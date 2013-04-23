@@ -23,8 +23,8 @@
   \brief An static class with global definitions.
  */
 
-#ifndef __TERRALIB_VP_INTERNAL_GLOBAL_H
-#define __TERRALIB_VP_INTERNAL_GLOBAL_H
+#ifndef __TERRALIB_VP_CORE_INTERNAL_GLOBAL_H
+#define __TERRALIB_VP_CORE_INTERNAL_GLOBAL_H
 
 // TerraLib
 #include "Config.h"
@@ -52,5 +52,5 @@ namespace te
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_GLOBAL_H
+#endif  // __TERRALIB_VP_CORE_INTERNAL_GLOBAL_H
 

@@ -48,8 +48,10 @@ namespace te
     namespace widgets
     {
       class AbstractTool;
+      class EyeBirdMapDisplayWidget;
       class MapDisplay;
       class Pan;
+      class ZoomInMapDisplayWidget;
       class ZoomWheel;
 
       /*!
@@ -98,6 +100,8 @@ namespace te
 
           void hideInfoTool(bool hide);
 
+          void hideExtraDisplaysTool(bool hide);
+
         protected slots:
 
           void onGeomAquired(te::gm::Polygon* poly);
@@ -120,6 +124,8 @@ namespace te
 
           void onReadPixelToggled(bool checked);
 
+          void onExtraDisplaysToggled(bool checked);
+
           void onRecomposeClicked();
 
         signals:
@@ -139,8 +145,10 @@ namespace te
           std::auto_ptr<Ui::RasterNavigatorWidgetForm> m_ui;
 
           te::map::AbstractLayerPtr m_layer;
-          te::qt::widgets::MapDisplay* m_mapDisplay;
           te::qt::widgets::AbstractTool* m_tool;
+          te::qt::widgets::MapDisplay* m_mapDisplay;
+          te::qt::widgets::ZoomInMapDisplayWidget* m_zoomInMapDisplay;
+          te::qt::widgets::EyeBirdMapDisplayWidget* m_eyeBirdMapDisplay;
 
           te::qt::widgets::Pan* m_panTool;                          //!< Pan tool (used in preview mode)
           te::qt::widgets::ZoomWheel* m_zoomTool;                   //!< Zoom tool (used in preview mode)

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/vp/IntersectionDialog.cpp
+  \file terralib/vp/AggregationDialog.cpp
 
   \brief A dialog for intersection operation
 */
@@ -29,8 +29,8 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/layer/explorer/LayerTreeModel.h"
 #include "../core/Exception.h"
-#include "ui_IntersectionDialogForm.h"
-#include "IntersectionDialog.h"
+#include "ui_AggregationDialogForm.h"
+#include "AggregationDialog.h"
 
 // Qt
 #include <QtGui/QMessageBox>
@@ -40,39 +40,37 @@
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 Q_DECLARE_METATYPE(te::dt::Property*);
 
-te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags f)
+te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::IntersectionDialogForm)
+    m_ui(new Ui::AggregationDialogForm)
 {
 // add controls
   m_ui->setupUi(this);
 
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-intersection-hint").pixmap(48,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-aggregation-hint").pixmap(48,48));
   m_ui->m_datasourcesToolButton->setIcon(QIcon::fromTheme("datasource"));
-
-  connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilterLineEditTextChanged(const QString&)));
 }
 
-te::vp::IntersectionDialog::~IntersectionDialog()
+te::vp::AggregationDialog::~AggregationDialog()
 {
 }
 
-void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
+void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
 }
 
-void te::vp::IntersectionDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
+void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
 {
   
 }
 
-void te::vp::IntersectionDialog::setSelectedLayers(std::vector<std::string> selectedLayers)
+void te::vp::AggregationDialog::setSelectedLayers(std::vector<std::string> selectedLayers)
 {
   m_selectedLayers = selectedLayers;
 }
 
-void te::vp::IntersectionDialog::onFilterLineEditTextChanged(const QString& text)
+void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
 {
 
 }

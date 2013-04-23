@@ -50,46 +50,6 @@ te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, bool isOwner)
   : m_ds(dataset, isOwner)
 {
   assert(dataset);
-
-// by default no property is automatically adapted
-  std::size_t np = m_ds->getNumProperties();
-
-  for(std::size_t i = 0; i != np; ++i)
-    m_adaptedProperties.push_back(0);
-}
-
-te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, const DataSourceCapabilities& capabilities, bool isOwner)
-  : m_ds(dataset, isOwner)
-{
-  assert(dataset);
-
-// by default no property is automatically adapted
-  std::size_t np = m_ds->getNumProperties();
-
-  for(std::size_t i = 0; i != np; ++i)
-    m_adaptedProperties.push_back(0);
-
-// gets the DataTypeCapabilities
-  const DataTypeCapabilities& dtCapabilities = capabilities.getDataTypeCapabilities();
-
-// try to build automatically the adapter
-  for(std::size_t i = 0; i != np; ++i)
-  {
-    std::string propertyName = m_ds->getPropertyName(i);
-    int propertyDataType = m_ds->getPropertyDataType(i);
-
-    if(dtCapabilities.supports(propertyDataType))
-    {
-      add(propertyName, propertyDataType, i);
-    }
-    else
-    {
-      int hintDataType = dtCapabilities.getHint(propertyDataType);
-
-      if(hintDataType != te::dt::UNKNOWN_TYPE)
-        add(propertyName, hintDataType, i);
-    }
-  }
 }
 
 te::da::DataSetAdapter::~DataSetAdapter()
@@ -297,103 +257,6 @@ te::da::DataSet* te::da::DataSetAdapter::getAdaptee() const
   return m_ds.get();
 }
 
-void te::da::DataSetAdapter::getNonAdaptedProperties(std::vector<std::string>& propertyNames) const
-{
-  for(std::size_t i = 0; i < m_ds->getNumProperties(); ++i)
-    if(!isAdapted(i))
-      propertyNames.push_back(m_ds->getPropertyName(i));
-}
-
-void te::da::DataSetAdapter::getNonAdaptedProperties(std::vector<std::size_t>& propertyPos) const
-{
-  for(std::size_t i = 0; i < m_ds->getNumProperties(); ++i)
-    if(!isAdapted(i))
-      propertyPos.push_back(i);
-}
-
-void te::da::DataSetAdapter::getAdaptedProperties(const std::string& propertyName, std::vector<std::size_t>& adaptedPropertyPos)
-{
-  for(std::size_t i = 0; i != m_pnames.size(); ++i)
-  {
-    if(m_pnames[i] == propertyName)
-    {
-      getAdaptedProperties(i, adaptedPropertyPos);
-      return;
-    }
-  }
-}
-
-void te::da::DataSetAdapter::getAdaptedProperties(std::size_t propertyPos, std::vector<std::size_t>& adaptedPropertyPos)
-{
-  assert(propertyPos >= 0 && propertyPos < m_propertyIndexes.size());
-
-  std::vector<std::size_t> indexes = m_propertyIndexes[propertyPos];
-
-  for(std::size_t i = 0; i < indexes.size(); ++i)
-    adaptedPropertyPos.push_back(indexes[i]);
-}
-
-void te::da::DataSetAdapter::remove(const std::string& propertyName)
-{
-  for(std::size_t i = 0; i != m_pnames.size(); ++i)
-  {
-    if(m_pnames[i] == propertyName)
-    {
-      remove(i);
-      return;
-    }
-  }
-}
-
-void te::da::DataSetAdapter::remove(std::size_t i)
-{
-  assert(i < m_pnames.size());
-
-  m_pnames.erase(m_pnames.begin() + i);
-  m_datatypes.erase(m_datatypes.begin() + i);
-
-// adjusting internal indexes...
-  const std::vector<std::size_t>& indexes = m_propertyIndexes[i];
-
-  for(std::size_t j = 0; j < indexes.size(); ++j)
-    m_adaptedProperties[indexes[j]]--;
-
-  m_propertyIndexes.erase(m_propertyIndexes.begin() + i);
-  m_converters.erase(m_converters.begin() + i);
-}
-
-void te::da::DataSetAdapter::add(const std::string& newPropertyName,
-                                 int newPropertyType,
-                                 const std::string& adaptedPropertyName,
-                                 AttributeConverter conv)
-{
-  add(newPropertyName, newPropertyType, GetPropertyPos(m_ds.get(), adaptedPropertyName), conv);
-}
-
-void te::da::DataSetAdapter::add(const std::string& newPropertyName,
-                                 int newPropertyType,
-                                 std::size_t adaptedPropertyPos,
-                                 AttributeConverter conv)
-{
-  std::vector<std::size_t> indexes;
-  indexes.push_back(adaptedPropertyPos);
-
-  add(newPropertyName, newPropertyType, indexes, conv);
-}
-
-void te::da::DataSetAdapter::add(const std::string& newPropertyName,
-                                int newPropertyType,
-                                const std::vector<std::string>& adaptedPropertyNames,
-                                AttributeConverter conv)
-{
-  std::vector<std::size_t> indexes;
-
-  for(std::size_t i = 0; i < adaptedPropertyNames.size(); ++i)
-    indexes.push_back(GetPropertyPos(m_ds.get(), adaptedPropertyNames[i]));
-
-  add(newPropertyName, newPropertyType, indexes, conv);
-}
-
 void te::da::DataSetAdapter::add(const std::string& newPropertyName,
                                  int newPropertyType,
                                  const std::vector<std::size_t>& adaptedPropertyPos,
@@ -403,16 +266,6 @@ void te::da::DataSetAdapter::add(const std::string& newPropertyName,
   m_pnames.push_back(newPropertyName);
   m_propertyIndexes.push_back(adaptedPropertyPos);
   m_converters.push_back(conv);
-
-  for(std::size_t i = 0; i < adaptedPropertyPos.size(); ++i)
-    m_adaptedProperties[adaptedPropertyPos[i] ]++;
-}
-
-bool te::da::DataSetAdapter::isAdapted(std::size_t i) const
-{
-  assert(i < m_adaptedProperties.size());
-
-  return m_adaptedProperties[i] > 0;
 }
 
 te::dt::AbstractData* te::da::DataSetAdapter::getAdaptedValue(std::size_t i) const

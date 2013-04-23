@@ -7,7 +7,7 @@
 // STL
 #include <iostream>
 
-void PrintDataSet(te::da::DataSet* dataset)
+void PrintDataSet(te::da::DataSet* dataset, const std::string& datasetName)
 {
   if(dataset == 0)
   {
@@ -15,24 +15,21 @@ void PrintDataSet(te::da::DataSet* dataset)
     return;
   }
 
-// let's get the dataset structure
-  const te::da::DataSetType* dt = dataset->getType();
-
-  int nproperties = static_cast<int>(dt->size());
+  std::size_t nproperties = dataset->getNumProperties();
 
 // this will be used just to count the items in the dataset
   int item = 0;
 
-  std::cout << "Printing information about dataset: " << dt->getName() << std::endl;
+  std::cout << "Printing information about the dataset: " << datasetName << std::endl;
 
 // traverse the dataset and print each dataset item
   while(dataset->moveNext())
   {
     std::cout << std::endl << "ITEM NUMBER: " << item++ << " =======================" << std::endl;
   
-    for(int i = 0; i < nproperties; ++i)
+    for(std::size_t i = 0; i < nproperties; ++i)
     {
-      std::cout << dt->getProperty(i)->getName() << ": " ; 
+      std::cout << dataset->getPropertyName(i) << ": " ; 
 
 // check if value is not null
       if(dataset->isNull(i))
@@ -48,4 +45,3 @@ void PrintDataSet(te::da::DataSet* dataset)
     }
   }
 }
-

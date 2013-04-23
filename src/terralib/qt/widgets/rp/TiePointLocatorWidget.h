@@ -141,6 +141,12 @@ namespace te
 
           void adjCoordPicked(double x, double y);
 
+          void setTiePointMarkLegend(QPixmap p);
+
+          void setSelectedTiePointMarkLegend(QPixmap p);
+
+          void setReferenceTiePointMarkLegend(QPixmap p);
+
         protected slots:
 
           void onAutoAcquireTiePointsToolButtonClicked();
@@ -170,6 +176,10 @@ namespace te
 
           /*! \brief Update tie point values with  advanced options changed values. */
           void updateAdvancedOptions();
+
+        signals:
+
+          void tiePointsUpdated();
 
         private:
 

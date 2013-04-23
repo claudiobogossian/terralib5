@@ -28,7 +28,9 @@ void RasterSymbologyWidgets()
   te::rst::RasterProperty* rstp = static_cast<te::rst::RasterProperty*>(dt->getProperties()[0]->clone());
 
   te::da::DataSet* dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
-  te::rst::Raster* raster = dataSet->getRaster();
+
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataSet, te::dt::RASTER_TYPE);
+  te::rst::Raster* raster = dataSet->getRaster(rpos);
 
   te::se::RasterSymbolizer* rs = 0;
 

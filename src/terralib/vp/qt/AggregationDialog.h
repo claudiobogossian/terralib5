@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/vp/qt/IntersectionDialog.h
+  \file terralib/vp/qt/AggregationDialog.h
 
   \brief A dialog intersection operation
 */
 
-#ifndef __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
-#define __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
+#ifndef __TERRALIB_VP_INTERNAL_AGGREGATIONDIALOG_H
+#define __TERRALIB_VP_INTERNAL_AGGREGATIONDIALOG_H
 
 // TerraLib
 #include "../../maptools/AbstractLayer.h"
@@ -37,7 +37,7 @@
 // Qt
 #include <QtGui/QDialog>
 
-namespace Ui { class IntersectionDialogForm; }
+namespace Ui { class AggregationDialogForm; }
 
 class QModelIndex;
 class QTreeWidgetItem;
@@ -46,15 +46,15 @@ namespace te
 {
   namespace vp
   {
-    class TEVPEXPORT IntersectionDialog : public QDialog
+    class TEVPEXPORT AggregationDialog : public QDialog
     {
       Q_OBJECT
 
       public:
 
-        IntersectionDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+        AggregationDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-        ~IntersectionDialog();
+        ~AggregationDialog();
 
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
@@ -70,11 +70,11 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::IntersectionDialogForm> m_ui;
+        std::auto_ptr<Ui::AggregationDialogForm> m_ui;
         std::list<te::map::AbstractLayerPtr> m_layers;
         std::vector<std::string> m_selectedLayers;
     };
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
+#endif  // __TERRALIB_VP_INTERNAL_AGGREGATIONDIALOG_H

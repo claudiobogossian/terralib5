@@ -28,8 +28,8 @@ void DrawingRasterObject()
   te::da::DataSourceTransactor* tr = ds->getTransactor();
 
   te::da::DataSet* dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
-  dataSet->loadTypeInfo();
-  te::rst::Raster* raster = dataSet->getRaster();
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataSet, te::dt::RASTER_TYPE);
+  te::rst::Raster* raster = dataSet->getRaster(rpos);
 
   const te::gm::Envelope* extent = raster->getExtent();
 

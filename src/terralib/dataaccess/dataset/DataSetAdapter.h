@@ -69,28 +69,8 @@ namespace te
         */
         DataSetAdapter(DataSet* dataset, bool isOwner = false);
 
-        /*!
-          \brief Constructor.
-
-          \param dataset A pointer to the DataSet that will be handled by adapter.
-          \param capabilities A data source capabilities of data source that the user intend use.
-                 e.g. the data source where the given data set will be saved.
-          \param isOwner If true the DataSetAdapter will have the ownership of the given data set pointer.
-
-          \note This method will try create automatic property adaptations based on given capabilities.
-                Here we will look up the data type support of DataSourceCapabilities.
-                Case there is not support for a given data type, the method "getHint" will be used to try retrieves an appropriate property.
-
-          \note Case the method "getHint" no informs any hint, the specific property will not have an adaptation. i.e. The adapater is invalid.
-          \note The method "adapt" can be used to do manual adaptations.
-          \note The method "getNonAdaptedProperties" can be used to retrieve that properties that no have defined adaptation.
-          
-          \sa DataSourceCapabilities DataTypeCapabilities
-        */
-        DataSetAdapter(DataSet* dataset, const DataSourceCapabilities& capabilities, bool isOwner = false);
-
-        /*! \brief Virtual Destructor. */
-        virtual ~DataSetAdapter();
+        /*! \brief Destructor. */
+        ~DataSetAdapter();
 
         //@}
 
@@ -187,70 +167,10 @@ namespace te
         */
         te::da::DataSet* getAdaptee() const;
 
-        /*!
-          \brief This method returns the name of the properties that have not yet been adapted.
-
-          \param propertyNames A vector that will be filled with the name of the properties that have not yet been adapted.
-        */
-        void getNonAdaptedProperties(std::vector<std::string>& propertyNames) const;
-
-        /*!
-          \brief This method returns the index of the properties that have not yet been adapted.
-
-          \param propertyPos A vector that will be filled with the index of the properties that have not yet been adapted.
-        */
-        void getNonAdaptedProperties(std::vector<std::size_t>& propertyPos) const;
-
-         /*!
-          \brief This method tells which properties of the handled data set that have been adapted based on the given property name.
-
-          \param propertyName A property name of the DataSetAdapter.
-          \param adaptedPropertyPos  A vector that will be filled with the property positions of the handled data set have been adapted.
-        */
-        void getAdaptedProperties(const std::string& propertyName, std::vector<std::size_t>& adaptedPropertyPos);
-
-        /*!
-          \brief This method tells which properties of the handled data set that have been adapted based on the given property name.
-
-          \param propertyPos A property position of the DataSetAdapter.
-          \param adaptedPropertyPos  A vector that will be filled with the property positions of the handled data set have been adapted.
-        */
-        void getAdaptedProperties(std::size_t propertyPos, std::vector<std::size_t>& adaptedPropertyPos);
-
-        /*!
-          \brief This method removes a property of DataSetAdapter.
-
-          \param propertyName The property name of the DataSetAdapter that will be removed.
-        */
-        void remove(const std::string& propertyName);
-
-        /*!
-          \brief This method removes a property of DataSetAdapter.
-
-          \param i The property index of the DataSetAdapter that will be removed.
-        */
-        void remove(std::size_t i);
-
-        void add(const std::string& newPropertyName,
-                 int newPropertyType,
-                 const std::string& adaptedPropertyName,
-                 AttributeConverter conv = GenericAttributeConverter);
-
-        void add(const std::string& newPropertyName,
-                 int newPropertyType,
-                 std::size_t adaptedPropertyPos,
-                 AttributeConverter conv = GenericAttributeConverter);
-
-        void add(const std::string& newPropertyName,
-                 int newPropertyType,
-                 const std::vector<std::string>& adaptedPropertyNames,
-                 AttributeConverter conv);
-
         void add(const std::string& newPropertyName,
                  int newPropertyType,
                  const std::vector<std::size_t>& adaptedPropertyPos,
                  AttributeConverter conv);
-
         //@}
 
       private:
@@ -259,8 +179,6 @@ namespace te
          *  DataSet Adapter Internal Methods implementation.
          */
         //@{
-
-        bool isAdapted(std::size_t i) const;
 
         te::dt::AbstractData* getAdaptedValue(std::size_t i) const;
 
@@ -273,7 +191,6 @@ namespace te
         te::common::Holder<DataSet> m_ds;                         //!< A pointer to the DataSet that will be handled by adapter
         std::vector<std::vector<std::size_t> > m_propertyIndexes; //!< A vector that stores the adapted property indexes.
         std::vector<AttributeConverter> m_converters;             //!< A vector that stores the attribute converters functions.
-        std::vector<std::size_t> m_adaptedProperties;             //!< Internal vector to count the references to adapted properties.
     };
 
   } // end namespace da

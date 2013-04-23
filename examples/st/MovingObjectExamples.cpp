@@ -41,8 +41,9 @@ void MovingObjectExamples()
     
     if(dSet->moveNext())
     {
-      geom = dSet->getGeometry();
-       
+      std::size_t geomPos = te::da::GetFirstPropertyPos(dSet, te::dt::GEOMETRY_TYPE);
+      geom = dSet->getGeometry(geomPos);
+
       PrintMovingObjectIntersection(output[1], geom);
       PrintMovingObjectDifference(output[1], geom);
     }

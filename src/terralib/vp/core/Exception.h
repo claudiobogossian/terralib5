@@ -23,8 +23,8 @@
   \brief An exception class for the Vector processing module.
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_EXCEPTION_H
-#define __TERRALIB_VP_INTERNAL_EXCEPTION_H
+#ifndef __TERRALIB_VP_CORE_INTERNAL_EXCEPTION_H
+#define __TERRALIB_VP_CORE_INTERNAL_EXCEPTION_H
 
 // TerraLib
 #include "../../common/Exception.h"
@@ -40,5 +40,5 @@ namespace te
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_EXCEPTION_H
+#endif  // __TERRALIB_VP_CORE_INTERNAL_EXCEPTION_H
 
