@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
-#include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
@@ -41,8 +41,8 @@
 te::qt::widgets::DataSetAdapterWidget::DataSetAdapterWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::DataSetAdapterWidgetForm),
-    m_sourceDataSet(0),
-    m_dataSetAdapter(0)
+    m_sourceDataSetType(0),
+    m_dataSetConverter(0)
 {
   m_ui->setupUi(this);
 
@@ -69,38 +69,38 @@ te::qt::widgets::DataSetAdapterWidget::~DataSetAdapterWidget()
 
 }
 
-void te::qt::widgets::DataSetAdapterWidget::setAdapterParameters(te::da::DataSet* sourceDataSet, te::da::DataSetAdapter* adapter, const te::da::DataSourceInfoPtr& targetDatasource)
+void te::qt::widgets::DataSetAdapterWidget::setAdapterParameters(te::da::DataSetType* sourceDataSetType, te::da::DataSetTypeConverter* converter, const te::da::DataSourceInfoPtr& targetDatasource)
 {
   //update interface button state
   m_ui->m_addToolButton->setEnabled(true);
 
   m_targetDataSource = te::da::DataSourceManager::getInstance().find(targetDatasource->getId());
 
-  m_sourceDataSet = sourceDataSet;
+  m_sourceDataSetType = sourceDataSetType;
 
-  m_dataSetAdapter = adapter;
+  m_dataSetConverter = converter;
 
   fillDataSetTable();
 }
 
-te::da::DataSetAdapter* te::qt::widgets::DataSetAdapterWidget::getAdapter()
+te::da::DataSetTypeConverter* te::qt::widgets::DataSetAdapterWidget::getConverter()
 {
-  return m_dataSetAdapter;
+  return m_dataSetConverter;
 }
 
 void te::qt::widgets::DataSetAdapterWidget::onAddToolButtonClicked()
 {
-  //te::qt::widgets::PropertyConverterDialog w(this);
+  te::qt::widgets::PropertyConverterDialog w(this);
 
-  //w.set(m_targetDataSource->getId());
-  //w.set(m_sourceDataSet->getType());
+  w.set(m_targetDataSource->getId());
+  w.set(m_sourceDataSetType);
 
-  //if(w.exec() == QDialog::Accepted)
-  //{
-  //  w.adapt(m_dataSetAdapter);
+  if(w.exec() == QDialog::Accepted)
+  {
+    w.adapt(m_dataSetConverter);
 
-  //  fillDataSetTable();
-  //}
+    fillDataSetTable();
+  }
 }
 
 void te::qt::widgets::DataSetAdapterWidget::onRemoveToolButtonClicked()
@@ -110,7 +110,7 @@ void te::qt::widgets::DataSetAdapterWidget::onRemoveToolButtonClicked()
 
   std::string propName = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 1)->text().toStdString();
 
-  //m_dataSetAdapter->remove(propName);
+  m_dataSetConverter->remove(propName);
 
   m_ui->m_removeToolButton->setEnabled(false);
 
@@ -131,22 +131,22 @@ void te::qt::widgets::DataSetAdapterWidget::onDownToolButtonClicked()
 
 void te::qt::widgets::DataSetAdapterWidget::onCellClicked(int row, int col)
 {
-  //std::string propName = m_ui->m_tableWidget->item(row, 1)->text().toStdString();
+  std::string propName = m_ui->m_tableWidget->item(row, 1)->text().toStdString();
 
-  //std::vector<std::string> nap;
+  std::vector<std::string> nap;
 
-  //m_dataSetAdapter->getNonAdaptedProperties(nap);
+  m_dataSetConverter->getNonConvertedProperties(nap);
 
-  //for(size_t t = 0; t < nap.size(); ++t)
-  //{
-  //  if(nap[t] == propName)
-  //  {
-  //    m_ui->m_removeToolButton->setEnabled(false);
-  //    return;
-  //  }
-  //}
+  for(size_t t = 0; t < nap.size(); ++t)
+  {
+    if(nap[t] == propName)
+    {
+      m_ui->m_removeToolButton->setEnabled(false);
+      return;
+    }
+  }
 
-  //m_ui->m_removeToolButton->setEnabled(true);
+  m_ui->m_removeToolButton->setEnabled(true);
 }
 
 void te::qt::widgets::DataSetAdapterWidget::buidTypeMap()
@@ -178,50 +178,50 @@ void te::qt::widgets::DataSetAdapterWidget::buidTypeMap()
 
 void te::qt::widgets::DataSetAdapterWidget::fillDataSetTable()
 {
- // assert(m_dataSetAdapter);
+  assert(m_dataSetConverter);
 
- // te::da::DataSetType* dsType = m_dataSetAdapter->getType();
+  te::da::DataSetType* dsType = m_dataSetConverter->getConvertee();
 
- // m_ui->m_tableWidget->setRowCount(0);
+  m_ui->m_tableWidget->setRowCount(0);
 
- ////fill table with dataset properties
- // for(size_t t = 0; t < dsType->size(); ++t)
- // {
- //   std::string propName = dsType->getProperty(t)->getName();
+ //fill table with dataset properties
+  for(size_t t = 0; t < dsType->size(); ++t)
+  {
+    std::string propName = dsType->getProperty(t)->getName();
 
- //   int newrow = m_ui->m_tableWidget->rowCount();
- //   m_ui->m_tableWidget->insertRow(newrow);
+    int newrow = m_ui->m_tableWidget->rowCount();
+    m_ui->m_tableWidget->insertRow(newrow);
 
- //   QTableWidgetItem* itemCheck = new QTableWidgetItem();
- //   itemCheck->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
- //   itemCheck->setIcon(QIcon::fromTheme("check"));
- //   m_ui->m_tableWidget->setItem(newrow, 0, itemCheck);
+    QTableWidgetItem* itemCheck = new QTableWidgetItem();
+    itemCheck->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    itemCheck->setIcon(QIcon::fromTheme("check"));
+    m_ui->m_tableWidget->setItem(newrow, 0, itemCheck);
 
- //   QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(propName));
- //   itemName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
- //   m_ui->m_tableWidget->setItem(newrow, 1, itemName);
+    QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(propName));
+    itemName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    m_ui->m_tableWidget->setItem(newrow, 1, itemName);
 
- //   QTableWidgetItem* itemType = new QTableWidgetItem(m_typeMap[dsType->getProperty(t)->getType()].c_str());
- //   itemType->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
- //   m_ui->m_tableWidget->setItem(newrow, 2, itemType);
- // }
+    QTableWidgetItem* itemType = new QTableWidgetItem(m_typeMap[dsType->getProperty(t)->getType()].c_str());
+    itemType->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    m_ui->m_tableWidget->setItem(newrow, 2, itemType);
+  }
 
- // //fill table with dataset properties that can not be adapted
- // std::vector<std::string> nonAdaptedProperties;
- // m_dataSetAdapter->getNonAdaptedProperties(nonAdaptedProperties);
+  //fill table with dataset properties that can not be adapted
+  std::vector<std::string> nonAdaptedProperties;
+  m_dataSetConverter->getNonConvertedProperties(nonAdaptedProperties);
 
- // for(std::size_t i = 0; i < nonAdaptedProperties.size(); ++i)
- // {
- //   int newrow = m_ui->m_tableWidget->rowCount();
- //   m_ui->m_tableWidget->insertRow(newrow);
+  for(std::size_t i = 0; i < nonAdaptedProperties.size(); ++i)
+  {
+    int newrow = m_ui->m_tableWidget->rowCount();
+    m_ui->m_tableWidget->insertRow(newrow);
 
- //   QTableWidgetItem* itemCheck = new QTableWidgetItem();
- //   itemCheck->setFlags(Qt::ItemIsEnabled);
- //   itemCheck->setIcon(QIcon::fromTheme("delete"));
- //   m_ui->m_tableWidget->setItem(newrow, 0, itemCheck);
+    QTableWidgetItem* itemCheck = new QTableWidgetItem();
+    itemCheck->setFlags(Qt::ItemIsEnabled);
+    itemCheck->setIcon(QIcon::fromTheme("delete"));
+    m_ui->m_tableWidget->setItem(newrow, 0, itemCheck);
 
- //   QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(nonAdaptedProperties[i]));
- //   itemName->setFlags(Qt::ItemIsEnabled);
- //   m_ui->m_tableWidget->setItem(newrow, 1, itemName);
- // }
+    QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(nonAdaptedProperties[i]));
+    itemName->setFlags(Qt::ItemIsEnabled);
+    m_ui->m_tableWidget->setItem(newrow, 1, itemName);
+  }
 }
