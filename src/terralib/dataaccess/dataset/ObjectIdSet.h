@@ -40,10 +40,8 @@ namespace te
   namespace da
   {
 // Forward declaration
-    class DataSet;
-    class DataSetType;
     class ObjectId;
-    class Select;
+    class Expression;
 
     /*!
       \class ObjectIdSet
@@ -56,52 +54,19 @@ namespace te
     {
       public:
 
-        /*!
-          \brief Constructor.
-
-          \param type The type of the data set that generates the unique ids.
-
-          \note This class will NOT take the ownership of the given pointer.
-        */
-        ObjectIdSet(const DataSetType* type);
+        /*! \brief Constructor. */
+        ObjectIdSet();
 
         /*! \brief Destructor. */
         ~ObjectIdSet();
-      
-        /*!
-          \brief It returns the type of the data set that generated the unique ids.
-
-          \return The type of the data set that generated the unique ids.
-        */
-        const DataSetType* getType() const;
 
         /*!
-          \brief It adds a propety that will be used to generate the unique ids.
+          \brief It adds a property that will be used to generate the unique ids.
 
-          \param name A propety name that will be used to generate the unique ids.
+          \param name A property name that will be used to generate the unique ids.
+          \param type The property data type.
         */
-        void addProperty(const std::string& name);
-
-        /*!
-          \brief It adds a propety that will be used to generate the unique ids.
-
-          \param i A propety index that will be used to generate the unique ids.
-        */
-        void addProperty(std::size_t i);
-
-        /*!
-          \brief It sets the properties that will be used to generate the unique ids.
-
-          \param names A vector with the propety names that will be used to generate the unique ids.
-        */
-        void setProperties(const std::vector<std::string>& names);
-
-        /*!
-          \brief It sets the properties that will be used to generate the unique ids.
-
-          \param indexes A vector with the propety indexes that will be used to generate the unique ids.
-        */
-        void setProperties(const std::vector<std::size_t>& indexes);
+        void addProperty(const std::string& name, int type);
 
         /*!
           \brief It adds an object id to this object id set.
@@ -113,13 +78,13 @@ namespace te
         void add(ObjectId* oid);
 
         /*!
-          \brief It returns the query that can be used to retrieve the data set that contains the all indentified elements.
+          \brief It returns the expression that can be used to retrieve the data set that contains the all indentified elements.
 
-          \return The query that can be used to retrieve the data set that contains the all indentified elements.
+          \return The expression that can be used to retrieve the data set that contains the all indentified elements.
 
           \note The caller will take the ownership of the given pointer.
         */
-        Select* getQuery() const;
+        Expression* getExpression() const;
 
         /*!
           \brief It clears this object id set.
@@ -155,8 +120,8 @@ namespace te
 
       private:
 
-        DataSetType* m_type;                                          //!< A pointer to the type of the data set that generates the unique ids.
-        std::vector<std::size_t> m_indexes;                           //!< A vector with the property indexes used to generate de unique ids.
+        std::vector<std::string> m_pnames;                            //!< The list of property names used to generate the unique ids.
+        std::vector<int> m_ptypes;                                    //!< The list of property types used to generate the unique ids.
         std::set<ObjectId*, te::common::LessCmp<ObjectId*> > m_oids;  //!< The set of unique ids.
     };
 
