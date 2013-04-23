@@ -18,32 +18,32 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/GraphicSettings.cpp
+  \file terralib/qt/widgets/charts/ChartProperties.cpp
 
-  \brief A dialog used to customize a graphic's parameters, weather it is about it's data or it's visual style
+  \brief A dialog used to customize a Chart's parameters, weather it is about it's data or it's visual style
 */
 
-#include "ui_GraphicSettingsDialogForm.h"
-#include "GraphicWidget.h"
-#include "GraphicWidgetFactory.h"
-//#include "HistogramFrameFactory.h"
-//#include "ScatterFrameFactory.h"
-#include "GraphicSettings.h"
+#include "ui_ChartPropertiesDialogForm.h"
+#include "ChartWidget.h"
+#include "ChartWidgetFactory.h"
+#include "HistogramFrameFactory.h"
+#include "ScatterFrameFactory.h"
+#include "ChartProperties.h"
 
-te::qt::widgets::GraphicSettings::GraphicSettings(QWidget* parent)
+te::qt::widgets::ChartProperties::ChartProperties(QWidget* parent)
   : QDialog(parent),
-    m_ui(new Ui::GraphicSettingsDialogForm),
+    m_ui(new Ui::ChartPropertiesDialogForm),
     m_curComp(0)
 {
   m_ui->setupUi(this);
 
   //init factories
-//  HistogramFrameFactory::initialize();
-//  ScatterFrameFactory::initialize();
+  HistogramFrameFactory::initialize();
+  ScatterFrameFactory::initialize();
 
   std::vector<std::string> vec;
-  const te::qt::widgets::GraphicWidgetFactory::dictionary_type& d = te::qt::widgets::GraphicWidgetFactory::getDictionary();
-  te::qt::widgets::GraphicWidgetFactory::dictionary_type::const_iterator it = d.begin();
+  const te::qt::widgets::ChartWidgetFactory::dictionary_type& d = te::qt::widgets::ChartWidgetFactory::getDictionary();
+  te::qt::widgets::ChartWidgetFactory::dictionary_type::const_iterator it = d.begin();
 
   while(it != d.end())
   {
@@ -60,16 +60,16 @@ te::qt::widgets::GraphicSettings::GraphicSettings(QWidget* parent)
 
 }
 
-te::qt::widgets::GraphicSettings::~GraphicSettings()
+te::qt::widgets::ChartProperties::~ChartProperties()
 {
   delete m_curComp;
 }
 
-void te::qt::widgets::GraphicSettings::on_itemClicked(QListWidgetItem * current) 
+void te::qt::widgets::ChartProperties::on_itemClicked(QListWidgetItem * current) 
 {
   std::string value = current->text().toStdString();
   delete m_curComp;
-  m_curComp = te::qt::widgets::GraphicWidgetFactory::make(value, m_ui->m_scrollArea);
-  m_ui->m_scrollArea->setWidget(m_curComp);
+  m_curComp = te::qt::widgets::ChartWidgetFactory::make(value, m_ui->m_tabWidget);
+  m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString(value));
   m_curComp->show();
 }

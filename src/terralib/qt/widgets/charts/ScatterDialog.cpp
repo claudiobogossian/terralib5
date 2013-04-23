@@ -62,9 +62,7 @@ void te::qt::widgets::ScatterDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
 {
-  te::qt::widgets::Scatter* scatter = m_scatterDataWidget->getScatter();
-
-  m_scatterChart = new te::qt::widgets::ScatterChart(scatter);
+  m_scatterChart = new te::qt::widgets::ScatterChart(m_scatterDataWidget->getScatter());
 
   QDialog dlg(this);
   QGridLayout* lay = new QGridLayout(&dlg);

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 0-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,25 +18,20 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/HistogramFrame.cpp
+  \file terralib/qt/widgets/charts/ChartWidget.cpp
 
-  \brief A frame used to adjust a histogram's chart parameters, weather it is about it's data or it's visual style.
+  \brief A base widget to be used on the chart settings.
 */
 
-#include "ui_HistogramFrameWidgetForm.h"
-#include "HistogramFrame.h"
-#include "HistogramDataWidget.h"
+#include "ChartWidget.h"
 
-te::qt::widgets::HistogramFrame::HistogramFrame(QWidget* parent)
-  : ChartWidget(parent),
-    m_ui(new Ui::HistogramFrameWidgetForm)
+te::qt::widgets::ChartWidget::ChartWidget(QWidget* parent)
+  : QWidget(parent)
 {
-  m_ui->setupUi(this);
 
-  m_label = "Histogram";
 }
 
-te::qt::widgets::HistogramFrame::~HistogramFrame()
+te::qt::widgets::ChartWidget::~ChartWidget()
 {
 
 }

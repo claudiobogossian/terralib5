@@ -32,8 +32,8 @@
 // TerraLib
 #include "../../../common/AbstractFactory.h"
 #include "../Config.h"
-#include "GraphicWidget.h"
-#include "GraphicWidgetFactory.h"
+#include "ChartWidget.h"
+#include "ChartWidgetFactory.h"
 #include "HistogramFrame.h"
 
 namespace te
@@ -47,7 +47,7 @@ namespace te
 
         \brief A factory to build the histogram frame object.
       */
-      class TEQTWIDGETSEXPORT HistogramFrameFactory : public te::qt::widgets::GraphicWidgetFactory
+      class TEQTWIDGETSEXPORT HistogramFrameFactory : public te::qt::widgets::ChartWidgetFactory
       {
         public:
 
@@ -61,11 +61,11 @@ namespace te
 
         protected:
 
-          te::qt::widgets::GraphicWidget* build();
+          te::qt::widgets::ChartWidget* build();
 
           HistogramFrameFactory();
 
-          virtual te::qt::widgets::GraphicWidget* create(QWidget* parent = 0);
+          virtual te::qt::widgets::ChartWidget* create(QWidget* parent = 0);
 
         private:
 

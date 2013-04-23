@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
-#include "GraphicWidget.h"
+#include "ChartWidget.h"
 
 #include <memory>
 
@@ -45,7 +45,7 @@ namespace te
 
         \brief A frame for setting display options.
       */
-      class TEQTWIDGETSEXPORT ScatterFrame : public GraphicWidget
+      class TEQTWIDGETSEXPORT ScatterFrame : public ChartWidget
       {
         Q_OBJECT
 

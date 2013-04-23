@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/GraphicSettings.h
+  \file terralib/qt/widgets/charts/ChartProperties.h
 
   \brief A dialog used to customize a graphic's parameters, weather it is about it's data or it's visual style
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_GRAPHICSETTINGS_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_GRAPHICSETTINGS_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTPROPERTIES_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTPROPERTIES_H
 
 // QT
 #include <QtGui/QDialog>
@@ -35,7 +35,7 @@
 
 #include <memory>
 
-namespace Ui { class GraphicSettingsDialogForm; }
+namespace Ui { class ChartPropertiesDialogForm; }
 
 namespace te
 {
@@ -43,21 +43,21 @@ namespace te
   {
     namespace widgets
     {
-      class GraphicWidget;
+      class ChartWidget;
       /*!
-        \class GraphicSettings
+        \class ChartProperties
 
         \brief A dialog used to customize a graphic's parameters.
       */
-      class TEQTWIDGETSEXPORT GraphicSettings : public QDialog
+      class TEQTWIDGETSEXPORT ChartProperties : public QDialog
       {
         Q_OBJECT
 
         public:
 
-          GraphicSettings(QWidget* parent = 0);
+          ChartProperties(QWidget* parent = 0);
 
-          ~GraphicSettings();
+          ~ChartProperties();
 
           public slots:
 
@@ -65,9 +65,9 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::GraphicSettingsDialogForm> m_ui;
+          std::auto_ptr<Ui::ChartPropertiesDialogForm> m_ui;
 
-          GraphicWidget* m_curComp;
+          ChartWidget* m_curComp;
 
       };
 
@@ -75,5 +75,5 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_GRAPHICSETTINGS_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_CHARTPROPERTIES_H
 

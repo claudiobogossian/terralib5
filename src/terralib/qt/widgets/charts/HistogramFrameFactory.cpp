@@ -50,18 +50,18 @@ te::qt::widgets::HistogramFrameFactory::~HistogramFrameFactory()
 
 }
 
-te::qt::widgets::GraphicWidget* te::qt::widgets::HistogramFrameFactory::build()
+te::qt::widgets::ChartWidget* te::qt::widgets::HistogramFrameFactory::build()
 {
   return new HistogramFrame;
 }
 
 te::qt::widgets::HistogramFrameFactory::HistogramFrameFactory()
-  : te::qt::widgets::GraphicWidgetFactory("HistogramFrame")
+  : te::qt::widgets::ChartWidgetFactory("HistogramFrame")
 {
 
 }
 
-te::qt::widgets::GraphicWidget* te::qt::widgets::HistogramFrameFactory::create(QWidget* parent)
+te::qt::widgets::ChartWidget* te::qt::widgets::HistogramFrameFactory::create(QWidget* parent)
 {
   return new HistogramFrame(parent);
 }

@@ -27,7 +27,7 @@
 #include "ScatterFrame.h"
 
 te::qt::widgets::ScatterFrame::ScatterFrame(QWidget* parent)
-  : GraphicWidget(parent),
+  : ChartWidget(parent),
     m_ui(new Ui::ScatterFrameWidgetForm)
 {
   m_ui->setupUi(this);

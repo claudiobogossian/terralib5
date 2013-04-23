@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/GraphicWidget.h
+  \file terralib/qt/widgets/charts/ChartWidget.h
 
-  \brief A base widget to be used on the graphic settings.
+  \brief A base widget to be used on the chart settings.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_GRAPHICWIDGET_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_GRAPHICWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTWIDGET_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTWIDGET_H
 
 // QT
 #include <QtGui/QWidget>
@@ -39,17 +39,17 @@ namespace te
     namespace widgets
       {
       /*!
-        \class GraphicWidget
+        \class ChartWidget
 
         \brief A base widget for settings.
       */
-      class TEQTWIDGETSEXPORT GraphicWidget : public QWidget
+      class TEQTWIDGETSEXPORT ChartWidget : public QWidget
       {
         public:
 
-          GraphicWidget(QWidget* parent = 0);
+          ChartWidget(QWidget* parent = 0);
 
-          ~GraphicWidget();
+          ~ChartWidget();
 
         public:
 
@@ -60,4 +60,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_GRAPHICWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_CHARTWIDGET_H

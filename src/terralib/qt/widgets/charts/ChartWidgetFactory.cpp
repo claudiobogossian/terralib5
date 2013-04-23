@@ -18,41 +18,41 @@
  */
 
 /*!
-  \file terralib/qt/widgets/settings/GraphicWidgetFactory.cpp
+  \file terralib/qt/widgets/settings/ChartWidgetFactory.cpp
 
   \brief A factory to build widget objects.
 */
 
 #include "../../../common/StringUtils.h"
-#include "GraphicWidget.h"
-#include "GraphicWidgetFactory.h"
+#include "ChartWidget.h"
+#include "ChartWidgetFactory.h"
 
-te::qt::widgets::GraphicWidget* te::qt::widgets::GraphicWidgetFactory::make(const std::string& cwType)
+te::qt::widgets::ChartWidget* te::qt::widgets::ChartWidgetFactory::make(const std::string& cwType)
 {
-  return te::common::AbstractFactory<te::qt::widgets::GraphicWidget, std::string>::make(cwType);
+  return te::common::AbstractFactory<te::qt::widgets::ChartWidget, std::string>::make(cwType);
 }
 
-te::qt::widgets::GraphicWidget* te::qt::widgets::GraphicWidgetFactory::make(const std::string& cwType, QWidget* parent)
+te::qt::widgets::ChartWidget* te::qt::widgets::ChartWidgetFactory::make(const std::string& cwType, QWidget* parent)
 {
-  te::common::AbstractFactory<GraphicWidget, std::string>::dictionary_type& d = te::common::AbstractFactory<GraphicWidget, std::string>::getDictionary();
+  te::common::AbstractFactory<ChartWidget, std::string>::dictionary_type& d = te::common::AbstractFactory<ChartWidget, std::string>::getDictionary();
 
-  GraphicWidgetFactory* f = static_cast<GraphicWidgetFactory*>(d.find(cwType));
+  ChartWidgetFactory* f = static_cast<ChartWidgetFactory*>(d.find(cwType));
 
   if(f == 0)
     throw ;
 
-  GraphicWidget* cw = f->create(parent);
+  ChartWidget* cw = f->create(parent);
 
   return cw;
 }
 
-te::qt::widgets::GraphicWidgetFactory::~GraphicWidgetFactory() 
+te::qt::widgets::ChartWidgetFactory::~ChartWidgetFactory() 
 {
 
 }
 
-te::qt::widgets::GraphicWidgetFactory::GraphicWidgetFactory(const std::string& factoryKey)
-  : te::common::AbstractFactory<te::qt::widgets::GraphicWidget, std::string>(factoryKey)
+te::qt::widgets::ChartWidgetFactory::ChartWidgetFactory(const std::string& factoryKey)
+  : te::common::AbstractFactory<te::qt::widgets::ChartWidget, std::string>(factoryKey)
 {
   
 }

@@ -50,18 +50,18 @@ te::qt::widgets::ScatterFrameFactory::~ScatterFrameFactory()
 
 }
 
-te::qt::widgets::GraphicWidget* te::qt::widgets::ScatterFrameFactory::build()
+te::qt::widgets::ChartWidget* te::qt::widgets::ScatterFrameFactory::build()
 {
   return new ScatterFrame;
 }
 
 te::qt::widgets::ScatterFrameFactory::ScatterFrameFactory()
-  : te::qt::widgets::GraphicWidgetFactory("ScatterFrame")
+  : te::qt::widgets::ChartWidgetFactory("ScatterFrame")
 {
 
 }
 
-te::qt::widgets::GraphicWidget* te::qt::widgets::ScatterFrameFactory::create(QWidget* parent)
+te::qt::widgets::ChartWidget* te::qt::widgets::ScatterFrameFactory::create(QWidget* parent)
 {
   return new ScatterFrame(parent);
 }

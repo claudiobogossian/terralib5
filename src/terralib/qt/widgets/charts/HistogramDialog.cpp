@@ -34,8 +34,6 @@
 
 //QT
 #include <QtGui/QDialog>
-#include <QtGui/QToolBar>
-#include <QtGui/QToolButton>
 
 te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -64,8 +62,14 @@ void te::qt::widgets::HistogramDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
 {
-  te::qt::widgets::Histogram* histogram = m_histogramDataWidget->getHistogram();
-  m_histogramChart = new te::qt::widgets::HistogramChart(histogram);
+  m_histogramChart = new te::qt::widgets::HistogramChart(m_histogramDataWidget->getHistogram());
+
+  /*
+    m_histogramChart->attach(m_chartDisplay);
+    ChartDialog dlg(this, m_chartDisplay);
+    this->close();
+    dlg.exec();
+  */
 
   QDialog dlg(this);
   QGridLayout* lay = new QGridLayout(&dlg);
@@ -75,6 +79,7 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
 
   lay->addWidget(m_chartDisplay);
 
+  m_histogramChart->attach(m_chartDisplay);
   m_histogramChart->attach(m_chartDisplay);
 
   m_chartDisplay->show();

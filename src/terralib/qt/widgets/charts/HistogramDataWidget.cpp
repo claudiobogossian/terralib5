@@ -52,6 +52,7 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
 
   if(rpos != std::string::npos)
     {
+      m_ui->m_slicesSpinBox->setEnabled(false);
       size_t size =  dataSet->getRaster(rpos)->getNumberOfBands();
       for (size_t i = 0; i < size; i++)
       {

@@ -1,4 +1,4 @@
-/*  Copyright (C) 0-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,23 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/GraphicWidget.cpp
+  \file terralib/qt/widgets/charts/ChartDialog.cpp
 
-  \brief A base widget to be used on the graphic settings.
+  \brief A dialog used to display a set of charts.
 */
 
-#include "GraphicWidget.h"
+//Terralib
+#include "ChartDisplay.h"
+#include "ChartDialog.h"
+#include "../../../dataaccess.h"
+#include "../../../datatype/Property.h"
+#include "ui_histogramDialogForm.h"
 
-te::qt::widgets::GraphicWidget::GraphicWidget(QWidget* parent)
-  : QWidget(parent)
-{
+//QT
+#include <QtGui/QDialog>
 
-}
+te::qt::widgets::ChartDialog::ChartDialog(te::da::DataSet* dataSet, QWidget* parent,  Qt::WindowFlags f){}
 
-te::qt::widgets::GraphicWidget::~GraphicWidget()
-{
+te::qt::widgets::ChartDialog::~ChartDialog(){}
 
-}
+void te::qt::widgets::ChartDialog::onSettingsToolButtonClicked(){}

@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/GraphicWidgetFactory.h
+  \file terralib/qt/widgets/charts/ChartWidgetFactory.h
 
   \brief A factory to build widget objects.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_GRAPHICWIDGETFACTORY_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_GRAPHICWIDGETFACTORY_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTWIDGETFACTORY_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTWIDGETFACTORY_H
 
 // QT
 #include <QtGui/QWidget>
@@ -32,7 +32,7 @@
 // TerraLib
 #include "../../../common/AbstractFactory.h"
 #include "../Config.h"
-#include "GraphicWidget.h"
+#include "ChartWidget.h"
 
 namespace te
 {
@@ -41,29 +41,29 @@ namespace te
     namespace widgets
     {
       /*!
-        \class GraphicWidgetFactory
+        \class ChartWidgetFactory
 
         \brief  A factory to build widget objects.
       */
-      class TEQTWIDGETSEXPORT GraphicWidgetFactory : public te::common::AbstractFactory<te::qt::widgets::GraphicWidget, std::string>
+      class TEQTWIDGETSEXPORT ChartWidgetFactory : public te::common::AbstractFactory<te::qt::widgets::ChartWidget, std::string>
       {
         public:
 
-          static te::qt::widgets::GraphicWidget* make(const std::string& cwType);
+          static te::qt::widgets::ChartWidget* make(const std::string& cwType);
           
-          static te::qt::widgets::GraphicWidget* make(const std::string& cwType, QWidget* parent = 0);
+          static te::qt::widgets::ChartWidget* make(const std::string& cwType, QWidget* parent = 0);
 
           /*!
             \brief Virtual destructor.
 
             \note It will automatically unregister the factory from the dictionary.
           */
-          virtual ~GraphicWidgetFactory();
+          virtual ~ChartWidgetFactory();
 
           /*!
-            \brief It returns the type of Graphic widget that the factory knows how to create.
+            \brief It returns the type of Chart widget that the factory knows how to create.
 
-            \return The type of Graphic widget that the factory knows how to create.
+            \return The type of Chart widget that the factory knows how to create.
           */
           virtual const std::string& getType() const = 0;
 
@@ -72,17 +72,17 @@ namespace te
           /*!
             \brief It creates the factory.
 
-            The key of a GraphicWidgetFactory is a string.
+            The key of a ChartWidgetFactory is a string.
 
             \param factoryKey The key that identifies the factory.
           */
-          GraphicWidgetFactory(const std::string& factoryKey);
+          ChartWidgetFactory(const std::string& factoryKey);
           
-          virtual te::qt::widgets::GraphicWidget* create(QWidget* Parent = 0) = 0;
+          virtual te::qt::widgets::ChartWidget* create(QWidget* Parent = 0) = 0;
 
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_GRAPHICWIDGETFACTORY_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_CHARTWIDGETFACTORY_H
