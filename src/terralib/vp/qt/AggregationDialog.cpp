@@ -29,12 +29,12 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/layer/explorer/LayerTreeModel.h"
 #include "../core/Exception.h"
-#include "ui_AggregationDialogForm.h"
 #include "AggregationDialog.h"
+#include "ui_AggregationDialogForm.h"
+#include "VectorProcessingConfig.h"
+
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QVBoxLayout>
 #include <QtGui/QTreeWidget>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
@@ -47,7 +47,7 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
 // add controls
   m_ui->setupUi(this);
 
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-aggregation-hint").pixmap(48,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-aggregation-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 }
 
