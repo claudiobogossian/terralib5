@@ -24,8 +24,8 @@
 */
 
 // TerraLib
-#include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../dataaccess/dataset/Index.h"
 #include "../../../dataaccess/dataset/PrimaryKey.h"
 #include "../../../dataaccess/dataset/UniqueKey.h"
@@ -96,31 +96,20 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
   
   m_targetDatasource = targetDatasource;
 
+  te::da::DataSourcePtr targetDSPtr = te::da::DataSourceManager::getInstance().get(m_targetDatasource->getId(), m_targetDatasource->getType(), m_targetDatasource->getConnInfo()); 
+
   for(std::list<te::da::DataSetTypePtr>::const_iterator it = datasets.begin(); it != datasets.end(); ++it)
   {
     if(it->get() == 0)
       continue;
 
-    te::da::DataSourcePtr sourceDataSource = te::da::DataSourceManager::getInstance().find(m_datasource->getId());
-
-    te::da::DataSourcePtr targetDataSource = te::da::DataSourceManager::getInstance().find(m_targetDatasource->getId());
-
-    te::da::DataSourceTransactor* transactor = sourceDataSource->getTransactor();
-
-    te::da::DataSet* sourceDataSet = transactor->getDataSet((*it)->getName());
-
-    delete transactor;
-
-    //get datasetype
-    te::da::DataSetTypePtr dt(static_cast<te::da::DataSetType*>(sourceDataSet->getType()->clone()));
-
-    if(!dt->isFullLoaded())
-      te::da::LoadFull(dt.get(), datasource->getId());
+    if(!(*it)->isFullLoaded())
+      te::da::LoadFull((*it).get(), datasource->getId());
 
     //create dataset adapter
-    te::da::DataSetAdapter* adapter = new te::da::DataSetAdapter(sourceDataSet, targetDataSource->getCapabilities(), true);
+    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter((*it).get(), targetDSPtr->getCapabilities());
 
-    m_datasets.insert(std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::value_type(dt, adapter));
+    m_datasets.insert(std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::value_type((*it).get(), converter));
   }
 
   for(std::list<te::da::DataSetTypePtr>::const_iterator it = datasets.begin(); it != datasets.end(); ++it)
@@ -140,7 +129,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
   setControlsEnabled(false);
 }
 
-const std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>& te::qt::widgets::DataSetOptionsWizardPage::getDatasets() const
+const std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>& te::qt::widgets::DataSetOptionsWizardPage::getDatasets() const
 {
   return m_datasets;
 }
@@ -154,21 +143,21 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
 
   std::string dataSetAdapterName = item->text().toStdString();
 
-  std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::iterator it = m_datasets.begin();
+  std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::iterator it = m_datasets.begin();
 
   while(it != m_datasets.end())
   {
-    if(it->second->getType()->getName() == dataSetAdapterName)
+    if(it->second->getConvertee()->getName() == dataSetAdapterName)
     {
-      it->second->getType()->setName(m_ui->m_datasetNameLineEdit->text().trimmed().toStdString());
-      it->second->getType()->setTitle(m_ui->m_datasetTitleLineEdit->text().trimmed().toStdString());
+      it->second->getConvertee()->setName(m_ui->m_datasetNameLineEdit->text().trimmed().toStdString());
+      it->second->getConvertee()->setTitle(m_ui->m_datasetTitleLineEdit->text().trimmed().toStdString());
 
-      if(it->second->getType()->hasGeom())
-        it->second->getType()->getDefaultGeomProperty()->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+      if(it->second->getConvertee()->hasGeom())
+        it->second->getConvertee()->getDefaultGeomProperty()->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
 
-      QString title = QString::fromStdString(it->second->getType()->getTitle());
+      QString title = QString::fromStdString(it->second->getConvertee()->getTitle());
 
-      QString name = QString::fromStdString(it->second->getType()->getName());
+      QString name = QString::fromStdString(it->second->getConvertee()->getName());
 
       if(title.isEmpty())
         title = name;
@@ -198,13 +187,13 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
 
   std::string dataSetAdapterName = item->text().toStdString();
 
-  std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::iterator it = m_datasets.begin();
+  std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::iterator it = m_datasets.begin();
 
   while(it != m_datasets.end())
   {
-    if(it->second->getType()->getName() == dataSetAdapterName)
+    if(it->second->getConvertee()->getName() == dataSetAdapterName)
     {
-      te::da::DataSetType* dataset = it->second->getType();
+      te::da::DataSetType* dataset = it->second->getConvertee();
 
       // fill line edits
       m_ui->m_datasetNameLineEdit->setEnabled(true);
@@ -227,7 +216,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
       }
 
       // fill property table
-      m_dataSetAdapterWidget->setAdapterParameters(it->second->getAdaptee(), it->second, m_targetDatasource);
+      m_dataSetAdapterWidget->setAdapterParameters(it->second->getConvertee(), it->second, m_targetDatasource);
 
       // fill constraints
       te::da::DataSetTypePtr dstypePtr(dataset);
@@ -301,11 +290,11 @@ te::da::DataSetTypePtr te::qt::widgets::DataSetOptionsWizardPage::getSelectedDat
 
   std::string dataSetAdapterName = item->text().toStdString();
 
-  std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::const_iterator it = m_datasets.begin();
+  std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::const_iterator it = m_datasets.begin();
 
   while(it != m_datasets.end())
   {
-    if(it->second->getType()->getName() == dataSetAdapterName)
+    if(it->second->getConvertee()->getName() == dataSetAdapterName)
     {
       return it->first;
     }
