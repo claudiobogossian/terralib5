@@ -353,7 +353,7 @@ QPixmap te::qt::widgets::TiePointLocatorWizardPage::getPixmap(te::color::RGBACol
 
   QImage* img = te::qt::widgets::GetImage(rgba, PATTERN_SIZE, PATTERN_SIZE);
 
-  p.convertFromImage(*img);
+  p.fromImage(*img);
 
   delete img;
 

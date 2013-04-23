@@ -28,92 +28,49 @@
 #include "../../common/Translator.h"
 #include "../../datatype/Enums.h"
 #include "../query/And.h"
-#include "../query/DataSetName.h"
-#include "../query/EqualTo.h"
-#include "../query/Expression.h"
-#include "../query/Field.h"
-#include "../query/Fields.h"
-#include "../query/From.h"
-#include "../query/FromItem.h"
 #include "../query/In.h"
 #include "../query/Literal.h"
 #include "../query/LiteralString.h"
-#include "../query/PropertyName.h"
-#include "../query/Select.h"
-#include "../query/Where.h"
 #include "../Exception.h"
-#include "DataSetType.h"
 #include "ObjectId.h"
 #include "ObjectIdSet.h"
 
 // STL
 #include <cassert>
 
-te::da::ObjectIdSet::ObjectIdSet(const te::da::DataSetType* type)
-  : m_type(static_cast<DataSetType*>(type->clone()))
+te::da::ObjectIdSet::ObjectIdSet()
 {
 }
 
 te::da::ObjectIdSet::~ObjectIdSet()
 {
-  delete m_type;
   te::common::FreeContents(m_oids);
 }
 
-const te::da::DataSetType* te::da::ObjectIdSet::getType() const
+void te::da::ObjectIdSet::addProperty(const std::string& name, int type)
 {
-  return m_type;
-}
-
-void te::da::ObjectIdSet::addProperty(const std::string& name)
-{
-  assert(m_type);
-
-  addProperty(m_type->getPropertyPosition(name));
-}
-
-void te::da::ObjectIdSet::addProperty(std::size_t i)
-{
-  m_indexes.push_back(i);
-}
-
-void te::da::ObjectIdSet::setProperties(const std::vector<std::string>& names)
-{
-  assert(m_type);
-
-  std::vector<std::size_t> indexes;
-
-  for(std::size_t i = 0; i < names.size(); ++i)
-    indexes.push_back(m_type->getPropertyPosition(names[i]));
-
-  setProperties(indexes);
-}
-
-void te::da::ObjectIdSet::setProperties(const std::vector<std::size_t>& indexes)
-{
-  m_indexes = indexes;
+  assert(!name.empty());
+  m_pnames.push_back(name);
+  m_ptypes.push_back(type);
 }
 
 void te::da::ObjectIdSet::add(te::da::ObjectId* oid)
 {
   assert(oid);
-
   m_oids.insert(oid);
 }
 
-te::da::Select* te::da::ObjectIdSet::getQuery() const
+te::da::Expression* te::da::ObjectIdSet::getExpression() const
 {
-  assert(m_type);
-  
+  assert(m_pnames.size() == m_ptypes.size());
+
   Expression* ins = 0;
   Expression* tmp = 0;
   
-  // for each property used to be part of the object identification builds a IN clause.
-  for(std::size_t i = 0; i < m_indexes.size(); ++i)
+  // for each property used to be part of the object identification builds a IN clause
+  for(std::size_t i = 0; i < m_pnames.size(); ++i)
   {
-    const std::string& propertyName = m_type->getProperty(m_indexes[i])->getName();
-    
-    In* in = new In(propertyName);
+    In* in = new In(m_pnames[i]);
 
     // for each object in the set include its property value in the IN clause
     std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator it;
@@ -121,7 +78,7 @@ te::da::Select* te::da::ObjectIdSet::getQuery() const
     {
       const boost::ptr_vector<te::dt::AbstractData>& data = (*it)->getValue();
 
-      if(m_type->getProperty(m_indexes[i])->getType() == te::dt::STRING_TYPE)
+      if(m_ptypes[i] == te::dt::STRING_TYPE)
         in->add(new LiteralString(data[i].toString()));
       else
         in->add(new Literal(data[i]));
@@ -134,23 +91,11 @@ te::da::Select* te::da::ObjectIdSet::getQuery() const
       delete in;
       ins = tmp;
     }
-    else 
+    else
       ins = in;
   }
-  
-  // filter is one or more IN clauses
-  Where* filter = new Where(ins);
-  
-  // all fields
-  te::da::Fields* all = new te::da::Fields;
-  all->push_back(new te::da::Field("*"));
-  
-  // from the data set?
-  FromItem* fromItem = new DataSetName(m_type->getName());
-  From* from = new From;
-  from->push_back(fromItem);
-  
-  return new Select(all, from, filter);
+
+  return ins;
 }
 
 void te::da::ObjectIdSet::clear()

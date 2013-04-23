@@ -23,8 +23,8 @@
   \brief Configuration flags for the Terrralib Vector Processing module.
  */
 
-#ifndef __TERRALIB_VP_INTERNAL_CONFIG_H
-#define __TERRALIB_VP_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_VP_CORE_INTERNAL_CONFIG_H
+#define __TERRALIB_VP_CORE_INTERNAL_CONFIG_H
 
 // TerraLib
 #include "../../Config.h"
@@ -103,5 +103,5 @@
 
 //@}
 
-#endif  // __TERRALIB_VP_INTERNAL_CONFIG_H
+#endif  // __TERRALIB_VP_CORE_INTERNAL_CONFIG_H
 
