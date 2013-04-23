@@ -54,7 +54,7 @@ void PrintDataSets(te::da::DataSource* ds);
 
   \param dataset A dataset.
  */
-void PrintDataSetValues(te::da::DataSet* dataset);
+void PrintDataSetValues(const std::string& datasetName, te::da::DataSet* dataset);
 
 #endif  // __TERRALIB_EXAMPLES_ADO_INTERNAL_ADOEXAMPLES_H
 

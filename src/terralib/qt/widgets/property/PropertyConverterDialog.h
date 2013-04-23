@@ -43,7 +43,7 @@ namespace te
 {
   namespace da 
   { 
-    class DataSetAdapter;
+    class DataSetTypeConverter;
     class DataSetType; 
   }
 
@@ -74,7 +74,7 @@ namespace te
 
           void set(std::string dataSourceId);
 
-          void adapt(te::da::DataSetAdapter* dsAdapter);
+          void adapt(te::da::DataSetTypeConverter* converter);
 
         public slots:
 

@@ -85,14 +85,14 @@ bool SelectionTool::mouseReleaseEvent(QMouseEvent* e)
   m_geoms.clear();
 
   // For feature attributes
-  const te::da::DataSetType* dt = dataset->getType();
-  std::size_t nproperties = dt->size();
+  std::size_t nproperties = dataset->getNumProperties();
   QString information("<h2>Attributes</h2><ul>");
 
-  // Finds the geometries that really intersect the clicked point
+  // Find the geometries that really intersect the clicked point
   while(dataset->moveNext())
   {
-    te::gm::Geometry* g = dataset->getGeometry();
+    std::size_t pos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+    te::gm::Geometry* g = dataset->getGeometry(pos);
     if(g->intersects(&point))
     {
       // Stores the geometry
@@ -101,9 +101,9 @@ bool SelectionTool::mouseReleaseEvent(QMouseEvent* e)
       // Building the features attributes text
       for(std::size_t i = 0; i < nproperties; ++i)
       {
-        te::dt::Property* p = dt->getProperty(i);
-        if(p->getType() != te::dt::GEOMETRY_TYPE)
-          information += "<li><b>" + QString::fromStdString(p->getName()) + ":</b> " + QString::fromStdString(dataset->getAsString(i, 3)) + "</li>";
+        int propertyType = dataset->getPropertyDataType(i);
+        if(propertyType != te::dt::GEOMETRY_TYPE)
+          information += "<li><b>" + QString::fromStdString(dataset->getPropertyName(i)) + ":</b> " + QString::fromStdString(dataset->getAsString(i, 3)) + "</li>";
       }
     }
   }

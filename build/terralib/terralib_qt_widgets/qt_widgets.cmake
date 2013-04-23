@@ -75,7 +75,7 @@ set (
   widgets/datasource/explorer
   widgets/datasource/selector
   widgets/datasource/connector
-  #widgets/exchanger
+  widgets/exchanger
   widgets/layer/explorer
   widgets/layer/search
   widgets/layer/selector
@@ -113,8 +113,10 @@ set (MOC "")
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/canvas/DrawLayerThread.h
+  ${SRCDIR}/widgets/canvas/EyeBirdMapDisplayWidget.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
   ${SRCDIR}/widgets/canvas/MultiThreadMapDisplay.h
+  ${SRCDIR}/widgets/canvas/ZoomInMapDisplayWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
 
@@ -164,13 +166,13 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/selector" MOC)
 
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/exchanger/DataExchangerWizard.h
-#  ${SRCDIR}/widgets/exchanger/DataExchangeSummaryWizardPage.h
-#  ${SRCDIR}/widgets/exchanger/DataSetOptionsWizardPage.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/exchanger/DataExchangerWizard.h
+  ${SRCDIR}/widgets/exchanger/DataExchangeSummaryWizardPage.h
+  ${SRCDIR}/widgets/exchanger/DataSetOptionsWizardPage.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
 
 set (
   HDRS_TO_MOC
@@ -396,6 +398,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/tools/CoordTracking.h
   ${SRCDIR}/widgets/tools/Measure.h
+  ${SRCDIR}/widgets/tools/PanExtent.h
   ${SRCDIR}/widgets/tools/PointPicker.h
   ${SRCDIR}/widgets/tools/PolygonAcquire.h
   ${SRCDIR}/widgets/tools/ReadPixelTool.h
@@ -440,7 +443,7 @@ file(
   ${SRCDIR}/widgets/dataset/*.ui
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui
-  #${SRCDIR}/widgets/exchanger/ui/*.ui
+  ${SRCDIR}/widgets/exchanger/ui/*.ui
   ${SRCDIR}/widgets/layer/search/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
   ${SRCDIR}/widgets/property/ui/*.ui

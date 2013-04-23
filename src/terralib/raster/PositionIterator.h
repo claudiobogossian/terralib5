@@ -759,8 +759,8 @@ namespace te
       const double resXdiv2 = this->m_band->getRaster()->getResolutionX() / 2;
       const double resYdiv2 = this->m_band->getRaster()->getResolutionY() / 2;
       double x1, x2, y1, y2, geoX, geoY;
-      for(int r = startingrow; r <= endingrow; r++)
-        for(int c = startingcolumn; c <= endingcolumn; c++)
+      for(int r = (int)startingrow; r <= (int)endingrow; r++)
+        for(int c = (int)startingcolumn; c <= (int)endingcolumn; c++)
         {
 // define envelope of pixel
           this->m_band->getRaster()->getGrid()->gridToGeo(c, r, geoX, geoY);
@@ -798,19 +798,19 @@ namespace te
 
     template<class T> unsigned int te::rst::LineIterator<T>::getRow() const
     {
-      return m_pixelsinline[m_currentpixelindex]->getY();
+      return (unsigned int)(m_pixelsinline[m_currentpixelindex]->getY());
     }
 
     template<class T> unsigned int te::rst::LineIterator<T>::getCol() const
     {
-      return m_pixelsinline[m_currentpixelindex]->getX();
+      return (unsigned int)(m_pixelsinline[m_currentpixelindex]->getX());
     }
 
     template<class T> void te::rst::LineIterator<T>::operator++()
     {
       m_currentpixelindex++;
 
-      if (m_currentpixelindex >= m_pixelsinline.size())
+      if (m_currentpixelindex >= (int)(m_pixelsinline.size()))
         setEnd();
     }
 
@@ -920,12 +920,12 @@ namespace te
 
     template<class T> unsigned int te::rst::PointSetIterator<T>::getRow() const
     {
-      return m_pixelsinpointset[m_currentpixelindex]->getY();
+      return (unsigned int)(m_pixelsinpointset[m_currentpixelindex]->getY());
     }
 
     template<class T> unsigned int te::rst::PointSetIterator<T>::getCol() const
     {
-      return m_pixelsinpointset[m_currentpixelindex]->getX();
+      return (unsigned int)(m_pixelsinpointset[m_currentpixelindex]->getX());
     }
 
     template<class T> void te::rst::PointSetIterator<T>::operator++()

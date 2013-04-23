@@ -40,7 +40,9 @@
 #include "../../widgets/tools/ZoomClick.h"
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../canvas/Canvas.h"
+#include "../canvas/EyeBirdMapDisplayWidget.h"
 #include "../canvas/MapDisplay.h"
+#include "../canvas/ZoomInMapDisplayWidget.h"
 #include "RasterNavigatorWidget.h"
 #include "ui_RasterNavigatorWidgetForm.h"
 
@@ -58,6 +60,16 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   displayLayout->addWidget(m_mapDisplay);
   displayLayout->setContentsMargins(0,0,0,0);
 
+  QGridLayout* eyeBirdDisplayLayout = new QGridLayout(m_ui->m_eyeBirdFrame);
+  m_eyeBirdMapDisplay = new te::qt::widgets::EyeBirdMapDisplayWidget(m_mapDisplay, m_ui->m_eyeBirdFrame);
+  eyeBirdDisplayLayout->addWidget(m_eyeBirdMapDisplay);
+  eyeBirdDisplayLayout->setContentsMargins(0,0,0,0);
+
+  QGridLayout* zoomInDisplayLayout = new QGridLayout(m_ui->m_zoomInFrame);
+  m_zoomInMapDisplay = new te::qt::widgets::ZoomInMapDisplayWidget(m_mapDisplay, m_ui->m_zoomInFrame);
+  zoomInDisplayLayout->addWidget(m_zoomInMapDisplay);
+  zoomInDisplayLayout->setContentsMargins(0,0,0,0);
+
 // CoordTracking tool
   te::qt::widgets::CoordTracking* coordTracking = new te::qt::widgets::CoordTracking(m_mapDisplay, m_mapDisplay);
   m_mapDisplay->installEventFilter(coordTracking);
@@ -69,6 +81,7 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   connect(m_ui->m_pointActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onPointPickerToggled(bool)));
   connect(m_ui->m_geomActionToolButtontoolButton, SIGNAL(toggled(bool)), this, SLOT(onGeomToggled(bool)));
   connect(m_ui->m_readPixelActionToolButton, SIGNAL(toggled(bool)), this, SLOT(onReadPixelToggled(bool)));
+  connect(m_ui->m_extraDisplaysToolButton, SIGNAL(toggled(bool)), this, SLOT(onExtraDisplaysToggled(bool)));
   connect(m_ui->m_recomposeActionToolButton, SIGNAL(clicked()), this, SLOT(onRecomposeClicked()));
 
   connect(coordTracking, SIGNAL(coordTracked(QPointF&)), this, SLOT(onCoordTrackedChanged(QPointF&)));
@@ -82,6 +95,8 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_ui->m_pointActionToolButtontoolButton->setIcon(QIcon::fromTheme("placemark"));
   m_ui->m_geomActionToolButtontoolButton->setIcon(QIcon::fromTheme("edit-polygon"));
   m_ui->m_readPixelActionToolButton->setIcon(QIcon::fromTheme("color-picker"));
+  m_ui->m_extraDisplaysToolButton->setIcon(QIcon::fromTheme("view-map-display-extra"));
+  
 }
 
 te::qt::widgets::RasterNavigatorWidget::~RasterNavigatorWidget()
@@ -95,8 +110,10 @@ void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer
 {
   m_layer = layer;
 
-  std::list<te::map::AbstractLayerPtr> list;
+  m_zoomInMapDisplay->set(m_layer);
+  m_eyeBirdMapDisplay->set(m_layer);
 
+  std::list<te::map::AbstractLayerPtr> list;
   list.push_back(m_layer);
 
   te::gm::Envelope e = m_layer->getExtent();
@@ -125,6 +142,8 @@ void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
   m_ui->m_toolsFrame->setVisible(!asPreview);
   m_ui->m_label->setVisible(!asPreview);
 
+  hideExtraDisplaysTool(asPreview);
+
   if(asPreview)
   {
     m_panTool = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
@@ -137,6 +156,7 @@ void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
 
 void te::qt::widgets::RasterNavigatorWidget::hideEditionTools(bool hide)
 {
+  m_ui->m_toolLine->setVisible(!hide);
   hidePickerTool(hide);
   hideGeomTool(hide);
   hideInfoTool(hide);
@@ -157,9 +177,20 @@ void te::qt::widgets::RasterNavigatorWidget::hideInfoTool(bool hide)
   m_ui->m_readPixelActionToolButton->setVisible(!hide);
 }
 
+void te::qt::widgets::RasterNavigatorWidget::hideExtraDisplaysTool(bool hide)
+{
+  m_ui->m_extraDisplaysToolButton->setChecked(!hide);
+
+  m_ui->m_extraLine->setVisible(!hide);
+  m_ui->m_extraDisplaysToolButton->setVisible(!hide);
+}
+
 void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coordinate)
 {
   assert(m_layer.get());
+
+  if(m_ui->m_extraDisplaysToolButton->isChecked())
+    m_zoomInMapDisplay->drawCursorPosition((double) coordinate.rx(), (double)coordinate.ry());
 
   //get input raster
   te::da::DataSet* ds = m_layer->getData();
@@ -214,6 +245,8 @@ void te::qt::widgets::RasterNavigatorWidget::onPointPicked(QPointF& point)
 
 void te::qt::widgets::RasterNavigatorWidget::onMapDisplayExtentChanged()
 {
+  te::gm::Envelope e = m_mapDisplay->getExtent();
+
   //emit signal
   emit mapDisplayExtentChanged();
 }
@@ -276,11 +309,19 @@ void te::qt::widgets::RasterNavigatorWidget::onReadPixelToggled(bool checked)
   setCurrentTool(pa);
 }
 
+void te::qt::widgets::RasterNavigatorWidget::onExtraDisplaysToggled(bool checked)
+{
+  m_eyeBirdMapDisplay->setEnabled(checked);
+  m_zoomInMapDisplay->setEnabled(checked);
+}
+
 void te::qt::widgets::RasterNavigatorWidget::onRecomposeClicked()
 {
   te::gm::Envelope env = m_layer->getExtent();
 
   m_mapDisplay->setExtent(env);
+
+  m_eyeBirdMapDisplay->recompose();
 }
 
 void te::qt::widgets::RasterNavigatorWidget::setCurrentTool(te::qt::widgets::AbstractTool* tool)

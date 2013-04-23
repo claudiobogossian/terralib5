@@ -149,6 +149,8 @@ void te::qt::widgets::ClassifierWizardPage::fillClassifierTypes()
 
 void te::qt::widgets::ClassifierWizardPage::listBands()
 {
+  m_ui->m_inputRasterBandsListWidget->clear();
+
   assert(m_layer.get());
 
   //get input raster

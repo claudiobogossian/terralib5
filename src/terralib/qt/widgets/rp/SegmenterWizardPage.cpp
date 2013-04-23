@@ -114,6 +114,8 @@ void te::qt::widgets::SegmenterWizardPage::fillSegmenterTypes()
 
 void te::qt::widgets::SegmenterWizardPage::listBands()
 {
+  m_ui->m_inputRasterBandsListWidget->clear();
+
   assert(m_layer.get());
 
   //get input raster

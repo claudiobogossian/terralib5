@@ -29,12 +29,12 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/layer/explorer/LayerTreeModel.h"
 #include "../core/Exception.h"
-#include "ui_IntersectionDialogForm.h"
 #include "IntersectionDialog.h"
+#include "LayerTreeModel.h"
+#include "ui_IntersectionDialogForm.h"
+#include "VectorProcessingConfig.h"
 
 // Qt
-#include <QtGui/QMessageBox>
-#include <QtGui/QVBoxLayout>
 #include <QtGui/QTreeWidget>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
@@ -47,10 +47,12 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
 // add controls
   m_ui->setupUi(this);
 
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-insersectionHint").pixmap(48,48));
-  m_ui->m_datasourcesToolButton->setIcon(QIcon::fromTheme("datasource"));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-intersection-hint").pixmap(48,48));
+  m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilterLineEditTextChanged(const QString&)));
+
+  LayerTreeModel* model = new LayerTreeModel(m_layers);
 }
 
 te::vp::IntersectionDialog::~IntersectionDialog()
@@ -60,6 +62,10 @@ te::vp::IntersectionDialog::~IntersectionDialog()
 void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
+
+  LayerTreeModel* model = new LayerTreeModel(m_layers);
+
+  m_ui->m_layerTreeView->setModel(model);
 }
 
 void te::vp::IntersectionDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)

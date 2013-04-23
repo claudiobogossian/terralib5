@@ -256,7 +256,7 @@ namespace te
           \param g        A geometry to be used as a spatial filter when retrieving datasets.
           \param r        The spatial relation to be used during the filter.
           \param travType The traverse type associated to the returned dataset. 
-          \param rwRole   The read and write permission associated to the returned dataset. 
+          \param rwRole   The read and write permission associated to the returned dataset.
 
           \return The caller of this method will take the ownership of the returned DataSet.
 
@@ -279,6 +279,28 @@ namespace te
                                     te::gm::SpatialRelation r,
                                     te::common::TraverseType travType = te::common::FORWARDONLY, 
                                     te::common::AccessPolicy rwRole = te::common::RAccess) = 0;
+
+        /*
+         \brief It gets the dataset identified by the given name using the set of objects identification.
+
+         \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
+         \param oids     A pointer to a set of objects identification. Do not pass null. Do not pass set empty.
+         \param travType The traverse type associated to the returned dataset.
+         \param rwRole   The read and write permission associated to the returned dataset.
+         
+         \return The caller of this method will take the ownership of the returned DataSet.
+         
+         \exception Exception It can throws an exception if:
+                    <ul>
+                    <li>something goes wrong during data retrieval</li>
+                    <li>if the data source driver doesn't support the traversal type</li>
+                    <li>if the data source driver doesn't support the access policy</li>
+                    </ul>
+         */
+       virtual DataSet* getDataSet(const std::string& name,
+                                   const ObjectIdSet* oids, 
+                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                   te::common::AccessPolicy rwRole= te::common::RAccess);
 
         /*!
           \brief It executes a query that may return some data using a generic query.
@@ -305,7 +327,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual DataSet* query(const Select& q, 
+        virtual DataSet* query(const Select& q,
                                te::common::TraverseType travType = te::common::FORWARDONLY, 
                                te::common::AccessPolicy rwRole = te::common::RAccess) = 0;
 
@@ -332,26 +354,6 @@ namespace te
         virtual DataSet* query(const std::string& query, 
                                te::common::TraverseType travType = te::common::FORWARDONLY, 
                                te::common::AccessPolicy rwRole= te::common::RAccess) = 0;
-      
-        /*
-         \brief Returns a dataset from a set of objects identification.
-         \param oids     Pointer to a set of object ids. Do not pass null. Do not pass set empty.
-         \param travType The traverse type associated to the returned dataset. 
-         \param rwRole   The read and write permission associated to the returned dataset. 
-         
-         \return A pointer to a dataset. The caller of this method will take the ownership of the returned data set.
-         
-         \exception Exception It can throws an exception if:
-         <ul>
-         <li>something goes wrong during data retrieval</li>
-         <li>if the data source driver doesn't support the traversal type</li>
-         <li>if the data source driver doesn't support the access policy</li>
-         </ul>
-         */
-       virtual DataSet* getDataSet(const ObjectIdSet* oids, 
-                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                  te::common::AccessPolicy rwRole= te::common::RAccess);
-
         //@}
 
         /** @name Execution Methods
