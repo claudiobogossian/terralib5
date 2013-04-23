@@ -67,8 +67,16 @@ set (MOC "")
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/qt/AbstractLayerTreeItem.h
   ${SRCDIR}/qt/IntersectionDialog.h
-  ${SRCDIR}/qt/AggregationDialog.h
+  ${SRCDIR}/qt/AggregationDialog.h  
+  ${SRCDIR}/qt/AbstractLayerTreeItem.h
+  ${SRCDIR}/qt/AbstractLayerTreeItemFactory.h
+  ${SRCDIR}/qt/DataSetLayerItem.h
+  ${SRCDIR}/qt/FolderLayerItem.h
+  ${SRCDIR}/qt/LayerTreeModel.h
+  ${SRCDIR}/qt/PropertyItem.h
+  ${SRCDIR}/qt/QueryLayerItem.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/vp/qt" MOC)
 

@@ -31,6 +31,7 @@
 #include "../core/Exception.h"
 #include "ui_IntersectionDialogForm.h"
 #include "IntersectionDialog.h"
+#include "LayerTreeModel.h"
 
 // Qt
 #include <QtGui/QMessageBox>
@@ -51,6 +52,8 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
   m_ui->m_datasourcesToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilterLineEditTextChanged(const QString&)));
+
+  LayerTreeModel* model = new LayerTreeModel(m_layers);
 }
 
 te::vp::IntersectionDialog::~IntersectionDialog()
@@ -60,6 +63,10 @@ te::vp::IntersectionDialog::~IntersectionDialog()
 void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
+
+  LayerTreeModel* model = new LayerTreeModel(m_layers);
+
+  m_ui->m_layerTreeView->setModel(model);
 }
 
 void te::vp::IntersectionDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
