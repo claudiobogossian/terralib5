@@ -21,11 +21,11 @@ void DroppingDataSetTypeProperty(te::dt::Property* prop, te::da::DataSourceTrans
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Dropping DataSetType Property Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurried in Dropping DataSetType Property Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Dropping DataSetType Property Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurried in Dropping DataSetType Property Example!" << std::endl;
   }
 }
 
