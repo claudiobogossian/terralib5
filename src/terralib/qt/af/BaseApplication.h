@@ -97,6 +97,8 @@ namespace te
 
           void onLayerPropertiesTriggered();
 
+          void onLayerShowTableTriggered();
+
           void onLayerHistogramTriggered();
 
           void onLayerScatterTriggered();
@@ -178,6 +180,7 @@ namespace te
           QAction* m_layerRename;
           QAction* m_layerExport;
           QAction* m_layerProperties;
+          QAction* m_layerShowTable;
           QAction* m_layerRaise;
           QAction* m_layerLower;
           QAction* m_layerToTop;
@@ -233,6 +236,8 @@ namespace te
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
           TabularViewer* m_viewer;
+
+          std::vector<QDockWidget*> m_tableDocks;
 
 // Project
           Project* m_project;

@@ -66,8 +66,8 @@ set (
   widgets/canvas
   widgets/charts
   widgets/colorbar
-  widgets/datagrid
-  widgets/dataview
+ # widgets/datagrid
+ # widgets/dataview
   widgets/dataset
   widgets/dataset/explorer
   widgets/dataset/selector
@@ -238,13 +238,13 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/dataset/explorer" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datagrid/DataGridModel.h
-  ${SRCDIR}/widgets/datagrid/DataGridView.h
-  ${SRCDIR}/widgets/datagrid/HeaderView.h
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datagrid" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datagrid/DataGridModel.h
+#  ${SRCDIR}/widgets/datagrid/DataGridView.h
+#  ${SRCDIR}/widgets/datagrid/HeaderView.h
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datagrid" MOC)
 
 set (
   HDRS_TO_MOC
@@ -380,19 +380,19 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/srs" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/table/DataSetTableDockWidget.h
-  ${SRCDIR}/widgets/table/DataSetTableModel.h
-  ${SRCDIR}/widgets/table/DataSetTableView.h
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/table" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/table/DataSetTableDockWidget.h
+#  ${SRCDIR}/widgets/table/DataSetTableModel.h
+#  ${SRCDIR}/widgets/table/DataSetTableView.h
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/table" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/dataview/TabularViewer.h
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/dataview" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/dataview/TabularViewer.h
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/dataview" MOC)
 
 set (
   HDRS_TO_MOC
@@ -439,7 +439,7 @@ file(
   ${SRCDIR}/widgets/*.ui
   ${SRCDIR}/widgets/canvas/*.ui
   ${SRCDIR}/widgets/charts/ui/*.ui
-  ${SRCDIR}/widgets/datagrid/*.ui
+ # ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui
@@ -462,8 +462,8 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DQWT_DLL)
 endif()
 
-set (MOC2 ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp)
-QT4_CREATE_MOC_COMMAND("${SRCDIR}/widgets/dataview/TabularViewer.cpp" "${MOC2}" "" "-fterralib/qt/widgets/dataview/TabularViewer.cpp" )
+#set (MOC2 ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp)
+#QT4_CREATE_MOC_COMMAND("${SRCDIR}/widgets/dataview/TabularViewer.cpp" "${MOC2}" "" "-fterralib/qt/widgets/dataview/TabularViewer.cpp" )
 
 qt4_wrap_ui(UI ${FORMS})
 

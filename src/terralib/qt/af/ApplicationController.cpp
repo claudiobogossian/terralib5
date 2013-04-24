@@ -604,7 +604,7 @@ void te::qt::af::ApplicationController::set(te::qt::af::Project* prj)
   m_project = prj;
 }
 
-te::qt::af::Project* te::qt::af::ApplicationController::get()
+te::qt::af::Project* te::qt::af::ApplicationController::getProject()
 {
   return m_project;
 }

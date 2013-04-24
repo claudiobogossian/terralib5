@@ -271,7 +271,7 @@ te::da::DataSet* te::map::DataSet2Memory(te::da::DataSet* dataset)
 {
   assert(dataset);
 
-  //if(!dataset->moveNext())
+  dataset->moveNext();
     //return new te::mem::DataSet(*dataset);
 
   return new te::mem::DataSet(*dataset);
