@@ -60,8 +60,8 @@ bool te::mem::ExpansibleBandBlocksManager::initialize(
   const std::vector< unsigned int>& blocksSizesBytes,
   const unsigned long int maxDiskFilesSize )
 {
-  assert( numbersOfBlocksX.size() == numbersOfBlocksY.size() );
-  assert( numbersOfBlocksY.size() == blocksSizesBytes.size() );
+  if( numbersOfBlocksX.size() != numbersOfBlocksY.size() ) return false;
+  if( numbersOfBlocksY.size() != blocksSizesBytes.size() ) return false;
   
   free();
   
@@ -95,6 +95,8 @@ bool te::mem::ExpansibleBandBlocksManager::initialize(
         numbersOfBlocksY[ blockBIdx ] );
     }
   }
+  
+  if( m_maxBlockSizeBytes > maxDiskFilesSize ) return false;
   
   // Allocating RAM blocks
   
@@ -163,18 +165,14 @@ bool te::mem::ExpansibleBandBlocksManager::initialize(
         allocatedRAMBlocksNumber;
       
       std::vector< DiskBlockInfo > diskBlocksInfos;                       
-      std::vector< boost::shared_ptr< OpenDiskFileHandler > > diskFilesHandler;
       if( ! allocateDiskBlocks( requiredDiskBlocksNumber, diskBlocksInfos, 
-        diskFilesHandler ) )
+        m_diskFilesHandler ) )
       {
         free();
         return false;
       }
       assert( ((unsigned int)diskBlocksInfos.size()) == requiredDiskBlocksNumber );
       
-      m_diskFilesHandler.insert(  m_diskFilesHandler.end(), diskFilesHandler.begin(),
-        diskFilesHandler.end() );
-        
       unsigned int diskBlocksInfosIdx = 0;
       m_diskBlocksInfo.resize( boost::extents[ numbersOfBlocksX.size() ][ maxNumbersOfBlocksY ][ maxNumbersOfBlocksX ] );
       for( unsigned int blockBIdx = 0 ; blockBIdx < numbersOfBlocksX.size() ;  
@@ -376,6 +374,10 @@ bool te::mem::ExpansibleBandBlocksManager::allocateDiskBlocks(
 {
   assert( m_maxDiskFilesSize > 0 );
   assert( m_maxBlockSizeBytes > 0 );
+  assert( m_maxDiskFilesSize >= m_maxBlockSizeBytes );
+  
+  diskBlocksInfos.clear();
+  diskFilesHandler.clear();
 
   const unsigned int maxBlocksPerFile = m_maxDiskFilesSize / m_maxBlockSizeBytes;
 
@@ -386,6 +388,7 @@ bool te::mem::ExpansibleBandBlocksManager::allocateDiskBlocks(
     const unsigned int fileBlocksNumber = std::min( maxBlocksPerFile, remainnigBlocksNumber );
     const unsigned long int fileSizeBytes = ((unsigned long int)fileBlocksNumber) *
       ((unsigned long int)m_maxBlockSizeBytes);
+    assert( fileSizeBytes <= m_maxDiskFilesSize );
       
     boost::shared_ptr< OpenDiskFileHandler > newFileHandlerPtr( new OpenDiskFileHandler );
     if( ! createNewDiskFile( fileSizeBytes, &( newFileHandlerPtr->m_filePtr ) ) )
@@ -403,7 +406,7 @@ bool te::mem::ExpansibleBandBlocksManager::allocateDiskBlocks(
         ((unsigned long int)m_maxBlockSizeBytes);
     }
       
-    remainnigBlocksNumber -= blocksNumber;
+    remainnigBlocksNumber -= fileBlocksNumber;
   }
     
   return true;
