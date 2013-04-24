@@ -112,6 +112,29 @@ namespace te
         
       protected :
         
+        
+        /*!
+        \brief Block index.
+        */         
+        class BlockIndex
+        {
+          public :
+            
+            unsigned int m_bIndex; //!< Block band index.
+            
+            unsigned int m_xIndex; //!< Block X index.
+            
+            unsigned int m_yIndex; //!< Block Y index.
+            
+            BlockIndex() : m_bIndex( 0 ), m_xIndex( 0 ), m_yIndex( 0 ) {};
+            
+            BlockIndex( const unsigned int& bIndex, const unsigned int& xIndex,
+              const unsigned int& yIndex ) : m_bIndex( bIndex ), m_xIndex( xIndex ), 
+              m_yIndex( yIndex ) {};
+            
+            ~BlockIndex() {};
+        };        
+        
         /*!
         \brief RAM block handler.
         */         
@@ -121,13 +144,7 @@ namespace te
             
             unsigned char* m_dataPtr; //!< Block data pointer.
             
-            unsigned int m_bIndex; //!< Block band index.
-            
-            unsigned int m_xIndex; //!< Block X index.
-            
-            unsigned int m_yIndex; //!< Block Y index.
-            
-            RAMBlockHandler() : m_dataPtr( 0 ), m_bIndex( 0 ), m_xIndex( 0 ), m_yIndex( 0 ) {};
+            RAMBlockHandler() : m_dataPtr( 0 ) {};
             
             ~RAMBlockHandler()
             {
@@ -176,7 +193,7 @@ namespace te
         
         unsigned long int m_maxBlockSizeBytes; //!< The maximum global used block size in bytes.
         
-        std::vector< boost::shared_ptr< RAMBlockHandler > >::size_type m_nextFIFOPositionOverRamBlocksHandler; //!< The next position of the swap FIFO buffer over m_ramBlocksHandler;
+        std::vector< boost::shared_ptr< RAMBlockHandler > >::size_type m_nextFIFOPositionOverSwapFifo; //!< The next position where a block swap will occur over m_swapFifo;
         
         unsigned char* m_currSwapBlockPtr; //!< A pointer to the current block where disk data swap will be done.
         
@@ -188,19 +205,17 @@ namespace te
         
         boost::multi_array< unsigned char*, 3 > m_blocksPointers; //!< 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
         
-        std::vector< boost::shared_ptr< RAMBlockHandler > > m_ramBlocksHandler; //!< The RAM blocks handler;
+        std::vector< BlockIndex > m_swapFifo; //!< Disk swapping FIFO.
+        
+        std::vector< boost::shared_ptr< RAMBlockHandler > > m_activeRamBlocksHandler; //!< The active RAM blocks handler;
+        
+        std::vector< boost::shared_ptr< RAMBlockHandler > > m_inactiveRamBlocksHandler; //!< The inative RAM blocks handler;
         
         boost::multi_array< DiskBlockInfo, 3 > m_diskBlocksInfo; //!< 3D Matrix of disk block info indexed as [band][blockYIndex][blockXIndex].
         
         std::vector< boost::shared_ptr< OpenDiskFileHandler > > m_diskFilesHandler; //!< The disk files handler;
         
         RAMBlockHandler m_swapBlockHandler; //!< An extra block for disk swap purposes.
-        
-      private :
-        
-        // Variables used by the method getBlockPointer
-        
-        unsigned char* getBlockPointer_returnValue;
         
         /*!
           \brief Initialize this instance to an initial state.
@@ -231,7 +246,18 @@ namespace te
           
           \return true if OK. false on errors.
         */
-        bool createNewDiskFile( unsigned long int size, FILE** fileptr ) const; 
+        bool createNewDiskFile( unsigned long int size, FILE** fileptr ) const;         
+        
+      private :
+        
+        // Variables used by the method getBlockPointer
+        
+        unsigned char* getBlockPointer_returnValue;
+        unsigned int getBlockPointer_outBlockB;
+        unsigned int getBlockPointer_outBlockX;
+        unsigned int getBlockPointer_outBlockY;
+        
+
     };
 
   } // end namespace mem
