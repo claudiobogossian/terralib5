@@ -86,7 +86,11 @@ bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
     case QEvent::ContextMenu:
       m_menu.exec(static_cast<QContextMenuEvent*>(e)->globalPos());
     break;
+          
+    default:
+    break;
   }
+
   return false;
 }
 
