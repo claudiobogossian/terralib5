@@ -59,20 +59,18 @@ void SelectPKey::updateColumns(te::da::DataSet* dset)
   m_ui->m_columnsTable->clearContents();
   m_ui->m_columnsTable->setRowCount(0);
 
-  te::da::DataSetType* type = dset->getType();
-  std::vector<te::dt::Property*> props = type->getProperties();
-  std::vector<te::dt::Property*>::iterator it;
+  std::size_t numProperties = dset->getNumProperties();
 
-  for(it=props.begin(); it!= props.end(); ++it)
+  for(std::size_t i = 0; i < numProperties; ++i)
   {
-    te::dt::Property* prop = *it;
+    int propertyType = dset->getPropertyDataType(i);
 
-    if(prop->getType() != te::dt::GEOMETRY_TYPE)
+    if(propertyType != te::dt::GEOMETRY_TYPE)
     {
       int nRows = m_ui->m_columnsTable->rowCount();
       m_ui->m_columnsTable->insertRow(nRows);
 
-      m_ui->m_columnsTable->setItem(nRows, 0, new QTableWidgetItem(prop->getName().c_str()));
+      m_ui->m_columnsTable->setItem(nRows, 0, new QTableWidgetItem(dset->getPropertyName(i).c_str()));
       m_ui->m_columnsTable->setCellWidget(nRows, 1, new QCheckBox(tr("primary key"), this));
     }
   }

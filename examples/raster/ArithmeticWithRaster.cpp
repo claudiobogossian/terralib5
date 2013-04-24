@@ -56,7 +56,10 @@ void ArithmeticWithRaster()
 
 // access the temporary data set
     te::da::DataSet* dsden = tr->getDataSet(srden["URI"], te::common::FORWARDONLY, te::common::RWAccess);
-    te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster());
+
+    std::size_t rpos = te::da::GetFirstPropertyPos(dsden, te::dt::RASTER_TYPE);
+    te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster(rpos));
+    //te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster());
 
 // create ndvi raster
     te::rst::Grid* gndvi = new te::rst::Grid(*ri->getGrid());

@@ -45,7 +45,8 @@ namespace te
   {
     class DataSource;
     class DataSet;
-    class DataSetAdapter;
+    class DataSetType;
+    class DataSetTypeConverter;
   }
 
   namespace qt
@@ -75,9 +76,9 @@ namespace te
             \param targetDS
             \param sourceDataSet
           */
-          void setAdapterParameters(te::da::DataSet* sourceDataSet, te::da::DataSetAdapter* adapter, const te::da::DataSourceInfoPtr& targetDatasource);
+          void setAdapterParameters(te::da::DataSetType* sourceDataSetType, te::da::DataSetTypeConverter* converter, const te::da::DataSourceInfoPtr& targetDatasource);
 
-          te::da::DataSetAdapter* getAdapter();
+          te::da::DataSetTypeConverter* getConverter();
 
 
         public slots:
@@ -106,8 +107,8 @@ namespace te
           std::auto_ptr<Ui::DataSetAdapterWidgetForm> m_ui;
           std::map<int, std::string> m_typeMap;
           te::da::DataSourcePtr m_targetDataSource;
-          te::da::DataSet* m_sourceDataSet;
-          te::da::DataSetAdapter* m_dataSetAdapter;
+          te::da::DataSetType* m_sourceDataSetType;
+          te::da::DataSetTypeConverter* m_dataSetConverter;
       }; 
     } // end namespace widgets
   }   // end namespace qt

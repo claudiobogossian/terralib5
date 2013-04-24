@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Globals.cpp
+  \file terralib/vp/core/Globals.cpp
    
   \brief An static class with global definitions.
- */
+*/
 
 // TerraLib
 #include "Globals.h"

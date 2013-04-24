@@ -96,12 +96,13 @@ void DataSet()
     te::da::DataSet* dset = tr->getDataSet("test.tif",te::common::FORWARDONLY, te::common::RWAccess);
 
 // access the raster
-    te::rst::Raster* rst = dset->getRaster();
-    for (unsigned int b=0; b<rst->getNumberOfBands(); ++b)
+    std::size_t rpos = te::da::GetFirstPropertyPos(dset, te::dt::RASTER_TYPE);
+    te::rst::Raster* rst = dset->getRaster(rpos);
+    for (unsigned int b = 0; b < rst->getNumberOfBands(); ++b)
     {
-      for (unsigned int l=0; l<rst->getNumberOfRows(); ++l)
+      for (unsigned int l = 0; l < rst->getNumberOfRows(); ++l)
       {
-        for (unsigned int c=0; c<rst->getNumberOfColumns(); ++c)
+        for (unsigned int c = 0; c < rst->getNumberOfColumns(); ++c)
         {
           rst->setValue(c,l,l*2,b);
         }
@@ -144,12 +145,17 @@ void DataSetPersistence()
     te::da::DataSetType* dt_tiff2 = new te::da::DataSetType("test2.tif");
     te::rst::RasterProperty* rstp = static_cast<te::rst::RasterProperty*>(dt_tiff->getProperties()[0]->clone());
     rstp->setName("test2.tif");
-    dt_tiff2->add(rstp);
+    //dt_tiff2->add(rstp);
+
+    te::da::DataSetTypePersistence* datasetTypePersistence = tr->getDataSetTypePersistence();
+    datasetTypePersistence->add(dt_tiff2, rstp);
 
     te::da::DataSetPersistence* pers = tr->getDataSetPersistence();
-    pers->create(dt_tiff2,ds_tiff);
+    pers->add("test2.tif", ds_tiff);
+    //pers->create(dt_tiff2,ds_tiff);
 
-    pers->remove(dt_tiff2);
+    //pers->remove(dt_tiff2);
+    pers->remove("test2.tif");
 
     delete pers;
     delete tr;

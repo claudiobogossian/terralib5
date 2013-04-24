@@ -23,8 +23,8 @@
   \brief A dialog intersection operation
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_INTERSECTIONDIALOG_H
-#define __TERRALIB_VP_INTERNAL_INTERSECTIONDIALOG_H
+#ifndef __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
+#define __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
 
 // TerraLib
 #include "../../maptools/AbstractLayer.h"
@@ -77,4 +77,4 @@ namespace te
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_INTERSECTIONDIALOG_H
+#endif  // __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H

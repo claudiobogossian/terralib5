@@ -10,13 +10,14 @@
 
 #include "boost/date_time/gregorian/gregorian.hpp"
 
-te::da::DataSet* CreatingDataSetInMemory()
+te::da::DataSet* CreatingDataSetInMemory(const std::string& datasetName)
 {
   try
   {  
     //============= (1) Create a new data set type
     
-    te::da::DataSetType* dt = new te::da::DataSetType("SoilMeasures");
+    //te::da::DataSetType* dt = new te::da::DataSetType("SoilMeasures");
+    te::da::DataSetType* dt = new te::da::DataSetType(datasetName);
        
     //first property: measure_id
     te::dt::SimpleProperty* prop01 = new te::dt::SimpleProperty("id", te::dt::INT32_TYPE, true);
@@ -64,7 +65,7 @@ te::da::DataSet* CreatingDataSetInMemory()
     te::mem::DataSet* ds = new te::mem::DataSet(dt);
     
     te::gm::Point auxPoint1( 23.5, 78.6, 4326);
-    te::da::DataSetItem* dsItem01 = new te::mem::DataSetItem(ds);
+    te::mem::DataSetItem* dsItem01 = new te::mem::DataSetItem(ds);
     dsItem01->setInt32(1, 233); //sensor_id
     dsItem01->setGeometry(2, auxPoint1); //location
 
@@ -75,14 +76,14 @@ te::da::DataSet* CreatingDataSetInMemory()
     dsItem01->setNumeric(4, "65.89"); //measure_value
        
     te::gm::Point auxPoint2( 25.7, 80.5, 4326 );  
-    te::da::DataSetItem* dsItem02 = new te::mem::DataSetItem(ds);
+    te::mem::DataSetItem* dsItem02 = new te::mem::DataSetItem(ds);
     dsItem02->setInt32(1, 245); //sensor_id
     dsItem02->setGeometry(2, auxPoint2); //location
     dsItem02->setDateTime(3, *datetime1); //measure_date
     dsItem02->setNumeric(4, "80.90"); //measure_value
        
     te::gm::Point auxPoint3( 24.6, 83.5, 4326 );   
-    te::da::DataSetItem* dsItem03 = new te::mem::DataSetItem(ds);
+    te::mem::DataSetItem* dsItem03 = new te::mem::DataSetItem(ds);
     dsItem03->setInt32(1, 255); //sensor_id
     dsItem03->setGeometry(2, auxPoint3); //location
     dsItem03->setDateTime(3, *datetime1); //measure_date
@@ -92,21 +93,21 @@ te::da::DataSet* CreatingDataSetInMemory()
     te::dt::DateTime* datetime2 = new te::dt::Date(d2);
     
     te::gm::Point auxPoint4( 23.5, 78.6, 4326 );
-    te::da::DataSetItem* dsItem04 = new te::mem::DataSetItem(ds);
+    te::mem::DataSetItem* dsItem04 = new te::mem::DataSetItem(ds);
     dsItem04->setInt32(1, 233); //sensor_id
     dsItem04->setGeometry(2, auxPoint4); //location
     dsItem04->setDateTime(3, *datetime2); //measure_date
     dsItem04->setNumeric(4, "90.89"); //measure_value
        
     te::gm::Point auxPoint5( 25.7, 80.5, 4326 ); 
-    te::da::DataSetItem* dsItem05 = new te::mem::DataSetItem(ds);
+    te::mem::DataSetItem* dsItem05 = new te::mem::DataSetItem(ds);
     dsItem05->setInt32(1, 245); //sensor_id
     dsItem05->setGeometry(2, auxPoint5); //location
     dsItem05->setDateTime(3, *datetime2); //measure_date
     dsItem05->setNumeric(4, "73.90"); //measure_value
        
     te::gm::Point auxPoint6( 24.6, 83.5, 4326 );  
-    te::da::DataSetItem* dsItem06 = new te::mem::DataSetItem(ds);
+    te::mem::DataSetItem* dsItem06 = new te::mem::DataSetItem(ds);
     dsItem06->setInt32(1, 255); //sensor_id
     dsItem06->setGeometry(2, auxPoint6); //location
     dsItem06->setDateTime(3, *datetime2); //measure_date
@@ -116,21 +117,21 @@ te::da::DataSet* CreatingDataSetInMemory()
     te::dt::DateTime* datetime3 = new te::dt::Date(d3);
     
     te::gm::Point auxPoint7( 23.5, 78.6, 4326 ); 
-    te::da::DataSetItem* dsItem07 = new te::mem::DataSetItem(ds);
+    te::mem::DataSetItem* dsItem07 = new te::mem::DataSetItem(ds);
     dsItem07->setInt32(1, 233); //sensor_id
     dsItem07->setGeometry(2, auxPoint7); //location
     dsItem07->setDateTime(3, *datetime3); //measure_date
     dsItem07->setNumeric(4, "76.89"); //measure_value
        
     te::gm::Point auxPoint8( 25.7, 80.5, 4326 );  
-    te::da::DataSetItem* dsItem08 = new te::mem::DataSetItem(ds);
+    te::mem::DataSetItem* dsItem08 = new te::mem::DataSetItem(ds);
     dsItem08->setInt32(1, 245); //sensor_id
     dsItem08->setGeometry(2, auxPoint8); //location
     dsItem08->setDateTime(3,*datetime3); //measure_date
     dsItem08->setNumeric(4, "78.15"); //measure_value
        
     te::gm::Point auxPoint9( 24.6, 83.5, 4326 );  
-    te::da::DataSetItem* dsItem09 = new te::mem::DataSetItem(ds);
+    te::mem::DataSetItem* dsItem09 = new te::mem::DataSetItem(ds);
     dsItem09->setInt32(1, 255); //sensor_id
     dsItem09->setGeometry(2, auxPoint9); //location
     dsItem09->setDateTime(3, *datetime3); //measure_date
@@ -152,15 +153,14 @@ te::da::DataSet* CreatingDataSetInMemory()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried in Creating DataSet In Memory Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurried when Creating DataSet In Memory Example: " << e.what() << std::endl;
     return 0;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried in Creating DataSet In Memory Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurried when Creating DataSet In Memory Example!" << std::endl;
     return 0;
   }
-  
 }
 
 

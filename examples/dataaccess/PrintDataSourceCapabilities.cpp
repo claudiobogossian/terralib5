@@ -81,7 +81,7 @@ void PrintDataSourceCapabilities(te::da::DataSource* ds)
   PrintHelper("Support CINT32", dataTypeCapabilities.supportsCInt32());
   PrintHelper("Support CFLOAT", dataTypeCapabilities.supportsCFloat());
   PrintHelper("Support CDOUBLE", dataTypeCapabilities.supportsCDouble());
-  PrintHelper("Support DATASET_ITEM", dataTypeCapabilities.supportsDatasetItem());
+  //PrintHelper("Support DATASET_ITEM", dataTypeCapabilities.supportsDatasetItem());
   PrintHelper("Support POLYMORPHIC", dataTypeCapabilities.supportsPolymorphic());
 
   std::cout << ":: DataSetType Capabilities" << std::endl;

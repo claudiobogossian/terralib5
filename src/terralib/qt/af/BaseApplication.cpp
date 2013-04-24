@@ -39,6 +39,7 @@
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/dataview/TabularViewer.h"
+#include "../widgets/exchanger/DataExchangerWizard.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
 #include "../widgets/layer/explorer/LayerTreeView.h"
@@ -440,6 +441,19 @@ void te::qt::af::BaseApplication::onToolsCustomizeTriggered()
   try
   {
     te::qt::af::SettingsDialog dlg(this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onToolsDataExchangerTriggered()
+{
+  try
+  {
+    te::qt::widgets::DataExchangerWizard dlg(this);
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -850,6 +864,7 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchanger, "", "Tools.Data Exchanger", tr("&Data Exchanger..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceManagement, "", "Tools.Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, 
     false, m_menubar);
 
@@ -1054,6 +1069,7 @@ void te::qt::af::BaseApplication::initMenus()
 
 //  m_toolsMenu->addAction(m_toolbarsManagement);
   m_toolsMenu->addSeparator();
+  m_toolsMenu->addAction(m_toolsDataExchanger);
   m_toolsMenu->addAction(m_toolsDataSourceManagement);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsCustomize);  
@@ -1160,6 +1176,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
+  connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));

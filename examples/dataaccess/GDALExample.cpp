@@ -55,11 +55,11 @@ void OpenDirectory()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in GDALExample OpenDirectory(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurried in GDALExample OpenDirectory(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in GDALExample OpenDirectory()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurried in GDALExample OpenDirectory()!" << std::endl;
   }
 
 }
@@ -81,7 +81,7 @@ void DataSourceTransactor()
     if (cl->datasetExists("cbers2b_rgb342_crop.tif"))
     {
       te::da::DataSet* dtset = tr->getDataSet("cbers2b_rgb342_crop.tif");  // caller gets the pointer ownership, delete it later
-      PrintDataSet(dtset);
+      PrintDataSet("cbers2b_rgb342_crop.tif", dtset);
       delete dtset;
     }
 
@@ -91,11 +91,11 @@ void DataSourceTransactor()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in GDALExample DataSourceTransactor(): " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurried in GDALExample DataSourceTransactor(): " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in GDALExample DataSourceTransactor()!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurried in GDALExample DataSourceTransactor()!" << std::endl;
   }
 }
 

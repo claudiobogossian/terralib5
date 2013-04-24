@@ -24,11 +24,11 @@ void SQLiteExample()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in SQLite Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurried in SQLite Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in SQLite Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurried in SQLite Example!" << std::endl;
   }
 #endif
 }

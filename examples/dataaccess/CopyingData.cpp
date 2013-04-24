@@ -33,7 +33,8 @@ void CopyingData()
   clOrigin->getDataSets(datasets);
 
   te::da::DataSet* datasetOrigin = tOrigin->getDataSet(datasets[0]);
-  te::da::DataSetType* dtOrigin = datasetOrigin->getType();
+  te::da::DataSetType* dtOrigin = clOrigin->getDataSetType(datasets[0]);
+  //te::da::DataSetType* dtOrigin = datasetOrigin->getType();
 
 // let's open the destination datasource
   std::map<std::string, std::string> pgisInfo;
@@ -57,7 +58,8 @@ void CopyingData()
 
   std::cout << std::endl << "starting copy..." << std::endl;
   tDestination->begin();
-  tDestination->getDataSetPersistence()->create(newDataSet, datasetOrigin);
+  tDestination->getDataSetPersistence()->add(newDataSet->getName(), datasetOrigin);
+  //tDestination->getDataSetPersistence()->create(newDataSet, datasetOrigin);
   tDestination->commit();
   std::cout << std::endl << "copy finished..." << std::endl;
 
@@ -71,10 +73,10 @@ void CopyingData()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Copy Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurried in Copy Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Copy Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurried in Copy Example!" << std::endl;
   }
 }
