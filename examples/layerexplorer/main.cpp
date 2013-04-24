@@ -32,6 +32,7 @@
 #include <ctime>
 #include <iostream>
 
+
 int main(int argc, char *argv[])
 {
   TerraLib::getInstance().initialize();
@@ -44,18 +45,18 @@ int main(int argc, char *argv[])
 // create the layers
   begin = clock();
 
-  te::map::FolderLayer* rootLayer = new te::map::FolderLayer("Layers", "Layers");
-
   const int maxi = 1000;
   const int maxj = 10;
   const int maxk = 5;
+
+  std::list<te::map::AbstractLayerPtr> layers;
 
   for(int i = 1; i <= maxi; ++i)
   {
     std::string id = te::common::Convert2String(i);
     std::string title = "Folder Layer "  + id;
 
-    te::map::FolderLayer* f = new te::map::FolderLayer(id, title, rootLayer);
+    te::map::FolderLayer* f = new te::map::FolderLayer(id, title, 0);
 
     for(int j = 1; j <= maxj; ++j)
     {
@@ -72,31 +73,30 @@ int main(int argc, char *argv[])
         te::map::DataSetLayer* fk = new te::map::DataSetLayer(kid, title, fj);
       }
     }
+
+    te::map::AbstractLayerPtr layerPtr(f);
+
+    layers.push_back(layerPtr);
   }
 
   end = clock();
 
   std::cout << std::endl << "Time to create te::map::AbstractLayer hierarchical tree with " << maxi * maxj * maxk << " items in: " << end - begin << " miliseconds" << std:: endl;
 
-// create the explorer model and set the layer tree
+  // Create the layer explorer
   begin = clock();
 
-  te::qt::widgets::LayerExplorerModel* model = new te::qt::widgets::LayerExplorerModel(rootLayer, 0);
+  te::qt::widgets::LayerExplorer* layerExplorer = new te::qt::widgets::LayerExplorer();
   
   end = clock();
 
-  std::cout << std::endl << "Time to create LayerExplorerModel for the hierarchical tree with " << maxi * maxj * maxk << " items in: " << end - begin << " miliseconds" << std:: endl;
+  std::cout << std::endl << "Time to create LayerExplorer for the hierarchical tree with " << maxi * maxj * maxk << " items in: " << end - begin << " miliseconds" << std:: endl;
 
-// create the explorer view and set its model
   begin = clock();
 
-  te::qt::widgets::LayerExplorer* explorer = new te::qt::widgets::LayerExplorer(model);
+  layerExplorer->setLayers(layers);
 
-  explorer->setDragEnabled(true);
-  explorer->setAcceptDrops(true);
-  explorer->setDropIndicatorShown(true);
-
-  explorer->show();
+  layerExplorer->show();
 
   end = clock();
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 
   int ret = app.exec();
 
-  delete rootLayer;
+  delete layerExplorer;
 
   TerraLib::getInstance().finalize();
 
