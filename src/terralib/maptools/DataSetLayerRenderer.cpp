@@ -428,8 +428,12 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
 
 // create a SRS converter
   std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
-  converter->setSourceSRID(srid);
-  converter->setTargetSRID(layer->getSRID());
+    
+  if(needRemap)
+  {
+    converter->setSourceSRID(srid);
+    converter->setTargetSRID(layer->getSRID());
+  }
 
 // fill the result RGBA array
   for(unsigned int r = 0; r < gridCanvas->getNumberOfRows(); ++r)

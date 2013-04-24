@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../geometry/Coord2D.h"
+#include "../srs/Config.h"
 #include "Config.h"
 
 // Boost
@@ -65,7 +66,7 @@ namespace te
           \note The grid resolution (x-axis and y-axis) will be computed based on the number of columns/rows and the provided extent.
         */
         Grid(unsigned int nCols = 0, unsigned int nRows = 0,
-             te::gm::Envelope* mbr = 0, int srid = -1);
+             te::gm::Envelope* mbr = 0, int srid = TE_UNKNOWN_SRS);
 
         /*!
           \brief Constructor.
@@ -81,7 +82,7 @@ namespace te
         */
         Grid(unsigned int nCols, unsigned int nRows,
              double resX, double resY,
-             const te::gm::Coord2D* ulc, int srid = -1);
+             const te::gm::Coord2D* ulc, int srid = TE_UNKNOWN_SRS);
 
         /*!
           \brief Constructor.
@@ -97,7 +98,7 @@ namespace te
         */
         Grid(unsigned int nCols, unsigned int nRows,
              double resX, double resY,
-             te::gm::Envelope* mbr, int srid = -1);
+             te::gm::Envelope* mbr, int srid = TE_UNKNOWN_SRS);
 
         /*!
           \brief Constructor.
@@ -110,7 +111,7 @@ namespace te
           \note The grid resolution (x-axis and y-axis) will be computed based on the number of columns/rows and the provided extent.
         */
         Grid(double resX, double resY,
-             te::gm::Envelope* mbr, int srid = -1);
+             te::gm::Envelope* mbr, int srid = TE_UNKNOWN_SRS);
 
         /*!
           \brief Copy constructor.
