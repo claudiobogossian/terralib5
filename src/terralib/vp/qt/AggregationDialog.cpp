@@ -27,7 +27,6 @@
 #include "../../common/Translator.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../maptools/AbstractLayer.h"
-#include "../../qt/widgets/layer/explorer/LayerTreeModel.h"
 #include "../core/Exception.h"
 #include "AggregationDialog.h"
 #include "ui_AggregationDialogForm.h"
