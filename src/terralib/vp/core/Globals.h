@@ -18,15 +18,16 @@
  */
 
 /*!
-  \file Globals.h
-   
-  \brief An static class with global definitions.
- */
+  \file terralib/vp/core/Globals.h
 
-#ifndef __TERRALIB_VP_INTERNAL_GLOBAL_H
-#define __TERRALIB_VP_INTERNAL_GLOBAL_H
+  \brief An static class with global definitions.
+*/
+
+#ifndef __TERRALIB_VP_CORE_INTERNAL_GLOBAL_H
+#define __TERRALIB_VP_CORE_INTERNAL_GLOBAL_H
 
 // TerraLib
+#include "../../common/Static.h"
 #include "Config.h"
 
 namespace te
@@ -37,20 +38,12 @@ namespace te
       \class Globals
 
       \brief An static class with global definitions.
-      */
-    class TEVPEXPORT Globals
+    */
+    class TEVPEXPORT Globals : public te::common::Static
     {
-      private:
-
-        /*! \brief Not instantiable. */
-        Globals();
-
-      public:
-
-          
     };
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_GLOBAL_H
+#endif  // __TERRALIB_VP_CORE_INTERNAL_GLOBAL_H
 

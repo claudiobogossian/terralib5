@@ -25,6 +25,7 @@ set(DEP_LIBS
     terralib_dataaccess
 		terralib_datatype
 		terralib_geometry
+    terralib_maptools
 		terralib_memory
 		terralib_plugin
 		terralib_raster

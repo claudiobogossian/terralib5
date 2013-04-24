@@ -139,18 +139,6 @@ namespace te
     TEDATAACCESSEXPORT DataSourcePtr GetDataSource(const std::string& datasourceId, const bool opened = true);
 
     /*
-      \brief It generates the set of unique ids for every element of the given dataset.
-
-      This method tries to use the primary key properties to generate the unique ids. If they do not exist it tries
-      to use unique keys. If they do not exist then it uses all the properties.
-     
-      \param dataset A pointer to a valid data set. Do not pass null.
-
-      \return The object id set generated from the given dataset.
-    */
-    TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset);
-
-    /*
       \brief It generates the set of unique ids for every element of the given dataset using a set of attributes.
 
       \param dataset A pointer to a valid data set.
@@ -159,16 +147,6 @@ namespace te
       \return The object id set generated from the given dataset.
     */
     TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const std::vector<std::string>& names);
-
-    /*
-      \brief It generates the set of unique ids for every element of the given dataset using a set of attributes.
-
-      \param dataset A pointer to a valid data set.
-      \param indexes A non empty vector of property indexes to be used to identify the elements.
-     
-      \return The object id set generated from the given dataset.
-    */
-    TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const std::vector<std::size_t>& indexes);
 
     /*!
       \brief It returns the first dataset spatial property or NULL if none is found.

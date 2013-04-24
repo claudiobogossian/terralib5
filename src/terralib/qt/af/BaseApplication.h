@@ -93,6 +93,8 @@ namespace te
 
           void onToolsCustomizeTriggered();
 
+          void onToolsDataExchangerTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onLayerPropertiesTriggered();
@@ -164,6 +166,7 @@ namespace te
           QAction* m_viewFullScreen;
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
+          QAction* m_toolsDataExchanger;
           QAction* m_pluginsManager;
           QAction* m_pluginsBuilder;
           QAction* m_helpContents;

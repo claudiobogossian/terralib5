@@ -23,8 +23,8 @@
   \brief This singleton defines the TerraLib Qt Widgets module entry.
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_MODULE_H
-#define __TERRALIB_VP_INTERNAL_MODULE_H
+#ifndef __TERRALIB_VP_CORE_INTERNAL_MODULE_H
+#define __TERRALIB_VP_CORE_INTERNAL_MODULE_H
 
 // TerraLib
 #include "../../common/Singleton.h"
@@ -73,5 +73,5 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_MODULE_H
+#endif  // __TERRALIB_VP_CORE_INTERNAL_MODULE_H
 

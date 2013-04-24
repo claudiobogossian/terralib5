@@ -32,45 +32,45 @@ void OGRExampleRead()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in OGR Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurried in OGR Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in OGR Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurried in OGR Example!" << std::endl;
   }
 #endif
 }
 
 void ORGExampleWrite()
 {
-  #if TE_EXAMPLE_USE_OGR
-  try
-  {
-    te::da::DataSet* datas = CreatingDataSetInMemory();  
-
-    //PrintDataSet(datas);
-
-    te::da::DataSetType* newDt = new te::da::DataSetType(*datas->getType());
-    std::map<std::string, std::string> ogrInfo;
-    ogrInfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/soilmeasure.shp";
-    te::da::DataSource* ds = te::da::DataSource::create("OGR", ogrInfo);
-      
-    te::da::DataSourceTransactor* trans = ds->getTransactor();
-    te::da::DataSetPersistence* dsPers = trans->getDataSetPersistence();
-    dsPers->create(newDt,datas);
-    delete dsPers;
-
-    delete trans;
-    delete datas;
-    delete ds;
-  }
-  catch(const std::exception& e)
-  {
-    std::cout << std::endl << "An exception has occuried in OGR Example: " << e.what() << std::endl;
-  }
-  catch(...)
-  {
-    std::cout << std::endl << "An unexpected exception has occuried in OGR Example!" << std::endl;
-  }
-#endif
+//  #if TE_EXAMPLE_USE_OGR
+//  try
+//  {
+//    te::da::DataSet* datas = CreatingDataSetInMemory();  
+//
+//    //PrintDataSet(datas);
+//
+//    te::da::DataSetType* newDt = new te::da::DataSetType(*datas->getType());
+//    std::map<std::string, std::string> ogrInfo;
+//    ogrInfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/soilmeasure.shp";
+//    te::da::DataSource* ds = te::da::DataSource::create("OGR", ogrInfo);
+//      
+//    te::da::DataSourceTransactor* trans = ds->getTransactor();
+//    te::da::DataSetPersistence* dsPers = trans->getDataSetPersistence();
+//    dsPers->create(newDt,datas);
+//    delete dsPers;
+//
+//    delete trans;
+//    delete datas;
+//    delete ds;
+//  }
+//  catch(const std::exception& e)
+//  {
+//    std::cout << std::endl << "An exception has occurried in OGR Example: " << e.what() << std::endl;
+//  }
+//  catch(...)
+//  {
+//    std::cout << std::endl << "An unexpected exception has occurried in OGR Example!" << std::endl;
+//  }
+//#endif
 }

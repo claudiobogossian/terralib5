@@ -73,7 +73,7 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
   if (!gds)
     return 0;
 
-  int srid = -1;
+  int srid = TE_UNKNOWN_SRS;
   char* projWKT = (char*)gds->GetProjectionRef();
   if (projWKT)
   {

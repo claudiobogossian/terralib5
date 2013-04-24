@@ -37,7 +37,6 @@ list (APPEND TE_DEP_LIBS
 	terralib_dataaccess
 	terralib_datatype
 	terralib_maptools
-	terralib_memory
     terralib_plugin
 )
 
@@ -68,6 +67,7 @@ set (MOC "")
 set (
   HDRS_TO_MOC
   ${SRCDIR}/qt/IntersectionDialog.h
+  ${SRCDIR}/qt/AggregationDialog.h  
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/vp/qt" MOC)
 
@@ -92,6 +92,8 @@ install (
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI})
 
+set(VP_IMAGES "${ROOT}/resources/images/svg" CACHE STRING "Path to Vector Processing images.")
+
 # Include directory of the image files
 list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
 list (APPEND QT_INC_INST_DIRS "qt/ui")
@@ -103,3 +105,5 @@ list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}" "${qt_pb_headers_MOC}" "${qt_pb_res
 
 #exporting module information
 exportModuleInformation("vp" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")
+
+configure_file (VectorProcessingConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/VectorProcessingConfig.h)

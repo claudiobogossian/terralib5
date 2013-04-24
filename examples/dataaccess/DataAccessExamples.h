@@ -137,7 +137,7 @@ void PrintDataSets(te::da::DataSource* ds);
 
   \param dataset Any dataset.
  */
-void PrintDataSet(te::da::DataSet* dataset);
+void PrintDataSet(const std::string& datasetName, te::da::DataSet* dataset);
 
 /*!
   \brief An example showing how to retrieve data using a spatial filter.
@@ -190,7 +190,7 @@ void SQLiteExample();
   
   \note The caller is responsible for deleting the returned data set.
 */
-te::da::DataSet* CreatingDataSetInMemory();
+te::da::DataSet* CreatingDataSetInMemory(const std::string& datasetName);
 
 /*! \brief This example shows how to use the TerraLib Persistence. */
 void PersistenceExample();

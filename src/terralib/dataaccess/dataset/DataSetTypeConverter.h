@@ -109,7 +109,7 @@ namespace te
 
           \return The pointer to the DataSetType that is handled by the converter.
         */
-        DataSetType* getConvertee() const;
+        DataSetType* getConvertee();
 
         /*!
           \brief This method returns the name of the properties that have not yet been converted.
@@ -213,7 +213,7 @@ namespace te
 
       private:
 
-        const DataSetType* m_inDataSetType;                        //!< A pointer to DataSetType that will be converted.
+        DataSetType* m_inDataSetType;                              //!< A pointer to DataSetType that will be converted.
         DataSetType* m_outDataSetType;                             //!< The converted DataSetType.
         std::vector<std::vector<std::size_t> > m_propertyIndexes;  //!< A vector that stores the converted property indexes.
         std::vector<AttributeConverter> m_converters;              //!< A vector that stores the attribute converters functions.

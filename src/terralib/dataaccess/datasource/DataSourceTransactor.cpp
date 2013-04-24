@@ -29,14 +29,16 @@
 #include "../../datatype/Property.h"
 #include "../dataset/DataSetType.h"
 #include "../dataset/ObjectIdSet.h"
-#include "../Exception.h"
+#include "../query/DataSetName.h"
+#include "../query/Field.h"
+#include "../query/Fields.h"
 #include "../query/Select.h"
-#include "../query/SQLVisitor.h"
+#include "../query/Where.h"
+#include "../Exception.h"
 #include "DataSource.h"
 #include "DataSourceCatalog.h"
 #include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
-
 
 // STL
 #include <memory>
@@ -139,16 +141,35 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
   }
 }
 
-te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const te::da::ObjectIdSet* oids, 
-                    te::common::TraverseType travType, 
-                    te::common::AccessPolicy rwRole)
+te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& name,
+                                                          const te::da::ObjectIdSet* oids,
+                                                          te::common::TraverseType travType,
+                                                          te::common::AccessPolicy rwRole)
 {
+  assert(!name.empty());
   assert(oids);
   assert(oids->size() > 0);
+
+  // ObjectIds restriction
+  Expression* exp = oids->getExpression();
+  assert(exp);
+
+  // Where clause
+  Where* filter = new Where(exp);
   
-  std::auto_ptr<te::da::Select> select(oids->getQuery());
-  assert(select.get());
+  // All fields (?)
+  te::da::Fields* all = new te::da::Fields;
+  all->push_back(new te::da::Field("*"));
   
-  te::da::DataSet* ds = query(select.get(),travType,rwRole);
-  return ds;
+  // From the data set
+  FromItem* fromItem = new DataSetName(name);
+  From* from = new From;
+  from->push_back(fromItem);
+
+  // The final Select
+  std::auto_ptr<Select> select(new Select(all, from, filter));
+
+  DataSet* result = query(select.get(), travType, rwRole);
+
+  return result;
 }
