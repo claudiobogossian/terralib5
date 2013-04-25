@@ -287,7 +287,7 @@ void te::qt::widgets::DataSetTreeView::onModelToggled(bool checked)
   {
     AbstractDataSourceTreeItem* item = static_cast<AbstractDataSourceTreeItem*>(idx.internalPointer());
 
-    for(std::size_t i = 0; i < item->children().size(); i++)
+    for(int i = 0; i < item->children().size(); i++)
     {
       QModelIndex idxChild = nmodel->index(i, 0, idx);
       expand(idxChild);
