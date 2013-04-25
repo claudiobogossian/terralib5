@@ -13,6 +13,8 @@ set(PROJ_NAME "terralib_example_qt_rp")
 project(${PROJ_NAME})         # the project name is terralib_example_qt_rp
 SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_qt_rp
 
+find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+
 set(DEP_LIBS
   terralib_annotationtext
   terralib_color
@@ -31,6 +33,7 @@ set(DEP_LIBS
   terralib_symbology
   terralib_srs
   terralib_xlink
+  ${Boost_LIBRARIES}
   ${QWT_LIBRARY}
   ${QT_LIBRARIES}
   ${GDAL_LIBRARY}
