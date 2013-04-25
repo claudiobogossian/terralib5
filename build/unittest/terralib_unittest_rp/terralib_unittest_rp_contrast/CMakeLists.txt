@@ -13,6 +13,8 @@ set(PROJ_NAME "terralib_unittest_rp_contrast")
 project(${PROJ_NAME})           # the project name is terralib_unittest_rp_contrast
 set(LIB_NAME ${PROJ_NAME})      # the library name is terralib_unittest_rp_contrast
 
+find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+
 #Definitions for windows compiling
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
@@ -26,6 +28,7 @@ set (
   terralib_raster
   terralib_rp
   ${CPPUNIT_LIBRARY}
+  ${Boost_LIBRARIES}
   )
 
 # Select the source and header files

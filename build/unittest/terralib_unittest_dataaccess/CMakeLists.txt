@@ -34,6 +34,9 @@ if(PostgreSQL_FOUND)
 	list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
 endif()
 
+
+find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+
 #Definitions for windows compiling
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
@@ -48,6 +51,7 @@ list (
 	terralib_plugin
 	terralib_raster
 	terralib_srs
+    ${Boost_LIBRARIES}	
   )
 
 # Select the source files
