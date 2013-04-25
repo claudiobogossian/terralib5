@@ -64,7 +64,7 @@ namespace te
           \param parent The object used to fetch more data.
 
           \return It returns true if there is more data available for parent.
-          */
+        */
         bool canFetchMore(const QModelIndex& parent) const;
 
         /*!
@@ -73,7 +73,7 @@ namespace te
           \param parent The parent index.
 
           \return The number of columns for the children of the given parent.
-          */
+        */
         int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
         /*!
@@ -83,14 +83,14 @@ namespace te
           \param role  The role that is used by the view to indicate to the model which type of data it needs.
 
           \return The data stored under the given role for the item referred to by the index.
-          */
+        */
         QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
         /*!
           \brief It fetches any available data for the items with the parent specified by the parent index.
 
           \param parent The object used to fetch available data.
-          */
+        */
         void fetchMore(const QModelIndex& parent);
 
         /*!
@@ -99,7 +99,7 @@ namespace te
           \param index The item index.
 
           \return The item flags for the given index.
-          */
+        */
         Qt::ItemFlags flags(const QModelIndex& index) const;
 
         /*!
@@ -108,7 +108,7 @@ namespace te
           \param parent The item index.
 
           \return It returns true if the given index has children.
-          */
+        */
         bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
 
         /*!
@@ -122,7 +122,7 @@ namespace te
           \param parent  The parent index of the item.
 
           \return The item index.
-          */
+        */
         QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
 
         /*!
@@ -131,7 +131,7 @@ namespace te
           \param index The item index.
 
           \return The parent index of the item with the given index, or QModelIndex(), if it has no parent.
-          */
+        */
         QModelIndex parent(const QModelIndex & index) const;
 
         /*!
@@ -140,7 +140,7 @@ namespace te
           \param parent The parent index.
 
           \return The number of rows of the given parent.
-          */
+        */
         int rowCount(const QModelIndex & parent = QModelIndex()) const;
 
         /*!
@@ -153,7 +153,7 @@ namespace te
           \return It returns true if successful; otherwise, it returns false.
 
           \note The dataChanged() signal is emitted if the data was successfully set.
-          */
+        */
         bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
       private:

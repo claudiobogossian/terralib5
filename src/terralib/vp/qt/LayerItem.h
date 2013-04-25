@@ -27,18 +27,8 @@
 #define __TERRALIB_VP_QT_INTERNAL_LAYERITEM_H
 
 // TerraLib
-#include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/layer/explorer/AbstractLayerTreeItem.h"
 #include "../core/Config.h"
-
-//Qt
-#include <QtCore/QModelIndex>
-#include <QtCore/QObject>
-#include <QtCore/QVariant>
-
-// Forward declaration
-class QMenu;
-class QWidget;
 
 namespace te
 {
@@ -52,36 +42,34 @@ namespace te
 
         LayerItem(te::map::AbstractLayerPtr layer, QObject* parent = 0);
 
-        virtual ~LayerItem();
+        ~LayerItem();
 
-        // Returns the number of columns for the children of the item
-        virtual int columnCount() const;
+        int columnCount() const;
 
-        //Returns the data stored under the given role
-        //http://doc.qt.nokia.com/4.7/qt.html#ItemDataRole-enum
-        virtual QVariant data(int column, int role) const;
+        QVariant data(int column, int role) const;
 
-        virtual QMenu* getMenu(QWidget* parent = 0) const;
+        QMenu* getMenu(QWidget* parent = 0) const;
 
-        virtual bool canFetchMore() const;
+        bool canFetchMore() const;
 
-        virtual void fetchMore();
+        void fetchMore();
 
-        virtual Qt::ItemFlags flags() const;
+        Qt::ItemFlags flags() const;
 
-        virtual bool hasChildren() const;
+        bool hasChildren() const;
 
-        virtual bool setData(const QVariant& value, int role = Qt::EditRole);
+        bool setData(const QVariant& value, int role = Qt::EditRole);
 
-        virtual te::map::AbstractLayerPtr getLayer() const;
-
-        //virtual AbstractLayerTreeItem* clone(QObject* parent = 0) = 0;
+        te::map::AbstractLayerPtr getLayer() const;
 
       private:
 
         te::map::AbstractLayerPtr m_layer;
+        bool m_selected;
+        bool m_onlySelecteds;
     };
   }
 }
 
 #endif // __TERRALIB_VP_QT_INTERNAL_LAYERITEM_H
+

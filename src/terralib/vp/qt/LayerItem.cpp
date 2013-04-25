@@ -34,7 +34,9 @@
 
 te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
   : te::qt::widgets::AbstractLayerTreeItem(parent),
-    m_layer(layer)
+    m_layer(layer),
+    m_selected(false),
+    m_onlySelecteds(false)
 {
 }
 
@@ -45,73 +47,99 @@ te::vp::LayerItem::~LayerItem()
 
 int te::vp::LayerItem::columnCount() const
 {
-  return 1;
+  return 2;
 }
 
 QVariant te::vp::LayerItem::data(int column, int role) const
 {
-  if(role == Qt::DisplayRole)
-    return m_layer->getTitle().c_str();
+  if(role == Qt::DisplayRole && column == 0)
+    return QVariant(QString::fromStdString(m_layer->getTitle()));
+
+  if(role == Qt::CheckStateRole && column == 0)
+    return QVariant(m_selected);
+
+  if(role == Qt::CheckStateRole && column == 1)
+    return QVariant(m_onlySelecteds);
+
+  return QVariant();
 }
 
 QMenu* te::vp::LayerItem::getMenu(QWidget* parent) const
 {
-  QMenu* m = new QMenu(parent);
+  //QMenu* m = new QMenu(parent);
 
-  QAction* aOpenDataSource = m->addAction(tr("&Open layer"));
+  //QAction* aOpenDataSource = m->addAction(tr("&Open layer"));
 
-  connect(aOpenDataSource, SIGNAL(triggered()), this, SLOT(openDataSource()));
+  //connect(aOpenDataSource, SIGNAL(triggered()), this, SLOT(openDataSource()));
 
-  return m;
+  //return m;
+  return 0;
 }
 
 bool te::vp::LayerItem::canFetchMore() const
 {
-  return m_layer->hasChildren();
+  //return m_layer->hasChildren();
+  return false;
 }
 
 void te::vp::LayerItem::fetchMore()
 {
-  if(parent() == 0)
-    return;
-
-// if parent is a dataset item we can get more data otherwise we can do nothing
-  LayerItem* parentItem = dynamic_cast<LayerItem*>(parent());
-
-  if(parentItem == 0)
-    return;
-
-  const te::map::LayerSchema* schema = parentItem->getLayer()->getSchema();
-
-  if(schema == 0)
-    return;
-
-  const std::size_t nproperties = schema->size();
-
-  for(std::size_t i = 0; i < nproperties; ++i)
-  {
-    te::dt::Property* p = schema->getProperty(i);
-
-    if(p == 0)
-      continue;
-
-    new PropertyItem(p, this);
-  }
+//  if(parent() == 0)
+//    return;
+//
+//// if parent is a dataset item we can get more data otherwise we can do nothing
+//  LayerItem* parentItem = dynamic_cast<LayerItem*>(parent());
+//
+//  if(parentItem == 0)
+//    return;
+//
+//  const te::map::LayerSchema* schema = parentItem->getLayer()->getSchema();
+//
+//  if(schema == 0)
+//    return;
+//
+//  const std::size_t nproperties = schema->size();
+//
+//  for(std::size_t i = 0; i < nproperties; ++i)
+//  {
+//    te::dt::Property* p = schema->getProperty(i);
+//
+//    if(p == 0)
+//      continue;
+//
+//    new PropertyItem(p, this);
+//  }
 }
 
 Qt::ItemFlags te::vp::LayerItem::flags() const
 {
-  return 0;
+  return Qt::ItemIsUserCheckable;
 }
 
 bool te::vp::LayerItem::hasChildren() const
 {
-  return m_layer->hasChildren();
+  return m_layer->hasChildren() || !children().isEmpty();
 }
 
 bool te::vp::LayerItem::setData(const QVariant& value, int role)
 {
-  return true;
+  if(role == Qt::CheckStateRole)
+  {
+    bool ok = false;
+    Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt(&ok));
+
+    if(!ok)
+      return false;
+
+    if(checkState == Qt::Checked)
+      m_selected = true;
+    else if(checkState == Qt::Unchecked)
+      m_selected = false;
+
+    return true;
+  }
+
+  return false;
 }
 
 te::map::AbstractLayerPtr te::vp::LayerItem::getLayer() const

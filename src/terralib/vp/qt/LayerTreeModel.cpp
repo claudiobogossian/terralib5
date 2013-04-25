@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/LayerTreeModel.cpp
+  \file terralib/vp/qt/LayerTreeModel.cpp
 
   \brief The class that defines the model used in the Qt Model/View architecture
 */
@@ -26,9 +26,6 @@
 // TerraLib
 #include "../../common/STLUtils.h"
 #include "../../common/Translator.h"
-#include "../../maptools/AbstractLayer.h"
-#include "../../qt/widgets/layer/explorer/AbstractLayerTreeItem.h"
-#include "../../qt/widgets/layer/explorer/AbstractLayerTreeItemFactory.h"
 #include "../core/Exception.h"
 #include "LayerItem.h"
 #include "LayerTreeModel.h"
@@ -42,7 +39,7 @@ te::vp::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr
 {
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
   {
-    te::qt::widgets::AbstractLayerTreeItem* litem = te::qt::widgets::AbstractLayerTreeItemFactory::make(*it, 0);
+    te::qt::widgets::AbstractLayerTreeItem* litem = new LayerItem(*it, 0);
 
     if(litem)
       m_items.push_back(litem);
@@ -66,15 +63,12 @@ bool te::vp::LayerTreeModel::canFetchMore(const QModelIndex& parent) const
 
 int te::vp::LayerTreeModel::columnCount(const QModelIndex& /*parent*/) const
 {
-  return 1;
+  return 2;
 }
 
 QVariant te::vp::LayerTreeModel::data(const QModelIndex& index, int role) const
 {
   if(!index.isValid())
-    return QVariant();
-
-  if(role == Qt::CheckStateRole)
     return QVariant();
 
   te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(index.internalPointer());
@@ -101,7 +95,7 @@ void te::vp::LayerTreeModel::fetchMore(const QModelIndex& parent)
 Qt::ItemFlags te::vp::LayerTreeModel::flags(const QModelIndex& index) const
 {
   if(!index.isValid())
-    return QAbstractItemModel::flags(index) | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+    return QAbstractItemModel::flags(index) /*| Qt::ItemIsDragEnabled*/ | Qt::ItemIsDropEnabled;
 
   te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(index.internalPointer());
 
@@ -129,7 +123,7 @@ QModelIndex te::vp::LayerTreeModel::index(int row, int column, const QModelIndex
   if(m_items.empty())
     return QModelIndex();
 
-  if(parent == QModelIndex() && static_cast<std::size_t>(row) >= m_items.size())
+  if(!parent.isValid() && static_cast<std::size_t>(row) >= m_items.size())
     return QModelIndex();
 
   te::qt::widgets::AbstractLayerTreeItem* parentItem = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(parent.internalPointer());
@@ -144,8 +138,6 @@ QModelIndex te::vp::LayerTreeModel::index(int row, int column, const QModelIndex
 
     return createIndex(row, column, item);
   }
-
-  //te::qt::widgets::AbstractLayerTreeItem* parentItem = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(parent.internalPointer());
 
   if(parentItem == 0)
     throw Exception(TR_VP("Invalid data associated to the layer model!"));
@@ -254,3 +246,4 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
 
   return retval;
 }
+
