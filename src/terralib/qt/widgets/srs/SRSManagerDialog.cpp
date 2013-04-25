@@ -101,7 +101,7 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   m_ui->m_SRSTreeWidget->resizeColumnToContents(0);
   
   unsigned int ntl =  m_ui->m_SRSTreeWidget->topLevelItemCount();
-  for(int i = 0; i < ntl; ++i)
+  for(unsigned int i = 0; i < ntl; ++i)
   {
     QTreeWidgetItem* item = m_ui->m_SRSTreeWidget->topLevelItem(i);
     item->setExpanded(true);

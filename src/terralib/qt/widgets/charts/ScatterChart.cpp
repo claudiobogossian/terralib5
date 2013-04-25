@@ -67,7 +67,7 @@ void te::qt::widgets::ScatterChart::setData()
 {
   QPolygonF samples;
 
-  for (int i = 0; i < m_scatter->size(); i++)
+  for (size_t i = 0; i < m_scatter->size(); i++)
   {
     samples += QPointF( m_scatter->getX(i), m_scatter->getY(i));
   

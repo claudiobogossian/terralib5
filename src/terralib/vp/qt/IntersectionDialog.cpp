@@ -29,6 +29,7 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Exception.h"
 #include "IntersectionDialog.h"
+#include "LayerTreeModel.h"
 #include "ui_IntersectionDialogForm.h"
 #include "VectorProcessingConfig.h"
 
@@ -58,6 +59,10 @@ te::vp::IntersectionDialog::~IntersectionDialog()
 void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
+
+  LayerTreeModel* model = new LayerTreeModel(m_layers);
+
+  m_ui->m_layerTreeView->setModel(model);
 }
 
 void te::vp::IntersectionDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
