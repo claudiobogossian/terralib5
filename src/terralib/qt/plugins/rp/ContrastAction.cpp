@@ -49,7 +49,7 @@ void te::qt::plugins::rp::ContrastAction::onActionActivated(bool checked)
   te::qt::widgets::ContrastWizard dlg(0);
 
 // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().get();
+  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
 
   if(prj)
   {
