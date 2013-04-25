@@ -32,6 +32,9 @@
 // Qt
 #include <QtGui/QTableView>
 
+// Forward declarations
+class TablePopupFilter;
+
 namespace te
 {
   // Forward declarations
@@ -56,6 +59,8 @@ namespace te
       */
       class TEQTWIDGETSEXPORT DataSetTableView : public QTableView
       {
+        Q_OBJECT
+
         public:
           /*!
             \brief Constructor.
@@ -78,9 +83,36 @@ namespace te
           */
           void setDataSet(te::da::DataSet* dset);
 
+        public slots:
+          
+          /*!
+            \brief Hides the column at position \a column
+
+            \param column Column to be hidden.
+          */
+          void hideColumn(const int& column);
+
+          /*!
+            \brief Shows the hidden column.
+
+            \param column Column to be presented.
+          */
+          void showColumn(const int& column);
+
+          /*!
+            \brief Shows all hidden columns.
+          */
+          void showAllColumns();
+
+          /*!
+            \brief Shows columns in the original order.
+          */
+          void resetColumnsOrder();
+
         protected:
 
-          DataSetTableModel* m_model;   //!< The model to be used.
+          DataSetTableModel* m_model;       //!< The model to be used.
+          TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
       };
     }
   }
