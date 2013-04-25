@@ -37,6 +37,7 @@ list (APPEND TE_DEP_LIBS
 	terralib_dataaccess
 	terralib_datatype
 	terralib_maptools
+	terralib_qt_widgets
     terralib_plugin
 )
 
@@ -67,7 +68,10 @@ set (MOC "")
 set (
   HDRS_TO_MOC
   ${SRCDIR}/qt/IntersectionDialog.h
-  ${SRCDIR}/qt/AggregationDialog.h  
+  ${SRCDIR}/qt/AggregationDialog.h
+  ${SRCDIR}/qt/LayerItem.h
+  ${SRCDIR}/qt/PropertyItem.h
+  ${SRCDIR}/qt/LayerTreeModel.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/vp/qt" MOC)
 
