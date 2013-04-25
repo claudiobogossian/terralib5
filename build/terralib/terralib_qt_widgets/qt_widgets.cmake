@@ -380,13 +380,11 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/srs" MOC)
 
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/table/DataSetTableDockWidget.h
-#  ${SRCDIR}/widgets/table/DataSetTableModel.h
-#  ${SRCDIR}/widgets/table/DataSetTableView.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/table" MOC)
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/table/DataSetTableView.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/table" MOC)
 
 #set (
 #  HDRS_TO_MOC
@@ -462,8 +460,8 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DQWT_DLL)
 endif()
 
-#set (MOC2 ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp)
-#QT4_CREATE_MOC_COMMAND("${SRCDIR}/widgets/dataview/TabularViewer.cpp" "${MOC2}" "" "-fterralib/qt/widgets/dataview/TabularViewer.cpp" )
+set (MOC2 ${CMAKE_CURRENT_BINARY_DIR}/moc_TablePopupFilter.cpp)
+QT4_CREATE_MOC_COMMAND("${SRCDIR}/widgets/table/DataSetTableView.cpp" "${MOC2}" "" "-fterralib/qt/widgets/table/DataSetTableView.cpp" )
 
 qt4_wrap_ui(UI ${FORMS})
 
@@ -485,7 +483,7 @@ set (TE_AUX_DIRS ${TE_AUX_DIRS} "${CMAKE_CURRENT_BINARY_DIR}" PARENT_SCOPE)
 
 list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}" "${qt_pb_headers_MOC}" "${qt_pb_resources_RCC}")
 
-list (REMOVE_ITEM SRCS ${SRCDIR}/widgets/dataview/TabularViewer.cpp)
+list (REMOVE_ITEM SRCS ${SRCDIR}/widgets/table/DataSetTableView.cpp)
 
 #exporting module information
 exportModuleInformation("qt_widgets" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")
