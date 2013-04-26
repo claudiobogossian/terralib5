@@ -106,7 +106,7 @@ bool te::qt::widgets::FolderLayerItem::hasChildren() const
   return !children().empty();
 }
 
-bool te::qt::widgets::FolderLayerItem::setData(const QVariant& value, int role)
+bool te::qt::widgets::FolderLayerItem::setData(int column, const QVariant& value, int role)
 {
   if(role == Qt::CheckStateRole)
   {

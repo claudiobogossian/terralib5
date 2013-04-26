@@ -103,7 +103,7 @@ bool te::qt::widgets::DataSetLayerItem::hasChildren() const
   return !children().isEmpty();
 }
 
-bool te::qt::widgets::DataSetLayerItem::setData(const QVariant& value, int role)
+bool te::qt::widgets::DataSetLayerItem::setData(int column, const QVariant& value, int role)
 {
   if(role == Qt::CheckStateRole)
   {

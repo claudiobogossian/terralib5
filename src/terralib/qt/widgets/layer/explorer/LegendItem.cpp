@@ -106,7 +106,7 @@ bool te::qt::widgets::LegendItem::hasChildren() const
   return false;
 }
 
-bool te::qt::widgets::LegendItem::setData(const QVariant& value, int role)
+bool te::qt::widgets::LegendItem::setData(int column, const QVariant& value, int role)
 {
   //if(role == Qt::CheckStateRole)
   //{
