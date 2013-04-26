@@ -250,7 +250,6 @@ void te::qt::widgets::StyleExplorer::onItemClicked(QTreeWidgetItem* item, int /*
 void te::qt::widgets::StyleExplorer::onSymbolizerChanged(te::se::Symbolizer* symb)
 {
   QTreeWidgetItem* symbolizerItem = getSelectedItem();
-  std::size_t index = symbolizerItem->data(0, Qt::UserRole).toUInt();
 
   const te::se::Rule* rule = getCurrentRule();
   assert(rule);

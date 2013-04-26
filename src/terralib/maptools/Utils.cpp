@@ -271,8 +271,8 @@ te::da::DataSet* te::map::DataSet2Memory(te::da::DataSet* dataset)
 {
   assert(dataset);
 
-  dataset->moveNext();
-    //return new te::mem::DataSet(*dataset);
+  if(!dataset->moveNext())
+    throw Exception(TR_MAP("Could not copy the data set to memory!"));
 
   return new te::mem::DataSet(*dataset);
 }
