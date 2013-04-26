@@ -13,11 +13,14 @@ set(PROJ_NAME "terralib_example_qt_srs")
 project(${PROJ_NAME})         # the project name is terralib_example_qt_srs
 SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_qt_srs
 
+find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+
 set(DEP_LIBS 
     terralib_common
     terralib_plugin
     terralib_qt_widgets
     terralib_srs
+    ${Boost_LIBRARIES}
     ${QWT_LIBRARY}
     ${QT_LIBRARIES}
     )  
