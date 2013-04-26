@@ -27,7 +27,6 @@
 #include "../../common/Translator.h"
 #include "../../datatype/Property.h"
 #include "../core/Exception.h"
-//#include "PropertyGroupItem.h"
 #include "PropertyItem.h"
 
 // Qt

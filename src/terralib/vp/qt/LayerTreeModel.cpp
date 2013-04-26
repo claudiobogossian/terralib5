@@ -243,3 +243,19 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
 
   return retval;
 }
+
+QVariant te::vp::LayerTreeModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+  if(role == Qt::DisplayRole)
+  {
+    if(orientation == Qt::Horizontal)
+    {
+      if(section == 0)
+        return QVariant(TR_VP("Layers"));
+      else if(section == 1)
+        return QVariant(TR_VP("Only Selected"));
+    }
+  }
+
+  return QAbstractItemModel::headerData(section, orientation, role);
+}
