@@ -26,6 +26,7 @@
 //Terralib
 
 #include "ChartDisplay.h"
+#include "ChartDisplayWidget.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
 #include <PointSymbolizerWidget.h>
@@ -35,13 +36,14 @@
 #include "Symbol.h"
 #include "ui_scatterDialogForm.h"
 
+//QT
+#include <QtGui/QDockWidget>
+
 te::qt::widgets::ScatterDialog::ScatterDialog(te::da::DataSet* dataSet, QWidget* parent,  Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::ScatterDialogForm)
 {
     m_ui->setupUi(this);
-
-  m_chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"));
 
   // Scatter data Widget
   m_scatterDataWidget = new te::qt::widgets::ScatterDataWidget(dataSet, this, 0);
@@ -64,22 +66,22 @@ void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
 {
   m_scatterChart = new te::qt::widgets::ScatterChart(m_scatterDataWidget->getScatter());
 
-  QDialog dlg(this);
-  QGridLayout* lay = new QGridLayout(&dlg);
-  dlg.setLayout(lay);
+  //Adjusting the chart Display
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"));;
+  m_scatterChart->attach(chartDisplay);
+  chartDisplay->show();
+  chartDisplay->replot();
 
-  m_chartDisplay = new te::qt::widgets::ChartDisplay(&dlg);
+  //Adjusting the chart widget
+  te::qt::widgets::ChartDisplayWidget* chartWidget = new te::qt::widgets::ChartDisplayWidget(m_scatterDataWidget->getDataSet(), this->parentWidget());
+  chartWidget->setDisplay(chartDisplay);
 
-  m_chartDisplay->setTitle("Scatter");
-
-  lay->addWidget(m_chartDisplay);
-
-  m_scatterChart->attach(m_chartDisplay);
-
-  m_chartDisplay->show();
-
-  m_chartDisplay->replot();
+  // Docking
+  QDockWidget* doc = new QDockWidget(this->parentWidget(), Qt::Dialog);
+  doc->setWidget(chartWidget);
+  doc->setWindowTitle("Chart");
+  chartWidget->setParent(doc);
 
   this->close();
-  dlg.exec();
+  doc->show();
 }

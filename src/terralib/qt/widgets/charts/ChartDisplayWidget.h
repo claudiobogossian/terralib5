@@ -18,25 +18,27 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/ChartDialog.h
+  \file terralib/qt/widgets/charts/ChartDisplayWidget.h
 
-  \brief A dialog used to display a set of charts.
+  \brief A widget used to display a set of charts.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTDIALOG_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTDIALOG_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTDISPLAYWIDGET_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTDISPLAYWIDGET_H
 
 //TerraLib
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QtGui/QWidget>
+
+//QWt
+#include <qwt_legend.h>
 
 //STL
 #include <memory>
 
-
-namespace Ui { class ChartDialogForm; }
+namespace Ui { class ChartDisplayWidgetForm; }
 
 namespace te
 {
@@ -60,28 +62,34 @@ namespace te
 
         \brief A wdiget used to customize a Histogram parameters.
       */
-      class TEQTWIDGETSEXPORT ChartDialog : public QDialog
+      class TEQTWIDGETSEXPORT ChartDisplayWidget : public QWidget
       {
 
         Q_OBJECT
 
         public:
 
-          ChartDialog(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          ChartDisplayWidget(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
-          ~ChartDialog();
+          ~ChartDisplayWidget();
+
+          void setDisplay(te::qt::widgets::ChartDisplay* newDisplay);
+
+          te::da::DataSet* getDataSet();
+
+          void setDataSet(te::da::DataSet* newDataSet);
 
         protected slots:
 
-          void onSettingsToolButtonClicked();
+          void onSettingsToolButtonnTriggered();
 
         private:
 
-          std::auto_ptr<Ui::ChartDialogForm>      m_ui;               //!< The dialog form.
-          te::qt::widgets::ChartDisplay*          m_chartDisplay;     //!< The display that will be used to draq the new chart.
+          std::auto_ptr<Ui::ChartDisplayWidgetForm>  m_ui;  //!< The widget form.
+          te::da::DataSet*                           m_dataSet;   //!< The dataset used to generate the displayed chart.
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_CHARTDIALOG_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_CHARTDISPLAYWIDGET_H

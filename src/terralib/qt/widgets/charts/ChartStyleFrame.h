@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/ScatterFrame.h
+  \file terralib/qt/widgets/charts/ChartFrame.h
 
-  \brief A frame used to adjust a histogram's chart parameters, weather it is about it's data or it's visual style.
+  \brief A frame used to adjust a Chart's visual style.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERFRAME_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERFRAME_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTFRAME_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTFRAME_H
 
 // TerraLib
 #include "../Config.h"
@@ -32,43 +32,32 @@
 
 #include <memory>
 
-namespace Ui { class ScatterFrameWidgetForm; }
+namespace Ui { class ChartStyleFrameWidgetForm; }
 
 namespace te
 {
-  namespace da
-  {
-    //forward declarations
-    class DataSet;
-  }
-
   namespace qt
   {
     namespace widgets
       {
       /*!
-        \class ScatterFrame
+        \class ChartFrame
 
         \brief A frame for setting display options.
       */
-      class TEQTWIDGETSEXPORT ScatterFrame : public ChartWidget
+      class TEQTWIDGETSEXPORT ChartFrame : public ChartWidget
       {
         Q_OBJECT
 
         public:
 
-          ScatterFrame(QWidget* parent = 0);
+          ChartFrame(QWidget* parent = 0);
 
-          ~ScatterFrame();
-
-          te::da::DataSet* getDataSet();
-
-          void setDataSet(te::da::DataSet* newDataSet);
+          ~ChartFrame();
 
         private:
 
-          std::auto_ptr<Ui::ScatterFrameWidgetForm>  m_ui;        //!< The widgetv form.
-          te::da::DataSet*                           m_dataSet;   //!< The dataset that will be configured.
+          std::auto_ptr<Ui::ChartStyleFrameWidgetForm> m_ui;
 
       };
 
@@ -76,5 +65,5 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERFRAME_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_CHARTFRAME_H
 

@@ -18,50 +18,50 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/HistogramFrameFactory.cpp
+  \file terralib/qt/widgets/charts/ChartFrameFactory.cpp
 
-  \brief A factory to build the histogram frame object.
+  \brief A factory to build the Chart frame object.
 */
 
-#include "histogramFrame.h"
-#include "HistogramFrameFactory.h"
+#include "ChartStyleFrame.h"
+#include "ChartStyleFrameFactory.h"
 
-te::qt::widgets::HistogramFrameFactory* te::qt::widgets::HistogramFrameFactory::sm_factory(0);
+te::qt::widgets::ChartFrameFactory* te::qt::widgets::ChartFrameFactory::sm_factory(0);
 
-void te::qt::widgets::HistogramFrameFactory::initialize()
+void te::qt::widgets::ChartFrameFactory::initialize()
 {
   finalize();
-  sm_factory = new HistogramFrameFactory;
+  sm_factory = new ChartFrameFactory;
 }
 
-void te::qt::widgets::HistogramFrameFactory::finalize()
+void te::qt::widgets::ChartFrameFactory::finalize()
 {
   delete sm_factory;
   sm_factory = 0;
 }
 
-const std::string& te::qt::widgets::HistogramFrameFactory::getType() const
+const std::string& te::qt::widgets::ChartFrameFactory::getType() const
 {
-  return "HistogramFrame";
+  return "ChartFrame";
 }
 
-te::qt::widgets::HistogramFrameFactory::~HistogramFrameFactory()
-{
-
-}
-
-te::qt::widgets::ChartWidget* te::qt::widgets::HistogramFrameFactory::build()
-{
-  return new HistogramFrame;
-}
-
-te::qt::widgets::HistogramFrameFactory::HistogramFrameFactory()
-  : te::qt::widgets::ChartWidgetFactory("Histogram")
+te::qt::widgets::ChartFrameFactory::~ChartFrameFactory()
 {
 
 }
 
-te::qt::widgets::ChartWidget* te::qt::widgets::HistogramFrameFactory::create(QWidget* parent)
+te::qt::widgets::ChartWidget* te::qt::widgets::ChartFrameFactory::build()
 {
-  return new HistogramFrame(parent);
+  return new ChartFrame;
+}
+
+te::qt::widgets::ChartFrameFactory::ChartFrameFactory()
+  : te::qt::widgets::ChartWidgetFactory("Chart Style")
+{
+
+}
+
+te::qt::widgets::ChartWidget* te::qt::widgets::ChartFrameFactory::create(QWidget* parent)
+{
+  return new ChartFrame(parent);
 }

@@ -25,6 +25,7 @@
 
 //Terralib
 #include "ChartDisplay.h"
+#include "ChartDisplayWidget.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
 #include "HistogramChart.h"
@@ -34,14 +35,13 @@
 
 //QT
 #include <QtGui/QDialog>
+#include <QtGui/QDockWidget>
 
 te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::HistogramDialogForm)
 {
   m_ui->setupUi(this);
-
-  m_chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"));
 
   // Histogram data Widget
   m_histogramDataWidget = new te::qt::widgets::HistogramDataWidget(dataSet, this, 0);
@@ -64,27 +64,22 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
 {
   m_histogramChart = new te::qt::widgets::HistogramChart(m_histogramDataWidget->getHistogram());
 
-  /*
-    m_histogramChart->attach(m_chartDisplay);
-    ChartDialog dlg(this, m_chartDisplay);
-    this->close();
-    dlg.exec();
-  */
+  //Adjusting the chart Display
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"));;
+  m_histogramChart->attach(chartDisplay);
+  chartDisplay->show();
+  chartDisplay->replot();
 
-  QDialog dlg(this);
-  QGridLayout* lay = new QGridLayout(&dlg);
-  dlg.setLayout(lay);
+  //Adjusting the chart widget
+  te::qt::widgets::ChartDisplayWidget* chartWidget = new te::qt::widgets::ChartDisplayWidget(m_histogramDataWidget->getDataSet(), this->parentWidget());
+  chartWidget->setDisplay(chartDisplay);
 
-  m_chartDisplay->setParent(&dlg);
-
-  lay->addWidget(m_chartDisplay);
-
-  m_histogramChart->attach(m_chartDisplay);
-  m_histogramChart->attach(m_chartDisplay);
-
-  m_chartDisplay->show();
-  m_chartDisplay->replot();
+  // Docking
+  QDockWidget* doc = new QDockWidget(this->parentWidget(), Qt::Dialog);
+  doc->setWidget(chartWidget);
+  doc->setWindowTitle("Chart");
+  chartWidget->setParent(doc);
 
   this->close();
-  dlg.exec();
+  doc->show();
 }

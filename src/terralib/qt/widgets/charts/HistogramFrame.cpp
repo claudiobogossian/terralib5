@@ -23,17 +23,27 @@
   \brief A frame used to adjust a histogram's chart parameters, weather it is about it's data or it's visual style.
 */
 
+#include "../../../dataaccess.h"
 #include "ui_HistogramFrameWidgetForm.h"
 #include "HistogramFrame.h"
 #include "HistogramDataWidget.h"
+#include "HistogramStyleWidget.h"
 
 te::qt::widgets::HistogramFrame::HistogramFrame(QWidget* parent)
   : ChartWidget(parent),
     m_ui(new Ui::HistogramFrameWidgetForm)
 {
   m_ui->setupUi(this);
-
   m_label = "Histogram";
+
+  //te::qt::widgets::HistogramDataWidget* dataWidget = new te::qt::widgets::HistogramDataWidget();
+  //te::qt::widgets::HistogramStyleWidget* styleWidget = new te::qt::widgets::HistogramStyleWidget();
+
+  QGridLayout* dataLayout = new QGridLayout(m_ui->m_histogramDataFrame);
+  //dataLayout->addWidget(dataWidget);
+
+  QGridLayout* styleLayout = new QGridLayout(m_ui->m_histogramStyleFrame);
+  //styleLayout->addWidget(styleWidget);
 }
 
 te::qt::widgets::HistogramFrame::~HistogramFrame()

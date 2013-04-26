@@ -18,23 +18,29 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/ChartDialog.cpp
+  \file terralib/qt/af/settings/ChartFrame.cpp
 
-  \brief A dialog used to display a set of charts.
+  \brief A frame used to adjust a Chart's chart parameters, weather it is about it's data or it's visual style.
 */
 
-//Terralib
-#include "ChartDisplay.h"
-#include "ChartDialog.h"
-#include "../../../dataaccess.h"
-#include "../../../datatype/Property.h"
-#include "ui_histogramDialogForm.h"
+#include "ui_ChartStyleFrameWidgetForm.h"
+#include "ChartStyleFrame.h"
+#include "ChartStyleWidget.h"
 
-//QT
-#include <QtGui/QDialog>
+te::qt::widgets::ChartFrame::ChartFrame(QWidget* parent)
+  : ChartWidget(parent),
+    m_ui(new Ui::ChartStyleFrameWidgetForm)
+{
+  m_ui->setupUi(this);
 
-te::qt::widgets::ChartDialog::ChartDialog(te::da::DataSet* dataSet, QWidget* parent,  Qt::WindowFlags f){}
+  te::qt::widgets::ChartStyleWidget* styleWidget = new te::qt::widgets::ChartStyleWidget();
+  m_label = "Chart";
 
-te::qt::widgets::ChartDialog::~ChartDialog(){}
+  QGridLayout* layout = new QGridLayout(m_ui->m_StyleFrame);
+  layout->addWidget(styleWidget);
+}
 
-void te::qt::widgets::ChartDialog::onSettingsToolButtonClicked(){}
+te::qt::widgets::ChartFrame::~ChartFrame()
+{
+
+}

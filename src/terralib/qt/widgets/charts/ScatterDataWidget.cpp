@@ -47,6 +47,11 @@ te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, 
   }
 }
 
+te::da::DataSet* te::qt::widgets::ScatterDataWidget::getDataSet()
+{
+  return m_dataSet;
+}
+
 te::qt::widgets::Scatter* te::qt::widgets::ScatterDataWidget::getScatter()
 {
   //Acquiring the dataset Properties types and creating a new scatter

@@ -71,6 +71,8 @@ namespace te
 
           ~HistogramDataWidget();
 
+          te::da::DataSet* getDataSet();
+
           te::qt::widgets::Histogram* getHistogram();
 
         protected slots:

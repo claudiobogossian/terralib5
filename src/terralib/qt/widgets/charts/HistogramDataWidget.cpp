@@ -78,6 +78,11 @@ te::qt::widgets::HistogramDataWidget::~HistogramDataWidget()
 
 }
 
+te::da::DataSet* te::qt::widgets::HistogramDataWidget::getDataSet()
+{
+  return m_dataSet;
+}
+
 te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram() 
 {
   std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);

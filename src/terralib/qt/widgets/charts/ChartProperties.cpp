@@ -28,6 +28,7 @@
 #include "ChartWidgetFactory.h"
 #include "HistogramFrameFactory.h"
 #include "ScatterFrameFactory.h"
+#include "ChartStyleFrameFactory.h"
 #include "ChartProperties.h"
 
 te::qt::widgets::ChartProperties::ChartProperties(QWidget* parent)
@@ -40,6 +41,7 @@ te::qt::widgets::ChartProperties::ChartProperties(QWidget* parent)
   //init factories
   HistogramFrameFactory::initialize();
   ScatterFrameFactory::initialize();
+  ChartFrameFactory::initialize();
 
   std::vector<std::string> vec;
   const te::qt::widgets::ChartWidgetFactory::dictionary_type& d = te::qt::widgets::ChartWidgetFactory::getDictionary();
@@ -56,8 +58,10 @@ te::qt::widgets::ChartProperties::ChartProperties(QWidget* parent)
     m_ui->m_componentsListWidget->addItem(vec[i].c_str());
   }
 
+  m_ui->m_tabWidget->clear();
+  m_curComp = te::qt::widgets::ChartWidgetFactory::make("Chart Style", m_ui->m_tabWidget);
+  m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString("Chart Style"));
   connect(m_ui->m_componentsListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(on_itemClicked(QListWidgetItem*)));
-
 }
 
 te::qt::widgets::ChartProperties::~ChartProperties()
@@ -70,6 +74,7 @@ void te::qt::widgets::ChartProperties::on_itemClicked(QListWidgetItem * current)
   std::string value = current->text().toStdString();
   delete m_curComp;
   m_curComp = te::qt::widgets::ChartWidgetFactory::make(value, m_ui->m_tabWidget);
+  m_ui->m_tabWidget->clear();
   m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString(value));
   m_curComp->show();
 }

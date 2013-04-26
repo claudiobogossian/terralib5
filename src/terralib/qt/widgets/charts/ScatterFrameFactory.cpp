@@ -56,7 +56,7 @@ te::qt::widgets::ChartWidget* te::qt::widgets::ScatterFrameFactory::build()
 }
 
 te::qt::widgets::ScatterFrameFactory::ScatterFrameFactory()
-  : te::qt::widgets::ChartWidgetFactory("ScatterFrame")
+  : te::qt::widgets::ChartWidgetFactory("Scatter")
 {
 
 }

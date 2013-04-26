@@ -52,7 +52,6 @@ namespace te
     {
 
     //forward declarations
-    class ChartDisplay;
     class ScatterChart;
     class ScatterDataWidget;
 
@@ -80,7 +79,6 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ScatterDialogForm>  m_ui;             //!< The dialog form.
-          te::qt::widgets::ChartDisplay*        m_chartDisplay;   //!< The display that will be used to draq the new chart.
           te::qt::widgets::ScatterChart*        m_scatterChart;   //!< The scatter's chart that will be configured by this dialog.
           te::qt::widgets::ScatterDataWidget*   m_scatterDataWidget;     //!< The scatter's data widget used to configure the basic parameters of the new scatter.
       };
