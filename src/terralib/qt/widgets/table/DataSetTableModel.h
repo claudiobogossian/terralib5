@@ -56,11 +56,9 @@ namespace te
           /*!
             \brief Constructor.
           */
-          DataSetTableModel (QObject* parent=0);
+          DataSetTableModel(QObject* parent = 0);
 
-          /*!
-            \brief Virtual destructor.
-          */
+          /*! \brief Virtual destructor. */
           virtual ~DataSetTableModel();
 
           /*!
@@ -72,11 +70,12 @@ namespace te
           */
           void setDataSet(te::da::DataSet* dset);
 
-        /*!
-          \name QAbstractTableModel re-implementation methods.
-          \brief Re-implementation of QAbstractTableModel methods.
-        */
-        //@{
+          /*!
+            \name QAbstractTableModel re-implementation methods.
+
+            \brief Re-implementation of QAbstractTableModel methods.
+          */
+          //@{
 
           int rowCount(const QModelIndex & parent) const;
 

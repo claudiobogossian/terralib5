@@ -42,10 +42,10 @@ void MoveDataSet(te::da::DataSet* dset, const int& currentRow, const int& nextRo
   }
 }
 
-te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent) :
-QAbstractTableModel(parent),
-m_dataset(0),
-m_currentRow(-1)
+te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
+  : QAbstractTableModel(parent),
+    m_dataset(0),
+    m_currentRow(-1)
 {
 }
 
@@ -136,6 +136,7 @@ Qt::ItemFlags te::qt::widgets::DataSetTableModel::flags(const QModelIndex & inde
     return 0;
 
   Qt::ItemFlags flags = QAbstractItemModel::flags(index);
+
   flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 
   return flags;
