@@ -208,7 +208,7 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::da::ObjectIdSet* oids,
   std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
   assert(t.get());
 
-  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(oids, travType, rwRole));
+  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, oids, travType, rwRole));
 
   return DataSet2Memory(dataset.get());
 }

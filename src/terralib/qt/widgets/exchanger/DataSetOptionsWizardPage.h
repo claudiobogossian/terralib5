@@ -45,7 +45,7 @@ class QListWidgetItem;
 
 namespace te
 {
-  namespace da { class DataSetAdapter; }
+  namespace da { class DataSetTypeConverter; }
   namespace qt
   {
     namespace widgets
@@ -67,7 +67,7 @@ namespace te
                    const te::da::DataSourceInfoPtr& datasource,
                    const te::da::DataSourceInfoPtr& targetDatasource);
 
-          const std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>& getDatasets() const;
+          const std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>& getDatasets() const;
 
         public slots:
 
@@ -107,7 +107,7 @@ namespace te
           std::auto_ptr<Ui::DataSetOptionsWizardPageForm> m_ui;
           std::auto_ptr<te::qt::widgets::ConstraintsIndexesListWidget> m_constraintWidget;
           std::auto_ptr<te::qt::widgets::DataSetAdapterWidget> m_dataSetAdapterWidget;
-          std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*> m_datasets;
+          std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*> m_datasets;
           te::da::DataSourceInfoPtr m_datasource;
           te::da::DataSourceInfoPtr m_targetDatasource;
       };

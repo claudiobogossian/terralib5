@@ -90,6 +90,11 @@ te::da::DataSetTypeConverter::~DataSetTypeConverter()
   delete m_outDataSetType;
 }
 
+te::da::DataSetType* te::da::DataSetTypeConverter::getConvertee()
+{
+  return m_inDataSetType;
+}
+
 void te::da::DataSetTypeConverter::getNonConvertedProperties(std::vector<std::string>& propertyNames) const
 {
   for(std::size_t i = 0; i < m_inDataSetType->size(); ++i)

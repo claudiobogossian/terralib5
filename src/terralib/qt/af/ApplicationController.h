@@ -318,7 +318,7 @@ namespace te
             \return Pointer to a current project if defined or a null pointer in other case.
 
           */
-          te::qt::af::Project* get();
+          te::qt::af::Project* getProject();
 
           /*!
             \brief Finalize the application framework.

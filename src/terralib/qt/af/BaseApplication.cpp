@@ -37,7 +37,8 @@
 #include "../widgets/datasource/core/DataSourceType.h"
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
-#include "../widgets/dataview/TabularViewer.h"
+//#include "../widgets/dataview/TabularViewer.h"
+#include "../widgets/exchanger/DataExchangerWizard.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
 #include "../widgets/layer/explorer/LayerTreeView.h"
@@ -51,6 +52,7 @@
 #include "../widgets/progress/ProgressViewerWidget.h"
 #include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/se/RasterVisualDockWidget.h"
+#include "../widgets/table/DataSetTableView.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/ZoomArea.h"
@@ -230,6 +232,8 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
         QMainWindow::addToolBar(Qt::TopToolBarArea, ev->m_toolbar);
       }
     break;
+
+
 
     default:
     break;
@@ -447,6 +451,19 @@ void te::qt::af::BaseApplication::onToolsCustomizeTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onToolsDataExchangerTriggered()
+{
+  try
+  {
+    te::qt::widgets::DataExchangerWizard dlg(this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
 {
   if(m_project == 0)
@@ -479,6 +496,39 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
   doc->setWindowTitle(info->windowTitle());
 
   doc->show();
+}
+
+void te::qt::af::BaseApplication::onLayerShowTableTriggered()
+{
+  std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+  if(layers.empty())
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+    return;
+  }
+
+  te::map::AbstractLayer* lay = (*layers.begin())->getLayer().get();
+
+  // Docking
+  QDockWidget* doc = new QDockWidget(this, Qt::Widget);
+  te::qt::widgets::DataSetTableView* tbl = new te::qt::widgets::DataSetTableView(doc);
+  tbl->setDataSet(lay->getData());
+
+  doc->setWindowTitle(lay->getTitle().c_str());
+
+  doc->setWidget(tbl);
+
+  addDockWidget(Qt::BottomDockWidgetArea, doc);
+
+  if(!m_tableDocks.empty())
+  {
+    tabifyDockWidget(m_tableDocks[m_tableDocks.size()-1], doc);
+    doc->show();
+    doc->raise();
+  }
+
+  m_tableDocks.push_back(doc);
 }
 
 void te::qt::af::BaseApplication::onLayerHistogramTriggered()
@@ -748,15 +798,15 @@ void te::qt::af::BaseApplication::makeDialog()
   m_display = new te::qt::af::MapDisplay(map);
 
 // 3. Data Table
-  te::qt::widgets::TabularViewer* view = new te::qt::widgets::TabularViewer(this);
+//  te::qt::widgets::TabularViewer* view = new te::qt::widgets::TabularViewer(this);
 
-  m_viewer = new te::qt::af::TabularViewer(view);
+ // m_viewer = new te::qt::af::TabularViewer(view);
 
 // registering framework listeners
   te::qt::af::ApplicationController::getInstance().addListener(this);
   te::qt::af::ApplicationController::getInstance().addListener(m_explorer);
   te::qt::af::ApplicationController::getInstance().addListener(m_display);
-  te::qt::af::ApplicationController::getInstance().addListener(m_viewer);
+  //te::qt::af::ApplicationController::getInstance().addListener(m_viewer);
 
 
 // initializing connector widgets
@@ -766,12 +816,13 @@ void te::qt::af::BaseApplication::makeDialog()
   doc->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewMapDisplay->setChecked(true);
 
-  doc = new QDockWidget(tr("Data Table"), this);
+/*  doc = new QDockWidget(tr("Data Table"), this);
   doc->setWidget(view);
   QMainWindow::addDockWidget(Qt::BottomDockWidgetArea, doc);
   doc->connect(m_viewDataTable, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewDataTable->setChecked(false);
   doc->setVisible(false);
+*/
 
 //// Raster Visual Dock widget
 //  m_rasterVisualDock = new te::qt::widgets::RasterVisualDockWidget(tr("Raster Enhancement"), this);
@@ -850,6 +901,7 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchanger, "", "Tools.Data Exchanger", tr("&Data Exchanger..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceManagement, "", "Tools.Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, 
     false, m_menubar);
 
@@ -885,6 +937,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerRename, "layer-rename", "Layer.Rename", tr("R&ename"), tr(""), true, false, false, m_menubar);
   initAction(m_layerExport, "document-export", "Layer.Export", tr("E&xport..."), tr(""), true, false, false, m_menubar);
   initAction(m_layerProperties, "", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerShowTable, "", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
   initAction(m_layerRaise, "layer-raise", "Layer.Raise", tr("&Raise"), tr(""), true, false, false, m_menubar);
   initAction(m_layerLower, "layer-lower", "Layer.Lower", tr("&Lower"), tr(""), true, false, false, m_menubar);
   initAction(m_layerToTop, "layer-to-top", "Layer.To Top", tr("To &Top"), tr(""), true, false, false, m_menubar);
@@ -1013,6 +1066,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerRename);
   m_layerMenu->addAction(m_layerExport);
   m_layerMenu->addAction(m_layerProperties);
+  m_layerMenu->addAction(m_layerShowTable);
   m_layerMenu->addSeparator();
 
   m_layerChartsMenu->setObjectName("Layer.Charts");
@@ -1054,6 +1108,7 @@ void te::qt::af::BaseApplication::initMenus()
 
 //  m_toolsMenu->addAction(m_toolbarsManagement);
   m_toolsMenu->addSeparator();
+  m_toolsMenu->addAction(m_toolsDataExchanger);
   m_toolsMenu->addAction(m_toolsDataSourceManagement);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsCustomize);  
@@ -1160,6 +1215,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
+  connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
@@ -1174,4 +1230,5 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
   connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
   connect(m_mapStopDraw, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
+  connect(m_layerShowTable, SIGNAL(triggered()), SLOT(onLayerShowTableTriggered()));
 }

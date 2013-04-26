@@ -27,12 +27,14 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
@@ -206,14 +208,14 @@ void te::qt::widgets::DataExchangerWizard::commit()
 // get selected datasets and modified datasets
   std::list<DataExchangeStatus> result;
 
-  std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*> odatasets = m_datasetOptionsPage->getDatasets();
+  std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*> odatasets = m_datasetOptionsPage->getDatasets();
 
-  std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::iterator it = odatasets.begin();
+  std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>::iterator it = odatasets.begin();
 
   while(it != odatasets.end())
   {
     te::da::DataSetTypePtr idset = it->first;
-    te::da::DataSetType* odset = it->second->getType();
+    te::da::DataSetType* odset = it->second->getResult();
 
     try
     {
@@ -224,8 +226,12 @@ void te::qt::widgets::DataExchangerWizard::commit()
 // stay tunned: create can change idset!
       dtp->create(odset);
 
+      te::da::DataSetAdapter* dsAdapter = te::da::CreateAdapter(dataset.get(), it->second);
+
       if(dataset->moveNext())
-        dp->add(odset, dataset.get());
+        dp->add(odset->getName(), dsAdapter);
+
+      delete dsAdapter;
 
       // boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
 

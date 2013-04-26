@@ -40,52 +40,52 @@ void createDataSource()
 
 void copyFromOGR()
 {
-#if TE_EXAMPLE_USE_OGR
-  if(DATASOURCE_NAME == "")
-    createDataSource();
-
-  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
-
-  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
-  ds->setConnectionStr(ogrInfo);
-  ds->open();
-
-  std::auto_ptr<te::da::DataSourceTransactor> originTransactor(ds->getTransactor());
-
-  std::auto_ptr<te::da::DataSourceCatalogLoader> originLoader(originTransactor->getCatalogLoader());
-
-  originLoader->loadCatalog();
-
-  std::auto_ptr<te::da::DataSetType> originDt(originLoader->getDataSetType("munic_2001"));
-
-  std::auto_ptr<te::da::DataSet> originDset(originTransactor->getDataSet(originDt->getName()));
-
-  std::map<std::string, std::string> dsInfo;
-  dsInfo["MY_HOST_NAME"] = "localhost";
-  dsInfo["MY_USER_NAME"] = "root";
-  dsInfo["MY_PASSWORD"] = "admin";
-  dsInfo["MY_SCHEMA"] = DATASOURCE_NAME;
-  dsInfo["MY_PORT"] = "3306";
-  dsInfo["MY_OPT_CONNECT_TIMEOUT"] = "4";
-  dsInfo["MY_CLIENT_MULTI_RESULTS"] = "TRUE";
-  dsInfo["MY_CLIENT_MULTI_STATEMENTS"] = "TRUE";
-  dsInfo["MY_OPT_CHARSET_NAME"] = "latin1";
-
-  
-  std::auto_ptr<te::da::DataSource> destinationDs(te::da::DataSourceFactory::open("MYSQL", dsInfo));
-
-  std::auto_ptr<te::da::DataSourceTransactor> destinationTransactor(destinationDs->getTransactor());
-
-  std::auto_ptr<te::da::DataSetPersistence> destinationDsp(destinationTransactor->getDataSetPersistence());
-
-  std::map<std::string, std::string> op;
-  op["ADD_TYPE"] = "T3";
-
-  originDset->moveNext();
-
-  destinationDsp->create(originDt.get(), originDset.get(), op);
-        
-#endif
+//#if TE_EXAMPLE_USE_OGR
+//  if(DATASOURCE_NAME == "")
+//    createDataSource();
+//
+//  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
+//
+//  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
+//  ds->setConnectionStr(ogrInfo);
+//  ds->open();
+//
+//  std::auto_ptr<te::da::DataSourceTransactor> originTransactor(ds->getTransactor());
+//
+//  std::auto_ptr<te::da::DataSourceCatalogLoader> originLoader(originTransactor->getCatalogLoader());
+//
+//  originLoader->loadCatalog();
+//
+//  std::auto_ptr<te::da::DataSetType> originDt(originLoader->getDataSetType("munic_2001"));
+//
+//  std::auto_ptr<te::da::DataSet> originDset(originTransactor->getDataSet(originDt->getName()));
+//
+//  std::map<std::string, std::string> dsInfo;
+//  dsInfo["MY_HOST_NAME"] = "localhost";
+//  dsInfo["MY_USER_NAME"] = "root";
+//  dsInfo["MY_PASSWORD"] = "admin";
+//  dsInfo["MY_SCHEMA"] = DATASOURCE_NAME;
+//  dsInfo["MY_PORT"] = "3306";
+//  dsInfo["MY_OPT_CONNECT_TIMEOUT"] = "4";
+//  dsInfo["MY_CLIENT_MULTI_RESULTS"] = "TRUE";
+//  dsInfo["MY_CLIENT_MULTI_STATEMENTS"] = "TRUE";
+//  dsInfo["MY_OPT_CHARSET_NAME"] = "latin1";
+//
+//  
+//  std::auto_ptr<te::da::DataSource> destinationDs(te::da::DataSourceFactory::open("MYSQL", dsInfo));
+//
+//  std::auto_ptr<te::da::DataSourceTransactor> destinationTransactor(destinationDs->getTransactor());
+//
+//  std::auto_ptr<te::da::DataSetPersistence> destinationDsp(destinationTransactor->getDataSetPersistence());
+//
+//  std::map<std::string, std::string> op;
+//  op["ADD_TYPE"] = "T3";
+//
+//  originDset->moveNext();
+//
+//  destinationDsp->create(originDt.get(), originDset.get(), op);
+//        
+//#endif
 }
 
 void createSpatialTables()
@@ -143,120 +143,119 @@ void createSpatialTables()
 
 void populateSpatialTables()
 {
+  //std::map<std::string, std::string> op;
+  //op["ADD_TYPE"] = "T3";
 
-  std::map<std::string, std::string> op;
-  op["ADD_TYPE"] = "T3";
+  //std::map<std::string, std::string> dsInfo;
+  //dsInfo["MY_HOST_NAME"] = "localhost";
+  //dsInfo["MY_USER_NAME"] = "root";
+  //dsInfo["MY_PASSWORD"] = "admin";
+  //dsInfo["MY_SCHEMA"] = DATASOURCE_NAME;
+  //dsInfo["MY_PORT"] = "3306"; 
+  //dsInfo["MY_OPT_CONNECT_TIMEOUT"] = "4";
+  //
+  //std::auto_ptr<te::da::DataSource> destinationDs(te::da::DataSourceFactory::open("MYSQL", dsInfo));
 
-  std::map<std::string, std::string> dsInfo;
-  dsInfo["MY_HOST_NAME"] = "localhost";
-  dsInfo["MY_USER_NAME"] = "root";
-  dsInfo["MY_PASSWORD"] = "admin";
-  dsInfo["MY_SCHEMA"] = DATASOURCE_NAME;
-  dsInfo["MY_PORT"] = "3306"; 
-  dsInfo["MY_OPT_CONNECT_TIMEOUT"] = "4";
-  
-  std::auto_ptr<te::da::DataSource> destinationDs(te::da::DataSourceFactory::open("MYSQL", dsInfo));
+  //te::da::DataSourceTransactor* t = destinationDs->getTransactor();
+  //te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();  
 
-  te::da::DataSourceTransactor* t = destinationDs->getTransactor();
-  te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();  
+  //////////////////////////////////////////////////////////////////////////////////////////
 
-  ////////////////////////////////////////////////////////////////////////////////////////
+  //te::gm::LinearRing* s = new te::gm::LinearRing(5, te::gm::LineStringType);
+  //s->setPoint(0, -51, -15.5);
+  //s->setPoint(1, -49.5, -15.5);
+  //s->setPoint(2, -49.5, -15);
+  //s->setPoint(3, -51, -15);
+  //s->setPoint(4, -51, -15.5);
 
-  te::gm::LinearRing* s = new te::gm::LinearRing(5, te::gm::LineStringType);
-  s->setPoint(0, -51, -15.5);
-  s->setPoint(1, -49.5, -15.5);
-  s->setPoint(2, -49.5, -15);
-  s->setPoint(3, -51, -15);
-  s->setPoint(4, -51, -15.5);
+  //te::gm::LinearRing* s2 = new te::gm::LinearRing(5, te::gm::LineStringType);
+  //s2->setPoint(0, -41, -5.5);
+  //s2->setPoint(1, -39.5, -5.5);
+  //s2->setPoint(2, -39.5, -5);
+  //s2->setPoint(3, -41, -5);
+  //s2->setPoint(4, -41, -5.5);
 
-  te::gm::LinearRing* s2 = new te::gm::LinearRing(5, te::gm::LineStringType);
-  s2->setPoint(0, -41, -5.5);
-  s2->setPoint(1, -39.5, -5.5);
-  s2->setPoint(2, -39.5, -5);
-  s2->setPoint(3, -41, -5);
-  s2->setPoint(4, -41, -5.5);
+  //te::gm::Polygon* pol = new te::gm::Polygon(0, te::gm::PolygonType);
+  //pol->push_back(s);
+  //pol->setSRID(4326); //srid =  4326
 
-  te::gm::Polygon* pol = new te::gm::Polygon(0, te::gm::PolygonType);
-  pol->push_back(s);
-  pol->setSRID(4326); //srid =  4326
+  //te::gm::Polygon* pol2 = new te::gm::Polygon(0, te::gm::PolygonType);
+  //pol2->push_back(s2);
+  //pol2->setSRID(4326); //srid =  4326  
 
-  te::gm::Polygon* pol2 = new te::gm::Polygon(0, te::gm::PolygonType);
-  pol2->push_back(s2);
-  pol2->setSRID(4326); //srid =  4326  
+  //te::da::DataSetType* polDt = loader->getDataSetType("poligonos");
 
-  te::da::DataSetType* polDt = loader->getDataSetType("poligonos");
+  //te::mem::DataSet* polDs = new te::mem::DataSet(polDt);
 
-  te::mem::DataSet* polDs = new te::mem::DataSet(polDt);
+  //te::mem::DataSetItem* polItem1 = new te::mem::DataSetItem(polDs);
+  //polItem1->setInt32("id", 1);
+  //polItem1->setGeometry("the_geom", *pol);
 
-  te::mem::DataSetItem* polItem1 = new te::mem::DataSetItem(polDs);
-  polItem1->setInt32("id", 1);
-  polItem1->setGeometry("the_geom", *pol);
+  //te::mem::DataSetItem* polItem2 = new te::mem::DataSetItem(polDs);
+  //polItem2->setInt32("id", 2);
+  //polItem2->setGeometry("the_geom", *pol2);
 
-  te::mem::DataSetItem* polItem2 = new te::mem::DataSetItem(polDs);
-  polItem2->setInt32("id", 2);
-  polItem2->setGeometry("the_geom", *pol2);
+  //polDs->add(polItem1);
+  //polDs->add(polItem2);
 
-  polDs->add(polItem1);
-  polDs->add(polItem2);
+  //polDs->moveNext();
 
-  polDs->moveNext();
+  //t->getDataSetPersistence()->add(polDt, polDs, op);
 
-  t->getDataSetPersistence()->add(polDt, polDs, op);
+  /////////////////////////////////////////////////////////////////////////////////////////
 
-  ///////////////////////////////////////////////////////////////////////////////////////
+  //te::gm::Point* p1 = new te::gm::Point(-51, -15.5, 4326);
+  //te::gm::Point* p2 = new te::gm::Point(-49.5, -15, 4326);
+  //
+  //te::da::DataSetType* pointDt = loader->getDataSetType("pontos");
 
-  te::gm::Point* p1 = new te::gm::Point(-51, -15.5, 4326);
-  te::gm::Point* p2 = new te::gm::Point(-49.5, -15, 4326);
-  
-  te::da::DataSetType* pointDt = loader->getDataSetType("pontos");
+  //te::mem::DataSet* pointDs = new te::mem::DataSet(pointDt);
 
-  te::mem::DataSet* pointDs = new te::mem::DataSet(pointDt);
+  //te::mem::DataSetItem* pointItem1 = new te::mem::DataSetItem(pointDs);
+  //pointItem1->setInt32("id", 1);
+  //pointItem1->setGeometry("the_geom", *p1);
 
-  te::mem::DataSetItem* pointItem1 = new te::mem::DataSetItem(pointDs);
-  pointItem1->setInt32("id", 1);
-  pointItem1->setGeometry("the_geom", *p1);
+  //te::mem::DataSetItem* pointItem2 = new te::mem::DataSetItem(pointDs);
+  //pointItem2->setInt32("id", 2);
+  //pointItem2->setGeometry("the_geom", *p2);
 
-  te::mem::DataSetItem* pointItem2 = new te::mem::DataSetItem(pointDs);
-  pointItem2->setInt32("id", 2);
-  pointItem2->setGeometry("the_geom", *p2);
+  //pointDs->add(pointItem1);
+  //pointDs->add(pointItem2);
 
-  pointDs->add(pointItem1);
-  pointDs->add(pointItem2);
+  //pointDs->moveNext();
 
-  pointDs->moveNext();
+  //t->getDataSetPersistence()->add(pointDt, pointDs, op);
 
-  t->getDataSetPersistence()->add(pointDt, pointDs, op);
+  ////////////////////////////////////////////////////////////////
 
-  //////////////////////////////////////////////////////////////
+  //te::gm::LineString* l1 = new te::gm::LineString(3, te::gm::LineStringType);
+  //l1->setPoint(0, -51, -15.5);
+  //l1->setPoint(1, -49.5, -15.5);
+  //l1->setPoint(2, -49.5, -15);
 
-  te::gm::LineString* l1 = new te::gm::LineString(3, te::gm::LineStringType);
-  l1->setPoint(0, -51, -15.5);
-  l1->setPoint(1, -49.5, -15.5);
-  l1->setPoint(2, -49.5, -15);
+  //te::gm::LineString* l2 = new te::gm::LineString(3, te::gm::LineStringType);
+  //l2->setPoint(0, -41, -5.5);
+  //l2->setPoint(1, -39.5, -5.5);
+  //l2->setPoint(2, -39.5, -5);
+  //
+  //te::da::DataSetType* lineDt = loader->getDataSetType("linhas");
 
-  te::gm::LineString* l2 = new te::gm::LineString(3, te::gm::LineStringType);
-  l2->setPoint(0, -41, -5.5);
-  l2->setPoint(1, -39.5, -5.5);
-  l2->setPoint(2, -39.5, -5);
-  
-  te::da::DataSetType* lineDt = loader->getDataSetType("linhas");
+  //te::mem::DataSet* lineDs = new te::mem::DataSet(lineDt);
 
-  te::mem::DataSet* lineDs = new te::mem::DataSet(lineDt);
+  //te::mem::DataSetItem* lineItem1 = new te::mem::DataSetItem(lineDs);
+  //lineItem1->setInt32("id", 1);
+  //lineItem1->setGeometry("the_geom", *l1);
 
-  te::mem::DataSetItem* lineItem1 = new te::mem::DataSetItem(lineDs);
-  lineItem1->setInt32("id", 1);
-  lineItem1->setGeometry("the_geom", *l1);
+  //te::mem::DataSetItem* lineItem2 = new te::mem::DataSetItem(lineDs);
+  //lineItem2->setInt32("id", 2);
+  //lineItem2->setGeometry("the_geom", *l2);
 
-  te::mem::DataSetItem* lineItem2 = new te::mem::DataSetItem(lineDs);
-  lineItem2->setInt32("id", 2);
-  lineItem2->setGeometry("the_geom", *l2);
+  //lineDs->add(lineItem1);
+  //lineDs->add(lineItem2);
 
-  lineDs->add(lineItem1);
-  lineDs->add(lineItem2);
+  //lineDs->moveNext();
 
-  lineDs->moveNext();
-
-  t->getDataSetPersistence()->add(lineDt, lineDs, op);
+  //t->getDataSetPersistence()->add(lineDt, lineDs, op);
 }
 
 void createInsertExample()
@@ -307,11 +306,11 @@ void MySQLExample()
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in MySQL Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurried in MySQL Example: " << e.what() << std::endl;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in MySQL Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurried in MySQL Example!" << std::endl;
   }
 #endif
 }

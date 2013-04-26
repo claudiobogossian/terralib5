@@ -37,7 +37,7 @@ void PrintDataSets(te::da::DataSource* ds)
     te::da::DataSet* dataset = transactor->getDataSet(datasets[i]);
 
 // print its date to standard output
-    PrintDataSet(dataset);
+    PrintDataSet(datasets[i], dataset);
 
 // release the dataset: you are the owner
     delete dataset;

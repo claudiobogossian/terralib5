@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -23,44 +23,99 @@
   \brief A table view for a dataset.
 */
 
+
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEVIEW_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEVIEW_H
 
-// TerraLib
 #include "../Config.h"
 
 // Qt
 #include <QtGui/QTableView>
 
+// Forward declarations
+class TablePopupFilter;
+
 namespace te
 {
-  namespace da { class DataSet; }
+  // Forward declarations
+  namespace da
+  {
+    class DataSet;
+  }
 
   namespace qt
   {
     namespace widgets
     {
+      // Forward declaration
+      class DataSetTableModel;
+
       /*!
-        \class DataSetTableView
+        \class
 
-        \brief A tree view for the data sources of an application.
+        \brief A customized table view for te::map::AbstractLayer objects. Uses a te::qt::widgets::DataSetModel as its model.
 
-        \sa DataSetTableModel
+        \note We assume that the layer can return ALWAYS return a te::da::DataSet object with random access of it's values. 
       */
       class TEQTWIDGETSEXPORT DataSetTableView : public QTableView
       {
         Q_OBJECT
 
         public:
+          /*!
+            \brief Constructor.
 
-          DataSetTableView(QWidget* parent = 0);
+            \param parent Qt widget parent.
+          */
+          DataSetTableView(QWidget* parent=0);
 
-          ~DataSetTableView();
+          /*!
+            \brief Virtual destructor.
+          */
+          virtual ~DataSetTableView();
 
-          void set(te::da::DataSet* dataset);
-      }; 
-    } // end namespace widgets
-  }   // end namespace qt
-}     // end namespace te
+          /*!
+            \brief Updates the data set being visualized.
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEVIEW_H
+            Note that this DataSet MUST HAVE random access. The view DOES NOT get the ownership of the pointer.
+
+            \param dset The new data set to be visualized.
+          */
+          void setDataSet(te::da::DataSet* dset);
+
+        public slots:
+          
+          /*!
+            \brief Hides the column at position \a column
+
+            \param column Column to be hidden.
+          */
+          void hideColumn(const int& column);
+
+          /*!
+            \brief Shows the hidden column.
+
+            \param column Column to be presented.
+          */
+          void showColumn(const int& column);
+
+          /*!
+            \brief Shows all hidden columns.
+          */
+          void showAllColumns();
+
+          /*!
+            \brief Shows columns in the original order.
+          */
+          void resetColumnsOrder();
+
+        protected:
+
+          DataSetTableModel* m_model;       //!< The model to be used.
+          TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
+      };
+    }
+  }
+}
+
+#endif //__TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEVIEW_H

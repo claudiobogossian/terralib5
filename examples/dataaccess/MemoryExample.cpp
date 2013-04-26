@@ -14,19 +14,19 @@ void MemoryExample()
   try
   {
     //It creates a data set in memory
-    ds = CreatingDataSetInMemory();
+    ds = CreatingDataSetInMemory("SoilMeasures");
     std::cout << std::endl << "A data set in memory has been created! " << std::endl;
-    PrintDataSet(ds);
+    PrintDataSet("SoilMeasures", ds);
     delete ds;
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried in Memory Example: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occurried in Memory Example: " << e.what() << std::endl;
     return;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried in Memory Example!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occurried in Memory Example!" << std::endl;
     return;
   }  
 }

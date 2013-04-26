@@ -50,10 +50,10 @@ void ObjectId2()
   assert(dataset->size() == identified->size());
   
   std::cout << "== DataSet Retrieved From Box == " << std::endl;
-  PrintDataSet(dataset);
+  PrintDataSet("munic_2001", dataset);
   
   std::cout << "== DataSet Retrieved From ObjectIdSet == " << std::endl;
-  PrintDataSet(identified);
+  PrintDataSet("munic_2001_identified",identified);
   
   // Cleaning All!
   delete identified;
@@ -97,7 +97,7 @@ void ObjectId()
   dataset->moveBeforeFirst();
 
   assert(dataset->size() == oids->size());
-  assert(oids->isFromPrimaryKey());
+  //assert(oids->isFromPrimaryKey());
 
 // let's get the Select from the generated OIDS
   te::da::Select* select = oids->getQuery();
@@ -117,10 +117,10 @@ void ObjectId()
   assert(dataset->size() == identified->size());
 
   std::cout << "== DataSet Retrieved From Box == " << std::endl;
-  PrintDataSet(dataset);
+  PrintDataSet("munic_2001", dataset);
 
   std::cout << "== DataSet Retrieved From ObjectIdSet == " << std::endl;
-  PrintDataSet(identified);
+  PrintDataSet("munic_2001_identified", identified);
 
   // Cleaning All!
   delete identified;

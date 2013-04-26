@@ -34,7 +34,6 @@ namespace te
 {
   namespace vp
   {
-    
     TE_DECLARE_EXCEPTION_CLASS(TEVPEXPORT, Exception, te::common::Exception)
 
   }   // end namespace vp

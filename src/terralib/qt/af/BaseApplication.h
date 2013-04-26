@@ -93,9 +93,13 @@ namespace te
 
           void onToolsCustomizeTriggered();
 
+          void onToolsDataExchangerTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onLayerPropertiesTriggered();
+
+          void onLayerShowTableTriggered();
 
           void onLayerHistogramTriggered();
 
@@ -162,6 +166,7 @@ namespace te
           QAction* m_viewFullScreen;
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
+          QAction* m_toolsDataExchanger;
           QAction* m_pluginsManager;
           QAction* m_pluginsBuilder;
           QAction* m_helpContents;
@@ -178,6 +183,7 @@ namespace te
           QAction* m_layerRename;
           QAction* m_layerExport;
           QAction* m_layerProperties;
+          QAction* m_layerShowTable;
           QAction* m_layerRaise;
           QAction* m_layerLower;
           QAction* m_layerToTop;
@@ -233,6 +239,8 @@ namespace te
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
           TabularViewer* m_viewer;
+
+          std::vector<QDockWidget*> m_tableDocks;
 
 // Project
           Project* m_project;

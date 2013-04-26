@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,26 +20,24 @@
 /*!
   \file DataSetTableModel.h
 
-  \brief A table model for a dataset.
+  \brief A model based on te::da::DataSet.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEMODEL_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEMODEL_H
 
-// TerraLib
 #include "../Config.h"
-
-// STL
-#include <memory>
 
 // Qt
 #include <QtCore/QAbstractTableModel>
 
 namespace te
 {
-  namespace da { class DataSet; }
-
-  namespace map { class DataSetTable; }
+  // Forward declarations
+  namespace da
+  {
+    class DataSet;
+  }
 
   namespace qt
   {
@@ -48,38 +46,57 @@ namespace te
       /*!
         \class DataSetTableModel
 
-        \brief A tree view for the data sources of an application.
-
-        \sa DataSetTableView
+        \brief A table model representing a te::da::DataSet.
       */
       class TEQTWIDGETSEXPORT DataSetTableModel : public QAbstractTableModel
       {
-        Q_OBJECT
-
         public:
 
-          DataSetTableModel(te::da::DataSet* dataset, QObject* parent = 0);
+          /*!
+            \brief Constructor.
+          */
+          DataSetTableModel (QObject* parent=0);
 
-          ~DataSetTableModel();
+          /*!
+            \brief Virtual destructor.
+          */
+          virtual ~DataSetTableModel();
 
-          int columnCount(const QModelIndex& parent = QModelIndex()) const;
+          /*!
+            \brief Updates the data being used. Note this method DO TAKES the ownership of te::da::DataSet pointer.
 
-          QVariant data(const QModelIndex& index, int role) const;
+            \param dset The new data set to be used.
+          */
+          void setDataSet(te::da::DataSet* dset);
+
+        /*!
+          \name QAbstractTableModel re-implementation methods.
+          \brief Re-implementation of QAbstractTableModel methods.
+        */
+        //@{
+
+          int rowCount(const QModelIndex & parent) const;
+
+          int columnCount(const QModelIndex & parent) const;
+
+          QVariant data(const QModelIndex & index, int role) const;
 
           QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
-          /*QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;*/
+          Qt::ItemFlags flags(const QModelIndex & index) const;
 
-          int rowCount(const QModelIndex& parent = QModelIndex()) const;
+          bool setData (const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
+          //@}
 
-          void setDataSet(te::da::DataSet* dataset);
+        protected:
+          te::da::DataSet* m_dataset;   //!< Data set being used.
 
-        private:
+          mutable int m_currentRow;
 
-          std::auto_ptr<te::map::DataSetTable> m_table;
-      }; 
-    } // end namespace widgets
-  }   // end namespace qt
-}     // end namespace te
+//          std::set<int> m_geomColumns;
+      };
+    }
+  }
+}
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEMODEL_H
+#endif //__TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEMODEL_H
