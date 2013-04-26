@@ -111,8 +111,6 @@ bool te::qt::widgets::SegmenterWizard::execute()
   std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
   te::map::AbstractLayerPtr l = *list.begin();
   te::da::DataSet* ds = l->getData();
-  std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
 
   //run contrast
   te::rp::Segmenter algorithmInstance;

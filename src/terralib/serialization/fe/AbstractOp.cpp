@@ -529,8 +529,8 @@ void BinarySpatialOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer
   te::serialize::Expression::getInstance().write(binarySpatialOp->getProperty(), writer);
 
   // Envelope || Geometry
-  te::gml::Envelope* env = binarySpatialOp->getEnvelope();
-  te::gm::Geometry* geom = binarySpatialOp->getGeometry();
+  //te::gml::Envelope* env = binarySpatialOp->getEnvelope();
+  //te::gm::Geometry* geom = binarySpatialOp->getGeometry();
 
   // TODO: write Envelope or Geometry!
 

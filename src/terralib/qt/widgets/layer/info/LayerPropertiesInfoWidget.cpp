@@ -12,7 +12,6 @@ te::qt::widgets::LayerPropertiesInfoWidget::LayerPropertiesInfoWidget(te::map::A
   QWidget::setWindowTitle(tr("Layer properties"));
 
   QtTreePropertyBrowser* pb = new QtTreePropertyBrowser(this);
-  te::qt::widgets::LayerPropertiesInfo* info = new te::qt::widgets::LayerPropertiesInfo(pb, layer);
 
   pb->setPropertiesWithoutValueMarked(true);
   pb->setResizeMode(QtTreePropertyBrowser::ResizeToContents);

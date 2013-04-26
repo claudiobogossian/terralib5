@@ -56,8 +56,8 @@
 te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::MixtureModelWizardPageForm),
-    m_layer(0),
-    m_countComponents(0)
+    m_countComponents(0),
+    m_layer(0)
 {
 // setup controls
   m_ui->setupUi(this);

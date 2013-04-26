@@ -362,7 +362,6 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
     AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
 
     // First, remove the associated layer associated to the item
-    te::map::AbstractLayer* layer = childItem->getLayer().get();
     te::map::AbstractLayer* parentLayer = static_cast<te::map::AbstractLayer*>(parentItem->getLayer().get());
 
     parentLayer->remove(row);
