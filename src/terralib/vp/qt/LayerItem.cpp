@@ -127,7 +127,7 @@ void te::vp::LayerItem::fetchMore()
     for(size_t i = 0; i < layer->getChildrenCount(); i++)
     {
       te::map::AbstractLayerPtr child = boost::dynamic_pointer_cast<te::map::AbstractLayer>(layer->getChild(i));
-      te::qt::widgets::AbstractLayerTreeItem* litem = new LayerItem(child, this);
+      //te::qt::widgets::AbstractLayerTreeItem* litem = new LayerItem(child, this);
     }
   }
   else if(layer->getSchema()->getProperties().size() > 0)
