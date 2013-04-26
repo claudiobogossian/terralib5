@@ -64,8 +64,6 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
-          //AbstractLayerTreeItem* clone(QObject* parent = 0);
-
         private:
 
           te::map::DataSetLayerPtr m_layer;
