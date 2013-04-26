@@ -39,14 +39,6 @@ te::qt::widgets::DataSetLayerItem::DataSetLayerItem(const te::map::AbstractLayer
   : AbstractLayerTreeItem(parent)
 {
   m_layer = boost::dynamic_pointer_cast<te::map::DataSetLayer>(l);
-
-  if(m_layer->getStyle())
-  {
-    const std::vector<te::se::Rule*>& rules = m_layer->getStyle()->getRules();
-
-    for(std::size_t i = 0; i != rules.size(); ++i)
-      new LegendItem(rules[i], this);
-  }
 }
 
 te::qt::widgets::DataSetLayerItem::~DataSetLayerItem()
@@ -86,7 +78,7 @@ QMenu* te::qt::widgets::DataSetLayerItem::getMenu(QWidget* /*parent*/) const
 
 bool te::qt::widgets::DataSetLayerItem::canFetchMore() const
 {
-  return !children().isEmpty();
+  return (m_layer->getStyle() != 0) && (m_layer->getStyle()->getRules().empty() == false) && children().isEmpty();
 }
 
 Qt::ItemFlags te::qt::widgets::DataSetLayerItem::flags() const
@@ -96,14 +88,24 @@ Qt::ItemFlags te::qt::widgets::DataSetLayerItem::flags() const
 
 void te::qt::widgets::DataSetLayerItem::fetchMore()
 {
+  if(!children().isEmpty())
+    return;
+
+  if(m_layer->getStyle())
+  {
+    const std::vector<te::se::Rule*>& rules = m_layer->getStyle()->getRules();
+
+    for(std::size_t i = 0; i != rules.size(); ++i)
+      new LegendItem(rules[i], this);
+  }
 }
 
 bool te::qt::widgets::DataSetLayerItem::hasChildren() const
 {
-  return !children().isEmpty();
+  return (m_layer->getStyle() != 0) && (m_layer->getStyle()->getRules().empty() == false);
 }
 
-bool te::qt::widgets::DataSetLayerItem::setData(const QVariant& value, int role)
+bool te::qt::widgets::DataSetLayerItem::setData(int column, const QVariant& value, int role)
 {
   if(role == Qt::CheckStateRole)
   {
@@ -129,8 +131,5 @@ te::map::AbstractLayerPtr te::qt::widgets::DataSetLayerItem::getLayer() const
   return m_layer;
 }
 
-//te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::DataSetLayerItem::clone(QObject* parent)
-//{
-//  return new DataSetLayerItem(m_layer, parent);
-//}
+
 

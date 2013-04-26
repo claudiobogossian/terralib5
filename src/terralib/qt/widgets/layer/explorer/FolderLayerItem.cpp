@@ -38,11 +38,6 @@ te::qt::widgets::FolderLayerItem::FolderLayerItem(const te::map::AbstractLayerPt
   : AbstractLayerTreeItem(parent)
 {
   m_layer = boost::dynamic_pointer_cast<te::map::FolderLayer>(l);
-
-  for(te::map::AbstractLayer::const_iterator it = l->begin(); it != l->end(); ++it)
-  {
-    /*AbstractLayerTreeItem* litem = */AbstractLayerTreeItemFactory::make(boost::dynamic_pointer_cast<te::map::AbstractLayer>(*it), this);
-  }
 }
 
 te::qt::widgets::FolderLayerItem::~FolderLayerItem()
@@ -89,7 +84,7 @@ QMenu* te::qt::widgets::FolderLayerItem::getMenu(QWidget* /*parent*/) const
 
 bool te::qt::widgets::FolderLayerItem::canFetchMore() const
 {
-  return !children().empty();
+  return m_layer->hasChildren() && !children().empty();
 }
 
 Qt::ItemFlags te::qt::widgets::FolderLayerItem::flags() const
@@ -99,14 +94,21 @@ Qt::ItemFlags te::qt::widgets::FolderLayerItem::flags() const
 
 void te::qt::widgets::FolderLayerItem::fetchMore()
 {
+  if(!children().empty())
+    return;
+
+  for(te::map::AbstractLayer::const_iterator it = m_layer->begin(); it != m_layer->end(); ++it)
+  {
+    /*AbstractLayerTreeItem* litem = */AbstractLayerTreeItemFactory::make(boost::dynamic_pointer_cast<te::map::AbstractLayer>(*it), this);
+  }
 }
 
 bool te::qt::widgets::FolderLayerItem::hasChildren() const
 {
-  return !children().empty();
+  return m_layer->hasChildren();
 }
 
-bool te::qt::widgets::FolderLayerItem::setData(const QVariant& value, int role)
+bool te::qt::widgets::FolderLayerItem::setData(int column, const QVariant& value, int role)
 {
   if(role == Qt::CheckStateRole)
   {
@@ -134,9 +136,6 @@ te::map::AbstractLayerPtr te::qt::widgets::FolderLayerItem::getLayer() const
   return m_layer;
 }
 
-//te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::FolderLayerItem::clone(QObject* parent)
-//{
-//  return new FolderLayerItem(m_layer, parent);
-//}
+
 
 

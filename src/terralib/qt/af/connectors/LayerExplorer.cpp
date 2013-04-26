@@ -58,7 +58,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       if(nevt == 0 || nevt->m_proj == 0)
         return;
 
-      m_explorer->setLayers(nevt->m_proj->getLayers());
+      m_explorer->set(nevt->m_proj->getLayers());
 
       assert(m_explorer->getTreeView());
       assert(m_explorer->getTreeView()->selectionModel());

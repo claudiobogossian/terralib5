@@ -72,7 +72,7 @@ namespace te
 
           virtual bool hasChildren() const = 0;
 
-          virtual bool setData(const QVariant& value, int role = Qt::EditRole) = 0;
+          virtual bool setData(int column, const QVariant& value, int role = Qt::EditRole) = 0;
 
           virtual te::map::AbstractLayerPtr getLayer() const = 0;
 

@@ -494,7 +494,7 @@ te::color::RGBAColor te::map::RasterTransform::getInterpolatedColor(double value
       {
         distance = 0;
       }
-      else if(distance >= it->second.getColorBar().size())
+      else if(distance >= (int)it->second.getColorBar().size())
       {
         distance = it->second.getColorBar().size() - 1;
       }

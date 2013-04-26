@@ -24,7 +24,7 @@
 */
 
 //Terralib
-#include "ChartStyle.h";
+#include "ChartStyle.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Stroke.h"
 
@@ -41,9 +41,9 @@ te::qt::widgets::ChartStyle::ChartStyle()
 
 te::qt::widgets::ChartStyle::ChartStyle(std::string title, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color)
 :m_title(title),
+  m_gridChecked(gridChecked),
   m_fill(fill),
   m_stroke(stroke),
-  m_gridChecked(gridChecked),
   m_backColor(color)
 {
 }

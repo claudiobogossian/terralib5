@@ -50,7 +50,13 @@ te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent, Qt::WindowFlags f
 
   m_treeView = new LayerTreeView(this);
 
+  m_treeModel = new LayerTreeModel(this);
+
+  m_treeModel->setCheckable(true);
+
   setWidget(m_treeView);
+
+  m_treeView->setModel(m_treeModel);
 
   m_treeView->setHeaderHidden(true);
   m_treeView->setIndentation(TE_QTWIDGETS_DEFAULT_TREEVIEW_IDENTATION);
@@ -70,13 +76,9 @@ te::qt::widgets::LayerTreeModel* te::qt::widgets::LayerExplorer::getTreeModel() 
   return m_treeModel;
 }
 
-void te::qt::widgets::LayerExplorer::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
+void te::qt::widgets::LayerExplorer::set(const std::list<te::map::AbstractLayerPtr>& layers)
 {
-  m_treeView->setModel(0);
-  delete m_treeModel;
-  m_treeModel = new LayerTreeModel(layers, this);
-  m_treeModel->setCheckable(true);
-  m_treeView->setModel(m_treeModel);
+  m_treeModel->set(layers);
 }
 
 void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer)

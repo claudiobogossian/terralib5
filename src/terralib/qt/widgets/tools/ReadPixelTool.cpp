@@ -198,14 +198,25 @@ bool te::qt::widgets::ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
           type = "Unknown Composition";
         }
 
-        QString opacity = te::map::GetString(rs->getOpacity()).c_str();
-        QString gain = te::map::GetString(rs->getGain()).c_str();
-        QString offset = te::map::GetString(rs->getOffset()).c_str();
-
         information += "<li><b>" + QString("Color Composition ") + ":</b> " + type + "</li>";
-        information += "<li><b>" + QString("Opacity Value ") + ":</b> " + opacity + "</li>";
-        information += "<li><b>" + QString("Gain Value ") + ":</b> " + gain + "</li>";
-        information += "<li><b>" + QString("Offset Value ") + ":</b> " + offset + "</li>";
+
+        if(rs->getOpacity())
+        {
+          QString opacity = te::map::GetString(rs->getOpacity()).c_str();
+          information += "<li><b>" + QString("Opacity Value ") + ":</b> " + opacity + "</li>";
+        }
+
+        if(rs->getGain())
+        {
+          QString gain = te::map::GetString(rs->getGain()).c_str();
+          information += "<li><b>" + QString("Gain Value ") + ":</b> " + gain + "</li>";
+        }
+
+        if(rs->getOffset())
+        {
+          QString offset = te::map::GetString(rs->getOffset()).c_str();
+          information += "<li><b>" + QString("Offset Value ") + ":</b> " + offset + "</li>";
+        }
 
         if(rs->getChannelSelection()->getRedChannel() && 
            rs->getChannelSelection()->getRedChannel()->getContrastEnhancement())

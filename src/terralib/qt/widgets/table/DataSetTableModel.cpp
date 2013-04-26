@@ -1,8 +1,32 @@
-#include "DataSetTableModel.h"
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/qt/widgets/table/DataSetTableModel.cpp
+
+  \brief A model based on te::da::DataSet.
+*/
 
 // TerraLib
 #include "../../../common/Exception.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "DataSetTableModel.h"
 
 void MoveDataSet(te::da::DataSet* dset, const int& currentRow, const int& nextRow)
 {
@@ -18,10 +42,10 @@ void MoveDataSet(te::da::DataSet* dset, const int& currentRow, const int& nextRo
   }
 }
 
-te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent) :
-QAbstractTableModel(parent),
-m_dataset(0),
-m_currentRow(-1)
+te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
+  : QAbstractTableModel(parent),
+    m_dataset(0),
+    m_currentRow(-1)
 {
 }
 
@@ -112,12 +136,13 @@ Qt::ItemFlags te::qt::widgets::DataSetTableModel::flags(const QModelIndex & inde
     return 0;
 
   Qt::ItemFlags flags = QAbstractItemModel::flags(index);
+
   flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 
   return flags;
 }
 
-bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & index, const QVariant & value, int role)
+bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & /*index*/, const QVariant & /*value*/, int /*role*/)
 {
   return true;
 }
