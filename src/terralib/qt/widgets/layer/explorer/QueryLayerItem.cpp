@@ -96,7 +96,7 @@ bool te::qt::widgets::QueryLayerItem::hasChildren() const
   return false;
 }
 
-bool te::qt::widgets::QueryLayerItem::setData(const QVariant& value, int role)
+bool te::qt::widgets::QueryLayerItem::setData(int column, const QVariant& value, int role)
 {
   if(role == Qt::CheckStateRole)
   {

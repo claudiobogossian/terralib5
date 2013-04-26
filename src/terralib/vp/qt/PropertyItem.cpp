@@ -36,7 +36,8 @@
 
 te::vp::PropertyItem::PropertyItem(te::dt::Property* p, AbstractLayerTreeItem* parent)
   : AbstractLayerTreeItem(parent),
-    m_property(p)
+    m_property(p),
+    m_selected(false)
 {
 }
 
@@ -51,23 +52,26 @@ int te::vp::PropertyItem::columnCount() const
   return 1;
 }
 
-QVariant te::vp::PropertyItem::data(int /*column*/, int role) const
+QVariant te::vp::PropertyItem::data(int column, int role) const
 {
-  if(role == Qt::DisplayRole)
+  if(role == Qt::DisplayRole && column == 0)
     return QVariant(m_property->getName().c_str());
+
+  if(role == Qt::CheckStateRole && column == 0)
+    return (m_selected ? Qt::Checked : Qt::Unchecked);
 
   return QVariant();
 }
 
 QMenu* te::vp::PropertyItem::getMenu(QWidget* parent) const
 {
-  QMenu* m = new QMenu(parent);
+  /*QMenu* m = new QMenu(parent);
 
   QAction* aOpenProperty = m->addAction(tr("&Open property"));
 
-  connect(aOpenProperty, SIGNAL(triggered()), this, SLOT(openProperty()));
+  connect(aOpenProperty, SIGNAL(triggered()), this, SLOT(openProperty()));*/
 
-  return m;
+  return 0;
 }
 
 bool te::vp::PropertyItem::canFetchMore() const
@@ -77,7 +81,7 @@ bool te::vp::PropertyItem::canFetchMore() const
 
 Qt::ItemFlags te::vp::PropertyItem::flags() const
 {
-  return Qt::NoItemFlags;
+  return Qt::ItemIsUserCheckable;
 }
 
 void te::vp::PropertyItem::fetchMore()
@@ -89,8 +93,26 @@ bool te::vp::PropertyItem::hasChildren() const
   return false;
 }
 
-bool te::vp::PropertyItem::setData(const QVariant& /*value*/, int /*role*/)
+bool te::vp::PropertyItem::setData(int column, const QVariant& value, int role)
 {
+  if(role == Qt::CheckStateRole)
+  {
+    bool ok = false;
+    Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt(&ok));
+
+    if(!ok)
+      return false;
+
+    if(column == 0)
+    {
+      if(checkState == Qt::Checked)
+        m_selected = true;
+      else if(checkState == Qt::Unchecked)
+        m_selected = false;
+    }    
+    return true;
+  }
+
   return false;
 }
 

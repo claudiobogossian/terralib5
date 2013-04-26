@@ -38,6 +38,35 @@ te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
     m_selected(false),
     m_onlySelecteds(false)
 {
+  if(layer->hasChildren())
+  {
+    for(size_t i = 0; i < layer->getChildrenCount(); i++)
+    {
+      te::map::AbstractLayerPtr layerChild = boost::dynamic_pointer_cast<te::map::AbstractLayer>(layer->getChild(i));
+
+      if(layerChild->isValid())
+        new LayerItem(layerChild, this);
+    }
+  }
+  else if(m_layer->getSchema()->getProperties().size() > 0)
+  {
+    const te::map::LayerSchema* schema = m_layer->getSchema();
+
+    if(schema == 0)
+      return;
+
+    std::vector<te::dt::Property*> properties = schema->getProperties();
+
+    for(size_t i = 0; i < properties.size(); i++)
+    {
+      te::dt::Property* p = schema->getProperty(i);
+      
+      if(p == 0)
+        continue;
+
+      new PropertyItem(properties[i], this);
+    }
+  }
 }
 
 te::vp::LayerItem::~LayerItem()
@@ -56,10 +85,10 @@ QVariant te::vp::LayerItem::data(int column, int role) const
     return QVariant(QString::fromStdString(m_layer->getTitle()));
 
   if(role == Qt::CheckStateRole && column == 0)
-    return QVariant(m_selected);
+    return (m_selected ? Qt::Checked : Qt::Unchecked);
 
   if(role == Qt::CheckStateRole && column == 1)
-    return QVariant(m_onlySelecteds);
+    return (m_onlySelecteds ? Qt::Checked : Qt::Unchecked);
 
   return QVariant();
 }
@@ -78,37 +107,48 @@ QMenu* te::vp::LayerItem::getMenu(QWidget* parent) const
 
 bool te::vp::LayerItem::canFetchMore() const
 {
-  //return m_layer->hasChildren();
-  return false;
+  return m_layer->hasChildren() || (m_layer->getSchema()->getProperties().size() > 0);
 }
 
 void te::vp::LayerItem::fetchMore()
 {
-//  if(parent() == 0)
-//    return;
-//
-//// if parent is a dataset item we can get more data otherwise we can do nothing
-//  LayerItem* parentItem = dynamic_cast<LayerItem*>(parent());
-//
-//  if(parentItem == 0)
-//    return;
-//
-//  const te::map::LayerSchema* schema = parentItem->getLayer()->getSchema();
-//
-//  if(schema == 0)
-//    return;
-//
-//  const std::size_t nproperties = schema->size();
-//
-//  for(std::size_t i = 0; i < nproperties; ++i)
-//  {
-//    te::dt::Property* p = schema->getProperty(i);
-//
-//    if(p == 0)
-//      continue;
-//
-//    new PropertyItem(p, this);
-//  }
+  if(parent() == 0)
+    return;
+
+  LayerItem* parentItem = dynamic_cast<LayerItem*>(parent());
+
+  if(!parentItem->hasChildren())
+    return;
+
+  te::map::AbstractLayerPtr layer = parentItem->getLayer();
+
+  if(layer->hasChildren())
+  {
+    for(size_t i = 0; i < layer->getChildrenCount(); i++)
+    {
+      te::map::AbstractLayerPtr child = boost::dynamic_pointer_cast<te::map::AbstractLayer>(layer->getChild(i));
+      te::qt::widgets::AbstractLayerTreeItem* litem = new LayerItem(child, this);
+    }
+  }
+  else if(layer->getSchema()->getProperties().size() > 0)
+  {
+    const te::map::LayerSchema* schema = parentItem->getLayer()->getSchema();
+    
+    if(schema == 0)
+      return;
+
+    std::vector<te::dt::Property*> properties = schema->getProperties();
+
+    for(size_t i = 0; i < properties.size(); i++)
+    {
+      te::dt::Property* p = schema->getProperty(i);
+      
+      if(p == 0)
+        continue;
+
+      new PropertyItem(properties[i], this);
+    }
+  }
 }
 
 Qt::ItemFlags te::vp::LayerItem::flags() const
@@ -121,7 +161,7 @@ bool te::vp::LayerItem::hasChildren() const
   return m_layer->hasChildren() || !children().isEmpty();
 }
 
-bool te::vp::LayerItem::setData(const QVariant& value, int role)
+bool te::vp::LayerItem::setData(int column, const QVariant& value, int role)
 {
   if(role == Qt::CheckStateRole)
   {
@@ -131,11 +171,20 @@ bool te::vp::LayerItem::setData(const QVariant& value, int role)
     if(!ok)
       return false;
 
-    if(checkState == Qt::Checked)
-      m_selected = true;
-    else if(checkState == Qt::Unchecked)
-      m_selected = false;
-
+    if(column == 0)
+    {
+      if(checkState == Qt::Checked)
+        m_selected = true;
+      else if(checkState == Qt::Unchecked)
+        m_selected = false;
+    }
+    else if(column == 1)
+    {
+      if(checkState == Qt::Checked)
+        m_onlySelecteds = true;
+      else if(checkState == Qt::Unchecked)
+        m_onlySelecteds = false;
+    }
     return true;
   }
 

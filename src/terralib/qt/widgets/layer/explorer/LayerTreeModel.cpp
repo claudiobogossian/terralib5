@@ -457,7 +457,7 @@ bool te::qt::widgets::LayerTreeModel::setData(const QModelIndex& index, const QV
   if(item == 0)
     return false;
 
-  bool retval = item->setData(value, role);
+  bool retval = item->setData(index.column(), value, role);
 
   emit dataChanged(index, index);
 

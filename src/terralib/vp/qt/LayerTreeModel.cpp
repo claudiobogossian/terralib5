@@ -217,15 +217,12 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
   if(!index.isValid())
     return false;
 
-  if(role == Qt::CheckStateRole)
-    return false;
-
   te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(index.internalPointer());
 
   if(item == 0)
     return false;
 
-  bool retval = item->setData(value, role);
+  bool retval = item->setData(index.column(), value, role);
 
   emit dataChanged(index, index);
 
@@ -246,4 +243,3 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
 
   return retval;
 }
-
