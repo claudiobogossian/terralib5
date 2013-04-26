@@ -18,14 +18,15 @@
  */
 
 /*!
-  \file DataSetTableModel.h
+  \file terralib/qt/widgets/table/DataSetTableModel.h
 
   \brief A model based on te::da::DataSet.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEMODEL_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEMODEL_H
+#ifndef __TERRALIB_QT_WIDGETS_TABLE_INTERNAL_DATASETTABLEMODEL_H
+#define __TERRALIB_QT_WIDGETS_TABLE_INTERNAL_DATASETTABLEMODEL_H
 
+// TerraLib
 #include "../Config.h"
 
 // Qt
@@ -55,25 +56,26 @@ namespace te
           /*!
             \brief Constructor.
           */
-          DataSetTableModel (QObject* parent=0);
+          DataSetTableModel(QObject* parent = 0);
 
-          /*!
-            \brief Virtual destructor.
-          */
+          /*! \brief Virtual destructor. */
           virtual ~DataSetTableModel();
 
           /*!
-            \brief Updates the data being used. Note this method DO TAKES the ownership of te::da::DataSet pointer.
+            \brief Updates the data being used. 
 
             \param dset The new data set to be used.
+
+            \note This method DO TAKES the ownership of te::da::DataSet pointer.
           */
           void setDataSet(te::da::DataSet* dset);
 
-        /*!
-          \name QAbstractTableModel re-implementation methods.
-          \brief Re-implementation of QAbstractTableModel methods.
-        */
-        //@{
+          /*!
+            \name QAbstractTableModel re-implementation methods.
+
+            \brief Re-implementation of QAbstractTableModel methods.
+          */
+          //@{
 
           int rowCount(const QModelIndex & parent) const;
 
@@ -86,17 +88,16 @@ namespace te
           Qt::ItemFlags flags(const QModelIndex & index) const;
 
           bool setData (const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
+
           //@}
 
         protected:
-          te::da::DataSet* m_dataset;   //!< Data set being used.
 
-          mutable int m_currentRow;
-
-//          std::set<int> m_geomColumns;
+          te::da::DataSet* m_dataset;   //!< The dataset being used.
+          mutable int m_currentRow;     //!< An internal row pointer.
       };
     }
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_INTERNAL_DATASETTABLEMODEL_H
+#endif //__TERRALIB_QT_WIDGETS_TABLE_INTERNAL_DATASETTABLEMODEL_H
