@@ -64,7 +64,7 @@ void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
 {
   m_layers = layers;
   
-  LayerTreeModel* model = new LayerTreeModel(m_layers);
+  LayerTreeModel* model = new LayerTreeModel(m_layers, true);
 
   m_ui->m_layerTreeView->setModel(model);
 }

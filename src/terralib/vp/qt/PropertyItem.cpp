@@ -27,6 +27,7 @@
 #include "../../common/Translator.h"
 #include "../../datatype/Property.h"
 #include "../core/Exception.h"
+#include "LayerItem.h"
 #include "PropertyItem.h"
 
 // Qt
@@ -53,11 +54,14 @@ int te::vp::PropertyItem::columnCount() const
 
 QVariant te::vp::PropertyItem::data(int column, int role) const
 {
+  LayerItem* litem = dynamic_cast<LayerItem*>(parent());
+
+
   if(role == Qt::DisplayRole && column == 0)
     return QVariant(m_property->getName().c_str());
 
   if(role == Qt::CheckStateRole && column == 0)
-    return (m_selected ? Qt::Checked : Qt::Unchecked);
+    return ((m_selected && litem->isSelected()) ? Qt::Checked : Qt::Unchecked);
 
   return QVariant();
 }
@@ -123,4 +127,9 @@ te::dt::Property* te::vp::PropertyItem::getProperty() const
 te::map::AbstractLayerPtr te::vp::PropertyItem::getLayer() const
 {
   return 0;
+}
+
+void te::vp::PropertyItem::setSelected(bool selected)
+{
+  m_selected = selected;
 }
