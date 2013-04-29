@@ -49,6 +49,8 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-aggregation-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
+  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));   
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilterLineEditTextChanged(const QString&)));
 }
 
@@ -60,9 +62,10 @@ void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
 {
   m_layers = layers;
   
-  LayerTreeModel* model = new LayerTreeModel(m_layers);
+  LayerTreeModel* model = new LayerTreeModel(m_layers, true);
 
   m_ui->m_layerTreeView->setModel(model);
+  m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
 }
 
 void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
@@ -78,4 +81,13 @@ void te::vp::AggregationDialog::setSelectedLayers(std::vector<std::string> selec
 void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
 {
 
+}
+
+void te::vp::AggregationDialog::onCancelPushButtonClicked()
+{
+  reject();
+}
+
+void te::vp::AggregationDialog::onHelpPushButtonClicked()
+{
 }

@@ -29,7 +29,7 @@
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
-#include "../../maptools/FolderLayer.h"
+#include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
 #include "../widgets/charts/ChartStyleDialog.h"
@@ -620,6 +620,16 @@ void te::qt::af::BaseApplication::onPanToggled(bool checked)
   m_display->setCurrentTool(pan);
 }
 
+void te::qt::af::BaseApplication::onZoomExtentTriggered()
+{
+  if(!m_project && m_project->getLayers().empty())
+    return;
+
+  te::qt::widgets::MapDisplay* display = m_display->getDisplay();
+  te::gm::Envelope e = te::map::GetExtent(m_project->getLayers(), display->getSRID(), true);
+  display->setExtent(e, true);
+}
+
 void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
 {
   if(!checked)
@@ -960,7 +970,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapZoomOut, "zoom-out", "Map.Zoom Out", tr("Zoom &Out"), tr(""), true, true, true, m_menubar);
   initAction(m_mapZoomArea, "zoom-area", "Map.Zoom Area", tr("Zoom &Area"), tr(""), true, true, true, m_menubar);
   initAction(m_mapPan, "pan", "Map.Pan", tr("&Pan"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapZoomExtent, "zoom-extent", "Map.Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, false, m_menubar);
+  initAction(m_mapZoomExtent, "zoom-extent", "Map.Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, true, m_menubar);
   initAction(m_mapPreviousExtent, "edit-undo", "Map.Previous Extent", tr("&Previous Extent"), tr(""), true, false, false, m_menubar);
   initAction(m_mapNextExtent, "edit-redo", "Map.Next Extent", tr("&Next Extent"), tr(""), true, false, false, m_menubar);
   initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, false, m_menubar);
@@ -1226,6 +1236,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
   connect(m_mapZoomArea, SIGNAL(toggled(bool)), SLOT(onZoomAreaToggled(bool)));
   connect(m_mapPan, SIGNAL(toggled(bool)), SLOT(onPanToggled(bool)));
+  connect(m_mapZoomExtent, SIGNAL(triggered()), SLOT(onZoomExtentTriggered()));
   connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
   connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
   connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));

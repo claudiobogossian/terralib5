@@ -68,6 +68,10 @@ namespace te
 
         void onFilterLineEditTextChanged(const QString& text);
 
+        void onCancelPushButtonClicked();
+
+        void onHelpPushButtonClicked();
+
       private:
 
         std::auto_ptr<Ui::AggregationDialogForm> m_ui;

@@ -34,8 +34,9 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QStringList>
 
-te::vp::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject * parent)
-  : QAbstractItemModel(parent)
+te::vp::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, bool singleSelection, QObject * parent)
+  : QAbstractItemModel(parent),
+    m_singleSelection(singleSelection)
 {
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
   {
@@ -239,7 +240,29 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
         ascendentIndex = parent(ascendentIndex);
       }
     }
+// if the vector processing uses only one input layer
+    if(m_singleSelection)
+    {
+// Verify if the selectd item is layer or property. If property, the return of "getLayer" is 0.
+      if(item->getLayer() != 0)
+      {
+// Unselect all layers different than "item"
+        for(size_t i = 0; i < m_items.size(); i++)
+        {
+          if(m_items[i] == item)
+            continue;
+
+          LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
+          litem->isSelected(false);
+        }
+      }
+    }
   }
+
+// after all changes is necessary to emit the dataChenged signal to refresh the checkboxes.
+  QModelIndex start_ix = createIndex( 0, 0 );
+  QModelIndex end_ix = createIndex( 0, 1 );
+  emit( dataChanged( start_ix, end_ix ) );
 
   return retval;
 }
