@@ -65,6 +65,7 @@ void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
   LayerTreeModel* model = new LayerTreeModel(m_layers, true);
 
   m_ui->m_layerTreeView->setModel(model);
+  m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
 }
 
 void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
@@ -90,4 +91,3 @@ void te::vp::AggregationDialog::onCancelPushButtonClicked()
 void te::vp::AggregationDialog::onHelpPushButtonClicked()
 {
 }
-

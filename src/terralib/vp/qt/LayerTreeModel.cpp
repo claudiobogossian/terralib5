@@ -243,13 +243,18 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
 // if the vector processing uses only one input layer
     if(m_singleSelection)
     {
-      for(size_t i = 0; i < m_items.size(); i++)
+// Verify if the selectd item is layer or property. If property, the return of "getLayer" is 0.
+      if(item->getLayer() != 0)
       {
-        if(m_items[i] == item)
-          continue;
+// Unselect all layers different than "item"
+        for(size_t i = 0; i < m_items.size(); i++)
+        {
+          if(m_items[i] == item)
+            continue;
 
-        LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
-        litem->isSelected(false);
+          LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
+          litem->isSelected(false);
+        }
       }
     }
   }
