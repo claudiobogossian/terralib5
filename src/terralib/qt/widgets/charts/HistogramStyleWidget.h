@@ -59,7 +59,7 @@ namespace te
 
         public:
 
-          HistogramStyleWidget(te::qt::widgets::HistogramStyle* initial, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          HistogramStyleWidget(te::qt::widgets::HistogramStyle* initial = 0, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           ~HistogramStyleWidget();
 

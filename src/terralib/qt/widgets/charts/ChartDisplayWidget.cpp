@@ -65,6 +65,6 @@ void te::qt::widgets::ChartDisplayWidget::setDataSet(te::da::DataSet* newDataSet
 
 void te::qt::widgets::ChartDisplayWidget::onSettingsToolButtonnTriggered()
 {
-    te::qt::widgets::ChartProperties dlg(this->parentWidget());
+    te::qt::widgets::ChartProperties dlg(m_dataSet, this->parentWidget());
     dlg.exec();
 }

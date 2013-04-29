@@ -217,15 +217,12 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
   if(!index.isValid())
     return false;
 
-  if(role == Qt::CheckStateRole)
-    return false;
-
   te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(index.internalPointer());
 
   if(item == 0)
     return false;
 
-  bool retval = item->setData(value, role);
+  bool retval = item->setData(index.column(), value, role);
 
   emit dataChanged(index, index);
 
@@ -247,3 +244,18 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
   return retval;
 }
 
+QVariant te::vp::LayerTreeModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+  if(role == Qt::DisplayRole)
+  {
+    if(orientation == Qt::Horizontal)
+    {
+      if(section == 0)
+        return QVariant(TR_VP("Layers"));
+      else if(section == 1)
+        return QVariant(TR_VP("Only Selected"));
+    }
+  }
+
+  return QAbstractItemModel::headerData(section, orientation, role);
+}

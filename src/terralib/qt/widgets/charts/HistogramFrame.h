@@ -55,12 +55,12 @@ namespace te
 
           ~HistogramFrame();
 
+          void setDataSet(te::da::DataSet* newDataSet);
+
         private:
 
           std::auto_ptr<Ui::HistogramFrameWidgetForm> m_ui;
-
       };
-
     }   // end namespace widgets
   }     // end namespace qt
 }       // end namespace te

@@ -35,3 +35,8 @@ te::qt::widgets::ChartWidget::~ChartWidget()
 {
 
 }
+
+void te::qt::widgets::ChartWidget::setDataSet(te::da::DataSet* newDataSet)
+{
+  m_dataSet = newDataSet;
+}

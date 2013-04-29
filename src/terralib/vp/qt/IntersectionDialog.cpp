@@ -46,6 +46,8 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
 // add controls
   m_ui->setupUi(this);
 
+  //m_ui->m_layerTreeView->header()->setStretchLastSection(false);
+
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-intersection-hint").pixmap(48,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 

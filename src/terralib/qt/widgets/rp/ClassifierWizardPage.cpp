@@ -45,8 +45,8 @@
 te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::ClassifierWizardPageForm),
-    m_layer(0),
-    m_countSamples(0)
+    m_countSamples(0),
+    m_layer(0)
 {
 // setup controls
   m_ui->setupUi(this);

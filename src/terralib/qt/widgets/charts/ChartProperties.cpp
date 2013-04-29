@@ -31,10 +31,11 @@
 #include "ChartStyleFrameFactory.h"
 #include "ChartProperties.h"
 
-te::qt::widgets::ChartProperties::ChartProperties(QWidget* parent)
+te::qt::widgets::ChartProperties::ChartProperties(te::da::DataSet* dataSet, QWidget* parent)
   : QDialog(parent),
     m_ui(new Ui::ChartPropertiesDialogForm),
-    m_curComp(0)
+    m_curComp(0),
+    m_dataSet(dataSet)
 {
   m_ui->setupUi(this);
 
@@ -61,7 +62,9 @@ te::qt::widgets::ChartProperties::ChartProperties(QWidget* parent)
   m_ui->m_tabWidget->clear();
   m_curComp = te::qt::widgets::ChartWidgetFactory::make("Chart Style", m_ui->m_tabWidget);
   m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString("Chart Style"));
-  connect(m_ui->m_componentsListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(on_itemClicked(QListWidgetItem*)));
+
+  connect(m_ui->m_componentsListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
+  connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyButtonClicked()));
 }
 
 te::qt::widgets::ChartProperties::~ChartProperties()
@@ -69,12 +72,18 @@ te::qt::widgets::ChartProperties::~ChartProperties()
   delete m_curComp;
 }
 
-void te::qt::widgets::ChartProperties::on_itemClicked(QListWidgetItem * current) 
+void te::qt::widgets::ChartProperties::onItemClicked(QListWidgetItem * current) 
 {
   std::string value = current->text().toStdString();
   delete m_curComp;
   m_curComp = te::qt::widgets::ChartWidgetFactory::make(value, m_ui->m_tabWidget);
   m_ui->m_tabWidget->clear();
   m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString(value));
+  m_curComp->setDataSet(m_dataSet);
   m_curComp->show();
+}
+
+void te::qt::widgets::ChartProperties::onApplyButtonClicked() 
+{
+  this->close();
 }

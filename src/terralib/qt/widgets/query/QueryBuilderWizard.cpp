@@ -358,9 +358,6 @@ bool te::qt::widgets::QueryBuilderWizard::checkGroupByPage()
 
 bool te::qt::widgets::QueryBuilderWizard::checkOrderByPage()
 {
-  int numRows = m_ui->m_orderTableWidget->rowCount();
-
-
   return buildQuery();
 }
 
@@ -374,11 +371,6 @@ void te::qt::widgets::QueryBuilderWizard::onDataSourceComboBoxActivated(const QS
   std::string dataSourceName = value.toStdString();
 
   te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().find(dataSourceName);
-
-  if(ds.get())
-  {
-    const te::da::SQLDialect* dialect = ds->getDialect();
-  }
 }
 
 void te::qt::widgets::QueryBuilderWizard::onDataSetComboBoxActivated(const QString& value)

@@ -36,17 +36,21 @@ te::qt::widgets::HistogramFrame::HistogramFrame(QWidget* parent)
   m_ui->setupUi(this);
   m_label = "Histogram";
 
-  //te::qt::widgets::HistogramDataWidget* dataWidget = new te::qt::widgets::HistogramDataWidget();
-  //te::qt::widgets::HistogramStyleWidget* styleWidget = new te::qt::widgets::HistogramStyleWidget();
 
-  QGridLayout* dataLayout = new QGridLayout(m_ui->m_histogramDataFrame);
-  //dataLayout->addWidget(dataWidget);
+  te::qt::widgets::HistogramStyleWidget* styleWidget = new te::qt::widgets::HistogramStyleWidget();
 
   QGridLayout* styleLayout = new QGridLayout(m_ui->m_histogramStyleFrame);
-  //styleLayout->addWidget(styleWidget);
+  styleLayout->addWidget(styleWidget);
 }
 
 te::qt::widgets::HistogramFrame::~HistogramFrame()
 {
 
+}
+
+void te::qt::widgets::HistogramFrame::setDataSet(te::da::DataSet* dataSet)
+{
+  te::qt::widgets::HistogramDataWidget* dataWidget = new te::qt::widgets::HistogramDataWidget(dataSet);
+  QGridLayout* dataLayout = new QGridLayout(m_ui->m_histogramDataFrame);
+  dataLayout->addWidget(dataWidget);
 }

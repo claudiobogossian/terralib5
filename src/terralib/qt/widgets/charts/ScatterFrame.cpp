@@ -35,11 +35,7 @@ te::qt::widgets::ScatterFrame::ScatterFrame(QWidget* parent)
   m_ui->setupUi(this);
   m_label = "Scatter";
 
-//  te::qt::widgets::ScatterDataWidget* dataWidget = new te::qt::widgets::ScatterDataWidget();
   te::qt::widgets::ScatterStyleWidget* styleWidget = new te::qt::widgets::ScatterStyleWidget();
-
-  QGridLayout* dataLayout = new QGridLayout(m_ui->m_scatterDataFrame);
-  //dataLayout->addWidget(dataWidget);
 
   QGridLayout* styleLayout = new QGridLayout(m_ui->m_scatterStyleFrame);
   styleLayout->addWidget(styleWidget);
@@ -51,12 +47,9 @@ te::qt::widgets::ScatterFrame::~ScatterFrame()
 
 }
 
-te::da::DataSet* te::qt::widgets::ScatterFrame::getDataSet()
+void te::qt::widgets::ScatterFrame::setDataSet(te::da::DataSet* dataSet)
 {
-  return m_dataSet;
-}
-
-void te::qt::widgets::ScatterFrame::setDataSet(te::da::DataSet* newDataSet)
-{
- m_dataSet = newDataSet;
+  te::qt::widgets::ScatterDataWidget* dataWidget = new te::qt::widgets::ScatterDataWidget(dataSet);
+  QGridLayout* dataLayout = new QGridLayout(m_ui->m_scatterDataFrame);
+  dataLayout->addWidget(dataWidget);
 }

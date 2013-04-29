@@ -29,9 +29,9 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Exception.h"
 #include "AggregationDialog.h"
+#include "LayerTreeModel.h"
 #include "ui_AggregationDialogForm.h"
 #include "VectorProcessingConfig.h"
-
 
 // Qt
 #include <QtGui/QTreeWidget>
@@ -48,6 +48,8 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
 
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-aggregation-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+
+  connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilterLineEditTextChanged(const QString&)));
 }
 
 te::vp::AggregationDialog::~AggregationDialog()
@@ -57,6 +59,10 @@ te::vp::AggregationDialog::~AggregationDialog()
 void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
+  
+  LayerTreeModel* model = new LayerTreeModel(m_layers);
+
+  m_ui->m_layerTreeView->setModel(model);
 }
 
 void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)

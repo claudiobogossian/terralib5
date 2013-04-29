@@ -63,7 +63,6 @@ void te::qt::widgets::ChartDisplay::setStyle(te::qt::widgets::ChartStyle* newSty
 
 void  te::qt::widgets::ChartDisplay::adjustDisplay()
 {
-
   if(m_chartStyle)
   {
     setTitle(m_chartStyle->getTitle());

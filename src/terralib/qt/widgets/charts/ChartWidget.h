@@ -34,6 +34,13 @@
 
 namespace te
 {
+
+  namespace da
+  {
+    //forward declarations
+    class DataSet;
+  }
+
   namespace qt
   {
     namespace widgets
@@ -51,9 +58,12 @@ namespace te
 
           ~ChartWidget();
 
+          virtual void setDataSet(te::da::DataSet* newDataSet);
+
         public:
 
-          std::string m_label;
+          std::string       m_label;     //!< The chart's Label.
+          te::da::DataSet*  m_dataSet;   //!< The dataset used to generate the displayed chart.
 
       };
     }   // end namespace widgets

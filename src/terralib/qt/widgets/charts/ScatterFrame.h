@@ -36,12 +36,6 @@ namespace Ui { class ScatterFrameWidgetForm; }
 
 namespace te
 {
-  namespace da
-  {
-    //forward declarations
-    class DataSet;
-  }
-
   namespace qt
   {
     namespace widgets
@@ -61,15 +55,11 @@ namespace te
 
           ~ScatterFrame();
 
-          te::da::DataSet* getDataSet();
-
           void setDataSet(te::da::DataSet* newDataSet);
 
         private:
 
           std::auto_ptr<Ui::ScatterFrameWidgetForm>  m_ui;        //!< The widgetv form.
-          te::da::DataSet*                           m_dataSet;   //!< The dataset that will be configured.
-
       };
 
     }   // end namespace widgets

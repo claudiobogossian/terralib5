@@ -39,6 +39,13 @@ namespace Ui { class ChartPropertiesDialogForm; }
 
 namespace te
 {
+
+  namespace da
+  {
+    //forward declarations
+    class DataSet;
+  }
+
   namespace qt
   {
     namespace widgets
@@ -55,19 +62,20 @@ namespace te
 
         public:
 
-          ChartProperties(QWidget* parent = 0);
+          ChartProperties(te::da::DataSet* dataSet, QWidget* parent = 0);
 
           ~ChartProperties();
 
           public slots:
 
-            void on_itemClicked(QListWidgetItem * current);
+            void onItemClicked(QListWidgetItem * current);
+            void onApplyButtonClicked();
 
         private:
 
           std::auto_ptr<Ui::ChartPropertiesDialogForm> m_ui;
-
           ChartWidget* m_curComp;
+          te::da::DataSet*   m_dataSet; 
 
       };
 
