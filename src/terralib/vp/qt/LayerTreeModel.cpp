@@ -34,8 +34,9 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QStringList>
 
-te::vp::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject * parent)
-  : QAbstractItemModel(parent)
+te::vp::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, bool singleSelection, QObject * parent)
+  : QAbstractItemModel(parent),
+    m_singleSelection(singleSelection)
 {
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
   {
@@ -237,6 +238,18 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
       {
         emit dataChanged(ascendentIndex, ascendentIndex);
         ascendentIndex = parent(ascendentIndex);
+      }
+    }
+
+    if(m_singleSelection)
+    {
+      for(size_t i = 0; i < m_items.size(); i++)
+      {
+        if(m_items[i] == item)
+          continue;
+
+        LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
+        litem->isSelected(false);
       }
     }
   }

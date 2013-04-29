@@ -67,6 +67,8 @@ namespace te
 
         te::dt::Property* getProperty() const;
 
+        void setSelected(bool selected);
+
       private:
 
         te::dt::Property* m_property;

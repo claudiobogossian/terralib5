@@ -53,7 +53,7 @@ namespace te
           \param layers The layers which will be associated to the model indexes.
           \param parent The parent object.
           */
-        LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject * parent = 0);
+        LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, bool singleSelection = false, QObject * parent = 0);
 
         /*! Destructor */
         ~LayerTreeModel();
@@ -161,6 +161,7 @@ namespace te
       private:
 
         std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;
+        bool m_singleSelection;
     };
   }   // end namespace vp
 }     // end namespace te
