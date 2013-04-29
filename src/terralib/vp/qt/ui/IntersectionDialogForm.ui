@@ -290,5 +290,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_cancelPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>IntersectionDialogForm</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>592</x>
+     <y>518</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>269</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
