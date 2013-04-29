@@ -240,7 +240,7 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
         ascendentIndex = parent(ascendentIndex);
       }
     }
-
+// if the vector processing uses only one input layer
     if(m_singleSelection)
     {
       for(size_t i = 0; i < m_items.size(); i++)
@@ -253,6 +253,11 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
       }
     }
   }
+
+// after all changes is necessary to emit the dataChenged signal to refresh the checkboxes.
+  QModelIndex start_ix = createIndex( 0, 0 );
+  QModelIndex end_ix = createIndex( 0, 1 );
+  emit( dataChanged( start_ix, end_ix ) );
 
   return retval;
 }

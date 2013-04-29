@@ -171,7 +171,7 @@ bool te::vp::LayerItem::setData(int column, const QVariant& value, int role)
   {
     bool ok = false;
     Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt(&ok));
-
+    
     if(!ok)
       return false;
 
@@ -197,7 +197,7 @@ bool te::vp::LayerItem::setData(int column, const QVariant& value, int role)
     }
     return true;
   }
-
+  
   return false;
 }
 
