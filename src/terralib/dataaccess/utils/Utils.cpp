@@ -320,27 +320,23 @@ te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId, con
   return datasource;
 }
 
-te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::da::DataSetType* type)
+void te::da::GetOIDPropertyNames(const te::da::DataSetType* type, std::vector<std::string>& pnames)
 {
-  assert(dataset);
   assert(type);
 
-  // A vector with the property names that will be used to generate the unique ids
-  std::vector<std::string> oidprops;
-
-  // Try to use the primary key properties
+  // Looking for the primary key properties
   PrimaryKey* pk = type->getPrimaryKey();
   if(pk != 0)
   {
     const std::vector<te::dt::Property*>& pkProperties = pk->getProperties();
 
     for(std::size_t i = 0; i < pkProperties.size(); ++i)
-      oidprops.push_back(pkProperties[i]->getName());
+      pnames.push_back(pkProperties[i]->getName());
 
-    return te::da::GenerateOIDSet(dataset, oidprops);
+    return;
   }
 
-  // Try to use the unique key properties
+  // Looking for the unique key properties
   if(type->getNumberOfUniqueKeys() > 0)
   {
     for(std::size_t i = 0; i < type->getNumberOfUniqueKeys(); ++i)
@@ -350,13 +346,13 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::
       const std::vector<te::dt::Property*>& ukProperties = uk->getProperties();
 
       for(std::size_t j = 0; j < ukProperties.size(); ++j)
-        oidprops.push_back(ukProperties[j]->getName());
+        pnames.push_back(ukProperties[j]->getName());
     }
-    
-    return te::da::GenerateOIDSet(dataset, oidprops);
+
+    return;
   }
   
-  // Here, the data set do not have primary key properties or unique key properties.
+  // Here, the data set type do not have primary key properties or unique key properties.
   // So, use all the non geometric properties.
   const std::vector<te::dt::Property*>& props = type->getProperties();
   for(std::size_t i = 0; i < props.size(); ++i)
@@ -364,8 +360,28 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::
     if(props[i]->getType() == te::dt::GEOMETRY_TYPE || props[i]->getType() == te::dt::RASTER_TYPE)
       continue;
 
-    oidprops.push_back(props[i]->getName());
+    pnames.push_back(props[i]->getName());
   }
+}
+
+void te::da::GetOIDPropertyPos(const te::da::DataSetType* type, std::vector<std::size_t>& ppos)
+{
+  assert(type);
+
+  std::vector<std::string> oidprops;
+  GetOIDPropertyNames(type, oidprops);
+
+  for(std::size_t i = 0; i < oidprops.size(); ++i)
+    ppos.push_back(type->getPropertyPosition(oidprops[i]));
+}
+
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const te::da::DataSetType* type)
+{
+  assert(dataset);
+  assert(type);
+
+  std::vector<std::string> oidprops;
+  GetOIDPropertyNames(type, oidprops);
 
   return te::da::GenerateOIDSet(dataset, oidprops);
 }
@@ -382,7 +398,7 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std:
     std::size_t pos = GetPropertyPos(dataset, names[i]);
     assert(pos != std::string::npos);
 
-    oids->addProperty(names[i], dataset->getPropertyDataType(pos));
+    oids->addProperty(names[i], pos, dataset->getPropertyDataType(pos));
   }
 
   while(dataset->moveNext())
