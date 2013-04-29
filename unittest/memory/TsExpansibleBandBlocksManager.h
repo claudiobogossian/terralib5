@@ -42,7 +42,7 @@ class TsExpansibleBandBlocksManager : public CPPUNIT_NS::TestFixture
   
   CPPUNIT_TEST( ReadWriteTest );
   
-  CPPUNIT_TEST( addTopBlocksTest );
+  CPPUNIT_TEST( addBlocksTest );
   
   CPPUNIT_TEST_SUITE_END();
 
@@ -58,7 +58,7 @@ class TsExpansibleBandBlocksManager : public CPPUNIT_NS::TestFixture
       {
         const unsigned int numberOfBlocksX = manager.getNumberOfBlocksX( bandIdx );
         const unsigned int numberOfBlocksY = manager.getNumberOfBlocksY( bandIdx );
-        const unsigned int blocksSizesBytes = manager.getBlocksSizesBytes( bandIdx );
+        const unsigned int blocksSizesBytes = manager.getBlockSizeBytes();
         const unsigned int elementsNumber = blocksSizesBytes / 
           ((unsigned int)sizeof( DataType ));
           
@@ -87,7 +87,7 @@ class TsExpansibleBandBlocksManager : public CPPUNIT_NS::TestFixture
       {
         const unsigned int numberOfBlocksX = manager.getNumberOfBlocksX( bandIdx );
         const unsigned int numberOfBlocksY = manager.getNumberOfBlocksY( bandIdx );
-        const unsigned int blocksSizesBytes = manager.getBlocksSizesBytes( bandIdx );
+        const unsigned int blocksSizesBytes = manager.getBlockSizeBytes();
         const unsigned int elementsNumber = blocksSizesBytes / 
           ((unsigned int)sizeof( DataType ));
           
@@ -108,7 +108,7 @@ class TsExpansibleBandBlocksManager : public CPPUNIT_NS::TestFixture
     
     void ReadWriteTest();
     
-    void addTopBlocksTest();
+    void addBlocksTest();
 };
 
 #endif  // __TERRALIB_UNITTEST_MEMORY_EXPANSIBLEBANDBLOCKSMANAGER_INTERNAL_H
