@@ -27,6 +27,7 @@
 #define __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
 
 // TerraLib
+#include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
 
@@ -64,28 +65,45 @@ namespace te
         */
         enum MemoryUse
         {
-          WHOLE_MEM = 0,
-          PARTIALLY_MEM = 1,
-          LOW_MEM = 2
+          WHOLE_MEM = 0,    //!< Whole memory use.
+          PARTIALLY_MEM = 1,//!< Partially memory use.
+          LOW_MEM = 2       //!< Low memory use.
         };      
 
         IntersectionDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
         ~IntersectionDialog();
 
+        /*!
+          \brief Set the layer that can be used
+
+          \param layers   List of AbstractLayerPtr
+        */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
+        /*!
+          \brief Set the selected layers
+
+          \param selectedLayers Vector of selected layers string name
+        */
         void setSelectedLayers(std::vector<std::string> selectedLayers);
 
-        int getMemoryUse();
+        /*!
+          \brief Get the type of memory use based on a enum.
 
-        std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> getSeleted();
+          \return MemoryUse enum.
+        */
+        int getMemoryUse();
 
       private:
 
         //void filter(const QList<QTreeWidgetItem*>& itens);
 
       protected slots:
+
+        void onTargetDatasourceToolButtonPressed();
+
+        void onTargetFileToolButtonPressed();
 
         void onLayerTreeViewClicked(QTreeWidgetItem * item, int column);
 
@@ -94,9 +112,10 @@ namespace te
       private:
 
         std::auto_ptr<Ui::IntersectionDialogForm> m_ui;
-        std::list<te::map::AbstractLayerPtr> m_layers;
-        std::vector<std::string> m_selectedLayers;
-        LayerTreeModel* m_model;
+        te::da::DataSourceInfoPtr m_outputDatasource;
+        std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of layers.
+        std::vector<std::string> m_selectedLayers;      //!< Selected layers list.
+        LayerTreeModel* m_model;                        //!< Layer Tree Model.
     };
   }   // end namespace vp
 }     // end namespace te
