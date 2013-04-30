@@ -14,6 +14,8 @@ set(PROJ_NAME "terralib_example_qt_tools")
 project(${PROJ_NAME})         # the project name is terralib_example_qt_tools
 SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_qt_tools
 
+find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+
 #Definitions for Windows compiling
 if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB
@@ -49,6 +51,7 @@ set (DEP_LIBS
 		terralib_symbology
 		terralib_srs
 		terralib_xlink
+    ${Boost_LIBRARIES}
 		${QT_LIBRARIES}
     )  
 

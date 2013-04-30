@@ -36,11 +36,32 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QStringList>
 
+te::qt::widgets::LayerTreeModel::LayerTreeModel(QObject* parent)
+  : QAbstractItemModel(parent),
+    m_checkable(false)
+{
+  setSupportedDragActions(Qt::MoveAction);
+}
+
 te::qt::widgets::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject * parent)
   : QAbstractItemModel(parent),
     m_checkable(false)
 {
   setSupportedDragActions(Qt::MoveAction);
+}
+
+te::qt::widgets::LayerTreeModel::~LayerTreeModel()
+{
+  te::common::FreeContents(m_items);
+}
+
+void te::qt::widgets::LayerTreeModel::set(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  beginResetModel();
+
+  te::common::FreeContents(m_items);
+
+  m_items.clear();
 
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
   {
@@ -49,11 +70,8 @@ te::qt::widgets::LayerTreeModel::LayerTreeModel(const std::list<te::map::Abstrac
     if(litem)
       m_items.push_back(litem);
   }
-}
 
-te::qt::widgets::LayerTreeModel::~LayerTreeModel()
-{
-  te::common::FreeContents(m_items);
+  endResetModel();
 }
 
 bool te::qt::widgets::LayerTreeModel::canFetchMore(const QModelIndex& parent) const
@@ -131,32 +149,24 @@ QModelIndex te::qt::widgets::LayerTreeModel::index(int row, int column, const QM
   if(m_items.empty())
     return QModelIndex();
 
-  if(parent == QModelIndex() && static_cast<std::size_t>(row) >= m_items.size())
-    return QModelIndex();
-
-  AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
-
-  if(parentItem && row >= parentItem->children().count())
-    return QModelIndex();
-
-  if(!parent.isValid()) // is it a top-level item?
+  if(!parent.isValid())
   {
-// yes!
+    if(static_cast<std::size_t>(row) >= m_items.size())
+      return QModelIndex();
+
+// row and column is about a top-level item?
     AbstractLayerTreeItem* item = m_items[row];
 
     return createIndex(row, column, item);
   }
 
-  //AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+  AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
 
   if(parentItem == 0)
     throw Exception(TR_QT_WIDGETS("Invalid data associated to the layer model!"));
 
-  if(parentItem->children().empty())
-    throw Exception(TR_QT_WIDGETS("The layer item in the model must have a child item!"));
-
-  if(row >= parentItem->children().size())
-    throw Exception(TR_QT_WIDGETS("The row for the layer item is out of range!"));
+  if(row >= parentItem->children().count())
+    return QModelIndex();
 
   AbstractLayerTreeItem* item = dynamic_cast<AbstractLayerTreeItem*>(parentItem->children().at(row));
 
@@ -165,11 +175,6 @@ QModelIndex te::qt::widgets::LayerTreeModel::index(int row, int column, const QM
 
   return createIndex(row, column, item);
 }
-
-//bool te::qt::widgets::LayerTreeModel::insertRows(int row, int count, const QModelIndex & parent)
-//{
-//
-//}
 
 QMimeData* te::qt::widgets::LayerTreeModel::mimeData(const QModelIndexList& indexes) const
 {
@@ -362,7 +367,6 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
     AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
 
     // First, remove the associated layer associated to the item
-    te::map::AbstractLayer* layer = childItem->getLayer().get();
     te::map::AbstractLayer* parentLayer = static_cast<te::map::AbstractLayer*>(parentItem->getLayer().get());
 
     parentLayer->remove(row);
@@ -457,7 +461,7 @@ bool te::qt::widgets::LayerTreeModel::setData(const QModelIndex& index, const QV
   if(item == 0)
     return false;
 
-  bool retval = item->setData(value, role);
+  bool retval = item->setData(index.column(), value, role);
 
   emit dataChanged(index, index);
 

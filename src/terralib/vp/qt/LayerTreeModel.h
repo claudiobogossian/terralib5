@@ -53,7 +53,7 @@ namespace te
           \param layers The layers which will be associated to the model indexes.
           \param parent The parent object.
           */
-        LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject * parent = 0);
+        LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, bool singleSelection = false, QObject * parent = 0);
 
         /*! Destructor */
         ~LayerTreeModel();
@@ -156,9 +156,14 @@ namespace te
         */
         bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
+        QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+
+        std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> getSelected();
+
       private:
 
         std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;
+        bool m_singleSelection;
     };
   }   // end namespace vp
 }     // end namespace te

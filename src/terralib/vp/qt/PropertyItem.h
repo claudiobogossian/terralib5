@@ -61,15 +61,20 @@ namespace te
 
         bool hasChildren() const;
 
-        bool setData(const QVariant& value, int role = Qt::EditRole);
+        bool setData(int column, const QVariant& value, int role = Qt::EditRole);
 
         te::map::AbstractLayerPtr getLayer() const;
 
         te::dt::Property* getProperty() const;
 
+        void setSelected(bool selected);
+
+        bool isSelected();
+
       private:
 
         te::dt::Property* m_property;
+        bool m_selected;
     }; 
   }   // end namespace vp
 }     // end namespace te

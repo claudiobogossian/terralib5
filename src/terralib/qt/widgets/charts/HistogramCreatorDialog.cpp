@@ -104,7 +104,6 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
 
   if(m_dataSet->getRaster(rpos))
   {
-    int teste  =  m_ui->m_propertyComboBox->currentIndex();
     m_histogram = te::qt::widgets::createHistogram(m_dataSet, m_ui->m_propertyComboBox->currentIndex());
   }
   else

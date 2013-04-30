@@ -26,7 +26,9 @@
 // TerraLib
 #include "../../../../common/Translator.h"
 #include "../../../../maptools/QueryLayer.h"
+#include "../../../../se/Style.h"
 #include "../../Exception.h"
+#include "LegendItem.h"
 #include "QueryLayerItem.h"
 
 // STL
@@ -79,7 +81,7 @@ QMenu* te::qt::widgets::QueryLayerItem::getMenu(QWidget* /*parent*/) const
 
 bool te::qt::widgets::QueryLayerItem::canFetchMore() const
 {
-  return false;
+  return (m_layer->getStyle() != 0) && (m_layer->getStyle()->getRules().empty() == false) && children().isEmpty();
 }
 
 Qt::ItemFlags te::qt::widgets::QueryLayerItem::flags() const
@@ -89,14 +91,24 @@ Qt::ItemFlags te::qt::widgets::QueryLayerItem::flags() const
 
 void te::qt::widgets::QueryLayerItem::fetchMore()
 {
+  if(!children().isEmpty())
+    return;
+
+  if(m_layer->getStyle())
+  {
+    const std::vector<te::se::Rule*>& rules = m_layer->getStyle()->getRules();
+
+    for(std::size_t i = 0; i != rules.size(); ++i)
+      new LegendItem(rules[i], this);
+  }
 }
 
 bool te::qt::widgets::QueryLayerItem::hasChildren() const
 {
-  return false;
+  return (m_layer->getStyle() != 0) && (m_layer->getStyle()->getRules().empty() == false);
 }
 
-bool te::qt::widgets::QueryLayerItem::setData(const QVariant& value, int role)
+bool te::qt::widgets::QueryLayerItem::setData(int column, const QVariant& value, int role)
 {
   if(role == Qt::CheckStateRole)
   {
@@ -122,8 +134,4 @@ te::map::AbstractLayerPtr te::qt::widgets::QueryLayerItem::getLayer() const
   return m_layer;
 }
 
-//te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::QueryLayerItem::clone(QObject* parent)
-//{
-//  return new QueryLayerItem(m_layer, parent);
-//}
 

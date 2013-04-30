@@ -46,6 +46,34 @@ namespace te
 {
   namespace vp
   {
+    class LayerTreeModel;
+
+    enum
+    {
+      WHOLE_MEM,
+      PARTIALLY_MEM,
+      LOW_MEM
+    };
+
+    enum Operation
+    {
+      MIN_VALUE, /**/
+      MAX_VALUE, /**/
+      MEAN, /**/
+      SUM, /**/
+      COUNT, /**/
+      VALID_COUNT, /**/
+      STANDARD_DEVIATION, /*standard deviation*/
+      KERNEL, /**/
+      VARIANCE, /**/
+      SKEWNESS, /**/
+      KURTOSIS, /**/
+      AMPLITUDE, /*amplitude*/
+      MEDIAN, /**/
+      VAR_COEFF, /**/
+      MODE /*mode*/
+    };
+
     class TEVPEXPORT AggregationDialog : public QDialog
     {
       Q_OBJECT
@@ -60,6 +88,8 @@ namespace te
 
         void setSelectedLayers(std::vector<std::string> selectedLayers);
 
+        void setOperations();
+
       private:
 
       protected slots:
@@ -67,12 +97,19 @@ namespace te
         void onLayerTreeViewClicked(QTreeWidgetItem * item, int column);
 
         void onFilterLineEditTextChanged(const QString& text);
+        
+        void onTreeViewClicked(const QModelIndex& index);
+
+        void onCancelPushButtonClicked();
+
+        void onHelpPushButtonClicked();
 
       private:
 
         std::auto_ptr<Ui::AggregationDialogForm> m_ui;
         std::list<te::map::AbstractLayerPtr> m_layers;
         std::vector<std::string> m_selectedLayers;
+        LayerTreeModel* m_model;
     };
   }   // end namespace vp
 }     // end namespace te

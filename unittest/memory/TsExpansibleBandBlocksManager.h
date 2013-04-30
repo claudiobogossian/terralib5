@@ -29,6 +29,8 @@
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
+#include <terralib/memory/ExpansibleBandBlocksManager.h>
+
 /*!
   \class TsExpansibleBandBlocksManager
 
@@ -40,11 +42,73 @@ class TsExpansibleBandBlocksManager : public CPPUNIT_NS::TestFixture
   
   CPPUNIT_TEST( ReadWriteTest );
   
+  CPPUNIT_TEST( addBlocksTest );
+  
   CPPUNIT_TEST_SUITE_END();
 
   protected :
-
+    
+    template< typename DataType >
+    void FillBlocks( te::mem::ExpansibleBandBlocksManager& manager )
+    {
+      DataType counter = 0;
+      const unsigned int bandsNumber = manager.getNumberOfBands();
+      
+      for( unsigned int bandIdx = 0 ; bandIdx < bandsNumber ; ++bandIdx )
+      {
+        const unsigned int numberOfBlocksX = manager.getNumberOfBlocksX( bandIdx );
+        const unsigned int numberOfBlocksY = manager.getNumberOfBlocksY( bandIdx );
+        const unsigned int blocksSizesBytes = manager.getBlockSizeBytes();
+        const unsigned int elementsNumber = blocksSizesBytes / 
+          ((unsigned int)sizeof( DataType ));
+          
+        for( unsigned int blockX = 0 ; blockX < numberOfBlocksX ; ++blockX )
+          for( unsigned int blockY = 0 ; blockY < numberOfBlocksY ; ++blockY )
+          {
+            DataType* dataPtr = (DataType*)manager.getBlockPointer( bandIdx, blockX, blockY );
+            assert( dataPtr != 0 );
+            
+            for( unsigned int elemIdx = 0 ; elemIdx < elementsNumber ; ++elemIdx )
+            {
+              dataPtr[ elemIdx ] = counter;
+              ++counter;
+            }
+          }
+      }
+    };
+    
+    template< typename DataType >
+    void CheckValues( te::mem::ExpansibleBandBlocksManager& manager )
+    {
+      DataType counter = 0;
+      const unsigned int bandsNumber = manager.getNumberOfBands();
+      
+      for( unsigned int bandIdx = 0 ; bandIdx < bandsNumber ; ++bandIdx )
+      {
+        const unsigned int numberOfBlocksX = manager.getNumberOfBlocksX( bandIdx );
+        const unsigned int numberOfBlocksY = manager.getNumberOfBlocksY( bandIdx );
+        const unsigned int blocksSizesBytes = manager.getBlockSizeBytes();
+        const unsigned int elementsNumber = blocksSizesBytes / 
+          ((unsigned int)sizeof( DataType ));
+          
+        for( unsigned int blockX = 0 ; blockX < numberOfBlocksX ; ++blockX )
+          for( unsigned int blockY = 0 ; blockY < numberOfBlocksY ; ++blockY )
+          {
+            DataType* dataPtr = (DataType*)manager.getBlockPointer( bandIdx, blockX, blockY );
+            assert( dataPtr != 0 );
+            
+            for( unsigned int elemIdx = 0 ; elemIdx < elementsNumber ; ++elemIdx )
+            {
+              CPPUNIT_ASSERT( dataPtr[ elemIdx ] == counter );
+              ++counter;
+            }
+          }
+      }
+    };    
+    
     void ReadWriteTest();
+    
+    void addBlocksTest();
 };
 
 #endif  // __TERRALIB_UNITTEST_MEMORY_EXPANSIBLEBANDBLOCKSMANAGER_INTERNAL_H

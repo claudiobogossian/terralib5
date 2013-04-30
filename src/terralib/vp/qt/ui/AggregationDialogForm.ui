@@ -82,7 +82,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Please, select the input layer and the group attribute(s)</string>
+        <string>Input layer and the group attribute(s)</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,0">
         <property name="spacing">
@@ -161,7 +161,11 @@
          </layout>
         </item>
         <item>
-         <widget class="QListView" name="m_outputListView"/>
+         <widget class="QListWidget" name="m_outputListWidget">
+          <property name="selectionMode">
+           <enum>QAbstractItemView::MultiSelection</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -261,7 +265,7 @@
         <item row="2" column="0">
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>Target Repository:</string>
+           <string>Repository:</string>
           </property>
          </widget>
         </item>
@@ -279,12 +283,12 @@
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QLineEdit" name="lineEdit_2"/>
+         <widget class="QLineEdit" name="m_repositoryLineEdit"/>
         </item>
         <item row="0" column="0">
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>New Layer Name:</string>
+           <string>Layer Name:</string>
           </property>
          </widget>
         </item>

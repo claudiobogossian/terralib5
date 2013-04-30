@@ -34,8 +34,9 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QStringList>
 
-te::vp::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject * parent)
-  : QAbstractItemModel(parent)
+te::vp::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, bool singleSelection, QObject * parent)
+  : QAbstractItemModel(parent),
+    m_singleSelection(singleSelection)
 {
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
   {
@@ -217,15 +218,12 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
   if(!index.isValid())
     return false;
 
-  if(role == Qt::CheckStateRole)
-    return false;
-
   te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(index.internalPointer());
 
   if(item == 0)
     return false;
 
-  bool retval = item->setData(value, role);
+  bool retval = item->setData(index.column(), value, role);
 
   emit dataChanged(index, index);
 
@@ -242,8 +240,62 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
         ascendentIndex = parent(ascendentIndex);
       }
     }
+// if the vector processing uses only one input layer
+    if(m_singleSelection)
+    {
+// Verify if the selectd item is layer or property. If property, the return of "getLayer" is 0.
+      if(item->getLayer() != 0)
+      {
+// Unselect all layers different than "item"
+        for(size_t i = 0; i < m_items.size(); i++)
+        {
+          if(m_items[i] == item)
+            continue;
+
+          LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
+          litem->isSelected(false);
+        }
+      }
+    }
   }
+
+// after all changes is necessary to emit the dataChenged signal to refresh the checkboxes.
+  QModelIndex start_ix = createIndex( 0, 0 );
+  QModelIndex end_ix = createIndex( 0, 1 );
+  emit( dataChanged( start_ix, end_ix ) );
 
   return retval;
 }
 
+QVariant te::vp::LayerTreeModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+  if(role == Qt::DisplayRole)
+  {
+    if(orientation == Qt::Horizontal)
+    {
+      if(section == 0)
+        return QVariant(TR_VP("Layers"));
+      else if(section == 1)
+        return QVariant(TR_VP("Only Selected"));
+    }
+  }
+
+  return QAbstractItemModel::headerData(section, orientation, role);
+}
+
+std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> te::vp::LayerTreeModel::getSelected()
+{
+  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> selected;
+
+  for(size_t i = 0; i < m_items.size(); i++)
+  {
+    LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
+
+    if(litem->isSelected())
+    {
+      selected[litem->getLayer()] = litem->getSelected();
+    }
+  }
+
+  return selected;
+}

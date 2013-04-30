@@ -58,12 +58,19 @@ namespace te
 
         bool hasChildren() const;
 
-        bool setData(const QVariant& value, int role = Qt::EditRole);
+        bool setData(int column, const QVariant& value, int role = Qt::EditRole);
 
         te::map::AbstractLayerPtr getLayer() const;
 
+        void isSelected(bool selected);
+
+        bool isSelected();
+
+        std::vector<te::dt::Property*> getSelected();
+
       private:
 
+        std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;
         te::map::AbstractLayerPtr m_layer;
         bool m_selected;
         bool m_onlySelecteds;

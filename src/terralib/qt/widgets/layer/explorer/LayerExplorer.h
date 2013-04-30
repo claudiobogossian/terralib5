@@ -66,7 +66,7 @@ namespace te
 
           LayerTreeModel* getTreeModel() const;
 
-          void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
+          void set(const std::list<te::map::AbstractLayerPtr>& layers);
 
         public slots:
 

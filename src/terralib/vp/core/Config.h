@@ -31,8 +31,6 @@
 
 #define TE_VP_MODULE_NAME "te.vp"
 
-#define TE_VP_DEFAULT_TREEVIEW_IDENTATION 10
-
 /** @name Internationalization Defines
  *  Flags for TerraLib code internationalization.
  */

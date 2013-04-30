@@ -31,10 +31,11 @@
 #include "../raster/Raster.h"
 
 #include <boost/shared_ptr.hpp>
-#include <boost/multi_array.hpp>
+#include <boost/shared_array.hpp>
 #include <boost/noncopyable.hpp>
 
 #include <vector>
+#include <list>
 
 #include <cstdio>
 
@@ -50,6 +51,30 @@ namespace te
     class TEMEMORYEXPORT ExpansibleBandBlocksManager : private boost::noncopyable
     {
       public:
+        
+        /*!
+        \brief 3D Block index.
+        */         
+        class TEMEMORYEXPORT BlockIndex3D
+        {
+          public :
+            
+            typedef unsigned int CoordDataType; //!< Coords data type.
+            
+            CoordDataType m_dim0Index; //!< Block Z (band) index.
+            
+            CoordDataType m_dim1Index; //!< Block Y index.
+            
+            CoordDataType m_dim2Index; //!< Block X index.
+            
+            BlockIndex3D() : m_dim0Index( 0 ), m_dim1Index( 0 ), m_dim2Index( 0 ) {};
+            
+            BlockIndex3D( const CoordDataType& dim0Index, const CoordDataType& dim1Index,
+              const CoordDataType& dim2Index ) : m_dim0Index( dim0Index ), 
+              m_dim1Index( dim1Index ), m_dim2Index( dim2Index ) {};
+            
+            ~BlockIndex3D() {};
+        };         
 
         ExpansibleBandBlocksManager();
 
@@ -85,6 +110,53 @@ namespace te
         {
           return m_isInitialized;
         };
+        
+        /*!
+          \brief Returns the number of blocks along the X directon for the required band.
+          
+          \param band The required band.
+          
+          \return Returns the number of blocks along the X directon for the required band.
+        */         
+        inline unsigned int getNumberOfBlocksX( 
+          const unsigned int band ) const
+        {
+          assert( m_ramBlocksPointers.size() > band );
+          assert( m_ramBlocksPointers[ band ].size() > 0 );
+          return (unsigned int)m_ramBlocksPointers[ band ][ 0 ].size();
+        };
+        
+        /*!
+          \brief Returns the number of blocks along the Y directon for the required band.
+          
+          \param band The required band.
+          
+          \return Returns the number of blocks along the Y directon for the required band.
+        */         
+        inline unsigned int getNumberOfBlocksY( 
+          const unsigned int band ) const
+        {
+          assert( m_ramBlocksPointers.size() > band );
+          return (unsigned int)m_ramBlocksPointers[ band ].size();
+        };
+        
+        /*!
+          \brief Returns the number of bands.
+          \return Returns the number of bands.
+        */         
+        inline unsigned int getNumberOfBands() const
+        {
+          return (unsigned int)m_ramBlocksPointers.size();
+        };         
+        
+        /*!
+          \brief Returns the internal size( bytes ) used for all internal blocks.
+          \return Returns the internal size( bytes ) used for all internal blocks
+        */ 
+        inline unsigned long int getBlockSizeBytes()
+        {
+          return m_maxBlockSizeBytes;
+        };
 
         /*!
           \note Free all allocated internal resources and go back to the initial state.
@@ -110,48 +182,88 @@ namespace te
           return m_maxNumberRAMBlocks;
         };
         
+        /*!
+          \brief New blocks will be added at the top of the raster.
+          
+          \param expansionSize The expansion size over the Y direction.
+          
+          \param band The band where the operation will be performed.
+          
+          \param addedBlocksCoords The added blocks coords.
+          
+          \return true if OK, false on errors.
+        */        
+        bool addTopBlocks( const unsigned int& expansionSize, const unsigned int& band,
+          std::vector< BlockIndex3D >& addedBlocksCoords );
+        
+        /*!
+          \brief New blocks will be added at the bottom of the raster.
+          
+          \param expansionSize The expansion size over the Y direction.
+          
+          \param band The band where the operation will be performed.
+          
+          \param addedBlocksCoords The added blocks coords.
+          
+          \return true if OK, false on errors.
+        */         
+        bool addBottomBlocks( const unsigned int& expansionSize, const unsigned int& band,
+          std::vector< BlockIndex3D >& addedBlocksCoords );
+        
+        /*!
+          \brief New blocks will be added at the left of the raster.
+          
+          \param expansionSize The expansion size over the X direction.
+          
+          \param band The band where the operation will be performed.
+          
+          \param addedBlocksCoords The added blocks coords.
+          
+          \return true if OK, false on errors.
+        */        
+        bool addLeftBlocks( const unsigned int& expansionSize, const unsigned int& band,
+          std::vector< BlockIndex3D >& addedBlocksCoords );        
+        
+        /*!
+          \brief New blocks will be added at the right of the raster.
+          
+          \param expansionSize The expansion size over the X direction.
+          
+          \param band The band where the operation will be performed.
+          
+          \param addedBlocksCoords The added blocks coords.
+          
+          \return true if OK, false on errors.
+        */        
+        bool addRightBlocks( const unsigned int& expansionSize, const unsigned int& band,
+          std::vector< BlockIndex3D >& addedBlocksCoords );        
+        
+        /*!
+          \brief New bands will be added at the top of the raster (before the first band).
+          
+          \param expansionSize The number of bands to add.
+          
+          \param addedBlocksCoords The added blocks coords.
+          
+          \return true if OK, false on errors.
+        */        
+        bool addTopBands( const unsigned int& expansionSize,
+          std::vector< BlockIndex3D >& addedBlocksCoords );
+        
+        /*!
+          \brief New bands will be added at the bottom of the raster (after de the last band).
+          
+          \param expansionSize The number of bands to add.
+          
+          \param addedBlocksCoords The added blocks coords.
+          
+          \return true if OK, false on errors.
+        */         
+        bool addBottomBands( const unsigned int& expansionSize,
+          std::vector< BlockIndex3D >& addedBlocksCoords );        
+        
       protected :
         
-        
-        /*!
-        \brief Block index.
-        */         
-        class BlockIndex
-        {
-          public :
-            
-            unsigned int m_bIndex; //!< Block band index.
-            
-            unsigned int m_xIndex; //!< Block X index.
-            
-            unsigned int m_yIndex; //!< Block Y index.
-            
-            BlockIndex() : m_bIndex( 0 ), m_xIndex( 0 ), m_yIndex( 0 ) {};
-            
-            BlockIndex( const unsigned int& bIndex, const unsigned int& xIndex,
-              const unsigned int& yIndex ) : m_bIndex( bIndex ), m_xIndex( xIndex ), 
-              m_yIndex( yIndex ) {};
-            
-            ~BlockIndex() {};
-        };        
-        
-        /*!
-        \brief RAM block handler.
-        */         
-        class RAMBlockHandler : private boost::noncopyable
-        {
-          public :
-            
-            unsigned char* m_dataPtr; //!< Block data pointer.
-            
-            RAMBlockHandler() : m_dataPtr( 0 ) {};
-            
-            ~RAMBlockHandler()
-            {
-              if( m_dataPtr ) delete[] ( m_dataPtr );
-            };
-        };        
-      
         /*!
         \brief Disk block info.
         */         
@@ -183,7 +295,27 @@ namespace te
                 fclose( m_filePtr );
               }
             };
-        };   
+        };        
+        
+        typedef unsigned char BlockElementT; //!< Block element type.
+        
+        typedef BlockElementT* BlockelementPtrT; //!< Block element pointer type.
+        
+        typedef boost::shared_array< BlockElementT > RAMBlockHandlerT; //!< RAM Block handler type;  
+        
+        typedef std::vector< std::vector< std::vector< BlockelementPtrT > > > RAMBlocksPointersContainerT; //!< RAM blocks pointers container type.
+        
+        typedef std::list< RAMBlockHandlerT > RAMBlocksHandlerT; //!< Blocks handler type;
+        
+        typedef std::vector< std::vector< std::vector< DiskBlockInfo > > > ActiveDiskBlocksInfoT; //!< Active disk blocks info type;
+        
+        typedef std::list< DiskBlockInfo > InactiveDiskBlocksInfoT; //!< Inactive disk blocks info type.
+        
+        typedef boost::shared_ptr< OpenDiskFileHandler > OpenDiskFileHandlerPtrT; //!< Open disk file pointer type.
+        
+        typedef std::list< OpenDiskFileHandlerPtrT > OpenDiskFilesHandlerT; //!< Open dis files handler type.
+        
+        typedef std::vector< BlockIndex3D > SwapFifoT; //!< Swap fifo type.
         
         bool m_isInitialized; //!< Is this instance initialized ?
         
@@ -193,29 +325,21 @@ namespace te
         
         unsigned long int m_maxBlockSizeBytes; //!< The maximum global used block size in bytes.
         
-        std::vector< boost::shared_ptr< RAMBlockHandler > >::size_type m_nextFIFOPositionOverSwapFifo; //!< The next position where a block swap will occur over m_swapFifo;
-        
         unsigned char* m_currSwapBlockPtr; //!< A pointer to the current block where disk data swap will be done.
         
-        std::vector< unsigned int> m_numbersOfBlocksX; //!< The number of blocks along the X directon (for each band).
+        SwapFifoT::size_type m_nextFIFOPositionOverSwapFifo; //!< The next position where a block swap will occur over m_swapFifo;
         
-        std::vector< unsigned int> m_numbersOfBlocksY; //!< The number of blocks along the Y directon (for each band).
+        RAMBlocksHandlerT m_activeRAMBlocksHandler; //!< The active RAM blocks handler.
         
-        std::vector< unsigned int> m_blocksSizesBytes; //!<  The blocks sizes in bytes (for each band).
+        RAMBlocksPointersContainerT m_ramBlocksPointers; //!< 3D Matrix of active RAM blocks pointers indexed in the form [band][blockYIndex][blockXIndex].
         
-        boost::multi_array< unsigned char*, 3 > m_blocksPointers; //!< 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
+        SwapFifoT m_swapFifo; //!< Disk swapping FIFO.
         
-        std::vector< BlockIndex > m_swapFifo; //!< Disk swapping FIFO.
+        ActiveDiskBlocksInfoT m_activeDiskBlocksInfo; //!< 3D Matrix of active disk block info indexed as [band][blockYIndex][blockXIndex].
         
-        std::vector< boost::shared_ptr< RAMBlockHandler > > m_activeRamBlocksHandler; //!< The active RAM blocks handler;
+        OpenDiskFilesHandlerT m_diskFilesHandler; //!< The disk files handler;
         
-        std::vector< boost::shared_ptr< RAMBlockHandler > > m_inactiveRamBlocksHandler; //!< The inative RAM blocks handler;
-        
-        boost::multi_array< DiskBlockInfo, 3 > m_diskBlocksInfo; //!< 3D Matrix of disk block info indexed as [band][blockYIndex][blockXIndex].
-        
-        std::vector< boost::shared_ptr< OpenDiskFileHandler > > m_diskFilesHandler; //!< The disk files handler;
-        
-        RAMBlockHandler m_swapBlockHandler; //!< An extra block for disk swap purposes.
+        RAMBlockHandlerT m_swapBlockHandler; //!< An extra block for disk swap purposes.
         
         /*!
           \brief Initialize this instance to an initial state.
@@ -235,7 +359,17 @@ namespace te
         */
         bool allocateDiskBlocks( const unsigned int blocksNumber,
           std::vector< DiskBlockInfo >& diskBlocksInfos,                       
-          std::vector< boost::shared_ptr< OpenDiskFileHandler > >& diskFilesHandler );
+          OpenDiskFilesHandlerT& diskFilesHandler ) const;
+          
+        /*!
+          \brief Allocate and activate disk blocks.
+          
+          \param blocksIndxes The blocks indexes inside the internal 3D indexing matrices.
+          
+          \return true if OK. false on errors.
+        */
+        bool allocateAndActivateDiskBlocks( 
+          const std::vector< BlockIndex3D >& blocksIndxes );          
           
         /*!
           \brief Create a new disk file.
@@ -248,15 +382,85 @@ namespace te
         */
         bool createNewDiskFile( unsigned long int size, FILE** fileptr ) const;         
         
+        /*!
+          \brief Shift coords given a fixed dimention 0 index.
+          
+          \param inputContainer The input coords container.
+          
+          \param dim0index The dimension 0 fixed index.
+          
+          \param dim1Shift The shift to be done over the dimension 1.
+          
+          \param dim2Shift The shift to be done over the dimension 2.
+        */         
+        template< typename ContainerType >
+        void shiftDim03DCoords( 
+          ContainerType& inputContainer,
+          const unsigned int dim0index, const int dim1Shift, const int dim2Shift ) const
+        {
+          typename ContainerType::iterator it = inputContainer.begin();
+          const typename ContainerType::iterator itE = inputContainer.end();
+          BlockIndex3D newCoords;
+          
+          while( it != itE )
+          {
+            if( it->m_dim0Index == dim0index )
+            {
+              assert( ( dim1Shift < 0 ) ? ( ((int)it->m_dim1Index) > dim1Shift ) : true );
+              it->m_dim1Index = (BlockIndex3D::CoordDataType)
+                ( ((int)it->m_dim1Index) + dim1Shift );
+
+              assert( ( dim2Shift < 0 ) ? ( ((int)it->m_dim2Index) > dim2Shift ) : true );
+              it->m_dim2Index = (BlockIndex3D::CoordDataType)
+                ( ((int)it->m_dim2Index) + dim2Shift );
+            }
+            
+            ++it;
+          }
+        };
+        
+        /*!
+          \brief Shift 3D coords.
+          
+          \param inputContainer The input coords container.
+          
+          \param dim0Shift The shift to be done over the dimension 0.
+          
+          \param dim1Shift The shift to be done over the dimension 1.
+          
+          \param dim2Shift The shift to be done over the dimension 2.
+        */         
+        template< typename ContainerType >
+        void shift3DCoords( 
+          ContainerType& inputContainer,
+          const int& dim0Shift, const int& dim1Shift, const int& dim2Shift ) const
+        {
+          typename ContainerType::iterator it = inputContainer.begin();
+          const typename ContainerType::iterator itE = inputContainer.end();
+          BlockIndex3D newCoords;
+          
+          while( it != itE )
+          {
+            assert( ( dim0Shift < 0 ) ? ( ((int)it->m_dim0Index) > dim0Shift ) : true );
+            it->m_dim0Index = (BlockIndex3D::CoordDataType)
+              ( ((int)it->m_dim0Index) + dim0Shift );
+            
+            assert( ( dim1Shift < 0 ) ? ( ((int)it->m_dim1Index) > dim1Shift ) : true );
+            it->m_dim1Index = (BlockIndex3D::CoordDataType)
+              ( ((int)it->m_dim1Index) + dim1Shift );
+
+            assert( ( dim2Shift < 0 ) ? ( ((int)it->m_dim2Index) > dim2Shift ) : true );
+            it->m_dim2Index = (BlockIndex3D::CoordDataType)
+              ( ((int)it->m_dim2Index) + dim2Shift );
+            
+            ++it;
+          }
+        };                
+        
       private :
         
         // Variables used by the method getBlockPointer
-        
-        unsigned char* getBlockPointer_returnValue;
-        unsigned int getBlockPointer_outBlockB;
-        unsigned int getBlockPointer_outBlockX;
-        unsigned int getBlockPointer_outBlockY;
-        
+        unsigned char* m_getBlockPointer_returnValue;
 
     };
 
