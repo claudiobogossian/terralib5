@@ -791,6 +791,11 @@ void te::qt::af::BaseApplication::makeDialog()
 // 1. Layer Explorer
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
 
+  lexplorer->getTreeView()->add(m_projectAddLayerDataset, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
+  lexplorer->getTreeView()->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 
   //lexplorer->getTreeView()->setSelectionMode(QAbstractItemView::MultiSelection);
