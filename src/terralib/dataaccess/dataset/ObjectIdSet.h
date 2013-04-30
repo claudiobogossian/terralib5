@@ -64,9 +64,10 @@ namespace te
           \brief It adds a property that will be used to generate the unique ids.
 
           \param name A property name that will be used to generate the unique ids.
+          \param name The property position.
           \param type The property data type.
         */
-        void addProperty(const std::string& name, int type);
+        void addProperty(const std::string& name, std::size_t pos, int type);
 
         /*!
           \brief It adds an object id to this object id set.
@@ -99,6 +100,38 @@ namespace te
         std::size_t size() const;
 
         /*!
+          \brief It returns the property names used to generated the oids.
+
+          \return The property names used to generated the oids.
+        */
+        const std::vector<std::string>& getPropertyNames() const;
+
+        /*!
+          \brief It returns the property positions used to generated the oids.
+
+          \return The property positions used to generated the oids.
+        */
+        const std::vector<std::size_t>& getPropertyPos() const;
+
+        /*!
+          \brief It returns the property types used to generated the oids.
+
+          \return The property types used to generated the oids.
+        */
+        const std::vector<int>& getPropertyTypes() const;
+
+        /*!
+          \brief It returns if the object id set contains the given oid.
+
+          \param oid The object id that will be searched.
+
+          \return True if the object id set contains the given oid. False, otherwise.
+
+          \note The ObjectIdSet will NOT take the ownership of the given pointer.
+        */
+        bool contains(ObjectId* oid) const;
+
+        /*!
           \brief It performs the union operation between this ObjectIdSet and the given ObjectIdSet.
 
           \param rhs A valid ObjectIdSet that will be used on union operation. Do not pass NULL!
@@ -121,6 +154,7 @@ namespace te
       private:
 
         std::vector<std::string> m_pnames;                            //!< The list of property names used to generate the unique ids.
+        std::vector<std::size_t> m_ppos;                              //!< The list of property positions used to generate the unique ids.
         std::vector<int> m_ptypes;                                    //!< The list of property types used to generate the unique ids.
         std::set<ObjectId*, te::common::LessCmp<ObjectId*> > m_oids;  //!< The set of unique ids.
     };

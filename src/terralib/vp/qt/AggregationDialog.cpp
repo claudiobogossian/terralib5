@@ -51,7 +51,11 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
 
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));   
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked()));
+  
+  setOperations();
+  
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilterLineEditTextChanged(const QString&)));
+
 }
 
 te::vp::AggregationDialog::~AggregationDialog()
@@ -68,19 +72,41 @@ void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
   m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
 }
 
-void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
-{
-  
-}
-
 void te::vp::AggregationDialog::setSelectedLayers(std::vector<std::string> selectedLayers)
 {
   m_selectedLayers = selectedLayers;
 }
 
+void te::vp::AggregationDialog::setOperations()
+{
+  QStringList operationList;
+  operationList << ""
+                << "MIN_VALUE" 
+                << "MAX_VALUE" 
+                << "MEAN" 
+                << "SUM" 
+                << "COUNT"
+                << "VALID_COUNT"
+                << "STANDARD_DEVIATION"
+                << "KERNEL"
+                << "VARIANCE"
+                << "SKEWNESS"
+                << "KURTOSIS"
+                << "AMPLITUDE"
+                << "MEDIAN"
+                << "VAR_COEFF"
+                << "MODE";
+
+  m_ui->m_selectAllComboBox->addItems(operationList);
+  m_ui->m_rejectAllComboBox->addItems(operationList);
+}
+
+void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
+{ 
+}
+
 void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
 {
-
 }
 
 void te::vp::AggregationDialog::onCancelPushButtonClicked()

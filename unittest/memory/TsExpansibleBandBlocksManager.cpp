@@ -101,7 +101,7 @@ void TsExpansibleBandBlocksManager::ReadWriteTest()
   CPPUNIT_ASSERT( ((double*)manager.getBlockPointer( 2, 1, 0))[ 2 ] == (double)(17) );  
 }
 
-void TsExpansibleBandBlocksManager::addTopBlocksTest()
+void TsExpansibleBandBlocksManager::addBlocksTest()
 {
   const unsigned int maxNumberRAMBlocks = 2;
   
@@ -129,16 +129,78 @@ void TsExpansibleBandBlocksManager::addTopBlocksTest()
   FillBlocks< unsigned int >( manager );
   CheckValues< unsigned int >( manager );
   
-  manager.addTopBlocks( 1, 0 );
+  std::vector< te::mem::ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
+  
+  manager.addTopBlocks( 1, 0, addedBlocksCoords );
   FillBlocks< unsigned int >( manager );
   CheckValues< unsigned int >( manager );
 
-  manager.addTopBlocks( 2, 1 );
+  manager.addTopBlocks( 2, 1, addedBlocksCoords );
   FillBlocks< unsigned int >( manager );
   CheckValues< unsigned int >( manager );
 
-  manager.addTopBlocks( 3, 2 );
+  manager.addTopBlocks( 3, 2, addedBlocksCoords );
   FillBlocks< unsigned int >( manager );
   CheckValues< unsigned int >( manager );
+  
+  manager.addBottomBlocks( 1, 0, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );
+
+  manager.addBottomBlocks( 2, 1, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );
+
+  manager.addBottomBlocks( 3, 2, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );  
+  
+  manager.addLeftBlocks( 1, 0, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );
+
+  manager.addLeftBlocks( 2, 1, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );
+
+  manager.addLeftBlocks( 3, 2, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );  
+  
+  manager.addRightBlocks( 1, 0, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );
+
+  manager.addRightBlocks( 2, 1, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );
+
+  manager.addRightBlocks( 3, 2, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );   
+  
+  manager.addTopBands( 1, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );
+  
+  manager.addTopBands( 2, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );  
+  
+  manager.addTopBands( 3, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );    
+  
+  manager.addBottomBands( 1, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );
+  
+  manager.addBottomBands( 2, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );  
+  
+  manager.addBottomBands( 3, addedBlocksCoords );
+  FillBlocks< unsigned int >( manager );
+  CheckValues< unsigned int >( manager );  
 }
 

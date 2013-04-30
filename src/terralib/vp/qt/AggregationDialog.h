@@ -67,6 +67,8 @@ namespace te
 
         void setSelectedLayers(std::vector<std::string> selectedLayers);
 
+        void setOperations();
+
       private:
 
       protected slots:
