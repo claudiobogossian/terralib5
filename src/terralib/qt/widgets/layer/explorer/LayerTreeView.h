@@ -33,6 +33,9 @@
 // STL
 #include <list>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 // Qt
 #include <QtGui/QTreeView>
 
@@ -55,11 +58,19 @@ namespace te
 
         \sa LayerExplorer, LayerTreeViewModel
       */
-      class TEQTWIDGETSEXPORT LayerTreeView : public QTreeView
+      class TEQTWIDGETSEXPORT LayerTreeView : public QTreeView, public boost::noncopyable
       {
         Q_OBJECT
 
         public:
+
+          enum ContextMenuType
+          {
+            ALL_SELECTION_TYPES,
+            NO_LAYER_SELECTED,
+            SINGLE_LAYER_SELECTED,
+            MULTIPLE_LAYERS_SELECTED
+          };
 
           LayerTreeView(QWidget* parent = 0);
 
@@ -93,13 +104,21 @@ namespace te
             \param action    The action to be associated to the context menu.
             \param menu      The name of a submenu, using a dot separator notation. If omitted the action will be set on a top menu item.
             \param layerType If omitted the action will be set to all type of layers.
+            \param menuType  The type of selection to what this action will be displayed.
+
+            \note LayerTreeView will not take the action ownership.
           */
-          void add(QAction* action, const QString& menu = QString(""), const QString& layerType = QString(""));
+          void add(QAction* action,
+                   const QString& menu = QString(""),
+                   const QString& layerType = QString(""),
+                   ContextMenuType menuType = SINGLE_LAYER_SELECTED);
 
           /*!
             \brief It removes the action from the list of context menu.
 
             \param action The action to be removed from the context menu.
+
+            \note LayerTreeView will not destroy the action, it will only detach it from widget.
           */
           void remove(QAction* action);
 
@@ -131,7 +150,7 @@ namespace te
 
           class Impl;
 
-          Impl* m_pImpl;
+          Impl* m_pImpl;  //!< The tree view implementation.
       };
 
     } // end namespace widgets
