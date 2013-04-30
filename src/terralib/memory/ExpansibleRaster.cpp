@@ -28,6 +28,8 @@
 #include "Exception.h"
 #include "ExpansibleRaster.h"
 #include "../raster/Utils.h"
+#include "../raster/BlockUtils.h"
+#include "../geometry/Envelope.h"
 #include "../common/Translator.h"
 #include "../common/PlatformUtils.h"
 
@@ -64,6 +66,12 @@ te::mem::ExpansibleRaster::ExpansibleRaster( const unsigned char maxMemPercentUs
   {
     for( unsigned int bandIdx = 0 ; bandIdx < bandsProperties.size() ;  ++bandIdx )
     {
+      // Making all bands blocking equal
+      bandsProperties[ bandIdx ]->m_nblocksx = bandsProperties[ 0 ]->m_nblocksx;
+      bandsProperties[ bandIdx ]->m_nblocksy = bandsProperties[ 0 ]->m_nblocksy;
+      bandsProperties[ bandIdx ]->m_blkw = bandsProperties[ 0 ]->m_blkw;
+      bandsProperties[ bandIdx ]->m_blkh = bandsProperties[ 0 ]->m_blkh;      
+      
       const unsigned int blockSizeBytes = (unsigned int)( 
         bandsProperties[ bandIdx ]->m_blkw * 
         bandsProperties[ bandIdx ]->m_blkh * 
@@ -115,6 +123,12 @@ te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid,
   {
     for( unsigned int bandIdx = 0 ; bandIdx < bandsProperties.size() ;  ++bandIdx )
     {
+      // Making all bands blocking equal
+      bandsProperties[ bandIdx ]->m_nblocksx = bandsProperties[ 0 ]->m_nblocksx;
+      bandsProperties[ bandIdx ]->m_nblocksy = bandsProperties[ 0 ]->m_nblocksy;
+      bandsProperties[ bandIdx ]->m_blkw = bandsProperties[ 0 ]->m_blkw;
+      bandsProperties[ bandIdx ]->m_blkh = bandsProperties[ 0 ]->m_blkh;   
+      
       const unsigned int blockSizeBytes = (unsigned int)( 
         bandsProperties[ bandIdx ]->m_blkw * 
         bandsProperties[ bandIdx ]->m_blkh * 
@@ -170,13 +184,54 @@ te::dt::AbstractData* te::mem::ExpansibleRaster::clone() const
 
 bool te::mem::ExpansibleRaster::addTopLines( const unsigned int number )
 {
-  if( number )
+  if( ( m_bands.size() > 0 ) && ( number > 0 ) )
   {
-   
+    const unsigned int oldLinesNumber = 
+      ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkh) *
+      ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksy );
+      
+    const unsigned int blockExpansionSize = std::max( (unsigned int)1, 
+      number / ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkh) );
+      
+    std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
+      
+    for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
+    {
+      std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
+      if( ! m_blocksManager.addTopBlocks( blockExpansionSize, bandsIdx,
+        addedBlocksCoords ) ) 
+        return false;
+      
+      addedBlocksCoords.insert( addedBlocksCoords.end(), bandAddedBlocksCoords.begin(),
+        bandAddedBlocksCoords.end() );
+      
+      m_bands[ bandsIdx ]->getProperty()->m_nblocksy += blockExpansionSize;
+    }
     
+    dummyFillBlocks( addedBlocksCoords );
+    
+    const unsigned int newLinesNumber = 
+      ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkh) *
+      ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksy );
+    const unsigned int newColsNumber = 
+      ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkw) *
+      ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksx );
+      
+    const double addedLinesNumber = (double)( newLinesNumber - oldLinesNumber );
+      
+    te::gm::Coord2D newULC( 
+      m_grid->getExtent()->getLowerLeftX(), 
+      m_grid->getExtent()->getUpperRightY() - ( addedLinesNumber * 
+      m_grid->getResolutionY() ) );
+    
+    te::rst::Grid* newGridPtr( new te::rst::Grid( newColsNumber,
+      newLinesNumber, m_grid->getResolutionX(), m_grid->getResolutionY(), 
+      &newULC, m_grid->getSRID() ) );
+    delete( m_grid );
+    m_grid = newGridPtr;
   }
   
-  return false;
+  return true;
 }
 
 bool te::mem::ExpansibleRaster::addBottomLines( const unsigned int number )
@@ -234,80 +289,46 @@ bool te::mem::ExpansibleRaster::addBottomBands( const unsigned int number )
   return false;
 }
 
-bool te::mem::ExpansibleRaster::removeTopLines( const unsigned int number )
-{
-  if( number )
-  {
-   
-    
-  }
-    
-  return false;
-}
-
-bool te::mem::ExpansibleRaster::removeBottomLines( const unsigned int number )
-{
-  if( number )
-  {
-   
-    
-  }
-    
-  return false;
-}
-
-bool te::mem::ExpansibleRaster::removeLeftColumns( const unsigned int number )
-{
-  if( number )
-  {
-   
-    
-  }
-    
-  return false;
-}
-
-bool te::mem::ExpansibleRaster::removeRightColumns( const unsigned int number )
-{
-  if( number )
-  {
-   
-    
-  }
-    
-  return false;
-}
-
-bool te::mem::ExpansibleRaster::removeTopBands( const unsigned int number )
-{
-  if( number )
-  {
-   
-    
-  }
-    
-  return false;
-}
-
-bool te::mem::ExpansibleRaster::removeBottomBands( const unsigned int number )
-{
-  if( number )
-  {
-   
-    
-  }
-    
-  return false;
-}
-
 void te::mem::ExpansibleRaster::free()
 {
   if( m_bands.size() > 0 )
   {
     for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
-      delete m_bands[ bandsIdx ];
+      delete (m_bands[ bandsIdx ]);
     m_bands.clear();
   }
   
   m_blocksManager.free();
 }
+
+void te::mem::ExpansibleRaster::dummyFillBlocks( 
+  const std::vector< ExpansibleBandBlocksManager::BlockIndex3D >& blocksCoords )
+{
+  for( unsigned int coodsIdx = 0 ; coodsIdx < blocksCoords.size() ;
+    ++coodsIdx )
+  {
+    const ExpansibleBandBlocksManager::BlockIndex3D& block3DIdx = blocksCoords[ coodsIdx ];
+    
+    assert( block3DIdx.m_dim0Index < m_bands.size() );
+    te::mem::ExpansibleBand& band = *( m_bands[ block3DIdx.m_dim0Index ] );
+    
+    te::rst::GetBufferValueFPtr gb = 0;
+    te::rst::GetBufferValueFPtr gbi = 0;
+    te::rst::SetBufferValueFPtr sb = 0;
+    te::rst::SetBufferValueFPtr sbi = 0;
+    
+    te::rst::SetBlockFunctions( &gb, &gbi, &sb, &sbi, band.getProperty()->m_type );
+    
+    void* blockPtr = m_blocksManager.getBlockPointer( block3DIdx.m_dim0Index,
+      block3DIdx.m_dim2Index, block3DIdx.m_dim1Index );
+    
+    const int elementsNumber = band.getProperty()->m_blkh *
+      band.getProperty()->m_blkw;
+      
+    double* noDataValuePtr = &( band.getProperty()->m_noDataValue );
+      
+    for( int eIdx = 0 ; eIdx < elementsNumber ; ++eIdx )
+      sb( eIdx, blockPtr, noDataValuePtr );
+  }  
+}
+  

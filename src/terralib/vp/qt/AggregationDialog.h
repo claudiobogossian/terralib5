@@ -46,6 +46,13 @@ namespace te
 {
   namespace vp
   {
+    enum
+    {
+      WHOLE_MEM = 0,
+      PARTIALLY_MEM = 1,
+      LOW_MEM = 2
+    };
+
     class TEVPEXPORT AggregationDialog : public QDialog
     {
       Q_OBJECT
@@ -59,6 +66,8 @@ namespace te
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
         void setSelectedLayers(std::vector<std::string> selectedLayers);
+
+        void setOperations();
 
       private:
 

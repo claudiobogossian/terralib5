@@ -69,6 +69,8 @@ namespace te
 
         void setSelected(bool selected);
 
+        bool isSelected();
+
       private:
 
         te::dt::Property* m_property;

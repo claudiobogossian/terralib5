@@ -243,13 +243,18 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
 // if the vector processing uses only one input layer
     if(m_singleSelection)
     {
-      for(size_t i = 0; i < m_items.size(); i++)
+// Verify if the selectd item is layer or property. If property, the return of "getLayer" is 0.
+      if(item->getLayer() != 0)
       {
-        if(m_items[i] == item)
-          continue;
+// Unselect all layers different than "item"
+        for(size_t i = 0; i < m_items.size(); i++)
+        {
+          if(m_items[i] == item)
+            continue;
 
-        LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
-        litem->isSelected(false);
+          LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
+          litem->isSelected(false);
+        }
       }
     }
   }
@@ -276,4 +281,21 @@ QVariant te::vp::LayerTreeModel::headerData(int section, Qt::Orientation orienta
   }
 
   return QAbstractItemModel::headerData(section, orientation, role);
+}
+
+std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> te::vp::LayerTreeModel::getSelected()
+{
+  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> selected;
+
+  for(size_t i = 0; i < m_items.size(); i++)
+  {
+    LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
+
+    if(litem->isSelected())
+    {
+      selected[litem->getLayer()] = litem->getSelected();
+    }
+  }
+
+  return selected;
 }

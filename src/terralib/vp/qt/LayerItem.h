@@ -66,6 +66,8 @@ namespace te
 
         bool isSelected();
 
+        std::vector<te::dt::Property*> getSelected();
+
       private:
 
         std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;

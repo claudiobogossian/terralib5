@@ -139,6 +139,28 @@ namespace te
     TEDATAACCESSEXPORT DataSourcePtr GetDataSource(const std::string& datasourceId, const bool opened = true);
 
     /*
+      \brief It returns the property names used to generate the object ids.
+
+      This method first looks for the primary key properties defined on data set type.
+      If they do not exist it looks for the unique keys. If they do not exist then it returns all the properties.
+     
+      \param type   A pointer to a valid data set type. Do not pass null.
+      \param pnames The vector that will be filled with the property names.
+    */
+    TEDATAACCESSEXPORT void GetOIDPropertyNames(const DataSetType* type, std::vector<std::string>& pnames);
+
+    /*
+      \brief It returns the property positions used to generate the object ids.
+
+      This method first looks for the primary key properties defined on data set type.
+      If they do not exist it looks for the unique keys. If they do not exist then it returns all the properties.
+     
+      \param type   A pointer to a valid data set type. Do not pass null.
+      \param pnames The vector that will be filled with the property names.
+    */
+    TEDATAACCESSEXPORT void GetOIDPropertyPos(const DataSetType* type, std::vector<std::size_t>& ppos);
+
+    /*
       \brief It generates the set of unique ids for every element of the given dataset.
 
       This method tries to use the primary key properties defined on data set type to generate the unique ids.

@@ -116,7 +116,7 @@ bool te::vp::PropertyItem::setData(int column, const QVariant& value, int role)
     return true;
   }
 
-  return false;
+  return true;
 }
 
 te::dt::Property* te::vp::PropertyItem::getProperty() const
@@ -132,4 +132,9 @@ te::map::AbstractLayerPtr te::vp::PropertyItem::getLayer() const
 void te::vp::PropertyItem::setSelected(bool selected)
 {
   m_selected = selected;
+}
+
+bool te::vp::PropertyItem::isSelected()
+{
+  return m_selected;
 }

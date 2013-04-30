@@ -33,12 +33,14 @@
 // STL
 #include <list>
 #include <memory>
+#include <map>
 
 // Qt
 #include <QtGui/QDialog>
 
 namespace Ui { class IntersectionDialogForm; }
 
+// Forward declarations
 class QModelIndex;
 class QTreeWidgetItem;
 
@@ -46,11 +48,26 @@ namespace te
 {
   namespace vp
   {
+// Forward declarations
+    class LayerTreeModel;
+
     class TEVPEXPORT IntersectionDialog : public QDialog
     {
       Q_OBJECT
 
       public:
+
+        /*!
+          \enum PluginStatus
+
+          \brief Define possible states for the plugin.
+        */
+        enum MemoryUse
+        {
+          WHOLE_MEM = 0,
+          PARTIALLY_MEM = 1,
+          LOW_MEM = 2
+        };      
 
         IntersectionDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
@@ -60,7 +77,13 @@ namespace te
 
         void setSelectedLayers(std::vector<std::string> selectedLayers);
 
+        int getMemoryUse();
+
+        std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> getSeleted();
+
       private:
+
+        //void filter(const QList<QTreeWidgetItem*>& itens);
 
       protected slots:
 
@@ -73,6 +96,7 @@ namespace te
         std::auto_ptr<Ui::IntersectionDialogForm> m_ui;
         std::list<te::map::AbstractLayerPtr> m_layers;
         std::vector<std::string> m_selectedLayers;
+        LayerTreeModel* m_model;
     };
   }   // end namespace vp
 }     // end namespace te
