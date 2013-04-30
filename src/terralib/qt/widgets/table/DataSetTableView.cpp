@@ -171,8 +171,28 @@ class TablePopupFilter : public QObject
           }
           else if(watched == vport)
           {
-
           }
+        }
+        break;
+
+        case QEvent::MouseButtonPress:
+          {
+            QMouseEvent* evt = static_cast<QMouseEvent*>(event);
+
+            if(evt->button() == Qt::LeftButton && watched == vport)
+              return true;
+          }
+        break;
+
+        case QEvent::MouseButtonDblClick:
+        {
+          QMouseEvent* evt = static_cast<QMouseEvent*>(event);
+
+          QModelIndex idx = m_view->indexAt(evt->pos());
+
+          m_view->edit(idx);
+
+          return true;
         }
         break;
       }
@@ -228,7 +248,8 @@ QTableView(parent)
   setModel(m_model);
 
   horizontalHeader()->setMovable(true);
-  setSelectionMode(QAbstractItemView::NoSelection);
+  setSelectionMode(QAbstractItemView::MultiSelection);
+  setSelectionBehavior(QAbstractItemView::SelectColumns);
 
   m_popupFilter = new TablePopupFilter(this);
 }
