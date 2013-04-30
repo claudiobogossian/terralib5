@@ -20,7 +20,7 @@
 /*!
   \file terralib/memory/ExpansibleRaster.h
 
-  \brief A raster (stored in memory and eventually swapped to disk) where it is possible to dynamically add and remove lines/columns.
+  \brief A raster (stored in memory and eventually swapped to disk) where it is possible to dynamically add lines/columns/bands.
 */
 
 #ifndef __TERRALIB_MEMORY_INTERNAL_EXPANSIBLERASTER_H
@@ -41,7 +41,7 @@ namespace te
     /*!
       \class ExpansibleRaster
 
-      \brief A raster (stored in memory and eventually swapped to disk) where it is possible to dynamically add and remove lines/columns.
+      \brief A raster (stored in memory and eventually swapped to disk) where it is possible to dynamically add lines/columns/bands.
       
       \note The first band blocking scheme will be taken as reference for the other bands.
       
@@ -184,6 +184,11 @@ namespace te
           \brief Free all allocated internal resources and go back to the initial state.
         */
         void free();    
+        
+        /*!
+          \brief Fill all blocks with dummy values.
+        */
+        void dummyFillAllBlocks();        
 
         /*!
           \brief Fill the required blocks with dummy values.
