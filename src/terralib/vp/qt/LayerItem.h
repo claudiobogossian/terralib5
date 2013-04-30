@@ -62,8 +62,13 @@ namespace te
 
         te::map::AbstractLayerPtr getLayer() const;
 
+        void isSelected(bool selected);
+
+        bool isSelected();
+
       private:
 
+        std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;
         te::map::AbstractLayerPtr m_layer;
         bool m_selected;
         bool m_onlySelecteds;

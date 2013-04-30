@@ -49,7 +49,13 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-aggregation-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
+  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));   
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked()));
+  
+  setOperations();
+  
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilterLineEditTextChanged(const QString&)));
+
 }
 
 te::vp::AggregationDialog::~AggregationDialog()
@@ -60,14 +66,10 @@ void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
 {
   m_layers = layers;
   
-  LayerTreeModel* model = new LayerTreeModel(m_layers);
+  LayerTreeModel* model = new LayerTreeModel(m_layers, true);
 
   m_ui->m_layerTreeView->setModel(model);
-}
-
-void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
-{
-  
+  m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
 }
 
 void te::vp::AggregationDialog::setSelectedLayers(std::vector<std::string> selectedLayers)
@@ -75,7 +77,43 @@ void te::vp::AggregationDialog::setSelectedLayers(std::vector<std::string> selec
   m_selectedLayers = selectedLayers;
 }
 
+void te::vp::AggregationDialog::setOperations()
+{
+  QStringList operationList;
+  operationList << ""
+                << "MIN_VALUE" 
+                << "MAX_VALUE" 
+                << "MEAN" 
+                << "SUM" 
+                << "COUNT"
+                << "VALID_COUNT"
+                << "STANDARD_DEVIATION"
+                << "KERNEL"
+                << "VARIANCE"
+                << "SKEWNESS"
+                << "KURTOSIS"
+                << "AMPLITUDE"
+                << "MEDIAN"
+                << "VAR_COEFF"
+                << "MODE";
+
+  m_ui->m_selectAllComboBox->addItems(operationList);
+  m_ui->m_rejectAllComboBox->addItems(operationList);
+}
+
+void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
+{ 
+}
+
 void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
 {
+}
 
+void te::vp::AggregationDialog::onCancelPushButtonClicked()
+{
+  reject();
+}
+
+void te::vp::AggregationDialog::onHelpPushButtonClicked()
+{
 }

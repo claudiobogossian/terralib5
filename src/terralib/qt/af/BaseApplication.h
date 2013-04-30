@@ -115,6 +115,8 @@ namespace te
 
           void onPanToggled(bool checked);
 
+          void onZoomExtentTriggered();
+
           void onMeasureDistanceToggled(bool checked);
 
           void onMeasureAreaToggled(bool checked);

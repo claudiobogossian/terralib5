@@ -47,10 +47,11 @@ te::da::ObjectIdSet::~ObjectIdSet()
   te::common::FreeContents(m_oids);
 }
 
-void te::da::ObjectIdSet::addProperty(const std::string& name, int type)
+void te::da::ObjectIdSet::addProperty(const std::string& name, std::size_t pos, int type)
 {
   assert(!name.empty());
   m_pnames.push_back(name);
+  m_ppos.push_back(pos);
   m_ptypes.push_back(type);
 }
 
@@ -107,6 +108,27 @@ void te::da::ObjectIdSet::clear()
 std::size_t te::da::ObjectIdSet::size() const
 {
   return m_oids.size();
+}
+
+const std::vector<std::string>& te::da::ObjectIdSet::getPropertyNames() const
+{
+  return m_pnames;
+}
+
+const std::vector<std::size_t>& te::da::ObjectIdSet::getPropertyPos() const
+{
+  return m_ppos;
+}
+
+const std::vector<int>& te::da::ObjectIdSet::getPropertyTypes() const
+{
+  return m_ptypes;
+}
+
+bool te::da::ObjectIdSet::contains(ObjectId* oid) const
+{
+  assert(oid);
+  return m_oids.find(oid) != m_oids.end();
 }
 
 void te::da::ObjectIdSet::Union(te::da::ObjectIdSet* rhs)

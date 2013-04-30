@@ -45,7 +45,10 @@ te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
       te::map::AbstractLayerPtr layerChild = boost::dynamic_pointer_cast<te::map::AbstractLayer>(layer->getChild(i));
 
       if(layerChild->isValid())
-        new LayerItem(layerChild, this);
+      {
+        te::qt::widgets::AbstractLayerTreeItem* litem =  new LayerItem(layerChild, this);
+        m_items.push_back(litem);
+      }
     }
   }
   else if(m_layer->getSchema()->getProperties().size() > 0)
@@ -64,7 +67,8 @@ te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
       if(p == 0)
         continue;
 
-      new PropertyItem(properties[i], this);
+      te::qt::widgets::AbstractLayerTreeItem* litem =  new PropertyItem(properties[i], this);
+      m_items.push_back(litem);
     }
   }
 }
@@ -167,7 +171,7 @@ bool te::vp::LayerItem::setData(int column, const QVariant& value, int role)
   {
     bool ok = false;
     Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt(&ok));
-
+    
     if(!ok)
       return false;
 
@@ -177,6 +181,12 @@ bool te::vp::LayerItem::setData(int column, const QVariant& value, int role)
         m_selected = true;
       else if(checkState == Qt::Unchecked)
         m_selected = false;
+
+      for(size_t i = 0; i < m_items.size(); i++)
+      {
+        PropertyItem* pItem = dynamic_cast<PropertyItem*>(m_items[i]);
+        pItem->setSelected(m_selected);
+      }
     }
     else if(column == 1)
     {
@@ -187,11 +197,21 @@ bool te::vp::LayerItem::setData(int column, const QVariant& value, int role)
     }
     return true;
   }
-
+  
   return false;
 }
 
 te::map::AbstractLayerPtr te::vp::LayerItem::getLayer() const
 {
   return m_layer;
+}
+
+void te::vp::LayerItem::isSelected(bool selected)
+{
+  m_selected = selected;
+}
+
+bool te::vp::LayerItem::isSelected()
+{
+  return m_selected;
 }

@@ -60,6 +60,8 @@ namespace te
 
         void setSelectedLayers(std::vector<std::string> selectedLayers);
 
+        void setOperations();
+
       private:
 
       protected slots:
@@ -67,6 +69,10 @@ namespace te
         void onLayerTreeViewClicked(QTreeWidgetItem * item, int column);
 
         void onFilterLineEditTextChanged(const QString& text);
+
+        void onCancelPushButtonClicked();
+
+        void onHelpPushButtonClicked();
 
       private:
 
