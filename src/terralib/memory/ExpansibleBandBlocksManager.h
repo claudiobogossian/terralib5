@@ -331,15 +331,11 @@ namespace te
         
         RAMBlocksHandlerT m_activeRAMBlocksHandler; //!< The active RAM blocks handler.
         
-        RAMBlocksHandlerT m_inactiveRAMBlocksHandler; //!< The inative RAM blocks handler;
-        
         RAMBlocksPointersContainerT m_ramBlocksPointers; //!< 3D Matrix of active RAM blocks pointers indexed in the form [band][blockYIndex][blockXIndex].
         
         SwapFifoT m_swapFifo; //!< Disk swapping FIFO.
         
         ActiveDiskBlocksInfoT m_activeDiskBlocksInfo; //!< 3D Matrix of active disk block info indexed as [band][blockYIndex][blockXIndex].
-        
-        InactiveDiskBlocksInfoT m_inactiveDiskBlocksInfo; //!< Inactive disk blocks info.
         
         OpenDiskFilesHandlerT m_diskFilesHandler; //!< The disk files handler;
         

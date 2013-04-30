@@ -397,21 +397,26 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std:
   {
     std::size_t pos = GetPropertyPos(dataset, names[i]);
     assert(pos != std::string::npos);
-
     oids->addProperty(names[i], pos, dataset->getPropertyDataType(pos));
   }
 
   while(dataset->moveNext())
-  {
-    ObjectId* oid = new ObjectId;
-
-    for(std::size_t i = 0; i < names.size(); ++i)
-      oid->addValue(dataset->getValue(names[i]));
-
-    oids->add(oid);
-  }
+    oids->add(GenerateOID(dataset, names));
 
   return oids;
+}
+
+te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vector<std::string>& names)
+{
+  assert(dataset);
+  assert(!names.empty());
+
+  ObjectId* oid = new ObjectId;
+
+  for(std::size_t i = 0; i < names.size(); ++i)
+    oid->addValue(dataset->getValue(names[i]));
+
+  return oid;
 }
 
 std::size_t te::da::GetFirstSpatialPropertyPos(const te::da::DataSet* dataset)

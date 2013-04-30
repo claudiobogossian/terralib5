@@ -106,7 +106,7 @@ bool te::mem::ExpansibleBandBlocksManager::initialize(
   
   // Allocating RAM blocks
   
-  unsigned int allocatedRAMBlocksNumber = 0;
+  std::vector< BlockIndex3D > diskBlocksToAllocateIndexes;
   
   try
   {
@@ -120,17 +120,11 @@ bool te::mem::ExpansibleBandBlocksManager::initialize(
       for( unsigned int blockYIdx = 0 ; blockYIdx < numbersOfBlocksY[ blockBIdx ] ; 
         ++blockYIdx )
       {
-        m_ramBlocksPointers[ blockBIdx ][ blockYIdx ].resize( numbersOfBlocksX[ blockBIdx ] );
+        m_ramBlocksPointers[ blockBIdx ][ blockYIdx ].resize( numbersOfBlocksX[ blockBIdx ], 0 );
         
         for( unsigned int blockXIdx = 0 ; blockXIdx < numbersOfBlocksX[ blockBIdx ] ; ++blockXIdx )
         {
-          if( 
-              ( allocatedRAMBlocksNumber < maxNumberRAMBlocks )
-              &&
-              ( blockYIdx < numbersOfBlocksY[ blockBIdx ] )
-              &&
-              ( blockXIdx < numbersOfBlocksX[ blockBIdx ] )
-            )
+          if( m_activeRAMBlocksHandler.size() < maxNumberRAMBlocks )
           {
             RAMBlockHandlerT newBlockHandler( new BlockElementT[ m_maxBlockSizeBytes ] );
             
@@ -140,12 +134,11 @@ bool te::mem::ExpansibleBandBlocksManager::initialize(
               newBlockHandler.get();
               
             m_swapFifo.push_back( BlockIndex3D( blockBIdx, blockYIdx, blockXIdx ) );  
-            
-            ++allocatedRAMBlocksNumber;
           }
           else
           {
-            m_ramBlocksPointers[ blockBIdx ][ blockYIdx ][ blockXIdx ] = 0;
+            diskBlocksToAllocateIndexes.push_back( BlockIndex3D( blockBIdx,
+              blockYIdx, blockXIdx ) );
           }
         }
       }
@@ -169,20 +162,6 @@ bool te::mem::ExpansibleBandBlocksManager::initialize(
     
     // Allocating disk blocks
     
-    const unsigned int requiredDiskBlocksNumber = totalRequiredBlocks -
-      allocatedRAMBlocksNumber;
-    
-    std::vector< DiskBlockInfo > diskBlocksInfos;                       
-    if( ! allocateDiskBlocks( requiredDiskBlocksNumber, diskBlocksInfos, 
-      m_diskFilesHandler ) )
-    {
-      free();
-      return false;
-    }
-    assert( ((unsigned int)diskBlocksInfos.size()) == requiredDiskBlocksNumber );
-    
-    unsigned int diskBlocksInfosIdx = 0;
-    
     m_activeDiskBlocksInfo.resize( numbersOfBlocksX.size() );
     
     for( unsigned int blockBIdx = 0 ; blockBIdx < numbersOfBlocksX.size() ;  
@@ -194,24 +173,13 @@ bool te::mem::ExpansibleBandBlocksManager::initialize(
         ++blockYIdx )
       {
         m_activeDiskBlocksInfo[ blockBIdx ][ blockYIdx ].resize( numbersOfBlocksX[ blockBIdx ] );
-        
-        for( unsigned int blockXIdx = 0 ; blockXIdx < numbersOfBlocksX[ blockBIdx ] ; ++blockXIdx )
-        {
-          if( 
-              ( m_ramBlocksPointers[ blockBIdx ][ blockYIdx ][ blockXIdx ] == 0 )
-              &&
-              ( blockYIdx < numbersOfBlocksY[ blockBIdx ] )
-              &&
-              ( blockXIdx < numbersOfBlocksX[ blockBIdx ] )
-            )
-          {
-            assert( diskBlocksInfosIdx < (unsigned int)diskBlocksInfos.size() );
-            m_activeDiskBlocksInfo[ blockBIdx ][ blockYIdx ][ blockXIdx ] =
-              diskBlocksInfos[ diskBlocksInfosIdx ];
-            ++diskBlocksInfosIdx;
-          }
-        }
       }
+    }
+    
+    if( ! allocateAndActivateDiskBlocks( diskBlocksToAllocateIndexes ) )
+    {
+      free();
+      return false;
     }
   }
   catch(...)
@@ -230,11 +198,9 @@ bool te::mem::ExpansibleBandBlocksManager::initialize(
 void te::mem::ExpansibleBandBlocksManager::free()
 {
   m_activeRAMBlocksHandler.clear();
-  m_inactiveRAMBlocksHandler.clear();
   m_ramBlocksPointers.clear();
   m_swapFifo.clear();
   m_activeDiskBlocksInfo.clear();  
-  m_inactiveDiskBlocksInfo.clear();
   m_diskFilesHandler.clear();
   m_swapBlockHandler.reset();
   
@@ -255,7 +221,7 @@ void* te::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band,
   {
     return m_getBlockPointer_returnValue;
   }
-  else if( m_inactiveRAMBlocksHandler.empty() )
+  else
   {
     // defining the blocks that will manipulated    
     
@@ -334,46 +300,6 @@ void* te::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band,
       
     return m_getBlockPointer_returnValue;
   }
-  else
-  {
-    // Activating one inactive block
-    
-    m_activeRAMBlocksHandler.push_back( m_inactiveRAMBlocksHandler.back() );
-    m_inactiveRAMBlocksHandler.pop_back();
-    
-    m_getBlockPointer_returnValue = m_activeRAMBlocksHandler.back().get();
-    
-    // reading the required block into m_currSwapBlockPtr
-    
-    assert( band < m_activeDiskBlocksInfo.size() );
-    assert( y < m_activeDiskBlocksInfo[ band ].size() );
-    assert( x <  m_activeDiskBlocksInfo[ band ][ y ].size() );    
-    DiskBlockInfo& inDiskInfo = m_activeDiskBlocksInfo[ band ][ y ][ x ];     
-    
-    if( 0 != fseek( inDiskInfo.m_filePtr, 
-      (long)( inDiskInfo.m_fileOff ), SEEK_SET ) )
-    {
-      throw Exception(TR_MEMORY("File seek error") );
-    }
-      
-    assert( m_getBlockPointer_returnValue != 0  );
-    if( 1 != fread( (void*)m_getBlockPointer_returnValue, (size_t)( m_maxBlockSizeBytes ), 
-      1, inDiskInfo.m_filePtr ) )
-    {
-      throw Exception(TR_MEMORY("File read error") );
-    }    
-    
-    // updating the indexing structures
-    
-    m_swapFifo.push_back( BlockIndex3D( band, x, y ) );
-    
-    m_ramBlocksPointers[ band ][ y ][ x ] = m_getBlockPointer_returnValue;
-    
-    inDiskInfo.m_fileOff = 0;
-    inDiskInfo.m_filePtr = 0;
-
-    return m_getBlockPointer_returnValue;
-  }  
 }
 
 bool te::mem::ExpansibleBandBlocksManager::addTopBlocks( 
@@ -387,28 +313,46 @@ bool te::mem::ExpansibleBandBlocksManager::addTopBlocks(
   
   if( expansionSize )
   {
+    shiftDim03DCoords( m_swapFifo, band, expansionSize, 0 );
+    
     const unsigned int numberOfBlocksX = (unsigned int)
       m_ramBlocksPointers[ band ][ 0 ].size();
     
     m_ramBlocksPointers[ band ].insert( m_ramBlocksPointers[ band ].begin(), 
       expansionSize, 
-      std::vector< BlockelementPtrT >( numberOfBlocksX ) );
+      std::vector< BlockelementPtrT >( numberOfBlocksX, 0 ) );
       
     m_activeDiskBlocksInfo[ band ].insert( m_activeDiskBlocksInfo[ band ].begin(), 
       expansionSize, 
-      std::vector< DiskBlockInfo >( numberOfBlocksX ) );      
+      std::vector< DiskBlockInfo >( numberOfBlocksX ) );   
+      
+    std::vector< BlockIndex3D > diskBlocksToAllocateIndexes;
     
     for( unsigned int blockYIdx = 0 ; blockYIdx < expansionSize ; ++blockYIdx )
     {
       for( unsigned int blockXIdx = 0 ; blockXIdx < numberOfBlocksX ; ++blockXIdx )
       {
+        if( m_activeRAMBlocksHandler.size() < m_maxNumberRAMBlocks )
+        {
+          RAMBlockHandlerT newBlockHandler( new BlockElementT[ m_maxBlockSizeBytes ] );
+          
+          m_activeRAMBlocksHandler.push_back( newBlockHandler );
+            
+          m_ramBlocksPointers[ band ][ blockYIdx ][ blockXIdx ] =
+            newBlockHandler.get();
+            
+          m_swapFifo.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) ); 
+        }
+        else
+        {
+          diskBlocksToAllocateIndexes.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) );
+        }
+        
         addedBlocksCoords.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) );
       }
     }
-    
-    shiftDim03DCoords( m_swapFifo, band, expansionSize, 0 );
       
-    if( ! allocateAndActivateDiskBlocks( addedBlocksCoords ) ) return false;
+    if( ! allocateAndActivateDiskBlocks( diskBlocksToAllocateIndexes ) ) return false;
   }
   
   return true;
@@ -430,11 +374,13 @@ bool te::mem::ExpansibleBandBlocksManager::addBottomBlocks(
     
     m_ramBlocksPointers[ band ].insert( m_ramBlocksPointers[ band ].end(), 
       expansionSize, 
-      std::vector< BlockelementPtrT >( numberOfBlocksX ) );
+      std::vector< BlockelementPtrT >( numberOfBlocksX, 0 ) );
       
     m_activeDiskBlocksInfo[ band ].insert( m_activeDiskBlocksInfo[ band ].end(), 
       expansionSize, 
-      std::vector< DiskBlockInfo >( numberOfBlocksX ) );      
+      std::vector< DiskBlockInfo >( numberOfBlocksX ) );    
+      
+    std::vector< BlockIndex3D > diskBlocksToAllocateIndexes;
     
     for( unsigned int blockYIdx = m_activeDiskBlocksInfo[ band ].size() - 
       expansionSize ; blockYIdx < m_activeDiskBlocksInfo[ band ].size() ; 
@@ -442,11 +388,27 @@ bool te::mem::ExpansibleBandBlocksManager::addBottomBlocks(
     {
       for( unsigned int blockXIdx = 0 ; blockXIdx < numberOfBlocksX ; ++blockXIdx )
       {
-        addedBlocksCoords.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) ); 
+        if( m_activeRAMBlocksHandler.size() < m_maxNumberRAMBlocks )
+        {
+          RAMBlockHandlerT newBlockHandler( new BlockElementT[ m_maxBlockSizeBytes ] );
+          
+          m_activeRAMBlocksHandler.push_back( newBlockHandler );
+            
+          m_ramBlocksPointers[ band ][ blockYIdx ][ blockXIdx ] =
+            newBlockHandler.get();
+            
+          m_swapFifo.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) ); 
+        }
+        else
+        {
+          diskBlocksToAllocateIndexes.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) ); 
+        }
+        
+        addedBlocksCoords.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) );
       }
     }
       
-    if( ! allocateAndActivateDiskBlocks( addedBlocksCoords ) ) return false;
+    if( ! allocateAndActivateDiskBlocks( diskBlocksToAllocateIndexes ) ) return false;
   }
   
   return true;
@@ -463,8 +425,12 @@ bool te::mem::ExpansibleBandBlocksManager::addLeftBlocks(
   
   if( expansionSize )
   {
+    shiftDim03DCoords( m_swapFifo, band, 0, expansionSize );
+    
     const unsigned int numberOfBlocksY = (unsigned int)
       m_ramBlocksPointers[ band ].size();
+      
+    std::vector< BlockIndex3D > diskBlocksToAllocateIndexes;
       
     for( unsigned int blockYIdx = 0 ; blockYIdx < numberOfBlocksY ; ++blockYIdx )
     {
@@ -478,13 +444,27 @@ bool te::mem::ExpansibleBandBlocksManager::addLeftBlocks(
       
       for( unsigned int blockXIdx = 0 ; blockXIdx < expansionSize ; ++blockXIdx )
       {
-        addedBlocksCoords.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) ); 
+        if( m_activeRAMBlocksHandler.size() < m_maxNumberRAMBlocks )
+        {
+          RAMBlockHandlerT newBlockHandler( new BlockElementT[ m_maxBlockSizeBytes ] );
+          
+          m_activeRAMBlocksHandler.push_back( newBlockHandler );
+            
+          m_ramBlocksPointers[ band ][ blockYIdx ][ blockXIdx ] =
+            newBlockHandler.get();
+            
+          m_swapFifo.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) ); 
+        }
+        else
+        {        
+          diskBlocksToAllocateIndexes.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) ); 
+        }
+        
+        addedBlocksCoords.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) );
       }
     }      
-    
-    shiftDim03DCoords( m_swapFifo, band, 0, expansionSize );
       
-    if( ! allocateAndActivateDiskBlocks( addedBlocksCoords ) ) return false;
+    if( ! allocateAndActivateDiskBlocks( diskBlocksToAllocateIndexes ) ) return false;
   }
   
   return true;
@@ -504,6 +484,8 @@ bool te::mem::ExpansibleBandBlocksManager::addRightBlocks(
     const unsigned int numberOfBlocksY = (unsigned int)
       m_ramBlocksPointers[ band ].size();
       
+    std::vector< BlockIndex3D > diskBlocksToAllocateIndexes;
+      
     for( unsigned int blockYIdx = 0 ; blockYIdx < numberOfBlocksY ; ++blockYIdx )
     {
       m_ramBlocksPointers[ band ][ blockYIdx ].insert( 
@@ -518,11 +500,27 @@ bool te::mem::ExpansibleBandBlocksManager::addRightBlocks(
         - expansionSize ; blockXIdx < 
         m_ramBlocksPointers[ band ][ blockYIdx ].size() ; ++blockXIdx )
       {
-        addedBlocksCoords.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) ); 
+        if( m_activeRAMBlocksHandler.size() < m_maxNumberRAMBlocks )
+        {
+          RAMBlockHandlerT newBlockHandler( new BlockElementT[ m_maxBlockSizeBytes ] );
+          
+          m_activeRAMBlocksHandler.push_back( newBlockHandler );
+            
+          m_ramBlocksPointers[ band ][ blockYIdx ][ blockXIdx ] =
+            newBlockHandler.get();
+            
+          m_swapFifo.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) ); 
+        }
+        else
+        {
+          diskBlocksToAllocateIndexes.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) ); 
+        }
+        
+        addedBlocksCoords.push_back( BlockIndex3D( band, blockYIdx, blockXIdx ) );
       }
     }      
       
-    if( ! allocateAndActivateDiskBlocks( addedBlocksCoords ) ) return false;
+    if( ! allocateAndActivateDiskBlocks( diskBlocksToAllocateIndexes ) ) return false;
   }
   
   return true;
@@ -538,6 +536,8 @@ bool te::mem::ExpansibleBandBlocksManager::addTopBands(
   
   if( expansionSize )
   {
+    shift3DCoords( m_swapFifo, expansionSize, 0, 0 );
+    
     const unsigned int numberOfBlocksY = (unsigned int)
       m_ramBlocksPointers[ 0 ].size();
     const unsigned int numberOfBlocksX = (unsigned int)
@@ -549,26 +549,42 @@ bool te::mem::ExpansibleBandBlocksManager::addTopBands(
       
     m_activeDiskBlocksInfo.insert( m_activeDiskBlocksInfo.begin(), 
       expansionSize, 
-      std::vector< std::vector< DiskBlockInfo > >( numberOfBlocksY ) );      
+      std::vector< std::vector< DiskBlockInfo > >( numberOfBlocksY ) );  
+      
+    std::vector< BlockIndex3D > diskBlocksToAllocateIndexes;
     
     for( unsigned int expansionIdx = 0 ; expansionIdx < expansionSize ;
       ++expansionIdx )
     {
       for( unsigned int blockYIdx = 0 ; blockYIdx < numberOfBlocksY ; ++blockYIdx )
       {
-        m_ramBlocksPointers[ expansionIdx ][ blockYIdx ].resize( numberOfBlocksX );
+        m_ramBlocksPointers[ expansionIdx ][ blockYIdx ].resize( numberOfBlocksX, 0 );
         m_activeDiskBlocksInfo[ expansionIdx ][ blockYIdx ].resize( numberOfBlocksX );
         
         for( unsigned int blockXIdx = 0 ; blockXIdx < numberOfBlocksX ; ++blockXIdx )
         {
+          if( m_activeRAMBlocksHandler.size() < m_maxNumberRAMBlocks )
+          {
+            RAMBlockHandlerT newBlockHandler( new BlockElementT[ m_maxBlockSizeBytes ] );
+            
+            m_activeRAMBlocksHandler.push_back( newBlockHandler );
+              
+            m_ramBlocksPointers[ expansionIdx ][ blockYIdx ][ blockXIdx ] =
+              newBlockHandler.get();
+              
+            m_swapFifo.push_back( BlockIndex3D( expansionIdx, blockYIdx, blockXIdx ) ); 
+          }
+          else          
+          {
+            diskBlocksToAllocateIndexes.push_back( BlockIndex3D( expansionIdx, blockYIdx, blockXIdx ) ); 
+          }
+          
           addedBlocksCoords.push_back( BlockIndex3D( expansionIdx, blockYIdx, blockXIdx ) ); 
         }
       }
     }
-    
-    shift3DCoords( m_swapFifo, expansionSize, 0, 0 );
       
-    if( ! allocateAndActivateDiskBlocks( addedBlocksCoords ) ) return false;
+    if( ! allocateAndActivateDiskBlocks( diskBlocksToAllocateIndexes ) ) return false;
   }
   
   return true;
@@ -594,7 +610,9 @@ bool te::mem::ExpansibleBandBlocksManager::addBottomBands( const unsigned int& e
       
     m_activeDiskBlocksInfo.insert( m_activeDiskBlocksInfo.end(), 
       expansionSize, 
-      std::vector< std::vector< DiskBlockInfo > >( numberOfBlocksY ) );      
+      std::vector< std::vector< DiskBlockInfo > >( numberOfBlocksY ) );    
+      
+    std::vector< BlockIndex3D > diskBlocksToAllocateIndexes;
     
     for( unsigned int expansionIdx =  m_ramBlocksPointers.size() - expansionSize ; 
       expansionIdx < m_ramBlocksPointers.size() ; ++expansionIdx )
@@ -606,12 +624,28 @@ bool te::mem::ExpansibleBandBlocksManager::addBottomBands( const unsigned int& e
         
         for( unsigned int blockXIdx = 0 ; blockXIdx < numberOfBlocksX ; ++blockXIdx )
         {
+          if( m_activeRAMBlocksHandler.size() < m_maxNumberRAMBlocks )
+          {
+            RAMBlockHandlerT newBlockHandler( new BlockElementT[ m_maxBlockSizeBytes ] );
+            
+            m_activeRAMBlocksHandler.push_back( newBlockHandler );
+              
+            m_ramBlocksPointers[ expansionIdx ][ blockYIdx ][ blockXIdx ] =
+              newBlockHandler.get();
+              
+            m_swapFifo.push_back( BlockIndex3D( expansionIdx, blockYIdx, blockXIdx ) ); 
+          }
+          else          
+          {
+            diskBlocksToAllocateIndexes.push_back( BlockIndex3D( expansionIdx, blockYIdx, blockXIdx ) ); 
+          }
+          
           addedBlocksCoords.push_back( BlockIndex3D( expansionIdx, blockYIdx, blockXIdx ) ); 
         }
       }
     }
     
-    if( ! allocateAndActivateDiskBlocks( addedBlocksCoords ) ) return false;
+    if( ! allocateAndActivateDiskBlocks( diskBlocksToAllocateIndexes ) ) return false;
   }
   
   return true;
@@ -665,71 +699,38 @@ bool te::mem::ExpansibleBandBlocksManager::allocateDiskBlocks(
 bool te::mem::ExpansibleBandBlocksManager::allocateAndActivateDiskBlocks( 
   const std::vector< BlockIndex3D >& blocksIndxes )
 {
-  assert( m_isInitialized );
-  
   if( ! blocksIndxes.empty() )
   {
-    // re-activating old inactive disk blocks
+    // Allocating new disk blocks
+    
+    std::vector< DiskBlockInfo > newDiskBlocksInfos;
+    OpenDiskFilesHandlerT newDiskFilesHandler;
+    if( ! allocateDiskBlocks( blocksIndxes.size(), newDiskBlocksInfos, 
+      newDiskFilesHandler ) )
+      return false;
+    assert( newDiskBlocksInfos.size() == blocksIndxes.size() );
+    
+    m_diskFilesHandler.insert( m_diskFilesHandler.end(), 
+      newDiskFilesHandler.begin(), newDiskFilesHandler.end() );
     
     unsigned int blocksIndxesIdx = 0;
-    
-    while( ( blocksIndxesIdx < blocksIndxes.size() ) && 
-      ( ! m_inactiveDiskBlocksInfo.empty() ) )
+    while( blocksIndxesIdx < blocksIndxes.size() )
     {
-      DiskBlockInfo inactiveBInfo = m_inactiveDiskBlocksInfo.back();
-      m_inactiveDiskBlocksInfo.pop_back();
-      assert( inactiveBInfo.m_filePtr );
-      
       const BlockIndex3D& bIdx = blocksIndxes[ blocksIndxesIdx ];
       
       assert( bIdx.m_dim0Index < m_activeDiskBlocksInfo.size() );
       assert( bIdx.m_dim1Index < m_activeDiskBlocksInfo[ bIdx.m_dim0Index ].size() );
-      assert( bIdx.m_dim2Index < m_activeDiskBlocksInfo[ bIdx.m_dim0Index ][ bIdx.m_dim1Index ].size() );      
+      assert( bIdx.m_dim2Index < m_activeDiskBlocksInfo[ bIdx.m_dim0Index ][ bIdx.m_dim1Index ].size() );
       assert( m_activeDiskBlocksInfo[ bIdx.m_dim0Index ][ bIdx.m_dim1Index ][
         bIdx.m_dim2Index ].m_filePtr == 0 );
+      assert( blocksIndxesIdx < newDiskBlocksInfos.size() );
       m_activeDiskBlocksInfo[ bIdx.m_dim0Index ][ bIdx.m_dim1Index ][
-        bIdx.m_dim2Index ] = inactiveBInfo;
+        bIdx.m_dim2Index ] = newDiskBlocksInfos[ blocksIndxesIdx ];        
+      assert( m_activeDiskBlocksInfo[ bIdx.m_dim0Index ][ bIdx.m_dim1Index ][
+        bIdx.m_dim2Index ].m_filePtr );
       
       ++blocksIndxesIdx;
-    }
-    
-    // Allocating new disk blocks
-    
-    const unsigned int newDiskBlocksNumber = (unsigned int)(
-      blocksIndxes.size() - blocksIndxesIdx );
-      
-    if( newDiskBlocksNumber )
-    {
-      std::vector< DiskBlockInfo > newDiskBlocksInfos;
-      OpenDiskFilesHandlerT newDiskFilesHandler;
-      if( ! allocateDiskBlocks( newDiskBlocksNumber, newDiskBlocksInfos, 
-        newDiskFilesHandler ) )
-        return false;
-      assert( newDiskBlocksInfos.size() == newDiskBlocksNumber );
-      
-      m_diskFilesHandler.insert( m_diskFilesHandler.end(), 
-        newDiskFilesHandler.begin(), newDiskFilesHandler.end() );
-      
-      unsigned int newDiskBlocksInfosIdx = 0;
-      while( blocksIndxesIdx < blocksIndxes.size() )
-      {
-        const BlockIndex3D& bIdx = blocksIndxes[ blocksIndxesIdx ];
-        
-        assert( bIdx.m_dim0Index < m_activeDiskBlocksInfo.size() );
-        assert( bIdx.m_dim1Index < m_activeDiskBlocksInfo[ bIdx.m_dim0Index ].size() );
-        assert( bIdx.m_dim2Index < m_activeDiskBlocksInfo[ bIdx.m_dim0Index ][ bIdx.m_dim1Index ].size() );
-        assert( m_activeDiskBlocksInfo[ bIdx.m_dim0Index ][ bIdx.m_dim1Index ][
-          bIdx.m_dim2Index ].m_filePtr == 0 );
-        assert( newDiskBlocksInfosIdx < newDiskBlocksInfos.size() );
-        m_activeDiskBlocksInfo[ bIdx.m_dim0Index ][ bIdx.m_dim1Index ][
-          bIdx.m_dim2Index ] = newDiskBlocksInfos[ newDiskBlocksInfosIdx ];        
-        assert( m_activeDiskBlocksInfo[ bIdx.m_dim0Index ][ bIdx.m_dim1Index ][
-          bIdx.m_dim2Index ].m_filePtr );
-        
-        ++newDiskBlocksInfosIdx;
-        ++blocksIndxesIdx;
-      }      
-    }
+    }      
   }
   
   return true;
