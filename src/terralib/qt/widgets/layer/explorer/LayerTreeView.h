@@ -36,6 +36,10 @@
 // Qt
 #include <QtGui/QTreeView>
 
+// Forward declaration
+class QAction;
+class QString;
+
 namespace te
 {
   namespace qt
@@ -81,6 +85,24 @@ namespace te
 
           void add(const te::map::AbstractLayerPtr& layer);
 
+        public:
+
+          /*!
+            \brief It adds the action to a specified menu of a given layer type when a context menu is displayed.
+
+            \param action    The action to be associated to the context menu.
+            \param menu      The name of a submenu, using a dot separator notation. If omitted the action will be set on a top menu item.
+            \param layerType If omitted the action will be set to all type of layers.
+          */
+          void add(QAction* action, const QString& menu = QString(""), const QString& layerType = QString(""));
+
+          /*!
+            \brief It removes the action from the list of context menu.
+
+            \param action The action to be removed from the context menu.
+          */
+          void remove(QAction* action);
+
         protected slots:
 
           void itemActivated(const QModelIndex & index);
@@ -102,6 +124,14 @@ namespace te
           void dragLeaveEvent(QDragLeaveEvent* e);
 
           void dropEvent(QDropEvent* e);
+
+          void contextMenuEvent(QContextMenuEvent* e);
+
+        private:
+
+          class Impl;
+
+          Impl* m_pImpl;
       };
 
     } // end namespace widgets
