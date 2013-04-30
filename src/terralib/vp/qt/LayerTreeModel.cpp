@@ -282,3 +282,20 @@ QVariant te::vp::LayerTreeModel::headerData(int section, Qt::Orientation orienta
 
   return QAbstractItemModel::headerData(section, orientation, role);
 }
+
+std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> te::vp::LayerTreeModel::getSelected()
+{
+  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> selected;
+
+  for(size_t i = 0; i < m_items.size(); i++)
+  {
+    LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
+
+    if(litem->isSelected())
+    {
+      selected[litem->getLayer()] = litem->getSelected();
+    }
+  }
+
+  return selected;
+}
