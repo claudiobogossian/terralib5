@@ -36,9 +36,6 @@
 // Qt
 #include <QtGui/QTreeWidget>
 
-Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
-Q_DECLARE_METATYPE(te::dt::Property*);
-
 te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::IntersectionDialogForm)
@@ -62,9 +59,9 @@ void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> 
 {
   m_layers = layers;
 
-  LayerTreeModel* model = new LayerTreeModel(m_layers);
+  m_model = new LayerTreeModel(m_layers);
 
-  m_ui->m_layerTreeView->setModel(model);
+  m_ui->m_layerTreeView->setModel(m_model);
 }
 
 void te::vp::IntersectionDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
@@ -79,5 +76,20 @@ void te::vp::IntersectionDialog::setSelectedLayers(std::vector<std::string> sele
 
 void te::vp::IntersectionDialog::onFilterLineEditTextChanged(const QString& text)
 {
+  
+}
 
+int te::vp::IntersectionDialog::getMemoryUse()
+{
+  if(m_ui->m_wholeMemRadioButton->isChecked())
+    return WHOLE_MEM;
+  else if(m_ui->m_partiallyMemRadioButton->isChecked())
+    return PARTIALLY_MEM;
+  else
+    return LOW_MEM;
+}
+
+std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> te::vp::IntersectionDialog::getSeleted()
+{
+  return m_model->getSelected();
 }

@@ -133,3 +133,8 @@ void te::vp::PropertyItem::setSelected(bool selected)
 {
   m_selected = selected;
 }
+
+bool te::vp::PropertyItem::isSelected()
+{
+  return m_selected;
+}

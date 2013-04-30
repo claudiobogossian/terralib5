@@ -215,3 +215,20 @@ bool te::vp::LayerItem::isSelected()
 {
   return m_selected;
 }
+
+std::vector<te::dt::Property*> te::vp::LayerItem::getSelected()
+{
+  std::vector<te::dt::Property*> selected;
+
+  for(size_t i = 0; i < m_items.size(); i++)
+  {
+    PropertyItem* pitem = dynamic_cast<PropertyItem*>(m_items[i]);
+
+    if(pitem->isSelected())
+    {
+      selected.push_back(pitem->getProperty());
+    }
+  }
+
+  return selected;
+}
