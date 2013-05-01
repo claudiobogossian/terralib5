@@ -91,7 +91,7 @@ namespace te
           /*!
             \brief Adds the objects in the group.
 
-            \param oIds The objects ids to be inserted.
+            \param oIds The objects ids to be inserted. This DOES TAKES the ownership of \a oId.
           */
           virtual void addObjects(te::da::ObjectIdSet* oIds);
 
@@ -110,14 +110,14 @@ namespace te
           virtual void addObject(const int& row);
 
           /*!
-            \brief Sets the current data set being used. This method DOES NOT take the ownership of \a dset.
+            \brief Sets the current data set being used. This method DOES NOT take the ownership of the \a dset.
 
             \param dset The DataSet to be used.
           */
           virtual void setDataSet(te::da::DataSet* dset);
 
           /*!
-            \brief Sets the object id set. It WILL TAKE the ownershipe of \a objs.
+            \brief Sets the object id set. It WILL TAKE the ownership of the \a objs.
           */
           virtual void setObjectIdSet(te::da::ObjectIdSet* objs);
 

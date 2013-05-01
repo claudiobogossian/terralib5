@@ -5,6 +5,7 @@
 // TerraLib include files
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 
 // Qt
 #include <QtGui/QHeaderView>
@@ -299,6 +300,8 @@ void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType
   te::da::GetEmptyOIDSet(schema, objs);
 
   m_delegate->setObjectIdSet(objs);
+
+  m_model->setPkeysColumns(objs->getPropertyPos());
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)

@@ -28,6 +28,20 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "DataSetTableModel.h"
 
+// Qt
+#include <QtGui/QIcon>
+
+bool IsPkey(const int& column, const std::vector<size_t>& pkeys)
+{
+  std::vector<size_t>::const_iterator it;
+
+  for(it=pkeys.begin(); it!=pkeys.end(); ++it)
+    if(*it == column)
+      return true;
+
+  return false;
+}
+
 te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
   : QAbstractTableModel(parent),
     m_dataset(0),
@@ -49,6 +63,11 @@ void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset)
   m_dataset = dset;
 
   endResetModel();
+}
+
+void te::qt::widgets::DataSetTableModel::setPkeysColumns(const std::vector<size_t>& pkeys)
+{
+  m_pkeysColumns = pkeys;
 }
 
 int te::qt::widgets::DataSetTableModel::rowCount(const QModelIndex & parent) const
@@ -95,6 +114,12 @@ QVariant te::qt::widgets::DataSetTableModel::headerData(int section, Qt::Orienta
     {
       case Qt::DisplayRole:
         return m_dataset->getPropertyName(section).c_str();
+      break;
+
+      case Qt::DecorationRole:
+        return (IsPkey(section, m_pkeysColumns)) ?
+          QIcon::fromTheme("key") :
+          QVariant();
       break;
 
       default:
