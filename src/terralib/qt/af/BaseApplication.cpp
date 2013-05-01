@@ -514,7 +514,9 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
   // Docking
   QDockWidget* doc = new QDockWidget(this, Qt::Widget);
   te::qt::widgets::DataSetTableView* tbl = new te::qt::widgets::DataSetTableView(doc);
+
   tbl->setDataSet(lay->getData());
+  tbl->setLayerSchema(lay->getSchema());
 
   doc->setWindowTitle(lay->getTitle().c_str());
 

@@ -1,8 +1,10 @@
 #include "DataSetTableView.h"
 #include "DataSetTableModel.h"
+#include "HighlightDelegate.h"
 
 // TerraLib include files
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 
 // Qt
 #include <QtGui/QHeaderView>
@@ -104,6 +106,7 @@ class TablePopupFilter : public QObject
 
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
+      m_view->connect(this, SIGNAL(selectObject(const int&, const QColor&)), SLOT(highlightRow(const int&, const QColor&)));
     }
 
     /*!
@@ -180,7 +183,13 @@ class TablePopupFilter : public QObject
             QMouseEvent* evt = static_cast<QMouseEvent*>(event);
 
             if(evt->button() == Qt::LeftButton && watched == vport)
+            {
+              int row = m_view->rowAt(evt->pos().y());
+
+              emit selectObject(row, Qt::green);
+
               return true;
+            }
           }
         break;
 
@@ -230,6 +239,8 @@ class TablePopupFilter : public QObject
 
     void showColumn(const int&);
 
+    void selectObject(const int&, const QColor&);
+
   protected:
 
     te::qt::widgets::DataSetTableView* m_view;
@@ -252,6 +263,12 @@ QTableView(parent)
   setSelectionBehavior(QAbstractItemView::SelectColumns);
 
   m_popupFilter = new TablePopupFilter(this);
+
+  m_delegate = new HighlightDelegate(this);
+
+  m_delegate->setColor(Qt::green);
+
+  setItemDelegate(m_delegate);
 }
 
 te::qt::widgets::DataSetTableView::~DataSetTableView()
@@ -270,6 +287,18 @@ void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset)
     hideColumn(*it);
 
   m_popupFilter->setDataSet(dset);
+  m_delegate->setDataSet(dset);
+
+  dset->moveFirst();
+}
+
+void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType* schema)
+{
+  te::da::ObjectIdSet* objs = 0;
+
+  te::da::GetEmptyOIDSet(schema, objs);
+
+  m_delegate->setObjectIdSet(objs);
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
@@ -304,4 +333,11 @@ void te::qt::widgets::DataSetTableView::resetColumnsOrder()
     if(visCol != i)
       hdr->moveSection(visCol, i);
   }
+}
+
+void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const QColor& color)
+{
+  m_delegate->addObject(row);
+
+  viewport()->repaint();
 }

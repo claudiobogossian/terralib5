@@ -37,8 +37,8 @@ namespace te
   namespace da
   {
     class ObjectIdSet;
-
     class ObjectId;
+    class DataSet;
   }
 
   namespace qt
@@ -71,6 +71,9 @@ namespace te
           */
           virtual ~HighlightDelegate();
 
+
+          virtual void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
           /*!
             \brief Update the color group.
 
@@ -88,15 +91,43 @@ namespace te
           /*!
             \brief Adds the objects in the group.
 
-            \param objs The objects to be inserted.
+            \param oIds The objects ids to be inserted.
           */
-          virtual void addObjects(te::da::ObjectIdSet* objs);
+          virtual void addObjects(te::da::ObjectIdSet* oIds);
+
+          /*!
+            \brief Adds a single object id to the set.
+
+            \param oId The object id to be inserted. This DOES TAKES the ownership of \a oId.
+          */
+          virtual void addObject(te::da::ObjectId* oId);
+
+          /*!
+            \brief Adds a table row to the Objects Id set.
+
+            \param row The table row.
+          */
+          virtual void addObject(const int& row);
+
+          /*!
+            \brief Sets the current data set being used. This method DOES NOT take the ownership of \a dset.
+
+            \param dset The DataSet to be used.
+          */
+          virtual void setDataSet(te::da::DataSet* dset);
+
+          /*!
+            \brief Sets the object id set. It WILL TAKE the ownershipe of \a objs.
+          */
+          virtual void setObjectIdSet(te::da::ObjectIdSet* objs);
 
         protected:
 
           QColor m_color;               //!< Highlight color.
 
           te::da::ObjectIdSet* m_objs;  //!< Identifiers of the highlight object.
+
+          te::da::DataSet* m_dset;      //!< Pointer to the DataSet being used.
       };
     }
   }

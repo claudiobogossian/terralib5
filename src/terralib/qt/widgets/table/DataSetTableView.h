@@ -41,6 +41,7 @@ namespace te
   namespace da
   {
     class DataSet;
+    class DataSetType;
   }
 
   namespace qt
@@ -49,6 +50,7 @@ namespace te
     {
       // Forward declaration
       class DataSetTableModel;
+      class HighlightDelegate;
 
       /*!
         \class
@@ -83,6 +85,13 @@ namespace te
           */
           void setDataSet(te::da::DataSet* dset);
 
+          /*!
+            \brief Sets the schema of the data set. It is used to define the primary keys and create the ObjectIdSet.
+
+            \param schema The DataSetType to extract keys.
+          */
+          virtual void setLayerSchema(const te::da::DataSetType* schema);
+
         public slots:
           
           /*!
@@ -109,10 +118,18 @@ namespace te
           */
           void resetColumnsOrder();
 
+          /*!
+            \brief Used to highlight the data when the mouse is clicked over a row in the table.
+
+            \para row Row to be highlighted.
+          */
+          void highlightRow(const int& row, const QColor& color);
+
         protected:
 
           DataSetTableModel* m_model;       //!< The model to be used.
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
+          HighlightDelegate* m_delegate;    //!< Delegate use for rendering selected rows.
       };
     }
   }

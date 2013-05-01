@@ -21,15 +21,54 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
+#include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
+
+bool toHighlight(te::da::DataSet* dset, te::da::ObjectIdSet* objs, const int& row)
+{
+  dset->move(row);
+
+  std::vector<std::string> pNames = objs->getPropertyNames();
+  te::da::ObjectId* oId = te::da::GenerateOID(dset, pNames);
+
+  bool res = objs->contains(oId);
+
+  delete oId;
+
+  return res;
+}
 
 te::qt::widgets::HighlightDelegate::HighlightDelegate(QObject* parent) :
-QItemDelegate(parent)
+QItemDelegate(parent),
+  m_objs(0),
+  m_dset(0)
 {
 }
 
 te::qt::widgets::HighlightDelegate::~HighlightDelegate()
 {
+  delete m_objs;
 }
+
+void te::qt::widgets::HighlightDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+  if(!index.isValid())
+    return;
+
+  QStyleOptionViewItem opt = option;
+
+  if(toHighlight(m_dset, m_objs, index.row()))
+  {
+    opt.showDecorationSelected = true;
+    opt.state |= QStyle::State_Selected;
+    opt.palette.setColor(QPalette::Highlight, m_color);
+    opt.palette.setColor(QPalette::HighlightedText, Qt::black);
+  }
+
+  QItemDelegate::paint(painter, opt, index);
+}
+
 
 void te::qt::widgets::HighlightDelegate::setColor(const QColor& c)
 {
@@ -41,7 +80,37 @@ QColor te::qt::widgets::HighlightDelegate::getColor()
   return m_color;
 }
 
-void te::qt::widgets::HighlightDelegate::addObjects(te::da::ObjectIdSet* objs)
+void te::qt::widgets::HighlightDelegate::addObjects(te::da::ObjectIdSet* oIds)
 {
-  m_objs->Union(objs);
+  assert(m_objs);
+
+  m_objs->Union(oIds);
+}
+
+void te::qt::widgets::HighlightDelegate::addObject(te::da::ObjectId* oId)
+{
+  assert(m_objs);
+
+  m_objs->add(oId);
+}
+
+void te::qt::widgets::HighlightDelegate::addObject(const int& row)
+{
+  assert(m_objs);
+  assert(m_dset);
+
+  m_dset->move(row);
+
+  te::da::ObjectId* id = te::da::GenerateOID(m_dset, m_objs->getPropertyNames());
+  addObject(id);
+}
+
+void te::qt::widgets::HighlightDelegate::setDataSet(te::da::DataSet* dset)
+{
+  m_dset = dset;
+}
+
+void te::qt::widgets::HighlightDelegate::setObjectIdSet(te::da::ObjectIdSet* objs)
+{
+  m_objs = objs;
 }

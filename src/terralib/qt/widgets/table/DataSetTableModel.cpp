@@ -28,20 +28,6 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "DataSetTableModel.h"
 
-void MoveDataSet(te::da::DataSet* dset, const int& currentRow, const int& nextRow)
-{
-  if(currentRow != nextRow)
-  {
-    if(nextRow == (currentRow+1))
-    {
-      if(!dset->moveNext())
-        throw te::common::Exception("Fail to move next on data set.");
-    }
-    else if(!dset->move(nextRow))
-      throw te::common::Exception("Fail to move dataSet.");
-  }
-}
-
 te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
   : QAbstractTableModel(parent),
     m_dataset(0),
@@ -87,8 +73,11 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
     break;
 
     case Qt::DisplayRole:
-      MoveDataSet(m_dataset, m_currentRow, index.row());
-      m_currentRow = index.row();
+      if(m_currentRow != index.row())
+      {
+        m_currentRow = index.row();
+        m_dataset->move(m_currentRow);
+      }
       return m_dataset->getAsString(index.column()).c_str();
     break;
 
