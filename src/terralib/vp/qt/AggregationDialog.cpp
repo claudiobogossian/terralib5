@@ -29,6 +29,7 @@
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../core/Config.h"
 #include "../core/Exception.h"
 #include "AggregationDialog.h"
 #include "LayerTreeModel.h"
@@ -36,11 +37,10 @@
 #include "VectorProcessingConfig.h"
 
 // Qt
+#include <QtCore/QList>
 #include <QtGui/QTreeWidget>
-#include <QListWidget>
-
-Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
-Q_DECLARE_METATYPE(te::dt::Property*);
+#include <QtGui/QListWidget>
+#include <QtGui/QListWidgetItem>
 
 te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -48,19 +48,25 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
 {
 // add controls
   m_ui->setupUi(this);
-
+//add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-aggregation-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
-  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));   
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked()));
-  
-  setOperations();
-  
+  setAttributes();
+
+  setAttributesNameMap();
+
   connect(m_ui->m_layerTreeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onTreeViewClicked(const QModelIndex&)));
 
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilterLineEditTextChanged(const QString&)));
 
+  connect(m_ui->m_outputListWidget, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(onOutputListWidgetClicked(QListWidgetItem *)));
+
+  connect(m_ui->m_selectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectAllComboBoxChanged(int)));
+  connect(m_ui->m_rejectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRejectAllComboBoxChanged(int)));
+
+  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));   
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked()));
 }
 
 te::vp::AggregationDialog::~AggregationDialog()
@@ -82,42 +88,61 @@ void te::vp::AggregationDialog::setSelectedLayers(std::vector<std::string> selec
   m_selectedLayers = selectedLayers;
 }
 
-void te::vp::AggregationDialog::setOperations()
+void te::vp::AggregationDialog::setAttributes()
 {
   m_ui->m_selectAllComboBox->addItem("");
-  m_ui->m_selectAllComboBox->addItem(tr("Minimum value"), MIN_VALUE);
-  m_ui->m_selectAllComboBox->addItem(tr("Maximum value"), MAX_VALUE);
-  m_ui->m_selectAllComboBox->addItem(tr("Mean"), MEAN);
-  m_ui->m_selectAllComboBox->addItem(tr("Sum of values"), SUM);
-  m_ui->m_selectAllComboBox->addItem(tr("Total number of values"), COUNT);
-  m_ui->m_selectAllComboBox->addItem(tr("Total not null values"), VALID_COUNT);
-  m_ui->m_selectAllComboBox->addItem(tr("Standard deviation"), STANDARD_DEVIATION);
-  m_ui->m_selectAllComboBox->addItem(tr("Kernel"), KERNEL);
-  m_ui->m_selectAllComboBox->addItem(tr("Variance"), VARIANCE);
-  m_ui->m_selectAllComboBox->addItem(tr("Skewness"), SKEWNESS);
-  m_ui->m_selectAllComboBox->addItem(tr("Kurtosis"), KURTOSIS);
-  m_ui->m_selectAllComboBox->addItem(tr("Amplitude"), AMPLITUDE);
-  m_ui->m_selectAllComboBox->addItem(tr("Median"), MEDIAN);
-  m_ui->m_selectAllComboBox->addItem(tr("Coefficient variation"), VAR_COEFF);
-  m_ui->m_selectAllComboBox->addItem(tr("Mode"), MODE);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Minimum value"), MIN_VALUE);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Maximum value"), MAX_VALUE);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Mean"), MEAN);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Sum of values"), SUM);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Total number of values"), COUNT);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Total not null values"), VALID_COUNT);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Standard deviation"), STANDARD_DEVIATION);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Kernel"), KERNEL);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Variance"), VARIANCE);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Skewness"), SKEWNESS);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Kurtosis"), KURTOSIS);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Amplitude"), AMPLITUDE);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Median"), MEDIAN);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Coefficient variation"), VAR_COEFF);
+  m_ui->m_selectAllComboBox->addItem(TR_VP("Mode"), MODE);
 
   m_ui->m_rejectAllComboBox->addItem("");
-  m_ui->m_rejectAllComboBox->addItem(tr("Minimum value"), MIN_VALUE);
-  m_ui->m_rejectAllComboBox->addItem(tr("Maximum value"), MAX_VALUE);
-  m_ui->m_rejectAllComboBox->addItem(tr("Mean"), MEAN);
-  m_ui->m_rejectAllComboBox->addItem(tr("Sum of values"), SUM);
-  m_ui->m_rejectAllComboBox->addItem(tr("Total number of values"), COUNT);
-  m_ui->m_rejectAllComboBox->addItem(tr("Total not null values"), VALID_COUNT);
-  m_ui->m_rejectAllComboBox->addItem(tr("Standard deviation"), STANDARD_DEVIATION);
-  m_ui->m_rejectAllComboBox->addItem(tr("Kernel"), KERNEL);
-  m_ui->m_rejectAllComboBox->addItem(tr("Variance"), VARIANCE);
-  m_ui->m_rejectAllComboBox->addItem(tr("Skewness"), SKEWNESS);
-  m_ui->m_rejectAllComboBox->addItem(tr("Kurtosis"), KURTOSIS);
-  m_ui->m_rejectAllComboBox->addItem(tr("Amplitude"), AMPLITUDE);
-  m_ui->m_rejectAllComboBox->addItem(tr("Median"), MEDIAN);
-  m_ui->m_rejectAllComboBox->addItem(tr("Coefficient variation"), VAR_COEFF);
-  m_ui->m_rejectAllComboBox->addItem(tr("Mode"), MODE);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Minimum value"), MIN_VALUE);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Maximum value"), MAX_VALUE);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Mean"), MEAN);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Sum of values"), SUM);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Total number of values"), COUNT);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Total not null values"), VALID_COUNT);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Standard deviation"), STANDARD_DEVIATION);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Kernel"), KERNEL);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Variance"), VARIANCE);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Skewness"), SKEWNESS);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Kurtosis"), KURTOSIS);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Amplitude"), AMPLITUDE);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Median"), MEDIAN);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Coefficient variation"), VAR_COEFF);
+  m_ui->m_rejectAllComboBox->addItem(TR_VP("Mode"), MODE);
 
+}
+
+void te::vp::AggregationDialog::setAttributesNameMap()
+{
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MIN_VALUE, TR_VP("Minimum value")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MAX_VALUE, TR_VP("Maximum value")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MEAN, TR_VP("Mean")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(SUM, TR_VP("Sum of values")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(COUNT, TR_VP("Total number of values")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(VALID_COUNT, TR_VP("Total not null values")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(STANDARD_DEVIATION, TR_VP("Standard deviation")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(KERNEL, TR_VP("Kernel")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(VARIANCE, TR_VP("Variance")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(SKEWNESS, TR_VP("Skewness")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(KURTOSIS, TR_VP("Kurtosis")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(AMPLITUDE, TR_VP("Amplitude")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MEDIAN, TR_VP("Median")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(VAR_COEFF, TR_VP("Coefficient variation")));
+  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MODE, TR_VP("Mode")));
 }
 
 void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
@@ -133,6 +158,10 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
   QStringList propertyList;
   int propertyType;
 
+//set both combobox at first position
+  m_ui->m_selectAllComboBox->setCurrentIndex(0);
+  m_ui->m_rejectAllComboBox->setCurrentIndex(0);
+
   std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> selected = m_model->getSelected();
   
   if(selected.size() > 0)
@@ -145,29 +174,31 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
 
       if(propertyType == te::dt::STRING_TYPE)
       {  
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : MIN_VALUE");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : MAX_VALUE");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : COUNT");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : VALID_COUNT");
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MIN_VALUE].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MAX_VALUE].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[COUNT].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VALID_COUNT].c_str());
+
         propertyList.append("");
       }
       else
       {
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : MIN_VALUE");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : MAX_VALUE");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : MEAN");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : SUM");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : COUNT");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : VALID_COUNT");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : STANDARD_DEVIATION");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : KERNEL");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : VARIANCE");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : SKEWNESS");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : KURTOSIS");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : AMPLITUDE");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : MEDIAN");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : VAR_COEFF");
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : MODE");
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MIN_VALUE].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MAX_VALUE].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MEAN].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[SUM].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[COUNT].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VALID_COUNT].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[STANDARD_DEVIATION].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[KERNEL].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VARIANCE].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[SKEWNESS].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[KURTOSIS].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[AMPLITUDE].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MEDIAN].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VAR_COEFF].c_str());
+        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MODE].c_str());
+     
         propertyList.append("");
       }
     }
@@ -181,6 +212,45 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
   }
 }
 
+void te::vp::AggregationDialog::onSelectAllComboBoxChanged(int index)
+{
+  QString text = m_ui->m_selectAllComboBox->itemText(index);
+  Qt::MatchFlags flag = 3; //The search term matches the end of the item.
+  
+  if(text=="")
+    return;
+
+  QList<QListWidgetItem *> listFound;
+  listFound = m_ui->m_outputListWidget->findItems(text, flag);
+  
+  for(size_t i=0; i < listFound.size(); i++)
+    listFound.at(i)->setSelected(true);
+
+  m_ui->m_rejectAllComboBox->setCurrentIndex(0);
+}
+
+void te::vp::AggregationDialog::onRejectAllComboBoxChanged(int index)
+{
+  QString text = m_ui->m_selectAllComboBox->itemText(index);
+  Qt::MatchFlags flag = 3; //The search term matches the end of the item.
+  
+  if(text=="")
+    return;
+
+  QList<QListWidgetItem *> listFound;
+  listFound = m_ui->m_outputListWidget->findItems(text, flag);
+  
+  for(size_t i=0; i < listFound.size(); i++)
+    listFound.at(i)->setSelected(false);
+
+  m_ui->m_selectAllComboBox->setCurrentIndex(0);
+}
+
+void te::vp::AggregationDialog::onOutputListWidgetClicked(QListWidgetItem * item)
+{
+  if(item->text()=="")
+    item->setSelected(false);
+}
 
 void te::vp::AggregationDialog::onCancelPushButtonClicked()
 {
