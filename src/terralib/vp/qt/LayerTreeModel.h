@@ -172,7 +172,7 @@ namespace te
 
           \return It returns a map of Layers end Properties selected.
         */
-        std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> getSelected();
+        std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > getSelected();
 
         void setLayerList(const std::list<te::map::AbstractLayerPtr>& layers);
 

@@ -243,7 +243,7 @@ bool te::vp::LayerTreeModel::setData(const QModelIndex& index, const QVariant& v
       if(item->getLayer() != 0)
       {
 // Unselect all layers different than "item"
-        for(size_t i = 0; i < m_items.size(); i++)
+        for(size_t i = 0; i < m_items.size(); ++i)
         {
           if(m_items[i] == item)
             continue;
@@ -283,7 +283,7 @@ std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > te::vp::Lay
 {
   std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > selected;
 
-  for(size_t i = 0; i < m_items.size(); i++)
+  for(size_t i = 0; i < m_items.size(); ++i)
   {
     LayerItem* litem = dynamic_cast<LayerItem*>(m_items[i]);
 
