@@ -20,7 +20,7 @@
 /*!
   \file terralib/vp/qt/LayerTreeModel.h
 
-  \brief ????
+  \brief The class that defines the model used in the Qt Model/View architecture
 */
 
 #ifndef __TERRALIB_VP_QT_INTERNAL_LAYERTREEMODEL_H
@@ -156,14 +156,30 @@ namespace te
         */
         bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
+        /*!
+          \brief Returns the data for the given role and section in the header with the specified orientation.
+
+          \param section      The section number corresponds to the column number.
+          \param orientation  This type is used to signify an object's orientation.
+          \param role         The role used.
+
+          \return The data for the given role and section in the header with the specified orientation.
+        */
         QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
+        /*!
+          \brief It get the Layer selected and the Properties selected of the Layer
+
+          \return It returns a map of Layers end Properties selected.
+        */
         std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> getSelected();
+
+        void setLayerList(const std::list<te::map::AbstractLayerPtr>& layers);
 
       private:
 
         std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;
-        bool m_singleSelection;
+        bool m_singleSelection;  //!< If is single selection or multiselection
     };
   }   // end namespace vp
 }     // end namespace te
