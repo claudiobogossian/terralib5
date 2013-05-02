@@ -619,7 +619,7 @@ bool te::mem::ExpansibleBandBlocksManager::addBottomBands( const unsigned int& e
     {
       for( unsigned int blockYIdx = 0 ; blockYIdx < numberOfBlocksY ; ++blockYIdx )
       {
-        m_ramBlocksPointers[ expansionIdx ][ blockYIdx ].resize( numberOfBlocksX );
+        m_ramBlocksPointers[ expansionIdx ][ blockYIdx ].resize( numberOfBlocksX, 0 );
         m_activeDiskBlocksInfo[ expansionIdx ][ blockYIdx ].resize( numberOfBlocksX );
         
         for( unsigned int blockXIdx = 0 ; blockXIdx < numberOfBlocksX ; ++blockXIdx )

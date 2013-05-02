@@ -139,6 +139,17 @@ namespace te
     */
     TEDATAACCESSEXPORT DataSourcePtr GetDataSource(const std::string& datasourceId, const bool opened = true);
 
+    /*!
+      \brief Returns an empty ObjectIdSet, with the definitions of fields that compose it.
+
+      \param type[in] A pointer to a valid data set type. Do not pass null.
+
+      \param set[out] The ObjectIdSet containing only the the fields definitions. This pointer will be instantiated inside the method.
+
+      \note The caller WILL TAKE the ownership of \a set.
+    */
+    TEDATAACCESSEXPORT void GetEmptyOIDSet(const DataSetType* type, ObjectIdSet*& set);
+    
     /*
       \brief It returns the property names used to generate the object ids.
 

@@ -32,6 +32,9 @@
 // Qt
 #include <QtCore/QAbstractTableModel>
 
+// STL
+#include <vector>
+
 namespace te
 {
   // Forward declarations
@@ -71,6 +74,11 @@ namespace te
           void setDataSet(te::da::DataSet* dset);
 
           /*!
+            \brief Sets the columns used as pkeys, for presentation purposes;
+          */
+          void setPkeysColumns(const std::vector<size_t>& pkeys);
+
+          /*!
             \name QAbstractTableModel re-implementation methods.
 
             \brief Re-implementation of QAbstractTableModel methods.
@@ -93,8 +101,9 @@ namespace te
 
         protected:
 
-          te::da::DataSet* m_dataset;   //!< The dataset being used.
-          mutable int m_currentRow;     //!< An internal row pointer.
+          te::da::DataSet* m_dataset;         //!< The dataset being used.
+          mutable int m_currentRow;           //!< An internal row pointer.
+          std::vector<size_t> m_pkeysColumns; //!< Primary key columns.
       };
     }
   }

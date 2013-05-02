@@ -320,6 +320,29 @@ te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId, con
   return datasource;
 }
 
+void te::da::GetEmptyOIDSet(const te::da::DataSetType* type, te::da::ObjectIdSet*& set)
+{
+  assert (type);
+
+  std::vector<size_t> ppos;
+  std::vector<int> ptypes;
+  std::vector<std::string> pnames;
+  std::vector<size_t>::iterator it;
+  set = new ObjectIdSet();
+
+  GetOIDPropertyPos(type, ppos);
+  
+  for(it=ppos.begin(); it!=ppos.end(); ++it)
+  {
+    te::dt::Property* prop = type->getProperty(*it); 
+    ptypes.push_back(prop->getType());
+    pnames.push_back(prop->getName());
+  }
+
+  for(size_t i=0; i<ppos.size(); i++)
+    set->addProperty(pnames[i], ppos[i], ptypes[i]);
+}
+
 void te::da::GetOIDPropertyNames(const te::da::DataSetType* type, std::vector<std::string>& pnames)
 {
   assert(type);

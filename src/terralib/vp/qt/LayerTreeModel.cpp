@@ -30,10 +30,6 @@
 #include "LayerItem.h"
 #include "LayerTreeModel.h"
 
-// Qt
-#include <QtCore/QMimeData>
-#include <QtCore/QStringList>
-
 te::vp::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, bool singleSelection, QObject * parent)
   : QAbstractItemModel(parent),
     m_singleSelection(singleSelection)
@@ -283,9 +279,9 @@ QVariant te::vp::LayerTreeModel::headerData(int section, Qt::Orientation orienta
   return QAbstractItemModel::headerData(section, orientation, role);
 }
 
-std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> te::vp::LayerTreeModel::getSelected()
+std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > te::vp::LayerTreeModel::getSelected()
 {
-  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> selected;
+  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > selected;
 
   for(size_t i = 0; i < m_items.size(); i++)
   {
@@ -298,4 +294,25 @@ std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> te::vp::Laye
   }
 
   return selected;
+}
+
+void te::vp::LayerTreeModel::setLayerList(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  //if(layers.empty())
+    //return;
+
+  m_items.clear();
+
+  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
+  {
+    te::qt::widgets::AbstractLayerTreeItem* litem = new LayerItem(*it, 0);
+
+    if(litem)
+      m_items.push_back(litem);
+  }
+
+  // after all changes is necessary to emit the dataChenged signal to refresh the checkboxes.
+  QModelIndex start_ix = createIndex( 0, 0 );
+  QModelIndex end_ix = createIndex( 0, 1 );
+  emit( dataChanged( start_ix, end_ix ) );
 }

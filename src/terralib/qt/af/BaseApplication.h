@@ -43,9 +43,15 @@ namespace te
 {
   namespace qt
   {
+    namespace widgets
+    {
+// Forward declarations
+      class DataSetTableDockWidget;
+    }
+
     namespace af
     {
-// Forwar declarations
+// Forward declarations
       class ApplicationController;
       class LayerExplorer;
       class MapDisplay;
@@ -242,7 +248,7 @@ namespace te
           MapDisplay* m_display;
           TabularViewer* m_viewer;
 
-          std::vector<QDockWidget*> m_tableDocks;
+          std::vector<te::qt::widgets::DataSetTableDockWidget*> m_tableDocks;
 
 // Project
           Project* m_project;

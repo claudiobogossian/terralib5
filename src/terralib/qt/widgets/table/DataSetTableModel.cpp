@@ -28,18 +28,18 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "DataSetTableModel.h"
 
-void MoveDataSet(te::da::DataSet* dset, const int& currentRow, const int& nextRow)
+// Qt
+#include <QtGui/QIcon>
+
+bool IsPkey(const int& column, const std::vector<size_t>& pkeys)
 {
-  if(currentRow != nextRow)
-  {
-    if(nextRow == (currentRow+1))
-    {
-      if(!dset->moveNext())
-        throw te::common::Exception("Fail to move next on data set.");
-    }
-    else if(!dset->move(nextRow))
-      throw te::common::Exception("Fail to move dataSet.");
-  }
+  std::vector<size_t>::const_iterator it;
+
+  for(it=pkeys.begin(); it!=pkeys.end(); ++it)
+    if(*it == column)
+      return true;
+
+  return false;
 }
 
 te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
@@ -65,6 +65,11 @@ void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset)
   endResetModel();
 }
 
+void te::qt::widgets::DataSetTableModel::setPkeysColumns(const std::vector<size_t>& pkeys)
+{
+  m_pkeysColumns = pkeys;
+}
+
 int te::qt::widgets::DataSetTableModel::rowCount(const QModelIndex & parent) const
 {
   return (m_dataset == 0) ? 0 : (int)m_dataset->size();
@@ -87,8 +92,11 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
     break;
 
     case Qt::DisplayRole:
-      MoveDataSet(m_dataset, m_currentRow, index.row());
-      m_currentRow = index.row();
+      if(m_currentRow != index.row())
+      {
+        m_currentRow = index.row();
+        m_dataset->move(m_currentRow);
+      }
       return m_dataset->getAsString(index.column()).c_str();
     break;
 
@@ -106,6 +114,12 @@ QVariant te::qt::widgets::DataSetTableModel::headerData(int section, Qt::Orienta
     {
       case Qt::DisplayRole:
         return m_dataset->getPropertyName(section).c_str();
+      break;
+
+      case Qt::DecorationRole:
+        return (IsPkey(section, m_pkeysColumns)) ?
+          QIcon::fromTheme("key") :
+          QVariant();
       break;
 
       default:

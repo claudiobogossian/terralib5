@@ -46,6 +46,8 @@ namespace te
       \note The first band blocking scheme will be taken as reference for the other bands.
       
       \note Adding lines/columns may add extra lines/columns to correctly fit the internal blocking structure.
+      
+      \note The geographic limits will be automatically adjust following the requested expansion.
     */
     class TEMEMORYEXPORT ExpansibleRaster: public te::rst::Raster
     {
