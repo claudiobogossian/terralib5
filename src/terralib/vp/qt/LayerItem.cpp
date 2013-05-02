@@ -20,16 +20,15 @@
 /*!
   \file terralib/vp/qt/LayerItem.cpp
 
-  \brief ????
+  \brief A class that represents a Layer in a LayerTreeModel.
 */
 
 // TerraLib
 #include "../../dataaccess/dataset/DataSetType.h"
-#include "../../qt/widgets/datasource/explorer/PropertyItem.h"
 #include "LayerItem.h"
 #include "PropertyItem.h"
 
-#include <QtGui/QMenu>
+// Qt
 #include <QtGui/QWidget>
 
 te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)

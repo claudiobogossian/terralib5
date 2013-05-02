@@ -20,7 +20,7 @@
 /*!
   \file terralib/vp/qt/PropertyItem.cpp
 
-  \brief ????
+  \brief A class that represents a Property in a LayerTreeModel.
 */
 
 // TerraLib
@@ -31,7 +31,6 @@
 #include "PropertyItem.h"
 
 // Qt
-#include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
 te::vp::PropertyItem::PropertyItem(te::dt::Property* p, AbstractLayerTreeItem* parent)

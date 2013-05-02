@@ -32,6 +32,7 @@
 
 // STL
 #include <list>
+#include <map>
 #include <memory>
 
 // Qt
@@ -40,6 +41,7 @@
 namespace Ui { class AggregationDialogForm; }
 
 class QModelIndex;
+class QListWidgetItem;
 class QTreeWidgetItem;
 
 namespace te
@@ -55,23 +57,23 @@ namespace te
       LOW_MEM
     };
 
-    enum Operation
+    enum Attributes
     {
-      MIN_VALUE, /**/
-      MAX_VALUE, /**/
-      MEAN, /**/
-      SUM, /**/
-      COUNT, /**/
-      VALID_COUNT, /**/
-      STANDARD_DEVIATION, /*standard deviation*/
-      KERNEL, /**/
-      VARIANCE, /**/
-      SKEWNESS, /**/
-      KURTOSIS, /**/
-      AMPLITUDE, /*amplitude*/
-      MEDIAN, /**/
-      VAR_COEFF, /**/
-      MODE /*mode*/
+      MIN_VALUE, /*Minimum value*/
+      MAX_VALUE, /*Maximum value*/
+      MEAN, /*Mean*/
+      SUM, /*Sum of values*/
+      COUNT, /*Total number of values*/
+      VALID_COUNT, /*Total not null values*/
+      STANDARD_DEVIATION, /*Standard deviation*/
+      KERNEL, /*Kernel*/
+      VARIANCE, /*Variance*/
+      SKEWNESS, /*Skewness*/
+      KURTOSIS, /*Kurtosis*/
+      AMPLITUDE, /*Amplitude*/
+      MEDIAN, /*Median*/
+      VAR_COEFF, /*Coefficient variation*/
+      MODE /*Mode*/
     };
 
     class TEVPEXPORT AggregationDialog : public QDialog
@@ -88,7 +90,9 @@ namespace te
 
         void setSelectedLayers(std::vector<std::string> selectedLayers);
 
-        void setOperations();
+        void setAttributes();
+
+        void setAttributesNameMap();
 
       private:
 
@@ -100,6 +104,12 @@ namespace te
         
         void onTreeViewClicked(const QModelIndex& index);
 
+        void onSelectAllComboBoxChanged(int index);
+
+        void onRejectAllComboBoxChanged(int index);
+
+        void onOutputListWidgetClicked(QListWidgetItem * item);
+
         void onCancelPushButtonClicked();
 
         void onHelpPushButtonClicked();
@@ -110,6 +120,7 @@ namespace te
         std::list<te::map::AbstractLayerPtr> m_layers;
         std::vector<std::string> m_selectedLayers;
         LayerTreeModel* m_model;
+        std::map<Attributes, std::string> m_attributeNameMap;
     };
   }   // end namespace vp
 }     // end namespace te

@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../common/Translator.h"
-#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../common/StringUtils.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../maptools/AbstractLayer.h"
@@ -39,15 +39,16 @@
 // Qt
 #include <QtGui/QTreeWidget>
 #include <QtGui/QFileDialog>
+#include <QtGui/QAbstractItemView>
 
 te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::IntersectionDialogForm)
+    m_ui(new Ui::IntersectionDialogForm),
+    m_layers(std::list<te::map::AbstractLayerPtr>()),
+    m_model(0)
 {
 // add controls
   m_ui->setupUi(this);
-
-  //m_ui->m_layerTreeView->header()->setStretchLastSection(false);
 
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-intersection-hint").pixmap(48,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
@@ -66,23 +67,42 @@ void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> 
 {
   m_layers = layers;
 
+  if(m_model != 0)
+    delete m_model;
+
   m_model = new LayerTreeModel(m_layers);
+  
+  m_ui->m_layerTreeView->setModel(m_model);
+}
+
+void te::vp::IntersectionDialog::setFilteredLayers(std::list<te::map::AbstractLayerPtr> layers)
+{
+  delete m_model;
+
+  m_model = new LayerTreeModel(layers);
 
   m_ui->m_layerTreeView->setModel(m_model);
 }
 
-void te::vp::IntersectionDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
-{
-  
-}
-
-void te::vp::IntersectionDialog::setSelectedLayers(std::vector<std::string> selectedLayers)
-{
-  m_selectedLayers = selectedLayers;
-}
-
 void te::vp::IntersectionDialog::onFilterLineEditTextChanged(const QString& text)
 {
+  std::list<te::map::AbstractLayerPtr> filteredList;
+
+  if(text == "")
+  {
+    setLayers(m_layers);
+    return;
+  }
+
+  for(std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin(); it != m_layers.end(); it++)
+  {
+    std::string layName = (*it)->getTitle().substr(0, text.size());
+    
+    if(te::common::Convert2UCase(layName) == te::common::Convert2UCase(text.toStdString()))
+      filteredList.push_back(*it);
+  }
+
+  setFilteredLayers(filteredList);
   
 }
 
