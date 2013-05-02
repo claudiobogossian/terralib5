@@ -133,7 +133,7 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
   QStringList propertyList;
   int propertyType;
 
-  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> selected = m_model->getSelected();
+  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > selected = m_model->getSelected();
   
   if(selected.size() > 0)
   {

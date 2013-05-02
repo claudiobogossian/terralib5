@@ -158,7 +158,7 @@ namespace te
 
         QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-        std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> getSelected();
+        std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > getSelected();
 
       private:
 
