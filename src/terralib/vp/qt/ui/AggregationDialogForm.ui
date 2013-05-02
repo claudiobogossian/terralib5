@@ -161,7 +161,11 @@
          </layout>
         </item>
         <item>
-         <widget class="QListView" name="m_outputListView"/>
+         <widget class="QListWidget" name="m_outputListWidget">
+          <property name="selectionMode">
+           <enum>QAbstractItemView::MultiSelection</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
