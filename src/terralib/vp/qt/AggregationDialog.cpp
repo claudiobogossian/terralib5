@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/Translator.h"
+#include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
@@ -48,20 +49,17 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
 {
 // add controls
   m_ui->setupUi(this);
-//add icons
+
+// add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-aggregation-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
   setAttributes();
-
   setAttributesNameMap();
 
   connect(m_ui->m_layerTreeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onTreeViewClicked(const QModelIndex&)));
-
-  connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilterLineEditTextChanged(const QString&)));
-
+  connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
   connect(m_ui->m_outputListWidget, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(onOutputListWidgetClicked(QListWidgetItem *)));
-
   connect(m_ui->m_selectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectAllComboBoxChanged(int)));
   connect(m_ui->m_rejectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRejectAllComboBoxChanged(int)));
 
@@ -83,9 +81,18 @@ void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
   m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
 }
 
-void te::vp::AggregationDialog::setSelectedLayers(std::vector<std::string> selectedLayers)
+void te::vp::AggregationDialog::setFilteredLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
-  m_selectedLayers = selectedLayers;
+}
+
+int te::vp::AggregationDialog::getMemoryUse()
+{
+  if(m_ui->m_wholeMemRadioButton->isChecked())
+    return WHOLE_MEM;
+  else if(m_ui->m_partiallyMemRadioButton->isChecked())
+    return PARTIALLY_MEM;
+  else
+    return LOW_MEM;
 }
 
 void te::vp::AggregationDialog::setAttributes()
