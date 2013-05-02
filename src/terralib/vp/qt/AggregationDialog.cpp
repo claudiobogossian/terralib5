@@ -158,15 +158,11 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
   QStringList propertyList;
   int propertyType;
 
-<<<<<<< HEAD
 //set both combobox at first position
   m_ui->m_selectAllComboBox->setCurrentIndex(0);
   m_ui->m_rejectAllComboBox->setCurrentIndex(0);
 
-  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>> selected = m_model->getSelected();
-=======
   std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > selected = m_model->getSelected();
->>>>>>> 35ffedcb06e4c3259b04f5adf848ad08063488a2
   
   if(selected.size() > 0)
   {
