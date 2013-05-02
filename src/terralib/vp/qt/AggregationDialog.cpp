@@ -215,7 +215,7 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
 void te::vp::AggregationDialog::onSelectAllComboBoxChanged(int index)
 {
   QString text = m_ui->m_selectAllComboBox->itemText(index);
-  Qt::MatchFlags flag = 3; //The search term matches the end of the item.
+  Qt::MatchFlags flag = Qt::MatchEndsWith; //The search term matches the end of the item.
   
   if(text=="")
     return;
@@ -232,7 +232,7 @@ void te::vp::AggregationDialog::onSelectAllComboBoxChanged(int index)
 void te::vp::AggregationDialog::onRejectAllComboBoxChanged(int index)
 {
   QString text = m_ui->m_selectAllComboBox->itemText(index);
-  Qt::MatchFlags flag = 3; //The search term matches the end of the item.
+  Qt::MatchFlags flag = Qt::MatchEndsWith; //The search term matches the end of the item.
   
   if(text=="")
     return;
