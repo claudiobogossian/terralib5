@@ -87,13 +87,6 @@ namespace te
           \return MemoryUse enum.
         */
         int getMemoryUse();
-        
-        /*!
-          \brief Set layer filtered
-
-          \param layers Layers filtered.
-        */
-        void setFilteredLayers(std::list<te::map::AbstractLayerPtr> layers);
 
       private:
 

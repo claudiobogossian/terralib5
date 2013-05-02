@@ -35,6 +35,7 @@
 #include "LayerTreeModel.h"
 #include "ui_IntersectionDialogForm.h"
 #include "VectorProcessingConfig.h"
+#include "Utils.h"
 
 // Qt
 #include <QtGui/QTreeWidget>
@@ -75,35 +76,18 @@ void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> 
   m_ui->m_layerTreeView->setModel(m_model);
 }
 
-void te::vp::IntersectionDialog::setFilteredLayers(std::list<te::map::AbstractLayerPtr> layers)
-{
-  delete m_model;
-
-  m_model = new LayerTreeModel(layers);
-
-  m_ui->m_layerTreeView->setModel(m_model);
-}
-
 void te::vp::IntersectionDialog::onFilterLineEditTextChanged(const QString& text)
 {
-  std::list<te::map::AbstractLayerPtr> filteredList;
+  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
+
+  delete m_model;
 
   if(text == "")
-  {
-    setLayers(m_layers);
-    return;
-  }
+    filteredLayers = m_layers;
 
-  for(std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin(); it != m_layers.end(); it++)
-  {
-    std::string layName = (*it)->getTitle().substr(0, text.size());
-    
-    if(te::common::Convert2UCase(layName) == te::common::Convert2UCase(text.toStdString()))
-      filteredList.push_back(*it);
-  }
+  m_model = new LayerTreeModel(filteredLayers);
 
-  setFilteredLayers(filteredList);
-  
+  m_ui->m_layerTreeView->setModel(m_model);
 }
 
 int te::vp::IntersectionDialog::getMemoryUse()
