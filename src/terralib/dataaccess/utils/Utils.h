@@ -56,6 +56,7 @@ namespace te
     class DataSetTypeConverter;
     class DataSourceCatalogLoader;
     class DataSourceTransactor;
+    class ObjectId;
     class ObjectIdSet;
 
     TEDATAACCESSEXPORT void LoadFull(te::da::DataSetType* dataset, const std::string& datasourceId);
@@ -138,6 +139,17 @@ namespace te
     */
     TEDATAACCESSEXPORT DataSourcePtr GetDataSource(const std::string& datasourceId, const bool opened = true);
 
+    /*!
+      \brief Returns an empty ObjectIdSet, with the definitions of fields that compose it.
+
+      \param type[in] A pointer to a valid data set type. Do not pass null.
+
+      \param set[out] The ObjectIdSet containing only the the fields definitions. This pointer will be instantiated inside the method.
+
+      \note The caller WILL TAKE the ownership of \a set.
+    */
+    TEDATAACCESSEXPORT void GetEmptyOIDSet(const DataSetType* type, ObjectIdSet*& set);
+    
     /*
       \brief It returns the property names used to generate the object ids.
 
@@ -161,9 +173,9 @@ namespace te
     TEDATAACCESSEXPORT void GetOIDPropertyPos(const DataSetType* type, std::vector<std::size_t>& ppos);
 
     /*
-      \brief It generates the set of unique ids for every element of the given dataset.
+      \brief It generates the set of object ids for every element of the given dataset.
 
-      This method tries to use the primary key properties defined on data set type to generate the unique ids.
+      This method tries to use the primary key properties defined on data set type to generate the object ids.
       If they do not exist it tries to use unique keys. If they do not exist then it uses all the properties.
      
       \param dataset A pointer to a valid data set. Do not pass null.
@@ -174,7 +186,7 @@ namespace te
     TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const DataSetType* type);
 
     /*
-      \brief It generates the set of unique ids for every element of the given dataset using a set of attributes.
+      \brief It generates the set of object ids for every element of the given dataset using a set of attributes.
 
       \param dataset A pointer to a valid data set.
       \param names   A non empty vector of property names to be used to identify the elements.
@@ -182,6 +194,16 @@ namespace te
       \return The object id set generated from the given dataset.
     */
     TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const std::vector<std::string>& names);
+
+    /*
+      \brief It generates an object id for the current element of the given dataset using the informed set of attributes.
+
+      \param dataset A pointer to a valid data set.
+      \param names   A non empty vector of property names to be used to identify the element.
+     
+      \return The object id generated for the current element of the given dataset.
+    */
+    TEDATAACCESSEXPORT ObjectId* GenerateOID(DataSet* dataset, const std::vector<std::string>& names);
 
     /*!
       \brief It returns the first dataset spatial property or NULL if none is found.

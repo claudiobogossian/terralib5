@@ -638,8 +638,8 @@ void te::sqlite::DataSetTypePersistence::drop(te::da::Sequence* /*sequence*/)
   throw Exception(TR_SQLITE("Not supported by SQLite!"));
 }
 
-te::da::DataSourceTransactor* te::sqlite::DataSetTypePersistence::getTransactor() const
-{
-  return m_t;
-}
+//te::da::DataSourceTransactor* te::sqlite::DataSetTypePersistence::getTransactor() const
+//{
+//  return m_t;
+//}
 

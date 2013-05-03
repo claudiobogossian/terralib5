@@ -26,9 +26,7 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/datasource/ScopedTransaction.h"
@@ -59,332 +57,352 @@ te::sqlite::DataSetPersistence::~DataSetPersistence()
 {
 }
 
-void te::sqlite::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit)
-{
-  std::auto_ptr<te::da::DataSetTypePersistence> dtp(m_t->getDataSetTypePersistence());
-
-  dtp->create(dt, options);
-  
-  add(dt, d, options, limit);
-}
-
-void te::sqlite::DataSetPersistence::remove(const te::da::DataSetType* dt)
-{
-  std::string sql("DELETE FROM ");
-              sql += dt->getName();
-
-  m_t->execute(sql);  
-}
-
-void te::sqlite::DataSetPersistence::remove(const std::string& /*datasetName*/)
+void te::sqlite::DataSetPersistence::remove(const std::string& datasetName, const te::da::ObjectIdSet* oids)
 {
   throw Exception(TR_SQLITE("Not implemented yet!"));
 }
 
-void te::sqlite::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
+//void te::sqlite::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit)
+//{
+//  std::auto_ptr<te::da::DataSetTypePersistence> dtp(m_t->getDataSetTypePersistence());
+//
+//  dtp->create(dt, options);
+//  
+//  add(dt, d, options, limit);
+//}
+//
+//void te::sqlite::DataSetPersistence::remove(const te::da::DataSetType* dt)
+//{
+//  std::string sql("DELETE FROM ");
+//              sql += dt->getName();
+//
+//  m_t->execute(sql);  
+//}
+//
+//void te::sqlite::DataSetPersistence::remove(const std::string& /*datasetName*/)
+//{
+//  throw Exception(TR_SQLITE("Not implemented yet!"));
+//}
+//
+//void te::sqlite::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
+//{
+//  const std::vector<te::dt::Property*>* keyproperties; 
+// 
+//  if(dt->getPrimaryKey())
+//  {
+//    keyproperties = &(dt->getPrimaryKey()->getProperties()); 
+//  }
+//  else if(dt->getNumberOfUniqueKeys() > 0)
+//  {
+//    keyproperties = &(dt->getUniqueKey(0)->getProperties());
+//  }
+//  else
+//  {
+//    throw Exception(TR_SQLITE("Can not remove dataset item(s) because dataset doesn't have a primary key or unique key!")); 
+//  }
+//
+//// create a prepared statement
+//  std::string sql  = "DELETE FROM ";
+//              sql += dt->getName();
+//              sql += " WHERE ";
+//              sql += GetBindableWhereSQL(keyproperties->begin(), keyproperties->end());
+//
+//  std::vector<std::size_t> propertiesPos;
+//  
+//  te::dt::GetPropertiesPosition(*keyproperties, dt, propertiesPos);
+//
+//  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
+//
+//  pq->prepare(sql);
+//
+//  do
+//  {
+//    pq->bind(propertiesPos, dt, d);
+//    pq->execute();
+//  }while(d->moveNext());
+//}
+//
+//void te::sqlite::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSetItem* item)
+//{
+//  const std::vector<te::dt::Property*>* keyproperties; 
+// 
+//  if(dt->getPrimaryKey())
+//  {
+//    keyproperties = &(dt->getPrimaryKey()->getProperties()); 
+//  }
+//  else if(dt->getNumberOfUniqueKeys() > 0)
+//  {
+//    keyproperties = &(dt->getUniqueKey(0)->getProperties());
+//  }
+//  else
+//  {
+//    throw Exception(TR_SQLITE("Can not remove dataset item because dataset doesn't have a primary key or unique key!")); 
+//  }
+//
+//// create a prepared statement
+//  std::string sql  = "DELETE FROM ";
+//              sql += dt->getName();
+//              sql += " WHERE ";
+//              sql += GetBindableWhereSQL(keyproperties->begin(), keyproperties->end());
+//
+//  std::vector<std::size_t> propertiesPos;
+//  
+//  te::dt::GetPropertiesPosition(*keyproperties, dt, propertiesPos);
+//
+//  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
+//
+//  pq->prepare(sql);
+//  pq->bind(propertiesPos, dt, item);
+//  pq->execute();
+//}
+
+void te::sqlite::DataSetPersistence::add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit)
 {
-  const std::vector<te::dt::Property*>* keyproperties; 
- 
-  if(dt->getPrimaryKey())
-  {
-    keyproperties = &(dt->getPrimaryKey()->getProperties()); 
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyproperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_SQLITE("Can not remove dataset item(s) because dataset doesn't have a primary key or unique key!")); 
-  }
-
-// create a prepared statement
-  std::string sql  = "DELETE FROM ";
-              sql += dt->getName();
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(keyproperties->begin(), keyproperties->end());
-
-  std::vector<std::size_t> propertiesPos;
-  
-  te::dt::GetPropertiesPosition(*keyproperties, dt, propertiesPos);
-
-  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
-
-  pq->prepare(sql);
-
-  do
-  {
-    pq->bind(propertiesPos, dt, d);
-    pq->execute();
-  }while(d->moveNext());
+  throw Exception(TR_SQLITE("Not implemented yet!"));
 }
 
-void te::sqlite::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  const std::vector<te::dt::Property*>* keyproperties; 
- 
-  if(dt->getPrimaryKey())
-  {
-    keyproperties = &(dt->getPrimaryKey()->getProperties()); 
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyproperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_SQLITE("Can not remove dataset item because dataset doesn't have a primary key or unique key!")); 
-  }
+//void te::sqlite::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
+//{
+//// create a prepared statement
+//  std::string sql  = "INSERT INTO ";
+//              sql += dt->getName();
+//              sql += GetSQLValueNames(dt);
+//              sql += " VALUES";
+//              sql += GetSQLBindValues(dt);
+//
+//  te::da::ScopedTransaction st(*m_t);
+//
+//  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
+//
+//  pq->prepare(sql);
+//
+//  do
+//  {
+//    pq->bind(dt, d);
+//    pq->execute();
+//  }while(d->moveNext());
+//
+//  st.commit();
+//}
+//
+//void te::sqlite::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSetItem* item)
+//{
+//// create a prepared statement
+//  std::string sql  = "INSERT INTO ";
+//              sql += dt->getName();
+//              sql += GetSQLValueNames(dt);
+//              sql += " VALUES";
+//              sql += GetSQLBindValues(dt);
+//
+//  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
+//
+//  pq->prepare(sql);
+//  pq->bind(dt, item);
+//  pq->execute();
+//}
 
-// create a prepared statement
-  std::string sql  = "DELETE FROM ";
-              sql += dt->getName();
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(keyproperties->begin(), keyproperties->end());
-
-  std::vector<std::size_t> propertiesPos;
-  
-  te::dt::GetPropertiesPosition(*keyproperties, dt, propertiesPos);
-
-  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
-
-  pq->prepare(sql);
-  pq->bind(propertiesPos, dt, item);
-  pq->execute();
-}
-
-void te::sqlite::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
-{
-// create a prepared statement
-  std::string sql  = "INSERT INTO ";
-              sql += dt->getName();
-              sql += GetSQLValueNames(dt);
-              sql += " VALUES";
-              sql += GetSQLBindValues(dt);
-
-  te::da::ScopedTransaction st(*m_t);
-
-  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
-
-  pq->prepare(sql);
-
-  do
-  {
-    pq->bind(dt, d);
-    pq->execute();
-  }while(d->moveNext());
-
-  st.commit();
-}
-
-void te::sqlite::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-// create a prepared statement
-  std::string sql  = "INSERT INTO ";
-              sql += dt->getName();
-              sql += GetSQLValueNames(dt);
-              sql += " VALUES";
-              sql += GetSQLBindValues(dt);
-
-  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
-
-  pq->prepare(sql);
-  pq->bind(dt, item);
-  pq->execute();
-}
-
-void te::sqlite::DataSetPersistence::update(const te::da::DataSetType* dt,
+void te::sqlite::DataSetPersistence::update(const std::string& datasetName,
                                             te::da::DataSet* dataset,
-                                            const std::vector<te::dt::Property*>& properties,
-                                            const std::map<std::string, std::string>& /*options*/,
-                                            std::size_t /*limit*/)
+                                            const std::vector<std::size_t>& properties,
+                                            const te::da::ObjectIdSet* oids,
+                                            const std::map<std::string, std::string>& options,
+                                            std::size_t limit)
 {
-  const std::vector<te::dt::Property*>* keyProperties = 0;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = &(dt->getPrimaryKey()->getProperties());
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_SQLITE("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
-  }
-
-// create a prepared statement
-  std::string sql  = "UPDATE ";
-              sql += dt->getName();
-              sql += " SET ";
-              sql += GetBindableUpdateSQL(properties);
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(keyProperties->begin(), keyProperties->end());
-
-  std::vector<std::size_t> propertiesPos;
-
-  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
-
-  te::dt::GetPropertiesPosition(*keyProperties, dt, propertiesPos);
-
-  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
-
-  te::da::ScopedTransaction st(*m_t);
-
-  pq->prepare(sql);
-
-  do
-  {
-    pq->bind(propertiesPos, dt, dataset);
-    pq->execute();
-
-  }while(dataset->moveNext());
-
-  st.commit();
+  throw Exception(TR_SQLITE("Not implemented yet!"));
 }
 
-void te::sqlite::DataSetPersistence::update(const te::da::DataSetType* dt,
-                                            te::da::DataSet* oldD,
-                                            te::da::DataSet* newD,
-                                            const std::vector<te::dt::Property*>& properties,
-                                            std::size_t /*limit*/)
-{
-  const std::vector<te::dt::Property*>* keyProperties = 0;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = &(dt->getPrimaryKey()->getProperties());
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_SQLITE("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
-  }
-
-// create a prepared statement
-  std::string sql  = "UPDATE ";
-              sql += dt->getName();
-              sql += " SET ";
-              sql += GetBindableUpdateSQL(properties);
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(keyProperties->begin(), keyProperties->end());
-
-  std::vector<std::size_t> propertiesPos;
-
-  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
-
-  std::vector<std::size_t> keysPos;
-  
-  te::dt::GetPropertiesPosition(*keyProperties, dt, keysPos);
-
-  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
-
-  te::da::ScopedTransaction st(*m_t);
-
-  pq->prepare(sql);
-
-  do
-  {
-    pq->bind(propertiesPos, dt, newD);
-    pq->bind(keysPos, propertiesPos.size(), dt, oldD);
-    pq->execute();
-  }while(oldD->moveNext() && newD->moveNext());
-
-  st.commit();
-}
-
-void te::sqlite::DataSetPersistence::update(const te::da::DataSetType* dt,
-                                            te::da::DataSetItem* item,
-                                            const std::vector<te::dt::Property*>& properties)
-{
-  const std::vector<te::dt::Property*>* keyProperties = 0;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = &(dt->getPrimaryKey()->getProperties());
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_SQLITE("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
-  }
-
-// create a prepared statement
-  std::string sql  = "UPDATE ";
-              sql += dt->getName();
-              sql += " SET ";
-              sql += GetBindableUpdateSQL(properties);
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(keyProperties->begin(), keyProperties->end());
-
-  std::vector<std::size_t> propertiesPos;
-
-  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
-
-  te::dt::GetPropertiesPosition(*keyProperties, dt, propertiesPos);
-
-  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
-
-  pq->prepare(sql);
-
-  pq->bind(propertiesPos, dt, item);
-  pq->execute();
-}
-
-void te::sqlite::DataSetPersistence::update(const te::da::DataSetType* dt,
-                                            te::da::DataSetItem* oldItem,
-                                            te::da::DataSetItem* newItem,
-                                            const std::vector<te::dt::Property*>& properties)
-{
-  const std::vector<te::dt::Property*>* keyProperties = 0;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = &(dt->getPrimaryKey()->getProperties());
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_SQLITE("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
-  }
-
-// create a prepared statement
-  std::string sql  = "UPDATE ";
-              sql += dt->getName();
-              sql += " SET ";
-              sql += GetBindableUpdateSQL(properties);
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(keyProperties->begin(), keyProperties->end());
-
-  std::vector<std::size_t> propertiesPos;
-
-  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
-
-  std::vector<std::size_t> keysPos;
-  
-  te::dt::GetPropertiesPosition(*keyProperties, dt, keysPos);
-
-  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
-
-  pq->prepare(sql);
-
-  pq->bind(propertiesPos, dt, newItem);
-  pq->bind(keysPos, propertiesPos.size(), dt, oldItem);
-  pq->execute();
-}
-
-te::da::DataSourceTransactor* te::sqlite::DataSetPersistence::getTransactor() const
-{
-  return m_t;
-}
+//void te::sqlite::DataSetPersistence::update(const te::da::DataSetType* dt,
+//                                            te::da::DataSet* dataset,
+//                                            const std::vector<te::dt::Property*>& properties,
+//                                            const std::map<std::string, std::string>& /*options*/,
+//                                            std::size_t /*limit*/)
+//{
+//  const std::vector<te::dt::Property*>* keyProperties = 0;
+// 
+//  if(dt->getPrimaryKey())
+//  {
+//    keyProperties = &(dt->getPrimaryKey()->getProperties());
+//  }
+//  else if(dt->getNumberOfUniqueKeys() > 0)
+//  {
+//    keyProperties = &(dt->getUniqueKey(0)->getProperties());
+//  }
+//  else
+//  {
+//    throw Exception(TR_SQLITE("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
+//  }
+//
+//// create a prepared statement
+//  std::string sql  = "UPDATE ";
+//              sql += dt->getName();
+//              sql += " SET ";
+//              sql += GetBindableUpdateSQL(properties);
+//              sql += " WHERE ";
+//              sql += GetBindableWhereSQL(keyProperties->begin(), keyProperties->end());
+//
+//  std::vector<std::size_t> propertiesPos;
+//
+//  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
+//
+//  te::dt::GetPropertiesPosition(*keyProperties, dt, propertiesPos);
+//
+//  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
+//
+//  te::da::ScopedTransaction st(*m_t);
+//
+//  pq->prepare(sql);
+//
+//  do
+//  {
+//    pq->bind(propertiesPos, dt, dataset);
+//    pq->execute();
+//
+//  }while(dataset->moveNext());
+//
+//  st.commit();
+//}
+//
+//void te::sqlite::DataSetPersistence::update(const te::da::DataSetType* dt,
+//                                            te::da::DataSet* oldD,
+//                                            te::da::DataSet* newD,
+//                                            const std::vector<te::dt::Property*>& properties,
+//                                            std::size_t /*limit*/)
+//{
+//  const std::vector<te::dt::Property*>* keyProperties = 0;
+// 
+//  if(dt->getPrimaryKey())
+//  {
+//    keyProperties = &(dt->getPrimaryKey()->getProperties());
+//  }
+//  else if(dt->getNumberOfUniqueKeys() > 0)
+//  {
+//    keyProperties = &(dt->getUniqueKey(0)->getProperties());
+//  }
+//  else
+//  {
+//    throw Exception(TR_SQLITE("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
+//  }
+//
+//// create a prepared statement
+//  std::string sql  = "UPDATE ";
+//              sql += dt->getName();
+//              sql += " SET ";
+//              sql += GetBindableUpdateSQL(properties);
+//              sql += " WHERE ";
+//              sql += GetBindableWhereSQL(keyProperties->begin(), keyProperties->end());
+//
+//  std::vector<std::size_t> propertiesPos;
+//
+//  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
+//
+//  std::vector<std::size_t> keysPos;
+//  
+//  te::dt::GetPropertiesPosition(*keyProperties, dt, keysPos);
+//
+//  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
+//
+//  te::da::ScopedTransaction st(*m_t);
+//
+//  pq->prepare(sql);
+//
+//  do
+//  {
+//    pq->bind(propertiesPos, dt, newD);
+//    pq->bind(keysPos, propertiesPos.size(), dt, oldD);
+//    pq->execute();
+//  }while(oldD->moveNext() && newD->moveNext());
+//
+//  st.commit();
+//}
+//
+//void te::sqlite::DataSetPersistence::update(const te::da::DataSetType* dt,
+//                                            te::da::DataSetItem* item,
+//                                            const std::vector<te::dt::Property*>& properties)
+//{
+//  const std::vector<te::dt::Property*>* keyProperties = 0;
+// 
+//  if(dt->getPrimaryKey())
+//  {
+//    keyProperties = &(dt->getPrimaryKey()->getProperties());
+//  }
+//  else if(dt->getNumberOfUniqueKeys() > 0)
+//  {
+//    keyProperties = &(dt->getUniqueKey(0)->getProperties());
+//  }
+//  else
+//  {
+//    throw Exception(TR_SQLITE("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
+//  }
+//
+//// create a prepared statement
+//  std::string sql  = "UPDATE ";
+//              sql += dt->getName();
+//              sql += " SET ";
+//              sql += GetBindableUpdateSQL(properties);
+//              sql += " WHERE ";
+//              sql += GetBindableWhereSQL(keyProperties->begin(), keyProperties->end());
+//
+//  std::vector<std::size_t> propertiesPos;
+//
+//  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
+//
+//  te::dt::GetPropertiesPosition(*keyProperties, dt, propertiesPos);
+//
+//  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
+//
+//  pq->prepare(sql);
+//
+//  pq->bind(propertiesPos, dt, item);
+//  pq->execute();
+//}
+//
+//void te::sqlite::DataSetPersistence::update(const te::da::DataSetType* dt,
+//                                            te::da::DataSetItem* oldItem,
+//                                            te::da::DataSetItem* newItem,
+//                                            const std::vector<te::dt::Property*>& properties)
+//{
+//  const std::vector<te::dt::Property*>* keyProperties = 0;
+// 
+//  if(dt->getPrimaryKey())
+//  {
+//    keyProperties = &(dt->getPrimaryKey()->getProperties());
+//  }
+//  else if(dt->getNumberOfUniqueKeys() > 0)
+//  {
+//    keyProperties = &(dt->getUniqueKey(0)->getProperties());
+//  }
+//  else
+//  {
+//    throw Exception(TR_SQLITE("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
+//  }
+//
+//// create a prepared statement
+//  std::string sql  = "UPDATE ";
+//              sql += dt->getName();
+//              sql += " SET ";
+//              sql += GetBindableUpdateSQL(properties);
+//              sql += " WHERE ";
+//              sql += GetBindableWhereSQL(keyProperties->begin(), keyProperties->end());
+//
+//  std::vector<std::size_t> propertiesPos;
+//
+//  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
+//
+//  std::vector<std::size_t> keysPos;
+//  
+//  te::dt::GetPropertiesPosition(*keyProperties, dt, keysPos);
+//
+//  std::auto_ptr<PreparedQuery> pq(m_t->getLitePrepared());
+//
+//  pq->prepare(sql);
+//
+//  pq->bind(propertiesPos, dt, newItem);
+//  pq->bind(keysPos, propertiesPos.size(), dt, oldItem);
+//  pq->execute();
+//}
+//
+//te::da::DataSourceTransactor* te::sqlite::DataSetPersistence::getTransactor() const
+//{
+//  return m_t;
+//}
 

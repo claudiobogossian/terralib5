@@ -75,8 +75,6 @@ namespace te
           virtual bool setData(int column, const QVariant& value, int role = Qt::EditRole) = 0;
 
           virtual te::map::AbstractLayerPtr getLayer() const = 0;
-
-          //virtual AbstractLayerTreeItem* clone(QObject* parent = 0) = 0;
       };
 
     } // end namespace widgets

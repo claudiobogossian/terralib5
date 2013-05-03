@@ -27,7 +27,6 @@
 #include "../common/Globals.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/query/Query.h"
 #include "../datatype/ByteArray.h"
@@ -432,29 +431,29 @@ void te::sqlite::PreparedQuery::prepare(const std::string& query)
   m_stmt = m_t->queryLite(query);
 }
 
-void te::sqlite::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  const std::size_t nparams = propertiesPos.size();
-
-  for(std::size_t i = 0; i < nparams; ++i)
-    BindValue(m_stmt, i + offset, propertiesPos[i], dt->getProperty(propertiesPos[i]), item);
-}
-
-void te::sqlite::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  const std::size_t nparams = propertiesPos.size();
-
-  for(std::size_t i = 0; i < nparams; ++i)
-    BindValue(m_stmt, i, propertiesPos[i], dt->getProperty(propertiesPos[i]), item);
-}
-
-void te::sqlite::PreparedQuery::bind(const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  const std::size_t nparams = dt->size();
-
-  for(std::size_t i = 0; i < nparams; ++i)
-    BindValue(m_stmt, i, i, dt->getProperty(i), item);
-}
+//void te::sqlite::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item)
+//{
+//  const std::size_t nparams = propertiesPos.size();
+//
+//  for(std::size_t i = 0; i < nparams; ++i)
+//    BindValue(m_stmt, i + offset, propertiesPos[i], dt->getProperty(propertiesPos[i]), item);
+//}
+//
+//void te::sqlite::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSetItem* item)
+//{
+//  const std::size_t nparams = propertiesPos.size();
+//
+//  for(std::size_t i = 0; i < nparams; ++i)
+//    BindValue(m_stmt, i, propertiesPos[i], dt->getProperty(propertiesPos[i]), item);
+//}
+//
+//void te::sqlite::PreparedQuery::bind(const te::da::DataSetType* dt, te::da::DataSetItem* item)
+//{
+//  const std::size_t nparams = dt->size();
+//
+//  for(std::size_t i = 0; i < nparams; ++i)
+//    BindValue(m_stmt, i, i, dt->getProperty(i), item);
+//}
 
 void te::sqlite::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSet* d)
 {

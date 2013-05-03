@@ -27,11 +27,11 @@
 #define __TERRALIB_VP_QT_INTERNAL_INTERSECTIONDIALOG_H
 
 // TerraLib
+#include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
 
 // STL
-#include <list>
 #include <memory>
 
 // Qt
@@ -39,13 +39,18 @@
 
 namespace Ui { class IntersectionDialogForm; }
 
-class QModelIndex;
-class QTreeWidgetItem;
-
 namespace te
 {
   namespace vp
   {
+// Forward declarations
+    class LayerTreeModel;
+
+    /*!
+      \class IntersectionDialog
+
+      \brief A dialog used to execute vector intersection.
+    */
     class TEVPEXPORT IntersectionDialog : public QDialog
     {
       Q_OBJECT
@@ -56,23 +61,31 @@ namespace te
 
         ~IntersectionDialog();
 
+        /*!
+          \brief Set the layer that can be used
+
+          \param layers   List of AbstractLayerPtr
+        */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
-
-        void setSelectedLayers(std::vector<std::string> selectedLayers);
-
-      private:
 
       protected slots:
 
-        void onLayerTreeViewClicked(QTreeWidgetItem * item, int column);
-
         void onFilterLineEditTextChanged(const QString& text);
+
+        void onHelpPushButtonClicked();
+
+        void onOkPushButtonClicked();
+
+        void onTargetDatasourceToolButtonPressed();
+
+        void onTargetFileToolButtonPressed();
 
       private:
 
         std::auto_ptr<Ui::IntersectionDialogForm> m_ui;
-        std::list<te::map::AbstractLayerPtr> m_layers;
-        std::vector<std::string> m_selectedLayers;
+        te::da::DataSourceInfoPtr m_outputDatasource;   //!< DataSource information.
+        std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of layers.
+        LayerTreeModel* m_model;                        //!< Layer Tree Model.
     };
   }   // end namespace vp
 }     // end namespace te
