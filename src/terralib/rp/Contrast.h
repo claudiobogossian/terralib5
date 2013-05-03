@@ -77,15 +77,15 @@ namespace te
 
             ContrastType m_type; //!< The contrast type to be applied.
             
-            double m_lCMinInput; //!< The contrast minimum input greyscale value.
+            std::vector< double > m_lCMinInput; //!< The contrast minimum input greyscale value of each band.
             
-            double m_lCMaxInput; //!< The contrast maximum input greyscale value.
+            std::vector< double > m_lCMaxInput; //!< The contrast maximum input greyscale value of each band.
             
-            double m_hECMaxInput; //!<  The contrast maximum input greyscale value.
+            std::vector< double > m_hECMaxInput; //!<  The contrast maximum input greyscale value of each band.
             
-            double m_sMASCMeanInput; //!<  The mean greyscale to be applied in the contrast image.
+            std::vector< double > m_sMASCMeanInput; //!<  The mean greyscale to be applied in each band.
             
-            double m_sMASCStdInput; //!< The standard deviation to be applied in the contrast image.
+            std::vector< double > m_sMASCStdInput; //!< The standard deviation to be applied in each band.
 
             te::rst::Raster const* m_inRasterPtr; //!< Input raster.
             
