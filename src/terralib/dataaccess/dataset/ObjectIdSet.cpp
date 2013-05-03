@@ -131,6 +131,14 @@ bool te::da::ObjectIdSet::contains(ObjectId* oid) const
   return m_oids.find(oid) != m_oids.end();
 }
 
+void te::da::ObjectIdSet::remove(ObjectId* oid)
+{
+  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator it = m_oids.find(oid);
+
+  if(it != m_oids.end())
+    m_oids.erase(it);
+}
+
 void te::da::ObjectIdSet::Union(te::da::ObjectIdSet* rhs)
 {
   assert(rhs);

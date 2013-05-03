@@ -110,6 +110,17 @@ namespace te
           virtual void addObject(const int& row);
 
           /*!
+            \brief Adds the table rows to the Objects Id set.
+
+            \param initRow The begin row.
+
+            \param endRow The end row.
+
+            \note The \a initRow must to be less than \a endRow.
+          */
+          virtual void addObjects(const int& initRow, const int& endRow);
+
+          /*!
             \brief Sets the current data set being used. This method DOES NOT take the ownership of the \a dset.
 
             \param dset The DataSet to be used.
@@ -120,6 +131,11 @@ namespace te
             \brief Sets the object id set. It WILL TAKE the ownership of the \a objs.
           */
           virtual void setObjectIdSet(te::da::ObjectIdSet* objs);
+
+          /*!
+            \brief Removes all selected ids.
+          */
+          virtual void clearSelected();
 
         protected:
 

@@ -132,6 +132,15 @@ namespace te
         bool contains(ObjectId* oid) const;
 
         /*!
+          \brief Removes the object id from set.
+
+          \param oid Object id to be removed.
+
+          \note This WILL NOT take the ownership of \a oid.
+        */
+        void remove(ObjectId* oid);
+
+        /*!
           \brief It performs the union operation between this ObjectIdSet and the given ObjectIdSet.
 
           \param rhs A valid ObjectIdSet that will be used on union operation. Do not pass NULL!

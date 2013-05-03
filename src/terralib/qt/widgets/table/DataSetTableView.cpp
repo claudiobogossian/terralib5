@@ -107,7 +107,8 @@ class TablePopupFilter : public QObject
 
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
-      m_view->connect(this, SIGNAL(selectObject(const int&, const QColor&)), SLOT(highlightRow(const int&, const QColor&)));
+      m_view->connect(this, SIGNAL(selectObject(const int&, const bool&)), SLOT(highlightRow(const int&, const bool&)));
+      m_view->connect(this, SIGNAL(selectObjects(const int&, const int&)), SLOT(highlightRows(const int&, const int&)));
     }
 
     /*!
@@ -187,7 +188,18 @@ class TablePopupFilter : public QObject
             {
               int row = m_view->rowAt(evt->pos().y());
 
-              emit selectObject(row, Qt::green);
+              if(evt->modifiers() & Qt::ShiftModifier)
+              {
+                emit selectObjects(m_initRow, row);
+
+                return true;
+              }
+
+              m_initRow = row;
+
+              bool add = evt->modifiers() & Qt::ControlModifier;
+
+              emit selectObject(row, add);
 
               return true;
             }
@@ -240,7 +252,9 @@ class TablePopupFilter : public QObject
 
     void showColumn(const int&);
 
-    void selectObject(const int&, const QColor&);
+    void selectObject(const int&, const bool&);
+
+    void selectObjects(const int& initRow, const int& finalRow);
 
   protected:
 
@@ -251,6 +265,7 @@ class TablePopupFilter : public QObject
     te::da::DataSet* m_dset;
 
     int m_columnPressed;
+    int m_initRow;
 };
 
 te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
@@ -338,9 +353,33 @@ void te::qt::widgets::DataSetTableView::resetColumnsOrder()
   }
 }
 
-void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const QColor& color)
+void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool& add)
 {
+  if(!add)
+    m_delegate->clearSelected();
+
   m_delegate->addObject(row);
+
+  viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const int& finalRow)
+{
+  int ini,
+    final;
+
+  if(initRow < finalRow)
+  {
+    ini = initRow;
+    final = finalRow;
+  }
+  else
+  {
+    ini = finalRow;
+    final = initRow;
+  }
+
+  m_delegate->addObjects(ini, final);
 
   viewport()->repaint();
 }
