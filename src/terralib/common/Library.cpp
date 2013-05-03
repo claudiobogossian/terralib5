@@ -38,109 +38,151 @@
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 #include <cstdlib>
 #include <dlfcn.h>
-//#include <sys/types.h>
-//#include <sys/stat.h>
-//#include <dirent.h>
-
 #else
   #error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
 #endif
 
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-bool te::common::Library::sm_addedSearchPath(false);
+static bool sg_addedSearchPath(false);  //!< This flag is very important for Windows because some routines in its API returns 0 with two meanings: error or empty, but there is no way to know which one is right!
 #endif
 
-te::common::Library::Library(const std::string& fileName, bool delayLoad) throw(Exception)
-  : m_fileName(fileName),
-    m_module(0)
+class te::common::Library::Impl
 {
-  if(delayLoad)
-    return;
+  public:
 
-  load();
+    Impl(const std::string& fileName, bool delayLoad) throw(te::common::Exception)
+      : m_fileName(fileName),
+        m_module(0)
+    {
+      if(delayLoad)
+        return;
+
+      load();
+    }
+
+    ~Impl()
+    {
+      unload();
+    }
+
+    void load() throw(te::common::Exception)
+    {
+      if(m_module)
+        return;
+
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      m_module = (void*)LoadLibraryA(m_fileName.c_str());
+
+#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+      m_module = dlopen(m_fileName.c_str(), RTLD_NOW);  
+
+#else
+      #error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
+#endif
+
+      if(m_module == 0)
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+        throw te::common::Exception((boost::format(TR_COMMON("Could not load library: %1%, due to following error: %2%.")) % m_fileName % te::common::win::GetLastError()).str()); 
+#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+        throw te::common::Exception((boost::format(TR_COMMON("Could not load library: %1%, due to following error: %2%.")) % m_fileName % te::common::lx::GetDlError()).str());
+#else
+      #error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
+#endif
+    }
+
+    void unload() throw(te::common::Exception)
+    {
+      if(m_module == 0)
+        return;
+
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      BOOL result = FreeLibrary((HMODULE)m_module);
+
+      if(result == FALSE)
+        throw te::common::Exception((boost::format(TR_COMMON("Could not unload library: %1%, due to following error: %2%.")) % m_fileName % te::common::win::GetLastError()).str()); 
+
+#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+      if(dlclose(m_module))
+        throw Exception((boost::format(TR_COMMON("Could not unload library: %1%, due to following error: %2%.")) % m_fileName % te::common::lx::GetDlError()).str()); 
+#else
+      #error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
+#endif
+
+      m_module = 0;
+    }
+
+    bool isLoaded() const throw()
+    {
+      return (m_module != 0);
+    }
+
+    const std::string& getFileName() const throw()
+    {
+      return m_fileName;
+    }
+
+    void* getAddress(const std::string& symbol) const throw(te::common::Exception)
+    {
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      void* f = GetProcAddress((HMODULE)m_module, symbol.c_str());
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      void* f = dlsym(m_module, symbol.c_str());
+#else
+      #error "Platform not supported! Please, contact the TerraLib team for helping support this platform!"
+#endif
+
+      if(f == NULL)
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+        throw Exception((boost::format(TR_COMMON("Could not find symbol: %1%, in the library %2%, due to the following error: %3%.")) % symbol % m_fileName % te::common::win::GetLastError()).str());
+#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
+        throw Exception((boost::format(TR_COMMON("Could not find symbol: %1%, in the library %2%, due to the following error: %3%.")) % symbol % m_fileName % te::common::lx::GetDlError()).str());
+#else
+      #error "Platform not supported! Please, contact terralib-team@dpi.inpe.br for helping support this platform!"
+#endif
+
+      return f;
+    }
+
+  private:
+
+    std::string m_fileName;    //!< The library file name with full path.
+    void* m_module;            //!< The handle for DLLs, SO or a DyLib.
+};
+
+te::common::Library::Library(const std::string& fileName, bool delayLoad) throw(Exception)
+  : m_pImpl(0)
+{
+  m_pImpl = new Impl(fileName, delayLoad);
 }
 
 te::common::Library::~Library()
 {
-  unload();
+  delete m_pImpl;
 }
 
 void te::common::Library::load() throw(Exception)
 {
-  if(m_module)
-    return;
-
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-  m_module = (void*)LoadLibraryA(m_fileName.c_str());
-
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
-  m_module = dlopen(m_fileName.c_str(), RTLD_NOW);  
-
-#else
-  #error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
-#endif
-
-  if(m_module == 0)
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-    throw Exception((boost::format(TR_COMMON("Could not load library: %1%, due to following error: %2%.")) % m_fileName % te::common::win::GetLastError()).str()); 
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
-    throw Exception((boost::format(TR_COMMON("Could not load library: %1%, due to following error: %2%.")) % m_fileName % te::common::lx::GetDlError()).str());
-#else
-  #error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
-#endif
+  m_pImpl->load();
 }
 
 void te::common::Library::unload() throw(Exception)
 {
-  if(m_module == 0)
-    return;
-
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-  BOOL result = FreeLibrary((HMODULE)m_module);
-
-  if(result == FALSE)
-    throw Exception((boost::format(TR_COMMON("Could not unload library: %1%, due to following error: %2%.")) % m_fileName % te::common::win::GetLastError()).str()); 
-
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
-  if(dlclose(m_module))
-    throw Exception((boost::format(TR_COMMON("Could not unload library: %1%, due to following error: %2%.")) % m_fileName % te::common::lx::GetDlError()).str()); 
-#else
-  #error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
-#endif
-
-  m_module = 0;
+  m_pImpl->unload();
 }
 
 bool te::common::Library::isLoaded() const throw()
 {
-  return (m_module != 0);
+  return m_pImpl->isLoaded();
 }
 
 const std::string& te::common::Library::getFileName() const throw()
 {
-  return m_fileName;
+  return m_pImpl->getFileName();
 }
 
 void* te::common::Library::getAddress(const std::string& symbol) const throw(Exception)
 {
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-  void* f = GetProcAddress((HMODULE)m_module, symbol.c_str());
-#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
-  void* f = dlsym(m_module, symbol.c_str());
-#else
-  #error "Platform not supported! Please, contact the TerraLib team for helping support this platform!"
-#endif
-
-  if(f == NULL)
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-    throw Exception((boost::format(TR_COMMON("Could not find symbol: %1%, in the library %2%, due to the following error: %3%.")) % symbol % m_fileName % te::common::win::GetLastError()).str());
-#elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
-    throw Exception((boost::format(TR_COMMON("Could not find symbol: %1%, in the library %2%, due to the following error: %3%.")) % symbol % m_fileName % te::common::lx::GetDlError()).str());
-#else
-  #error "Platform not supported! Please, contact terralib-team@dpi.inpe.br for helping support this platform!"
-#endif
-
-  return f;
+  return m_pImpl->getAddress(symbol);
 }
 
 std::string te::common::Library::getNativeName(const std::string& name) throw()
@@ -153,7 +195,7 @@ std::string te::common::Library::getNativeName(const std::string& name) throw()
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
   std::string nativeName = "lib" + name + ".dylib";
-  
+
 #else
   #error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
 #endif
@@ -173,7 +215,7 @@ void te::common::Library::addSearchDir(const std::string& d) throw(Exception)
   if(retval == FALSE)
     throw Exception((boost::format(TR_COMMON("The informed dir \"%1%\" couldn't be added to the application dll lookup path due to the following error: %2%.")) % d % te::common::win::GetLastError()).str());
 
-  sm_addedSearchPath = true;
+  sg_addedSearchPath = true;
 
 #elif (TE_PLATFORM == TE_PLATFORMCODE_LINUX) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE)
 
@@ -202,7 +244,7 @@ void te::common::Library::addSearchDir(const std::string& d) throw(Exception)
 
 #else
   throw Exception(TR_COMMON("method: void te::common::Library::addSearchDir(const std::string& d) throw(Exception) not implemented for this platform! Contact terralib-team@dpi.inpe.br"));
-#endif
+#endif;
 }
 
 void te::common::Library::resetSearchPath() throw(Exception)
@@ -214,7 +256,7 @@ void te::common::Library::resetSearchPath() throw(Exception)
   if(retval == FALSE)
     throw Exception((boost::format(TR_COMMON("Couldn't come back with default Windows DLL lookup path due to the following error: %1%.")) % te::common::win::GetLastError()).str());
 
-  sm_addedSearchPath = false;
+  sg_addedSearchPath = false;
 
 #else
   throw Exception(TR_COMMON("method: void te::common::Library::resetSearchPath() throw(Exception) not implemented for this platform! Contact terralib-team@dpi.inpe.br"));
@@ -230,7 +272,7 @@ std::string te::common::Library::getSearchPath() throw(Exception)
 
   DWORD length = GetDllDirectory(buffSize, buff);
 
-  if(length == 0 && sm_addedSearchPath)
+  if(length == 0 && sg_addedSearchPath)
     throw Exception((boost::format(TR_COMMON("Couldn't get Windows DLL lookup path due to the following error: %1%!")) % te::common::win::GetLastError()).str());
 
   if(length <= buffSize)
