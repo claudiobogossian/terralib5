@@ -96,7 +96,7 @@ te::gm::GeometricTransformation* te::gm::AffineGT::clone() const
 bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
 {
   const unsigned int tiepointsSize = params.m_tiePoints.size();
-  if( tiepointsSize < 3 ) return false;
+  if( tiepointsSize < getMinRequiredTiePoints() ) return false;
 
   boost::numeric::ublas::matrix< double > L( 2*tiepointsSize, 1 );
   boost::numeric::ublas::matrix< double > A( 2*tiepointsSize, 6 );

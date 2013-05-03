@@ -50,7 +50,7 @@ void TsContrast::LinearContrast()
   // access a raster datasource to create the output raster
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_Contrast_noOptimization_Test.tif";
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Contrast_noOptimization_Test.tif";
 
   // Creating the algorithm parameters
 
@@ -58,8 +58,8 @@ void TsContrast::LinearContrast()
   te::rp::Contrast::OutputParameters algoOutputParams;
 
   algoInputParams.m_type = te::rp::Contrast::InputParameters::LinearContrastT;
-  algoInputParams.m_lCMinInput = 50;
-  algoInputParams.m_lCMaxInput = 200;
+  algoInputParams.m_lCMinInput.resize( 3, 50 );
+  algoInputParams.m_lCMaxInput.resize( 3, 200 );
   algoInputParams.m_inRasterPtr = inputRasterPointer.get();
   algoInputParams.m_inRasterBands.push_back( 0 );
   algoInputParams.m_inRasterBands.push_back( 1 );
@@ -89,7 +89,7 @@ void TsContrast::HistogramEqualizationContrast()
   // access a raster datasource to create the output raster
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_HistogramEqualizationContrast_Test.tif";
+  outputRasterInfo["URI"] = "terralib_unittest_rp_HistogramEqualizationContrast_Test.tif";
 
   // Creating the algorithm parameters
 
@@ -97,7 +97,7 @@ void TsContrast::HistogramEqualizationContrast()
   te::rp::Contrast::OutputParameters algoOutputParams;
 
   algoInputParams.m_type = te::rp::Contrast::InputParameters::HistogramEqualizationContrastT;
-  algoInputParams.m_hECMaxInput = 255; // set this parameter to normalize raster [0, 255]
+  algoInputParams.m_hECMaxInput.resize( 3, 255 ); // set this parameter to normalize raster [0, 255]
   algoInputParams.m_inRasterPtr = inputRasterPointer.get();
   algoInputParams.m_inRasterBands.push_back( 0 );
   algoInputParams.m_inRasterBands.push_back( 1 );
@@ -127,7 +127,7 @@ void TsContrast::SetMeanAndStdContrast()
   // access a raster datasource to create the output raster
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_SetMeanAndStdContrast_Test.tif";
+  outputRasterInfo["URI"] = "terralib_unittest_rp_SetMeanAndStdContrast_Test.tif";
 
   // Creating the algorithm parameters
 
@@ -135,8 +135,8 @@ void TsContrast::SetMeanAndStdContrast()
   te::rp::Contrast::OutputParameters algoOutputParams;
 
   algoInputParams.m_type = te::rp::Contrast::InputParameters::SetMeanAndStdContrastT;
-  algoInputParams.m_sMASCMeanInput = 127;
-  algoInputParams.m_sMASCStdInput = 100;
+  algoInputParams.m_sMASCMeanInput.resize( 3, 127 );
+  algoInputParams.m_sMASCStdInput.resize( 3, 100 );
   algoInputParams.m_inRasterPtr = inputRasterPointer.get();
   algoInputParams.m_inRasterBands.push_back( 0 );
   algoInputParams.m_inRasterBands.push_back( 1 );

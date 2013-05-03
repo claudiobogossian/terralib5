@@ -63,6 +63,10 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
     void tearDown();
 
   protected:
+    
+    void testTiePoints( const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
+      const te::gm::GeometricTransformation& transformation,
+      double maxError ) const;
       
 // Test Cases:
 
