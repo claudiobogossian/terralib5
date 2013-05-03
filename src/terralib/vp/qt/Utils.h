@@ -19,20 +19,28 @@
 
 /*!
   \file terralib/vp/qt/Utils.h
-   
+
   \brief Utility functions for Vector Processing.  
 */
 
 #ifndef __TERRALIB_VP_QT_INTERNAL_UTILS_H
 #define __TERRALIB_VP_QT_INTERNAL_UTILS_H
 
-class QTreeView;
+// Terralib
+#include"../../maptools/AbstractLayer.h"
 
 namespace te
 {
   namespace vp
   {
+    /*!
+      \brief Get a list of AbstractLayer filtered by the name;
 
+      \param text   Text that the filter is based.
+      \param layers List of layer to filter.
+
+      \return A list of layer filtered by the name.
+    */
     std::list<te::map::AbstractLayerPtr> GetFilteredLayers(std::string text, std::list<te::map::AbstractLayerPtr> layers);
 
   } // end namespace vp
