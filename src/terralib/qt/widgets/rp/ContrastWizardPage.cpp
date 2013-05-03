@@ -102,19 +102,24 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
   if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT)
   {
     algoInputParams.m_type = te::rp::Contrast::InputParameters::LinearContrastT;
-    algoInputParams.m_lCMinInput = m_ui->m_lCMinInputLineEdit->text().toDouble();
-    algoInputParams.m_lCMaxInput = m_ui->m_lCMaxInputLineEdit->text().toDouble();
+    algoInputParams.m_lCMinInput.resize( m_ui->m_rComboBox->count(),
+      m_ui->m_lCMinInputLineEdit->text().toDouble() );
+    algoInputParams.m_lCMaxInput.resize( m_ui->m_rComboBox->count(),
+      m_ui->m_lCMaxInputLineEdit->text().toDouble() );
   }
   else if(contrastType == te::rp::Contrast::InputParameters::HistogramEqualizationContrastT)
   {
     algoInputParams.m_type = te::rp::Contrast::InputParameters::HistogramEqualizationContrastT;
-    algoInputParams.m_hECMaxInput = m_ui->m_hECMaxInputLineEdit->text().toDouble();
+    algoInputParams.m_hECMaxInput.resize( m_ui->m_rComboBox->count(),
+      m_ui->m_hECMaxInputLineEdit->text().toDouble() );
   }
   else if(contrastType == te::rp::Contrast::InputParameters::SetMeanAndStdContrastT)
   {
     algoInputParams.m_type = te::rp::Contrast::InputParameters::SetMeanAndStdContrastT;
-    algoInputParams.m_sMASCMeanInput = m_ui->m_sMASCMeanInputLineEdit->text().toDouble();
-    algoInputParams.m_sMASCStdInput = m_ui->m_sMASCStdInputLineEdit->text().toDouble();
+    algoInputParams.m_sMASCMeanInput.resize( m_ui->m_rComboBox->count(),
+      m_ui->m_sMASCMeanInputLineEdit->text().toDouble() );
+    algoInputParams.m_sMASCStdInput.resize( m_ui->m_rComboBox->count(),
+      m_ui->m_sMASCStdInputLineEdit->text().toDouble() );
   }
 
   if(m_ui->m_mRadioButton->isChecked())
