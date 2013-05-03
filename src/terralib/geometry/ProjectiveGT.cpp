@@ -148,7 +148,7 @@ bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
     */
 
   const unsigned int tiepointsSize = params.m_tiePoints.size();
-  if( tiepointsSize < 4 ) return false;
+  if( tiepointsSize < getMinRequiredTiePoints() ) return false;
 
   // Direct mapping
   boost::numeric::ublas::matrix< double > L_DM( 2*tiepointsSize, 1 );
