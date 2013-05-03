@@ -40,6 +40,7 @@
 
 namespace Ui { class AggregationDialogForm; }
 
+// Forward declarations
 class QModelIndex;
 class QListWidgetItem;
 class QTreeWidgetItem;
@@ -48,32 +49,43 @@ namespace te
 {
   namespace vp
   {
+// Forward declarations
     class LayerTreeModel;
+    
+    /*!
+      \enum MemoryUse
 
+      \brief Define possible states for memory use.
+    */
     enum
     {
-      WHOLE_MEM,
-      PARTIALLY_MEM,
-      LOW_MEM
+      WHOLE_MEM,      //!< Whole memory use.
+      PARTIALLY_MEM,  //!< Partially memory use.
+      LOW_MEM         //!< Low memory use.
     };
 
+    /*!
+      \enum Attributes
+
+      \brief Define attributes for output layer.
+    */
     enum Attributes
     {
-      MIN_VALUE, /*Minimum value*/
-      MAX_VALUE, /*Maximum value*/
-      MEAN, /*Mean*/
-      SUM, /*Sum of values*/
-      COUNT, /*Total number of values*/
-      VALID_COUNT, /*Total not null values*/
-      STANDARD_DEVIATION, /*Standard deviation*/
-      KERNEL, /*Kernel*/
-      VARIANCE, /*Variance*/
-      SKEWNESS, /*Skewness*/
-      KURTOSIS, /*Kurtosis*/
-      AMPLITUDE, /*Amplitude*/
-      MEDIAN, /*Median*/
-      VAR_COEFF, /*Coefficient variation*/
-      MODE /*Mode*/
+      MIN_VALUE,          //!< Minimum value.
+      MAX_VALUE,          //!< Maximum value.
+      MEAN,               //!< Mean.
+      SUM,                //!< Sum of values.
+      COUNT,              //!< Total number of values.
+      VALID_COUNT,        //!< Total not null values.
+      STANDARD_DEVIATION, //!< Standard deviation.
+      KERNEL,             //!< Kernel.
+      VARIANCE,           //!< Variance.
+      SKEWNESS,           //!< Skewness.
+      KURTOSIS,           //!< Kurtosis.
+      AMPLITUDE,          //!< Amplitude.
+      MEDIAN,             //!< Median.
+      VAR_COEFF,          //!< Coefficient variation.
+      MODE                //!< Mode.
     };
 
     class TEVPEXPORT AggregationDialog : public QDialog
@@ -86,12 +98,35 @@ namespace te
 
         ~AggregationDialog();
 
+        /*!
+          \brief Set the layer that can be used
+
+          \param layers   List of AbstractLayerPtr
+        */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
-        void setSelectedLayers(std::vector<std::string> selectedLayers);
+        /*!
+          \brief Set layer filtered
 
+          \param layers Layers filtered.
+        */
+        void setFilteredLayers(std::list<te::map::AbstractLayerPtr> layers);
+
+        /*!
+          \brief Get the type of memory use based on a enum.
+
+          \return MemoryUse enum.
+        */
+        int getMemoryUse();
+
+        /*!
+          \brief Set attributes for combobox 'm_selectAllComboBox' and 'm_rejectAllComboBox' based on a enum.
+        */
         void setAttributes();
 
+        /*!
+          \brief Map Attributes enum for an intuitive name.
+        */
         void setAttributesNameMap();
 
       private:
@@ -117,10 +152,9 @@ namespace te
       private:
 
         std::auto_ptr<Ui::AggregationDialogForm> m_ui;
-        std::list<te::map::AbstractLayerPtr> m_layers;
-        std::vector<std::string> m_selectedLayers;
-        LayerTreeModel* m_model;
-        std::map<Attributes, std::string> m_attributeNameMap;
+        std::list<te::map::AbstractLayerPtr> m_layers;          //!< List of layers.
+        LayerTreeModel* m_model;                                //!< Layer Tree Model.
+        std::map<Attributes, std::string> m_attributeNameMap;   //!< Maping of Attributes enum
     };
   }   // end namespace vp
 }     // end namespace te
