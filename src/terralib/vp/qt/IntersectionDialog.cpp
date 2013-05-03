@@ -28,7 +28,6 @@
 #include "../../common/StringUtils.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../core/Exception.h"
 #include "IntersectionDialog.h"
@@ -38,9 +37,9 @@
 #include "Utils.h"
 
 // Qt
-#include <QtGui/QTreeWidget>
 #include <QtGui/QFileDialog>
-#include <QtGui/QAbstractItemView>
+#include <QtGui/QMessageBox>
+#include <QtGui/QTreeWidget>
 
 te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -53,10 +52,14 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
 
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-intersection-hint").pixmap(48,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+  m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
 
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
+  
 }
 
 te::vp::IntersectionDialog::~IntersectionDialog()
@@ -90,14 +93,14 @@ void te::vp::IntersectionDialog::onFilterLineEditTextChanged(const QString& text
   m_ui->m_layerTreeView->setModel(m_model);
 }
 
-int te::vp::IntersectionDialog::getMemoryUse()
+void te::vp::IntersectionDialog::onHelpPushButtonClicked()
 {
-  if(m_ui->m_wholeMemRadioButton->isChecked())
-    return WHOLE_MEM;
-  else if(m_ui->m_partiallyMemRadioButton->isChecked())
-    return PARTIALLY_MEM;
-  else
-    return LOW_MEM;
+  QMessageBox::information(this, "Intersection Operation", "Under development");
+}
+
+void te::vp::IntersectionDialog::onOkPushButtonClicked()
+{
+  QMessageBox::information(this, "Intersection Operation", "Under development");
 }
 
 void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
@@ -131,3 +134,6 @@ void te::vp::IntersectionDialog::onTargetFileToolButtonPressed()
 
   m_outputDatasource = datasources[0];
 }
+
+
+

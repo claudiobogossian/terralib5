@@ -106,13 +106,6 @@ namespace te
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
         /*!
-          \brief Set layer filtered
-
-          \param layers Layers filtered.
-        */
-        void setFilteredLayers(std::list<te::map::AbstractLayerPtr> layers);
-
-        /*!
           \brief Get the type of memory use based on a enum.
 
           \return MemoryUse enum.
@@ -132,8 +125,6 @@ namespace te
       private:
 
       protected slots:
-
-        void onLayerTreeViewClicked(QTreeWidgetItem * item, int column);
 
         void onFilterLineEditTextChanged(const QString& text);
         

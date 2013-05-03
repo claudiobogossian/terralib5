@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "../../common/StringUtils.h"
-#include "LayerTreeModel.h"
 #include "Utils.h"
 
 // Qt

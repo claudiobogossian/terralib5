@@ -36,6 +36,7 @@
 #include "LayerTreeModel.h"
 #include "ui_AggregationDialogForm.h"
 #include "VectorProcessingConfig.h"
+#include "Utils.h"
 
 // Qt
 #include <QtCore/QList>
@@ -45,7 +46,9 @@
 
 te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::AggregationDialogForm)
+    m_ui(new Ui::AggregationDialogForm),
+    m_layers(std::list<te::map::AbstractLayerPtr>()),
+    m_model(0)
 {
 // add controls
   m_ui->setupUi(this);
@@ -69,20 +72,20 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
 
 te::vp::AggregationDialog::~AggregationDialog()
 {
+  delete m_model;
 }
 
 void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
   
+  if(m_model != 0)
+      delete m_model;
+
   m_model = new LayerTreeModel(m_layers, true);
 
   m_ui->m_layerTreeView->setModel(m_model);
   m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
-}
-
-void te::vp::AggregationDialog::setFilteredLayers(std::list<te::map::AbstractLayerPtr> layers)
-{
 }
 
 int te::vp::AggregationDialog::getMemoryUse()
@@ -152,12 +155,21 @@ void te::vp::AggregationDialog::setAttributesNameMap()
   m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MODE, TR_VP("Mode")));
 }
 
-void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
-{ 
-}
-
 void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
 {
+  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
+
+  delete m_model;
+  m_ui->m_selectAllComboBox->setCurrentIndex(0);
+  m_ui->m_rejectAllComboBox->setCurrentIndex(0);
+  m_ui->m_outputListWidget->clear();
+
+  if(text == "")
+    filteredLayers = m_layers;
+
+  m_model = new LayerTreeModel(filteredLayers);
+
+  m_ui->m_layerTreeView->setModel(m_model);
 }
 
 void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
@@ -175,7 +187,7 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
   {
     std::vector<te::dt::Property*> properties = selected.begin()->second;
   
-    for(size_t i=0; i < properties.size(); i++)
+    for(size_t i=0; i < properties.size(); ++i)
     {
       propertyType = properties[i]->getType();
 
@@ -230,7 +242,7 @@ void te::vp::AggregationDialog::onSelectAllComboBoxChanged(int index)
   QList<QListWidgetItem *> listFound;
   listFound = m_ui->m_outputListWidget->findItems(text, flag);
   
-  for(size_t i=0; i < listFound.size(); i++)
+  for(int i=0; i < listFound.size(); ++i)
     listFound.at(i)->setSelected(true);
 
   m_ui->m_rejectAllComboBox->setCurrentIndex(0);
@@ -247,7 +259,7 @@ void te::vp::AggregationDialog::onRejectAllComboBoxChanged(int index)
   QList<QListWidgetItem *> listFound;
   listFound = m_ui->m_outputListWidget->findItems(text, flag);
   
-  for(size_t i=0; i < listFound.size(); i++)
+  for(int i=0; i < listFound.size(); ++i)
     listFound.at(i)->setSelected(false);
 
   m_ui->m_selectAllComboBox->setCurrentIndex(0);
