@@ -25,36 +25,41 @@
 
 // TerraLib
 #include "../../common/Translator.h"
-#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../common/StringUtils.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../core/Exception.h"
 #include "IntersectionDialog.h"
 #include "LayerTreeModel.h"
 #include "ui_IntersectionDialogForm.h"
 #include "VectorProcessingConfig.h"
+#include "Utils.h"
 
 // Qt
-#include <QtGui/QTreeWidget>
 #include <QtGui/QFileDialog>
+#include <QtGui/QMessageBox>
+#include <QtGui/QTreeWidget>
 
 te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::IntersectionDialogForm)
+    m_ui(new Ui::IntersectionDialogForm),
+    m_layers(std::list<te::map::AbstractLayerPtr>()),
+    m_model(0)
 {
 // add controls
   m_ui->setupUi(this);
 
-  //m_ui->m_layerTreeView->header()->setStretchLastSection(false);
-
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-intersection-hint").pixmap(48,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
+  m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
 
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
+  
 }
 
 te::vp::IntersectionDialog::~IntersectionDialog()
@@ -66,34 +71,36 @@ void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> 
 {
   m_layers = layers;
 
+  if(m_model != 0)
+    delete m_model;
+
   m_model = new LayerTreeModel(m_layers);
-
-  m_ui->m_layerTreeView->setModel(m_model);
-}
-
-void te::vp::IntersectionDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
-{
   
-}
-
-void te::vp::IntersectionDialog::setSelectedLayers(std::vector<std::string> selectedLayers)
-{
-  m_selectedLayers = selectedLayers;
+  m_ui->m_layerTreeView->setModel(m_model);
 }
 
 void te::vp::IntersectionDialog::onFilterLineEditTextChanged(const QString& text)
 {
-  
+  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
+
+  delete m_model;
+
+  if(text == "")
+    filteredLayers = m_layers;
+
+  m_model = new LayerTreeModel(filteredLayers);
+
+  m_ui->m_layerTreeView->setModel(m_model);
 }
 
-int te::vp::IntersectionDialog::getMemoryUse()
+void te::vp::IntersectionDialog::onHelpPushButtonClicked()
 {
-  if(m_ui->m_wholeMemRadioButton->isChecked())
-    return WHOLE_MEM;
-  else if(m_ui->m_partiallyMemRadioButton->isChecked())
-    return PARTIALLY_MEM;
-  else
-    return LOW_MEM;
+  QMessageBox::information(this, "Intersection Operation", "Under development");
+}
+
+void te::vp::IntersectionDialog::onOkPushButtonClicked()
+{
+  QMessageBox::information(this, "Intersection Operation", "Under development");
 }
 
 void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
@@ -127,3 +134,6 @@ void te::vp::IntersectionDialog::onTargetFileToolButtonPressed()
 
   m_outputDatasource = datasources[0];
 }
+
+
+

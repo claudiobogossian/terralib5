@@ -373,11 +373,11 @@ te::da::Sequence* te::sqlite::DataSourceCatalogLoader::getSequence(const std::st
   return 0;
 }
 
-te::gm::Envelope* te::sqlite::DataSourceCatalogLoader::getExtent(const te::gm::GeometryProperty* gp)
+te::gm::Envelope* te::sqlite::DataSourceCatalogLoader::getExtent(const te::dt::Property* sp)
 {
-  assert(gp->getParent());
+  assert(sp->getParent());
 
-  return getExtent(gp->getParent()->getName(), gp->getName());
+  return getExtent(sp->getParent()->getName(), sp->getName());
 }
 
 void te::sqlite::DataSourceCatalogLoader::loadCatalog(const bool full)

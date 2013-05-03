@@ -20,16 +20,15 @@
 /*!
   \file terralib/vp/qt/LayerItem.cpp
 
-  \brief ????
+  \brief A class that represents a Layer in a LayerTreeModel.
 */
 
 // TerraLib
 #include "../../dataaccess/dataset/DataSetType.h"
-#include "../../qt/widgets/datasource/explorer/PropertyItem.h"
 #include "LayerItem.h"
 #include "PropertyItem.h"
 
-#include <QtGui/QMenu>
+// Qt
 #include <QtGui/QWidget>
 
 te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
@@ -40,7 +39,7 @@ te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
 {
   if(layer->hasChildren())
   {
-    for(size_t i = 0; i < layer->getChildrenCount(); i++)
+    for(size_t i = 0; i < layer->getChildrenCount(); ++i)
     {
       te::map::AbstractLayerPtr layerChild = boost::dynamic_pointer_cast<te::map::AbstractLayer>(layer->getChild(i));
 
@@ -60,7 +59,7 @@ te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
 
     std::vector<te::dt::Property*> properties = schema->getProperties();
 
-    for(size_t i = 0; i < properties.size(); i++)
+    for(size_t i = 0; i < properties.size(); ++i)
     {
       te::dt::Property* p = schema->getProperty(i);
       
@@ -128,7 +127,7 @@ void te::vp::LayerItem::fetchMore()
 
   if(layer->hasChildren())
   {
-    for(size_t i = 0; i < layer->getChildrenCount(); i++)
+    for(size_t i = 0; i < layer->getChildrenCount(); ++i)
     {
       te::map::AbstractLayerPtr child = boost::dynamic_pointer_cast<te::map::AbstractLayer>(layer->getChild(i));
       new LayerItem(child, this);
@@ -143,7 +142,7 @@ void te::vp::LayerItem::fetchMore()
 
     std::vector<te::dt::Property*> properties = schema->getProperties();
 
-    for(size_t i = 0; i < properties.size(); i++)
+    for(size_t i = 0; i < properties.size(); ++i)
     {
       te::dt::Property* p = schema->getProperty(i);
       
@@ -182,7 +181,7 @@ bool te::vp::LayerItem::setData(int column, const QVariant& value, int role)
       else if(checkState == Qt::Unchecked)
         m_selected = false;
 
-      for(size_t i = 0; i < m_items.size(); i++)
+      for(size_t i = 0; i < m_items.size(); ++i)
       {
         PropertyItem* pItem = dynamic_cast<PropertyItem*>(m_items[i]);
         pItem->setSelected(m_selected);
@@ -220,7 +219,7 @@ std::vector<te::dt::Property*> te::vp::LayerItem::getSelected()
 {
   std::vector<te::dt::Property*> selected;
 
-  for(size_t i = 0; i < m_items.size(); i++)
+  for(size_t i = 0; i < m_items.size(); ++i)
   {
     PropertyItem* pitem = dynamic_cast<PropertyItem*>(m_items[i]);
 

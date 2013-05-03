@@ -73,26 +73,18 @@ namespace te
         te::da::DataSetType* getType();
 
         const te::da::DataSetType* getType() const;
-        
-        te::da::DataSourceTransactor* getTransactor() const;
 
         void loadTypeInfo();
 
-        te::da::DataSet* getParent() const;
+        te::gm::Envelope* getExtent(std::size_t i);
 
-        te::gm::Envelope* getExtent(const te::dt::Property* p);
+        std::size_t getNumProperties() const;
 
-        void setFilter(te::dt::Property* p,
-                       const te::gm::Geometry* g,
-                       te::gm::SpatialRelation r = te::gm::INTERSECTS);
- 
-        void setFilter(te::dt::Property* p,
-                       const te::gm::Envelope* e,
-                       te::gm::SpatialRelation r = te::gm::INTERSECTS); 
+        int getPropertyDataType(std::size_t i) const;
 
-        te::da::DataSetItem* getItem() const;
+        std::string getPropertyName(std::size_t i) const;
 
-        void add(te::da::DataSetItem* item);
+        std::string getDatasetNameOfProperty(std::size_t i) const;
 
         bool isEmpty() const;
 
@@ -108,8 +100,6 @@ namespace te
 
         bool moveLast();
 
-        bool moveAfterLast();
-
         bool move(std::size_t i);
 
         bool isAtBegin() const;
@@ -120,73 +110,37 @@ namespace te
 
         bool isAfterEnd() const;
 
-        char getChar(int i) const;
+        char getChar(std::size_t i) const;
 
-        void setChar(int i, char value);        
+        unsigned char getUChar(std::size_t i) const;
 
-        unsigned char getUChar(int i) const;
+        boost::int16_t getInt16(std::size_t i) const;
 
-        void setUChar(int i, unsigned char value);
-        
-        boost::int16_t getInt16(int i) const;
+        boost::int32_t getInt32(std::size_t i) const;
 
-        void setInt16(int i, boost::int16_t value);
+        boost::int64_t getInt64(std::size_t i) const;
 
-        boost::int32_t getInt32(int i) const;
+        bool getBool(std::size_t i) const;
 
-        void setInt32(int i, boost::int32_t value);
+        float getFloat(std::size_t i) const;
 
-        boost::int64_t getInt64(int i) const;
+        double getDouble(std::size_t i) const;
 
-        void setInt64(int i, boost::int64_t value);
+        std::string getNumeric(std::size_t i) const;
 
-        bool getBool(int i) const;
+        std::string getString(std::size_t i) const;
 
-        void setBool(int i, bool value);
+        te::dt::ByteArray* getByteArray(std::size_t i) const;
 
-        float getFloat(int i) const;
+        te::gm::Geometry* getGeometry(std::size_t i) const;
 
-        void setFloat(int i, float value);
+        te::rst::Raster* getRaster(std::size_t i) const;
 
-        double getDouble(int i) const;
+        te::dt::DateTime* getDateTime(std::size_t i) const; 
 
-        void setDouble(int i, double value);
+        te::dt::Array* getArray(std::size_t i) const;
 
-        std::string getNumeric(int i) const;
-
-        void setNumeric(int i, const std::string& value);
-
-        std::string getString(int i) const;
-
-        void setString(int i, const std::string& value);
-
-        te::dt::ByteArray* getByteArray(int i) const;
-
-        void setByteArray(int i, const te::dt::ByteArray& value);
-
-        te::gm::Geometry* getGeometry(int i) const;
-
-        void setGeometry(int i, const te::gm::Geometry& value);
-
-        te::rst::Raster* getRaster(int i) const;
-
-        void setRaster(int i, const te::rst::Raster& value);
-
-        te::dt::DateTime* getDateTime(int i) const; 
-
-        void setDateTime(int i, const te::dt::DateTime& value); 
-        
-        void getArray(int i, std::vector<boost::int16_t>& values) const;
-
-        const unsigned char* getWKB(int i) const;
-
-        te::da::DataSet* getDataSet(int i);
-
-        void setDataSet(int i, const te::da::DataSet& value);
-        
-        void setValue(int i, te::dt::AbstractData* value);
-
-        bool isNull(int i) const;
+        bool isNull(std::size_t i) const;
 
         /*!
           \brief Returns the blob size in bytes.
