@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,13 +35,13 @@
 #include <QtGui/QCloseEvent>
 #include <QtGui/QScrollBar>
 
-te::qt::widgets::ProgressViewerWidget::ProgressViewerWidget(QWidget* parent) 
-  : QDialog(parent, Qt::Tool), 
+te::qt::widgets::ProgressViewerWidget::ProgressViewerWidget(QWidget* parent)
+  : QDialog(parent, Qt::Tool),
     AbstractProgressViewer()
 {
   //create custom widget
   m_MainLayout = new QGridLayout(this);
-  m_MainLayout->setContentsMargins(1,1,1,1);
+  m_MainLayout->setContentsMargins(1, 1, 1, 1);
 
   m_scroll = new QScrollArea(this);
   m_scroll->setBackgroundRole(QPalette::Light);
@@ -52,7 +52,7 @@ te::qt::widgets::ProgressViewerWidget::ProgressViewerWidget(QWidget* parent)
   m_scroll->setWidget(m_widget);
 
   m_widgetLayout = new QGridLayout(m_widget);
-  m_widgetLayout->setContentsMargins(1,1,1,1);
+  m_widgetLayout->setContentsMargins(1, 1, 1, 1);
   m_widgetLayout->setVerticalSpacing(1);
   m_widgetLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 }
@@ -77,9 +77,6 @@ void te::qt::widgets::ProgressViewerWidget::removeTask(int taskId)
     m_tasks.erase(it);
 
   QCoreApplication::postEvent(this, new RemoveProgressWidgetItemEvent(taskId));
-
-  /*if(m_tasks.empty())
-    QCoreApplication::postEvent(this, new QCloseEvent);*/
 
   QCoreApplication::processEvents();
 }
