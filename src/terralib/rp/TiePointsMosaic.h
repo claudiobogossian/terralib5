@@ -18,12 +18,12 @@
  */
 
 /*!
-  \file terralib/rp/Mosaic.h
-  \brief Create a mosaic from a set of rasters.
+  \file terralib/rp/TiePointsMosaic.h
+  \brief Create a mosaic from a set of rasters using tie-points.
  */
 
-#ifndef __TERRALIB_RP_INTERNAL_MOSAIC_H
-#define __TERRALIB_RP_INTERNAL_MOSAIC_H
+#ifndef __TERRALIB_RP_INTERNAL_TIEPOINTSMOSAIC_H
+#define __TERRALIB_RP_INTERNAL_TIEPOINTSMOSAIC_H
 
 #include "Algorithm.h"
 #include "FeedersRaster.h"
@@ -35,18 +35,19 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <memory>
 
 namespace te
 {
   namespace rp
   {
     /*!
-      \class Mosaic
-      \brief Create a mosaic from a set of rasters.
+      \class TiePointsMosaic
+      \brief Create a mosaic from a set of rasters using tie-points.
       \note The first raster will always be taken as reference to define the mosaic resolution and SRS.
-      \ingroup RPAlgorithms
+      \ingroup MosaicAlgorithms
      */
-    class TERPEXPORT Mosaic : public Algorithm
+    class TERPEXPORT TiePointsMosaic : public Algorithm
     {
       public:
         
@@ -70,7 +71,7 @@ namespace te
             
             std::vector< std::vector< unsigned int > > m_inputRastersBands; //!< Bands to process for each input raster.
             
-            std::vector< std::vector< te::gm::GTParameters::TiePoint > > m_tiePoints; //!< An empty vector (for the case where only the reaster geographical coordinates must be used) or Tie-points between each adjacent raster pair (te::gm::GTParameters::TiePoint::first are raster (with index i) lines/columns, te::gm::GTParameters::TiePoint::second are raster (with index I+1) lines/columns ,and so on).
+            std::vector< std::vector< te::gm::GTParameters::TiePoint > > m_tiePoints; //!< Tie-points between each adjacent raster pair (te::gm::GTParameters::TiePoint::first are raster (with index i) lines/columns, te::gm::GTParameters::TiePoint::second are raster (with index I+1) lines/columns ,and so on).
             
             TiePointsLinkType m_tiePointsLinkType; //!< The given tie points linking type, see TiePointsLinkType.
             
@@ -116,7 +117,7 @@ namespace te
             
             std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the output rasters (as described in te::raster::RasterFactory). 
             
-            mutable boost::shared_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output mosaic raster.
+            std::auto_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output mosaic raster.
             
             OutputParameters();
             
@@ -134,9 +135,9 @@ namespace te
             AbstractParameters* clone() const;
         };        
 
-        Mosaic();
+        TiePointsMosaic();
         
-        ~Mosaic();
+        ~TiePointsMosaic();
        
         //overload
         bool execute( AlgorithmOutputParameters& outputParams ) throw( te::rp::Exception );
@@ -151,7 +152,7 @@ namespace te
 
       protected:
         
-        Mosaic::InputParameters m_inputParameters; //!< Input execution parameters.
+        TiePointsMosaic::InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
         
@@ -160,14 +161,14 @@ namespace te
           \param outputParams The algorithm execution parameters.
           \return true if ok, false on errors.
         */
-        bool executeGeoMosaic( Mosaic::OutputParameters& outputParams );
+        bool executeGeoMosaic( TiePointsMosaic::OutputParameters& outputParams );
           
         /*!
           \brief Execute a mosaic of images linket by tie-points.
           \param outputParams The algorithm execution parameters.
           \return true if ok, false on errors.
         */
-        bool executeTiePointsMosaic( Mosaic::OutputParameters& outputParams );          
+        bool executeTiePointsMosaic( TiePointsMosaic::OutputParameters& outputParams );          
           
         /*!
           \brief Raster band statistics calcule.

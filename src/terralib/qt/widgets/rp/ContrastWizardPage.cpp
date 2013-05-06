@@ -171,9 +171,6 @@ void te::qt::widgets::ContrastWizardPage::apply()
   {
     if(algorithmInstance.execute(algoOutputParams))
     {
-
-      te::rst::RasterPtr outputRaster = algoOutputParams.m_createdOutRasterPtr;
-
       QMessageBox::information(this, tr("Contrast"), tr("Contrast enhencement ended sucessfully"));
     }
     else
