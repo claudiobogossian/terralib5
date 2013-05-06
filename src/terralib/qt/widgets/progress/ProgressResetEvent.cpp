@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,14 +21,12 @@
   \file terralib/qt/widgets/progress/ProgressResetEvent.cpp
 
   \brief The ProgressResetEvent is a custom event used to reset a progress bar.
-
-  \note Used in thread codes.
 */
 
 //TerraLib
 #include "ProgressResetEvent.h"
 
-QEvent::Type te::qt::widgets::ProgressResetEvent::m_customEventType = QEvent::None;
+QEvent::Type te::qt::widgets::ProgressResetEvent::sm_customEventType(QEvent::None);
 
 te::qt::widgets::ProgressResetEvent::ProgressResetEvent()
   : QEvent(ProgressResetEvent::type())
@@ -41,11 +39,11 @@ te::qt::widgets::ProgressResetEvent::~ProgressResetEvent()
 
 QEvent::Type te::qt::widgets::ProgressResetEvent::type()
 {
-  if(m_customEventType == QEvent::None)
+  if(sm_customEventType == QEvent::None)
   {
     int generatedType = QEvent::registerEventType();
-    m_customEventType = static_cast<QEvent::Type>(generatedType);
+    sm_customEventType = static_cast<QEvent::Type>(generatedType);
   }
 
-  return m_customEventType;
+  return sm_customEventType;
 }
