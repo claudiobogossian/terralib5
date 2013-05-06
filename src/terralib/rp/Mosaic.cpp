@@ -137,7 +137,6 @@ namespace te
 
       m_rType = params.m_rType;
       m_rInfo = params.m_rInfo;
-      m_outputRasterPtr = params.m_outputRasterPtr;
 
       return *this;
     }

@@ -35,6 +35,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <memory>
 
 namespace te
 {
@@ -116,7 +117,7 @@ namespace te
             
             std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the output rasters (as described in te::raster::RasterFactory). 
             
-            mutable boost::shared_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output mosaic raster.
+            std::auto_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output mosaic raster.
             
             OutputParameters();
             

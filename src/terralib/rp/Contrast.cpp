@@ -121,7 +121,6 @@ namespace te
       reset();
 
       m_outRasterPtr = params.m_outRasterPtr;
-      m_createdOutRasterPtr = params.m_createdOutRasterPtr;
       m_outRasterBands = params.m_outRasterBands;
       m_createdOutRasterDSType = params.m_createdOutRasterDSType;
       m_createdOutRasterInfo = params.m_createdOutRasterInfo;
