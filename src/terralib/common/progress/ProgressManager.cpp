@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/common/progress/ProgressManager.cpp
 
-  \brief A class that defines the singleton to manager tasks and viewers.
+  \brief A singleton class used to manage tasks progresses and their viewers.
 */
 
 // TerraLib
@@ -34,7 +34,7 @@ int te::common::ProgressManager::addViewer(AbstractProgressViewer* apv)
 
   m_viewers.insert(std::map<int, AbstractProgressViewer*>::value_type(id, apv));
 
-  //add current tasks into viewer
+  // add current tasks into the new viewer
   std::map<int, TaskProgress*>::iterator it = m_tasks.begin();
 
   while(it != m_tasks.end())
@@ -64,7 +64,7 @@ int te::common::ProgressManager::addTask(TaskProgress* tp)
 
   m_tasks.insert(std::map<int, TaskProgress*>::value_type(id, tp));
 
-  //add task in viewers
+  // add task in viewers
   std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
 
   while(itV != m_viewers.end())
@@ -85,7 +85,7 @@ void te::common::ProgressManager::removeTask(int taskId)
 
   if(it != m_tasks.end())
   {
-    //remove task from viewers
+    // remove task from viewers
     std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
 
     while(itV != m_viewers.end())
@@ -105,7 +105,7 @@ void te::common::ProgressManager::cancelTask(int taskId)
 
   if(it != m_tasks.end())
   {
-    //remove task from viewers
+    // remove task from viewers
     std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
 
     while(itV != m_viewers.end())
@@ -172,9 +172,9 @@ void te::common::ProgressManager::updateMessage(int taskId)
   }
 }
 
-te::common::ProgressManager::ProgressManager(): 
-  m_taskCounter(0),
-  m_viewerCounter(0)
+te::common::ProgressManager::ProgressManager()
+  : m_taskCounter(0),
+    m_viewerCounter(0)
 {
 }
 
@@ -193,3 +193,4 @@ int te::common::ProgressManager::generateTaskId()
 {
   return m_taskCounter++;
 }
+
