@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,26 +26,64 @@
 // TerraLib
 #include "LibraryManager.h"
 
+// STL
+#include <map>
+
+// Boost
+#include <boost/weak_ptr.hpp>
+
+class te::common::LibraryManager::Impl
+{
+  public:
+
+    typedef boost::weak_ptr<te::common::Library> LibraryWeakPtr;
+
+    Impl()
+    {
+    }
+
+    ~Impl()
+    {
+    }
+
+    void add(const std::string& id, const te::common::LibraryPtr& l) throw()
+    {
+      m_libraryMap[id] = l;
+    }
+
+    te::common::LibraryPtr find(const std::string& id) throw()
+    {
+      std::map<std::string, LibraryWeakPtr>::const_iterator it = m_libraryMap.find(id);
+
+      if(it != m_libraryMap.end())
+        return it->second.lock();
+
+      return te::common::LibraryPtr();
+    }
+
+  private:
+
+    std::map<std::string, LibraryWeakPtr> m_libraryMap;
+};
+
 void te::common::LibraryManager::add(const std::string& id, const LibraryPtr& l) throw()
 {
-  m_libraryMap[id] = l;
+  m_pImpl->add(id, l);
 }
 
 te::common::LibraryPtr te::common::LibraryManager::find(const std::string& id) throw()
 {
-  std::map<std::string, boost::weak_ptr<Library> >::const_iterator it = m_libraryMap.find(id);
-
-  if(it != m_libraryMap.end())
-    return it->second.lock();
-
-  return LibraryPtr();
+  return m_pImpl->find(id);
 }
 
 te::common::LibraryManager::LibraryManager()
+  : m_pImpl(0)
 {
+  m_pImpl = new Impl;
 }
 
 te::common::LibraryManager::~LibraryManager()
 {
+  delete m_pImpl;
 }
 

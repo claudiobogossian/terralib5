@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -52,7 +52,7 @@ namespace te
             must be in a folder where the system can search for these dependencies.
 
       \note This class is based on pimpl idiom.
-     */
+    */
     class TECOMMONEXPORT Library : public boost::noncopyable
     {
       public:
