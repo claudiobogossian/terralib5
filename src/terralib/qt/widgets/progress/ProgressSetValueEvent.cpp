@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,7 +28,7 @@
 //TerraLib
 #include "ProgressSetValueEvent.h"
 
-QEvent::Type te::qt::widgets::ProgressSetValueEvent::m_customEventType = QEvent::None;
+QEvent::Type te::qt::widgets::ProgressSetValueEvent::sm_customEventType(QEvent::None);
 
 te::qt::widgets::ProgressSetValueEvent::ProgressSetValueEvent(int value)
   : QEvent(ProgressSetValueEvent::type()), m_value(value)
@@ -41,12 +41,12 @@ te::qt::widgets::ProgressSetValueEvent::~ProgressSetValueEvent()
 
 QEvent::Type te::qt::widgets::ProgressSetValueEvent::type()
 {
-  if (m_customEventType == QEvent::None)
+  if (sm_customEventType == QEvent::None)
   {
     int generatedType = QEvent::registerEventType();
-    m_customEventType = static_cast<QEvent::Type>(generatedType);
+    sm_customEventType = static_cast<QEvent::Type>(generatedType);
   }
 
-  return m_customEventType;
+  return sm_customEventType;
 }
 
