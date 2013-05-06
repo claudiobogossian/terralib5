@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -81,12 +81,7 @@ namespace te
           ProgressViewerBar(QWidget* parent);
 
           /*! \brief Virtual destructor. */
-          virtual ~ProgressViewerBar();
-
-          /** @name ProgressViewerBar Methods
-           *  Methods for ProgressViewerBar access
-           */
-          //@{
+          ~ProgressViewerBar();
 
            /*!
             \brief Insert a new taks to progress viewer container
@@ -94,46 +89,44 @@ namespace te
             \param t  Task pointer
             \param id Task identifier
           */
-          virtual void addTask(te::common::TaskProgress* t, int id);
+          void addTask(te::common::TaskProgress* t, int id);
 
           /*!
             \brief Removes a task from progress viewer container
 
             \param taskId Task identifier
           */
-          virtual void removeTask(int taskId);
+          void removeTask(int taskId);
 
           /*!
             \brief Cancel a task
 
             \param taskId Task identifier
           */
-          virtual void cancelTask(int taskId);
+          void cancelTask(int taskId);
 
           /*!
             \brief Set task total steps
 
             \param taskId Task identifier
           */
-          virtual void setTotalValues(int taskId);
+          void setTotalValues(int taskId);
 
           /*!
             \brief Update the progress evaluation
 
             \param taskId Task identifier
           */
-          virtual void updateValue(int taskId);
+          void updateValue(int taskId);
 
           /*!
             \brief Update the progress message
 
             \param taskId Task identifier
           */
-          virtual void updateMessage(int taskId);
+          void updateMessage(int taskId);
 
-          void setButtonText(std::string value);
-
-          //@}
+          void setButtonText(const std::string& value);
 
         protected:
 

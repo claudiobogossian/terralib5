@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -52,7 +52,7 @@ te::qt::widgets::ProgressViewerBar::ProgressViewerBar(QWidget* parent)
 
   m_layout = new QGridLayout(this);
 
-  m_layout->setContentsMargins(0,0,0,0);
+  m_layout->setContentsMargins(0, 0, 0, 0);
   m_layout->setHorizontalSpacing(1);
   m_layout->addWidget(m_progressBar, 0, 0);
   m_layout->addWidget(m_button, 0, 1);
@@ -95,13 +95,13 @@ void te::qt::widgets::ProgressViewerBar::cancelTask(int taskId)
 
   if(it != m_tasks.end())
   {
-    //update total and current values
+    // update total and current values
     m_totalSteps -= it->second->getTotalSteps();
     m_currentStep -= it->second->getCurrentStep();
 
-    double aux = (double) m_currentStep / (double) m_totalSteps;
+    double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 
-    m_propStep = int (100. * aux);
+    m_propStep = static_cast<int>(100.0 * aux);
   }
 }
 
@@ -114,11 +114,11 @@ void te::qt::widgets::ProgressViewerBar::updateValue(int /*taskId*/)
 {
   m_currentStep++;
 
-  double aux = (double) m_currentStep / (double) m_totalSteps;
+  double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 
-  int val = int (100. * aux);
+  int val = static_cast<int>(100.0 * aux);
 
-  if(val != m_propStep && val >= 0.)
+  if(val != m_propStep && val >= 0.0)
   {
     m_propStep = val;
 
@@ -131,7 +131,7 @@ void te::qt::widgets::ProgressViewerBar::updateMessage(int /*taskId*/)
 {
 }
 
-void te::qt::widgets::ProgressViewerBar::setButtonText(std::string value)
+void te::qt::widgets::ProgressViewerBar::setButtonText(const std::string& value)
 {
   m_button->setText(value.c_str());
 }
