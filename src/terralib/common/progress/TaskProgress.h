@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/common/progress/TaskProgress.h
 
-  \brief This class is the implementation of a progress evalution of a task.
+  \brief This class can be used to inform the progress of a task.
 */
 
 #ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_TASKPROGRESS_H
@@ -42,12 +42,9 @@ namespace te
     /*!
       \class TaskProgress
 
-      \brief This class is the implementation of a progress evalution of a task.
+      \brief This class can be used to inform the progress of a task.
 
-      \sa ProgressTimer
-
-      \note In constructor the task auto register in progress manager and in
-            detructor the task is removed from progress manager.
+      \sa ProgressTimer, ProgressManager
 
       \todo ProgressTimer is NOT working if TaskProgress is in multithread mode.
     */
@@ -62,37 +59,40 @@ namespace te
           DRAW   = 1     /*!< Draw task type.      */
         };
 
-        /*! \brief Default constructor. */
-        TaskProgress(const std::string& message = "", const unsigned int& type = UNDEFINED, int totalSteps = 0);
+        /*!
+          \brief Default constructor.
 
-        /*! \brief Destructor. */
+          The constructor will register the task in the progress manager.
+        */
+        TaskProgress(const std::string& message = "", unsigned int type = UNDEFINED, int totalSteps = 0);
+
+        /*!
+          \brief Destructor.
+
+          The destructor will remove the task from the progress manager.
+        */
         ~TaskProgress();
-
-        /** @name TaskProgress Methods
-         *  Methods for task access
-         */
-        //@{
 
         /*!
           \brief Get the task identification.
 
           \return Task id as integer value.
         */
-        int getId();
+        int getId() const;
 
         /*!
           \brief Get the task type.
 
           \return The task type.
         */
-        unsigned int getType();
+        unsigned int getType() const;
 
         /*!
           \brief Get the task total stepes.
 
-          \return Interger value with total steps.
+          \return Integer value with total steps.
         */
-        int getTotalSteps();
+        int getTotalSteps() const;
 
         /*!
           \brief Set the task total stepes.
@@ -102,18 +102,18 @@ namespace te
         void setTotalSteps(int value);
 
         /*!
-          \brief Get the proportional value (value between 0-100).
+          \brief Get the proportional value (value between 0 and 100).
 
           \return Proportional value as integer.
         */
-        int getProportionalValue();
+        int getProportionalValue() const;
 
         /*!
           \brief Get the task current step.
 
           \return Current step as integer value.
         */
-        int getCurrentStep();
+        int getCurrentStep() const;
 
         /*!
           \brief Set the task current step.
@@ -130,21 +130,21 @@ namespace te
 
           \return String value with task message.
         */
-        std::string getMessage();
+        const std::string& getMessage() const;
 
         /*!
           \brief Set the task message.
 
           \param message String value with task message.
         */
-        void setMessage(std::string message);
+        void setMessage(const std::string& message);
 
         /*!
           \brief Verify if the task is active.
 
           \return True if task is active and false in other case.
         */
-        bool isActive();
+        bool isActive() const;
 
         /*! \brief Cancel task, set the task active FALSE. */
         void cancel();
@@ -168,9 +168,7 @@ namespace te
 
           \return True if progress has to be update and false in other case.
         */
-        bool hasToUpdate();
-
-        //@}
+        bool hasToUpdate() const;
 
       protected:
 
