@@ -77,6 +77,7 @@ void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> 
   m_model = new LayerTreeModel(m_layers);
   
   m_ui->m_layerTreeView->setModel(m_model);
+  m_ui->m_layerTreeView->resizeColumnToContents(0);
 }
 
 void te::vp::IntersectionDialog::onFilterLineEditTextChanged(const QString& text)
