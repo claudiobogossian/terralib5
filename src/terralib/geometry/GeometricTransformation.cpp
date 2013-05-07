@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -33,24 +33,23 @@ te::gm::GeometricTransformation::~GeometricTransformation()
 {
 }
 
-bool te::gm::GeometricTransformation::initialize( const GTParameters& newParameters )
+bool te::gm::GeometricTransformation::initialize(const GTParameters& newParameters)
 {
-  /* If previous calculated parameters were supplied, no need to do calcules */
+// If previous calculated parameters were supplied, no need to do calcules
 
-  if( isValid( newParameters ) ) 
+  if(isValid(newParameters))
   {
     m_internalParameters = newParameters;
-    
+
     return true;
-  } 
+  }
   else
   {
-    /* No previous parameters given - Need to calculate the new transformation
-       parameters */
-    
+// No previous parameters given - Need to calculate the new transformation parameters
+
     m_internalParameters = newParameters;
-    
-    if( computeParameters( m_internalParameters ) )
+
+    if(computeParameters( m_internalParameters))
     {
       return true;
     }
@@ -62,17 +61,16 @@ bool te::gm::GeometricTransformation::initialize( const GTParameters& newParamet
   }
 }
 
-double te::gm::GeometricTransformation::getMaxDirectMappingError( 
-  const GTParameters& params ) const
+double te::gm::GeometricTransformation::getMaxDirectMappingError(const GTParameters& params ) const
 {
-  assert( isValid( params ) );
-    
-  const unsigned int tiepointsSize = (unsigned int)params.m_tiePoints.size();
-  
-  double maxError = 0;
-  double currentError = 0;
-  
-  for( unsigned int tpIndex = 0 ; tpIndex < tiepointsSize ; ++tpIndex ) 
+  assert(isValid(params));
+
+  const unsigned int tiepointsSize = static_cast<unsigned int>(params.m_tiePoints.size());
+
+  double maxError = 0.0;
+  double currentError = 0.0;
+
+  for(unsigned int tpIndex = 0; tpIndex < tiepointsSize; ++tpIndex)
   {
     currentError = getDirectMappingError( params.m_tiePoints[ tpIndex ], params );
 
@@ -81,21 +79,21 @@ double te::gm::GeometricTransformation::getMaxDirectMappingError(
       maxError = currentError;
     }
   }
-  
+
   return maxError;
 }
 
 double te::gm::GeometricTransformation::getMaxInverseMappingError( const GTParameters& params ) const
 {
   assert( isValid( params ) );
-    
-  const unsigned int tiepointsSize = (unsigned int)params.m_tiePoints.size();
 
-  double maxError = 0;
+  const unsigned int tiepointsSize = static_cast<unsigned int>(params.m_tiePoints.size());
 
-  double currentError = 0;
-  
-  for( unsigned int tpIndex = 0 ; tpIndex < tiepointsSize ; ++tpIndex ) 
+  double maxError = 0.0;
+
+  double currentError = 0.0;
+
+  for( unsigned int tpIndex = 0 ; tpIndex < tiepointsSize ; ++tpIndex )
   {
     currentError = getInverseMappingError( params.m_tiePoints[ tpIndex ], params );
 
@@ -112,17 +110,17 @@ double te::gm::GeometricTransformation::getDirectMapRMSE( const GTParameters& pa
 {
   assert( isValid( params ) );
 
-  const unsigned int tiepointsSize = (unsigned int)params.m_tiePoints.size();
+  const unsigned int tiepointsSize = static_cast<unsigned int>(params.m_tiePoints.size());
 
   if( tiepointsSize == 0 )
   {
-    return 0;
+    return 0.0;
   }
   else
   {
-    double error2Sum = 0;
+    double error2Sum = 0.0;
 
-    double currentError = 0;
+    double currentError = 0.0;
 
     for( unsigned int tpIndex = 0 ; tpIndex < tiepointsSize ; ++tpIndex ) 
     {
@@ -131,7 +129,7 @@ double te::gm::GeometricTransformation::getDirectMapRMSE( const GTParameters& pa
       error2Sum += ( currentError * currentError );
     }
 
-    return sqrt( error2Sum / ( (double)tiepointsSize ) );
+    return sqrt( error2Sum / static_cast<double>(tiepointsSize) );
   }
 }
 
@@ -139,16 +137,16 @@ double te::gm::GeometricTransformation::getInverseMapRMSE( const GTParameters& p
 {
   assert( isValid( params ) );
 
-  const unsigned int tiepointsSize = (unsigned int)params.m_tiePoints.size();
+  const unsigned int tiepointsSize = static_cast<unsigned int>(params.m_tiePoints.size());
 
   if( tiepointsSize == 0 )
   {
-    return 0;
+    return 0.0;
   }
   else
   {
-    double error2Sum = 0;
-    double currentError = 0;
+    double error2Sum = 0.0;
+    double currentError = 0.0;
     
     for( unsigned int tpIndex = 0 ; tpIndex < tiepointsSize ; ++tpIndex ) 
     {
@@ -158,7 +156,7 @@ double te::gm::GeometricTransformation::getInverseMapRMSE( const GTParameters& p
       error2Sum += ( currentError * currentError );
     }
     
-    return sqrt( error2Sum / ( (double)tiepointsSize ) );
+    return sqrt( error2Sum / static_cast<double>(tiepointsSize) );
   }
 }
 
@@ -179,14 +177,14 @@ double te::gm::GeometricTransformation::getDirectMappingError( const GTParameter
 double te::gm::GeometricTransformation::getInverseMappingError( const GTParameters::TiePoint& tiePoint, const GTParameters& params ) const
 {
   assert( isValid( params ) );
-    
+
   Coord2D inverseMappedPoint;
 
   inverseMap( params, tiePoint.second, inverseMappedPoint );
-    
+
   double diffX = tiePoint.first.x - inverseMappedPoint.x;
   double diffY = tiePoint.first.y - inverseMappedPoint.y;
-    
+
   return hypot( diffX, diffY );
 }
 te::gm::GeometricTransformation::GeometricTransformation()

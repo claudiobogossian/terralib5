@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -49,16 +49,16 @@ namespace te
             u = a.x + b.y + c
             v = d.x + e.y + f
             
-            | u | = | a b c | * | x |
-            | v |   | d e f |   | y |
+            | u |   | a b c |   | x |
+            | v | = | d e f | * | y |
             | 1 |   | 0 0 1 |   | 1 |
                 
-            |u0| = |x0   y0  1  0   0  0|.|a|
+            |u0|   |x0   y0  1  0   0  0|.|a|
             |v0|   |0    0   0 x0  y0  1| |b|
-            |u1|   |x1   y1  1  0   0  0| |c|
+            |u1| = |x1   y1  1  0   0  0| |c|
             |v1|   |0    0   0 x1  y1  1| |d|
             |..|   |....................| |e|
-            |..|   |....................| |f|               
+            |..|   |....................| |f|
 
         GTParameters::m_directParameters = [ a b c d e f ]
       \endcode
