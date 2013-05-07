@@ -25,8 +25,12 @@
 
 // TerraLib
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../maptools/DataSetLayer.h"
+#include "../../se/Style.h"
 #include "LayerItem.h"
+#include "PropertyGroupItem.h"
 #include "PropertyItem.h"
+#include "LegendGroupItem.h"
 
 // Qt
 #include <QtGui/QWidget>
@@ -34,8 +38,11 @@
 te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
   : te::qt::widgets::AbstractLayerTreeItem(parent),
     m_layer(layer),
+    m_propertyGroup(0),
+    m_legendGroup(0),
     m_selected(false),
-    m_onlySelecteds(false)
+    m_onlySelecteds(false),
+    m_OnlyLegend(false)
 {
   if(layer->hasChildren())
   {
@@ -59,17 +66,22 @@ te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
 
     std::vector<te::dt::Property*> properties = schema->getProperties();
 
-    for(size_t i = 0; i < properties.size(); ++i)
-    {
-      te::dt::Property* p = schema->getProperty(i);
-      
-      if(p == 0)
-        continue;
+    m_propertyGroup = new PropertyGroupItem(properties, this);
+  }
+  
+  te::map::DataSetLayer* dataSetLayer = 0;
+  dataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_layer.get());
 
-      te::qt::widgets::AbstractLayerTreeItem* litem =  new PropertyItem(properties[i], this);
-      m_items.push_back(litem);
+  if(dataSetLayer != 0)
+  {
+    if(dataSetLayer->getStyle())
+    {
+      const std::vector<te::se::Rule*>& rules = dataSetLayer->getStyle()->getRules();
+
+      m_legendGroup = new LegendGroupItem(rules, this);
     }
   }
+  
 }
 
 te::vp::LayerItem::~LayerItem()
@@ -118,39 +130,9 @@ void te::vp::LayerItem::fetchMore()
   if(parent() == 0)
     return;
 
-  LayerItem* parentItem = dynamic_cast<LayerItem*>(parent());
-
-  if(!parentItem->hasChildren())
-    return;
-
-  te::map::AbstractLayerPtr layer = parentItem->getLayer();
-
-  if(layer->hasChildren())
+  for(size_t i = 0; i < m_items.size(); ++i)
   {
-    for(size_t i = 0; i < layer->getChildrenCount(); ++i)
-    {
-      te::map::AbstractLayerPtr child = boost::dynamic_pointer_cast<te::map::AbstractLayer>(layer->getChild(i));
-      new LayerItem(child, this);
-    }
-  }
-  else if(layer->getSchema()->getProperties().size() > 0)
-  {
-    const te::map::LayerSchema* schema = parentItem->getLayer()->getSchema();
-    
-    if(schema == 0)
-      return;
-
-    std::vector<te::dt::Property*> properties = schema->getProperties();
-
-    for(size_t i = 0; i < properties.size(); ++i)
-    {
-      te::dt::Property* p = schema->getProperty(i);
-      
-      if(p == 0)
-        continue;
-
-      new PropertyItem(properties[i], this);
-    }
+    m_items[i]->fetchMore();
   }
 }
 
@@ -181,9 +163,11 @@ bool te::vp::LayerItem::setData(int column, const QVariant& value, int role)
       else if(checkState == Qt::Unchecked)
         m_selected = false;
 
-      for(size_t i = 0; i < m_items.size(); ++i)
+      std::vector<te::qt::widgets::AbstractLayerTreeItem*> items = m_propertyGroup->getItems();
+
+      for(size_t i = 0; i < items.size(); ++i)
       {
-        PropertyItem* pItem = dynamic_cast<PropertyItem*>(m_items[i]);
+        PropertyItem* pItem = dynamic_cast<PropertyItem*>(items[i]);
         pItem->setSelected(m_selected);
       }
     }
@@ -217,11 +201,13 @@ bool te::vp::LayerItem::isSelected()
 
 std::vector<te::dt::Property*> te::vp::LayerItem::getSelected()
 {
+  std::vector<te::qt::widgets::AbstractLayerTreeItem*> propItems = m_propertyGroup->getItems();
+  
   std::vector<te::dt::Property*> selected;
 
-  for(size_t i = 0; i < m_items.size(); ++i)
+  for(size_t i = 0; i < propItems.size(); ++i)
   {
-    PropertyItem* pitem = dynamic_cast<PropertyItem*>(m_items[i]);
+    PropertyItem* pitem = dynamic_cast<PropertyItem*>(propItems[i]);
 
     if(pitem->isSelected())
     {

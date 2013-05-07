@@ -34,6 +34,9 @@ namespace te
 {
   namespace vp
   {
+    class PropertyGroupItem;
+    class LegendGroupItem;
+
     class TEVPEXPORT LayerItem : public te::qt::widgets::AbstractLayerTreeItem
     {
       Q_OBJECT
@@ -85,10 +88,13 @@ namespace te
 
       private:
 
-        std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;
+        std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;        
         te::map::AbstractLayerPtr m_layer;  //!< Terralib Layer of the LayerItem.
+        te::vp::PropertyGroupItem* m_propertyGroup;
+        te::vp::LegendGroupItem* m_legendGroup;
         bool m_selected;                    //!< Layer select state.
         bool m_onlySelecteds;               //!< Only features selected.
+        bool m_OnlyLegend;
     };
   }
 }
