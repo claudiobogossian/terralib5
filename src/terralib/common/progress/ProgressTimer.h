@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/common/progress/ProgressTimer.h
 
-  \brief The ProgressTimer is a util class used to calculate the estimated time to finish loop job.
+  \brief The ProgressTimer is a utility class that can be used to calculate the estimated time to finish a task.
 */
 
 #ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSTIMER_H
@@ -40,7 +40,9 @@ namespace te
     /*!
       \class ProgressTimer
 
-      \brief The ProgressTimer is a util class used to calculate the estimated time to finish loop job.
+      \brief The ProgressTimer is a utility class that can be used to calculate the estimated time to finish a task.
+
+      \sa TaskProgress
     */
     class TECOMMONEXPORT ProgressTimer
     {
@@ -59,26 +61,26 @@ namespace te
         /*! 
           \brief Define a new step process evolution.
 
-          \note Each tick a new value for remaining time and speed time is generated.
+          \note For each tick, new values for remaining time and speed time are computed.
         */
         void tick();
 
         /*! \brief Set the total steps. */
-        void setTotalSteps(const int& totalSteps);
+        void setTotalSteps(int totalSteps);
 
         /*!
           \brief Function used to get the remaining time to end the process.
 
           \return Dobule value, the remaingin time in minutes.
         */
-        double getRemainingTimeInMin();
+        double getRemainingTimeInMin() const;
 
         /*!
           \brief Function used to get the speed time.
 
           \return Double value, the spped time in seconds.
         */
-        double getSpeedTimeInSec();
+        double getSpeedTimeInSec() const;
 
         /*!
           \brief Get the information about the evolution of the process.

@@ -84,7 +84,7 @@ QMenu* te::qt::widgets::FolderLayerItem::getMenu(QWidget* /*parent*/) const
 
 bool te::qt::widgets::FolderLayerItem::canFetchMore() const
 {
-  return m_layer->hasChildren() && !children().empty();
+  return m_layer->hasChildren() && children().empty();
 }
 
 Qt::ItemFlags te::qt::widgets::FolderLayerItem::flags() const

@@ -27,6 +27,7 @@
 #define __TERRALIB_VP_INTERNAL_AGGREGATIONDIALOG_H
 
 // TerraLib
+#include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
 
@@ -106,13 +107,6 @@ namespace te
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
         /*!
-          \brief Set layer filtered
-
-          \param layers Layers filtered.
-        */
-        void setFilteredLayers(std::list<te::map::AbstractLayerPtr> layers);
-
-        /*!
           \brief Get the type of memory use based on a enum.
 
           \return MemoryUse enum.
@@ -133,8 +127,6 @@ namespace te
 
       protected slots:
 
-        void onLayerTreeViewClicked(QTreeWidgetItem * item, int column);
-
         void onFilterLineEditTextChanged(const QString& text);
         
         void onTreeViewClicked(const QModelIndex& index);
@@ -145,13 +137,20 @@ namespace te
 
         void onOutputListWidgetClicked(QListWidgetItem * item);
 
-        void onCancelPushButtonClicked();
+        void onTargetDatasourceToolButtonPressed();
+
+        void onTargetFileToolButtonPressed();
 
         void onHelpPushButtonClicked();
+
+        void onOkPushButtonClicked();
+
+        void onCancelPushButtonClicked();
 
       private:
 
         std::auto_ptr<Ui::AggregationDialogForm> m_ui;
+        te::da::DataSourceInfoPtr m_outputDatasource;           //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;          //!< List of layers.
         LayerTreeModel* m_model;                                //!< Layer Tree Model.
         std::map<Attributes, std::string> m_attributeNameMap;   //!< Maping of Attributes enum

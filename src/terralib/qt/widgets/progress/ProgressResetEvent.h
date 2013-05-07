@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,8 +21,6 @@
   \file terralib/qt/widgets/progress/ProgressResetEvent.h
 
   \brief The ProgressResetEvent is a custom event used to reset a progress bar.
-
-  \note Used in thread codes.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSRESETEVENT_H
@@ -43,7 +41,9 @@ namespace te
       /*!
         \class ProgressResetEvent
 
-        \brief The ProgressResetEvent is a custom event used to reset a progress bar. Used in thread codes.
+        \brief The ProgressResetEvent is a custom event used to reset a progress bar.
+
+        This event can be used when working with multithread tasks.
       */
       class TEQTWIDGETSEXPORT ProgressResetEvent : public QEvent
       {
@@ -60,7 +60,7 @@ namespace te
 
         private:
 
-          static QEvent::Type m_customEventType;  //!< Custom Event Type
+          static QEvent::Type sm_customEventType;  //!< Custom Event Type
       };
 
     }  // end namespace widgets

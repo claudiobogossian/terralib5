@@ -80,6 +80,13 @@ te::qt::widgets::DataSourceSelectorWidget::DataSourceSelectorWidget(QWidget* par
     ++it;
   }
 
+//verify if datasourceTypeListWidget has any item and set the first one as selected equals true.
+  if(m_ui->m_datasourceTypeListWidget->count() > 0)
+  {
+    m_ui->m_datasourceTypeListWidget->setItemSelected(m_ui->m_datasourceTypeListWidget->item(0), true);
+    dataSourceTypePressed(m_ui->m_datasourceTypeListWidget->item(0));
+  }
+
 // connect signal and slots
   connect(m_ui->m_addDataSourceToolButton, SIGNAL(pressed()), this, SLOT(addDataSourcePushButtonPressed()));
   connect(m_ui->m_removeDataSourceToolButton, SIGNAL(pressed()), this, SLOT(removeDataSourcePushButtonPressed()));

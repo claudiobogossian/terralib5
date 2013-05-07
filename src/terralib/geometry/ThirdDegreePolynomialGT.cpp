@@ -62,27 +62,27 @@ void te::gm::ThirdDegreePolynomialGT::directMap( const GTParameters& params, con
   
   pt2X =
       params.m_directParameters[ 0 ] +
-    ( params.m_directParameters[ 1 ] * pt1Y ) +
-    ( params.m_directParameters[ 2 ] * pt1Y * pt1Y ) +
-    ( params.m_directParameters[ 3 ] * pt1Y * pt1Y * pt1Y ) +
-    ( params.m_directParameters[ 4 ] * pt1X ) +
-    ( params.m_directParameters[ 5 ] * pt1X * pt1Y ) +
-    ( params.m_directParameters[ 6 ] * pt1X * pt1Y * pt1Y ) +
-    ( params.m_directParameters[ 7 ] * pt1X * pt1X ) +
-    ( params.m_directParameters[ 8 ] * pt1X * pt1X * pt1Y ) +
-    ( params.m_directParameters[ 9 ] * pt1X * pt1X * pt1X );
+    ( params.m_directParameters[ 1 ] * pt1X ) +
+    ( params.m_directParameters[ 2 ] * pt1Y ) +
+    ( params.m_directParameters[ 3 ] * pt1X * pt1X ) +
+    ( params.m_directParameters[ 4 ] * pt1X * pt1Y ) +
+    ( params.m_directParameters[ 5 ] * pt1Y * pt1Y ) +
+    ( params.m_directParameters[ 6 ] * pt1X * pt1X * pt1X ) +
+    ( params.m_directParameters[ 7 ] * pt1X * pt1X * pt1Y ) +
+    ( params.m_directParameters[ 8 ] * pt1X * pt1Y * pt1Y ) +
+    ( params.m_directParameters[ 9 ] * pt1Y * pt1Y * pt1Y );
 
   pt2Y =
       params.m_directParameters[ 10 ] +
-    ( params.m_directParameters[ 11 ] * pt1Y ) +
-    ( params.m_directParameters[ 12 ] * pt1Y * pt1Y ) +
-    ( params.m_directParameters[ 13 ] * pt1Y * pt1Y * pt1Y ) +
-    ( params.m_directParameters[ 14 ] * pt1X ) +
-    ( params.m_directParameters[ 15 ] * pt1X * pt1Y ) +
-    ( params.m_directParameters[ 16 ] * pt1X * pt1Y * pt1Y ) +
-    ( params.m_directParameters[ 17 ] * pt1X * pt1X ) +
-    ( params.m_directParameters[ 18 ] * pt1X * pt1X * pt1Y ) +
-    ( params.m_directParameters[ 19 ] * pt1X * pt1X * pt1X );
+    ( params.m_directParameters[ 11 ] * pt1X ) +
+    ( params.m_directParameters[ 12 ] * pt1Y ) +
+    ( params.m_directParameters[ 13 ] * pt1X * pt1X ) +
+    ( params.m_directParameters[ 14 ] * pt1X * pt1Y ) +
+    ( params.m_directParameters[ 15 ] * pt1Y * pt1Y ) +
+    ( params.m_directParameters[ 16 ] * pt1X * pt1X * pt1X ) +
+    ( params.m_directParameters[ 17 ] * pt1X * pt1X * pt1Y ) +
+    ( params.m_directParameters[ 18 ] * pt1X * pt1Y * pt1Y ) +
+    ( params.m_directParameters[ 19 ] * pt1Y * pt1Y * pt1Y );
 }
 
 void te::gm::ThirdDegreePolynomialGT::inverseMap( const GTParameters& params, const double& pt2X, 
@@ -92,27 +92,28 @@ void te::gm::ThirdDegreePolynomialGT::inverseMap( const GTParameters& params, co
   
   pt1X =
       params.m_inverseParameters[ 0 ] +
-    ( params.m_inverseParameters[ 1 ] * pt2Y ) +
-    ( params.m_inverseParameters[ 2 ] * pt2Y * pt2Y ) +
-    ( params.m_inverseParameters[ 3 ] * pt2Y * pt2Y * pt2Y ) +
-    ( params.m_inverseParameters[ 4 ] * pt2X ) +
-    ( params.m_inverseParameters[ 5 ] * pt2X * pt2Y ) +
-    ( params.m_inverseParameters[ 6 ] * pt2X * pt2Y * pt2Y ) +
-    ( params.m_inverseParameters[ 7 ] * pt2X * pt2X ) +
-    ( params.m_inverseParameters[ 8 ] * pt2X * pt2X * pt2Y ) +
-    ( params.m_inverseParameters[ 9 ] * pt2X * pt2X * pt2X );
+    ( params.m_inverseParameters[ 1 ] * pt2X ) +
+    ( params.m_inverseParameters[ 2 ] * pt2Y ) +
+    ( params.m_inverseParameters[ 3 ] * pt2X * pt2X ) +
+    ( params.m_inverseParameters[ 4 ] * pt2X * pt2Y ) +
+    ( params.m_inverseParameters[ 5 ] * pt2Y * pt2Y ) +
+    ( params.m_inverseParameters[ 6 ] * pt2X * pt2X * pt2X ) +
+    ( params.m_inverseParameters[ 7 ] * pt2X * pt2X * pt2Y ) +
+    ( params.m_inverseParameters[ 8 ] * pt2X * pt2Y * pt2Y ) +
+    ( params.m_inverseParameters[ 9 ] * pt2Y * pt2Y * pt2Y );
 
   pt1Y =
       params.m_inverseParameters[ 10 ] +
-    ( params.m_inverseParameters[ 11 ] * pt2Y ) +
-    ( params.m_inverseParameters[ 12 ] * pt2Y * pt2Y ) +
-    ( params.m_inverseParameters[ 13 ] * pt2Y * pt2Y * pt2Y ) +
-    ( params.m_inverseParameters[ 14 ] * pt2X ) +
-    ( params.m_inverseParameters[ 15 ] * pt2X * pt2Y ) +
-    ( params.m_inverseParameters[ 16 ] * pt2X * pt2Y * pt2Y ) +
-    ( params.m_inverseParameters[ 17 ] * pt2X * pt2X ) +
-    ( params.m_inverseParameters[ 18 ] * pt2X * pt2X * pt2Y ) +
-    ( params.m_inverseParameters[ 19 ] * pt2X * pt2X * pt2X );  
+    ( params.m_inverseParameters[ 11 ] * pt2X ) +
+    ( params.m_inverseParameters[ 12 ] * pt2Y ) +
+    ( params.m_inverseParameters[ 13 ] * pt2X * pt2X ) +
+    ( params.m_inverseParameters[ 14 ] * pt2X * pt2Y ) +
+    ( params.m_inverseParameters[ 15 ] * pt2Y * pt2Y ) +
+    ( params.m_inverseParameters[ 16 ] * pt2X * pt2X * pt2X ) +
+    ( params.m_inverseParameters[ 17 ] * pt2X * pt2X * pt2Y ) +
+    ( params.m_inverseParameters[ 18 ] * pt2X * pt2Y * pt2Y ) +
+    ( params.m_inverseParameters[ 19 ] * pt2Y * pt2Y * pt2Y );  
+
 }
           
 unsigned int te::gm::ThirdDegreePolynomialGT::getMinRequiredTiePoints() const
@@ -132,7 +133,7 @@ bool te::gm::ThirdDegreePolynomialGT::computeParameters( GTParameters& params ) 
   // Creating the equation system parameters
   
   const unsigned int tiepointsSize = params.m_tiePoints.size();
-  if( tiepointsSize < 11 ) return false;
+  if( tiepointsSize < getMinRequiredTiePoints() ) return false;
   
   boost::numeric::ublas::matrix< double > W( tiepointsSize, 10 );
   boost::numeric::ublas::matrix< double > WI( tiepointsSize, 10 );
@@ -144,31 +145,30 @@ bool te::gm::ThirdDegreePolynomialGT::computeParameters( GTParameters& params ) 
   for ( unsigned int tpIdx = 0 ; tpIdx < tiepointsSize ; ++tpIdx ) 
   {
     const Coord2D& pt1 = params.m_tiePoints[ tpIdx ].first;
-    
+   
     W( tpIdx, 0 ) = 1;
-    W( tpIdx, 1 ) = pt1.y;
-    W( tpIdx, 2 ) = pt1.y * pt1.y;
-    W( tpIdx, 3 ) = pt1.y * pt1.y * pt1.y;
-    W( tpIdx, 4 ) = pt1.x;
-    W( tpIdx, 5 ) = pt1.x * pt1.y;
-    W( tpIdx, 6 ) = pt1.x * pt1.y * pt1.y;
-    W( tpIdx, 7 ) = pt1.x * pt1.x;
-    W( tpIdx, 8 ) = pt1.x * pt1.x * pt1.y;
-    W( tpIdx, 9 ) = pt1.x * pt1.x * pt1.x;
+    W( tpIdx, 1 ) = pt1.x;
+    W( tpIdx, 2 ) = pt1.y;
+    W( tpIdx, 3 ) = pt1.x * pt1.x;
+    W( tpIdx, 4 ) = pt1.x * pt1.y;
+    W( tpIdx, 5 ) = pt1.y * pt1.y;
+    W( tpIdx, 6 ) = pt1.x * pt1.x * pt1.x;
+    W( tpIdx, 7 ) = pt1.x * pt1.x * pt1.y;
+    W( tpIdx, 8 ) = pt1.x * pt1.y * pt1.y;
+    W( tpIdx, 9 ) = pt1.y * pt1.y * pt1.y;
     
     const Coord2D& pt2 = params.m_tiePoints[ tpIdx ].second;
     
     WI( tpIdx, 0 ) = 1;
-    WI( tpIdx, 1 ) = pt2.y;
-    WI( tpIdx, 2 ) = pt2.y * pt2.y;
-    WI( tpIdx, 3 ) = pt2.y * pt2.y * pt2.y;
-    WI( tpIdx, 4 ) = pt2.x;
-    WI( tpIdx, 5 ) = pt2.x * pt2.y;
-    WI( tpIdx, 6 ) = pt2.x * pt2.y * pt2.y;
-    WI( tpIdx, 7 ) = pt2.x * pt2.x;
-    WI( tpIdx, 8 ) = pt2.x * pt2.x * pt2.y;
-    WI( tpIdx, 9 ) = pt2.x * pt2.x * pt2.x;
-    
+    WI( tpIdx, 1 ) = pt2.x;
+    WI( tpIdx, 2 ) = pt2.y;
+    WI( tpIdx, 3 ) = pt2.x * pt2.x;
+    WI( tpIdx, 4 ) = pt2.x * pt2.y;
+    WI( tpIdx, 5 ) = pt2.y * pt2.y;
+    WI( tpIdx, 6 ) = pt2.x * pt2.x * pt2.x;
+    WI( tpIdx, 7 ) = pt2.x * pt2.x * pt2.y;
+    WI( tpIdx, 8 ) = pt2.x * pt2.y * pt2.y;
+    WI( tpIdx, 9 ) = pt2.y * pt2.y * pt2.y;
     
     X( tpIdx, 0 ) = pt2.x;
     
@@ -176,7 +176,7 @@ bool te::gm::ThirdDegreePolynomialGT::computeParameters( GTParameters& params ) 
     
     Y( tpIdx, 0 ) = pt2.y;
     
-    YI( tpIdx, 0 ) = pt1.y;    
+    YI( tpIdx, 0 ) = pt1.y;       
   }
     
   // Solving...

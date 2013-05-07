@@ -133,23 +133,28 @@ void te::qt::widgets::ContrastDialog::on_okPushButton_clicked()
       {
         algoInputParams.m_type = 
           te::rp::Contrast::InputParameters::HistogramEqualizationContrastT;
-        algoInputParams.m_hECMaxInput = m_uiPtr->m_hECMaxInputLineEdit->text().toDouble();
+        algoInputParams.m_hECMaxInput.resize( selectedBands.size(), 
+          m_uiPtr->m_hECMaxInputLineEdit->text().toDouble() );
       }
       else if( m_uiPtr->m_contrastTypeComboBox->currentText() == 
         tr( "Linear" ) )
       {
         algoInputParams.m_type = 
           te::rp::Contrast::InputParameters::LinearContrastT;
-        algoInputParams.m_lCMinInput = m_uiPtr->m_lCMinInputLineEdit->text().toDouble();
-        algoInputParams.m_lCMaxInput = m_uiPtr->m_lCMaxInputLineEdit->text().toDouble();
+        algoInputParams.m_lCMinInput.resize( selectedBands.size(),
+          m_uiPtr->m_lCMinInputLineEdit->text().toDouble() );
+        algoInputParams.m_lCMaxInput.resize( selectedBands.size(),
+          m_uiPtr->m_lCMaxInputLineEdit->text().toDouble() );
       }
       else if( m_uiPtr->m_contrastTypeComboBox->currentText() == 
         tr( "Mean and standard deviation" ) )
       {
         algoInputParams.m_type = 
           te::rp::Contrast::InputParameters::SetMeanAndStdContrastT;
-        algoInputParams.m_sMASCMeanInput = m_uiPtr->m_sMASCMeanInputLineEdit->text().toDouble();
-        algoInputParams.m_sMASCStdInput = m_uiPtr->m_sMASCStdInputLineEdit->text().toDouble();
+        algoInputParams.m_sMASCMeanInput.resize( selectedBands.size(),
+          m_uiPtr->m_sMASCMeanInputLineEdit->text().toDouble() );
+        algoInputParams.m_sMASCStdInput.resize( selectedBands.size(),
+          m_uiPtr->m_sMASCStdInputLineEdit->text().toDouble() );
       }
       
       if( m_outputRasterIsInputRaster )

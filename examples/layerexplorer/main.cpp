@@ -23,6 +23,7 @@
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
 #include <terralib/qt/widgets.h>
+#include <terralib/qt/widgets/layer/explorer/LayerTreeModel.h>
 
 //Qt
 #include <QtGui/QApplication>
@@ -94,7 +95,7 @@ int main(int argc, char *argv[])
 
   begin = clock();
 
-  layerExplorer->setLayers(layers);
+  layerExplorer->getTreeModel()->set(layers);
 
   layerExplorer->show();
 

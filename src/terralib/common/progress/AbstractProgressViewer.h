@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -41,7 +41,7 @@ namespace te
 
       \brief A class that defines the interface of an abstract progress viewer.
 
-      \sa TaskProgress
+      \sa TaskProgress, ProgressManager
     */
     class AbstractProgressViewer
     {
@@ -54,10 +54,12 @@ namespace te
         virtual ~AbstractProgressViewer() { }
 
         /*!
-          \brief Insert a new taks to progress viewer container.
+          \brief Insert a new task in the progress viewer.
 
           \param t  Task pointer.
           \param id Task identifier.
+
+          \note The Progress Viewer will NOT take the ownership of TaskProgress (t).
         */
         virtual void addTask(TaskProgress* t, int id) = 0;
 

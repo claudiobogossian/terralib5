@@ -26,7 +26,8 @@
 #include "TsMosaic.h"
 #include "../Config.h"
 
-#include <terralib/rp/Mosaic.h>
+#include <terralib/rp/TiePointsMosaic.h>
+#include <terralib/rp/GeoMosaic.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/RasterFactory.h>
 
@@ -58,7 +59,7 @@ void TsMosaic::GeoReferencedImagesMosaic()
     
   // Creating the algorithm parameters
   
-  te::rp::Mosaic::InputParameters algoInputParams;
+  te::rp::GeoMosaic::InputParameters algoInputParams;
   
   std::vector< const te::rst::Raster* > rasters;
   rasters.push_back( inputRaster1Pointer.get() );
@@ -88,7 +89,7 @@ void TsMosaic::GeoReferencedImagesMosaic()
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
   algoInputParams.m_autoEqualize = true;  
 
-  te::rp::Mosaic::OutputParameters algoOutputParams;
+  te::rp::GeoMosaic::OutputParameters algoOutputParams;
   
   algoOutputParams.m_rInfo["URI"] =  
     "terralib_unittest_rp_Mosaic_GeoReferencedImagesMosaic_Test.tif";  
@@ -96,7 +97,7 @@ void TsMosaic::GeoReferencedImagesMosaic()
   
   // Executing the algorithm
   
-  te::rp::Mosaic algorithmInstance;
+  te::rp::GeoMosaic algorithmInstance;
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
@@ -126,7 +127,7 @@ void TsMosaic::TiePointsMosaicTest1()
     
   // Creating the algorithm parameters
   
-  te::rp::Mosaic::InputParameters algoInputParams;
+  te::rp::TiePointsMosaic::InputParameters algoInputParams;
   
   std::vector< const te::rst::Raster* > rasters;
   rasters.push_back( inputRaster1Pointer.get() );
@@ -184,14 +185,14 @@ void TsMosaic::TiePointsMosaicTest1()
   algoInputParams.m_tiePoints.push_back( r1ToR2tiePoints );
   
   algoInputParams.m_tiePointsLinkType = 
-    te::rp::Mosaic::InputParameters::AdjacentRastersLinkingTiePointsT;
+    te::rp::TiePointsMosaic::InputParameters::AdjacentRastersLinkingTiePointsT;
   
   algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
   algoInputParams.m_noDataValue = 0;
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
   algoInputParams.m_autoEqualize = true;  
 
-  te::rp::Mosaic::OutputParameters algoOutputParams;
+  te::rp::TiePointsMosaic::OutputParameters algoOutputParams;
   
   algoOutputParams.m_rInfo["URI"] =  
     "terralib_unittest_rp_Mosaic_TiePointsMosaicTest1_Test.tif";  
@@ -199,7 +200,7 @@ void TsMosaic::TiePointsMosaicTest1()
   
   // Executing the algorithm
   
-  te::rp::Mosaic algorithmInstance;
+  te::rp::TiePointsMosaic algorithmInstance;
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
@@ -229,7 +230,7 @@ void TsMosaic::TiePointsMosaicTest2()
     
   // Creating the algorithm parameters
   
-  te::rp::Mosaic::InputParameters algoInputParams;
+  te::rp::TiePointsMosaic::InputParameters algoInputParams;
   
   std::vector< const te::rst::Raster* > rasters;
   rasters.push_back( inputRaster1Pointer.get() );
@@ -287,14 +288,14 @@ void TsMosaic::TiePointsMosaicTest2()
   algoInputParams.m_tiePoints.push_back( r1ToR2tiePoints );
   
   algoInputParams.m_tiePointsLinkType = 
-    te::rp::Mosaic::InputParameters::AdjacentRastersLinkingTiePointsT;
+    te::rp::TiePointsMosaic::InputParameters::AdjacentRastersLinkingTiePointsT;
   
   algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
   algoInputParams.m_noDataValue = 0;
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
   algoInputParams.m_autoEqualize = true;  
 
-  te::rp::Mosaic::OutputParameters algoOutputParams;
+  te::rp::TiePointsMosaic::OutputParameters algoOutputParams;
   
   algoOutputParams.m_rInfo["URI"] =  
     "terralib_unittest_rp_Mosaic_TiePointsMosaicTest2_Test.tif";  
@@ -302,7 +303,7 @@ void TsMosaic::TiePointsMosaicTest2()
   
   // Executing the algorithm
   
-  te::rp::Mosaic algorithmInstance;
+  te::rp::TiePointsMosaic algorithmInstance;
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );

@@ -26,7 +26,9 @@
 // TerraLib
 #include "../../common/Translator.h"
 #include "../../common/StringUtils.h"
-#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
@@ -36,16 +38,21 @@
 #include "LayerTreeModel.h"
 #include "ui_AggregationDialogForm.h"
 #include "VectorProcessingConfig.h"
+#include "Utils.h"
 
 // Qt
 #include <QtCore/QList>
-#include <QtGui/QTreeWidget>
+#include <QtGui/QFileDialog>
 #include <QtGui/QListWidget>
 #include <QtGui/QListWidgetItem>
+#include <QtGui/QMessageBox>
+#include <QtGui/QTreeWidget>
 
 te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::AggregationDialogForm)
+    m_ui(new Ui::AggregationDialogForm),
+    m_layers(std::list<te::map::AbstractLayerPtr>()),
+    m_model(0)
 {
 // add controls
   m_ui->setupUi(this);
@@ -62,27 +69,31 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_outputListWidget, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(onOutputListWidgetClicked(QListWidgetItem *)));
   connect(m_ui->m_selectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectAllComboBoxChanged(int)));
   connect(m_ui->m_rejectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRejectAllComboBoxChanged(int)));
+  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
+  connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
-  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));   
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked()));
+  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 }
 
 te::vp::AggregationDialog::~AggregationDialog()
 {
+  delete m_model;
 }
 
 void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
   
+  if(m_model != 0)
+      delete m_model;
+
   m_model = new LayerTreeModel(m_layers, true);
 
   m_ui->m_layerTreeView->setModel(m_model);
   m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
-}
-
-void te::vp::AggregationDialog::setFilteredLayers(std::list<te::map::AbstractLayerPtr> layers)
-{
+  m_ui->m_layerTreeView->resizeColumnToContents(0);
 }
 
 int te::vp::AggregationDialog::getMemoryUse()
@@ -152,12 +163,21 @@ void te::vp::AggregationDialog::setAttributesNameMap()
   m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MODE, TR_VP("Mode")));
 }
 
-void te::vp::AggregationDialog::onLayerTreeViewClicked(QTreeWidgetItem * item, int column)
-{ 
-}
-
 void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
 {
+  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
+
+  delete m_model;
+  m_ui->m_selectAllComboBox->setCurrentIndex(0);
+  m_ui->m_rejectAllComboBox->setCurrentIndex(0);
+  m_ui->m_outputListWidget->clear();
+
+  if(text == "")
+    filteredLayers = m_layers;
+
+  m_model = new LayerTreeModel(filteredLayers);
+
+  m_ui->m_layerTreeView->setModel(m_model);
 }
 
 void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
@@ -165,7 +185,6 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
   QStringList propertyList;
   int propertyType;
 
-//set both combobox at first position
   m_ui->m_selectAllComboBox->setCurrentIndex(0);
   m_ui->m_rejectAllComboBox->setCurrentIndex(0);
 
@@ -175,7 +194,7 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
   {
     std::vector<te::dt::Property*> properties = selected.begin()->second;
   
-    for(size_t i=0; i < properties.size(); i++)
+    for(size_t i=0; i < properties.size(); ++i)
     {
       propertyType = properties[i]->getType();
 
@@ -185,8 +204,9 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
         propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MAX_VALUE].c_str());
         propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[COUNT].c_str());
         propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VALID_COUNT].c_str());
-
-        propertyList.append("");
+        
+        if(i < properties.size()-1)
+          propertyList.append("");
       }
       else
       {
@@ -205,8 +225,9 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
         propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MEDIAN].c_str());
         propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VAR_COEFF].c_str());
         propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MODE].c_str());
-     
-        propertyList.append("");
+        
+        if(i < properties.size()-1)
+          propertyList.append("");
       }
     }
   
@@ -230,7 +251,7 @@ void te::vp::AggregationDialog::onSelectAllComboBoxChanged(int index)
   QList<QListWidgetItem *> listFound;
   listFound = m_ui->m_outputListWidget->findItems(text, flag);
   
-  for(size_t i=0; i < listFound.size(); i++)
+  for(int i=0; i < listFound.size(); ++i)
     listFound.at(i)->setSelected(true);
 
   m_ui->m_rejectAllComboBox->setCurrentIndex(0);
@@ -247,7 +268,7 @@ void te::vp::AggregationDialog::onRejectAllComboBoxChanged(int index)
   QList<QListWidgetItem *> listFound;
   listFound = m_ui->m_outputListWidget->findItems(text, flag);
   
-  for(size_t i=0; i < listFound.size(); i++)
+  for(int i=0; i < listFound.size(); ++i)
     listFound.at(i)->setSelected(false);
 
   m_ui->m_selectAllComboBox->setCurrentIndex(0);
@@ -256,7 +277,51 @@ void te::vp::AggregationDialog::onRejectAllComboBoxChanged(int index)
 void te::vp::AggregationDialog::onOutputListWidgetClicked(QListWidgetItem * item)
 {
   if(item->text()=="")
+  {
     item->setSelected(false);
+  }
+}
+
+void te::vp::AggregationDialog::onTargetDatasourceToolButtonPressed()
+{
+  te::qt::widgets::DataSourceSelectorDialog dlg(this);
+  dlg.exec();
+
+  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
+
+  if(dsPtrList.size() <= 0)
+    return;
+
+  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
+
+  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
+
+  m_outputDatasource = *it;
+}
+
+void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
+{
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Open Feature File"), QString(""), tr("Common Formats (*.shp *.SHP *.kml *.KML *.geojson *.GEOJSON *.gml *.GML);; Shapefile (*.shp *.SHP);; GML (*.gml *.GML);; Web Feature Service - WFS (*.xml *.XML *.wfs *.WFS);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
+  
+  if(fileName.isEmpty())
+    return;
+
+  m_ui->m_repositoryLineEdit->setText(fileName);
+
+  std::vector<te::da::DataSourceInfoPtr> datasources;
+  te::da::DataSourceInfoManager::getInstance().getByType("OGR", datasources);
+
+  m_outputDatasource = datasources[0];
+}
+
+void te::vp::AggregationDialog::onHelpPushButtonClicked()
+{
+  QMessageBox::information(this, "Help", "Under development");
+}
+
+void te::vp::AggregationDialog::onOkPushButtonClicked()
+{
+  QMessageBox::information(this, "Ok", "Under development");
 }
 
 void te::vp::AggregationDialog::onCancelPushButtonClicked()
@@ -264,6 +329,4 @@ void te::vp::AggregationDialog::onCancelPushButtonClicked()
   reject();
 }
 
-void te::vp::AggregationDialog::onHelpPushButtonClicked()
-{
-}
+

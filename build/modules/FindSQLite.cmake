@@ -28,7 +28,7 @@ SET(RASTERLITE_INCLUDE_DIR
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
 
 FIND_LIBRARY(SQLITE_LIBRARY_SQLITE_RELEASE
-             NAMES libsqlite sqlite
+             NAMES libsqlite sqlite sqlite3
              PATHS /usr/local/lib /usr/lib /usr/local/mysql/lib)
 			 
 FIND_LIBRARY(SQLITE_LIBRARY_SPATIALITE_RELEASE
