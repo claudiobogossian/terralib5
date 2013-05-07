@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/progress/ProgressViewerDialog.h
 
-  \brief A class that defines the interface of a qt bar progress viewer.
+  \brief A progress dialog.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSVIEWERDIALOG_H
@@ -48,19 +48,20 @@ namespace te
       /*!
         \class ProgressViewerDialog
 
-        \brief  A class that defines the interface of a qt bar progress viewer.
+        \brief A progress dialog.
 
-        This widget is a dialog box with progress information and a
+        This widget is a dialog with progress information and a
         cancel button.
-         
-        This viewer is made using Qt Progress Dialog Feed back will be generated
+
+        This viewer is made using Qt Progress Dialog. Feed back will be generated
         over a dialog window. Multiples tasks will be displayed using ONLY one
         progress.
 
-        The proportional value is calculated using TOTALSTEPS / CURRENTSTEPS.
-
-        TOTALSTEPS - Sum of all total steps of all tasks
-        CURRENTSTEPS - Sum of all current steps of all tasks
+        The proportional value is calculated using TOTALSTEPS / CURRENTSTEPS, where:
+        <ul>
+        <li>TOTALSTEPS: Sum of all total steps of all tasks</li>
+        <li>CURRENTSTEPS: Sum of all current steps of all tasks</li>
+        </ul>
 
         The progress message is defined by the task message, if it has more than
         on task the message will be "MULTI TASKS".
@@ -77,55 +78,48 @@ namespace te
           /*! \brief Virtual destructor. */
           virtual ~ProgressViewerDialog();
 
-           /** @name ProgressViewerDialog Methods
-           *  Methods for ProgressViewerDialog access
-           */
-          //@{
-
            /*!
             \brief Insert a new taks to progress viewer container
 
             \param t  Task pointer.
             \param id Task identifier.
           */
-          virtual void addTask(te::common::TaskProgress* t, int id);
+          void addTask(te::common::TaskProgress* t, int id);
 
           /*!
             \brief Removes a task from progress viewer container.
 
             \param taskId Task identifier.
           */
-          virtual void removeTask(int taskId);
+          void removeTask(int taskId);
 
           /*!
             \brief Cancel a task.
 
             \param taskId Task identifier.
           */
-          virtual void cancelTask(int taskId);
+          void cancelTask(int taskId);
 
           /*!
             \brief Set task total steps.
 
             \param taskId Task identifier.
           */
-          virtual void setTotalValues(int taskId);
+          void setTotalValues(int taskId);
 
           /*!
             \brief Update the progress evaluation.
 
             \param taskId Task identifier.
           */
-          virtual void updateValue(int taskId);
+          void updateValue(int taskId);
 
           /*!
             \brief Update the progress message.
 
             \param taskId Task identifier.
           */
-          virtual void updateMessage(int taskId);
-
-          //@}
+          void updateMessage(int taskId);
 
         protected:
 

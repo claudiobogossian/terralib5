@@ -95,9 +95,12 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "Author");
 
   reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  project->setAuthor(reader.getElementValue());
-  reader.next(); // End element
+
+  if(reader.getNodeType() == te::xml::VALUE)
+  {
+    project->setAuthor(reader.getElementValue());
+    reader.next(); // End element
+  }
 
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);

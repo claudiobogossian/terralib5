@@ -18,60 +18,59 @@
  */
 
 /*!
-  \file terralib/rp/Register.h
-  \brief Performs raster data registering into a SRS using a set of tie points.
+  \file terralib/rp/GeoMosaic.h
+  \brief Create a mosaic from a set of geo-referenced rasters.
  */
 
-#ifndef __TERRALIB_RP_INTERNAL_REGISTER_H
-#define __TERRALIB_RP_INTERNAL_REGISTER_H
+#ifndef __TERRALIB_RP_INTERNAL_GEOMOSAIC_H
+#define __TERRALIB_RP_INTERNAL_GEOMOSAIC_H
 
 #include "Algorithm.h"
-#include "../raster/Raster.h"
+#include "FeedersRaster.h"
+#include "Blender.h"
 #include "../raster/Interpolator.h"
-#include "../geometry/GTParameters.h"
 
 #include <vector>
 #include <string>
-#include <memory>
+#include <map>
 
 namespace te
 {
   namespace rp
   {
     /*!
-      \class Register
-      \brief Performs raster data registering into a SRS using a set of tie points.
-      \ingroup RPAlgorithms
+      \class GeoMosaic
+      \brief Create a mosaic from a set of geo-referenced rasters.
+      \note The first raster will always be taken as reference to define the mosaic resolution and SRS.
+      \ingroup MosaicAlgorithms
      */
-    class TERPEXPORT Register : public Algorithm
+    class TERPEXPORT GeoMosaic : public Algorithm
     {
       public:
         
         /*!
           \class InputParameters
-          \brief Register input parameters
+          \brief GeoMosaic input parameters
          */        
         class TERPEXPORT InputParameters : public AlgorithmInputParameters
         {
           public:
             
-            te::rst::Raster const* m_inputRasterPtr; //!< Input raster.
+            FeederConstRaster* m_feederRasterPtr; //!< Input rasters feeder.
             
-            std::vector< unsigned int > m_inputRasterBands; //!< Bands to process from the input raster.
-            
-            std::vector< te::gm::GTParameters::TiePoint > m_tiePoints; //!< Tie-points between each raster point (te::gm::GTParameters::TiePoint::first are raster lines/columns ) and their respective coordinates under the chosen SRS (te::gm::GTParameters::TiePoint::second).
-            
-            int m_outputSRID; //!< The output raster SRID (default:0).
-            
-            double m_outputResolutionX; //!< The output raster X axis resolution (default:1).
-            
-            double m_outputResolutionY; //!< The output raster Y axis resolution (default:1).
+            std::vector< std::vector< unsigned int > > m_inputRastersBands; //!< Bands to process for each input raster.
             
             te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
             
             double m_noDataValue; //!< The pixel value used where no raster data is avaliable (defaul:0).
             
-            std::string m_geomTransfName; //!< The name of the geometric transformation used (see each te::gm::GTFactory inherited classes to find each factory key/name, default:Affine).
+            bool m_forceInputNoDataValue; //!< If true, m_noDataValue will be used as the no-data value for input rasters (defalt:false).
+            
+            te::rp::Blender::BlendMethod m_blendMethod; //!< The pixel blending method (default: NoBlendMethod).
+            
+            bool m_autoEqualize; //!< Auto equalization will be performed using the overlaped image areas (default:true).
+            
+            bool m_useRasterCache; //!< Enable(true) or disable the use of raster caching (default:true).
             
             InputParameters();
             
@@ -91,7 +90,7 @@ namespace te
         
         /*!
           \class OutputParameters
-          \brief Register output parameters
+          \brief GeoMosaic output parameters
          */        
         class TERPEXPORT OutputParameters : public AlgorithmOutputParameters
         {
@@ -101,7 +100,7 @@ namespace te
             
             std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the output rasters (as described in te::raster::RasterFactory). 
             
-            std::auto_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output registered raster.
+            mutable boost::shared_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output mosaic raster.
             
             OutputParameters();
             
@@ -119,9 +118,9 @@ namespace te
             AbstractParameters* clone() const;
         };        
 
-        Register();
+        GeoMosaic();
         
-        ~Register();
+        ~GeoMosaic();
        
         //overload
         bool execute( AlgorithmOutputParameters& outputParams ) throw( te::rp::Exception );
@@ -136,10 +135,31 @@ namespace te
 
       protected:
         
-        Register::InputParameters m_inputParameters; //!< Input execution parameters.
+        GeoMosaic::InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
         
+        /*!
+          \brief Execute a mosaic of georeferenced images.
+          \param outputParams The algorithm execution parameters.
+          \return true if ok, false on errors.
+        */
+        bool executeGeoMosaic( GeoMosaic::OutputParameters& outputParams );
+          
+          
+        /*!
+          \brief Raster band statistics calcule.
+          \param band Input raster band.
+          \param forceNoDataValue Force the noDataValue to be used as the band no-data value.
+          \param noDataValue The no-data value to use.
+          \param mean Pixels mean.
+          \param variance Pixels variance.
+        */
+        static void calcBandStatistics( const te::rst::Band& band,
+          const bool& forceNoDataValue,
+          const double& noDataValue,
+          double& mean, 
+          double& variance );
 
     };
 

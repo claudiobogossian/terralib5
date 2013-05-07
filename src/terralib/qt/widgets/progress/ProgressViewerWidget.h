@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -76,11 +76,6 @@ namespace te
           /*! \brief Virtual destructor. */
           virtual ~ProgressViewerWidget();
 
-          /** @name ProgressViewerWidget Methods
-           *  Methods for ProgressViewerWidget access
-           */
-          //@{
-
            /*!
             \brief Insert a new taks to progress viewer container.
 
@@ -124,8 +119,6 @@ namespace te
           */
           virtual void updateMessage(int taskId);
 
-          //@}
-
         protected:
 
           /*!
@@ -133,7 +126,7 @@ namespace te
 
             \param e Event sent to this object.
           */
-          virtual void customEvent(QEvent* e);
+          void customEvent(QEvent* e);
 
         public slots:
 
@@ -142,7 +135,7 @@ namespace te
 
             \param id value used to inform what task was canceled.
           */
-          virtual void cancel(int id);
+          void cancel(int id);
 
         protected:
 

@@ -21,14 +21,12 @@
   \file terralib/qt/widgets/progress/RemoveProgressWidgetItemEvent.cpp
 
   \brief The RemoveProgressWidgetItemEvent is a custom event used to remove a progress widget item.
-
-  \note Used in thread codes.
 */
 
 // TerraLib
 #include "RemoveProgressWidgetItemEvent.h"
 
-QEvent::Type te::qt::widgets::RemoveProgressWidgetItemEvent::m_customEventType = QEvent::None;
+QEvent::Type te::qt::widgets::RemoveProgressWidgetItemEvent::sm_customEventType(QEvent::None);
 
 te::qt::widgets::RemoveProgressWidgetItemEvent::RemoveProgressWidgetItemEvent(const int& taskId)
   : QEvent(RemoveProgressWidgetItemEvent::type()),
@@ -42,11 +40,11 @@ te::qt::widgets::RemoveProgressWidgetItemEvent::~RemoveProgressWidgetItemEvent()
 
 QEvent::Type te::qt::widgets::RemoveProgressWidgetItemEvent::type()
 {
-  if(m_customEventType == QEvent::None)
+  if(sm_customEventType == QEvent::None)
   {
     int generatedType = QEvent::registerEventType();
-    m_customEventType = static_cast<QEvent::Type>(generatedType);
+    sm_customEventType = static_cast<QEvent::Type>(generatedType);
   }
 
-  return m_customEventType;
+  return sm_customEventType;
 }

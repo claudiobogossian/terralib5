@@ -27,11 +27,10 @@
 
 #include "Algorithm.h"
 
-#include <boost/shared_ptr.hpp>
-
 #include <vector>
 #include <string>
 #include <map>
+#include <memory>
 
 namespace te
 {
@@ -120,7 +119,7 @@ namespace te
             
             te::rst::Raster* m_outRasterPtr; //!< A pointer to a valid initiated raster instance where the result must be written, leave NULL to create a new instance(in this case the other output parameters must be used).
             
-            boost::shared_ptr< te::rst::Raster > m_createdOutRasterPtr; //!< A pointer to the created output raster instance, or an empty pointer empty if the result must be written to the raster pointed m_outRasterPtr.
+            std::auto_ptr< te::rst::Raster > m_createdOutRasterPtr; //!< A pointer to the created output raster instance, or an empty pointer empty if the result must be written to the raster pointed m_outRasterPtr.
             
             std::vector< unsigned int > m_outRasterBands; //!< Bands to be processed from the output raster.
             
