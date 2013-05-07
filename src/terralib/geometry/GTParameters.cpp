@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,7 +31,7 @@ te::gm::GTParameters::GTParameters()
 }
 
 te::gm::GTParameters::GTParameters( const GTParameters& rhs )
-{ 
+{
   this->operator=( rhs );
 }
 
@@ -52,21 +52,22 @@ void te::gm::GTParameters::reset() throw( te::common::Exception )
   m_modelParameters.reset();
 }
 
-const te::gm::GTParameters& te::gm::GTParameters::operator=( 
-  const te::gm::GTParameters& params )
+te::gm::GTParameters& te::gm::GTParameters::operator=(const te::gm::GTParameters& rhs)
 {
-  m_tiePoints = params.m_tiePoints;
-  m_directParameters = params.m_directParameters;
-  m_inverseParameters = params.m_inverseParameters;
-  
-  if( params.m_modelParameters.get() )
+  if(this != &rhs)
   {
-    m_modelParameters.reset( (GTModelParameters*)
-      params.m_modelParameters->clone() );
-  }
-  else
-  {
-    m_modelParameters.reset();
+    m_tiePoints = rhs.m_tiePoints;
+    m_directParameters = rhs.m_directParameters;
+    m_inverseParameters = rhs.m_inverseParameters;
+
+    if( rhs.m_modelParameters.get() )
+    {
+      m_modelParameters.reset(static_cast<GTModelParameters*>(rhs.m_modelParameters->clone()));
+    }
+    else
+    {
+      m_modelParameters.reset();
+    }
   }
   
   return *this;
