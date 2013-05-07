@@ -160,6 +160,23 @@ namespace te
         */
         void difference(const ObjectIdSet* rhs);
 
+        /*!
+          \brief Returns an iterator for the object ids in container
+          
+          \return Iterator for the begin element of the container.
+
+          \note When using the iterators it WILL NOT give the ownership of the pointers. 
+          This means that the caller MUST NOT delete the pointers or it will lead to an inconsistent state.
+        */
+        std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator begin() const;
+
+        /*!
+          \brief Returns an iterator for the object ids in container
+          
+          \return Iterator for the ending element of the container.
+        */
+        std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator end() const;
+
       private:
 
         std::vector<std::string> m_pnames;                            //!< The list of property names used to generate the unique ids.

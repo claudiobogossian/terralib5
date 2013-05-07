@@ -45,6 +45,9 @@ namespace te
   {
     namespace widgets
     {
+      // Forward declaration
+      class Promoter;
+
       /*!
         \class HighlightDelegate
 
@@ -137,6 +140,22 @@ namespace te
           */
           virtual void clearSelected();
 
+          /*!
+            \brief Returns the identifiers of the rows highlighted.
+
+            \return The identifiers of the highlighted rows;
+          */
+          virtual std::vector<te::da::ObjectId*> getSelected();
+
+          /*!
+            \brief Sets the promoter being used.
+
+            \param promoter Pointer of the promoter.
+
+            \note It DOES NOT take the ownership of \a promoter.
+          */
+          void setPromoter(Promoter* promoter);
+
         protected:
 
           QColor m_color;               //!< Highlight color.
@@ -144,6 +163,8 @@ namespace te
           te::da::ObjectIdSet* m_objs;  //!< Identifiers of the highlight object.
 
           te::da::DataSet* m_dset;      //!< Pointer to the DataSet being used.
+
+          Promoter* m_promoter;         //!< Pointer to the promoter being used.
       };
     }
   }

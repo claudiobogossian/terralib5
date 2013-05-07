@@ -11,6 +11,7 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QMenu>
+#include <QtGui/QCursor>
 
 // STL
 #include <vector>
@@ -176,6 +177,21 @@ class TablePopupFilter : public QObject
           }
           else if(watched == vport)
           {
+            delete m_vportMenu;
+
+            QContextMenuEvent* evt = static_cast<QContextMenuEvent*>(event);
+            QPoint pos = evt->globalPos();
+
+            m_vportMenu = new QMenu;
+
+            QAction* act = new QAction(m_vportMenu);
+            act->setText(tr("Promote"));
+            act->setToolTip(tr("Reorder rows"));
+            m_vportMenu->addAction(act);
+
+            m_view->connect(act, SIGNAL(triggered()), SLOT(promote()));
+
+            m_vportMenu->popup(pos);
           }
         }
         break;
@@ -255,6 +271,8 @@ class TablePopupFilter : public QObject
     void selectObject(const int&, const bool&);
 
     void selectObjects(const int& initRow, const int& finalRow);
+
+    void promote();
 
   protected:
 
@@ -360,7 +378,10 @@ void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool&
 
   m_delegate->addObject(row);
 
-  viewport()->repaint();
+  if(m_model->isPromotionEnabled())
+    promote();
+  else
+    viewport()->repaint();
 }
 
 void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const int& finalRow)
@@ -380,6 +401,21 @@ void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const 
   }
 
   m_delegate->addObjects(ini, final);
+
+  if(m_model->isPromotionEnabled())
+    promote();
+  else
+    viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::promote()
+{
+  QCursor cursor(Qt::WaitCursor);
+
+  std::vector<te::da::ObjectId*> oids = m_delegate->getSelected();
+  m_model->promote(oids);
+
+  m_delegate->setPromoter(m_model->getPromoter());
 
   viewport()->repaint();
 }

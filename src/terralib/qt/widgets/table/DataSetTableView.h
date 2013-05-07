@@ -32,7 +32,7 @@
 // Qt
 #include <QtGui/QTableView>
 
-// Forward declarations
+// Forward declaration
 class TablePopupFilter;
 
 namespace te
@@ -144,6 +144,13 @@ namespace te
             \note It does not matter if \a initRow is less than \a finalRow.
           */
           void highlightRows(const int& initRow, const int& finalRow);
+
+          /*!
+            \brief Promotes the highlighted rows.
+
+            The rows highlighted are presented in the begining of the table.
+          */
+          void promote();
           //@}
 
         protected:

@@ -179,3 +179,13 @@ void te::da::ObjectIdSet::difference(const te::da::ObjectIdSet* rhs)
     m_oids.erase(itSearch);
   }
 }
+
+std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator te::da::ObjectIdSet::begin() const
+{
+  return m_oids.cbegin();
+}
+
+std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator te::da::ObjectIdSet::end() const
+{
+  return m_oids.cend();
+}
