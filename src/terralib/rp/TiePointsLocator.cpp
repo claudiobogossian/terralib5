@@ -3228,7 +3228,7 @@ namespace te
                   featureSubWindowWidth ; featureSubWindowXOffset += featureWindowSampleStep ) 
                 {
                   featureElementZeroCenteredOriginalXIdx = ((double)featureSubWindowXOffset)
-                    - featureWindowRadiusDouble;                  
+                    - featureWindowRadiusDouble;
                   
                   /* finding the correspondent point over the original raster
                      using a clockwize rotation */ 
@@ -3247,7 +3247,7 @@ namespace te
                     
                   featureElementRasterRotatedXIdx = featureWindowRasterXStart +
                     (unsigned int)ROUND( featureElementRotatedXIdx );
-                  featureElementRasterRotatedYIdx = ((double)featureWindowRasterYStart) +
+                  featureElementRasterRotatedYIdx = featureWindowRasterYStart +
                     (unsigned int)ROUND( featureElementRotatedYIdx );
                     
                   assert( ((long int)featureElementRasterRotatedXIdx) -
@@ -3255,9 +3255,9 @@ namespace te
                   assert( ((long int)featureElementRasterRotatedYIdx) -
                     ((long int)featureElementHaarWindowRadius) >= 0 );
                   assert( featureElementRasterRotatedXIdx + 
-                    featureElementHaarWindowRadius < integralRasterData.getColumnsNumber() ); 
+                    featureElementHaarWindowRadius < integralRasterData.getColumnsNumber() );
                   assert( featureElementRasterRotatedYIdx + 
-                    featureElementHaarWindowRadius < integralRasterData.getLinesNumber() );                    
+                    featureElementHaarWindowRadius < integralRasterData.getLinesNumber() );
                     
                   // Finding the original haar intesity vectors
                     
