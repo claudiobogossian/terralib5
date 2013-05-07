@@ -244,7 +244,7 @@ void te::common::Library::addSearchDir(const std::string& d) throw(Exception)
 
 #else
   throw Exception(TR_COMMON("method: void te::common::Library::addSearchDir(const std::string& d) throw(Exception) not implemented for this platform! Contact terralib-team@dpi.inpe.br"));
-#endif;
+#endif
 }
 
 void te::common::Library::resetSearchPath() throw(Exception)
