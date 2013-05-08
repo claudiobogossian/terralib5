@@ -342,6 +342,8 @@ void TsManagerDataSource::initialize(const std::string driver_name)
     te::common::Convert(driver.get_child("dt.dt_idx_names"), sm_vecIdxNames);
     te::common::Convert(driver.get_child("dt.dt_seq_names"), sm_vecSeqNames);
     te::common::Convert(driver.get_child("dt.dt_pk_names"), sm_vecFkNames);
+    te::common::Convert(driver.get_child("dt.dt_uk_names"), sm_vecUkNames);
+
     te::common::Convert(driver.get_child("dt.dt_cconstrains_names"), sm_vecCcNames);
    
     setPairsValues(); //Setting some pairs of values based on related vetors above

@@ -48,13 +48,12 @@ te::vp::PropertyItem::~PropertyItem()
 
 int te::vp::PropertyItem::columnCount() const
 {
-  return 1;
+  return 2;
 }
 
 QVariant te::vp::PropertyItem::data(int column, int role) const
 {
-  LayerItem* litem = dynamic_cast<LayerItem*>(parent());
-
+  LayerItem* litem = dynamic_cast<LayerItem*>(parent()->parent());
 
   if(role == Qt::DisplayRole && column == 0)
     return QVariant(m_property->getName().c_str());

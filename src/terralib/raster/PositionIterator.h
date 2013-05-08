@@ -313,8 +313,8 @@ namespace te
 
       protected:
 
-        std::vector<te::gm::Point*> m_pixelsinpointset;         //!< The spatial restriction to be applied in the iterator.
-        int m_currentpixelindex;                      //!< The index of the current pixel location.
+        std::vector<te::gm::Point*> m_pixelsinpointset;    //!< The spatial restriction to be applied in the iterator.
+        int m_currentpixelindex;                           //!< The index of the current pixel location.
 
     };
 // implementation of abstract position iterator
@@ -689,6 +689,7 @@ namespace te
     template<class T> void te::rst::PolygonIterator<T>::setEnd()
     {
       this->m_column = -1;
+
       this->m_row = -1;
     }
 

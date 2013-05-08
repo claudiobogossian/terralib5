@@ -77,7 +77,21 @@ namespace te
             
             bool m_useRasterCache; //!< Enable(true) or disable the use of raster caching (default:true).
             
-            te::rp::TiePointsLocator::InputParameters m_locatorParams; //!< The tie-points locator parameters (leave untouched to use the default parameters).
+            bool m_enableMultiThread; //!< Enable/Disable the use of multi-threads (default:true).
+            
+            bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
+            double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:2).
+            
+            unsigned int m_tiePointsLocationBandIndex; //!< The band used to locate tie-points, this is the index inside each vector of m_inputRastersBands (defaul:0).
+            
+            unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate between each raster pair (default=0).
+            
+            unsigned int m_maxRastersOffset; //!< The maximum offset (pixels units) between a raster point and the respective point over the next sequence raster (default:0 - no offset restriction).
+            
+            std::string m_outDataSetsNamePrefix; //!< The raster output data sets names prefix.
+            
+            double m_minRequiredTiePointsCoveredAreaPercent; //!< The mininumum required tie-points covered area percent of each raster area - valid range [0,100] (default:0).
             
             InputParameters();
             
@@ -104,8 +118,6 @@ namespace te
           public:
             
             te::da::DataSource* m_outputDSPtr; //!< The output data source where the mosaic rasters will be created.
-            
-            std::string m_dataSetsNamePrefix; //!< The raster data sets names prefix.
             
             OutputParameters();
             
@@ -146,10 +158,15 @@ namespace te
           
         /*!
           \brief Raster band statistics calcule.
+          
           \param band Input raster band.
+          
           \param forceNoDataValue Force the noDataValue to be used as the band no-data value.
+          
           \param noDataValue The no-data value to use.
+          
           \param mean Pixels mean.
+          
           \param variance Pixels variance.
         */
         static void calcBandStatistics( const te::rst::Band& band,
@@ -157,6 +174,33 @@ namespace te
           const double& noDataValue,
           double& mean, 
           double& variance );
+          
+        /*!
+          \brief Create a raster data set from the given raster.
+          
+          \param dataSetName The data set name.
+          
+          \param sourceRaster The source raster.
+          
+          \param dataSourcePtr The output data source pointer.
+          
+          \return true if OK, false on errors.
+        */
+        bool createRasterDataSet( const std::string& dataSetName,
+          const te::rst::Raster& sourceRaster, te::da::DataSource* dataSourcePtr ) const;
+          
+        /*!
+          \brief Returns the tie points converx hull area.
+          
+          \param tiePoints Input tie-points.
+          
+          \param useTPSecondCoordPair If true the sencond tie-point component (te::gm::GTParameters::TiePoint::second) will be used for the area calcule, otherwize the first component will be used.
+          
+          \return Returns the tie points converx hull area.
+        */          
+        double getTPConvexHullArea( 
+          const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
+          const bool useTPSecondCoordPair ) const;
 
     };
 

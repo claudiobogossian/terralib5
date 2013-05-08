@@ -36,9 +36,11 @@ list (APPEND TE_DEP_LIBS
 	terralib_common
 	terralib_dataaccess
 	terralib_datatype
+	terralib_geometry
 	terralib_maptools
 	terralib_qt_widgets
     terralib_plugin
+	terralib_symbology
 )
 
 # Files to process.
@@ -70,6 +72,8 @@ set (
   ${SRCDIR}/qt/IntersectionDialog.h
   ${SRCDIR}/qt/AggregationDialog.h
   ${SRCDIR}/qt/LayerItem.h
+  ${SRCDIR}/qt/LegendGroupItem.h
+  ${SRCDIR}/qt/PropertyGroupItem.h  
   ${SRCDIR}/qt/PropertyItem.h
   ${SRCDIR}/qt/LayerTreeModel.h
 )
