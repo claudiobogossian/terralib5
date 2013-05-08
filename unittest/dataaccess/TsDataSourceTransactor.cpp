@@ -130,7 +130,7 @@ void TsDataSourceTransactor::tcGetDataSet()
     while (i < datasets.size() && i < 10)   //to save time during test
     {
       dt = t->getDataSet(datasets[i]);
-      CPPUNIT_ASSERT_NO_THROW(dt->getType()->getName() == (datasets[i]));
+      CPPUNIT_ASSERT_NO_THROW(t->getDataSet(datasets[i]));
       i++;
     }
   }
@@ -147,7 +147,7 @@ void TsDataSourceTransactor::tcGetDataSetByGeometry()
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
   if (!((m_capabilit.getDataTypeCapabilities()).supportsGeometry()))
-    CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource",(m_capabilit.getDataTypeCapabilities()).supportsGeometry() == false, te::common::Exception);
+    CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource",(m_capabilit.getDataTypeCapabilities()).supportsGeometry() == 0, te::common::Exception);
 
   else
   {
@@ -164,7 +164,9 @@ void TsDataSourceTransactor::tcGetDataSetByGeometry()
     {
     
       CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), &m_pt, te::gm::INTERSECTS)); //point
-      int pos = static_cast<int>(dt->getType()->getDefaultGeomPropertyPos());
+      int nprop = dt->getNumProperties();
+      int i;
+      int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dt));
       dt->moveNext();
       m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());
       m_geom->computeMBR(true);
@@ -262,12 +264,11 @@ void TsDataSourceTransactor::tcGetDataSetByEnvRec()
   te::da::DataSet* dtRec;
   CPPUNIT_ASSERT_NO_THROW(dtRec = t->getDataSet(*it,p,rec,te::gm::INTERSECTS));
 
-  if (dtRec->getType()->hasGeom())
+  if (dtRec)
   {
-    te::gm::Envelope* envRec;
-    te::gm::GeometryProperty* dtGeomRec = dtRec->getType()->getDefaultGeomProperty();
-    CPPUNIT_ASSERT(dtGeomRec);
-    CPPUNIT_ASSERT_NO_THROW(envRec = dtRec->getExtent(dtGeomRec));
+    te::gm::Envelope* envRec; 
+    int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dtRec));
+    CPPUNIT_ASSERT_NO_THROW(envRec = dtRec->getExtent(pos));
     if (envRec)
     {
       std::cout << std::endl << "DataSetRec Name: " << (*it) << "Size: "<< dtRec->size() << std::endl ;
@@ -298,15 +299,14 @@ void TsDataSourceTransactor::tcGetDataSetByEnvRec1()
     try
     {
       CPPUNIT_ASSERT_NO_THROW(dtRec = t->getDataSet( (*itpair).first, &(*itpair).second, te::gm::INTERSECTS ));
-      if (dtRec->getType()->hasGeom())
+      if (dtRec)
       {
-        dtGeomRec = dtRec->getType()->getDefaultGeomProperty();
-        CPPUNIT_ASSERT(dtGeomRec);
-        CPPUNIT_ASSERT_NO_THROW(envRec = dtRec->getExtent(dtGeomRec));
+        te::gm::Envelope* envRec; 
+        int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dtRec));
+        CPPUNIT_ASSERT_NO_THROW(envRec = dtRec->getExtent(pos));
         std::cout << std::endl << "DataSet Name: " << (*itpair).first << " Size: " << dtRec->size() << std::endl ;
         std::cout << "DataSet Envelop returned: " << envRec->m_llx << "," << envRec->m_lly << "," << envRec->m_urx << "," << envRec->m_ury << std::endl;
         std::cout << "Envelop Filter          : " << (*itpair).second.m_llx << "," << (*itpair).second.m_lly << "," << (*itpair).second.m_urx << "," << (*itpair).second.m_ury << std::endl;
-
       }
     }
     catch (te::common::Exception  e)

@@ -137,7 +137,7 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
     {
       dt = cl->getDataSetType(m_newCapabilitiesDt);
       CPPUNIT_ASSERT(dt);
-      CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt));
+      CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt->getName()));
     }
 
     dt = new te::da::DataSetType(m_newCapabilitiesDt);
@@ -225,7 +225,7 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
       dt->add(new te::gm::GeometryProperty("attr_geom_multilm", 4326, te::gm::MultiLineStringMType, true));
 
       dt->add(new te::gm::GeometryProperty("attr_geom_multipol", 4326, te::gm::MultiPolygonType, true));
-      dt->add(new te::gm::GeometryProperty("attr_geom_multiPolz", 4326, te::gm::MultiPolygonZType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multipolz", 4326, te::gm::MultiPolygonZType, true));
       dt->add(new te::gm::GeometryProperty("attr_geom_multipolzm", 4326, te::gm::MultiPolygonZMType, true));
       dt->add(new te::gm::GeometryProperty("attr_geom_multipolm", 4326, te::gm::MultiPolygonMType, true));
     }
@@ -249,12 +249,21 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
     if ((m_capabilit.getDataTypeCapabilities()).supportsDateTime()) 
     {
       // TE_DATETIME_DT is not used inside constructor - only subType
-      dt->add(new te::dt::DateTimeProperty("attr_datetime", te::dt::DATE));   
-      dt->add(new te::dt::DateTimeProperty("attr_datetime_date", te::dt::TIME_INSTANT));
-      dt->add(new te::dt::DateTimeProperty("attr_datetime_time", te::dt::TIME_PERIOD));
-      dt->add(new te::dt::DateTimeProperty("attr_datetime_tz", te::dt::TIME_INSTANT_TZ));
-      dt->add(new te::dt::DateTimeProperty("attr_datetime_stamp", te::dt::TIME_INSTANT));
-      dt->add(new te::dt::DateTimeProperty("attr_datetime_stamp_tz", te::dt::TIME_INSTANT_TZ));
+      //dt->add(new te::dt::DateTimeProperty("attr_date", te::dt::DATE));   
+      //dt->add(new te::dt::DateTimeProperty("attr_time_instant", te::dt::TIME_INSTANT));
+      //dt->add(new te::dt::DateTimeProperty("attr_time_period", te::dt::TIME_PERIOD));
+      //dt->add(new te::dt::DateTimeProperty("attr_time_instant_tz", te::dt::TIME_INSTANT_TZ));
+      //dt->add(new te::dt::DateTimeProperty("attr_datetime_stamp", te::dt::TIME_INSTANT));
+      //dt->add(new te::dt::DateTimeProperty("attr_datetime_stamp_tz", te::dt::TIME_INSTANT_TZ));
+      dt->add(new te::dt::DateTimeProperty("attr_date", te::dt::DATE));
+      dt->add(new te::dt::DateTimeProperty("attr_date", te::dt::DATE_PERIOD));
+      dt->add(new te::dt::DateTimeProperty("attr_time_duration", te::dt::TIME_DURATION));
+      dt->add(new te::dt::DateTimeProperty("attr_time_instant", te::dt::TIME_INSTANT));
+      dt->add(new te::dt::DateTimeProperty("attr_time_period", te::dt::TIME_PERIOD));
+      dt->add(new te::dt::DateTimeProperty("attr_time_instant_tz", te::dt::TIME_INSTANT_TZ));
+      dt->add(new te::dt::DateTimeProperty("attr_time_period_tz", te::dt::TIME_PERIOD_TZ));
+      dt->add(new te::dt::DateTimeProperty("attr_ordinal_instant", te::dt::ORDINAL_INSTANT));
+      dt->add(new te::dt::DateTimeProperty("attr_ordinal_period", te::dt::ORDINAL_PERIOD));
     }
 
     ////it = m_capabilit.find("COMPOSITE_DT");
@@ -1003,7 +1012,7 @@ void TsDataSetTypePersistence::tcRemoveDataSetTypeCloned()
   te::da::DataSetType* dt = cl->getDataSetType(m_newDataSetType2,true);
   CPPUNIT_ASSERT(dt);
   te::da::DataSetTypePersistence* dtP = t->getDataSetTypePersistence();
-  CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt)); 
+  CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt->getName()));
 
 //#endif  // TE_COMPILE_ALL
 }
@@ -1067,10 +1076,10 @@ void TsDataSetTypePersistence::tcRemoveDataSetType()
   size_t n_fk = 0;
   if (m_capabilit.getDataSetTypeCapabilities().supportsForeignKey())
   {
-    CPPUNIT_ASSERT_THROW(dtP->drop(dt), te::common::Exception);
+    CPPUNIT_ASSERT_THROW(dtP->drop(dt->getName()), te::common::Exception);
   }
   else 
-    CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt)); //no foreign_key support
+    CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt->getName())); //no foreign_key support
 
 //#endif  // TE_COMPILE_ALL
 }
@@ -1094,7 +1103,7 @@ void TsDataSetTypePersistence::tcRemoveDataSetTypeWithFk()
 // checking FK if it makes sense...
  
   if (!(m_capabilit.getDataSetTypeCapabilities().supportsForeignKey()))
-    CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt));
+    CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt->getName()));
   else
   {
     size_t n_fk = 0;
@@ -1124,7 +1133,7 @@ void TsDataSetTypePersistence::tcRemoveDataSetTypeWithFk()
     CPPUNIT_ASSERT(dt->getUniqueKey(m_Attr3e4Uk+"3")->getAssociatedIndex() == dt->getIndex(dt->getUniqueKey(m_Attr3e4Uk+"3")->getAssociatedIndex()->getName()));
     CPPUNIT_ASSERT(dt->getIndex("public."+ m_Attr5idx+"3"));
 
-    CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt));
+    CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt->getName()));
   // now it is allowed to remove m_newDataSetType referenced by m_newDataSetType3
     for(itref = rdts.begin();  itref < rdts.end();  itref++)
     { 
@@ -1132,7 +1141,7 @@ void TsDataSetTypePersistence::tcRemoveDataSetTypeWithFk()
       if (cl->datasetExists(rdtname))  
       {
         te::da::DataSetType* dtref = cl->getDataSetType(rdtname);
-        CPPUNIT_ASSERT_NO_THROW(dtP->drop(dtref));
+        CPPUNIT_ASSERT_NO_THROW(dtP->drop(dtref->getName()));
       }
     }     
   }
