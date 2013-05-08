@@ -1,10 +1,11 @@
 set (thirdParty_dlls
   ${TE_DEPENDENCIES_DIR}/bin/asprintf.dll
-  ${TE_DEPENDENCIES_DIR}/bin/boost_date_time-vc100-mt-1_47.dll
-  ${TE_DEPENDENCIES_DIR}/bin/boost_filesystem-vc100-mt-1_47.dll
-  ${TE_DEPENDENCIES_DIR}/bin/boost_program_options-vc100-mt-1_47.dll
-  ${TE_DEPENDENCIES_DIR}/bin/boost_system-vc100-mt-1_47.dll
-  ${TE_DEPENDENCIES_DIR}/bin/boost_thread-vc100-mt-1_47.dll
+  ${TE_DEPENDENCIES_DIR}/bin/boost_date_time-mt.dll
+  ${TE_DEPENDENCIES_DIR}/bin/boost_chrono-mt.dll
+  ${TE_DEPENDENCIES_DIR}/bin/boost_filesystem-mt.dll
+  ${TE_DEPENDENCIES_DIR}/bin/boost_program_options-mt.dll
+  ${TE_DEPENDENCIES_DIR}/bin/boost_system-mt.dll
+  ${TE_DEPENDENCIES_DIR}/bin/boost_thread-mt.dll
   ${TE_DEPENDENCIES_DIR}/bin/charset.dll
   ${TE_DEPENDENCIES_DIR}/bin/comerr32.dll
   ${TE_DEPENDENCIES_DIR}/bin/csqlclient.dll
