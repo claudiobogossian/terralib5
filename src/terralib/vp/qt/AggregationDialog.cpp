@@ -34,6 +34,7 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
 #include "../core/Exception.h"
+#include "Aggregation.h"
 #include "AggregationDialog.h"
 #include "LayerTreeModel.h"
 #include "ui_AggregationDialogForm.h"
@@ -98,12 +99,62 @@ void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
 
 int te::vp::AggregationDialog::getMemoryUse()
 {
-  if(m_ui->m_wholeMemRadioButton->isChecked())
-    return WHOLE_MEM;
-  else if(m_ui->m_partiallyMemRadioButton->isChecked())
-    return PARTIALLY_MEM;
+  if(m_ui->m_advancedOptionsGroupBox->isChecked())
+  {
+    if(m_ui->m_wholeMemRadioButton->isChecked())
+      return WHOLE_MEM;
+    else if(m_ui->m_partiallyMemRadioButton->isChecked())
+      return PARTIALLY_MEM;
+    else
+      return LOW_MEM;
+  }
   else
-    return LOW_MEM;
+    m_ui->m_wholeMemRadioButton->setChecked(true);
+    return WHOLE_MEM;
+}
+
+std::map<std::string, std::vector<te::vp::Attributes> > te::vp::AggregationDialog::getOutputAttributes()
+{
+  std::map<std::string, std::vector<te::vp::Attributes> > outputAttributes;
+
+  QList<QListWidgetItem*> itemList = m_ui->m_outputListWidget->selectedItems();
+
+  std::string aux = "";
+  std::string currentToken = "";
+  std::string attribute = "";
+  te::vp::Attributes enumAttribute;
+  std::vector<te::vp::Attributes> vectorAttributes;
+  
+  for(int i = 0; i < itemList.size(); ++i)
+  {
+    std::vector<std::string> tokens;
+    te::common::Tokenize(itemList[i]->text().toStdString(), tokens, ":");
+
+    currentToken = tokens[0];
+    currentToken.erase(currentToken.end() - 1);
+
+    enumAttribute = (te::vp::Attributes)itemList[i]->data(Qt::UserRole).toInt();
+
+    if(currentToken != aux && aux != "")
+    {
+      outputAttributes[aux] = vectorAttributes;
+      vectorAttributes.clear();
+      vectorAttributes.push_back(enumAttribute);
+    }
+    else
+    {
+      vectorAttributes.push_back(enumAttribute);
+
+      if(i == itemList.size() - 1)
+      {
+        outputAttributes[aux] = vectorAttributes;
+      }
+    }
+
+    aux = currentToken;
+  }
+
+  return outputAttributes;
 }
 
 void te::vp::AggregationDialog::setAttributes()
@@ -192,47 +243,108 @@ void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
   
   if(selected.size() > 0)
   {
+    m_ui->m_outputListWidget->clear();
+
     std::vector<te::dt::Property*> properties = selected.begin()->second;
-  
+    
     for(size_t i=0; i < properties.size(); ++i)
     {
       propertyType = properties[i]->getType();
 
       if(propertyType == te::dt::STRING_TYPE)
       {  
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MIN_VALUE].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MAX_VALUE].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[COUNT].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VALID_COUNT].c_str());
+        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MIN_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(MIN_VALUE));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MAX_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(MAX_VALUE));
+        m_ui->m_outputListWidget->addItem(item);
+        
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(COUNT));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VALID_COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(VALID_COUNT));
+        m_ui->m_outputListWidget->addItem(item);
         
         if(i < properties.size()-1)
-          propertyList.append("");
+        {
+          QListWidgetItem* item = new QListWidgetItem("");
+          m_ui->m_outputListWidget->addItem(item);
+        }
       }
       else
       {
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MIN_VALUE].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MAX_VALUE].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MEAN].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[SUM].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[COUNT].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VALID_COUNT].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[STANDARD_DEVIATION].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[KERNEL].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VARIANCE].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[SKEWNESS].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[KURTOSIS].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[AMPLITUDE].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MEDIAN].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VAR_COEFF].c_str());
-        propertyList.append(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MODE].c_str());
+        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MIN_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(MIN_VALUE));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MAX_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(MAX_VALUE));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MEAN].c_str());
+        item->setData(Qt::UserRole, QVariant(MEAN));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[SUM].c_str());
+        item->setData(Qt::UserRole, QVariant(SUM));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(COUNT));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VALID_COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(VALID_COUNT));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[STANDARD_DEVIATION].c_str());
+        item->setData(Qt::UserRole, QVariant(STANDARD_DEVIATION));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[KERNEL].c_str());
+        item->setData(Qt::UserRole, QVariant(KERNEL));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VARIANCE].c_str());
+        item->setData(Qt::UserRole, QVariant(VARIANCE));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[SKEWNESS].c_str());
+        item->setData(Qt::UserRole, QVariant(SKEWNESS));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[KURTOSIS].c_str());
+        item->setData(Qt::UserRole, QVariant(KURTOSIS));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[AMPLITUDE].c_str());
+        item->setData(Qt::UserRole, QVariant(AMPLITUDE));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MEDIAN].c_str());
+        item->setData(Qt::UserRole, QVariant(MEDIAN));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VAR_COEFF].c_str());
+        item->setData(Qt::UserRole, QVariant(VAR_COEFF));
+        m_ui->m_outputListWidget->addItem(item);
+
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MODE].c_str());
+        item->setData(Qt::UserRole, QVariant(MODE));
+        m_ui->m_outputListWidget->addItem(item);
         
         if(i < properties.size()-1)
-          propertyList.append("");
+        {
+          QListWidgetItem* item = new QListWidgetItem("");
+          m_ui->m_outputListWidget->addItem(item);
+        }
       }
     }
-  
-    m_ui->m_outputListWidget->clear();
-    m_ui->m_outputListWidget->addItems(propertyList);
+
   }
   else
   {
@@ -321,7 +433,43 @@ void te::vp::AggregationDialog::onHelpPushButtonClicked()
 
 void te::vp::AggregationDialog::onOkPushButtonClicked()
 {
-  QMessageBox::information(this, "Ok", "Under development");
+  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > selectedLayer = m_model->getSelected();
+
+  if(selectedLayer.size() > 0)
+  {
+    if(selectedLayer.begin()->second.size() > 0)
+    {
+      std::map<std::string, std::vector<te::vp::Attributes> > outputAttributes = getOutputAttributes();
+      
+      te::vp::MemoryUse memoryUse = (te::vp::MemoryUse)getMemoryUse();
+      
+      if(m_ui->m_newLayerNameLineEdit->text() != "")
+      {
+        std::string outputLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+        if(m_ui->m_repositoryLineEdit->text() != "")
+        {
+          te::vp::Aggregation(selectedLayer, outputAttributes, outputLayerName, m_outputDatasource);
+        }
+        else
+        {
+          QMessageBox::information(this, "Aggregation", "Set a repository for the new Layer.");
+        }
+      }
+      else
+      {
+        QMessageBox::information(this, "Aggregation", "Set a name for the new Layer.");
+      }
+    }
+    else
+    {
+      QMessageBox::information(this, "Aggregation", "Select at least one property.");
+    }
+  }
+  else
+  {
+    QMessageBox::information(this, "Aggregation", "Select one layer.");
+  }
 }
 
 void te::vp::AggregationDialog::onCancelPushButtonClicked()

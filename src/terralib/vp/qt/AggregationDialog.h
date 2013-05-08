@@ -58,7 +58,7 @@ namespace te
 
       \brief Define possible states for memory use.
     */
-    enum
+    enum MemoryUse
     {
       WHOLE_MEM,      //!< Whole memory use.
       PARTIALLY_MEM,  //!< Partially memory use.
@@ -112,6 +112,13 @@ namespace te
           \return MemoryUse enum.
         */
         int getMemoryUse();
+
+        /*!
+          \brief Get the output Attributes based on selected QListWidgetItem.
+
+          \return Map with Properties and Attributes.
+        */
+        std::map<std::string, std::vector<te::vp::Attributes> > getOutputAttributes();
 
         /*!
           \brief Set attributes for combobox 'm_selectAllComboBox' and 'm_rejectAllComboBox' based on a enum.
