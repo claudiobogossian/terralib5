@@ -13,6 +13,8 @@ set(PROJ_NAME "terralib_unittest_dataaccess")
 project(${PROJ_NAME})           # the project name is terralib_unittest_dataaccess
 set(LIB_NAME ${PROJ_NAME})      # the library name is terralib_unittest_dataaccess
 
+find_package(Boost ${_Boost_VERSION} COMPONENTS system thread REQUIRED)
+
 set (DEP_LIBS ${Boost_LIBRARIES})
 set (DEP_INCLUDES 
   ${Boost_INCLUDE_DIRS}
@@ -34,9 +36,6 @@ if(PostgreSQL_FOUND)
 	list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
 endif()
 
-
-find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
-
 #Definitions for windows compiling
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
@@ -51,7 +50,6 @@ list (
 	terralib_plugin
 	terralib_raster
 	terralib_srs
-    ${Boost_LIBRARIES}	
   )
 
 # Select the source files

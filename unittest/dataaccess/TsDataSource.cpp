@@ -162,9 +162,10 @@ void TsDataSource::tcGetCapabilities()
 void TsDataSource::tcGetTransactor()
 {
 //#ifdef TE_COMPILE_ALL
-  te::da::DataSourceTransactor* transactor = 0;
-  CPPUNIT_ASSERT_NO_THROW(transactor = m_ds->getTransactor());
-  CPPUNIT_ASSERT_NO_THROW(delete transactor);
+  // get a transactor to retrieve information about the data source 
+  std::auto_ptr<te::da::DataSourceTransactor> t(m_ds->getTransactor());
+  CPPUNIT_ASSERT(t.get());
+
 //#endif
 }
 
@@ -196,6 +197,7 @@ void TsDataSource::tcCreate()
   {
     te::da::DataSource * newDb = te::da::DataSource::create(m_dsType, m_connInfoNewDs);
     CPPUNIT_ASSERT(newDb);
+    delete newDb;
   }
   catch (te::common::Exception  e)
   {

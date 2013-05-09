@@ -31,21 +31,20 @@
 
 //QWT
 #include <qwt_plot_curve.h>
-#include <qwt_symbol.h>
 
 //STL
 #include <vector>
 
 namespace te
 {
-
   namespace qt
   {
     namespace widgets
     {
       // Forward declarations
       class Scatter;
-      
+      class ScatterStyle;
+
       /*!
         \class ScatterChart
 
@@ -67,24 +66,32 @@ namespace te
           /*!
             \brief Constructor
 
-            \note It will take the ownership of the pointer "style".
+            \note It will take the ownership of the pointer "symbol".
             \note It will not take the ownership of the pointer "data".
           */
-          ScatterChart(Scatter* data,QwtSymbol* symbol, size_t size);
+          ScatterChart(Scatter* data, ScatterStyle* style, size_t size);
                     
 
           /*! \brief Destructor. */
-          ~ScatterChart();  
-          
+          ~ScatterChart();
+
+          te::qt::widgets::Scatter* getScatter();
+
+          void setScatter(te::qt::widgets::Scatter* newScatter);
+
+          ScatterStyle* getScatterStyle();
+
+          void setScatterStyle(ScatterStyle* newStyle);
+
         private:
 
           void setData();
 
         private:
-          Scatter*                m_scatter; //!< The scatter that will be shown on this chart.
-          QwtSymbol*              m_symbol; //!< The symbol that defines the look of a scatter's point.
-          std::size_t             m_size; //!< The size of a scatter's point.                                        
-      }; 
+          Scatter*       m_scatter;       //!< The scatter that will be shown on this chart.
+          ScatterStyle*  m_scatterStyle;  //!< The symbol that defines the look of a scatter's point.
+          std::size_t    m_size;          //!< The size of a scatter's point.
+      };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

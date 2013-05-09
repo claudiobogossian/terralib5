@@ -40,6 +40,7 @@ namespace te
     {
       // Forward declarations
       class Histogram;
+      class HistogramStyle;
       class StringScaleDraw;
 
       /*!
@@ -56,7 +57,7 @@ namespace te
 
             It constructs a histogram chart .
 
-            \note It will not take the ownership of the pointers.
+            \note It will take the ownership of the pointer "data".
           */
           HistogramChart(Histogram* data);
           
@@ -67,7 +68,6 @@ namespace te
             \brief It returns the chart's scale draw.  
 
             \return The chart's scale draw.  
-
           */
 
            StringScaleDraw* getScaleDraw();
@@ -76,12 +76,13 @@ namespace te
             \brief It sets the chart's scale draw.   
 
             \param new_labels The new chart's scale draw.   
+            \note It will take the ownership of the pointer "newScaleDraw".
           */
 
-          void setScaleDraw(  StringScaleDraw* new_scaleDraw);
+          void setScaleDraw( StringScaleDraw* newScaleDraw);
 
           /*!            
-            \brief IT atttaches a QwtPlot to this Cahrt 
+            \brief It atttaches a QwtPlot to this Cahrt 
 
             \param plot The QwtPlot that will be attached to this plot.
 
@@ -89,11 +90,19 @@ namespace te
           */
           void attach(QwtPlot* plot);
 
+          te::qt::widgets::Histogram* getHistogram();
+
+          void setHistogram(te::qt::widgets::Histogram* newHistogram);
+
+          te::qt::widgets::HistogramStyle* getHistogramStyle();
+
+          void setHistogramStyle(te::qt::widgets::HistogramStyle* newStyle);
+
         private:
 
-            Histogram* m_histogram;                  //!< The histogram that will be shown on this chart.
-            StringScaleDraw* m_histogramScaleDraw;   //!< Scale draw that defines how a label will be displayed on this chart.
-//            HistogramStyle* m_style; 
+            Histogram*                        m_histogram;           //!< The histogram that will be shown on this chart.
+            StringScaleDraw*                  m_histogramScaleDraw;  //!< Scale draw that defines how a label will be displayed on this chart.
+            te::qt::widgets::HistogramStyle*  m_histogramStyle;      //!< The histogram's style as displayed by this widget.
 
       };
     } // end namespace widgets

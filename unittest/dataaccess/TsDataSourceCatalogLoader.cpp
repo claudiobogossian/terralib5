@@ -102,7 +102,7 @@ void TsDataSourceCatalogLoader::tcGetDataSetType()
     for(it = m_vecDtNames.begin(); it < m_vecDtNames.end(); it++)
     {
       te::da::DataSetType *dt =  cl->getDataSetType(*it);
-      //CPPUNIT_ASSERT(dt->getTitle()  == *it);
+      CPPUNIT_ASSERT(dt->getTitle()  == *it);
       CPPUNIT_ASSERT(dt);
 
       // As the second parameter of getDataSetType is false - nothing below were loaded

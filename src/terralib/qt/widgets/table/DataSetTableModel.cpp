@@ -27,6 +27,7 @@
 #include "../../../common/Exception.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "DataSetTableModel.h"
+#include "Promoter.h"
 
 // Qt
 #include <QtGui/QIcon>
@@ -45,13 +46,15 @@ bool IsPkey(const int& column, const std::vector<size_t>& pkeys)
 te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
   : QAbstractTableModel(parent),
     m_dataset(0),
-    m_currentRow(-1)
+    m_currentRow(-1),
+    m_promoter(0)
 {
 }
 
 te::qt::widgets::DataSetTableModel::~DataSetTableModel()
 {
   delete m_dataset;
+  delete m_promoter;
 }
 
 void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset)
@@ -68,6 +71,40 @@ void te::qt::widgets::DataSetTableModel::setDataSet(te::da::DataSet* dset)
 void te::qt::widgets::DataSetTableModel::setPkeysColumns(const std::vector<size_t>& pkeys)
 {
   m_pkeysColumns = pkeys;
+}
+
+void te::qt::widgets::DataSetTableModel::setPromotionEnable(const bool& enable)
+{
+  if(enable)
+  {
+    if(m_promoter == 0)
+    {
+      m_promoter = new Promoter;
+      m_promoter->preProcessKeys(m_dataset, m_pkeysColumns);
+    }
+  }
+  else
+  {
+    delete m_promoter;
+    m_promoter = 0;
+  }
+}
+
+void te::qt::widgets::DataSetTableModel::promote(const std::vector<te::da::ObjectId*>& oids)
+{
+  setPromotionEnable(true);
+
+  m_promoter->promote(oids);
+}
+
+bool te::qt::widgets::DataSetTableModel::isPromotionEnabled()
+{
+  return m_promoter != 0;
+}
+
+te::qt::widgets::Promoter* te::qt::widgets::DataSetTableModel::getPromoter()
+{
+  return m_promoter;
 }
 
 int te::qt::widgets::DataSetTableModel::rowCount(const QModelIndex & parent) const
@@ -95,8 +132,11 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
       if(m_currentRow != index.row())
       {
         m_currentRow = index.row();
-        m_dataset->move(m_currentRow);
+
+        int row = (m_promoter == 0) ? m_currentRow : (int)m_promoter->getLogicalRow(m_currentRow);
+        m_dataset->move(row);
       }
+
       return m_dataset->getAsString(index.column()).c_str();
     break;
 

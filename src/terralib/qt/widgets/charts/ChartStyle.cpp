@@ -39,7 +39,7 @@ te::qt::widgets::ChartStyle::ChartStyle()
   m_gridChecked = false;
 }
 
-te::qt::widgets::ChartStyle::ChartStyle(std::string title, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color)
+te::qt::widgets::ChartStyle::ChartStyle(QString title, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color)
 :m_title(title),
   m_gridChecked(gridChecked),
   m_fill(fill),
@@ -53,12 +53,12 @@ te::qt::widgets::ChartStyle::~ChartStyle()
 }
 
 
-std::string& te::qt::widgets::ChartStyle::getTitle()
+QString& te::qt::widgets::ChartStyle::getTitle()
 {
   return m_title;
 }
 
-void te::qt::widgets::ChartStyle::setTitle(std::string newTitle)
+void te::qt::widgets::ChartStyle::setTitle(QString newTitle)
 {
   m_title = newTitle;
 }

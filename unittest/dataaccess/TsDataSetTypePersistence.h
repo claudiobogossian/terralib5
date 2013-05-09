@@ -73,7 +73,7 @@ class TsDataSetTypePersistence : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( tcUpdateProperty );
   CPPUNIT_TEST( tcCloneTable );
   CPPUNIT_TEST( tcRemoveIndex );
-  CPPUNIT_TEST( tcCreateDataSetTypeWithPkUkIdxCc );
+  //CPPUNIT_TEST( tcCreateDataSetTypeWithPkUkIdxCc );
   CPPUNIT_TEST( tcAddForeignKey );
   CPPUNIT_TEST( tcRemovePrimaryKey );
   CPPUNIT_TEST( tcRemoveUniqueKey );
