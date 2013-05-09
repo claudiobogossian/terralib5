@@ -77,19 +77,15 @@ namespace te
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
-            double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:2).
-            
             unsigned int m_tiePointsLocationBandIndex; //!< The band used to locate tie-points, this is the index inside each vector of m_inputRastersBands (defaul:0).
-            
-            unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate between each raster pair (default=0).
-            
-            unsigned int m_maxRastersOffset; //!< The maximum offset (pixels units) between a raster point and the respective point over the next sequence raster (default:0 - no offset restriction).
             
             std::string m_outDataSetsNamePrefix; //!< The raster output data sets names prefix.
             
             std::string m_outDataSetsNameSufix; //!< The raster output data sets names sufix.
             
             double m_minRequiredTiePointsCoveredAreaPercent; //!< The mininumum required tie-points covered area percent of each raster area - valid range [0,100] (default:0).
+            
+            te::rp::TiePointsLocator::InputParameters m_locatorParams; //!< The parameters used by the tie-points locator when processing each rasters pair (leave untouched to use the default).
             
             InputParameters();
             

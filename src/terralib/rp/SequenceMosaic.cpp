@@ -78,13 +78,11 @@ namespace te
       m_useRasterCache = true;
       m_enableMultiThread = true;
       m_enableProgress = false;
-      m_geomTransfMaxError = 2;
       m_tiePointsLocationBandIndex = 0;
-      m_maxTiePoints = 0;
-      m_maxRastersOffset = 0;
       m_outDataSetsNamePrefix.clear();
       m_outDataSetsNameSufix.clear();
       m_minRequiredTiePointsCoveredAreaPercent = 0.0;
+      m_locatorParams.reset();
     }
 
     const SequenceMosaic::InputParameters& SequenceMosaic::InputParameters::operator=(
@@ -103,14 +101,12 @@ namespace te
       m_useRasterCache = params.m_useRasterCache;
       m_enableMultiThread = params.m_enableMultiThread;
       m_enableProgress = params.m_enableProgress;
-      m_geomTransfMaxError = params.m_geomTransfMaxError;
       m_tiePointsLocationBandIndex = params.m_tiePointsLocationBandIndex;
-      m_maxTiePoints = params.m_maxTiePoints;
-      m_maxRastersOffset = params.m_maxRastersOffset;
       m_outDataSetsNamePrefix = params.m_outDataSetsNamePrefix;
       m_outDataSetsNameSufix = params.m_outDataSetsNameSufix;
       m_minRequiredTiePointsCoveredAreaPercent = 
         params.m_minRequiredTiePointsCoveredAreaPercent;
+      m_locatorParams = params.m_locatorParams;
 
       return *this;
     }
@@ -392,11 +388,13 @@ namespace te
           
           {
             te::rp::TiePointsLocator::InputParameters locatorInParams;
+            locatorInParams = m_inputParameters.m_locatorParams;
             
             locatorInParams.m_inRaster1Ptr = mosaicRasterHandler.get();
             
             locatorInParams.m_inMaskRaster1Ptr = 0;
             
+            locatorInParams.m_inRaster1Bands.clear();
             locatorInParams.m_inRaster1Bands.push_back( 
               m_inputParameters.m_tiePointsLocationBandIndex );
 
@@ -434,6 +432,7 @@ namespace te
             
             locatorInParams.m_inMaskRaster2Ptr = 0;
             
+            locatorInParams.m_inRaster2Bands.clear();
             locatorInParams.m_inRaster2Bands.push_back( 
               m_inputParameters.m_inputRastersBands[ inputRasterIdx ][ 
               m_inputParameters.m_tiePointsLocationBandIndex ] );
@@ -447,8 +446,6 @@ namespace te
 
             locatorInParams.m_enableProgress = false;
             
-            locatorInParams.m_maxTiePoints = m_inputParameters.m_maxTiePoints;
-            
             locatorInParams.m_pixelSizeXRelation = mosaicRasterHandler->getResolutionX() /
               inputRasterPtr->getResolutionX();
             locatorInParams.m_pixelSizeYRelation = mosaicRasterHandler->getResolutionY() /
@@ -456,10 +453,6 @@ namespace te
               
             locatorInParams.m_geomTransfName = m_inputParameters.m_geomTransfName;
               
-            locatorInParams.m_geomTransfMaxError = m_inputParameters.m_geomTransfMaxError;
-            
-            locatorInParams.m_maxR1ToR2Offset = m_inputParameters.m_maxRastersOffset;
-            
             locatorInParams.m_enableGeometryFilter = true;
             
             locatorInParams.m_interpMethod = m_inputParameters.m_interpMethod;
@@ -919,9 +912,6 @@ namespace te
         
         m_inputParameters.m_feederRasterPtr->moveNext();
       }
-      
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_maxTiePoints, 
-        "Invalid tie points number" );
         
       TERP_TRUE_OR_RETURN_FALSE( 
         ( ( m_inputParameters.m_minRequiredTiePointsCoveredAreaPercent >= 0.0 ) &&

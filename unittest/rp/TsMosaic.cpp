@@ -366,25 +366,25 @@ void TsMosaic::SequenceMosaicTest()
   
   algoInputParams.m_noDataValue = 0.0;
   
-  algoInputParams.m_forceInputNoDataValue = false;
+  algoInputParams.m_forceInputNoDataValue = true;
   
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
   
-  algoInputParams.m_autoEqualize = false;
+  algoInputParams.m_autoEqualize = true;
   
-  algoInputParams.m_useRasterCache = false;
+  algoInputParams.m_useRasterCache = true;
   
-  algoInputParams.m_enableMultiThread = false;
+  algoInputParams.m_enableMultiThread = true;
   
   algoInputParams.m_enableProgress = true;
   
-  algoInputParams.m_geomTransfMaxError = 1.0;
+  algoInputParams.m_locatorParams.m_geomTransfMaxError = 1.0;
   
   algoInputParams.m_tiePointsLocationBandIndex = 0;
   
-  algoInputParams.m_maxTiePoints = 500;
+  algoInputParams.m_locatorParams.m_maxTiePoints = 500;
   
-  algoInputParams.m_maxRastersOffset = 0;
+  algoInputParams.m_locatorParams.m_maxR1ToR2Offset = 0;
   
   algoInputParams.m_outDataSetsNamePrefix = 
     "terralib_unittest_rp_Mosaic_SequenceMosaic_Test_";
