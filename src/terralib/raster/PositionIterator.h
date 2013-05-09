@@ -550,6 +550,12 @@ namespace te
             delete inter;
 
             m_row++;
+            if (m_row > m_endingrow)
+            {
+              setEnd();
+
+              return;
+            }
 
             setNextLine();
 

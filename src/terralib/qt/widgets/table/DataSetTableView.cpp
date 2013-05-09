@@ -11,6 +11,7 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QMenu>
+#include <QtGui/QCursor>
 
 // STL
 #include <vector>
@@ -107,7 +108,8 @@ class TablePopupFilter : public QObject
 
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
-      m_view->connect(this, SIGNAL(selectObject(const int&, const QColor&)), SLOT(highlightRow(const int&, const QColor&)));
+      m_view->connect(this, SIGNAL(selectObject(const int&, const bool&)), SLOT(highlightRow(const int&, const bool&)));
+      m_view->connect(this, SIGNAL(selectObjects(const int&, const int&)), SLOT(highlightRows(const int&, const int&)));
     }
 
     /*!
@@ -175,6 +177,21 @@ class TablePopupFilter : public QObject
           }
           else if(watched == vport)
           {
+            delete m_vportMenu;
+
+            QContextMenuEvent* evt = static_cast<QContextMenuEvent*>(event);
+            QPoint pos = evt->globalPos();
+
+            m_vportMenu = new QMenu;
+
+            QAction* act = new QAction(m_vportMenu);
+            act->setText(tr("Promote"));
+            act->setToolTip(tr("Reorder rows"));
+            m_vportMenu->addAction(act);
+
+            m_view->connect(act, SIGNAL(triggered()), SLOT(promote()));
+
+            m_vportMenu->popup(pos);
           }
         }
         break;
@@ -187,7 +204,18 @@ class TablePopupFilter : public QObject
             {
               int row = m_view->rowAt(evt->pos().y());
 
-              emit selectObject(row, Qt::green);
+              if(evt->modifiers() & Qt::ShiftModifier)
+              {
+                emit selectObjects(m_initRow, row);
+
+                return true;
+              }
+
+              m_initRow = row;
+
+              bool add = evt->modifiers() & Qt::ControlModifier;
+
+              emit selectObject(row, add);
 
               return true;
             }
@@ -240,7 +268,11 @@ class TablePopupFilter : public QObject
 
     void showColumn(const int&);
 
-    void selectObject(const int&, const QColor&);
+    void selectObject(const int&, const bool&);
+
+    void selectObjects(const int& initRow, const int& finalRow);
+
+    void promote();
 
   protected:
 
@@ -251,6 +283,7 @@ class TablePopupFilter : public QObject
     te::da::DataSet* m_dset;
 
     int m_columnPressed;
+    int m_initRow;
 };
 
 te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
@@ -338,9 +371,51 @@ void te::qt::widgets::DataSetTableView::resetColumnsOrder()
   }
 }
 
-void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const QColor& color)
+void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool& add)
 {
+  if(!add)
+    m_delegate->clearSelected();
+
   m_delegate->addObject(row);
+
+  if(m_model->isPromotionEnabled())
+    promote();
+  else
+    viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const int& finalRow)
+{
+  int ini,
+    final;
+
+  if(initRow < finalRow)
+  {
+    ini = initRow;
+    final = finalRow;
+  }
+  else
+  {
+    ini = finalRow;
+    final = initRow;
+  }
+
+  m_delegate->addObjects(ini, final);
+
+  if(m_model->isPromotionEnabled())
+    promote();
+  else
+    viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::promote()
+{
+  QCursor cursor(Qt::WaitCursor);
+
+  std::vector<te::da::ObjectId*> oids = m_delegate->getSelected();
+  m_model->promote(oids);
+
+  m_delegate->setPromoter(m_model->getPromoter());
 
   viewport()->repaint();
 }

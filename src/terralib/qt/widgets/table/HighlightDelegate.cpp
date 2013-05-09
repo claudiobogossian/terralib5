@@ -18,6 +18,7 @@
  */
 
 #include "HighlightDelegate.h"
+#include "Promoter.h"
 
 // TerraLib
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
@@ -39,10 +40,36 @@ bool toHighlight(te::da::DataSet* dset, te::da::ObjectIdSet* objs, const int& ro
   return res;
 }
 
+te::da::ObjectId* GetOId(te::da::DataSet* dset, const std::vector<std::string>& pNames, const int& row, te::qt::widgets::Promoter* promoter)
+{
+  int r = (promoter == 0) ? row : promoter->getLogicalRow(row);
+
+  dset->move(r);
+
+  return te::da::GenerateOID(dset, pNames);
+}
+
+te::da::ObjectIdSet* GetOIDSet(te::da::DataSet* dset, te::da::ObjectIdSet* oidSet, const int& initRow, const int& finalRow, te::qt::widgets::Promoter* promoter)
+{
+  te::da::ObjectIdSet* oIds = new te::da::ObjectIdSet;
+  std::vector<std::string> pnames = oidSet->getPropertyNames();
+  std::vector<size_t> ppos = oidSet->getPropertyPos();
+  std::vector<int> ptypes = oidSet->getPropertyTypes();
+
+  for(size_t i=0; i<pnames.size(); i++)
+    oIds->addProperty(pnames[i], ppos[i], ptypes[i]);
+
+  for(int i=initRow; i<=finalRow; i++)
+    oIds->add(GetOId(dset, pnames, i, promoter));
+ 
+  return oIds;
+}
+
 te::qt::widgets::HighlightDelegate::HighlightDelegate(QObject* parent) :
 QItemDelegate(parent),
   m_objs(0),
-  m_dset(0)
+  m_dset(0),
+  m_promoter(0)
 {
 }
 
@@ -58,7 +85,9 @@ void te::qt::widgets::HighlightDelegate::paint(QPainter* painter, const QStyleOp
 
   QStyleOptionViewItem opt = option;
 
-  if(toHighlight(m_dset, m_objs, index.row()))
+  int row = (m_promoter == 0) ? index.row() : m_promoter->getLogicalRow(index.row());
+
+  if(toHighlight(m_dset, m_objs, row))
   {
     opt.showDecorationSelected = true;
     opt.state |= QStyle::State_Selected;
@@ -90,8 +119,15 @@ void te::qt::widgets::HighlightDelegate::addObjects(te::da::ObjectIdSet* oIds)
 void te::qt::widgets::HighlightDelegate::addObject(te::da::ObjectId* oId)
 {
   assert(m_objs);
+  assert(oId);
 
-  m_objs->add(oId);
+  if(m_objs->contains(oId))
+  {
+    m_objs->remove(oId);
+    delete oId;
+  }
+  else
+    m_objs->add(oId);
 }
 
 void te::qt::widgets::HighlightDelegate::addObject(const int& row)
@@ -99,10 +135,22 @@ void te::qt::widgets::HighlightDelegate::addObject(const int& row)
   assert(m_objs);
   assert(m_dset);
 
-  m_dset->move(row);
+  int r = (m_promoter == 0) ? row : m_promoter->getLogicalRow(row);
+
+  m_dset->move(r);
 
   te::da::ObjectId* id = te::da::GenerateOID(m_dset, m_objs->getPropertyNames());
   addObject(id);
+}
+
+void te::qt::widgets::HighlightDelegate::addObjects(const int& initRow, const int& endRow)
+{
+  assert(m_objs);
+  assert(m_dset);
+
+  te::da::ObjectIdSet* oIds = GetOIDSet(m_dset, m_objs, initRow, endRow, m_promoter); 
+
+  addObjects(oIds);
 }
 
 void te::qt::widgets::HighlightDelegate::setDataSet(te::da::DataSet* dset)
@@ -113,4 +161,27 @@ void te::qt::widgets::HighlightDelegate::setDataSet(te::da::DataSet* dset)
 void te::qt::widgets::HighlightDelegate::setObjectIdSet(te::da::ObjectIdSet* objs)
 {
   m_objs = objs;
+}
+
+void te::qt::widgets::HighlightDelegate::clearSelected()
+{
+  m_objs->clear();
+}
+
+std::vector<te::da::ObjectId*> te::qt::widgets::HighlightDelegate::getSelected()
+{
+  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::iterator init = m_objs->begin();
+  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::iterator final = m_objs->end();
+  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::iterator it;
+  std::vector<te::da::ObjectId*> res;
+
+  for(it=init; it!=final; ++it)
+    res.push_back(*it);
+
+  return res;
+}
+
+void te::qt::widgets::HighlightDelegate::setPromoter(Promoter* promoter)
+{
+  m_promoter = promoter;
 }
