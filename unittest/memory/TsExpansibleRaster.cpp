@@ -238,6 +238,13 @@ void TsExpansibleRaster::addBottomLinesTest()
   rasterInstance.getValue( (unsigned int)col, (unsigned int)row, readValue, 1 );
   CPPUNIT_ASSERT( readValue == 1.0 );  
   
+  rasterInstance.getValue( 5, 19, readValue, 1 );
+  CPPUNIT_ASSERT( readValue == 0.0 );   
+  
+  rasterInstance.setValue( 5, 19, 1, 1 );
+  rasterInstance.getValue( 5, 19, readValue, 1 );
+  CPPUNIT_ASSERT( readValue == 1.0 );    
+  
   writeValues( rasterInstance );
   testValues( rasterInstance );    
 }
@@ -352,7 +359,14 @@ void TsExpansibleRaster::addRightColumnsTest()
   rasterInstance.getGrid()->geoToGrid( xCoord, yCoord, col, row );
   
   rasterInstance.getValue( (unsigned int)col, (unsigned int)row, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+  CPPUNIT_ASSERT( readValue == 1.0 ); 
+  
+  rasterInstance.getValue( 14, 5, readValue, 1 );
+  CPPUNIT_ASSERT( readValue == 0.0 );    
+  
+  rasterInstance.setValue( 14, 5, 1, 1 );
+  rasterInstance.getValue( 14, 5, readValue, 1 );
+  CPPUNIT_ASSERT( readValue == 1.0 );    
   
   writeValues( rasterInstance );
   testValues( rasterInstance );    
@@ -452,7 +466,14 @@ void TsExpansibleRaster::addBottomBandsTest()
   CPPUNIT_ASSERT( rasterInstance.getNumberOfColumns() == 10 );
 
   rasterInstance.getValue( 5, 5, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+  CPPUNIT_ASSERT( readValue == 1.0 ); 
+  
+  rasterInstance.getValue( 5, 5, readValue, 5 );
+  CPPUNIT_ASSERT( readValue == 0.0 );    
+  
+  rasterInstance.setValue( 5, 5, 1, 5 );
+  rasterInstance.getValue( 5, 5, readValue, 5 );
+  CPPUNIT_ASSERT( readValue == 1.0 );    
   
   writeValues( rasterInstance );
   testValues( rasterInstance );  

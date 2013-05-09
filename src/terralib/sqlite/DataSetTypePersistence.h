@@ -94,7 +94,7 @@ namespace te
    
         void drop(te::da::Sequence* sequence);
 
-        te::da::DataSourceTransactor* getTransactor() const;
+        //te::da::DataSourceTransactor* getTransactor() const;
 
       private:
 

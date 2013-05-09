@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/common/progress/ProgressManager.h
 
-  \brief A class that defines the singleton to manager tasks and viewers.
+  \brief A singleton class used to manage tasks progresses and their viewers.
 */
 
 #ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSMANAGER_H
@@ -46,11 +46,11 @@ namespace te
     /*!
       \class ProgressManager
 
-      \brief A class that defines the singleton to manager tasks and viewers
+      \brief A singleton class used to manage tasks progresses and their viewers.
 
-      This singleton is used to store all tasks created, also is
-      used to attach progress viewers. If one or more viewers is attached,
-      all instances will be used to display the tasks progress.
+      This singleton is used to store all tasks created and their
+      progress viewers. If one or more viewers is attached,
+      all instances will be used to display the tasks progresses.
 
       \sa AbstractProgressViewer, TaskProgress
     */
@@ -64,17 +64,14 @@ namespace te
 
       public:
 
-        /** @name ProgressManager Methods
-         *  Methods to add and remove tasks and viewers
-         */
-        //@{
-
         /*!
           \brief Attach a progress viewer
 
           \param apv Progress viewer instance
 
           \return Progress viewer identifier
+
+          \note 
         */
         int addViewer(AbstractProgressViewer* apv);
 
@@ -139,8 +136,6 @@ namespace te
           \param taskId Task identifier.
         */
         void updateMessage(int taskId);
-
-        //@}
 
       protected:
 

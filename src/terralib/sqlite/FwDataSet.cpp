@@ -120,11 +120,6 @@ const te::da::DataSetType* te::sqlite::FwDataSet::getType() const
   return m_dt;
 }
 
-te::da::DataSourceTransactor* te::sqlite::FwDataSet::getTransactor() const
-{
-  return m_t;
-}
-
 void te::sqlite::FwDataSet::loadTypeInfo()
 {
   if(m_dt && m_dt->isFullLoaded())
@@ -239,21 +234,16 @@ void te::sqlite::FwDataSet::loadTypeInfo()
   m_dt->setFullLoaded(true);
 }
 
-te::da::DataSet* te::sqlite::FwDataSet::getParent() const
-{
-  return 0;
-}
-
-te::gm::Envelope* te::sqlite::FwDataSet::getExtent(const te::dt::Property* p)
+te::gm::Envelope* te::sqlite::FwDataSet::getExtent(std::size_t i)
 {
   std::string sql("SELECT MIN(MBRMinX(");
-              sql += p->getName();
+              sql += getType()->getProperty(i)->getName();
               sql += ")), MIN(MBRMinY(";
-              sql += p->getName();
+              sql += getType()->getProperty(i)->getName();
               sql += ")), MAX(MBRMaxX(";
-              sql += p->getName();
+              sql += getType()->getProperty(i)->getName();
               sql += ")), MAX(MBRMaxY(";
-              sql += p->getName();
+              sql += getType()->getProperty(i)->getName();
               sql += ")) FROM (";
               sql += sqlite3_sql(m_stmt);
               sql += ")";
@@ -271,115 +261,22 @@ te::gm::Envelope* te::sqlite::FwDataSet::getExtent(const te::dt::Property* p)
   return new te::gm::Envelope(xmin, ymin, xmax, ymax);
 }
 
-void te::sqlite::FwDataSet::setFilter(te::dt::Property* p,
-                                    const te::gm::Geometry* g,
-                                    te::gm::SpatialRelation r)
+std::size_t te::sqlite::FwDataSet::getNumProperties() const
 {
-#ifdef TE_ENABLE_SPATIALITE
-  if(m_originalsql == 0)
-    m_originalsql = new std::string(sqlite3_sql(m_stmt));
-
-  if(g == 0)
-  {
-    m_stmt = m_t->queryLite(*m_originalsql);
-
-    return;
-  }
-
-  if(p == 0)
-    throw Exception(TR_SQLITE("The property is missing!"));
-
-  if(p->getType() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_SQLITE("The property is not geometric!"));
-
-  if(m_originalsql == 0)
-    m_originalsql = new std::string(sqlite3_sql(m_stmt));
-
-  std::string tname = sqlite3_column_table_name(m_stmt, getType()->getPropertyPosition(p));
-
-  std::string sql("SELECT * FROM (");
-              sql += *m_originalsql;
-              sql += ") WHERE ";
-              sql += GetBindableSpatialRelation(p->getName(), r);
-              sql += " AND ROWID IN (SELECT pkid FROM ";
-              sql += "idx_" + tname + "_" + p->getName();
-              sql += " WHERE pkid MATCH ";
-              sql += GetRtreeFilter(g->getMBR(), r);
-              sql += ")";
-
-  int ret = sqlite3_finalize(m_stmt);
-
-  m_stmt = 0;
-
-  if(ret != SQLITE_OK)
-    throw Exception(TR_SQLITE("Could not apply MBR filter!"));
-
-  m_stmt = m_t->queryLite(sql);
-
-  std::size_t ewkbSize = EWKBSize::getEWKBSize(g);
-
-  unsigned char* ewkb = new unsigned char[ewkbSize];
-
-  EWKBWriter::write(g, ewkb, te::common::Globals::sm_machineByteOrder);
-
-  int retval = sqlite3_bind_blob(m_stmt, 1, ewkb, ewkbSize, SQLITE_TRANSIENT);
-
-  delete [] ewkb;
-
-  if(retval != SQLITE_OK)
-    throw Exception(TR_SQLITE("Could not bind geometry in the spatial filter!"));
-
-#endif  // TE_ENABLE_SPATIALITE
-}
- 
-void te::sqlite::FwDataSet::setFilter(te::dt::Property* p,
-                                    const te::gm::Envelope* e,
-                                    te::gm::SpatialRelation r)
-{
-#ifdef TE_ENABLE_SPATIALITE
-  if(m_originalsql == 0)
-    m_originalsql = new std::string(sqlite3_sql(m_stmt));
-
-  if(e == 0)
-  {
-    m_stmt = m_t->queryLite(*m_originalsql);
-
-    return;
-  }
-
-  if(p == 0)
-    throw Exception(TR_SQLITE("The property is missing!"));
-
-  if(p->getType() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_SQLITE("The property is not geometric!"));
-
-  std::string tname = sqlite3_column_table_name(m_stmt, getType()->getPropertyPosition(p));
-
-  std::string sql("SELECT * FROM (");
-              sql += *m_originalsql;
-              sql += ") WHERE ROWID IN (SELECT pkid FROM ";
-              sql += "idx_" + tname + "_" + p->getName();
-              sql += " WHERE pkid MATCH ";
-              sql += GetRtreeFilter(e, r);
-              sql += ")";
-
-  int ret = sqlite3_finalize(m_stmt);
-
-  m_stmt = 0;
-
-  if(ret != SQLITE_OK)
-    throw Exception(TR_SQLITE("Could not apply MBR filter!"));
-
-  m_stmt = m_t->queryLite(sql);
-#endif //TE_ENABLE_SPATIALITE
+  return getType()->size();
 }
 
-te::da::DataSetItem* te::sqlite::FwDataSet::getItem() const
+int te::sqlite::FwDataSet::getPropertyDataType(std::size_t i) const
 {
-  return new te::mem::DataSetItem(this);
+  return getType()->getProperty(i)->getType();
 }
 
-void te::sqlite::FwDataSet::add(te::da::DataSetItem* /*item*/)
+std::string te::sqlite::FwDataSet::getPropertyName(std::size_t i) const
+{
+  return getType()->getProperty(i)->getName();
+}
+
+std::string te::sqlite::FwDataSet::getDatasetNameOfProperty(std::size_t i) const
 {
   throw Exception(TR_SQLITE("Not implemented yet!"));
 }
@@ -424,14 +321,6 @@ bool te::sqlite::FwDataSet::moveLast()
   throw Exception(TR_SQLITE("Not supported by SQLite!"));
 }
 
-bool te::sqlite::FwDataSet::moveAfterLast()
-{
-  while(moveNext())
-    ;
-
-  return true;
-}
-
 bool te::sqlite::FwDataSet::move(std::size_t /*i*/)
 {
   throw Exception(TR_SQLITE("Not supported by SQLite!"));
@@ -457,113 +346,63 @@ bool te::sqlite::FwDataSet::isAfterEnd() const
   throw Exception(TR_SQLITE("Not implemented yet!"));
 }
 
-char te::sqlite::FwDataSet::getChar(int i) const
+char te::sqlite::FwDataSet::getChar(std::size_t i) const
 {
   int value = sqlite3_column_int(m_stmt, i);
 
   return static_cast<char>(value);
 }
 
-void te::sqlite::FwDataSet::setChar(int /*i*/, char /*value*/)
-{
-  throw Exception(TR_SQLITE("Not supported by SQLite!"));
-}
-
-unsigned char te::sqlite::FwDataSet::getUChar(int i) const
+unsigned char te::sqlite::FwDataSet::getUChar(std::size_t i) const
 {
   int value = sqlite3_column_int(m_stmt, i);
 
   return static_cast<unsigned char>(value);
 }
 
-void te::sqlite::FwDataSet::setUChar(int /*i*/, unsigned char /*value*/)
-{
-  throw Exception(TR_SQLITE("Not supported by SQLite!"));
-}
-
-boost::int16_t te::sqlite::FwDataSet::getInt16(int i) const
+boost::int16_t te::sqlite::FwDataSet::getInt16(std::size_t i) const
 {
   return static_cast<boost::int16_t>(sqlite3_column_int(m_stmt, i));
 }
 
-void te::sqlite::FwDataSet::setInt16(int /*i*/, boost::int16_t /*value*/)
-{
-  throw Exception(TR_SQLITE("Not supported by SQLite!"));
-}
-
-boost::int32_t te::sqlite::FwDataSet::getInt32(int i) const
+boost::int32_t te::sqlite::FwDataSet::getInt32(std::size_t i) const
 {
   return sqlite3_column_int(m_stmt, i);
 }
 
-void te::sqlite::FwDataSet::setInt32(int /*i*/, boost::int32_t /*value*/)
-{
-  throw Exception(TR_SQLITE("Not implemented yet!"));
-}
-
-boost::int64_t te::sqlite::FwDataSet::getInt64(int i) const
+boost::int64_t te::sqlite::FwDataSet::getInt64(std::size_t i) const
 {
   return sqlite3_column_int64(m_stmt, i);
 }
 
-void te::sqlite::FwDataSet::setInt64(int /*i*/, boost::int64_t /*value*/)
-{
-  throw Exception(TR_SQLITE("Not implemented yet!"));
-}
-
-bool te::sqlite::FwDataSet::getBool(int i) const
+bool te::sqlite::FwDataSet::getBool(std::size_t i) const
 {
   return sqlite3_column_int(m_stmt, i) == TE_SQLITE_BOOL_TRUE;
 }
 
-void te::sqlite::FwDataSet::setBool(int /*i*/, bool /*value*/)
-{
-  throw Exception(TR_SQLITE("Not supported by SQLite!"));
-}
-
-float te::sqlite::FwDataSet::getFloat(int i) const
+float te::sqlite::FwDataSet::getFloat(std::size_t i) const
 {
   return static_cast<float>(sqlite3_column_double(m_stmt, i));
 }
 
-void te::sqlite::FwDataSet::setFloat(int /*i*/, float /*value*/)
-{
-  throw Exception(TR_SQLITE("Not supported by SQLite!"));
-}
-
-double te::sqlite::FwDataSet::getDouble(int i) const
+double te::sqlite::FwDataSet::getDouble(std::size_t i) const
 {
   return sqlite3_column_double(m_stmt, i);
 }
 
-void te::sqlite::FwDataSet::setDouble(int /*i*/, double /*value*/)
-{
-  throw Exception(TR_SQLITE("Not implemented yet!"));
-}
-
-std::string te::sqlite::FwDataSet::getNumeric(int i) const
+std::string te::sqlite::FwDataSet::getNumeric(std::size_t i) const
 {
   std::string value((const char*)(sqlite3_column_text(m_stmt, i)));
 
   return value; 
 }
 
-void te::sqlite::FwDataSet::setNumeric(int /*i*/, const std::string& /*value*/)
-{
-  throw Exception(TR_SQLITE("Not supported by SQLite!"));
-}
-
-std::string te::sqlite::FwDataSet::getString(int i) const
+std::string te::sqlite::FwDataSet::getString(std::size_t i) const
 {
   return (const char*)(sqlite3_column_text(m_stmt, i));
 }
 
-void te::sqlite::FwDataSet::setString(int /*i*/, const std::string& /*value*/)
-{
-  throw Exception(TR_SQLITE("Not implemented yet!"));
-}
-
-te::dt::ByteArray* te::sqlite::FwDataSet::getByteArray(int i) const
+te::dt::ByteArray* te::sqlite::FwDataSet::getByteArray(std::size_t i) const
 {
   char* blob = (char*)(sqlite3_column_blob(m_stmt, i));
 
@@ -576,12 +415,7 @@ te::dt::ByteArray* te::sqlite::FwDataSet::getByteArray(int i) const
   return barray;
 }
 
-void te::sqlite::FwDataSet::setByteArray(int /*i*/, const te::dt::ByteArray& /*value*/)
-{
-  throw Exception(TR_SQLITE("Not implemented yet!"));
-}
-
-te::gm::Geometry* te::sqlite::FwDataSet::getGeometry(int i) const
+te::gm::Geometry* te::sqlite::FwDataSet::getGeometry(std::size_t i) const
 {
 #ifdef TE_ENABLE_SPATIALITE 
   unsigned char* ewkb = (unsigned char*)(sqlite3_column_blob(m_stmt, i));
@@ -592,22 +426,12 @@ te::gm::Geometry* te::sqlite::FwDataSet::getGeometry(int i) const
 #endif  // TE_ENABLE_SPATIALITE
 }
 
-void te::sqlite::FwDataSet::setGeometry(int /*i*/, const te::gm::Geometry& /*value*/)
+te::rst::Raster* te::sqlite::FwDataSet::getRaster(std::size_t /*i*/) const
 {
   throw Exception(TR_SQLITE("Not implemented yet!"));
 }
 
-te::rst::Raster* te::sqlite::FwDataSet::getRaster(int /*i*/) const
-{
-  throw Exception(TR_SQLITE("Not implemented yet!"));
-}
-
-void te::sqlite::FwDataSet::setRaster(int /*i*/, const te::rst::Raster& /*value*/)
-{
-  throw Exception(TR_SQLITE("Not implemented yet!"));
-}
-
-te::dt::DateTime* te::sqlite::FwDataSet::getDateTime(int i) const
+te::dt::DateTime* te::sqlite::FwDataSet::getDateTime(std::size_t i) const
 {
   int coltype = sqlite3_column_type(m_stmt, i);
 
@@ -637,37 +461,12 @@ te::dt::DateTime* te::sqlite::FwDataSet::getDateTime(int i) const
   }
 }
 
-void te::sqlite::FwDataSet::setDateTime(int /*i*/, const te::dt::DateTime& /*value*/)
+te::dt::Array* te::sqlite::FwDataSet::getArray(std::size_t /*i*/) const
 {
   throw Exception(TR_SQLITE("Not supported by SQLite!"));
 }
 
-void te::sqlite::FwDataSet::getArray(int /*i*/, std::vector<boost::int16_t>& /*values*/) const
-{
-  throw Exception(TR_SQLITE("Not supported by SQLite!"));
-}
-
-const unsigned char* te::sqlite::FwDataSet::getWKB(int i) const
-{
-  return (const unsigned char*)sqlite3_column_blob(m_stmt, i);
-}
-
-te::da::DataSet* te::sqlite::FwDataSet::getDataSet(int /*i*/)
-{
-  throw Exception(TR_SQLITE("Not supported by SQLite!"));
-}
-
-void te::sqlite::FwDataSet::setDataSet(int /*i*/, const te::da::DataSet& /*value*/)
-{
-  throw Exception(TR_SQLITE("Not supported by SQLite!"));
-}
-
-void te::sqlite::FwDataSet::setValue(int /*i*/, te::dt::AbstractData* /*ad*/)
-{
-  throw Exception(TR_SQLITE("Not implemented yet!"));
-}
-
-bool te::sqlite::FwDataSet::isNull(int i) const
+bool te::sqlite::FwDataSet::isNull(std::size_t i) const
 {
   return sqlite3_column_type(m_stmt, i) == SQLITE_NULL;
 }

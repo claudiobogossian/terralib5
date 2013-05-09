@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,9 +24,9 @@
 */
 
 // TerraLib
+#include "ProgressResetEvent.h"
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
-#include "ProgressResetEvent.h"
 #include "ProgressWidgetItem.h"
 
 // Qt
@@ -38,9 +38,9 @@ te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int tas
   : QWidget(parent),
     m_taskId(taskId)
 {
-  //build custom widget
+  // build custom widget
   m_mainGridLayout = new QGridLayout(this);
-  m_mainGridLayout->setContentsMargins(1,1,1,1);
+  m_mainGridLayout->setContentsMargins(1, 1, 1, 1);
   m_mainGridLayout->setHorizontalSpacing(2);
   
   m_frame = new QFrame(this);
@@ -50,7 +50,7 @@ te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int tas
   m_mainGridLayout->addWidget(m_frame);
 
   m_frameGridLayout = new QGridLayout(m_frame);
-  m_frameGridLayout->setContentsMargins(1,1,1,1);
+  m_frameGridLayout->setContentsMargins(1, 1, 1, 1);
   m_frameGridLayout->setVerticalSpacing(1);
 
   m_label = new QLabel(m_frame);
@@ -67,13 +67,13 @@ te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int tas
   m_frameGridLayout->addWidget(m_progressBar, 1, 0);
   m_frameGridLayout->addWidget(m_button, 1, 1, 1, 1, Qt::AlignCenter);
 
-  //set default range
+  // set default range
   totalSteps == 0 ? m_progressBar->setRange(0, 0) : m_progressBar->setRange(0, 100);
 
-  //connect signal cancel
+  // connect signal cancel
   connect(m_button, SIGNAL(released()), this, SLOT(cancel()));
 
-  this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed); 
+  this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 }
 
 te::qt::widgets::ProgressWidgetItem::~ProgressWidgetItem()
@@ -83,10 +83,11 @@ te::qt::widgets::ProgressWidgetItem::~ProgressWidgetItem()
 void te::qt::widgets::ProgressWidgetItem::setValue(int step)
 {
   QCoreApplication::postEvent(this, new te::qt::widgets::ProgressSetValueEvent(step));
+
   QCoreApplication::processEvents();
 }
 
-void te::qt::widgets::ProgressWidgetItem::setLabel(std::string message)
+void te::qt::widgets::ProgressWidgetItem::setLabel(const std::string& message)
 {
   QCoreApplication::postEvent(this, new ProgressSetMessageEvent(message));
 }
@@ -94,6 +95,7 @@ void te::qt::widgets::ProgressWidgetItem::setLabel(std::string message)
 void te::qt::widgets::ProgressWidgetItem::reset()
 {
   QCoreApplication::postEvent(this, new ProgressResetEvent);
+
   QCoreApplication::processEvents();
 }
 

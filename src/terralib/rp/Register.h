@@ -30,10 +30,9 @@
 #include "../raster/Interpolator.h"
 #include "../geometry/GTParameters.h"
 
-#include <boost/shared_ptr.hpp>
-
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace te
 {
@@ -102,7 +101,7 @@ namespace te
             
             std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the output rasters (as described in te::raster::RasterFactory). 
             
-            mutable boost::shared_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output registered raster.
+            std::auto_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output registered raster.
             
             OutputParameters();
             

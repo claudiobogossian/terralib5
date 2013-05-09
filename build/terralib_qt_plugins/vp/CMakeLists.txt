@@ -65,8 +65,8 @@ target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
 
 #Exporting plug-in file
 set (TE_PLUGIN_NAME "te.qt.vp")
-set (TE_PLUGIN_DISPLAYNAME "VP Qt-Widgets")
-set (TE_PLUGIN_DESCRIPTION "This plugin enables the terralib raster processing operations.")
+set (TE_PLUGIN_DISPLAYNAME "Vector Processing")
+set (TE_PLUGIN_DESCRIPTION "This plugin enables the terralib vector processing operations.")
 set (TE_PLUGIN_LIBRARY "terralib_qt_plugin_vp")
 set (TE_PLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation")
 set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TE_PLUGIN_NAME}.teplg")

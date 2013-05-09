@@ -395,8 +395,6 @@ bool te::mem::ExpansibleRaster::addTopBands( const unsigned int number )
       
     if( ! m_blocksManager.addTopBands( number, addedBlocksCoords ) ) 
         return false;
-    
-    dummyFillBlocks( addedBlocksCoords );
 
     m_bands.insert( m_bands.begin(), number, 0 );
     for( unsigned int bIdx = 0 ; bIdx < m_bands.size() ; ++bIdx )
@@ -414,6 +412,8 @@ bool te::mem::ExpansibleRaster::addTopBands( const unsigned int number )
           *( m_bands[ number ]->getProperty() ), bIdx );
       }
     }
+    
+    dummyFillBlocks( addedBlocksCoords );
   }
   
   return true;
@@ -429,8 +429,6 @@ bool te::mem::ExpansibleRaster::addBottomBands( const unsigned int number )
       
     if( ! m_blocksManager.addBottomBands( number, addedBlocksCoords ) ) 
         return false;
-    
-    dummyFillBlocks( addedBlocksCoords );
 
     unsigned int lastBandIdx = (unsigned int)m_bands.size() - 1;
     m_bands.insert( m_bands.end(), number, 0 );
@@ -439,6 +437,8 @@ bool te::mem::ExpansibleRaster::addBottomBands( const unsigned int number )
       m_bands[ bIdx ] = new te::mem::ExpansibleBand( m_blocksManager, *this,
         *( m_bands[ lastBandIdx ]->getProperty() ), bIdx );
     }
+    
+    dummyFillBlocks( addedBlocksCoords );
   }
   
   return true;

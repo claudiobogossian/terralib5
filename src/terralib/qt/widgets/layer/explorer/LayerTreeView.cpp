@@ -134,7 +134,7 @@ class te::qt::widgets::LayerTreeView::Impl
       }
       else
       {
-// if more than one layer is selected we must look for common actions dependending on the layer types
+// if more than one layer is selected we must look for common actions depending on the layer types
         std::map<std::string, std::vector<QAction*> > actionsByLayerType;
 
 // determine the layer types
@@ -178,10 +178,28 @@ class te::qt::widgets::LayerTreeView::Impl
         }
 
 // determine the common list of actions
-        //...
+        std::size_t k = 0;
+        std::vector<QAction*> commonActions;
+        std::vector<QAction*>::iterator outIt;
+        for(std::map<std::string, std::vector<QAction*> >::iterator it = actionsByLayerType.begin();
+            it != actionsByLayerType.end();
+            ++it)
+        {
+          if(k == 0)
+            commonActions = it->second;
+          else
+          {
+            outIt = std::set_intersection(commonActions.begin(), commonActions.end(),
+                                          it->second.begin(),it->second.end(), commonActions.begin());
+
+          }
+          commonActions.resize(outIt - commonActions.begin());
+          ++k;
+        }
 
 // add the actions to the popup menu
-        //...
+        for(std::size_t i = 0; i < commonActions.size(); ++ i)
+          menu.addAction(commonActions[i]);
       }
 
       menu.exec(pos);

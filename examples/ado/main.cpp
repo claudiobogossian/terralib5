@@ -48,11 +48,11 @@ int main(int /*argc*/, char** /*argv*/)
 
     // Set the minimum server connection information needed to connect to the database server
     std::map<std::string, std::string> connInfo;
-    connInfo["Provider"] = "Microsoft.Jet.OLEDB.4.0";
-    connInfo["host"] = "localhost";
-    connInfo["user"] = "";
-    connInfo["password"] = "";
-    connInfo["dbname"] = ""TE_DATA_EXAMPLE_DIR"/data/mdb/Northwind.mdb";
+    connInfo["PROVIDER"] = "Microsoft.Jet.OLEDB.4.0";
+    connInfo["HOST"] = "localhost";
+    connInfo["USER_NAME"] = "";
+    connInfo["PASSWORD"] = "";
+    connInfo["DB_NAME"] = ""TE_DATA_EXAMPLE_DIR"/data/mdb/Northwind.mdb";
    
     // Create a data source using the data source factory
     te::da::DataSource* ds = te::da::DataSourceFactory::make("ADO");

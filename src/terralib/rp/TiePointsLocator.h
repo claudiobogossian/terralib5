@@ -29,6 +29,7 @@
 #include "Matrix.h"
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
+#include "../geometry/GeometricTransformation.h"
 #include "../geometry/GTParameters.h"
 #include "../sam/rtree.h"
 #include "../common/progress/TaskProgress.h"
@@ -164,6 +165,8 @@ namespace te
           public:
             
             std::vector< te::gm::GTParameters::TiePoint > m_tiePoints; //!< The generated tie-pionts (te::gm::GTParameters::TiePoint::first are raster 1 line/column indexes, te::gm::GTParameters::TiePoint::second are raster 2 line/column indexes).
+            
+            std::auto_ptr< te::gm::GeometricTransformation > m_transformationPtr; //!< The generated geometric transformation( depending on the tie-points, a valid transformation may not exist, in this case, this pointer will be null).
             
             OutputParameters();
             

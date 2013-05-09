@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-20013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-20013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -107,20 +107,20 @@ te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std:
   if(!datasetExists(datasetName))
     return 0;
   
-  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(datasetName));
+  te::da::DataSetType* dt = new te::da::DataSetType(datasetName);
   dt->setTitle(datasetName);
 
-  getProperties(dt.get());
+  getProperties(dt);
 
   if(full)
   {
-    getPrimaryKey(dt.get());
-    getUniqueKeys(dt.get());
-    getIndexes(dt.get());
+    getPrimaryKey(dt);
+    getUniqueKeys(dt);
+    getIndexes(dt);
   }
 
   dt->setFullLoaded(full);
-  return dt.release();
+  return dt;
 }
 
 //te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std::string& datasetName,

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,8 +21,6 @@
   \file terralib/qt/widgets/progress/CreateProgressWidgetItemEvent.h
 
   \brief The CreateProgressWidgetItemEvent is a custom event used to create a progress widget item.
-
-  \note Used in thread codes.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_CREATEPROGRESSWIDGETITEMEVENT_H
@@ -44,7 +42,9 @@ namespace te
       /*!
         \class CreateProgressWidgetItemEvent
 
-        \brief The CreateProgressWidgetItemEvent is a custom event used to create a progress widget item. Used in thread codes.
+        \brief The CreateProgressWidgetItemEvent is a custom event used to create a progress widget item.
+
+        This event can be used when working with multithread tasks.
       */
       class TEQTWIDGETSEXPORT CreateProgressWidgetItemEvent : public QEvent
       {
@@ -56,10 +56,10 @@ namespace te
             \param label Progress widget item label.
             \param taskId The task id associated with the progress widget that will be created.
             \param totalSteps The total steps of progress widget that will be created. 
-                              
+
             \note If the totalSteps equals 0 the progress widget shows a busy indicator instead of a percentage of steps.
           */
-          CreateProgressWidgetItemEvent(const QString& label, const int& taskId, const int& totalSteps);
+          CreateProgressWidgetItemEvent(const QString& label, int taskId, int totalSteps);
 
           /*! \brief Destructor */
           ~CreateProgressWidgetItemEvent();
@@ -75,7 +75,7 @@ namespace te
 
         private:
 
-          static QEvent::Type m_customEventType; //!< Custom Event Type
+          static QEvent::Type sm_customEventType; //!< Custom Event Type
       };
 
     }  // end namespace widgets

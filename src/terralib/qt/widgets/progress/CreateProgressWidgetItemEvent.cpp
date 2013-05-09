@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,16 +21,14 @@
   \file terralib/qt/widgets/progress/CreateProgressWidgetItemEvent.cpp
 
   \brief The CreateProgressWidgetItemEvent is a custom event used to create a progress widget item.
-
-  \note Used in thread codes.
 */
 
 // TerraLib
 #include "CreateProgressWidgetItemEvent.h"
 
-QEvent::Type te::qt::widgets::CreateProgressWidgetItemEvent::m_customEventType = QEvent::None;
+QEvent::Type te::qt::widgets::CreateProgressWidgetItemEvent::sm_customEventType(QEvent::None);
 
-te::qt::widgets::CreateProgressWidgetItemEvent::CreateProgressWidgetItemEvent(const QString& label, const int& taskId, const int& totalSteps)
+te::qt::widgets::CreateProgressWidgetItemEvent::CreateProgressWidgetItemEvent(const QString& label, int taskId, int totalSteps)
   : QEvent(CreateProgressWidgetItemEvent::type()),
     m_label(label),
     m_taskId(taskId),
@@ -44,11 +42,11 @@ te::qt::widgets::CreateProgressWidgetItemEvent::~CreateProgressWidgetItemEvent()
 
 QEvent::Type te::qt::widgets::CreateProgressWidgetItemEvent::type()
 {
-  if(m_customEventType == QEvent::None)
+  if(sm_customEventType == QEvent::None)
   {
     int generatedType = QEvent::registerEventType();
-    m_customEventType = static_cast<QEvent::Type>(generatedType);
+    sm_customEventType = static_cast<QEvent::Type>(generatedType);
   }
 
-  return m_customEventType;
+  return sm_customEventType;
 }
