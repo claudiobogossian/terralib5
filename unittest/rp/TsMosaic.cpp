@@ -28,14 +28,16 @@
 
 #include <terralib/rp/TiePointsMosaic.h>
 #include <terralib/rp/GeoMosaic.h>
+#include <terralib/rp/SequenceMosaic.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/RasterFactory.h>
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
 #include <boost/shared_ptr.hpp>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsMosaic );
 
-void TsMosaic::GeoReferencedImagesMosaic()
+void TsMosaic::GeoReferencedImagesMosaicTest()
 {
   // openning input rasters
   
@@ -309,4 +311,101 @@ void TsMosaic::TiePointsMosaicTest2()
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
 
+void TsMosaic::SequenceMosaicTest()
+{
+  // openning input rasters
+  
+  std::map<std::string, std::string> auxRasterInfo;
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.jpg";
+  boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRaster1Pointer.get() );    
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop2.jpg";
+  boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRaster2Pointer.get() );
+  
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop3.jpg";
+  boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRaster3Pointer.get() );    
+  
+    
+  // Creating the algorithm parameters
+  
+  te::rp::SequenceMosaic::InputParameters algoInputParams;
+  
+  std::vector< const te::rst::Raster* > rasters;
+  rasters.push_back( inputRaster1Pointer.get() );
+  rasters.push_back( inputRaster2Pointer.get() );
+  rasters.push_back( inputRaster3Pointer.get() );
+  te::rp::FeederConstRasterVector feeder( rasters );
+  algoInputParams.m_feederRasterPtr = &feeder;
+  
+  std::vector< unsigned int > bands;
+  bands.push_back( 0 );
+  bands.push_back( 1 );
+  bands.push_back( 2 );
+  algoInputParams.m_inputRastersBands.push_back( bands );
+  
+  bands[ 0 ] = 1;
+  bands[ 1 ] = 2;
+  bands[ 2 ] = 0;
+  algoInputParams.m_inputRastersBands.push_back( bands );
+  
+  bands[ 2 ] = 2;
+  bands[ 0 ] = 1;
+  bands[ 1 ] = 0;
+  algoInputParams.m_inputRastersBands.push_back( bands );
+  
+  algoInputParams.m_geomTransfName = "Affine";
+  
+  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  
+  algoInputParams.m_noDataValue = 0.0;
+  
+  algoInputParams.m_forceInputNoDataValue = false;
+  
+  algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
+  
+  algoInputParams.m_autoEqualize = false;
+  
+  algoInputParams.m_useRasterCache = false;
+  
+  algoInputParams.m_enableMultiThread = false;
+  
+  algoInputParams.m_enableProgress = true;
+  
+  algoInputParams.m_geomTransfMaxError = 1.0;
+  
+  algoInputParams.m_tiePointsLocationBandIndex = 0;
+  
+  algoInputParams.m_maxTiePoints = 500;
+  
+  algoInputParams.m_maxRastersOffset = 0;
+  
+  algoInputParams.m_outDataSetsNamePrefix = 
+    "terralib_unittest_rp_Mosaic_SequenceMosaic_Test_";
+    
+  algoInputParams.m_outDataSetsNameSufix = ".tif";
+    
+  algoInputParams.m_minRequiredTiePointsCoveredAreaPercent = 1;
+  
+  te::rp::SequenceMosaic::OutputParameters algoOutputParams;
+  
+  std::map<std::string, std::string> connInfoRaster;
+  connInfoRaster["URI"] = ".";
+  std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
+  dsPtr->open( connInfoRaster );
+  algoOutputParams.m_outputDSPtr = dsPtr.get();
+  
+  // Executing the algorithm
+  
+  te::rp::SequenceMosaic algorithmInstance;
+  
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
 

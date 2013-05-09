@@ -19,37 +19,27 @@
 
 /*!
   \file terralib/rp/SequenceMosaic.cpp
-  \brief Create a mosaic from a sequence of overlapped rasters using an automatic tie-points detection method.
+  \brief Create mosaics from a sequence of overlapped rasters using an automatic tie-points detection method. 
 */
 
 #include "SequenceMosaic.h"
 
 #include "Macros.h"
-//#include "../raster/Interpolator.h"
-//#include "../raster/Enums.h"
-//#include "../raster/RasterFactory.h"
 #include "../raster/Grid.h"
-//#include "../raster/Band.h"
 #include "../raster/BandProperty.h"
-//#include "../raster/PositionIterator.h"
 #include "../raster/Utils.h"
 #include "../memory/CachedRaster.h"
 #include "../memory/ExpansibleRaster.h"
 #include "../geometry/Envelope.h"
-//#include "../geometry/GTFactory.h"
-//#include "../geometry/GTParameters.h"
+#include "../geometry/GeometricTransformation.h"
 #include "../geometry/Polygon.h"
 #include "../geometry/LinearRing.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/MultiPoint.h"
-//#include "../srs/Converter.h"
+#include "RasterHandler.h"
 
-//#include <boost/shared_ptr.hpp>
 #include <boost/lexical_cast.hpp>
 
-//#include <climits>
-//#include <cfloat>
-//#include <cmath>
 #include <memory>
 
 #define SEQUENCE_RASTER_MAX_MOSAIC_MEM_USE 10
@@ -93,6 +83,7 @@ namespace te
       m_maxTiePoints = 0;
       m_maxRastersOffset = 0;
       m_outDataSetsNamePrefix.clear();
+      m_outDataSetsNameSufix.clear();
       m_minRequiredTiePointsCoveredAreaPercent = 0.0;
     }
 
@@ -116,6 +107,8 @@ namespace te
       m_tiePointsLocationBandIndex = params.m_tiePointsLocationBandIndex;
       m_maxTiePoints = params.m_maxTiePoints;
       m_maxRastersOffset = params.m_maxRastersOffset;
+      m_outDataSetsNamePrefix = params.m_outDataSetsNamePrefix;
+      m_outDataSetsNameSufix = params.m_outDataSetsNameSufix;
       m_minRequiredTiePointsCoveredAreaPercent = 
         params.m_minRequiredTiePointsCoveredAreaPercent;
 
@@ -234,7 +227,7 @@ namespace te
         {
           mosaicXResolution = inputRasterPtr->getGrid()->getResolutionX();
           mosaicYResolution = inputRasterPtr->getGrid()->getResolutionY();
-          mosaicSRID = inputRasterPtr->getGrid()->getSRID();
+          mosaicSRID = inputRasterPtr->getGrid()->getSRID();          
           
           const double& mosaicLLX = inputRasterPtr->getGrid()->getExtent()->m_llx;
           const double& mosaicLLY = inputRasterPtr->getGrid()->getExtent()->m_lly;
@@ -258,12 +251,12 @@ namespace te
           std::vector< te::rst::BandProperty* > bandsProperties;
           for( std::vector< unsigned int >::size_type inputRastersBandsIdx = 0 ;  
             inputRastersBandsIdx <
-            m_inputParameters.m_inputRastersBands[ 0 ].size() ; 
+            m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ; 
             ++inputRastersBandsIdx )
           {
             te::rst::BandProperty const* const inBandPropPtr =
               inputRasterPtr->getBand( m_inputParameters.m_inputRastersBands[ 
-              0 ][ inputRastersBandsIdx ] )->getProperty();
+              inputRasterIdx ][ inputRastersBandsIdx ] )->getProperty();
             
             bandsProperties.push_back( new te::rst::BandProperty( *inBandPropPtr ) );
             bandsProperties[ inputRastersBandsIdx ]->m_colorInterp = te::rst::GrayIdxCInt;
@@ -288,7 +281,7 @@ namespace te
             nBands ; ++inputRastersBandsIdx )
           {
             const unsigned int inputBandIdx =  
-              m_inputParameters.m_inputRastersBands[ 0 ][ inputRastersBandsIdx ] ;
+              m_inputParameters.m_inputRastersBands[ inputRasterIdx ][ inputRastersBandsIdx ] ;
             const double& bandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
               m_inputParameters.m_noDataValue : inputRasterPtr->getBand( inputBandIdx
               )->getProperty()->m_noDataValue;
@@ -315,6 +308,7 @@ namespace te
                 if( pixelValue != bandNoDataValue )
                 {
                   outBand.setValue( outCol, outRow, pixelValue );
+                  
                   mean += pixelValue;
                   ++validPixelsNumber;
                 }
@@ -348,6 +342,10 @@ namespace te
               }
             }
           }
+          
+          // Move to the next raster
+          
+          m_inputParameters.m_feederRasterPtr->moveNext();          
         }
         else
         {
@@ -399,8 +397,8 @@ namespace te
             
             locatorInParams.m_inMaskRaster1Ptr = 0;
             
-            locatorInParams.m_inRaster1Bands.push_back( m_inputParameters.m_inputRastersBands[ 0 ][ 
-              m_inputParameters.m_tiePointsLocationBandIndex ] );
+            locatorInParams.m_inRaster1Bands.push_back( 
+              m_inputParameters.m_tiePointsLocationBandIndex );
 
             double mosaicLLXIndex = 0;
             double mosaicLLYIndex = 0;
@@ -415,13 +413,22 @@ namespace te
               lastMosaicAddedRasterPol.getMBR()->getUpperRightX(),
               lastMosaicAddedRasterPol.getMBR()->getUpperRightY(),
               mosaicURXIndex,
-              mosaicURYIndex );            
+              mosaicURYIndex ); 
+            mosaicLLXIndex = std::max( 0.0, std::min( mosaicLLXIndex, 
+              ((double)mosaicRasterHandler->getNumberOfColumns() - 1 ) ) );
+            mosaicURXIndex = std::max( 0.0, std::min( mosaicURXIndex, 
+              ((double)mosaicRasterHandler->getNumberOfColumns() - 1 ) ) );
+            mosaicLLYIndex = std::max( 0.0, std::min( mosaicLLYIndex, 
+              ((double)mosaicRasterHandler->getNumberOfRows() - 1 ) ) );
+            mosaicURYIndex = std::max( 0.0, std::min( mosaicURYIndex, 
+              ((double)mosaicRasterHandler->getNumberOfRows() - 1 ) ) );
+              
             locatorInParams.m_raster1TargetAreaColStart = (unsigned int)mosaicLLXIndex;
             locatorInParams.m_raster1TargetAreaLineStart = (unsigned int)mosaicURYIndex;
             locatorInParams.m_raster1TargetAreaWidth = (unsigned int)( mosaicURXIndex -
-              mosaicLLXIndex );
+              mosaicLLXIndex + 1 );
             locatorInParams.m_raster1TargetAreaHeight = (unsigned int)( mosaicLLYIndex -
-              mosaicURYIndex );
+              mosaicURYIndex + 1 );
               
             locatorInParams.m_inRaster2Ptr = inputRasterPtr;
             
@@ -466,7 +473,7 @@ namespace te
         
           // The matching was accomplished successfully
         
-          if( 
+          if(
               ( locatorOutParams.m_transformationPtr.get() == 0 ) 
               ||
               ( 
@@ -490,58 +497,221 @@ namespace te
                   )
                 )
                 < 
-                m_inputParameters.m_minRequiredTiePointsCoveredAreaPercent 
+                (
+                  m_inputParameters.m_minRequiredTiePointsCoveredAreaPercent 
+                  /
+                  100.0
+                )
               ) 
-            )
+             )
           {
+            assert( mosaicRasterHandler.get() );
             TERP_TRUE_OR_RETURN_FALSE( createRasterDataSet( 
               m_inputParameters.m_outDataSetsNamePrefix + 
-              boost::lexical_cast< std::string >( mosaicSequenceCounter++ ),
+              boost::lexical_cast< std::string >( mosaicSequenceCounter++ ) +
+              m_inputParameters.m_outDataSetsNameSufix,
               *( mosaicRasterHandler.get() ), outParamsPtr->m_outputDSPtr ),
               "Data set creation error" );
             mosaicRasterHandler.reset();
           }
           else
           {
-            // locating the current raster over the mosaic
+            // Expanding the mosaic to fit the extent requirement allowing the 
+            // merge of the current raster.
+            // Fiding the new geometric transformation between then.
             
-            double LLXIndexed = 0;
-            double LLYIndexed = 0;
-            double URXIndexed = 0;
-            double URYIndexed = 0;
-            double LLX = 0;
-            double LLY = 0;
-            double URX = 0;
-            double URY = 0;            
+            std::auto_ptr< te::gm::GeometricTransformation > geoTransPtr(
+              locatorOutParams.m_transformationPtr->clone() );
+              
             {
-              double mappedX1 = 0;
-              double mappedY1 = 0;
-              double mappedX2 = 0;
-              double mappedY2 = 0;
+              const double oldLLYIndexed = 
+                (double)( inputRasterPtr->getNumberOfRows() - 1 );
+              const double oldURXIndexed =
+                (double)( inputRasterPtr->getNumberOfColumns() - 1 );
+              
+              double mappedLLX = 0;
+              double mappedLLY = 0;
+              double mappedLRX = 0;
+              double mappedLRY = 0;
+              double mappedURX = 0;
+              double mappedURY = 0;
+              double mappedULX = 0;
+              double mappedULY = 0;
               locatorOutParams.m_transformationPtr->inverseMap( 
                 0.0,
-                (double)( inputRasterPtr->getNumberOfRows() - 1 ),
-                mappedX1,
-                mappedY1);
+                oldLLYIndexed,
+                mappedLLX,
+                mappedLLY);
               locatorOutParams.m_transformationPtr->inverseMap( 
-                (double)( inputRasterPtr->getNumberOfColumns() - 1 ),
+                oldURXIndexed,
+                oldLLYIndexed,
+                mappedLRX,
+                mappedLRY);                
+              locatorOutParams.m_transformationPtr->inverseMap( 
+                oldURXIndexed,
                 0.0,
-                mappedX2,
-                mappedY2);                
+                mappedURX,
+                mappedURY);                
+              locatorOutParams.m_transformationPtr->inverseMap( 
+                0.0,
+                0.0,
+                mappedULX,
+                mappedULY);                
               
-              LLXIndexed = std::min( mappedX1, mappedX2 );
-              LLYIndexed = std::max( mappedY1, mappedY2 );
-              URXIndexed = std::max( mappedX1, mappedX2 );
-              URYIndexed = std::min( mappedY1, mappedY2 );  
+              const double newLLXIndexed = std::min( mappedLLX, std::min( mappedLRX, std::min( mappedURX, mappedULX ) ) );
+              const double newLLYIndexed = std::max( mappedLLY, std::max( mappedLRY, std::max( mappedURY, mappedULY ) ) );
+              const double newURXIndexed = std::max( mappedLLX, std::max( mappedLRX, std::max( mappedURX, mappedULX ) ) );
+              const double newURYIndexed = std::min( mappedLLY, std::min( mappedLRY, std::min( mappedURY, mappedULY ) ) );
               
-              mosaicRasterHandler->getGrid()->gridToGeo( LLXIndexed, LLYIndexed,
-                LLX, LLY );
-              mosaicRasterHandler->getGrid()->gridToGeo( URXIndexed, URYIndexed,
-                URX, URY );              
-            }            
+              double oldMosaicReferenceX = 0;
+              double oldMosaicReferenceY = 0;
+              mosaicRasterHandler->getGrid()->gridToGeo( 0.0, 0.0, oldMosaicReferenceX,
+                oldMosaicReferenceY );
+              
+              double mosaicReferenceHasChanged = false;
+              
+              
+              if( newLLXIndexed < 0.0 )
+              {
+                TERP_TRUE_OR_RETURN_FALSE( mosaicRasterHandler->addLeftColumns( 
+                  (unsigned int)std::ceil( -1.0 * newLLXIndexed ) ),
+                  "Mosaic expansion error" );
+                mosaicReferenceHasChanged = true;
+              }
+              
+              if( newURYIndexed < 0.0 )
+              {
+                TERP_TRUE_OR_RETURN_FALSE( mosaicRasterHandler->addTopLines( 
+                  (unsigned int)std::ceil( -1.0 * newURYIndexed ) ),
+                  "Mosaic expansion error" );
+                mosaicReferenceHasChanged = true;
+              }      
+              
+              if( newURXIndexed > oldURXIndexed )
+              {
+                TERP_TRUE_OR_RETURN_FALSE( mosaicRasterHandler->addRightColumns( 
+                  (unsigned int)std::ceil( newURXIndexed - oldURXIndexed ) ),
+                  "Mosaic expansion error" );
+              }
+              
+              if( newLLYIndexed > oldLLYIndexed )
+              {
+                TERP_TRUE_OR_RETURN_FALSE( mosaicRasterHandler->addBottomLines( 
+                  (unsigned int)std::ceil( newLLYIndexed - oldLLYIndexed ) ),
+                  "Mosaic expansion error" );
+              }              
+              
+              // updating the geometric transformation between both rasters
+              
+              if( mosaicReferenceHasChanged )
+              {
+                double expansionOffSetX = 0;
+                double expansionOffSetY = 0;
+                mosaicRasterHandler->getGrid()->geoToGrid( oldMosaicReferenceX,
+                  oldMosaicReferenceY, expansionOffSetX, expansionOffSetY );
+                  
+                te::gm::GTParameters newTransParams = 
+                  geoTransPtr->getParameters();
+                newTransParams.m_directParameters.clear();
+                newTransParams.m_inverseParameters.clear();
+                
+                for( unsigned int tpIdx = 0 ; tpIdx < 
+                  newTransParams.m_tiePoints.size() ; ++tpIdx )
+                {
+                  newTransParams.m_tiePoints[ tpIdx ].first.x += expansionOffSetX;
+                  newTransParams.m_tiePoints[ tpIdx ].first.y += expansionOffSetY;  
+                }  
+                
+                TERP_TRUE_OR_RETURN_FALSE( geoTransPtr->initialize( newTransParams ),
+                  "Geometric transformation parameters calcule error" );
+              }            
+            }
+            
+            // Locating the current raster over the expanded mosaic
+            
+            unsigned int inputRasterBBoxLLXIndexed = 0;
+            unsigned int inputRasterBBoxLLYIndexed = 0;
+            unsigned int inputRasterBBoxURXIndexed = 0;
+            unsigned int inputRasterBBoxURYIndexed = 0;
+            double inputRasterMappedLLXIndexed = 0;
+            double inputRasterMappedLLYIndexed = 0;
+            double inputRasterMappedLRXIndexed = 0;
+            double inputRasterMappedLRYIndexed = 0;
+            double inputRasterMappedURXIndexed = 0;
+            double inputRasterMappedURYIndexed = 0;
+            double inputRasterMappedULXIndexed = 0;
+            double inputRasterMappedULYIndexed = 0;            
+            {
+              const double lastRowIdx = 
+                (double)( inputRasterPtr->getNumberOfRows() - 1 );
+              const double lastColIdx =
+                (double)( inputRasterPtr->getNumberOfColumns() - 1 );
+
+              geoTransPtr->inverseMap( 
+                0.0,
+                lastRowIdx,
+                inputRasterMappedLLXIndexed,
+                inputRasterMappedLLYIndexed);
+              geoTransPtr->inverseMap( 
+                lastColIdx,
+                lastRowIdx,
+                inputRasterMappedLRXIndexed,
+                inputRasterMappedLRYIndexed);                
+              geoTransPtr->inverseMap( 
+                lastColIdx,
+                0.0,
+                inputRasterMappedURXIndexed,
+                inputRasterMappedURYIndexed);                
+              geoTransPtr->inverseMap( 
+                0.0,
+                0.0,
+                inputRasterMappedULXIndexed,
+                inputRasterMappedULYIndexed);                
+              
+              inputRasterBBoxLLXIndexed = (unsigned int)
+                std::floor( 
+                  std::min( inputRasterMappedLLXIndexed, 
+                    std::min( inputRasterMappedLRXIndexed, 
+                      std::min( inputRasterMappedURXIndexed, 
+                                  inputRasterMappedULXIndexed
+                      ) 
+                    ) 
+                  ) 
+                );
+              inputRasterBBoxLLYIndexed = (unsigned int)
+                std::ceil( 
+                  std::max( inputRasterMappedLLYIndexed, 
+                    std::max( inputRasterMappedLRYIndexed, 
+                      std::max( inputRasterMappedURYIndexed, 
+                                  inputRasterMappedULYIndexed
+                      ) 
+                    ) 
+                  ) 
+                );
+              inputRasterBBoxURXIndexed = (unsigned int)
+                std::ceil( 
+                  std::max( inputRasterMappedLLXIndexed, 
+                    std::max( inputRasterMappedLRXIndexed, 
+                      std::max( inputRasterMappedURXIndexed, 
+                                  inputRasterMappedULXIndexed
+                      ) 
+                    ) 
+                  ) 
+                );                
+              inputRasterBBoxURYIndexed = (unsigned int)
+                std::floor( 
+                  std::min( inputRasterMappedLLYIndexed, 
+                    std::min( inputRasterMappedLRYIndexed, 
+                      std::min( inputRasterMappedURYIndexed, 
+                                  inputRasterMappedULYIndexed
+                      ) 
+                    ) 
+                  ) 
+                );
+            }
             
             // Blending the current raster into the mosaic
-            
+        
             {
               te::rp::Blender blenderInstance;
 
@@ -561,7 +731,7 @@ namespace te
                 currentRasterBandsScales,
                 &mosaicValidDataPol,
                 0,
-                locatorOutParams.m_transformationPtr.get() ), 
+                geoTransPtr.get() ), 
                 "Blender initiazing error" );              
                 
               for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
@@ -577,14 +747,14 @@ namespace te
                   
                 unsigned int outputRow = 0;
                 unsigned int outputCol = 0;
-                const unsigned int outputRowsStart = std::max( 0.0, URYIndexed );
-                const unsigned int outputColsStart = std::max( 0.0, LLXIndexed );
-                const unsigned int outputRowsBound = (unsigned int)std::min( 
-                  (double)mosaicRasterHandler->getNumberOfRows(),
-                  LLYIndexed );
-                const unsigned int outputColsBound = (unsigned int)std::min( 
-                  (double)mosaicRasterHandler->getNumberOfColumns(),
-                  URXIndexed );                  
+                const unsigned int outputRowsStart = std::max( 0u, inputRasterBBoxURYIndexed );
+                const unsigned int outputColsStart = std::max( 0u, inputRasterBBoxLLXIndexed );
+                const unsigned int outputRowsBound = std::min( 
+                  mosaicRasterHandler->getNumberOfRows(),
+                  ( inputRasterBBoxLLYIndexed + 1 ) );
+                const unsigned int outputColsBound = std::min( 
+                  mosaicRasterHandler->getNumberOfColumns(),
+                  ( inputRasterBBoxURXIndexed + 1 ) );                  
                 double blendedValue = 0;                  
                 
                 for( outputRow = outputRowsStart ; outputRow < outputRowsBound ;
@@ -611,12 +781,38 @@ namespace te
             // updating the mosaic related polygons
             
             {
+              
+              double inputRasterMappedLLX = 0;
+              double inputRasterMappedLLY = 0;
+              mosaicRasterHandler->getGrid()->gridToGeo( 
+                (double)inputRasterMappedLLXIndexed, (double)inputRasterMappedLLYIndexed,
+                inputRasterMappedLLX, inputRasterMappedLLY );              
+              
+              double inputRasterMappedLRX = 0;
+              double inputRasterMappedLRY = 0;
+              mosaicRasterHandler->getGrid()->gridToGeo( 
+                (double)inputRasterMappedLRXIndexed, (double)inputRasterMappedLRYIndexed,
+                inputRasterMappedLRX, inputRasterMappedLRY );
+                
+              double inputRasterMappedURX = 0;
+              double inputRasterMappedURY = 0;
+              mosaicRasterHandler->getGrid()->gridToGeo( 
+                (double)inputRasterMappedURXIndexed, (double)inputRasterMappedURYIndexed,
+                inputRasterMappedURX, inputRasterMappedURY );                
+                
+              double inputRasterMappedULX = 0;
+              double inputRasterMappedULY = 0;
+              mosaicRasterHandler->getGrid()->gridToGeo( 
+                (double)inputRasterMappedULXIndexed, (double)inputRasterMappedULYIndexed,
+                inputRasterMappedULX, inputRasterMappedULY );                  
+
+              
               te::gm::LinearRing* auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-              auxLinearRingPtr->setPoint( 0, LLX, URY );
-              auxLinearRingPtr->setPoint( 1, URX, URY );
-              auxLinearRingPtr->setPoint( 2, URX, LLY );
-              auxLinearRingPtr->setPoint( 3, LLX, LLY );
-              auxLinearRingPtr->setPoint( 4, LLX, URY );
+              auxLinearRingPtr->setPoint( 0, inputRasterMappedULX, inputRasterMappedULY );
+              auxLinearRingPtr->setPoint( 1, inputRasterMappedURX, inputRasterMappedURY );
+              auxLinearRingPtr->setPoint( 2, inputRasterMappedLRX, inputRasterMappedLRY );
+              auxLinearRingPtr->setPoint( 3, inputRasterMappedLLX, inputRasterMappedLLY );
+              auxLinearRingPtr->setPoint( 4, inputRasterMappedULX, inputRasterMappedULY );
               lastMosaicAddedRasterPol.clear();
               lastMosaicAddedRasterPol.push_back( auxLinearRingPtr );
               
@@ -636,20 +832,24 @@ namespace te
               TERP_TRUE_OR_THROW( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonType,
                 "Invalid geometry type")
               mosaicValidDataPol = *( (te::gm::Polygon*)unionMultiPolPtr.get() );
-            }            
+            }       
+            
+            // Move to the next raster
+            
+            m_inputParameters.m_feederRasterPtr->moveNext();            
           }
         }
-        
-        // Move to the next raster
-        
-        m_inputParameters.m_feederRasterPtr->moveNext();
       }
       
-      TERP_TRUE_OR_RETURN_FALSE( createRasterDataSet( 
-        m_inputParameters.m_outDataSetsNamePrefix + 
-        boost::lexical_cast< std::string >( mosaicSequenceCounter++ ),
-        *( mosaicRasterHandler.get() ), outParamsPtr->m_outputDSPtr ),
-        "Data set creation error" );
+      if( mosaicRasterHandler.get() )
+      {
+        TERP_TRUE_OR_RETURN_FALSE( createRasterDataSet( 
+          m_inputParameters.m_outDataSetsNamePrefix + 
+          boost::lexical_cast< std::string >( mosaicSequenceCounter++ ) +
+          m_inputParameters.m_outDataSetsNameSufix,
+          *( mosaicRasterHandler.get() ), outParamsPtr->m_outputDSPtr ),
+          "Data set creation error" );
+      }
       
       return true;
     }
@@ -795,7 +995,48 @@ namespace te
     bool SequenceMosaic::createRasterDataSet( const std::string& dataSetName,
       const te::rst::Raster& sourceRaster, te::da::DataSource* dataSourcePtr ) const
     {
-      return false;
+      if( dataSetName.empty() ) return false;
+      if( ! ( sourceRaster.getAccessPolicy() & te::common::RAccess ) ) return false;
+      if( dataSourcePtr == 0 ) return false;
+      if( ! dataSourcePtr->isValid() ) return false;
+      
+      const unsigned int nRows = sourceRaster.getNumberOfRows();
+      const unsigned int nCols = sourceRaster.getNumberOfColumns();
+      const unsigned int nBands = sourceRaster.getNumberOfBands();
+      
+      std::vector< te::rst::BandProperty* > bandsProperties;
+      unsigned int bandIdx = 0;
+      for( bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
+      {
+        bandsProperties.push_back( new te::rst::BandProperty( 
+          *( sourceRaster.getBand( bandIdx )->getProperty()) ) );
+      }
+      
+      te::rp::RasterHandler outRasterHandler;
+      if( ! te::rp::createNewRaster( *( sourceRaster.getGrid() ),
+        bandsProperties, dataSetName, *dataSourcePtr, outRasterHandler) )
+        return false;      
+      
+      unsigned int col = 0;
+      unsigned int row = 0;
+      double value = 0;
+      
+      for( bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
+      {
+        const te::rst::Band& inBand = *(sourceRaster.getBand( bandIdx ));
+        te::rst::Band& outBand = *(outRasterHandler.getRasterPtr()->getBand( bandIdx ));
+        
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, row, value );
+            outBand.setValue( col, row, value );
+          }
+        }
+      }
+      
+      return true;
     }
     
     double SequenceMosaic::getTPConvexHullArea( 

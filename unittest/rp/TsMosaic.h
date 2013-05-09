@@ -38,22 +38,27 @@ class TsMosaic : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsMosaic );
   
-  CPPUNIT_TEST( TiePointsMosaicTest2 );
+  CPPUNIT_TEST( SequenceMosaicTest );
   
+  CPPUNIT_TEST( TiePointsMosaicTest2 );
+ 
   CPPUNIT_TEST( TiePointsMosaicTest1 );  
   
-  CPPUNIT_TEST( GeoReferencedImagesMosaic );
+  CPPUNIT_TEST( GeoReferencedImagesMosaicTest );
   
   CPPUNIT_TEST_SUITE_END();
 
 protected :
-
-  void GeoReferencedImagesMosaic();
   
+  void SequenceMosaicTest();
+
+  void GeoReferencedImagesMosaicTest();
+  
+  // All images with the same SRS
   void TiePointsMosaicTest1();
   
+  // Imagines with different SRS
   void TiePointsMosaicTest2();
-
 };
 
 #endif

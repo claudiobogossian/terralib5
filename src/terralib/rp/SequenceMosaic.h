@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/rp/SequenceMosaic.h
-  \brief Create a mosaic from a sequence of overlapped rasters using an automatic tie-points detection method.
+  \brief Create mosaics from a sequence of overlapped rasters using an automatic tie-points detection method. 
  */
 
 #ifndef __TERRALIB_RP_INTERNAL_SEQUENCEMOSAIC_H
@@ -32,19 +32,15 @@
 #include "../raster/Interpolator.h"
 #include "../dataaccess/datasource/DataSource.h"
 
-//#include <vector>
-//#include <string>
-//#include <map>
-//#include <memory>
-
 namespace te
 {
   namespace rp
   {
     /*!
       \class SequenceMosaic
-      \brief Create a mosaic from a sequence of overlapped rasters using an automatic tie-points detection method.
-      \note The first raster will always be taken as reference to define the mosaic resolution and SRS.
+      \brief Create mosaics from a sequence of overlapped rasters using an automatic tie-points detection method. 
+      \note When the tie-points detection fails, a new mosaic sequence is generated.
+      \note Each mosaic sequence takes the first raster (of each sequence) as reference for resolution, SRS and equalization parameters.
       \ingroup MosaicAlgorithms
      */
     class TERPEXPORT SequenceMosaic : public Algorithm
@@ -90,6 +86,8 @@ namespace te
             unsigned int m_maxRastersOffset; //!< The maximum offset (pixels units) between a raster point and the respective point over the next sequence raster (default:0 - no offset restriction).
             
             std::string m_outDataSetsNamePrefix; //!< The raster output data sets names prefix.
+            
+            std::string m_outDataSetsNameSufix; //!< The raster output data sets names sufix.
             
             double m_minRequiredTiePointsCoveredAreaPercent; //!< The mininumum required tie-points covered area percent of each raster area - valid range [0,100] (default:0).
             
@@ -201,7 +199,6 @@ namespace te
         double getTPConvexHullArea( 
           const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
           const bool useTPSecondCoordPair ) const;
-
     };
 
   } // end namespace rp
