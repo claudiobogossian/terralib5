@@ -1,4 +1,4 @@
-/*  Copyright (C) 0-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,45 +18,33 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/ChartWidget.cpp
+  \file terralib/.../Enums.h
 
-  \brief A base widget to be used on the chart settings.
+  \brief ....
 */
 
-//Terralib
-#include "ChartWidget.h"
-#include "ChartDisplay.h"
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_ENUMS_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_ENUMS_H
 
-te::qt::widgets::ChartWidget::ChartWidget(QWidget* parent)
-  : QWidget(parent)
+namespace te
 {
+  namespace qt
+  {
+    namespace widgets
+    {
+      /*!
+        \enum DateTimeType
 
-}
+        \brief The subtype of date and time type.
+      */
+      enum ChartType
+      {
+        HISTOGRAM_CHART,  /*!< Histogram.  */
+        SCATTER_CHART     /*!< Scatter.    */
+      };
+    }
+  } // end namespace dt
+}   // end namespace te
 
-te::qt::widgets::ChartWidget::~ChartWidget()
-{
+#endif  // __TERRALIB_DATETYPE_INTERNAL_ENUMS_H
 
-}
-
-
-QwtPlotSeriesItem* te::qt::widgets::ChartWidget::getChart()
-{
-  return m_chart;
-}
-
-
-te::qt::widgets::ChartDisplay* te::qt::widgets::ChartWidget::getDisplay()
-{
-  return m_display;
-}
-
-void te::qt::widgets::ChartWidget::setChart(QwtPlotSeriesItem* newChart)
-{
-  m_chart = newChart;
-}
-
-
-void te::qt::widgets::ChartWidget::setDisplay(te::qt::widgets::ChartDisplay* newDisplay)
-{
-  m_display = newDisplay;
-}

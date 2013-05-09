@@ -32,7 +32,7 @@
 #include "../../../raster/RasterSummaryManager.h"
 #include "Histogram.h"
 #include "HistogramDataWidget.h"
-#include "ui_histogramDataWidgetForm.h"
+#include "ui_HistogramDataWidgetForm.h"
 
 //QT
 #include <QtGui/QWidget>
@@ -52,7 +52,9 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
 
   if(rpos != std::string::npos)
     {
-      m_ui->m_slicesSpinBox->setEnabled(false);
+      m_ui->m_slicesSpinBox->hide();
+      m_ui->slicesLabel->hide();
+      m_ui->propertyLabel->setText(QString::fromStdString("Band:"));
       size_t size =  dataSet->getRaster(rpos)->getNumberOfBands();
       for (size_t i = 0; i < size; i++)
       {

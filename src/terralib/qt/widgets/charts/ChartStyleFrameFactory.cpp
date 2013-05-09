@@ -26,42 +26,37 @@
 #include "ChartStyleFrame.h"
 #include "ChartStyleFrameFactory.h"
 
-te::qt::widgets::ChartFrameFactory* te::qt::widgets::ChartFrameFactory::sm_factory(0);
+te::qt::widgets::ChartStyleFrameFactory* te::qt::widgets::ChartStyleFrameFactory::sm_factory(0);
 
-void te::qt::widgets::ChartFrameFactory::initialize()
+void te::qt::widgets::ChartStyleFrameFactory::initialize()
 {
   finalize();
-  sm_factory = new ChartFrameFactory;
+  sm_factory = new ChartStyleFrameFactory;
 }
 
-void te::qt::widgets::ChartFrameFactory::finalize()
+void te::qt::widgets::ChartStyleFrameFactory::finalize()
 {
   delete sm_factory;
   sm_factory = 0;
 }
 
-const std::string& te::qt::widgets::ChartFrameFactory::getType() const
-{
-  return "ChartFrame";
-}
-
-te::qt::widgets::ChartFrameFactory::~ChartFrameFactory()
+te::qt::widgets::ChartStyleFrameFactory::~ChartStyleFrameFactory()
 {
 
 }
 
-te::qt::widgets::ChartWidget* te::qt::widgets::ChartFrameFactory::build()
+te::qt::widgets::ChartWidget* te::qt::widgets::ChartStyleFrameFactory::build()
 {
-  return new ChartFrame;
+  return new ChartStyleFrame;
 }
 
-te::qt::widgets::ChartFrameFactory::ChartFrameFactory()
+te::qt::widgets::ChartStyleFrameFactory::ChartStyleFrameFactory()
   : te::qt::widgets::ChartWidgetFactory("Chart Style")
 {
 
 }
 
-te::qt::widgets::ChartWidget* te::qt::widgets::ChartFrameFactory::create(QWidget* parent)
+te::qt::widgets::ChartWidget* te::qt::widgets::ChartStyleFrameFactory::create(QWidget* parent)
 {
-  return new ChartFrame(parent);
+  return new ChartStyleFrame(parent);
 }

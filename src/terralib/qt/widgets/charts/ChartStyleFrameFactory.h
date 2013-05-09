@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/ChartFrameFactory.h
+  \file terralib/qt/widgets/charts/ChartStyleFrameFactory.h
 
   \brief A factory to build the Chart frame object.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTFRAMEFACTORY_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTFRAMEFACTORY_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLEFRAMEFACTORY_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLEFRAMEFACTORY_H
 
 // QT
 #include <QtGui/QWidget>
@@ -47,7 +47,7 @@ namespace te
 
         \brief A factory to build the Chart frame object.
       */
-      class TEQTWIDGETSEXPORT ChartFrameFactory : public te::qt::widgets::ChartWidgetFactory
+      class TEQTWIDGETSEXPORT ChartStyleFrameFactory : public te::qt::widgets::ChartWidgetFactory
       {
         public:
 
@@ -55,24 +55,22 @@ namespace te
 
           static void finalize();
 
-          const std::string& getType() const;
-
-          ~ChartFrameFactory();
+          ~ChartStyleFrameFactory();
 
         protected:
 
           te::qt::widgets::ChartWidget* build();
 
-          ChartFrameFactory();
+          ChartStyleFrameFactory();
 
           virtual te::qt::widgets::ChartWidget* create(QWidget* parent = 0);
 
         private:
 
-          static ChartFrameFactory* sm_factory;
+          static ChartStyleFrameFactory* sm_factory;
 
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
-#endif // __TERRALIB_QT_WIDGETS_INTERNAL_CHARTFRAMEFACTORY_H
+#endif // __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLEFRAMEFACTORY_H

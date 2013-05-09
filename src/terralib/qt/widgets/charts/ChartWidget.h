@@ -32,19 +32,16 @@
 // TerraLib
 #include "../Config.h"
 
+class QwtPlotSeriesItem;
+
 namespace te
 {
-
-  namespace da
-  {
-    //forward declarations
-    class DataSet;
-  }
-
   namespace qt
   {
     namespace widgets
       {
+      //forward declarations
+      class ChartDisplay;
       /*!
         \class ChartWidget
 
@@ -58,13 +55,19 @@ namespace te
 
           ~ChartWidget();
 
-          virtual void setDataSet(te::da::DataSet* newDataSet);
+          virtual QwtPlotSeriesItem* getChart();
+
+          virtual te::qt::widgets::ChartDisplay* getDisplay();
+
+          virtual void setChart(QwtPlotSeriesItem* newChart);
+
+          virtual void setDisplay(te::qt::widgets::ChartDisplay* newDisplay);
 
         public:
 
-          std::string       m_label;     //!< The chart's Label.
-          te::da::DataSet*  m_dataSet;   //!< The dataset used to generate the displayed chart.
-
+          std::string                     m_label;    //!< The chart's Label.
+          QwtPlotSeriesItem*              m_chart;    //!< The chart that will be configured by this widget.
+          te::qt::widgets::ChartDisplay*  m_display;  //!< The display that will be configured by this widget.
       };
     }   // end namespace widgets
   }     // end namespace qt

@@ -28,27 +28,20 @@
 
 //TerraLib
 #include "../Config.h"
+#include "Enums.h"
 
 // Qt
 #include <QtGui/QWidget>
 
-//QWt
-#include <qwt_legend.h>
-
 //STL
 #include <memory>
+
+class QwtPlotSeriesItem;
 
 namespace Ui { class ChartDisplayWidgetForm; }
 
 namespace te
 {
-
-  namespace da
-  {
-    //forward declarations
-    class DataSet;
-  }
-
   namespace qt
   {
     namespace widgets
@@ -69,15 +62,19 @@ namespace te
 
         public:
 
-          ChartDisplayWidget(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          ChartDisplayWidget(QwtPlotSeriesItem* chart, int type, te::qt::widgets::ChartDisplay* display, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           ~ChartDisplayWidget();
 
+          QwtPlotSeriesItem* getChart();
+
+          void setChart(QwtPlotSeriesItem* newChart);
+
+          te::qt::widgets::ChartDisplay* getDisplay();
+
           void setDisplay(te::qt::widgets::ChartDisplay* newDisplay);
 
-          te::da::DataSet* getDataSet();
-
-          void setDataSet(te::da::DataSet* newDataSet);
+          int getType();
 
         protected slots:
 
@@ -85,8 +82,10 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ChartDisplayWidgetForm>  m_ui;  //!< The widget form.
-          te::da::DataSet*                           m_dataSet;   //!< The dataset used to generate the displayed chart.
+          std::auto_ptr<Ui::ChartDisplayWidgetForm>  m_ui;       //!< The widget form.
+          QwtPlotSeriesItem*                         m_chart;    //!< The chart that will be plotted by this widget.
+          int                                        m_type;     //!< The type of the chart that will be plotted by this widget.
+          te::qt::widgets::ChartDisplay*             m_display;  //!< The display that will be used to plot the chart.
       };
     } // end namespace widgets
   }   // end namespace qt

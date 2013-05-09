@@ -55,8 +55,6 @@ namespace te
 
           static void finalize();
 
-          const std::string& getType() const;
-
           ~HistogramFrameFactory();
 
         protected:

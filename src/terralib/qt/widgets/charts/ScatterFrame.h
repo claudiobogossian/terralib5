@@ -32,6 +32,8 @@
 
 #include <memory>
 
+class QwtPlotSeriesItem;
+
 namespace Ui { class ScatterFrameWidgetForm; }
 
 namespace te
@@ -40,6 +42,10 @@ namespace te
   {
     namespace widgets
       {
+      //Forward declarations
+      class ScatterChart;
+      class ScatterStyleWidget;
+
       /*!
         \class ScatterFrame
 
@@ -55,13 +61,16 @@ namespace te
 
           ~ScatterFrame();
 
-          void setDataSet(te::da::DataSet* newDataSet);
+          QwtPlotSeriesItem* getChart();
+
+          void setChart(QwtPlotSeriesItem* newChart);
 
         private:
 
-          std::auto_ptr<Ui::ScatterFrameWidgetForm>  m_ui;        //!< The widgetv form.
+          std::auto_ptr<Ui::ScatterFrameWidgetForm>  m_ui;     //!< The widget form.
+          te::qt::widgets::ScatterChart*             m_chart;  //!< The chart that will be editted by this widget;
+          te::qt::widgets::ScatterStyleWidget*       m_styleWidget;  //!< The widget used to configure the histogram's style.
       };
-
     }   // end namespace widgets
   }     // end namespace qt
 }       // end namespace te

@@ -40,25 +40,33 @@ namespace te
   {
     namespace widgets
       {
+      //Forward declarations
+      class ChartDisplay;
+      class ChartStyleWidget;
       /*!
         \class ChartFrame
 
         \brief A frame for setting display options.
       */
-      class TEQTWIDGETSEXPORT ChartFrame : public ChartWidget
+      class TEQTWIDGETSEXPORT ChartStyleFrame : public ChartWidget
       {
         Q_OBJECT
 
         public:
 
-          ChartFrame(QWidget* parent = 0);
+          ChartStyleFrame(QWidget* parent = 0);
 
-          ~ChartFrame();
+          ~ChartStyleFrame();
+
+        te::qt::widgets::ChartDisplay* getDisplay();
+
+        void setDisplay(te::qt::widgets::ChartDisplay* newDisplay);
 
         private:
 
-          std::auto_ptr<Ui::ChartStyleFrameWidgetForm> m_ui;
-
+          std::auto_ptr<Ui::ChartStyleFrameWidgetForm> m_ui;  //!< The Widget form.
+          te::qt::widgets::ChartDisplay*  m_display;          //!< The display that will be configured by this widget.
+          te::qt::widgets::ChartStyleWidget* m_styleWidget;
       };
 
     }   // end namespace widgets

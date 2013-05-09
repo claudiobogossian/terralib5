@@ -31,7 +31,8 @@
 #include "HistogramChart.h"
 #include "HistogramDataWidget.h"
 #include "HistogramDialog.h"
-#include "ui_histogramDialogForm.h"
+#include "HistogramStyle.h"
+#include "ui_HistogramDialogForm.h"
 
 //QT
 #include <QtGui/QDialog>
@@ -63,6 +64,7 @@ void te::qt::widgets::HistogramDialog::onHelpPushButtonClicked(){}
 void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
 {
   m_histogramChart = new te::qt::widgets::HistogramChart(m_histogramDataWidget->getHistogram());
+  m_histogramChart->setHistogramStyle(new te::qt::widgets::HistogramStyle());
 
   //Adjusting the chart Display
   te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"));;
@@ -71,7 +73,7 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
   chartDisplay->replot();
 
   //Adjusting the chart widget
-  te::qt::widgets::ChartDisplayWidget* chartWidget = new te::qt::widgets::ChartDisplayWidget(m_histogramDataWidget->getDataSet(), this->parentWidget());
+  te::qt::widgets::ChartDisplayWidget* chartWidget = new te::qt::widgets::ChartDisplayWidget(m_histogramChart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay, this->parentWidget());
   chartWidget->setDisplay(chartDisplay);
 
   // Docking

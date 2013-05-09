@@ -39,18 +39,12 @@ namespace Ui { class ChartPropertiesDialogForm; }
 
 namespace te
 {
-
-  namespace da
-  {
-    //forward declarations
-    class DataSet;
-  }
-
   namespace qt
   {
     namespace widgets
     {
       class ChartWidget;
+      class ChartDisplayWidget;
       /*!
         \class ChartProperties
 
@@ -62,7 +56,7 @@ namespace te
 
         public:
 
-          ChartProperties(te::da::DataSet* dataSet, QWidget* parent = 0);
+          ChartProperties(te::qt::widgets::ChartDisplayWidget* chartWidget, QWidget* parent = 0);
 
           ~ChartProperties();
 
@@ -73,12 +67,11 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ChartPropertiesDialogForm> m_ui;
-          ChartWidget* m_curComp;
-          te::da::DataSet*   m_dataSet; 
+          std::auto_ptr<Ui::ChartPropertiesDialogForm>  m_ui;           // The Dialog Form.
+          ChartWidget*                                  m_curComp;      // The widget being displayed
+          te::qt::widgets::ChartDisplayWidget*          m_chartWidget;  // The chart widget that will be configured by this dialog.
 
       };
-
     }   // end namespace widgets
   }     // end namespace qt
 }       // end namespace te

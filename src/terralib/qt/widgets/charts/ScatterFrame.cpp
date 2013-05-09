@@ -23,10 +23,15 @@
   \brief A frame used to adjust a scater's chart parameters, weather it is about it's data or it's visual style.
 */
 
+//Terralib
 #include "ui_ScatterFrameWidgetForm.h"
+#include "ScatterChart.h"
 #include "ScatterFrame.h"
 #include "ScatterDataWidget.h"
 #include "ScatterStyleWidget.h"
+
+//QWT
+#include <qwt_plot_seriesitem.h>
 
 te::qt::widgets::ScatterFrame::ScatterFrame(QWidget* parent)
   : ChartWidget(parent),
@@ -35,10 +40,7 @@ te::qt::widgets::ScatterFrame::ScatterFrame(QWidget* parent)
   m_ui->setupUi(this);
   m_label = "Scatter";
 
-  te::qt::widgets::ScatterStyleWidget* styleWidget = new te::qt::widgets::ScatterStyleWidget();
-
-  QGridLayout* styleLayout = new QGridLayout(m_ui->m_scatterStyleFrame);
-  styleLayout->addWidget(styleWidget);
+  m_styleWidget = new te::qt::widgets::ScatterStyleWidget();
 
 }
 
@@ -47,9 +49,16 @@ te::qt::widgets::ScatterFrame::~ScatterFrame()
 
 }
 
-void te::qt::widgets::ScatterFrame::setDataSet(te::da::DataSet* dataSet)
+QwtPlotSeriesItem* te::qt::widgets::ScatterFrame::getChart()
 {
-  te::qt::widgets::ScatterDataWidget* dataWidget = new te::qt::widgets::ScatterDataWidget(dataSet);
-  QGridLayout* dataLayout = new QGridLayout(m_ui->m_scatterDataFrame);
-  dataLayout->addWidget(dataWidget);
+  m_chart->setScatterStyle(m_styleWidget->getScatterStyle());
+  return m_chart;
+}
+
+void te::qt::widgets::ScatterFrame::setChart(QwtPlotSeriesItem* newChart)
+{
+  m_chart = static_cast<te::qt::widgets::ScatterChart*>(newChart);
+  m_styleWidget = new te::qt::widgets::ScatterStyleWidget(m_chart->getScatterStyle());
+  QGridLayout* styleLayout = new QGridLayout(m_ui->m_scatterStyleFrame);
+  styleLayout->addWidget(m_styleWidget);
 }

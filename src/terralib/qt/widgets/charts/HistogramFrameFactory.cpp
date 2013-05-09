@@ -23,7 +23,7 @@
   \brief A factory to build the histogram frame object.
 */
 
-#include "histogramFrame.h"
+#include "HistogramFrame.h"
 #include "HistogramFrameFactory.h"
 
 te::qt::widgets::HistogramFrameFactory* te::qt::widgets::HistogramFrameFactory::sm_factory(0);
@@ -40,11 +40,6 @@ void te::qt::widgets::HistogramFrameFactory::finalize()
   sm_factory = 0;
 }
 
-const std::string& te::qt::widgets::HistogramFrameFactory::getType() const
-{
-  return "HistogramFrame";
-}
-
 te::qt::widgets::HistogramFrameFactory::~HistogramFrameFactory()
 {
 
@@ -56,7 +51,7 @@ te::qt::widgets::ChartWidget* te::qt::widgets::HistogramFrameFactory::build()
 }
 
 te::qt::widgets::HistogramFrameFactory::HistogramFrameFactory()
-  : te::qt::widgets::ChartWidgetFactory("Histogram")
+  : te::qt::widgets::ChartWidgetFactory("Histogram Style")
 {
 
 }

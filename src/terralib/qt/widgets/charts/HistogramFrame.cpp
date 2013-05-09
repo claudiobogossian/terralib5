@@ -23,11 +23,16 @@
   \brief A frame used to adjust a histogram's chart parameters, weather it is about it's data or it's visual style.
 */
 
+//Terralib
 #include "../../../dataaccess.h"
 #include "ui_HistogramFrameWidgetForm.h"
+#include "HistogramChart.h"
 #include "HistogramFrame.h"
-#include "HistogramDataWidget.h"
+#include "HistogramStyle.h"
 #include "HistogramStyleWidget.h"
+
+//QWT
+#include <qwt_plot_seriesitem.h>
 
 te::qt::widgets::HistogramFrame::HistogramFrame(QWidget* parent)
   : ChartWidget(parent),
@@ -35,12 +40,6 @@ te::qt::widgets::HistogramFrame::HistogramFrame(QWidget* parent)
 {
   m_ui->setupUi(this);
   m_label = "Histogram";
-
-
-  te::qt::widgets::HistogramStyleWidget* styleWidget = new te::qt::widgets::HistogramStyleWidget();
-
-  QGridLayout* styleLayout = new QGridLayout(m_ui->m_histogramStyleFrame);
-  styleLayout->addWidget(styleWidget);
 }
 
 te::qt::widgets::HistogramFrame::~HistogramFrame()
@@ -48,9 +47,17 @@ te::qt::widgets::HistogramFrame::~HistogramFrame()
 
 }
 
-void te::qt::widgets::HistogramFrame::setDataSet(te::da::DataSet* dataSet)
+QwtPlotSeriesItem* te::qt::widgets::HistogramFrame::getChart()
 {
-  te::qt::widgets::HistogramDataWidget* dataWidget = new te::qt::widgets::HistogramDataWidget(dataSet);
-  QGridLayout* dataLayout = new QGridLayout(m_ui->m_histogramDataFrame);
-  dataLayout->addWidget(dataWidget);
+  m_chart->setHistogramStyle(m_styleWidget->getHistogramStyle());
+  return m_chart;
 }
+
+void te::qt::widgets::HistogramFrame::setChart(QwtPlotSeriesItem* newChart)
+{
+  m_chart = static_cast<te::qt::widgets::HistogramChart*>(newChart);
+  m_styleWidget = new te::qt::widgets::HistogramStyleWidget(m_chart->getHistogramStyle());
+  QGridLayout* styleLayout = new QGridLayout(m_ui->m_histogramStyleFrame);
+  styleLayout->addWidget(m_styleWidget);
+}
+

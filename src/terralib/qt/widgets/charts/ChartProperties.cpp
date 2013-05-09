@@ -22,27 +22,43 @@
 
   \brief A dialog used to customize a Chart's parameters, weather it is about it's data or it's visual style
 */
-
+//Terralib
 #include "ui_ChartPropertiesDialogForm.h"
+#include "ChartDisplay.h"
+#include "ChartDisplayWidget.h"
+#include "ChartStyleFrameFactory.h"
+#include "ChartProperties.h"
 #include "ChartWidget.h"
 #include "ChartWidgetFactory.h"
 #include "HistogramFrameFactory.h"
 #include "ScatterFrameFactory.h"
-#include "ChartStyleFrameFactory.h"
-#include "ChartProperties.h"
 
-te::qt::widgets::ChartProperties::ChartProperties(te::da::DataSet* dataSet, QWidget* parent)
+
+//QWT
+#include <qwt_plot_seriesitem.h>
+
+te::qt::widgets::ChartProperties::ChartProperties(te::qt::widgets::ChartDisplayWidget* chartWidget, QWidget* parent)
   : QDialog(parent),
     m_ui(new Ui::ChartPropertiesDialogForm),
     m_curComp(0),
-    m_dataSet(dataSet)
+    m_chartWidget(chartWidget)
 {
   m_ui->setupUi(this);
 
   //init factories
-  HistogramFrameFactory::initialize();
-  ScatterFrameFactory::initialize();
-  ChartFrameFactory::initialize();
+  switch (m_chartWidget->getType())
+  {
+    case(te::qt::widgets::HISTOGRAM_CHART):
+      HistogramFrameFactory::initialize();
+      ScatterFrameFactory::finalize();
+      break;
+    case(te::qt::widgets::SCATTER_CHART):
+      ScatterFrameFactory::initialize();
+      HistogramFrameFactory::finalize();
+      break;
+  }
+
+  ChartStyleFrameFactory::initialize();
 
   std::vector<std::string> vec;
   const te::qt::widgets::ChartWidgetFactory::dictionary_type& d = te::qt::widgets::ChartWidgetFactory::getDictionary();
@@ -62,7 +78,8 @@ te::qt::widgets::ChartProperties::ChartProperties(te::da::DataSet* dataSet, QWid
   m_ui->m_tabWidget->clear();
   m_curComp = te::qt::widgets::ChartWidgetFactory::make("Chart Style", m_ui->m_tabWidget);
   m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString("Chart Style"));
-
+  m_curComp->setDisplay(m_chartWidget->getDisplay());
+//  m_curComp->setFocus();
   connect(m_ui->m_componentsListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyButtonClicked()));
 }
@@ -77,13 +94,23 @@ void te::qt::widgets::ChartProperties::onItemClicked(QListWidgetItem * current)
   std::string value = current->text().toStdString();
   delete m_curComp;
   m_curComp = te::qt::widgets::ChartWidgetFactory::make(value, m_ui->m_tabWidget);
+  m_curComp->setChart(m_chartWidget->getChart());
+  m_curComp->setDisplay(m_chartWidget->getDisplay());
   m_ui->m_tabWidget->clear();
   m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString(value));
-  m_curComp->setDataSet(m_dataSet);
   m_curComp->show();
 }
 
 void te::qt::widgets::ChartProperties::onApplyButtonClicked() 
 {
+  if(m_ui->m_componentsListWidget->currentItem()->text() == "Chart Style")
+  {
+    m_chartWidget->setDisplay(m_curComp->getDisplay());
+  }
+  else
+  {
+    m_chartWidget->setChart(m_curComp->getChart());
+    m_chartWidget->getChart()->attach( m_chartWidget->getDisplay());
+  }
   this->close();
 }

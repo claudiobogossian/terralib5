@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>114</width>
-    <height>134</height>
+    <width>121</width>
+    <height>72</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,33 +16,14 @@
   <layout class="QGridLayout" name="gridLayout_12">
    <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout_11">
-     <item row="1" column="0">
+     <item row="0" column="0">
       <widget class="QGroupBox" name="m_histogramStyleGroupBox">
        <property name="title">
-        <string>Style</string>
+        <string/>
        </property>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
          <widget class="QFrame" name="m_histogramStyleFrame">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QGroupBox" name="m_histogramDataGroupBox">
-       <property name="title">
-        <string>Data</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QFrame" name="m_histogramDataFrame">
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -66,7 +47,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Histogram</string>
+      <string>Histogram Style</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

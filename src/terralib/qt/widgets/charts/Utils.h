@@ -31,6 +31,7 @@
 
 //QWT
 #include <qwt_text.h>
+#include <qwt_symbol.h>
 
 //STL
 #include <vector>
@@ -39,7 +40,7 @@ namespace te
 {
   // Forward declarations
   namespace color { class RGBAColor; }
-  namespace se    { class Font; class Fill; class Stroke; }
+  namespace se    { class Font; class Fill; class Stroke; class Mark; }
   namespace da    { class DataSet; }
   namespace dt    { class DateTime; }
   namespace qt
@@ -47,7 +48,7 @@ namespace te
     namespace widgets
     {      
 
-		class Scatter;
+    class Scatter;
     class Histogram;
 
     double getDouble(const std::string& value, std::vector<std::string>& sVector);
@@ -64,8 +65,8 @@ namespace te
 
         \return a new Scatter
     */
-		TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, int propX, int propY);
-		
+    TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, int propX, int propY);
+
     /*!
         \brief Histogram Creator
 
@@ -78,7 +79,7 @@ namespace te
 
         \return a new Scatter
     */
-		TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, int propId, int slices);
+    TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, int propId, int slices);
 
     /*!
         \brief Histogram Creator
@@ -90,9 +91,9 @@ namespace te
         \note It will traverse the data set, using the moveNext() method
         \note It will not take the ownership of the DataSet pointer. 
     */
-		TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, int propId);
+    TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, int propId);
 
-		/*!
+    /*!
         \function Terralib2Qwt
 
         This function returns a default QwtText.
@@ -121,7 +122,21 @@ namespace te
       TEQTWIDGETSEXPORT QwtText* Terralib2Qwt(const std::string& text,  te::color::RGBAColor* color, 
                    te::se::Font*  font, te::se::Fill* backFill, 
                    te::se::Stroke* backStroke);
-                    
+
+      /*!
+        \function Mark2Symbol
+
+        This function translates a terralib's Mark object into a QWTSymbol object.
+
+        \param mark The mark that will be used to generate the symbol.
+        
+        \return A QwtSymbol
+
+        \note The caller will take the ownership of the returned pointer.
+        \note It will not take the ownership of the Mark pointer.
+      */
+      TEQTWIDGETSEXPORT QwtSymbol* Terralib2Qwt(te::se::Mark* mark);
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

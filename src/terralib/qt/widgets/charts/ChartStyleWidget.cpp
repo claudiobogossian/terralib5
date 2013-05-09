@@ -27,7 +27,7 @@
 #include "ChartStyleWidget.h"
 #include "ChartStyle.h"
 #include "../utils/ColorPickerToolButton.h"
-#include "ui_chartStyleWidgetForm.h"
+#include "ui_ChartStyleWidgetForm.h"
 #include "../../../qt/widgets/se/Utils.h"
 
 te::qt::widgets::ChartStyleWidget::ChartStyleWidget(QWidget* parent, Qt::WindowFlags f, QString title, QString PropertyX, QString PropertyY)
@@ -54,7 +54,7 @@ te::qt::widgets::ChartStyleWidget::ChartStyleWidget(QWidget* parent, Qt::WindowF
   m_chartStyle = new te::qt::widgets::ChartStyle();
 
   connect(m_ui->m_chartTitleLineEdit, SIGNAL(editingFinished()), this, SLOT(onTitleLineEditFinish()));
-  connect(m_ui->m_gridCheckBox, SIGNAL(Toggled()), this, SLOT(onGridCheckBoxToggled()));
+  connect(m_ui->m_gridCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onGridCheckBoxToggled(int)));
   connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onColorChanged(const QColor&)));
 }
 
@@ -63,16 +63,15 @@ te::qt::widgets::ChartStyleWidget::~ChartStyleWidget(){}
 void te::qt::widgets::ChartStyleWidget::onTitleStylePushButtonClicked(){}
 void te::qt::widgets::ChartStyleWidget::onLabelStylePushButtonClicked(){}
 
-void te::qt::widgets::ChartStyleWidget::onGridCheckBoxToggled()
+void te::qt::widgets::ChartStyleWidget::onGridCheckBoxToggled(int state)
 {
-  m_chartStyle->setGridChecked(m_ui->m_gridCheckBox->isChecked());
+  m_chartStyle->setGridChecked(state);
 }
 
 void te::qt::widgets::ChartStyleWidget::onColorChanged(const QColor& color)
 {
   // The new fill color
   m_chartStyle->setColor(color);
-
   m_colorPicker->setColor(m_chartStyle->getColor());
 }
 
@@ -81,24 +80,17 @@ void te::qt::widgets::ChartStyleWidget::onTitleLineEditFinish()
   m_chartStyle->setTitle(m_ui->m_chartTitleLineEdit->text());
 }
 
-te::qt::widgets::ChartStyle* te::qt::widgets::ChartStyleWidget::getStyle(te::qt::widgets::ChartStyle* initial, QWidget* parent, Qt::WindowFlags f, QString title, QString PropertyX, QString PropertyY)
+te::qt::widgets::ChartStyle* te::qt::widgets::ChartStyleWidget::getStyle()
 {
-  te::qt::widgets::ChartStyleWidget dlg(parent, f, title, PropertyX, PropertyY);
-
-  dlg.setWindowTitle("Chart Style");
-  
-  if(initial)
-    dlg.setStyle(initial);
-  
-  //if(dlg.exec() == QDialog::Accepted)
-  //  return dlg.adjustStyle();
-
-  return dlg.m_chartStyle;
+  return m_chartStyle;
 }
 
 void te::qt::widgets::ChartStyleWidget::setStyle(te::qt::widgets::ChartStyle* newStyle)
 {
   m_chartStyle = newStyle;
+  m_ui->m_chartTitleLineEdit->setText(m_chartStyle->getTitle());
+  m_colorPicker->setColor(m_chartStyle->getColor());
+  m_ui->m_gridCheckBox->setChecked(m_chartStyle->getGridChecked());
 }
 
 te::qt::widgets::ChartStyle* te::qt::widgets::ChartStyleWidget::adjustStyle() 

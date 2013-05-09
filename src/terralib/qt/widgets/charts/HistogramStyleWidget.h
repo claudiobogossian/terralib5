@@ -72,8 +72,8 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::HistogramStyleWidgetForm>  m_ui;      //!< The widget form.
-          te::qt::widgets::HistogramStyle*    m_histogramStyle;   //!< The histogram's chart style that will be configured by this widget.
+          std::auto_ptr<Ui::HistogramStyleWidgetForm>  m_ui;              //!< The widget form.
+          te::qt::widgets::HistogramStyle*             m_histogramStyle;  //!< The histogram's chart style that will be configured by this widget.
       };
     } // end namespace widgets
   }   // end namespace qt

@@ -24,23 +24,36 @@
 */
 
 #include "ui_ChartStyleFrameWidgetForm.h"
+#include "ChartDisplay.h"
 #include "ChartStyleFrame.h"
 #include "ChartStyleWidget.h"
 
-te::qt::widgets::ChartFrame::ChartFrame(QWidget* parent)
+te::qt::widgets::ChartStyleFrame::ChartStyleFrame(QWidget* parent)
   : ChartWidget(parent),
     m_ui(new Ui::ChartStyleFrameWidgetForm)
 {
   m_ui->setupUi(this);
 
-  te::qt::widgets::ChartStyleWidget* styleWidget = new te::qt::widgets::ChartStyleWidget();
+  m_styleWidget = new te::qt::widgets::ChartStyleWidget();
   m_label = "Chart";
 
   QGridLayout* layout = new QGridLayout(m_ui->m_StyleFrame);
-  layout->addWidget(styleWidget);
+  layout->addWidget(m_styleWidget);
 }
 
-te::qt::widgets::ChartFrame::~ChartFrame()
+te::qt::widgets::ChartStyleFrame::~ChartStyleFrame()
 {
 
+}
+
+te::qt::widgets::ChartDisplay* te::qt::widgets::ChartStyleFrame::getDisplay()
+{
+  m_display->setStyle(m_styleWidget->getStyle());
+  return m_display;
+}
+
+void te::qt::widgets::ChartStyleFrame::setDisplay(te::qt::widgets::ChartDisplay* newDisplay)
+{
+  m_display = newDisplay;
+  m_styleWidget->setStyle(m_display->getStyle());
 }

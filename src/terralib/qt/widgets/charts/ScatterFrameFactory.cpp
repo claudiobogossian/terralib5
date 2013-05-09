@@ -23,7 +23,8 @@
   \brief A factory to build the scatter frame object.
 */
 
-#include "histogramFrame.h"
+//Terralib
+#include "ScatterFrame.h"
 #include "ScatterFrameFactory.h"
 
 te::qt::widgets::ScatterFrameFactory* te::qt::widgets::ScatterFrameFactory::sm_factory(0);
@@ -40,11 +41,6 @@ void te::qt::widgets::ScatterFrameFactory::finalize()
   sm_factory = 0;
 }
 
-const std::string& te::qt::widgets::ScatterFrameFactory::getType() const
-{
-  return "ScatterFrame";
-}
-
 te::qt::widgets::ScatterFrameFactory::~ScatterFrameFactory()
 {
 
@@ -56,7 +52,7 @@ te::qt::widgets::ChartWidget* te::qt::widgets::ScatterFrameFactory::build()
 }
 
 te::qt::widgets::ScatterFrameFactory::ScatterFrameFactory()
-  : te::qt::widgets::ChartWidgetFactory("Scatter")
+  : te::qt::widgets::ChartWidgetFactory("Scatter Style")
 {
 
 }

@@ -32,6 +32,8 @@
 
 #include <memory>
 
+class QwtPlotSeriesItem;
+
 namespace Ui { class HistogramFrameWidgetForm; }
 
 namespace te
@@ -40,6 +42,9 @@ namespace te
   {
     namespace widgets
       {
+      //Forward declarations
+      class HistogramChart;
+      class HistogramStyleWidget;
       /*!
         \class HistogramFrame
 
@@ -55,11 +60,15 @@ namespace te
 
           ~HistogramFrame();
 
-          void setDataSet(te::da::DataSet* newDataSet);
+          QwtPlotSeriesItem* getChart();
+
+          void setChart(QwtPlotSeriesItem* newChart);
 
         private:
 
-          std::auto_ptr<Ui::HistogramFrameWidgetForm> m_ui;
+          std::auto_ptr<Ui::HistogramFrameWidgetForm>  m_ui;           //!< The widget Form.
+          te::qt::widgets::HistogramChart*             m_chart;        //!< The chart that will be editted by this widget.
+          te::qt::widgets::HistogramStyleWidget*       m_styleWidget;  //!< The widget used to configure the histogram's style.
       };
     }   // end namespace widgets
   }     // end namespace qt

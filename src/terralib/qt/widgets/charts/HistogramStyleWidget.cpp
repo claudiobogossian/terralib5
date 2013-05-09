@@ -29,7 +29,7 @@
 #include "BasicStrokeDialog.h"
 #include "HistogramStyleWidget.h"
 #include "HistogramStyle.h"
-#include "ui_histogramStyleWidgetForm.h"
+#include "ui_HistogramStyleWidgetForm.h"
 
 //QT
 #include <QtGui/QWidget>

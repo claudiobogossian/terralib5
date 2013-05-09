@@ -60,13 +60,6 @@ namespace te
           */
           virtual ~ChartWidgetFactory();
 
-          /*!
-            \brief It returns the type of Chart widget that the factory knows how to create.
-
-            \return The type of Chart widget that the factory knows how to create.
-          */
-          virtual const std::string& getType() const = 0;
-
         protected:
 
           /*!

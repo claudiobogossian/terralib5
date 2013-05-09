@@ -83,8 +83,8 @@ void  te::qt::widgets::ChartDisplay::adjustDisplay()
     //m_chartStyle->getColor());
 
     setAutoFillBackground( true );
-    setPalette( Qt::white );
-    canvas()->setPalette( QColor( "LemonChiffon" ) );
+    //setPalette( Qt::white );
+    canvas()->setPalette(m_chartStyle->getColor());
     setAutoReplot( true );
   }
 }

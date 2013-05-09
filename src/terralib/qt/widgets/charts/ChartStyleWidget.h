@@ -64,7 +64,7 @@ namespace te
 
           ~ChartStyleWidget();
 
-          static te::qt::widgets::ChartStyle* getStyle(te::qt::widgets::ChartStyle* initial, QWidget* parent, Qt::WindowFlags f, QString title, QString PropertyX, QString PropertyY);
+          te::qt::widgets::ChartStyle* getStyle();
 
           void setStyle(te::qt::widgets::ChartStyle* newStyle);
 
@@ -75,14 +75,14 @@ namespace te
           void onTitleLineEditFinish();
           void onTitleStylePushButtonClicked();
           void onLabelStylePushButtonClicked();
-          void onGridCheckBoxToggled();
+          void onGridCheckBoxToggled(int state);
           void onColorChanged(const QColor& color);
 
         private:
 
-          std::auto_ptr<Ui::chartStyleWidgetForm>  m_ui;
-          ColorPickerToolButton*               m_colorPicker;   //!< The color picker used to customise the color of several chart parameters.
-          te::qt::widgets::ChartStyle*         m_chartStyle;    //!< The display's style that will be configured by this dialog.
+          std::auto_ptr<Ui::chartStyleWidgetForm>  m_ui;            //!< The widget form.
+          ColorPickerToolButton*                   m_colorPicker;   //!< The color picker used to customise the color of several chart parameters.
+          te::qt::widgets::ChartStyle*             m_chartStyle;    //!< The display's style that will be configured by this dialog.
       };
     } // end namespace widgets
   }   // end namespace qt

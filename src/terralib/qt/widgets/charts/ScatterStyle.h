@@ -18,65 +18,54 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/HistogramStyle.h
+  \file terralib/qt/widgets/charts/scatterStyle.h
 
-  \brief A class used to define the style of a histogram's chart
+  \brief A class used to define the style of a scatter's chart
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLE_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLE_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERSTYLE_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERSTYLE_H
 
 //TerraLib
 #include "../Config.h"
 
-//QT
-#include "qcolor.h"
+class QwtSymbol;
 
 namespace te
 {
-  namespace se 
+  // Forward declarations
+  namespace se
   {
-    //forward declarations
-    class Fill;
-    class Stroke;
+    class Graphic;
+    class Mark;
   }
 
   namespace qt
   {
-
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT HistogramStyle
+      class TEQTWIDGETSEXPORT ScatterStyle
       {
-
         public:
 
-          HistogramStyle(); 
+        ScatterStyle (); 
 
-          HistogramStyle (te::se::Fill* fill, te::se::Stroke* stroke);
+        ScatterStyle (te::se::Graphic* graphic); 
 
-          ~HistogramStyle();
+        ~ScatterStyle();
 
-          te::se::Fill* getFill();
+        te::se::Graphic* getGraphic();
 
-          void setFill(te::se::Fill* newFill);
+        void setGraphic(te::se::Graphic* newGraphic);
 
-          te::se::Stroke* getStroke();
-
-          void setStroke(te::se::Stroke* newStroke);
+        QwtSymbol* getSymbol();
 
         private:
 
-          void adjustSymbol();
-
-        private:
-
-          te::se::Fill*    m_fill;     //!< The bar's fill .
-          te::se::Stroke*  m_stroke;   //!< The bar's stroke.
-
-      };
+          te::se::Graphic*  m_graphic;    //!< The graphic used to edit the symbol's style
+          te::se::Mark*     m_mark;       //!< The mark used to edit the symbol's style
+      }; 
     }  //end namespace widgets
   }    //end namespace qt
 }      // end namespace te
-
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLE_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERSTYLE_H

@@ -34,9 +34,14 @@
 //QT
 #include <QtGui/QWidget>
 
-te::qt::widgets::ChartDisplayWidget::ChartDisplayWidget(te::da::DataSet* dataSet, QWidget* parent,  Qt::WindowFlags f)
+//QWT
+#include <qwt_plot_seriesitem.h>
+
+te::qt::widgets::ChartDisplayWidget::ChartDisplayWidget(QwtPlotSeriesItem* chart, int type, te::qt::widgets::ChartDisplay* display, QWidget* parent,  Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_dataSet (dataSet),
+    m_display(display),
+    m_chart(chart),
+    m_type(type),
     m_ui(new Ui::ChartDisplayWidgetForm)
 {
     m_ui->setupUi(this);
@@ -47,24 +52,41 @@ te::qt::widgets::ChartDisplayWidget::ChartDisplayWidget(te::da::DataSet* dataSet
 
 te::qt::widgets::ChartDisplayWidget::~ChartDisplayWidget(){}
 
+QwtPlotSeriesItem* te::qt::widgets::ChartDisplayWidget::getChart()
+{
+  return m_chart;
+}
+
+void te::qt::widgets::ChartDisplayWidget::setChart(QwtPlotSeriesItem* newChart)
+{
+  m_chart = newChart;
+  m_chart->attach(m_display);
+  m_display->show();
+  m_display->replot();
+}
+
+te::qt::widgets::ChartDisplay* te::qt::widgets::ChartDisplayWidget::getDisplay()
+{
+  return m_display;
+}
+
 void te::qt::widgets::ChartDisplayWidget::setDisplay(te::qt::widgets::ChartDisplay* newDisplay)
 {
+  m_display = newDisplay;
   QGridLayout* layout = new QGridLayout(m_ui->m_plotFrame);
-  layout->addWidget(newDisplay);
+  layout->addWidget(m_display);
+  m_chart->attach(m_display);
+  m_display->show();
+  m_display->replot();
 }
 
-te::da::DataSet* te::qt::widgets::ChartDisplayWidget::getDataSet()
+int te::qt::widgets::ChartDisplayWidget::getType()
 {
-  return m_dataSet;
-}
-
-void te::qt::widgets::ChartDisplayWidget::setDataSet(te::da::DataSet* newDataSet)
-{
- m_dataSet = newDataSet;
+  return m_type;
 }
 
 void te::qt::widgets::ChartDisplayWidget::onSettingsToolButtonnTriggered()
 {
-    te::qt::widgets::ChartProperties dlg(m_dataSet, this->parentWidget());
+    te::qt::widgets::ChartProperties dlg(this, this->parentWidget());
     dlg.exec();
 }

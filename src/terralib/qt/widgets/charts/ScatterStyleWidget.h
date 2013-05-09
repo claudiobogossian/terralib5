@@ -43,9 +43,8 @@ namespace te
   {
     namespace widgets
     {
-
-    //forward declarations
-    class Symbol;
+    //Forward Declarations
+    class ScatterStyle;
 
     /*!
         \class Scatter creator
@@ -59,11 +58,11 @@ namespace te
 
         public:
 
-          ScatterStyleWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          ScatterStyleWidget(te::qt::widgets::ScatterStyle* initial = 0, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           ~ScatterStyleWidget();
 
-          te::qt::widgets::Symbol* getSymbol();
+          te::qt::widgets::ScatterStyle* getScatterStyle();
 
         protected slots:
 
@@ -71,8 +70,8 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ScatterStyleWidgetForm>  m_ui;    //!< The iwdget form.
-          te::qt::widgets::Symbol*          m_symbol;         //!< The symbol that will be used to plot the scatter's points.
+          std::auto_ptr<Ui::ScatterStyleWidgetForm>  m_ui;            //!< The iwdget form.
+          te::qt::widgets::ScatterStyle*             m_scatterStyle;  //!< The scatter's chart style that will be configured by this widget.
       };
     } // end namespace widgets
   }   // end namespace qt

@@ -24,7 +24,7 @@
 */
 
 //Terralib
-#include "ui_scatterDataWidgetForm.h"
+#include "ui_ScatterDataWidgetForm.h"
 #include "../../../qt/widgets/charts/Utils.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"

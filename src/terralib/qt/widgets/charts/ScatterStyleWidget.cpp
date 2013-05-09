@@ -24,46 +24,34 @@
 */
 
 //Terralib
-#include "ui_scatterStyleWidgetForm.h"
+#include "ui_ScatterStyleWidgetForm.h"
+#include "ScatterStyle.h"
 #include "ScatterStyleWidget.h"
-#include <PointSymbolizerWidget.h>
-#include "ScatterStyleWidget.h"
-#include "Symbol.h"
+#include "../../../se/Graphic.h"
+#include "GraphicDialog.h"
 
 //QT
 #include <qdialog.h>
 
-te::qt::widgets::ScatterStyleWidget::ScatterStyleWidget(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::ScatterStyleWidget::ScatterStyleWidget(te::qt::widgets::ScatterStyle* initial, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
+    m_scatterStyle(initial),
     m_ui(new Ui::ScatterStyleWidgetForm)
 {
     m_ui->setupUi(this);
 
 // connect signal and slots
-
   connect(m_ui->m_plotStylePushButton, SIGNAL(clicked()), this, SLOT(onPlotStylePushButtonClicked()));
 }
 
 te::qt::widgets::ScatterStyleWidget::~ScatterStyleWidget(){}
 
-te::qt::widgets::Symbol* te::qt::widgets::ScatterStyleWidget::getSymbol()
+te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterStyleWidget::getScatterStyle()
 {
-  return m_symbol;
+  return m_scatterStyle;
 }
 
 void te::qt::widgets::ScatterStyleWidget::onPlotStylePushButtonClicked()
 {
-  QDialog dlg;
-  dlg.setWindowTitle("Scatter Style");
-
-  // Point Symbolizer Widget
-  te::qt::widgets::PointSymbolizerWidget* pts = new te::qt::widgets::PointSymbolizerWidget(&dlg);
-
-  // Adjusting...
-  QGridLayout* layout = new QGridLayout(&dlg);
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->addWidget(pts);
-
-  dlg.exec();
-  m_symbol->setSymbolizer(1, static_cast<PointSymbolizerWidget*>(pts)->getSymbolizer());
+  m_scatterStyle->setGraphic((te::qt::widgets::GraphicDialog::getGraphic(0, 0, "Scatter Style")));
 }
