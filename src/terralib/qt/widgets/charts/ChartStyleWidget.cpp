@@ -18,20 +18,21 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/chartStyleDialog.cpp
+  \file terralib/qt/widgets/charts/chartStyleWidget.cpp
 
   \brief A dialog created to customize the style parameters of a chart
 */
 
-#include "ChartStyleDialog.h"
-#include "ChartDisplay.h"
+//Terralib
+#include "ChartStyleWidget.h"
 #include "ChartStyle.h"
 #include "../utils/ColorPickerToolButton.h"
-#include "ui_chartStyleDialog.h"
+#include "ui_ChartStyleWidgetForm.h"
+#include "../../../qt/widgets/se/Utils.h"
 
-te::qt::widgets::ChartStyleDialog::ChartStyleDialog(QWidget* parent, Qt::WindowFlags f, QString title, QString PropertyX, QString PropertyY)
-  : QDialog(parent, f),
-    m_ui(new Ui::ChartStyleDialog)
+te::qt::widgets::ChartStyleWidget::ChartStyleWidget(QWidget* parent, Qt::WindowFlags f, QString title, QString PropertyX, QString PropertyY)
+  : QWidget(parent, f),
+    m_ui(new Ui::chartStyleWidgetForm)
 {
   m_ui->setupUi(this);
   m_ui->m_labelStylePushButton->setEnabled(false);
@@ -53,38 +54,49 @@ te::qt::widgets::ChartStyleDialog::ChartStyleDialog(QWidget* parent, Qt::WindowF
   m_chartStyle = new te::qt::widgets::ChartStyle();
 
   connect(m_ui->m_chartTitleLineEdit, SIGNAL(editingFinished()), this, SLOT(onTitleLineEditFinish()));
-  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  connect(m_ui->m_gridCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onGridCheckBoxToggled(int)));
   connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onColorChanged(const QColor&)));
-
-  m_ui->m_helpPushButton->setPageReference("widgets/charts/chart_style.html");
 }
 
-te::qt::widgets::ChartStyleDialog::~ChartStyleDialog(){}
+te::qt::widgets::ChartStyleWidget::~ChartStyleWidget(){}
 
-Ui::ChartStyleDialog* te::qt::widgets::ChartStyleDialog::getForm() const
+void te::qt::widgets::ChartStyleWidget::onTitleStylePushButtonClicked(){}
+void te::qt::widgets::ChartStyleWidget::onLabelStylePushButtonClicked(){}
+
+void te::qt::widgets::ChartStyleWidget::onGridCheckBoxToggled(int state)
 {
-  return m_ui.get();
+  m_chartStyle->setGridChecked(state);
 }
 
-void te::qt::widgets::ChartStyleDialog::onTitleStylePushButtonClicked(){}
-void te::qt::widgets::ChartStyleDialog::onLabelStylePushButtonClicked(){}
-void te::qt::widgets::ChartStyleDialog::onGridCheckBoxToggled(){}
-
-void te::qt::widgets::ChartStyleDialog::onOkPushButtonClicked()
-{
-  
-}
-
-void te::qt::widgets::ChartStyleDialog::onColorChanged(const QColor& color)
+void te::qt::widgets::ChartStyleWidget::onColorChanged(const QColor& color)
 {
   // The new fill color
   m_chartStyle->setColor(color);
-
   m_colorPicker->setColor(m_chartStyle->getColor());
 }
 
-void te::qt::widgets::ChartStyleDialog::onTitleLineEditFinish()
+void te::qt::widgets::ChartStyleWidget::onTitleLineEditFinish()
 {
-  m_chartStyle->setTitle(m_ui->m_chartTitleLineEdit->text().toStdString());
+  m_chartStyle->setTitle(m_ui->m_chartTitleLineEdit->text());
+}
+
+te::qt::widgets::ChartStyle* te::qt::widgets::ChartStyleWidget::getStyle()
+{
+  return m_chartStyle;
+}
+
+void te::qt::widgets::ChartStyleWidget::setStyle(te::qt::widgets::ChartStyle* newStyle)
+{
+  m_chartStyle = newStyle;
+  m_ui->m_chartTitleLineEdit->setText(m_chartStyle->getTitle());
+  m_colorPicker->setColor(m_chartStyle->getColor());
+  m_ui->m_gridCheckBox->setChecked(m_chartStyle->getGridChecked());
+}
+
+te::qt::widgets::ChartStyle* te::qt::widgets::ChartStyleWidget::adjustStyle() 
+{
+  m_chartStyle->setTitle(m_ui->m_chartTitleLineEdit->text());
+  m_chartStyle->setColor(m_colorPicker->getColor());
+  m_chartStyle->setGridChecked(m_ui->m_gridCheckBox->isChecked());
+  return m_chartStyle;
 }

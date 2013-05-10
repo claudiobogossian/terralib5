@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -43,7 +43,7 @@ namespace te
 
       \brief 2D Geometric transformation factory.
     */
-    class TEGEOMEXPORT GTFactory : public te::common::AbstractFactory< GeometricTransformation, std::string, std::less<std::string> >
+    class TEGEOMEXPORT GTFactory : public te::common::AbstractFactory<GeometricTransformation, std::string>
     {
       public:
 

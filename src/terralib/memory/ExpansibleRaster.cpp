@@ -201,7 +201,7 @@ bool te::mem::ExpansibleRaster::addTopLines( const unsigned int number )
     {
       std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
       if( ! m_blocksManager.addTopBlocks( blockExpansionSize, bandsIdx,
-        addedBlocksCoords ) ) 
+        bandAddedBlocksCoords ) ) 
         return false;
       
       addedBlocksCoords.insert( addedBlocksCoords.end(), bandAddedBlocksCoords.begin(),
@@ -252,7 +252,7 @@ bool te::mem::ExpansibleRaster::addBottomLines( const unsigned int number )
     {
       std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
       if( ! m_blocksManager.addBottomBlocks( blockExpansionSize, bandsIdx,
-        addedBlocksCoords ) ) 
+        bandAddedBlocksCoords ) ) 
         return false;
       
       addedBlocksCoords.insert( addedBlocksCoords.end(), bandAddedBlocksCoords.begin(),
@@ -303,7 +303,7 @@ bool te::mem::ExpansibleRaster::addLeftColumns( const unsigned int number )
     {
       std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
       if( ! m_blocksManager.addLeftBlocks( blockExpansionSize, bandsIdx,
-        addedBlocksCoords ) ) 
+        bandAddedBlocksCoords ) ) 
         return false;
       
       addedBlocksCoords.insert( addedBlocksCoords.end(), bandAddedBlocksCoords.begin(),
@@ -353,7 +353,7 @@ bool te::mem::ExpansibleRaster::addRightColumns( const unsigned int number )
     {
       std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
       if( ! m_blocksManager.addRightBlocks( blockExpansionSize, bandsIdx,
-        addedBlocksCoords ) ) 
+        bandAddedBlocksCoords ) ) 
         return false;
       
       addedBlocksCoords.insert( addedBlocksCoords.end(), bandAddedBlocksCoords.begin(),
