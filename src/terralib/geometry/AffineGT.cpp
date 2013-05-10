@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -56,7 +56,7 @@ bool te::gm::AffineGT::isValid( const GTParameters& params ) const
 }
 
 void te::gm::AffineGT::directMap( const GTParameters& params, const double& pt1X, 
-  const double& pt1Y, double& pt2X, double& pt2Y ) const
+                                  const double& pt1Y, double& pt2X, double& pt2Y ) const
 {
   assert( isValid( params ) );
   
@@ -69,7 +69,7 @@ void te::gm::AffineGT::directMap( const GTParameters& params, const double& pt1X
 }
 
 void te::gm::AffineGT::inverseMap( const GTParameters& params, const double& pt2X, 
-          const double& pt2Y, double& pt1X, double& pt1Y ) const
+                                   const double& pt2Y, double& pt1X, double& pt1Y ) const
 {
   assert( isValid( params ) );
 
@@ -95,13 +95,15 @@ te::gm::GeometricTransformation* te::gm::AffineGT::clone() const
         
 bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
 {
-  const unsigned int tiepointsSize = params.m_tiePoints.size();
-  if( tiepointsSize < getMinRequiredTiePoints() ) return false;
+  const unsigned int tiepointsSize = static_cast<unsigned int>(params.m_tiePoints.size());
+
+  if( tiepointsSize < getMinRequiredTiePoints() )
+    return false;
 
   boost::numeric::ublas::matrix< double > L( 2*tiepointsSize, 1 );
   boost::numeric::ublas::matrix< double > A( 2*tiepointsSize, 6 );
   unsigned int index1 = 0;
-  unsigned int index2 = 0;  
+  unsigned int index2 = 0;
   
   for ( unsigned int tpIdx = 0 ; tpIdx < tiepointsSize ; ++tpIdx)
   {
@@ -109,7 +111,7 @@ bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
     const Coord2D& u_v = params.m_tiePoints[ tpIdx ].second;
     
     index1 = tpIdx*2;
-    index2 = index1 + 1;    
+    index2 = index1 + 1;
 
     A( index1, 0 ) = x_y.x ;
     A( index1, 1 ) = x_y.y ;
@@ -126,7 +128,7 @@ bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
     A( index2, 5 ) = 1 ; 
     
     L( index1, 0) = u_v.x;
-    L( index2, 0) = u_v.y;    
+    L( index2, 0) = u_v.y;
   }
 
   /* At calcule */
@@ -196,9 +198,9 @@ bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
 
 
 bool te::gm::AffineGT::decompose( const std::vector< double >& transfParams,
-  double& translationX, double& translationY,
-  double& scalingFactorX, double& scalingFactorY, double& skew,
-  double& squeeze, double& scaling, double& rotation )
+                                  double& translationX, double& translationY,
+                                  double& scalingFactorX, double& scalingFactorY, double& skew,
+                                  double& squeeze, double& scaling, double& rotation )
 {
   assert( transfParams.size() == 6 );
   

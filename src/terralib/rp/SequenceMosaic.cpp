@@ -24,6 +24,7 @@
 
 #include "SequenceMosaic.h"
 
+#include "RasterHandler.h"
 #include "Macros.h"
 #include "../raster/Grid.h"
 #include "../raster/BandProperty.h"
@@ -36,7 +37,7 @@
 #include "../geometry/LinearRing.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/MultiPoint.h"
-#include "RasterHandler.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -174,6 +175,18 @@ namespace te
         "Invalid data source" );
       TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputDSPtr->isValid(),
         "Invalid data source" );
+        
+      // progress
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        
+        progressPtr->setTotalSteps( m_inputParameters.m_feederRasterPtr->getObjsCount() );
+        
+        progressPtr->setMessage( "Mosaicking" );
+      }          
       
       // iterating over all rasters
       
@@ -342,6 +355,12 @@ namespace te
           // Move to the next raster
           
           m_inputParameters.m_feederRasterPtr->moveNext();          
+          
+          if( m_inputParameters.m_enableProgress )
+          {
+            progressPtr->pulse();
+            if( ! progressPtr->isActive() ) return false;
+          }            
         }
         else
         {
@@ -829,7 +848,13 @@ namespace te
             
             // Move to the next raster
             
-            m_inputParameters.m_feederRasterPtr->moveNext();            
+            m_inputParameters.m_feederRasterPtr->moveNext();  
+            
+            if( m_inputParameters.m_enableProgress )
+            {
+              progressPtr->pulse();
+              if( ! progressPtr->isActive() ) return false;
+            }             
           }
         }
       }

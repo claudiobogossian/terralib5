@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -50,18 +50,18 @@ namespace te
         /*! \brief Default constructor. */
         SecondDegreePolynomialGT();
 
-        /*! \brief Virtual destructor. */
-        virtual ~SecondDegreePolynomialGT();
+        /*! \brief Destructor. */
+        ~SecondDegreePolynomialGT();
 
         const std::string& getName() const;
 
         bool isValid( const GTParameters& params ) const;
 
         void directMap( const GTParameters& params, const double& pt1X, 
-          const double& pt1Y, double& pt2X, double& pt2Y ) const;
-          
+                        const double& pt1Y, double& pt2X, double& pt2Y ) const;
+
         void inverseMap( const GTParameters& params, const double& pt2X, 
-          const double& pt2Y, double& pt1X, double& pt1Y ) const;
+                         const double& pt2Y, double& pt1X, double& pt1Y ) const;
 
         unsigned int getMinRequiredTiePoints() const;
         
@@ -84,7 +84,9 @@ namespace te
         ~SecondDegreePolynomialGTFactory();
 
         SecondDegreePolynomialGTFactory();
-        
+
+      protected:
+
         GeometricTransformation* build();
     };
 

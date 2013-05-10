@@ -27,6 +27,7 @@
 
 #include "Config.h"
 #include "Macros.h"
+#include "../raster/Grid.h"
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
 #include "../geometry/GeometricTransformation.h"
@@ -136,13 +137,14 @@ namespace te
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
         te::rst::Raster const* m_raster1Ptr; //!< Input raster 1.
         te::rst::Raster const* m_raster2Ptr; //!< Input raster 2.
+        te::rst::Grid const* m_grid1Ptr; //!< Raster 1 Grid. 
+        te::rst::Grid const* m_grid2Ptr; //!< Raster 2 Grid.
         te::gm::Polygon* m_r1ValidDataPolygonPtr; //!< null or a polygon (raster 1 indexed coords).
         te::gm::Polygon* m_r2ValidDataPolygonPtr; //!< null or a polygon (raster 2 indexed coords).
         te::gm::GeometricTransformation* m_geomTransformationPtr; //!< A transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns).
         te::rst::Interpolator::Method m_interpMethod1; //!< The interpolation method to use when reading raster 1 data.
         te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
         double m_outputNoDataValue; //!< The output raster no-data value.
-        bool m_forceInputNoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
         bool m_rastersHaveDifSRS; //!< True if the input rasters are under distinct SRSs.
         te::rst::Interpolator* m_interp1; //!< Raster 1 interpolator instance pointer.
         te::rst::Interpolator* m_interp2; //!< Raster 2 interpolator instance pointer.        
@@ -163,8 +165,6 @@ namespace te
         double m_noBlendMethodImp_Point1YProj2;
         double m_noBlendMethodImp_Point2Line;
         double m_noBlendMethodImp_Point2Col;        
-        te::gm::Point m_noBlendMethodImp_Point1Indexed;
-        te::gm::Point m_noBlendMethodImp_Point2Indexed;
         std::complex< double > m_noBlendMethodImp_cValue;
         
         /*! \brief Reset the instance to its initial default state. */
