@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -56,7 +56,7 @@ bool te::gm::ThirdDegreePolynomialGT::isValid( const GTParameters& params ) cons
 }
 
 void te::gm::ThirdDegreePolynomialGT::directMap( const GTParameters& params, const double& pt1X, 
-  const double& pt1Y, double& pt2X, double& pt2Y ) const
+                                                 const double& pt1Y, double& pt2X, double& pt2Y ) const
 {
   assert( isValid( params ) );
   
@@ -86,7 +86,7 @@ void te::gm::ThirdDegreePolynomialGT::directMap( const GTParameters& params, con
 }
 
 void te::gm::ThirdDegreePolynomialGT::inverseMap( const GTParameters& params, const double& pt2X, 
-  const double& pt2Y, double& pt1X, double& pt1Y ) const
+                                                  const double& pt2Y, double& pt1X, double& pt1Y ) const
 {
   assert( isValid( params ) );
   
@@ -176,11 +176,11 @@ bool te::gm::ThirdDegreePolynomialGT::computeParameters( GTParameters& params ) 
     
     Y( tpIdx, 0 ) = pt2.y;
     
-    YI( tpIdx, 0 ) = pt1.y;       
+    YI( tpIdx, 0 ) = pt1.y;
   }
-    
+
   // Solving...
-  
+
   boost::numeric::ublas::matrix< double > PinvW;
   if( ! te::common::getPseudoInverseMatrix( W, PinvW ) ) return false;
   
@@ -240,7 +240,7 @@ bool te::gm::ThirdDegreePolynomialGT::computeParameters( GTParameters& params ) 
   params.m_inverseParameters[ 17 ] = BI( 7, 0 );
   params.m_inverseParameters[ 18 ] = BI( 8, 0 );
   params.m_inverseParameters[ 19 ] = BI( 9, 0 );
-  
+
   return true;
 }
 

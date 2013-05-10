@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,12 +24,12 @@
 */ 
 
 // TerraLib
+#include "../common/PlatformUtils.h"
 #include "GTFactory.h"
 #include "GTFilter.h"
 #include "MultiPoint.h"
 #include "Point.h"
 #include "Surface.h"
-#include "../common/PlatformUtils.h"
 
 // STL
 #include <cmath>
@@ -48,26 +48,25 @@ te::gm::GTFilter::GTFilter()
 {
 }
 
-te::gm::GTFilter::GTFilter( const GTFilter& )
+bool te::gm::GTFilter::applyRansac(const std::string& transfName,
+                                   const GTParameters& inputParams,
+                                   const double expectedDirectMapRmse,
+                                   const double expectedInverseMapRmse,
+                                   const RansacItCounterT& maxIterations,
+                                   const double& assurance,
+                                   const bool enableMultiThread,
+                                   std::auto_ptr< GeometricTransformation >& outTransf,
+                                   const std::vector<double>& tiePointsWeights)
 {
-}
+  if(expectedDirectMapRmse < 0)
+    return false;
 
-te::gm::GTFilter& te::gm::GTFilter::operator=( const GTFilter& )
-{
-  return *this;
-}
+  if(expectedInverseMapRmse < 0)
+    return false;
 
-bool te::gm::GTFilter::applyRansac( const std::string& transfName, 
-  const GTParameters& inputParams, const double expectedDirectMapRmse, 
-  const double expectedInverseMapRmse, const RansacItCounterT& maxIterations,
-  const double& assurance, const bool enableMultiThread, 
-  std::auto_ptr< GeometricTransformation >& outTransf,
-  const std::vector< double >& tiePointsWeights )
-{
-  if( expectedDirectMapRmse < 0 ) return false;
-  if( expectedInverseMapRmse < 0 ) return false;
-  if( ( assurance < 0.0 ) || ( assurance > 1.0 ) ) return false;
-  
+  if((assurance < 0.0) || (assurance > 1.0))
+    return false;
+
   // generating the tie-points accumulated probabilities map
   // with positive values between 0 and 1
   std::map< double, GTParameters::TiePoint > tpsMap;
@@ -195,8 +194,7 @@ bool te::gm::GTFilter::applyRansac( const std::string& transfName,
   }
 }
 
-void te::gm::GTFilter::applyRansacThreadEntry( 
-  te::gm::GTFilter::ApplyRansacThreadEntryThreadParams* paramsPtr )
+void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThreadEntryThreadParams* paramsPtr)
 {
   assert( paramsPtr->m_maxIterationsDivFactor > 0 );
   
@@ -536,8 +534,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(
   }
 }
 
-double te::gm::GTFilter::getPt1ConvexHullArea( 
-  const std::vector< GTParameters::TiePoint >& tiePoints )
+double te::gm::GTFilter::getPt1ConvexHullArea(const std::vector< GTParameters::TiePoint >& tiePoints)
 {
   if( tiePoints.size() < 3 )
   {
