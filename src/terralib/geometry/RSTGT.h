@@ -70,7 +70,7 @@ namespace te
         /*! \brief Default constructor. */
         RSTGT();
 
-        /*! \brief Virtual destructor. */
+        /*! \brief Destructor. */
         ~RSTGT();
 
         const std::string& getName() const;
