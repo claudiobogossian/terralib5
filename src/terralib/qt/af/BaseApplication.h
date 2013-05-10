@@ -133,6 +133,8 @@ namespace te
 
           void showProgressDockWidget();
 
+          void onLayerTableClose(te::qt::widgets::DataSetTableDockWidget* wid);
+
         protected:
 
           virtual void openProject(const QString& projectFileName);
