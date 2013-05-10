@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/geometry/ProjectiveGT.cpp
 
-  \brief 2D Geometric transformation.
+  \brief 2D Projective Geometric transformation.
 */
 
 // TerraLib
@@ -56,7 +56,7 @@ bool te::gm::ProjectiveGT::isValid( const GTParameters& params ) const
 }
 
 void te::gm::ProjectiveGT::directMap( const GTParameters& params, const double& pt1X, 
-  const double& pt1Y, double& pt2X, double& pt2Y ) const
+                                      const double& pt1Y, double& pt2X, double& pt2Y ) const
 {
   assert( isValid( params ) );
   
@@ -86,7 +86,7 @@ void te::gm::ProjectiveGT::directMap( const GTParameters& params, const double& 
 }
 
 void te::gm::ProjectiveGT::inverseMap( const GTParameters& params, const double& pt2X, 
-  const double& pt2Y, double& pt1X, double& pt1Y ) const
+                                       const double& pt2Y, double& pt1X, double& pt1Y ) const
 {
   assert( isValid( params ) );
   

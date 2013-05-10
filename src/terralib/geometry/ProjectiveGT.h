@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -40,60 +40,60 @@ namespace te
   {
     /*!
       \class ProjectiveGT
-      
+
       \brief 2D Projective Geometric transformation.
       
       \note The transformation parameters (inside GTParameters::m_directParameters) are disposed on the following form:
-      
+
       \code
-      | u | = | a b c | * | x |
-      | v |   | d e f |   | y |
+      | u |   | a b c | * | x |
+      | v | = | d e f |   | y |
       | 1 |   | g h 1 |   | 1 |
-  
+
       u = a.x + b.y + c
           -------------------
           g.x + h.y + 1
-      
+
       v = d.x + e.y + f
           -------------------
           g.x + h.y + 1
-      
-      |u0| = |x0   y0  1  0   0  0  -x0*u0 -y0*v0|.|a|
+
+      |u0|   |x0   y0  1  0   0  0  -x0*u0 -y0*v0|.|a|
       |v0|   |0    0   0 x0  y0  1  -x0*v0 -y0*v0| |b|
       |u1|   |...................................| |c|
-      |v1|   |...................................| |d|
+      |v1| = |...................................| |d|
       |..|   |...................................| |e|
       |..|   |...................................| |f|
-      |..|   |...................................| |g|      
-      |..|   |...................................| |h|            
-        
-GTParameters::m_directParameters = [ a b c d e f g h ]
+      |..|   |...................................| |g|
+      |..|   |...................................| |h|
+
+      GTParameters::m_directParameters = [ a b c d e f g h ]
       \endcode
     */
     class TEGEOMEXPORT ProjectiveGT : public GeometricTransformation
     {
       public:
-        
+
         /*! \brief Default constructor. */
         ProjectiveGT();
 
-        /*! \brief Virtual destructor. */
-        virtual ~ProjectiveGT();
+        /*! \brief Destructor. */
+        ~ProjectiveGT();
 
         const std::string& getName() const;
 
         bool isValid( const GTParameters& params ) const;
 
         void directMap( const GTParameters& params, const double& pt1X, 
-          const double& pt1Y, double& pt2X, double& pt2Y ) const;
+                        const double& pt1Y, double& pt2X, double& pt2Y ) const;
           
         void inverseMap( const GTParameters& params, const double& pt2X, 
-          const double& pt2Y, double& pt1X, double& pt1Y ) const;
+                         const double& pt2Y, double& pt1X, double& pt1Y ) const;
 
         unsigned int getMinRequiredTiePoints() const;
-        
+
         GeometricTransformation* clone() const;
-        
+
       protected:
 
         bool computeParameters( GTParameters& params ) const;
@@ -111,7 +111,9 @@ GTParameters::m_directParameters = [ a b c d e f g h ]
         ~ProjectiveGTFactory();
 
         ProjectiveGTFactory();
-        
+
+      protected:
+
         GeometricTransformation* build();
     };
 
