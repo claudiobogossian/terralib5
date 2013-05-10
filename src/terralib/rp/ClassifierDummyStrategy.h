@@ -19,8 +19,9 @@
 
 /*!
   \file terralib/rp/ClassifierDummyStrategy.h
+
   \brief Dummy strategy (just for testing purposes).
- */
+*/
 
 #ifndef __TERRALIB_RP_INTERNAL_CLASSIFIERDUMMYSTRATEGY_H
 #define __TERRALIB_RP_INTERNAL_CLASSIFIERDUMMYSTRATEGY_H
@@ -28,7 +29,6 @@
 #include "ClassifierStrategy.h"
 #include "ClassifierStrategyFactory.h"
 #include "Config.h"
-
 
 namespace te
 {
@@ -38,7 +38,7 @@ namespace te
       \class ClassifierDummyStrategy
 
       \brief Dummy strategy (just for testing purposes).
-     */
+    */
     class TERPEXPORT ClassifierDummyStrategy : public ClassifierStrategy
     {
       public:

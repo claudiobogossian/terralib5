@@ -20,7 +20,7 @@
 /*!
   \file terralib/rp/ClassifierDummyStrategy.cpp
 
-  \briefRaster Dummy strategy.
+  \brief Dummy strategy (just for testing purposes).
 */
 
 // TerraLib
