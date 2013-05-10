@@ -28,7 +28,7 @@
 #include "ProgressTimer.h"
 #include "TaskProgress.h"
 
-te::common::TaskProgress::TaskProgress(const std::string& message, const unsigned int& type, int totalSteps)
+te::common::TaskProgress::TaskProgress(const std::string& message, unsigned int type, int totalSteps)
   : m_id(-1),
     m_type(type),
     m_totalSteps(totalSteps),
@@ -54,17 +54,17 @@ te::common::TaskProgress::~TaskProgress()
   delete m_timer;
 }
 
-int te::common::TaskProgress::getId()
+int te::common::TaskProgress::getId() const
 {
   return m_id;
 }
 
-unsigned int te::common::TaskProgress::getType()
+unsigned int te::common::TaskProgress::getType() const
 {
   return m_type;
 }
 
-int te::common::TaskProgress::getTotalSteps()
+int te::common::TaskProgress::getTotalSteps() const
 {
   return m_totalSteps;
 }
@@ -80,19 +80,19 @@ void te::common::TaskProgress::setTotalSteps(int value)
   {
     m_timer->setTotalSteps(m_totalSteps);
 
-    //reset timer clock
+    // reset timer clock
     m_timer->start();
   }
 
   te::common::ProgressManager::getInstance().setTotalValues(m_id);
 }
 
-int te::common::TaskProgress::getProportionalValue()
+int te::common::TaskProgress::getProportionalValue() const
 {
   return m_currentPropStep;
 }
 
-int te::common::TaskProgress::getCurrentStep()
+int te::common::TaskProgress::getCurrentStep() const
 {
   return m_currentStep;
 }
@@ -105,7 +105,7 @@ void te::common::TaskProgress::setCurrentStep(int value)
 
     double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 
-    int val = int (100. * aux);
+    int val = static_cast<int>(100.0 * aux);
 
     if(val > m_currentPropStep)
     {
@@ -124,33 +124,33 @@ void te::common::TaskProgress::setCurrentStep(int value)
       setMessage(m_timer->getMessage());
     }
 
-    //inform progress manager singleton that current value has changed
+    // inform the progress manager singleton that the current value has changed
     te::common::ProgressManager::getInstance().updateValue(m_id);
   }
 }
 
 void te::common::TaskProgress::pulse()
 {
-  //increment by one current value
+  // increment by one current value
   int val = getCurrentStep();
 
   setCurrentStep(++val);
 }
 
-std::string te::common::TaskProgress::getMessage()
+const std::string& te::common::TaskProgress::getMessage() const
 {
   return m_message;
 }
 
-void te::common::TaskProgress::setMessage(std::string message)
+void te::common::TaskProgress::setMessage(const std::string& message)
 {
   m_message = message;
 
-  //inform progress manager singleton that message has changed
+  // inform the progress manager singleton that the message has changed
   te::common::ProgressManager::getInstance().updateMessage(m_id);
 }
 
-bool te::common::TaskProgress::isActive()
+bool te::common::TaskProgress::isActive() const
 {
   return m_isActive;
 }
@@ -159,7 +159,7 @@ void te::common::TaskProgress::cancel()
 {
   m_isActive = false;
 
-  //inform progress manager singleton that current was canceled
+  // inform the progress manager singleton that the current task was canceled
   te::common::ProgressManager::getInstance().cancelTask(m_id);
 }
 
@@ -167,7 +167,7 @@ void te::common::TaskProgress::useMultiThread(bool flag)
 {
   m_isMultiThread = flag;
 
-  //code restriction, must be fixed
+  // code restriction, must be fixed
   if(m_isMultiThread)
   {
     delete m_timer;
@@ -182,7 +182,7 @@ void te::common::TaskProgress::useTimer(bool flag)
 
   if(m_timer == 0 && m_useTimer)
   {
-    //code restriction, must be fixed
+    // code restriction, must be fixed
     if(!m_isMultiThread)
     {
       m_timer = new ProgressTimer(getTotalSteps());
@@ -191,7 +191,7 @@ void te::common::TaskProgress::useTimer(bool flag)
   }
 }
 
-bool te::common::TaskProgress::hasToUpdate()
+bool te::common::TaskProgress::hasToUpdate() const
 {
   return m_hasToUpdate;
 }

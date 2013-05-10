@@ -75,7 +75,7 @@ namespace te
           te::se::Stroke*  m_stroke;   //!< The bar's stroke.
 
       };
-    }; //end namespace widgets
+    }  //end namespace widgets
   }    //end namespace qt
 }      // end namespace te
 

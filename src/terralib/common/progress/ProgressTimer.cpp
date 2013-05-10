@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/common/progress/ProgressTimer.cpp
 
-  \brief The ProgressTimer is a util class used to calculate the estimated time to finish loop job.
+  \brief The ProgressTimer is a utility class that can be used to calculate the estimated time to finish a task.
 */
 
 // TerraLib
@@ -32,8 +32,8 @@ te::common::ProgressTimer::ProgressTimer(int totalSteps)
   : m_totalSteps(totalSteps),
     m_count(0),
     m_startTime(0),
-    m_remainingTime(0.),
-    m_speedTime(0.)
+    m_remainingTime(0.0),
+    m_speedTime(0.0)
 {
 }
 
@@ -43,7 +43,7 @@ te::common::ProgressTimer::~ProgressTimer()
 
 void te::common::ProgressTimer::start()
 {
-//start time
+// start time
   time(&m_startTime);
 
   m_count = 0;
@@ -55,32 +55,32 @@ void te::common::ProgressTimer::tick()
 
   time_t curtime;
 
-  //current time
+  // current time
   time(&curtime);
 
-  //difference in seconds
+  // difference in seconds
   double diffInSec = difftime(curtime, m_startTime);
-
-  int remainingSteps = m_totalSteps - m_count;
 
   m_speedTime = (static_cast<double>(m_count) / diffInSec);
 
+  int remainingSteps = m_totalSteps - m_count;
+
   double remainingTimeInSec = (static_cast<double>(remainingSteps) / m_speedTime);
 
-  m_remainingTime = remainingTimeInSec / 60.;
+  m_remainingTime = remainingTimeInSec / 60.0;
 }
 
-void te::common::ProgressTimer::setTotalSteps(const int& totalSteps)
+void te::common::ProgressTimer::setTotalSteps(int totalSteps)
 {
   m_totalSteps = totalSteps;
 }
 
-double te::common::ProgressTimer::getRemainingTimeInMin()
+double te::common::ProgressTimer::getRemainingTimeInMin() const
 {
   return m_remainingTime;
 }
 
-double te::common::ProgressTimer::getSpeedTimeInSec()
+double te::common::ProgressTimer::getSpeedTimeInSec() const
 {
   return m_speedTime;
 }
@@ -89,7 +89,7 @@ std::string te::common::ProgressTimer::getMessage()
 {
   std::string strTime = "";
 
-  if(m_remainingTime < 1.)
+  if(m_remainingTime < 1.0)
   {
     strTime = TR_COMMON("Remaining Time: Less than one minute");
   }

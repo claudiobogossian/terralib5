@@ -23,8 +23,8 @@
   \brief A class used to define a chart's style
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLE_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLE_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLE_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLE_H
 
 //TerraLib
 #include "../Config.h"
@@ -56,13 +56,13 @@ namespace te
 
           ChartStyle();
 
-          ChartStyle(std::string title, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color);
+          ChartStyle(QString title, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color);
 
           ~ChartStyle();
 
-          std::string& getTitle();
+          QString& getTitle();
 
-          void setTitle(std::string newTitle);
+          void setTitle(QString newTitle);
 
           te::se::Fill* getFill();
 
@@ -82,7 +82,7 @@ namespace te
 
         private:
 
-          std::string      m_title;         //!< The chart's title.
+          QString          m_title;         //!< The chart's title.
           bool             m_gridChecked;   //!< The boolean used to decide if the chart will have a background grid .
           te::se::Fill*    m_fill;          //!< The chart's fill.
           te::se::Stroke*  m_stroke;        //!< The chart's stroke.
@@ -93,4 +93,4 @@ namespace te
   }    //end namespace qt
 }      // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLE_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLE_H

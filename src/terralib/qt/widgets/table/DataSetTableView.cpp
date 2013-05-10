@@ -1,13 +1,17 @@
 #include "DataSetTableView.h"
 #include "DataSetTableModel.h"
+#include "HighlightDelegate.h"
 
 // TerraLib include files
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 
 // Qt
 #include <QtGui/QHeaderView>
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QMenu>
+#include <QtGui/QCursor>
 
 // STL
 #include <vector>
@@ -104,6 +108,8 @@ class TablePopupFilter : public QObject
 
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
+      m_view->connect(this, SIGNAL(selectObject(const int&, const bool&)), SLOT(highlightRow(const int&, const bool&)));
+      m_view->connect(this, SIGNAL(selectObjects(const int&, const int&)), SLOT(highlightRows(const int&, const int&)));
     }
 
     /*!
@@ -171,8 +177,60 @@ class TablePopupFilter : public QObject
           }
           else if(watched == vport)
           {
+            delete m_vportMenu;
 
+            QContextMenuEvent* evt = static_cast<QContextMenuEvent*>(event);
+            QPoint pos = evt->globalPos();
+
+            m_vportMenu = new QMenu;
+
+            QAction* act = new QAction(m_vportMenu);
+            act->setText(tr("Promote"));
+            act->setToolTip(tr("Reorder rows"));
+            m_vportMenu->addAction(act);
+
+            m_view->connect(act, SIGNAL(triggered()), SLOT(promote()));
+
+            m_vportMenu->popup(pos);
           }
+        }
+        break;
+
+        case QEvent::MouseButtonPress:
+          {
+            QMouseEvent* evt = static_cast<QMouseEvent*>(event);
+
+            if(evt->button() == Qt::LeftButton && watched == vport)
+            {
+              int row = m_view->rowAt(evt->pos().y());
+
+              if(evt->modifiers() & Qt::ShiftModifier)
+              {
+                emit selectObjects(m_initRow, row);
+
+                return true;
+              }
+
+              m_initRow = row;
+
+              bool add = evt->modifiers() & Qt::ControlModifier;
+
+              emit selectObject(row, add);
+
+              return true;
+            }
+          }
+        break;
+
+        case QEvent::MouseButtonDblClick:
+        {
+          QMouseEvent* evt = static_cast<QMouseEvent*>(event);
+
+          QModelIndex idx = m_view->indexAt(evt->pos());
+
+          m_view->edit(idx);
+
+          return true;
         }
         break;
       }
@@ -210,6 +268,12 @@ class TablePopupFilter : public QObject
 
     void showColumn(const int&);
 
+    void selectObject(const int&, const bool&);
+
+    void selectObjects(const int& initRow, const int& finalRow);
+
+    void promote();
+
   protected:
 
     te::qt::widgets::DataSetTableView* m_view;
@@ -219,6 +283,7 @@ class TablePopupFilter : public QObject
     te::da::DataSet* m_dset;
 
     int m_columnPressed;
+    int m_initRow;
 };
 
 te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
@@ -228,9 +293,16 @@ QTableView(parent)
   setModel(m_model);
 
   horizontalHeader()->setMovable(true);
-  setSelectionMode(QAbstractItemView::NoSelection);
+  setSelectionMode(QAbstractItemView::MultiSelection);
+  setSelectionBehavior(QAbstractItemView::SelectColumns);
 
   m_popupFilter = new TablePopupFilter(this);
+
+  m_delegate = new HighlightDelegate(this);
+
+  m_delegate->setColor(Qt::green);
+
+  setItemDelegate(m_delegate);
 }
 
 te::qt::widgets::DataSetTableView::~DataSetTableView()
@@ -249,6 +321,20 @@ void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset)
     hideColumn(*it);
 
   m_popupFilter->setDataSet(dset);
+  m_delegate->setDataSet(dset);
+
+  dset->moveFirst();
+}
+
+void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType* schema)
+{
+  te::da::ObjectIdSet* objs = 0;
+
+  te::da::GetEmptyOIDSet(schema, objs);
+
+  m_delegate->setObjectIdSet(objs);
+
+  m_model->setPkeysColumns(objs->getPropertyPos());
 }
 
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
@@ -283,4 +369,53 @@ void te::qt::widgets::DataSetTableView::resetColumnsOrder()
     if(visCol != i)
       hdr->moveSection(visCol, i);
   }
+}
+
+void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool& add)
+{
+  if(!add)
+    m_delegate->clearSelected();
+
+  m_delegate->addObject(row);
+
+  if(m_model->isPromotionEnabled())
+    promote();
+  else
+    viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const int& finalRow)
+{
+  int ini,
+    final;
+
+  if(initRow < finalRow)
+  {
+    ini = initRow;
+    final = finalRow;
+  }
+  else
+  {
+    ini = finalRow;
+    final = initRow;
+  }
+
+  m_delegate->addObjects(ini, final);
+
+  if(m_model->isPromotionEnabled())
+    promote();
+  else
+    viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::promote()
+{
+  QCursor cursor(Qt::WaitCursor);
+
+  std::vector<te::da::ObjectId*> oids = m_delegate->getSelected();
+  m_model->promote(oids);
+
+  m_delegate->setPromoter(m_model->getPromoter());
+
+  viewport()->repaint();
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -71,14 +71,14 @@ namespace te
 
         void reset() throw( te::common::Exception );
 
-        const GTParameters& operator=( const GTParameters& params );
-        
+        GTParameters& operator=( const GTParameters& rhs );
+
         /*!
           \brief Returns a pointer the the internal specific model parameters or null if they do not exist.
 
           \return A pointer the the internal specific model parameters or null if they do not exist.
         */
-        inline GTModelParameters const* getModelParameters() const
+        const GTModelParameters* getModelParameters() const
         {
           return m_modelParameters.get();
         };
@@ -88,10 +88,10 @@ namespace te
 
           \param modelParamsPtr The new model specific parameters.
         */
-        void setModelParameters( GTModelParameters const* modelParamsPtr ) const
+        void setModelParameters( const GTModelParameters* modelParamsPtr )
         {
-          m_modelParameters.reset( modelParamsPtr ? 
-            ( (GTModelParameters*)modelParamsPtr->clone() ) : 0 );
+          m_modelParameters.reset( modelParamsPtr ?
+                                  static_cast<GTModelParameters*>(modelParamsPtr->clone()) : 0 );
         };
 
       public:
@@ -102,7 +102,7 @@ namespace te
 
       protected:
 
-        mutable std::auto_ptr< GTModelParameters > m_modelParameters; //!< Transformation model parameters.
+        std::auto_ptr< GTModelParameters > m_modelParameters; //!< Transformation model parameters.
     };
 
   } // end namespace gm

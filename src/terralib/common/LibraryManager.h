@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,23 +20,20 @@
 /*!
   \file terralib/common/LibraryManager.h
 
-  \brief A singleton that can be used to register the available libraries in the system.
- */
+  \brief A singleton that can be used to observe the available libraries in the system.
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_LIBRARYMANAGER_H
 #define __TERRALIB_COMMON_INTERNAL_LIBRARYMANAGER_H
 
 // TerraLib
 #include "Config.h"
-#include "Singleton.h"
 #include "Library.h"
+#include "Singleton.h"
 
 // STL
-#include <map>
 #include <string>
 
-// Boost
-#include <boost/weak_ptr.hpp>
 
 namespace te
 {
@@ -45,12 +42,15 @@ namespace te
     /*!
       \class LibraryManager
 
-      \brief A singleton that can be used to register the available libraries in the system.
+      \brief A singleton that can be used to observe the available libraries in the system.
 
       \note This singleton doesn't control the libraries lifetime, it
             just make smart references to them that will be automatically removed
-            when a library goes out of scope (or been destroyed).
-     */
+            when a library goes out of scope (or been destroyed). Actually it works
+            like an observer of known libraries.
+
+      \note This class is based on pimpl idiom.
+    */
     class TECOMMONEXPORT LibraryManager : public Singleton<LibraryManager>
     {
       friend class Singleton<LibraryManager>;
@@ -68,7 +68,7 @@ namespace te
 
           \param id An identifier used to search for the library in successive lookups.
           \param l  The library to be managed.
-         */
+        */
         void add(const std::string& id, const LibraryPtr& l) throw();
 
         /*!
@@ -77,7 +77,7 @@ namespace te
           \param name The library name.
 
           \return A pointer to an already loaded library or null.
-         */
+        */
         LibraryPtr find(const std::string& name) throw();
 
       protected:
@@ -90,7 +90,9 @@ namespace te
 
       private:
 
-        std::map<std::string, boost::weak_ptr<Library> > m_libraryMap;  //!< The list of references to libraries, a map from: lib-name -> lib.
+        class Impl;
+
+        Impl* m_pImpl;  //!< A pointer to the real implementation.
     };
 
   } // end namespace common

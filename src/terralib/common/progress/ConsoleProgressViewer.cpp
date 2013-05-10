@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/common/progress/ConsoleProgressViewer.cpp
 
-  \brief A class that defines the interface of an console progress viewer.
+  \brief A progress viewer implementation for the console.
 */
 
 // TerraLib
@@ -80,7 +80,7 @@ void te::common::ConsoleProgressViewer::cancelTask(int taskId)
 
     double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 
-    m_propStep = static_cast<int>(100. * aux);
+    m_propStep = static_cast<int>(100.0 * aux);
   }
 }
 
@@ -95,7 +95,7 @@ void te::common::ConsoleProgressViewer::updateValue(int /*taskId*/)
 
   double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 
-  int val = static_cast<int>(100. * aux);
+  int val = static_cast<int>(100.0 * aux);
 
   if((val != m_propStep) && (val >= 0))
   {

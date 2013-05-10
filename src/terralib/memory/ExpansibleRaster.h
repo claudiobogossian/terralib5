@@ -20,7 +20,7 @@
 /*!
   \file terralib/memory/ExpansibleRaster.h
 
-  \brief A raster (stored in memory and eventually swapped to disk) where it is possible to dynamically add and remove lines/columns.
+  \brief A raster (stored in memory and eventually swapped to disk) where it is possible to dynamically add lines/columns/bands.
 */
 
 #ifndef __TERRALIB_MEMORY_INTERNAL_EXPANSIBLERASTER_H
@@ -41,9 +41,13 @@ namespace te
     /*!
       \class ExpansibleRaster
 
-      \brief A raster (stored in memory and eventually swapped to disk) where it is possible to dynamically add and remove lines/columns.
+      \brief A raster (stored in memory and eventually swapped to disk) where it is possible to dynamically add lines/columns/bands.
       
-      \note All bands will have the same blocking scheme.
+      \note The first band blocking scheme will be taken as reference for the other bands.
+      
+      \note Adding lines/columns may add extra lines/columns to correctly fit the internal blocking structure.
+      
+      \note The geographic limits will be automatically adjust following the requested expansion.
     */
     class TEMEMORYEXPORT ExpansibleRaster: public te::rst::Raster
     {
@@ -171,60 +175,6 @@ namespace te
           \return true if OK, false on errors.
         */         
         bool addBottomBands( const unsigned int number );        
-        
-        /*!
-          \brief Lines will be removed from the top of the raster.
-          
-          \param number The number of lines to remove.
-          
-          \return true if OK, false on errors.
-        */        
-        bool removeTopLines( const unsigned int number );
-        
-        /*!
-          \brief Lines will be removed from the bottom of the raster.
-          
-          \param number The number of lines to remove.
-          
-          \return true if OK, false on errors.
-        */         
-        bool removeBottomLines( const unsigned int number );
-        
-        /*!
-          \brief Columns will be removed from the left of the raster.
-          
-          \param number The number of columns to remove.
-          
-          \return true if OK, false on errors.
-        */        
-        bool removeLeftColumns( const unsigned int number );        
-        
-        /*!
-          \brief Columns will be removed from the right of the raster.
-          
-          \param number The number of columns to add.
-          
-          \return true if OK, false on errors.
-        */        
-        bool removeRightColumns( const unsigned int number );     
-        
-        /*!
-          \brief Bands will be removed from the top of the raster.
-          
-          \param number The number of bands to remove.
-          
-          \return true if OK, false on errors.
-        */        
-        bool removeTopBands( const unsigned int number );
-        
-        /*!
-          \brief Bands will be removed from the bottom of the raster.
-          
-          \param number The number of bands to remove.
-          
-          \return true if OK, false on errors.
-        */         
-        bool removeBottomBands( const unsigned int number );        
 
       protected :
         
@@ -233,9 +183,22 @@ namespace te
         ExpansibleBandBlocksManager m_blocksManager; //!< Internal blocks manager.      
 
         /*!
-          \note Free all allocated internal resources and go back to the initial state.
+          \brief Free all allocated internal resources and go back to the initial state.
         */
-        void free();      
+        void free();    
+        
+        /*!
+          \brief Fill all blocks with dummy values.
+        */
+        void dummyFillAllBlocks();        
+
+        /*!
+          \brief Fill the required blocks with dummy values.
+          
+          \param blocksCoords The blocks coords.
+        */
+        void dummyFillBlocks( 
+          const std::vector< ExpansibleBandBlocksManager::BlockIndex3D >& blocksCoords );
         
       private :
         

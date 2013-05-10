@@ -54,7 +54,7 @@ void PrintCatalog(te::da::DataSource* ds)
   cloader->getDataSets(datasets);
 
   // Iterate over the dataset names to retrieve its information
-  std::cout << "Printing information about datasets...\n\n Number of datasets: " << datasets.size() << std::endl;
+  std::cout << "Printing information about datasets...\n\nNumber of datasets: " << datasets.size() << std::endl;
 
   for(unsigned int i=0; i<datasets.size(); ++i)
   {
@@ -63,9 +63,28 @@ void PrintCatalog(te::da::DataSource* ds)
 
     te::da::DataSetType* dt = cloader->getDataSetType(datasets[i], true);
 
+    std::cout << "\n=============================================================================" << std::endl;
     std::cout << "DataSet: " << dt->getName() << std::endl;
-    std::cout << "\t" << "Number of attributes:" << dt->size() << std::endl;
-    std::cout << "\t" << "Has PK:" << (dt->getPrimaryKey() != 0) << std::endl;
+    std::cout << ">>>>>Number of attributes: " << dt->size() << std::endl;
+
+    // Get the column(s) that take(s) part of the primary key(if any)
+    std::cout << ">>>>>Primary Key Information" << std::endl;
+
+    te::da::PrimaryKey* pk = dt->getPrimaryKey();
+    if(pk != 0)
+    {
+      const std::vector<te::dt::Property*>& pkCols = pk->getProperties();
+
+      std::vector<std::string> pNames(pkCols.size());
+      for(std::size_t i = 0; i < pkCols.size(); ++i)
+      {
+        pNames[i]= pkCols[i]->getName();
+        std::cout << "\t" << "Column " << i << ": " << pNames[i] << std::endl;
+      }
+    }
+    else
+      std::cout << "\t" << "The data set has no primary key!" << std::endl;
+
     std::cout << "\t" << "Number of UKs:" << dt->getNumberOfUniqueKeys() << std::endl;
     std::cout << "\t" << "Number of Indexes:" << dt->getNumberOfIndexes() << std::endl;
     std::cout << "\t" << "Number of Check-Constraints:" << dt->getNumberOfCheckConstraints() << std::endl;

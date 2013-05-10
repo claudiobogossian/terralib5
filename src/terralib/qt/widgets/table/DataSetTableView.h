@@ -32,7 +32,7 @@
 // Qt
 #include <QtGui/QTableView>
 
-// Forward declarations
+// Forward declaration
 class TablePopupFilter;
 
 namespace te
@@ -41,6 +41,7 @@ namespace te
   namespace da
   {
     class DataSet;
+    class DataSetType;
   }
 
   namespace qt
@@ -49,6 +50,7 @@ namespace te
     {
       // Forward declaration
       class DataSetTableModel;
+      class HighlightDelegate;
 
       /*!
         \class
@@ -83,8 +85,22 @@ namespace te
           */
           void setDataSet(te::da::DataSet* dset);
 
+          /*!
+            \brief Sets the schema of the data set. It is used to define the primary keys and create the ObjectIdSet.
+
+            \param schema The DataSetType to extract keys.
+          */
+          virtual void setLayerSchema(const te::da::DataSetType* schema);
+
         public slots:
           
+          /*!
+            \name Table slot methods.
+
+            \brief Methods to handle user interaction with table.
+          */
+
+          //@{
           /*!
             \brief Hides the column at position \a column
 
@@ -109,10 +125,39 @@ namespace te
           */
           void resetColumnsOrder();
 
+          /*!
+            \brief Used to highlight the data when the mouse is clicked over a row in the table.
+
+            \param row Row to be highlighted.
+
+            \param add True to add to selection, false to new selection.
+          */
+          void highlightRow(const int& row, const bool& add);
+
+          /*!
+            \brief Select all rows from \a initRow to \a finalRow.
+
+            \param initRow the begin row.
+
+            \param finalRow the final row.
+
+            \note It does not matter if \a initRow is less than \a finalRow.
+          */
+          void highlightRows(const int& initRow, const int& finalRow);
+
+          /*!
+            \brief Promotes the highlighted rows.
+
+            The rows highlighted are presented in the begining of the table.
+          */
+          void promote();
+          //@}
+
         protected:
 
           DataSetTableModel* m_model;       //!< The model to be used.
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
+          HighlightDelegate* m_delegate;    //!< Delegate used for rendering selected rows.
       };
     }
   }

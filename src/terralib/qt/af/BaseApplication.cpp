@@ -32,9 +32,8 @@
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
-#include "../widgets/charts/ChartStyleDialog.h"
-#include "../widgets/charts/HistogramCreatorDialog.h"
-#include "../widgets/charts/ScatterCreatorDialog.h"
+#include "../widgets/charts/HistogramDialog.h"
+#include "../widgets/charts/ScatterDialog.h"
 #include "../widgets/datasource/core/DataSourceType.h"
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
@@ -53,7 +52,7 @@
 #include "../widgets/progress/ProgressViewerWidget.h"
 #include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/se/RasterVisualDockWidget.h"
-#include "../widgets/table/DataSetTableView.h"
+#include "../widgets/table/DataSetTableDockWidget.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/ZoomArea.h"
@@ -95,6 +94,18 @@
 
 // Boost
 #include <boost/format.hpp>
+
+te::qt::widgets::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::widgets::DataSetTableDockWidget*>& docs)
+{
+  std::vector<te::qt::widgets::DataSetTableDockWidget*>::const_iterator it;
+
+  for(it=docs.begin(); it!=docs.end(); ++it)
+    if((*it)->getLayer() == layer)
+      return *it;
+
+  return 0;
+}
+
 
 te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
@@ -511,25 +522,22 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
 
   te::map::AbstractLayer* lay = (*layers.begin())->getLayer().get();
 
-  // Docking
-  QDockWidget* doc = new QDockWidget(this, Qt::Widget);
-  te::qt::widgets::DataSetTableView* tbl = new te::qt::widgets::DataSetTableView(doc);
-  tbl->setDataSet(lay->getData());
+  te::qt::widgets::DataSetTableDockWidget* doc = GetLayerDock(lay, m_tableDocks);
 
-  doc->setWindowTitle(lay->getTitle().c_str());
-
-  doc->setWidget(tbl);
-
-  addDockWidget(Qt::BottomDockWidgetArea, doc);
-
-  if(!m_tableDocks.empty())
+  if(doc == 0)
   {
-    tabifyDockWidget(m_tableDocks[m_tableDocks.size()-1], doc);
-    doc->show();
-    doc->raise();
+    doc = new te::qt::widgets::DataSetTableDockWidget(this);
+    doc->setLayer(lay);
+    addDockWidget(Qt::BottomDockWidgetArea, doc);
+
+    if(!m_tableDocks.empty())
+      tabifyDockWidget(m_tableDocks[m_tableDocks.size()-1], doc);
+  
+    m_tableDocks.push_back(doc);
   }
 
-  m_tableDocks.push_back(doc);
+  doc->show();
+  doc->raise();
 }
 
 void te::qt::af::BaseApplication::onLayerHistogramTriggered()
@@ -545,7 +553,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     }
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
-    te::qt::widgets::HistogramCreatorDialog dlg(dataset, this);
+    te::qt::widgets::HistogramDialog dlg(dataset, this);
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -567,7 +575,8 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     }
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
-    te::qt::widgets::ScatterCreatorDialog dlg(dataset, this);
+    te::qt::widgets::ScatterDialog dlg(dataset, this);
+
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -790,6 +799,11 @@ void te::qt::af::BaseApplication::makeDialog()
 
 // 1. Layer Explorer
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
+
+  lexplorer->getTreeView()->add(m_projectAddLayerDataset, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
+  lexplorer->getTreeView()->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 

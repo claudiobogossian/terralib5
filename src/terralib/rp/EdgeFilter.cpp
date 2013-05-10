@@ -108,9 +108,8 @@ namespace te
     {
       reset();
       
-      m_rType.clear();
-      m_rInfo.clear();
-      m_outputRasterPtr.reset();
+      m_rType = params.m_rType;
+      m_rInfo = params.m_rInfo;
 
       return *this;
     }

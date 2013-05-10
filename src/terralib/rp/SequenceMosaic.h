@@ -18,35 +18,32 @@
  */
 
 /*!
-  \file terralib/rp/Mosaic.h
-  \brief Create a mosaic from a set of rasters.
+  \file terralib/rp/SequenceMosaic.h
+  \brief Create mosaics from a sequence of overlapped rasters using an automatic tie-points detection method. 
  */
 
-#ifndef __TERRALIB_RP_INTERNAL_MOSAIC_H
-#define __TERRALIB_RP_INTERNAL_MOSAIC_H
+#ifndef __TERRALIB_RP_INTERNAL_SEQUENCEMOSAIC_H
+#define __TERRALIB_RP_INTERNAL_SEQUENCEMOSAIC_H
 
 #include "Algorithm.h"
 #include "FeedersRaster.h"
 #include "Blender.h"
-#include "../geometry/GTParameters.h"
-#include "../geometry/GeometricTransformation.h"
+#include "TiePointsLocator.h"
 #include "../raster/Interpolator.h"
-
-#include <vector>
-#include <string>
-#include <map>
+#include "../dataaccess/datasource/DataSource.h"
 
 namespace te
 {
   namespace rp
   {
     /*!
-      \class Mosaic
-      \brief Create a mosaic from a set of rasters.
-      \note The first raster will always be taken as reference to define the mosaic resolution and SRS.
-      \ingroup RPAlgorithms
+      \class SequenceMosaic
+      \brief Create mosaics from a sequence of overlapped rasters using an automatic tie-points detection method. 
+      \note When the tie-points detection fails, a new mosaic sequence is generated.
+      \note Each mosaic sequence takes the first raster (of each sequence) as reference for resolution, SRS and equalization parameters.
+      \ingroup MosaicAlgorithms
      */
-    class TERPEXPORT Mosaic : public Algorithm
+    class TERPEXPORT SequenceMosaic : public Algorithm
     {
       public:
         
@@ -58,21 +55,9 @@ namespace te
         {
           public:
             
-            /*! \enum TiePointsLinkType The tie pionts linking type (what rasters are linked by the supplied tie-points. */
-            enum TiePointsLinkType
-            {
-              InvalidTiePointsT = 0, //!< Invalid linking type.
-              AdjacentRastersLinkingTiePointsT = 1, //!< Tie-points linking adjacent raster pairs (te::gm::GTParameters::TiePoint::first are raster (with index i) lines/columns, te::gm::GTParameters::TiePoint::second are raster (with index I+1) lines/columns ,and so on).
-              FirstRasterLinkingTiePointsT = 2 //!< Tie-points linking any raster to the first sequence raster (te::gm::GTParameters::TiePoint::first are the first raster lines/columns, te::gm::GTParameters::TiePoint::second are any other sequenced raster lines/columns ,and so on).
-            };            
-            
             FeederConstRaster* m_feederRasterPtr; //!< Input rasters feeder.
             
             std::vector< std::vector< unsigned int > > m_inputRastersBands; //!< Bands to process for each input raster.
-            
-            std::vector< std::vector< te::gm::GTParameters::TiePoint > > m_tiePoints; //!< An empty vector (for the case where only the reaster geographical coordinates must be used) or Tie-points between each adjacent raster pair (te::gm::GTParameters::TiePoint::first are raster (with index i) lines/columns, te::gm::GTParameters::TiePoint::second are raster (with index I+1) lines/columns ,and so on).
-            
-            TiePointsLinkType m_tiePointsLinkType; //!< The given tie points linking type, see TiePointsLinkType.
             
             std::string m_geomTransfName; //!< The name of the geometric transformation used if tie-points are supplied (see each te::gm::GTFactory inherited classes to find each factory key/name, default:Affine).
             
@@ -88,9 +73,23 @@ namespace te
             
             bool m_useRasterCache; //!< Enable(true) or disable the use of raster caching (default:true).
             
+            bool m_enableMultiThread; //!< Enable/Disable the use of multi-threads (default:true).
+            
+            bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
+            unsigned int m_tiePointsLocationBandIndex; //!< The band used to locate tie-points, this is the index inside each vector of m_inputRastersBands (defaul:0).
+            
+            std::string m_outDataSetsNamePrefix; //!< The raster output data sets names prefix.
+            
+            std::string m_outDataSetsNameSufix; //!< The raster output data sets names sufix.
+            
+            double m_minRequiredTiePointsCoveredAreaPercent; //!< The mininumum required tie-points covered area percent of each raster area - valid range [0,100] (default:0).
+            
+            te::rp::TiePointsLocator::InputParameters m_locatorParams; //!< The parameters used by the tie-points locator when processing each rasters pair (leave untouched to use the default).
+            
             InputParameters();
             
-            InputParameters( const InputParameters& );
+            InputParameters( const InputParameters& );            
             
             ~InputParameters();
             
@@ -112,11 +111,7 @@ namespace te
         {
           public:
             
-            std::string m_rType; //!< Output raster data source type (as described in te::raster::RasterFactory ).
-            
-            std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the output rasters (as described in te::raster::RasterFactory). 
-            
-            mutable boost::shared_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output mosaic raster.
+            te::da::DataSource* m_outputDSPtr; //!< The output data source where the mosaic rasters will be created.
             
             OutputParameters();
             
@@ -134,9 +129,9 @@ namespace te
             AbstractParameters* clone() const;
         };        
 
-        Mosaic();
+        SequenceMosaic();
         
-        ~Mosaic();
+        ~SequenceMosaic();
        
         //overload
         bool execute( AlgorithmOutputParameters& outputParams ) throw( te::rp::Exception );
@@ -151,30 +146,21 @@ namespace te
 
       protected:
         
-        Mosaic::InputParameters m_inputParameters; //!< Input execution parameters.
+        SequenceMosaic::InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
-        
-        /*!
-          \brief Execute a mosaic of georeferenced images.
-          \param outputParams The algorithm execution parameters.
-          \return true if ok, false on errors.
-        */
-        bool executeGeoMosaic( Mosaic::OutputParameters& outputParams );
-          
-        /*!
-          \brief Execute a mosaic of images linket by tie-points.
-          \param outputParams The algorithm execution parameters.
-          \return true if ok, false on errors.
-        */
-        bool executeTiePointsMosaic( Mosaic::OutputParameters& outputParams );          
           
         /*!
           \brief Raster band statistics calcule.
+          
           \param band Input raster band.
+          
           \param forceNoDataValue Force the noDataValue to be used as the band no-data value.
+          
           \param noDataValue The no-data value to use.
+          
           \param mean Pixels mean.
+          
           \param variance Pixels variance.
         */
         static void calcBandStatistics( const te::rst::Band& band,
@@ -182,7 +168,33 @@ namespace te
           const double& noDataValue,
           double& mean, 
           double& variance );
-
+          
+        /*!
+          \brief Create a raster data set from the given raster.
+          
+          \param dataSetName The data set name.
+          
+          \param sourceRaster The source raster.
+          
+          \param dataSourcePtr The output data source pointer.
+          
+          \return true if OK, false on errors.
+        */
+        bool createRasterDataSet( const std::string& dataSetName,
+          const te::rst::Raster& sourceRaster, te::da::DataSource* dataSourcePtr ) const;
+          
+        /*!
+          \brief Returns the tie points converx hull area.
+          
+          \param tiePoints Input tie-points.
+          
+          \param useTPSecondCoordPair If true the sencond tie-point component (te::gm::GTParameters::TiePoint::second) will be used for the area calcule, otherwize the first component will be used.
+          
+          \return Returns the tie points converx hull area.
+        */          
+        double getTPConvexHullArea( 
+          const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
+          const bool useTPSecondCoordPair ) const;
     };
 
   } // end namespace rp

@@ -20,7 +20,7 @@
 /*!
   \file terralib/vp/qt/PropertyItem.h
 
-  \brief ???
+  \brief A class that represents a Property in a LayerTreeModel.
 */
 
 #ifndef __TERRALIB_VP_QT_INTERNAL_PROPERTYITEM_H
@@ -67,12 +67,24 @@ namespace te
 
         te::dt::Property* getProperty() const;
 
+        /*!
+          \brief Set the Property as selected.
+
+          \param selected True or False to Property select state.
+        */
         void setSelected(bool selected);
+
+        /*!
+          \brief Check if the Property is selected.
+
+          \return True if the Property is selected.
+        */
+        bool isSelected();
 
       private:
 
-        te::dt::Property* m_property;
-        bool m_selected;
+        te::dt::Property* m_property; //!< Terralib Property of the LayerItem.
+        bool m_selected;              //!< Property select state.
     }; 
   }   // end namespace vp
 }     // end namespace te

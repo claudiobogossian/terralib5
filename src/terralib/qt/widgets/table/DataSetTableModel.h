@@ -32,18 +32,25 @@
 // Qt
 #include <QtCore/QAbstractTableModel>
 
+// STL
+#include <vector>
+
 namespace te
 {
   // Forward declarations
   namespace da
   {
     class DataSet;
+    class ObjectId;
   }
 
   namespace qt
   {
     namespace widgets
     {
+      // Forward declaration
+      class Promoter;
+
       /*!
         \class DataSetTableModel
 
@@ -58,7 +65,9 @@ namespace te
           */
           DataSetTableModel(QObject* parent = 0);
 
-          /*! \brief Virtual destructor. */
+          /*! 
+            \brief Virtual destructor. 
+          */
           virtual ~DataSetTableModel();
 
           /*!
@@ -66,9 +75,48 @@ namespace te
 
             \param dset The new data set to be used.
 
-            \note This method DO TAKES the ownership of te::da::DataSet pointer.
+            \note This method DOES TAKE the ownership of \a dset.
           */
           void setDataSet(te::da::DataSet* dset);
+
+          /*!
+            \brief Sets the columns used as pkeys, for presentation purposes.
+
+            \param pkeys Positions of the columns that form the primary key.
+          */
+          void setPkeysColumns(const std::vector<size_t>& pkeys);
+
+          /*!
+            \brief Enables or disables promotion fo the rows.
+
+            \param enable True for enable promotion, false for disable it.
+
+            \note This operation consumes time and memory resources, because the all primary keys must be processed.
+          */
+          void setPromotionEnable(const bool& enable);
+
+          /*!
+            \brief Promotes the rows identified by \a oids.
+
+            \parama oids The identifiers of the rows to be promoted.
+          */
+          void promote(const std::vector<te::da::ObjectId*>& oids);
+
+          /*!
+            \brief Returns true if promotion is enabled, false otherwise.
+
+            \return True if promotion is enabled and false otherwise.
+          */
+          bool isPromotionEnabled();
+
+          /*!
+            \brief Returns the pointer to the promoter being used.
+
+            \return Pointer of the promoter being used.
+
+            \note The caller of this method DOES NOT take the ownership of the pointer.
+          */
+          Promoter* getPromoter();
 
           /*!
             \name QAbstractTableModel re-implementation methods.
@@ -88,13 +136,17 @@ namespace te
           Qt::ItemFlags flags(const QModelIndex & index) const;
 
           bool setData (const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
-
           //@}
 
         protected:
 
-          te::da::DataSet* m_dataset;   //!< The dataset being used.
-          mutable int m_currentRow;     //!< An internal row pointer.
+          te::da::DataSet* m_dataset;         //!< The dataset being used.
+
+          mutable int m_currentRow;           //!< An internal row pointer.
+
+          std::vector<size_t> m_pkeysColumns; //!< Primary key columns.
+
+          Promoter* m_promoter;               //!< Promoter to be used.
       };
     }
   }

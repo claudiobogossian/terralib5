@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -63,12 +63,6 @@ namespace te
           /*! \brief Virtual destructor. */
           ~ProgressWidgetItem();
 
-
-          /** @name ProgressWidgetItem Methods
-           *  Methods for ProgressWidgetItem access
-           */
-          //@{
-
           /*!
             \brief Set the current value in progress bar.
 
@@ -81,13 +75,10 @@ namespace te
             
             \param message String with the label information.
           */
-          virtual void setLabel(std::string message);
+          virtual void setLabel(const std::string& message);
 
           /*! \brief Reset the progress bar. */
           virtual void reset();
-
-
-          //@}
 
         public slots:
 
@@ -97,7 +88,7 @@ namespace te
         signals:
 
           /*!
-            \brief Inform that a task as canceled.
+            \brief Inform that a task was canceled.
 
             \param id taskId.
           */

@@ -23,8 +23,8 @@
   \brief A widget used to define the basic parameters of a new Scatter chart.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERCREATORWIDGET_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERCREATORWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERDIALOG_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERDIALOG_H
 
 //TerraLib
 #include "../Config.h"
@@ -35,15 +35,15 @@
 //STL
 #include <memory>
 
-namespace Ui { class ScatterDialog; }
+namespace Ui { class ScatterDialogForm; }
 
 namespace te
 {
 
   namespace da
   {
+    //forward declarations
     class DataSet;
-    class DataSetType;
   }
 
   namespace qt
@@ -52,46 +52,38 @@ namespace te
     {
 
     //forward declarations
-    class Scatter;
     class ScatterChart;
-    class Symbol;
+    class ScatterDataWidget;
 
     /*!
         \class Scatter creator
 
         \brief A wdiget used to customize a Scatter parameters.
       */
-      class TEQTWIDGETSEXPORT ScatterCreatorDialog : public QDialog
+      class TEQTWIDGETSEXPORT ScatterDialog : public QDialog
       {
 
         Q_OBJECT
 
         public:
 
-          ScatterCreatorDialog(te::da::DataSet* dataSet, QWidget* parent = 0, Qt::WindowFlags f = 0);
+          ScatterDialog(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
-          ~ScatterCreatorDialog();
-
-          Ui::ScatterDialog* getForm() const;
+          ~ScatterDialog();
 
         protected slots:
 
-          void onStylePushButtonClicked();
-          void onPlotStylePushButtonClicked();
           void onOkPushButtonClicked();
           void onHelpPushButtonClicked();
 
         private:
 
-          std::auto_ptr<Ui::ScatterDialog>  m_ui;
-          te::da::DataSet*                  m_dataSet;        //!< The dataset that will be used to generate the Scatter graph.
-          te::da::DataSetType*              m_type;           //!< The dataset's type.
-          te::qt::widgets::Scatter*         m_scatter;        //!< The scatter that will be configured by this dialog.
-          te::qt::widgets::ScatterChart*    m_scatterChart;   //!< The scatter's chart that will be configured by this dialog.
-          te::qt::widgets::Symbol*          m_symbol;         //!< The symbol that will be used to plot the scatter's points.
+          std::auto_ptr<Ui::ScatterDialogForm>  m_ui;             //!< The dialog form.
+          te::qt::widgets::ScatterChart*        m_scatterChart;   //!< The scatter's chart that will be configured by this dialog.
+          te::qt::widgets::ScatterDataWidget*   m_scatterDataWidget;     //!< The scatter's data widget used to configure the basic parameters of the new scatter.
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERCREATORWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERDIALOG_H

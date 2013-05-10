@@ -44,8 +44,8 @@ void Contrast()
       te::rp::Contrast::OutputParameters contOutputParameters;
 
       contInputParameters.m_type = te::rp::Contrast::InputParameters::LinearContrastT;
-      contInputParameters.m_lCMinInput = 100;
-      contInputParameters.m_lCMaxInput = 255;
+      contInputParameters.m_lCMinInput.resize( rin->getNumberOfBands(), 100 );
+      contInputParameters.m_lCMaxInput.resize( rin->getNumberOfBands(), 255 );
       contInputParameters.m_inRasterPtr = rin;
       for (unsigned b = 0; b < rin->getNumberOfBands(); b++)
       {

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/common/progress/ConsoleProgressViewer.h
 
-  \brief A class that defines the interface of an console progress viewer.
+  \brief A progress viewer implementation for the console.
 */
 
 #ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_CONSOLEPROGRESSVIEWER_H
@@ -44,21 +44,22 @@ namespace te
     /*!
       \class ConsoleProgressViewer
 
-      \brief A class that defines the interface of an console progress viewer.
+      \briefA progress viewer implementation for the console.
 
-      This viewer is made using iostream functions. Feed back will be generated
-      over a console window. Multiples tasks will be displayed using ONLY one
-      progress.
+      This viewer is based on iostream. All the feedback will be generated
+      over a console window. Multiples tasks will be displayed using a single
+      report.
 
-      The proportional value is calculated using TOTALSTEPS / CURRENTSTEPS.
-
-      TOTALSTEPS - Sum of all total steps of all tasks
-      CURRENTSTEPS - Sum of all current steps of all tasks
+      The proportional value is calculated using TOTAL_STEPS / CURRENT_STEPS. Where:
+      <ul>
+      <li>TOTAL_STEPS: Sum of all total steps of all tasks</li>
+      <li>CURRENTSTEPS: Sum of all current steps of all tasks</li>
+      </ul>
 
       The progress message is defined by the task message, if it has more than
-      on task the message will be "MULTI TASKS".
+      one task the message will be set to: "MULTI TASKS".
 
-      \note In this viewer, tasks can NOT be deleted.
+      \sa AbstractProgressViewer, TaskProgress
     */
     class TECOMMONEXPORT ConsoleProgressViewer : public AbstractProgressViewer
     {
@@ -68,57 +69,19 @@ namespace te
         ConsoleProgressViewer();
 
         /*! \brief Virtual destructor. */
-        virtual ~ConsoleProgressViewer();
+        ~ConsoleProgressViewer();
 
-        /** @name ConsoleProgressViewer Methods
-         *  Methods for ConsoleProgressViewer access
-         */
-        //@{
+        void addTask(TaskProgress* t, int id);
 
-        /*!
-          \brief Insert a new taks to progress viewer container.
+        void removeTask(int taskId);
 
-          \param t  Task pointer.
-          \param id Task identifier.
-        */
-        virtual void addTask(TaskProgress* t, int id);
+        void cancelTask(int taskId);
 
-        /*!
-          \brief Removes a task from progress viewer container.
+        void setTotalValues(int taskId);
 
-          \param taskId Task identifier.
-        */
-        virtual void removeTask(int taskId);
+        void updateValue(int taskId);
 
-        /*!
-          \brief Cancel a task.
-
-          \param taskId Task identifier.
-        */
-        virtual void cancelTask(int taskId);
-
-        /*!
-          \brief Set task total steps.
-
-          \param taskId Task identifier.
-        */
-        virtual void setTotalValues(int taskId);
-
-        /*!
-          \brief Update the progress evaluation.
-
-          \param taskId Task identifier.
-        */
-        virtual void updateValue(int taskId);
-
-        /*!
-          \brief Update the progress message.
-
-          \param taskId Task identifier.
-        */
-        virtual void updateMessage(int taskId);
-
-        //@}
+        void updateMessage(int taskId);
 
       protected:
 

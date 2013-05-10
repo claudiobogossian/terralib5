@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,14 +20,14 @@
 /*!
   \file terralib/qt/widgets/progress/ProgressViewerDialog.cpp
 
-  \brief A class that defines the interface of a qt bar progress viewer.
+  \brief A progress dialog.
 */
 
 // Terralib
 #include "../../../common/Translator.h"
+#include "ProgressResetEvent.h"
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
-#include "ProgressResetEvent.h"
 #include "ProgressViewerDialog.h"
 
 // Qt
@@ -77,6 +77,7 @@ void te::qt::widgets::ProgressViewerDialog::removeTask(int taskId)
     m_propStep = 0;
 
     QCoreApplication::postEvent(this, new ProgressResetEvent);
+
     QCoreApplication::processEvents();
   }
 }
@@ -87,13 +88,13 @@ void te::qt::widgets::ProgressViewerDialog::cancelTask(int taskId)
 
   if(it != m_tasks.end())
   {
-    //update total and current values
+    // update total and current values
     m_totalSteps -= it->second->getTotalSteps();
     m_currentStep -= it->second->getCurrentStep();
 
-    double aux = (double) m_currentStep / (double) m_totalSteps;
+    double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 
-    m_propStep = int (100. * aux);
+    m_propStep = static_cast<int>(100.0 * aux);
   }
 }
 
@@ -106,15 +107,16 @@ void te::qt::widgets::ProgressViewerDialog::updateValue(int /*taskId*/)
 {
   m_currentStep++;
 
-  double aux = (double) m_currentStep / (double) m_totalSteps;
+  double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 
-  int val = int (100. * aux);
+  int val = static_cast<int>(100.0 * aux);
 
-  if(val != m_propStep && val >= 0.)
+  if(val != m_propStep && val >= 0.0)
   {
     m_propStep = val;
 
     QCoreApplication::postEvent(this, new ProgressSetValueEvent(m_propStep));
+
     QCoreApplication::processEvents();
   }
 }
@@ -138,17 +140,15 @@ void te::qt::widgets::ProgressViewerDialog::customEvent(QEvent* e)
   if(e->type() == ProgressSetValueEvent::type())
   {
     m_dlgProgress->setValue(static_cast<ProgressSetValueEvent*>(e)->m_value);
-    return;
   }
-  
-  if(e->type() == ProgressSetMessageEvent::type())
+  else if(e->type() == ProgressSetMessageEvent::type())
   {
     m_dlgProgress->setLabelText(static_cast<ProgressSetMessageEvent*>(e)->m_value.c_str());
-    return;
   }
-
-  if(e->type() == ProgressResetEvent::type())
+  else if(e->type() == ProgressResetEvent::type())
+  {
     m_dlgProgress->reset();
+  }
 }
 
 void te::qt::widgets::ProgressViewerDialog::cancel()

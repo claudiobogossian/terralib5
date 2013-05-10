@@ -20,7 +20,7 @@
 /*!
   \file terralib/vp/qt/PropertyItem.cpp
 
-  \brief ????
+  \brief A class that represents a Property in a LayerTreeModel.
 */
 
 // TerraLib
@@ -31,7 +31,6 @@
 #include "PropertyItem.h"
 
 // Qt
-#include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
 te::vp::PropertyItem::PropertyItem(te::dt::Property* p, AbstractLayerTreeItem* parent)
@@ -49,13 +48,12 @@ te::vp::PropertyItem::~PropertyItem()
 
 int te::vp::PropertyItem::columnCount() const
 {
-  return 1;
+  return 2;
 }
 
 QVariant te::vp::PropertyItem::data(int column, int role) const
 {
-  LayerItem* litem = dynamic_cast<LayerItem*>(parent());
-
+  LayerItem* litem = dynamic_cast<LayerItem*>(parent()->parent());
 
   if(role == Qt::DisplayRole && column == 0)
     return QVariant(m_property->getName().c_str());
@@ -132,4 +130,9 @@ te::map::AbstractLayerPtr te::vp::PropertyItem::getLayer() const
 void te::vp::PropertyItem::setSelected(bool selected)
 {
   m_selected = selected;
+}
+
+bool te::vp::PropertyItem::isSelected()
+{
+  return m_selected;
 }

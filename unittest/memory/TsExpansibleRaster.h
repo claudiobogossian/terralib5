@@ -46,13 +46,48 @@ class TsExpansibleRaster : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsExpansibleRaster );
   
-  CPPUNIT_TEST( ReadWriteTest );
+  CPPUNIT_TEST( readWriteTest );
+  
+  CPPUNIT_TEST( addTopLinesTest );
+  
+  CPPUNIT_TEST( addBottomLinesTest );
+  
+  CPPUNIT_TEST( addLeftColumnsTest );
+  
+  CPPUNIT_TEST( addRightColumnsTest );
+  
+  CPPUNIT_TEST( addTopBandsTest );
+  
+  CPPUNIT_TEST( addBottomBandsTest );
   
   CPPUNIT_TEST_SUITE_END();
 
   protected :
+    
+    void writeValues( te::rst::Raster& raster );
+    
+    void fillWithNoDataValues( te::rst::Raster& raster );
+    
+    void assertUniqueElement( const double& targetValue, 
+      const unsigned int& requiredBand,
+      const unsigned int& requiredCol, const unsigned int& requiredLine,
+      const te::rst::Raster& raster );
+    
+    void testValues( te::rst::Raster& raster );
 
-    void ReadWriteTest();
+    void readWriteTest();
+    
+    void addTopLinesTest();
+    
+    void addBottomLinesTest();
+    
+    void addLeftColumnsTest();
+    
+    void addRightColumnsTest();
+    
+    void addTopBandsTest();
+    
+    void addBottomBandsTest();
 };
 
 #endif  // __TERRALIB_UNITTEST_MEMORY_EXPANSIBLERASTER_INTERNAL_H

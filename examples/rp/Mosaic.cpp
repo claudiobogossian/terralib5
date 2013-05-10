@@ -1,7 +1,7 @@
 #include "RPExamples.h"
 
 // TerraLib
-#include <terralib/rp/Mosaic.h>
+#include <terralib/rp/GeoMosaic.h>
 #include <terralib/raster/RasterFactory.h>
 
 // STL
@@ -48,7 +48,7 @@ void Mosaic()
     
     // Creating the algorithm parameters
     
-    te::rp::Mosaic::InputParameters algoInputParams;
+    te::rp::GeoMosaic::InputParameters algoInputParams;
     
     std::vector< const te::rst::Raster* > rasters;
     rasters.push_back( inputRaster1Pointer );
@@ -76,7 +76,7 @@ void Mosaic()
     bands[ 1 ] = 0;
     algoInputParams.m_inputRastersBands.push_back( bands );
     
-    te::rp::Mosaic::OutputParameters algoOutputParams;
+    te::rp::GeoMosaic::OutputParameters algoOutputParams;
     
     // The output raster info
     algoOutputParams.m_rInfo["URI"] =  
@@ -85,7 +85,7 @@ void Mosaic()
     
     // Executing the algorithm
     
-    te::rp::Mosaic algorithmInstance;
+    te::rp::GeoMosaic algorithmInstance;
     
     if( ! algorithmInstance.initialize( algoInputParams ) )
     {

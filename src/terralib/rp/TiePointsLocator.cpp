@@ -170,6 +170,7 @@ namespace te
     void TiePointsLocator::OutputParameters::reset() throw( te::rp::Exception )
     {
       m_tiePoints.clear();
+      m_transformationPtr.reset();
     }
 
     const TiePointsLocator::OutputParameters& TiePointsLocator::OutputParameters::operator=(
@@ -178,6 +179,7 @@ namespace te
       reset();
       
       m_tiePoints = params.m_tiePoints;
+      m_transformationPtr.reset( params.m_transformationPtr->clone() );
 
       return *this;
     }
@@ -341,8 +343,6 @@ namespace te
         te::gm::GTParameters transfParams;
         transfParams.m_tiePoints = outParamsPtr->m_tiePoints;
         
-        std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
-        
         te::gm::GTFilter filter;
         TERP_TRUE_OR_RETURN_FALSE( filter.applyRansac( 
           m_inputParameters.m_geomTransfName, 
@@ -352,10 +352,23 @@ namespace te
           0,
           m_inputParameters.m_geometryFilterAssurance,
           m_inputParameters.m_enableMultiThread,
-          transfPtr,
+          outParamsPtr->m_transformationPtr,
           tiePointsWeights ), "Outliers remotion error" );
         
-        outParamsPtr->m_tiePoints = transfPtr->getParameters().m_tiePoints;        
+        outParamsPtr->m_tiePoints = 
+          outParamsPtr->m_transformationPtr->getParameters().m_tiePoints;        
+      }
+      else
+      {
+        outParamsPtr->m_transformationPtr.reset( te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
+        TERP_DEBUG_TRUE_OR_THROW( outParamsPtr->m_transformationPtr.get(), "Invalid transformation" );
+        
+        te::gm::GTParameters transfParams;
+        
+        if( ! outParamsPtr->m_transformationPtr->initialize( transfParams ) )
+        {
+          outParamsPtr->m_transformationPtr.reset();
+        }
       }
       
       if( m_inputParameters.m_enableProgress )
@@ -3215,7 +3228,7 @@ namespace te
                   featureSubWindowWidth ; featureSubWindowXOffset += featureWindowSampleStep ) 
                 {
                   featureElementZeroCenteredOriginalXIdx = ((double)featureSubWindowXOffset)
-                    - featureWindowRadiusDouble;                  
+                    - featureWindowRadiusDouble;
                   
                   /* finding the correspondent point over the original raster
                      using a clockwize rotation */ 
@@ -3234,7 +3247,7 @@ namespace te
                     
                   featureElementRasterRotatedXIdx = featureWindowRasterXStart +
                     (unsigned int)ROUND( featureElementRotatedXIdx );
-                  featureElementRasterRotatedYIdx = ((double)featureWindowRasterYStart) +
+                  featureElementRasterRotatedYIdx = featureWindowRasterYStart +
                     (unsigned int)ROUND( featureElementRotatedYIdx );
                     
                   assert( ((long int)featureElementRasterRotatedXIdx) -
@@ -3242,9 +3255,9 @@ namespace te
                   assert( ((long int)featureElementRasterRotatedYIdx) -
                     ((long int)featureElementHaarWindowRadius) >= 0 );
                   assert( featureElementRasterRotatedXIdx + 
-                    featureElementHaarWindowRadius < integralRasterData.getColumnsNumber() ); 
+                    featureElementHaarWindowRadius < integralRasterData.getColumnsNumber() );
                   assert( featureElementRasterRotatedYIdx + 
-                    featureElementHaarWindowRadius < integralRasterData.getLinesNumber() );                    
+                    featureElementHaarWindowRadius < integralRasterData.getLinesNumber() );
                     
                   // Finding the original haar intesity vectors
                     

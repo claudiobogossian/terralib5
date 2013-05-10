@@ -57,11 +57,11 @@ namespace te
     void Contrast::InputParameters::reset() throw( te::rp::Exception )
     {
       m_type = InputParameters::InvalidContrastT;
-      m_lCMinInput = DBL_MAX;
-      m_lCMaxInput = ( -1.0 * DBL_MAX );
-      m_hECMaxInput = 0;
-      m_sMASCMeanInput = 0;
-      m_sMASCStdInput = 0;
+      m_lCMinInput.clear();
+      m_lCMaxInput.clear();
+      m_hECMaxInput.clear();
+      m_sMASCMeanInput.clear();
+      m_sMASCStdInput.clear();
 
       m_inRasterPtr = 0;
       m_inRasterBands.clear();
@@ -121,7 +121,6 @@ namespace te
       reset();
 
       m_outRasterPtr = params.m_outRasterPtr;
-      m_createdOutRasterPtr = params.m_createdOutRasterPtr;
       m_outRasterBands = params.m_outRasterBands;
       m_createdOutRasterDSType = params.m_createdOutRasterDSType;
       m_createdOutRasterInfo = params.m_createdOutRasterInfo;
@@ -267,6 +266,46 @@ namespace te
           inputParamsPtr->m_inRasterPtr->getNumberOfBands(),
           "Invalid input raster band" );
       }
+      
+      // Checking contrast specifi parameters
+      
+      switch( inputParamsPtr->m_type )
+      {
+        case InputParameters::LinearContrastT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_lCMinInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_lCMinInput" );
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_lCMaxInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_lCMaxInput" );
+            
+          break;
+        }
+        case InputParameters::HistogramEqualizationContrastT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_hECMaxInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_hECMaxInput" );
+            
+          break;
+        }
+        case InputParameters::SetMeanAndStdContrastT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_sMASCMeanInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_sMASCMeanInput" );
+          TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_sMASCStdInput.size() ==
+            inputParamsPtr->m_inRasterBands.size(), 
+            "Invalid parameter m_sMASCStdInput" );            
+          break;
+        }
+        default :
+        {
+          TERP_LOG_AND_THROW( "Invalid contrast type" );
+          break;
+        }
+      }
 
       m_inputParameters = *inputParamsPtr;
       m_isInitialized = true;
@@ -298,13 +337,13 @@ namespace te
           outRangeMin, outRangeMax );
         const double outRasterRange = outRangeMax - outRangeMin;
 
-        const double inRasterRange = m_inputParameters.m_lCMaxInput -
-          m_inputParameters.m_lCMinInput;
+        const double inRasterRange = m_inputParameters.m_lCMaxInput[ inRasterBandsIdx ] -
+          m_inputParameters.m_lCMinInput[ inRasterBandsIdx ];
 
         if( ( outRasterRange != 0.0 ) && ( inRasterRange != 0.0 ) )
         {
           m_offSetGainRemap_gain = outRasterRange / inRasterRange;
-          m_offSetGainRemap_offset = outRangeMin - m_inputParameters.m_lCMinInput;
+          m_offSetGainRemap_offset = outRangeMin - m_inputParameters.m_lCMinInput[ inRasterBandsIdx ];
         }
 
         if( ! remapBandLevels( *inRasterBandPtr, *outRasterBandPtr,
@@ -322,10 +361,6 @@ namespace te
       assert( m_inputParameters.m_inRasterPtr );
       assert(m_outputParametersPtr->m_outRasterPtr );
 
-// ensure maxInput has a value, to normalize resultant image
-      if(m_inputParameters.m_hECMaxInput == ( -1.0 * DBL_MAX ))
-        m_inputParameters.m_hECMaxInput = 255;
-
       const te::rst::RasterSummary* rsummary =
         te::rst::RasterSummaryManager::getInstance().get(
         m_inputParameters.m_inRasterPtr, te::rst::SUMMARY_R_HISTOGRAM);
@@ -334,11 +369,12 @@ namespace te
       double newvalue;
       unsigned int N = m_inputParameters.m_inRasterPtr->getNumberOfRows() *
         m_inputParameters.m_inRasterPtr->getNumberOfColumns();
-      const double lutfactor =
-        m_inputParameters.m_hECMaxInput / (double) N;
 
       for( unsigned int b = 0 ; b < m_inputParameters.m_inRasterBands.size() ; b++ )
       {
+        const double lutfactor =
+          m_inputParameters.m_hECMaxInput[ b ] / (double) N;
+        
         unsigned int niband = m_inputParameters.m_inRasterBands[b];
         unsigned int noband = m_outputParametersPtr->m_outRasterBands[b];
 
@@ -397,9 +433,10 @@ namespace te
 
         const double meanp = rsummary->at(niband).m_meanVal->real();
         const double stdp = rsummary->at(niband).m_stdVal->real();
-        const double offset = m_inputParameters.m_sMASCMeanInput / m_inputParameters.m_sMASCStdInput;
-        const double c1 = m_inputParameters.m_sMASCStdInput / stdp;
-        const double c2 = offset * m_inputParameters.m_sMASCStdInput;
+        const double offset = m_inputParameters.m_sMASCMeanInput[ b ] /
+          m_inputParameters.m_sMASCStdInput[ b ];
+        const double c1 = m_inputParameters.m_sMASCStdInput[ b ] / stdp;
+        const double c2 = offset * m_inputParameters.m_sMASCStdInput[ b ];
 
         double value;
         double newvalue;

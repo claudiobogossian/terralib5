@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -44,13 +44,15 @@ namespace te
     /*!
       \class Library
 
-      \brief A class for handling shared libraries (DLLs or SO).
+      \brief A class for handling shared libraries (DLLs, SO, DyLibs).
 
       \note If the library you are trying to load has dependencies
             on other shared libraries then these are automatically
             loaded by the underlying operational system. The dependencies
             must be in a folder where the system can search for these dependencies.
-     */
+
+      \note This class is based on pimpl idiom.
+    */
     class TECOMMONEXPORT Library : public boost::noncopyable
     {
       public:
@@ -66,7 +68,7 @@ namespace te
           \param delayLoad If true the client object must call explicitly the load method before trying to access any symbol in the library.
 
           \exception Exception It throws an exception if delayLoad is true and the library can not be loaded.
-         */
+        */
         Library(const std::string& fileName, bool delayLoad = false) throw(Exception);
 
         /*! \brief The destructor will automatically unload the library from memory. */
@@ -74,13 +76,13 @@ namespace te
 
         /*!
           \brief It loads the shared library to memory.
-        
+
           If the library was already loaded this method doesn't perform operations.
 
           \exception Exception If the library can not be load to memory this method raises an exception.
 
           \note Not thread-safe.
-         */
+        */
         void load() throw(Exception);
 
         /*!
@@ -91,7 +93,7 @@ namespace te
           \exception Exception If the library can not be unload from memory this method raises an exception.
 
           \note Not thread-safe.
-         */
+        */
         void unload() throw(Exception);
 
         /*!
@@ -100,7 +102,7 @@ namespace te
           \return True if the shared library is loaded otherwise returns false.
 
           \note Thread-safe.
-         */
+        */
         bool isLoaded() const throw();
 
         /*!
@@ -109,7 +111,7 @@ namespace te
           \return The library file name as informed in the constructor.
 
           \note Thread-safe.
-         */
+        */
         const std::string& getFileName() const throw();
 
         /*!
@@ -122,16 +124,16 @@ namespace te
           \exception Exception It throws an exception if it is not possible to locate the given symbol.
 
           \note Thread-safe.
-         */
+        */
         void* getAddress(const std::string& symbol) const throw(Exception);
        
         /*!
           \brief Given a library name without file extensions, prefixes and nor suffixes it will construct a library name according to the specifc platform.
-          
+
           \return The library file name according to the specifc platform.
 
           \note Thread-safe.
-         */
+        */
         static std::string getNativeName(const std::string& name) throw();
 
         /*!
@@ -142,16 +144,16 @@ namespace te
           \exception Exception It throws an exception if the path couldn't be added to the search path.
 
           \note Not thread-safe.
-         */
+        */
         static void addSearchDir(const std::string& d) throw(Exception);
 
         /*!
           \brief It comes back the application lookupo path to the original state, before any addPath has been called.
 
-          \exception Exception It throws an exception if the search path couldn't be reset.          
+          \exception Exception It throws an exception if the search path couldn't be reset.
 
           \note Not thread-safe.
-         */
+        */
         static void resetSearchPath() throw(Exception);
 
         /*!
@@ -167,17 +169,14 @@ namespace te
                 loop to allocate more room for the path string!
 
           \note Thread-safe.
-         */
+        */
         static std::string getSearchPath() throw(Exception);
 
       private:
 
-        std::string m_fileName;    //!< The library file name with full path.
-        void* m_module;            //!< Windows or Linux handle for DLLs or S.O respectively.
+        class Impl;
 
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-        static bool sm_addedSearchPath; //!< This flag is very important for Windows because some routines in its API returns 0 with two meanings: error or empty, but there is no way to know which one is right!
-#endif
+        Impl* m_pImpl;  //!< A pointer to the real implementation.
     };
 
     typedef boost::shared_ptr<Library> LibraryPtr;
