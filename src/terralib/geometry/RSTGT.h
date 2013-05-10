@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/geometry/RSTGT.h
 
-  \brief 2D Rotation/scale/translation(rigid body ) Geometric transformation.
+  \brief 2D Rotation/scale/translation (rigid body) Geometric transformation.
 */
 
 #ifndef __TERRALIB_GEOMETRY_INTERNAL_RSTGT_H
@@ -48,10 +48,10 @@ namespace te
       \code
            u = a.x - b.y + c
            v = b.x + a.y + d
-            
+
   -        | u | = | a -b c | * | x |
   -        | v |   | b  a d |   | y |
-  -        | 1 |   | 0  0 1 |   | 1 |            
+  -        | 1 |   | 0  0 1 |   | 1 |
 
            |u0| = |x0  -y0  1  0|.|a|
            |v0|   |y0   x0  0  1| |b|
@@ -71,17 +71,17 @@ namespace te
         RSTGT();
 
         /*! \brief Virtual destructor. */
-        virtual ~RSTGT();
+        ~RSTGT();
 
         const std::string& getName() const;
 
         bool isValid( const GTParameters& params ) const;
 
         void directMap( const GTParameters& params, const double& pt1X, 
-          const double& pt1Y, double& pt2X, double& pt2Y ) const;
-          
+                        const double& pt1Y, double& pt2X, double& pt2Y ) const;
+
         void inverseMap( const GTParameters& params, const double& pt2X, 
-          const double& pt2Y, double& pt1X, double& pt1Y ) const;
+                         const double& pt2Y, double& pt1X, double& pt1Y ) const;
 
         unsigned int getMinRequiredTiePoints() const;
         
@@ -104,7 +104,9 @@ namespace te
         ~RSTGTFactory();
 
         RSTGTFactory();
-        
+
+      protected:
+
         GeometricTransformation* build();
     };
 
