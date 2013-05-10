@@ -27,7 +27,7 @@
 #include "GTFactory.h"
 
 te::gm::GTFactory::GTFactory(const std::string& factoryKey)
-  : te::common::AbstractFactory< GeometricTransformation, std::string, std::less<std::string> >(factoryKey)
+  : te::common::AbstractFactory<GeometricTransformation, std::string>(factoryKey)
 {
 }
 

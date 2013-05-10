@@ -43,7 +43,7 @@ namespace te
 
       \brief 2D Geometric transformation factory.
     */
-    class TEGEOMEXPORT GTFactory : public te::common::AbstractFactory< GeometricTransformation, std::string, std::less<std::string> >
+    class TEGEOMEXPORT GTFactory : public te::common::AbstractFactory<GeometricTransformation, std::string>
     {
       public:
 
