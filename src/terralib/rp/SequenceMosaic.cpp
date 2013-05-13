@@ -136,6 +136,7 @@ namespace te
     void SequenceMosaic::OutputParameters::reset() throw( te::rp::Exception )
     {
       m_outputDSPtr = 0;
+      m_tiePoints.clear();
     }
 
     const SequenceMosaic::OutputParameters& SequenceMosaic::OutputParameters::operator=(
@@ -144,6 +145,7 @@ namespace te
       reset();
 
       m_outputDSPtr = params.m_outputDSPtr;
+      m_tiePoints = params.m_tiePoints;
 
       return *this;
     }
@@ -175,6 +177,8 @@ namespace te
         "Invalid data source" );
       TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputDSPtr->isValid(),
         "Invalid data source" );
+        
+      outParamsPtr->m_tiePoints.clear();
         
       // progress
       
@@ -525,6 +529,8 @@ namespace te
               *( mosaicRasterHandler.get() ), outParamsPtr->m_outputDSPtr ),
               "Data set creation error" );
             mosaicRasterHandler.reset();
+            
+            outParamsPtr->m_tiePoints.push_back( std::vector< te::gm::GTParameters::TiePoint >() );
           }
           else
           {
@@ -845,6 +851,10 @@ namespace te
                 "Invalid geometry type")
               mosaicValidDataPol = *( (te::gm::Polygon*)unionMultiPolPtr.get() );
             }       
+            
+            // Exposing the found tie-points
+            
+            outParamsPtr->m_tiePoints.push_back( locatorOutParams.m_tiePoints );
             
             // Move to the next raster
             
