@@ -69,8 +69,6 @@ namespace te
 
           ~ScatterDataWidget();
 
-          te::da::DataSet* getDataSet();
-
           te::qt::widgets::Scatter* getScatter();
 
         protected slots:
@@ -78,7 +76,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ScatterDataWidgetForm>  m_ui;       //!< THe widget Form.
-          te::da::DataSet*                          m_dataSet;  //!< The dataset that will be used to generate the Scatter graph.
+          std::auto_ptr<te::da::DataSet>            m_dataSet;  //!< The dataset that will be used to generate the Scatter graph.
       };
     } // end namespace widgets
   }   // end namespace qt

@@ -79,19 +79,14 @@ te::qt::widgets::HistogramDataWidget::~HistogramDataWidget()
 {
 }
 
-te::da::DataSet* te::qt::widgets::HistogramDataWidget::getDataSet()
-{
-  return m_dataSet;
-}
-
 te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram() 
 {
-  std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);
+  std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet.get(), te::dt::RASTER_TYPE);
   te::qt::widgets::Histogram* histogram;
 
   if(rpos != std::string::npos)
   {
-    histogram = te::qt::widgets::createHistogram(m_dataSet, m_ui->m_propertyComboBox->currentIndex());
+    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_ui->m_propertyComboBox->currentIndex());
   }
   else
   {
@@ -101,7 +96,7 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
     for (size_t i = 0; i < m_dataSet->getNumProperties(); i++)
     {
-      if(m_ui->m_propertyComboBox->currentText().toStdString() == m_dataSet->getPropertyName(i))
+      if(m_ui->m_propertyComboBox->currentText().toStdString() == m_dataSet.get()->getPropertyName(i))
         selectedPropertyIdx = i;
     }
 
@@ -109,11 +104,11 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
     {
-      histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx);
+      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), selectedPropertyIdx);
     }
     else
     {
-      histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
     }
   }
   return histogram;
@@ -121,14 +116,14 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
 void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QString text)
 {
-  std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);
+  std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet.get(), te::dt::RASTER_TYPE);
   if(rpos != std::string::npos)
   {
     m_ui->m_slicesSpinBox->setEnabled(false);
   }
   else 
   {
-    int selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet,  m_ui->m_propertyComboBox->currentText().toStdString());
+    int selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet.get(),  m_ui->m_propertyComboBox->currentText().toStdString());
     int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
