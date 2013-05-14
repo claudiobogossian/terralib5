@@ -148,6 +148,11 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
 
   std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &p, &e, r, travType, rwRole));
 
+  // TODO: Need review: behaviour of te::mem::DataSet + te::rst::Raster.
+
+  if(p.getType() == te::dt::RASTER_TYPE)
+    return dataset.release();
+
   return DataSet2Memory(dataset.get());
 }
 

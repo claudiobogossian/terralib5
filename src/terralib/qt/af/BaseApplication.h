@@ -123,6 +123,8 @@ namespace te
 
           void onZoomExtentTriggered();
 
+          void onInfoToggled(bool checked);
+
           void onMeasureDistanceToggled(bool checked);
 
           void onMeasureAreaToggled(bool checked);
@@ -134,6 +136,8 @@ namespace te
           void showProgressDockWidget();
 
           void onLayerTableClose(te::qt::widgets::DataSetTableDockWidget* wid);
+
+          void onFullScreenToggled(bool checked);
 
         protected:
 
@@ -217,6 +221,7 @@ namespace te
           QAction* m_mapZoomExtent;
           QAction* m_mapPreviousExtent;
           QAction* m_mapNextExtent;
+          QAction* m_mapInfo;
           QAction* m_mapMeasureDistance;
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;

@@ -35,8 +35,8 @@
 
 te::qt::widgets::ScatterStyleWidget::ScatterStyleWidget(te::qt::widgets::ScatterStyle* initial, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_scatterStyle(initial),
-    m_ui(new Ui::ScatterStyleWidgetForm)
+    m_ui(new Ui::ScatterStyleWidgetForm),
+    m_scatterStyle(initial)
 {
     m_ui->setupUi(this);
 
