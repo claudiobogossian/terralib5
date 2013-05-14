@@ -110,7 +110,6 @@ void te::qt::widgets::ChartProperties::onApplyButtonClicked()
   else
   {
     m_chartWidget->setChart(m_curComp->getChart());
-    m_chartWidget->getChart()->attach( m_chartWidget->getDisplay());
   }
   this->close();
 }

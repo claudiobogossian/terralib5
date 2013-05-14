@@ -46,7 +46,7 @@ te::qt::widgets::ScatterFrame::ScatterFrame(QWidget* parent)
 
 te::qt::widgets::ScatterFrame::~ScatterFrame()
 {
-
+  delete m_styleWidget;
 }
 
 QwtPlotSeriesItem* te::qt::widgets::ScatterFrame::getChart()

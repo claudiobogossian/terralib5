@@ -77,7 +77,6 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
 
 te::qt::widgets::HistogramDataWidget::~HistogramDataWidget()
 {
-
 }
 
 te::da::DataSet* te::qt::widgets::HistogramDataWidget::getDataSet()
@@ -88,10 +87,11 @@ te::da::DataSet* te::qt::widgets::HistogramDataWidget::getDataSet()
 te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram() 
 {
   std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);
+  te::qt::widgets::Histogram* histogram;
 
   if(rpos != std::string::npos)
   {
-    m_histogram = te::qt::widgets::createHistogram(m_dataSet, m_ui->m_propertyComboBox->currentIndex());
+    histogram = te::qt::widgets::createHistogram(m_dataSet, m_ui->m_propertyComboBox->currentIndex());
   }
   else
   {
@@ -109,14 +109,14 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
     {
-      m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx);
+      histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx);
     }
     else
     {
-      m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+      histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
     }
   }
-  return m_histogram;
+  return histogram;
 }
 
 void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QString text)

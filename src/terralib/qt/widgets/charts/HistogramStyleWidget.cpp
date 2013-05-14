@@ -53,7 +53,6 @@ te::qt::widgets::HistogramStyleWidget::HistogramStyleWidget(te::qt::widgets::His
 
 te::qt::widgets::HistogramStyleWidget::~HistogramStyleWidget()
 {
-
 }
 
 te::qt::widgets::HistogramStyle* te::qt::widgets::HistogramStyleWidget::getHistogramStyle()
