@@ -53,7 +53,7 @@ namespace te
       class HighlightDelegate;
 
       /*!
-        \class
+        \class DataSetTableView
 
         \brief A customized table view for te::map::AbstractLayer objects. Uses a te::qt::widgets::DataSetModel as its model.
 

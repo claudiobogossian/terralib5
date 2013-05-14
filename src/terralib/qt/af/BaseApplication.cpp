@@ -530,6 +530,8 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
     doc->setLayer(lay);
     addDockWidget(Qt::BottomDockWidgetArea, doc);
 
+    connect (doc, SIGNAL(closed(te::qt::widgets::DataSetTableDockWidget*)), SLOT(onLayerTableClose(te::qt::widgets::DataSetTableDockWidget*)));
+
     if(!m_tableDocks.empty())
       tabifyDockWidget(m_tableDocks[m_tableDocks.size()-1], doc);
   
@@ -674,6 +676,18 @@ void te::qt::af::BaseApplication::onStopDrawTriggered()
 void te::qt::af::BaseApplication::showProgressDockWidget()
 {
   m_progressDockWidget->setVisible(true);
+}
+
+void te::qt::af::BaseApplication::onLayerTableClose(te::qt::widgets::DataSetTableDockWidget* wid)
+{
+  std::vector<te::qt::widgets::DataSetTableDockWidget*>::iterator it;
+
+  for(it=m_tableDocks.begin(); it!=m_tableDocks.end(); ++it)
+    if(*it == wid)
+      break;
+
+  if(it != m_tableDocks.end())
+    m_tableDocks.erase(it);
 }
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)

@@ -1,6 +1,7 @@
 #include "DataSetTableView.h"
 #include "DataSetTableModel.h"
 #include "HighlightDelegate.h"
+#include "DataSetTableVerticalHeader.h"
 
 // TerraLib include files
 #include "../../../dataaccess/dataset/DataSet.h"
@@ -108,8 +109,6 @@ class TablePopupFilter : public QObject
 
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
-      m_view->connect(this, SIGNAL(selectObject(const int&, const bool&)), SLOT(highlightRow(const int&, const bool&)));
-      m_view->connect(this, SIGNAL(selectObjects(const int&, const int&)), SLOT(highlightRows(const int&, const int&)));
     }
 
     /*!
@@ -196,43 +195,43 @@ class TablePopupFilter : public QObject
         }
         break;
 
-        case QEvent::MouseButtonPress:
-          {
-            QMouseEvent* evt = static_cast<QMouseEvent*>(event);
+        //case QEvent::MouseButtonPress:
+        //  {
+        //    QMouseEvent* evt = static_cast<QMouseEvent*>(event);
 
-            if(evt->button() == Qt::LeftButton && watched == vport)
-            {
-              int row = m_view->rowAt(evt->pos().y());
+        //    if(evt->button() == Qt::LeftButton && watched == vport)
+        //    {
+        //      int row = m_view->rowAt(evt->pos().y());
 
-              if(evt->modifiers() & Qt::ShiftModifier)
-              {
-                emit selectObjects(m_initRow, row);
+        //      if(evt->modifiers() & Qt::ShiftModifier)
+        //      {
+        //        emit selectObjects(m_initRow, row);
 
-                return true;
-              }
+        //        return true;
+        //      }
 
-              m_initRow = row;
+        //      m_initRow = row;
 
-              bool add = evt->modifiers() & Qt::ControlModifier;
+        //      bool add = evt->modifiers() & Qt::ControlModifier;
 
-              emit selectObject(row, add);
+        //      emit selectObject(row, add);
 
-              return true;
-            }
-          }
-        break;
+        //      return true;
+        //    }
+        //  }
+        //break;
 
-        case QEvent::MouseButtonDblClick:
-        {
-          QMouseEvent* evt = static_cast<QMouseEvent*>(event);
+        //case QEvent::MouseButtonDblClick:
+        //{
+        //  QMouseEvent* evt = static_cast<QMouseEvent*>(event);
 
-          QModelIndex idx = m_view->indexAt(evt->pos());
+        //  QModelIndex idx = m_view->indexAt(evt->pos());
 
-          m_view->edit(idx);
+        //  m_view->edit(idx);
 
-          return true;
-        }
-        break;
+        //  return true;
+        //}
+        //break;
       }
 
       return QObject::eventFilter(watched, event);
@@ -283,7 +282,6 @@ class TablePopupFilter : public QObject
     te::da::DataSet* m_dset;
 
     int m_columnPressed;
-    int m_initRow;
 };
 
 te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
@@ -293,8 +291,9 @@ QTableView(parent)
   setModel(m_model);
 
   horizontalHeader()->setMovable(true);
+  setVerticalHeader(new DataSetTableVerticalHeader(this));
+
   setSelectionMode(QAbstractItemView::MultiSelection);
-  setSelectionBehavior(QAbstractItemView::SelectColumns);
 
   m_popupFilter = new TablePopupFilter(this);
 
@@ -303,6 +302,9 @@ QTableView(parent)
   m_delegate->setColor(Qt::green);
 
   setItemDelegate(m_delegate);
+
+  connect(verticalHeader(), SIGNAL(selectedRow(const int&, const bool&)), SLOT(highlightRow(const int&, const bool&)));
+  connect(verticalHeader(), SIGNAL(selectedRows(const int&, const int&)), SLOT(highlightRows(const int&, const int&)));
 }
 
 te::qt::widgets::DataSetTableView::~DataSetTableView()
@@ -378,10 +380,7 @@ void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool&
 
   m_delegate->addObject(row);
 
-  if(m_model->isPromotionEnabled())
-    promote();
-  else
-    viewport()->repaint();
+  viewport()->repaint();
 }
 
 void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const int& finalRow)
@@ -402,10 +401,7 @@ void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const 
 
   m_delegate->addObjects(ini, final);
 
-  if(m_model->isPromotionEnabled())
-    promote();
-  else
-    viewport()->repaint();
+  viewport()->repaint();
 }
 
 void te::qt::widgets::DataSetTableView::promote()

@@ -26,7 +26,7 @@ int main()
     EdgeFilter();
 
     te::plugin::PluginManager::getInstance().unloadAll();
-    
+
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)

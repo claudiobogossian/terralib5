@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,14 +26,18 @@
 #ifndef __TERRALIB_GEOMETRY_INTERNAL_GTFILTER_H
 #define __TERRALIB_GEOMETRY_INTERNAL_GTFILTER_H
 
+// TerraLib
 #include "Config.h"
 #include "GTParameters.h"
 #include "GeometricTransformation.h"
 
+// STL
+#include <map>
 #include <memory>
 #include <vector>
-#include <map>
 
+// Boost
+#include <boost/noncopyable.hpp>
 #include <boost/thread.hpp>
 
 namespace te
@@ -45,64 +49,56 @@ namespace te
       
       \brief 2D Geometric transformation tie-points filter (outliers remotion).
     */
-    class TEGEOMEXPORT GTFilter
+    class TEGEOMEXPORT GTFilter : boost::noncopyable
     {
       public:
         
         /*! \brief RANSAC iterations counter type. */
-        typedef unsigned long long int RansacItCounterT;    
+        typedef unsigned long long int RansacItCounterT;
 
         /*! \brief Default constructor. */
         GTFilter();
 
         /*! \brief Destructor. */
         ~GTFilter();
-        
+
         /*!
           \brief Apply a RANSAC based outliers remotion strategy.
 
-          \param transfName Transformation name (see te::gm::GTFactory dictionary for reference).
-          
-          \param inputParams Input transformation parameters.
-          
-          \param expectedDirectMapRmse The expected direct mapping root mean square error.
-          
+          \param transfName             Transformation name (see te::gm::GTFactory dictionary for reference).
+          \param inputParams            Input transformation parameters.
+          \param expectedDirectMapRmse  The expected direct mapping root mean square error.
           \param expectedInverseMapRmse The expected inverse mapping root mean square error.
-          
-          \param maxIterations The maximum number of iterations (Use 0-zero to let this number be automatically found).
-          
-          \param assurance The error-free selection percent assurance - valid range (0-1) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations. Use 0-zero to let this number be automatically found.
-          
-          \param enableMultiThread Enable multi-threaded processing (good for multi-processor or multi-core systems).
-          
-          \param outTransf The generated output transformation.
-          
-          \param tiePointsWeights Optional tie-points weights (non-zero, positive values) or an empty vector if no weights must be used.
+          \param maxIterations          The maximum number of iterations (Use 0-zero to let this number be automatically found).
+          \param assurance              The error-free selection percent assurance - valid range (0-1) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations. Use 0-zero to let this number be automatically found.
+          \param enableMultiThread      Enable multi-threaded processing (good for multi-processor or multi-core systems).
+          \param outTransf              The generated output transformation.
+          \param tiePointsWeights       Optional tie-points weights (non-zero, positive values) or an empty vector if no weights must be used.
 
           \return true if OK, false on errors.
-          
-          \note Reference: Martin A. Fischler and Robert C. Bolles, Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and Automated Cartography, Communications of the ACM  archive, Volume 24 , Issue 6  (June 1981).
+
+          \note Reference: Martin A. Fischler and Robert C. Bolles, Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and Automated Cartography, Communications of the ACM archive, Volume 24, Issue 6 (June 1981).
         */
-        bool applyRansac(const std::string& transfName, 
-          const GTParameters& inputParams,
-          const double expectedDirectMapRmse, const double expectedInverseMapRmse,
-          const RansacItCounterT& maxIterations,
-          const double& assurance,
-          const bool enableMultiThread,
-          std::auto_ptr< GeometricTransformation >& outTransf,
-          const std::vector< double >& tiePointsWeights );
-        
+        bool applyRansac(const std::string& transfName,
+                         const GTParameters& inputParams,
+                         const double expectedDirectMapRmse, const double expectedInverseMapRmse,
+                         const RansacItCounterT& maxIterations,
+                         const double& assurance,
+                         const bool enableMultiThread,
+                         std::auto_ptr< GeometricTransformation >& outTransf,
+                         const std::vector< double >& tiePointsWeights);
+
       private:
-        
+
         /*!
           \class ApplyRansacThreadEntryThreadParams
-          
+
           \brief Parameters used by the GTFilter::applyRansacThreadEntry method.
-        */        
+        */
         class ApplyRansacThreadEntryThreadParams
         {
           public:
-            
+
             std::string const* m_transfNamePtr;
             GTParameters const* m_inputGTParamsPtr;
             double m_expectedDirectMapRmse;
@@ -118,16 +114,16 @@ namespace te
             double* m_bestParamsDRMSEPtr;
             double* m_bestParamsIRMSEPtr;
             double* m_bestParamsConvexHullAreaPtr;
-            
+
             ApplyRansacThreadEntryThreadParams() {};
-            
+
             ApplyRansacThreadEntryThreadParams( const ApplyRansacThreadEntryThreadParams& other )
             {
               operator=( other );
             };
-            
+
             ~ApplyRansacThreadEntryThreadParams() {};
-            
+
             const ApplyRansacThreadEntryThreadParams& operator=(
               const ApplyRansacThreadEntryThreadParams& other )
             {
@@ -149,25 +145,8 @@ namespace te
               
               return other;
             };
-        };     
+        };
 
-
-        /*!
-          \brief Copy constructor.
-
-          \param rhs The input filter.
-        */
-        GTFilter(const GTFilter& rhs);
-
-        /*!
-          \brief Assignment operator.
-
-          \param rhs The right-hand-side filter.
-
-          \return A reference for this.
-        */
-        GTFilter& operator=(const GTFilter& rhs);
-        
         /*!
           \brief Returns the tie-points convex hull area (GTParameters::TiePoint::first).
 
@@ -175,20 +154,19 @@ namespace te
 
           \return The tie-points convex hull area 
         */
-        static double getPt1ConvexHullArea( 
-          const std::vector< GTParameters::TiePoint >& tiePoints );
-          
+        static double getPt1ConvexHullArea(const std::vector<GTParameters::TiePoint>& tiePoints);
+
         /*! 
           \brief Surf locator thread entry.
-          
+
           \param paramsPtr A pointer to the thread parameters.
-        */      
-        static void applyRansacThreadEntry( 
-          te::gm::GTFilter::ApplyRansacThreadEntryThreadParams* paramsPtr);          
+        */
+        static void applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThreadEntryThreadParams* paramsPtr);
 
     };
+
   } // end namespace gm
 }   // end namespace te
 
-#endif  // __TERRALIB_GEOMETRY_INTERNAL_GEOMETRICTRANSFORMATION_H
+#endif  // __TERRALIB_GEOMETRY_INTERNAL_GTFILTER_H
 

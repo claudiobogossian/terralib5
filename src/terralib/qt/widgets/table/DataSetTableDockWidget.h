@@ -53,6 +53,8 @@ namespace te
       */
       class TEQTWIDGETSEXPORT DataSetTableDockWidget : public QDockWidget
       {
+        Q_OBJECT
+
         public:
 
           /*!
@@ -80,6 +82,10 @@ namespace te
             \return Layer being used.
           */
           te::map::AbstractLayer* getLayer() const;
+
+        signals:
+
+          void closed(te::qt::widgets::DataSetTableDockWidget* wid);
 
         protected:
 
