@@ -53,6 +53,7 @@
 #include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/se/RasterVisualDockWidget.h"
 #include "../widgets/table/DataSetTableDockWidget.h"
+#include "../widgets/tools/Info.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/ZoomArea.h"
@@ -105,7 +106,6 @@ te::qt::widgets::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLay
 
   return 0;
 }
-
 
 te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
@@ -641,6 +641,15 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
   display->setExtent(e, true);
 }
 
+void te::qt::af::BaseApplication::onInfoToggled(bool checked)
+{
+  if(!checked)
+    return;
+
+  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), m_project->getLayers());
+  m_display->setCurrentTool(info);
+}
+
 void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
 {
   if(!checked)
@@ -688,6 +697,11 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::widgets::DataSetTabl
 
   if(it != m_tableDocks.end())
     m_tableDocks.erase(it);
+}
+
+void te::qt::af::BaseApplication::onFullScreenToggled(bool checked)
+{
+  checked ? showFullScreen() : showMaximized();
 }
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
@@ -930,7 +944,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_viewMapDisplay, "view-map-display", "View.Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true, m_menubar);
   initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, false, m_menubar);
   initAction(m_viewStyleExplorer, "grid-visible", "View.Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, false, m_menubar);
-  initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, false, false, m_menubar);
+  initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, true, true, m_menubar);
   initAction(m_viewRefresh, "view-refresh", "View.Refresh", tr("&Refresh"), tr(""), true, false, false, m_menubar);
   //initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
   initAction(m_viewGrid, "view-grid", "View.Grid", tr("&Grid"), tr("Show or hide the geographic grid"), true, true, false, m_menubar);
@@ -1001,6 +1015,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapZoomExtent, "zoom-extent", "Map.Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, true, m_menubar);
   initAction(m_mapPreviousExtent, "edit-undo", "Map.Previous Extent", tr("&Previous Extent"), tr(""), true, false, false, m_menubar);
   initAction(m_mapNextExtent, "edit-redo", "Map.Next Extent", tr("&Next Extent"), tr(""), true, false, false, m_menubar);
+  initAction(m_mapInfo, "pointer-info", "Map.Info", tr("&Info"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, false, m_menubar);
   initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, false, m_menubar);
   initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, false, m_menubar);
@@ -1015,6 +1030,7 @@ void te::qt::af::BaseApplication::initActions()
   mapToolsGroup->addAction(m_mapMeasureDistance);
   mapToolsGroup->addAction(m_mapMeasureArea);
   mapToolsGroup->addAction(m_mapMeasureAngle);
+  mapToolsGroup->addAction(m_mapInfo);
 }
 
 void te::qt::af::BaseApplication::initMenus()
@@ -1133,6 +1149,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addAction(m_mapZoomExtent);
   m_mapMenu->addAction(m_mapPreviousExtent);
   m_mapMenu->addAction(m_mapNextExtent);
+  m_mapMenu->addSeparator();
+  m_mapMenu->addAction(m_mapInfo);
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapMeasureDistance);
   m_mapMenu->addAction(m_mapMeasureArea);
@@ -1265,9 +1283,11 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapZoomArea, SIGNAL(toggled(bool)), SLOT(onZoomAreaToggled(bool)));
   connect(m_mapPan, SIGNAL(toggled(bool)), SLOT(onPanToggled(bool)));
   connect(m_mapZoomExtent, SIGNAL(triggered()), SLOT(onZoomExtentTriggered()));
+  connect(m_mapInfo, SIGNAL(toggled(bool)), SLOT(onInfoToggled(bool)));
   connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
   connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
   connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
   connect(m_mapStopDraw, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
   connect(m_layerShowTable, SIGNAL(triggered()), SLOT(onLayerShowTableTriggered()));
+  connect(m_viewFullScreen, SIGNAL(toggled(bool)), SLOT(onFullScreenToggled(bool)));
 }

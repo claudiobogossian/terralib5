@@ -31,6 +31,7 @@
 #include "TiePointsLocator.h"
 #include "../raster/Interpolator.h"
 #include "../dataaccess/datasource/DataSource.h"
+#include "../geometry/GTParameters.h"
 
 namespace te
 {
@@ -112,6 +113,8 @@ namespace te
           public:
             
             te::da::DataSource* m_outputDSPtr; //!< The output data source where the mosaic rasters will be created.
+            
+            std::vector< std::vector< te::gm::GTParameters::TiePoint > > m_tiePoints; //!< The found tie-points between each pair of rasters (te::gm::GTParameters::TiePoint::first are raster with index N line/column indexes, te::gm::GTParameters::TiePoint::second are raster with index N+1 line/column indexes, empty vectors will be inserted when no tie-points where found).
             
             OutputParameters();
             

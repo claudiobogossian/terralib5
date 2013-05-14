@@ -62,6 +62,7 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Extent")); 
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Previous Extent"));
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Next Extent"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Info"));
   m_menu.addSeparator();
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Stop Draw"));
 

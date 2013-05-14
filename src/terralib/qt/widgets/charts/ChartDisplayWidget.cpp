@@ -39,10 +39,10 @@
 
 te::qt::widgets::ChartDisplayWidget::ChartDisplayWidget(QwtPlotSeriesItem* chart, int type, te::qt::widgets::ChartDisplay* display, QWidget* parent,  Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_display(display),
+    m_ui(new Ui::ChartDisplayWidgetForm),
     m_chart(chart),
     m_type(type),
-    m_ui(new Ui::ChartDisplayWidgetForm)
+    m_display(display)
 {
     m_ui->setupUi(this);
 
