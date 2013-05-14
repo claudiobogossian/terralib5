@@ -101,7 +101,8 @@ class TablePopupFilter : public QObject
       m_view(view),
       m_hMenu(0),
       m_vMenu(0),
-      m_vportMenu(0)
+      m_vportMenu(0),
+      m_showOidsColumns(false)
     {
       m_view->horizontalHeader()->installEventFilter(this);
       m_view->verticalHeader()->installEventFilter(this);
@@ -163,11 +164,22 @@ class TablePopupFilter : public QObject
             act3->setToolTip(tr("Put all columns in the original order."));
             m_hMenu->addAction(act3);
 
+            m_hMenu->addSeparator();
+
+            QAction* act4 = new QAction(m_hMenu);
+            act4->setText(tr("Show identifiers columns"));
+            act4->setToolTip(tr("Shows an icon on identifiers columns"));
+            m_hMenu->addAction(act4);
+            act4->setCheckable(true);
+            act4->setChecked(m_showOidsColumns);
+
             // Signal / Slot connections
             connect (act, SIGNAL(triggered()), SLOT(hideColumn()));
             connect (hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
+
             m_view->connect (act2, SIGNAL(triggered()), SLOT(showAllColumns()));
             m_view->connect (act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
+            connect(act4, SIGNAL(triggered()), SLOT(showOIdsColumns()));
 
             m_hMenu->popup(pos);
           }
@@ -194,44 +206,6 @@ class TablePopupFilter : public QObject
           }
         }
         break;
-
-        //case QEvent::MouseButtonPress:
-        //  {
-        //    QMouseEvent* evt = static_cast<QMouseEvent*>(event);
-
-        //    if(evt->button() == Qt::LeftButton && watched == vport)
-        //    {
-        //      int row = m_view->rowAt(evt->pos().y());
-
-        //      if(evt->modifiers() & Qt::ShiftModifier)
-        //      {
-        //        emit selectObjects(m_initRow, row);
-
-        //        return true;
-        //      }
-
-        //      m_initRow = row;
-
-        //      bool add = evt->modifiers() & Qt::ControlModifier;
-
-        //      emit selectObject(row, add);
-
-        //      return true;
-        //    }
-        //  }
-        //break;
-
-        //case QEvent::MouseButtonDblClick:
-        //{
-        //  QMouseEvent* evt = static_cast<QMouseEvent*>(event);
-
-        //  QModelIndex idx = m_view->indexAt(evt->pos());
-
-        //  m_view->edit(idx);
-
-        //  return true;
-        //}
-        //break;
       }
 
       return QObject::eventFilter(watched, event);
@@ -261,6 +235,13 @@ class TablePopupFilter : public QObject
       emit showColumn(column);
     }
 
+    void showOIdsColumns()
+    {
+      m_showOidsColumns = !m_showOidsColumns;
+
+      m_view->setOIdsColumnsVisible(m_showOidsColumns);
+    }
+
   signals:
 
     void hideColumn(const int&);
@@ -280,6 +261,7 @@ class TablePopupFilter : public QObject
     QMenu* m_vMenu;
     QMenu* m_vportMenu;
     te::da::DataSet* m_dset;
+    bool m_showOidsColumns;
 
     int m_columnPressed;
 };
@@ -380,6 +362,8 @@ void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool&
 
   m_delegate->addObject(row);
 
+  removeSelection(row, row);
+
   viewport()->repaint();
 }
 
@@ -401,6 +385,8 @@ void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const 
 
   m_delegate->addObjects(ini, final);
 
+  removeSelection(ini, final);
+
   viewport()->repaint();
 }
 
@@ -414,4 +400,25 @@ void te::qt::widgets::DataSetTableView::promote()
   m_delegate->setPromoter(m_model->getPromoter());
 
   viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::setOIdsColumnsVisible(const bool& visible)
+{
+  m_model->showOIdsVisible(visible);
+
+  horizontalHeader()->viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::removeSelection(const int& initRow, const int& finalRow)
+{
+  QItemSelection toRemove;
+  QModelIndexList idxs = selectionModel()->selection().indexes();
+
+  QModelIndexList::iterator it;
+
+  for(it=idxs.begin(); it!=idxs.end(); ++it)
+    if((*it).row()>=initRow && (*it).row()<=finalRow)
+      toRemove.select(*it, *it);
+
+  selectionModel()->select(toRemove, QItemSelectionModel::Deselect);
 }
