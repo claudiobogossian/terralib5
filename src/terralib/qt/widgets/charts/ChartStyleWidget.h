@@ -73,6 +73,8 @@ namespace te
         protected slots:
 
           void onTitleLineEditFinish();
+          void onlabelXEditFinish();
+          void onlabelYEditFinish();
           void onTitleStylePushButtonClicked();
           void onLabelStylePushButtonClicked();
           void onGridCheckBoxToggled(int state);

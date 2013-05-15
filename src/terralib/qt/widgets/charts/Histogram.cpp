@@ -25,7 +25,7 @@
 
 //terralib
 #include "Histogram.h"
-
+#include "../../../datatype.h"
 
 te::qt::widgets::Histogram::Histogram()
 {
@@ -34,7 +34,10 @@ te::qt::widgets::Histogram::Histogram()
 
 te::qt::widgets::Histogram::~Histogram()
 {
-
+  if(m_histogramType ==  te::dt::DATETIME_TYPE || m_histogramType == te::dt::STRING_TYPE)
+    delete m_StringValues;
+  else
+    delete m_values;
 }
 
 int& te::qt::widgets::Histogram::getType()

@@ -52,7 +52,6 @@ namespace te
     {
 
     //forward declarations
-    class HistogramChart;
     class HistogramDataWidget;
 
     /*!
@@ -79,7 +78,6 @@ namespace te
         private:
 
           std::auto_ptr<Ui::HistogramDialogForm>  m_ui;                   //!< The dialog form.
-          te::qt::widgets::HistogramChart*        m_histogramChart;       //!< The histogram's chart that will be configured by this dialog.
           te::qt::widgets::HistogramDataWidget*   m_histogramDataWidget;  //!< The histogram's data widget used to configure the basic parameters of the new histogram.
 
       };

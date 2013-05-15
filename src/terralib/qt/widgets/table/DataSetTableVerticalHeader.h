@@ -20,7 +20,7 @@
 /*!
   \file DataSetTableVerticalHeader.h
 
-  \brief
+  \brief Defines a vertical header for a dataset table view.
 */
 #ifndef __TERRALIB_QT_WIDGETS_TABLE_INTERNAL_DATASETTABLEVERTICALHEADER_H
 #define __TERRALIB_QT_WIDGETS_TABLE_INTERNAL_DATASETTABLEVERTICALHEADER_H
@@ -38,6 +38,8 @@ namespace te
 
       /*!
         \class DataSetTableVerticalHeader
+
+        \brief A vertical header used for selecting rows at a table view.
       */
       class DataSetTableVerticalHeader : public QHeaderView
       {
@@ -59,15 +61,21 @@ namespace te
 
         signals:
 
+          /*!
+            \brief Emitted when user clicks mouse on a row.
+          */
           void selectedRow(const int& row, const bool& add);
 
+          /*!
+            \brief Emitted when mouse clicks on row with SHIFT key button pressed.
+          */
           void selectedRows(const int& initRow, const int& finalRow);
 
         protected:
 
-          int m_initRow;
+          int m_initRow;              //!< Init row.
 
-          DataSetTableView* m_view;
+          DataSetTableView* m_view;   //!< Table view.
        };
     }
   }

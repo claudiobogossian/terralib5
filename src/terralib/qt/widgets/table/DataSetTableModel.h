@@ -118,6 +118,8 @@ namespace te
           */
           Promoter* getPromoter();
 
+          void showOIdsVisible(const bool& visible);
+
           /*!
             \name QAbstractTableModel re-implementation methods.
 
@@ -147,6 +149,8 @@ namespace te
           std::vector<size_t> m_pkeysColumns; //!< Primary key columns.
 
           Promoter* m_promoter;               //!< Promoter to be used.
+
+          bool m_OIdsVisible;                 //!< Oids icon visibility.
       };
     }
   }

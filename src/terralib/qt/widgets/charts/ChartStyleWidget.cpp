@@ -54,6 +54,8 @@ te::qt::widgets::ChartStyleWidget::ChartStyleWidget(QWidget* parent, Qt::WindowF
   m_chartStyle = new te::qt::widgets::ChartStyle();
 
   connect(m_ui->m_chartTitleLineEdit, SIGNAL(editingFinished()), this, SLOT(onTitleLineEditFinish()));
+  connect(m_ui->m_labelXlLineEdit, SIGNAL(editingFinished()), this, SLOT(onlabelXEditFinish()));
+  connect(m_ui->m_labelYlLineEdit, SIGNAL(editingFinished()), this, SLOT(onlabelYEditFinish()));
   connect(m_ui->m_gridCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onGridCheckBoxToggled(int)));
   connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onColorChanged(const QColor&)));
 }
@@ -80,6 +82,15 @@ void te::qt::widgets::ChartStyleWidget::onTitleLineEditFinish()
   m_chartStyle->setTitle(m_ui->m_chartTitleLineEdit->text());
 }
 
+void te::qt::widgets::ChartStyleWidget::onlabelXEditFinish()
+{
+  m_chartStyle->setAxisX(m_ui->m_labelXlLineEdit->text());
+}
+
+void te::qt::widgets::ChartStyleWidget::onlabelYEditFinish()
+{
+  m_chartStyle->setAxisY(m_ui->m_labelYlLineEdit->text());
+}
 te::qt::widgets::ChartStyle* te::qt::widgets::ChartStyleWidget::getStyle()
 {
   return m_chartStyle;
@@ -89,6 +100,8 @@ void te::qt::widgets::ChartStyleWidget::setStyle(te::qt::widgets::ChartStyle* ne
 {
   m_chartStyle = newStyle;
   m_ui->m_chartTitleLineEdit->setText(m_chartStyle->getTitle());
+  m_ui->m_labelXlLineEdit->setText(m_chartStyle->getAxisX());
+  m_ui->m_labelYlLineEdit->setText(m_chartStyle->getAxisY());
   m_colorPicker->setColor(m_chartStyle->getColor());
   m_ui->m_gridCheckBox->setChecked(m_chartStyle->getGridChecked());
 }

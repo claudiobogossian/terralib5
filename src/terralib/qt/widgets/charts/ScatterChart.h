@@ -70,7 +70,6 @@ namespace te
             \note It will not take the ownership of the pointer "data".
           */
           ScatterChart(Scatter* data, ScatterStyle* style, size_t size);
-                    
 
           /*! \brief Destructor. */
           ~ScatterChart();
@@ -90,7 +89,6 @@ namespace te
         private:
           Scatter*       m_scatter;       //!< The scatter that will be shown on this chart.
           ScatterStyle*  m_scatterStyle;  //!< The symbol that defines the look of a scatter's point.
-          std::size_t    m_size;          //!< The size of a scatter's point.
       };
     } // end namespace widgets
   }   // end namespace qt
