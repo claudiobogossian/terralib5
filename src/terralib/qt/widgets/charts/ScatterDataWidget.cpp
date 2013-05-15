@@ -47,11 +47,15 @@ te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, 
   }
 }
 
+Ui::ScatterDataWidgetForm* te::qt::widgets::ScatterDataWidget::getForm()
+{
+  return m_ui.get();
+}
+
 te::qt::widgets::Scatter* te::qt::widgets::ScatterDataWidget::getScatter()
 {
   //Acquiring the dataset Properties types and creating a new scatter
-  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(m_dataSet.get(), te::da::GetPropertyPos(m_dataSet.get(), m_ui->m_propertyXComboBox->currentText().toStdString()), te::da::GetPropertyPos(m_dataSet.get(), m_ui->m_propertyYComboBox->currentText().toStdString()));
-  return scatter;
+  return te::qt::widgets::createScatter(m_dataSet.get(), te::da::GetPropertyPos(m_dataSet.get(), m_ui->m_propertyXComboBox->currentText().toStdString()), te::da::GetPropertyPos(m_dataSet.get(), m_ui->m_propertyYComboBox->currentText().toStdString()));
 }
 
 te::qt::widgets::ScatterDataWidget::~ScatterDataWidget()

@@ -26,6 +26,7 @@
 //Terralib
 
 #include "ChartDisplay.h"
+#include "ChartStyle.h"
 #include "ChartDisplayWidget.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
@@ -36,6 +37,7 @@
 #include "ScatterStyle.h"
 #include "Symbol.h"
 #include "ui_ScatterDialogForm.h"
+#include "ui_ScatterDataWidgetForm.h"
 
 //QT
 #include <QtGui/QDockWidget>
@@ -72,7 +74,11 @@ void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
   chart->setScatterStyle(new te::qt::widgets::ScatterStyle());
 
   //Adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"));;
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"));
+  chartDisplay->getStyle()->setTitle(QString::fromStdString("Scatter"));
+  chartDisplay->getStyle()->setAxisX(m_scatterDataWidget->getForm()->m_propertyXComboBox->currentText());
+  chartDisplay->getStyle()->setAxisY(m_scatterDataWidget->getForm()->m_propertyXComboBox->currentText());
+  chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
   chartDisplay->show();
   chartDisplay->replot();

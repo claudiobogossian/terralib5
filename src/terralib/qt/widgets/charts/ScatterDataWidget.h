@@ -69,6 +69,8 @@ namespace te
 
           ~ScatterDataWidget();
 
+          Ui::ScatterDataWidgetForm* getForm();
+
           te::qt::widgets::Scatter* getScatter();
 
         protected slots:

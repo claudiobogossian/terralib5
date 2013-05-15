@@ -26,6 +26,7 @@
 //Terralib
 #include "ChartDisplay.h"
 #include "ChartDisplayWidget.h"
+#include "ChartStyle.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
 #include "HistogramChart.h"
@@ -33,6 +34,7 @@
 #include "HistogramDialog.h"
 #include "HistogramStyle.h"
 #include "ui_HistogramDialogForm.h"
+#include "ui_HistogramDataWidgetForm.h"
 
 //QT
 #include <QtGui/QDialog>
@@ -69,8 +71,12 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
   te::qt::widgets::HistogramChart* chart = new te::qt::widgets::HistogramChart(m_histogramDataWidget->getHistogram());
   chart->setHistogramStyle(new te::qt::widgets::HistogramStyle());
 
-  //Adjusting the chart Display
+  //Creating and adjusting the chart Display
   te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"));
+  chartDisplay->getStyle()->setTitle(QString::fromStdString("Histogram"));
+  chartDisplay->getStyle()->setAxisX(m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
+  chartDisplay->getStyle()->setAxisY(QString::fromStdString("Frequency"));
+  chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
   chartDisplay->show();
   chartDisplay->replot();

@@ -79,6 +79,11 @@ te::qt::widgets::HistogramDataWidget::~HistogramDataWidget()
 {
 }
 
+Ui::HistogramDataWidgetForm* te::qt::widgets::HistogramDataWidget::getForm()
+{
+  return m_ui.get();
+}
+
 te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram() 
 {
   std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet.get(), te::dt::RASTER_TYPE);
