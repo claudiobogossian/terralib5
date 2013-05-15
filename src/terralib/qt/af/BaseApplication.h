@@ -111,6 +111,8 @@ namespace te
 
           void onLayerScatterTriggered();
 
+          void onMapSRIDTriggered();
+
           void onDrawTriggered();
 
           void onZoomInToggled(bool checked);
@@ -213,6 +215,7 @@ namespace te
           QAction* m_fileExit;
           QAction* m_filePrint;
           QAction* m_filePrintPreview;
+          QAction* m_mapSRID;
           QAction* m_mapDraw;
           QAction* m_mapZoomIn;
           QAction* m_mapZoomOut;
