@@ -152,7 +152,7 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
   try
   {
     // Gets the Layer Schema
-    const te::map::LayerSchema* ls = layer->getSchema();
+    std::auto_ptr<const te::map::LayerSchema> ls(layer->getSchema());
 
     if(ls->hasGeom())
     {
