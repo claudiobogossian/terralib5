@@ -26,10 +26,27 @@
 #include <terralib/geometry/GTFactory.h>
 #include <terralib/geometry/GTFilter.h>
 
-// boost
-#include <boost/timer.hpp>
-
 #include <cmath> 
+
+#define testDirectMapping( transfPtr, pt1, pt2, maxError ) \
+{ \
+  te::gm::Coord2D mappedCoord; \
+  transfPtr->directMap( pt1, mappedCoord ); \
+  const double diffx = mappedCoord.x - pt2.x; \
+  const double diffy = mappedCoord.y - pt2.y; \
+  const double error = sqrt( ( diffx * diffx ) + ( diffy * diffy ) ); \
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0, error, maxError ); \
+}
+
+#define testInverseMapping( transfPtr, pt1, pt2, maxError ) \
+{ \
+  te::gm::Coord2D mappedCoord; \
+  transfPtr->inverseMap( pt2, mappedCoord ); \
+  const double diffx = mappedCoord.x - pt1.x; \
+  const double diffy = mappedCoord.y - pt1.y; \
+  const double error = sqrt( ( diffx * diffx ) + ( diffy * diffy ) ); \
+  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0, error, maxError ); \
+}
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsGTFilter );
 
@@ -39,39 +56,6 @@ void TsGTFilter::setUp()
 
 void TsGTFilter::tearDown()
 {
-}
-
-void TsGTFilter::testDirectMapping( 
-  te::gm::GeometricTransformation const * transfPtr,
-  const te::gm::Coord2D& pt1, const te::gm::Coord2D& pt2, 
-  const double& maxError )
-{
-  te::gm::Coord2D mappedCoord;
-  
-  transfPtr->directMap( pt1, mappedCoord );
-  
-  const double diffx = mappedCoord.x - pt2.x;
-  const double diffy = mappedCoord.y - pt2.y;
-  const double error = sqrt( ( diffx * diffx ) + ( diffy * diffy ) );
-  
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0, error, maxError );
-}
-
-
-void TsGTFilter::testInverseMapping( 
-  te::gm::GeometricTransformation const * transfPtr,
-  const te::gm::Coord2D& pt1, const te::gm::Coord2D& pt2, 
-  const double& maxError )
-{
-  te::gm::Coord2D mappedCoord;
-  
-  transfPtr->inverseMap( pt2, mappedCoord );
-  
-  const double diffx = mappedCoord.x - pt1.x;
-  const double diffy = mappedCoord.y - pt1.y;
-  const double error = sqrt( ( diffx * diffx ) + ( diffy * diffy ) );
-  
-  CPPUNIT_ASSERT_DOUBLES_EQUAL( 0, error, maxError );
 }
 
 void  TsGTFilter::generateTestTPSet1( 
@@ -1685,18 +1669,12 @@ void TsGTFilter::tcApplyRansacWithTPSet1()
   tiePointsWeights.resize( transfParams.m_tiePoints.size(), 1.0 );
 
   std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
+  std::vector< te::gm::GTParameters::TiePoint > tiePoints;
   
   te::gm::GTFilter filter;
 
-  boost::timer timerInstance;
-
   CPPUNIT_ASSERT( filter.applyRansac( "Affine", transfParams, 0.01, 
-    0.01, 0, 0, false, transfPtr, tiePointsWeights ) );
-  std::cout << std::endl << "Elapsed time:";
-  std::cout << timerInstance.elapsed() << std::endl;
-  
-  std::cout << std::endl << "Final Number of tie-points:";
-  std::cout << transfPtr->getParameters().m_tiePoints.size() << std::endl;
+    0.01, 0, 0, false, tiePointsWeights, tiePoints, transfPtr ) );
   
   CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
   
@@ -1732,20 +1710,15 @@ void TsGTFilter::tcApplyRansacWithTPSet2()
   tiePointsWeights.resize( transfParams.m_tiePoints.size(), 1.0 );
 
   std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
+  std::vector< te::gm::GTParameters::TiePoint > tiePoints;
   
   te::gm::GTFilter filter;
 
-  boost::timer timerInstance;
   CPPUNIT_ASSERT( filter.applyRansac( "Affine", transfParams, 1, 
-    1, 0, 0, false, transfPtr, tiePointsWeights ) );
-  std::cout << std::endl << "Elapsed time:";
-  std::cout << timerInstance.elapsed() << std::endl;
-  
-  std::cout << std::endl << "Final Number of tie-points:";
-  std::cout << transfPtr->getParameters().m_tiePoints.size() << std::endl;
+    1, 0, 0, false, tiePointsWeights, tiePoints, transfPtr ) );
   
   CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
-  CPPUNIT_ASSERT( transfPtr->getParameters().m_tiePoints.size() >
+  CPPUNIT_ASSERT( tiePoints.size() >
     transfPtr->getMinRequiredTiePoints() );
 }
 
@@ -1767,17 +1740,12 @@ void TsGTFilter::tcApplyRansacMultiThread()
   tiePointsWeights.resize( transfParams.m_tiePoints.size(), 1.0 );
 
   std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
+  std::vector< te::gm::GTParameters::TiePoint > tiePoints;
   
   te::gm::GTFilter filter;
 
-  boost::timer timerInstance;
   CPPUNIT_ASSERT( filter.applyRansac( "Affine", transfParams, 0.01, 
-    0.01, 0, 0, true, transfPtr, tiePointsWeights ) );
-  std::cout << std::endl << "Elapsed time:";
-  std::cout << timerInstance.elapsed() << std::endl;
-  
-  std::cout << std::endl << "Final Number of tie-points:";
-  std::cout << transfPtr->getParameters().m_tiePoints.size() << std::endl;
+    0.01, 0, 0, true, tiePointsWeights, tiePoints, transfPtr ) );
   
   CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
   

@@ -237,8 +237,6 @@ namespace te
         */
         double getMaxDirectMappingError() const
         {
-          assert(isValid(m_internalParameters));
-
           return getMaxDirectMappingError(m_internalParameters);
         };
 
@@ -258,10 +256,20 @@ namespace te
         */
         double getMaxInverseMappingError() const
         {
-          assert( isValid( m_internalParameters ) );
-
           return getMaxInverseMappingError( m_internalParameters );
         };
+        
+        /*!
+          \brief Calculates root mean square direct mapping error for the supplied tie-points using the supplied parameters.
+          
+          \param tiePoints The tie-points.
+
+          \param params Transformation parameters.
+
+          \return The root mean square error.
+        */
+        double getDirectMapRMSE( const std::vector< GTParameters::TiePoint >& tiePoints, 
+          const GTParameters& params ) const;        
 
         /*!
           \brief Calculates root mean square direct mapping error for the supplied parameters.
@@ -270,7 +278,22 @@ namespace te
 
           \return The root mean square error.
         */
-        double getDirectMapRMSE( const GTParameters& params ) const;
+        double getDirectMapRMSE( const GTParameters& params ) const
+        {
+          return getDirectMapRMSE( params.m_tiePoints, params );
+        };
+        
+        /*!
+          \brief Calculates root mean square direct mapping error for the supplied tie-points.
+          
+          \param tiePoints The tie-points.
+
+          \return The root mean square error.
+        */
+        double getDirectMapRMSE( const std::vector< GTParameters::TiePoint >& tiePoints ) const
+        {
+          return getDirectMapRMSE( tiePoints, m_internalParameters );
+        };
 
         /*!
           \brief Calculates root mean square direct mapping error.
@@ -279,10 +302,20 @@ namespace te
         */
         double getDirectMapRMSE() const
         {
-          assert( isValid( m_internalParameters ) );
-
           return getDirectMapRMSE( m_internalParameters );
         };
+        
+        /*!
+          \brief Calculates root mean square inverse mapping error for the supplied tie-points using the supplied parameters.
+          
+          \param tiePoints The tie-points.
+
+          \param params Transformation parameters.
+
+          \return The root mean square error.
+        */
+        double getInverseMapRMSE( const std::vector< GTParameters::TiePoint >& tiePoints,
+          const GTParameters& params ) const;        
 
         /*!
           \brief Calculates root mean square inverse mapping error for the supplied parameters.
@@ -291,7 +324,22 @@ namespace te
 
           \return The root mean square error.
         */
-        double getInverseMapRMSE( const GTParameters& params ) const;
+        double getInverseMapRMSE( const GTParameters& params ) const
+        {
+          return getInverseMapRMSE( params.m_tiePoints, params );
+        };
+        
+        /*!
+          \brief Calculates root mean square inverse mapping error for the supplied tie-points.
+          
+          \param tiePoints The tie-points.
+
+          \return The root mean square error.
+        */
+        double getInverseMapRMSE( const std::vector< GTParameters::TiePoint >& tiePoints ) const
+        {
+          return getInverseMapRMSE( tiePoints, m_internalParameters );
+        };
 
         /*!
           \brief Calculates root mean square inverse mapping error.
@@ -300,8 +348,6 @@ namespace te
         */
         double getInverseMapRMSE() const
         {
-          assert( isValid( m_internalParameters ) );
-
           return getInverseMapRMSE( m_internalParameters );
         };
 
@@ -325,8 +371,6 @@ namespace te
         */
         double getDirectMappingError( const GTParameters::TiePoint& tiePoint ) const
         {
-          assert( isValid( m_internalParameters ) );
-
           return getDirectMappingError( tiePoint, m_internalParameters );
         };
 
@@ -350,8 +394,6 @@ namespace te
         */
         double getInverseMappingError( const GTParameters::TiePoint& tiePoint ) const
         {
-          assert( isValid( m_internalParameters ) );
-        
           return getInverseMappingError( tiePoint, m_internalParameters );
         };
 

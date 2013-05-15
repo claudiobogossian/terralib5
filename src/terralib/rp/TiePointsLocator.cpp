@@ -352,11 +352,9 @@ namespace te
           0,
           m_inputParameters.m_geometryFilterAssurance,
           m_inputParameters.m_enableMultiThread,
-          outParamsPtr->m_transformationPtr,
-          tiePointsWeights ), "Outliers remotion error" );
-        
-        outParamsPtr->m_tiePoints = 
-          outParamsPtr->m_transformationPtr->getParameters().m_tiePoints;        
+          tiePointsWeights,
+          outParamsPtr->m_tiePoints,
+          outParamsPtr->m_transformationPtr  ), "Outliers remotion error" );
       }
       else
       {
