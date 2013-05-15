@@ -358,6 +358,8 @@ namespace te
           
           // Move to the next raster
           
+          cachedInputRasterPtr.reset();
+          
           m_inputParameters.m_feederRasterPtr->moveNext();          
           
           if( m_inputParameters.m_enableProgress )
@@ -487,7 +489,7 @@ namespace te
               locatorOutParams ), "Tie points locator exec error" );
           }
         
-          // The matching was accomplished successfully
+          // The matching was accomplished successfully ?
         
           if(
               ( locatorOutParams.m_transformationPtr.get() == 0 ) 
@@ -628,10 +630,9 @@ namespace te
                 mosaicRasterHandler->getGrid()->geoToGrid( oldMosaicReferenceX,
                   oldMosaicReferenceY, expansionOffSetX, expansionOffSetY );
                   
-                te::gm::GTParameters newTransParams = 
-                  geoTransPtr->getParameters();
-                newTransParams.m_directParameters.clear();
-                newTransParams.m_inverseParameters.clear();
+                te::gm::GTParameters newTransParams;
+                newTransParams.m_tiePoints = 
+                  geoTransPtr->getParameters().m_tiePoints;
                 
                 for( unsigned int tpIdx = 0 ; tpIdx < 
                   newTransParams.m_tiePoints.size() ; ++tpIdx )
@@ -679,53 +680,89 @@ namespace te
                 lastColIdx,
                 0.0,
                 inputRasterMappedURXIndexed,
-                inputRasterMappedURYIndexed);                
+                inputRasterMappedURYIndexed); 
               geoTransPtr->inverseMap( 
                 0.0,
                 0.0,
                 inputRasterMappedULXIndexed,
-                inputRasterMappedULYIndexed);                
+                inputRasterMappedULYIndexed);  
+                
               
               inputRasterBBoxLLXIndexed = (unsigned int)
-                std::floor( 
-                  std::min( inputRasterMappedLLXIndexed, 
-                    std::min( inputRasterMappedLRXIndexed, 
-                      std::min( inputRasterMappedURXIndexed, 
-                                  inputRasterMappedULXIndexed
-                      ) 
-                    ) 
-                  ) 
+                std::max( 0.0,
+                  std::min( (double)( mosaicRasterHandler->getNumberOfColumns() - 1 ),              
+                    std::floor( 
+                      std::min( inputRasterMappedLLXIndexed, 
+                        std::min( inputRasterMappedLRXIndexed, 
+                          std::min( inputRasterMappedURXIndexed, 
+                                      inputRasterMappedULXIndexed
+                          ) 
+                        ) 
+                      )
+                    )
+                  )
                 );
+             
+                
               inputRasterBBoxLLYIndexed = (unsigned int)
-                std::ceil( 
-                  std::max( inputRasterMappedLLYIndexed, 
-                    std::max( inputRasterMappedLRYIndexed, 
-                      std::max( inputRasterMappedURYIndexed, 
-                                  inputRasterMappedULYIndexed
+                std::max( 0.0,
+                  std::min( (double)( mosaicRasterHandler->getNumberOfRows() - 1 ),                
+                    std::ceil( 
+                      std::max( inputRasterMappedLLYIndexed, 
+                        std::max( inputRasterMappedLRYIndexed, 
+                          std::max( inputRasterMappedURYIndexed, 
+                                      inputRasterMappedULYIndexed
+                          ) 
+                        ) 
                       ) 
-                    ) 
-                  ) 
+                    )
+                  )
                 );
+               
+                
               inputRasterBBoxURXIndexed = (unsigned int)
-                std::ceil( 
-                  std::max( inputRasterMappedLLXIndexed, 
-                    std::max( inputRasterMappedLRXIndexed, 
-                      std::max( inputRasterMappedURXIndexed, 
-                                  inputRasterMappedULXIndexed
-                      ) 
-                    ) 
-                  ) 
-                );                
-              inputRasterBBoxURYIndexed = (unsigned int)
-                std::floor( 
-                  std::min( inputRasterMappedLLYIndexed, 
-                    std::min( inputRasterMappedLRYIndexed, 
-                      std::min( inputRasterMappedURYIndexed, 
-                                  inputRasterMappedULYIndexed
-                      ) 
-                    ) 
-                  ) 
+                std::max( 0.0,
+                  std::min( (double)( mosaicRasterHandler->getNumberOfColumns() - 1 ),                
+                    std::ceil( 
+                      std::max( inputRasterMappedLLXIndexed, 
+                        std::max( inputRasterMappedLRXIndexed, 
+                          std::max( inputRasterMappedURXIndexed, 
+                                      inputRasterMappedULXIndexed
+                          ) 
+                        ) 
+                      )
+                    )
+                  )
                 );
+
+                
+              inputRasterBBoxURYIndexed = (unsigned int)
+                std::max( 0.0,
+                  std::min( (double)( mosaicRasterHandler->getNumberOfRows() - 1 ),               
+                    std::floor( 
+                      std::min( inputRasterMappedLLYIndexed, 
+                        std::min( inputRasterMappedLRYIndexed, 
+                          std::min( inputRasterMappedURYIndexed, 
+                                      inputRasterMappedULYIndexed
+                          ) 
+                        ) 
+                      ) 
+                    )
+                  )
+                );
+                
+              assert( inputRasterBBoxLLXIndexed >= 0 );
+              assert( inputRasterBBoxLLXIndexed <= 
+                ( mosaicRasterHandler->getNumberOfColumns() - 1 ) );    
+              assert( inputRasterBBoxLLYIndexed >= 0 );
+              assert( inputRasterBBoxLLYIndexed <= 
+                ( mosaicRasterHandler->getNumberOfRows() - 1 ) );                 
+              assert( inputRasterBBoxURXIndexed >= 0 );
+              assert( inputRasterBBoxURXIndexed <= 
+                ( mosaicRasterHandler->getNumberOfColumns() - 1 ) ); 
+              assert( inputRasterBBoxURYIndexed >= 0 );
+              assert( inputRasterBBoxURYIndexed <= 
+                ( mosaicRasterHandler->getNumberOfRows() - 1 ) );
             }
             
             // Blending the current raster into the mosaic
@@ -765,23 +802,15 @@ namespace te
                   
                 unsigned int outputRow = 0;
                 unsigned int outputCol = 0;
-                const unsigned int outputRowsStart = std::max( 0u, inputRasterBBoxURYIndexed );
-                const unsigned int outputColsStart = std::max( 0u, inputRasterBBoxLLXIndexed );
-                const unsigned int outputRowsBound = std::min( 
-                  mosaicRasterHandler->getNumberOfRows(),
-                  ( inputRasterBBoxLLYIndexed + 1 ) );
-                const unsigned int outputColsBound = std::min( 
-                  mosaicRasterHandler->getNumberOfColumns(),
-                  ( inputRasterBBoxURXIndexed + 1 ) );                  
                 double blendedValue = 0;                  
                 
-                for( outputRow = outputRowsStart ; outputRow < outputRowsBound ;
+                for( outputRow = inputRasterBBoxURYIndexed ; outputRow <= inputRasterBBoxLLYIndexed ;
                   ++outputRow )
                 {
-                  for( outputCol = outputColsStart ; outputCol < outputColsBound ;
+                  for( outputCol = inputRasterBBoxLLXIndexed ; outputCol <= inputRasterBBoxURXIndexed ;
                     ++outputCol )
                   {
-                    blenderInstance.getBlendedValue( outputRow, outputCol, inputRastersBandsIdx,
+                    blenderInstance.getBlendedValue( (double)outputRow, (double)outputCol, inputRastersBandsIdx,
                       blendedValue );
                     
                     if( blendedValue != m_inputParameters.m_noDataValue )
@@ -857,6 +886,8 @@ namespace te
             outParamsPtr->m_tiePoints.push_back( locatorOutParams.m_tiePoints );
             
             // Move to the next raster
+            
+            cachedInputRasterPtr.reset();
             
             m_inputParameters.m_feederRasterPtr->moveNext();  
             
