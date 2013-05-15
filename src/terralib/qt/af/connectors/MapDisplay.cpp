@@ -53,6 +53,8 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   m_display->installEventFilter(new te::qt::widgets::ZoomWheel(m_display, 2.0, this));
 
   // Build the popup menu
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.SRID"));
+  m_menu.addSeparator();
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Draw"));
   m_menu.addSeparator();
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom In"));
