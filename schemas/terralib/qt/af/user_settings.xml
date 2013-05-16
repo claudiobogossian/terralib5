@@ -10,6 +10,8 @@
   <LastSearchedFolder xlink:href="C:/Users/gribeiro/Documents"/>
 
   <ToolBarIconSize>24</ToolBarIconSize>
+  
+  <DefaultSRID>4326</DefaultSRID>
 
   <SpecificPlugins>
     <Plugin>

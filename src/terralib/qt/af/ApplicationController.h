@@ -375,6 +375,13 @@ namespace te
           */
           QString getMostRecentProject() const;
 
+          /*!
+            \brief Returns the application default SRID value.
+
+            \return Application default SRID value.
+          */
+          int getDefaultSRID() const;
+
         protected:
 
           std::map<QString, QToolBar*> m_toolbars;    //!< Toolbars registered.
@@ -396,6 +403,8 @@ namespace te
           QString m_appDefaultIconTheme;              //!< Name of the icon theme to be used.
           QString m_appToolBarDefaultIconSize;        //!< Size of the tool buttons.
           std::string m_appDatasourcesFile;           //!< Name of the file containing datasources used.
+          int m_defaultSRID;                          //!< Default SRID value.
+
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
 
           Project* m_project;                         //!< Pointer to current project.

@@ -27,6 +27,7 @@
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Utils.h"
+#include "../../../maptools/Utils.h"
 #include "../../../srs/Config.h"
 #include "../../widgets/canvas/MapDisplay.h"
 #include "../../widgets/tools/AbstractTool.h"
@@ -70,6 +71,9 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 
   // To show popup menu
   m_display->installEventFilter(this);
+
+  // Config the default SRS
+  m_display->setSRID(ApplicationController::getInstance().getDefaultSRID(), false);
 }
 
 te::qt::af::MapDisplay::~MapDisplay()
@@ -104,8 +108,6 @@ void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& la
 
   std::list<te::map::AbstractLayerPtr>::const_iterator it;
 
-  /* It adjusts the map display SRID. 
-     This code try find the first valid SRID. Need review! */
   if(m_display->getSRID() == TE_UNKNOWN_SRS)
   {
     for(it = layers.begin(); it != layers.end(); ++it)
@@ -116,29 +118,13 @@ void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& la
         continue;
 
       m_display->setSRID(layer->getSRID(), false);
-
       break;
     }
   }
 
-  /* It adjusts the map display extent.
-     This code calculates an extent that covers all visible layers. Need review! */
   if(!m_display->getExtent().isValid())
   {
-    te::gm::Envelope displayExtent;
-    for(it = layers.begin(); it != layers.end(); ++it)
-    {
-      const te::map::AbstractLayerPtr& layer = *it;
-      if(layer->getVisibility() == te::map::NOT_VISIBLE)
-        continue;
-
-      te::gm::Envelope e(layer->getExtent());
-
-      if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS))
-        e.transform(layer->getSRID(), m_display->getSRID());
-
-      displayExtent.Union(e);
-    }
+    te::gm::Envelope displayExtent = te::map::GetExtent(layers, m_display->getSRID(), true);
     m_display->setExtent(displayExtent, false);
   }
   

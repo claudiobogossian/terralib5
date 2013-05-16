@@ -18,5 +18,5 @@
     <DefaultTheme>tango</DefaultTheme>
   </IconThemeInfo>
   <ToolBarDefaultIconSize>24</ToolBarDefaultIconSize>
-
+  <DefaultSRID>4326</DefaultSRID>
 </Application>
