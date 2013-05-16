@@ -16,6 +16,7 @@
     <DefaultTheme>${TE_ICONS_THEME}</DefaultTheme>
   </IconThemeInfo>
   <ToolBarDefaultIconSize>24</ToolBarDefaultIconSize>
+  <DefaultSRID>0</DefaultSRID>
   <DefaultPluginsCategory>
     <Category>Cellular Space</Category>
     <Category>Data Access</Category>

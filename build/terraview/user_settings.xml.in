@@ -10,6 +10,8 @@
   
   <ToolBarIconSize>24</ToolBarIconSize>
   
+  <DefaultSRID>0</DefaultSRID>
+  
   <SpecificPlugins> </SpecificPlugins>
   
   <EnabledPlugins> </EnabledPlugins>
