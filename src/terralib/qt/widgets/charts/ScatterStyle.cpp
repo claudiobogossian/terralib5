@@ -34,6 +34,7 @@
 
 te::qt::widgets::ScatterStyle::ScatterStyle ()
 {
+  m_graphic  = new te::se::Graphic();
   m_mark = new te::se::Mark();
   m_mark->setFill(new te::se::Fill());
   m_mark->setStroke(new te::se::Stroke());
@@ -41,7 +42,14 @@ te::qt::widgets::ScatterStyle::ScatterStyle ()
 
 te::qt::widgets::ScatterStyle::~ScatterStyle()
 {
+  delete m_graphic;
+}
 
+te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterStyle::clone()
+{
+  te::qt::widgets::ScatterStyle* style = new te::qt::widgets::ScatterStyle();
+  style->setGraphic(this->getGraphic()->clone());
+  return style;
 }
 
 te::se::Graphic* te::qt::widgets::ScatterStyle::getGraphic()

@@ -35,16 +35,21 @@
 
 te::qt::widgets::ScatterStyleWidget::ScatterStyleWidget(te::qt::widgets::ScatterStyle* initial, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_scatterStyle(initial),
-    m_ui(new Ui::ScatterStyleWidgetForm)
+    m_ui(new Ui::ScatterStyleWidgetForm),
+    m_scatterStyle(initial)
 {
     m_ui->setupUi(this);
+
+  if(!m_scatterStyle)
+    m_scatterStyle = new te::qt::widgets::ScatterStyle(); 
 
 // connect signal and slots
   connect(m_ui->m_plotStylePushButton, SIGNAL(clicked()), this, SLOT(onPlotStylePushButtonClicked()));
 }
 
-te::qt::widgets::ScatterStyleWidget::~ScatterStyleWidget(){}
+te::qt::widgets::ScatterStyleWidget::~ScatterStyleWidget()
+{
+}
 
 te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterStyleWidget::getScatterStyle()
 {

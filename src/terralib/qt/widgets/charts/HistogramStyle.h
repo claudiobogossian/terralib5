@@ -57,6 +57,8 @@ namespace te
 
           ~HistogramStyle();
 
+          HistogramStyle* clone();
+
           te::se::Fill* getFill();
 
           void setFill(te::se::Fill* newFill);

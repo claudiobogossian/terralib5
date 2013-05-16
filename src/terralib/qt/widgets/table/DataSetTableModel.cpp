@@ -47,7 +47,8 @@ te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
   : QAbstractTableModel(parent),
     m_dataset(0),
     m_currentRow(-1),
-    m_promoter(0)
+    m_promoter(0),
+    m_OIdsVisible(false)
 {
 }
 
@@ -107,6 +108,11 @@ te::qt::widgets::Promoter* te::qt::widgets::DataSetTableModel::getPromoter()
   return m_promoter;
 }
 
+void te::qt::widgets::DataSetTableModel::showOIdsVisible(const bool& visible)
+{
+  m_OIdsVisible = visible;
+}
+
 int te::qt::widgets::DataSetTableModel::rowCount(const QModelIndex & parent) const
 {
   return (m_dataset == 0) ? 0 : (int)m_dataset->size();
@@ -157,7 +163,7 @@ QVariant te::qt::widgets::DataSetTableModel::headerData(int section, Qt::Orienta
       break;
 
       case Qt::DecorationRole:
-        return (IsPkey(section, m_pkeysColumns)) ?
+        return (m_OIdsVisible && IsPkey(section, m_pkeysColumns)) ?
           QIcon::fromTheme("key") :
           QVariant();
       break;

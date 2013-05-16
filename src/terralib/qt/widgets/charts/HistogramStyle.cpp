@@ -42,6 +42,16 @@ te::qt::widgets::HistogramStyle::HistogramStyle(te::se::Fill* fill, te::se::Stro
 
 te::qt::widgets::HistogramStyle::~HistogramStyle()
 {
+  delete m_fill;
+  delete m_stroke;
+}
+
+te::qt::widgets::HistogramStyle* te::qt::widgets::HistogramStyle::clone()
+{
+  te::qt::widgets::HistogramStyle* style = new te::qt::widgets::HistogramStyle();
+  style->setFill(this->getFill()->clone());
+  style->setStroke(this->getStroke()->clone());
+  return style;
 }
 
 te::se::Fill* te::qt::widgets::HistogramStyle::getFill()
