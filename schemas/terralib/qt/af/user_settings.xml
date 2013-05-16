@@ -12,6 +12,8 @@
   <ToolBarIconSize>24</ToolBarIconSize>
   
   <DefaultSRID>4326</DefaultSRID>
+  
+  <SelectionColor>#00FF00</SelectionColor>
 
   <SpecificPlugins>
     <Plugin>
