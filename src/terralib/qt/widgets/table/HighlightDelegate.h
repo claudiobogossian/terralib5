@@ -45,6 +45,9 @@ namespace te
   {
     namespace widgets
     {
+      // Forward declaration
+      class Promoter;
+
       /*!
         \class HighlightDelegate
 
@@ -110,6 +113,17 @@ namespace te
           virtual void addObject(const int& row);
 
           /*!
+            \brief Adds the table rows to the Objects Id set.
+
+            \param initRow The begin row.
+
+            \param endRow The end row.
+
+            \note The \a initRow must to be less than \a endRow.
+          */
+          virtual void addObjects(const int& initRow, const int& endRow);
+
+          /*!
             \brief Sets the current data set being used. This method DOES NOT take the ownership of the \a dset.
 
             \param dset The DataSet to be used.
@@ -121,6 +135,27 @@ namespace te
           */
           virtual void setObjectIdSet(te::da::ObjectIdSet* objs);
 
+          /*!
+            \brief Removes all selected ids.
+          */
+          virtual void clearSelected();
+
+          /*!
+            \brief Returns the identifiers of the rows highlighted.
+
+            \return The identifiers of the highlighted rows;
+          */
+          virtual std::vector<te::da::ObjectId*> getSelected();
+
+          /*!
+            \brief Sets the promoter being used.
+
+            \param promoter Pointer of the promoter.
+
+            \note It DOES NOT take the ownership of \a promoter.
+          */
+          void setPromoter(Promoter* promoter);
+
         protected:
 
           QColor m_color;               //!< Highlight color.
@@ -128,6 +163,8 @@ namespace te
           te::da::ObjectIdSet* m_objs;  //!< Identifiers of the highlight object.
 
           te::da::DataSet* m_dset;      //!< Pointer to the DataSet being used.
+
+          Promoter* m_promoter;         //!< Pointer to the promoter being used.
       };
     }
   }

@@ -219,7 +219,7 @@ std::streamsize te::sqlite::ReadLine(std::istream& istr, char** pbuff, std::size
   {
     istr.getline(buff /*+ offset*/ + readbytes, static_cast<std::streamsize>(buffsize - readbytes) /*- offset*/);
 
-    if(istr.flags() == std::ios::failbit)
+    if(istr.flags() & std::ios::failbit)
     {
       buffsize += TE_SQLITE_BUFFER_SCRIPT_SIZE;
       buff = (char*)realloc(buff, buffsize);

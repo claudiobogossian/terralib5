@@ -32,7 +32,7 @@
 // Qt
 #include <QtGui/QTableView>
 
-// Forward declarations
+// Forward declaration
 class TablePopupFilter;
 
 namespace te
@@ -53,7 +53,7 @@ namespace te
       class HighlightDelegate;
 
       /*!
-        \class
+        \class DataSetTableView
 
         \brief A customized table view for te::map::AbstractLayer objects. Uses a te::qt::widgets::DataSetModel as its model.
 
@@ -95,6 +95,13 @@ namespace te
         public slots:
           
           /*!
+            \name Table slot methods.
+
+            \brief Methods to handle user interaction with table.
+          */
+
+          //@{
+          /*!
             \brief Hides the column at position \a column
 
             \param column Column to be hidden.
@@ -121,11 +128,41 @@ namespace te
           /*!
             \brief Used to highlight the data when the mouse is clicked over a row in the table.
 
-            \para row Row to be highlighted.
+            \param row Row to be highlighted.
+
+            \param add True to add to selection, false to new selection.
           */
-          void highlightRow(const int& row, const QColor& color);
+          void highlightRow(const int& row, const bool& add);
+
+          /*!
+            \brief Select all rows from \a initRow to \a finalRow.
+
+            \param initRow the begin row.
+
+            \param finalRow the final row.
+
+            \note It does not matter if \a initRow is less than \a finalRow.
+          */
+          void highlightRows(const int& initRow, const int& finalRow);
+
+          /*!
+            \brief Promotes the highlighted rows.
+
+            The rows highlighted are presented in the begining of the table.
+          */
+          void promote();
+          //@}
+
+          /*!
+            \brief Shows or hides the icon sinalizing the columns that identify each row.
+
+            \param visible True for icon visible, false otherwise.
+          */
+          void setOIdsColumnsVisible(const bool& visible);
 
         protected:
+
+          void removeSelection(const int& initRow, const int& finalRow);
 
           DataSetTableModel* m_model;       //!< The model to be used.
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.

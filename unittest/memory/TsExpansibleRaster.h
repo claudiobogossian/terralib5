@@ -68,6 +68,11 @@ class TsExpansibleRaster : public CPPUNIT_NS::TestFixture
     
     void fillWithNoDataValues( te::rst::Raster& raster );
     
+    void assertUniqueElement( const double& targetValue, 
+      const unsigned int& requiredBand,
+      const unsigned int& requiredCol, const unsigned int& requiredLine,
+      const te::rst::Raster& raster );
+    
     void testValues( te::rst::Raster& raster );
 
     void readWriteTest();

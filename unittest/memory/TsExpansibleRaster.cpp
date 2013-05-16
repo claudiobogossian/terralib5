@@ -100,6 +100,40 @@ void TsExpansibleRaster::testValues( te::rst::Raster& raster )
       }
 }
 
+void TsExpansibleRaster::assertUniqueElement( const double& targetValue, 
+  const unsigned int& requiredBand,
+  const unsigned int& requiredCol, const unsigned int& requiredLine,
+  const te::rst::Raster& raster )
+{
+  const unsigned int nBands = raster.getNumberOfBands();
+  const unsigned int nLines = raster.getNumberOfRows();
+  const unsigned int nCols = raster.getNumberOfColumns();
+  unsigned int band = 0;
+  unsigned int line = 0;
+  unsigned int col = 0;
+  double readValue = 0;
+  bool elementFound = false;
+  
+  for( band = 0 ; band < nBands ; ++band )
+    for( line = 0 ; line < nLines ; ++line )
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        raster.getValue( col, line, readValue, band );
+        
+        if( readValue == targetValue )
+        {
+          CPPUNIT_ASSERT( ! elementFound );
+          elementFound = true;
+          
+          CPPUNIT_ASSERT( band == requiredBand );
+          CPPUNIT_ASSERT( line == requiredLine );
+          CPPUNIT_ASSERT( col == requiredCol );
+        }
+      }
+      
+  CPPUNIT_ASSERT( elementFound );
+}
+
 void TsExpansibleRaster::readWriteTest()
 {
   std::vector< te::rst::BandProperty * > bandsProps;
@@ -177,8 +211,8 @@ void TsExpansibleRaster::addTopLinesTest()
   double row = 0;  
   rasterInstance.getGrid()->geoToGrid( xCoord, yCoord, col, row );
   
-  rasterInstance.getValue( (unsigned int)col, (unsigned int)row, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+  assertUniqueElement( 1.0, 1, (unsigned int)col, (unsigned int)row,
+    rasterInstance );
   
   writeValues( rasterInstance );
   testValues( rasterInstance );  
@@ -223,8 +257,8 @@ void TsExpansibleRaster::addBottomLinesTest()
   CPPUNIT_ASSERT( readValue == 0.0 );  
   
   rasterInstance.setValue( 5, 5, 1, 1 );
-  rasterInstance.getValue( 5, 5, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+  assertUniqueElement( 1.0, 1, (unsigned int)5, (unsigned int)5,
+    rasterInstance );
   
   rasterInstance.addBottomLines( 3 );
   CPPUNIT_ASSERT( rasterInstance.getNumberOfBands() == 3 );
@@ -234,14 +268,15 @@ void TsExpansibleRaster::addBottomLinesTest()
   double col = 0;
   double row = 0;
   rasterInstance.getGrid()->geoToGrid( xCoord, yCoord, col, row );
-  
-  rasterInstance.getValue( (unsigned int)col, (unsigned int)row, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+
+  assertUniqueElement( 1.0, 1, (unsigned int)col, (unsigned int)row,
+    rasterInstance );
   
   rasterInstance.getValue( 5, 19, readValue, 1 );
   CPPUNIT_ASSERT( readValue == 0.0 );   
   
   rasterInstance.setValue( 5, 19, 1, 1 );
+
   rasterInstance.getValue( 5, 19, readValue, 1 );
   CPPUNIT_ASSERT( readValue == 1.0 );    
   
@@ -288,8 +323,8 @@ void TsExpansibleRaster::addLeftColumnsTest()
   CPPUNIT_ASSERT( readValue == 0.0 );  
   
   rasterInstance.setValue( 5, 5, 1, 1 );
-  rasterInstance.getValue( 5, 5, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+  assertUniqueElement( 1.0, 1, (unsigned int)5, (unsigned int)5,
+    rasterInstance );  
   
   rasterInstance.addLeftColumns( 3 );
   CPPUNIT_ASSERT( rasterInstance.getNumberOfBands() == 3 );
@@ -300,8 +335,8 @@ void TsExpansibleRaster::addLeftColumnsTest()
   double row = 0;  
   rasterInstance.getGrid()->geoToGrid( xCoord, yCoord, col, row );
   
-  rasterInstance.getValue( (unsigned int)col, (unsigned int)row, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+  assertUniqueElement( 1.0, 1, (unsigned int)col, (unsigned int)row,
+    rasterInstance );  
   
   writeValues( rasterInstance );
   testValues( rasterInstance );  
@@ -346,8 +381,8 @@ void TsExpansibleRaster::addRightColumnsTest()
   CPPUNIT_ASSERT( readValue == 0.0 );  
   
   rasterInstance.setValue( 5, 5, 1, 1 );
-  rasterInstance.getValue( 5, 5, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+  assertUniqueElement( 1.0, 1, (unsigned int)5, (unsigned int)5,
+    rasterInstance );  
   
   rasterInstance.addRightColumns( 3 );
   CPPUNIT_ASSERT( rasterInstance.getNumberOfBands() == 3 );
@@ -357,9 +392,9 @@ void TsExpansibleRaster::addRightColumnsTest()
   double col = 0;
   double row = 0;
   rasterInstance.getGrid()->geoToGrid( xCoord, yCoord, col, row );
-  
-  rasterInstance.getValue( (unsigned int)col, (unsigned int)row, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 ); 
+
+  assertUniqueElement( 1.0, 1, (unsigned int)col, (unsigned int)row,
+    rasterInstance );  
   
   rasterInstance.getValue( 14, 5, readValue, 1 );
   CPPUNIT_ASSERT( readValue == 0.0 );    
@@ -407,16 +442,16 @@ void TsExpansibleRaster::addTopBandsTest()
   CPPUNIT_ASSERT( readValue == 0.0 );  
   
   rasterInstance.setValue( 5, 5, 1, 1 );
-  rasterInstance.getValue( 5, 5, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+  assertUniqueElement( 1.0, 1, (unsigned int)5, (unsigned int)5,
+    rasterInstance );  
   
   rasterInstance.addTopBands( 3 );
   CPPUNIT_ASSERT( rasterInstance.getNumberOfBands() == 6 );
   CPPUNIT_ASSERT( rasterInstance.getNumberOfRows() == 10 );
   CPPUNIT_ASSERT( rasterInstance.getNumberOfColumns() == 10 );
 
-  rasterInstance.getValue( 5, 5, readValue, 4 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+  assertUniqueElement( 1.0, 4, (unsigned int)5, (unsigned int)5,
+    rasterInstance );  
   
   writeValues( rasterInstance );
   testValues( rasterInstance );  
@@ -457,16 +492,16 @@ void TsExpansibleRaster::addBottomBandsTest()
   CPPUNIT_ASSERT( readValue == 0.0 );  
   
   rasterInstance.setValue( 5, 5, 1, 1 );
-  rasterInstance.getValue( 5, 5, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 );  
+  assertUniqueElement( 1.0, 1, (unsigned int)5, (unsigned int)5,
+    rasterInstance );  
   
   rasterInstance.addBottomBands( 3 );
   CPPUNIT_ASSERT( rasterInstance.getNumberOfBands() == 6 );
   CPPUNIT_ASSERT( rasterInstance.getNumberOfRows() == 10 );
   CPPUNIT_ASSERT( rasterInstance.getNumberOfColumns() == 10 );
 
-  rasterInstance.getValue( 5, 5, readValue, 1 );
-  CPPUNIT_ASSERT( readValue == 1.0 ); 
+  assertUniqueElement( 1.0, 1, (unsigned int)5, (unsigned int)5,
+    rasterInstance );  
   
   rasterInstance.getValue( 5, 5, readValue, 5 );
   CPPUNIT_ASSERT( readValue == 0.0 );    

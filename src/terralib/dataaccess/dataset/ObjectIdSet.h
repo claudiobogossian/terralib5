@@ -132,6 +132,15 @@ namespace te
         bool contains(ObjectId* oid) const;
 
         /*!
+          \brief Removes the object id from set.
+
+          \param oid Object id to be removed.
+
+          \note This WILL NOT take the ownership of \a oid.
+        */
+        void remove(ObjectId* oid);
+
+        /*!
           \brief It performs the union operation between this ObjectIdSet and the given ObjectIdSet.
 
           \param rhs A valid ObjectIdSet that will be used on union operation. Do not pass NULL!
@@ -150,6 +159,23 @@ namespace te
           \note The ObjectIdSet will NOT take the ownership of the given pointer.
         */
         void difference(const ObjectIdSet* rhs);
+
+        /*!
+          \brief Returns an iterator for the object ids in container
+          
+          \return Iterator for the begin element of the container.
+
+          \note When using the iterators it WILL NOT give the ownership of the pointers. 
+          This means that the caller MUST NOT delete the pointers or it will lead to an inconsistent state.
+        */
+        std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator begin() const;
+
+        /*!
+          \brief Returns an iterator for the object ids in container
+          
+          \return Iterator for the ending element of the container.
+        */
+        std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator end() const;
 
       private:
 

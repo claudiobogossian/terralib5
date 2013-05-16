@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/rp/SequenceMosaic.h
-  \brief Create a mosaic from a sequence of overlapped rasters using an automatic tie-points detection method.
+  \brief Create mosaics from a sequence of overlapped rasters using an automatic tie-points detection method. 
  */
 
 #ifndef __TERRALIB_RP_INTERNAL_SEQUENCEMOSAIC_H
@@ -31,11 +31,7 @@
 #include "TiePointsLocator.h"
 #include "../raster/Interpolator.h"
 #include "../dataaccess/datasource/DataSource.h"
-
-//#include <vector>
-//#include <string>
-//#include <map>
-//#include <memory>
+#include "../geometry/GTParameters.h"
 
 namespace te
 {
@@ -43,8 +39,9 @@ namespace te
   {
     /*!
       \class SequenceMosaic
-      \brief Create a mosaic from a sequence of overlapped rasters using an automatic tie-points detection method.
-      \note The first raster will always be taken as reference to define the mosaic resolution and SRS.
+      \brief Create mosaics from a sequence of overlapped rasters using an automatic tie-points detection method. 
+      \note When the tie-points detection fails, a new mosaic sequence is generated.
+      \note Each mosaic sequence takes the first raster (of each sequence) as reference for resolution, SRS and equalization parameters.
       \ingroup MosaicAlgorithms
      */
     class TERPEXPORT SequenceMosaic : public Algorithm
@@ -81,17 +78,15 @@ namespace te
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
-            double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:2).
-            
             unsigned int m_tiePointsLocationBandIndex; //!< The band used to locate tie-points, this is the index inside each vector of m_inputRastersBands (defaul:0).
-            
-            unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate between each raster pair (default=0).
-            
-            unsigned int m_maxRastersOffset; //!< The maximum offset (pixels units) between a raster point and the respective point over the next sequence raster (default:0 - no offset restriction).
             
             std::string m_outDataSetsNamePrefix; //!< The raster output data sets names prefix.
             
+            std::string m_outDataSetsNameSufix; //!< The raster output data sets names sufix.
+            
             double m_minRequiredTiePointsCoveredAreaPercent; //!< The mininumum required tie-points covered area percent of each raster area - valid range [0,100] (default:0).
+            
+            te::rp::TiePointsLocator::InputParameters m_locatorParams; //!< The parameters used by the tie-points locator when processing each rasters pair (leave untouched to use the default).
             
             InputParameters();
             
@@ -118,6 +113,8 @@ namespace te
           public:
             
             te::da::DataSource* m_outputDSPtr; //!< The output data source where the mosaic rasters will be created.
+            
+            std::vector< std::vector< te::gm::GTParameters::TiePoint > > m_tiePoints; //!< The found tie-points between each pair of rasters (te::gm::GTParameters::TiePoint::first are raster with index N line/column indexes, te::gm::GTParameters::TiePoint::second are raster with index N+1 line/column indexes, empty vectors will be inserted when no tie-points where found).
             
             OutputParameters();
             
@@ -201,7 +198,6 @@ namespace te
         double getTPConvexHullArea( 
           const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
           const bool useTPSecondCoordPair ) const;
-
     };
 
   } // end namespace rp

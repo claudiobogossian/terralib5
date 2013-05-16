@@ -35,6 +35,8 @@
 //STL
 #include <string>
 
+class QwtPlotGrid;
+
 namespace te
 {
   namespace se { class Stroke; class Fill; class Font; }
@@ -44,6 +46,10 @@ namespace te
   {
     namespace widgets
     {
+
+      //Forward declaration
+      class ChartStyle;
+
       /*!
         \class ChartDisplay
 
@@ -58,38 +64,24 @@ namespace te
 
             It constructs a default chart display.
           */
-          ChartDisplay(QWidget* parent=NULL);
-          
-          /*!
-            \brief Constructor
-
-            It sets the chart title.
-          */
-          void setChartTitle(const std::string& title);
-          
-          /*!
-            \brief Constructor
-
-            It sets the chart title.
-          */
-          void setChartTitle(const std::string& title,  te::color::RGBAColor* color, 
-                   te::se::Font*  font, te::se::Fill* backFill, 
-                   te::se::Stroke* backStroke);
+          ChartDisplay(QWidget* parent=NULL, QString title = "");
 
           /*!
             \brief Destructor
           */
           ~ChartDisplay();
-                 
+
+          te::qt::widgets::ChartStyle* getStyle();
+
+          void setStyle(te::qt::widgets::ChartStyle* newStyle);
+
+          void adjustDisplay();
+
          private:
-          
-          std::string           m_title;             //!< The chart's title.
-          te::color::RGBAColor* m_titleColor;        //!< The chart title's color.
-          te::se::Font*         m_titleFont;         //!< The chart title's font.
-          te::se::Fill*         m_titleBackFill;     //!< The chart title's background fill..
-          te::se::Stroke*       m_titleBackStroke;   //!<  background title stroke
-                     
-      }; 
+
+          te::qt::widgets::ChartStyle*  m_chartStyle;  //!< The display's style.
+          QwtPlotGrid*                  m_grid;        //!< The display's grid
+      };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

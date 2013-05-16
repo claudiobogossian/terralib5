@@ -25,13 +25,16 @@
 
 // TerraLib
 #include "../../../se/Mark.h"
+#include "../../../se/Graphic.h"
 #include "ScatterChart.h"
 #include "Scatter.h"
+#include "ScatterStyle.h"
 #include "../../../se/Utils.h"
 #include "Utils.h"
 
 //QWT
 #include <qwt_plot_curve.h>
+#include <qwt_symbol.h>
 
 te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   QwtPlotCurve(),
@@ -40,24 +43,17 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   //Set style
   setStyle(QwtPlotCurve::NoCurve);
 
-  //Build a default Mark
-   m_symbol = new QwtSymbol( QwtSymbol::Ellipse,
-        QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ) );
-    setSymbol( m_symbol );
-
   //Set Values
   setData();
 }
 
-te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, QwtSymbol* symbol, size_t size) :
+te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, ScatterStyle* style, size_t size) :
   QwtPlotCurve(),
   m_scatter(data),
-  m_symbol(symbol),
-  m_size(size)
+  m_scatterStyle(style)
 {
-
-  //Set Symbol
-  setSymbol(m_symbol);
+  //Set style
+  setStyle(QwtPlotCurve::NoCurve);
 
   //Set Values
   setData();
@@ -78,5 +74,27 @@ void te::qt::widgets::ScatterChart::setData()
 
 te::qt::widgets::ScatterChart::~ScatterChart()
 {  
-  delete m_scatter;  
+  delete m_scatter;
+  delete m_scatterStyle;
+}
+
+te::qt::widgets::Scatter* te::qt::widgets::ScatterChart::getScatter()
+{
+ return m_scatter;
+}
+
+void te::qt::widgets::ScatterChart::setScatter(te::qt::widgets::Scatter* newScatter)
+{
+  m_scatter = newScatter;
+}
+
+te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterChart::getScatterStyle()
+{
+ return m_scatterStyle;
+}
+
+void te::qt::widgets::ScatterChart::setScatterStyle(te::qt::widgets::ScatterStyle* newSymbol)
+{
+  m_scatterStyle = newSymbol;
+  setSymbol(m_scatterStyle->getSymbol());
 }

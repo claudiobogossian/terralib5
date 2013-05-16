@@ -21,7 +21,7 @@ void Segmenter()
 {
   // -------------------------------------------------------------------------------------------------------------
   // Region growing segmenter (with mean features) example
-  
+
   try
   {
     std::cout << "Region growing Segmentation example using Raster Processing module." << std::endl << std::endl;
@@ -65,8 +65,8 @@ void Segmenter()
 // execute the algorithm
     te::rp::Segmenter seginstance;
 
-    if( ! seginstance.initialize(algoInputParameters) ) throw;
-    if( ! seginstance.execute( algoOutputParameters ) ) throw;
+    if( !seginstance.initialize( algoInputParameters ) ) throw;
+    if( !seginstance.execute( algoOutputParameters ) ) throw;
 
 // export the segmentation into shapefile
     std::vector<te::gm::Geometry*> geometries;
@@ -92,7 +92,7 @@ void Segmenter()
     te::mem::DataSet* dset = new te::mem::DataSet(dst);
     for (unsigned i = 0; i < geometries.size(); i++)
     {
-      te::da::DataSetItem* dsitem = new te::mem::DataSetItem(dst);
+      te::mem::DataSetItem* dsitem = new te::mem::DataSetItem(dset);
       dsitem->setGeometry("objects", *geometries[i]);
       dset->add(dsitem);
     }
@@ -102,7 +102,7 @@ void Segmenter()
     te::da::DataSource* ds = te::da::DataSource::create("OGR", osinfo);
     te::da::DataSourceTransactor* trans = ds->getTransactor();
     te::da::DataSetPersistence* pers = trans->getDataSetPersistence();
-    pers->create(dst, dset);
+    pers->add(dst->getName(), dset);
 
     delete pers;
     delete trans;
@@ -198,7 +198,7 @@ void Segmenter()
     te::mem::DataSet* dset = new te::mem::DataSet(dst);
     for (unsigned i = 0; i < geometries.size(); i++)
     {
-      te::da::DataSetItem* dsitem = new te::mem::DataSetItem(dst);
+      te::mem::DataSetItem* dsitem = new te::mem::DataSetItem(dset);
       dsitem->setGeometry("objects", *geometries[i]);
       dset->add(dsitem);
     }
@@ -208,7 +208,7 @@ void Segmenter()
     te::da::DataSource* ds = te::da::DataSource::create("OGR", osinfo);
     te::da::DataSourceTransactor* trans = ds->getTransactor();
     te::da::DataSetPersistence* pers = trans->getDataSetPersistence();
-    pers->create(dst, dset);
+    pers->add(dst->getName(), dset);
 
     delete pers;
     delete trans;

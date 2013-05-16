@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/STLUtils.h"
+#include "../common/Translator.h"
 #include "Curve.h"
 #include "CurvePolygon.h"
 #include "Envelope.h"

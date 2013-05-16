@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -126,7 +126,7 @@ void te::ado::DataSource::open()
   try
   {
     m_conn.CreateInstance(__uuidof(Connection));
-    TESTHR(m_conn->Open(connStr,"","",-1));
+    TESTHR(m_conn->Open(connStr, "", "", -1));
     m_connInUse = false;
   }
   catch(_com_error& e)
@@ -207,7 +207,7 @@ void te::ado::DataSource::optimize(const std::map<std::string, std::string>& /*o
 
 void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  // Create a connection to an auxiliary database
+  // Create a connection to an auxiliary data source
   std::auto_ptr<DataSource> ds(new DataSource());
 
   ds->setConnectionInfo(dsInfo);
@@ -254,7 +254,6 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
   it = dsInfo.find("CREATE_OGC_METADATA_TABLES");
   if(it != it_end && it->second == "TRUE")
   {
-
     // Create the geometry_columns dataset
     te::da::DataSetType* geomColsDt = new te::da::DataSetType("geometry_columns");
 

@@ -30,10 +30,13 @@ QDockWidget(parent, Qt::Widget),
   m_view = new DataSetTableView(this);
 
   setWidget(m_view);
+
+  setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
 te::qt::widgets::DataSetTableDockWidget::~DataSetTableDockWidget()
 {
+  emit closed(this);
 }
 
 void te::qt::widgets::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)

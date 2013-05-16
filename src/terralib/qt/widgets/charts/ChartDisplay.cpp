@@ -25,10 +25,10 @@
 
 // TerraLib
 #include "ChartDisplay.h"
+#include "ChartStyle.h"
 #include "Utils.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../se.h"
-
 
 //Qwt
 #include <qwt_plot_grid.h>
@@ -37,49 +37,52 @@
 //Qt
 #include <QtGui/QPen>
 
-te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent) : 
-  QwtPlot(parent),
-  m_titleColor(0),
-  m_titleFont(0),
-  m_titleBackFill(0),
-  m_titleBackStroke(0)
+te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title) : 
+  QwtPlot(parent)
 {
-  //get default styles
-  std::string title = "Teste Chart Display"; 
-  setChartTitle(title);
-  //==== teste com grid
-  QwtPlotGrid *grid = new QwtPlotGrid;
-  // mostra a grade horizontal
-  grid->enableX(true);
-  // mostra a grade vertical
-  grid->enableY(true);
-  //a grade (mais espacada) e' mostrada em preto e linha solido
-  grid->setMajorPen(QPen(Qt::black, 0, Qt::SolidLine));
-  //a grade e' mostrada em cinza e pontilhado
-  grid->setMinorPen(QPen(Qt::gray, 0, Qt::DotLine));
-  grid->attach(this);
+  m_chartStyle = new te::qt::widgets::ChartStyle();
+
+  m_grid = new QwtPlotGrid;
+  m_grid->enableX(true);
+  m_grid->enableY(true);
+  m_grid->setMajorPen(QPen(Qt::black, 0, Qt::SolidLine));
+  m_grid->setMinorPen(QPen(Qt::gray, 0, Qt::DotLine));
+
+  setTitle(title);
+  setAutoFillBackground( true );
+  setAutoReplot( true );
 }
-
-void te::qt::widgets::ChartDisplay::setChartTitle(const std::string& title)
-{
-  QwtText* text = Terralib2Qwt(title);
-  setTitle(*text);
-  delete text;
-}         
-
-void te::qt::widgets::ChartDisplay::setChartTitle(const std::string& title,  te::color::RGBAColor* color, 
-                   te::se::Font*  font, te::se::Fill* backFill, 
-                   te::se::Stroke* backStroke)
-{
-  QwtText* text = Terralib2Qwt(title, color, font, backFill, backStroke);
-  setTitle(*text);
-  delete text;
-}   
 
 te::qt::widgets::ChartDisplay::~ChartDisplay()
 {
-  delete m_titleColor;
-  delete m_titleFont;
-  delete m_titleBackFill;
-  delete m_titleBackStroke;
+  delete m_chartStyle;
+  delete m_grid;
+}
+
+te::qt::widgets::ChartStyle* te::qt::widgets::ChartDisplay::getStyle()
+{
+  return m_chartStyle;
+}
+
+void te::qt::widgets::ChartDisplay::setStyle(te::qt::widgets::ChartStyle* newStyle)
+{
+  m_chartStyle = newStyle;
+  adjustDisplay();
+}
+
+void  te::qt::widgets::ChartDisplay::adjustDisplay()
+{
+  if(m_chartStyle)
+  {
+    setTitle(m_chartStyle->getTitle());
+    setAxisTitle( QwtPlot::yLeft, m_chartStyle->getAxisY() );
+    setAxisTitle( QwtPlot::xBottom,  m_chartStyle->getAxisX() );
+
+    if(m_chartStyle->getGridChecked())
+      m_grid->attach(this);
+    else
+      m_grid->detach();
+
+    canvas()->setPalette(m_chartStyle->getColor());
+  }
 }

@@ -33,14 +33,19 @@
 
 te::qt::widgets::ChartStyle::ChartStyle()
 {
-  m_title = "";
+  m_title = "Chart";
+  m_axisX = "Property X";
+  m_axisY = "Property Y";
   m_fill = new te::se::Fill();
   m_stroke = new te::se::Stroke();
   m_gridChecked = false;
+  m_backColor = QColor( Qt::white);
 }
 
-te::qt::widgets::ChartStyle::ChartStyle(std::string title, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color)
+te::qt::widgets::ChartStyle::ChartStyle(QString title, QString axisX, QString axisY, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color)
 :m_title(title),
+  m_axisX(axisX),
+  m_axisY(axisY),
   m_gridChecked(gridChecked),
   m_fill(fill),
   m_stroke(stroke),
@@ -50,23 +55,45 @@ te::qt::widgets::ChartStyle::ChartStyle(std::string title, te::se::Fill* fill, t
 
 te::qt::widgets::ChartStyle::~ChartStyle()
 {
+  delete m_fill;
+  delete m_stroke;
 }
 
-
-std::string& te::qt::widgets::ChartStyle::getTitle()
+QString& te::qt::widgets::ChartStyle::getTitle()
 {
   return m_title;
 }
 
-void te::qt::widgets::ChartStyle::setTitle(std::string newTitle)
+void te::qt::widgets::ChartStyle::setTitle(QString newTitle)
 {
   m_title = newTitle;
+}
+
+QString& te::qt::widgets::ChartStyle::getAxisX()
+{
+  return m_axisX;
+}
+
+void te::qt::widgets::ChartStyle::setAxisX(QString newAxisX)
+{
+  m_axisX = newAxisX;
+}
+
+QString& te::qt::widgets::ChartStyle::getAxisY()
+{
+  return m_axisY;
+}
+
+void te::qt::widgets::ChartStyle::setAxisY(QString newAxisY)
+{
+  m_axisY = newAxisY;
 }
 
 te::se::Fill* te::qt::widgets::ChartStyle::getFill()
 {
   return m_fill;
 }
+
 
 void te::qt::widgets::ChartStyle::setFill(te::se::Fill* newFill)
 {

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/chartStyleDialog.h
+  \file terralib/qt/widgets/charts/chartStyleWidget.h
 
   \brief A dialog used to customize the style parameters of a chart
 */
@@ -35,7 +35,7 @@
 //STL
 #include <memory>
 
-namespace Ui { class ChartStyleDialog; }
+namespace Ui { class chartStyleWidgetForm; }
 
 namespace te
 {
@@ -53,34 +53,38 @@ namespace te
 
         \brief A wdiget used to customize a chart's style parameters.
       */
-      class TEQTWIDGETSEXPORT ChartStyleDialog : public QDialog
+      class TEQTWIDGETSEXPORT ChartStyleWidget : public QWidget
       {
 
         Q_OBJECT
 
         public:
 
-          ChartStyleDialog(QWidget* parent = 0, Qt::WindowFlags f = 0, QString title = "", QString PropertyX = "", QString PropertyY = "");
+          ChartStyleWidget(QWidget* parent = 0, Qt::WindowFlags f = 0, QString title = "", QString PropertyX = "", QString PropertyY = "");
 
-          ~ChartStyleDialog();
+          ~ChartStyleWidget();
 
-          Ui::ChartStyleDialog* getForm() const;
+          te::qt::widgets::ChartStyle* getStyle();
+
+          void setStyle(te::qt::widgets::ChartStyle* newStyle);
+
+          te::qt::widgets::ChartStyle* adjustStyle();
 
         protected slots:
 
           void onTitleLineEditFinish();
+          void onlabelXEditFinish();
+          void onlabelYEditFinish();
           void onTitleStylePushButtonClicked();
           void onLabelStylePushButtonClicked();
-          void onGridCheckBoxToggled();
-          void onOkPushButtonClicked();
+          void onGridCheckBoxToggled(int state);
           void onColorChanged(const QColor& color);
 
         private:
 
-          std::auto_ptr<Ui::ChartStyleDialog>  m_ui;
-          ColorPickerToolButton*               m_colorPicker;   //!< The color picker used to customise the color of several chart parameters.
-          te::qt::widgets::ChartStyle*         m_chartStyle;    //!< The display's style that will be configured by this dialog.
-          te::qt::widgets::ChartDisplay*       m_display;       //!< The display that will be configured by this dialog.
+          std::auto_ptr<Ui::chartStyleWidgetForm>  m_ui;            //!< The widget form.
+          ColorPickerToolButton*                   m_colorPicker;   //!< The color picker used to customise the color of several chart parameters.
+          te::qt::widgets::ChartStyle*             m_chartStyle;    //!< The display's style that will be configured by this dialog.
       };
     } // end namespace widgets
   }   // end namespace qt

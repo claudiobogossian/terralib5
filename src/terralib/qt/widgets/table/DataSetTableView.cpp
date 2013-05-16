@@ -1,6 +1,7 @@
 #include "DataSetTableView.h"
 #include "DataSetTableModel.h"
 #include "HighlightDelegate.h"
+#include "DataSetTableVerticalHeader.h"
 
 // TerraLib include files
 #include "../../../dataaccess/dataset/DataSet.h"
@@ -11,6 +12,7 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QMenu>
+#include <QtGui/QCursor>
 
 // STL
 #include <vector>
@@ -99,7 +101,8 @@ class TablePopupFilter : public QObject
       m_view(view),
       m_hMenu(0),
       m_vMenu(0),
-      m_vportMenu(0)
+      m_vportMenu(0),
+      m_showOidsColumns(false)
     {
       m_view->horizontalHeader()->installEventFilter(this);
       m_view->verticalHeader()->installEventFilter(this);
@@ -107,7 +110,6 @@ class TablePopupFilter : public QObject
 
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
-      m_view->connect(this, SIGNAL(selectObject(const int&, const QColor&)), SLOT(highlightRow(const int&, const QColor&)));
     }
 
     /*!
@@ -162,11 +164,22 @@ class TablePopupFilter : public QObject
             act3->setToolTip(tr("Put all columns in the original order."));
             m_hMenu->addAction(act3);
 
+            m_hMenu->addSeparator();
+
+            QAction* act4 = new QAction(m_hMenu);
+            act4->setText(tr("Show identifiers columns"));
+            act4->setToolTip(tr("Shows an icon on identifiers columns"));
+            m_hMenu->addAction(act4);
+            act4->setCheckable(true);
+            act4->setChecked(m_showOidsColumns);
+
             // Signal / Slot connections
             connect (act, SIGNAL(triggered()), SLOT(hideColumn()));
             connect (hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
+
             m_view->connect (act2, SIGNAL(triggered()), SLOT(showAllColumns()));
             m_view->connect (act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
+            connect(act4, SIGNAL(triggered()), SLOT(showOIdsColumns()));
 
             m_hMenu->popup(pos);
           }
@@ -175,34 +188,22 @@ class TablePopupFilter : public QObject
           }
           else if(watched == vport)
           {
+            delete m_vportMenu;
+
+            QContextMenuEvent* evt = static_cast<QContextMenuEvent*>(event);
+            QPoint pos = evt->globalPos();
+
+            m_vportMenu = new QMenu;
+
+            QAction* act = new QAction(m_vportMenu);
+            act->setText(tr("Promote"));
+            act->setToolTip(tr("Reorder rows"));
+            m_vportMenu->addAction(act);
+
+            m_view->connect(act, SIGNAL(triggered()), SLOT(promote()));
+
+            m_vportMenu->popup(pos);
           }
-        }
-        break;
-
-        case QEvent::MouseButtonPress:
-          {
-            QMouseEvent* evt = static_cast<QMouseEvent*>(event);
-
-            if(evt->button() == Qt::LeftButton && watched == vport)
-            {
-              int row = m_view->rowAt(evt->pos().y());
-
-              emit selectObject(row, Qt::green);
-
-              return true;
-            }
-          }
-        break;
-
-        case QEvent::MouseButtonDblClick:
-        {
-          QMouseEvent* evt = static_cast<QMouseEvent*>(event);
-
-          QModelIndex idx = m_view->indexAt(evt->pos());
-
-          m_view->edit(idx);
-
-          return true;
         }
         break;
       }
@@ -234,13 +235,24 @@ class TablePopupFilter : public QObject
       emit showColumn(column);
     }
 
+    void showOIdsColumns()
+    {
+      m_showOidsColumns = !m_showOidsColumns;
+
+      m_view->setOIdsColumnsVisible(m_showOidsColumns);
+    }
+
   signals:
 
     void hideColumn(const int&);
 
     void showColumn(const int&);
 
-    void selectObject(const int&, const QColor&);
+    void selectObject(const int&, const bool&);
+
+    void selectObjects(const int& initRow, const int& finalRow);
+
+    void promote();
 
   protected:
 
@@ -249,6 +261,7 @@ class TablePopupFilter : public QObject
     QMenu* m_vMenu;
     QMenu* m_vportMenu;
     te::da::DataSet* m_dset;
+    bool m_showOidsColumns;
 
     int m_columnPressed;
 };
@@ -260,8 +273,9 @@ QTableView(parent)
   setModel(m_model);
 
   horizontalHeader()->setMovable(true);
+  setVerticalHeader(new DataSetTableVerticalHeader(this));
+
   setSelectionMode(QAbstractItemView::MultiSelection);
-  setSelectionBehavior(QAbstractItemView::SelectColumns);
 
   m_popupFilter = new TablePopupFilter(this);
 
@@ -270,6 +284,9 @@ QTableView(parent)
   m_delegate->setColor(Qt::green);
 
   setItemDelegate(m_delegate);
+
+  connect(verticalHeader(), SIGNAL(selectedRow(const int&, const bool&)), SLOT(highlightRow(const int&, const bool&)));
+  connect(verticalHeader(), SIGNAL(selectedRows(const int&, const int&)), SLOT(highlightRows(const int&, const int&)));
 }
 
 te::qt::widgets::DataSetTableView::~DataSetTableView()
@@ -338,9 +355,70 @@ void te::qt::widgets::DataSetTableView::resetColumnsOrder()
   }
 }
 
-void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const QColor& color)
+void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool& add)
 {
+  if(!add)
+    m_delegate->clearSelected();
+
   m_delegate->addObject(row);
 
+  removeSelection(row, row);
+
   viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const int& finalRow)
+{
+  int ini,
+    final;
+
+  if(initRow < finalRow)
+  {
+    ini = initRow;
+    final = finalRow;
+  }
+  else
+  {
+    ini = finalRow;
+    final = initRow;
+  }
+
+  m_delegate->addObjects(ini, final);
+
+  removeSelection(ini, final);
+
+  viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::promote()
+{
+  QCursor cursor(Qt::WaitCursor);
+
+  std::vector<te::da::ObjectId*> oids = m_delegate->getSelected();
+  m_model->promote(oids);
+
+  m_delegate->setPromoter(m_model->getPromoter());
+
+  viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::setOIdsColumnsVisible(const bool& visible)
+{
+  m_model->showOIdsVisible(visible);
+
+  horizontalHeader()->viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::removeSelection(const int& initRow, const int& finalRow)
+{
+  QItemSelection toRemove;
+  QModelIndexList idxs = selectionModel()->selection().indexes();
+
+  QModelIndexList::iterator it;
+
+  for(it=idxs.begin(); it!=idxs.end(); ++it)
+    if((*it).row()>=initRow && (*it).row()<=finalRow)
+      toRemove.select(*it, *it);
+
+  selectionModel()->select(toRemove, QItemSelectionModel::Deselect);
 }

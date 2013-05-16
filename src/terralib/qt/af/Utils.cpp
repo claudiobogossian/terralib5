@@ -439,6 +439,8 @@ void te::qt::af::CreateDefaultSettings()
   sett.setValue("action", "Map.Previous Extent");
   sett.setArrayIndex(7);
   sett.setValue("action", "Map.Next Extent");
+  sett.setArrayIndex(8);
+  sett.setValue("action", "Map.Info");
   sett.endArray();
   sett.endGroup();
 

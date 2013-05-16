@@ -35,6 +35,7 @@
 #include "Scatter.h"
 #include "../../../se.h"
 #include "Utils.h"
+#include "../../../qt/widgets/se/Utils.h"
 
 //QT
 #include <QPen>
@@ -247,8 +248,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
   te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
 
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
-
-  if(dataset->getRaster(rpos))
+  if(rpos != std::string::npos)
   {
     const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(dataset->getRaster(rpos), te::rst::SUMMARY_R_HISTOGRAM);
     newHistogram->setValues(rs->at(propId).m_histogramR);
@@ -339,3 +339,16 @@ QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text,  te::color::RGBA
   return result;
 }
 
+QwtSymbol* te::qt::widgets::Terralib2Qwt(te::se::Mark* mark)
+{
+  QwtSymbol* symbol =  new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ));
+  QPen symbolPen;
+  QBrush symbolBrush;
+  te::qt::widgets::Config(symbolPen, mark->getStroke());
+  te::qt::widgets::Config(symbolBrush, mark->getFill());
+  symbolBrush.setStyle(Qt::SolidPattern);
+  symbol->setPen(symbolPen);
+  symbol->setBrush(symbolBrush);
+
+  return symbol;
+}

@@ -26,8 +26,14 @@
 //Terralib
 #include "HistogramChart.h"
 #include "Histogram.h"
+#include "HistogramStyle.h"
 #include "StringScaleDraw.h"
 #include "../../../datatype.h"
+#include "../../../qt/widgets/se/Utils.h"
+
+//QT
+#include <qpen.h>
+#include <qbrush.h>
 
 //QWT
 #include <qwt_column_symbol.h>
@@ -120,7 +126,9 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
 te::qt::widgets::HistogramChart::~HistogramChart()
 {  
   delete m_histogram;
-//  delete m_histogramScaleDraw;
+  delete m_histogramStyle;
+  if(m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
+    delete m_histogramScaleDraw;
 }
 
 te::qt::widgets::StringScaleDraw* te::qt::widgets::HistogramChart::getScaleDraw()
@@ -128,9 +136,9 @@ te::qt::widgets::StringScaleDraw* te::qt::widgets::HistogramChart::getScaleDraw(
   return m_histogramScaleDraw;
 }
 
-void te::qt::widgets::HistogramChart::setScaleDraw( StringScaleDraw* new_scaleDraw)
+void te::qt::widgets::HistogramChart::setScaleDraw( StringScaleDraw* newScaleDraw)
 {
-  m_histogramScaleDraw = new_scaleDraw;
+  m_histogramScaleDraw = newScaleDraw;
 }
 
 void te::qt::widgets::HistogramChart::attach(QwtPlot* plot)
@@ -143,4 +151,34 @@ void te::qt::widgets::HistogramChart::attach(QwtPlot* plot)
   }
 
   QwtPlotHistogram::attach(plot);
+}
+
+te::qt::widgets::Histogram* te::qt::widgets::HistogramChart::getHistogram()
+{
+ return m_histogram;
+}
+
+void te::qt::widgets::HistogramChart::setHistogram(te::qt::widgets::Histogram* newHistogram)
+{
+  m_histogram = newHistogram;
+}
+
+te::qt::widgets::HistogramStyle* te::qt::widgets::HistogramChart::getHistogramStyle()
+{
+ return m_histogramStyle;
+}
+
+void te::qt::widgets::HistogramChart::setHistogramStyle(te::qt::widgets::HistogramStyle* newStyle)
+{
+  m_histogramStyle = newStyle;
+
+  QPen barPen;
+  QBrush barBrush;
+
+  te::qt::widgets::Config(barPen, m_histogramStyle->getStroke());
+  te::qt::widgets::Config(barBrush, m_histogramStyle->getFill());
+  barBrush.setStyle(Qt::SolidPattern);
+
+  setPen(barPen);
+  setBrush(barBrush);
 }

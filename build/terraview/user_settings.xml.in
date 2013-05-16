@@ -10,6 +10,10 @@
   
   <ToolBarIconSize>24</ToolBarIconSize>
   
+  <DefaultSRID>0</DefaultSRID>
+  
+  <SelectionColor>#00FF00</SelectionColor>
+  
   <SpecificPlugins> </SpecificPlugins>
   
   <EnabledPlugins> </EnabledPlugins>

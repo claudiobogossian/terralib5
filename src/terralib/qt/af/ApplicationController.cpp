@@ -36,6 +36,7 @@
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
 #include "../../serialization/dataaccess/DataSourceInfo.h"
+#include "../../srs/Config.h"
 #include "../widgets/help/AssistantHelpManagerImpl.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/Utils.h"
@@ -68,6 +69,8 @@ te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
   : QObject(/*parent*/),
     m_msgBoxParentWidget(0),
     m_initialized(false),
+    m_defaultSRID(TE_UNKNOWN_SRS),
+    m_selectionColor(QColor(0, 255, 0)),
     m_project(0)
 {
   if(sm_instance)
@@ -374,6 +377,22 @@ void  te::qt::af::ApplicationController::initialize()
       qApp->setStyleSheet(sh);
     }
 
+    // Default SRID
+    QString srid = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.DefaultSRID").c_str();
+    if(srid.isEmpty())
+      srid = te::common::SystemApplicationSettings::getInstance().getValue("Application.DefaultSRID").c_str();
+
+    if(!srid.isEmpty())
+      m_defaultSRID = srid.toInt();
+
+    // Selection Color
+    QString selectionColor = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.SelectionColor").c_str();
+    if(selectionColor.isEmpty())
+      selectionColor = te::common::SystemApplicationSettings::getInstance().getValue("Application.DefaultSelectionColor").c_str();
+
+    if(!selectionColor.isEmpty())
+      m_selectionColor = QColor(selectionColor);
+
     SplashScreenManager::getInstance().showMessage(tr("Application icon theme loaded!"));
   }
   catch(const std::exception& e)
@@ -659,3 +678,12 @@ QString te::qt::af::ApplicationController::getMostRecentProject() const
   return m_recentProjs.isEmpty() ? QString("") : m_recentProjs.front();
 }
 
+int te::qt::af::ApplicationController::getDefaultSRID() const
+{
+  return m_defaultSRID;
+}
+
+QColor te::qt::af::ApplicationController::getSelectionColor() const
+{
+  return m_selectionColor;
+}
