@@ -43,10 +43,12 @@ void PrintCatalog(te::da::DataSource* ds)
   }
  
   // Get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = ds->getTransactor();
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  //te::da::DataSourceTransactor* t = ds->getTransactor();
 
   // From the transactor, take a catalog loader to find out the datasets stored in the data source
-  te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
+  //te::da::DataSourceCatalogLoader* cloader = t->getCatalogLoader();
 
   // Retrieve the name of the datasets
   boost::ptr_vector<std::string> datasets;
@@ -56,18 +58,18 @@ void PrintCatalog(te::da::DataSource* ds)
   // Iterate over the dataset names to retrieve its information
   std::cout << "Printing information about datasets...\n\nNumber of datasets: " << datasets.size() << std::endl;
 
-  for(unsigned int i=0; i<datasets.size(); ++i)
+  for(std::size_t i = 0; i < datasets.size(); ++i)
   {
     // Get dataset information: the parameter true indicates that we want all the information about the dataset;
-    //                          you can set it to false and see the difference (no primary key and other stuffs are retrieved)
+    // you can set it to false and see the difference (no primary key and other stuffs are retrieved)
 
-    te::da::DataSetType* dt = cloader->getDataSetType(datasets[i], true);
+    std::auto_ptr<te::da::DataSetType> dt(cloader->getDataSetType(datasets[i], true));
 
     std::cout << "\n=============================================================================" << std::endl;
     std::cout << "DataSet: " << dt->getName() << std::endl;
     std::cout << ">>>>>Number of attributes: " << dt->size() << std::endl;
 
-    // Get the column(s) that take(s) part of the primary key(if any)
+    // Get the primary key information taking the column(s) that compose(s) the primary key(if any)
     std::cout << ">>>>>Primary Key Information" << std::endl;
 
     te::da::PrimaryKey* pk = dt->getPrimaryKey();
@@ -85,18 +87,68 @@ void PrintCatalog(te::da::DataSource* ds)
     else
       std::cout << "\t" << "The data set has no primary key!" << std::endl;
 
-    std::cout << "\t" << "Number of UKs:" << dt->getNumberOfUniqueKeys() << std::endl;
-    std::cout << "\t" << "Number of Indexes:" << dt->getNumberOfIndexes() << std::endl;
-    std::cout << "\t" << "Number of Check-Constraints:" << dt->getNumberOfCheckConstraints() << std::endl;
+    // Get the unique key(s) information taking the column(s) that compose(s) each unique key(if any)
+    std::cout << ">>>>>Unique Key Information" << std::endl;
+
+    // Get the number of unique keys
+    std::size_t numUniqueKeys = dt->getNumberOfUniqueKeys();
+
+    if(numUniqueKeys == 0)
+      std::cout << "\t" << "The data set has no unique keys!" << std::endl;
+
+    for(std::size_t i = 0; i < numUniqueKeys; ++i)
+    {
+       te::da::UniqueKey* uk = dt->getUniqueKey(i);
+       const std::vector<te::dt::Property*>& ukCols = uk->getProperties();
+
+      std::vector<std::string> pNames(ukCols.size());
+      for(std::size_t i = 0; i < ukCols.size(); ++i)
+      {
+        pNames[i]= ukCols[i]->getName();
+        std::cout << "\t" << "Column " << i << ": " << pNames[i] << std::endl;
+      }
+    }
+
+    // Get the index(es) information taking the column(s) that compose(s) each index(if any)
+    std::cout << ">>>>>Index(es) Information" << std::endl;
+
+    // Get the number of indexes
+    std::size_t numIndexes = dt->getNumberOfIndexes();
+
+    if(numIndexes == 0)
+      std::cout << "\t" << "The data set has no index(es)!" << std::endl;
+    else
+      std::cout << "- Number of Indexes: " << numIndexes << std::endl;
+
+    for(std::size_t i = 0; i < numIndexes; ++i)
+    {
+       te::da::Index* inx = dt->getIndex(i);
+
+       std::cout << "- Index Name: " << inx->getName() << std::endl;
+       
+       const std::vector<te::dt::Property*>& inxCols = inx->getProperties();
+
+      std::vector<std::string> pNames(inxCols.size()); 
+      for(std::size_t i = 0; i < inxCols.size(); ++i)
+      {
+        pNames[i]= inxCols[i]->getName();
+        std::cout << "   Column " << i << ": " << pNames[i] << std::endl;
+      }
+    }
+
+    std::size_t numCC = dt->getNumberOfCheckConstraints();
+
+    std::cout << ">>>>>Check Contraint(s) Information" << std::endl;
+
+    std::cout << "  Number of Check-Constraints: " << numCC << std::endl;
+
+    for(std::size_t i = 0; i < numCC; ++i)
+    {
+      te::da::CheckConstraint* cc =  dt->getCheckConstraint(i);
+      std::cout << "  Check Constraint Name: " << cc->getName();
+      std::cout << ", Expression = " << cc->getExpression() << std::endl;
+    }
+    
     std::cout << std::endl;
-
-    // Release the dataset type: you are the owner!
-    delete dt;
   }
-
-  // Release the catalog loader: you are the owner
-  delete cloader;
-
-  // Release the transactor: you are the owner
-  delete transactor;
 }
