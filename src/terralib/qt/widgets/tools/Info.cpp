@@ -115,9 +115,14 @@ bool te::qt::widgets::Info::mouseReleaseEvent(QMouseEvent* e)
   for(it = m_layers.begin(); it != m_layers.end(); ++it)
     getInfo(*it, envelope);
 
-  m_infoWidget->expandAll();
-  m_infoWidget->resizeColumnToContents(0);
-  m_infoWidget->show();
+  if(m_infoWidget->topLevelItemCount() > 0)
+  {
+    m_infoWidget->expandAll();
+    m_infoWidget->resizeColumnToContents(0);
+    m_infoWidget->show();
+  }
+  else
+    m_infoWidget->hide();
 
   m_display->repaint();
 
