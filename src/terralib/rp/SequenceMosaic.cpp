@@ -29,6 +29,7 @@
 #include "../raster/Grid.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Utils.h"
+#include "../raster/RasterFactory.h"
 #include "../memory/CachedRaster.h"
 #include "../memory/ExpansibleRaster.h"
 #include "../geometry/Envelope.h"
@@ -236,6 +237,18 @@ namespace te
             SEQUENCE_RASTER_MAX_MOSAIC_MEM_USE, 0 ) );
           inputRasterPtr = cachedInputRasterPtr.get();
         }
+        
+        // saving the current mosaic (debug purposes)
+        
+//         if( mosaicRasterHandler.get() )
+//         {
+//           if( ! createDiskRasterCopy( "Mosaic_" + 
+//             boost::lexical_cast< std::string >( inputRasterIdx - 1 ) + ".tif", 
+//             *mosaicRasterHandler  ) )
+//           {
+//             return false;
+//           }
+//         }
         
         // Mosaicking
         
@@ -592,17 +605,19 @@ namespace te
                 mosaicReferenceHasChanged = true;
               }      
               
-              if( newURXIndexed > oldURXIndexed )
+              if( newURXIndexed > ((double)(mosaicRasterHandler->getNumberOfColumns() - 1) ) )
               {
                 TERP_TRUE_OR_RETURN_FALSE( mosaicRasterHandler->addRightColumns( 
-                  (unsigned int)std::ceil( newURXIndexed - oldURXIndexed ) ),
+                  (unsigned int)std::ceil( newURXIndexed - 
+                  ((double)(mosaicRasterHandler->getNumberOfColumns() - 1)) ) ),
                   "Mosaic expansion error" );
               }
               
-              if( newLLYIndexed > oldLLYIndexed )
+              if( newLLYIndexed > ((double)(mosaicRasterHandler->getNumberOfRows() - 1) ) )
               {
                 TERP_TRUE_OR_RETURN_FALSE( mosaicRasterHandler->addBottomLines( 
-                  (unsigned int)std::ceil( newLLYIndexed - oldLLYIndexed ) ),
+                  (unsigned int)std::ceil( newLLYIndexed - 
+                  ((double)(mosaicRasterHandler->getNumberOfRows() - 1) ) ) ),
                   "Mosaic expansion error" );
               }              
               
@@ -1063,6 +1078,49 @@ namespace te
             outBand.setValue( col, row, value );
           }
         }
+      }
+      
+      return true;
+    }
+    
+    bool SequenceMosaic::createDiskRasterCopy( const std::string& fileName,
+       const te::rst::Raster& sourceRaster ) const
+    {
+      std::map<std::string, std::string> rInfo;
+      rInfo["URI"] = fileName;
+      
+      const unsigned int nBands = sourceRaster.getNumberOfBands();
+      
+      std::vector<te::rst::BandProperty*> bandsProperties;
+      unsigned int bandIdx = 0;
+      for( bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
+        bandsProperties.push_back(new te::rst::BandProperty( 
+          *sourceRaster.getBand( bandIdx )->getProperty() ) );
+
+      te::rst::Grid* newgrid = new te::rst::Grid( *sourceRaster.getGrid() );
+
+      std::auto_ptr< te::rst::Raster > outputRasterPtr(
+        te::rst::RasterFactory::make( "GDAL", newgrid, bandsProperties, rInfo, 0, 0));
+      if( outputRasterPtr.get() == 0 ) return false;
+          
+      unsigned int line = 0;
+      unsigned int col = 0;
+      const unsigned int nLines = sourceRaster.getNumberOfRows();
+      const unsigned int nCols = sourceRaster.getNumberOfColumns();
+
+      double value = 0;
+      
+      for( bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
+      {
+        const te::rst::Band& inBand = *sourceRaster.getBand( bandIdx );
+        te::rst::Band& outBand = *outputRasterPtr->getBand( bandIdx );
+        
+        for( line = 0 ; line < nLines ; ++line )
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, line, value );
+            outBand.setValue( col, line, value );
+          }          
       }
       
       return true;
