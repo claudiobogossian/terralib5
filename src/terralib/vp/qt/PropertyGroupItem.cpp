@@ -44,6 +44,9 @@ te::vp::PropertyGroupItem::PropertyGroupItem(std::vector<te::dt::Property*> prop
   {
     te::dt::Property* prop = properties[i];
 
+    if(prop->getType() == te::dt::GEOMETRY_TYPE)
+      continue;
+
     te::qt::widgets::AbstractLayerTreeItem* item = new PropertyItem(prop, this);
 
     m_items.push_back(item);
