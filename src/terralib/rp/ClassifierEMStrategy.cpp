@@ -137,7 +137,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
 // N is the number of vectors used to estimate the probabilities
   const unsigned int N = randomPoints.size();
 // S is the number of elements inside each vector
-  const unsigned int S = inputRasterBands.size();
+  const unsigned int S = inputRasterBands.size() * 3;
 
 // get the input data
   boost::numeric::ublas::matrix<double> Xk = boost::numeric::ublas::matrix<double>(N, S);
@@ -147,8 +147,19 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
   unsigned int k = 0;
   while (pit != pitend)
   {
-    for (unsigned int l = 0; l < S; l++)
-      inputRaster.getValue(pit.getCol(), pit.getRow(), Xk(k, l), inputRasterBands[l]);
+    for (unsigned int l = 0; l < S; l+=3)
+    {
+      inputRaster.getValue(pit.getCol(), pit.getRow(), Xk(k, l), inputRasterBands[l / 3]);
+
+      if (pit.getCol() + 1 >= inputRaster.getNumberOfColumns())
+        Xk(k, l + 1) = 0.0;
+      else
+        inputRaster.getValue(pit.getCol() + 1, pit.getRow(), Xk(k, l + 1), inputRasterBands[l / 3]);
+      if (pit.getRow() + 1 >= inputRaster.getNumberOfRows())
+        Xk(k, l + 2) = 0.0;
+      else
+        inputRaster.getValue(pit.getCol(), pit.getRow() + 1, Xk(k, l + 2), inputRasterBands[l / 3]);
+    }
     ++k;
     ++pit;
   }
@@ -180,7 +191,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
     {
       for (unsigned int m = 0; m < S; m++)
         tmp_sigma(l, m) = 0.0;
-      tmp_sigma(l, l) = 100.0;
+      tmp_sigma(l, l) = 10.0;
     }
     SIGMAj.push_back(tmp_sigma);
   }
@@ -269,6 +280,31 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
       }
     }
 
+// computing SIGMAj for t + 1
+    for (unsigned int j = 0; j < M; j++)
+    {
+      sum_PCj_Xk = 0.0;
+      for (unsigned int l = 0; l < S; l++)
+        for (unsigned int l2 = 0; l2 < S; l2++)
+          sum_product_Xk_minusMUj(l, l2) = 0.0;
+      for (unsigned int k = 0; k < N; k++)
+      {
+        sum_PCj_Xk += PCj_Xk(j, k);
+
+        for (unsigned int l = 0; l < S; l++)
+          Xk_minus_MUj(l, 0) = Xk(k, l) - MUj(j, l);
+        Xk_minus_MUj_T = boost::numeric::ublas::trans(Xk_minus_MUj);
+
+        product_Xk_minusMUj = prod(Xk_minus_MUj, Xk_minus_MUj_T);
+        product_Xk_minusMUj *= PCj_Xk(j, k);
+
+        sum_product_Xk_minusMUj += product_Xk_minusMUj;
+      }
+      if (sum_PCj_Xk == 0.0)
+        sum_PCj_Xk = 0.0000000001;
+      SIGMAj[j] = sum_product_Xk_minusMUj / sum_PCj_Xk;
+    }
+
 // computing MUj for t + 1
     for (unsigned int j = 0; j < M; j++)
     {
@@ -285,32 +321,6 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
         sum_PCj_Xk = 0.0000000001;
       for (unsigned int l = 0; l < S; l++)
         MUj(j, l) /= sum_PCj_Xk;
-    }
-
-// computing SIGMAj for t + 1
-    for (unsigned int j = 0; j < M; j++)
-    {
-      sum_PCj_Xk = 0.0;
-      for (unsigned int l = 0; l < S; l++)
-        for (unsigned int l2 = 0; l2 < S; l2++)
-          sum_product_Xk_minusMUj(l, l2) = 0.0;
-      for (unsigned int k = 0; k < N; k++)
-      {
-        sum_PCj_Xk += PCj_Xk(j, k);
-        for (unsigned int j2 = 0; j2 < M; j2++)
-        {
-          for (unsigned int l = 0; l < S; l++)
-            Xk_minus_MUj(l, 0) = Xk(k, l) - MUj(j2, l);
-          Xk_minus_MUj_T = boost::numeric::ublas::trans(Xk_minus_MUj);
-        }
-        product_Xk_minusMUj = prod(Xk_minus_MUj, Xk_minus_MUj_T);
-        product_Xk_minusMUj *= PCj_Xk(j, k);
-
-        sum_product_Xk_minusMUj += product_Xk_minusMUj;
-      }
-      if (sum_PCj_Xk == 0.0)
-        sum_PCj_Xk = 0.0000000001;
-      SIGMAj[j] = sum_product_Xk_minusMUj / sum_PCj_Xk;
     }
 
 // computing Pj for t + 1
@@ -350,13 +360,23 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
   double numerator_PCj_X;
   double denominator_PCj_X;
 
-  boost::numeric::ublas::matrix<double> X_minus_MUj(1, S);
-  boost::numeric::ublas::matrix<double> X_minus_MUj_T(S, 1);
+  boost::numeric::ublas::matrix<double> X_minus_MUj(S, 1);
+  boost::numeric::ublas::matrix<double> X_minus_MUj_T(1, S);
 
   while (it != itend)
   {
-    for (unsigned int l = 0; l < S; l++)
-      X(0, l) = (*it)[inputRasterBands[l]];
+    for (unsigned int l = 0; l < S; l+=3)
+    {
+      X(0, l) = (*it)[inputRasterBands[l / 3]];
+      if (it.getCol() + 1 >= inputRaster.getNumberOfColumns())
+        X(0, l + 1) = 0.0;
+      else
+        inputRaster.getValue(it.getCol() + 1, it.getRow(), X(0, l + 1), inputRasterBands[l / 3]);
+      if (it.getRow() + 1 >= inputRaster.getNumberOfRows())
+        X(0, l + 2) = 0.0;
+      else
+        inputRaster.getValue(it.getCol(), it.getRow() + 1, X(0, l + 2), inputRasterBands[l / 3]);
+    }
 
 // computing PCj_X
     for (unsigned int j = 0; j < M; j++)
@@ -370,13 +390,13 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
 
       numerator_PCj_X = 0.0;
       for (unsigned int l = 0; l < S; l++)
-        X_minus_MUj(0, l) = X(0, l) - MUj(j, l);
+        X_minus_MUj(l, 0) = X(0, l) - MUj(j, l);
       X_minus_MUj_T = boost::numeric::ublas::trans(X_minus_MUj);
 
       te::common::getInverseMatrix(SIGMAj[j], inverse_SIGMAj);
 
-      product_NETAj = prod(X_minus_MUj, inverse_SIGMAj);
-      product_NETAj = prod(product_NETAj, X_minus_MUj_T);
+      product_NETAj = prod(X_minus_MUj_T, inverse_SIGMAj);
+      product_NETAj = prod(product_NETAj, X_minus_MUj);
       product_NETAj *= -0.5;
 
       numerator_PCj_X = det_SIGMAj * exp(product_NETAj(0, 0)) * Pj(j, 0);
@@ -392,13 +412,13 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
           det_SIGMAj2 = 1.0;
 
         for (unsigned int l = 0; l < S; l++)
-          X_minus_MUj(0, l) = X(0, l) - MUj(j2, l);
+          X_minus_MUj(l, 0) = X(0, l) - MUj(j2, l);
         X_minus_MUj_T = boost::numeric::ublas::trans(X_minus_MUj);
 
         te::common::getInverseMatrix(SIGMAj[j2], inverse_SIGMAj2);
 
-        product_NETAj2 = prod(X_minus_MUj, inverse_SIGMAj2);
-        product_NETAj2 = prod(product_NETAj2, X_minus_MUj_T);
+        product_NETAj2 = prod(X_minus_MUj_T, inverse_SIGMAj2);
+        product_NETAj2 = prod(product_NETAj2, X_minus_MUj);
         product_NETAj2 *= -0.5;
 
         denominator_PCj_X += det_SIGMAj2 * exp(product_NETAj2(0, 0)) * Pj(j2, 0);
