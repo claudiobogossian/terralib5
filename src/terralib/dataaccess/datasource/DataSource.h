@@ -338,25 +338,24 @@ namespace te
         virtual void optimize(const std::map<std::string, std::string>& opInfo) = 0;
        
         /*!
-          \brief It returns a ecodings names string vector.
-          
+          \brief It returns a DataSources names string vector.
+         
           \param dsType The data source type name (example: PostGIS, Oracle, WFS).
           \param dsInfo The data source information.
 
-          \return Ecodings names string vector.
+          \return DataSources names string vector.
 
           \exception Exception It throws an exception if the data source can not be consulted.
         */
         static std::vector<std::string> getDataSources(const std::string& dsType, const std::map<std::string, std::string>& info);
 
         /*!
-          \brief It returns a DataSources names string vector.
-
+          \brief It returns a Encodings names string vector.
           
           \param dsType The data source type name (example: PostGIS, Oracle, WFS).
           \param dsInfo The data source information.
 
-          \return DataSources names string vector.
+          \return Encodings names string vector.
 
           \exception Exception It throws an exception if the data source can not be consulted.
         */

@@ -44,7 +44,9 @@ te::vp::LegendGroupItem::LegendGroupItem(std::vector<te::se::Rule*> rules, Abstr
   {
     te::se::Rule* rule = rules[i];
 
-    te::qt::widgets::AbstractLayerTreeItem* item = new te::qt::widgets::LegendItem(rule, this);
+
+    te::qt::widgets::LegendItem* item = new te::qt::widgets::LegendItem(rule, this);
+    item->setCheckable(true);
 
     m_items.push_back(item);
   }

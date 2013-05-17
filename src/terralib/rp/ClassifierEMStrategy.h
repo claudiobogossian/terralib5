@@ -61,6 +61,7 @@ namespace te
 
             unsigned int m_numberOfClusters;                    //!< The number of clusters (classes) to estimate in the image.
             unsigned int m_maxIterations;                       //!< The maximum of iterations (E/M steps) to perform if convergence is not achieved.
+            unsigned int m_maxInputPoints;                      //!< The maximum number of points used to estimate the clusters (default = 1000).
             double m_epsilon;                                   //!< The stop criteria. When the clusters change in a value smaller then epsilon, the convergence is achieved.
             std::vector<std::vector<double> > m_clustersMeans;  //!< The previously estimated means of the clusters (optional).
 
@@ -96,6 +97,7 @@ namespace te
 
         bool m_isInitialized;                                        //!< True if this instance is initialized.
         ClassifierEMStrategy::Parameters m_parameters;               //!< Internal execution parameters.
+
     };
 
     /*!

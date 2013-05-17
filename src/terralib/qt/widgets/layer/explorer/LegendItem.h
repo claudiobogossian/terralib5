@@ -66,11 +66,17 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
+          void setCheckable(bool checkable);
+
+          bool getCheckable();
+
           //AbstractLayerTreeItem* clone(QObject* parent = 0);
 
         private:
 
           const te::se::Rule* m_rule;
+          bool m_isCheckable;
+          bool m_isChecked;
       };
     } // end namespace widgets
   }   // end namespace qt

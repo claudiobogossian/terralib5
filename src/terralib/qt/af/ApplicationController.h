@@ -41,6 +41,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtCore/QSettings>
+#include <QtGui/QColor>
 
 // Forward declarations
 class QAction;
@@ -382,6 +383,13 @@ namespace te
           */
           int getDefaultSRID() const;
 
+          /*!
+            \brief Returns the application selection color.
+
+            \return Application selection color.
+          */
+          QColor getSelectionColor() const;
+
         protected:
 
           std::map<QString, QToolBar*> m_toolbars;    //!< Toolbars registered.
@@ -404,6 +412,7 @@ namespace te
           QString m_appToolBarDefaultIconSize;        //!< Size of the tool buttons.
           std::string m_appDatasourcesFile;           //!< Name of the file containing datasources used.
           int m_defaultSRID;                          //!< Default SRID value.
+          QColor m_selectionColor;                    //!< Default selection color.
 
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
 

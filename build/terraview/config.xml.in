@@ -17,6 +17,7 @@
   </IconThemeInfo>
   <ToolBarDefaultIconSize>24</ToolBarDefaultIconSize>
   <DefaultSRID>0</DefaultSRID>
+  <DefaultSelectionColor>#00FF00</DefaultSelectionColor>
   <DefaultPluginsCategory>
     <Category>Cellular Space</Category>
     <Category>Data Access</Category>

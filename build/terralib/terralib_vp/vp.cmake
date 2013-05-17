@@ -38,6 +38,7 @@ list (APPEND TE_DEP_LIBS
 	terralib_datatype
 	terralib_geometry
 	terralib_maptools
+	terralib_memory
 	terralib_qt_widgets
     terralib_plugin
 	terralib_symbology
