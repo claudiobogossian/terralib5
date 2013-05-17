@@ -40,11 +40,16 @@ te::qt::widgets::ScatterStyleWidget::ScatterStyleWidget(te::qt::widgets::Scatter
 {
     m_ui->setupUi(this);
 
+  if(!m_scatterStyle)
+    m_scatterStyle = new te::qt::widgets::ScatterStyle(); 
+
 // connect signal and slots
   connect(m_ui->m_plotStylePushButton, SIGNAL(clicked()), this, SLOT(onPlotStylePushButtonClicked()));
 }
 
-te::qt::widgets::ScatterStyleWidget::~ScatterStyleWidget(){}
+te::qt::widgets::ScatterStyleWidget::~ScatterStyleWidget()
+{
+}
 
 te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterStyleWidget::getScatterStyle()
 {

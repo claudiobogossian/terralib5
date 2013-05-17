@@ -72,6 +72,8 @@ class TsDataSource : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( tcGetCatalog );
   CPPUNIT_TEST( tcGetCatalogFull );
   CPPUNIT_TEST( tcGetCapabilities );
+  CPPUNIT_TEST( tcSQLDialect );
+
   CPPUNIT_TEST( tcGetTransactor );
   CPPUNIT_TEST( tcGetConnectionInfo );
   CPPUNIT_TEST( tcGetConnectionStr );
@@ -82,6 +84,8 @@ class TsDataSource : public CPPUNIT_NS::TestFixture
 
   CPPUNIT_TEST( tcCreate );
   CPPUNIT_TEST( tcDrop );
+  CPPUNIT_TEST( tcGetEncodings );
+  CPPUNIT_TEST( tcGetDataSources );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -113,6 +117,8 @@ class TsDataSource : public CPPUNIT_NS::TestFixture
     void tcExist();
     void tcCreate();
     void tcDrop();
+    void tcGetEncodings();
+    void tcGetDataSources();
 /*
     virtual void tcGetConnectionInfo();
     virtual void tcSetConnectionInfo();

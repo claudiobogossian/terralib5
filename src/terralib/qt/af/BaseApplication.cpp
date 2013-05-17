@@ -58,6 +58,7 @@
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
+#include "../widgets/srs/SRSManagerDialog.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/TabularViewer.h"
@@ -92,6 +93,7 @@
 // STL
 #include <list>
 #include <memory>
+#include <utility>
 
 // Boost
 #include <boost/format.hpp>
@@ -587,6 +589,18 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onMapSRIDTriggered()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+
+  if(srsDialog.exec() == QDialog::Rejected)
+    return;
+
+  std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
+  m_display->getDisplay()->setSRID(srid.first);
+}
+
 void te::qt::af::BaseApplication::onDrawTriggered()
 {
   if(m_project == 0)
@@ -1007,6 +1021,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_filePrintPreview, "document-print-preview", "File.Print Preview", tr("Print Pre&view..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Map- actions
+  initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);
   initAction(m_mapDraw, "map-draw", "Map.Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true, m_menubar);
   initAction(m_mapZoomIn, "zoom-in", "Map.Zoom In", tr("Zoom &In"), tr(""), true, true, true, m_menubar);
   initAction(m_mapZoomOut, "zoom-out", "Map.Zoom Out", tr("Zoom &Out"), tr(""), true, true, true, m_menubar);
@@ -1140,6 +1155,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->setObjectName("Map");
   m_mapMenu->setTitle(tr("&Map"));
 
+  m_mapMenu->addAction(m_mapSRID);
+  m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapDraw);
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapZoomIn);
@@ -1277,6 +1294,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
+  connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));

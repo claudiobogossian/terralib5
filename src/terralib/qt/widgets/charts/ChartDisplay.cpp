@@ -30,7 +30,6 @@
 #include "../../../color/RGBAColor.h"
 #include "../../../se.h"
 
-
 //Qwt
 #include <qwt_plot_grid.h>
 #include <qwt_text.h>
@@ -42,12 +41,22 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title) :
   QwtPlot(parent)
 {
   m_chartStyle = new te::qt::widgets::ChartStyle();
+
+  m_grid = new QwtPlotGrid;
+  m_grid->enableX(true);
+  m_grid->enableY(true);
+  m_grid->setMajorPen(QPen(Qt::black, 0, Qt::SolidLine));
+  m_grid->setMinorPen(QPen(Qt::gray, 0, Qt::DotLine));
+
   setTitle(title);
+  setAutoFillBackground( true );
+  setAutoReplot( true );
 }
 
 te::qt::widgets::ChartDisplay::~ChartDisplay()
 {
   delete m_chartStyle;
+  delete m_grid;
 }
 
 te::qt::widgets::ChartStyle* te::qt::widgets::ChartDisplay::getStyle()
@@ -66,25 +75,14 @@ void  te::qt::widgets::ChartDisplay::adjustDisplay()
   if(m_chartStyle)
   {
     setTitle(m_chartStyle->getTitle());
+    setAxisTitle( QwtPlot::yLeft, m_chartStyle->getAxisY() );
+    setAxisTitle( QwtPlot::xBottom,  m_chartStyle->getAxisX() );
+
     if(m_chartStyle->getGridChecked())
-    {
-      QwtPlotGrid *grid = new QwtPlotGrid;
-      // mostra a grade horizontal
-      grid->enableX(true);
-      // mostra a grade vertical
-      grid->enableY(true);
-      //a grade (mais espacada) e' mostrada em preto e linha solido
-      grid->setMajorPen(QPen(Qt::black, 0, Qt::SolidLine));
-      //a grade e' mostrada em cinza e pontilhado
-      grid->setMinorPen(QPen(Qt::gray, 0, Qt::DotLine));
-      grid->attach(this);
-    }
+      m_grid->attach(this);
+    else
+      m_grid->detach();
 
-    //m_chartStyle->getColor());
-
-    setAutoFillBackground( true );
-    //setPalette( Qt::white );
     canvas()->setPalette(m_chartStyle->getColor());
-    setAutoReplot( true );
   }
 }

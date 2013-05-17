@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/vp/core/Intersection.h
-   
-  \brief 
+  \file terralib/vp/core/IntersectionDialog.h
+
+  \brief Group of functions to intersection operation
 */
 
 #ifndef __TERRALIB_VP_CORE_INTERNAL_INTERSECTION_H
@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../sam/rtree.h"
 #include "Config.h"
 
 // STL
@@ -38,47 +39,76 @@ namespace te
 {
   namespace vp
   {
-    class TEVPEXPORT Intersection
-    {
-      public:
+      /*!
+        \enum MemoryUse
 
-        /*!
-          \enum MemoryUse
+        \brief Define possible states for memory use.
+      */
+      enum MemoryUse
+      {
+        WHOLE_MEM = 0,    //!< Whole memory use.
+        PARTIALLY_MEM = 1,//!< Partially memory use.
+        LOW_MEM = 2       //!< Low memory use.
+      };
 
-          \brief Define possible states for memory use.
-        */
-        enum MemoryUse
-        {
-          WHOLE_MEM = 0,    //!< Whole memory use.
-          PARTIALLY_MEM = 1,//!< Partially memory use.
-          LOW_MEM = 2       //!< Low memory use.
-        };
+      /*!
+        \brief Creates a new DataSetType based on two DataSetType and theirs groups of properties
 
-        Intersection();
+        \param newName The name of the new DataSetType.
+        \param firstDt The first DataSetType.
+        \param firstProps The first DataSetType vector of property.
+        \param secondDt The second DataSetType.
+        \param secondProps The second DataSetType vector of property.
 
-        ~Intersection();
+        \return The new DataSetType.
+      */
+      te::da::DataSetType* CreateDataSetType(std::string newName, te::da::DataSetType* firstDt,
+                                             std::vector<te::dt::Property*>& firstProps, te::da::DataSetType* secondDt,
+                                             std::vector<te::dt::Property*>& secondProps);
 
-        void setInputDatasource(te::da::DataSourceInfoPtr& inputDatasource);
+      /*!
+        \brief Create a RTree box of geometries and position of the geometry in the DataSet
 
-        void setOutputDatasource(te::da::DataSourceInfoPtr& outputDatasource);
+        \param dt The DataSetType
+        \param ds The DataSet
 
-        void setInputLayers(const std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*>>& layers);
+        \return The RTree
+      */
+      te::sam::rtree::Index<size_t, 8>* CreateRTree(te::da::DataSetType* dt, te::da::DataSet* ds);
 
-      private:
+      /*!
+        \brief Creates a new DataSetType based on two DataSetType and theirs groups of properties
 
-        void wholeMemIntersection();
+        \param newName The name of the new DataSetType.
+        \param layers Map of layers and properties.
 
-        void partiallyMemIntersection();
+        \return The DataSetType and DataSet
+      */
+      std::pair<te::da::DataSetType*, te::da::DataSet*> Intersect(std::string newName,
+                                                                  std::map<te::map::AbstractLayerPtr,
+                                                                  std::vector<te::dt::Property*> > layers);
+      
+      /*!
+        \brief Make the intersection of two DataSets
 
-        void lowMemIntersection();
+        \param newName The new name of DataSetType
+        \param firstDt The first DataSetType
+        \param firstDs The first DataSet
+        \param firstProp The first DataSetType vector of properties
+        \param secondDt The second DataSetType
+        \param secondDs The second DataSet
+        \param secondProp The second DataSetType vector of properties
 
-      private:
+        \return The DataSetType and DataSet
+      */
+      std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::string newName, 
+                                                                             te::da::DataSetType* firstDt, 
+                                                                             te::da::DataSet* firstDs,
+                                                                             std::vector<te::dt::Property*> firstProps, 
+                                                                             te::da::DataSetType* secondDt, 
+                                                                             te::da::DataSet* secondDs, 
+                                                                             std::vector<te::dt::Property*> secondProps);
 
-        te::da::DataSourceInfoPtr m_inputDatasource;
-        te::da::DataSourceInfoPtr m_outputDatasource;
-        std::list<te::map::AbstractLayerPtr> m_layers;
-
-    };
   }
 }
 

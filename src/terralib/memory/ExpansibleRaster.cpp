@@ -192,8 +192,8 @@ bool te::mem::ExpansibleRaster::addTopLines( const unsigned int number )
   
   if( number )
   {
-    const unsigned int blockExpansionSize = std::max( (unsigned int)1, 
-      number / ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkh) );
+    const unsigned int blockExpansionSize = (unsigned int)std::ceil( 
+      ((double)number) / ((double)m_bands[ 0 ]->getProperty()->m_blkh) );
       
     std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
       
@@ -243,8 +243,8 @@ bool te::mem::ExpansibleRaster::addBottomLines( const unsigned int number )
   
   if( number )
   {
-    const unsigned int blockExpansionSize = std::max( (unsigned int)1, 
-      number / ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkh) );
+    const unsigned int blockExpansionSize = (unsigned int)std::ceil(
+      ((double)number) / ((double)m_bands[ 0 ]->getProperty()->m_blkh) );
       
     std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
       
@@ -294,8 +294,8 @@ bool te::mem::ExpansibleRaster::addLeftColumns( const unsigned int number )
       ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkw) *
       ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksx );
       
-    const unsigned int blockExpansionSize = std::max( (unsigned int)1, 
-      number / ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkw) );
+    const unsigned int blockExpansionSize = (unsigned int)std::ceil(
+      ((double)number) / ((double)m_bands[ 0 ]->getProperty()->m_blkw) );
       
     std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
       
@@ -344,8 +344,8 @@ bool te::mem::ExpansibleRaster::addRightColumns( const unsigned int number )
   
   if( number )
   {
-    const unsigned int blockExpansionSize = std::max( (unsigned int)1, 
-      number / ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkw) );
+    const unsigned int blockExpansionSize = (unsigned int)std::ceil(
+      ((double)number) / ((double)m_bands[ 0 ]->getProperty()->m_blkw) );
       
     std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
       

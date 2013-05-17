@@ -72,8 +72,9 @@ namespace te
           \param maxIterations          The maximum number of iterations (Use 0-zero to let this number be automatically found).
           \param assurance              The error-free selection percent assurance - valid range (0-1) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations. Use 0-zero to let this number be automatically found.
           \param enableMultiThread      Enable multi-threaded processing (good for multi-processor or multi-core systems).
-          \param outTransf              The generated output transformation.
+          \param outTransf              The generated output transformation (with the base mininum required tie-points set).
           \param tiePointsWeights       Optional tie-points weights (non-zero, positive values) or an empty vector if no weights must be used.
+          \param outTiePoints           The filtered output tie-points (non-outliers) in agreenment with the generated transformation.
 
           \return true if OK, false on errors.
 
@@ -85,8 +86,10 @@ namespace te
                          const RansacItCounterT& maxIterations,
                          const double& assurance,
                          const bool enableMultiThread,
-                         std::auto_ptr< GeometricTransformation >& outTransf,
-                         const std::vector< double >& tiePointsWeights);
+                         const std::vector< double >& tiePointsWeights,
+                         std::vector< te::gm::GTParameters::TiePoint >& outTiePoints,
+                         std::auto_ptr< GeometricTransformation >& outTransf
+                         );
 
       private:
 
@@ -114,6 +117,7 @@ namespace te
             double* m_bestParamsDRMSEPtr;
             double* m_bestParamsIRMSEPtr;
             double* m_bestParamsConvexHullAreaPtr;
+            std::vector< te::gm::GTParameters::TiePoint >* m_bestTiePoinsPtr;
 
             ApplyRansacThreadEntryThreadParams() {};
 
@@ -142,6 +146,7 @@ namespace te
               m_bestParamsDRMSEPtr = other.m_bestParamsDRMSEPtr;
               m_bestParamsIRMSEPtr = other.m_bestParamsIRMSEPtr;
               m_bestParamsConvexHullAreaPtr = other.m_bestParamsConvexHullAreaPtr;
+              m_bestTiePoinsPtr = other.m_bestTiePoinsPtr;
               
               return other;
             };

@@ -50,8 +50,7 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
 te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, ScatterStyle* style, size_t size) :
   QwtPlotCurve(),
   m_scatter(data),
-  m_scatterStyle(style),
-  m_size(size)
+  m_scatterStyle(style)
 {
   //Set style
   setStyle(QwtPlotCurve::NoCurve);
@@ -75,7 +74,8 @@ void te::qt::widgets::ScatterChart::setData()
 
 te::qt::widgets::ScatterChart::~ScatterChart()
 {  
-  delete m_scatter;  
+  delete m_scatter;
+  delete m_scatterStyle;
 }
 
 te::qt::widgets::Scatter* te::qt::widgets::ScatterChart::getScatter()

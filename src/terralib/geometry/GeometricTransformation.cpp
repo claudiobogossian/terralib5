@@ -106,11 +106,13 @@ double te::gm::GeometricTransformation::getMaxInverseMappingError( const GTParam
   return maxError;
 }
 
-double te::gm::GeometricTransformation::getDirectMapRMSE( const GTParameters& params ) const
+double te::gm::GeometricTransformation::getDirectMapRMSE( 
+  const std::vector< GTParameters::TiePoint >& tiePoints,
+  const GTParameters& params ) const
 {
   assert( isValid( params ) );
 
-  const unsigned int tiepointsSize = static_cast<unsigned int>(params.m_tiePoints.size());
+  const unsigned int tiepointsSize = static_cast<unsigned int>(tiePoints.size());
 
   if( tiepointsSize == 0 )
   {
@@ -124,7 +126,7 @@ double te::gm::GeometricTransformation::getDirectMapRMSE( const GTParameters& pa
 
     for( unsigned int tpIndex = 0 ; tpIndex < tiepointsSize ; ++tpIndex ) 
     {
-      currentError = getDirectMappingError( params.m_tiePoints[ tpIndex ], params );
+      currentError = getDirectMappingError( tiePoints[ tpIndex ], params );
 
       error2Sum += ( currentError * currentError );
     }
@@ -133,11 +135,13 @@ double te::gm::GeometricTransformation::getDirectMapRMSE( const GTParameters& pa
   }
 }
 
-double te::gm::GeometricTransformation::getInverseMapRMSE( const GTParameters& params ) const
+double te::gm::GeometricTransformation::getInverseMapRMSE( 
+  const std::vector< GTParameters::TiePoint >& tiePoints,
+  const GTParameters& params ) const
 {
   assert( isValid( params ) );
 
-  const unsigned int tiepointsSize = static_cast<unsigned int>(params.m_tiePoints.size());
+  const unsigned int tiepointsSize = static_cast<unsigned int>(tiePoints.size());
 
   if( tiepointsSize == 0 )
   {
@@ -150,7 +154,7 @@ double te::gm::GeometricTransformation::getInverseMapRMSE( const GTParameters& p
     
     for( unsigned int tpIndex = 0 ; tpIndex < tiepointsSize ; ++tpIndex ) 
     {
-      currentError = getInverseMappingError( params.m_tiePoints[ tpIndex ], 
+      currentError = getInverseMappingError( tiePoints[ tpIndex ], 
         params );
         
       error2Sum += ( currentError * currentError );

@@ -36,6 +36,7 @@ const std::string te::pgis::Globals::sm_timeTypeName("TIME");
 const std::string te::pgis::Globals::sm_timeTZTypeName("TIMETZ");
 const std::string te::pgis::Globals::sm_timeStampTypeName("TIMESTAMP");
 const std::string te::pgis::Globals::sm_timeStampTZTypeName("TIMESTAMPTZ");
+const std::string te::pgis::Globals::sm_intervalTypeName("INTERVAL");
 const std::string te::pgis::Globals::sm_floatTypeName("FLOAT4");
 const std::string te::pgis::Globals::sm_doubleTypeName("FLOAT8");
 const std::string te::pgis::Globals::sm_booleanTypeName("BOOL");
