@@ -2,6 +2,7 @@
 #include "DataSetTableModel.h"
 #include "HighlightDelegate.h"
 #include "DataSetTableVerticalHeader.h"
+//#include "Sorter.h"
 
 // TerraLib include files
 #include "../../../dataaccess/dataset/DataSet.h"
@@ -168,10 +169,15 @@ class TablePopupFilter : public QObject
 
             QAction* act4 = new QAction(m_hMenu);
             act4->setText(tr("Show identifiers columns"));
-            act4->setToolTip(tr("Shows an icon on identifiers columns"));
+            act4->setToolTip(tr("Shows an icon on identifiers columns."));
             m_hMenu->addAction(act4);
             act4->setCheckable(true);
             act4->setChecked(m_showOidsColumns);
+
+            QAction* act5 = new QAction(m_hMenu);
+            act5->setText(tr("Sort data"));
+            act5->setToolTip(tr("Sort data using selected columns."));
+            m_hMenu->addAction(act5);
 
             // Signal / Slot connections
             connect (act, SIGNAL(triggered()), SLOT(hideColumn()));
@@ -179,6 +185,7 @@ class TablePopupFilter : public QObject
 
             m_view->connect (act2, SIGNAL(triggered()), SLOT(showAllColumns()));
             m_view->connect (act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
+            m_view->connect (act5, SIGNAL(triggered()), SLOT(sortByColumns()));
             connect(act4, SIGNAL(triggered()), SLOT(showOIdsColumns()));
 
             m_hMenu->popup(pos);
@@ -270,6 +277,10 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 QTableView(parent)
 {
   m_model = new DataSetTableModel(this);
+//  m_sortModel = new Sorter(this);
+
+ // m_sortModel->setSourceModel(m_model);
+
   setModel(m_model);
 
   horizontalHeader()->setMovable(true);
@@ -399,6 +410,28 @@ void te::qt::widgets::DataSetTableView::promote()
 
   m_delegate->setPromoter(m_model->getPromoter());
 
+  viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::sortByColumns()
+{
+  std::vector<int> selCols;
+
+  int nCols = model()->columnCount();
+
+  for(int i=0; i<nCols; i++)
+  {
+    int logCol = verticalHeader()->logicalIndex(i);
+
+    if(selectionModel()->isColumnSelected(i, QModelIndex()))
+      selCols.push_back(i);
+  }
+
+  if(selCols.empty())
+    return;
+
+  m_model->orderByColumns(selCols);
+  m_delegate->setPromoter(m_model->getPromoter());
   viewport()->repaint();
 }
 

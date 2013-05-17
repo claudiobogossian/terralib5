@@ -19,10 +19,31 @@
 #include "Promoter.h"
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../datatype/SimpleData.h"
 #include "../../../dataaccess/utils/Utils.h"
+
+
+//struct AbstractDataCompare
+//{
+//  bool operator() (const std::vector<te::dt::AbstractData*>& lhs, const std::vector<te::dt::AbstractData*>& rhs) const
+//  {
+//    for (size_t i=0; i<lhs.size(); i++)
+//    {
+//      switch(lhs[i]->getTypeCode())
+//      {
+//      }
+////      te::dt::SimpleData* l = dynamic_cast<te::dt::SimpleData*>(lhs[i])
+//    }
+//      //if(*rhs[i] < *lhs[i])
+//      //  return false;
+//
+//    return true;
+//  }
+//};
 
 
 std::vector<std::string> GetColumnsNames(te::da::DataSet* dset, const std::vector<size_t>& colsPositions)
@@ -122,6 +143,38 @@ void te::qt::widgets::Promoter::promote(const std::vector<te::da::ObjectId*>& oi
 
     pos++;
   }
+}
+
+void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<int>& cols)
+{
+  if(cols.empty())
+    return;
+
+  cleanPreproccessKeys();
+
+  m_logicalRows.resize(dset->size());
+
+  std::map<std::string, int> order;
+  std::map<std::string, int>::iterator m_it;
+  std::vector<int>::const_iterator it;
+
+  dset->moveBeforeFirst();
+
+  int i=0;
+
+  while (dset->moveNext())
+  {
+    std::string value;
+
+    for(it=cols.begin(); it !=cols.end(); ++it)
+      value += dset->getAsString(*it, 5);
+
+    order[value] = i++;
+  }
+
+  i=0;
+  for(m_it=order.begin(); m_it!=order.end(); ++m_it)
+    m_logicalRows[i++] = m_it->second;
 }
 
 size_t te::qt::widgets::Promoter::map2Row(te::da::ObjectId* oid)

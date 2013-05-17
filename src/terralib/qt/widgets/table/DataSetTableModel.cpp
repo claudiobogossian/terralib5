@@ -98,9 +98,19 @@ void te::qt::widgets::DataSetTableModel::promote(const std::vector<te::da::Objec
   m_promoter->promote(oids);
 }
 
+void te::qt::widgets::DataSetTableModel::orderByColumns(const std::vector<int>& cols)
+{
+  if(m_promoter == 0)
+    m_promoter = new Promoter;
+
+  m_promoter->sort(m_dataset, cols);
+
+  reset();
+}
+
 bool te::qt::widgets::DataSetTableModel::isPromotionEnabled()
 {
-  return m_promoter != 0;
+  return m_promoter != 0 && m_promoter->isPromotionEnabled();
 }
 
 te::qt::widgets::Promoter* te::qt::widgets::DataSetTableModel::getPromoter()

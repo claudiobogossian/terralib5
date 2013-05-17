@@ -102,6 +102,8 @@ namespace te
           */
           void promote(const std::vector<te::da::ObjectId*>& oids);
 
+          void orderByColumns(const std::vector<int>& cols);
+
           /*!
             \brief Returns true if promotion is enabled, false otherwise.
 

@@ -112,6 +112,8 @@ namespace te
           */
           void promote(const std::vector<te::da::ObjectId*>& oids);
 
+          void sort(te::da::DataSet* dset, const std::vector<int>& cols);
+
           /*!
             \brief Given an object id returns its row.
 
