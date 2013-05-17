@@ -215,6 +215,8 @@ namespace te
       std::vector< double > mosaicTargetVariances;
       te::gm::Polygon mosaicValidDataPol(  0, te::gm::PolygonType, 0 ); // the polygon delimiting the valid data inside the mosaic (mosaic world coods)
       unsigned int mosaicSequenceCounter = 0;
+      std::vector< double > mosaicBandsRangeMin;
+      std::vector< double > mosaicBandsRangeMax;        
       unsigned int lastInputRasterBBoxLLXIndexed = 0;
       unsigned int lastInputRasterBBoxLLYIndexed = 0;
       unsigned int lastInputRasterBBoxURXIndexed = 0;
@@ -280,6 +282,11 @@ namespace te
           
           mosaicBandProperties.clear();
           
+          mosaicBandsRangeMin.resize( 
+            m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size(), 0 );
+          mosaicBandsRangeMax.resize( 
+            m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size(), 0 );           
+          
           std::vector< te::rst::BandProperty* > bandsProperties;
           for( std::vector< unsigned int >::size_type inputRastersBandsIdx = 0 ;  
             inputRastersBandsIdx <
@@ -295,6 +302,10 @@ namespace te
             bandsProperties[ inputRastersBandsIdx ]->m_noDataValue = m_inputParameters.m_noDataValue;
             
             mosaicBandProperties.push_back( *bandsProperties[ inputRastersBandsIdx ] );
+            
+            te::rst::GetDataTypeRanges( bandsProperties[ inputRastersBandsIdx ]->m_type,
+              mosaicBandsRangeMin[ inputRastersBandsIdx ],
+              mosaicBandsRangeMax[ inputRastersBandsIdx ]);             
           }
 
           mosaicRasterHandler.reset( 
@@ -779,40 +790,38 @@ namespace te
                 &mosaicValidDataPol,
                 0,
                 geoTransPtr.get() ), 
-                "Blender initiazing error" );              
+                "Blender initiazing error" );      
                 
-              for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
-                m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ;
-                ++inputRastersBandsIdx )
-              {                
-                te::rst::Band& outputBand = (*mosaicRasterHandler->getBand( inputRastersBandsIdx ));
-
-                double outputBandRangeMin = 0;
-                double outputBandRangeMax = 0;
-                te::rst::GetDataTypeRanges( outputBand.getProperty()->m_type,
-                  outputBandRangeMin, outputBandRangeMax );                
-                  
-                unsigned int outputRow = 0;
-                unsigned int outputCol = 0;
-                double blendedValue = 0;                  
-                
-                for( outputRow = lastInputRasterBBoxURYIndexed ; outputRow <= lastInputRasterBBoxLLYIndexed ;
-                  ++outputRow )
+              std::vector< double > blendedValues( mosaicRasterHandler->getNumberOfBands() );
+              unsigned int outputRow = 0;
+              unsigned int outputCol = 0;
+              const unsigned int nBands = mosaicRasterHandler->getNumberOfBands();
+              unsigned int outBandIdx = 0;
+              te::rst::Raster& outputRaster = *mosaicRasterHandler;
+              
+              for( outputRow = lastInputRasterBBoxURYIndexed ; outputRow <= lastInputRasterBBoxLLYIndexed ;
+                ++outputRow )
+              {
+                for( outputCol = lastInputRasterBBoxLLXIndexed ; outputCol <= lastInputRasterBBoxURXIndexed ;
+                  ++outputCol )
                 {
-                  for( outputCol = lastInputRasterBBoxLLXIndexed ; outputCol <= lastInputRasterBBoxURXIndexed ;
-                    ++outputCol )
+                  blenderInstance.getBlendedValues( (double)outputRow, 
+                    (double)outputCol, blendedValues );
+                    
+                  for( outBandIdx = 0 ; outBandIdx < nBands ; ++outBandIdx )
                   {
-                    blenderInstance.getBlendedValue( (double)outputRow, (double)outputCol, inputRastersBandsIdx,
-                      blendedValue );
+                    double& blendedValue = blendedValues[ outBandIdx ];
                     
                     if( blendedValue != m_inputParameters.m_noDataValue )
                     {
-                      blendedValue = std::max( blendedValue, outputBandRangeMin );
-                      blendedValue = std::min( blendedValue, outputBandRangeMax );
+                      blendedValue = std::max( blendedValue , 
+                        mosaicBandsRangeMin[ outBandIdx ] );
+                      blendedValue = std::min( blendedValue , 
+                        mosaicBandsRangeMax[ outBandIdx ] );
 
-                      outputBand.setValue( outputCol, outputRow, blendedValue );
-                    }                      
-                  }
+                      outputRaster.setValue( outputCol, outputRow, blendedValue, outBandIdx );
+                    }
+                  }                    
                 }
               }
             }
