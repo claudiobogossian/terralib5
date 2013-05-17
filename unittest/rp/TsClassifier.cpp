@@ -30,6 +30,7 @@
 #include <terralib/geometry.h>
 #include <terralib/raster.h>
 #include <terralib/rp/Classifier.h>
+#include <terralib/rp/ClassifierEMStrategy.h>
 #include <terralib/rp/ClassifierISOSegStrategy.h>
 #include <terralib/rp/ClassifierMAPStrategy.h>
 #include <terralib/rp/Segmenter.h>
@@ -99,7 +100,7 @@ void TsClassifier::ISOSeg()
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = "terralib_unittest_rp_Classifier_ISOSeg_Test.tif";
+  orinfo["URI"] = TE_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_ISOSeg_Test.tif";
 
 // to apply ISOSeg the image must be segmented
   std::vector<te::gm::Polygon*> pin = SegmentImage(rin);
@@ -146,7 +147,7 @@ void TsClassifier::MAP()
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = "terralib_unittest_rp_Classifier_MAP_Test.tif";
+  orinfo["URI"] = TE_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_MAP_Test.tif";
 
 // Defining the classes samples
 
@@ -154,45 +155,45 @@ void TsClassifier::MAP()
   sampleC1_1.push_back( 20 );
   sampleC1_1.push_back( 190 );
   sampleC1_1.push_back( 50 );
-  
+
   te::rp::ClassifierMAPStrategy::Parameters::ClassSampleT sampleC1_2;
   sampleC1_2.push_back( 143 );
   sampleC1_2.push_back( 242 );
-  sampleC1_2.push_back( 174 );  
-  
+  sampleC1_2.push_back( 174 );
+
   te::rp::ClassifierMAPStrategy::Parameters::ClassSampleT sampleC1_3;
   sampleC1_3.push_back( 81 );
   sampleC1_3.push_back( 226 );
-  sampleC1_3.push_back( 112 );  
-  
+  sampleC1_3.push_back( 112 );
+
   te::rp::ClassifierMAPStrategy::Parameters::ClassSamplesContainerT class1Samples;
   class1Samples.push_back( sampleC1_1 );
   class1Samples.push_back( sampleC1_2 );
   class1Samples.push_back( sampleC1_3 );
-  
+
   te::rp::ClassifierMAPStrategy::Parameters::ClassSampleT sampleC2_1;
   sampleC2_1.push_back( 255 );
   sampleC2_1.push_back( 226 );
-  sampleC2_1.push_back( 245 );  
+  sampleC2_1.push_back( 245 );
 
   te::rp::ClassifierMAPStrategy::Parameters::ClassSampleT sampleC2_2;
   sampleC2_2.push_back( 168 );
   sampleC2_2.push_back( 138 );
-  sampleC2_2.push_back( 122 );  
-  
+  sampleC2_2.push_back( 122 );
+
   te::rp::ClassifierMAPStrategy::Parameters::ClassSampleT sampleC2_3;
   sampleC2_3.push_back( 179 );
   sampleC2_3.push_back( 167 );
-  sampleC2_3.push_back( 153 );  
-  
+  sampleC2_3.push_back( 153 );
+
   te::rp::ClassifierMAPStrategy::Parameters::ClassSamplesContainerT class2Samples;
   class2Samples.push_back( sampleC2_1 );
   class2Samples.push_back( sampleC2_2 );
-  class2Samples.push_back( sampleC2_3 );  
-  
+  class2Samples.push_back( sampleC2_3 );
+
   te::rp::ClassifierMAPStrategy::Parameters::MClassesSamplesCT allClassesSamples;
   allClassesSamples[ 1 ] = class1Samples;
-  allClassesSamples[ 2 ] = class2Samples;  
+  allClassesSamples[ 2 ] = class2Samples;
 
 // define classification parameters
 
@@ -208,6 +209,52 @@ void TsClassifier::MAP()
   classifierparameters.m_trainSamplesPtr = &allClassesSamples;
 
   algoInputParameters.m_strategyName = "map";
+  algoInputParameters.setClassifierStrategyParams(classifierparameters);
+
+// output parameters
+  te::rp::Classifier::OutputParameters algoOutputParameters;
+  algoOutputParameters.m_rInfo = orinfo;
+  algoOutputParameters.m_rType = "GDAL";
+
+// execute the algorithm
+  te::rp::Classifier algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize(algoInputParameters) );
+  CPPUNIT_ASSERT( algorithmInstance.execute(algoOutputParameters) );
+
+// clean up
+  delete rin;
+}
+
+void TsClassifier::EM()
+{
+// first open the input image
+  std::map<std::string, std::string> rinfo;
+  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+
+  te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = TE_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_EM_Test.tif";
+
+// define classification parameters
+
+// input parameters
+  te::rp::Classifier::InputParameters algoInputParameters;
+  algoInputParameters.m_inputRasterPtr = rin;
+  algoInputParameters.m_inputRasterBands.push_back(0);
+  algoInputParameters.m_inputRasterBands.push_back(1);
+  algoInputParameters.m_inputRasterBands.push_back(2);
+
+// link specific parameters with chosen implementation
+  te::rp::ClassifierEMStrategy::Parameters classifierparameters;
+  classifierparameters.m_numberOfClusters = 5;
+  classifierparameters.m_maxIterations = 150;
+  classifierparameters.m_epsilon = 15;
+  classifierparameters.m_clustersMeans = std::vector<std::vector<double> >();
+
+  algoInputParameters.m_strategyName = "em";
   algoInputParameters.setClassifierStrategyParams(classifierparameters);
 
 // output parameters

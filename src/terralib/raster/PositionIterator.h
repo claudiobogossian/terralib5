@@ -437,7 +437,7 @@ namespace te
 
     template<class T> te::rst::PolygonIterator<T>::~PolygonIterator()
     {
-      te::common::FreeContents(m_intersections);
+      m_intersections.clear();
     }
 
     template<class T> std::vector<te::gm::LineString*> te::rst::PolygonIterator<T>::decompose(te::gm::Geometry* g)

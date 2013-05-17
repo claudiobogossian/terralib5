@@ -64,14 +64,14 @@ namespace te
           /*! \brief Destructor. */
           ~HistogramChart();  
 
-          /*!            
+          /*!
             \brief It returns the chart's scale draw.  
 
             \return The chart's scale draw.  
           */
 
            StringScaleDraw* getScaleDraw();
-      
+
           /*!            
             \brief It sets the chart's scale draw.   
 
@@ -81,7 +81,7 @@ namespace te
 
           void setScaleDraw( StringScaleDraw* newScaleDraw);
 
-          /*!            
+          /*!
             \brief It atttaches a QwtPlot to this Cahrt 
 
             \param plot The QwtPlot that will be attached to this plot.

@@ -126,7 +126,9 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
 te::qt::widgets::HistogramChart::~HistogramChart()
 {  
   delete m_histogram;
-//  delete m_histogramScaleDraw;
+  delete m_histogramStyle;
+  if(m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
+    delete m_histogramScaleDraw;
 }
 
 te::qt::widgets::StringScaleDraw* te::qt::widgets::HistogramChart::getScaleDraw()

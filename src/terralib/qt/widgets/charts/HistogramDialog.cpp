@@ -26,6 +26,7 @@
 //Terralib
 #include "ChartDisplay.h"
 #include "ChartDisplayWidget.h"
+#include "ChartStyle.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
 #include "HistogramChart.h"
@@ -33,6 +34,7 @@
 #include "HistogramDialog.h"
 #include "HistogramStyle.h"
 #include "ui_HistogramDialogForm.h"
+#include "ui_HistogramDataWidgetForm.h"
 
 //QT
 #include <QtGui/QDialog>
@@ -57,29 +59,36 @@ te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, QWid
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
 }
 
-te::qt::widgets::HistogramDialog::~HistogramDialog(){}
+te::qt::widgets::HistogramDialog::~HistogramDialog()
+{
+  delete m_histogramDataWidget;
+}
 
 void te::qt::widgets::HistogramDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
 {
-  m_histogramChart = new te::qt::widgets::HistogramChart(m_histogramDataWidget->getHistogram());
-  m_histogramChart->setHistogramStyle(new te::qt::widgets::HistogramStyle());
+  te::qt::widgets::HistogramChart* chart = new te::qt::widgets::HistogramChart(m_histogramDataWidget->getHistogram());
+  chart->setHistogramStyle(new te::qt::widgets::HistogramStyle());
 
-  //Adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"));;
-  m_histogramChart->attach(chartDisplay);
+  //Creating and adjusting the chart Display
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"));
+  chartDisplay->getStyle()->setTitle(QString::fromStdString("Histogram"));
+  chartDisplay->getStyle()->setAxisX(m_histogramDataWidget->getForm()->m_propertyComboBox->currentText());
+  chartDisplay->getStyle()->setAxisY(QString::fromStdString("Frequency"));
+  chartDisplay->adjustDisplay();
+  chart->attach(chartDisplay);
   chartDisplay->show();
   chartDisplay->replot();
 
   //Adjusting the chart widget
-  te::qt::widgets::ChartDisplayWidget* chartWidget = new te::qt::widgets::ChartDisplayWidget(m_histogramChart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay, this->parentWidget());
+  te::qt::widgets::ChartDisplayWidget* chartWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay, this->parentWidget());
   chartWidget->setDisplay(chartDisplay);
 
   // Docking
   QDockWidget* doc = new QDockWidget(this->parentWidget(), Qt::Dialog);
   doc->setWidget(chartWidget);
-  doc->setWindowTitle("Chart");
+  doc->setWindowTitle("Histogram");
   chartWidget->setParent(doc);
 
   this->close();

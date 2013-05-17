@@ -44,7 +44,7 @@ te::qt::widgets::HistogramFrame::HistogramFrame(QWidget* parent)
 
 te::qt::widgets::HistogramFrame::~HistogramFrame()
 {
-
+  delete m_styleWidget;
 }
 
 QwtPlotSeriesItem* te::qt::widgets::HistogramFrame::getChart()

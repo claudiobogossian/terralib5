@@ -53,7 +53,7 @@ namespace te
       class HighlightDelegate;
 
       /*!
-        \class
+        \class DataSetTableView
 
         \brief A customized table view for te::map::AbstractLayer objects. Uses a te::qt::widgets::DataSetModel as its model.
 
@@ -153,7 +153,16 @@ namespace te
           void promote();
           //@}
 
+          /*!
+            \brief Shows or hides the icon sinalizing the columns that identify each row.
+
+            \param visible True for icon visible, false otherwise.
+          */
+          void setOIdsColumnsVisible(const bool& visible);
+
         protected:
+
+          void removeSelection(const int& initRow, const int& finalRow);
 
           DataSetTableModel* m_model;       //!< The model to be used.
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.

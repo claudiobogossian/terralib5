@@ -260,3 +260,23 @@ void TsDataSource::tcSQLDialect()
   CPPUNIT_ASSERT(dialect != 0);
 //#endif
 }
+
+void TsDataSource::tcGetDataSources()
+{
+//#ifdef TE_COMPILE_ALL
+  CPPUNIT_ASSERT(m_ds);
+  std::vector<std::string> dbs = m_ds->getDataSources(m_dsType,m_connInfo);
+ 
+  CPPUNIT_ASSERT(dbs.size() >= 0);
+//#endif
+}
+
+void TsDataSource::tcGetEncodings()
+{
+//#ifdef TE_COMPILE_ALL
+  CPPUNIT_ASSERT(m_ds);
+  std::vector<std::string> encodings = m_ds->getEncodings(m_dsType,m_connInfo);
+ 
+  CPPUNIT_ASSERT(encodings.size() >= 0);
+//#endif
+}

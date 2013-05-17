@@ -54,6 +54,8 @@ namespace te
 
         ~ScatterStyle();
 
+        ScatterStyle* clone();
+
         te::se::Graphic* getGraphic();
 
         void setGraphic(te::se::Graphic* newGraphic);
