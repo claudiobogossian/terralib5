@@ -79,10 +79,9 @@ void te::qt::widgets::DataSetTableModel::setPromotionEnable(const bool& enable)
   if(enable)
   {
     if(m_promoter == 0)
-    {
       m_promoter = new Promoter;
-      m_promoter->preProcessKeys(m_dataset, m_pkeysColumns);
-    }
+
+    m_promoter->preProcessKeys(m_dataset, m_pkeysColumns);
   }
   else
   {

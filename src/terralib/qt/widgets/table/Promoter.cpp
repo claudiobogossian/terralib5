@@ -26,24 +26,44 @@
 #include "../../../datatype/SimpleData.h"
 #include "../../../dataaccess/utils/Utils.h"
 
+// STL
+#include <algorithm>
 
-//struct AbstractDataCompare
-//{
-//  bool operator() (const std::vector<te::dt::AbstractData*>& lhs, const std::vector<te::dt::AbstractData*>& rhs) const
-//  {
-//    for (size_t i=0; i<lhs.size(); i++)
-//    {
-//      switch(lhs[i]->getTypeCode())
-//      {
-//      }
-////      te::dt::SimpleData* l = dynamic_cast<te::dt::SimpleData*>(lhs[i])
-//    }
-//      //if(*rhs[i] < *lhs[i])
-//      //  return false;
-//
-//    return true;
-//  }
-//};
+void removeAccents(std::string& v)
+{
+  for(size_t i=0; i<v.size(); i++)
+  {
+    if(v[i] == 'á' || v[i] == 'à' || v[i] == 'â' || v[i] == 'ã')
+      v[i] = 'a';
+    else if(v[i] == 'é' || v[i] == 'è' || v[i] == 'ê')
+      v[i] = 'e';
+    else if(v[i] == 'í' || v[i] == 'ì')
+      v[i] = 'i';
+    else if(v[i] == 'ó' || v[i] == 'ò' || v[i] == 'ô' || v[i] == 'õ')
+      v[i] = 'o';
+    else if(v[i] == 'ú' || v[i] == 'ù' || v[i] == 'û')
+      v[i] = 'u';
+    else if(v[i] == 'ç')
+      v[i] = 'c';
+  }
+}
+
+struct teStrCompare
+{
+  bool operator () (const std::string& lhs, const std::string& rhs)
+  {
+    std::string auxL = lhs;
+    std::string auxR = rhs;
+
+    std::transform(auxL.begin(), auxL.end(), auxL.begin(), tolower);
+    std::transform(auxR.begin(), auxR.end(), auxR.begin(), tolower);
+
+    removeAccents(auxR);
+    removeAccents(auxL);
+
+    return (auxL.compare(auxR) < 0);
+  }
+};
 
 
 std::vector<std::string> GetColumnsNames(te::da::DataSet* dset, const std::vector<size_t>& colsPositions)
@@ -80,6 +100,9 @@ void te::qt::widgets::Promoter::resetPromotion()
 
 void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std::vector<size_t>& pkeys)
 {
+  if(!m_PkeysRows.empty())
+    return;
+
   size_t setSize = dset->size();
   std::vector<std::string> colsNames = GetColumnsNames(dset, pkeys);
 
@@ -154,8 +177,8 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
 
   m_logicalRows.resize(dset->size());
 
-  std::map<std::string, int> order;
-  std::map<std::string, int>::iterator m_it;
+  std::multimap<std::string, int, teStrCompare> order;
+  std::multimap<std::string, int, teStrCompare>::iterator m_it;
   std::vector<int>::const_iterator it;
 
   dset->moveBeforeFirst();
@@ -169,7 +192,7 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
     for(it=cols.begin(); it !=cols.end(); ++it)
       value += dset->getAsString(*it, 5);
 
-    order[value] = i++;
+    order.insert(std::pair<std::string, int>(value, i++));
   }
 
   i=0;
