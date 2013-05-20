@@ -29,6 +29,13 @@
 // STL
 #include <algorithm>
 
+enum COMPARISON
+{
+  LESSER,
+  EQUAL,
+  GREATER
+};
+
 void removeAccents(std::string& v)
 {
   for(size_t i=0; i<v.size(); i++)
@@ -48,23 +55,88 @@ void removeAccents(std::string& v)
   }
 }
 
-struct teStrCompare
+COMPARISON CompareStr (const std::string& lhs, const std::string& rhs)
 {
-  bool operator () (const std::string& lhs, const std::string& rhs)
+  std::string auxL = lhs;
+  std::string auxR = rhs;
+
+  std::transform(auxL.begin(), auxL.end(), auxL.begin(), tolower);
+  std::transform(auxR.begin(), auxR.end(), auxR.begin(), tolower);
+
+  removeAccents(auxR);
+  removeAccents(auxL);
+
+  int aux = auxL.compare(auxR);
+
+  COMPARISON comp = (aux > 0) ? GREATER : (aux < 0) ? LESSER : EQUAL;
+
+  return comp;
+}
+
+template <typename T>
+COMPARISON CompareSimpleData(const T& lhs, const T& rhs)
+{
+  COMPARISON res;
+
+  if(lhs.getValue() > rhs.getValue())
+    res = GREATER;
+  else if(lhs.getValue() < rhs.getValue())
+    res = LESSER;
+  else
+    res = EQUAL;
+
+  return res;
+}
+
+COMPARISON CompareAbsData (te::dt::AbstractData* lhs, te::dt::AbstractData* rhs)
+{
+  COMPARISON res = EQUAL;
+
+  if(lhs->getTypeCode() == te::dt::CHAR_TYPE)
+    res = CompareSimpleData<te::dt::Char>(*((te::dt::Char*)lhs), *((te::dt::Char*)rhs));
+  else if(lhs->getTypeCode() == te::dt::UCHAR_TYPE)
+    res = CompareSimpleData<te::dt::UChar>(*((te::dt::UChar*)lhs), *((te::dt::UChar*)rhs));
+  else if(lhs->getTypeCode() == te::dt::INT16_TYPE)
+    res = CompareSimpleData<te::dt::Int16>(*((te::dt::Int16*)lhs), *((te::dt::Int16*)rhs));
+  else if(lhs->getTypeCode() == te::dt::UINT16_TYPE)
+    res = CompareSimpleData<te::dt::UInt16>(*((te::dt::UInt16*)lhs), *((te::dt::UInt16*)rhs));
+  else if(lhs->getTypeCode() == te::dt::INT32_TYPE)
+    res = CompareSimpleData<te::dt::Int32>(*((te::dt::Int32*)lhs), *((te::dt::Int32*)rhs));
+  else if(lhs->getTypeCode() == te::dt::UINT32_TYPE)
+    res = CompareSimpleData<te::dt::UInt32>(*((te::dt::UInt32*)lhs), *((te::dt::UInt32*)rhs));
+  else if(lhs->getTypeCode() == te::dt::INT64_TYPE)
+    res = CompareSimpleData<te::dt::Int64>(*((te::dt::Int64*)lhs), *((te::dt::Int64*)rhs));
+  else if(lhs->getTypeCode() == te::dt::UINT64_TYPE)
+    res = CompareSimpleData<te::dt::UInt64>(*((te::dt::UInt64*)lhs), *((te::dt::UInt64*)rhs));
+  else if(lhs->getTypeCode() == te::dt::BOOLEAN_TYPE)
+    res = CompareSimpleData<te::dt::Boolean>(*((te::dt::Boolean*)lhs), *((te::dt::Boolean*)rhs));
+  else if(lhs->getTypeCode() == te::dt::FLOAT_TYPE)
+    res = CompareSimpleData<te::dt::Float>(*((te::dt::Float*)lhs), *((te::dt::Float*)rhs));
+  else if(lhs->getTypeCode() == te::dt::DOUBLE_TYPE)
+    res = CompareSimpleData<te::dt::Double>(*((te::dt::Double*)lhs), *((te::dt::Double*)rhs));
+  else if(lhs->getTypeCode() == te::dt::STRING_TYPE)
+    res = CompareStr(((te::dt::String*)lhs)->getValue(), ((te::dt::String*) rhs)->getValue()); 
+
+  return res;
+}
+
+struct DataComparator
+{
+  bool operator() (const std::vector<te::dt::AbstractData*>& lhs, const std::vector<te::dt::AbstractData*>& rhs)
   {
-    std::string auxL = lhs;
-    std::string auxR = rhs;
+    for (size_t i=0; i<lhs.size(); i++)
+    {
+      COMPARISON res = CompareAbsData(lhs[i], rhs[i]);
 
-    std::transform(auxL.begin(), auxL.end(), auxL.begin(), tolower);
-    std::transform(auxR.begin(), auxR.end(), auxR.begin(), tolower);
+      if(res == LESSER)
+        return true;
+      else if (res == GREATER)
+        return false;
+    }
 
-    removeAccents(auxR);
-    removeAccents(auxL);
-
-    return (auxL.compare(auxR) < 0);
+    return false;
   }
 };
-
 
 std::vector<std::string> GetColumnsNames(te::da::DataSet* dset, const std::vector<size_t>& colsPositions)
 {
@@ -98,6 +170,13 @@ void te::qt::widgets::Promoter::resetPromotion()
     m_logicalRows[i] = i;
 }
 
+void te::qt::widgets::Promoter::cleanLogRowsAndProcessKeys()
+{
+  cleanPreproccessKeys();
+
+  m_logicalRows.clear();
+}
+
 void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std::vector<size_t>& pkeys)
 {
   if(!m_PkeysRows.empty())
@@ -108,7 +187,8 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
 
   cleanPreproccessKeys();
 
-  m_logicalRows.resize(setSize);
+  if(m_logicalRows.empty())
+    m_logicalRows.resize(setSize);
 
   dset->moveFirst();
 
@@ -132,7 +212,11 @@ size_t te::qt::widgets::Promoter::getLogicalRow(const size_t& visualRow)
 
 void te::qt::widgets::Promoter::cleanPreproccessKeys()
 {
-  m_logicalRows.clear();
+  std::map<te::da::ObjectId*, size_t, te::common::LessCmp<te::da::ObjectId*> >::iterator it;
+
+  for(it=m_PkeysRows.begin(); it!=m_PkeysRows.end(); ++it)
+    delete it->first;
+
   m_PkeysRows.clear();
 
   m_enabled = false;
@@ -175,29 +259,33 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
 
   cleanPreproccessKeys();
 
-  m_logicalRows.resize(dset->size());
+  if(m_logicalRows.empty())
+    m_logicalRows.resize(dset->size());
 
-  std::multimap<std::string, int, teStrCompare> order;
-  std::multimap<std::string, int, teStrCompare>::iterator m_it;
-  std::vector<int>::const_iterator it;
+  std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator> order;
+  std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator>::iterator m_it;
 
   dset->moveBeforeFirst();
 
   int i=0;
 
+  std::vector<te::dt::AbstractData*> value;
+  value.resize(cols.size());
+
   while (dset->moveNext())
   {
-    std::string value;
+    for(size_t j=0; j<cols.size(); j++)
+      value[j] = dset->getValue((size_t)cols[j]);
 
-    for(it=cols.begin(); it !=cols.end(); ++it)
-      value += dset->getAsString(*it, 5);
-
-    order.insert(std::pair<std::string, int>(value, i++));
+    order.insert(std::pair<std::vector<te::dt::AbstractData*>, int>(value, i++));
   }
 
   i=0;
   for(m_it=order.begin(); m_it!=order.end(); ++m_it)
+  {
     m_logicalRows[i++] = m_it->second;
+    te::common::FreeContents(m_it->first);
+  }
 }
 
 size_t te::qt::widgets::Promoter::map2Row(te::da::ObjectId* oid)

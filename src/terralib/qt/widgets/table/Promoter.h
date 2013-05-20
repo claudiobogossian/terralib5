@@ -82,6 +82,8 @@ namespace te
           */
           void resetPromotion();
 
+          void cleanLogRowsAndProcessKeys();
+
           /*!
             \brief Proccess primary keys and stores it.
 
