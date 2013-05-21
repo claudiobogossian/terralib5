@@ -31,13 +31,26 @@
 #include "../Config.h"
 #include "RubberBand.h"
 
+// Qt
+#include <QtGui/QColor>
+
+// STL
+#include <list>
+#include <vector>
+
 namespace te
 {
+// Forward declaration
+  namespace gm
+  {
+    class Geometry;
+  }
+
   namespace qt
   {
     namespace widgets
     {
-// Forward declarations
+// Forward declaration
     class MapDisplay;
 
       /*!
@@ -58,12 +71,13 @@ namespace te
             \brief It constructs a selection tool associated with the given map display.
 
             \param display The map display associated with the tool.
-            \param layer The layer that will be selected.
+            \param layer The layer list that will be selected.
+            \param selectionColor The color that will be used to draw the selected geometires.
             \param parent The tool's parent.
 
             \note The tool will NOT take the ownership of the given pointers.
           */
-          Selection(MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent = 0);
+          Selection(MapDisplay* display, const std::list<te::map::AbstractLayerPtr>& layers, const QColor& selectionColor, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~Selection();
@@ -87,9 +101,17 @@ namespace te
 
         private:
 
-          const te::map::AbstractLayerPtr& m_layer; //!< A pointer to layer that will be selected.
-          bool m_selectionStarted;                  //!< Flag that indicates if selection operation was started.
-          bool m_keepPreviousSelection;             //!< Flag that indicates if the tool must keep the previous selection.
+          void executeSelection(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e);
+
+          void drawSelection(const te::map::AbstractLayerPtr& layer) const;
+
+        private:
+
+          const std::list<te::map::AbstractLayerPtr>& m_layers; //!< A pointer to layer list that will be selected.
+          bool m_selectionStarted;                              //!< Flag that indicates if selection operation was started.
+          bool m_keepPreviousSelection;                         //!< Flag that indicates if the tool must keep the previous selection.
+          bool m_selectionByPointing;                           //!< Flag that indicates if the selection is by pointing.
+          QColor m_selectionColor;                              //!< The color used to draw the selected geometires.
       };
 
     } // end namespace widgets
