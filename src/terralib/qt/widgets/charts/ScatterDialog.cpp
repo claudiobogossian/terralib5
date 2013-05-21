@@ -26,19 +26,25 @@
 //Terralib
 
 #include "ChartDisplay.h"
+#include "ChartStyle.h"
 #include "ChartDisplayWidget.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
 #include "../../../se/Graphic.h"
+#include "Scatter.h"
 #include "ScatterChart.h"
 #include "ScatterDialog.h"
 #include "ScatterDataWidget.h"
 #include "ScatterStyle.h"
 #include "Symbol.h"
 #include "ui_ScatterDialogForm.h"
+#include "ui_ScatterDataWidgetForm.h"
 
 //QT
 #include <QtGui/QDockWidget>
+
+//QWT
+#include <qwt_symbol.h>
 
 te::qt::widgets::ScatterDialog::ScatterDialog(te::da::DataSet* dataSet, QWidget* parent,  Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -59,31 +65,41 @@ te::qt::widgets::ScatterDialog::ScatterDialog(te::da::DataSet* dataSet, QWidget*
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
 }
 
-te::qt::widgets::ScatterDialog::~ScatterDialog(){}
+te::qt::widgets::ScatterDialog::~ScatterDialog()
+{
+  delete m_scatterDataWidget;
+}
 
 void te::qt::widgets::ScatterDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
 {
-  m_scatterChart = new te::qt::widgets::ScatterChart(m_scatterDataWidget->getScatter());
-  m_scatterChart->setScatterStyle(new te::qt::widgets::ScatterStyle());
+  te::qt::widgets::ScatterChart* chart = new te::qt::widgets::ScatterChart(m_scatterDataWidget->getScatter());
+  chart->setScatterStyle(new te::qt::widgets::ScatterStyle());
+  if(chart->getScatter()->sizeX() > 100 || chart->getScatter()->sizeY() > 100)
+    chart->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::lightGray, 2 ), QSize( 1, 1 )));
 
   //Adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"));;
-  m_scatterChart->attach(chartDisplay);
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"));
+  chartDisplay->getStyle()->setTitle(QString::fromStdString("Scatter"));
+  chartDisplay->getStyle()->setAxisX(m_scatterDataWidget->getForm()->m_propertyXComboBox->currentText());
+  chartDisplay->getStyle()->setAxisY(m_scatterDataWidget->getForm()->m_propertyYComboBox->currentText());
+  chartDisplay->adjustDisplay();
+  chart->attach(chartDisplay);
   chartDisplay->show();
   chartDisplay->replot();
 
   //Adjusting the chart widget
-  te::qt::widgets::ChartDisplayWidget* chartWidget = new te::qt::widgets::ChartDisplayWidget(m_scatterChart, te::qt::widgets::SCATTER_CHART, chartDisplay, this->parentWidget());
+  te::qt::widgets::ChartDisplayWidget* chartWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::SCATTER_CHART, chartDisplay, this->parentWidget());
   chartWidget->setDisplay(chartDisplay);
 
   // Docking
   QDockWidget* doc = new QDockWidget(this->parentWidget(), Qt::Dialog);
   doc->setWidget(chartWidget);
-  doc->setWindowTitle("Chart");
-  chartWidget->setParent(doc);
+  doc->setWindowTitle("Scatter");
+  doc->setWindowIcon(QIcon::fromTheme("chart-scatter"));
 
+  chartWidget->setParent(doc);
   this->close();
   doc->show();
 }

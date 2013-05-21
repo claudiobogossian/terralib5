@@ -35,6 +35,8 @@
 //STL
 #include <string>
 
+class QwtPlotGrid;
+
 namespace te
 {
   namespace se { class Stroke; class Fill; class Font; }
@@ -77,7 +79,8 @@ namespace te
 
          private:
 
-          te::qt::widgets::ChartStyle*    m_chartStyle;   //!< The display's style.
+          te::qt::widgets::ChartStyle*  m_chartStyle;  //!< The display's style.
+          QwtPlotGrid*                  m_grid;        //!< The display's grid
       };
     } // end namespace widgets
   }   // end namespace qt

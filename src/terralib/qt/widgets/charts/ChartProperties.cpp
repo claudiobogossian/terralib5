@@ -74,12 +74,12 @@ te::qt::widgets::ChartProperties::ChartProperties(te::qt::widgets::ChartDisplayW
   {
     m_ui->m_componentsListWidget->addItem(vec[i].c_str());
   }
-
+  m_ui->m_componentsListWidget->setFocus();
   m_ui->m_tabWidget->clear();
   m_curComp = te::qt::widgets::ChartWidgetFactory::make("Chart Style", m_ui->m_tabWidget);
   m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString("Chart Style"));
   m_curComp->setDisplay(m_chartWidget->getDisplay());
-//  m_curComp->setFocus();
+  m_ui->m_componentsListWidget->setCurrentRow(0);
   connect(m_ui->m_componentsListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyButtonClicked()));
 }
@@ -110,7 +110,6 @@ void te::qt::widgets::ChartProperties::onApplyButtonClicked()
   else
   {
     m_chartWidget->setChart(m_curComp->getChart());
-    m_chartWidget->getChart()->attach( m_chartWidget->getDisplay());
   }
   this->close();
 }

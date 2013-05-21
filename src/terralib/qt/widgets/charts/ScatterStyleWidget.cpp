@@ -35,16 +35,21 @@
 
 te::qt::widgets::ScatterStyleWidget::ScatterStyleWidget(te::qt::widgets::ScatterStyle* initial, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_scatterStyle(initial),
-    m_ui(new Ui::ScatterStyleWidgetForm)
+    m_ui(new Ui::ScatterStyleWidgetForm),
+    m_scatterStyle(initial)
 {
     m_ui->setupUi(this);
+
+  if(!m_scatterStyle)
+    m_scatterStyle = new te::qt::widgets::ScatterStyle(); 
 
 // connect signal and slots
   connect(m_ui->m_plotStylePushButton, SIGNAL(clicked()), this, SLOT(onPlotStylePushButtonClicked()));
 }
 
-te::qt::widgets::ScatterStyleWidget::~ScatterStyleWidget(){}
+te::qt::widgets::ScatterStyleWidget::~ScatterStyleWidget()
+{
+}
 
 te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterStyleWidget::getScatterStyle()
 {
@@ -53,5 +58,7 @@ te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterStyleWidget::getScatterSt
 
 void te::qt::widgets::ScatterStyleWidget::onPlotStylePushButtonClicked()
 {
-  m_scatterStyle->setGraphic((te::qt::widgets::GraphicDialog::getGraphic(0, 0, "Scatter Style")));
+  std::unique_ptr<te::se::Graphic> graphic(te::qt::widgets::GraphicDialog::getGraphic(0, 0, "Scatter Style"));
+  if(graphic)
+    m_scatterStyle->setGraphic(graphic->clone());
 }

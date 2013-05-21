@@ -60,7 +60,7 @@ namespace te
           \param r      The raster to iterate.
           \param bands  The vector of band indices that the iterator will use.
         */
-        RasterIterator(Raster* r, const std::vector<std::size_t>& bands);
+        RasterIterator(Raster* r, const std::vector<unsigned int>& bands);
 
         /*!
           \brief Copy constructor.
@@ -85,7 +85,7 @@ namespace te
 
           \return The pixel value in current position.
         */
-        T operator[](const std::size_t i) const;
+        T operator[](const unsigned int i) const;
 
         /*! \brief Returns a vector with pixel values from all bands in current position (column, row) from iterator. */
         std::vector<T> operator*() const;
@@ -129,7 +129,7 @@ namespace te
           \param r      The raster to iterate.
           \param bands  The vector of band indices that the iterator will use.
         */
-        static RasterIterator begin(Raster* r, const std::vector<std::size_t>& bands);
+        static RasterIterator begin(Raster* r, const std::vector<unsigned int>& bands);
 
         /*!
           \brief Returns an iterator referring to after the end of the iterator.
@@ -137,11 +137,11 @@ namespace te
           \param r      The raster to iterate.
           \param bands  The vector of band indices that the iterator will use.
         */
-        static RasterIterator end(Raster* r, const std::vector<std::size_t>& bands);
+        static RasterIterator end(Raster* r, const std::vector<unsigned int>& bands);
 
       private:
 
-        std::vector<std::size_t> m_b;            //!< The vector of bands to iterate.
+        std::vector<unsigned int> m_b;           //!< The vector of bands to iterate.
         Raster* m_raster;                        //!< The raster from where to get the values.
         std::vector<BandIterator<T> > m_it;      //!< The vector of band iterators.
     };
@@ -153,11 +153,11 @@ namespace te
     {
     }
 
-    template<class T> te::rst::RasterIterator<T>::RasterIterator(Raster* r, const std::vector<std::size_t>& bands)
+    template<class T> te::rst::RasterIterator<T>::RasterIterator(Raster* r, const std::vector<unsigned int>& bands)
       : m_b(bands),
         m_raster(r)
     {
-      for(std::size_t i = 0; i < m_b.size(); i++)
+      for(unsigned int i = 0; i < m_b.size(); i++)
         m_it.push_back(te::rst::BandIterator<T>::begin(r->getBand(m_b[i])));
     }
 
@@ -180,7 +180,7 @@ namespace te
       return m_it[0].getCol();
     }
 
-    template<class T> T te::rst::RasterIterator<T>::operator[](const std::size_t i) const
+    template<class T> T te::rst::RasterIterator<T>::operator[](const unsigned int i) const
     {
       return *m_it[i];
     }
@@ -196,19 +196,19 @@ namespace te
 
     template<class T> void te::rst::RasterIterator<T>::getValues(std::vector<T>& v) const
     {
-      for (std::size_t b = 0; b < m_b.size(); b++)
+      for (unsigned int b = 0; b < m_b.size(); b++)
         v[b] = *m_it[b];
     }
 
     template<class T> void te::rst::RasterIterator<T>::operator++()
     {
-      for (std::size_t b = 0; b < m_b.size(); b++)
+      for (unsigned int b = 0; b < m_b.size(); b++)
         ++m_it[b];
     }
 
     template<class T> void te::rst::RasterIterator<T>::operator--()
     {
-      for (std::size_t b = 0; b < m_b.size(); b++)
+      for (unsigned int b = 0; b < m_b.size(); b++)
         --m_it[b];
     }
 
@@ -231,16 +231,16 @@ namespace te
       return (m_it[0] != rhs.m_it[0]);
     }
 
-    template<class T> te::rst::RasterIterator<T> te::rst::RasterIterator<T>::begin(Raster* r, const std::vector<std::size_t>& bands)
+    template<class T> te::rst::RasterIterator<T> te::rst::RasterIterator<T>::begin(Raster* r, const std::vector<unsigned int>& bands)
     {
       return te::rst::RasterIterator<T>(r, bands);
     }
 
-    template<class T> te::rst::RasterIterator<T> te::rst::RasterIterator<T>::end(Raster* r, const std::vector<std::size_t>& bands)
+    template<class T> te::rst::RasterIterator<T> te::rst::RasterIterator<T>::end(Raster* r, const std::vector<unsigned int>& bands)
     {
       te::rst::RasterIterator<T> it;
 
-      for(std::size_t i = 0; i < bands.size(); i++)
+      for(unsigned int i = 0; i < bands.size(); i++)
         it.m_it.push_back(te::rst::BandIterator<T>::end(r->getBand(bands[i])));
 
       return it;

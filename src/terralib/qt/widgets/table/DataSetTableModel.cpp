@@ -47,7 +47,8 @@ te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
   : QAbstractTableModel(parent),
     m_dataset(0),
     m_currentRow(-1),
-    m_promoter(0)
+    m_promoter(0),
+    m_OIdsVisible(false)
 {
 }
 
@@ -78,10 +79,9 @@ void te::qt::widgets::DataSetTableModel::setPromotionEnable(const bool& enable)
   if(enable)
   {
     if(m_promoter == 0)
-    {
       m_promoter = new Promoter;
-      m_promoter->preProcessKeys(m_dataset, m_pkeysColumns);
-    }
+
+    m_promoter->preProcessKeys(m_dataset, m_pkeysColumns);
   }
   else
   {
@@ -97,14 +97,29 @@ void te::qt::widgets::DataSetTableModel::promote(const std::vector<te::da::Objec
   m_promoter->promote(oids);
 }
 
+void te::qt::widgets::DataSetTableModel::orderByColumns(const std::vector<int>& cols)
+{
+  if(m_promoter == 0)
+    m_promoter = new Promoter;
+
+  m_promoter->sort(m_dataset, cols);
+
+  reset();
+}
+
 bool te::qt::widgets::DataSetTableModel::isPromotionEnabled()
 {
-  return m_promoter != 0;
+  return m_promoter != 0 && m_promoter->isPromotionEnabled();
 }
 
 te::qt::widgets::Promoter* te::qt::widgets::DataSetTableModel::getPromoter()
 {
   return m_promoter;
+}
+
+void te::qt::widgets::DataSetTableModel::showOIdsVisible(const bool& visible)
+{
+  m_OIdsVisible = visible;
 }
 
 int te::qt::widgets::DataSetTableModel::rowCount(const QModelIndex & parent) const
@@ -157,7 +172,7 @@ QVariant te::qt::widgets::DataSetTableModel::headerData(int section, Qt::Orienta
       break;
 
       case Qt::DecorationRole:
-        return (IsPkey(section, m_pkeysColumns)) ?
+        return (m_OIdsVisible && IsPkey(section, m_pkeysColumns)) ?
           QIcon::fromTheme("key") :
           QVariant();
       break;

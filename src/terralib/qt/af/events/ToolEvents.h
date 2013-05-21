@@ -22,9 +22,11 @@
 
   \brief Contains the list of the tools related events.
 */
+
 #ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_TOOLSEVENTS_H
 #define __TERRALIB_QT_AF_EVENTS_INTERNAL_TOOLSEVENTS_H
 
+// TerraLib
 #include "Event.h"
 #include "Enums.h"
 
@@ -32,7 +34,7 @@ namespace te
 {
   namespace qt
   {
-    //! Forward declarations
+// Forward declaration
     namespace widgets
     {
       class AbstractTool;
@@ -59,15 +61,15 @@ namespace te
 
             \param oldTool Pointer to the previously used tool.
           */
-          ToolChanged(te::qt::widgets::AbstractTool* newTool, te::qt::widgets::AbstractTool* oldTool) :
-          Event(TOOL_CHANGED),
-          m_oldTool(oldTool),
-          m_newTool(newTool)
+          ToolChanged(te::qt::widgets::AbstractTool* newTool, te::qt::widgets::AbstractTool* oldTool)
+            : Event(TOOL_CHANGED),
+              m_oldTool(oldTool),
+              m_newTool(newTool)
           {
           }
 
-          te::qt::widgets::AbstractTool* m_oldTool;     //!< Previously tool being used.
-          te::qt::widgets::AbstractTool* m_newTool;     //!< The new tool to be used.
+          te::qt::widgets::AbstractTool* m_oldTool; //!< Previously tool being used.
+          te::qt::widgets::AbstractTool* m_newTool; //!< The new tool to be used.
         };
 
         /*!
@@ -82,19 +84,18 @@ namespace te
           /*!
             \brief Constructor.
 
-            \param x The X coordinate component.
-
-            \param y The Y coordinate component.
+            \param x The x coordinate value.
+            \param y The y coordinate value.
           */
-          CoordinateTracked(const double& x, const double& y) :
-          Event(COORDINATE_TRACKED),
-          m_x(x),
-          m_y(y)
+          CoordinateTracked(const double& x, const double& y)
+            : Event(COORDINATE_TRACKED),
+              m_x(x),
+              m_y(y)
           {
           }
 
-          double m_x,     //!< X component of the coordinate.
-                m_y;      //!< Y component of the coordinate.
+          double m_x; //!< The x coordinate value.
+          double m_y; //!< The y coordinate value.
         };
       }
     }

@@ -53,10 +53,13 @@
 #include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/se/RasterVisualDockWidget.h"
 #include "../widgets/table/DataSetTableDockWidget.h"
+#include "../widgets/tools/Info.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
+#include "../widgets/tools/Selection.h"
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
+#include "../widgets/srs/SRSManagerDialog.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/TabularViewer.h"
@@ -91,6 +94,7 @@
 // STL
 #include <list>
 #include <memory>
+#include <utility>
 
 // Boost
 #include <boost/format.hpp>
@@ -105,7 +109,6 @@ te::qt::widgets::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLay
 
   return 0;
 }
-
 
 te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
@@ -239,45 +242,23 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
     break;
 
     case te::qt::af::evt::TOOLBAR_ADDED:
-      {
-        te::qt::af::evt::ToolBarAdded* ev = static_cast<te::qt::af::evt::ToolBarAdded*>(evt);
-        QMainWindow::addToolBar(Qt::TopToolBarArea, ev->m_toolbar);
-      }
+    {
+      te::qt::af::evt::ToolBarAdded* e = static_cast<te::qt::af::evt::ToolBarAdded*>(evt);
+      QMainWindow::addToolBar(Qt::TopToolBarArea, e->m_toolbar);
+    }
     break;
 
-
+    case te::qt::af::evt::COORDINATE_TRACKED:
+    {
+      te::qt::af::evt::CoordinateTracked* e = static_cast<te::qt::af::evt::CoordinateTracked*>(evt);
+      QString text = "(" + QString::number(e->m_x, 'f', 5) + " , " + QString::number(e->m_y, 'f', 5) + ")";
+      m_coordinateLineEdit->setText(text);
+    }
+    break;
 
     default:
-    break;
+      break;
   }
-  //{
-  //  case te::qt::af::evt::NEW_TOOLBAR :
-  //  break;
-
-  //  case te::qt::af::evt::TRACK_COORDINATE:
-  //  {
-  //    te::qt::af::TrackedCoordinate* e = static_cast<te::qt::af::TrackedCoordinate*>(evt);
-  //    QString text = tr("Coordinates: ") + "(" + QString::number(e->m_pos.x()) + " , " + QString::number(e->m_pos.y()) + ")";
-  //    QStatusBar* sb = statusBar();
-  //    sb->showMessage(text);
-  //  }
-  //  break;
-
-  //  //PROVISORIO
-  //  case te::qt::af::evt::LAYER_SELECTED:
-  //  {
-  //    te::qt::af::LayerSelected* e = static_cast<te::qt::af::LayerSelected*>(evt);
-  //    
-  //    if(e->m_layer->getType() == "RASTERLAYER")
-  //    {
-  //      m_rasterVisualDock->setRasterLayer(dynamic_cast<te::map::RasterLayer*>(e->m_layer));
-  //    }
-  //  }
-  //  break;
-
-  //  default :
-  //  break;
-  //}
 }
 
 void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
@@ -556,6 +537,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
     te::qt::widgets::HistogramDialog dlg(dataset, this);
+    dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -578,13 +560,29 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
     te::qt::widgets::ScatterDialog dlg(dataset, this);
-
+    dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));
     dlg.exec();
   }
   catch(const std::exception& e)
   {
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
   }
+}
+
+void te::qt::af::BaseApplication::onMapSRIDTriggered()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+
+  if(srsDialog.exec() == QDialog::Rejected)
+    return;
+
+  std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
+  m_display->getDisplay()->setSRID(srid.first);
+
+  QString sridText(srid.second.c_str());
+  sridText += ":" + QString::number(srid.first);
+  m_mapSRIDLineEdit->setText(sridText);
 }
 
 void te::qt::af::BaseApplication::onDrawTriggered()
@@ -641,6 +639,24 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
   display->setExtent(e, true);
 }
 
+void te::qt::af::BaseApplication::onInfoToggled(bool checked)
+{
+  if(!checked)
+    return;
+
+  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), m_project->getLayers());
+  m_display->setCurrentTool(info);
+}
+
+void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
+{
+  if(!checked)
+    return;
+
+  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), m_project->getLayers(), ApplicationController::getInstance().getSelectionColor());
+  m_display->setCurrentTool(selection);
+}
+
 void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
 {
   if(!checked)
@@ -688,6 +704,11 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::widgets::DataSetTabl
 
   if(it != m_tableDocks.end())
     m_tableDocks.erase(it);
+}
+
+void te::qt::af::BaseApplication::onFullScreenToggled(bool checked)
+{
+  checked ? showFullScreen() : showMaximized();
 }
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
@@ -831,9 +852,9 @@ void te::qt::af::BaseApplication::makeDialog()
 // 2. Map Display
   te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512), this);
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
-  map->setMouseTracking(true);
-
   m_display = new te::qt::af::MapDisplay(map);
+
+  initStatusBar();
 
 // 3. Data Table
 //  te::qt::widgets::TabularViewer* view = new te::qt::widgets::TabularViewer(this);
@@ -872,7 +893,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
 // Progress support
   te::qt::widgets::ProgressViewerBar* pvb = new te::qt::widgets::ProgressViewerBar(this);
-  pvb->setFixedWidth(250);
+  pvb->setFixedWidth(150);
   te::common::ProgressManager::getInstance().addViewer(pvb);
 
   te::qt::widgets::ProgressViewerWidget* pvw = new te::qt::widgets::ProgressViewerWidget(this);
@@ -930,7 +951,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_viewMapDisplay, "view-map-display", "View.Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true, m_menubar);
   initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, false, m_menubar);
   initAction(m_viewStyleExplorer, "grid-visible", "View.Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, false, m_menubar);
-  initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, false, false, m_menubar);
+  initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, true, true, m_menubar);
   initAction(m_viewRefresh, "view-refresh", "View.Refresh", tr("&Refresh"), tr(""), true, false, false, m_menubar);
   //initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
   initAction(m_viewGrid, "view-grid", "View.Grid", tr("&Grid"), tr("Show or hide the geographic grid"), true, true, false, m_menubar);
@@ -993,6 +1014,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_filePrintPreview, "document-print-preview", "File.Print Preview", tr("Print Pre&view..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Map- actions
+  initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);
   initAction(m_mapDraw, "map-draw", "Map.Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true, m_menubar);
   initAction(m_mapZoomIn, "zoom-in", "Map.Zoom In", tr("Zoom &In"), tr(""), true, true, true, m_menubar);
   initAction(m_mapZoomOut, "zoom-out", "Map.Zoom Out", tr("Zoom &Out"), tr(""), true, true, true, m_menubar);
@@ -1001,6 +1023,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapZoomExtent, "zoom-extent", "Map.Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, true, m_menubar);
   initAction(m_mapPreviousExtent, "edit-undo", "Map.Previous Extent", tr("&Previous Extent"), tr(""), true, false, false, m_menubar);
   initAction(m_mapNextExtent, "edit-redo", "Map.Next Extent", tr("&Next Extent"), tr(""), true, false, false, m_menubar);
+  initAction(m_mapInfo, "pointer-info", "Map.Info", tr("&Info"), tr(""), true, true, true, m_menubar);
+  initAction(m_mapSelection, "pointer-selection", "Map.Selection", tr("&Selection"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, false, m_menubar);
   initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, false, m_menubar);
   initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, false, m_menubar);
@@ -1015,6 +1039,8 @@ void te::qt::af::BaseApplication::initActions()
   mapToolsGroup->addAction(m_mapMeasureDistance);
   mapToolsGroup->addAction(m_mapMeasureArea);
   mapToolsGroup->addAction(m_mapMeasureAngle);
+  mapToolsGroup->addAction(m_mapInfo);
+  mapToolsGroup->addAction(m_mapSelection);
 }
 
 void te::qt::af::BaseApplication::initMenus()
@@ -1124,6 +1150,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->setObjectName("Map");
   m_mapMenu->setTitle(tr("&Map"));
 
+  m_mapMenu->addAction(m_mapSRID);
+  m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapDraw);
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapZoomIn);
@@ -1133,6 +1161,10 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addAction(m_mapZoomExtent);
   m_mapMenu->addAction(m_mapPreviousExtent);
   m_mapMenu->addAction(m_mapNextExtent);
+  m_mapMenu->addSeparator();
+  m_mapMenu->addAction(m_mapInfo);
+  m_mapMenu->addSeparator();
+  m_mapMenu->addAction(m_mapSelection);
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapMeasureDistance);
   m_mapMenu->addAction(m_mapMeasureArea);
@@ -1229,16 +1261,43 @@ void te::qt::af::BaseApplication::initToolbars()
   //m_mapToolBar->addAction(m_mapPreviousExtent);
   //m_mapToolBar->addAction(m_mapNextExtent);
 
-  QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
-  stopDrawToolButton->setDefaultAction(m_mapStopDraw);
-  m_statusbar->addPermanentWidget(stopDrawToolButton);
-
 //  m_viewToolBarsMenu->addAction(m_mapToolBar->toggleViewAction());
 
 // registering the toolbars
   //ApplicationController::getInstance().registerToolBar(m_fileToolBar->objectName(), m_fileToolBar);
   ////ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
   //ApplicationController::getInstance().registerToolBar(m_mapToolBar->objectName(), m_mapToolBar);
+}
+
+void te::qt::af::BaseApplication::initStatusBar()
+{
+  // Coordinate Line Edit
+  m_coordinateLineEdit = new QLineEdit(m_statusbar);
+  m_coordinateLineEdit->setFixedWidth(220);
+  m_coordinateLineEdit->setAlignment(Qt::AlignHCenter);
+  m_coordinateLineEdit->setReadOnly(true);
+  m_coordinateLineEdit->setFocusPolicy(Qt::NoFocus);
+  m_coordinateLineEdit->setPlaceholderText(tr("Coordinates"));
+  m_statusbar->addPermanentWidget(m_coordinateLineEdit);
+
+  // Map SRID action
+  QToolButton* mapSRIDToolButton = new QToolButton(m_statusbar);
+  mapSRIDToolButton->setDefaultAction(m_mapSRID);
+  m_statusbar->addPermanentWidget(mapSRIDToolButton);
+
+  // Map SRID information
+  m_mapSRIDLineEdit = new QLineEdit(m_statusbar);
+  m_mapSRIDLineEdit->setFixedWidth(80);
+  m_mapSRIDLineEdit->setEnabled(false);
+
+  int srid = m_display->getDisplay()->getSRID();
+  srid != TE_UNKNOWN_SRS ? m_mapSRIDLineEdit->setText("EPSG:" + QString::number(srid)) : m_mapSRIDLineEdit->setText(tr("Unknown SRS"));
+  m_statusbar->addPermanentWidget(m_mapSRIDLineEdit);
+
+  // Stop draw action
+  QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
+  stopDrawToolButton->setDefaultAction(m_mapStopDraw);
+  m_statusbar->addPermanentWidget(stopDrawToolButton);
 }
 
 void te::qt::af::BaseApplication::initSlotsConnections()
@@ -1259,15 +1318,19 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
+  connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
   connect(m_mapZoomArea, SIGNAL(toggled(bool)), SLOT(onZoomAreaToggled(bool)));
   connect(m_mapPan, SIGNAL(toggled(bool)), SLOT(onPanToggled(bool)));
   connect(m_mapZoomExtent, SIGNAL(triggered()), SLOT(onZoomExtentTriggered()));
+  connect(m_mapInfo, SIGNAL(toggled(bool)), SLOT(onInfoToggled(bool)));
+  connect(m_mapSelection, SIGNAL(toggled(bool)), SLOT(onSelectionToggled(bool)));
   connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
   connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
   connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
   connect(m_mapStopDraw, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
   connect(m_layerShowTable, SIGNAL(triggered()), SLOT(onLayerShowTableTriggered()));
+  connect(m_viewFullScreen, SIGNAL(toggled(bool)), SLOT(onFullScreenToggled(bool)));
 }

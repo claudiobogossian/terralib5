@@ -36,6 +36,7 @@
 #include <boost/noncopyable.hpp>
 
 // Qt
+#include <QtGui/QLineEdit>
 #include <QtGui/QMainWindow>
 
 // Forward declarations
@@ -111,6 +112,8 @@ namespace te
 
           void onLayerScatterTriggered();
 
+          void onMapSRIDTriggered();
+
           void onDrawTriggered();
 
           void onZoomInToggled(bool checked);
@@ -123,6 +126,10 @@ namespace te
 
           void onZoomExtentTriggered();
 
+          void onInfoToggled(bool checked);
+
+          void onSelectionToggled(bool checked);
+
           void onMeasureDistanceToggled(bool checked);
 
           void onMeasureAreaToggled(bool checked);
@@ -134,6 +141,8 @@ namespace te
           void showProgressDockWidget();
 
           void onLayerTableClose(te::qt::widgets::DataSetTableDockWidget* wid);
+
+          void onFullScreenToggled(bool checked);
 
         protected:
 
@@ -156,6 +165,8 @@ namespace te
           virtual void initMenus();
 
           virtual void initToolbars();
+
+          virtual void initStatusBar();
 
           virtual void initSlotsConnections();
 
@@ -209,6 +220,7 @@ namespace te
           QAction* m_fileExit;
           QAction* m_filePrint;
           QAction* m_filePrintPreview;
+          QAction* m_mapSRID;
           QAction* m_mapDraw;
           QAction* m_mapZoomIn;
           QAction* m_mapZoomOut;
@@ -217,13 +229,17 @@ namespace te
           QAction* m_mapZoomExtent;
           QAction* m_mapPreviousExtent;
           QAction* m_mapNextExtent;
+          QAction* m_mapInfo;
+          QAction* m_mapSelection;
           QAction* m_mapMeasureDistance;
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
           QAction* m_mapStopDraw;
 
           QWidget* m_centralwidget;
-          
+
+          QLineEdit* m_mapSRIDLineEdit;
+          QLineEdit* m_coordinateLineEdit;
 
           QMenuBar* m_menubar;
           //QMenu* m_editMenu;

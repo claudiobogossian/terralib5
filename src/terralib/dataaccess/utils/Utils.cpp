@@ -437,7 +437,10 @@ te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vecto
   ObjectId* oid = new ObjectId;
 
   for(std::size_t i = 0; i < names.size(); ++i)
-    oid->addValue(dataset->getValue(names[i]));
+  {
+    if(!dataset->isNull(i))
+      oid->addValue(dataset->getValue(names[i]));
+  }
 
   return oid;
 }

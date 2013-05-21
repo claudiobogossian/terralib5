@@ -69,7 +69,7 @@ namespace te
 
           ~ScatterDataWidget();
 
-          te::da::DataSet* getDataSet();
+          Ui::ScatterDataWidgetForm* getForm();
 
           te::qt::widgets::Scatter* getScatter();
 
@@ -79,7 +79,6 @@ namespace te
 
           std::auto_ptr<Ui::ScatterDataWidgetForm>  m_ui;       //!< THe widget Form.
           te::da::DataSet*                          m_dataSet;  //!< The dataset that will be used to generate the Scatter graph.
-          te::qt::widgets::Scatter*                 m_scatter;  //!< The scatter that will be configured by this widget.
       };
     } // end namespace widgets
   }   // end namespace qt

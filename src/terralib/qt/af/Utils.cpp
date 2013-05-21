@@ -436,9 +436,9 @@ void te::qt::af::CreateDefaultSettings()
   sett.setArrayIndex(5);
   sett.setValue("action", "Map.Zoom Extent");
   sett.setArrayIndex(6);
-  sett.setValue("action", "Map.Previous Extent");
+  sett.setValue("action", "Map.Info");
   sett.setArrayIndex(7);
-  sett.setValue("action", "Map.Next Extent");
+  sett.setValue("action", "Map.Selection");
   sett.endArray();
   sett.endGroup();
 

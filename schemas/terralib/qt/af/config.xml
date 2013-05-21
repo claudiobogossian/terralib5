@@ -18,5 +18,6 @@
     <DefaultTheme>tango</DefaultTheme>
   </IconThemeInfo>
   <ToolBarDefaultIconSize>24</ToolBarDefaultIconSize>
-
+  <DefaultSRID>4326</DefaultSRID>
+  <DefaultSelectionColor>#00FF00</DefaultSelectionColor>
 </Application>

@@ -102,6 +102,8 @@ namespace te
           */
           void promote(const std::vector<te::da::ObjectId*>& oids);
 
+          void orderByColumns(const std::vector<int>& cols);
+
           /*!
             \brief Returns true if promotion is enabled, false otherwise.
 
@@ -117,6 +119,8 @@ namespace te
             \note The caller of this method DOES NOT take the ownership of the pointer.
           */
           Promoter* getPromoter();
+
+          void showOIdsVisible(const bool& visible);
 
           /*!
             \name QAbstractTableModel re-implementation methods.
@@ -147,6 +151,8 @@ namespace te
           std::vector<size_t> m_pkeysColumns; //!< Primary key columns.
 
           Promoter* m_promoter;               //!< Promoter to be used.
+
+          bool m_OIdsVisible;                 //!< Oids icon visibility.
       };
     }
   }

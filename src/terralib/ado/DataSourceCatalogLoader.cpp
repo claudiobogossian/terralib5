@@ -26,6 +26,7 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/Constraint.h"
+#include "../dataaccess/dataset/CheckConstraint.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/ForeignKey.h"
@@ -44,8 +45,7 @@
 #include "Utils.h"
 
 // ADO
-#import "msado15.dll" \
-  no_namespace rename("EOF", "EndOfFile")
+#import "msado15.dll" no_namespace rename("EOF", "EndOfFile")
 #import "msadox.dll"
 
 inline void TESTHR(HRESULT x)
@@ -117,6 +117,7 @@ te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std:
     getPrimaryKey(dt);
     getUniqueKeys(dt);
     getIndexes(dt);
+    getCheckConstraints(dt);
   }
 
   dt->setFullLoaded(full);
@@ -595,7 +596,44 @@ void te::ado::DataSourceCatalogLoader::getIndexes(te::da::DataSetType* dt)
 
 void te::ado::DataSourceCatalogLoader::getCheckConstraints(te::da::DataSetType* dt)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _RecordsetPtr rs = NULL;
+
+  std::string dtName = dt->getName();
+
+  std::string str = "[" + dtName + "]";
+
+  try
+  {
+    HRESULT hr = S_OK;
+
+    _ConnectionPtr conn = m_t->getADOConnection();
+
+    TESTHR(rs.CreateInstance(__uuidof(Recordset)));
+
+    rs = conn->OpenSchema(adSchemaCheckConstraints);
+
+    while (!(rs->EndOfFile))
+    {
+      std::string constraintName = (LPCSTR)(bstr_t)(rs->Fields->GetItem("CONSTRAINT_NAME")->GetValue());
+      
+      if(constraintName.find(str) != std::string::npos)
+      {
+        te::da::CheckConstraint* cc = new te::da::CheckConstraint(constraintName, dt);
+        std::string checkClause = (LPCSTR)(bstr_t)(rs->Fields->GetItem("CHECK_CLAUSE")->GetValue());
+        cc->setExpression(checkClause);
+      }
+
+      rs->MoveNext();         
+    }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  // Clean up objects before exit.
+  if(rs && rs->State == adStateOpen)
+   rs->Close();
 }
 
 void te::ado::DataSourceCatalogLoader::getSequences(std::vector<std::string*>& sequences)
@@ -856,7 +894,37 @@ bool te::ado::DataSourceCatalogLoader::foreignkeyExists(const std::string& name)
 
 bool te::ado::DataSourceCatalogLoader::checkConstraintExists(const std::string& name)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _RecordsetPtr rs = NULL;
+
+  try
+  {
+    HRESULT hr = S_OK;
+
+    _ConnectionPtr conn = m_t->getADOConnection();
+
+    TESTHR(rs.CreateInstance(__uuidof(Recordset)));
+
+    rs = conn->OpenSchema(adSchemaCheckConstraints);
+
+    while(!(rs->EndOfFile))
+    {
+      std::string constraintName = (LPCSTR)(bstr_t)(rs->Fields->GetItem("CONSTRAINT_NAME")->GetValue());
+      if(constraintName == name)
+        return true;
+
+      rs->MoveNext();         
+    }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  // Clean up objects before exit.
+   if(rs && rs->State == adStateOpen)
+     rs->Close();
+
+   return false;
 }
 
 bool te::ado::DataSourceCatalogLoader::indexExists(const std::string& name)

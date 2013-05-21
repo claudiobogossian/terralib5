@@ -26,6 +26,7 @@
 //Terralib
 #include "ChartDisplay.h"
 #include "ChartDisplayWidget.h"
+#include "ChartStyle.h";
 #include "ChartProperties.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
@@ -39,18 +40,25 @@
 
 te::qt::widgets::ChartDisplayWidget::ChartDisplayWidget(QwtPlotSeriesItem* chart, int type, te::qt::widgets::ChartDisplay* display, QWidget* parent,  Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_display(display),
+    m_ui(new Ui::ChartDisplayWidgetForm),
     m_chart(chart),
     m_type(type),
-    m_ui(new Ui::ChartDisplayWidgetForm)
+    m_display(display)
 {
     m_ui->setupUi(this);
+
+  QGridLayout* layout = new QGridLayout(m_ui->m_plotFrame);
+  layout->addWidget(m_display);
 
 // connect signal and slots
   connect(m_ui->m_settingsToolButton, SIGNAL(clicked()), this, SLOT(onSettingsToolButtonnTriggered()));
 }
 
-te::qt::widgets::ChartDisplayWidget::~ChartDisplayWidget(){}
+te::qt::widgets::ChartDisplayWidget::~ChartDisplayWidget()
+{
+  delete m_chart;
+  delete m_display;
+}
 
 QwtPlotSeriesItem* te::qt::widgets::ChartDisplayWidget::getChart()
 {
@@ -60,8 +68,6 @@ QwtPlotSeriesItem* te::qt::widgets::ChartDisplayWidget::getChart()
 void te::qt::widgets::ChartDisplayWidget::setChart(QwtPlotSeriesItem* newChart)
 {
   m_chart = newChart;
-  m_chart->attach(m_display);
-  m_display->show();
   m_display->replot();
 }
 
@@ -73,10 +79,7 @@ te::qt::widgets::ChartDisplay* te::qt::widgets::ChartDisplayWidget::getDisplay()
 void te::qt::widgets::ChartDisplayWidget::setDisplay(te::qt::widgets::ChartDisplay* newDisplay)
 {
   m_display = newDisplay;
-  QGridLayout* layout = new QGridLayout(m_ui->m_plotFrame);
-  layout->addWidget(m_display);
-  m_chart->attach(m_display);
-  m_display->show();
+  this->parentWidget()->setWindowTitle(m_display->getStyle()->getTitle());
   m_display->replot();
 }
 

@@ -57,6 +57,7 @@ namespace te
         static const std::string sm_timeTZTypeName;               //!< The string literal representation for the time type
         static const std::string sm_timeStampTypeName;            //!< The string literal representation for the time stamp type
         static const std::string sm_timeStampTZTypeName;          //!< The string literal representation for the time stamp with time zone type
+        static const std::string sm_intervalTypeName;             //!< The string literal representation for the interval       
         static const std::string sm_floatTypeName;                //!< The string literal representation for the float type
         static const std::string sm_doubleTypeName;               //!< The string literal representation for the double type
         static const std::string sm_booleanTypeName;              //!< The string literal representation for the boolean type

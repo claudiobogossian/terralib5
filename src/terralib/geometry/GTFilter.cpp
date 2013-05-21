@@ -50,22 +50,27 @@ te::gm::GTFilter::GTFilter()
 
 bool te::gm::GTFilter::applyRansac(const std::string& transfName,
                                    const GTParameters& inputParams,
-                                   const double expectedDirectMapRmse,
-                                   const double expectedInverseMapRmse,
+                                   const double maxDirectMapError,
+                                   const double maxInverseMapError,
                                    const RansacItCounterT& maxIterations,
                                    const double& assurance,
                                    const bool enableMultiThread,
-                                   std::auto_ptr< GeometricTransformation >& outTransf,
-                                   const std::vector<double>& tiePointsWeights)
+                                   const std::vector<double>& tiePointsWeights,
+                                   std::vector< te::gm::GTParameters::TiePoint >& outTiePoints,
+                                   std::auto_ptr< GeometricTransformation >& outTransf
+                                   )
 {
-  if(expectedDirectMapRmse < 0)
+  if(maxDirectMapError < 0)
     return false;
 
-  if(expectedInverseMapRmse < 0)
+  if(maxInverseMapError < 0)
     return false;
 
   if((assurance < 0.0) || (assurance > 1.0))
     return false;
+  
+  outTiePoints.clear();
+  outTransf.reset();  
 
   // generating the tie-points accumulated probabilities map
   // with positive values between 0 and 1
@@ -130,29 +135,30 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
   
   const unsigned int procsNumber = te::common::GetPhysProcNumber();
   boost::mutex syncMutex;
-  double bestParamsDRMSE = expectedDirectMapRmse;
-  double bestParamsIRMSE = expectedInverseMapRmse;
+  double bestParamsMaxDMapError = maxDirectMapError;
+  double bestParamsMaxIMapError = maxInverseMapError;
   double bestParamsConvexHullArea = -1.0;
   bool returnValue = true;
   bool keepRunningFlag = true;
   
   ApplyRansacThreadEntryThreadParams baseThreadParams;
   baseThreadParams.m_inputGTParamsPtr = &inputParams;
-  baseThreadParams.m_expectedDirectMapRmse = expectedDirectMapRmse;
-  baseThreadParams.m_expectedInverseMapRmse = expectedInverseMapRmse;
+  baseThreadParams.m_maxDirectMapError = maxDirectMapError;
+  baseThreadParams.m_maxInverseMapError = maxInverseMapError;
   baseThreadParams.m_returnValuePtr = &returnValue;
   baseThreadParams.m_transfNamePtr = &transfName;
   baseThreadParams.m_mutexPtr = &syncMutex;
   baseThreadParams.m_keepRunningFlagPtr = &keepRunningFlag;
   baseThreadParams.m_tpsMapPtr = &tpsMap;
-  baseThreadParams.m_bestParamsDRMSEPtr = &bestParamsDRMSE;
-  baseThreadParams.m_bestParamsIRMSEPtr = &bestParamsIRMSE;
+  baseThreadParams.m_bestParamsMaxDMapErrorPtr = &bestParamsMaxDMapError;
+  baseThreadParams.m_bestParamsMaxIMapErrorPtr = &bestParamsMaxIMapError;
   baseThreadParams.m_assurance = assurance;
   baseThreadParams.m_bestParamsConvexHullAreaPtr = &bestParamsConvexHullArea;
   baseThreadParams.m_bestTransformationPtrPtr = &bestTransformationPtr;
   baseThreadParams.m_maxIterations = maxIterations;
   baseThreadParams.m_maxIterationsDivFactor = enableMultiThread ?
     ((RansacItCounterT)procsNumber) : 1;
+  baseThreadParams.m_bestTiePoinsPtr = &outTiePoints;
 
   // Calling the ransac thread entry
 
@@ -225,8 +231,8 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
   // external globals
   
   const RansacItCounterT& maxIterationsDivFactor = paramsPtr->m_maxIterationsDivFactor;
-  const double& expectedDirectMapRmse = paramsPtr->m_expectedDirectMapRmse;
-  const double& expectedInverseMapRmse = paramsPtr->m_expectedInverseMapRmse;
+  const double& maxDirectMapError = paramsPtr->m_maxDirectMapError;
+  const double& maxInverseMapError = paramsPtr->m_maxInverseMapError;
   bool& keepRunningFlag = (*(paramsPtr->m_keepRunningFlagPtr));    
   const double& assurance = paramsPtr->m_assurance;
   
@@ -247,9 +253,10 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
   // best parameters found by this thread
 
   GTParameters bestParams;
-  double bestParamsDRMSE = paramsPtr->m_expectedDirectMapRmse;
-  double bestParamsIRMSE = paramsPtr->m_expectedInverseMapRmse;
+  double bestParamsMaxDMapErrorPtr = paramsPtr->m_maxDirectMapError;
+  double bestParamsMaxIMapErrorPtr = paramsPtr->m_maxInverseMapError;
   double bestParamsConvexHullArea = -1.0;
+  std::vector< te::gm::GTParameters::TiePoint > bestTiePoins;
   
   // variables used by the ransac loop
   
@@ -264,17 +271,29 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
     ) / maxIterationsDivFactor
     :
     ( paramsPtr->m_maxIterations / maxIterationsDivFactor );
-  const RansacItCounterT fixedMaxConsecutiveInvalidIterations = std::max( 
-    (RansacItCounterT)1,
-    fixedMaxIterations / 2 );
+  const RansacItCounterT fixedMaxConsecutiveInvalidIterations = 
+    std::max( 
+      (RansacItCounterT)1, 
+      (
+        ( assurance > 0.0 )
+        ?
+        (
+          (RansacItCounterT)( 
+            ((long double)fixedMaxIterations) 
+            * 
+            ((long double)assurance) 
+          )
+        )
+        :
+        ( fixedMaxIterations / 2 )
+      )
+    );
     
   GTParameters consensusSetParams;  
+  std::vector< te::gm::GTParameters::TiePoint > consensusSetTiePoints;
   consensusSetParams.m_tiePoints.reserve( tiePoints.size() );
-  
-//  double consensusSetMaxDMapErr = 0;
-//  double consensusSetMaxIMapErr = 0;
-  double consensusSetDRMSE = 0;
-  double consensusSetIRMSE = 0;
+  double consensusSetMaxDMapError = 0;
+  double consensusSetMaxIMapError = 0;
   unsigned int consensusSetSize = 0;
   double consensusSetConvexHullArea = 0.0;
   std::vector< Coord2D > consensusSetPt1ConvexHullPoits;
@@ -357,9 +376,9 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
       // finding those tie-points in agreement with the generated
       // consensus basic transformation
 
-      consensusSetParams.m_tiePoints.clear();
-      consensusSetDRMSE = 0;
-      consensusSetIRMSE = 0;
+      consensusSetTiePoints.clear();
+      consensusSetMaxDMapError = 0;
+      consensusSetMaxIMapError = 0;
 
       for( inputTpIdx = 0 ; inputTpIdx < inputTPNmb ; ++inputTpIdx )
       {
@@ -368,39 +387,32 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
         tiePointDMapErr = bestTransfPtr->getDirectMappingError( curTP, consensusSetParams );
         tiePointIMapErr = bestTransfPtr->getInverseMappingError( curTP, consensusSetParams );
 
-        if( ( tiePointDMapErr <= expectedDirectMapRmse ) && 
-          ( tiePointIMapErr <= expectedInverseMapRmse ) )
+        if( ( tiePointDMapErr <= maxDirectMapError ) && 
+          ( tiePointIMapErr <= maxInverseMapError ) )
         {
-          consensusSetParams.m_tiePoints.push_back( curTP );
-          consensusSetDRMSE += ( tiePointDMapErr * tiePointDMapErr );
-          consensusSetIRMSE += ( tiePointIMapErr * tiePointIMapErr );
-//          if( tiePointDMapErr > consensusSetMaxDMapErr )
-//            consensusSetMaxDMapErr = tiePointDMapErr;
-//          if( tiePointIMapErr > consensusSetMaxIMapErr )
-//            consensusSetMaxIMapErr = tiePointIMapErr;              
+          consensusSetTiePoints.push_back( curTP );
+          
+          if( tiePointDMapErr > consensusSetMaxDMapError ) 
+            consensusSetMaxDMapError = tiePointDMapErr;
+          if( tiePointIMapErr > consensusSetMaxIMapError ) 
+            consensusSetMaxIMapError = tiePointIMapErr;
         }
       }
       
-      consensusSetSize = (unsigned int)consensusSetParams.m_tiePoints.size();
-      consensusSetDRMSE = sqrt( consensusSetDRMSE / ((double)consensusSetSize) );
-      consensusSetIRMSE = sqrt( consensusSetIRMSE / ((double)consensusSetSize) );
+      consensusSetSize = (unsigned int)consensusSetTiePoints.size();
       consensusSetConvexHullArea = getPt1ConvexHullArea( 
-        consensusSetParams.m_tiePoints );
+        consensusSetTiePoints );
       
       /* Is this an acceptable consensus set ?? */
       
       if( 
           ( consensusSetSize >= reqTPsNmb ) 
           &&
-          ( consensusSetDRMSE <= expectedDirectMapRmse ) 
-          &&
-          ( consensusSetIRMSE <= expectedInverseMapRmse ) 
-          &&
           (
-            ( consensusSetSize > bestParams.m_tiePoints.size() )
+            ( consensusSetSize > bestTiePoins.size() )
             ||
             (
-              ( consensusSetSize == bestParams.m_tiePoints.size() )
+              ( consensusSetSize == bestTiePoins.size() )
               &&
               (
                 ( consensusSetConvexHullArea > bestParamsConvexHullArea )
@@ -409,9 +421,9 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
                   ( consensusSetConvexHullArea == bestParamsConvexHullArea )
                   &&
                   (
-                    ( bestParamsDRMSE > consensusSetDRMSE )
+                    ( bestParamsMaxDMapErrorPtr > consensusSetMaxDMapError )
                     &&
-                    ( bestParamsIRMSE > consensusSetIRMSE )
+                    ( bestParamsMaxIMapErrorPtr > consensusSetMaxIMapError )
                   )
                 )
               )
@@ -420,9 +432,10 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
         )
       {
         bestParams = consensusSetParams;
-        bestParamsDRMSE = consensusSetDRMSE;
-        bestParamsIRMSE = consensusSetIRMSE;
+        bestParamsMaxDMapErrorPtr = consensusSetMaxDMapError;
+        bestParamsMaxIMapErrorPtr = consensusSetMaxIMapError;
         bestParamsConvexHullArea = consensusSetConvexHullArea;
+        bestTiePoins = consensusSetTiePoints;
         
         consecutiveInvalidIterations = 0;
       }
@@ -440,11 +453,11 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
     
     if( useDynamicMaxIterations && ( currentIteration != 0 ) )
     {
-      if( bestParams.m_tiePoints.size() == inputTPNmb )
+      if( bestTiePoins.size() == inputTPNmb )
       {
         dynamicMaxIterations = 0;
       }
-      else
+      else if( ! bestTiePoins.empty() )
       {
         dynamicMaxIterationsEstimation =
           (
@@ -457,7 +470,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
                   - 
                   std::pow(
                     (  
-                      ((long double)bestParams.m_tiePoints.size() )
+                      ((long double)bestTiePoins.size() )
                       /
                       ((long double)inputTPNmb)
                     )
@@ -479,31 +492,44 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
           :
           ( dynamicMaxIterations - ( ( dynamicMaxIterations - dynamicMaxIterationsEstimation ) / 2 ) );
           
-        dynamicMaxConsecutiveInvalidIterations = std::max( (RansacItCounterT)1, dynamicMaxIterations / 2 );
+        dynamicMaxConsecutiveInvalidIterations =
+          std::max( 
+            (RansacItCounterT)1, 
+            (
+              ( assurance > 0.0 )
+              ?
+              (
+                (RansacItCounterT)( 
+                  ((long double)dynamicMaxIterations) 
+                  * 
+                  ((long double)assurance) 
+                )
+              )
+              :
+              ( dynamicMaxIterations / 2 )
+            )
+          );        
       }
     }
     
     ++currentIteration;
   }
   
-  // Generating the smoothed transformation
+  // Comparing with the global best transformation
     
   if( bestTransfPtr->initialize( bestParams ) )
   {
-    bestParamsDRMSE = bestTransfPtr->getDirectMapRMSE();
-    bestParamsIRMSE = bestTransfPtr->getInverseMapRMSE();
-    
     paramsPtr->m_mutexPtr->lock();
     
     if(
         ( paramsPtr->m_bestTransformationPtrPtr->get() == 0 )
         ||
         (
-          ( bestTransfPtr->getParameters().m_tiePoints.size() >
+          ( bestTiePoins.size() >
             (*paramsPtr->m_bestTransformationPtrPtr)->getParameters().m_tiePoints.size() )
           ||
           (
-            ( bestTransfPtr->getParameters().m_tiePoints.size() ==
+            ( bestTiePoins.size() ==
               (*paramsPtr->m_bestTransformationPtrPtr)->getParameters().m_tiePoints.size() )
             &&
             (
@@ -513,9 +539,9 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
                 ( bestParamsConvexHullArea == (*paramsPtr->m_bestParamsConvexHullAreaPtr) )
                 &&
                 (
-                  ( bestParamsDRMSE < (*paramsPtr->m_bestParamsDRMSEPtr) )
+                  ( bestParamsMaxDMapErrorPtr < (*paramsPtr->m_bestParamsMaxDMapErrorPtr) )
                   &&
-                  ( bestParamsIRMSE < (*paramsPtr->m_bestParamsIRMSEPtr) )
+                  ( bestParamsMaxIMapErrorPtr < (*paramsPtr->m_bestParamsMaxIMapErrorPtr) )
                 )
               )
             )
@@ -525,9 +551,10 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
     {
       (*paramsPtr->m_bestTransformationPtrPtr).reset( 
         bestTransfPtr.release() );
-      (*paramsPtr->m_bestParamsDRMSEPtr) = bestParamsDRMSE;
-      (*paramsPtr->m_bestParamsIRMSEPtr) = bestParamsIRMSE;
+      (*paramsPtr->m_bestParamsMaxDMapErrorPtr) = bestParamsMaxDMapErrorPtr;
+      (*paramsPtr->m_bestParamsMaxIMapErrorPtr) = bestParamsMaxIMapErrorPtr;
       (*paramsPtr->m_bestParamsConvexHullAreaPtr) = bestParamsConvexHullArea;
+      (*paramsPtr->m_bestTiePoinsPtr) = bestTiePoins;
     }
       
     paramsPtr->m_mutexPtr->unlock();

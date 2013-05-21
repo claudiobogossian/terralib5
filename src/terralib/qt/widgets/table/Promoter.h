@@ -82,6 +82,8 @@ namespace te
           */
           void resetPromotion();
 
+          void cleanLogRowsAndProcessKeys();
+
           /*!
             \brief Proccess primary keys and stores it.
 
@@ -111,6 +113,8 @@ namespace te
             \param oids Set of object ids to be promoted.
           */
           void promote(const std::vector<te::da::ObjectId*>& oids);
+
+          void sort(te::da::DataSet* dset, const std::vector<int>& cols);
 
           /*!
             \brief Given an object id returns its row.

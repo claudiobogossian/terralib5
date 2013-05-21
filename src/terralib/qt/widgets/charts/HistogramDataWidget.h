@@ -71,7 +71,7 @@ namespace te
 
           ~HistogramDataWidget();
 
-          te::da::DataSet* getDataSet();
+          Ui::HistogramDataWidgetForm* getForm();
 
           te::qt::widgets::Histogram* getHistogram();
 
@@ -81,9 +81,8 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::HistogramDataWidgetForm>  m_ui;        //!< The widget form.
-          te::da::DataSet*                            m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
-          te::qt::widgets::Histogram*                 m_histogram; //!< The histogram that will be configured by this widget.
+          std::auto_ptr<Ui::HistogramDataWidgetForm>  m_ui;       //!< The widget form.
+          std::unique_ptr<te::da::DataSet>            m_dataSet;  //!< The dataset that will be used to generate the histogram graph.
        };
     } // end namespace widgets
   }   // end namespace qt
