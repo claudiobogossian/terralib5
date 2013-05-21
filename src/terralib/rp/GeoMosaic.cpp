@@ -172,6 +172,8 @@ namespace te
       double mosaicURX = -1.0 * DBL_MAX; // world coords
       double mosaicURY = -1.0 * DBL_MAX; // world coords
       int mosaicSRID = 0;
+      std::vector< double > mosaicBandsRangeMin;
+      std::vector< double > mosaicBandsRangeMax;       
       te::rst::BandProperty mosaicBaseBandProperties( 0, 0, "" );
       std::vector< te::gm::Polygon > rastersBBoxes; // all rasters bounding boxes (under the first raster world coords.
       std::vector< te::rst::Grid > rastersGrids; //all rasters original grids under their original SRSs
@@ -303,6 +305,11 @@ namespace te
       te::rst::Raster* outputRasterPtr = 0;
 
       {
+        mosaicBandsRangeMin.resize( 
+          m_inputParameters.m_inputRastersBands[ 0 ].size(), 0 );
+        mosaicBandsRangeMax.resize( 
+          m_inputParameters.m_inputRastersBands[ 0 ].size(), 0 );           
+        
         std::vector< te::rst::BandProperty* > bandsProperties;
         for( std::vector< unsigned int >::size_type bandIdx = 0 ;  bandIdx <
           m_inputParameters.m_inputRastersBands[ 0 ].size() ; ++bandIdx )
@@ -310,6 +317,10 @@ namespace te
           bandsProperties.push_back( new te::rst::BandProperty( mosaicBaseBandProperties ) );
           bandsProperties[ bandIdx ]->m_colorInterp = te::rst::GrayIdxCInt;
           bandsProperties[ bandIdx ]->m_noDataValue = m_inputParameters.m_noDataValue;
+          
+          te::rst::GetDataTypeRanges( bandsProperties[ bandIdx ]->m_type,
+            mosaicBandsRangeMin[ bandIdx ],
+            mosaicBandsRangeMax[ bandIdx ]);           
         }
 
         te::rst::Grid* outputGrid = new te::rst::Grid( mosaicXResolution,
@@ -623,6 +634,26 @@ namespace te
 
           if( overlappedResult.get() )
           {
+            te::rp::Blender blenderInstance;
+
+            TERP_TRUE_OR_RETURN_FALSE( blenderInstance.initialize(
+              outputRaster,
+              outputRasterBands,
+              *inputRasterPtr,
+              m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
+              m_inputParameters.m_blendMethod,
+              te::rst::Interpolator::NearestNeighbor,
+              m_inputParameters.m_interpMethod,
+              m_inputParameters.m_noDataValue,
+              m_inputParameters.m_forceInputNoDataValue,
+              dummyRasterOffsets,
+              dummyRasterScales,
+              currentRasterBandsOffsets,
+              currentRasterBandsScales,
+              mosaicBBoxesUnionElementPtr,
+              0,
+              0 ), "Blender initiazing error" );            
+            
             for( unsigned int overlappedResultIdx = 0 ; overlappedResultIdx <
               overlappedResult->getNumGeometries() ; ++overlappedResultIdx )
             {
@@ -638,61 +669,43 @@ namespace te
               TERP_DEBUG_TRUE_OR_THROW(overlappedResultUnderCurrentSRIDElementPtr,
                 "Invalid pointer" );
 
-              te::rp::Blender blenderInstance;
+              te::rst::PolygonIterator< double > itB = te::rst::PolygonIterator< double >::begin( 
+                outputRasterPtr->getBand( 0 ),
+                (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) );
+              const te::rst::PolygonIterator< double > itE = te::rst::PolygonIterator< double >::end( 
+                outputRasterPtr->getBand( 0 ),
+                (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) );
+                
+              std::vector< double > blendedValues( outputRasterPtr->getNumberOfBands() );
+              unsigned int outputRow = 0;
+              unsigned int outputCol = 0;
+              const unsigned int nBands = outputRasterPtr->getNumberOfBands();
+              unsigned int outBandIdx = 0;
+              te::rst::Raster& outputRaster = *outputRasterPtr;
 
-              TERP_TRUE_OR_RETURN_FALSE( blenderInstance.initialize(
-                outputRaster,
-                outputRasterBands,
-                *inputRasterPtr,
-                m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
-                m_inputParameters.m_blendMethod,
-                te::rst::Interpolator::NearestNeighbor,
-                m_inputParameters.m_interpMethod,
-                m_inputParameters.m_noDataValue,
-                m_inputParameters.m_forceInputNoDataValue,
-                dummyRasterOffsets,
-                dummyRasterScales,
-                currentRasterBandsOffsets,
-                currentRasterBandsScales,
-                mosaicBBoxesUnionElementPtr,
-                0,
-                0 ), "Blender initiazing error" );
-
-              for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
-                m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ;
-                ++inputRastersBandsIdx )
+              while( itB != itE )
               {
-                te::rst::Band& outputBand = (*outputRaster.getBand( inputRastersBandsIdx ));
+                outputRow = itB.getRow();
+                outputCol = itB.getCol();
 
-                double outputBandRangeMin = 0;
-                double outputBandRangeMax = 0;
-                te::rst::GetDataTypeRanges( outputBand.getProperty()->m_type,
-                  outputBandRangeMin, outputBandRangeMax );
-
-                unsigned int outputRow = 0;
-                unsigned int outputCol = 0;
-                double blendedValue = 0;
-
-                te::rst::PolygonIterator< double > itB = te::rst::PolygonIterator< double >::begin( &outputBand,
-                  (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) );
-                const te::rst::PolygonIterator< double > itE = te::rst::PolygonIterator< double >::end( &outputBand,
-                  (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) );
-
-                while( itB != itE )
+                blenderInstance.getBlendedValues( outputRow, outputCol, blendedValues );
+                
+                for( outBandIdx = 0 ; outBandIdx < nBands ; ++outBandIdx )
                 {
-                  outputRow = itB.getRow();
-                  outputCol = itB.getCol();
+                  double& blendedValue = blendedValues[ outBandIdx ];
+                  
+                  if( blendedValue != m_inputParameters.m_noDataValue )
+                  {
+                    blendedValue = std::max( blendedValue , 
+                      mosaicBandsRangeMin[ outBandIdx ] );
+                    blendedValue = std::min( blendedValue , 
+                      mosaicBandsRangeMax[ outBandIdx ] );
 
-                  blenderInstance.getBlendedValue( outputRow, outputCol, inputRastersBandsIdx,
-                    blendedValue );
-
-                  blendedValue = std::max( blendedValue, outputBandRangeMin );
-                  blendedValue = std::min( blendedValue, outputBandRangeMax );
-
-                  outputBand.setValue( outputCol, outputRow, blendedValue );
-
-                  ++itB;
+                    outputRaster.setValue( outputCol, outputRow, blendedValue, outBandIdx );
+                  }
                 }
+
+                ++itB;
               }
             }
           }

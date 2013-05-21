@@ -110,15 +110,14 @@ namespace te
           \brief Blend a pixel value using the current parameters.
           \param line Line (raster 1 reference).
           \param col Column (raster 1 reference).
-          \param rasterChannelsVecsIdx Vector index (the index to search the correct band/channel for each input raster from raster1ChannelsVec and raster2ChannelsVec).
-          \param value Blended value.
+          \param values Blended values for each band.
           \note The caller of this method must be aware that the returned blended value may be outside the original input rasters valid values range.
         */
-        inline void getBlendedValue( const double& line, const double& col, 
-          const unsigned int& rasterChannelsVecsIdx , double& value )
+        inline void getBlendedValues( const double& line, const double& col, 
+          std::vector< double >& values )
         {
           TERP_DEBUG_TRUE_OR_THROW( m_blendFuncPtr, "Invalid blend function pointer" );
-          (this->*m_blendFuncPtr)( line, col, rasterChannelsVecsIdx, value );
+          (this->*m_blendFuncPtr)( line, col, values );
         };
 
       protected:
@@ -127,11 +126,10 @@ namespace te
           \brief Type definition for the a bleding function pointer.
           \param line Raster 1 Line.
           \param col Raster 1 Column.
-          \param rasterChannelsVecsIdx An index from the internal raster bands vector.
-          \param value Interpolated value.
+          \param values Blended values for each band.
         */      
         typedef void (Blender::*BlendFunctPtr)( const double& line, 
-          const double& col, const unsigned int& rasterChannelsVecsIdx, double& value );         
+          const double& col, std::vector< double >& values );         
 
         BlendMethod m_blendMethod; //!< The blend method to apply.
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
@@ -166,6 +164,8 @@ namespace te
         double m_noBlendMethodImp_Point2Line;
         double m_noBlendMethodImp_Point2Col;        
         std::complex< double > m_noBlendMethodImp_cValue;
+        double m_noBlendMethodImp_Value;
+        unsigned int m_noBlendMethodImp_BandIdx;
         
         /*! \brief Reset the instance to its initial default state. */
         void initState();
@@ -177,11 +177,10 @@ namespace te
           \brief Implementation for NoBlendMethod.
           \param line Raster 1 Line.
           \param col Raster 1 Column.
-          \param rasterChannelsVecsIdx Vector index (the index to search the correct band/channel for each input raster from raster1ChannelsVec and raster2ChannelsVec).
-          \param value Blended value.
+          \param values Blended values for each band.
         */
         void noBlendMethodImp( const double& line1, const double& col1,
-          const unsigned int& rasterChannelsVecsIdx, double& value );        
+          std::vector< double >& values );        
 
     };
 

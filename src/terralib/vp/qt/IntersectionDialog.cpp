@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/vp/IntersectionDialog.cpp
+  \file terralib/vp/qt/IntersectionDialog.cpp
 
   \brief A dialog for intersection operation
 */
@@ -30,6 +30,7 @@
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../core/Exception.h"
+#include "../core/Intersection.h"
 #include "IntersectionDialog.h"
 #include "LayerTreeModel.h"
 #include "ui_IntersectionDialogForm.h"
@@ -101,7 +102,34 @@ void te::vp::IntersectionDialog::onHelpPushButtonClicked()
 
 void te::vp::IntersectionDialog::onOkPushButtonClicked()
 {
-  QMessageBox::information(this, "Intersection Operation", "Under development");
+  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > selected;
+
+  selected = m_model->getSelected();
+
+  if(selected.size() < 2)
+  {
+    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("At least two layers are necessary for an intersection!"));
+    return;
+  }
+
+  std::string newLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+  if(newLayerName.empty())
+  {
+    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("It is necessary a name for the new layer"));
+    return;
+  }
+
+  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+
+  try
+  {
+    resultPair = te::vp::Intersect(newLayerName, m_model->getSelected());
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, TR_VP("Intersection Operation"), e.what());
+  }
 }
 
 void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
