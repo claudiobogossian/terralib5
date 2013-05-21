@@ -231,11 +231,11 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
      std::map<double,  unsigned int>* histogramValues = new std::map<double,  unsigned int>;
 
-     int minValue, maxValue;
-     minValue = std::numeric_limits<int>::max();
-     maxValue = -std::numeric_limits<int>::max();
+     double minValue, maxValue;
+     minValue = std::numeric_limits<double>::max();
+     maxValue = -std::numeric_limits<double>::max();
 
-     std::vector<int> intervals;
+     std::vector<double> intervals;
 
     te::common::TaskProgress task;
     task.setTotalSteps((dataset->getNumProperties()) * 2);
@@ -250,7 +250,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
        if(maxValue<dataset->getDouble(propId))
          maxValue = dataset->getDouble(propId);
 
-       int interval = maxValue - minValue;
+       double interval = maxValue - minValue;
 
        //Adjusting the interval to the user-defined number of slices.
        newHistogram->setInterval(interval/slices);
@@ -258,7 +258,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      }
 
      //Adjusting the histogram's intervals
-     for (int i = minValue; i <(maxValue+newHistogram->getInterval()); i+=newHistogram->getInterval())
+     for (double i = minValue; i <(maxValue+newHistogram->getInterval()); i+=newHistogram->getInterval())
      {
        intervals.push_back(i);
      }
