@@ -155,7 +155,7 @@ te::da::DataSet* te::ogr::DataSourceTransactor::query(const te::da::Select& /*q*
                                                       te::common::TraverseType /*travType*/,
                                                       te::common::AccessPolicy /*rwRole*/)
 {
-  return 0; // OGR Library not supports sql dialect
+  throw(te::common::Exception(TR_OGR("Not implemented yet!")));
 }
 
 te::da::DataSet* te::ogr::DataSourceTransactor::query(const std::string& query, 
