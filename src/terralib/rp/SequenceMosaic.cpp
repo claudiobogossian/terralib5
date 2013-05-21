@@ -300,6 +300,16 @@ namespace te
             bandsProperties.push_back( new te::rst::BandProperty( *inBandPropPtr ) );
             bandsProperties[ inputRastersBandsIdx ]->m_colorInterp = te::rst::GrayIdxCInt;
             bandsProperties[ inputRastersBandsIdx ]->m_noDataValue = m_inputParameters.m_noDataValue;
+            bandsProperties[ inputRastersBandsIdx ]->m_blkw = (unsigned int)
+              std::ceil( ((double)inputRasterPtr->getNumberOfColumns()) / 4.0 );
+            bandsProperties[ inputRastersBandsIdx ]->m_blkh = (unsigned int)
+              std::ceil( ((double)inputRasterPtr->getNumberOfRows()) / 4.0 );
+            bandsProperties[ inputRastersBandsIdx ]->m_nblocksx = (unsigned int)
+              std::ceil( ((double)inputRasterPtr->getNumberOfColumns()) /
+              ((double)bandsProperties[ inputRastersBandsIdx ]->m_blkw ) );
+            bandsProperties[ inputRastersBandsIdx ]->m_nblocksy = (unsigned int)
+              std::ceil( ((double)inputRasterPtr->getNumberOfRows()) /
+              ((double)bandsProperties[ inputRastersBandsIdx ]->m_blkh ) );              
             
             mosaicBandProperties.push_back( *bandsProperties[ inputRastersBandsIdx ] );
             

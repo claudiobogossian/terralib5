@@ -281,7 +281,15 @@ void TsExpansibleRaster::addBottomLinesTest()
   CPPUNIT_ASSERT( readValue == 1.0 );    
   
   writeValues( rasterInstance );
-  testValues( rasterInstance );    
+  testValues( rasterInstance );   
+  
+  rasterInstance.addBottomLines( 10 );
+  writeValues( rasterInstance );
+  testValues( rasterInstance );   
+
+  rasterInstance.addBottomLines( 1 );
+  writeValues( rasterInstance );
+  testValues( rasterInstance );   
 }
 
 void TsExpansibleRaster::addLeftColumnsTest()
@@ -403,6 +411,14 @@ void TsExpansibleRaster::addRightColumnsTest()
   rasterInstance.getValue( 14, 5, readValue, 1 );
   CPPUNIT_ASSERT( readValue == 1.0 );    
   
+  writeValues( rasterInstance );
+  testValues( rasterInstance );    
+  
+  rasterInstance.addRightColumns( 10 );
+  writeValues( rasterInstance );
+  testValues( rasterInstance );
+  
+  rasterInstance.addRightColumns( 1 );
   writeValues( rasterInstance );
   testValues( rasterInstance );    
 }
