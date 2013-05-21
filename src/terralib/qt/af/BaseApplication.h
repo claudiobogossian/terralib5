@@ -127,6 +127,8 @@ namespace te
 
           void onInfoToggled(bool checked);
 
+          void onSelectionToggled(bool checked);
+
           void onMeasureDistanceToggled(bool checked);
 
           void onMeasureAreaToggled(bool checked);
@@ -225,6 +227,7 @@ namespace te
           QAction* m_mapPreviousExtent;
           QAction* m_mapNextExtent;
           QAction* m_mapInfo;
+          QAction* m_mapSelection;
           QAction* m_mapMeasureDistance;
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
