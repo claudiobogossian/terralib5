@@ -205,6 +205,11 @@ namespace te
         const te::da::ObjectIdSet* getSelected() const;
 
         /*!
+          \brief It clears the selected group of this Layer.
+        */
+        void clearSelected();
+
+        /*!
           \brief It returns the layer schema.
 
           \return The Layer schema.
