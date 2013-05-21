@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/progress/TaskProgress.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -79,87 +80,136 @@ double te::qt::widgets::getDouble(te::dt::DateTime* dateTime)
 te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* dataset, int propX, int propY)
 {
   te::qt::widgets::Scatter* newScatter = new te::qt::widgets::Scatter();
-  int xType = dataset->getPropertyDataType(propX);
-  int yType = dataset->getPropertyDataType(propY);
 
-  while(dataset->moveNext())
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
+  if(rpos != std::string::npos)
   {
-    double x_doubleValue = 0.;
-    double y_doubleValue = 0.;
+    std::unique_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));  
 
-    //====== treat the X value
-    if(xType == te::dt::STRING_TYPE)
+     unsigned int nCol = raster->getNumberOfColumns(); 
+     unsigned int nLin = raster->getNumberOfRows();
+
+    te::common::TaskProgress task;
+    task.setTotalSteps(nCol * nLin);
+    task.setMessage("Scatter creation");
+
+      for (unsigned int c=0; c < nCol; ++c)
+      {
+        for (unsigned int r=0;  r <nLin; ++r)
+        {
+              double val1, val2;
+
+              raster->getValue(c, r, val1, propX);
+              raster->getValue(c, r, val2, propY);
+
+              newScatter->addX(val1);
+              newScatter->addY(val2);
+
+              //calculate range
+              if(val1<newScatter->getMinX())
+                newScatter->setMinX(val1);
+              if(val1>newScatter->getMaxX())
+                newScatter->setMaxX(val1);
+
+              if(val2<newScatter->getMinY())
+                newScatter->setMinY(val2);
+              if(val2>newScatter->getMaxY())
+                newScatter->setMaxY(val2);
+
+              task.pulse();
+        }
+      }
+  }
+  else
+  {
+    int xType = dataset->getPropertyDataType(propX);
+    int yType = dataset->getPropertyDataType(propY);
+
+    te::common::TaskProgress task;
+    task.setTotalSteps(dataset->getNumProperties());
+    task.setMessage("Scatter creation");
+
+    while(dataset->moveNext())
     {
-      std::string sValue;
-      if(dataset->isNull(propX))
-        sValue = " null value";
-      else
-        sValue = dataset->getString(propX);
-      x_doubleValue = getDouble(sValue, newScatter->getXString());  
-    }
-    else if((xType >= te::dt::INT16_TYPE && xType <= te::dt::UINT64_TYPE) || 
-      xType == te::dt::FLOAT_TYPE || xType == te::dt::DOUBLE_TYPE || 
-      xType == te::dt::NUMERIC_TYPE)
-    {
-      if(dataset->isNull(propX))
-        continue;
 
-      x_doubleValue = dataset->getDouble(propX);
-    }
-    else if(xType == te::dt::DATETIME_TYPE)
-    {
-      if(dataset->isNull(propX))
-        continue;
+      double x_doubleValue = 0.;
+      double y_doubleValue = 0.;
 
-      te::dt::DateTime* dateTime = dataset->getDateTime(propX);
-      x_doubleValue = getDouble(dateTime);
-      delete dateTime;
-    }
+      //====== treat the X value
+      if(xType == te::dt::STRING_TYPE)
+      {
+        std::string sValue;
+        if(dataset->isNull(propX))
+          sValue = " null value";
+        else
+          sValue = dataset->getString(propX);
+        x_doubleValue = getDouble(sValue, newScatter->getXString());  
+      }
+      else if((xType >= te::dt::INT16_TYPE && xType <= te::dt::UINT64_TYPE) || 
+        xType == te::dt::FLOAT_TYPE || xType == te::dt::DOUBLE_TYPE || 
+        xType == te::dt::NUMERIC_TYPE)
+      {
+        if(dataset->isNull(propX))
+          continue;
 
-    //======treat the Y value
-    if(yType == te::dt::STRING_TYPE)
-    {
-      std::string sValue;
-      if(dataset->isNull(propY) == false)
-        sValue = dataset->getString(propY);
-      else
-        sValue = " null value";
-      y_doubleValue = getDouble(sValue, newScatter->getYString());   
-    }
-    else if((yType >= te::dt::INT16_TYPE && yType <= te::dt::UINT64_TYPE) || 
-      yType == te::dt::FLOAT_TYPE || yType == te::dt::DOUBLE_TYPE || 
-      yType == te::dt::NUMERIC_TYPE)
-    {
-      if(dataset->isNull(propY))
-        continue;
-      y_doubleValue = dataset->getDouble(propY);
-    }
-    else if(yType == te::dt::DATETIME_TYPE)
-    {
-      if(dataset->isNull(propY))
-        continue;
+        x_doubleValue = dataset->getDouble(propX);
+      }
+      else if(xType == te::dt::DATETIME_TYPE)
+      {
+        if(dataset->isNull(propX))
+          continue;
 
-      te::dt::DateTime* dateTime = dataset->getDateTime(propY);
-      y_doubleValue = getDouble(dateTime);
-      delete dateTime;
-    }
+        te::dt::DateTime* dateTime = dataset->getDateTime(propX);
+        x_doubleValue = getDouble(dateTime);
+        delete dateTime;
+      }
 
-    //insert values into the vectors
+      //======treat the Y value
+      if(yType == te::dt::STRING_TYPE)
+      {
+        std::string sValue;
+        if(dataset->isNull(propY) == false)
+          sValue = dataset->getString(propY);
+        else
+          sValue = " null value";
+        y_doubleValue = getDouble(sValue, newScatter->getYString());   
+      }
+      else if((yType >= te::dt::INT16_TYPE && yType <= te::dt::UINT64_TYPE) || 
+        yType == te::dt::FLOAT_TYPE || yType == te::dt::DOUBLE_TYPE || 
+        yType == te::dt::NUMERIC_TYPE)
+      {
+        if(dataset->isNull(propY))
+          continue;
+        y_doubleValue = dataset->getDouble(propY);
+      }
+      else if(yType == te::dt::DATETIME_TYPE)
+      {
+        if(dataset->isNull(propY))
+          continue;
 
-    newScatter->addX(x_doubleValue);
-    newScatter->addY(y_doubleValue);
+        te::dt::DateTime* dateTime = dataset->getDateTime(propY);
+        y_doubleValue = getDouble(dateTime);
+        delete dateTime;
+      }
 
-    //calculate range
-    if(x_doubleValue<newScatter->getMinX())
-      newScatter->setMinX(x_doubleValue);
-    if(x_doubleValue>newScatter->getMaxX())
-      newScatter->setMaxX(x_doubleValue);
+      //insert values into the vectors
 
-    if(y_doubleValue<newScatter->getMinY())
-      newScatter->setMinY(y_doubleValue);
-    if(y_doubleValue>newScatter->getMaxY())
-      newScatter->setMaxY(y_doubleValue);
-  } //end of the data set
+      newScatter->addX(x_doubleValue);
+      newScatter->addY(y_doubleValue);
+
+      //calculate range
+      if(x_doubleValue<newScatter->getMinX())
+        newScatter->setMinX(x_doubleValue);
+      if(x_doubleValue>newScatter->getMaxX())
+        newScatter->setMaxX(x_doubleValue);
+
+      if(y_doubleValue<newScatter->getMinY())
+        newScatter->setMinY(y_doubleValue);
+      if(y_doubleValue>newScatter->getMaxY())
+        newScatter->setMaxY(y_doubleValue);
+      task.pulse();
+    } //end of the data set
+  }
   return newScatter;
 }
 
@@ -181,12 +231,16 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
      std::map<double,  unsigned int>* histogramValues = new std::map<double,  unsigned int>;
 
-     double minValue, maxValue;
-     minValue = std::numeric_limits<double>::max();
-     maxValue = -std::numeric_limits<double>::max();
+     int minValue, maxValue;
+     minValue = std::numeric_limits<int>::max();
+     maxValue = -std::numeric_limits<int>::max();
 
-     std::vector<double> intervals;
-     
+     std::vector<int> intervals;
+
+    te::common::TaskProgress task;
+    task.setTotalSteps((dataset->getNumProperties()) * 2);
+    task.setMessage("Histogram creation");
+
      //Calculating the minimum and maximum values of the given property and adjusting the Histogram's interval.
      while(dataset->moveNext())
      {
@@ -196,14 +250,15 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
        if(maxValue<dataset->getDouble(propId))
          maxValue = dataset->getDouble(propId);
 
-       double interval = maxValue - minValue;
+       int interval = maxValue - minValue;
 
        //Adjusting the interval to the user-defined number of slices.
        newHistogram->setInterval(interval/slices);
+       task.pulse();
      }
 
      //Adjusting the histogram's intervals
-     for (double i = minValue; i <(maxValue+newHistogram->getInterval()); i+=newHistogram->getInterval())
+     for (int i = minValue; i <(maxValue+newHistogram->getInterval()); i+=newHistogram->getInterval())
      {
        intervals.push_back(i);
      }
@@ -217,7 +272,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      {
        double currentValue = dataset->getDouble(propId);
 
-       for (unsigned int i= 0; i<intervals.size(); i++)
+       for (unsigned int i= 0; i<intervals.size(); ++i)
        {
          if((currentValue >= intervals[i]) && (currentValue <= intervals[i+1]))
          {
@@ -225,10 +280,11 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
             break;
          }
        }
+      task.pulse();
       }
 
      //With both the intervals and values ready, the map can be populated
-     for (unsigned int i= 0; i<intervals.size(); i++)
+     for (unsigned int i= 0; i<intervals.size(); ++i)
      {
        std::pair<double,  unsigned int> new_pair(intervals[i], values[i]);
        histogramValues->insert(new_pair);
@@ -248,6 +304,11 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
   te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
 
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
+
+  te::common::TaskProgress task;
+  task.setTotalSteps((dataset->getNumProperties()) * 2);
+  task.setMessage("Histogram creation");
+
   if(rpos != std::string::npos)
   {
     const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(dataset->getRaster(rpos), te::rst::SUMMARY_R_HISTOGRAM);
@@ -276,6 +337,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
         //Every unique string will be an interval
         intervals.insert(interval);
+        task.pulse();
       }
 
       values.resize(intervals.size(), 0);
@@ -288,7 +350,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
         std::string currentValue = dataset->getString(propId);
         int i;
 
-        for (  i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end(); intervalsIt++,i++)
+        for (  i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end(); ++intervalsIt,++i)
         {
           if(currentValue == *intervalsIt)
           {
@@ -296,11 +358,12 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
             break;
           }
         }
+      task.pulse();
       }
 
       //With both the intervals and values ready, the map can be populated
       int i;
-      for (i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end(); intervalsIt++,i++)
+      for (i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end();  ++intervalsIt,++i)
       {
         std::pair<std::string, unsigned int> new_pair(*intervalsIt, values[i]);
         histogramValues->insert(new_pair);
@@ -326,16 +389,7 @@ QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text,  te::color::RGBA
                    te::se::Stroke* backStroke)
 {
   QwtText* result = new QwtText(QString(text.c_str()));
- 
-  /*
-  QColor color
-  if(color==0)
-  result->setColor();
-  result->setFont();
 
-  result->setBackgroundBrush();
-  result->setBackgroundPen();
-  */
   return result;
 }
 

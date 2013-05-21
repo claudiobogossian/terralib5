@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/af/settings/ChartFrame.cpp
 
-  \brief A frame used to adjust a Chart's chart parameters, weather it is about it's data or it's visual style.
+  \brief A frame used to adjust a Chart's visual style.
 */
 
 #include "ui_ChartStyleFrameWidgetForm.h"

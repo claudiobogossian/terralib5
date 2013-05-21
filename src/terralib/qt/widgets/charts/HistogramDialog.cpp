@@ -89,8 +89,9 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
   QDockWidget* doc = new QDockWidget(this->parentWidget(), Qt::Dialog);
   doc->setWidget(chartWidget);
   doc->setWindowTitle("Histogram");
-  chartWidget->setParent(doc);
+  doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
 
+  chartWidget->setParent(doc);
   this->close();
   doc->show();
 }

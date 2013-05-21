@@ -558,6 +558,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
     te::qt::widgets::HistogramDialog dlg(dataset, this);
+    dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -580,7 +581,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
     te::qt::widgets::ScatterDialog dlg(dataset, this);
-
+    dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));
     dlg.exec();
   }
   catch(const std::exception& e)

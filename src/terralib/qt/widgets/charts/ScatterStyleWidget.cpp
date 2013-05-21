@@ -58,5 +58,7 @@ te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterStyleWidget::getScatterSt
 
 void te::qt::widgets::ScatterStyleWidget::onPlotStylePushButtonClicked()
 {
-  m_scatterStyle->setGraphic((te::qt::widgets::GraphicDialog::getGraphic(0, 0, "Scatter Style")));
+  std::unique_ptr<te::se::Graphic> graphic(te::qt::widgets::GraphicDialog::getGraphic(0, 0, "Scatter Style"));
+  if(graphic)
+    m_scatterStyle->setGraphic(graphic->clone());
 }

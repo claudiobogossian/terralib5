@@ -78,7 +78,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ScatterDataWidgetForm>  m_ui;       //!< THe widget Form.
-          std::auto_ptr<te::da::DataSet>            m_dataSet;  //!< The dataset that will be used to generate the Scatter graph.
+          te::da::DataSet*                          m_dataSet;  //!< The dataset that will be used to generate the Scatter graph.
       };
     } // end namespace widgets
   }   // end namespace qt

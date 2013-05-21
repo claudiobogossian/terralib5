@@ -42,6 +42,7 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
 {
   //Set style
   setStyle(QwtPlotCurve::NoCurve);
+  setPaintAttribute(QwtPlotCurve::FilterPoints );
 
   //Set Values
   setData();
@@ -54,6 +55,7 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, ScatterStyle* style, 
 {
   //Set style
   setStyle(QwtPlotCurve::NoCurve);
+  setPaintAttribute(QwtPlotCurve::FilterPoints);
 
   //Set Values
   setData();
@@ -63,10 +65,19 @@ void te::qt::widgets::ScatterChart::setData()
 {
   QPolygonF samples;
 
-  for (size_t i = 0; i < m_scatter->size(); i++)
+  if(m_scatter->sizeX() < m_scatter->sizeY())
   {
-    samples += QPointF( m_scatter->getX(i), m_scatter->getY(i));
-  
+    for (size_t i = 0; i < m_scatter->sizeX(); i++)
+    {
+      samples += QPointF( m_scatter->getX(i), m_scatter->getY(i));
+    }
+ }
+  else
+  {
+    for (size_t i = 0; i < m_scatter->sizeY(); i++)
+    {
+      samples += QPointF( m_scatter->getX(i), m_scatter->getY(i));
+    }
   }
 
   setSamples( samples );
