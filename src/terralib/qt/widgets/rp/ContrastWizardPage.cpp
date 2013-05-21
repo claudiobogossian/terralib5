@@ -230,6 +230,8 @@ void te::qt::widgets::ContrastWizardPage::listBands()
   m_ui->m_bandTableWidget->resizeColumnsToContents();
   m_ui->m_bandTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
+  onContrastTypeComboBoxActivated(m_ui->m_contrastTypeComboBox->currentIndex());
+
   delete ds;
 }
 
