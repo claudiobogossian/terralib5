@@ -44,8 +44,15 @@ namespace te
     /*!
       \class ClassifierEMStrategy
 
-      \brief EM strategy for pixel-based classification. The algorithm ...
-     */
+      \brief EM strategy for pixel-based classification. This is an unsupervised
+      and pixel-based classification algorithm. Expectation-Maximization (EM) works
+      iteratively by applying two steps: the E-step (Expectation) and the M-step
+      (Maximization). The method aims to approximate the parameter estimates to
+      real data distribution, along the iterations:
+      1. The E-step calculates the conditional expectation of the complete a
+      posteriori probability function.
+      2. The M-step updates the parameter estimation.
+    */
     class TERPEXPORT ClassifierEMStrategy : public ClassifierStrategy
     {
       public:

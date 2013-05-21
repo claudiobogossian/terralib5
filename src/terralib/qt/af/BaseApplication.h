@@ -36,6 +36,7 @@
 #include <boost/noncopyable.hpp>
 
 // Qt
+#include <QtGui/QLineEdit>
 #include <QtGui/QMainWindow>
 
 // Forward declarations
@@ -127,6 +128,8 @@ namespace te
 
           void onInfoToggled(bool checked);
 
+          void onSelectionToggled(bool checked);
+
           void onMeasureDistanceToggled(bool checked);
 
           void onMeasureAreaToggled(bool checked);
@@ -162,6 +165,8 @@ namespace te
           virtual void initMenus();
 
           virtual void initToolbars();
+
+          virtual void initStatusBar();
 
           virtual void initSlotsConnections();
 
@@ -225,13 +230,16 @@ namespace te
           QAction* m_mapPreviousExtent;
           QAction* m_mapNextExtent;
           QAction* m_mapInfo;
+          QAction* m_mapSelection;
           QAction* m_mapMeasureDistance;
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
           QAction* m_mapStopDraw;
 
           QWidget* m_centralwidget;
-          
+
+          QLineEdit* m_mapSRIDLineEdit;
+          QLineEdit* m_coordinateLineEdit;
 
           QMenuBar* m_menubar;
           //QMenu* m_editMenu;

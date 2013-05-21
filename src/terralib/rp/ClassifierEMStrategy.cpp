@@ -137,7 +137,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
 // N is the number of vectors used to estimate the probabilities
   const unsigned int N = randomPoints.size();
 // S is the number of elements inside each vector
-  const unsigned int S = inputRasterBands.size() * 3;
+  const unsigned int S = inputRasterBands.size();
 
 // get the input data
   boost::numeric::ublas::matrix<double> Xk = boost::numeric::ublas::matrix<double>(N, S);
@@ -145,21 +145,16 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
   te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(inputRaster.getBand(0), randomPoints);
   te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(inputRaster.getBand(0), randomPoints);
   unsigned int k = 0;
+  double max_pixel_value = 0.0;
   while (pit != pitend)
   {
-    for (unsigned int l = 0; l < S; l+=3)
+    for (unsigned int l = 0; l < S; l++)
     {
-      inputRaster.getValue(pit.getCol(), pit.getRow(), Xk(k, l), inputRasterBands[l / 3]);
-
-      if (pit.getCol() + 1 >= inputRaster.getNumberOfColumns())
-        Xk(k, l + 1) = 0.0;
-      else
-        inputRaster.getValue(pit.getCol() + 1, pit.getRow(), Xk(k, l + 1), inputRasterBands[l / 3]);
-      if (pit.getRow() + 1 >= inputRaster.getNumberOfRows())
-        Xk(k, l + 2) = 0.0;
-      else
-        inputRaster.getValue(pit.getCol(), pit.getRow() + 1, Xk(k, l + 2), inputRasterBands[l / 3]);
+      inputRaster.getValue(pit.getCol(), pit.getRow(), Xk(k, l), inputRasterBands[l]);
+      if (Xk(k, l) > max_pixel_value)
+        max_pixel_value = Xk(k, l);
     }
+
     ++k;
     ++pit;
   }
@@ -176,9 +171,10 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
   }
   else
   {
+// define vector of means randomly, in the interval [0, max_pixel_value].
     for (unsigned int j = 0; j < M; j++)
       for (unsigned int l = 0; l < S; l++)
-        MUj(j, l) = rand() % 255;
+        MUj(j, l) = rand() % (int) ceil(max_pixel_value);
   }
   previous_MUj = MUj;
 
@@ -365,18 +361,8 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
 
   while (it != itend)
   {
-    for (unsigned int l = 0; l < S; l+=3)
-    {
-      X(0, l) = (*it)[inputRasterBands[l / 3]];
-      if (it.getCol() + 1 >= inputRaster.getNumberOfColumns())
-        X(0, l + 1) = 0.0;
-      else
-        inputRaster.getValue(it.getCol() + 1, it.getRow(), X(0, l + 1), inputRasterBands[l / 3]);
-      if (it.getRow() + 1 >= inputRaster.getNumberOfRows())
-        X(0, l + 2) = 0.0;
-      else
-        inputRaster.getValue(it.getCol(), it.getRow() + 1, X(0, l + 2), inputRasterBands[l / 3]);
-    }
+    for (unsigned int l = 0; l < S; l++)
+      X(0, l) = (*it)[inputRasterBands[l]];
 
 // computing PCj_X
     for (unsigned int j = 0; j < M; j++)
@@ -437,6 +423,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
         max_PCj_X = PCj_X(j, 0);
         cluster = j + 1;
       }
+
 // save cluster information in output raster
     outputRaster.setValue(it.getCol(), it.getRow(), cluster, outputRasterBand);
 

@@ -32,6 +32,7 @@
 
 // Qt
 #include <QtCore/QObject>
+#include <QtCore/QPoint>
 #include <QtGui/QMenu>
 
 namespace te
@@ -103,6 +104,8 @@ namespace te
           void setCurrentTool(te::qt::widgets::AbstractTool* tool);
 
         protected slots:
+
+          void onCoordTracked(QPointF& coordinate);
 
           /*!
             \brief Listener to the application framewrork events.
