@@ -46,6 +46,8 @@ namespace te
   {
     namespace widgets
     {
+      class RasterNavigatorWidget;
+
       /*!
         \class SegmenterWizardPage
 
@@ -76,6 +78,11 @@ namespace te
 
           te::rp::Segmenter::OutputParameters getOutputParams();
 
+
+        public slots:
+
+          void onStrategyTypeComboBoxActivated(int index);
+
         protected:
 
           void apply();
@@ -87,6 +94,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::SegmenterWizardPageForm> m_ui;
+          std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
 
           te::map::AbstractLayerPtr m_layer;
       };
