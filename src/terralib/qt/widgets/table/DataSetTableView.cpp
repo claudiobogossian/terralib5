@@ -384,6 +384,9 @@ void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool&
     if(m_delegate->getSelected()->contains(oid))
     {
       emit deselectOIds(oids);
+
+      delete oids;
+
       return;
     }
   }

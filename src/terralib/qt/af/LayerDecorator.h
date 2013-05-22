@@ -43,7 +43,7 @@ namespace te
 
         \brief This class will be used to communicate changes on layer to the framework.
       */
-      class LayerDecorator : public te::common::Decorator<te::map::AbstractLayer>
+      class TEQTAFEXPORT LayerDecorator : public te::common::Decorator<te::map::AbstractLayer>
       {
         public:
 
@@ -117,6 +117,10 @@ namespace te
           bool isValid() const;
 
           void draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+
+        protected:
+
+          te::map::AbstractLayerPtr m_layer;
       };
 
       typedef boost::intrusive_ptr<LayerDecorator> LayerDecoratorPtr;

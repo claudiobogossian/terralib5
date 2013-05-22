@@ -23,7 +23,8 @@
 #include "ApplicationController.h"
 
 te::qt::af::LayerDecorator::LayerDecorator(const te::map::AbstractLayerPtr& layer) :
-te::common::Decorator<te::map::AbstractLayer>(layer.get(), false)
+te::common::Decorator<te::map::AbstractLayer>(layer.get(), false),
+  m_layer(layer)
 {
 }
 
