@@ -28,8 +28,14 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Point.h"
+#include "../../../maptools/DataSetLayer.h"
 #include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
+#include "../../../se/CoverageStyle.h"
+#include "../../../se/ChannelSelection.h"
+#include "../../../se/RasterSymbolizer.h"
+#include "../../../se/Rule.h"
+#include "../../../se/SelectedChannel.h"
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/CoordTracking.h"
 #include "../../widgets/tools/Pan.h"
@@ -50,6 +56,7 @@
 te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::RasterNavigatorWidgetForm),
+    m_symbolizer(0),
     m_tool(0), m_panTool(0), m_zoomTool(0)
 {
   m_ui->setupUi(this);
@@ -83,6 +90,9 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   connect(m_ui->m_readPixelActionToolButton, SIGNAL(toggled(bool)), this, SLOT(onReadPixelToggled(bool)));
   connect(m_ui->m_extraDisplaysToolButton, SIGNAL(toggled(bool)), this, SLOT(onExtraDisplaysToggled(bool)));
   connect(m_ui->m_recomposeActionToolButton, SIGNAL(clicked()), this, SLOT(onRecomposeClicked()));
+  connect(m_ui->m_redComboBox, SIGNAL(activated(int)), this, SLOT(onRedComboBoxActivated(int)));
+  connect(m_ui->m_greenComboBox, SIGNAL(activated(int)), this, SLOT(onGreenComboBoxActivated(int)));
+  connect(m_ui->m_blueComboBox, SIGNAL(activated(int)), this, SLOT(onBlueComboBoxActivated(int)));
 
   connect(coordTracking, SIGNAL(coordTracked(QPointF&)), this, SLOT(onCoordTrackedChanged(QPointF&)));
   connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
@@ -96,7 +106,9 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_ui->m_geomActionToolButtontoolButton->setIcon(QIcon::fromTheme("edit-polygon"));
   m_ui->m_readPixelActionToolButton->setIcon(QIcon::fromTheme("color-picker"));
   m_ui->m_extraDisplaysToolButton->setIcon(QIcon::fromTheme("view-map-display-extra"));
-  
+  m_ui->m_redLabel->setPixmap(QIcon::fromTheme("bullet-red").pixmap(16,16));
+  m_ui->m_greenLabel->setPixmap(QIcon::fromTheme("bullet-green").pixmap(16,16));
+  m_ui->m_blueLabel->setPixmap(QIcon::fromTheme("bullet-blue").pixmap(16,16));
 }
 
 te::qt::widgets::RasterNavigatorWidget::~RasterNavigatorWidget()
@@ -122,6 +134,12 @@ void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer
   m_mapDisplay->setLayerList(list);
   m_mapDisplay->setSRID(m_layer->getSRID(), false);
   m_mapDisplay->setExtent(e, true);
+
+// list bands
+  listBands();
+
+// get band composition information
+  getCompositionInfo();
 }
 
 te::gm::Envelope te::qt::widgets::RasterNavigatorWidget::getCurrentExtent()
@@ -324,10 +342,152 @@ void te::qt::widgets::RasterNavigatorWidget::onRecomposeClicked()
   m_eyeBirdMapDisplay->recompose();
 }
 
+void te::qt::widgets::RasterNavigatorWidget::onRedComboBoxActivated(int index)
+{
+  std::string name = m_ui->m_redComboBox->itemText(index).toStdString();
+
+  m_symbolizer->getChannelSelection()->getRedChannel()->setSourceChannelName(name);
+
+  m_mapDisplay->refresh();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onGreenComboBoxActivated(int index)
+{
+  std::string name = m_ui->m_greenComboBox->itemText(index).toStdString();
+
+  m_symbolizer->getChannelSelection()->getGreenChannel()->setSourceChannelName(name);
+
+  m_mapDisplay->refresh();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onBlueComboBoxActivated(int index)
+{
+  std::string name = m_ui->m_blueComboBox->itemText(index).toStdString();
+
+  m_symbolizer->getChannelSelection()->getBlueChannel()->setSourceChannelName(name);
+
+  m_mapDisplay->refresh();
+}
+
 void te::qt::widgets::RasterNavigatorWidget::setCurrentTool(te::qt::widgets::AbstractTool* tool)
 {
   delete m_tool;
   m_tool = tool;
 
   m_mapDisplay->installEventFilter(m_tool);
+}
+
+void te::qt::widgets::RasterNavigatorWidget::listBands()
+{
+  m_ui->m_redComboBox->clear();
+  m_ui->m_greenComboBox->clear();
+  m_ui->m_blueComboBox->clear();
+
+  te::da::DataSet* ds = m_layer->getData();
+
+  if(ds)
+  {
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+
+    te::rst::Raster* inputRst = ds->getRaster(rpos);
+
+    if(inputRst)
+    {
+      for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
+      {
+        m_ui->m_redComboBox->addItem(QString::number(i));
+        m_ui->m_greenComboBox->addItem(QString::number(i));
+        m_ui->m_blueComboBox->addItem(QString::number(i));
+      }
+    }
+  }
+
+  delete ds;
+}
+
+void te::qt::widgets::RasterNavigatorWidget::getCompositionInfo()
+{
+  assert(m_layer);
+
+  // get the associated layer style
+  te::map::DataSetLayer* layer = dynamic_cast<te::map::DataSetLayer*>(m_layer.get());
+
+  if(!layer)
+    return;
+
+  te::se::Style* style = layer->getStyle();
+  assert(style);
+
+// should I render this style?
+  te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
+  assert(cs);
+
+// get the raster symbolizer
+  std::size_t nRules = cs->getRules().size();
+  assert(nRules >= 1);
+
+// for while, consider one rule
+  const te::se::Rule* rule = cs->getRule(0);
+
+  const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
+  assert(!symbolizers.empty());
+
+// for while, consider one raster symbolizer
+  m_symbolizer = dynamic_cast<te::se::RasterSymbolizer*>(symbolizers[0]);
+  assert(m_symbolizer);
+
+  if(m_symbolizer->getChannelSelection())
+  {
+    te::se::ChannelSelection* cs = m_symbolizer->getChannelSelection();
+
+    if(cs->getRedChannel())
+    {
+      std::string name = cs->getRedChannel()->getSourceChannelName();
+      setComboBoxText(m_ui->m_redComboBox, name);
+    }
+
+    if(cs->getGreenChannel())
+    {
+      std::string name = cs->getGreenChannel()->getSourceChannelName();
+      setComboBoxText(m_ui->m_greenComboBox, name);
+    }
+
+    if(cs->getBlueChannel())
+    {
+      std::string name = cs->getBlueChannel()->getSourceChannelName();
+      setComboBoxText(m_ui->m_blueComboBox, name);
+    }
+
+    if(cs->getGrayChannel())
+    {
+      std::string name = cs->getGrayChannel()->getSourceChannelName();
+      setComboBoxText(m_ui->m_redComboBox, name);
+      setComboBoxText(m_ui->m_greenComboBox, name);
+      setComboBoxText(m_ui->m_blueComboBox, name);
+    }
+  }
+
+}
+
+void te::qt::widgets::RasterNavigatorWidget::setComboBoxText(QComboBox* cb, std::string value)
+{
+  QString name = value.c_str();
+
+  bool found = false;
+
+  for(int i = 0; i < cb->count(); ++i)
+  {
+    if(cb->itemText(i) == name)
+    {
+      cb->setCurrentIndex(i);
+      found = true;
+      break;
+    }
+  }
+
+  if(!found)
+  {
+    cb->addItem(name);
+    cb->setCurrentIndex(cb->count() - 1);
+  }
 }

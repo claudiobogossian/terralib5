@@ -252,45 +252,23 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
     break;
 
     case te::qt::af::evt::TOOLBAR_ADDED:
-      {
-        te::qt::af::evt::ToolBarAdded* ev = static_cast<te::qt::af::evt::ToolBarAdded*>(evt);
-        QMainWindow::addToolBar(Qt::TopToolBarArea, ev->m_toolbar);
-      }
+    {
+      te::qt::af::evt::ToolBarAdded* e = static_cast<te::qt::af::evt::ToolBarAdded*>(evt);
+      QMainWindow::addToolBar(Qt::TopToolBarArea, e->m_toolbar);
+    }
     break;
 
-
+    case te::qt::af::evt::COORDINATE_TRACKED:
+    {
+      te::qt::af::evt::CoordinateTracked* e = static_cast<te::qt::af::evt::CoordinateTracked*>(evt);
+      QString text = "(" + QString::number(e->m_x, 'f', 5) + " , " + QString::number(e->m_y, 'f', 5) + ")";
+      m_coordinateLineEdit->setText(text);
+    }
+    break;
 
     default:
-    break;
+      break;
   }
-  //{
-  //  case te::qt::af::evt::NEW_TOOLBAR :
-  //  break;
-
-  //  case te::qt::af::evt::TRACK_COORDINATE:
-  //  {
-  //    te::qt::af::TrackedCoordinate* e = static_cast<te::qt::af::TrackedCoordinate*>(evt);
-  //    QString text = tr("Coordinates: ") + "(" + QString::number(e->m_pos.x()) + " , " + QString::number(e->m_pos.y()) + ")";
-  //    QStatusBar* sb = statusBar();
-  //    sb->showMessage(text);
-  //  }
-  //  break;
-
-  //  //PROVISORIO
-  //  case te::qt::af::evt::LAYER_SELECTED:
-  //  {
-  //    te::qt::af::LayerSelected* e = static_cast<te::qt::af::LayerSelected*>(evt);
-  //    
-  //    if(e->m_layer->getType() == "RASTERLAYER")
-  //    {
-  //      m_rasterVisualDock->setRasterLayer(dynamic_cast<te::map::RasterLayer*>(e->m_layer));
-  //    }
-  //  }
-  //  break;
-
-  //  default :
-  //  break;
-  //}
 }
 
 void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
@@ -571,6 +549,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
     te::qt::widgets::HistogramDialog dlg(dataset, this);
+    dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -593,7 +572,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
     te::qt::widgets::ScatterDialog dlg(dataset, this);
-
+    dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -612,6 +591,10 @@ void te::qt::af::BaseApplication::onMapSRIDTriggered()
 
   std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
   m_display->getDisplay()->setSRID(srid.first);
+
+  QString sridText(srid.second.c_str());
+  sridText += ":" + QString::number(srid.first);
+  m_mapSRIDLineEdit->setText(sridText);
 }
 
 void te::qt::af::BaseApplication::onDrawTriggered()
@@ -883,9 +866,9 @@ void te::qt::af::BaseApplication::makeDialog()
 // 2. Map Display
   te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512), this);
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
-  map->setMouseTracking(true);
-
   m_display = new te::qt::af::MapDisplay(map);
+
+  initStatusBar();
 
 // 3. Data Table
 //  te::qt::widgets::TabularViewer* view = new te::qt::widgets::TabularViewer(this);
@@ -924,7 +907,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
 // Progress support
   te::qt::widgets::ProgressViewerBar* pvb = new te::qt::widgets::ProgressViewerBar(this);
-  pvb->setFixedWidth(250);
+  pvb->setFixedWidth(220);
   te::common::ProgressManager::getInstance().addViewer(pvb);
 
   te::qt::widgets::ProgressViewerWidget* pvw = new te::qt::widgets::ProgressViewerWidget(this);
@@ -936,7 +919,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
   m_progressDockWidget = new QDockWidget(this);
   m_progressDockWidget->setWidget(pvw);
-  m_progressDockWidget->setMinimumWidth(250);
+  m_progressDockWidget->setMinimumWidth(220);
   m_progressDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
   m_progressDockWidget->setWindowTitle(tr("Tasks Progress"));
   addDockWidget(Qt::RightDockWidgetArea, m_progressDockWidget);
@@ -1292,16 +1275,44 @@ void te::qt::af::BaseApplication::initToolbars()
   //m_mapToolBar->addAction(m_mapPreviousExtent);
   //m_mapToolBar->addAction(m_mapNextExtent);
 
-  QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
-  stopDrawToolButton->setDefaultAction(m_mapStopDraw);
-  m_statusbar->addPermanentWidget(stopDrawToolButton);
-
 //  m_viewToolBarsMenu->addAction(m_mapToolBar->toggleViewAction());
 
 // registering the toolbars
   //ApplicationController::getInstance().registerToolBar(m_fileToolBar->objectName(), m_fileToolBar);
   ////ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
   //ApplicationController::getInstance().registerToolBar(m_mapToolBar->objectName(), m_mapToolBar);
+}
+
+void te::qt::af::BaseApplication::initStatusBar()
+{
+  // Map SRID action
+  QToolButton* mapSRIDToolButton = new QToolButton(m_statusbar);
+  mapSRIDToolButton->setDefaultAction(m_mapSRID);
+  m_statusbar->addPermanentWidget(mapSRIDToolButton);
+
+  // Map SRID information
+  m_mapSRIDLineEdit = new QLineEdit(m_statusbar);
+  m_mapSRIDLineEdit->setFixedWidth(120);
+  m_mapSRIDLineEdit->setAlignment(Qt::AlignHCenter);
+  m_mapSRIDLineEdit->setEnabled(false);
+
+  int srid = m_display->getDisplay()->getSRID();
+  srid != TE_UNKNOWN_SRS ? m_mapSRIDLineEdit->setText("EPSG:" + QString::number(srid)) : m_mapSRIDLineEdit->setText(tr("Unknown SRS"));
+  m_statusbar->addPermanentWidget(m_mapSRIDLineEdit);
+
+  // Coordinate Line Edit
+  m_coordinateLineEdit = new QLineEdit(m_statusbar);
+  m_coordinateLineEdit->setFixedWidth(220);
+  m_coordinateLineEdit->setAlignment(Qt::AlignHCenter);
+  m_coordinateLineEdit->setReadOnly(true);
+  m_coordinateLineEdit->setFocusPolicy(Qt::NoFocus);
+  m_coordinateLineEdit->setText(tr("Coordinates"));
+  m_statusbar->addPermanentWidget(m_coordinateLineEdit);
+
+  // Stop draw action
+  QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
+  stopDrawToolButton->setDefaultAction(m_mapStopDraw);
+  m_statusbar->addPermanentWidget(stopDrawToolButton);
 }
 
 void te::qt::af::BaseApplication::initSlotsConnections()

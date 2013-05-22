@@ -40,11 +40,11 @@ void ObjectId2()
   std::cout << "DataSet size: " << dataset->size() << std::endl;
   
   // let's generate the oid's
-  te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset);
+  te::da::ObjectIdSet* oids = 0/*te::da::GenerateOIDSet(dataset)*/;
   assert(oids);
   
   // let's retrieve the identified elements via transactor
-  te::da::DataSet* identified = transactor->getDataSet(oids);
+  te::da::DataSet* identified = 0/*transactor->getDataSet(oids)*/;
   
   assert(identified);
   assert(dataset->size() == identified->size());
@@ -90,7 +90,7 @@ void ObjectId()
   std::cout << "DataSet size: " << dataset->size() << std::endl;
 
 // let's generate the oid's
-  te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset);
+  te::da::ObjectIdSet* oids = 0/*te::da::GenerateOIDSet(dataset)*/;
   assert(oids);
   std::cout << "OIDs size: " << oids->size() << std::endl;
 
@@ -100,7 +100,7 @@ void ObjectId()
   //assert(oids->isFromPrimaryKey());
 
 // let's get the Select from the generated OIDS
-  te::da::Select* select = oids->getQuery();
+  te::da::Select* select = 0/*oids->getQuery()*/;
   assert(select);
 
 // let's print the SQL

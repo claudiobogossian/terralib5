@@ -67,8 +67,8 @@ namespace te
 
           \param transfName             Transformation name (see te::gm::GTFactory dictionary for reference).
           \param inputParams            Input transformation parameters.
-          \param expectedDirectMapRmse  The expected direct mapping root mean square error.
-          \param expectedInverseMapRmse The expected inverse mapping root mean square error.
+          \param maxDirectMapError      The maximum allowed direct mapping error.
+          \param maxInverseMapError     The maximum allowed inverse mapping error.
           \param maxIterations          The maximum number of iterations (Use 0-zero to let this number be automatically found).
           \param assurance              The error-free selection percent assurance - valid range (0-1) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations. Use 0-zero to let this number be automatically found.
           \param enableMultiThread      Enable multi-threaded processing (good for multi-processor or multi-core systems).
@@ -82,7 +82,8 @@ namespace te
         */
         bool applyRansac(const std::string& transfName,
                          const GTParameters& inputParams,
-                         const double expectedDirectMapRmse, const double expectedInverseMapRmse,
+                         const double maxDirectMapError, 
+                         const double maxInverseMapError,
                          const RansacItCounterT& maxIterations,
                          const double& assurance,
                          const bool enableMultiThread,
@@ -104,8 +105,8 @@ namespace te
 
             std::string const* m_transfNamePtr;
             GTParameters const* m_inputGTParamsPtr;
-            double m_expectedDirectMapRmse;
-            double m_expectedInverseMapRmse;
+            double m_maxDirectMapError;
+            double m_maxInverseMapError;
             double m_assurance;
             RansacItCounterT m_maxIterations;
             RansacItCounterT m_maxIterationsDivFactor;
@@ -114,8 +115,8 @@ namespace te
             bool* m_keepRunningFlagPtr;
             std::map< double, GTParameters::TiePoint > const* m_tpsMapPtr; //!< A map from accumulated probabilities (normalized between 0 and 1) to tie-points data.
             std::auto_ptr< GeometricTransformation >* m_bestTransformationPtrPtr;
-            double* m_bestParamsDRMSEPtr;
-            double* m_bestParamsIRMSEPtr;
+            double* m_bestParamsMaxDMapErrorPtr;
+            double* m_bestParamsMaxIMapErrorPtr;
             double* m_bestParamsConvexHullAreaPtr;
             std::vector< te::gm::GTParameters::TiePoint >* m_bestTiePoinsPtr;
 
@@ -133,8 +134,8 @@ namespace te
             {
               m_transfNamePtr = other.m_transfNamePtr;
               m_inputGTParamsPtr = other.m_inputGTParamsPtr;
-              m_expectedDirectMapRmse = other.m_expectedDirectMapRmse;
-              m_expectedInverseMapRmse = other.m_expectedInverseMapRmse;
+              m_maxDirectMapError = other.m_maxDirectMapError;
+              m_maxInverseMapError = other.m_maxInverseMapError;
               m_assurance = other.m_assurance;
               m_maxIterations = other.m_maxIterations;
               m_maxIterationsDivFactor = other.m_maxIterationsDivFactor;
@@ -143,8 +144,8 @@ namespace te
               m_keepRunningFlagPtr = other.m_keepRunningFlagPtr;
               m_tpsMapPtr = other.m_tpsMapPtr;
               m_bestTransformationPtrPtr = other.m_bestTransformationPtrPtr;
-              m_bestParamsDRMSEPtr = other.m_bestParamsDRMSEPtr;
-              m_bestParamsIRMSEPtr = other.m_bestParamsIRMSEPtr;
+              m_bestParamsMaxDMapErrorPtr = other.m_bestParamsMaxDMapErrorPtr;
+              m_bestParamsMaxIMapErrorPtr = other.m_bestParamsMaxIMapErrorPtr;
               m_bestParamsConvexHullAreaPtr = other.m_bestParamsConvexHullAreaPtr;
               m_bestTiePoinsPtr = other.m_bestTiePoinsPtr;
               

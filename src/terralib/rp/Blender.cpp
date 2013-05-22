@@ -338,6 +338,38 @@ namespace te
       TERP_DEBUG_TRUE_OR_THROW( m_r2ValidDataPolygonPtr, "Invalid m_r2ValidDataPolygonPtr pointer" );
       TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
       
+      // Finding the point over the second raster
+      
+      if( m_geomTransformationPtr )
+      {
+        m_geomTransformationPtr->directMap( col, line, m_noBlendMethodImp_Point2Col,
+          m_noBlendMethodImp_Point2Line );
+      }
+      else
+      {
+        m_grid1Ptr->gridToGeo( col, line, m_noBlendMethodImp_Point1XProj1,
+            m_noBlendMethodImp_Point1YProj1 );
+          
+        if( m_rastersHaveDifSRS )
+        {
+          m_convInstance.convert( m_noBlendMethodImp_Point1XProj1,
+            m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point1XProj2,
+            m_noBlendMethodImp_Point1YProj2 );
+            
+          m_grid2Ptr->geoToGrid( m_noBlendMethodImp_Point1XProj2,
+            m_noBlendMethodImp_Point1YProj2, m_noBlendMethodImp_Point2Col,
+            m_noBlendMethodImp_Point2Line );
+        }
+        else
+        {
+          m_raster2Ptr->getGrid()->geoToGrid(m_noBlendMethodImp_Point1XProj1,
+            m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point2Col,
+            m_noBlendMethodImp_Point2Line );
+        }
+      }
+      
+      // Blending values
+      
       for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
         m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
       {
@@ -347,36 +379,6 @@ namespace te
     
         if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
         {
-          // Finding the point over the second raster
-          
-          if( m_geomTransformationPtr )
-          {
-            m_geomTransformationPtr->directMap( col, line, m_noBlendMethodImp_Point2Col,
-              m_noBlendMethodImp_Point2Line );
-          }
-          else
-          {
-            m_grid1Ptr->gridToGeo( col, line, m_noBlendMethodImp_Point1XProj1,
-                m_noBlendMethodImp_Point1YProj1 );
-              
-            if( m_rastersHaveDifSRS )
-            {
-              m_convInstance.convert( m_noBlendMethodImp_Point1XProj1,
-                m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point1XProj2,
-                m_noBlendMethodImp_Point1YProj2 );
-                
-              m_grid2Ptr->geoToGrid( m_noBlendMethodImp_Point1XProj2,
-                m_noBlendMethodImp_Point1YProj2, m_noBlendMethodImp_Point2Col,
-                m_noBlendMethodImp_Point2Line );
-            }
-            else
-            {
-              m_raster2Ptr->getGrid()->geoToGrid(m_noBlendMethodImp_Point1XProj1,
-                m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point2Col,
-                m_noBlendMethodImp_Point2Line );
-            }
-          }        
-          
           m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
             m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
             m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );
