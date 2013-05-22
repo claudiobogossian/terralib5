@@ -103,6 +103,11 @@ te::da::DataSet* te::map::DataSetLayer::getData(te::common::TraverseType travTyp
 
   std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, travType, rwRole));
 
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+  if(dataset->size() > rpos)
+  {
+    return dataset.release();
+  }
   return DataSet2Memory(dataset.get());
 }
 

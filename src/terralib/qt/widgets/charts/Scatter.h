@@ -65,13 +65,20 @@ namespace te
             \brief Calculates the minimum and maximum values for both the X and Y axis
           */
           void calculateMinMaxValues();
-          
+
           /*!            
             \brief It returns the size of the scatter.
 
-            \return The number of the scatter elements.
+            \return The number of the scatter elements on the X axis.
           */
-          std::size_t size();
+          std::size_t sizeX();
+
+          /*!            
+            \brief It returns the size of the scatter.
+
+            \return The number of the scatter elements on the Y axis.
+          */
+          std::size_t sizeY();
 
           /*!            
             \brief It returns the idx-th value of the scatter X axis, as a double. 

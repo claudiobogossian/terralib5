@@ -36,12 +36,15 @@
 
 // Qt
 #include <QtGui/QWidget>
+#include <QtGui/QComboBox>
 
 namespace Ui { class RasterNavigatorWidgetForm; }
 
 namespace te
 {
   namespace gm { class Envelope; }
+
+  namespace se { class RasterSymbolizer; }
 
   namespace qt
   {
@@ -128,6 +131,12 @@ namespace te
 
           void onRecomposeClicked();
 
+          void onRedComboBoxActivated(int index);
+
+          void onGreenComboBoxActivated(int index);
+
+          void onBlueComboBoxActivated(int index);
+
         signals:
 
           void mapDisplayExtentChanged();
@@ -140,11 +149,19 @@ namespace te
 
           void setCurrentTool(te::qt::widgets::AbstractTool* tool);
 
+          void listBands();
+
+          void getCompositionInfo();
+
+          void setComboBoxText(QComboBox* cb, std::string value);
+
         private:
 
           std::auto_ptr<Ui::RasterNavigatorWidgetForm> m_ui;
 
           te::map::AbstractLayerPtr m_layer;
+          te::se::RasterSymbolizer* m_symbolizer;
+
           te::qt::widgets::AbstractTool* m_tool;
           te::qt::widgets::MapDisplay* m_mapDisplay;
           te::qt::widgets::ZoomInMapDisplayWidget* m_zoomInMapDisplay;

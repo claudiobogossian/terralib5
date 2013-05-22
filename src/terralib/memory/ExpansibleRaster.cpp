@@ -70,7 +70,13 @@ te::mem::ExpansibleRaster::ExpansibleRaster( const unsigned char maxMemPercentUs
       bandsProperties[ bandIdx ]->m_nblocksx = bandsProperties[ 0 ]->m_nblocksx;
       bandsProperties[ bandIdx ]->m_nblocksy = bandsProperties[ 0 ]->m_nblocksy;
       bandsProperties[ bandIdx ]->m_blkw = bandsProperties[ 0 ]->m_blkw;
-      bandsProperties[ bandIdx ]->m_blkh = bandsProperties[ 0 ]->m_blkh;      
+      bandsProperties[ bandIdx ]->m_blkh = bandsProperties[ 0 ]->m_blkh;     
+      bandsProperties[ bandIdx ]->m_nblocksx = (int)std::ceil(
+        ((double)grid->getNumberOfColumns()) / 
+        ((double)bandsProperties[ bandIdx ]->m_blkw) );
+      bandsProperties[ bandIdx ]->m_nblocksy = (int)std::ceil(
+        ((double)grid->getNumberOfRows()) / 
+        ((double)bandsProperties[ bandIdx ]->m_blkh) );
       
       const unsigned int blockSizeBytes = (unsigned int)( 
         bandsProperties[ bandIdx ]->m_blkw * 
@@ -130,6 +136,12 @@ te::mem::ExpansibleRaster::ExpansibleRaster( te::rst::Grid* grid,
       bandsProperties[ bandIdx ]->m_nblocksy = bandsProperties[ 0 ]->m_nblocksy;
       bandsProperties[ bandIdx ]->m_blkw = bandsProperties[ 0 ]->m_blkw;
       bandsProperties[ bandIdx ]->m_blkh = bandsProperties[ 0 ]->m_blkh;   
+      bandsProperties[ bandIdx ]->m_nblocksx = (int)std::ceil(
+        ((double)grid->getNumberOfColumns()) / 
+        ((double)bandsProperties[ bandIdx ]->m_blkw) );
+      bandsProperties[ bandIdx ]->m_nblocksy = (int)std::ceil(
+        ((double)grid->getNumberOfRows()) / 
+        ((double)bandsProperties[ bandIdx ]->m_blkh) );      
       
       const unsigned int blockSizeBytes = (unsigned int)( 
         bandsProperties[ bandIdx ]->m_blkw * 
@@ -243,42 +255,60 @@ bool te::mem::ExpansibleRaster::addBottomLines( const unsigned int number )
   
   if( number )
   {
-    const unsigned int blockExpansionSize = (unsigned int)std::ceil(
-      ((double)number) / ((double)m_bands[ 0 ]->getProperty()->m_blkh) );
+    const unsigned int currExtraLines =  
+      ( (unsigned int)( m_bands[ 0 ]->getProperty()->m_blkh *
+      m_bands[ 0 ]->getProperty()->m_nblocksy ) ) - 
+      m_grid->getNumberOfRows();
       
-    std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
-      
-    for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
-    {
-      std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
-      if( ! m_blocksManager.addBottomBlocks( blockExpansionSize, bandsIdx,
-        bandAddedBlocksCoords ) ) 
-        return false;
-      
-      addedBlocksCoords.insert( addedBlocksCoords.end(), bandAddedBlocksCoords.begin(),
-        bandAddedBlocksCoords.end() );
-      
-      m_bands[ bandsIdx ]->getProperty()->m_nblocksy += blockExpansionSize;
-    }
-    
-    dummyFillBlocks( addedBlocksCoords );
-    
-    const unsigned int newLinesNumber = 
-      ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkh) *
-      ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksy );
-    const unsigned int newColsNumber = 
-      ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkw) *
-      ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksx );
-      
-    te::gm::Coord2D newULC( 
+    te::gm::Coord2D uLC( 
       m_grid->getExtent()->getLowerLeftX(), 
-      m_grid->getExtent()->getUpperRightY() );
-    
-    te::rst::Grid* newGridPtr( new te::rst::Grid( newColsNumber,
-      newLinesNumber, m_grid->getResolutionX(), m_grid->getResolutionY(), 
-      &newULC, m_grid->getSRID() ) );
-    delete( m_grid );
-    m_grid = newGridPtr;
+      m_grid->getExtent()->getUpperRightY() );      
+      
+    if( currExtraLines < number )
+    {
+      const unsigned int blockExpansionSize = (unsigned int)std::ceil(
+        ((double)number) / ((double)m_bands[ 0 ]->getProperty()->m_blkh) );
+        
+      std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
+        
+      for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
+      {
+        std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
+        if( ! m_blocksManager.addBottomBlocks( blockExpansionSize, bandsIdx,
+          bandAddedBlocksCoords ) ) 
+          return false;
+        
+        addedBlocksCoords.insert( addedBlocksCoords.end(), bandAddedBlocksCoords.begin(),
+          bandAddedBlocksCoords.end() );
+        
+        m_bands[ bandsIdx ]->getProperty()->m_nblocksy += blockExpansionSize;
+      }
+      
+      dummyFillBlocks( addedBlocksCoords );
+      
+      const unsigned int newLinesNumber = 
+        ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkh) *
+        ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksy );
+      const unsigned int newColsNumber = 
+        ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkw) *
+        ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksx );
+      
+      te::rst::Grid* newGridPtr( new te::rst::Grid( newColsNumber,
+        newLinesNumber, m_grid->getResolutionX(), m_grid->getResolutionY(), 
+        &uLC, m_grid->getSRID() ) );
+      delete( m_grid );
+      m_grid = newGridPtr;
+    }
+    else
+    {
+      te::rst::Grid* newGridPtr( new te::rst::Grid( 
+        m_grid->getNumberOfColumns(),
+        m_grid->getNumberOfRows() + number, 
+        m_grid->getResolutionX(), m_grid->getResolutionY(), 
+        &uLC, m_grid->getSRID() ) );
+      delete( m_grid );
+      m_grid = newGridPtr;
+    }
   }
   
   return true;
@@ -344,42 +374,60 @@ bool te::mem::ExpansibleRaster::addRightColumns( const unsigned int number )
   
   if( number )
   {
-    const unsigned int blockExpansionSize = (unsigned int)std::ceil(
-      ((double)number) / ((double)m_bands[ 0 ]->getProperty()->m_blkw) );
+    const unsigned int currExtraCols =  
+      ( (unsigned int)( m_bands[ 0 ]->getProperty()->m_blkw *
+      m_bands[ 0 ]->getProperty()->m_nblocksx ) ) - 
+      m_grid->getNumberOfColumns();  
       
-    std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
-      
-    for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
-    {
-      std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
-      if( ! m_blocksManager.addRightBlocks( blockExpansionSize, bandsIdx,
-        bandAddedBlocksCoords ) ) 
-        return false;
-      
-      addedBlocksCoords.insert( addedBlocksCoords.end(), bandAddedBlocksCoords.begin(),
-        bandAddedBlocksCoords.end() );
-      
-      m_bands[ bandsIdx ]->getProperty()->m_nblocksx += blockExpansionSize;
-    }
-    
-    dummyFillBlocks( addedBlocksCoords );
-    
-    const unsigned int newLinesNumber = 
-      ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkh) *
-      ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksy );
-    const unsigned int newColsNumber = 
-      ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkw) *
-      ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksx );
-      
-    te::gm::Coord2D newULC( 
+    te::gm::Coord2D uLC( 
       m_grid->getExtent()->getLowerLeftX(), 
-      m_grid->getExtent()->getUpperRightY() );
-    
-    te::rst::Grid* newGridPtr( new te::rst::Grid( newColsNumber,
-      newLinesNumber, m_grid->getResolutionX(), m_grid->getResolutionY(), 
-      &newULC, m_grid->getSRID() ) );
-    delete( m_grid );
-    m_grid = newGridPtr;
+      m_grid->getExtent()->getUpperRightY() );  
+      
+    if( currExtraCols < number )
+    {
+      const unsigned int blockExpansionSize = (unsigned int)std::ceil(
+        ((double)number) / ((double)m_bands[ 0 ]->getProperty()->m_blkw) );
+        
+      std::vector< ExpansibleBandBlocksManager::BlockIndex3D > addedBlocksCoords;
+        
+      for( unsigned int bandsIdx = 0 ; bandsIdx < m_bands.size() ; ++bandsIdx )
+      {
+        std::vector< ExpansibleBandBlocksManager::BlockIndex3D > bandAddedBlocksCoords;
+        if( ! m_blocksManager.addRightBlocks( blockExpansionSize, bandsIdx,
+          bandAddedBlocksCoords ) ) 
+          return false;
+        
+        addedBlocksCoords.insert( addedBlocksCoords.end(), bandAddedBlocksCoords.begin(),
+          bandAddedBlocksCoords.end() );
+        
+        m_bands[ bandsIdx ]->getProperty()->m_nblocksx += blockExpansionSize;
+      }
+      
+      dummyFillBlocks( addedBlocksCoords );
+      
+      const unsigned int newLinesNumber = 
+        ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkh) *
+        ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksy );
+      const unsigned int newColsNumber = 
+        ((unsigned int)m_bands[ 0 ]->getProperty()->m_blkw) *
+        ((unsigned int)m_bands[ 0 ]->getProperty()->m_nblocksx );
+      
+      te::rst::Grid* newGridPtr( new te::rst::Grid( newColsNumber,
+        newLinesNumber, m_grid->getResolutionX(), m_grid->getResolutionY(), 
+        &uLC, m_grid->getSRID() ) );
+      delete( m_grid );
+      m_grid = newGridPtr;
+    }
+    else
+    {
+      te::rst::Grid* newGridPtr( new te::rst::Grid( 
+        m_grid->getNumberOfColumns() + number,
+        m_grid->getNumberOfRows(), 
+        m_grid->getResolutionX(), m_grid->getResolutionY(), 
+        &uLC, m_grid->getSRID() ) );
+      delete( m_grid );
+      m_grid = newGridPtr;
+    }
   }
   
   return true;

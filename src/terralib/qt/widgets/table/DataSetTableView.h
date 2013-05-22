@@ -180,6 +180,8 @@ namespace te
           */
           void selectOIds(te::da::ObjectIdSet*, const bool&);
 
+          void deselectOIds(te::da::ObjectIdSet*);
+
         protected:
 
           void removeSelection(const int& initRow, const int& finalRow);

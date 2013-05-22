@@ -36,6 +36,7 @@
 #include <boost/noncopyable.hpp>
 
 // Qt
+#include <QtGui/QLineEdit>
 #include <QtGui/QMainWindow>
 
 // Forward declarations
@@ -160,6 +161,8 @@ namespace te
 
           virtual void initToolbars();
 
+          virtual void initStatusBar();
+
           virtual void initSlotsConnections();
 
           //! Qt components
@@ -229,7 +232,9 @@ namespace te
           QAction* m_mapStopDraw;
 
           QWidget* m_centralwidget;
-          
+
+          QLineEdit* m_mapSRIDLineEdit;
+          QLineEdit* m_coordinateLineEdit;
 
           QMenuBar* m_menubar;
           //QMenu* m_editMenu;

@@ -115,9 +115,19 @@ namespace te
           */
           void selectionChanged(te::da::ObjectIdSet* oids, const bool& add);
 
+          /*!
+            \brief Removes the \a oids from the list of selected in the Layer.
+
+            \param oids Set of objects ids to be removed.
+          */
+          void removeSelectedOIds(te::da::ObjectIdSet* oids);
+
         signals:
 
-          void closed(te::qt::af::DataSetTableDockWidget* wid);
+          /*!
+            \brief Emitted before this widget was closed.
+          */
+          void closed(te::qt::af::DataSetTableDockWidget*);
 
         protected:
 

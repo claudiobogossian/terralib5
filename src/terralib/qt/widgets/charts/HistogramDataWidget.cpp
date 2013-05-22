@@ -54,12 +54,11 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
     {
       m_ui->m_slicesSpinBox->hide();
       m_ui->slicesLabel->hide();
-      m_ui->propertyLabel->setText(QString::fromStdString("Band:"));
       size_t size =  dataSet->getRaster(rpos)->getNumberOfBands();
       for (size_t i = 0; i < size; i++)
       {
         item = QString::number(i);
-        m_ui->m_propertyComboBox->addItem(item);
+        m_ui->m_propertyComboBox->addItem((QString::fromStdString("Band: ") + item));
       }
     }
   else

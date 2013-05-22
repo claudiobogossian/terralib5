@@ -34,6 +34,7 @@
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
 #include "../events/ProjectEvents.h"
+#include "../events/ToolEvents.h"
 #include "../ApplicationController.h"
 #include "../Project.h"
 #include "MapDisplay.h"
@@ -48,6 +49,7 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 {
   // CoordTracking tool
   te::qt::widgets::CoordTracking* coordTracking = new te::qt::widgets::CoordTracking(m_display, this);
+  connect(coordTracking, SIGNAL(coordTracked(QPointF&)), SLOT(onCoordTracked(QPointF&)));
   m_display->installEventFilter(coordTracking);
 
   // Zoom Wheel tool
@@ -147,9 +149,15 @@ void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
   m_display->installEventFilter(m_tool);
 }
 
+void te::qt::af::MapDisplay::onCoordTracked(QPointF& coordinate)
+{
+  te::qt::af::evt::CoordinateTracked e(coordinate.x(), coordinate.y());
+  ApplicationController::getInstance().broadcast(&e);
+}
+
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
-  switch (e->m_id)
+  switch(e->m_id)
   {
     case te::qt::af::evt::PROJECT_ADDED:
       clear();

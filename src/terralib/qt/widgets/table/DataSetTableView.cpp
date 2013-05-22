@@ -6,8 +6,9 @@
 
 // TerraLib include files
 #include "../../../dataaccess/dataset/DataSet.h"
-#include "../../../dataaccess/utils/Utils.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 
 // Qt
 #include <QtGui/QHeaderView>
@@ -375,6 +376,17 @@ void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool&
   removeSelection(row, row);
 
   te::da::ObjectIdSet* oids = m_model->getObjectIdSet(row, row);
+
+  if(add)
+  {
+    te::da::ObjectId* oid = *oids->begin();
+
+    if(m_delegate->getSelected()->contains(oid))
+    {
+      emit deselectOIds(oids);
+      return;
+    }
+  }
 
   emit selectOIds(oids, add);
 }

@@ -98,6 +98,10 @@ void te::qt::af::LayerDecorator::select(te::da::ObjectIdSet* oids)
 void te::qt::af::LayerDecorator::deselect(const te::da::ObjectIdSet* oids)
 {
   m_decorated->deselect(oids);
+
+  te::qt::af::evt::HighlightObjects evt(this);
+
+  ApplicationController::getInstance().broadcast(&evt);
 }
 
 const te::da::ObjectIdSet* te::qt::af::LayerDecorator::getSelected() const

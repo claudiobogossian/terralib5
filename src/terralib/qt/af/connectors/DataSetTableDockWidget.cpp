@@ -35,6 +35,7 @@ QDockWidget(parent, Qt::Widget),
   setAttribute(Qt::WA_DeleteOnClose, true);
 
   connect (m_view, SIGNAL(selectOIds(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
+  connect (m_view, SIGNAL(deselectOIds(te::da::ObjectIdSet*)), SLOT(removeSelectedOIds(te::da::ObjectIdSet*)));
 }
 
 te::qt::af::DataSetTableDockWidget::~DataSetTableDockWidget()
@@ -81,4 +82,10 @@ void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* o
     m_layer->clearSelected();
 
   m_layer->select(oids);
+}
+
+void te::qt::af::DataSetTableDockWidget::removeSelectedOIds(te::da::ObjectIdSet* oids)
+{
+  if(m_layer->getSelected() != 0)
+    m_layer->deselect(oids);
 }
