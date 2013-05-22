@@ -49,7 +49,8 @@ namespace te
 {
   namespace rp
   {
-
+    // -----------------------------------------------------------------------
+    
     TiePointsLocator::InputParameters::InputParameters()
     {
       reset();
@@ -151,6 +152,8 @@ namespace te
     {
       return new InputParameters( *this );
     }
+    
+    // -----------------------------------------------------------------------
 
     TiePointsLocator::OutputParameters::OutputParameters()
     {
@@ -189,6 +192,28 @@ namespace te
     {
       return new OutputParameters( *this );
     }
+    
+    // -----------------------------------------------------------------------
+    
+    TiePointsLocator::DoublesMatrix::DoublesMatrix()
+    {
+    }
+    
+    TiePointsLocator::DoublesMatrix::~DoublesMatrix()
+    {
+    }    
+    
+    // -----------------------------------------------------------------------
+    
+    TiePointsLocator::UCharsMatrix::UCharsMatrix()
+    {
+    }
+    
+    TiePointsLocator::UCharsMatrix::~UCharsMatrix()
+    {
+    }     
+    
+    // -----------------------------------------------------------------------
 
     TiePointsLocator::TiePointsLocator()
     {
@@ -401,12 +426,12 @@ namespace te
       
       // Generating raster 1 features
       
-      Matrix< double > raster1Features;
+      DoublesMatrix raster1Features;
       InterestPointsSetT raster1InterestPoints;
       {
         // loading raster data
-        std::vector< boost::shared_ptr< Matrix< double > > > raster1Data;
-        Matrix< unsigned char > maskRaster1Data;
+        std::vector< boost::shared_ptr< DoublesMatrix > > raster1Data;
+        UCharsMatrix maskRaster1Data;
         
         TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
           m_inputParameters.m_inRaster1Ptr,
@@ -434,11 +459,11 @@ namespace te
 
         if( m_inputParameters.m_gaussianFilterIterations )
         {
-          boost::shared_ptr< Matrix< double > > tempMatrix( 
-            new Matrix< double > );
+          boost::shared_ptr< DoublesMatrix > tempMatrix( 
+            new DoublesMatrix );
           TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
             0, 0,
-            Matrix< double >::AutoMemPol, 
+            DoublesMatrix::AutoMemPol, 
             raster1Data[ 0 ]->getMaxTmpFileSize(),
             raster1Data[ 0 ]->getMaxMemPercentUsage() ),
             "Cannot allocate image matrix" );
@@ -447,7 +472,8 @@ namespace te
             *(raster1Data[ 0 ]), 
             *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
             "Gaussian filter error" );
-
+            
+          raster1Data[ 0 ]->reset();
           raster1Data[ 0 ] = tempMatrix;
           
 //        createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsSetT(), "raster1Filtered");          
@@ -478,7 +504,7 @@ namespace te
           
         // Generting features (one feature per line)
         
-        raster1Features.reset( Matrix< double >::RAMMemPol );
+        raster1Features.reset( DoublesMatrix::RAMMemPol );
         InterestPointsSetT auxInterestPoints;
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
@@ -503,13 +529,13 @@ namespace te
       
       // Generating raster 2 features
       
-      Matrix< double > raster2Features;
+      DoublesMatrix raster2Features;
       InterestPointsSetT raster2InterestPoints;
       {
         // Loading image data
       
-        std::vector< boost::shared_ptr< Matrix< double > > > raster2Data;
-        Matrix< unsigned char > maskRaster2Data;
+        std::vector< boost::shared_ptr< DoublesMatrix > > raster2Data;
+        UCharsMatrix maskRaster2Data;
                      
         TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
           m_inputParameters.m_inRaster2Ptr,
@@ -537,13 +563,13 @@ namespace te
         
         if( m_inputParameters.m_gaussianFilterIterations )
         {
-          boost::shared_ptr< Matrix< double > > tempMatrix( 
-            new Matrix< double > );
+          boost::shared_ptr< DoublesMatrix > tempMatrix( 
+            new DoublesMatrix );
           
-          tempMatrix.reset( new Matrix< double > );
+          tempMatrix.reset( new DoublesMatrix );
           TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
             0, 0,
-            Matrix< double >::AutoMemPol, 
+            DoublesMatrix::AutoMemPol, 
             raster2Data[ 0 ]->getMaxTmpFileSize(),
             raster2Data[ 0 ]->getMaxMemPercentUsage() ),
             "Cannot allocate image matrix" );          
@@ -583,7 +609,7 @@ namespace te
           
         // Generting features (one feature per line)
 
-        raster2Features.reset( Matrix< double >::RAMMemPol );
+        raster2Features.reset( DoublesMatrix::RAMMemPol );
         InterestPointsSetT auxInterestPoints;        
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
@@ -748,12 +774,12 @@ namespace te
       // Locating interest points and features from raster 1
       
       InterestPointsSetT raster1InterestPoints;
-      Matrix< double > raster1Features;
+      DoublesMatrix raster1Features;
       {
         // Loading image data
         
-        std::vector< boost::shared_ptr< Matrix< double > > > rasterData;
-        Matrix< unsigned char > maskRasterData;
+        std::vector< boost::shared_ptr< DoublesMatrix > > rasterData;
+        UCharsMatrix maskRasterData;
         
         TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
           m_inputParameters.m_inRaster1Ptr,
@@ -782,7 +808,7 @@ namespace te
         
         // Creating the integral image
         
-        Matrix< double > integralRaster;
+        DoublesMatrix integralRaster;
         
         TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(rasterData[ 0 ]), 
           integralRaster ), "Integral image creation error" );
@@ -836,12 +862,12 @@ namespace te
       // Locating interest points and features from raster 2
       
       InterestPointsSetT raster2InterestPoints;
-      Matrix< double > raster2Features;
+      DoublesMatrix raster2Features;
       {
         // Loading image data
         
-        std::vector< boost::shared_ptr< Matrix< double > > > rasterData;
-        Matrix< unsigned char > maskRasterData;
+        std::vector< boost::shared_ptr< DoublesMatrix > > rasterData;
+        UCharsMatrix maskRasterData;
         
         TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
           m_inputParameters.m_inRaster2Ptr,
@@ -870,7 +896,7 @@ namespace te
         
         // Creating the integral image
         
-        Matrix< double > integralRaster;
+        DoublesMatrix integralRaster;
         
         TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(rasterData[ 0 ]), 
           integralRaster ), "Integral image creation error" );
@@ -1324,8 +1350,8 @@ namespace te
       const double rescaleFactorX,
       const double rescaleFactorY,
       const te::rst::Interpolator::Method rasterInterpMethod,
-      std::vector< boost::shared_ptr< Matrix< double > > >& loadedRasterData,
-      Matrix< unsigned char >& loadedMaskRasterData )
+      std::vector< boost::shared_ptr< DoublesMatrix > >& loadedRasterData,
+      UCharsMatrix& loadedMaskRasterData )
     {
       // Allocating the output matrixes
       
@@ -1343,7 +1369,7 @@ namespace te
         {
           TERP_TRUE_OR_RETURN_FALSE( loadedMaskRasterData.reset( 
             rescaledNLines, rescaledNCols,
-            Matrix< unsigned char >::AutoMemPol, maxTmpFileSize,
+            UCharsMatrix::AutoMemPol, maxTmpFileSize,
             maxMemPercentUsagePerMatrix ),
             "Cannot allocate image 1 mask matrix" );          
         }
@@ -1353,10 +1379,10 @@ namespace te
         for( unsigned int rasterBandsIdx = 0 ; rasterBandsIdx < rasterBands.size() ;
           ++rasterBandsIdx )
         {
-          loadedRasterData[ rasterBandsIdx ].reset( new Matrix< double > );
+          loadedRasterData[ rasterBandsIdx ].reset( new DoublesMatrix );
           TERP_TRUE_OR_RETURN_FALSE( loadedRasterData[ rasterBandsIdx ]->reset( 
             rescaledNLines, rescaledNCols,
-            Matrix< double >::AutoMemPol, maxTmpFileSize,
+            DoublesMatrix::AutoMemPol, maxTmpFileSize,
             maxMemPercentUsagePerMatrix ),
             "Cannot allocate image 1 matrix" );
         }
@@ -1443,8 +1469,8 @@ namespace te
     }
     
     bool TiePointsLocator::locateMoravecInterestPoints( 
-      const Matrix< double >& rasterData,
-      Matrix< unsigned char > const* maskRasterDataPtr,
+      const DoublesMatrix& rasterData,
+      UCharsMatrix const* maskRasterDataPtr,
       const unsigned int moravecWindowWidth,
       const unsigned int maxInterestPoints,
       const unsigned int enableMultiThread,
@@ -1536,17 +1562,16 @@ namespace te
       const unsigned int lastBufferLineIdx = bufferLines - 1;
       const unsigned int bufferCols = paramsPtr->m_rasterDataPtr->getColumnsNumber();
       const unsigned int rasterBufferLineSizeBytes = sizeof( 
-        MoravecLocatorThreadParams::RasterDataContainerT::ElementTypeT ) * 
-        bufferCols;
+        DoublesMatrix::ElementTypeT ) * bufferCols;
       const unsigned int maskRasterBufferLineSizeBytes = sizeof(
-        MoravecLocatorThreadParams::MaskRasterDataContainerT::ElementTypeT ) * 
+        UCharsMatrix::ElementTypeT ) * 
         bufferCols;
       
       paramsPtr->m_rastaDataAccessMutexPtr->unlock();
         
-      Matrix< double > rasterBufferDataHandler;
+      DoublesMatrix rasterBufferDataHandler;
       if( ! rasterBufferDataHandler.reset( bufferLines, bufferCols, 
-        Matrix< double >::RAMMemPol ) )
+        DoublesMatrix::RAMMemPol ) )
       {
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
         paramsPtr->m_returnValuePtr = false;
@@ -1566,7 +1591,7 @@ namespace te
       
       // Allocating the mask raster buffer      
       
-      Matrix< double > maskRasterBufferDataHandler;
+      DoublesMatrix maskRasterBufferDataHandler;
       
       boost::scoped_array< double* > maskRasterBufferHandler( new double*[ bufferLines ] );
       
@@ -1575,7 +1600,7 @@ namespace te
       if( paramsPtr->m_maskRasterDataPtr )
       {
         if( ! maskRasterBufferDataHandler.reset( bufferLines, bufferCols, 
-          Matrix< double >::RAMMemPol ) )
+          DoublesMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
           paramsPtr->m_returnValuePtr = false;
@@ -1595,9 +1620,9 @@ namespace te
       
       // Allocating the internal maximas values data buffer
         
-      Matrix< double > maximasBufferDataHandler;
+      DoublesMatrix maximasBufferDataHandler;
       if( ! maximasBufferDataHandler.reset( bufferLines, bufferCols, 
-        Matrix< double >::RAMMemPol ) )
+        DoublesMatrix::RAMMemPol ) )
       {
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
         paramsPtr->m_returnValuePtr = false;
@@ -1833,8 +1858,8 @@ namespace te
     }    
     
     bool TiePointsLocator::locateSurfInterestPoints( 
-      const Matrix< double >& integralRasterData,
-      Matrix< unsigned char > const* maskRasterDataPtr,
+      const DoublesMatrix& integralRasterData,
+      UCharsMatrix const* maskRasterDataPtr,
       const unsigned int maxInterestPoints,
       const unsigned int enableMultiThread,
       const unsigned int scalesNumber,
@@ -1947,11 +1972,11 @@ namespace te
       // Allocating the internal raster data buffer
       // and the mask raster buffer
       
-      Matrix< double > rasterBufferDataHandler;
+      DoublesMatrix rasterBufferDataHandler;
       boost::scoped_array< double* > rasterBufferHandler( new double*[ buffersLines ] );
       {
         if( ! rasterBufferDataHandler.reset( buffersLines, buffersCols, 
-          Matrix< double >::RAMMemPol ) )
+          DoublesMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
           paramsPtr->m_returnValuePtr = false;
@@ -1970,7 +1995,7 @@ namespace te
       
       // Allocating the mask raster buffer      
       
-      Matrix< double > maskRasterBufferDataHandler;
+      DoublesMatrix maskRasterBufferDataHandler;
       
       boost::scoped_array< double* > maskRasterBufferHandler( new double*[ buffersLines ] );
       
@@ -1979,7 +2004,7 @@ namespace te
       if( paramsPtr->m_maskRasterDataPtr )
       {
         if( ! maskRasterBufferDataHandler.reset( buffersLines, buffersCols, 
-          Matrix< double >::RAMMemPol ) )
+          DoublesMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
           paramsPtr->m_returnValuePtr = false;
@@ -1999,7 +2024,7 @@ namespace te
       
       // Allocating the internal octaves buffers
       
-      Matrix< double > octavesBufferDataHandler;
+      DoublesMatrix octavesBufferDataHandler;
       std::vector< std::vector< boost::shared_array< double* > > >
         octavesBufferHandlers;
       {
@@ -2007,7 +2032,7 @@ namespace te
           buffersLines * paramsPtr->m_octavesNumber * paramsPtr->m_scalesNumber;
         if( ! octavesBufferDataHandler.reset( octavesBufferDataHandlerLines , 
           buffersCols, 
-          Matrix< double >::RAMMemPol ) )
+          DoublesMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
           paramsPtr->m_returnValuePtr = false;
@@ -2061,7 +2086,7 @@ namespace te
       
       // Allocating the laplacian sign buffers
       
-      Matrix< unsigned char > laplacianSignBufferDataHandler;
+      UCharsMatrix laplacianSignBufferDataHandler;
       std::vector< std::vector< boost::shared_array< unsigned char* > > >
         laplacianSignBufferHandlers;
       {
@@ -2069,7 +2094,7 @@ namespace te
           buffersLines * paramsPtr->m_octavesNumber * paramsPtr->m_scalesNumber;
         if( ! laplacianSignBufferDataHandler.reset( laplacianSignBufferDataHandlerLines , 
           buffersCols, 
-          Matrix< unsigned char >::RAMMemPol ) )
+          UCharsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
           paramsPtr->m_returnValuePtr = false;
@@ -2415,7 +2440,7 @@ namespace te
     }
     
     void TiePointsLocator::createTifFromMatrix( 
-      const Matrix< double >& rasterData,
+      const DoublesMatrix& rasterData,
       const InterestPointsSetT& interestPoints,
       const std::string& tifFileName )
     {
@@ -2490,8 +2515,8 @@ namespace te
       }
     }
     
-    bool TiePointsLocator::applyGaussianFilter( const Matrix< double >& inputData,
-      Matrix< double >& outputData, const unsigned int iterationsNumber )
+    bool TiePointsLocator::applyGaussianFilter( const DoublesMatrix& inputData,
+      DoublesMatrix& outputData, const unsigned int iterationsNumber )
     {
       if( iterationsNumber == 0 ) return false;
       
@@ -2507,12 +2532,12 @@ namespace te
       
       // internal temp matrixes
       
-      Matrix< double > tempMatrix;
+      DoublesMatrix tempMatrix;
       
       if( iterationsNumber > 1 )
       {
         TERP_TRUE_OR_RETURN_FALSE( tempMatrix.reset( nLines, nCols,
-          Matrix< double >::AutoMemPol ),
+          DoublesMatrix::AutoMemPol ),
           "Cannot allocate image matrix" );
       }
       
@@ -2530,9 +2555,9 @@ namespace te
       
       /* Smoothing */
       
-      Matrix< double > const* inputPtr = 0;
-      Matrix< double >* outputPtr = 0;
-      Matrix< double > const* auxPtr = 0;
+      DoublesMatrix const* inputPtr = 0;
+      DoublesMatrix* outputPtr = 0;
+      DoublesMatrix const* auxPtr = 0;
       
       for( unsigned int iteration = 0 ; iteration < iterationsNumber ;
         ++iteration )
@@ -2555,7 +2580,7 @@ namespace te
         {
           auxPtr = inputPtr;
           inputPtr = outputPtr;
-          outputPtr = (Matrix< double >*)auxPtr;
+          outputPtr = (DoublesMatrix*)auxPtr;
         }
         
         for( currLine = 1 ; currLine < lastLineIndex ; ++currLine ) 
@@ -2577,8 +2602,8 @@ namespace te
       return true;
     }
     
-    bool TiePointsLocator::applyMeanFilter( const Matrix< double >& inputData,
-      Matrix< double >& outputData, const unsigned int iterationsNumber )
+    bool TiePointsLocator::applyMeanFilter( const DoublesMatrix& inputData,
+      DoublesMatrix& outputData, const unsigned int iterationsNumber )
     {
       if( iterationsNumber == 0 )
       {
@@ -2599,12 +2624,12 @@ namespace te
         
         // internal temp matrixes
         
-        Matrix< double > tempMatrix;
+        DoublesMatrix tempMatrix;
         
         if( iterationsNumber > 1 )
         {
           TERP_TRUE_OR_RETURN_FALSE( tempMatrix.reset( nLines, nCols,
-            Matrix< double >::AutoMemPol ),
+            DoublesMatrix::AutoMemPol ),
             "Cannot allocate image matrix" );
         }
         
@@ -2622,9 +2647,9 @@ namespace te
         
         /* Smoothing */
         
-        Matrix< double > const* inputPtr = 0;
-        Matrix< double >* outputPtr = 0;
-        Matrix< double > const* auxPtr = 0;
+        DoublesMatrix const* inputPtr = 0;
+        DoublesMatrix* outputPtr = 0;
+        DoublesMatrix const* auxPtr = 0;
         double* outputLinePtr = 0;
         unsigned int prevLine = 0;
         unsigned int prevCol = 0;
@@ -2652,10 +2677,10 @@ namespace te
           {
             auxPtr = inputPtr;
             inputPtr = outputPtr;
-            outputPtr = (Matrix< double >*)auxPtr;
+            outputPtr = (DoublesMatrix*)auxPtr;
           }
           
-          const Matrix< double >& internalInputMatrix = *inputPtr;
+          const DoublesMatrix& internalInputMatrix = *inputPtr;
           
           for( currLine = 1 ; currLine < lastLineIndex ; ++currLine ) 
           {
@@ -2688,8 +2713,8 @@ namespace te
       return true;
     }    
 
-    bool TiePointsLocator::createIntegralImage( const Matrix< double >& inputData,
-      Matrix< double >& outputData )
+    bool TiePointsLocator::createIntegralImage( const DoublesMatrix& inputData,
+      DoublesMatrix& outputData )
     {
       TERP_TRUE_OR_RETURN_FALSE( outputData.reset( inputData.getLinesNumber(),
         inputData.getColumnsNumber() ), "Cannot allocate image matrix" );
@@ -2721,9 +2746,9 @@ namespace te
     bool TiePointsLocator::generateCorrelationFeatures( 
       const InterestPointsSetT& interestPoints,
       const unsigned int correlationWindowWidth,
-      const Matrix< double >& rasterData,
+      const DoublesMatrix& rasterData,
       const bool normalize,
-      Matrix< double >& features,
+      DoublesMatrix& features,
       InterestPointsSetT& validInteresPoints )
     {
       // Locating the the valid interest points
@@ -3016,8 +3041,8 @@ namespace te
     
     bool TiePointsLocator::generateSurfFeatures( 
       const InterestPointsSetT& interestPoints,
-      const Matrix< double >& integralRasterData,
-      Matrix< double >& features,
+      const DoublesMatrix& integralRasterData,
+      DoublesMatrix& features,
       InterestPointsSetT& validInterestPoints )
     {
       validInterestPoints.clear();
@@ -3376,7 +3401,7 @@ namespace te
       return true;
     }    
     
-    void TiePointsLocator::features2Tiff( const Matrix< double >& features,
+    void TiePointsLocator::features2Tiff( const DoublesMatrix& features,
       const InterestPointsSetT& interestPoints,
       const std::string& fileNameBeginning )
     {
@@ -3441,8 +3466,8 @@ namespace te
     }
     
     bool TiePointsLocator::executeMatchingByCorrelation( 
-      const Matrix< double >& featuresSet1,
-      const Matrix< double >& featuresSet2,
+      const DoublesMatrix& featuresSet1,
+      const DoublesMatrix& featuresSet2,
       const InterestPointsSetT& interestPointsSet1,
       const InterestPointsSetT& interestPointsSet2,
       const unsigned int maxPt1ToPt2Distance,
@@ -3492,9 +3517,9 @@ namespace te
       
       // Creating the correlation matrix
       
-      Matrix< double > corrMatrix;
+      DoublesMatrix corrMatrix;
       TERP_TRUE_OR_RETURN_FALSE( corrMatrix.reset( interestPointsSet1Size,
-       interestPointsSet2Size, Matrix< double >::RAMMemPol ),
+       interestPointsSet2Size, DoublesMatrix::RAMMemPol ),
         "Error crearting the correlation matrix" );
         
       unsigned int col = 0;
@@ -3529,9 +3554,9 @@ namespace te
       if( enableMultiThread )
       {
         TERP_TRUE_OR_RETURN_FALSE( featuresSet1.getMemPolicy() ==
-          Matrix< double >::RAMMemPol, "Invalid memory policy" )
+          DoublesMatrix::RAMMemPol, "Invalid memory policy" )
         TERP_TRUE_OR_RETURN_FALSE( featuresSet2.getMemPolicy() ==
-          Matrix< double >::RAMMemPol, "Invalid memory policy" )    
+          DoublesMatrix::RAMMemPol, "Invalid memory policy" )    
           
         const unsigned int procsNumber = te::common::GetPhysProcNumber();
         
@@ -3629,11 +3654,11 @@ namespace te
       ExecuteMatchingByCorrelationThreadEntryParams* paramsPtr)
     {
       assert( paramsPtr->m_featuresSet1Ptr->getMemPolicy() == 
-        Matrix< double >::RAMMemPol );
+        DoublesMatrix::RAMMemPol );
       assert( paramsPtr->m_featuresSet2Ptr->getMemPolicy() == 
-        Matrix< double >::RAMMemPol );
+        DoublesMatrix::RAMMemPol );
       assert( paramsPtr->m_corrMatrixPtr->getMemPolicy() == 
-        Matrix< double >::RAMMemPol );       
+        DoublesMatrix::RAMMemPol );       
         
       unsigned int feat2Idx = 0;
       double const* feat1Ptr = 0;
@@ -3749,8 +3774,8 @@ namespace te
     }
     
     bool TiePointsLocator::executeMatchingByEuclideanDist( 
-      const Matrix< double >& featuresSet1,
-      const Matrix< double >& featuresSet2,
+      const DoublesMatrix& featuresSet1,
+      const DoublesMatrix& featuresSet2,
       const InterestPointsSetT& interestPointsSet1,
       const InterestPointsSetT& interestPointsSet2,
       const unsigned int maxPt1ToPt2PixelDistance,
@@ -3799,9 +3824,9 @@ namespace te
       
       // Creating the distances matrix
       
-      Matrix< double > distMatrix;
+      DoublesMatrix distMatrix;
       TERP_TRUE_OR_RETURN_FALSE( distMatrix.reset( interestPointsSet1Size,
-       interestPointsSet2Size, Matrix< double >::RAMMemPol ),
+       interestPointsSet2Size, DoublesMatrix::RAMMemPol ),
         "Error crearting the correlation matrix" );
         
       unsigned int col = 0;
@@ -3836,9 +3861,9 @@ namespace te
       if( enableMultiThread )
       {
         TERP_TRUE_OR_RETURN_FALSE( featuresSet1.getMemPolicy() ==
-          Matrix< double >::RAMMemPol, "Invalid memory policy" )
+          DoublesMatrix::RAMMemPol, "Invalid memory policy" )
         TERP_TRUE_OR_RETURN_FALSE( featuresSet2.getMemPolicy() ==
-          Matrix< double >::RAMMemPol, "Invalid memory policy" )    
+          DoublesMatrix::RAMMemPol, "Invalid memory policy" )    
           
         const unsigned int procsNumber = te::common::GetPhysProcNumber();
         
@@ -3936,9 +3961,9 @@ namespace te
       ExecuteMatchingByEuclideanDistThreadEntryParams* paramsPtr)
     {
       assert( paramsPtr->m_featuresSet1Ptr->getMemPolicy() == 
-        Matrix< double >::RAMMemPol );
+        DoublesMatrix::RAMMemPol );
       assert( paramsPtr->m_featuresSet2Ptr->getMemPolicy() == 
-        Matrix< double >::RAMMemPol );
+        DoublesMatrix::RAMMemPol );
       assert( paramsPtr->m_distMatrixPtr->getMemPolicy() == 
         Matrix< double >::RAMMemPol );
       assert( paramsPtr->m_featuresSet1Ptr->getColumnsNumber() ==
