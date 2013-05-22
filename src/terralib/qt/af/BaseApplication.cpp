@@ -52,7 +52,6 @@
 #include "../widgets/progress/ProgressViewerWidget.h"
 #include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/se/RasterVisualDockWidget.h"
-#include "../widgets/table/DataSetTableDockWidget.h"
 #include "../widgets/tools/Info.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
@@ -60,9 +59,9 @@
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
 #include "../widgets/srs/SRSManagerDialog.h"
+#include "connectors/DataSetTableDockWidget.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
-#include "connectors/TabularViewer.h"
 #include "events/LayerEvents.h"
 #include "events/ProjectEvents.h"
 #include "events/ApplicationEvents.h"
@@ -99,9 +98,22 @@
 // Boost
 #include <boost/format.hpp>
 
-te::qt::widgets::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::widgets::DataSetTableDockWidget*>& docs)
+te::map::AbstractLayerPtr FindLayerInProject(te::map::AbstractLayer* layer, te::qt::af::Project* proj)
 {
-  std::vector<te::qt::widgets::DataSetTableDockWidget*>::const_iterator it;
+  std::list<te::map::AbstractLayerPtr> layers = proj->getLayers();
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+
+  for(it=layers.begin(); it!=layers.end(); ++it)
+    if(it->get()->getId() == layer->getId())
+      return *it;
+
+  return 0;
+}
+
+te::qt::af::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::af::DataSetTableDockWidget*>& docs)
+{
+  std::vector<te::qt::af::DataSetTableDockWidget*>::const_iterator it;
 
   for(it=docs.begin(); it!=docs.end(); ++it)
     if((*it)->getLayer() == layer)
@@ -114,7 +126,6 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
     m_explorer(0),
     m_display(0),
-    m_viewer(0),
     m_project(0),
     m_controller(0)
 {
@@ -161,7 +172,6 @@ te::qt::af::BaseApplication::~BaseApplication()
 {
   delete m_explorer;
   delete m_display;
-  delete m_viewer;
   delete m_project;
   delete m_progressDockWidget;
 
@@ -523,22 +533,24 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
     return;
   }
 
-  te::map::AbstractLayer* lay = (*layers.begin())->getLayer().get();
+  te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
 
-  te::qt::widgets::DataSetTableDockWidget* doc = GetLayerDock(lay, m_tableDocks);
+  te::qt::af::DataSetTableDockWidget* doc = GetLayerDock(lay.get(), m_tableDocks);
 
   if(doc == 0)
   {
-    doc = new te::qt::widgets::DataSetTableDockWidget(this);
-    doc->setLayer(lay);
+    doc = new te::qt::af::DataSetTableDockWidget(this);
+    doc->setLayer(lay.get());
     addDockWidget(Qt::BottomDockWidgetArea, doc);
 
-    connect (doc, SIGNAL(closed(te::qt::widgets::DataSetTableDockWidget*)), SLOT(onLayerTableClose(te::qt::widgets::DataSetTableDockWidget*)));
+    connect (doc, SIGNAL(closed(te::qt::af::DataSetTableDockWidget*)), SLOT(onLayerTableClose(te::qt::af::DataSetTableDockWidget*)));
 
     if(!m_tableDocks.empty())
       tabifyDockWidget(m_tableDocks[m_tableDocks.size()-1], doc);
   
     m_tableDocks.push_back(doc);
+
+    ApplicationController::getInstance().addListener(doc);
   }
 
   doc->show();
@@ -711,9 +723,9 @@ void te::qt::af::BaseApplication::showProgressDockWidget()
   m_progressDockWidget->setVisible(true);
 }
 
-void te::qt::af::BaseApplication::onLayerTableClose(te::qt::widgets::DataSetTableDockWidget* wid)
+void te::qt::af::BaseApplication::onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid)
 {
-  std::vector<te::qt::widgets::DataSetTableDockWidget*>::iterator it;
+  std::vector<DataSetTableDockWidget*>::iterator it;
 
   for(it=m_tableDocks.begin(); it!=m_tableDocks.end(); ++it)
     if(*it == wid)
@@ -721,6 +733,8 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::widgets::DataSetTabl
 
   if(it != m_tableDocks.end())
     m_tableDocks.erase(it);
+
+  ApplicationController::getInstance().removeListener(wid);
 }
 
 void te::qt::af::BaseApplication::onFullScreenToggled(bool checked)

@@ -42,6 +42,7 @@ namespace te
   {
     class DataSet;
     class ObjectId;
+    class ObjectIdSet;
   }
 
   namespace qt
@@ -100,7 +101,7 @@ namespace te
 
             \parama oids The identifiers of the rows to be promoted.
           */
-          void promote(const std::vector<te::da::ObjectId*>& oids);
+          void promote(const te::da::ObjectIdSet* oids);
 
           void orderByColumns(const std::vector<int>& cols);
 
@@ -120,7 +121,21 @@ namespace te
           */
           Promoter* getPromoter();
 
+          /*!
+            \brief Shows an icon for indentify the columns that are used for identify objects.
+          */
           void showOIdsVisible(const bool& visible);
+
+          /*!
+            \brief Returns the ObjectIdSet begining with row \a initRow and ending in \a finalRow.
+
+            \param initRow Initial row.
+
+            \param endRow Final row.
+
+            \note The caller WILL TAKE the ownership of the ObjectIdSet returned.
+          */
+          te::da::ObjectIdSet* getObjectIdSet (const int& initRow, const int& finalRow);
 
           /*!
             \name QAbstractTableModel re-implementation methods.

@@ -26,6 +26,9 @@
 // TerraLib
 #include "../../../common/Exception.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/utils/Utils.h"
+
 #include "DataSetTableModel.h"
 #include "Promoter.h"
 
@@ -90,7 +93,7 @@ void te::qt::widgets::DataSetTableModel::setPromotionEnable(const bool& enable)
   }
 }
 
-void te::qt::widgets::DataSetTableModel::promote(const std::vector<te::da::ObjectId*>& oids)
+void te::qt::widgets::DataSetTableModel::promote(const te::da::ObjectIdSet* oids)
 {
   setPromotionEnable(true);
 
@@ -120,6 +123,30 @@ te::qt::widgets::Promoter* te::qt::widgets::DataSetTableModel::getPromoter()
 void te::qt::widgets::DataSetTableModel::showOIdsVisible(const bool& visible)
 {
   m_OIdsVisible = visible;
+}
+
+te::da::ObjectIdSet* te::qt::widgets::DataSetTableModel::getObjectIdSet (const int& initRow, const int& finalRow)
+{
+  te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
+
+  // Mounting oidset
+  std::vector<size_t>::iterator it;
+
+  for(it=m_pkeysColumns.begin(); it!=m_pkeysColumns.end(); ++it)
+    oids->addProperty(m_dataset->getPropertyName(*it), *it, m_dataset->getPropertyDataType(*it));
+
+  // Loading oid set.
+  int row;
+
+  for(int i=initRow; i<=finalRow; i++)
+  {
+    row = (m_promoter == 0) ? i : m_promoter->getLogicalRow(i);
+    m_dataset->move(row);
+
+    oids->add(te::da::GenerateOID(m_dataset, oids->getPropertyNames()));
+  }
+
+  return oids;
 }
 
 int te::qt::widgets::DataSetTableModel::rowCount(const QModelIndex & parent) const
@@ -152,7 +179,10 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
         m_dataset->move(row);
       }
 
-      return m_dataset->getAsString(index.column()).c_str();
+      return (m_dataset->isNull(index.column())) ? 
+        tr("Null") : 
+        m_dataset->getAsString(index.column()).c_str();
+
     break;
 
     default:

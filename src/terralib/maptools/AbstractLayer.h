@@ -207,7 +207,7 @@ namespace te
         /*!
           \brief It clears the selected group of this Layer.
         */
-        void clearSelected();
+        virtual void clearSelected();
 
         /*!
           \brief It returns the layer schema.

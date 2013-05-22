@@ -26,9 +26,6 @@
 #include "../../../datatype/SimpleData.h"
 #include "../../../dataaccess/utils/Utils.h"
 
-// STL
-#include <algorithm>
-
 enum COMPARISON
 {
   LESSER,
@@ -36,38 +33,9 @@ enum COMPARISON
   GREATER
 };
 
-//
-void removeAccents(std::string& v)
-{
-  for(size_t i=0; i<v.size(); i++)
-  {
-    if(v[i] == 'á' || v[i] == 'à' || v[i] == 'â' || v[i] == 'ã')
-      v[i] = 'a';
-    else if(v[i] == 'é' || v[i] == 'è' || v[i] == 'ê')
-      v[i] = 'e';
-    else if(v[i] == 'í' || v[i] == 'ì')
-      v[i] = 'i';
-    else if(v[i] == 'ó' || v[i] == 'ò' || v[i] == 'ô' || v[i] == 'õ')
-      v[i] = 'o';
-    else if(v[i] == 'ú' || v[i] == 'ù' || v[i] == 'û')
-      v[i] = 'u';
-    else if(v[i] == 'ç')
-      v[i] = 'c';
-  }
-}
-
 COMPARISON CompareStr (const std::string& lhs, const std::string& rhs)
 {
-  std::string auxL = lhs;
-  std::string auxR = rhs;
-
-  std::transform(auxL.begin(), auxL.end(), auxL.begin(), tolower);
-  std::transform(auxR.begin(), auxR.end(), auxR.begin(), tolower);
-
-  removeAccents(auxR);
-  removeAccents(auxL);
-
-  int aux = auxL.compare(auxR);
+  int aux = lhs.compare(rhs);
 
   COMPARISON comp = (aux > 0) ? GREATER : (aux < 0) ? LESSER : EQUAL;
 
@@ -223,14 +191,15 @@ void te::qt::widgets::Promoter::cleanPreproccessKeys()
   m_enabled = false;
 }
 
-void te::qt::widgets::Promoter::promote(const std::vector<te::da::ObjectId*>& oids)
+void te::qt::widgets::Promoter::promote(const te::da::ObjectIdSet* oids)
 {
-  std::vector<te::da::ObjectId*>::const_iterator it;
+  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
+
   size_t pos=0;
 
   resetPromotion();
 
-  for(it=oids.begin(); it!=oids.end(); ++it)
+  for(it=oids->begin(); it!=oids->end(); ++it)
   {
     size_t dsPos = map2Row(*it);
 

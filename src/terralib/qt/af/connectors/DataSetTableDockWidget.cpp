@@ -18,28 +18,31 @@
  */
 
 #include "DataSetTableDockWidget.h"
-#include "DataSetTableView.h"
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../widgets/table/DataSetTableView.h"
+#include "events/LayerEvents.h"
 
-te::qt::widgets::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent) :
+te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent) :
 QDockWidget(parent, Qt::Widget),
   m_layer(0)
 {
-  m_view = new DataSetTableView(this);
+  m_view = new te::qt::widgets::DataSetTableView(this);
 
   setWidget(m_view);
 
   setAttribute(Qt::WA_DeleteOnClose, true);
+
+  connect (m_view, SIGNAL(selectOIds(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
 }
 
-te::qt::widgets::DataSetTableDockWidget::~DataSetTableDockWidget()
+te::qt::af::DataSetTableDockWidget::~DataSetTableDockWidget()
 {
   emit closed(this);
 }
 
-void te::qt::widgets::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
+void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
 {
   m_layer = layer;
 
@@ -52,7 +55,30 @@ void te::qt::widgets::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* l
   setWindowTitle(m_layer->getTitle().c_str());
 }
 
-te::map::AbstractLayer* te::qt::widgets::DataSetTableDockWidget::getLayer() const
+te::map::AbstractLayer* te::qt::af::DataSetTableDockWidget::getLayer() const
 {
   return m_layer;
+}
+
+void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt::Event* evt)
+{
+  switch(evt->m_id)
+  {
+    case te::qt::af::evt::LAYER_HIGHLIGHT_OBJECTS:
+      {
+        te::qt::af::evt::HighlightObjects* ev = static_cast<te::qt::af::evt::HighlightObjects*>(evt);
+
+        if(ev->m_layer->getId() == m_layer->getId())
+          m_view->highlightOIds(ev->m_layer->getSelected());
+      }
+    break;
+  }
+}
+
+void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* oids, const bool& add)
+{
+  if (!add)
+    m_layer->clearSelected();
+
+  m_layer->select(oids);
 }
