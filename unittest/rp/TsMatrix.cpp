@@ -113,7 +113,7 @@ void TsMatrix::genericTests()
 void TsMatrix::rAMMemPolTest()
 {
   const unsigned int max_ram  = (unsigned int)
-    ( 0.20 * (double)MIN( ( te::common::GetTotalVirtualMemory() / 2.0 ) - 
+    ( 0.20 * (double)MIN( ( te::common::GetTotalVirtualMemory() / 2 ) - 
     te::common::GetUsedVirtualMemory(), te::common::GetTotalPhysicalMemory() ) );
 
   unsigned long int lines = (unsigned long int)(
@@ -148,6 +148,8 @@ void TsMatrix::rAMMemPolTest()
       ++counter;
     }
   }
+  
+  m1.reset();
 
   return;
 }
@@ -191,6 +193,8 @@ void TsMatrix::autoMemPolTest()
       ++counter;
     }
   }
+  
+  m1.reset();
 
   return;
 }
@@ -227,4 +231,8 @@ void TsMatrix::diskMemPolTest()
       ++counter;
     }
   }
+  
+  m1.reset();
+  
+  return;
 }

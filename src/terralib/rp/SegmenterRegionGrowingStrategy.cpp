@@ -37,6 +37,8 @@
 #include <cfloat>
 #include <cmath>
 
+#include <boost/lexical_cast.hpp>
+
 namespace
 {
   static te::rp::SegmenterRegionGrowingStrategyFactory 
@@ -1696,7 +1698,7 @@ namespace te
         {
           value = ( ((double)segmentsIds( line, col )) - offset ) * scale;
           TERP_TRUE_OR_THROW( value <= 255.0, "Invalid value:" +
-            te::common::Convert2String( value ))
+            boost::lexical_cast< std::string >( value ) )
           
           rasterPtr->setValue( col, line, value , 0 );
         }

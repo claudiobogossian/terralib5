@@ -157,6 +157,33 @@ namespace te
         };
         
         /*!
+          \class DoublesMatrix
+          \brief A matrix do store double values.
+         */        
+        class DoublesMatrix : public te::rp::Matrix< double >
+        { 
+          public :
+            
+            DoublesMatrix();
+            
+            ~DoublesMatrix();
+        };
+        
+        /*!
+          \class UCharsMatrix
+          \brief A matrix do store unsigned char values.
+         */        
+        class UCharsMatrix : public te::rp::Matrix< unsigned char >
+        { 
+          public :
+            
+            UCharsMatrix();
+            
+            ~UCharsMatrix();
+        };
+                
+        
+        /*!
           \class OutputParameters
           \brief TiePointsLocator output parameters
          */        
@@ -302,25 +329,15 @@ namespace te
         {
           public :
             
-            /*!
-            \brief Raster data container type.
-            */          
-            typedef Matrix< double > RasterDataContainerT;
-            
-            /*!
-            \brief Mask raster data container type.
-            */          
-            typedef Matrix< unsigned char > MaskRasterDataContainerT;            
-            
             bool* m_returnValuePtr; //! Thread return value pointer.
             
             unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 11, default: 11 ).
             
             unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
             
-            RasterDataContainerT const* m_rasterDataPtr; //!< The loaded raster data.
+            DoublesMatrix const* m_rasterDataPtr; //!< The loaded raster data.
             
-            MaskRasterDataContainerT const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
+            UCharsMatrix const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
             
             InterestPointsSetT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
             
@@ -345,16 +362,6 @@ namespace te
         {
           public :
             
-            /*!
-            \brief Raster data container type.
-            */          
-            typedef Matrix< double > RasterDataContainerT;
-            
-            /*!
-            \brief Mask raster data container type.
-            */          
-            typedef Matrix< unsigned char > MaskRasterDataContainerT;            
-            
             bool* m_returnValuePtr; //! Thread return value pointer.
             
             unsigned int m_scalesNumber; //!< The number of sub-samples scales to generate (minimum:3).
@@ -363,9 +370,9 @@ namespace te
             
             unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
             
-            RasterDataContainerT const* m_integralRasterDataPtr; //!< The integral image raster data.
+            DoublesMatrix const* m_integralRasterDataPtr; //!< The integral image raster data.
             
-            MaskRasterDataContainerT const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
+            UCharsMatrix const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
             
             InterestPointsSetT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
             
@@ -389,9 +396,9 @@ namespace te
         {
           public :
             
-            Matrix< double > const* m_featuresSet1Ptr;
+            DoublesMatrix const* m_featuresSet1Ptr;
             
-            Matrix< double > const* m_featuresSet2Ptr;
+            DoublesMatrix const* m_featuresSet2Ptr;
             
             InterestPointT const* m_interestPointsSet1Ptr;
 
@@ -399,7 +406,7 @@ namespace te
             
             unsigned int* m_nextFeatureIdx1ToProcessPtr;
             
-            Matrix< double >* m_corrMatrixPtr;
+            DoublesMatrix* m_corrMatrixPtr;
             
             boost::mutex* m_syncMutexPtr;
             
@@ -419,9 +426,9 @@ namespace te
         {
           public :
             
-            Matrix< double > const* m_featuresSet1Ptr;
+            DoublesMatrix const* m_featuresSet1Ptr;
             
-            Matrix< double > const* m_featuresSet2Ptr;
+            DoublesMatrix const* m_featuresSet2Ptr;
             
             InterestPointT const* m_interestPointsSet1Ptr;
 
@@ -429,7 +436,7 @@ namespace te
             
             unsigned int* m_nextFeatureIdx1ToProcessPtr;
             
-            Matrix< double >* m_distMatrixPtr;
+            DoublesMatrix* m_distMatrixPtr;
             
             boost::mutex* m_syncMutexPtr;
             
@@ -567,8 +574,8 @@ namespace te
           const double rescaleFactorX,
           const double rescaleFactorY,
           const te::rst::Interpolator::Method rasterInterpMethod,
-          std::vector< boost::shared_ptr< Matrix< double > > >& loadedRasterData,
-          Matrix< unsigned char >& loadedMaskRasterData );
+          std::vector< boost::shared_ptr< DoublesMatrix > >& loadedRasterData,
+          UCharsMatrix& loadedMaskRasterData );
           
         /*!
           \brief Moravec interest points locator.
@@ -588,8 +595,8 @@ namespace te
           \return true if ok, false on errors.
         */             
         static bool locateMoravecInterestPoints( 
-          const Matrix< double >& rasterData,
-          Matrix< unsigned char > const* maskRasterDataPtr,
+          const DoublesMatrix& rasterData,
+          UCharsMatrix const* maskRasterDataPtr,
           const unsigned int moravecWindowWidth,
           const unsigned int maxInterestPoints,
           const unsigned int enableMultiThread,
@@ -619,8 +626,8 @@ namespace te
           InterestPointT::m_feature3 will 1 if the laplacian sign is positive or zero if negative.
         */             
         static bool locateSurfInterestPoints( 
-          const Matrix< double >& integralRasterData,
-          Matrix< unsigned char > const* maskRasterDataPtr,
+          const DoublesMatrix& integralRasterData,
+          UCharsMatrix const* maskRasterDataPtr,
           const unsigned int maxInterestPoints,
           const unsigned int enableMultiThread,
           const unsigned int scalesNumber,
@@ -703,7 +710,7 @@ namespace te
           \param tifFileName Tif file name.
         */             
         static void createTifFromMatrix( 
-          const Matrix< double >& rasterData,
+          const DoublesMatrix& rasterData,
           const InterestPointsSetT& interestPoints,
           const std::string& tifFileName );
           
@@ -719,8 +726,8 @@ namespace te
           \return true if ok, false on errors.
         */             
         static bool applyGaussianFilter( 
-          const Matrix< double >& inputData,
-          Matrix< double >& outputData,
+          const DoublesMatrix& inputData,
+          DoublesMatrix& outputData,
           const unsigned int iterationsNumber );
           
         /*!
@@ -735,8 +742,8 @@ namespace te
           \return true if ok, false on errors.
         */             
         static bool applyMeanFilter( 
-          const Matrix< double >& inputData,
-          Matrix< double >& outputData,
+          const DoublesMatrix& inputData,
+          DoublesMatrix& outputData,
           const unsigned int iterationsNumber );     
           
         /*!
@@ -751,8 +758,8 @@ namespace te
           \return true if ok, false on errors.
         */             
         static bool createIntegralImage( 
-          const Matrix< double >& inputData,
-          Matrix< double >& outputData );           
+          const DoublesMatrix& inputData,
+          DoublesMatrix& outputData );           
           
         /*!
           \brief Generate a correlation features matrix for the given interes points.
@@ -776,9 +783,9 @@ namespace te
         static bool generateCorrelationFeatures( 
           const InterestPointsSetT& interestPoints,
           const unsigned int correlationWindowWidth,
-          const Matrix< double >& rasterData,
+          const DoublesMatrix& rasterData,
           const bool normalize,
-          Matrix< double >& features,
+          DoublesMatrix& features,
           InterestPointsSetT& validInteresPoints );
           
         /*!
@@ -796,8 +803,8 @@ namespace te
         */             
         static bool generateSurfFeatures( 
           const InterestPointsSetT& interestPoints,
-          const Matrix< double >& integralRasterData,
-          Matrix< double >& features,
+          const DoublesMatrix& integralRasterData,
+          DoublesMatrix& features,
           InterestPointsSetT& validInterestPoints );          
           
         /*!
@@ -810,7 +817,7 @@ namespace te
           \param fileNameStart The output file name beginning.
         */          
         static void features2Tiff( 
-          const Matrix< double >& features,
+          const DoublesMatrix& features,
           const InterestPointsSetT& interestPoints,
           const std::string& fileNameBeginning );
           
@@ -836,8 +843,8 @@ namespace te
           \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the absolute value of the correlation between then.
         */          
         static bool executeMatchingByCorrelation( 
-          const Matrix< double >& featuresSet1,
-          const Matrix< double >& featuresSet2,
+          const DoublesMatrix& featuresSet1,
+          const DoublesMatrix& featuresSet2,
           const InterestPointsSetT& interestPointsSet1,
           const InterestPointsSetT& interestPointsSet2,
           const unsigned int maxPt1ToPt2PixelDistance,
@@ -875,8 +882,8 @@ namespace te
           \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the inverse normalized distance in the range (0,1].
         */          
         static bool executeMatchingByEuclideanDist( 
-          const Matrix< double >& featuresSet1,
-          const Matrix< double >& featuresSet2,
+          const DoublesMatrix& featuresSet1,
+          const DoublesMatrix& featuresSet2,
           const InterestPointsSetT& interestPointsSet1,
           const InterestPointsSetT& interestPointsSet2,
           const unsigned int maxPt1ToPt2PixelDistance,
