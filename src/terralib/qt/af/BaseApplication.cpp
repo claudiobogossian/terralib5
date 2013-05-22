@@ -1277,7 +1277,7 @@ void te::qt::af::BaseApplication::initStatusBar()
   m_coordinateLineEdit->setAlignment(Qt::AlignHCenter);
   m_coordinateLineEdit->setReadOnly(true);
   m_coordinateLineEdit->setFocusPolicy(Qt::NoFocus);
-  m_coordinateLineEdit->setPlaceholderText(tr("Coordinates"));
+  m_coordinateLineEdit->setText(tr("Coordinates"));
   m_statusbar->addPermanentWidget(m_coordinateLineEdit);
 
   // Map SRID action
