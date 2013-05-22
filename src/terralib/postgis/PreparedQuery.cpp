@@ -58,9 +58,11 @@ namespace te
 {
   namespace pgis
   {
-    template<class T> inline void BindValue(te::pgis::PreparedQuery* pq, std::size_t i, std::size_t propertyPos, const te::dt::Property* p, T* d)
+    template<class T> inline void BindValue(te::pgis::PreparedQuery* pq, std::size_t i, std::size_t propertyPos, T* d)
     {
-      switch(p->getType())
+      const int dt = d->getPropertyDataType(propertyPos);
+
+      switch(dt)
       {
         case te::dt::CHAR_TYPE :
           pq->bind(i, d->getChar(propertyPos));
@@ -335,7 +337,7 @@ void te::pgis::PreparedQuery::execute()
   {
     delete [] (m_paramValues[i]);
     m_paramValues[i] = 0;
-    m_paramLenghts[i] = 0;
+    //m_paramLenghts[i] = 0;
   }
 
 // check result
@@ -590,24 +592,165 @@ te::da::DataSourceTransactor* te::pgis::PreparedQuery::getTransactor() const
   return m_t;
 }
 
-void te::pgis::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSet* d)
+void te::pgis::PreparedQuery::prepare(const std::string& query, const std::vector<int>& paramTypes)
+{
+// clear any previous prepared query
+  clear();
+
+// create parameters of prepared query
+  m_nparams = paramTypes.size();
+
+  m_paramTypes = new unsigned int[m_nparams];
+
+  memset(m_paramTypes, 0, m_nparams * sizeof(unsigned int));
+
+  m_paramValues = new char*[m_nparams];
+
+  memset(m_paramValues, 0, m_nparams * sizeof(char*));
+
+  m_paramLenghts = new int[m_nparams];
+
+  memset(m_paramLenghts, 0, m_nparams * sizeof(int));
+
+  m_paramFormats = new int[m_nparams];
+
+  memset(m_paramFormats, 0, m_nparams * sizeof(int));
+
+// set informational parameters of prepared query
+  for(std::size_t i = 0; i < m_nparams; ++i)
+  {
+    const int dt = paramTypes[i];
+
+    switch(dt)
+    {
+      case te::dt::CHAR_TYPE :
+      case te::dt::UCHAR_TYPE :
+      case te::dt::INT16_TYPE :
+        m_paramTypes[i] = PG_INT2_TYPE;
+        m_paramLenghts[i] = sizeof(boost::int16_t);
+        m_paramFormats[i] = 1;
+      break;
+
+      case te::dt::INT32_TYPE :
+        m_paramTypes[i] = PG_INT4_TYPE;
+        m_paramLenghts[i] = sizeof(boost::int32_t);
+        m_paramFormats[i] = 1;
+      break;
+
+      case te::dt::INT64_TYPE :
+        m_paramTypes[i] = PG_INT8_TYPE;
+        m_paramLenghts[i] = sizeof(boost::int64_t);
+        m_paramFormats[i] = 1;
+      break;
+
+      case te::dt::BOOLEAN_TYPE :
+        m_paramTypes[i] = PG_BOOL_TYPE;
+        m_paramLenghts[i] = sizeof(char);
+        m_paramFormats[i] = 1;
+      break;
+
+      case te::dt::FLOAT_TYPE :
+        m_paramTypes[i] = PG_FLOAT4_TYPE;
+        m_paramLenghts[i] = sizeof(float);
+        m_paramFormats[i] = 1;
+      break;
+
+      case te::dt::DOUBLE_TYPE :
+        m_paramTypes[i] = PG_FLOAT8_TYPE;
+        m_paramLenghts[i] = sizeof(double);
+        m_paramFormats[i] = 1;
+      break;
+
+      case te::dt::NUMERIC_TYPE :
+        m_paramTypes[i] = PG_NUMERIC_TYPE;
+        m_paramLenghts[i] = sizeof(double);
+        m_paramFormats[i] = 1;
+      break;
+
+      case te::dt::STRING_TYPE :
+        //m_paramTypes[i] = PG_TEXT_TYPE;
+        m_paramTypes[i] = PG_VARCHAR_TYPE;
+        m_paramLenghts[i] = 0;
+        m_paramFormats[i] = 1;
+
+      break;
+
+      case te::dt::BYTE_ARRAY_TYPE:
+        m_paramTypes[i] = PG_BYTEA_TYPE;
+        m_paramLenghts[i] = 0;
+        m_paramFormats[i] = 1;
+      break;
+
+      case te::dt::GEOMETRY_TYPE :
+        m_paramTypes[i] = m_t->getPGDataSource()->getGeomTypeId();
+        m_paramLenghts[i] = 0;
+        m_paramFormats[i] = 1;
+      break;
+
+      case te::dt::DATETIME_TYPE:
+      {
+        throw Exception(TR_PGIS("Not implemented yet!"));
+        //const te::dt::DateTimeProperty* dtp = static_cast<const te::dt::DateTimeProperty*>(p);
+
+        //if(dtp->getSubType() == te::dt::DATE)
+        //  m_paramTypes[i] = PG_DATE_TYPE;
+        //else if(dtp->getSubType() == te::dt::TIME_DURATION)
+        //  m_paramTypes[i] = PG_TIME_TYPE;
+        //else if(dtp->getSubType() == te::dt::TIME_INSTANT)
+        //  m_paramTypes[i] = PG_TIMESTAMP_TYPE;
+        //else
+        //  m_paramTypes[i] = PG_TIMESTAMPTZ_TYPE;
+
+        //m_paramLenghts[i] = 0;
+        //m_paramFormats[i] = 0;
+        break;
+      }
+
+      default:
+
+        throw Exception(TR_PGIS("This TerraLib data type is not supported by the PostgreSQL driver!"));
+
+      /*default :
+        m_paramTypes[i] = 0;
+        m_paramLenghts[i] = 0;
+        m_paramFormats[i] = 1;
+      break;*/
+    }
+  }
+
+// make prepared query
+  m_result = PQprepare(m_conn, m_qname.c_str(), query.c_str(), m_nparams, m_paramTypes);
+
+// check result
+  if((PQresultStatus(m_result) != PGRES_COMMAND_OK) &&
+     (PQresultStatus(m_result) != PGRES_TUPLES_OK))
+  {
+    boost::format errmsg(TR_PGIS("Could not create the prepared query due to the following error: %1%."));
+    
+    errmsg = errmsg % PQerrorMessage(m_conn);
+
+    throw Exception(errmsg.str());
+  }
+}
+
+void te::pgis::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, te::da::DataSet* d)
 {
   const std::size_t nparams = propertiesPos.size();
 
   for(std::size_t i = 0; i < nparams; ++i)
-    BindValue(this, i + offset, propertiesPos[i], dt->getProperty(propertiesPos[i]), d);
+    BindValue(this, i + offset, propertiesPos[i], d);
 }
 
-void te::pgis::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSet* d)
+void te::pgis::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, te::da::DataSet* d)
 {
   for(std::size_t i = 0; i < m_nparams; ++i)
-    BindValue(this, i, propertiesPos[i], dt->getProperty(propertiesPos[i]), d);
+    BindValue(this, i, propertiesPos[i], d);
 }
 
-void te::pgis::PreparedQuery::bind(const te::da::DataSetType* dt, te::da::DataSet* d)
+void te::pgis::PreparedQuery::bind(te::da::DataSet* d)
 {
   for(std::size_t i = 0; i < m_nparams; ++i)
-    BindValue(this, i, i, dt->getProperty(i), d);
+    BindValue(this, i, i, d);
 }
 
 void te::pgis::PreparedQuery::clear()

@@ -593,3 +593,56 @@ te::da::DataSetAdapter* te::da::CreateAdapter(DataSet* ds, DataSetTypeConverter*
 
   return adapter;
 }
+
+std::string te::da::GetSQLValueNames(const te::da::DataSetType* dt)
+{
+  std::string valueNames("(");
+
+  const std::size_t np = dt->size();
+
+  for(std::size_t i = 0; i != np; ++i)
+  {
+    if(i != 0)
+      valueNames += ",";
+
+    valueNames += dt->getProperty(i)->getName();
+  }
+
+  valueNames += ")";
+
+  return valueNames;
+}
+
+std::string te::da::GetSQLValueNames(const te::da::DataSet* dataset)
+{
+  std::string valueNames("(");
+
+  const std::size_t np = dataset->getNumProperties();
+
+  for(std::size_t i = 0; i != np; ++i)
+  {
+    if(i != 0)
+      valueNames += ",";
+
+    valueNames += dataset->getPropertyName(i);
+  }
+
+  valueNames += ")";
+
+  return valueNames;
+}
+
+std::vector<int> te::da::GetPropertyDataTypes(const te::da::DataSet* dataset)
+{
+  std::vector<int> properties;
+
+  const std::size_t np = dataset->getNumProperties();
+
+  for(std::size_t i = 0; i != np; ++i)
+  {
+    properties.push_back(dataset->getPropertyDataType(i));
+  }
+
+  return properties;
+}
+

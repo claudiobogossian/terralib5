@@ -31,6 +31,7 @@
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/datasource/ScopedTransaction.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../datatype/Utils.h"
 #include "Connection.h"
 #include "DataSetPersistence.h"
@@ -145,41 +146,29 @@ void te::pgis::DataSetPersistence::remove(const std::string& datasetName, const 
 
 void te::pgis::DataSetPersistence::add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
-//// create a prepared statement
-//  std::string sql  = "INSERT INTO ";
-//              sql += datasetName;
-//              sql += GetSQLValueNames(d);
-//              sql += " VALUES";
-//              sql += GetSQLBindValues(d->getNumProperties());
-//
-//  std::auto_ptr<PreparedQuery> pq(m_t->getPGPrepared("a" + boost::lexical_cast<std::string>((boost::int64_t)(this))));
-//
-//  te::da::ScopedTransaction st(*m_t);
-//
-//  pq->prepare(sql, dt->getProperties());
-//
-//  do
-//  {
-//    pq->bind(dt, d);
-//    pq->execute();
-//
-//  }while(d->moveNext());
-//
-//  st.commit();
+// create a prepared statement
+  std::string sql  = "INSERT INTO ";
+              sql += datasetName;
+              sql += te::da::GetSQLValueNames(d);
+              sql += " VALUES";
+              sql += GetSQLBindValues(d->getNumProperties());
 
-//// create a prepared statement
-//  std::string sql  = "INSERT INTO ";
-//              sql += dt->getName();
-//              sql += GetSQLValueNames(dt);
-//              sql += " VALUES";
-//              sql += GetSQLBindValues(dt);
-//
-//  std::auto_ptr<PreparedQuery> pq(m_t->getPGPrepared("a" + boost::lexical_cast<std::string>((boost::int64_t)(this))));
-//
-//  pq->prepare(sql, dt->getProperties());
-//  pq->bind(dt, item);
-//  pq->execute();
+  std::auto_ptr<PreparedQuery> pq(m_t->getPGPrepared("a" + boost::lexical_cast<std::string>((intptr_t)(this))));
 
+  te::da::ScopedTransaction st(*m_t);
+
+  std::vector<int> paramTypes = te::da::GetPropertyDataTypes(d);
+
+  pq->prepare(sql, paramTypes);
+
+  do
+  {
+    pq->bind(d);
+    pq->execute();
+
+  }while(d->moveNext());
+
+  st.commit();
 }
 
 void te::pgis::DataSetPersistence::update(const std::string& datasetName,
