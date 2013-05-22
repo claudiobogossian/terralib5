@@ -36,6 +36,8 @@
 //QT
 #include <QtGui/QWidget>
 
+#include <memory>
+
 te::qt::widgets::HistogramStyleWidget::HistogramStyleWidget(te::qt::widgets::HistogramStyle* initial, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::HistogramStyleWidgetForm),
@@ -62,14 +64,14 @@ te::qt::widgets::HistogramStyle* te::qt::widgets::HistogramStyleWidget::getHisto
 
 void te::qt::widgets::HistogramStyleWidget::onFillPushButtonClicked()
 {
-  std::unique_ptr<te::se::Fill> fill (te::qt::widgets::BasicFillDialog::getFill(m_histogramStyle->getFill(), 0, "Bar Fill"));
-  if (fill)
+  std::auto_ptr<te::se::Fill> fill (te::qt::widgets::BasicFillDialog::getFill(m_histogramStyle->getFill(), 0, "Bar Fill"));
+  if (fill.get())
     m_histogramStyle->setFill(fill->clone());
 }
 
 void te::qt::widgets::HistogramStyleWidget::onStrokePushButtonClicked()
 {
-  std::unique_ptr<te::se::Stroke> stroke (te::qt::widgets::BasicStrokeDialog::getStroke(m_histogramStyle->getStroke(), 0, "Bar Stroke"));
-  if(stroke)
+  std::auto_ptr<te::se::Stroke> stroke (te::qt::widgets::BasicStrokeDialog::getStroke(m_histogramStyle->getStroke(), 0, "Bar Stroke"));
+  if(stroke.get())
     m_histogramStyle->setStroke(stroke->clone());
 }

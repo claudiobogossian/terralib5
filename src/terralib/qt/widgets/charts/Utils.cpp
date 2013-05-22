@@ -41,6 +41,8 @@
 //QT
 #include <QPen>
 
+#include <memory>
+
 double te::qt::widgets::getDouble(const std::string& value, std::vector<std::string>& sVector)
 {
   //verify if it exists 
@@ -84,7 +86,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
   if(rpos != std::string::npos)
   {
-    std::unique_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));  
+    std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));  
 
      unsigned int nCol = raster->getNumberOfColumns(); 
      unsigned int nLin = raster->getNumberOfRows();
