@@ -44,11 +44,6 @@ namespace te
 {
   namespace qt
   {
-    namespace widgets
-    {
-// Forward declarations
-      class DataSetTableDockWidget;
-    }
 
     namespace af
     {
@@ -57,7 +52,7 @@ namespace te
       class LayerExplorer;
       class MapDisplay;
       class Project;
-      class TabularViewer;
+      class DataSetTableDockWidget;
 
       namespace evt
       {
@@ -140,7 +135,7 @@ namespace te
 
           void showProgressDockWidget();
 
-          void onLayerTableClose(te::qt::widgets::DataSetTableDockWidget* wid);
+          void onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid);
 
           void onFullScreenToggled(bool checked);
 
@@ -264,9 +259,8 @@ namespace te
 // Well known Widgets
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
-          TabularViewer* m_viewer;
 
-          std::vector<te::qt::widgets::DataSetTableDockWidget*> m_tableDocks;
+          std::vector<DataSetTableDockWidget*> m_tableDocks;
 
 // Project
           Project* m_project;

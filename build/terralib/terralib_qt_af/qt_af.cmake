@@ -65,8 +65,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/connectors/LayerExplorer.h
   ${SRCDIR}/connectors/MapDisplay.h  
-  ${SRCDIR}/connectors/TabularViewer.h
-  
+  ${SRCDIR}/connectors/DataSetTableDockWidget.h  
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)

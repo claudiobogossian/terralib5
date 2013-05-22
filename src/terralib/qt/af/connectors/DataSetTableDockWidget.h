@@ -39,19 +39,33 @@ namespace te
     class AbstractLayer;
   }
 
+  namespace da
+  {
+    class ObjectIdSet;
+  }
+
   namespace qt
   {
     namespace widgets
     {
       // Forward declarations
       class DataSetTableView;
+    }
+    
+    namespace af
+    {
+      namespace evt
+      {
+        // Forward declarations
+        struct Event;
+      }
 
       /*!
         \class DataSetTableDockWidget
 
         \brief A dock widget for DataSetTableView objects.
       */
-      class TEQTWIDGETSEXPORT DataSetTableDockWidget : public QDockWidget
+      class TEQTAFEXPORT DataSetTableDockWidget : public QDockWidget
       {
         Q_OBJECT
 
@@ -83,15 +97,43 @@ namespace te
           */
           te::map::AbstractLayer* getLayer() const;
 
+        protected slots:
+
+          /*!
+            \brief Used for capture events sent by application framework.
+          */
+          void onApplicationTriggered(te::qt::af::evt::Event* evt);
+
+          /*!
+            \brief Used for selection changed on table view.
+
+            \param oids The selected object ids.
+
+            \param add True to add to previous selection, false to discard older selection.
+
+            \note This function WILL TAKE the ownership of \a oids. It gives the ownership to the layer.
+          */
+          void selectionChanged(te::da::ObjectIdSet* oids, const bool& add);
+
+          /*!
+            \brief Removes the \a oids from the list of selected in the Layer.
+
+            \param oids Set of objects ids to be removed.
+          */
+          void removeSelectedOIds(te::da::ObjectIdSet* oids);
+
         signals:
 
-          void closed(te::qt::widgets::DataSetTableDockWidget* wid);
+          /*!
+            \brief Emitted before this widget was closed.
+          */
+          void closed(te::qt::af::DataSetTableDockWidget*);
 
         protected:
 
-          DataSetTableView* m_view;           //!< The table view.
+          te::qt::widgets::DataSetTableView* m_view;           //!< The table view.
 
-          te::map::AbstractLayer* m_layer;    //!< Layer being visualized.
+          te::map::AbstractLayer* m_layer;                      //!< Layer being visualized.
       };
     }
   }

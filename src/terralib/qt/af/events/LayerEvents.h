@@ -115,6 +115,25 @@ namespace te
   
           te::map::AbstractLayer* m_layer;  //!< Pointer to the selected layer.
         };
+
+        /*!
+          \struct
+
+          \brief
+        */
+        struct HighlightObjects : public Event
+        {
+          /*!
+            \brief Constructor
+          */
+          HighlightObjects(te::map::AbstractLayer* layer) :
+          Event(LAYER_HIGHLIGHT_OBJECTS),
+            m_layer(layer)
+          {
+          }
+
+          te::map::AbstractLayer* m_layer;
+        };
       }
     }
   }
