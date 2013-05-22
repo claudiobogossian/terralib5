@@ -82,7 +82,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::HistogramDataWidgetForm>  m_ui;       //!< The widget form.
-          std::unique_ptr<te::da::DataSet>            m_dataSet;  //!< The dataset that will be used to generate the histogram graph.
+          std::auto_ptr<te::da::DataSet>            m_dataSet;  //!< The dataset that will be used to generate the histogram graph.
        };
     } // end namespace widgets
   }   // end namespace qt

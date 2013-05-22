@@ -26,7 +26,7 @@
 //Terralib
 #include "ChartDisplay.h"
 #include "ChartDisplayWidget.h"
-#include "ChartStyle.h";
+#include "ChartStyle.h"
 #include "ChartProperties.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
