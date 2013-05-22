@@ -38,6 +38,7 @@ namespace te
   namespace da
   {
     class ObjectId;
+    class ObjectIdSet;
     class DataSet;
   }
 }
@@ -82,6 +83,9 @@ namespace te
           */
           void resetPromotion();
 
+          /*!
+            \breif Cleans pre processed keys and vector of mapping logical rows.
+          */
           void cleanLogRowsAndProcessKeys();
 
           /*!
@@ -112,8 +116,15 @@ namespace te
 
             \param oids Set of object ids to be promoted.
           */
-          void promote(const std::vector<te::da::ObjectId*>& oids);
+          void promote(const te::da::ObjectIdSet* oids);
 
+          /*
+            \brief Sort rows of \a dset.
+
+            \param dset The data set to be sorted.
+            
+            \param cols The positions of the columns to be used.
+          */
           void sort(te::da::DataSet* dset, const std::vector<int>& cols);
 
           /*!

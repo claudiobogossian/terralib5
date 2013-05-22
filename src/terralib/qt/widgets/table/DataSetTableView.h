@@ -42,6 +42,7 @@ namespace te
   {
     class DataSet;
     class DataSetType;
+    class ObjectIdSet;
   }
 
   namespace qt
@@ -51,7 +52,6 @@ namespace te
       // Forward declaration
       class DataSetTableModel;
       class HighlightDelegate;
-//      class Sorter;
 
       /*!
         \class DataSetTableView
@@ -92,6 +92,13 @@ namespace te
             \param schema The DataSetType to extract keys.
           */
           virtual void setLayerSchema(const te::da::DataSetType* schema);
+
+          /*!
+            \brief Highlights the objects identified by \a oids
+
+            \param oids The identifiers of rows to be highlighted.
+          */
+          void highlightOIds(const te::da::ObjectIdSet* oids);
 
         public slots:
           
@@ -165,6 +172,15 @@ namespace te
             \param visible True for icon visible, false otherwise.
           */
           void setOIdsColumnsVisible(const bool& visible);
+
+        signals:
+
+          /*!
+            \brief Emmite when objects was selected.
+          */
+          void selectOIds(te::da::ObjectIdSet*, const bool&);
+
+          void deselectOIds(te::da::ObjectIdSet*);
 
         protected:
 

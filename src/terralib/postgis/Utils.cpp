@@ -435,44 +435,6 @@ std::string te::pgis::GetBindableWhereSQL(const std::vector<te::dt::Property*>& 
   return wheresql;
 }
 
-std::string te::pgis::GetSQLValueNames(const te::da::DataSetType* dt)
-{
-  std::string valueNames("(");
-
-  const std::size_t np = dt->size();
-
-  for(std::size_t i = 0; i < np; ++i)
-  {
-    if(i != 0)
-      valueNames += ",";
-
-    valueNames += dt->getProperty(i)->getName();
-  }
-
-  valueNames += ")";
-
-  return valueNames;
-}
-
-std::string te::pgis::GetSQLValueNames(const te::da::DataSet* dataset)
-{
-  std::string valueNames("(");
-
-  const std::size_t np = dataset->getNumProperties();
-
-  for(std::size_t i = 0; i < np; ++i)
-  {
-    if(i != 0)
-      valueNames += ",";
-
-    valueNames += dataset->getPropertyName(i);
-  }
-
-  valueNames += ")";
-
-  return valueNames;
-}
-
 std::string te::pgis::GetSQLBindValues(std::size_t nproperties)
 {
   std::string valueNames("(");

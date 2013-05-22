@@ -6,8 +6,9 @@
 
 // TerraLib include files
 #include "../../../dataaccess/dataset/DataSet.h"
-#include "../../../dataaccess/utils/Utils.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 
 // Qt
 #include <QtGui/QHeaderView>
@@ -277,9 +278,6 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 QTableView(parent)
 {
   m_model = new DataSetTableModel(this);
-//  m_sortModel = new Sorter(this);
-
- // m_sortModel->setSourceModel(m_model);
 
   setModel(m_model);
 
@@ -332,6 +330,13 @@ void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType
   m_model->setPkeysColumns(objs->getPropertyPos());
 }
 
+void te::qt::widgets::DataSetTableView::highlightOIds(const te::da::ObjectIdSet* oids)
+{
+  m_delegate->setObjectIdSet(oids);
+
+  viewport()->repaint();
+}
+
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
 {
   horizontalHeader()->hideSection(column);
@@ -368,14 +373,22 @@ void te::qt::widgets::DataSetTableView::resetColumnsOrder()
 
 void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool& add)
 {
-  if(!add)
-    m_delegate->clearSelected();
-
-  m_delegate->addObject(row);
-
   removeSelection(row, row);
 
-  viewport()->repaint();
+  te::da::ObjectIdSet* oids = m_model->getObjectIdSet(row, row);
+
+  if(add)
+  {
+    te::da::ObjectId* oid = *oids->begin();
+
+    if(m_delegate->getSelected()->contains(oid))
+    {
+      emit deselectOIds(oids);
+      return;
+    }
+  }
+
+  emit selectOIds(oids, add);
 }
 
 void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const int& finalRow)
@@ -394,18 +407,18 @@ void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const 
     final = initRow;
   }
 
-  m_delegate->addObjects(ini, final);
-
   removeSelection(ini, final);
 
-  viewport()->repaint();
+  te::da::ObjectIdSet* oids = m_model->getObjectIdSet(ini, final);
+
+  emit selectOIds(oids, true);
 }
 
 void te::qt::widgets::DataSetTableView::promote()
 {
   QCursor cursor(Qt::WaitCursor);
 
-  std::vector<te::da::ObjectId*> oids = m_delegate->getSelected();
+  const te::da::ObjectIdSet* oids = m_delegate->getSelected();
   m_model->promote(oids);
 
   m_delegate->setPromoter(m_model->getPromoter());

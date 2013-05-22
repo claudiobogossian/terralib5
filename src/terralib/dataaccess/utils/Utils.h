@@ -280,6 +280,12 @@ namespace te
 
     TEDATAACCESSEXPORT DataSetAdapter* CreateAdapter(DataSet* ds, DataSetTypeConverter* converter, bool isOwner = false);
 
+    TEDATAACCESSEXPORT std::string GetSQLValueNames(const DataSetType* dt);
+
+    TEDATAACCESSEXPORT std::string GetSQLValueNames(const DataSet* dataset);
+
+    TEDATAACCESSEXPORT std::vector<int> GetPropertyDataTypes(const te::da::DataSet* dataset);
+
   } // end namespace da
 }   // end namespace te
 

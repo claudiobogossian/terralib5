@@ -956,10 +956,6 @@ namespace te
     */
     std::string GetBindableWhereSQL(const std::vector<te::dt::Property*>& properties, const std::size_t offset = 0);
 
-    std::string GetSQLValueNames(const te::da::DataSetType* dt);
-
-    std::string GetSQLValueNames(const te::da::DataSet* dataset);
-
     std::string GetSQLBindValues(std::size_t nproperties);
 
     /*!
