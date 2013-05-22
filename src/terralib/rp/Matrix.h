@@ -282,11 +282,13 @@
           {
             public :
               
-              FILE* m_filePtr;
-              unsigned int m_fileOff;
+              FILE* m_filePtr; //!< The file pointer.
               
-              DiskLineInfo() : m_filePtr( 0 ), m_fileOff( 0 ) {};
-              ~DiskLineInfo() {};
+              unsigned int m_fileOff; //!< The offset within the file.
+              
+              DiskLineInfo();
+              
+              ~DiskLineInfo();
           };
           
           /*!
@@ -296,16 +298,11 @@
           {
             public :
               
-              FILE* m_filePtr;
+              FILE* m_filePtr; //!< The file pointer.
               
-              OpenDiskFileHandler() : m_filePtr( 0 ) {};          
-              ~OpenDiskFileHandler() 
-              {
-                if( m_filePtr ) 
-                {
-                  fclose( m_filePtr );
-                }
-              };
+              OpenDiskFileHandler();
+              
+              ~OpenDiskFileHandler();
           };      
           
           /*!
@@ -406,6 +403,33 @@
           */
           bool createNewDiskFile( unsigned long int size, FILE** fileptr ) const;      
       };
+      
+      template< typename ElementType >
+      Matrix< ElementType >::DiskLineInfo::DiskLineInfo()
+      {
+        m_filePtr = 0;
+        m_fileOff = 0;
+      }
+      
+      template< typename ElementType >
+      Matrix< ElementType >::DiskLineInfo::~DiskLineInfo()
+      {        
+      }      
+      
+      template< typename ElementType >
+      Matrix< ElementType >::OpenDiskFileHandler::OpenDiskFileHandler()
+      {
+        m_filePtr = 0;
+      }
+      
+      template< typename ElementType >
+      Matrix< ElementType >::OpenDiskFileHandler::~OpenDiskFileHandler()
+      {
+        if( m_filePtr ) 
+        {
+          fclose( m_filePtr );
+        }
+      }
 
       template< typename ElementType >
       void Matrix< ElementType >::init()
@@ -551,7 +575,7 @@
                 const double linesMem = ( ((double)m_maxMemPercentUsage) / 100.0 ) *
                   freeVMem;
                   
-                maxRAMLines = (unsigned int)MAX( 1, linesMem / 
+                maxRAMLines = (unsigned int)MAX( 1.0, linesMem / 
                   ((double)lineSizeBytes) );
               }        
               

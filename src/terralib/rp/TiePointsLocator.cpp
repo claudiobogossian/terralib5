@@ -36,6 +36,7 @@
 
 #include <boost/scoped_array.hpp>
 #include <boost/shared_array.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <algorithm>
 
@@ -1334,7 +1335,7 @@ namespace te
         ((double)rasterTargetAreaWidth) * rescaleFactorX );
     
       {
-        const unsigned int maxMemPercentUsagePerMatrix = MAX( 1, 25 / 
+        const unsigned int maxMemPercentUsagePerMatrix = MAX( 1u, 25 / 
           ( 1 + ((unsigned int)rasterBands.size()) ) );
         const unsigned long int  maxTmpFileSize = 2ul * 1024ul * 1024ul * 1024ul;
         
@@ -3136,7 +3137,7 @@ namespace te
           featureWindowRadius = featureWindowWidth / 2;
           featureWindowRadiusDouble = (double)featureWindowRadius;
           featureSubWindowWidth = featureWindowWidth / 4;
-          featureWindowSampleStep = MAX( 1, featureWindowWidth / 9 );
+          featureWindowSampleStep = MAX( 1u, featureWindowWidth / 9 );
           featureWindowRasterXStart = currIPointCenterX - featureWindowRadius;
           featureWindowRasterYStart = currIPointCenterY - featureWindowRadius;
           
@@ -3398,8 +3399,8 @@ namespace te
         bandsProperties[0]->m_noDataValue = 0;
         
         std::map<std::string, std::string> rInfo;
-        rInfo["URI"] = fileNameBeginning + "_" + te::common::Convert2String( iIt->m_x ) 
-          + "_" + te::common::Convert2String( iIt->m_y ) + ".tif";        
+        rInfo["URI"] = fileNameBeginning + "_" + boost::lexical_cast< std::string >( iIt->m_x ) 
+          + "_" + boost::lexical_cast< std::string >( iIt->m_y ) + ".tif";        
           
         te::rst::Grid* newgrid = new te::rst::Grid( tifLinesNumber,
           tifLinesNumber, 0, -1 );          
@@ -3429,8 +3430,8 @@ namespace te
             value = featureLinePtr[ ( line * tifLinesNumber ) + col ];
             value *= gain;
             value -= min;
-            value = MIN( 255, value );
-            value = MAX( 0, value );
+            value = MIN( 255.0, value );
+            value = MAX( 0.0, value );
             
             outputRasterPtr->setValue( col, line, value, 0 );
           }
