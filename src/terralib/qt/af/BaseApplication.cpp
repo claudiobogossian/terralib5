@@ -893,7 +893,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
 // Progress support
   te::qt::widgets::ProgressViewerBar* pvb = new te::qt::widgets::ProgressViewerBar(this);
-  pvb->setFixedWidth(150);
+  pvb->setFixedWidth(220);
   te::common::ProgressManager::getInstance().addViewer(pvb);
 
   te::qt::widgets::ProgressViewerWidget* pvw = new te::qt::widgets::ProgressViewerWidget(this);
@@ -905,7 +905,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
   m_progressDockWidget = new QDockWidget(this);
   m_progressDockWidget->setWidget(pvw);
-  m_progressDockWidget->setMinimumWidth(250);
+  m_progressDockWidget->setMinimumWidth(220);
   m_progressDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
   m_progressDockWidget->setWindowTitle(tr("Tasks Progress"));
   addDockWidget(Qt::RightDockWidgetArea, m_progressDockWidget);
@@ -1271,6 +1271,21 @@ void te::qt::af::BaseApplication::initToolbars()
 
 void te::qt::af::BaseApplication::initStatusBar()
 {
+  // Map SRID action
+  QToolButton* mapSRIDToolButton = new QToolButton(m_statusbar);
+  mapSRIDToolButton->setDefaultAction(m_mapSRID);
+  m_statusbar->addPermanentWidget(mapSRIDToolButton);
+
+  // Map SRID information
+  m_mapSRIDLineEdit = new QLineEdit(m_statusbar);
+  m_mapSRIDLineEdit->setFixedWidth(120);
+  m_mapSRIDLineEdit->setAlignment(Qt::AlignHCenter);
+  m_mapSRIDLineEdit->setEnabled(false);
+
+  int srid = m_display->getDisplay()->getSRID();
+  srid != TE_UNKNOWN_SRS ? m_mapSRIDLineEdit->setText("EPSG:" + QString::number(srid)) : m_mapSRIDLineEdit->setText(tr("Unknown SRS"));
+  m_statusbar->addPermanentWidget(m_mapSRIDLineEdit);
+
   // Coordinate Line Edit
   m_coordinateLineEdit = new QLineEdit(m_statusbar);
   m_coordinateLineEdit->setFixedWidth(220);
@@ -1279,20 +1294,6 @@ void te::qt::af::BaseApplication::initStatusBar()
   m_coordinateLineEdit->setFocusPolicy(Qt::NoFocus);
   m_coordinateLineEdit->setText(tr("Coordinates"));
   m_statusbar->addPermanentWidget(m_coordinateLineEdit);
-
-  // Map SRID action
-  QToolButton* mapSRIDToolButton = new QToolButton(m_statusbar);
-  mapSRIDToolButton->setDefaultAction(m_mapSRID);
-  m_statusbar->addPermanentWidget(mapSRIDToolButton);
-
-  // Map SRID information
-  m_mapSRIDLineEdit = new QLineEdit(m_statusbar);
-  m_mapSRIDLineEdit->setFixedWidth(80);
-  m_mapSRIDLineEdit->setEnabled(false);
-
-  int srid = m_display->getDisplay()->getSRID();
-  srid != TE_UNKNOWN_SRS ? m_mapSRIDLineEdit->setText("EPSG:" + QString::number(srid)) : m_mapSRIDLineEdit->setText(tr("Unknown SRS"));
-  m_statusbar->addPermanentWidget(m_mapSRIDLineEdit);
 
   // Stop draw action
   QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
