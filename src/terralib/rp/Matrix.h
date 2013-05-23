@@ -198,7 +198,7 @@
           \param column Column number.
           \return A reference to the required element.
           */
-          inline Matrix< TemplateElementType >::ElementTypeT& operator()( 
+          inline TemplateElementType& operator()( 
             const unsigned int& line, 
             const unsigned int& column )
           {
@@ -215,7 +215,7 @@
           \param column Column number.
           \return A const reference to the required element.
           */
-          inline const Matrix< TemplateElementType >::ElementTypeT& operator()( 
+          inline const TemplateElementType& operator()( 
             const unsigned int& line, 
             const unsigned int& column ) const
           {
@@ -236,7 +236,7 @@
           \note Concurrent thread access to this method is guaranteed
           if RAMMemPol policy method is used.
           */
-          inline Matrix< TemplateElementType >::ElementTypeT* operator[]( 
+          inline TemplateElementType* operator[]( 
             const unsigned int& line )
           {
             return getScanLine( line );
@@ -253,7 +253,7 @@
           \note Concurrent thread access to this method is guaranteed
           if RAMMemPol policy method is used.       
           */
-          inline Matrix< TemplateElementType >::ElementTypeT const* operator[]( 
+          inline TemplateElementType const* operator[]( 
             const unsigned int& line ) const
           {
             return getScanLine( line );
@@ -344,14 +344,14 @@
           /*!
           \brief A pointer to the current swap tile.
           */        
-          mutable ElementTypeT* m_currentSwapTilePtr;
+          mutable TemplateElementType* m_currentSwapTilePtr;
           
-          std::vector< ElementTypeT* > m_memoryblocksHandler;
+          std::vector< TemplateElementType* > m_memoryblocksHandler;
 
           /*!
           \brief A vector with pointers to all lines.
           */
-          mutable std::vector< ElementTypeT* > m_allLinesPtrsVec;     
+          mutable std::vector< TemplateElementType* > m_allLinesPtrsVec;     
           
           /*!
           \brief A vector with open disk files handler.
@@ -372,7 +372,7 @@
           \brief An auxiliar line used when swapping
           data to/from disk.
           */              
-          mutable std::auto_ptr< ElementTypeT > m_swapMemoryBlockHandler;      
+          mutable std::auto_ptr< TemplateElementType > m_swapMemoryBlockHandler;      
         
           /*!
           \brief Reset the internal variables to the initial state.
@@ -397,7 +397,7 @@
           \note Concurrent thread access to this method is guaranteed
           if RAMMemPol policy method is used.       
           */
-         ElementTypeT* getScanLine( 
+         TemplateElementType* getScanLine( 
             const unsigned int& line ) const;
             
           /*!
@@ -532,7 +532,7 @@
             m_totalColumns = columns;    
             
             const unsigned int lineSizeBytes = (unsigned int)(
-              sizeof( ElementTypeT ) * m_totalColumns );
+              sizeof( TemplateElementType ) * m_totalColumns );
                   
             // Allocating the lines pointers vectpr
             
@@ -543,12 +543,12 @@
               m_ramLinesIndexesVec.resize( m_totalLines, 0 );
               m_memoryblocksHandler.resize( m_totalLines );
               
-              ElementTypeT* newLinePtr = 0;
+              TemplateElementType* newLinePtr = 0;
               
               for( unsigned int allLinesPtrsVecIdx = 0 ; allLinesPtrsVecIdx <
                 m_totalLines ; ++allLinesPtrsVecIdx )
               {
-                newLinePtr = new ElementTypeT[ m_totalColumns ];
+                newLinePtr = new TemplateElementType[ m_totalColumns ];
                 
                 m_memoryblocksHandler[ allLinesPtrsVecIdx ] = newLinePtr;
                 
@@ -562,7 +562,7 @@
             
               // Allocating the swap line pointer
               
-              m_swapMemoryBlockHandler.reset( new ElementTypeT[ m_totalColumns ] );
+              m_swapMemoryBlockHandler.reset( new TemplateElementType[ m_totalColumns ] );
               m_currentSwapTilePtr = m_swapMemoryBlockHandler.get();
             
               // Defining the number of max RAM lines
@@ -597,12 +597,12 @@
               m_ramLinesIndexesVec.resize( ramLinesIndexesVecSize, 0 );
               m_memoryblocksHandler.resize( ramLinesIndexesVecSize );
               
-              ElementTypeT* newLinePtr = 0;
+              TemplateElementType* newLinePtr = 0;
               
               for( unsigned int allLinesPtrsVecIdx = 0 ; allLinesPtrsVecIdx <
                 ramLinesIndexesVecSize ; ++allLinesPtrsVecIdx )
               {
-                newLinePtr = new ElementTypeT[ m_totalColumns ];
+                newLinePtr = new TemplateElementType[ m_totalColumns ];
                 
                 m_memoryblocksHandler[ allLinesPtrsVecIdx ] = newLinePtr;
                 
@@ -634,7 +634,7 @@
       template< typename TemplateElementType >
       void Matrix< TemplateElementType >::clear()
       {
-        ElementTypeT* linePtr = 0;
+        TemplateElementType* linePtr = 0;
         for( unsigned int memoryblocksHandlerIdx = 0 ; memoryblocksHandlerIdx <
           m_memoryblocksHandler.size() ; ++memoryblocksHandlerIdx )
         {
@@ -690,8 +690,8 @@
           "Unable to initiate the matrix object" );
         
         unsigned int column = 0;;
-        ElementTypeT const* inLinePtr = 0;
-        ElementTypeT* outLinePtr = 0;
+        TemplateElementType const* inLinePtr = 0;
+        TemplateElementType* outLinePtr = 0;
         
         for( unsigned int line = 0 ; line < m_totalLines ; ++line ) 
         {
@@ -732,7 +732,7 @@
         if( diskLinesNmb )
         {    
           const unsigned long int lineSizeBytes = (unsigned long int)(
-            sizeof( ElementTypeT ) * m_totalColumns );
+            sizeof( TemplateElementType ) * m_totalColumns );
               
           const unsigned long int maxLinesPerFile = ( unsigned long int )
             floor( ( (double)m_maxTmpFileSize ) / ( (double) lineSizeBytes ) );
@@ -833,7 +833,7 @@
             
           TERP_DEBUG_TRUE_OR_THROW( m_currentSwapTilePtr, "Internal error" );
           TERP_TRUE_OR_THROW( 1 == fread( (void*)m_currentSwapTilePtr, 
-            (size_t)( sizeof( ElementTypeT ) * m_totalColumns ), 1, inLineData.m_filePtr ),
+            (size_t)( sizeof( TemplateElementType ) * m_totalColumns ), 1, inLineData.m_filePtr ),
             "File read error" )
         
           /* Flushing the choosed tile to disk */
@@ -846,12 +846,12 @@
             "Internal error" );          
           TERP_TRUE_OR_THROW( 1 == fwrite( (void*)m_allLinesPtrsVec[ 
             swapLineIdx ], 
-            (size_t)( sizeof( ElementTypeT ) * m_totalColumns ), 1, 
+            (size_t)( sizeof( TemplateElementType ) * m_totalColumns ), 1, 
             inLineData.m_filePtr ), "File write error" )        
           
           // Updating the tile pointers
           
-          ElementTypeT* linePtr = m_allLinesPtrsVec[ swapLineIdx ];
+          TemplateElementType* linePtr = m_allLinesPtrsVec[ swapLineIdx ];
           
           m_allLinesPtrsVec[ swapLineIdx ] = 0;
           
