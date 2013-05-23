@@ -24,13 +24,21 @@
  */
 
 // TerraLib
+#include "../../common/STLUtils.h"
+#include "../../maptools/MarkRendererManager.h"
+#include "../../maptools/Canvas.h"
+#include "../../se/Fill.h"
+#include "../../se/Mark.h"
+#include "../../se/Stroke.h"
+#include "../../se/Utils.h"
 #include "Utils.h"
 
 // Qt
-#include <QApplication>
+#include <QtGui/QApplication>
 #include <QtGui/QImage>
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
+#include <QtGui/QMessageBox>
 #include <QtGui/QTreeWidgetItem>
 #include <QtGui/QTreeWidgetItemIterator>
 
@@ -98,7 +106,7 @@ QStyle::StandardPixmap toQStyle(const QMessageBox::Icon& icon)
     break;
 
     case QMessageBox::Critical:
-      return QStyle::SP_MessageBoxCritical;    
+      return QStyle::SP_MessageBoxCritical;
     break;
 
     default:
@@ -195,4 +203,110 @@ QMenu* te::qt::widgets::GetMenu(const QString& mnuText, QMenuBar* bar)
       CreateMenu(mnus[i], res);
   }
   return res;
+}
+
+te::color::RGBAColor te::qt::widgets::Convert2TerraLib(const QColor& color)
+{
+  return te::color::RGBAColor(color.red(), color.green(), color.blue(), color.alpha());
+}
+
+void te::qt::widgets::Config2DrawPolygons(te::map::Canvas* canvas, const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth)
+{
+  canvas->setPolygonContourWidth(contourWidth);
+  canvas->setPolygonContourColor(Convert2TerraLib(contourColor));
+  canvas->setPolygonFillColor(Convert2TerraLib(fillColor));
+}
+
+void te::qt::widgets::Config2DrawLines(te::map::Canvas* canvas, const QColor& color, const std::size_t& width)
+{
+  canvas->setLineWidth(width);
+  canvas->setLineColor(Convert2TerraLib(color));
+}
+
+void te::qt::widgets::Config2DrawPoints(te::map::Canvas* canvas, const QColor& color, const std::size_t& width)
+{
+  canvas->setPointWidth(width);
+  canvas->setPointColor(Convert2TerraLib(color));
+}
+
+void te::qt::widgets::Config2DrawPoints(te::map::Canvas* canvas, const QString& markName, const std::size_t& size,
+                                        const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth)
+{
+  te::se::Stroke* stroke = te::se::CreateStroke(contourColor.name().toStdString(),
+                                                QString::number(contourWidth).toStdString(),
+                                                QString::number(contourColor.alphaF()).toStdString());
+
+  te::se::Fill* fill = te::se::CreateFill(fillColor.name().toStdString(),
+                                          QString::number(fillColor.alphaF()).toStdString());
+
+  te::se::Mark* mark = te::se::CreateMark(markName.toStdString(), stroke, fill);
+
+  te::color::RGBAColor** rgba = te::map::MarkRendererManager::getInstance().render(mark, size);
+
+  canvas->setPointColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
+  canvas->setPointPattern(rgba, size, size);
+
+  te::common::Free(rgba, size);
+
+  delete mark;
+}
+
+void te::qt::widgets::Config2DrawLayerSelection(te::map::Canvas* canvas, const QColor& selectionColor, const te::gm::GeomType& type)
+{
+  switch(type)
+  {
+    case te::gm::PolygonType:
+    case te::gm::PolygonZType:
+    case te::gm::PolygonMType:
+    case te::gm::PolygonZMType:
+    case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZMType:
+    {
+      QColor fillColor = selectionColor;
+      fillColor.setAlpha(128);
+
+      Config2DrawPolygons(canvas, fillColor, Qt::black, 2);
+    }
+    break;
+
+    case te::gm::LineStringType:
+    case te::gm::LineStringZType:
+    case te::gm::LineStringMType:
+    case te::gm::LineStringZMType:
+    case te::gm::MultiLineStringType:
+    case te::gm::MultiLineStringZType:
+    case te::gm::MultiLineStringMType:
+    case te::gm::MultiLineStringZMType:
+    {
+      QColor fillColor = selectionColor;
+      fillColor.setAlpha(128);
+
+      Config2DrawLines(canvas, fillColor, 6);
+    }
+    break;
+
+    case te::gm::PointType:
+    case te::gm::PointZType:
+    case te::gm::PointMType:
+    case te::gm::PointZMType:
+    case te::gm::MultiPointType:
+    case te::gm::MultiPointZType:
+    case te::gm::MultiPointMType:
+    case te::gm::MultiPointZMType:
+    {
+      QColor fillColor = selectionColor;
+      fillColor.setAlpha(70);
+
+      QColor contourColor = selectionColor;
+      contourColor.setAlpha(150);
+
+      Config2DrawPoints(canvas, "square", 24, fillColor, contourColor,2);
+    }
+    break;
+
+    default:
+      return;
+  }
 }

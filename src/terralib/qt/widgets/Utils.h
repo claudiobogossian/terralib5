@@ -27,15 +27,18 @@
 #define __TERRALIB_QTWIDGETS_INTERNAL_UTILS_H
 
 // TerraLib
-#include "../../maptools/Canvas.h"
+#include "../../color/RGBAColor.h"
+#include "../../geometry/Enums.h"
+#include "../../maptools/Enums.h"
 #include "Config.h"
 #include "Globals.h"
 
 // Qt
 #include <QtCore/QObject>
-#include <QMessageBox>
+#include <QtGui/QColor>
 
 // Forward declarations
+class QAction;
 class QImage;
 class QMenu;
 class QMenuBar;
@@ -43,6 +46,11 @@ class QTreeWidgetItem;
 
 namespace te
 {
+  namespace map
+  {
+    class Canvas;
+  }
+
   namespace qt
   {
     namespace widgets
@@ -157,7 +165,6 @@ namespace te
         \brief
 
         \param
-
         \param
 
         \return
@@ -168,12 +175,68 @@ namespace te
         \brief
 
         \param
-
         \param
 
         \return
       */
       TEQTWIDGETSEXPORT QAction* FindAction(const QString& actText, QMenuBar* mnuBar);
+
+       /*!
+        \brief It converts a Qt Color to TerraLib Color.
+
+        \param color The Qt Color that will be converted.
+      */
+      TEQTWIDGETSEXPORT te::color::RGBAColor Convert2TerraLib(const QColor& color);
+
+      /*!
+        \brief It configs (i.e. prepares) the given canvas to draw polygons.
+
+        \param canvas The canvas that will be configured. Do not pass NULL!
+        \param fillColor The color that will be used to fill the polygons.
+        \param contourColor The color that will be used to contour the polygons.
+        \param contourWidth The width that will be used to contour the polygons.
+      */
+      TEQTWIDGETSEXPORT void Config2DrawPolygons(te::map::Canvas* canvas, const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth = 1);
+
+      /*!
+        \brief It configs (i.e. prepares) the given canvas to draw lines.
+
+        \param canvas The canvas that will be configured. Do not pass NULL!
+        \param color The color that will be used to draw the lines.
+        \param width The width that will be used to draw the lines.
+      */
+      TEQTWIDGETSEXPORT void Config2DrawLines(te::map::Canvas* canvas, const QColor& color, const std::size_t& width = 1);
+
+      /*!
+        \brief It configs (i.e. prepares) the given canvas to draw points.
+
+        \param canvas The canvas that will be configured. Do not pass NULL!
+        \param color The color that will be used to draw the points.
+        \param width The width that will be used to draw the points.
+      */
+      TEQTWIDGETSEXPORT void Config2DrawPoints(te::map::Canvas* canvas, const QColor& color, const std::size_t& width = 1);
+
+       /*!
+        \brief It configs (i.e. prepares) the given canvas to draw points.
+
+        \param canvas The canvas that will be configured. Do not pass NULL!
+        \param markName The mark name that will be used to draw the points.
+        \param size The size that will be used to draw the points.
+        \param fillColor The color that will be used to fill the mark.
+        \param contourColor The color that will be used to contour the mark.
+        \param contourWidth The width that will be used to contour the mark.
+      */
+      TEQTWIDGETSEXPORT void Config2DrawPoints(te::map::Canvas* canvas, const QString& markName, const std::size_t& size,
+                                               const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth = 1);
+
+      /*!
+        \brief It configs (i.e. prepares) the given canvas to draw a layer selection.
+
+        \param canvas The canvas that will be configured. Do not pass NULL!
+        \param selectionColor The color that will be used to draw the selection.
+        \param type The geometry type that will be drawn.
+      */
+      TEQTWIDGETSEXPORT void Config2DrawLayerSelection(te::map::Canvas* canvas, const QColor& selectionColor, const te::gm::GeomType& type);
 
     } // end namespace widgets
   }   // end namespace qt
