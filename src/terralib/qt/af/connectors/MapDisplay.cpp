@@ -24,15 +24,21 @@
 */
 
 // TerraLib
+#include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Utils.h"
 #include "../../../maptools/Utils.h"
 #include "../../../srs/Config.h"
+#include "../../widgets/canvas/Canvas.h"
 #include "../../widgets/canvas/MapDisplay.h"
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
+#include "../../widgets/Utils.h"
+#include "../events/LayerEvents.h"
 #include "../events/ProjectEvents.h"
 #include "../events/ToolEvents.h"
 #include "../ApplicationController.h"
@@ -41,6 +47,10 @@
 
 // Qt
 #include <QtGui/QContextMenuEvent>
+#include <QtGui/QMessageBox>
+
+// STL
+#include <cassert>
 
 te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   : QObject(display),
@@ -54,6 +64,9 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 
   // Zoom Wheel tool
   m_display->installEventFilter(new te::qt::widgets::ZoomWheel(m_display, 2.0, this));
+
+  // Signals & slots
+  connect(m_display, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
 
   // Build the popup menu
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.SRID"));
@@ -155,6 +168,15 @@ void te::qt::af::MapDisplay::onCoordTracked(QPointF& coordinate)
   ApplicationController::getInstance().broadcast(&e);
 }
 
+void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& /*errors*/)
+{
+  // Stores the clean pixmap!
+  m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
+
+  // TODO!!!
+  drawLayerSelection((ApplicationController::getInstance().getProject()->getLayers().begin())->get());
+}
+
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
   switch(e->m_id)
@@ -162,5 +184,84 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     case te::qt::af::evt::PROJECT_ADDED:
       clear();
     break;
+
+    case te::qt::af::evt::LAYER_HIGHLIGHT_OBJECTS:
+    {
+      te::qt::af::evt::HighlightObjects* highlight = static_cast<te::qt::af::evt::HighlightObjects*>(e);
+
+      QPixmap* content = m_display->getDisplayPixmap();
+      content->fill(Qt::transparent);
+
+      QPainter painter(content);
+      painter.drawPixmap(0, 0, m_lastDisplayContent);
+      painter.end();
+
+      drawLayerSelection(highlight->m_layer);
+    }
+    break;
+
+    default:
+      return;
   }
+}
+
+void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
+{
+  assert(layer);
+
+  if(layer->getVisibility() != te::map::VISIBLE)
+    return;
+
+  const te::da::ObjectIdSet* oids = layer->getSelected();
+  if(oids == 0 || oids->size() == 0)
+    return;
+
+  bool needRemap = false;
+
+  if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_display->getSRID()))
+    needRemap = true;
+
+  // Try retrieves the layer selection
+  std::auto_ptr<te::da::DataSet> selected;
+  try
+  {
+    selected.reset(layer->getData(oids));
+  }
+  catch(std::exception& e)
+  {
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("The layer selection cannot be drawn. Details:") + " %1.").arg(e.what()));
+    return;
+  }
+
+  std::size_t gpos = te::da::GetFirstPropertyPos(selected.get(), te::dt::GEOMETRY_TYPE);
+
+  QPixmap* content = m_display->getDisplayPixmap();
+
+  const te::gm::Envelope& displayExtent = m_display->getExtent();
+
+  te::qt::widgets::Canvas canvas(content);
+  canvas.setWindow(displayExtent.m_llx, displayExtent.m_lly, displayExtent.m_urx, displayExtent.m_ury);
+
+  te::gm::GeomType currentGeomType = te::gm::UnknownGeometryType;
+
+  while(selected->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> g(selected->getGeometry(gpos));
+
+    if(needRemap)
+    {
+      g->setSRID(layer->getSRID());
+      g->transform(m_display->getSRID());
+    }
+
+    if(currentGeomType != g->getGeomTypeId())
+    {
+      currentGeomType = g->getGeomTypeId();
+      te::qt::widgets::Config2DrawLayerSelection(&canvas, ApplicationController::getInstance().getSelectionColor(), currentGeomType);
+    }
+
+    canvas.draw(g.get());
+  }
+
+  m_display->repaint();
 }
