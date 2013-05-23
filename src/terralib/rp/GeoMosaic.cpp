@@ -650,7 +650,8 @@ namespace te
               currentRasterBandsScales,
               mosaicBBoxesUnionElementPtr,
               0,
-              0 ), "Blender initiazing error" );            
+              0,
+              true ), "Blender initiazing error" );            
             
             for( unsigned int overlappedResultIdx = 0 ; overlappedResultIdx <
               overlappedResult->getNumGeometries() ; ++overlappedResultIdx )
