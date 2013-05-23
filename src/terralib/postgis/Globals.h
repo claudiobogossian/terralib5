@@ -48,6 +48,7 @@ namespace te
 
 // PostgreSQL type names
         static const std::string sm_unknownTypeName;              //!< The string literal representation for the unknown type.
+        static const std::string sm_charTypeName;                 //!< The string literal representation for the 1-byte character type.
         static const std::string sm_int2TypeName;                 //!< The string literal representation for the int2 type
         static const std::string sm_intTypeName;                  //!< The string literal representation for the int type
         static const std::string sm_int8TypeName;                 //!< The string literal representation for the int8 type
@@ -61,7 +62,7 @@ namespace te
         static const std::string sm_floatTypeName;                //!< The string literal representation for the float type
         static const std::string sm_doubleTypeName;               //!< The string literal representation for the double type
         static const std::string sm_booleanTypeName;              //!< The string literal representation for the boolean type
-        static const std::string sm_charTypeName;                 //!< The string literal representation for the char type
+        static const std::string sm_fixedcharTypeName;            //!< The string literal representation for the char type.
         static const std::string sm_varcharTypeName;              //!< The string literal representation for the varchar type
         static const std::string sm_stringTypeName;               //!< The string literal representation for the string type
         static const std::string sm_byteArrayTypeName;            //!< The string literal representation for the byte array type

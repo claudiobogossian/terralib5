@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -17,10 +17,9 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-//! TerraLib
+// TerraLib
 #include "../common/Logger.h"
 #include "../common/Translator.h"
-
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/BinaryOpEncoder.h"
@@ -29,7 +28,6 @@
 #include "../dataaccess/query/SQLFunctionEncoder.h"
 #include "../dataaccess/query/TemplateEncoder.h"
 #include "../dataaccess/query/UnaryOpEncoder.h"
-
 #include "DataSource.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
