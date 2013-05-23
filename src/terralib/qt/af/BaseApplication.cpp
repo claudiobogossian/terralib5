@@ -665,7 +665,7 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), m_project->getLayers(), ApplicationController::getInstance().getSelectionColor());
+  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), m_project->getLayers());
   m_display->setCurrentTool(selection);
 }
 
