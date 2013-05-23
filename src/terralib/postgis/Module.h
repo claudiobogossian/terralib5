@@ -37,7 +37,7 @@ namespace te
     /*!
       \class Module
 
-      \brief The TerraLib PostGIS driver is a plugin.    
+      \brief The TerraLib PostGIS driver is a plugin.
     */
     class Module : public te::plugin::Plugin
     {
@@ -45,7 +45,7 @@ namespace te
 
         /*!
           \brief Plugin constructor.
-            
+
           \param pInfo Basic information provided to initialize this module through the plugin API.
         */
         Module(const te::plugin::PluginInfo& pluginInfo);
@@ -60,52 +60,19 @@ namespace te
 
         /*!
           \brief This method will be called by TerraLib to startup some plugin's functionality.
-                  
+
           \exception Exception It throws an exception if the plugin can not be started.
-         */
+        */
         void startup();
 
         /*!
           \brief This method will be called by TerraLib to shutdown plugin's functionality.
-          
-          \exception Exception It throws an exception if the plugin can not be shutdown.
-         */
-        void shutdown();
-        //@}
 
-// PostgreSQL type names
-        static const std::string sm_unknownTypeName;              //!< The string literal representation for the unknown type.
-        static const std::string sm_int2TypeName;                 //!< The string literal representation for the int2 type
-        static const std::string sm_intTypeName;                  //!< The string literal representation for the int type
-        static const std::string sm_int8TypeName;                 //!< The string literal representation for the int8 type
-        static const std::string sm_numericTypeName;              //!< The string literal representation for the numeric type
-        static const std::string sm_dateTypeName;                 //!< The string literal representation for the date type
-        static const std::string sm_timeTypeName;                 //!< The string literal representation for the time type
-        static const std::string sm_timeTZTypeName;               //!< The string literal representation for the time type
-        static const std::string sm_timeStampTypeName;            //!< The string literal representation for the time stamp type
-        static const std::string sm_timeStampTZTypeName;          //!< The string literal representation for the time stamp with time zone type
-        static const std::string sm_floatTypeName;                //!< The string literal representation for the float type
-        static const std::string sm_doubleTypeName;               //!< The string literal representation for the double type
-        static const std::string sm_booleanTypeName;              //!< The string literal representation for the boolean type
-        static const std::string sm_charTypeName;                 //!< The string literal representation for the char type
-        static const std::string sm_varcharTypeName;              //!< The string literal representation for the varchar type
-        static const std::string sm_stringTypeName;               //!< The string literal representation for the string type
-        static const std::string sm_byteArrayTypeName;            //!< The string literal representation for the byte array type
-        static const std::string sm_pointTypeName;                //!< The string literal representation for PostGIS point geometry type
-        static const std::string sm_pointMTypeName;               //!< The string literal representation for PostGIS point geometry type 
-        static const std::string sm_lineStringTypeName;           //!< The string literal representation for PostGIS line string geometry type
-        static const std::string sm_lineStringMTypeName;          //!< The string literal representation for PostGIS line string with m geometry type
-        static const std::string sm_polygonTypeName;              //!< The string literal representation for PostGIS polygon geometry type
-        static const std::string sm_polygonMTypeName;             //!< The string literal representation for PostGIS polygon with m geometry type
-        static const std::string sm_geometryCollectionTypeName;   //!< The string literal representation for PostGIS geometry collection geometry type
-        static const std::string sm_geometryCollectionMTypeName;  //!< The string literal representation for PostGIS geometry collection with m geometry type
-        static const std::string sm_multiPointTypeName;           //!< The string literal representation for PostGIS multi-point geometry type
-        static const std::string sm_multiPointMTypeName;          //!< The string literal representation for PostGIS multi-point with m geometry type
-        static const std::string sm_multiLineStringTypeName;      //!< The string literal representation for PostGIS multi-linestring geometry type
-        static const std::string sm_multiLineStringMTypeName;     //!< The string literal representation for PostGIS multi-linestring with m geometry type
-        static const std::string sm_multiPolygonTypeName;         //!< The string literal representation for PostGIS multi-polygon geometry type
-        static const std::string sm_multiPolygonMTypeName;        //!< The string literal representation for PostGIS multi-polygon with m geometry type
-        static const std::string sm_geometryTypeName;             //!< The string literal representation for PostGIS base geometry type
+          \exception Exception It throws an exception if the plugin can not be shutdown.
+        */
+        void shutdown();
+
+        //@}
     };
   } // end namespace pgis
 }   // end namespace te

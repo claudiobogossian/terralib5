@@ -34,39 +34,6 @@
 #include "DataSourceFactory.h"
 #include "Module.h"
 
-const std::string te::pgis::Module::sm_unknownTypeName("UNKNOWN");
-const std::string te::pgis::Module::sm_int2TypeName("INT2");
-const std::string te::pgis::Module::sm_intTypeName("INT");
-const std::string te::pgis::Module::sm_int8TypeName("INT8");
-const std::string te::pgis::Module::sm_numericTypeName("NUMERIC");
-const std::string te::pgis::Module::sm_dateTypeName("DATE");
-const std::string te::pgis::Module::sm_timeTypeName("TIME");
-const std::string te::pgis::Module::sm_timeTZTypeName("TIMETZ");
-const std::string te::pgis::Module::sm_timeStampTypeName("TIMESTAMP");
-const std::string te::pgis::Module::sm_timeStampTZTypeName("TIMESTAMPTZ");
-const std::string te::pgis::Module::sm_floatTypeName("FLOAT4");
-const std::string te::pgis::Module::sm_doubleTypeName("FLOAT8");
-const std::string te::pgis::Module::sm_booleanTypeName("BOOL");
-const std::string te::pgis::Module::sm_charTypeName("CHAR");
-const std::string te::pgis::Module::sm_varcharTypeName("VARCHAR");
-const std::string te::pgis::Module::sm_stringTypeName("TEXT");
-const std::string te::pgis::Module::sm_byteArrayTypeName("BYTEA");
-const std::string te::pgis::Module::sm_pointTypeName("POINT");
-const std::string te::pgis::Module::sm_pointMTypeName("POINTM");
-const std::string te::pgis::Module::sm_lineStringTypeName("LINESTRING");
-const std::string te::pgis::Module::sm_lineStringMTypeName("LINESTRINGM");
-const std::string te::pgis::Module::sm_polygonTypeName("POLYGON");
-const std::string te::pgis::Module::sm_polygonMTypeName("POLYGONM");
-const std::string te::pgis::Module::sm_geometryCollectionTypeName("GEOMETRYCOLLECTION");
-const std::string te::pgis::Module::sm_geometryCollectionMTypeName("GEOMETRYCOLLECTIONM");
-const std::string te::pgis::Module::sm_multiPointTypeName("MULTIPOINT");
-const std::string te::pgis::Module::sm_multiPointMTypeName("MULTIPOINTM");
-const std::string te::pgis::Module::sm_multiLineStringTypeName("MULTILINESTRING");
-const std::string te::pgis::Module::sm_multiLineStringMTypeName("MULTILINESTRINGM");
-const std::string te::pgis::Module::sm_multiPolygonTypeName("MULTIPOLYGON");
-const std::string te::pgis::Module::sm_multiPolygonMTypeName("MULTIPOLYGONM");
-const std::string te::pgis::Module::sm_geometryTypeName("GEOMETRY");
-
 te::pgis::Module::Module(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo)
 {
