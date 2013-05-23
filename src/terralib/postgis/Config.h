@@ -20,7 +20,7 @@
 /*!
   \file terralib/postgis/Config.h
 
-  \brief Configuration flags for the PostGIS Driver Implementation of TerraLib.  
+  \brief Configuration flags for the PostGIS Driver Implementation of TerraLib.
 */
 
 #ifndef __TERRALIB_POSTGIS_INTERNAL_CONFIG_H

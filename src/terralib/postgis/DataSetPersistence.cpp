@@ -144,8 +144,11 @@ void te::pgis::DataSetPersistence::remove(const std::string& datasetName, const 
 //  pq->execute();
 }
 
-void te::pgis::DataSetPersistence::add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
+void te::pgis::DataSetPersistence::add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t limit)
 {
+  if(limit == 0)
+    limit = std::string::npos;
+
 // create a prepared statement
   std::string sql  = "INSERT INTO ";
               sql += datasetName;
@@ -159,6 +162,8 @@ void te::pgis::DataSetPersistence::add(const std::string& datasetName, te::da::D
 
   std::vector<int> paramTypes = te::da::GetPropertyDataTypes(d);
 
+  std::size_t nProcessedRows = 0;
+
   pq->prepare(sql, paramTypes);
 
   do
@@ -166,7 +171,9 @@ void te::pgis::DataSetPersistence::add(const std::string& datasetName, te::da::D
     pq->bind(d);
     pq->execute();
 
-  }while(d->moveNext());
+    ++nProcessedRows;
+
+  }while(d->moveNext() && nProcessedRows != limit);
 
   st.commit();
 }
