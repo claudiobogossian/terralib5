@@ -59,7 +59,7 @@ te::map::QueryLayer::~QueryLayer()
   delete m_style;
 }
 
-const te::map::LayerSchema* te::map::QueryLayer::getSchema() const
+const te::map::LayerSchema* te::map::QueryLayer::getSchema(const bool /*full*/) const
 {
   return 0;
 }

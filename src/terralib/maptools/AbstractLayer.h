@@ -212,11 +212,13 @@ namespace te
         /*!
           \brief It returns the layer schema.
 
+          \param full If true it will try to retrieve the maximum information about the layer.
+
           \return The Layer schema.
 
           \note The caller will take the ownership of the returned layer schema.
         */
-        virtual const LayerSchema* getSchema() const = 0;
+        virtual const LayerSchema* getSchema(const bool full = false) const = 0;
 
         /*!
           \brief It gets the dataset identified by the layer name.
