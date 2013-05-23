@@ -23,8 +23,9 @@
 #include "../../widgets/layer/explorer/LayerTreeView.h"
 #include "../events/Event.h"
 #include "../events/ProjectEvents.h"
-#include "../Project.h"
 #include "../ApplicationController.h"
+#include "../LayerDecorator.h"
+#include "../Project.h"
 #include "LayerExplorer.h"
 
 te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explorer, QObject* parent)
@@ -58,7 +59,16 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       if(nevt == 0 || nevt->m_proj == 0)
         return;
 
-      m_explorer->set(nevt->m_proj->getLayers());
+      std::list<te::map::AbstractLayerPtr> layers;
+      std::list<te::map::AbstractLayerPtr>::iterator it;
+
+      for(it = nevt->m_proj->getLayers().begin(); it != nevt->m_proj->getLayers().end(); ++it)
+      {
+        te::map::AbstractLayerPtr layer(((LayerDecorator*)it->get())->getDecorated());
+        layers.push_back(layer);
+      }
+
+      m_explorer->set(layers);
 
       assert(m_explorer->getTreeView());
       assert(m_explorer->getTreeView()->selectionModel());

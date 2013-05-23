@@ -59,6 +59,11 @@ COMPARISON CompareSimpleData(const T& lhs, const T& rhs)
 
 COMPARISON CompareAbsData (te::dt::AbstractData* lhs, te::dt::AbstractData* rhs)
 {
+  if(lhs == 0)
+    return GREATER;
+  if(rhs == 0)
+    return LESSER;
+
   COMPARISON res = EQUAL;
 
   if(lhs->getTypeCode() == te::dt::CHAR_TYPE)
@@ -245,7 +250,7 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
   while (dset->moveNext())
   {
     for(size_t j=0; j<cols.size(); j++)
-      value[j] = dset->getValue((size_t)cols[j]);
+      value[j] = (dset->isNull((size_t)cols[j])) ? 0 : dset->getValue((size_t)cols[j]);
 
     order.insert(std::pair<std::vector<te::dt::AbstractData*>, int>(value, i++));
   }

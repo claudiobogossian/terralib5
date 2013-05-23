@@ -30,6 +30,8 @@
   #include "../common/Config.h"
   #include "Exception.h"
 
+  #include <boost/lexical_cast.hpp>
+
   #include <sstream>
   #include <string>
   #include <iostream>
@@ -58,7 +60,7 @@
       std::cout << std::endl << "Message : " \
         << __FILE__ \
         << ":" << __LINE__ \
-        << " - " << te::rp::macros::toString( message ) \
+        << " - " << boost::lexical_cast< std::string >( message ) \
         << std::endl;
   #else
     #define TERP_LOGMSG_STDOUT( message )
@@ -73,7 +75,7 @@
       std::cerr << std::endl << "Error : " \
         << __FILE__ \
         << ":" << __LINE__ \
-        << " - " << te::rp::macros::toString( message ) \
+        << " - " << boost::lexical_cast< std::string >( message ) \
         << std::endl;
   #else
     #define TERP_LOGERR_STDOUT( message )
@@ -88,7 +90,7 @@
       std::cout << std::endl << "Warning : " \
         << __FILE__ \
         << ":" << __LINE__ \
-        << " - " << te::rp::macros::toString( message ) \
+        << " - " << boost::lexical_cast< std::string >( message ) \
         << std::endl;
   #else
     #define TERP_LOGWARN_STDOUT( message )
@@ -101,7 +103,7 @@
    */
   #define TERP_LOGMSG( message ) \
   { \
-    TE_LOG_INFO( te::rp::macros::toString( message ).c_str() ); \
+    TE_LOG_INFO( boost::lexical_cast< std::string >( message ).c_str() ); \
     TERP_LOGMSG_STDOUT( message ); \
   };
 
@@ -111,7 +113,7 @@
    */
   #define TERP_LOGERR( message ) \
   { \
-    TE_LOG_ERROR( te::rp::macros::toString( message ).c_str() ); \
+    TE_LOG_ERROR( boost::lexical_cast< std::string >( message ).c_str() ); \
     TERP_LOGERR_STDOUT( message ); \
   };
       
@@ -121,7 +123,7 @@
    */
   #define TERP_LOGWARN( message ) \
   { \
-    TE_LOG_WARN( te::rp::macros::toString( message ).c_str() ); \
+    TE_LOG_WARN( boost::lexical_cast< std::string >( message ).c_str() ); \
     TERP_LOGWARN_STDOUT( message ); \
   };
       
@@ -132,7 +134,7 @@
   #define TERP_LOG_AND_THROW( message ) \
   { \
     TERP_LOGERR( message ); \
-    throw te::rp::Exception( te::rp::macros::toString( message ) ); \
+    throw te::rp::Exception( boost::lexical_cast< std::string >( message ) ); \
   };
       
   /*!
@@ -142,9 +144,9 @@
    */
   #define TERP_TRUE_OR_THROW( value , message ) \
     if( ( value ) == 0 ) { \
-      TERP_LOGERR( te::rp::macros::toString( message ) + \
-        " - " + te::rp::macros::toString( #value ) ); \
-      throw te::rp::Exception( te::rp::macros::toString( message ) ); \
+      TERP_LOGERR( boost::lexical_cast< std::string >( message ) + \
+        " - " + boost::lexical_cast< std::string >( #value ) ); \
+      throw te::rp::Exception( boost::lexical_cast< std::string >( message ) ); \
     };      
 
   /*!
@@ -153,8 +155,8 @@
    */
   #define TERP_WATCH( variable ) \
     { \
-      TERP_LOGMSG( "WATCH - " + te::rp::macros::toString( #variable ) + \
-        "=[" + te::rp::macros::toString( variable ) +"]" ); \
+      TERP_LOGMSG( "WATCH - " + boost::lexical_cast< std::string >( #variable ) + \
+        "=[" + boost::lexical_cast< std::string >( variable ) +"]" ); \
     };
 
   /**!   * @brief Checks if value is true and logs an warning message if not.
@@ -163,8 +165,8 @@
    */
   #define TERP_TRUE_OR_LOG( value , message ) \
     if( ( value ) == 0 ) { \
-      TERP_LOGWARN( te::rp::macros::toString( message ) + \
-        " - " + te::rp::macros::toString( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
+        " - " + boost::lexical_cast< std::string >( #value ) ); \
     };
 
   /*!
@@ -176,8 +178,8 @@
    */
   #define TERP_TRUE_OR_RETURN_FALSE( value , message ) \
     if( ( value ) == 0 ) { \
-      TERP_LOGWARN( te::rp::macros::toString( message ) + \
-        " - " + te::rp::macros::toString( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
+        " - " + boost::lexical_cast< std::string >( #value ) ); \
       return false; \
     };
     
@@ -190,8 +192,8 @@
    */
   #define TERP_TRUE_OR_RETURN( value , message ) \
     if( ( value ) == 0 ) { \
-      TERP_LOGWARN( te::rp::macros::toString( message ) + \
-        " - " + te::rp::macros::toString( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
+        " - " + boost::lexical_cast< std::string >( #value ) ); \
       return; \
     };    
     
@@ -204,8 +206,8 @@
    */
   #define TERP_FALSE_OR_RETURN_FALSE( value , message ) \
     if( ( value ) != 0 ) { \
-      TERP_LOGWARN( te::rp::macros::toString( message ) + \
-        " - " + te::rp::macros::toString( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
+        " - " + boost::lexical_cast< std::string >( #value ) ); \
       return false; \
     };    
     
@@ -218,8 +220,8 @@
    */
   #define TERP_FALSE_OR_RETURN( value , message ) \
     if( ( value ) != 0 ) { \
-      TERP_LOGWARN( te::rp::macros::toString( message ) + \
-        " - " + te::rp::macros::toString( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
+        " - " + boost::lexical_cast< std::string >( #value ) ); \
       return; \
     };     
 
@@ -250,8 +252,8 @@
    */
   #define TERP_FALSE_OR_LOG( value , message ) \
     if( ( value ) != 0 ) { \
-      TERP_LOGWARN( te::rp::macros::toString( message ) + \
-        " - " + te::rp::macros::toString( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
+        " - " + boost::lexical_cast< std::string >( #value ) ); \
     };
 
   /*!
@@ -263,9 +265,9 @@
   #define TERP_CHECK_EQUAL( value1 , value2 , message ) \
     TERP_TRUE_OR_THROW( ( ((double)( value1 ) ) == ((double)( value2 ) ) ), \
     std::string( "Values must be equal [" ) + \
-    te::rp::macros::toString( value1 ) + "!=" + \
-    te::rp::macros::toString( value2 ) + "] - " + \
-    te::rp::macros::toString( message ) );
+    boost::lexical_cast< std::string >( value1 ) + "!=" + \
+    boost::lexical_cast< std::string >( value2 ) + "] - " + \
+    boost::lexical_cast< std::string >( message ) );
 
   /*!
    \brief Checks if two values are diferent and throws an exception if not.
@@ -276,9 +278,9 @@
   #define TERP_CHECK_NOT_EQUAL( value1 , value2 , message ) \
     TERP_TRUE_OR_THROW( ( ((double)( value1 )) != ((double)( value2 )) ), \
     std::string( "Values can't be equal [" ) + \
-    te::rp::macros::toString( #value1 ) + std::string( "==" ) + \
-    te::rp::macros::toString( #value2 ) + std::string( "==" ) + \
-    te::rp::macros::toString( value1 ) + std::string( "]" ) );
+    boost::lexical_cast< std::string >( #value1 ) + std::string( "==" ) + \
+    boost::lexical_cast< std::string >( #value2 ) + std::string( "==" ) + \
+    boost::lexical_cast< std::string >( value1 ) + std::string( "]" ) );
 
   /*!
    \brief  Checks if two values are equal ( within an EPS ) and throws an exception if not.
@@ -304,19 +306,19 @@
       TERP_TRUE_OR_THROW( \
         TERP_CHECK_EPS_double_diff <= TERP_CHECK_EPS_double_eps, \
         std::string( "Values are not equal: " ) + \
-        te::rp::macros::toString( #value1 ) + \
+        boost::lexical_cast< std::string >( #value1 ) + \
         std::string( "=[") + \
-        te::rp::macros::toString( TERP_CHECK_EPS_double_value1 ) + \
+        boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_value1 ) + \
         std::string( "] " ) + \
-        te::rp::macros::toString( #value2 ) + \
+        boost::lexical_cast< std::string >( #value2 ) + \
         std::string( "=[") + \
-        te::rp::macros::toString( TERP_CHECK_EPS_double_value2 ) + \
+        boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_value2 ) + \
         std::string( "] eps=[") + \
-        te::rp::macros::toString( TERP_CHECK_EPS_double_eps ) + \
+        boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_eps ) + \
         std::string( "] diff=[") + \
-        te::rp::macros::toString( TERP_CHECK_EPS_double_diff ) + \
+        boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_diff ) + \
         std::string( "] - " ) + \
-        te::rp::macros::toString( message ) \
+        boost::lexical_cast< std::string >( message ) \
         ); \
     };
 
@@ -357,14 +359,14 @@
    \brief Minimum of two values.
    */
   #ifndef MIN
-    #define MIN(x,y) ( ( (x) < (y) ) ? (x) : (y) )
+    #define MIN(x,y) std::min( x , y )
   #endif
   
   /*!
    \brief Maximum of two values.
    */
   #ifndef MAX
-    #define MAX(x,y) ( ( (x) > (y) ) ? (x) : (y) )
+    #define MAX(x,y) std::max( x , y )
   #endif  
   
   /*!
@@ -378,31 +380,8 @@
    \brief Absolute value.
    */
   #ifndef ABS
-    #define ABS(x) ( ( (x) >= 0 ) ? (x) : -(x) )
+    #define ABS(x) std::abs( x )
   #endif   
-  
-namespace te
-{
-  namespace rp
-  {
-    namespace macros
-    {
-      /*!
-      \brief Data conversion to string.
-      \param data Data to be converted.
-      \return The converted string.
-      */
-      template< class T >
-      std::string toString( const T& data )
-      {
-          std::stringstream temp_ss;
-          temp_ss.setf(std::ios_base::fixed);
-          temp_ss << data;
-          return temp_ss.str();
-      }      
-    };
-  };
-};
 
 #endif  // __TERRALIB_RP_INTERNAL_MACROS_H
 

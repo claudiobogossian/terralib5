@@ -41,8 +41,6 @@
 #include "../geometry/MultiPolygon.h"
 #include "../srs/Converter.h"
 
-#include <boost/shared_ptr.hpp>
-
 #include <climits>
 #include <cfloat>
 #include <cmath>
@@ -133,7 +131,7 @@ namespace te
 
       m_rType = params.m_rType;
       m_rInfo = params.m_rInfo;
-      m_outputRasterPtr = params.m_outputRasterPtr;
+      m_outputRasterPtr.reset();;
 
       return *this;
     }

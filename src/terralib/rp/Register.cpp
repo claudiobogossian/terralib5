@@ -33,10 +33,8 @@
 #include "../raster/Grid.h"
 #include "../raster/Utils.h"
 
-
-#include <boost/shared_ptr.hpp>
-
 #include <cfloat>
+#include <memory>
 
 
 namespace te
@@ -155,7 +153,7 @@ namespace te
       
       // instantiating the geometric transformation
       
-      boost::shared_ptr< te::gm::GeometricTransformation > transformationPtr;
+      std::auto_ptr< te::gm::GeometricTransformation > transformationPtr;
       
       {
         te::gm::GTParameters transfParams;
@@ -341,7 +339,7 @@ namespace te
 
       // checking transformation related parameters
       
-      boost::shared_ptr< te::gm::GeometricTransformation > transformationPtr( 
+      std::auto_ptr< te::gm::GeometricTransformation > transformationPtr( 
       te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
       TERP_TRUE_OR_RETURN_FALSE( transformationPtr.get() != 0,
         "Geometric transformation instatiation error" );

@@ -36,6 +36,7 @@
 #include "ApplicationController.h"
 #include "ApplicationPlugins.h"
 #include "Exception.h"
+#include "LayerDecorator.h"
 #include "Project.h"
 #include "Utils.h"
 
@@ -182,7 +183,7 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = project.getLayers().begin();
       it != project.getLayers().end();
       ++it)
-    lserial.write(it->get(), writer);
+    lserial.write(((LayerDecorator*)it->get())->getDecorated(), writer);
 
   writer.writeEndElement("te_map:LayerList");
 
