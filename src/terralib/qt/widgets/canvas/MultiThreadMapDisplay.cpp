@@ -165,7 +165,10 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
   {
     QPainter painter(m_displayPixmap);
     painter.drawImage(0, 0, image);
+    painter.end();
+
     repaint();
+
     return;
   }
 
@@ -176,6 +179,8 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
   std::map<int, QImage>::iterator it;
   for(it = m_images.begin(); it != m_images.end(); ++it)
     painter.drawImage(0, 0, it->second);
+
+  painter.end();
 
   m_images.clear();
 
