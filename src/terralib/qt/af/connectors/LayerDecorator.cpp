@@ -114,9 +114,9 @@ void te::qt::af::LayerDecorator::clearSelected()
   m_decorated->clearSelected();
 }
 
-const te::map::LayerSchema* te::qt::af::LayerDecorator::getSchema() const
+const te::map::LayerSchema* te::qt::af::LayerDecorator::getSchema(const bool full) const
 {
-  return m_decorated->getSchema();
+  return m_decorated->getSchema(full);
 }
 
 te::da::DataSet* te::qt::af::LayerDecorator::getData(te::common::TraverseType travType, 
