@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -50,13 +50,12 @@ namespace te
 
         ~DataSetPersistence();
 
-        void create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
-
-        void remove(const std::string& datasetName);
-
         void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids);
 
-        void add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
+        void add(const std::string& datasetName,
+                 te::da::DataSet* d,
+                 const std::map<std::string, std::string>& options,
+                 std::size_t limit = 0);
 
         void update(const std::string& datasetName,
                     te::da::DataSet* dataset,
@@ -64,48 +63,6 @@ namespace te
                     const te::da::ObjectIdSet* oids,
                     const std::map<std::string, std::string>& options,
                     std::size_t limit = 0);
-
-        te::da::DataSourceTransactor* getTransactor() const;
-
-      private:
-
-        // insere 1-linha nao preparada por item
-        void add1(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        // usa transacao + insere 1-linha nao preparada por item
-        void add2(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        // insere 1-linha preparada por item
-        void add3(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        // usa transacao + insere 1-linha preparada por item
-        void add4(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        // insere usando multiplas linhas
-        void add5(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        // usa transacao + insere usando multiplas linhas
-        void add6(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        // insercao multipla em uma linha
-        void add7(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        // usa transacao + insercao multipla em uma linha
-        void add8(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        // gera um arquivo e usa LOAD do cliente p/ servidor
-        void add9(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        // gera um arquivo e usa LOAD no proprio servidor
-        void add10(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        void update1(const te::da::DataSetType* dt,
-                     te::da::DataSet* dataset,
-                     const std::vector<te::dt::Property*>& properties);
-
-        void update2(const te::da::DataSetType* dt,
-                     te::da::DataSet* dataset,
-                     const std::vector<te::dt::Property*>& properties);
 
       private:
 

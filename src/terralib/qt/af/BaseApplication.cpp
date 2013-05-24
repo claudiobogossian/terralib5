@@ -27,6 +27,7 @@
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../common/SystemApplicationSettings.h"
+#include "../../common/STLUtils.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
 #include "../../maptools/AbstractLayer.h"
@@ -121,6 +122,16 @@ te::qt::af::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLayer* l
       return *it;
 
   return 0;
+}
+
+void CloseAllTables(std::vector<te::qt::af::DataSetTableDockWidget*>& tables)
+{
+  std::vector<te::qt::af::DataSetTableDockWidget*>::iterator it;
+
+  for(it=tables.begin(); it!=tables.end(); ++it)
+    (*it)->close();
+
+  tables.clear();
 }
 
 te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
@@ -733,6 +744,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
   {
     checkProjectSave();
 
+    CloseAllTables(m_tableDocks);
+
     Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
 
     delete m_project;
@@ -796,6 +809,8 @@ void te::qt::af::BaseApplication::checkProjectSave()
 
 void te::qt::af::BaseApplication::newProject()
 {
+  CloseAllTables(m_tableDocks);
+
   delete m_project;
 
   m_project = new Project;

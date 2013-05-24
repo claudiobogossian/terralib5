@@ -343,7 +343,7 @@ namespace te
 
       \return An expression with bindable parameters (?, ?, ? , ...) that can be used in INSERT expressions.
     */
-    TESQLITEEXPORT std::string GetSQLBindValues(const te::da::DataSetType* dt);
+    TESQLITEEXPORT std::string GetSQLBindValues(const te::da::DataSet* dataset);
 
     /*!
       \brief It creates a bindable expression for a spatial relation involving a column and a parameterized value.
