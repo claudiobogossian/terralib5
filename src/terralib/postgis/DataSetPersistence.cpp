@@ -173,7 +173,7 @@ void te::pgis::DataSetPersistence::add(const std::string& datasetName, te::da::D
 
     ++nProcessedRows;
 
-  }while(d->moveNext() && nProcessedRows != limit);
+  }while(d->moveNext() && (nProcessedRows != limit));
 
   st.commit();
 }

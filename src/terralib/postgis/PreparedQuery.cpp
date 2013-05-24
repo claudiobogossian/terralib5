@@ -466,7 +466,9 @@ void te::pgis::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos
 
 void te::pgis::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, te::da::DataSet* d)
 {
-  for(std::size_t i = 0; i < m_nparams; ++i)
+  const std::size_t nparams = propertiesPos.size();
+
+  for(std::size_t i = 0; i < nparams; ++i)
     BindValue(this, d, i, propertiesPos[i]);
 }
 
