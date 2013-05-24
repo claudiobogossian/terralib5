@@ -799,7 +799,8 @@ namespace te
                 currentRasterBandsScales,
                 &mosaicValidDataPol,
                 0,
-                geoTransPtr.get() ), 
+                geoTransPtr.get(),
+                false ), 
                 "Blender initiazing error" );      
                 
               std::vector< double > blendedValues( mosaicRasterHandler->getNumberOfBands() );

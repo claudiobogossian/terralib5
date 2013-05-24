@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/postgis/PreparedQuery.cpp
 
-  \brief A class that implements a prepared query for PostgreSQL data access driver.  
+  \brief A class that implements a prepared query for PostgreSQL data access driver.
 */
 
 // TerraLib
@@ -58,18 +58,14 @@ namespace te
 {
   namespace pgis
   {
-    template<class T> inline void BindValue(te::pgis::PreparedQuery* pq, std::size_t i, std::size_t propertyPos, T* d)
+    inline void BindValue(te::pgis::PreparedQuery* pq, te::da::DataSet* d, std::size_t i, std::size_t propertyPos)
     {
-      const int dt = d->getPropertyDataType(propertyPos);
+      const int propertyDataType = d->getPropertyDataType(propertyPos);
 
-      switch(dt)
+      switch(propertyDataType)
       {
         case te::dt::CHAR_TYPE :
           pq->bind(i, d->getChar(propertyPos));
-        break;
-
-        case te::dt::UCHAR_TYPE :
-          pq->bind(i, d->getUChar(propertyPos));
         break;
 
         case te::dt::INT16_TYPE :
@@ -137,9 +133,8 @@ te::pgis::PreparedQuery::PreparedQuery(Transactor* t, const std::string& pqname)
   : m_t(t),
     m_conn(0),
     m_result(0),
-    m_paramTypes(0),
     m_paramValues(0),
-    m_paramLenghts(0),
+    m_paramLengths(0),
     m_paramFormats(0),
     m_nparams(0),
     m_qname(pqname)
@@ -157,7 +152,6 @@ te::pgis::PreparedQuery::~PreparedQuery()
   }
   catch(...)
   {
-  
   }
 }
 
@@ -179,165 +173,21 @@ void te::pgis::PreparedQuery::prepare(const te::da::Query& query, const std::vec
 
 void te::pgis::PreparedQuery::prepare(const std::string& query, const std::vector<te::dt::Property*>& queryParams)
 {
-// clear any previous prepared query
-  clear();
-
-// create parameters of prepared query
-  m_nparams = queryParams.size();
-
-  m_paramTypes = new unsigned int[m_nparams];
-
-  memset(m_paramTypes, 0, m_nparams * sizeof(unsigned int));
-
-  m_paramValues = new char*[m_nparams];
-
-  memset(m_paramValues, 0, m_nparams * sizeof(char*));
-
-  m_paramLenghts = new int[m_nparams];
-
-  memset(m_paramLenghts, 0, m_nparams * sizeof(int));
-
-  m_paramFormats = new int[m_nparams];
-
-  memset(m_paramFormats, 0, m_nparams * sizeof(int));
-
-// set informational parameters of prepared query
-  for(std::size_t i = 0; i < m_nparams; ++i)
-  {
-    const te::dt::Property* p = queryParams[i];
-
-    switch(p->getType())
-    {
-      case te::dt::CHAR_TYPE :
-      case te::dt::UCHAR_TYPE :
-      case te::dt::INT16_TYPE :
-        m_paramTypes[i] = PG_INT2_TYPE;
-        m_paramLenghts[i] = sizeof(boost::int16_t);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::INT32_TYPE :
-        m_paramTypes[i] = PG_INT4_TYPE;
-        m_paramLenghts[i] = sizeof(boost::int32_t);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::INT64_TYPE :
-        m_paramTypes[i] = PG_INT8_TYPE;
-        m_paramLenghts[i] = sizeof(boost::int64_t);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::BOOLEAN_TYPE :
-        m_paramTypes[i] = PG_BOOL_TYPE;
-        m_paramLenghts[i] = sizeof(char);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::FLOAT_TYPE :
-        m_paramTypes[i] = PG_FLOAT4_TYPE;
-        m_paramLenghts[i] = sizeof(float);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::DOUBLE_TYPE :
-        m_paramTypes[i] = PG_FLOAT8_TYPE;
-        m_paramLenghts[i] = sizeof(double);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::NUMERIC_TYPE :
-        m_paramTypes[i] = PG_NUMERIC_TYPE;
-        m_paramLenghts[i] = sizeof(double);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::STRING_TYPE :
-      {
-        const te::dt::StringProperty* sp = static_cast<const te::dt::StringProperty*>(p);
-
-        if(sp->getSubType() == te::dt::VAR_STRING)
-          m_paramTypes[i] = PG_VARCHAR_TYPE;
-        else if(sp->getSubType() == te::dt::STRING)
-          m_paramTypes[i] = PG_TEXT_TYPE;
-        else
-          m_paramTypes[i] =  PG_CHARACTER_TYPE;
-
-        m_paramLenghts[i] = 0;
-        m_paramFormats[i] = 1;
-
-        break;
-      }
-
-      case te::dt::BYTE_ARRAY_TYPE:
-        m_paramTypes[i] = PG_BYTEA_TYPE;
-        m_paramLenghts[i] = 0;
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::GEOMETRY_TYPE :
-        m_paramTypes[i] = m_t->getPGDataSource()->getGeomTypeId();
-        m_paramLenghts[i] = 0;
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::DATETIME_TYPE:
-      {
-        const te::dt::DateTimeProperty* dtp = static_cast<const te::dt::DateTimeProperty*>(p);
-
-        if(dtp->getSubType() == te::dt::DATE)
-          m_paramTypes[i] = PG_DATE_TYPE;
-        else if(dtp->getSubType() == te::dt::TIME_DURATION)
-          m_paramTypes[i] = PG_TIME_TYPE;
-        else if(dtp->getSubType() == te::dt::TIME_INSTANT)
-          m_paramTypes[i] = PG_TIMESTAMP_TYPE;
-        else
-          m_paramTypes[i] = PG_TIMESTAMPTZ_TYPE;
-
-        m_paramLenghts[i] = 0;
-        m_paramFormats[i] = 0;
-        break;
-      }
-
-      default:
-
-        throw Exception(TR_PGIS("This TerraLib data type is not supported by the PostgreSQL driver!"));
-
-      /*default :
-        m_paramTypes[i] = 0;
-        m_paramLenghts[i] = 0;
-        m_paramFormats[i] = 1;
-      break;*/
-    }
-  }
-
-// make prepared query
-  m_result = PQprepare(m_conn, m_qname.c_str(), query.c_str(), m_nparams, m_paramTypes);
-
-// check result
-  if((PQresultStatus(m_result) != PGRES_COMMAND_OK) &&
-     (PQresultStatus(m_result) != PGRES_TUPLES_OK))
-  {
-    boost::format errmsg(TR_PGIS("Could not create the prepared query due to the following error: %1%."));
-    
-    errmsg = errmsg % PQerrorMessage(m_conn);
-
-    throw Exception(errmsg.str());
-  }
+  throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
 void te::pgis::PreparedQuery::execute()
 {
   PQclear(m_result);
 
-  m_result = PQexecPrepared(m_conn, m_qname.c_str(), m_nparams, m_paramValues, m_paramLenghts, m_paramFormats, 1);
+  m_result = PQexecPrepared(m_conn, m_qname.c_str(), m_nparams, m_paramValues, m_paramLengths, m_paramFormats, 1);
 
 // release param values data and set it to a null value
   for(std::size_t i = 0; i < m_nparams; ++i)
   {
     delete [] (m_paramValues[i]);
     m_paramValues[i] = 0;
-    //m_paramLenghts[i] = 0;
+    m_paramLengths[i] = 0;
   }
 
 // check result
@@ -355,28 +205,7 @@ void te::pgis::PreparedQuery::execute()
 te::da::DataSet* te::pgis::PreparedQuery::query(te::common::TraverseType /*travType*/,
                                                 te::common::AccessPolicy /*rwRole*/)
 {
-  PQclear(m_result);
-
-  m_result = PQexecPrepared(m_conn, m_qname.c_str(), m_nparams, m_paramValues, m_paramLenghts, m_paramFormats, 1);
-
-// release param values data and set it to a null value
-  for(std::size_t i = 0; i < m_nparams; ++i)
-  {
-    delete [] (m_paramValues[i]);
-    m_paramValues[i] = 0;
-    m_paramLenghts[i] = 0;
-  }
-
-// check result
-  if((PQresultStatus(m_result) != PGRES_COMMAND_OK) &&
-     (PQresultStatus(m_result) != PGRES_TUPLES_OK))
-  {
-    boost::format errmsg(TR_PGIS("Could not execute the prepared query due to the following error: %1%."));
-    
-    errmsg = errmsg % PQerrorMessage(m_conn);
-
-    throw Exception(errmsg.str());
-  }
+  execute();
 
   DataSet* dataset = new DataSet(m_result, m_t, 0);
 
@@ -387,39 +216,24 @@ te::da::DataSet* te::pgis::PreparedQuery::query(te::common::TraverseType /*travT
 
 void te::pgis::PreparedQuery::bind(int i, char value)
 {
-  assert(m_paramTypes[i] == PG_INT2_TYPE);
-
-  boost::int16_t ivalue = value;
+  m_paramLengths[i] = sizeof(char);
+  m_paramFormats[i] = 1;
 
   if(m_paramValues[i] == 0)
-    m_paramValues[i] = new char[sizeof(boost::int16_t)];
+    m_paramValues[i] = new char[sizeof(char)];
 
-  memcpy(m_paramValues[i], &ivalue, sizeof(boost::int16_t));
-
-#if TE_MACHINE_BYTE_ORDER == TE_NDR
-  te::common::Swap2Bytes(m_paramValues[i]);
-#endif
+  memcpy(m_paramValues[i], &value, sizeof(char));
 }
 
 void te::pgis::PreparedQuery::bind(int i, unsigned char value)
 {
-  assert(m_paramTypes[i] == PG_INT2_TYPE);
-
-  boost::int16_t ivalue = value;
-
-  if(m_paramValues[i] == 0)
-    m_paramValues[i] = new char[sizeof(boost::int16_t)];
-
-  memcpy(m_paramValues[i], &ivalue, sizeof(boost::int16_t));
-
-#if TE_MACHINE_BYTE_ORDER == TE_NDR
-  te::common::Swap2Bytes(m_paramValues[i]);
-#endif
+  throw Exception(TR_PGIS("The TerraLib unsigned char data type is not supported by PostgreSQL data access driver!"));
 }
 
 void te::pgis::PreparedQuery::bind(int i, boost::int16_t value)
 {
-  assert(m_paramTypes[i] == PG_INT2_TYPE);
+  m_paramLengths[i] = sizeof(boost::int16_t);
+  m_paramFormats[i] = 1;
 
   if(m_paramValues[i] == 0)
     m_paramValues[i] = new char[sizeof(boost::int16_t)];
@@ -433,7 +247,8 @@ void te::pgis::PreparedQuery::bind(int i, boost::int16_t value)
 
 void te::pgis::PreparedQuery::bind(int i, boost::int32_t value)
 {
-  assert(m_paramTypes[i] == PG_INT4_TYPE);
+  m_paramLengths[i] = sizeof(boost::int32_t);
+  m_paramFormats[i] = 1;
 
   if(m_paramValues[i] == 0)
     m_paramValues[i] = new char[sizeof(boost::int32_t)];
@@ -447,7 +262,8 @@ void te::pgis::PreparedQuery::bind(int i, boost::int32_t value)
 
 void te::pgis::PreparedQuery::bind(int i, boost::int64_t value)
 {
-  assert(m_paramTypes[i] == PG_INT8_TYPE);
+  m_paramLengths[i] = sizeof(boost::int64_t);
+  m_paramFormats[i] = 1;
 
   if(m_paramValues[i] == 0)
     m_paramValues[i] = new char[sizeof(boost::int64_t)];
@@ -461,7 +277,8 @@ void te::pgis::PreparedQuery::bind(int i, boost::int64_t value)
 
 void te::pgis::PreparedQuery::bind(int i, bool value)
 {
-  assert(m_paramTypes[i] == PG_BOOL_TYPE);
+  m_paramLengths[i] = sizeof(char);
+  m_paramFormats[i] = 1;
 
   if(m_paramValues[i] == 0)
     m_paramValues[i] = new char[sizeof(char)];
@@ -473,7 +290,8 @@ void te::pgis::PreparedQuery::bind(int i, bool value)
 
 void te::pgis::PreparedQuery::bind(int i, float value)
 {
-  assert(m_paramTypes[i] == PG_FLOAT4_TYPE);
+  m_paramLengths[i] = sizeof(float);
+  m_paramFormats[i] = 1;
 
   if(m_paramValues[i] == 0)
     m_paramValues[i] = new char[sizeof(float)];
@@ -487,7 +305,8 @@ void te::pgis::PreparedQuery::bind(int i, float value)
 
 void te::pgis::PreparedQuery::bind(int i, double value)
 {
-  assert(m_paramTypes[i] == PG_FLOAT8_TYPE);
+  m_paramLengths[i] = sizeof(double);
+  m_paramFormats[i] = 1;
 
   if(m_paramValues[i] == 0)
     m_paramValues[i] = new char[sizeof(double)];
@@ -501,60 +320,55 @@ void te::pgis::PreparedQuery::bind(int i, double value)
 
 void te::pgis::PreparedQuery::bindNumeric(int i, const std::string& value)
 {
-  assert((m_paramTypes[i] == PG_BYTEA_TYPE));
-
   delete [] (m_paramValues[i]);
 
   m_paramValues[i] = new char[value.length()];
 
   memcpy(m_paramValues[i], value.c_str(), value.length());
 
-  m_paramLenghts[i] = value.length();
+  m_paramLengths[i] = static_cast<int>(value.length());
+  m_paramFormats[i] = 0;
 }
 
 void te::pgis::PreparedQuery::bind(int i, const std::string& value)
 {
-  assert((m_paramTypes[i] == PG_VARCHAR_TYPE) || (m_paramTypes[i] == PG_CHARACTER_TYPE) || (m_paramTypes[i] == PG_TEXT_TYPE));
-
   delete [] (m_paramValues[i]);
 
   m_paramValues[i] = new char[value.length() + 1];
 
   memcpy(m_paramValues[i], value.c_str(), value.length() + 1);
 
-  m_paramLenghts[i] = value.length();
+  //m_paramLengths[i] = static_cast<int>(value.length()); // we don't need to inform the length
+  m_paramFormats[i] = 0;
 }
 
 void te::pgis::PreparedQuery::bind(int i, const te::dt::ByteArray& value)
 {
-  assert(m_paramTypes[i] == PG_BYTEA_TYPE);
-
   delete [] (m_paramValues[i]);
 
   m_paramValues[i] = new char[value.bytesUsed()];
 
   memcpy(m_paramValues[i], value.getData(), value.bytesUsed());
 
-  m_paramLenghts[i] = value.bytesUsed();
+  m_paramLengths[i] = value.bytesUsed();
+  m_paramFormats[i] = 1;
 }
 
 void te::pgis::PreparedQuery::bind(int i, const te::gm::Geometry& value)
 {
-  assert(m_paramTypes[i] == m_t->getPGDataSource()->getGeomTypeId());
-
-// clear previous data
   delete [] (m_paramValues[i]);
 
   m_paramValues[i] = 0;
 
-// get ewkb
+  m_paramFormats[i] = 1;
+
   std::size_t ewkbsize = value.getWkbSize() + 4;
 
   m_paramValues[i] = new char[ewkbsize];
 
   EWKBWriter::write(&value, m_paramValues[i]);
 
-  m_paramLenghts[i] = ewkbsize;
+  m_paramLengths[i] = static_cast<int>(ewkbsize);
 }
 
 void te::pgis::PreparedQuery::bind(int /*i*/, const te::rst::Raster& /*value*/)
@@ -564,7 +378,22 @@ void te::pgis::PreparedQuery::bind(int /*i*/, const te::rst::Raster& /*value*/)
 
 void te::pgis::PreparedQuery::bind(int i, const te::dt::DateTime& value)
 {
-  assert((m_paramTypes[i] == PG_TIME_TYPE) || (m_paramTypes[i] == PG_DATE_TYPE) || (m_paramTypes[i] == PG_TIMESTAMP_TYPE) || (m_paramTypes[i] == PG_TIMESTAMPTZ_TYPE));
+  //if(dynamic_cast<const te::dt::Date*>(&value) != 0)
+  //{
+  //  m_paramTypes[i] = PG_DATE_TYPE;
+  //}
+  //else if(dynamic_cast<const te::dt::TimeDuration*>(&value) != 0)
+  //{
+  //  m_paramTypes[i] = PG_TIME_TYPE;
+  //}
+  //else if(dynamic_cast<const te::dt::TimeInstant*>(&value) != 0)
+  //{
+  //  m_paramTypes[i] = PG_TIMESTAMP_TYPE;
+  //}
+  //else
+  //{
+  //  m_paramTypes[i] = PG_TIMESTAMPTZ_TYPE;
+  //}
 
   delete [] (m_paramValues[i]);
 
@@ -574,7 +403,7 @@ void te::pgis::PreparedQuery::bind(int i, const te::dt::DateTime& value)
 
   memcpy(m_paramValues[i], dvalue.c_str(), dvalue.length() + 1);
 
-  m_paramLenghts[i] = dvalue.length() + 1;
+  m_paramLengths[i] = dvalue.length() + 1;
 }
 
 void te::pgis::PreparedQuery::bind(int /*i*/, const te::da::DataSet& /*value*/)
@@ -600,126 +429,20 @@ void te::pgis::PreparedQuery::prepare(const std::string& query, const std::vecto
 // create parameters of prepared query
   m_nparams = paramTypes.size();
 
-  m_paramTypes = new unsigned int[m_nparams];
-
-  memset(m_paramTypes, 0, m_nparams * sizeof(unsigned int));
-
   m_paramValues = new char*[m_nparams];
 
   memset(m_paramValues, 0, m_nparams * sizeof(char*));
 
-  m_paramLenghts = new int[m_nparams];
+  m_paramLengths = new int[m_nparams];
 
-  memset(m_paramLenghts, 0, m_nparams * sizeof(int));
+  memset(m_paramLengths, 0, m_nparams * sizeof(int));
 
   m_paramFormats = new int[m_nparams];
 
   memset(m_paramFormats, 0, m_nparams * sizeof(int));
 
-// set informational parameters of prepared query
-  for(std::size_t i = 0; i < m_nparams; ++i)
-  {
-    const int dt = paramTypes[i];
-
-    switch(dt)
-    {
-      case te::dt::CHAR_TYPE :
-      case te::dt::UCHAR_TYPE :
-      case te::dt::INT16_TYPE :
-        m_paramTypes[i] = PG_INT2_TYPE;
-        m_paramLenghts[i] = sizeof(boost::int16_t);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::INT32_TYPE :
-        m_paramTypes[i] = PG_INT4_TYPE;
-        m_paramLenghts[i] = sizeof(boost::int32_t);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::INT64_TYPE :
-        m_paramTypes[i] = PG_INT8_TYPE;
-        m_paramLenghts[i] = sizeof(boost::int64_t);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::BOOLEAN_TYPE :
-        m_paramTypes[i] = PG_BOOL_TYPE;
-        m_paramLenghts[i] = sizeof(char);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::FLOAT_TYPE :
-        m_paramTypes[i] = PG_FLOAT4_TYPE;
-        m_paramLenghts[i] = sizeof(float);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::DOUBLE_TYPE :
-        m_paramTypes[i] = PG_FLOAT8_TYPE;
-        m_paramLenghts[i] = sizeof(double);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::NUMERIC_TYPE :
-        m_paramTypes[i] = PG_NUMERIC_TYPE;
-        m_paramLenghts[i] = sizeof(double);
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::STRING_TYPE :
-        //m_paramTypes[i] = PG_TEXT_TYPE;
-        m_paramTypes[i] = PG_VARCHAR_TYPE;
-        m_paramLenghts[i] = 0;
-        m_paramFormats[i] = 1;
-
-      break;
-
-      case te::dt::BYTE_ARRAY_TYPE:
-        m_paramTypes[i] = PG_BYTEA_TYPE;
-        m_paramLenghts[i] = 0;
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::GEOMETRY_TYPE :
-        m_paramTypes[i] = m_t->getPGDataSource()->getGeomTypeId();
-        m_paramLenghts[i] = 0;
-        m_paramFormats[i] = 1;
-      break;
-
-      case te::dt::DATETIME_TYPE:
-      {
-        throw Exception(TR_PGIS("Not implemented yet!"));
-        //const te::dt::DateTimeProperty* dtp = static_cast<const te::dt::DateTimeProperty*>(p);
-
-        //if(dtp->getSubType() == te::dt::DATE)
-        //  m_paramTypes[i] = PG_DATE_TYPE;
-        //else if(dtp->getSubType() == te::dt::TIME_DURATION)
-        //  m_paramTypes[i] = PG_TIME_TYPE;
-        //else if(dtp->getSubType() == te::dt::TIME_INSTANT)
-        //  m_paramTypes[i] = PG_TIMESTAMP_TYPE;
-        //else
-        //  m_paramTypes[i] = PG_TIMESTAMPTZ_TYPE;
-
-        //m_paramLenghts[i] = 0;
-        //m_paramFormats[i] = 0;
-        break;
-      }
-
-      default:
-
-        throw Exception(TR_PGIS("This TerraLib data type is not supported by the PostgreSQL driver!"));
-
-      /*default :
-        m_paramTypes[i] = 0;
-        m_paramLenghts[i] = 0;
-        m_paramFormats[i] = 1;
-      break;*/
-    }
-  }
-
 // make prepared query
-  m_result = PQprepare(m_conn, m_qname.c_str(), query.c_str(), m_nparams, m_paramTypes);
+  m_result = PQprepare(m_conn, m_qname.c_str(), query.c_str(), m_nparams, 0);
 
 // check result
   if((PQresultStatus(m_result) != PGRES_COMMAND_OK) &&
@@ -738,19 +461,21 @@ void te::pgis::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos
   const std::size_t nparams = propertiesPos.size();
 
   for(std::size_t i = 0; i < nparams; ++i)
-    BindValue(this, i + offset, propertiesPos[i], d);
+    BindValue(this, d, i + offset, propertiesPos[i]);
 }
 
 void te::pgis::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, te::da::DataSet* d)
 {
-  for(std::size_t i = 0; i < m_nparams; ++i)
-    BindValue(this, i, propertiesPos[i], d);
+  const std::size_t nparams = propertiesPos.size();
+
+  for(std::size_t i = 0; i < nparams; ++i)
+    BindValue(this, d, i, propertiesPos[i]);
 }
 
 void te::pgis::PreparedQuery::bind(te::da::DataSet* d)
 {
   for(std::size_t i = 0; i < m_nparams; ++i)
-    BindValue(this, i, i, d);
+    BindValue(this, d, i, i);
 }
 
 void te::pgis::PreparedQuery::clear()
@@ -766,11 +491,6 @@ void te::pgis::PreparedQuery::clear()
 
   m_result = 0;
 
-// release param types
-  delete [] m_paramTypes;
-
-  m_paramTypes = 0;
-
 // release param values
   for(std::size_t i = 0; i < m_nparams; ++i)
     delete [] (m_paramValues[i]);
@@ -780,9 +500,9 @@ void te::pgis::PreparedQuery::clear()
   m_paramValues = 0;
 
 // release param lengths
-  delete [] m_paramLenghts;
+  delete [] m_paramLengths;
 
-  m_paramLenghts = 0;
+  m_paramLengths = 0;
 
 // release param formats
   delete [] m_paramFormats;

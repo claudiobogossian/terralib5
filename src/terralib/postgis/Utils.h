@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -561,7 +561,7 @@ namespace te
 
         case PG_CHAR_TYPE:
           p = new te::dt::SimpleProperty(name, te::dt::CHAR_TYPE, attNotNull, defaultValue, attNum);
-          break;
+        break;
 
         default:
           p = new te::dt::SimpleProperty(name, te::dt::UNKNOWN_TYPE, attNotNull, defaultValue, attNum);
