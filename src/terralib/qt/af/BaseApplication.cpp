@@ -29,6 +29,7 @@
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
+#include "../../maptools/AbstractLayer.h"
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
@@ -546,9 +547,10 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
       return;
     }
-    
+    const te::map::LayerSchema* schema = (*(layers.begin()))->getLayer()->getSchema();
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
-    te::qt::widgets::HistogramDialog dlg(dataset, this);
+    te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+    te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
     dlg.exec();
   }
