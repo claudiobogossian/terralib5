@@ -58,7 +58,7 @@ namespace te
   {
     inline void BindValue(te::da::DataSet* d, te::mysql::PreparedQuery* pq, std::size_t i, std::size_t propertyPos)
     {
-      int propertyDataType = d->getPropertyDataType(propertyPos);
+      const int propertyDataType = d->getPropertyDataType(propertyPos);
 
       switch(propertyDataType)
       {

@@ -109,6 +109,8 @@ void te::mysql::DataSetPersistence::add(const std::string& datasetName, te::da::
       pq->bind(d);
       pq->execute();
 
+      ++nProcessedRows;
+
     }while(d->moveNext() && (nProcessedRows != limit));
 
     if(st.get())
