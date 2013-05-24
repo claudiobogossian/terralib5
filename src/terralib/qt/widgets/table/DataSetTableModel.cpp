@@ -50,10 +50,10 @@ te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
   : QAbstractTableModel(parent),
     m_dataset(0),
     m_currentRow(-1),
-    m_promoter(0),
     m_OIdsVisible(false),
     m_enabled(true)
 {
+  m_promoter = new Promoter;
 }
 
 te::qt::widgets::DataSetTableModel::~DataSetTableModel()
@@ -81,39 +81,30 @@ void te::qt::widgets::DataSetTableModel::setPkeysColumns(const std::vector<size_
 void te::qt::widgets::DataSetTableModel::setPromotionEnable(const bool& enable)
 {
   if(enable)
-  {
-    if(m_promoter == 0)
-      m_promoter = new Promoter;
-
     m_promoter->preProcessKeys(m_dataset, m_pkeysColumns);
-  }
-  else
-  {
-    delete m_promoter;
-    m_promoter = 0;
-  }
 }
 
 void te::qt::widgets::DataSetTableModel::promote(const te::da::ObjectIdSet* oids)
 {
+  beginResetModel();
+
   setPromotionEnable(true);
 
   m_promoter->promote(oids);
+
+  endResetModel();
 }
 
 void te::qt::widgets::DataSetTableModel::orderByColumns(const std::vector<int>& cols)
 {
+  beginResetModel();
+
   if(m_promoter == 0)
     m_promoter = new Promoter;
 
   m_promoter->sort(m_dataset, cols);
 
-  reset();
-}
-
-bool te::qt::widgets::DataSetTableModel::isPromotionEnabled()
-{
-  return m_promoter != 0 && m_promoter->isPromotionEnabled();
+  endResetModel();
 }
 
 te::qt::widgets::Promoter* te::qt::widgets::DataSetTableModel::getPromoter()

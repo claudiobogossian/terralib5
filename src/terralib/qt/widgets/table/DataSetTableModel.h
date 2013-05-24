@@ -103,14 +103,12 @@ namespace te
           */
           void promote(const te::da::ObjectIdSet* oids);
 
-          void orderByColumns(const std::vector<int>& cols);
-
           /*!
-            \brief Returns true if promotion is enabled, false otherwise.
+            \brief Sort data using columns \a cols.
 
-            \return True if promotion is enabled and false otherwise.
+            \param cols Vector of positions of the columns to use on sorting.
           */
-          bool isPromotionEnabled();
+          void orderByColumns(const std::vector<int>& cols);
 
           /*!
             \brief Returns the pointer to the promoter being used.
