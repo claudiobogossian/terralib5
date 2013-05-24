@@ -51,7 +51,8 @@ te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
     m_dataset(0),
     m_currentRow(-1),
     m_promoter(0),
-    m_OIdsVisible(false)
+    m_OIdsVisible(false),
+    m_enabled(true)
 {
 }
 
@@ -149,9 +150,18 @@ te::da::ObjectIdSet* te::qt::widgets::DataSetTableModel::getObjectIdSet (const i
   return oids;
 }
 
+void te::qt::widgets::DataSetTableModel::setEnabled(const bool& enabled)
+{
+  beginResetModel();
+
+  m_enabled = enabled;
+
+  endResetModel();
+}
+
 int te::qt::widgets::DataSetTableModel::rowCount(const QModelIndex & parent) const
 {
-  return (m_dataset == 0) ? 0 : (int)m_dataset->size();
+  return (m_dataset == 0 || !m_enabled) ? 0 : (int)m_dataset->size();
 }
 
 int te::qt::widgets::DataSetTableModel::columnCount(const QModelIndex & parent) const
