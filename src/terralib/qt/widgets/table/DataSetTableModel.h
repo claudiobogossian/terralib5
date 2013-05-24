@@ -138,6 +138,13 @@ namespace te
           te::da::ObjectIdSet* getObjectIdSet (const int& initRow, const int& finalRow);
 
           /*!
+            \brief Enable or disable the dataset presentation.
+
+            \param enabled True for show dataSet on table, false to hide it.
+          */
+          void setEnabled(const bool& enabled);
+
+          /*!
             \name QAbstractTableModel re-implementation methods.
 
             \brief Re-implementation of QAbstractTableModel methods.
@@ -168,6 +175,8 @@ namespace te
           Promoter* m_promoter;               //!< Promoter to be used.
 
           bool m_OIdsVisible;                 //!< Oids icon visibility.
+
+          bool m_enabled;
       };
     }
   }

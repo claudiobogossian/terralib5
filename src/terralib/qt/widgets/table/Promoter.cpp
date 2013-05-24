@@ -20,11 +20,15 @@
 
 // TerraLib
 #include "../../../common/STLUtils.h"
+#include "../../../common/progress/TaskProgress.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../datatype/SimpleData.h"
 #include "../../../dataaccess/utils/Utils.h"
+
+// Qt
+#include <QObject>
 
 enum COMPARISON
 {
@@ -166,14 +170,18 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
 
   dset->moveFirst();
 
-  for(size_t i=0; i<setSize; i++)
+  te::common::TaskProgress task(QObject::tr("Executing promotion...").toStdString(), te::common::TaskProgress::UNDEFINED, m_logicalRows.size());
+
+  for(size_t i=0; i<m_logicalRows.size(); i++)
   {
     te::da::ObjectId* obj = te::da::GenerateOID(dset, colsNames);
+    
+    m_PkeysRows[obj] = i;
+    m_logicalRows[i] = i;
 
     dset->moveNext();
 
-    m_PkeysRows[obj] = i;
-    m_logicalRows[i] = i;
+    task.pulse();
   }
 
   m_enabled = true;
@@ -237,6 +245,8 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
   if(m_logicalRows.empty())
     m_logicalRows.resize(dset->size());
 
+  te::common::TaskProgress task (QObject::tr("Sorting columns...").toStdString(), te::common::TaskProgress::UNDEFINED, m_logicalRows.size());
+
   std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator> order;
   std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator>::iterator m_it;
 
@@ -253,6 +263,8 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
       value[j] = (dset->isNull((size_t)cols[j])) ? 0 : dset->getValue((size_t)cols[j]);
 
     order.insert(std::pair<std::vector<te::dt::AbstractData*>, int>(value, i++));
+
+    task.pulse();
   }
 
   i=0;
