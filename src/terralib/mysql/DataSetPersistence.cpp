@@ -74,6 +74,9 @@ void te::mysql::DataSetPersistence::remove(const std::string& /*datasetName*/, c
 
 void te::mysql::DataSetPersistence::add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t limit)
 {
+  if(limit == 0)
+    limit = std::string::npos;
+
 // find out the database engine used by the table in order to lock or start a transaction
   std::auto_ptr<DataSourceCatalogLoader> cloader(m_t->getMyCatalogLoader());
 

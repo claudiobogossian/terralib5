@@ -301,7 +301,12 @@ void te::mysql::PreparedQuery::bind(int /*i*/, const te::da::DataSet& /*value*/)
   throw Exception(TR_MYSQL("Not implemented yet!"));
 }
 
-void te::mysql::PreparedQuery::prepare(const std::string& querypes, std::size_t nparams)
+te::da::DataSourceTransactor* te::mysql::PreparedQuery::getTransactor() const
+{
+  return m_t;
+}
+
+void te::mysql::PreparedQuery::prepare(const std::string& query, std::size_t nparams)
 {
   delete m_pstmt;
   m_pstmt = m_t->getConnection()->getConn()->prepareStatement(query);
@@ -310,11 +315,6 @@ void te::mysql::PreparedQuery::prepare(const std::string& querypes, std::size_t 
   m_blobs.clear();
   m_nparams = nparams;
   m_blobs.resize(nparams, 0);
-}
-
-te::da::DataSourceTransactor* te::mysql::PreparedQuery::getTransactor() const
-{
-  return m_t;
 }
 
 void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, te::da::DataSet* d)
