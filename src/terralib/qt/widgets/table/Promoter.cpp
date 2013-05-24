@@ -127,19 +127,23 @@ std::vector<std::string> GetColumnsNames(te::da::DataSet* dset, const std::vecto
   return res;
 }
 
-te::qt::widgets::Promoter::Promoter() :
-m_enabled(false)
+void CleanAbstractData(std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator>& d)
+{
+  std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator>::iterator it;
+    
+  for(it=d.begin(); it!=d.end(); ++it)
+    te::common::FreeContents(it->first);
+
+  d.clear();
+}
+
+te::qt::widgets::Promoter::Promoter() 
 {
 }
 
 te::qt::widgets::Promoter::~Promoter()
 {
   cleanPreproccessKeys();
-}
-
-bool te::qt::widgets::Promoter::isPromotionEnabled()
-{
-  return m_enabled;
 }
 
 void te::qt::widgets::Promoter::resetPromotion()
@@ -174,6 +178,12 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
 
   for(size_t i=0; i<m_logicalRows.size(); i++)
   {
+    if(!task.isActive())
+    {
+      cleanLogRowsAndProcessKeys();
+      return;
+    }
+
     te::da::ObjectId* obj = te::da::GenerateOID(dset, colsNames);
     
     m_PkeysRows[obj] = i;
@@ -183,13 +193,11 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
 
     task.pulse();
   }
-
-  m_enabled = true;
 }
 
 size_t te::qt::widgets::Promoter::getLogicalRow(const size_t& visualRow)
 {
-  return m_logicalRows[visualRow];
+  return (m_logicalRows.empty()) ? visualRow : m_logicalRows[visualRow];
 }
 
 void te::qt::widgets::Promoter::cleanPreproccessKeys()
@@ -200,12 +208,13 @@ void te::qt::widgets::Promoter::cleanPreproccessKeys()
     delete it->first;
 
   m_PkeysRows.clear();
-
-  m_enabled = false;
 }
 
 void te::qt::widgets::Promoter::promote(const te::da::ObjectIdSet* oids)
 {
+  if(m_logicalRows.empty() || m_PkeysRows.empty())
+    return;
+
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
 
   size_t pos=0;
@@ -259,6 +268,15 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
 
   while (dset->moveNext())
   {
+    if(!task.isActive())
+    {
+      cleanLogRowsAndProcessKeys();
+
+      CleanAbstractData(order);
+
+      return;
+    }
+
     for(size_t j=0; j<cols.size(); j++)
       value[j] = (dset->isNull((size_t)cols[j])) ? 0 : dset->getValue((size_t)cols[j]);
 
