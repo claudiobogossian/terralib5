@@ -26,12 +26,19 @@
 // Terralib
 #include "../../common/Translator.h"
 #include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/DataSetTypePersistence.h"
+#include "../../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Property.h"
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/GeometryProperty.h"
+#include "../../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "Config.h"
 #include "Exception.h"
 #include "Intersection.h"
@@ -168,6 +175,19 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 
     ++countAux;
   }
+
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsinfo->getId(), dsinfo->getType(), dsinfo->getConnInfo());
+
+  te::da::DataSourceTransactor* t = dataSource->getTransactor();
+
+  te::da::Create(t, resultPair.first, resultPair.second, options);
+
+  /*te::qt::widgets::DataSet2Layer converter(dataSource->getId());
+
+  te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
+  te::da::DataSetTypePtr dstPtr(loader->getDataSetType(resultPair.first->getName()));
+
+  te::map::DataSetLayerPtr newLayer = converter(dstPtr);*/
 
   return outputLayer;
 }
