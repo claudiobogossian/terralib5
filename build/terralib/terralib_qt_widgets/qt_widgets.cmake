@@ -384,7 +384,6 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/se" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/srs/SRSDialog.h
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/srs" MOC)
