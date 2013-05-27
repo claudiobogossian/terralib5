@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -54,43 +54,32 @@ te::mem::DataSetPersistence::~DataSetPersistence()
 {
 }
 
-void te::mem::DataSetPersistence::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
+void te::mem::DataSetPersistence::remove(const std::string& datasetName, const te::da::ObjectIdSet* /*oids*/)
 {
-  //DataSource* ds = m_t->getMemDataSource();
+  DataSource* ds = m_t->getMemDataSource();
 
-  //DataSource::LockWrite l(ds);
+  DataSource::LockWrite l(ds);
 
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
+  DataSet* dataset = ds->getDataSetRef(datasetName);
 
-  //ds->getDataSet(dt->getName())->remove(dynamic_cast<DataSetItem*>(item));
+  if(dataset == 0)
+    throw Exception((boost::format(TR_MEMORY("The dataset %1% doesn't exist!")) % datasetName).str());
 
-  throw Exception(TR_MEMORY("Not implemented yet!"));
+  dataset->clear();
 }
 
-void te::mem::DataSetPersistence::add(const std::string& /*datasetName*/, te::da::DataSet* /*d*/, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
+void te::mem::DataSetPersistence::add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t limit)
 {
-  //DataSource* ds = m_t->getMemDataSource();
+  DataSource* ds = m_t->getMemDataSource();
 
-  //DataSource::LockWrite l(ds);
+  DataSource::LockWrite l(ds);
 
-  //te::mem::DataSet* idataset = ds->getDataSetRef(dt->getName());
+  te::mem::DataSet* idataset = ds->getDataSetRef(datasetName);
 
-  //if(idataset == 0)
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% doesn't exist!")) % dt->getName()).str());
+  if(idataset == 0)
+    throw Exception((boost::format(TR_MEMORY("The dataset %1% doesn't exist!")) % datasetName).str());
 
-  //idataset->copy(*d);
-
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
-
-  //DataSource::LockWrite l(ds);
-
-  //ds->getDataSet(dt->getName())->add(item);
-
-  throw Exception(TR_MEMORY("Not implemented yet!"));
+  idataset->copy(*d, limit);
 }
 
 void te::mem::DataSetPersistence::update(const std::string& /*datasetName*/,

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -52,7 +52,10 @@ namespace te
 
         void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids);
 
-        void add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
+        void add(const std::string& datasetName,
+                 te::da::DataSet* d,
+                 const std::map<std::string, std::string>& options,
+                 std::size_t limit = 0);
 
         void update(const std::string& datasetName,
                     te::da::DataSet* dataset,
