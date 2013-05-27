@@ -36,9 +36,11 @@
 #include "Exception.h"
 #include "Intersection.h"
 
-te::da::DataSetType* te::vp::CreateDataSetType(std::string newName, te::da::DataSetType* firstDt,
-                                               std::vector<te::dt::Property*>& firstProps, te::da::DataSetType* secondDt,
-                                               std::vector<te::dt::Property*>& secondProps)
+te::da::DataSetType* te::vp::CreateDataSetType(std::string newName, 
+                                               te::da::DataSetType* firstDt,
+                                               std::vector<te::dt::Property*> firstProps, 
+                                               te::da::DataSetType* secondDt,
+                                               std::vector<te::dt::Property*> secondProps)
 {
   te::da::DataSetType* outputDt = new te::da::DataSetType(newName);
 
@@ -68,9 +70,9 @@ te::da::DataSetType* te::vp::CreateDataSetType(std::string newName, te::da::Data
   return outputDt;
 }
 
-te::sam::rtree::Index<size_t, 8>* te::vp::CreateRTree(te::da::DataSetType* dt, te::da::DataSet* ds)
+te::vp::DataSetRTree te::vp::CreateRTree(te::da::DataSetType* dt, te::da::DataSet* ds)
 {
-  te::sam::rtree::Index<size_t, 8>* rtree = new te::sam::rtree::Index<size_t, 8>;
+  te::vp::DataSetRTree rtree(new te::sam::rtree::Index<size_t, 8>);
 
   size_t secGeomPropPos = dt->getDefaultGeomPropertyPos();
 
@@ -89,40 +91,83 @@ te::sam::rtree::Index<size_t, 8>* te::vp::CreateRTree(te::da::DataSetType* dt, t
   return rtree;
 }
 
-std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::Intersect(std::string newName,
-                                                                    std::map<te::map::AbstractLayerPtr,
-                                                                    std::vector<te::dt::Property*> > layers)
+#include "../../qt/widgets/canvas/Canvas.h"
+void PrintDataSet(std::string name, te::da::DataSet* ds, size_t geomPos,
+               te::gm::Envelope e)
 {
-  if(layers.size() <= 1)
+  te::qt::widgets::Canvas canvas(512, 512);
+  canvas.calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+  canvas.setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+
+  canvas.setPolygonFillColor(te::color::RGBAColor(255, 0, 0, 0));
+  canvas.setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
+
+  ds->moveBeforeFirst();
+
+  while(ds->moveNext())
+  {
+    canvas.draw(ds->getGeometry(geomPos));
+  }
+
+  std::string fileName = "C:\\SHPTESTE\\TESTES\\"+name+".png";
+  canvas.save(fileName.c_str(), te::map::PNG);
+}
+
+std::vector<te::dt::Property*> GetPropertiesByPos(te::da::DataSetType* dt, std::vector<size_t> propsPos)
+{
+  std::vector<te::dt::Property*> props;
+
+  for(size_t i = 0; i < propsPos.size(); ++i)
+  {
+    te::dt::Property* prop = dt->getProperty(propsPos[i]);
+    props.push_back(prop);
+  }
+
+  return props;
+}
+
+te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
+                                               const std::vector<LayerInputData>& idata,
+                                               const te::da::DataSourceInfoPtr& dsinfo,
+                                               size_t outputSRID,
+                                               const std::map<std::string, std::string>& options)
+{
+  if(idata.size() <= 1)
     throw te::common::Exception(TR_VP("At least two layers are necessary for an intersection!"));
 
-  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> >::iterator it = layers.begin();
-  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> >::iterator itAux;
+  te::map::AbstractLayerPtr outputLayer;
 
   size_t countAux = 0;
+  LayerInputData aux;
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
-  while(it != layers.end())
+
+  for(size_t i = 0; i < idata.size(); ++i)
   {
-    if(it == layers.begin())
+    if(i == 0)
     {
-      itAux = it;
+      aux = idata[i];
       ++countAux;
-      ++it;
       continue;
     }
 
-    te::da::DataSetType* secondDt = (te::da::DataSetType*)it->first->getSchema();
-    te::da::DataSet* secondDs = it->first->getData();
-    std::vector<te::dt::Property*> secondProps = it->second;
+    te::map::AbstractLayerPtr secondLayer = idata[i].first;
+    std::vector<size_t> secondPropsPos = idata[i].second;
+
+    IntersectionMember secondMember;
+    secondMember.dt = (te::da::DataSetType*)secondLayer->getSchema();
+    secondMember.ds = secondLayer->getData();
+    secondMember.props = GetPropertiesByPos(secondMember.dt, secondPropsPos);
 
     if(countAux == 1)
     {
-      te::da::DataSetType* firstDt = (te::da::DataSetType*)itAux->first->getSchema();
-      te::da::DataSet* fiDs = itAux->first->getData();
-      std::vector<te::dt::Property*> firstProps = itAux->second;
+      std::vector<size_t> firstPropsPos = aux.second;
 
-      resultPair = PairwiseIntersection(newName, firstDt, fiDs, firstProps, secondDt, secondDs, secondProps);
+      IntersectionMember firstMember;
+      firstMember.dt = (te::da::DataSetType*)aux.first->getSchema();
+      firstMember.ds = aux.first->getData();
+      firstMember.props = GetPropertiesByPos(firstMember.dt, firstPropsPos);
 
+      resultPair = PairwiseIntersection(newLayerName, firstMember, secondMember);
     }
     else if(countAux > 1)
     {
@@ -135,50 +180,52 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::Intersect(std::string 
           auxProps.push_back(resultProps[i]);
       }
 
-      resultPair = PairwiseIntersection(newName, resultPair.first, resultPair.second, auxProps, secondDt, secondDs, secondProps);
+      IntersectionMember auxMember;
+      auxMember.dt = resultPair.first;
+      auxMember.ds = resultPair.second;
+      auxMember.props = auxProps;
+
+      resultPair = PairwiseIntersection(newLayerName, auxMember, secondMember);
     }
 
     ++countAux;
-    ++it;
   }
 
-  return resultPair;
+  PrintDataSet("ds", resultPair.second, resultPair.first->getDefaultGeomPropertyPos(), idata.front().first->getExtent());
+
+  return outputLayer;
 }
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(std::string newName, 
-                                                                               te::da::DataSetType* firstDt, 
-                                                                               te::da::DataSet* firstDs,
-                                                                               std::vector<te::dt::Property*> firstProps, 
-                                                                               te::da::DataSetType* secondDt, 
-                                                                               te::da::DataSet* secondDs, 
-                                                                               std::vector<te::dt::Property*> secondProps)
+                                                                               IntersectionMember firstMember, 
+                                                                               IntersectionMember secondMember)
 {
 
   //Creating the RTree with the secound layer geometries
-  te::sam::rtree::Index<size_t, 8>* rtree = CreateRTree(secondDt, secondDs);
+  te::sam::rtree::Index<size_t, 8>* rtree = CreateRTree(secondMember.dt, secondMember.ds);
 
-  firstDs->moveBeforeFirst();
+  firstMember.ds->moveBeforeFirst();
 
-  size_t fiGeomPropPos = firstDt->getDefaultGeomPropertyPos();
-  te::gm::GeometryProperty* fiGeomProp = firstDt->getDefaultGeomProperty();
+  size_t fiGeomPropPos = firstMember.dt->getDefaultGeomPropertyPos();
+  te::gm::GeometryProperty* fiGeomProp = firstMember.dt->getDefaultGeomProperty();
 
-  size_t secGeomPropPos = secondDt->getDefaultGeomPropertyPos();
+  size_t secGeomPropPos = secondMember.dt->getDefaultGeomPropertyPos();
 
   // Create the DataSetType and DataSet
-  te::da::DataSetType* outputDt = CreateDataSetType(newName, firstDt, firstProps, secondDt, secondProps);
+  te::da::DataSetType* outputDt = CreateDataSetType(newName, firstMember.dt, firstMember.props, secondMember.dt, secondMember.props);
   te::mem::DataSet* outputDs = new te::mem::DataSet(outputDt);
 
-  while(firstDs->moveNext())
+  while(firstMember.ds->moveNext())
   {
-    te::gm::Geometry* currGeom = firstDs->getGeometry(fiGeomPropPos);
+    te::gm::Geometry* currGeom = firstMember.ds->getGeometry(fiGeomPropPos);
 
     std::vector<size_t> report;
     rtree->search(*currGeom->getMBR(), report);
 
     for(size_t i = 0; i < report.size(); ++i)
     {
-      secondDs->move(report[i]);
-      te::gm::Geometry* secGeom = secondDs->getGeometry(secGeomPropPos);
+      secondMember.ds->move(report[i]);
+      te::gm::Geometry* secGeom = secondMember.ds->getGeometry(secGeomPropPos);
 
       if(!currGeom->intersects(secGeom))
         continue;
@@ -188,30 +235,30 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
       item->setGeometry(fiGeomProp->getName(), *newGeom);
 
-      for(size_t j = 0; j < firstProps.size(); ++j)
+      for(size_t j = 0; j < firstMember.props.size(); ++j)
       {
         std::string name = "";
 
-        name = firstProps[j]->getName();
+        name = firstMember.props[j]->getName();
 
-        if(!firstDt->getTitle().empty())
-          name = firstDt->getTitle() + "_" + firstProps[j]->getName();
+        if(!firstMember.dt->getTitle().empty())
+          name = firstMember.dt->getTitle() + "_" + firstMember.props[j]->getName();
 
-        if(!firstDs->isNull(firstProps[j]->getName()))
+        if(!firstMember.ds->isNull(firstMember.props[j]->getName()))
         {
-          te::dt::AbstractData* ad = firstDs->getValue(firstProps[j]->getName());
+          te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName());
 
           item->setValue(name, ad);
         }
       }
 
-      for(size_t j = 0; j < secondProps.size(); ++j)
+      for(size_t j = 0; j < secondMember.props.size(); ++j)
       {
-        std::string name = secondDt->getTitle() + "_" + secondProps[j]->getName();
+        std::string name = secondMember.dt->getTitle() + "_" + secondMember.props[j]->getName();
 
-        if(!secondDs->isNull(secondProps[j]->getName()))
+        if(!secondMember.ds->isNull(secondMember.props[j]->getName()))
         {
-          te::dt::AbstractData* ad = secondDs->getValue(secondProps[j]->getName());
+          te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName());
 
           item->setValue(name, ad);
         }
