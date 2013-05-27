@@ -69,7 +69,7 @@ te::map::DataSetLayer::~DataSetLayer()
   delete m_style;
 }
 
-const te::map::LayerSchema* te::map::DataSetLayer::getSchema() const
+const te::map::LayerSchema* te::map::DataSetLayer::getSchema(const bool full) const
 {
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
@@ -83,7 +83,7 @@ const te::map::LayerSchema* te::map::DataSetLayer::getSchema() const
 
   assert(!m_datasetName.empty());
 
-  return cloader->getDataSetType(m_datasetName);
+  return cloader->getDataSetType(m_datasetName, full);
 }
 
 te::da::DataSet* te::map::DataSetLayer::getData(te::common::TraverseType travType, 
@@ -103,6 +103,11 @@ te::da::DataSet* te::map::DataSetLayer::getData(te::common::TraverseType travTyp
 
   std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, travType, rwRole));
 
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+  if(dataset->size() > rpos)
+  {
+    return dataset.release();
+  }
   return DataSet2Memory(dataset.get());
 }
 

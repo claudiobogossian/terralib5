@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -121,17 +121,22 @@ namespace te
         /*!
           \note PostgeSQL driver extended method.
         */
-        void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSet* d);
+        void prepare(const std::string& query, const std::vector<int>& paramTypes);
 
         /*!
           \note PostgeSQL driver extended method.
         */
-        void bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSet* d);
+        void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, te::da::DataSet* d);
 
         /*!
           \note PostgeSQL driver extended method.
         */
-        void bind(const te::da::DataSetType* dt, te::da::DataSet* d);
+        void bind(const std::vector<std::size_t>& propertiesPos, te::da::DataSet* d);
+
+        /*!
+          \note PostgeSQL driver extended method.
+        */
+        void bind(te::da::DataSet* d);
 
         /*!
           \note PostgeSQL driver extended method.
@@ -143,9 +148,8 @@ namespace te
         Transactor* m_t;
         PGconn* m_conn;
         PGresult* m_result;
-        unsigned int* m_paramTypes;
         char** m_paramValues;
-        int* m_paramLenghts;
+        int* m_paramLengths;
         int* m_paramFormats;
         std::size_t m_nparams;
         std::string m_qname;

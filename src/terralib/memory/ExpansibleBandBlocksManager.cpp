@@ -34,6 +34,23 @@
 
 #include <cassert>
 
+// ---------------------------------------------------------------------------
+
+te::mem::ExpansibleBandBlocksManager::OpenDiskFileHandler::OpenDiskFileHandler()
+: m_filePtr( 0 ) 
+{
+} 
+
+te::mem::ExpansibleBandBlocksManager::OpenDiskFileHandler::~OpenDiskFileHandler()
+{
+  if( m_filePtr ) 
+  {
+    fclose( m_filePtr );
+  }
+}
+
+// ---------------------------------------------------------------------------
+
 void te::mem::ExpansibleBandBlocksManager::initState()
 {
   m_isInitialized = false;

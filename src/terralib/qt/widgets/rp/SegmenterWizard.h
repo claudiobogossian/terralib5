@@ -42,6 +42,7 @@ namespace te
   {
     namespace widgets
     {
+      class SegmenterAdvancedOptionsWizardPage;
       class SegmenterWizardPage;
       class LayerSearchWizardPage;
       class RasterInfoWizardPage;
@@ -75,6 +76,7 @@ namespace te
         private:
 
           std::auto_ptr<te::qt::widgets::SegmenterWizardPage> m_segmenterPage;
+          std::auto_ptr<te::qt::widgets::SegmenterAdvancedOptionsWizardPage> m_segmenterAdvOptPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
       };

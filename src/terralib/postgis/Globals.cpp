@@ -27,6 +27,7 @@
 #include "Globals.h"
 
 const std::string te::pgis::Globals::sm_unknownTypeName("UNKNOWN");
+const std::string te::pgis::Globals::sm_charTypeName("\"char\"");
 const std::string te::pgis::Globals::sm_int2TypeName("INT2");
 const std::string te::pgis::Globals::sm_intTypeName("INT");
 const std::string te::pgis::Globals::sm_int8TypeName("INT8");
@@ -36,10 +37,11 @@ const std::string te::pgis::Globals::sm_timeTypeName("TIME");
 const std::string te::pgis::Globals::sm_timeTZTypeName("TIMETZ");
 const std::string te::pgis::Globals::sm_timeStampTypeName("TIMESTAMP");
 const std::string te::pgis::Globals::sm_timeStampTZTypeName("TIMESTAMPTZ");
+const std::string te::pgis::Globals::sm_intervalTypeName("INTERVAL");
 const std::string te::pgis::Globals::sm_floatTypeName("FLOAT4");
 const std::string te::pgis::Globals::sm_doubleTypeName("FLOAT8");
 const std::string te::pgis::Globals::sm_booleanTypeName("BOOL");
-const std::string te::pgis::Globals::sm_charTypeName("CHAR");
+const std::string te::pgis::Globals::sm_fixedcharTypeName("CHAR");
 const std::string te::pgis::Globals::sm_varcharTypeName("VARCHAR");
 const std::string te::pgis::Globals::sm_stringTypeName("TEXT");
 const std::string te::pgis::Globals::sm_byteArrayTypeName("BYTEA");

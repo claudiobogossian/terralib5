@@ -5,8 +5,10 @@
 
 // TerraLib include files
 #include "../../../dataaccess/dataset/DataSet.h"
-#include "../../../dataaccess/utils/Utils.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/utils/Utils.h"
+#include "../utils/ScopedCursor.h"
 
 // Qt
 #include <QtGui/QHeaderView>
@@ -102,7 +104,8 @@ class TablePopupFilter : public QObject
       m_hMenu(0),
       m_vMenu(0),
       m_vportMenu(0),
-      m_showOidsColumns(false)
+      m_showOidsColumns(false),
+      m_enabled(true)
     {
       m_view->horizontalHeader()->installEventFilter(this);
       m_view->verticalHeader()->installEventFilter(this);
@@ -124,6 +127,9 @@ class TablePopupFilter : public QObject
 
     bool eventFilter(QObject* watched, QEvent* event)
     {
+      if(!m_enabled)
+        return QObject::eventFilter(watched, event);
+
       QWidget* vport = m_view->viewport();
       QHeaderView* hHdr = m_view->horizontalHeader();
       QHeaderView* vHdr = m_view->verticalHeader();
@@ -168,10 +174,15 @@ class TablePopupFilter : public QObject
 
             QAction* act4 = new QAction(m_hMenu);
             act4->setText(tr("Show identifiers columns"));
-            act4->setToolTip(tr("Shows an icon on identifiers columns"));
+            act4->setToolTip(tr("Shows an icon on identifiers columns."));
             m_hMenu->addAction(act4);
             act4->setCheckable(true);
             act4->setChecked(m_showOidsColumns);
+
+            QAction* act5 = new QAction(m_hMenu);
+            act5->setText(tr("Sort data"));
+            act5->setToolTip(tr("Sort data using selected columns."));
+            m_hMenu->addAction(act5);
 
             // Signal / Slot connections
             connect (act, SIGNAL(triggered()), SLOT(hideColumn()));
@@ -179,12 +190,10 @@ class TablePopupFilter : public QObject
 
             m_view->connect (act2, SIGNAL(triggered()), SLOT(showAllColumns()));
             m_view->connect (act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
+            m_view->connect (act5, SIGNAL(triggered()), SLOT(sortByColumns()));
             connect(act4, SIGNAL(triggered()), SLOT(showOIdsColumns()));
 
             m_hMenu->popup(pos);
-          }
-          else if(watched == vHdr)
-          {
           }
           else if(watched == vport)
           {
@@ -219,6 +228,11 @@ class TablePopupFilter : public QObject
     std::vector<int> getHiddenColumns()
     {
       return GetHiddenSections(m_view->horizontalHeader(), m_dset);
+    }
+
+    void setEnabled(const bool& enabled)
+    {
+      m_enabled = enabled;
     }
 
   protected slots:
@@ -262,6 +276,7 @@ class TablePopupFilter : public QObject
     QMenu* m_vportMenu;
     te::da::DataSet* m_dset;
     bool m_showOidsColumns;
+    bool m_enabled;
 
     int m_columnPressed;
 };
@@ -270,6 +285,7 @@ te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 QTableView(parent)
 {
   m_model = new DataSetTableModel(this);
+
   setModel(m_model);
 
   horizontalHeader()->setMovable(true);
@@ -280,6 +296,8 @@ QTableView(parent)
   m_popupFilter = new TablePopupFilter(this);
 
   m_delegate = new HighlightDelegate(this);
+
+  m_delegate->setPromoter(m_model->getPromoter());
 
   m_delegate->setColor(Qt::green);
 
@@ -321,6 +339,13 @@ void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType
   m_model->setPkeysColumns(objs->getPropertyPos());
 }
 
+void te::qt::widgets::DataSetTableView::highlightOIds(const te::da::ObjectIdSet* oids)
+{
+  m_delegate->setObjectIdSet(oids);
+
+  viewport()->repaint();
+}
+
 void te::qt::widgets::DataSetTableView::hideColumn(const int& column)
 {
   horizontalHeader()->hideSection(column);
@@ -357,14 +382,25 @@ void te::qt::widgets::DataSetTableView::resetColumnsOrder()
 
 void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool& add)
 {
-  if(!add)
-    m_delegate->clearSelected();
-
-  m_delegate->addObject(row);
-
   removeSelection(row, row);
 
-  viewport()->repaint();
+  te::da::ObjectIdSet* oids = m_model->getObjectIdSet(row, row);
+
+  if(add)
+  {
+    te::da::ObjectId* oid = *oids->begin();
+
+    if(m_delegate->getSelected()->contains(oid))
+    {
+      emit deselectOIds(oids);
+
+      delete oids;
+
+      return;
+    }
+  }
+
+  emit selectOIds(oids, add);
 }
 
 void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const int& finalRow)
@@ -383,21 +419,59 @@ void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const 
     final = initRow;
   }
 
-  m_delegate->addObjects(ini, final);
-
   removeSelection(ini, final);
 
-  viewport()->repaint();
+  te::da::ObjectIdSet* oids = m_model->getObjectIdSet(ini, final);
+
+  emit selectOIds(oids, true);
 }
 
 void te::qt::widgets::DataSetTableView::promote()
 {
-  QCursor cursor(Qt::WaitCursor);
+  ScopedCursor cursor(Qt::WaitCursor);
 
-  std::vector<te::da::ObjectId*> oids = m_delegate->getSelected();
+  setEnabled(false);
+  m_model->setEnabled(false);
+  m_popupFilter->setEnabled(false);
+
+  const te::da::ObjectIdSet* oids = m_delegate->getSelected();
   m_model->promote(oids);
 
-  m_delegate->setPromoter(m_model->getPromoter());
+  m_popupFilter->setEnabled(true);
+  m_model->setEnabled(true);
+  setEnabled(true);
+
+  viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::sortByColumns()
+{
+  ScopedCursor cursor(Qt::WaitCursor);
+
+  std::vector<int> selCols;
+
+  int nCols = model()->columnCount();
+
+  for(int i=0; i<nCols; i++)
+  {
+    int logCol = verticalHeader()->logicalIndex(i);
+
+    if(selectionModel()->isColumnSelected(i, QModelIndex()))
+      selCols.push_back(i);
+  }
+
+  if(selCols.empty())
+    return;
+
+  setEnabled(false);
+  m_model->setEnabled(false);
+  m_popupFilter->setEnabled(false);
+
+  m_model->orderByColumns(selCols);
+
+  m_popupFilter->setEnabled(true);
+  m_model->setEnabled(true);
+  setEnabled(true);
 
   viewport()->repaint();
 }

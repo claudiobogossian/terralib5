@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,7 +27,6 @@
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
-//#include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/query/Query.h"
 #include "../datatype/ByteArray.h"
@@ -57,9 +56,11 @@ namespace te
 {
   namespace mysql
   {
-    template<class T> inline void BindValue(te::mysql::PreparedQuery* pq, std::size_t i, std::size_t propertyPos, const te::dt::Property* p, T* d)
+    inline void BindValue(te::da::DataSet* d, te::mysql::PreparedQuery* pq, std::size_t i, std::size_t propertyPos)
     {
-      switch(p->getType())
+      const int propertyDataType = d->getPropertyDataType(propertyPos);
+
+      switch(propertyDataType)
       {
         case te::dt::CHAR_TYPE :
           pq->bind(i, d->getChar(propertyPos));
@@ -305,43 +306,38 @@ te::da::DataSourceTransactor* te::mysql::PreparedQuery::getTransactor() const
   return m_t;
 }
 
-// MySQL specific
-//void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSetItem* item)
-//{
-//  for(std::size_t i = 0; i < m_nparams; ++i)
-//    BindValue(this, i, propertiesPos[i], dt->getProperty(propertiesPos[i]), item);
-//}
-//
-//void te::mysql::PreparedQuery::bind(const te::da::DataSetType* dt, te::da::DataSetItem* item)
-//{
-//  for(std::size_t i = 0; i < m_nparams; ++i)
-//    BindValue(this, i, i, dt->getProperty(i), item);
-//}
-//
-//void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item)
-//{
-//  const std::size_t nparams = propertiesPos.size();
-//
-//  for(std::size_t i = 0; i < nparams; ++i)
-//    BindValue(this, i + offset, propertiesPos[i], dt->getProperty(propertiesPos[i]), item);
-//}
-
-void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSet* d)
+void te::mysql::PreparedQuery::prepare(const std::string& query, std::size_t nparams)
 {
-  for(std::size_t i = 0; i < m_nparams; ++i)
-    BindValue(this, i, propertiesPos[i], dt->getProperty(propertiesPos[i]), d);
+  delete m_pstmt;
+  m_pstmt = m_t->getConnection()->getConn()->prepareStatement(query);
+
+  te::common::FreeContents(m_blobs);
+  m_blobs.clear();
+  m_nparams = nparams;
+  m_blobs.resize(nparams, 0);
 }
 
-void te::mysql::PreparedQuery::bind(const te::da::DataSetType* dt, te::da::DataSet* d)
-{
-  for(std::size_t i = 0; i < m_nparams; ++i)
-    BindValue(this, i, i, dt->getProperty(i), d);
-}
-
-void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSet* d)
+void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, te::da::DataSet* d)
 {
   const std::size_t nparams = propertiesPos.size();
 
   for(std::size_t i = 0; i < nparams; ++i)
-    BindValue(this, i + offset, propertiesPos[i], dt->getProperty(propertiesPos[i]), d);
+    BindValue(d, this, i + offset, propertiesPos[i]);
 }
+
+void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, te::da::DataSet* d)
+{
+  const std::size_t nparams = propertiesPos.size();
+
+  for(std::size_t i = 0; i < nparams; ++i)
+    BindValue(d, this, i, propertiesPos[i]);
+}
+
+void te::mysql::PreparedQuery::bind(te::da::DataSet* d)
+{
+  const std::size_t nparams = d->getNumProperties();
+
+  for(std::size_t i = 0; i < nparams; ++i)
+    BindValue(d, this, i, i);
+}
+

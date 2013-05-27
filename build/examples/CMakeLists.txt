@@ -229,7 +229,7 @@ if(_NOTFOUND)
 endif()
 
 find_path ( 
-  TE_GDAL_DATADIR NAME compdcs.csv 
+  GDAL_DATADIR NAME compdcs.csv 
   PATH ${TE_DEPENDENCIES_DIR} 
   PATH_SUFFIXES gdal/data 
   DOC "Path to where the gdal data directory is located."

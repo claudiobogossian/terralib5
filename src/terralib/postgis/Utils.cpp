@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -216,7 +216,9 @@ bool te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool just
   switch(t)
   {
     case te::dt::CHAR_TYPE:
-    case te::dt::UCHAR_TYPE:
+      ret = SetColumnDef(s, Globals::sm_charTypeName, static_cast<const te::dt::SimpleProperty*>(p), justDataType);
+    break;
+
     case te::dt::INT16_TYPE:
       ret = SetColumnDef(s, Globals::sm_int2TypeName, static_cast<const te::dt::SimpleProperty*>(p), justDataType);
     break;
@@ -238,11 +240,11 @@ bool te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool just
         const te::dt::DateTimeProperty* dtp = static_cast<const te::dt::DateTimeProperty*>(p);
         if(dtp->getSubType() == te::dt::DATE)
           SetColumnDef(s, Globals::sm_dateTypeName, dtp, justDataType);
-        else if(dtp->getSubType() == te::dt::TIME_DURATION)            
+        else if(dtp->getSubType() == te::dt::TIME_DURATION)
           SetColumnDef(s, Globals::sm_timeTypeName, dtp, justDataType);
-        else if(dtp->getSubType() == te::dt::TIME_INSTANT)            
+        else if(dtp->getSubType() == te::dt::TIME_INSTANT)
           SetColumnDef(s, Globals::sm_timeStampTypeName, dtp, justDataType);
-        else if(dtp->getSubType() == te::dt::TIME_INSTANT_TZ)            
+        else if(dtp->getSubType() == te::dt::TIME_INSTANT_TZ)
           SetColumnDef(s, Globals::sm_timeStampTZTypeName, dtp, justDataType);
       }
     break;
@@ -260,7 +262,7 @@ bool te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool just
         const te::dt::StringProperty* sp = static_cast<const te::dt::StringProperty*>(p);
 
         if(sp->getSubType() == te::dt::FIXED_STRING)
-          SetColumnDef(s, Globals::sm_charTypeName, sp, justDataType);
+          SetColumnDef(s, Globals::sm_fixedcharTypeName, sp, justDataType);
         else if(sp->getSubType() == te::dt::VAR_STRING)
           SetColumnDef(s, Globals::sm_varcharTypeName, sp, justDataType);
         else
@@ -435,44 +437,6 @@ std::string te::pgis::GetBindableWhereSQL(const std::vector<te::dt::Property*>& 
   return wheresql;
 }
 
-std::string te::pgis::GetSQLValueNames(const te::da::DataSetType* dt)
-{
-  std::string valueNames("(");
-
-  const std::size_t np = dt->size();
-
-  for(std::size_t i = 0; i < np; ++i)
-  {
-    if(i != 0)
-      valueNames += ",";
-
-    valueNames += dt->getProperty(i)->getName();
-  }
-
-  valueNames += ")";
-
-  return valueNames;
-}
-
-std::string te::pgis::GetSQLValueNames(const te::da::DataSet* dataset)
-{
-  std::string valueNames("(");
-
-  const std::size_t np = dataset->getNumProperties();
-
-  for(std::size_t i = 0; i < np; ++i)
-  {
-    if(i != 0)
-      valueNames += ",";
-
-    valueNames += dataset->getPropertyName(i);
-  }
-
-  valueNames += ")";
-
-  return valueNames;
-}
-
 std::string te::pgis::GetSQLBindValues(std::size_t nproperties)
 {
   std::string valueNames("(");
@@ -535,11 +499,7 @@ std::string te::pgis::GetSQLValue(const te::dt::Property* p, std::size_t propert
   switch(p->getType())
   {
     case te::dt::CHAR_TYPE :
-      value += boost::lexical_cast<std::string>(static_cast<boost::int16_t>(d->getChar(propertyPos)));
-    break;
-
-    case te::dt::UCHAR_TYPE :
-      value += boost::lexical_cast<std::string>(static_cast<boost::uint16_t>(d->getUChar(propertyPos)));
+      value += d->getChar(propertyPos);
     break;
 
     case te::dt::INT16_TYPE :

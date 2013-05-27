@@ -29,6 +29,7 @@
 #include "../raster/Grid.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Utils.h"
+#include "../raster/RasterFactory.h"
 #include "../memory/CachedRaster.h"
 #include "../memory/ExpansibleRaster.h"
 #include "../geometry/Envelope.h"
@@ -214,6 +215,8 @@ namespace te
       std::vector< double > mosaicTargetVariances;
       te::gm::Polygon mosaicValidDataPol(  0, te::gm::PolygonType, 0 ); // the polygon delimiting the valid data inside the mosaic (mosaic world coods)
       unsigned int mosaicSequenceCounter = 0;
+      std::vector< double > mosaicBandsRangeMin;
+      std::vector< double > mosaicBandsRangeMax;        
       unsigned int lastInputRasterBBoxLLXIndexed = 0;
       unsigned int lastInputRasterBBoxLLYIndexed = 0;
       unsigned int lastInputRasterBBoxURXIndexed = 0;
@@ -236,6 +239,18 @@ namespace te
             SEQUENCE_RASTER_MAX_MOSAIC_MEM_USE, 0 ) );
           inputRasterPtr = cachedInputRasterPtr.get();
         }
+        
+        // saving the current mosaic (debug purposes)
+        
+//         if( mosaicRasterHandler.get() )
+//         {
+//           if( ! createDiskRasterCopy( "Mosaic_" + 
+//             boost::lexical_cast< std::string >( inputRasterIdx - 1 ) + ".tif", 
+//             *mosaicRasterHandler  ) )
+//           {
+//             return false;
+//           }
+//         }
         
         // Mosaicking
         
@@ -267,6 +282,11 @@ namespace te
           
           mosaicBandProperties.clear();
           
+          mosaicBandsRangeMin.resize( 
+            m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size(), 0 );
+          mosaicBandsRangeMax.resize( 
+            m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size(), 0 );           
+          
           std::vector< te::rst::BandProperty* > bandsProperties;
           for( std::vector< unsigned int >::size_type inputRastersBandsIdx = 0 ;  
             inputRastersBandsIdx <
@@ -280,8 +300,22 @@ namespace te
             bandsProperties.push_back( new te::rst::BandProperty( *inBandPropPtr ) );
             bandsProperties[ inputRastersBandsIdx ]->m_colorInterp = te::rst::GrayIdxCInt;
             bandsProperties[ inputRastersBandsIdx ]->m_noDataValue = m_inputParameters.m_noDataValue;
+            bandsProperties[ inputRastersBandsIdx ]->m_blkw = (unsigned int)
+              std::ceil( ((double)inputRasterPtr->getNumberOfColumns()) / 4.0 );
+            bandsProperties[ inputRastersBandsIdx ]->m_blkh = (unsigned int)
+              std::ceil( ((double)inputRasterPtr->getNumberOfRows()) / 4.0 );
+            bandsProperties[ inputRastersBandsIdx ]->m_nblocksx = (unsigned int)
+              std::ceil( ((double)inputRasterPtr->getNumberOfColumns()) /
+              ((double)bandsProperties[ inputRastersBandsIdx ]->m_blkw ) );
+            bandsProperties[ inputRastersBandsIdx ]->m_nblocksy = (unsigned int)
+              std::ceil( ((double)inputRasterPtr->getNumberOfRows()) /
+              ((double)bandsProperties[ inputRastersBandsIdx ]->m_blkh ) );              
             
             mosaicBandProperties.push_back( *bandsProperties[ inputRastersBandsIdx ] );
+            
+            te::rst::GetDataTypeRanges( bandsProperties[ inputRastersBandsIdx ]->m_type,
+              mosaicBandsRangeMin[ inputRastersBandsIdx ],
+              mosaicBandsRangeMax[ inputRastersBandsIdx ]);             
           }
 
           mosaicRasterHandler.reset( 
@@ -471,7 +505,11 @@ namespace te
             TERP_TRUE_OR_RETURN_FALSE( locatorInstance.execute( 
               locatorOutParams ), "Tie points locator exec error" );
           }
-        
+          
+          // Exposing the found tie-points
+          
+          outParamsPtr->m_tiePoints.push_back( locatorOutParams.m_tiePoints );          
+      
           // The matching was accomplished successfully ?
         
           if(
@@ -514,8 +552,6 @@ namespace te
               *( mosaicRasterHandler.get() ), outParamsPtr->m_outputDSPtr ),
               "Data set creation error" );
             mosaicRasterHandler.reset();
-            
-            outParamsPtr->m_tiePoints.push_back( std::vector< te::gm::GTParameters::TiePoint >() );
           }
           else
           {
@@ -590,17 +626,19 @@ namespace te
                 mosaicReferenceHasChanged = true;
               }      
               
-              if( newURXIndexed > oldURXIndexed )
+              if( newURXIndexed > ((double)(mosaicRasterHandler->getNumberOfColumns() - 1) ) )
               {
                 TERP_TRUE_OR_RETURN_FALSE( mosaicRasterHandler->addRightColumns( 
-                  (unsigned int)std::ceil( newURXIndexed - oldURXIndexed ) ),
+                  (unsigned int)std::ceil( newURXIndexed - 
+                  ((double)(mosaicRasterHandler->getNumberOfColumns() - 1)) ) ),
                   "Mosaic expansion error" );
               }
               
-              if( newLLYIndexed > oldLLYIndexed )
+              if( newLLYIndexed > ((double)(mosaicRasterHandler->getNumberOfRows() - 1) ) )
               {
                 TERP_TRUE_OR_RETURN_FALSE( mosaicRasterHandler->addBottomLines( 
-                  (unsigned int)std::ceil( newLLYIndexed - oldLLYIndexed ) ),
+                  (unsigned int)std::ceil( newLLYIndexed - 
+                  ((double)(mosaicRasterHandler->getNumberOfRows() - 1) ) ) ),
                   "Mosaic expansion error" );
               }              
               
@@ -761,41 +799,40 @@ namespace te
                 currentRasterBandsScales,
                 &mosaicValidDataPol,
                 0,
-                geoTransPtr.get() ), 
-                "Blender initiazing error" );              
+                geoTransPtr.get(),
+                false ), 
+                "Blender initiazing error" );      
                 
-              for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
-                m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ;
-                ++inputRastersBandsIdx )
-              {                
-                te::rst::Band& outputBand = (*mosaicRasterHandler->getBand( inputRastersBandsIdx ));
-
-                double outputBandRangeMin = 0;
-                double outputBandRangeMax = 0;
-                te::rst::GetDataTypeRanges( outputBand.getProperty()->m_type,
-                  outputBandRangeMin, outputBandRangeMax );                
-                  
-                unsigned int outputRow = 0;
-                unsigned int outputCol = 0;
-                double blendedValue = 0;                  
-                
-                for( outputRow = lastInputRasterBBoxURYIndexed ; outputRow <= lastInputRasterBBoxLLYIndexed ;
-                  ++outputRow )
+              std::vector< double > blendedValues( mosaicRasterHandler->getNumberOfBands() );
+              unsigned int outputRow = 0;
+              unsigned int outputCol = 0;
+              const unsigned int nBands = mosaicRasterHandler->getNumberOfBands();
+              unsigned int outBandIdx = 0;
+              te::rst::Raster& outputRaster = *mosaicRasterHandler;
+              
+              for( outputRow = lastInputRasterBBoxURYIndexed ; outputRow <= lastInputRasterBBoxLLYIndexed ;
+                ++outputRow )
+              {
+                for( outputCol = lastInputRasterBBoxLLXIndexed ; outputCol <= lastInputRasterBBoxURXIndexed ;
+                  ++outputCol )
                 {
-                  for( outputCol = lastInputRasterBBoxLLXIndexed ; outputCol <= lastInputRasterBBoxURXIndexed ;
-                    ++outputCol )
+                  blenderInstance.getBlendedValues( (double)outputRow, 
+                    (double)outputCol, blendedValues );
+                    
+                  for( outBandIdx = 0 ; outBandIdx < nBands ; ++outBandIdx )
                   {
-                    blenderInstance.getBlendedValue( (double)outputRow, (double)outputCol, inputRastersBandsIdx,
-                      blendedValue );
+                    double& blendedValue = blendedValues[ outBandIdx ];
                     
                     if( blendedValue != m_inputParameters.m_noDataValue )
                     {
-                      blendedValue = std::max( blendedValue, outputBandRangeMin );
-                      blendedValue = std::min( blendedValue, outputBandRangeMax );
+                      blendedValue = std::max( blendedValue , 
+                        mosaicBandsRangeMin[ outBandIdx ] );
+                      blendedValue = std::min( blendedValue , 
+                        mosaicBandsRangeMax[ outBandIdx ] );
 
-                      outputBand.setValue( outputCol, outputRow, blendedValue );
-                    }                      
-                  }
+                      outputRaster.setValue( outputCol, outputRow, blendedValue, outBandIdx );
+                    }
+                  }                    
                 }
               }
             }
@@ -855,10 +892,6 @@ namespace te
                 "Invalid geometry type")
               mosaicValidDataPol = *( (te::gm::Polygon*)unionMultiPolPtr.get() );
             }       
-            
-            // Exposing the found tie-points
-            
-            outParamsPtr->m_tiePoints.push_back( locatorOutParams.m_tiePoints );
             
             // Move to the next raster
             
@@ -1070,6 +1103,49 @@ namespace te
       return true;
     }
     
+    bool SequenceMosaic::createDiskRasterCopy( const std::string& fileName,
+       const te::rst::Raster& sourceRaster ) const
+    {
+      std::map<std::string, std::string> rInfo;
+      rInfo["URI"] = fileName;
+      
+      const unsigned int nBands = sourceRaster.getNumberOfBands();
+      
+      std::vector<te::rst::BandProperty*> bandsProperties;
+      unsigned int bandIdx = 0;
+      for( bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
+        bandsProperties.push_back(new te::rst::BandProperty( 
+          *sourceRaster.getBand( bandIdx )->getProperty() ) );
+
+      te::rst::Grid* newgrid = new te::rst::Grid( *sourceRaster.getGrid() );
+
+      std::auto_ptr< te::rst::Raster > outputRasterPtr(
+        te::rst::RasterFactory::make( "GDAL", newgrid, bandsProperties, rInfo, 0, 0));
+      if( outputRasterPtr.get() == 0 ) return false;
+          
+      unsigned int line = 0;
+      unsigned int col = 0;
+      const unsigned int nLines = sourceRaster.getNumberOfRows();
+      const unsigned int nCols = sourceRaster.getNumberOfColumns();
+
+      double value = 0;
+      
+      for( bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
+      {
+        const te::rst::Band& inBand = *sourceRaster.getBand( bandIdx );
+        te::rst::Band& outBand = *outputRasterPtr->getBand( bandIdx );
+        
+        for( line = 0 ; line < nLines ; ++line )
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            inBand.getValue( col, line, value );
+            outBand.setValue( col, line, value );
+          }          
+      }
+      
+      return true;
+    }
+    
     double SequenceMosaic::getTPConvexHullArea( 
       const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
       const bool useTPSecondCoordPair ) const
@@ -1093,7 +1169,13 @@ namespace te
               tiePoints[ tiePointsIdx ].first.y ) );
         }
         
-        return ( (te::gm::Surface*)points.convexHull() )->getArea();
+        std::auto_ptr< te::gm::Polygon > convexHullPolPtr( 
+          dynamic_cast< te::gm::Polygon* >( points.convexHull() ) );
+        
+        if( convexHullPolPtr.get() )
+          return convexHullPolPtr->getArea();
+        else
+          return 0.0;
       }
     }
 

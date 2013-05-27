@@ -24,13 +24,14 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
-#include "../../../geometry/Geometry.h"
-#include "../canvas/Canvas.h"
+#include "../../../srs/Config.h"
 #include "../canvas/MapDisplay.h"
+#include "../utils/ScopedCursor.h"
 #include "Selection.h"
 
 // Qt
@@ -41,16 +42,16 @@
 
 // STL
 #include <cassert>
+#include <exception>
 #include <memory>
 
-te::qt::widgets::Selection::Selection(te::qt::widgets::MapDisplay* display, const te::map::AbstractLayerPtr& layer, QObject* parent) 
+te::qt::widgets::Selection::Selection(te::qt::widgets::MapDisplay* display, const std::list<te::map::AbstractLayerPtr>& layers, QObject* parent) 
   : RubberBand(display, parent),
-    m_layer(layer),
+    m_layers(layers),
     m_selectionStarted(false),
-    m_keepPreviousSelection(false)
+    m_keepPreviousSelection(false),
+    m_selectionByPointing(false)
 {
-  assert(layer.get());
-
   // Setups the rubber band style
   m_pen.setStyle(Qt::DashLine);
   m_pen.setColor(QColor(255, 255, 100));
@@ -105,6 +106,11 @@ bool te::qt::widgets::Selection::mouseMoveEvent(QMouseEvent* e)
 
 bool te::qt::widgets::Selection::mouseReleaseEvent(QMouseEvent* e)
 {
+  if(m_layers.empty())
+    return false;
+
+  ScopedCursor cursor(Qt::WaitCursor);
+
   m_selectionStarted = false;
 
   if(e->button() != Qt::LeftButton)
@@ -112,8 +118,14 @@ bool te::qt::widgets::Selection::mouseReleaseEvent(QMouseEvent* e)
 
   RubberBand::mouseReleaseEvent(e);
 
+  m_selectionByPointing = false;
+
   if(m_rect.isNull())
-    return false;
+  {
+    m_selectionByPointing = true;
+    QPointF pixelOffset(4.0, 4.0);
+    m_rect = QRectF(e->posF() - pixelOffset, e->posF() + pixelOffset);
+  }
 
   // Converts rect boundary to world coordinates
   QPointF ll(m_rect.left(), m_rect.bottom());
@@ -123,28 +135,51 @@ bool te::qt::widgets::Selection::mouseReleaseEvent(QMouseEvent* e)
 
   te::gm::Envelope envelope(ll.x(), ll.y(), ur.x(), ur.y());
 
+  // For while, select the last layer
+  const te::map::AbstractLayerPtr& layer = *(m_layers.rbegin());
+  executeSelection(layer, envelope);
+
+  return true;
+}
+
+void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e)
+{
+  if(layer->getVisibility() != te::map::VISIBLE)
+    return;
+
+  bool needRemap = false;
+  te::gm::Envelope reprojectedEnvelope(e);
+
+  if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_display->getSRID()))
+  {
+    needRemap = true;
+    reprojectedEnvelope.transform(m_display->getSRID(), layer->getSRID());
+  }
+
+  // Clear previous selection?
+  if(!m_keepPreviousSelection)
+    layer->clearSelected();
+
+  if(!reprojectedEnvelope.intersects(layer->getExtent()))
+    return;
+
   try
   {
     // Gets the dataset
-    std::auto_ptr<te::da::DataSet> dataset(m_layer->getData(envelope, te::gm::INTERSECTS));
+    std::auto_ptr<te::da::DataSet> dataset(layer->getData(reprojectedEnvelope, te::gm::INTERSECTS));
     assert(dataset.get());
 
     // Let's generate the oids
-    std::auto_ptr<const te::map::LayerSchema> schema(m_layer->getSchema());
+    std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema(true));
     te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
     assert(oids);
 
-    //if(!m_keepPreviousSelection)
-      //m_layer->clearSelected(); // TODO: te::map::AbstractLayer::clearSelected() method
-
     // Adjusts the layer selection
-    m_layer->select(oids);
+    layer->select(oids);
   }
-  catch(...)
+  catch(std::exception& e)
   {
-    QMessageBox::critical(m_display, tr("Error"), QString(tr("The dataset cannot be retrieved from the layer") + " %1.").arg(m_layer->getTitle().c_str()));
-    return false;
+    QMessageBox::critical(m_display, tr("Error"), QString(tr("The selection cannot be retrieved from the layer. Details:") + " %1.").arg(e.what()));
+    // TODO: catch the exceptions...
   }
-
-  return true;
 }

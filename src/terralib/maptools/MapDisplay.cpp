@@ -85,6 +85,5 @@ void te::map::MapDisplay::setSRID(const int& srid, bool doRefresh)
 
   m_srid = srid;
 
-  if(doRefresh)
-    refresh();
+  setExtent(m_extent, doRefresh);
 }

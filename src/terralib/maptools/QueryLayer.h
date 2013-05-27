@@ -79,7 +79,7 @@ namespace te
         /*! \brief Destructor. */
         ~QueryLayer();
 
-        const LayerSchema* getSchema() const;
+        const LayerSchema* getSchema(const bool full = false) const;
 
         te::da::DataSet* getData(te::common::TraverseType travType = te::common::FORWARDONLY, 
                                  te::common::AccessPolicy rwRole = te::common::RAccess) const;

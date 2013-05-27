@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/charts/chartStyleWidget.h
 
-  \brief A dialog used to customize the style parameters of a chart
+  \brief A widget used to customize the style parameters of a chart
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLEWIDGET_H

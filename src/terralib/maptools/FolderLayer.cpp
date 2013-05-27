@@ -49,7 +49,7 @@ te::map::FolderLayer::~FolderLayer()
 {
 }
 
-const te::map::LayerSchema* te::map::FolderLayer::getSchema() const
+const te::map::LayerSchema* te::map::FolderLayer::getSchema(const bool /*full*/) const
 {
   return 0;
 }

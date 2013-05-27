@@ -287,14 +287,10 @@ namespace te
             
             FILE* m_filePtr;
             
-            OpenDiskFileHandler() : m_filePtr( 0 ) {};          
-            ~OpenDiskFileHandler() 
-            {
-              if( m_filePtr ) 
-              {
-                fclose( m_filePtr );
-              }
-            };
+            OpenDiskFileHandler();
+            
+            ~OpenDiskFileHandler();
+
         };        
         
         typedef unsigned char BlockElementT; //!< Block element type.

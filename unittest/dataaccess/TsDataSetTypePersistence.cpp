@@ -256,14 +256,15 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
       //dt->add(new te::dt::DateTimeProperty("attr_datetime_stamp", te::dt::TIME_INSTANT));
       //dt->add(new te::dt::DateTimeProperty("attr_datetime_stamp_tz", te::dt::TIME_INSTANT_TZ));
       dt->add(new te::dt::DateTimeProperty("attr_date", te::dt::DATE));
-      dt->add(new te::dt::DateTimeProperty("attr_date", te::dt::DATE_PERIOD));
       dt->add(new te::dt::DateTimeProperty("attr_time_duration", te::dt::TIME_DURATION));
       dt->add(new te::dt::DateTimeProperty("attr_time_instant", te::dt::TIME_INSTANT));
-      dt->add(new te::dt::DateTimeProperty("attr_time_period", te::dt::TIME_PERIOD));
       dt->add(new te::dt::DateTimeProperty("attr_time_instant_tz", te::dt::TIME_INSTANT_TZ));
+      dt->add(new te::dt::DateTimeProperty("attr_date_period", te::dt::DATE_PERIOD));
       dt->add(new te::dt::DateTimeProperty("attr_time_period_tz", te::dt::TIME_PERIOD_TZ));
+      dt->add(new te::dt::DateTimeProperty("attr_time_period", te::dt::TIME_PERIOD));
       dt->add(new te::dt::DateTimeProperty("attr_ordinal_instant", te::dt::ORDINAL_INSTANT));
       dt->add(new te::dt::DateTimeProperty("attr_ordinal_period", te::dt::ORDINAL_PERIOD));
+    
     }
 
     ////it = m_capabilit.find("COMPOSITE_DT");

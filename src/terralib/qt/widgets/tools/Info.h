@@ -81,7 +81,7 @@ namespace te
             \brief It constructs a info tool associated with the given map display.
 
             \param display The map display associated with the tool.
-            param layers   The layer list that will be queried.
+            \param layers  The layer list that will be queried.
             \param parent  The tool's parent.
 
             \note The tool will NOT take the ownership of the given pointers.

@@ -31,7 +31,7 @@
 
 #include <vector>
 #include <map>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace te
 {
@@ -126,7 +126,7 @@ namespace te
         std::vector< std::string >::size_type m_currentOffset;
         std::vector< std::string > m_rTypes;
         std::vector< std::map< std::string, std::string > > m_rInfos;
-        boost::shared_ptr< te::rst::Raster > m_currentRasterPtr;
+        std::auto_ptr< te::rst::Raster > m_currentRasterPtr;
         
         FeederConstRasterInfo();
     };    

@@ -93,6 +93,8 @@ namespace te
 
           void showHistogram();
 
+          void onContrastTypeComboBoxActivated(int index);
+
         private:
 
           std::auto_ptr<Ui::ContrastWizardPageForm> m_ui;

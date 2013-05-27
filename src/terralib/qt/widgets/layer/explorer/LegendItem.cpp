@@ -38,7 +38,9 @@
 
 te::qt::widgets::LegendItem::LegendItem(const te::se::Rule* rule, QObject* parent)
   : AbstractLayerTreeItem(parent),
-    m_rule(rule)
+    m_rule(rule),
+    m_isCheckable(false),
+    m_isChecked(false)
 {
 }
 
@@ -51,23 +53,29 @@ int te::qt::widgets::LegendItem::columnCount() const
   return 1;
 }
 
-QVariant te::qt::widgets::LegendItem::data(int /*column*/, int role) const
+QVariant te::qt::widgets::LegendItem::data(int column, int role) const
 {
-  if(role == Qt::DecorationRole)
+  if(role == Qt::DecorationRole && column == 0)
   {
     return QVariant(QIcon(SymbologyPreview::build(m_rule, QSize(16, 16))));
   }
 
   if(role == Qt::DisplayRole)
   {
-    if(m_rule->getDescription())
-      return QVariant(QString::fromStdString(m_rule->getDescription()->getTitle()));
+    if(column == 0)
+    {
+      if(m_rule->getDescription())
+        return QVariant(QString::fromStdString(m_rule->getDescription()->getTitle()));
 
-    if(m_rule->getName())
-      return QVariant(QString::fromStdString(*(m_rule->getName())));
+      if(m_rule->getName())
+        return QVariant(QString::fromStdString(*(m_rule->getName())));
 
-    return QVariant(QString(tr("No Description")));
+      return QVariant(QString(tr("No Description")));
+    }
   }
+
+  if(role == Qt::CheckStateRole && m_isCheckable && column == 0)
+    return QVariant(m_isChecked ? Qt::Checked : Qt::Unchecked);
 
   //if(role == Qt::CheckStateRole)
   //  return QVariant(m_layer->getVisibility() == te::map::VISIBLE ? Qt::Checked : Qt::Unchecked);
@@ -94,7 +102,7 @@ bool te::qt::widgets::LegendItem::canFetchMore() const
 
 Qt::ItemFlags te::qt::widgets::LegendItem::flags() const
 {
-  return Qt::ItemIsEnabled;
+  return (m_isCheckable ? (Qt::ItemIsEnabled | Qt::ItemIsUserCheckable) : Qt::ItemIsEnabled);
 }
 
 void te::qt::widgets::LegendItem::fetchMore()
@@ -108,6 +116,17 @@ bool te::qt::widgets::LegendItem::hasChildren() const
 
 bool te::qt::widgets::LegendItem::setData(int column, const QVariant& value, int role)
 {
+  if(role == Qt::CheckStateRole && m_isCheckable)
+  {
+    bool ok = false;
+    Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt(&ok));
+    
+    if(!ok)
+      return false;
+
+    m_isChecked = (checkState == Qt::Checked ? true : false);
+  }
+
   //if(role == Qt::CheckStateRole)
   //{
   //  bool vis = value.toBool();
@@ -129,3 +148,12 @@ te::map::AbstractLayerPtr te::qt::widgets::LegendItem::getLayer() const
 //  return new LegendItem(m_rule, parent);
 //}
 
+void te::qt::widgets::LegendItem::setCheckable(bool checkable)
+{
+  m_isCheckable = checkable;
+}
+
+bool te::qt::widgets::LegendItem::getCheckable()
+{
+  return m_isCheckable;
+}

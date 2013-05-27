@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -45,7 +45,6 @@ namespace te
   namespace da
   {
     class DataSet;
-    //class DataSetItem;
     class DataSetType;
   }
 
@@ -117,32 +116,22 @@ namespace te
         /*!
           \note MySQL driver extended method.
         */
-        //void bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSetItem* item);
+        void prepare(const std::string& query, std::size_t nparams);
 
         /*!
           \note MySQL driver extended method.
         */
-        //void bind(const te::da::DataSetType* dt, te::da::DataSetItem* item);
+        void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, te::da::DataSet* d);
 
         /*!
           \note MySQL driver extended method.
         */
-        //void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item);
+        void bind(const std::vector<std::size_t>& propertiesPos, te::da::DataSet* d);
 
         /*!
           \note MySQL driver extended method.
         */
-        void bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        /*!
-          \note MySQL driver extended method.
-        */
-        void bind(const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        /*!
-          \note MySQL driver extended method.
-        */
-        void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSet* d);
+        void bind(te::da::DataSet* d);
 
       private:
 

@@ -27,6 +27,8 @@
 //Terralib
 #include "BasicFillDialog.h"
 #include "BasicStrokeDialog.h"
+#include "../../../se/Fill.h"
+#include "../../../se/Stroke.h"
 #include "HistogramStyleWidget.h"
 #include "HistogramStyle.h"
 #include "ui_HistogramStyleWidgetForm.h"
@@ -34,7 +36,7 @@
 //QT
 #include <QtGui/QWidget>
 
-#include <iostream>
+#include <memory>
 
 te::qt::widgets::HistogramStyleWidget::HistogramStyleWidget(te::qt::widgets::HistogramStyle* initial, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -62,10 +64,14 @@ te::qt::widgets::HistogramStyle* te::qt::widgets::HistogramStyleWidget::getHisto
 
 void te::qt::widgets::HistogramStyleWidget::onFillPushButtonClicked()
 {
-  m_histogramStyle->setFill(te::qt::widgets::BasicFillDialog::getFill(m_histogramStyle->getFill(), 0, "Bar Fill"));
+  std::auto_ptr<te::se::Fill> fill (te::qt::widgets::BasicFillDialog::getFill(m_histogramStyle->getFill(), 0, "Bar Fill"));
+  if (fill.get())
+    m_histogramStyle->setFill(fill->clone());
 }
 
 void te::qt::widgets::HistogramStyleWidget::onStrokePushButtonClicked()
 {
-    m_histogramStyle->setStroke(te::qt::widgets::BasicStrokeDialog::getStroke(m_histogramStyle->getStroke(), 0, "Bar Fill"));
+  std::auto_ptr<te::se::Stroke> stroke (te::qt::widgets::BasicStrokeDialog::getStroke(m_histogramStyle->getStroke(), 0, "Bar Stroke"));
+  if(stroke.get())
+    m_histogramStyle->setStroke(stroke->clone());
 }

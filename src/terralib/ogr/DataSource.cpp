@@ -158,7 +158,7 @@ void te::ogr::DataSource::create(const std::map<std::string, std::string>& dsInf
       throw te::common::Exception(m);
     }
     setConnectionInfo(dsInfo);
-    open();
+    //open();
   }
   else
   {
@@ -175,6 +175,7 @@ void te::ogr::DataSource::create(const std::map<std::string, std::string>& dsInf
       throw(te::common::Exception(TR_OGR("Error when attempting create the data source.")));   
 
     //OGRDataSource::DestroyDataSource(newDS);
+    setConnectionInfo(dsInfo);
   }
 }
 

@@ -187,6 +187,19 @@ namespace te
           const te::rst::Raster& sourceRaster, te::da::DataSource* dataSourcePtr ) const;
           
         /*!
+          \brief Create copy of the given raster into a disk file.
+          
+          \param fileName The disk file name.
+          
+          \param sourceRaster The source raster.
+          
+          \return true if OK, false on errors.
+        */
+        bool createDiskRasterCopy( const std::string& fileName,
+          const te::rst::Raster& sourceRaster ) const;
+                    
+          
+        /*!
           \brief Returns the tie points converx hull area.
           
           \param tiePoints Input tie-points.

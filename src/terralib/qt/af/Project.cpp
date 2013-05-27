@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "Project.h"
+#include "LayerDecorator.h"
 
 // STL
 #include <algorithm>
@@ -76,7 +77,8 @@ std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getLayers()
 
 void te::qt::af::Project::add(const te::map::AbstractLayerPtr& layer)
 {
-  m_layers.push_back(layer);
+  m_layers.push_back(LayerDecoratorPtr(new LayerDecorator(layer)));
+
   m_changed = true;
 }
 

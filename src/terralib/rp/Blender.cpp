@@ -61,7 +61,8 @@ namespace te
       const std::vector< double >& pixelScales2,
       te::gm::Polygon const * const r1ValidDataPolygonPtr,
       te::gm::Polygon const * const r2ValidDataPolygonPtr,
-      te::gm::GeometricTransformation const * const geomTransformationPtr )
+      te::gm::GeometricTransformation const * const geomTransformationPtr,
+      const bool raster1HasPrecedence )
     {
       TERP_TRUE_OR_RETURN_FALSE( 
         raster1.getAccessPolicy() & te::common::RAccess, 
@@ -110,6 +111,8 @@ namespace te
       }        
       
       // defining the input rasters
+      
+      m_raster1HasPrecedence = raster1HasPrecedence;
         
       m_raster1Ptr = &raster1;
       m_raster2Ptr = &raster2;
@@ -332,67 +335,114 @@ namespace te
     }
     
     void Blender::noBlendMethodImp( const double& line, const double& col,
-      const unsigned int& rasterChannelsVecsIdx, double& value )
+      std::vector< double >& values )
     {
       TERP_DEBUG_TRUE_OR_THROW( m_r1ValidDataPolygonPtr, "Invalid m_r1ValidDataPolygonPtr pointer" );
       TERP_DEBUG_TRUE_OR_THROW( m_r2ValidDataPolygonPtr, "Invalid m_r2ValidDataPolygonPtr pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
       
-      m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
-        m_raster1Bands[ rasterChannelsVecsIdx ] ); 
-      value = m_noBlendMethodImp_cValue.real();      
-  
-      if( value == m_raster1NoDataValues[ rasterChannelsVecsIdx ] )
+      // Finding the point over the second raster
+      
+      if( m_geomTransformationPtr )
       {
-        // Finding the point over the second raster
-        
-        if( m_geomTransformationPtr )
+        m_geomTransformationPtr->directMap( col, line, m_noBlendMethodImp_Point2Col,
+          m_noBlendMethodImp_Point2Line );
+      }
+      else
+      {
+        m_grid1Ptr->gridToGeo( col, line, m_noBlendMethodImp_Point1XProj1,
+            m_noBlendMethodImp_Point1YProj1 );
+          
+        if( m_rastersHaveDifSRS )
         {
-          m_geomTransformationPtr->directMap( col, line, m_noBlendMethodImp_Point2Col,
+          m_convInstance.convert( m_noBlendMethodImp_Point1XProj1,
+            m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point1XProj2,
+            m_noBlendMethodImp_Point1YProj2 );
+            
+          m_grid2Ptr->geoToGrid( m_noBlendMethodImp_Point1XProj2,
+            m_noBlendMethodImp_Point1YProj2, m_noBlendMethodImp_Point2Col,
             m_noBlendMethodImp_Point2Line );
         }
         else
         {
-         m_grid1Ptr->gridToGeo( col, line, m_noBlendMethodImp_Point1XProj1,
-            m_noBlendMethodImp_Point1YProj1 );
-            
-          if( m_rastersHaveDifSRS )
+          m_raster2Ptr->getGrid()->geoToGrid(m_noBlendMethodImp_Point1XProj1,
+            m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point2Col,
+            m_noBlendMethodImp_Point2Line );
+        }
+      }
+      
+      // Blending values
+      
+      if( m_raster1HasPrecedence )
+      {
+        for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
+          m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
+        {
+          m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
+            m_raster1Bands[ m_noBlendMethodImp_BandIdx ] ); 
+          m_noBlendMethodImp_Value = m_noBlendMethodImp_cValue.real();      
+      
+          if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
           {
-            m_convInstance.convert( m_noBlendMethodImp_Point1XProj1,
-              m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point1XProj2,
-              m_noBlendMethodImp_Point1YProj2 );
-              
-            m_grid2Ptr->geoToGrid( m_noBlendMethodImp_Point1XProj2,
-              m_noBlendMethodImp_Point1YProj2, m_noBlendMethodImp_Point2Col,
-              m_noBlendMethodImp_Point2Line );
+            m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
+              m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
+              m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );
+            m_noBlendMethodImp_Value =  m_noBlendMethodImp_cValue.real();          
+            
+            if( m_noBlendMethodImp_Value == m_raster2NoDataValues[ m_noBlendMethodImp_BandIdx ] )
+            {
+              values[ m_noBlendMethodImp_BandIdx ] = m_outputNoDataValue;
+            }
+            else
+            {
+              m_noBlendMethodImp_Value *= m_pixelScales2[ m_noBlendMethodImp_BandIdx ];
+              values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value + 
+                m_pixelOffsets2[ m_noBlendMethodImp_BandIdx ]; 
+            }
           }
           else
           {
-            m_raster2Ptr->getGrid()->geoToGrid(m_noBlendMethodImp_Point1XProj1,
-              m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point2Col,
-              m_noBlendMethodImp_Point2Line );
-          }
-        }        
-        
-        m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
-          m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
-          m_raster2Bands[ rasterChannelsVecsIdx ] );
-        value =  m_noBlendMethodImp_cValue.real();          
-        
-        if( value == m_raster2NoDataValues[ rasterChannelsVecsIdx ] )
-        {
-          value = m_outputNoDataValue;
-        }
-        else
-        {
-          value *= m_pixelScales2[ rasterChannelsVecsIdx ];
-          value += m_pixelOffsets2[ rasterChannelsVecsIdx ]; 
+            m_noBlendMethodImp_Value *= m_pixelScales1[ m_noBlendMethodImp_BandIdx ];
+            values[ m_noBlendMethodImp_BandIdx ] =  m_noBlendMethodImp_Value + 
+              m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
+          }      
         }
       }
       else
       {
-        value *= m_pixelScales1[ rasterChannelsVecsIdx ];
-        value += m_pixelOffsets1[ rasterChannelsVecsIdx ]; 
-      }      
+        for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
+          m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
+        {
+          m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
+            m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
+            m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );          
+          m_noBlendMethodImp_Value = m_noBlendMethodImp_cValue.real();      
+      
+          if( m_noBlendMethodImp_Value == m_raster2NoDataValues[ m_noBlendMethodImp_BandIdx ] )
+          {
+            m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
+              m_raster1Bands[ m_noBlendMethodImp_BandIdx ] ); 
+            m_noBlendMethodImp_Value =  m_noBlendMethodImp_cValue.real();          
+            
+            if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
+            {
+              values[ m_noBlendMethodImp_BandIdx ] = m_outputNoDataValue;
+            }
+            else
+            {
+              m_noBlendMethodImp_Value *= m_pixelScales1[ m_noBlendMethodImp_BandIdx ];
+              values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value + 
+                m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
+            }
+          }
+          else
+          {
+            m_noBlendMethodImp_Value *= m_pixelScales2[ m_noBlendMethodImp_BandIdx ];
+            values[ m_noBlendMethodImp_BandIdx ] =  m_noBlendMethodImp_Value + 
+              m_pixelOffsets2[ m_noBlendMethodImp_BandIdx ]; 
+          }      
+        }
+      }
     }
 
   } // end namespace rp

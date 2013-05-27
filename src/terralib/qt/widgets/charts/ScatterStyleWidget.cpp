@@ -33,6 +33,8 @@
 //QT
 #include <qdialog.h>
 
+#include <memory>
+
 te::qt::widgets::ScatterStyleWidget::ScatterStyleWidget(te::qt::widgets::ScatterStyle* initial, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::ScatterStyleWidgetForm),
@@ -58,5 +60,7 @@ te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterStyleWidget::getScatterSt
 
 void te::qt::widgets::ScatterStyleWidget::onPlotStylePushButtonClicked()
 {
-  m_scatterStyle->setGraphic((te::qt::widgets::GraphicDialog::getGraphic(0, 0, "Scatter Style")));
+  std::auto_ptr<te::se::Graphic> graphic(te::qt::widgets::GraphicDialog::getGraphic(0, 0, "Scatter Style"));
+  if(graphic.get())
+    m_scatterStyle->setGraphic(graphic->clone());
 }

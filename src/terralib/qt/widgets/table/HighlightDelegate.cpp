@@ -26,7 +26,7 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 
-bool toHighlight(te::da::DataSet* dset, te::da::ObjectIdSet* objs, const int& row)
+bool toHighlight(te::da::DataSet* dset, const te::da::ObjectIdSet* objs, const int& row)
 {
   dset->move(row);
 
@@ -42,14 +42,12 @@ bool toHighlight(te::da::DataSet* dset, te::da::ObjectIdSet* objs, const int& ro
 
 te::da::ObjectId* GetOId(te::da::DataSet* dset, const std::vector<std::string>& pNames, const int& row, te::qt::widgets::Promoter* promoter)
 {
-  int r = (promoter == 0) ? row : promoter->getLogicalRow(row);
-
-  dset->move(r);
+  dset->move(promoter->getLogicalRow(row));
 
   return te::da::GenerateOID(dset, pNames);
 }
 
-te::da::ObjectIdSet* GetOIDSet(te::da::DataSet* dset, te::da::ObjectIdSet* oidSet, const int& initRow, const int& finalRow, te::qt::widgets::Promoter* promoter)
+te::da::ObjectIdSet* GetOIDSet(te::da::DataSet* dset, const te::da::ObjectIdSet* oidSet, const int& initRow, const int& finalRow, te::qt::widgets::Promoter* promoter)
 {
   te::da::ObjectIdSet* oIds = new te::da::ObjectIdSet;
   std::vector<std::string> pnames = oidSet->getPropertyNames();
@@ -75,7 +73,6 @@ QItemDelegate(parent),
 
 te::qt::widgets::HighlightDelegate::~HighlightDelegate()
 {
-  delete m_objs;
 }
 
 void te::qt::widgets::HighlightDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -85,9 +82,7 @@ void te::qt::widgets::HighlightDelegate::paint(QPainter* painter, const QStyleOp
 
   QStyleOptionViewItem opt = option;
 
-  int row = (m_promoter == 0) ? index.row() : m_promoter->getLogicalRow(index.row());
-
-  if(toHighlight(m_dset, m_objs, row))
+  if(toHighlight(m_dset, m_objs, m_promoter->getLogicalRow(index.row())))
   {
     opt.showDecorationSelected = true;
     opt.state |= QStyle::State_Selected;
@@ -109,76 +104,19 @@ QColor te::qt::widgets::HighlightDelegate::getColor()
   return m_color;
 }
 
-void te::qt::widgets::HighlightDelegate::addObjects(te::da::ObjectIdSet* oIds)
-{
-  assert(m_objs);
-
-  m_objs->Union(oIds);
-}
-
-void te::qt::widgets::HighlightDelegate::addObject(te::da::ObjectId* oId)
-{
-  assert(m_objs);
-  assert(oId);
-
-  if(m_objs->contains(oId))
-  {
-    m_objs->remove(oId);
-    delete oId;
-  }
-  else
-    m_objs->add(oId);
-}
-
-void te::qt::widgets::HighlightDelegate::addObject(const int& row)
-{
-  assert(m_objs);
-  assert(m_dset);
-
-  int r = (m_promoter == 0) ? row : m_promoter->getLogicalRow(row);
-
-  m_dset->move(r);
-
-  te::da::ObjectId* id = te::da::GenerateOID(m_dset, m_objs->getPropertyNames());
-  addObject(id);
-}
-
-void te::qt::widgets::HighlightDelegate::addObjects(const int& initRow, const int& endRow)
-{
-  assert(m_objs);
-  assert(m_dset);
-
-  te::da::ObjectIdSet* oIds = GetOIDSet(m_dset, m_objs, initRow, endRow, m_promoter); 
-
-  addObjects(oIds);
-}
-
 void te::qt::widgets::HighlightDelegate::setDataSet(te::da::DataSet* dset)
 {
   m_dset = dset;
 }
 
-void te::qt::widgets::HighlightDelegate::setObjectIdSet(te::da::ObjectIdSet* objs)
+void te::qt::widgets::HighlightDelegate::setObjectIdSet(const te::da::ObjectIdSet* objs)
 {
   m_objs = objs;
 }
 
-void te::qt::widgets::HighlightDelegate::clearSelected()
+const te::da::ObjectIdSet* te::qt::widgets::HighlightDelegate::getSelected() const
 {
-  m_objs->clear();
-}
-
-std::vector<te::da::ObjectId*> te::qt::widgets::HighlightDelegate::getSelected()
-{
-  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::iterator init = m_objs->begin();
-  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::iterator final = m_objs->end();
-  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::iterator it;
-  std::vector<te::da::ObjectId*> res;
-
-  for(it=init; it!=final; ++it)
-    res.push_back(*it);
-
-  return res;
+  return m_objs;
 }
 
 void te::qt::widgets::HighlightDelegate::setPromoter(Promoter* promoter)

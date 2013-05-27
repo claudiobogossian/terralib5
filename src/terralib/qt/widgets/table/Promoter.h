@@ -38,6 +38,7 @@ namespace te
   namespace da
   {
     class ObjectId;
+    class ObjectIdSet;
     class DataSet;
   }
 }
@@ -73,14 +74,14 @@ namespace te
           ~Promoter();
 
           /*!
-            \brief Returns true if promotion is enabled.
-          */
-          bool isPromotionEnabled();
-
-          /*!
             \brief Returns the rows to its original positions.
           */
           void resetPromotion();
+
+          /*!
+            \breif Cleans pre processed keys and vector of mapping logical rows.
+          */
+          void cleanLogRowsAndProcessKeys();
 
           /*!
             \brief Proccess primary keys and stores it.
@@ -110,7 +111,16 @@ namespace te
 
             \param oids Set of object ids to be promoted.
           */
-          void promote(const std::vector<te::da::ObjectId*>& oids);
+          void promote(const te::da::ObjectIdSet* oids);
+
+          /*
+            \brief Sort rows of \a dset.
+
+            \param dset The data set to be sorted.
+            
+            \param cols The positions of the columns to be used.
+          */
+          void sort(te::da::DataSet* dset, const std::vector<int>& cols);
 
           /*!
             \brief Given an object id returns its row.
@@ -126,8 +136,6 @@ namespace te
           std::map<te::da::ObjectId*, size_t, te::common::LessCmp<te::da::ObjectId*> > m_PkeysRows; //!< Map object id to its position in DataSet.
 
           std::vector<size_t> m_logicalRows;                                                        //!< Map original row to logical postion.
-
-          bool m_enabled;                                                                           //!< Promotion enabling.
       };
     }
   }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,7 +21,7 @@
   \file terralib/ogr/DataSetPersistence.cpp
 
   \brief This is the OGR implementation for the DataSetPersistence API..
- */
+*/
 
 // TerraLib
 #include "../common/Exception.h"
@@ -52,6 +52,7 @@
 
 // STL
 #include <cassert>
+#include <memory>
 
 te::ogr::DataSetPersistence::DataSetPersistence(DataSourceTransactor* t):
   m_t(t)
@@ -61,48 +62,43 @@ te::ogr::DataSetPersistence::~DataSetPersistence()
 {
 }
 
-void te::ogr::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit)
-{
-  te::ogr::DataSetTypePersistence* pers = new te::ogr::DataSetTypePersistence(m_t);
-  pers->create(dt, options);
-  add(dt->getName(), d, options, limit);
-  delete pers;
-}
-
-void te::ogr::DataSetPersistence::remove(const std::string& /*datasetName*/)
-{
-  throw te::common::Exception(TR_OGR("OGR driver: not implemented yet."));
-}
-
 void te::ogr::DataSetPersistence::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
 {
   throw te::common::Exception(TR_OGR("OGR driver: not implemented yet."));
 }
 
-void te::ogr::DataSetPersistence::add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
+void te::ogr::DataSetPersistence::add(const std::string& datasetName,
+                                      te::da::DataSet* d,
+                                      const std::map<std::string, std::string>& /*options*/,
+                                      std::size_t limit)
 {
+  if(limit == 0)
+    limit = std::string::npos;
+
   OGRLayer* layer = m_t->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
   if(layer == 0)
     throw(te::common::Exception(TR_OGR("DataSet not found.")));
 
-  te::dt::ByteArray* ba = 0;
-  te::dt::DateTime* dtm = 0;
-  OGRGeometry* OGRgeom = 0;
-  std::size_t currfield;
-
   m_t->begin();
 
-  while(d->moveNext())
+  std::size_t nproperties = d->getNumProperties();
+
+  std::size_t nProcessedRows = 0;
+
+  do
   {
     OGRFeature* feat = OGRFeature::CreateFeature(layer->GetLayerDefn());
-    currfield = 0;
-    for(size_t i = 0; i < d->size(); ++i)
+
+    std::size_t currfield = 0;
+
+    for(std::size_t i = 0; i != nproperties; ++i)
     {
       if(d->isNull(i))
       {
         if(d->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
           ++currfield;
+
         continue;
       }
 
@@ -114,72 +110,81 @@ void te::ogr::DataSetPersistence::add(const std::string& datasetName, te::da::Da
         break;
 
         case te::dt::STRING_TYPE:
-          feat->SetField(currfield,d->getAsString(i).c_str());
+          feat->SetField(currfield, d->getAsString(i).c_str());
           ++currfield;
         break;
 
         case te::dt::DOUBLE_TYPE:
-          feat->SetField(currfield,d->getDouble(i));
-          ++currfield;        
+          feat->SetField(currfield, d->getDouble(i));
+          ++currfield;
          break;
 
         case te::dt::NUMERIC_TYPE:
-          feat->SetField(currfield,atof(d->getNumeric(i).c_str()));
+          feat->SetField(currfield, atof(d->getNumeric(i).c_str()));
           ++currfield;
         break;
 
         case te::dt::BYTE_ARRAY_TYPE:
-          ba = d->getByteArray(i);
-          feat->SetField(currfield,ba->bytesUsed(),(unsigned char*) ba->getData());
-          ++currfield;
-          delete ba;
+          {
+            std::auto_ptr<te::dt::ByteArray> ba(d->getByteArray(i));
+            feat->SetField(currfield, ba->bytesUsed(), reinterpret_cast<unsigned char*>(ba->getData()));
+            ++currfield;
+          }
         break;
 
-        //case te::dt::ARRAY_TYPE:
-        //{
-        //  te::da::ArrayProperty* at = static_cast<te::da::ArrayProperty*>(p);
-        //  int elementType = at->getElementType()->getType();
-        //
-        //  if(elementType == te::dt::INT32_TYPE)
-        //    feat->SetField();
-        //  else if(elementType == te::dt::STRING_TYPE)
-        //    feat->SetField();
-        //  else if(elementType == te::dt::DOUBLE_TYPE)
-        //    feat->SetField();
-        //  else
-        //    throw(te::common::Exception(TR_OGR("Unsupported data type by OGR.")));
-        //}
+        case te::dt::DATETIME_TYPE:
+          {
+            std::auto_ptr<te::dt::DateTime> dtm(d->getDateTime(i));
 
-        /*case te::dt::DATETIME_TYPE:
-        {
-          const te::dt::DateTimeProperty* dp = static_cast<const te::dt::DateTimeProperty*>(p);
-          dtm = d->getDateTime(i);
-          te::dt::DateTimeType elementType = dp->getSubType();
-          if(elementType == te::dt::DATE)
-          {
-            te::dt::Date* d = static_cast<te::dt::Date*>(dtm);
-            feat->SetField(currfield,(int)d->getYear(),(int)d->getMonth(),(int)d->getDay());
+            te::dt::Date* dtime = dynamic_cast<te::dt::Date*>(dtm.get());
+
+            if(dtime)
+            {
+              feat->SetField(currfield,
+                             static_cast<int>(dtime->getYear()),
+                             static_cast<int>(dtime->getMonth()),
+                             static_cast<int>(dtime->getDay()));
+              ++currfield;
+              break;
+            }
+
+            te::dt::TimeDuration* tduration = dynamic_cast<te::dt::TimeDuration*>(dtm.get());
+
+            if(tduration)
+            {
+              feat->SetField(currfield, 0, 0, 0,
+                             static_cast<int>(tduration->getHours()),
+                             static_cast<int>(tduration->getMinutes()),
+                             static_cast<int>(tduration->getSeconds()));
+              ++currfield;
+              break;
+            }
+
+            te::dt::TimeInstant* tinst = dynamic_cast<te::dt::TimeInstant*>(dtm.get());
+
+            if(tinst)
+            {
+              feat->SetField(currfield,
+                             static_cast<int>(dtime->getYear()),
+                             static_cast<int>(dtime->getMonth()),
+                             static_cast<int>(dtime->getDay()),
+                             static_cast<int>(tduration->getHours()),
+                             static_cast<int>(tduration->getMinutes()),
+                             static_cast<int>(tduration->getSeconds()));
+              ++currfield;
+              break;
+            }
+
+            throw(te::common::Exception(TR_OGR("Unsupported date and time type by OGR.")));
           }
-          else if(elementType == te::dt::TIME_DURATION)
-          {
-            te::dt::TimeDuration* td = static_cast<te::dt::TimeDuration*>(dtm);
-            feat->SetField(currfield,0,0,0,(int)td->getHours(),(int)td->getMinutes(),(int)td->getSeconds());
-          }
-          else if(elementType == te::dt::TIME_INSTANT)
-          {
-            te::dt::Date d = static_cast<te::dt::TimeInstant*>(dtm)->getDate();
-            te::dt::TimeDuration td = static_cast<te::dt::TimeInstant*>(dtm)->getTime();
-            feat->SetField( currfield,(int)d.getYear(), (int)d.getMonth(), (int)d.getDay(),
-                            (int)td.getHours(),(int)td.getMinutes(),(int)td.getSeconds());
-          }
-          ++currfield;
-          delete dtm;
-          break;
-        }*/
-      
+        break;
+
         case te::dt::GEOMETRY_TYPE:
-          OGRgeom = Convert2OGR(d->getGeometry(i));
-          feat->SetGeometry(OGRgeom);
+          {
+            std::auto_ptr<te::gm::Geometry> geom(d->getGeometry(i));
+            OGRGeometry* OGRgeom = Convert2OGR(geom.get());
+            feat->SetGeometryDirectly(OGRgeom);
+          }
         break;
 
         default:
@@ -194,7 +199,8 @@ void te::ogr::DataSetPersistence::add(const std::string& datasetName, te::da::Da
     }
 
     OGRFeature::DestroyFeature(feat);
-  }
+
+  }while(d->moveNext() && (nProcessedRows != limit));
 
   m_t->commit();
 }

@@ -44,8 +44,15 @@ namespace te
     /*!
       \class ClassifierEMStrategy
 
-      \brief EM strategy for pixel-based classification. The algorithm ...
-     */
+      \brief EM strategy for pixel-based classification. This is an unsupervised
+      and pixel-based classification algorithm. Expectation-Maximization (EM) works
+      iteratively by applying two steps: the E-step (Expectation) and the M-step
+      (Maximization). The method aims to approximate the parameter estimates to
+      real data distribution, along the iterations:
+      1. The E-step calculates the conditional expectation of the complete a
+      posteriori probability function.
+      2. The M-step updates the parameter estimation.
+    */
     class TERPEXPORT ClassifierEMStrategy : public ClassifierStrategy
     {
       public:
@@ -61,6 +68,7 @@ namespace te
 
             unsigned int m_numberOfClusters;                    //!< The number of clusters (classes) to estimate in the image.
             unsigned int m_maxIterations;                       //!< The maximum of iterations (E/M steps) to perform if convergence is not achieved.
+            unsigned int m_maxInputPoints;                      //!< The maximum number of points used to estimate the clusters (default = 1000).
             double m_epsilon;                                   //!< The stop criteria. When the clusters change in a value smaller then epsilon, the convergence is achieved.
             std::vector<std::vector<double> > m_clustersMeans;  //!< The previously estimated means of the clusters (optional).
 
@@ -96,6 +104,7 @@ namespace te
 
         bool m_isInitialized;                                        //!< True if this instance is initialized.
         ClassifierEMStrategy::Parameters m_parameters;               //!< Internal execution parameters.
+
     };
 
     /*!
