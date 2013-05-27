@@ -7,7 +7,7 @@ if(UNIX)
 		PATHS /usr/local/include /usr/local/include/grib /usr/include/grib /usr/include)
 				
 	find_library(GRIB_LIBRARY
-		NAMES grib.a libgrib_api.so
+		NAMES grib.a libgrib_api.so libgrib_api.a
 		HINTS /usr/local/lib /usr/lib 
   )
 			  

@@ -25,7 +25,9 @@
 
 // TerraLib
 #include "../../common/Translator.h"
+#include "../../common/STLUtils.h"
 #include "../../common/StringUtils.h"
+#include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
@@ -53,7 +55,7 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::AggregationDialogForm),
     m_layers(std::list<te::map::AbstractLayerPtr>()),
-    m_model(0)
+    m_selectedLayer(0)
 {
 // add controls
   m_ui->setupUi(this);
@@ -62,10 +64,10 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-aggregation-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
-  setAttributes();
-  setAttributesNameMap();
+  setGroupingFunctionsType();
+  setGroupingFunctionsTypeMap();
 
-  connect(m_ui->m_layerTreeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onTreeViewClicked(const QModelIndex&)));
+  connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
   connect(m_ui->m_outputListWidget, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(onOutputListWidgetClicked(QListWidgetItem *)));
   connect(m_ui->m_selectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectAllComboBoxChanged(int)));
@@ -80,21 +82,19 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
 
 te::vp::AggregationDialog::~AggregationDialog()
 {
-  delete m_model;
 }
 
 void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
   
-  if(m_model != 0)
-      delete m_model;
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
-  m_model = new LayerTreeModel(m_layers, true);
-
-  m_ui->m_layerTreeView->setModel(m_model);
-  m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
-  m_ui->m_layerTreeView->resizeColumnToContents(0);
+  while(it != m_layers.end())
+  {  
+    m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    ++it;
+  }
 }
 
 int te::vp::AggregationDialog::getMemoryUse()
@@ -113,51 +113,98 @@ int te::vp::AggregationDialog::getMemoryUse()
     return WHOLE_MEM;
 }
 
-std::map<std::string, std::vector<te::vp::Attributes> > te::vp::AggregationDialog::getOutputAttributes()
+std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > te::vp::AggregationDialog::getGroupingFunctionsType()
 {
-  std::map<std::string, std::vector<te::vp::Attributes> > outputAttributes;
+  std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > outputGroupingFunctionsType;
 
   QList<QListWidgetItem*> itemList = m_ui->m_outputListWidget->selectedItems();
 
+  std::string propertyName = "";
   std::string aux = "";
-  std::string currentToken = "";
-  std::string attribute = "";
-  te::vp::Attributes enumAttribute;
-  std::vector<te::vp::Attributes> vectorAttributes;
+  te::dt::Property* currentToken;
+  te::dt::Property* auxProperty;
+  std::string groupingFunctionType = "";
+  te::vp::GroupingFunctionsType enumGroupingFunctionsType;
+  std::vector<te::vp::GroupingFunctionsType> vectorGroupingFunctionsType;
   
   for(int i = 0; i < itemList.size(); ++i)
   {
     std::vector<std::string> tokens;
+
     te::common::Tokenize(itemList[i]->text().toStdString(), tokens, ":");
-
-    currentToken = tokens[0];
-    currentToken.erase(currentToken.end() - 1);
-
-    enumAttribute = (te::vp::Attributes)itemList[i]->data(Qt::UserRole).toInt();
-
-    if(currentToken != aux && aux != "")
+    
+    if(tokens.empty())
     {
-      outputAttributes[aux] = vectorAttributes;
-      vectorAttributes.clear();
-      vectorAttributes.push_back(enumAttribute);
+      propertyName = "";
+      currentToken = getSelectedPropertyByName(propertyName);
     }
     else
     {
-      vectorAttributes.push_back(enumAttribute);
+      propertyName = tokens[0];
+      propertyName.erase(propertyName.end() - 1);
+      currentToken = getSelectedPropertyByName(propertyName);
+    }
+
+    enumGroupingFunctionsType = (te::vp::GroupingFunctionsType)itemList[i]->data(Qt::UserRole).toInt();
+
+    if(propertyName != aux && aux != "")
+    {
+      outputGroupingFunctionsType[auxProperty] = vectorGroupingFunctionsType;
+      vectorGroupingFunctionsType.clear();
+      vectorGroupingFunctionsType.push_back(enumGroupingFunctionsType);
+    }
+    else
+    {
+      vectorGroupingFunctionsType.push_back(enumGroupingFunctionsType);
 
       if(i == itemList.size() - 1)
       {
-        outputAttributes[aux] = vectorAttributes;
+        auxProperty = currentToken;
+        outputGroupingFunctionsType[auxProperty] = vectorGroupingFunctionsType;
       }
     }
 
-    aux = currentToken;
+    aux = propertyName;
+    auxProperty = currentToken;
   }
 
-  return outputAttributes;
+  return outputGroupingFunctionsType;
 }
 
-void te::vp::AggregationDialog::setAttributes()
+te::dt::Property* te::vp::AggregationDialog::getSelectedPropertyByName(std::string propertyName)
+{
+  te::dt::Property* selProperty;
+
+  if(propertyName == "")
+    return 0;
+
+  for(std::size_t i = 0; i < m_properties.size(); ++i)
+  {
+    if(propertyName == m_properties[i]->getName())
+    {
+      selProperty = m_properties[i];
+      return selProperty;
+    }
+  }
+  return 0;
+}
+
+std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties()
+{
+  std::vector<te::dt::Property*> selProperties;
+
+  for(std::size_t i = 0; i != m_ui->m_propertieslistWidget->count(); ++i)
+  {
+    if(m_ui->m_propertieslistWidget->isItemSelected(m_ui->m_propertieslistWidget->item(i)))
+    {
+      selProperties.push_back(m_properties[i]);
+    }
+  }
+
+  return selProperties;
+}
+
+void te::vp::AggregationDialog::setGroupingFunctionsType()
 {
   m_ui->m_selectAllComboBox->addItem("");
   m_ui->m_selectAllComboBox->addItem(TR_VP("Minimum value"), MIN_VALUE);
@@ -195,160 +242,194 @@ void te::vp::AggregationDialog::setAttributes()
 
 }
 
-void te::vp::AggregationDialog::setAttributesNameMap()
+void te::vp::AggregationDialog::setGroupingFunctionsTypeMap()
 {
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MIN_VALUE, TR_VP("Minimum value")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MAX_VALUE, TR_VP("Maximum value")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MEAN, TR_VP("Mean")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(SUM, TR_VP("Sum of values")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(COUNT, TR_VP("Total number of values")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(VALID_COUNT, TR_VP("Total not null values")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(STANDARD_DEVIATION, TR_VP("Standard deviation")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(KERNEL, TR_VP("Kernel")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(VARIANCE, TR_VP("Variance")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(SKEWNESS, TR_VP("Skewness")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(KURTOSIS, TR_VP("Kurtosis")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(AMPLITUDE, TR_VP("Amplitude")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MEDIAN, TR_VP("Median")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(VAR_COEFF, TR_VP("Coefficient variation")));
-  m_attributeNameMap.insert(std::map<Attributes, std::string>::value_type(MODE, TR_VP("Mode")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(MIN_VALUE, TR_VP("Minimum value")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(MAX_VALUE, TR_VP("Maximum value")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(MEAN, TR_VP("Mean")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(SUM, TR_VP("Sum of values")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(COUNT, TR_VP("Total number of values")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(VALID_COUNT, TR_VP("Total not null values")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(STANDARD_DEVIATION, TR_VP("Standard deviation")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(KERNEL, TR_VP("Kernel")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(VARIANCE, TR_VP("Variance")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(SKEWNESS, TR_VP("Skewness")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(KURTOSIS, TR_VP("Kurtosis")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(AMPLITUDE, TR_VP("Amplitude")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(MEDIAN, TR_VP("Median")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(VAR_COEFF, TR_VP("Coefficient variation")));
+  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(MODE, TR_VP("Mode")));
 }
 
-void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
-{
-  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
-
-  delete m_model;
-  m_ui->m_selectAllComboBox->setCurrentIndex(0);
-  m_ui->m_rejectAllComboBox->setCurrentIndex(0);
-  m_ui->m_outputListWidget->clear();
-
-  if(text == "")
-    filteredLayers = m_layers;
-
-  m_model = new LayerTreeModel(filteredLayers);
-
-  m_ui->m_layerTreeView->setModel(m_model);
-}
-
-void te::vp::AggregationDialog::onTreeViewClicked(const QModelIndex& index)
+void te::vp::AggregationDialog::setFunctionsByLayer(std::vector<te::dt::Property*> properties)
 {
   QStringList propertyList;
   int propertyType;
 
   m_ui->m_selectAllComboBox->setCurrentIndex(0);
   m_ui->m_rejectAllComboBox->setCurrentIndex(0);
-
-  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > selected = m_model->getSelected();
-  
-  if(selected.size() > 0)
-  {
-    m_ui->m_outputListWidget->clear();
-
-    std::vector<te::dt::Property*> properties = selected.begin()->second;
+  m_ui->m_outputListWidget->clear();
     
-    for(size_t i=0; i < properties.size(); ++i)
+  for(size_t i=0; i < properties.size(); ++i)
+  {
+    propertyType = properties[i]->getType();
+    if(propertyType != te::dt::GEOMETRY_TYPE)
     {
-      propertyType = properties[i]->getType();
-
       if(propertyType == te::dt::STRING_TYPE)
       {  
-        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MIN_VALUE].c_str());
+        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MIN_VALUE].c_str());
         item->setData(Qt::UserRole, QVariant(MIN_VALUE));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MAX_VALUE].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MAX_VALUE].c_str());
         item->setData(Qt::UserRole, QVariant(MAX_VALUE));
         m_ui->m_outputListWidget->addItem(item);
         
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[COUNT].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[COUNT].c_str());
         item->setData(Qt::UserRole, QVariant(COUNT));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VALID_COUNT].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[VALID_COUNT].c_str());
         item->setData(Qt::UserRole, QVariant(VALID_COUNT));
         m_ui->m_outputListWidget->addItem(item);
-        
-        if(i < properties.size()-1)
-        {
-          QListWidgetItem* item = new QListWidgetItem("");
-          m_ui->m_outputListWidget->addItem(item);
-        }
+
+        item = new QListWidgetItem("");
+        m_ui->m_outputListWidget->addItem(item);
       }
       else
       {
-        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MIN_VALUE].c_str());
+        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MIN_VALUE].c_str());
         item->setData(Qt::UserRole, QVariant(MIN_VALUE));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MAX_VALUE].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MAX_VALUE].c_str());
         item->setData(Qt::UserRole, QVariant(MAX_VALUE));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MEAN].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MEAN].c_str());
         item->setData(Qt::UserRole, QVariant(MEAN));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[SUM].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[SUM].c_str());
         item->setData(Qt::UserRole, QVariant(SUM));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[COUNT].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[COUNT].c_str());
         item->setData(Qt::UserRole, QVariant(COUNT));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VALID_COUNT].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[VALID_COUNT].c_str());
         item->setData(Qt::UserRole, QVariant(VALID_COUNT));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[STANDARD_DEVIATION].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[STANDARD_DEVIATION].c_str());
         item->setData(Qt::UserRole, QVariant(STANDARD_DEVIATION));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[KERNEL].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[KERNEL].c_str());
         item->setData(Qt::UserRole, QVariant(KERNEL));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VARIANCE].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[VARIANCE].c_str());
         item->setData(Qt::UserRole, QVariant(VARIANCE));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[SKEWNESS].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[SKEWNESS].c_str());
         item->setData(Qt::UserRole, QVariant(SKEWNESS));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[KURTOSIS].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[KURTOSIS].c_str());
         item->setData(Qt::UserRole, QVariant(KURTOSIS));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[AMPLITUDE].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[AMPLITUDE].c_str());
         item->setData(Qt::UserRole, QVariant(AMPLITUDE));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MEDIAN].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MEDIAN].c_str());
         item->setData(Qt::UserRole, QVariant(MEDIAN));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[VAR_COEFF].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[VAR_COEFF].c_str());
         item->setData(Qt::UserRole, QVariant(VAR_COEFF));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_attributeNameMap[MODE].c_str());
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MODE].c_str());
         item->setData(Qt::UserRole, QVariant(MODE));
         m_ui->m_outputListWidget->addItem(item);
-        
-        if(i < properties.size()-1)
-        {
-          QListWidgetItem* item = new QListWidgetItem("");
-          m_ui->m_outputListWidget->addItem(item);
-        }
+
+        item = new QListWidgetItem("");
+        m_ui->m_outputListWidget->addItem(item);
       }
     }
-
   }
-  else
+
+  int lastRow = m_ui->m_outputListWidget->count() - 1;
+  delete m_ui->m_outputListWidget->item(lastRow);
+}
+
+void te::vp::AggregationDialog::onLayerComboBoxChanged(int index)
+{
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  
+  std::string layerID = m_ui->m_layersComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+
+  m_ui->m_propertieslistWidget->clear();
+
+  while(it != m_layers.end())
   {
-    m_ui->m_outputListWidget->clear();
+    if(layerID == it->get()->getId().c_str())
+    {
+      std::size_t type;
+      te::map::AbstractLayerPtr selectedLayer = it->get();
+      m_selectedLayer = selectedLayer;
+      std::auto_ptr<const te::map::LayerSchema> schema(selectedLayer->getSchema());
+
+      if(schema->size() == 0)
+        return;
+
+      te::common::FreeContents(m_properties);
+      m_properties.clear();
+
+      const std::vector<te::dt::Property*>& properties = schema->getProperties();
+      
+      te::common::Clone(properties, m_properties);
+      
+      setFunctionsByLayer(m_properties);
+
+      for(size_t i = 0; i < m_properties.size(); ++i)
+      {
+        type = m_properties[i]->getType();
+        
+        if(type != te::dt::GEOMETRY_TYPE)
+          m_ui->m_propertieslistWidget->addItem(m_properties[i]->getName().c_str());
+      }
+
+      return;
+    }
+    ++it;
+  }
+}
+
+void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
+{
+  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
+
+  m_ui->m_layersComboBox->clear();
+
+  m_ui->m_selectAllComboBox->setCurrentIndex(0);
+  m_ui->m_rejectAllComboBox->setCurrentIndex(0);
+  m_ui->m_outputListWidget->clear();
+
+  if(text.isEmpty())
+    filteredLayers = m_layers;
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = filteredLayers.begin();
+
+  while(it != filteredLayers.end())
+  {  
+    m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    ++it;
   }
 }
 
@@ -357,7 +438,7 @@ void te::vp::AggregationDialog::onSelectAllComboBoxChanged(int index)
   QString text = m_ui->m_selectAllComboBox->itemText(index);
   Qt::MatchFlags flag = Qt::MatchEndsWith; //The search term matches the end of the item.
   
-  if(text=="")
+  if(text.isEmpty())
     return;
 
   QList<QListWidgetItem *> listFound;
@@ -388,7 +469,7 @@ void te::vp::AggregationDialog::onRejectAllComboBoxChanged(int index)
 
 void te::vp::AggregationDialog::onOutputListWidgetClicked(QListWidgetItem * item)
 {
-  if(item->text()=="")
+  if(item->text().isEmpty())
   {
     item->setSelected(false);
   }
@@ -433,42 +514,53 @@ void te::vp::AggregationDialog::onHelpPushButtonClicked()
 
 void te::vp::AggregationDialog::onOkPushButtonClicked()
 {
-  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > selectedLayer = m_model->getSelected();
-
-  if(selectedLayer.size() > 0)
+  if(m_ui->m_layersComboBox->count() == 0)
   {
-    if(selectedLayer.begin()->second.size() > 0)
-    {
-      std::map<std::string, std::vector<te::vp::Attributes> > outputAttributes = getOutputAttributes();
-      
-      te::vp::MemoryUse memoryUse = (te::vp::MemoryUse)getMemoryUse();
-      
-      if(m_ui->m_newLayerNameLineEdit->text() != "")
-      {
-        std::string outputLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+    QMessageBox::information(this, "Aggregation", "Please, you must select a layer.");
 
-        if(m_ui->m_repositoryLineEdit->text() != "")
-        {
-          te::vp::Aggregation(selectedLayer, outputAttributes, outputLayerName, m_outputDatasource);
-        }
-        else
-        {
-          QMessageBox::information(this, "Aggregation", "Set a repository for the new Layer.");
-        }
-      }
-      else
-      {
-        QMessageBox::information(this, "Aggregation", "Set a name for the new Layer.");
-      }
-    }
-    else
-    {
-      QMessageBox::information(this, "Aggregation", "Select at least one property.");
-    }
+    return;
   }
-  else
+  
+  std::vector<te::dt::Property*> selProperties = getSelectedProperties();
+
+  if(selProperties.empty())
   {
-    QMessageBox::information(this, "Aggregation", "Select one layer.");
+    QMessageBox::information(this, "Aggregation", "Please, select at least one property.");
+
+    return;
+  }
+  
+  std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > outputGroupingFunctions = getGroupingFunctionsType();
+      
+  te::vp::MemoryUse memoryUse = (te::vp::MemoryUse)getMemoryUse();
+      
+  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Aggregation", "Set a name for the new Layer.");
+
+    return;
+  }
+
+  std::string outputLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Aggregation", "Set a repository for the new Layer.");
+
+    return;
+  }
+
+  try
+  {
+    te::vp::Aggregation(m_selectedLayer, selProperties, outputGroupingFunctions, memoryUse, outputLayerName, m_outputDatasource);
+  }
+  catch(const std::exception& e)
+  {
+    QString errMsg(tr("Error during map aggregation. The reported error is: %1"));
+
+    errMsg = errMsg.arg(e.what());
+
+    QMessageBox::information(this, "Aggregation", errMsg);
   }
 }
 

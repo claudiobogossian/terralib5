@@ -24,14 +24,15 @@
 */
 
 #include "SRSManagerDialog.h"
-#include "SRSDialog.h"
 
 #include "../../../srs/SpatialReferenceSystemManager.h"
 
 #include <ui_SRSManagerDialogForm.h>
 #include <QtGui/QMessageBox>
+#include <QSettings>
+#include <QString>
 
-// TerraLib
+#include <iostream>
 
 te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowFlags f):
   QDialog(parent, f),
@@ -43,28 +44,17 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   
   // Signals & slots
   connect(m_ui->m_SRSTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onSRSTreeWidgetItemClicked(QTreeWidgetItem* , int)));
-  connect(m_ui->m_moreInfoToolButton, SIGNAL(clicked()), SLOT(onMoreInfoToolButtonClicked())); 
-  connect(m_ui->m_addSRSToolButton, SIGNAL(clicked()), SLOT(onAddSRSToolButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));   
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked())); 
-  connect(m_ui->m_findSRSPushButton, SIGNAL(clicked()), SLOT(onFindSRSPushButtonClicked()));
   connect(m_ui->m_searchedSRSLineEdit, SIGNAL(textChanged(const QString&)),SLOT(onSearchLineEditTextChanged(const QString&)));
+  connect(m_ui->m_SRSRecentTableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), SLOT(onSRSRecentTableWidgetItemClicked(QTableWidgetItem*)));
   
   QList<QTreeWidgetItem *> items;
-//  QTreeWidgetItem* gs = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Geoographic Spatial Coordinate Systems")));
-//  QTreeWidgetItem* ps = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Projected Spatial Coordinate Systems")));
-//  QTreeWidgetItem* us = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("User Defined Coordinate Systems")));
-//  gs->setExpanded(true);
-//  ps->setExpanded(true);
-//  us->setExpanded(true);
-//  items.append(gs);
-//  items.append(ps);
-//  items.append(us);
   
-  items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Geoographic Spatial Coordinate Systems"))));
-  items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Projected Spatial Coordinate Systems"))));
-  items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("User Defined Coordinate Systems"))));
+  items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Geoographic SRS"))));
+  items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Projected SRS"))));
+  items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("User defined SRS"))));
   m_ui->m_SRSTreeWidget->insertTopLevelItems(0, items);
   
   std::pair<te::srs::SpatialReferenceSystemManager::iterator,
@@ -98,7 +88,10 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
     }
     ++its.first;
   }  
-  m_ui->m_SRSTreeWidget->resizeColumnToContents(0);
+
+  m_ui->m_SRSTreeWidget->setColumnWidth(0, 440);
+  m_ui->m_SRSTreeWidget->setColumnWidth(1, 100);
+  m_ui->m_SRSTreeWidget->setColumnWidth(2, 100);
   
   unsigned int ntl =  m_ui->m_SRSTreeWidget->topLevelItemCount();
   for(unsigned int i = 0; i < ntl; ++i)
@@ -107,7 +100,44 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
     item->setExpanded(true);
   }
   
-  m_srsDiag = new te::qt::widgets::SRSDialog(this); 
+  m_ui->m_p4descPlainTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+  QFontMetrics m (m_ui->m_p4descPlainTextEdit->font());
+  int RowHeight = m.lineSpacing() ;
+  m_ui->m_p4descPlainTextEdit->setFixedHeight(3*RowHeight);
+  
+  // To build and populate the table with the recently used SRSIDS
+  
+  QStringList hLabels;
+  hLabels << "Name" << "ID" << "Authority";
+  m_ui->m_SRSRecentTableWidget->setVerticalHeaderLabels(hLabels);
+  
+  m_ui->m_SRSRecentTableWidget->setColumnWidth(0, 440);
+  m_ui->m_SRSRecentTableWidget->setColumnWidth(1, 100);
+  m_ui->m_SRSRecentTableWidget->setColumnWidth(2, 100);
+  
+  //m_ui->m_SRSRecentTableWidget->horizontalHeader()->setStretchLastSection(true);
+    
+  //m_ui->m_SRSRecentTableWidget->setUpdatesEnabled(false);
+  
+  QSettings settings;
+  QString value = settings.value("SRSRecentlyUsed", "").toString();
+  
+  m_ui->m_SRSRecentTableWidget->clear();
+  if (!value.isEmpty())
+  {
+    m_recentSRS = value.split(',');
+    int aux = 0;
+    int srid;
+    QStringList::const_iterator it;
+    for (it = m_recentSRS.constBegin(); it != m_recentSRS.constEnd(); ++it)
+    {
+      srid = (*it).toInt();
+      m_ui->m_SRSRecentTableWidget->setItem(aux, 0, new QTableWidgetItem(te::srs::SpatialReferenceSystemManager::getInstance().getName(srid).c_str()));
+      m_ui->m_SRSRecentTableWidget->setItem(aux, 1, new QTableWidgetItem(QString::number(srid)));    
+      m_ui->m_SRSRecentTableWidget->setItem(aux, 2, new QTableWidgetItem("EPSG"));
+      ++aux;
+    }
+  }
 }
 
 
@@ -137,7 +167,7 @@ std::pair<int, std::string> te::qt::widgets::SRSManagerDialog::getSRS(QWidget* p
 
 void te::qt::widgets::SRSManagerDialog::onSearchLineEditTextChanged(const QString& text)
 {
-  QList<QTreeWidgetItem*> itens = m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
+  QList<QTreeWidgetItem*> itens = m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive , 0);
   itens.append(m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 1));  
   filter(itens);
 }
@@ -159,80 +189,6 @@ void te::qt::widgets::SRSManagerDialog::filter(const QList<QTreeWidgetItem*>& it
   update();
 }
 
-void te::qt::widgets::SRSManagerDialog::onFindSRSPushButtonClicked() 
-{
-  QString itemText = m_ui->m_searchedSRSLineEdit->text();
-  
-  if (itemText.isEmpty())
-  {
-    QMessageBox::warning(this, "", tr("Enter a SRS name to search for."));
-    return;   
-  }
-  
-  QList<QTreeWidgetItem *> found = m_ui->m_SRSTreeWidget->findItems(itemText, Qt::MatchWildcard | Qt::MatchRecursive);
-  
-  if (!found.isEmpty())
-  {
-    QTreeWidgetItem *item = found[0];
-    if (item->parent() != 0)
-    {
-      item->parent()->setExpanded(true);
-      m_ui->m_SRSTreeWidget->setItemSelected(item, true);
-      m_ui->m_SRSTreeWidget->setCurrentItem(item);
-      return;
-    }
-  }
-  
-  QMessageBox::warning(this, "", tr("No SRS matching the searching string."));
-  return;
-}
-
-void te::qt::widgets::SRSManagerDialog::onMoreInfoToolButtonClicked()
-{
-  QTreeWidgetItem* curItem = m_ui->m_SRSTreeWidget->currentItem();
-  if (!curItem) 
-  {
-    QMessageBox::warning(this, "", tr("Select a spatial reference system."));
-    return;
-  }
-  
-  if (curItem->text(1).isEmpty())
-  {
-    QMessageBox::warning(this, "", tr("Select a spatial reference system."));
-    return;
-  }    
-  unsigned int srid = curItem->text(1).toUInt();
-  std::string auth = std::string(curItem->text(2).toLatin1());
-  te::srs::SpatialReferenceSystemManager::getInstance().getName(srid,auth);
-  
-  m_srsDiag->setAddMode(false);  
-  m_srsDiag->setSRSInformation(te::srs::SpatialReferenceSystemManager::getInstance().getName(srid,auth), 
-                               te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(srid,auth), 
-                               te::srs::SpatialReferenceSystemManager::getInstance().getWkt(srid,auth), 
-                               auth,srid);
-  m_srsDiag->exec();
-}
-
-void te::qt::widgets::SRSManagerDialog::onAddSRSToolButtonClicked()
-{
-  m_srsDiag->setAddMode(true); 
-  if (m_srsDiag->exec() == QDialog::Accepted)
-  {
-    std::string name; 
-    std::string p4Txt;
-    std::string wkt;
-    std::string authName;
-    unsigned int srid = m_srsDiag->getSRSInformation(name,p4Txt,wkt,authName);
-    
-    QTreeWidgetItem *proj = new QTreeWidgetItem(m_ui->m_SRSTreeWidget->topLevelItem(2));
-    proj->setText(0, name.c_str());
-    proj->setText(1, QString("%1").arg(srid));
-    proj->setText(2, authName.c_str());
-    m_ui->m_SRSTreeWidget->setCurrentItem(proj);    
-    m_ui->m_SRSTreeWidget->resizeColumnToContents(0);    
-    return;
-  }
-}
 
 void te::qt::widgets::SRSManagerDialog::onSRSTreeWidgetItemClicked(QTreeWidgetItem * item, int /*column*/)
 {
@@ -240,10 +196,21 @@ void te::qt::widgets::SRSManagerDialog::onSRSTreeWidgetItemClicked(QTreeWidgetIt
   {
     m_selSrsId.first = -1;  
     m_selSrsId.second = "";
+    m_ui->m_p4descPlainTextEdit->clear();
     return;
   }
   m_selSrsId.first = item->text(1).toUInt();  
   m_selSrsId.second = std::string(item->text(2).toLatin1());
+  m_ui->m_p4descPlainTextEdit->setPlainText(te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(m_selSrsId.first,std::string(item->text(2).toLatin1())).c_str());
+}
+
+void te::qt::widgets::SRSManagerDialog::onSRSRecentTableWidgetItemClicked(QTableWidgetItem* item)
+{
+  if (!item)
+    return;
+  QString val = m_ui->m_SRSRecentTableWidget->item(item->row(),1)->text();
+  m_ui->m_p4descPlainTextEdit->setPlainText(te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(val.toInt()).c_str());
+  m_ui->m_searchedSRSLineEdit->setText(val);
 }
 
 void te::qt::widgets::SRSManagerDialog::onOkPushButtonClicked()
@@ -251,7 +218,19 @@ void te::qt::widgets::SRSManagerDialog::onOkPushButtonClicked()
   if (m_selSrsId.first == -1)
     reject();
   else 
+  {
+    QStringList aux;
+    aux << QString::number(m_selSrsId.first);    
+    for (size_t i=0; (i<3 && i<m_recentSRS.size()); ++i)
+      if (QString::number(m_selSrsId.first) != m_recentSRS[i])
+        aux << m_recentSRS[i];
+    
+    QString value = aux.join(",");
+    std::cout << &value << std::endl;
+    QSettings settings;
+    settings.setValue("SRSRecentlyUsed", value);
     accept();
+  }
 }
 
 void te::qt::widgets::SRSManagerDialog::onCancelPushButtonClicked()

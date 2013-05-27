@@ -26,8 +26,10 @@
 // TerraLib
 #include "../../common/Translator.h"
 #include "../../common/StringUtils.h"
+#include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../datatype/Property.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../core/Exception.h"
 #include "../core/Intersection.h"
@@ -79,6 +81,9 @@ void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> 
   
   m_ui->m_layerTreeView->setModel(m_model);
   m_ui->m_layerTreeView->resizeColumnToContents(0);
+
+  //m_ui->m_layerTreeView->resizeColumnsToContents();
+  //m_ui->m_layerTreeView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 }
 
 void te::vp::IntersectionDialog::onFilterLineEditTextChanged(const QString& text)
@@ -106,6 +111,29 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
   selected = m_model->getSelected();
 
+  std::vector<LayerInputData> layers;
+
+  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> >::iterator it;
+
+  for(it = selected.begin(); it != selected.end(); ++it)
+  {
+    LayerInputData layerInput;
+    LayerPropertiesPosList propsPos;
+
+    te::map::AbstractLayerPtr layer = it->first;
+    std::vector<te::dt::Property*> props = it->second;
+
+    const te::map::LayerSchema* schema = layer->getSchema();
+
+    for(size_t i = 0; i < props.size(); ++i)
+      propsPos.push_back(schema->getPropertyPosition(props[i]->getName()));
+
+    layerInput.first = layer;
+    layerInput.second = propsPos;
+
+    layers.push_back(layerInput);
+  }
+
   if(selected.size() < 2)
   {
     QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("At least two layers are necessary for an intersection!"));
@@ -124,7 +152,10 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
   try
   {
-    resultPair = te::vp::Intersect(newLayerName, m_model->getSelected());
+    size_t srid = 0;
+    std::map<std::string, std::string> op;
+    te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
+    //te::vp::Intersection(newLayerName, selected);
   }
   catch(const std::exception& e)
   {

@@ -18,25 +18,27 @@
  */
 
 /*!
- \file terralib/qt/widgets/srs/SRSManagerDialog.h
+ \file terralib/srs/qt/SRSManagerDialog.h
  
  \brief A dialog used to manage Spatial Reference Systems for coordinates.
  */
 
-#ifndef __TERRALIB_QT_WIDGETS_SRS_INTERNAL_SRSMANAGERDIALOG_H
-#define __TERRALIB_QT_WIDGETS_SRS_INTERNAL_SRSMANAGERDIALOG_H
+#ifndef __TERRALIB_SRS_INTERNAL_QT_SRSMANAGERDIALOG_H
+#define __TERRALIB_SRS_INTERNAL_QT_SRSMANAGERDIALOG_H
 
-  // TerraLib
+// TerraLib
 #include "../Config.h"
 
-  // Qt
+// Qt
+#include <QtGui/QTableWidgetItem>
 #include <QtGui/QTreeWidgetItem>
 #include <QtGui/QDialog>
+#include <QStringList>
 
-  //STL
+//STL
 #include <string>
 
- // Forward declaraion
+// Forward declaraion
 namespace Ui { class SRSManagerDialogForm; }
 
 namespace te
@@ -73,7 +75,7 @@ namespace te
         /*!
          \brief Returns the selected SRS in the window. 
          \return a const pair <srid,auth_name> reference, with an SRS identification given by an authority. If the user doesn't
-                select a SRS the pair will have a TE_UNKNOW_SRS and an empty auth_name.
+         select a SRS the pair will have a TE_UNKNOW_SRS and an empty auth_name.
          */
         const std::pair<int, std::string>& getSelectedSRS() const;
         
@@ -88,28 +90,25 @@ namespace te
         static std::pair<int, std::string> getSRS(QWidget* parent, const QString& title = "");
         
         
-      protected slots:
+        protected slots:
         
         void onSRSTreeWidgetItemClicked(QTreeWidgetItem* , int);
-        void onMoreInfoToolButtonClicked();
-        void onAddSRSToolButtonClicked();
         void onOkPushButtonClicked();
         void onCancelPushButtonClicked();
         void onHelpPushButtonClicked();
-        void onFindSRSPushButtonClicked();
         void onSearchLineEditTextChanged(const QString& text);
+        void onSRSRecentTableWidgetItemClicked(QTableWidgetItem*);
         
       private:
         
         void filter(const QList<QTreeWidgetItem*>& itens);
         
-        Ui::SRSManagerDialogForm* m_ui;   //!< Dialog form.   
-        te::qt::widgets::SRSDialog* m_srsDiag;          //!< A single SRS dialog.   
-        std::pair<int, std::string> m_selSrsId;         //!< The selected SRS
+        Ui::SRSManagerDialogForm* m_ui;         //!< Dialog form.    
+        std::pair<int, std::string> m_selSrsId; //!< The selected SRS
+        QStringList m_recentSRS;
       }; 
-      
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SRS_INTERNAL_SRSMANAGERDIALOG_H
+#endif  // __TERRALIB_SRS_INTERNAL_QT_SRSMANAGERDIALOG_H

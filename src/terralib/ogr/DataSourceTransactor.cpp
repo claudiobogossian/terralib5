@@ -43,6 +43,7 @@
 #include "DataSource.h"
 #include "DataSourceTransactor.h"
 #include "DataSetPersistence.h"
+#include "DataSetTypePersistence.h"
 #include "Globals.h"
 #include "Utils.h"
 
@@ -204,7 +205,7 @@ te::da::DataSourceCatalogLoader* te::ogr::DataSourceTransactor::getCatalogLoader
 
 te::da::DataSetTypePersistence* te::ogr::DataSourceTransactor::getDataSetTypePersistence()
 {
-  return 0;
+  return new te::ogr::DataSetTypePersistence(this);
 }
 
 te::da::DataSetPersistence* te::ogr::DataSourceTransactor::getDataSetPersistence()
