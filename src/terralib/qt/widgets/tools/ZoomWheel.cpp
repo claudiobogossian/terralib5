@@ -28,6 +28,7 @@
 #include "ZoomWheel.h"
 
 // Qt
+#include <QtGui/QPixmap>
 #include <QtGui/QWheelEvent>
 
 te::qt::widgets::ZoomWheel::ZoomWheel(te::qt::widgets::MapDisplay* display, const double& zoomFactor, QObject* parent) 
@@ -51,6 +52,9 @@ bool te::qt::widgets::ZoomWheel::eventFilter(QObject* watched, QEvent* e)
       QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(e);
       wheelEvent->delta() > 0 ? setZoomType(In) : setZoomType(Out);
       
+      QPixmap* draft = m_display->getDraftPixmap();
+      draft->fill(Qt::transparent);
+
       applyZoom();
 
       return true;

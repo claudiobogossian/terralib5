@@ -92,38 +92,6 @@ namespace te
           QColor getColor();
 
           /*!
-            \brief Adds the objects in the group.
-
-            \param oIds The objects ids to be inserted. This DOES TAKES the ownership of \a oId.
-          */
-          virtual void addObjects(te::da::ObjectIdSet* oIds);
-
-          /*!
-            \brief Adds a single object id to the set.
-
-            \param oId The object id to be inserted. This DOES TAKES the ownership of \a oId.
-          */
-          virtual void addObject(te::da::ObjectId* oId);
-
-          /*!
-            \brief Adds a table row to the Objects Id set.
-
-            \param row The table row.
-          */
-          virtual void addObject(const int& row);
-
-          /*!
-            \brief Adds the table rows to the Objects Id set.
-
-            \param initRow The begin row.
-
-            \param endRow The end row.
-
-            \note The \a initRow must to be less than \a endRow.
-          */
-          virtual void addObjects(const int& initRow, const int& endRow);
-
-          /*!
             \brief Sets the current data set being used. This method DOES NOT take the ownership of the \a dset.
 
             \param dset The DataSet to be used.
@@ -133,19 +101,14 @@ namespace te
           /*!
             \brief Sets the object id set. It WILL TAKE the ownership of the \a objs.
           */
-          virtual void setObjectIdSet(te::da::ObjectIdSet* objs);
-
-          /*!
-            \brief Removes all selected ids.
-          */
-          virtual void clearSelected();
+          virtual void setObjectIdSet(const te::da::ObjectIdSet* objs);
 
           /*!
             \brief Returns the identifiers of the rows highlighted.
 
             \return The identifiers of the highlighted rows;
           */
-          virtual std::vector<te::da::ObjectId*> getSelected();
+          virtual const te::da::ObjectIdSet* getSelected() const;
 
           /*!
             \brief Sets the promoter being used.
@@ -160,7 +123,7 @@ namespace te
 
           QColor m_color;               //!< Highlight color.
 
-          te::da::ObjectIdSet* m_objs;  //!< Identifiers of the highlight object.
+          const te::da::ObjectIdSet* m_objs;  //!< Identifiers of the highlight object.
 
           te::da::DataSet* m_dset;      //!< Pointer to the DataSet being used.
 

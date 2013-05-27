@@ -195,7 +195,7 @@ namespace te
 
     TEMYSQLEXPORT std::string GetSQLValue(const te::dt::Property* p, std::size_t propertyPos, te::da::DataSet* d, sql::mysql::MySQL_Connection* conn);
 
-    TEMYSQLEXPORT std::string GetSQLBindValues(const te::da::DataSetType* dt);
+    TEMYSQLEXPORT std::string GetSQLBindValues(const te::da::DataSet* dataset);
 
     TEMYSQLEXPORT std::string GetSQLUpdateValues(const te::da::DataSetType* dt, te::da::DataSet* dataset, const std::vector<std::size_t>& propertiesPos, sql::mysql::MySQL_Connection* conn);
 

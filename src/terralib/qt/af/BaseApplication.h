@@ -36,6 +36,7 @@
 #include <boost/noncopyable.hpp>
 
 // Qt
+#include <QtGui/QLineEdit>
 #include <QtGui/QMainWindow>
 
 // Forward declarations
@@ -43,11 +44,6 @@ namespace te
 {
   namespace qt
   {
-    namespace widgets
-    {
-// Forward declarations
-      class DataSetTableDockWidget;
-    }
 
     namespace af
     {
@@ -56,7 +52,7 @@ namespace te
       class LayerExplorer;
       class MapDisplay;
       class Project;
-      class TabularViewer;
+      class DataSetTableDockWidget;
 
       namespace evt
       {
@@ -127,6 +123,8 @@ namespace te
 
           void onInfoToggled(bool checked);
 
+          void onSelectionToggled(bool checked);
+
           void onMeasureDistanceToggled(bool checked);
 
           void onMeasureAreaToggled(bool checked);
@@ -137,7 +135,7 @@ namespace te
 
           void showProgressDockWidget();
 
-          void onLayerTableClose(te::qt::widgets::DataSetTableDockWidget* wid);
+          void onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid);
 
           void onFullScreenToggled(bool checked);
 
@@ -162,6 +160,8 @@ namespace te
           virtual void initMenus();
 
           virtual void initToolbars();
+
+          virtual void initStatusBar();
 
           virtual void initSlotsConnections();
 
@@ -225,13 +225,16 @@ namespace te
           QAction* m_mapPreviousExtent;
           QAction* m_mapNextExtent;
           QAction* m_mapInfo;
+          QAction* m_mapSelection;
           QAction* m_mapMeasureDistance;
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
           QAction* m_mapStopDraw;
 
           QWidget* m_centralwidget;
-          
+
+          QLineEdit* m_mapSRIDLineEdit;
+          QLineEdit* m_coordinateLineEdit;
 
           QMenuBar* m_menubar;
           //QMenu* m_editMenu;
@@ -256,9 +259,8 @@ namespace te
 // Well known Widgets
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
-          TabularViewer* m_viewer;
 
-          std::vector<te::qt::widgets::DataSetTableDockWidget*> m_tableDocks;
+          std::vector<DataSetTableDockWidget*> m_tableDocks;
 
 // Project
           Project* m_project;

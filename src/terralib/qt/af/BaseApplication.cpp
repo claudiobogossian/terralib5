@@ -27,6 +27,7 @@
 #include "../../common/progress/ProgressManager.h"
 #include "../../common/progress/TaskProgress.h"
 #include "../../common/SystemApplicationSettings.h"
+#include "../../common/STLUtils.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
 #include "../../maptools/Utils.h"
@@ -52,16 +53,16 @@
 #include "../widgets/progress/ProgressViewerWidget.h"
 #include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/se/RasterVisualDockWidget.h"
-#include "../widgets/table/DataSetTableDockWidget.h"
 #include "../widgets/tools/Info.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
+#include "../widgets/tools/Selection.h"
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
 #include "../widgets/srs/SRSManagerDialog.h"
+#include "connectors/DataSetTableDockWidget.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
-#include "connectors/TabularViewer.h"
 #include "events/LayerEvents.h"
 #include "events/ProjectEvents.h"
 #include "events/ApplicationEvents.h"
@@ -98,9 +99,22 @@
 // Boost
 #include <boost/format.hpp>
 
-te::qt::widgets::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::widgets::DataSetTableDockWidget*>& docs)
+te::map::AbstractLayerPtr FindLayerInProject(te::map::AbstractLayer* layer, te::qt::af::Project* proj)
 {
-  std::vector<te::qt::widgets::DataSetTableDockWidget*>::const_iterator it;
+  std::list<te::map::AbstractLayerPtr> layers = proj->getLayers();
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+
+  for(it=layers.begin(); it!=layers.end(); ++it)
+    if(it->get()->getId() == layer->getId())
+      return *it;
+
+  return 0;
+}
+
+te::qt::af::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::af::DataSetTableDockWidget*>& docs)
+{
+  std::vector<te::qt::af::DataSetTableDockWidget*>::const_iterator it;
 
   for(it=docs.begin(); it!=docs.end(); ++it)
     if((*it)->getLayer() == layer)
@@ -109,11 +123,20 @@ te::qt::widgets::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLay
   return 0;
 }
 
+void CloseAllTables(std::vector<te::qt::af::DataSetTableDockWidget*>& tables)
+{
+  std::vector<te::qt::af::DataSetTableDockWidget*>::iterator it;
+
+  for(it=tables.begin(); it!=tables.end(); ++it)
+    (*it)->close();
+
+  tables.clear();
+}
+
 te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
     m_explorer(0),
     m_display(0),
-    m_viewer(0),
     m_project(0),
     m_controller(0)
 {
@@ -160,7 +183,6 @@ te::qt::af::BaseApplication::~BaseApplication()
 {
   delete m_explorer;
   delete m_display;
-  delete m_viewer;
   delete m_project;
   delete m_progressDockWidget;
 
@@ -241,45 +263,23 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
     break;
 
     case te::qt::af::evt::TOOLBAR_ADDED:
-      {
-        te::qt::af::evt::ToolBarAdded* ev = static_cast<te::qt::af::evt::ToolBarAdded*>(evt);
-        QMainWindow::addToolBar(Qt::TopToolBarArea, ev->m_toolbar);
-      }
+    {
+      te::qt::af::evt::ToolBarAdded* e = static_cast<te::qt::af::evt::ToolBarAdded*>(evt);
+      QMainWindow::addToolBar(Qt::TopToolBarArea, e->m_toolbar);
+    }
     break;
 
-
+    case te::qt::af::evt::COORDINATE_TRACKED:
+    {
+      te::qt::af::evt::CoordinateTracked* e = static_cast<te::qt::af::evt::CoordinateTracked*>(evt);
+      QString text = "(" + QString::number(e->m_x, 'f', 5) + " , " + QString::number(e->m_y, 'f', 5) + ")";
+      m_coordinateLineEdit->setText(text);
+    }
+    break;
 
     default:
-    break;
+      break;
   }
-  //{
-  //  case te::qt::af::evt::NEW_TOOLBAR :
-  //  break;
-
-  //  case te::qt::af::evt::TRACK_COORDINATE:
-  //  {
-  //    te::qt::af::TrackedCoordinate* e = static_cast<te::qt::af::TrackedCoordinate*>(evt);
-  //    QString text = tr("Coordinates: ") + "(" + QString::number(e->m_pos.x()) + " , " + QString::number(e->m_pos.y()) + ")";
-  //    QStatusBar* sb = statusBar();
-  //    sb->showMessage(text);
-  //  }
-  //  break;
-
-  //  //PROVISORIO
-  //  case te::qt::af::evt::LAYER_SELECTED:
-  //  {
-  //    te::qt::af::LayerSelected* e = static_cast<te::qt::af::LayerSelected*>(evt);
-  //    
-  //    if(e->m_layer->getType() == "RASTERLAYER")
-  //    {
-  //      m_rasterVisualDock->setRasterLayer(dynamic_cast<te::map::RasterLayer*>(e->m_layer));
-  //    }
-  //  }
-  //  break;
-
-  //  default :
-  //  break;
-  //}
 }
 
 void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
@@ -522,22 +522,24 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
     return;
   }
 
-  te::map::AbstractLayer* lay = (*layers.begin())->getLayer().get();
+  te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
 
-  te::qt::widgets::DataSetTableDockWidget* doc = GetLayerDock(lay, m_tableDocks);
+  te::qt::af::DataSetTableDockWidget* doc = GetLayerDock(lay.get(), m_tableDocks);
 
   if(doc == 0)
   {
-    doc = new te::qt::widgets::DataSetTableDockWidget(this);
-    doc->setLayer(lay);
+    doc = new te::qt::af::DataSetTableDockWidget(this);
+    doc->setLayer(lay.get());
     addDockWidget(Qt::BottomDockWidgetArea, doc);
 
-    connect (doc, SIGNAL(closed(te::qt::widgets::DataSetTableDockWidget*)), SLOT(onLayerTableClose(te::qt::widgets::DataSetTableDockWidget*)));
+    connect (doc, SIGNAL(closed(te::qt::af::DataSetTableDockWidget*)), SLOT(onLayerTableClose(te::qt::af::DataSetTableDockWidget*)));
 
     if(!m_tableDocks.empty())
       tabifyDockWidget(m_tableDocks[m_tableDocks.size()-1], doc);
   
     m_tableDocks.push_back(doc);
+
+    ApplicationController::getInstance().addListener(doc);
   }
 
   doc->show();
@@ -558,6 +560,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
     te::qt::widgets::HistogramDialog dlg(dataset, this);
+    dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -580,7 +583,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
     te::qt::widgets::ScatterDialog dlg(dataset, this);
-
+    dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -599,6 +602,10 @@ void te::qt::af::BaseApplication::onMapSRIDTriggered()
 
   std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
   m_display->getDisplay()->setSRID(srid.first);
+
+  QString sridText(srid.second.c_str());
+  sridText += ":" + QString::number(srid.first);
+  m_mapSRIDLineEdit->setText(sridText);
 }
 
 void te::qt::af::BaseApplication::onDrawTriggered()
@@ -664,6 +671,15 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
   m_display->setCurrentTool(info);
 }
 
+void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
+{
+  if(!checked)
+    return;
+
+  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), m_project->getLayers());
+  m_display->setCurrentTool(selection);
+}
+
 void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
 {
   if(!checked)
@@ -701,9 +717,9 @@ void te::qt::af::BaseApplication::showProgressDockWidget()
   m_progressDockWidget->setVisible(true);
 }
 
-void te::qt::af::BaseApplication::onLayerTableClose(te::qt::widgets::DataSetTableDockWidget* wid)
+void te::qt::af::BaseApplication::onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid)
 {
-  std::vector<te::qt::widgets::DataSetTableDockWidget*>::iterator it;
+  std::vector<DataSetTableDockWidget*>::iterator it;
 
   for(it=m_tableDocks.begin(); it!=m_tableDocks.end(); ++it)
     if(*it == wid)
@@ -711,6 +727,8 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::widgets::DataSetTabl
 
   if(it != m_tableDocks.end())
     m_tableDocks.erase(it);
+
+  ApplicationController::getInstance().removeListener(wid);
 }
 
 void te::qt::af::BaseApplication::onFullScreenToggled(bool checked)
@@ -723,6 +741,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
   try
   {
     checkProjectSave();
+
+    CloseAllTables(m_tableDocks);
 
     Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
 
@@ -787,6 +807,8 @@ void te::qt::af::BaseApplication::checkProjectSave()
 
 void te::qt::af::BaseApplication::newProject()
 {
+  CloseAllTables(m_tableDocks);
+
   delete m_project;
 
   m_project = new Project;
@@ -859,9 +881,9 @@ void te::qt::af::BaseApplication::makeDialog()
 // 2. Map Display
   te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512), this);
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
-  map->setMouseTracking(true);
-
   m_display = new te::qt::af::MapDisplay(map);
+
+  initStatusBar();
 
 // 3. Data Table
 //  te::qt::widgets::TabularViewer* view = new te::qt::widgets::TabularViewer(this);
@@ -900,7 +922,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
 // Progress support
   te::qt::widgets::ProgressViewerBar* pvb = new te::qt::widgets::ProgressViewerBar(this);
-  pvb->setFixedWidth(250);
+  pvb->setFixedWidth(220);
   te::common::ProgressManager::getInstance().addViewer(pvb);
 
   te::qt::widgets::ProgressViewerWidget* pvw = new te::qt::widgets::ProgressViewerWidget(this);
@@ -912,7 +934,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
   m_progressDockWidget = new QDockWidget(this);
   m_progressDockWidget->setWidget(pvw);
-  m_progressDockWidget->setMinimumWidth(250);
+  m_progressDockWidget->setMinimumWidth(220);
   m_progressDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
   m_progressDockWidget->setWindowTitle(tr("Tasks Progress"));
   addDockWidget(Qt::RightDockWidgetArea, m_progressDockWidget);
@@ -1031,6 +1053,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapPreviousExtent, "edit-undo", "Map.Previous Extent", tr("&Previous Extent"), tr(""), true, false, false, m_menubar);
   initAction(m_mapNextExtent, "edit-redo", "Map.Next Extent", tr("&Next Extent"), tr(""), true, false, false, m_menubar);
   initAction(m_mapInfo, "pointer-info", "Map.Info", tr("&Info"), tr(""), true, true, true, m_menubar);
+  initAction(m_mapSelection, "pointer-selection", "Map.Selection", tr("&Selection"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, false, m_menubar);
   initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, false, m_menubar);
   initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, false, m_menubar);
@@ -1046,6 +1069,7 @@ void te::qt::af::BaseApplication::initActions()
   mapToolsGroup->addAction(m_mapMeasureArea);
   mapToolsGroup->addAction(m_mapMeasureAngle);
   mapToolsGroup->addAction(m_mapInfo);
+  mapToolsGroup->addAction(m_mapSelection);
 }
 
 void te::qt::af::BaseApplication::initMenus()
@@ -1169,6 +1193,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapInfo);
   m_mapMenu->addSeparator();
+  m_mapMenu->addAction(m_mapSelection);
+  m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapMeasureDistance);
   m_mapMenu->addAction(m_mapMeasureArea);
   m_mapMenu->addAction(m_mapMeasureAngle);
@@ -1264,16 +1290,44 @@ void te::qt::af::BaseApplication::initToolbars()
   //m_mapToolBar->addAction(m_mapPreviousExtent);
   //m_mapToolBar->addAction(m_mapNextExtent);
 
-  QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
-  stopDrawToolButton->setDefaultAction(m_mapStopDraw);
-  m_statusbar->addPermanentWidget(stopDrawToolButton);
-
 //  m_viewToolBarsMenu->addAction(m_mapToolBar->toggleViewAction());
 
 // registering the toolbars
   //ApplicationController::getInstance().registerToolBar(m_fileToolBar->objectName(), m_fileToolBar);
   ////ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
   //ApplicationController::getInstance().registerToolBar(m_mapToolBar->objectName(), m_mapToolBar);
+}
+
+void te::qt::af::BaseApplication::initStatusBar()
+{
+  // Map SRID action
+  QToolButton* mapSRIDToolButton = new QToolButton(m_statusbar);
+  mapSRIDToolButton->setDefaultAction(m_mapSRID);
+  m_statusbar->addPermanentWidget(mapSRIDToolButton);
+
+  // Map SRID information
+  m_mapSRIDLineEdit = new QLineEdit(m_statusbar);
+  m_mapSRIDLineEdit->setFixedWidth(120);
+  m_mapSRIDLineEdit->setAlignment(Qt::AlignHCenter);
+  m_mapSRIDLineEdit->setEnabled(false);
+
+  int srid = m_display->getDisplay()->getSRID();
+  srid != TE_UNKNOWN_SRS ? m_mapSRIDLineEdit->setText("EPSG:" + QString::number(srid)) : m_mapSRIDLineEdit->setText(tr("Unknown SRS"));
+  m_statusbar->addPermanentWidget(m_mapSRIDLineEdit);
+
+  // Coordinate Line Edit
+  m_coordinateLineEdit = new QLineEdit(m_statusbar);
+  m_coordinateLineEdit->setFixedWidth(220);
+  m_coordinateLineEdit->setAlignment(Qt::AlignHCenter);
+  m_coordinateLineEdit->setReadOnly(true);
+  m_coordinateLineEdit->setFocusPolicy(Qt::NoFocus);
+  m_coordinateLineEdit->setText(tr("Coordinates"));
+  m_statusbar->addPermanentWidget(m_coordinateLineEdit);
+
+  // Stop draw action
+  QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
+  stopDrawToolButton->setDefaultAction(m_mapStopDraw);
+  m_statusbar->addPermanentWidget(stopDrawToolButton);
 }
 
 void te::qt::af::BaseApplication::initSlotsConnections()
@@ -1302,6 +1356,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapPan, SIGNAL(toggled(bool)), SLOT(onPanToggled(bool)));
   connect(m_mapZoomExtent, SIGNAL(triggered()), SLOT(onZoomExtentTriggered()));
   connect(m_mapInfo, SIGNAL(toggled(bool)), SLOT(onInfoToggled(bool)));
+  connect(m_mapSelection, SIGNAL(toggled(bool)), SLOT(onSelectionToggled(bool)));
   connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
   connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
   connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -561,7 +561,7 @@ namespace te
 
         case PG_CHAR_TYPE:
           p = new te::dt::SimpleProperty(name, te::dt::CHAR_TYPE, attNotNull, defaultValue, attNum);
-          break;
+        break;
 
         default:
           p = new te::dt::SimpleProperty(name, te::dt::UNKNOWN_TYPE, attNotNull, defaultValue, attNum);
@@ -955,10 +955,6 @@ namespace te
       \return An AND connected expression with bindable parameters ($n) that can be used in WHERE expressions.
     */
     std::string GetBindableWhereSQL(const std::vector<te::dt::Property*>& properties, const std::size_t offset = 0);
-
-    std::string GetSQLValueNames(const te::da::DataSetType* dt);
-
-    std::string GetSQLValueNames(const te::da::DataSet* dataset);
 
     std::string GetSQLBindValues(std::size_t nproperties);
 

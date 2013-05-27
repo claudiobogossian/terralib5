@@ -38,6 +38,7 @@ te::qt::widgets::RasterNavigatorWizardPage::RasterNavigatorWizardPage(QWidget* p
   QGridLayout* layout = new QGridLayout(this);
   m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(this));
   layout->addWidget(m_navigator.get(), 0, 0);
+  layout->setContentsMargins(0,0,0,0);
 
 //configure page
   this->setTitle(tr("Raster Navigator"));

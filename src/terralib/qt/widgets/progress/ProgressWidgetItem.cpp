@@ -63,9 +63,9 @@ te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int tas
   m_button->setFixedHeight(23);
   m_button->setFixedWidth(23);
   
-  m_frameGridLayout->addWidget(m_label, 0, 0);
-  m_frameGridLayout->addWidget(m_progressBar, 1, 0);
-  m_frameGridLayout->addWidget(m_button, 1, 1, 1, 1, Qt::AlignCenter);
+  m_frameGridLayout->addWidget(m_label, 0, 0, 1, 2);
+  m_frameGridLayout->addWidget(m_progressBar, 1, 1);
+  m_frameGridLayout->addWidget(m_button, 1, 0);
 
   // set default range
   totalSteps == 0 ? m_progressBar->setRange(0, 0) : m_progressBar->setRange(0, 100);

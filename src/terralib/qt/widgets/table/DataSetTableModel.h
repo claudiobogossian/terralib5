@@ -42,6 +42,7 @@ namespace te
   {
     class DataSet;
     class ObjectId;
+    class ObjectIdSet;
   }
 
   namespace qt
@@ -100,14 +101,14 @@ namespace te
 
             \parama oids The identifiers of the rows to be promoted.
           */
-          void promote(const std::vector<te::da::ObjectId*>& oids);
+          void promote(const te::da::ObjectIdSet* oids);
 
           /*!
-            \brief Returns true if promotion is enabled, false otherwise.
+            \brief Sort data using columns \a cols.
 
-            \return True if promotion is enabled and false otherwise.
+            \param cols Vector of positions of the columns to use on sorting.
           */
-          bool isPromotionEnabled();
+          void orderByColumns(const std::vector<int>& cols);
 
           /*!
             \brief Returns the pointer to the promoter being used.
@@ -118,7 +119,28 @@ namespace te
           */
           Promoter* getPromoter();
 
+          /*!
+            \brief Shows an icon for indentify the columns that are used for identify objects.
+          */
           void showOIdsVisible(const bool& visible);
+
+          /*!
+            \brief Returns the ObjectIdSet begining with row \a initRow and ending in \a finalRow.
+
+            \param initRow Initial row.
+
+            \param endRow Final row.
+
+            \note The caller WILL TAKE the ownership of the ObjectIdSet returned.
+          */
+          te::da::ObjectIdSet* getObjectIdSet (const int& initRow, const int& finalRow);
+
+          /*!
+            \brief Enable or disable the dataset presentation.
+
+            \param enabled True for show dataSet on table, false to hide it.
+          */
+          void setEnabled(const bool& enabled);
 
           /*!
             \name QAbstractTableModel re-implementation methods.
@@ -151,6 +173,8 @@ namespace te
           Promoter* m_promoter;               //!< Promoter to be used.
 
           bool m_OIdsVisible;                 //!< Oids icon visibility.
+
+          bool m_enabled;
       };
     }
   }

@@ -45,14 +45,14 @@
       \class Matrix
       \brief A generic template matrix
       */
-      template< typename ElementType >
+      template< typename TemplateElementType >
       class Matrix {
         public :
           
           /*!
           \brief Public matrix element type definition.
           */          
-          typedef ElementType ElementTypeT;
+          typedef TemplateElementType ElementTypeT;
           
           /*!
           \brief Memory polycy.
@@ -77,7 +77,7 @@
           
           Matrix();      
 
-          Matrix( const Matrix< ElementType >& external );
+          Matrix( const Matrix< TemplateElementType >& external );
 
           virtual ~Matrix();
           
@@ -188,8 +188,8 @@
           \param external External instance reference.
           \return A reference to the current matrix.
           */
-          const Matrix< ElementType >& operator=( 
-            const Matrix< ElementType >& external );
+          const Matrix< TemplateElementType >& operator=( 
+            const Matrix< TemplateElementType >& external );
 
           /*!
           \brief Operator () overload.
@@ -198,7 +198,8 @@
           \param column Column number.
           \return A reference to the required element.
           */
-          inline ElementType& operator()( const unsigned int& line, 
+          inline TemplateElementType& operator()( 
+            const unsigned int& line, 
             const unsigned int& column )
           {
             TERP_DEBUG_TRUE_OR_THROW( ( column < m_totalColumns ),
@@ -214,7 +215,8 @@
           \param column Column number.
           \return A const reference to the required element.
           */
-          inline const ElementType& operator()( const unsigned int& line, 
+          inline const TemplateElementType& operator()( 
+            const unsigned int& line, 
             const unsigned int& column ) const
           {
             TERP_DEBUG_TRUE_OR_THROW( ( column < m_totalColumns ),
@@ -234,7 +236,8 @@
           \note Concurrent thread access to this method is guaranteed
           if RAMMemPol policy method is used.
           */
-          inline ElementType* operator[]( const unsigned int& line )
+          inline TemplateElementType* operator[]( 
+            const unsigned int& line )
           {
             return getScanLine( line );
           };
@@ -250,7 +253,8 @@
           \note Concurrent thread access to this method is guaranteed
           if RAMMemPol policy method is used.       
           */
-          inline ElementType const* operator[]( const unsigned int& line ) const
+          inline TemplateElementType const* operator[]( 
+            const unsigned int& line ) const
           {
             return getScanLine( line );
           };      
@@ -282,11 +286,13 @@
           {
             public :
               
-              FILE* m_filePtr;
-              unsigned int m_fileOff;
+              FILE* m_filePtr; //!< The file pointer.
               
-              DiskLineInfo() : m_filePtr( 0 ), m_fileOff( 0 ) {};
-              ~DiskLineInfo() {};
+              unsigned int m_fileOff; //!< The offset within the file.
+              
+              DiskLineInfo();
+              
+              ~DiskLineInfo();
           };
           
           /*!
@@ -296,16 +302,11 @@
           {
             public :
               
-              FILE* m_filePtr;
+              FILE* m_filePtr; //!< The file pointer.
               
-              OpenDiskFileHandler() : m_filePtr( 0 ) {};          
-              ~OpenDiskFileHandler() 
-              {
-                if( m_filePtr ) 
-                {
-                  fclose( m_filePtr );
-                }
-              };
+              OpenDiskFileHandler();
+              
+              ~OpenDiskFileHandler();
           };      
           
           /*!
@@ -343,14 +344,14 @@
           /*!
           \brief A pointer to the current swap tile.
           */        
-          mutable ElementType* m_currentSwapTilePtr;
+          mutable TemplateElementType* m_currentSwapTilePtr;
           
-          std::vector< ElementType* > m_memoryblocksHandler;
+          std::vector< TemplateElementType* > m_memoryblocksHandler;
 
           /*!
           \brief A vector with pointers to all lines.
           */
-          mutable std::vector< ElementType* > m_allLinesPtrsVec;     
+          mutable std::vector< TemplateElementType* > m_allLinesPtrsVec;     
           
           /*!
           \brief A vector with open disk files handler.
@@ -371,7 +372,7 @@
           \brief An auxiliar line used when swapping
           data to/from disk.
           */              
-          mutable std::auto_ptr< ElementType > m_swapMemoryBlockHandler;      
+          mutable std::auto_ptr< TemplateElementType > m_swapMemoryBlockHandler;      
         
           /*!
           \brief Reset the internal variables to the initial state.
@@ -396,7 +397,8 @@
           \note Concurrent thread access to this method is guaranteed
           if RAMMemPol policy method is used.       
           */
-          ElementType* getScanLine( const unsigned int& line ) const;
+         TemplateElementType* getScanLine( 
+            const unsigned int& line ) const;
             
           /*!
           \brief Create a new disk file.
@@ -406,9 +408,36 @@
           */
           bool createNewDiskFile( unsigned long int size, FILE** fileptr ) const;      
       };
+      
+      template< typename TemplateElementType >
+      Matrix< TemplateElementType >::DiskLineInfo::DiskLineInfo()
+      {
+        m_filePtr = 0;
+        m_fileOff = 0;
+      }
+      
+      template< typename TemplateElementType >
+      Matrix< TemplateElementType >::DiskLineInfo::~DiskLineInfo()
+      {        
+      }      
+      
+      template< typename TemplateElementType >
+      Matrix< TemplateElementType >::OpenDiskFileHandler::OpenDiskFileHandler()
+      {
+        m_filePtr = 0;
+      }
+      
+      template< typename TemplateElementType >
+      Matrix< TemplateElementType >::OpenDiskFileHandler::~OpenDiskFileHandler()
+      {
+        if( m_filePtr ) 
+        {
+          fclose( m_filePtr );
+        }
+      }
 
-      template< typename ElementType >
-      void Matrix< ElementType >::init()
+      template< typename TemplateElementType >
+      void Matrix< TemplateElementType >::init()
       {
         m_maxTmpFileSize = 2ul * 1024ul * 1024ul * 1024ul;;
         m_maxMemPercentUsage = 40;
@@ -419,57 +448,57 @@
         m_currentSwapTilePtr = 0;
       }
 
-      template< typename ElementType >
-      Matrix< ElementType >::Matrix()
+      template< typename TemplateElementType >
+      Matrix< TemplateElementType >::Matrix()
       {
         init();
       }    
       
-      template< typename ElementType >
-      Matrix< ElementType >::Matrix( 
-        const Matrix< ElementType >& external )
+      template< typename TemplateElementType >
+      Matrix< TemplateElementType >::Matrix( 
+        const Matrix< TemplateElementType >& external )
       {
         init();
         
         operator=( external );
       }
 
-      template< typename ElementType >
-        Matrix< ElementType >::~Matrix()
+      template< typename TemplateElementType >
+        Matrix< TemplateElementType >::~Matrix()
       {
         clear();
       }
       
-      template< typename ElementType >
-      void Matrix< ElementType >::reset()
+      template< typename TemplateElementType >
+      void Matrix< TemplateElementType >::reset()
       {
-        reset( 0, 0, m_memoryPolicy, m_maxTmpFileSize, m_maxMemPercentUsage );
+        clear();
       }  
       
-      template< typename ElementType >
-      void Matrix< ElementType >::reset( MemoryPolicy memoryPolicy )
+      template< typename TemplateElementType >
+      void Matrix< TemplateElementType >::reset( MemoryPolicy memoryPolicy )
       {
         reset( 0, 0, memoryPolicy, m_maxTmpFileSize, m_maxMemPercentUsage );
       }   
       
-      template< typename ElementType >
-      bool Matrix< ElementType >::reset( unsigned int lines, 
+      template< typename TemplateElementType >
+      bool Matrix< TemplateElementType >::reset( unsigned int lines, 
         unsigned int columns )
       {
         return reset( lines, columns, m_memoryPolicy, m_maxTmpFileSize,
           m_maxMemPercentUsage );
       } 
       
-      template< typename ElementType >
-      bool Matrix< ElementType >::reset( unsigned int lines, 
+      template< typename TemplateElementType >
+      bool Matrix< TemplateElementType >::reset( unsigned int lines, 
         unsigned int columns, MemoryPolicy memoryPolicy )
       {
         return reset( lines, columns, memoryPolicy, m_maxTmpFileSize, 
           m_maxMemPercentUsage );
       }
       
-      template< typename ElementType >
-      bool Matrix< ElementType >::reset( unsigned int lines, 
+      template< typename TemplateElementType >
+      bool Matrix< TemplateElementType >::reset( unsigned int lines, 
         unsigned int columns, MemoryPolicy memoryPolicy, 
         unsigned char maxMemPercentUsage )
       {
@@ -477,8 +506,8 @@
           maxMemPercentUsage );
       }
       
-      template< typename ElementType >
-      bool Matrix< ElementType >::reset( unsigned int lines, 
+      template< typename TemplateElementType >
+      bool Matrix< TemplateElementType >::reset( unsigned int lines, 
         unsigned int columns, MemoryPolicy memoryPolicy,
         unsigned long int maxTmpFileSize,
         unsigned char maxMemPercentUsage )
@@ -503,7 +532,7 @@
             m_totalColumns = columns;    
             
             const unsigned int lineSizeBytes = (unsigned int)(
-              sizeof( ElementType ) * m_totalColumns );
+              sizeof( TemplateElementType ) * m_totalColumns );
                   
             // Allocating the lines pointers vectpr
             
@@ -511,16 +540,21 @@
             
             if( m_memoryPolicy == RAMMemPol )
             {
+              m_ramLinesIndexesVec.resize( m_totalLines, 0 );
               m_memoryblocksHandler.resize( m_totalLines );
+              
+              TemplateElementType* newLinePtr = 0;
               
               for( unsigned int allLinesPtrsVecIdx = 0 ; allLinesPtrsVecIdx <
                 m_totalLines ; ++allLinesPtrsVecIdx )
               {
-                m_memoryblocksHandler[ allLinesPtrsVecIdx ] =
-                  new ElementType[ m_totalColumns ];
+                newLinePtr = new TemplateElementType[ m_totalColumns ];
                 
-                m_allLinesPtrsVec[ allLinesPtrsVecIdx ] = 
-                  m_memoryblocksHandler[ allLinesPtrsVecIdx ];
+                m_memoryblocksHandler[ allLinesPtrsVecIdx ] = newLinePtr;
+                
+                m_allLinesPtrsVec[ allLinesPtrsVecIdx ] = newLinePtr;
+                
+                m_ramLinesIndexesVec[ allLinesPtrsVecIdx ] = allLinesPtrsVecIdx;
               }
             }
             else
@@ -528,7 +562,7 @@
             
               // Allocating the swap line pointer
               
-              m_swapMemoryBlockHandler.reset( new ElementType[ m_totalColumns ] );
+              m_swapMemoryBlockHandler.reset( new TemplateElementType[ m_totalColumns ] );
               m_currentSwapTilePtr = m_swapMemoryBlockHandler.get();
             
               // Defining the number of max RAM lines
@@ -551,7 +585,7 @@
                 const double linesMem = ( ((double)m_maxMemPercentUsage) / 100.0 ) *
                   freeVMem;
                   
-                maxRAMLines = (unsigned int)MAX( 1, linesMem / 
+                maxRAMLines = (unsigned int)MAX( 1.0, linesMem / 
                   ((double)lineSizeBytes) );
               }        
               
@@ -563,14 +597,16 @@
               m_ramLinesIndexesVec.resize( ramLinesIndexesVecSize, 0 );
               m_memoryblocksHandler.resize( ramLinesIndexesVecSize );
               
+              TemplateElementType* newLinePtr = 0;
+              
               for( unsigned int allLinesPtrsVecIdx = 0 ; allLinesPtrsVecIdx <
                 ramLinesIndexesVecSize ; ++allLinesPtrsVecIdx )
               {
-                m_memoryblocksHandler[ allLinesPtrsVecIdx ] =  
-                  new ElementType[ m_totalColumns ];
+                newLinePtr = new TemplateElementType[ m_totalColumns ];
                 
-                m_allLinesPtrsVec[ allLinesPtrsVecIdx ] = 
-                  m_memoryblocksHandler[ allLinesPtrsVecIdx ];                
+                m_memoryblocksHandler[ allLinesPtrsVecIdx ] = newLinePtr;
+                
+                m_allLinesPtrsVec[ allLinesPtrsVecIdx ] = newLinePtr;         
                 
                 m_ramLinesIndexesVec[ allLinesPtrsVecIdx ] = allLinesPtrsVecIdx;
               }
@@ -595,15 +631,18 @@
         return true;
       }
       
-      template< typename ElementType >
-      void Matrix< ElementType >::clear()
+      template< typename TemplateElementType >
+      void Matrix< TemplateElementType >::clear()
       {
+        TemplateElementType* linePtr = 0;
         for( unsigned int memoryblocksHandlerIdx = 0 ; memoryblocksHandlerIdx <
           m_memoryblocksHandler.size() ; ++memoryblocksHandlerIdx )
         {
-          if( m_memoryblocksHandler[ memoryblocksHandlerIdx ] )
+          linePtr = m_memoryblocksHandler[ memoryblocksHandlerIdx ];
+          
+          if( linePtr )
           {
-            delete[] ( m_memoryblocksHandler[ memoryblocksHandlerIdx ] );
+            delete[] ( linePtr );
           }
         }
         m_memoryblocksHandler.clear();
@@ -621,29 +660,29 @@
         init();
       }    
       
-      template< typename ElementType >
-      unsigned int Matrix< ElementType >::getLinesNumber() const
+      template< typename TemplateElementType >
+      unsigned int Matrix< TemplateElementType >::getLinesNumber() const
       {
         return m_totalLines;
       }
 
       
-      template< typename ElementType >
-      unsigned int Matrix< ElementType >::getColumnsNumber() const
+      template< typename TemplateElementType >
+      unsigned int Matrix< TemplateElementType >::getColumnsNumber() const
       {
         return m_totalColumns;
       }
       
       
-      template< typename ElementType >
-      bool Matrix< ElementType >::isEmpty() const
+      template< typename TemplateElementType >
+      bool Matrix< TemplateElementType >::isEmpty() const
       {
         return ( m_totalLines == 0 ) ? true : false;
       }      
 
-      template< typename ElementType >
-      const Matrix< ElementType >& Matrix< ElementType >::operator=(
-        const Matrix< ElementType >& external )
+      template< typename TemplateElementType >
+      const Matrix< TemplateElementType >& Matrix< TemplateElementType >::operator=(
+        const Matrix< TemplateElementType >& external )
       {
         TERP_TRUE_OR_THROW( 
           reset( external.m_totalLines, external.m_totalColumns,
@@ -651,8 +690,8 @@
           "Unable to initiate the matrix object" );
         
         unsigned int column = 0;;
-        ElementType const* inLinePtr = 0;
-        ElementType* outLinePtr = 0;
+        TemplateElementType const* inLinePtr = 0;
+        TemplateElementType* outLinePtr = 0;
         
         for( unsigned int line = 0 ; line < m_totalLines ; ++line ) 
         {
@@ -667,33 +706,33 @@
         return *this;
       }
       
-      template< typename ElementType >
-      typename Matrix< ElementType >::MemoryPolicy Matrix< ElementType >::getMemPolicy() const
+      template< typename TemplateElementType >
+      typename Matrix< TemplateElementType >::MemoryPolicy Matrix< TemplateElementType >::getMemPolicy() const
       {
         return m_memoryPolicy;
       }  
       
-      template< typename ElementType >
-      unsigned long int Matrix< ElementType >::getMaxTmpFileSize() const
+      template< typename TemplateElementType >
+      unsigned long int Matrix< TemplateElementType >::getMaxTmpFileSize() const
       {
         return m_maxTmpFileSize;
       }
       
-      template< typename ElementType >
-      unsigned char Matrix< ElementType >::getMaxMemPercentUsage() const
+      template< typename TemplateElementType >
+      unsigned char Matrix< TemplateElementType >::getMaxMemPercentUsage() const
       {
         return m_maxMemPercentUsage;
       }
       
-      template< typename ElementType >
-      bool Matrix< ElementType >::allocateDiskLines( unsigned int startingLineIdx )
+      template< typename TemplateElementType >
+      bool Matrix< TemplateElementType >::allocateDiskLines( unsigned int startingLineIdx )
       {
         const unsigned long int diskLinesNmb = m_totalLines - startingLineIdx;
         
         if( diskLinesNmb )
         {    
           const unsigned long int lineSizeBytes = (unsigned long int)(
-            sizeof( ElementType ) * m_totalColumns );
+            sizeof( TemplateElementType ) * m_totalColumns );
               
           const unsigned long int maxLinesPerFile = ( unsigned long int )
             floor( ( (double)m_maxTmpFileSize ) / ( (double) lineSizeBytes ) );
@@ -758,8 +797,9 @@
         return true;
       }
       
-      template< typename ElementType >
-      ElementType* Matrix< ElementType >::getScanLine( const unsigned int& line ) const
+      template< typename TemplateElementType >
+      TemplateElementType*
+        Matrix< TemplateElementType >::getScanLine( const unsigned int& line ) const
       {
         TERP_DEBUG_TRUE_OR_THROW( line < m_totalLines, "Invalid tile index" );
           
@@ -793,7 +833,7 @@
             
           TERP_DEBUG_TRUE_OR_THROW( m_currentSwapTilePtr, "Internal error" );
           TERP_TRUE_OR_THROW( 1 == fread( (void*)m_currentSwapTilePtr, 
-            (size_t)( sizeof( ElementType ) * m_totalColumns ), 1, inLineData.m_filePtr ),
+            (size_t)( sizeof( TemplateElementType ) * m_totalColumns ), 1, inLineData.m_filePtr ),
             "File read error" )
         
           /* Flushing the choosed tile to disk */
@@ -806,12 +846,12 @@
             "Internal error" );          
           TERP_TRUE_OR_THROW( 1 == fwrite( (void*)m_allLinesPtrsVec[ 
             swapLineIdx ], 
-            (size_t)( sizeof( ElementType ) * m_totalColumns ), 1, 
+            (size_t)( sizeof( TemplateElementType ) * m_totalColumns ), 1, 
             inLineData.m_filePtr ), "File write error" )        
           
           // Updating the tile pointers
           
-          ElementType* linePtr = m_allLinesPtrsVec[ swapLineIdx ];
+          TemplateElementType* linePtr = m_allLinesPtrsVec[ swapLineIdx ];
           
           m_allLinesPtrsVec[ swapLineIdx ] = 0;
           
@@ -838,8 +878,8 @@
         }
       } 
       
-      template< typename ElementType >
-      bool Matrix< ElementType >::createNewDiskFile( unsigned long int size,
+      template< typename TemplateElementType >
+      bool Matrix< TemplateElementType >::createNewDiskFile( unsigned long int size,
         FILE** fileptr ) const
       {
         //(*fileptr) = fopen( filename.c_str(), "wb+" );

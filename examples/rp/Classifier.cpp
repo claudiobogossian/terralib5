@@ -399,9 +399,10 @@ void EMClassifier()
 
 // link specific parameters with chosen implementation
     te::rp::ClassifierEMStrategy::Parameters classifierparameters;
-    classifierparameters.m_numberOfClusters = 5;
-    classifierparameters.m_maxIterations = 150;
-    classifierparameters.m_epsilon = 15;
+    classifierparameters.m_numberOfClusters = 4;
+    classifierparameters.m_maxIterations = 100;
+    classifierparameters.m_maxInputPoints = 1000;
+    classifierparameters.m_epsilon = 15.0;
     classifierparameters.m_clustersMeans = std::vector<std::vector<double> >();
 
     algoInputParameters.m_strategyName = "em";

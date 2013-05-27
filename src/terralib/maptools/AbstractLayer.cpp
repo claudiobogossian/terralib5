@@ -127,6 +127,12 @@ const te::da::ObjectIdSet* te::map::AbstractLayer::getSelected() const
   return m_selected;
 }
 
+void te::map::AbstractLayer::clearSelected()
+{
+  if(m_selected)
+    m_selected->clear();
+}
+
 void te::map::AbstractLayer::deselect(const te::da::ObjectIdSet* oids)
 {
   assert(m_selected);

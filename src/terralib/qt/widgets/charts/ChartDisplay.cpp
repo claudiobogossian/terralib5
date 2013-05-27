@@ -33,7 +33,9 @@
 //Qwt
 #include <qwt_plot_grid.h>
 #include <qwt_text.h>
-
+#include <qwt_plot_panner.h>
+#include <qwt_plot_magnifier.h>
+#include <qwt_plot_zoomer.h>
 //Qt
 #include <QtGui/QPen>
 
@@ -51,6 +53,15 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title) :
   setTitle(title);
   setAutoFillBackground( true );
   setAutoReplot( true );
+
+  // panning with the left mouse button
+  ( void ) new QwtPlotPanner( this->canvas() );
+
+  // zoom in/out with a bounding rectangle
+//  ( void ) new QwtPlotZoomer( this->canvas() );
+
+  // zoom in/out with the wheel
+  ( void ) new QwtPlotMagnifier( this->canvas() );
 }
 
 te::qt::widgets::ChartDisplay::~ChartDisplay()

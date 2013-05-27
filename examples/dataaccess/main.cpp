@@ -46,6 +46,8 @@ int main(int /*argc*/, char** /*argv*/)
 
     LoadModules();
 
+    ObjectId3();
+
     OGRExampleRead();
 
     ORGExampleWrite();

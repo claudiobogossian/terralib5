@@ -393,7 +393,6 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/table/DataSetTableView.h
   ${SRCDIR}/widgets/table/DataSetTableVerticalHeader.h
-  ${SRCDIR}/widgets/table/DataSetTableDockWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/table" MOC)
 

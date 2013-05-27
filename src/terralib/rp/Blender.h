@@ -85,6 +85,7 @@ namespace te
           \param r1ValidDataPolygonPtr A pointer to a polygon (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
           \param r2ValidDataPolygon A pointer to a polygon (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
           \param geomTransformation A pointer transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 pixels ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns), or a null value if only the spatial reference systems must be used.
+          \param raster1HasPrecedence If true, raster 1 valid pixel values will have precedence over raster2  valid pixel values.
           \return true if ok, false on errors
         */
         bool initialize( 
@@ -103,22 +104,22 @@ namespace te
           const std::vector< double >& pixelScales2,
           te::gm::Polygon const * const r1ValidDataPolygonPtr,
           te::gm::Polygon const * const r2ValidDataPolygonPtr,
-          te::gm::GeometricTransformation const * const geomTransformationPtr );
+          te::gm::GeometricTransformation const * const geomTransformationPtr,
+          const bool raster1HasPrecedence );
         
         
         /*!
           \brief Blend a pixel value using the current parameters.
           \param line Line (raster 1 reference).
           \param col Column (raster 1 reference).
-          \param rasterChannelsVecsIdx Vector index (the index to search the correct band/channel for each input raster from raster1ChannelsVec and raster2ChannelsVec).
-          \param value Blended value.
+          \param values Blended values for each band.
           \note The caller of this method must be aware that the returned blended value may be outside the original input rasters valid values range.
         */
-        inline void getBlendedValue( const double& line, const double& col, 
-          const unsigned int& rasterChannelsVecsIdx , double& value )
+        inline void getBlendedValues( const double& line, const double& col, 
+          std::vector< double >& values )
         {
           TERP_DEBUG_TRUE_OR_THROW( m_blendFuncPtr, "Invalid blend function pointer" );
-          (this->*m_blendFuncPtr)( line, col, rasterChannelsVecsIdx, value );
+          (this->*m_blendFuncPtr)( line, col, values );
         };
 
       protected:
@@ -127,11 +128,10 @@ namespace te
           \brief Type definition for the a bleding function pointer.
           \param line Raster 1 Line.
           \param col Raster 1 Column.
-          \param rasterChannelsVecsIdx An index from the internal raster bands vector.
-          \param value Interpolated value.
+          \param values Blended values for each band.
         */      
         typedef void (Blender::*BlendFunctPtr)( const double& line, 
-          const double& col, const unsigned int& rasterChannelsVecsIdx, double& value );         
+          const double& col, std::vector< double >& values );         
 
         BlendMethod m_blendMethod; //!< The blend method to apply.
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
@@ -148,6 +148,7 @@ namespace te
         bool m_rastersHaveDifSRS; //!< True if the input rasters are under distinct SRSs.
         te::rst::Interpolator* m_interp1; //!< Raster 1 interpolator instance pointer.
         te::rst::Interpolator* m_interp2; //!< Raster 2 interpolator instance pointer.        
+        bool m_raster1HasPrecedence; //!< If true, raster 1 valid pixel values will have precedence over raster2  valid pixel values.
         std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
         std::vector< unsigned int > m_raster2Bands; //!< Input raster 2 band indexes to use.
         std::vector< double > m_pixelOffsets1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
@@ -166,6 +167,8 @@ namespace te
         double m_noBlendMethodImp_Point2Line;
         double m_noBlendMethodImp_Point2Col;        
         std::complex< double > m_noBlendMethodImp_cValue;
+        double m_noBlendMethodImp_Value;
+        unsigned int m_noBlendMethodImp_BandIdx;
         
         /*! \brief Reset the instance to its initial default state. */
         void initState();
@@ -177,11 +180,10 @@ namespace te
           \brief Implementation for NoBlendMethod.
           \param line Raster 1 Line.
           \param col Raster 1 Column.
-          \param rasterChannelsVecsIdx Vector index (the index to search the correct band/channel for each input raster from raster1ChannelsVec and raster2ChannelsVec).
-          \param value Blended value.
+          \param values Blended values for each band.
         */
         void noBlendMethodImp( const double& line1, const double& col1,
-          const unsigned int& rasterChannelsVecsIdx, double& value );        
+          std::vector< double >& values );        
 
     };
 

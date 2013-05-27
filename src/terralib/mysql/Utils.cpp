@@ -797,18 +797,18 @@ std::string te::mysql::GetSQLValue(const te::dt::Property* p, std::size_t proper
   return value;
 }
 
-std::string te::mysql::GetSQLBindValues(const te::da::DataSetType* dt)
+std::string te::mysql::GetSQLBindValues(const te::da::DataSet* dataset)
 {
   std::string valueNames("(");
 
-  const std::size_t np = dt->size();
+  const std::size_t np = dataset->getNumProperties();
 
   for(std::size_t i = 0; i < np; ++i)
   {
     if(i != 0)
       valueNames += ",";
 
-    if(dt->getProperty(i)->getType() != te::dt::GEOMETRY_TYPE)
+    if(dataset->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
       valueNames += "?";
     else
       valueNames += "GeomFromWKB(?)";

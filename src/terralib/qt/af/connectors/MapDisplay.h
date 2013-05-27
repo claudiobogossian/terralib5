@@ -32,7 +32,11 @@
 
 // Qt
 #include <QtCore/QObject>
+#include <QtCore/QPoint>
+#include <QtCore/QString>
+#include <QtCore/QMap>
 #include <QtGui/QMenu>
+#include <QtGui/QPixmap>
 
 namespace te
 {
@@ -104,6 +108,10 @@ namespace te
 
         protected slots:
 
+          void onCoordTracked(QPointF& coordinate);
+
+          void onDrawLayersFinished(const QMap<QString, QString>& errors);
+
           /*!
             \brief Listener to the application framewrork events.
 
@@ -113,9 +121,14 @@ namespace te
 
         protected:
 
+          void drawLayerSelection(te::map::AbstractLayer* layer);
+
+        protected:
+
           te::qt::widgets::MapDisplay* m_display; //!< Pointer to a component te::qt::widgets::MapDisplay.
           te::qt::widgets::AbstractTool* m_tool;  //!< Pointer to the current tool being used.
           QMenu m_menu;                           //!< The map display popup menu.
+          QPixmap m_lastDisplayContent;           //!< The last map display content. i.e. a "clean" pixmap.
       };
     }
   }

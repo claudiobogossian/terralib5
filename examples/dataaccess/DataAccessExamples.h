@@ -242,4 +242,6 @@ void ObjectId();
 
 void ObjectId2();
 
+void ObjectId3();
+
 #endif  // __TERRALIB_EXAMPLES_DATAACCESS_INTERNAL_DATAACCESSEXAMPLES_H

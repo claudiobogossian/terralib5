@@ -30,11 +30,13 @@
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
 #include "SegmenterWizard.h"
+#include "SegmenterAdvancedOptionsWizardPage.h"
 #include "SegmenterWizardPage.h"
 #include "LayerSearchWidget.h"
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
+#include "ui_SegmenterAdvancedOptionsWizardPageForm.h"
 
 // STL
 #include <cassert>
@@ -49,7 +51,7 @@ te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Segmenter"));
-  this->setFixedSize(640, 480);
+  this->setFixedSize(640, 580);
 
   addPages();
 }
@@ -95,10 +97,12 @@ void te::qt::widgets::SegmenterWizard::addPages()
 {
   m_layerSearchPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
   m_segmenterPage.reset(new te::qt::widgets::SegmenterWizardPage(this));
+  m_segmenterAdvOptPage.reset(new te::qt::widgets::SegmenterAdvancedOptionsWizardPage(this));
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
 
   addPage(m_layerSearchPage.get());
   addPage(m_segmenterPage.get());
+  addPage(m_segmenterAdvOptPage.get());
   addPage(m_rasterInfoPage.get());
 
   //for contrast only one layer can be selected
@@ -116,6 +120,12 @@ bool te::qt::widgets::SegmenterWizard::execute()
   te::rp::Segmenter algorithmInstance;
 
   te::rp::Segmenter::InputParameters algoInputParams = m_segmenterPage->getInputParams();
+
+  algoInputParams.m_enableThreadedProcessing = m_segmenterAdvOptPage->getForm()->m_enableThreadedProcessingcheckBox->isChecked();
+  algoInputParams.m_maxSegThreads = m_segmenterAdvOptPage->getForm()->m_maximumThreadsNumberLineEdit->text().toUInt();
+  algoInputParams.m_enableBlockProcessing = m_segmenterAdvOptPage->getForm()->m_enableBlockProcessingcheckBox->isChecked();
+  algoInputParams.m_enableBlockMerging = m_segmenterAdvOptPage->getForm()->m_enableBlockMergingCheckBox->isChecked();
+  algoInputParams.m_maxBlockSize = m_segmenterAdvOptPage->getForm()->m_maximumBlockSizeLineEdit->text().toUInt();
 
   te::rp::Segmenter::OutputParameters algoOutputParams;
   algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();

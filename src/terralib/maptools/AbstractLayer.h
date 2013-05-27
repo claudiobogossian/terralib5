@@ -101,28 +101,28 @@ namespace te
 
           \return The layer id.
         */
-        const std::string& getId() const;
+        virtual const std::string& getId() const;
 
         /*!
           \brief It sets the layer id.
 
           \param id The layer id.
         */
-        void setId(const std::string& id);
+        virtual void setId(const std::string& id);
 
         /*!
           \brief It returns the layer title.
 
           \return The layer title.
         */
-        const std::string& getTitle() const;
+        virtual const std::string& getTitle() const;
 
         /*!
           \brief It sets the layer title.
 
           \param title The layer title.
         */
-        void setTitle(const std::string& title);
+        virtual void setTitle(const std::string& title);
 
         /*!
           \brief It returns the layer visibility.
@@ -131,7 +131,7 @@ namespace te
 
           \return The layer visibility.
         */
-        Visibility getVisibility() const;
+        virtual Visibility getVisibility() const;
 
         /*!
           \brief It sets the visibility status of the layer.
@@ -140,7 +140,7 @@ namespace te
 
           \param v The layer visibility.
         */
-        void setVisibility(Visibility v);
+        virtual void setVisibility(Visibility v);
 
         /*!
           \brief It adjusts the visibility of the descendants layers having children(folder layers).
@@ -152,7 +152,7 @@ namespace te
 
           \return The Layer extent (or minimum bounding box) with coordinates in the same SRS as the layer.
         */
-        const te::gm::Envelope& getExtent() const;
+        virtual const te::gm::Envelope& getExtent() const;
 
         /*!
           \brief It sets the Layer extent (or minimum bounding box).
@@ -161,21 +161,21 @@ namespace te
 
           \pre The mbr coordinates must be in the same SRS as the layer.
         */
-        void setExtent(const te::gm::Envelope& mbr);
+        virtual void setExtent(const te::gm::Envelope& mbr);
 
         /*!
           \brief It returns the Spatial Reference System ID associated to the Layer.
 
           \return The Spatial Reference System ID associated to the Layer.
         */
-        int getSRID() const;
+        virtual int getSRID() const;
 
         /*!
           \brief It sets the Spatial Reference System ID associated to the Layer.
 
           \param srid The Spatial Reference System ID to be associated to the Layer.
         */
-        void setSRID(int srid);
+        virtual void setSRID(int srid);
 
         /*!
           \brief It adds the given oids to the selected group of this Layer.
@@ -184,7 +184,7 @@ namespace te
 
           \note The Layer will take the ownership of the given pointer.
         */
-        void select(te::da::ObjectIdSet* oids);
+        virtual void select(te::da::ObjectIdSet* oids);
 
         /*!
           \brief It removes the given oids from the selected group of this Layer.
@@ -193,7 +193,7 @@ namespace te
 
           \note The Layer will NOT take the ownership of the given pointer.
         */
-        void deselect(const te::da::ObjectIdSet* oids);
+        virtual void deselect(const te::da::ObjectIdSet* oids);
 
         /*!
           \brief It returns the selected group of this Layer.
@@ -202,16 +202,23 @@ namespace te
 
           \note The caller will NOT take the ownership of the given pointer.
         */
-        const te::da::ObjectIdSet* getSelected() const;
+        virtual const te::da::ObjectIdSet* getSelected() const;
+
+        /*!
+          \brief It clears the selected group of this Layer.
+        */
+        virtual void clearSelected();
 
         /*!
           \brief It returns the layer schema.
+
+          \param full If true it will try to retrieve the maximum information about the layer.
 
           \return The Layer schema.
 
           \note The caller will take the ownership of the returned layer schema.
         */
-        virtual const LayerSchema* getSchema() const = 0;
+        virtual const LayerSchema* getSchema(const bool full = false) const = 0;
 
         /*!
           \brief It gets the dataset identified by the layer name.

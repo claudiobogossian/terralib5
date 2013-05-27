@@ -71,9 +71,14 @@ void te::qt::widgets::Scatter::calculateMinMaxValues()
   }
 }
 
-std::size_t te::qt::widgets::Scatter::size()
+std::size_t te::qt::widgets::Scatter::sizeX()
 {
-  return m_xValues.size(); // equal to m_yValues.size();
+  return m_xValues.size();
+}
+
+std::size_t te::qt::widgets::Scatter::sizeY()
+{
+  return m_yValues.size();
 }
 
 double te::qt::widgets::Scatter::getX(unsigned int idx)
