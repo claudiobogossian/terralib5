@@ -91,28 +91,6 @@ te::vp::DataSetRTree te::vp::CreateRTree(te::da::DataSetType* dt, te::da::DataSe
   return rtree;
 }
 
-#include "../../qt/widgets/canvas/Canvas.h"
-void PrintDataSet(std::string name, te::da::DataSet* ds, size_t geomPos,
-               te::gm::Envelope e)
-{
-  te::qt::widgets::Canvas canvas(512, 512);
-  canvas.calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
-  canvas.setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
-
-  canvas.setPolygonFillColor(te::color::RGBAColor(255, 0, 0, 0));
-  canvas.setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-
-  ds->moveBeforeFirst();
-
-  while(ds->moveNext())
-  {
-    canvas.draw(ds->getGeometry(geomPos));
-  }
-
-  std::string fileName = "C:\\SHPTESTE\\TESTES\\"+name+".png";
-  canvas.save(fileName.c_str(), te::map::PNG);
-}
-
 std::vector<te::dt::Property*> GetPropertiesByPos(te::da::DataSetType* dt, std::vector<size_t> propsPos)
 {
   std::vector<te::dt::Property*> props;
@@ -190,8 +168,6 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 
     ++countAux;
   }
-
-  PrintDataSet("ds", resultPair.second, resultPair.first->getDefaultGeomPropertyPos(), idata.front().first->getExtent());
 
   return outputLayer;
 }
