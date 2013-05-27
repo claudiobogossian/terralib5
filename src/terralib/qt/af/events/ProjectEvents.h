@@ -62,8 +62,16 @@ namespace te
           Project* m_proj;    //!< Pointer to the newe project.
         };
 
+        /*!
+          \struct ProjectUnsaved
+
+          \brief Signals that the project has unsaved changes.
+        */
         struct ProjectUnsaved : public Event
         {
+          /*!
+            \brief Constructor.
+          */
           ProjectUnsaved() :
           Event(PROJECT_UNSAVED)
           {

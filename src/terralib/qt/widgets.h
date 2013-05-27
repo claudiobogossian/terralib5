@@ -30,10 +30,6 @@
 #include "widgets/Config.h"
 #include "widgets/canvas/Canvas.h"
 #include "widgets/canvas/MapDisplay.h"
-#include "widgets/datagrid/DataGridItemDelegate.h"
-#include "widgets/datagrid/DataGridModel.h"
-#include "widgets/datagrid/DataGridView.h"
-#include "widgets/datagrid/HeaderView.h"
 #include "widgets/layer/explorer/AbstractLayerTreeItem.h"
 #include "widgets/layer/explorer/LayerExplorer.h"
 
