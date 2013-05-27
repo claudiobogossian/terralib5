@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -46,7 +46,7 @@ namespace te
     {
       public:
 
-        /*! 
+        /*!
           \brief Constructor.
 
           \param t The DataSourceTransactor associated to this persistence.
@@ -55,13 +55,12 @@ namespace te
 
         ~DataSetPersistence();
 
-        void create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
-
-        void remove(const std::string& datasetName);
-
         void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids);
 
-        void add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
+        void add(const std::string& datasetName,
+                 te::da::DataSet* d,
+                 const std::map<std::string, std::string>& options,
+                 std::size_t limit = 0);
 
         void update(const std::string& datasetName,
                     te::da::DataSet* dataset,
