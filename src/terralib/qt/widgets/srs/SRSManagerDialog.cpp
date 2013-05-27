@@ -32,7 +32,7 @@
 #include <QSettings>
 #include <QString>
 
-// TerraLib
+#include <iostream>
 
 te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowFlags f):
   QDialog(parent, f),
