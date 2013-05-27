@@ -81,7 +81,7 @@ namespace te
     throw( te::rp::Exception )
     {
       m_minSegmentSize = 1;
-      m_segmentsSimilarityThreshold = 0.5;
+      m_segmentsSimilarityThreshold = 0.05;
       m_segmentFeatures = InvalidFeaturesType;      
       m_bandsWeights.clear();
       m_colorWeight = 0.5;

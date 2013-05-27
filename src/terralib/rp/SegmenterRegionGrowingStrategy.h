@@ -65,7 +65,7 @@ namespace te
             
             unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 1).
             
-            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Segments with similarity values below this value will be merged; valid values range: [ 0, 1 ]; default:0.5.
+            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Segments with similarity values below this value will be merged; valid values range: [ 0, 1 ]; default:0.05.
             
             SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:InvalidFeaturesType).
             

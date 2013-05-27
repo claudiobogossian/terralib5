@@ -39,8 +39,6 @@ option (EXAMPLE_COLORBAR "Build colorbar example." ON)
 option (EXAMPLE_COMMON "Build common example." ON)  
 option (EXAMPLE_PLUGIN_HELLOWORLD "Build plugin hello world example." ON)  
 option (EXAMPLE_DATAACCESS "Build data access example." ON)  
-option (EXAMPLE_DATAGRID "Build data grid example." ON)  
-option (EXAMPLE_DATAVIEW "Build data view example." ON)  
 option (EXAMPLE_DATASETMANAGEMENT "Build data set management example." ON)  
 option (EXAMPLE_FACTORY "Build factory example." ON)  
 option (EXAMPLE_GEOMETRY "Build geometry example." ON)  
@@ -68,6 +66,7 @@ option (EXAMPLE_QT_RASTERVISUAL "Build qt/rastervisual example." ON)
 option (EXAMPLE_QT_RP "Build qt/rp example." ON)  
 option (EXAMPLE_QT_SE "Build qt/se example." ON)
 option (EXAMPLE_QT_SRS "Build qt/srs example." ON)  
+option (EXAMPLE_QT_TABLE "Build qt/table example." ON)
 option (EXAMPLE_QT_TOOLS "Build qt/tools example." ON)
 option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
   
@@ -90,14 +89,6 @@ endif()
 
 if(EXAMPLE_PLUGIN_HELLOWORLD)
   add_subdirectory(terralib_example_cppplugin_helloworld)
-endif()
-
-if(EXAMPLE_DATAACCESS)
-  add_subdirectory(terralib_example_dataaccess)
-endif()
-
-if(EXAMPLE_DATAVIEW)
-  add_subdirectory(terralib_example_dataview)
 endif()
 
 if(EXAMPLE_DATAGRID)
@@ -210,6 +201,10 @@ endif()
 
 if(EXAMPLE_QT_TOOLS)
   add_subdirectory(terralib_example_qt/tools)
+endif()
+
+if(EXAMPLE_QT_TABLE)
+  add_subdirectory(terralib_example_qt/table)
 endif()
 
 if(EXAMPLE_QT_RASTERVISUAL)

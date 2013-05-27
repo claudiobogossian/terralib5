@@ -117,14 +117,16 @@ namespace te
         };
 
         /*!
-          \struct
+          \struct HighlightObjects
 
-          \brief
+          \brief This event signals that the selected objects in the layer has changed.
         */
         struct HighlightObjects : public Event
         {
           /*!
             \brief Constructor
+
+            \param layer The layer that its selected objects has changed.
           */
           HighlightObjects(te::map::AbstractLayer* layer) :
           Event(LAYER_HIGHLIGHT_OBJECTS),
@@ -132,7 +134,7 @@ namespace te
           {
           }
 
-          te::map::AbstractLayer* m_layer;
+          te::map::AbstractLayer* m_layer;    //!< Layer that has changed its selection.
         };
       }
     }
