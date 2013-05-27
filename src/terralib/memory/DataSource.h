@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -188,7 +188,7 @@ namespace te
           \note In-Memory driver extended method.
         */
         void remove(const std::string& datasetName);
-        
+
         /*!
           \brief It renames a dataset
 

@@ -37,7 +37,7 @@
 #include "maptools/AbstractRenderer.h"
 #include "maptools/Canvas.h"
 #include "maptools/Config.h"
-#include "maptools/DataGridOperation.h"
+//#include "maptools/DataGridOperation.h"
 #include "maptools/DataSetLayer.h"
 #include "maptools/DataSetLayerRenderer.h"
 #include "maptools/FolderLayer.h"
