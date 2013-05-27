@@ -297,6 +297,8 @@ QTableView(parent)
 
   m_delegate = new HighlightDelegate(this);
 
+  m_delegate->setPromoter(m_model->getPromoter());
+
   m_delegate->setColor(Qt::green);
 
   setItemDelegate(m_delegate);
@@ -439,8 +441,6 @@ void te::qt::widgets::DataSetTableView::promote()
   m_model->setEnabled(true);
   setEnabled(true);
 
-  m_delegate->setPromoter(m_model->getPromoter());
-
   viewport()->repaint();
 }
 
@@ -468,7 +468,6 @@ void te::qt::widgets::DataSetTableView::sortByColumns()
   m_popupFilter->setEnabled(false);
 
   m_model->orderByColumns(selCols);
-  m_delegate->setPromoter(m_model->getPromoter());
 
   m_popupFilter->setEnabled(true);
   m_model->setEnabled(true);

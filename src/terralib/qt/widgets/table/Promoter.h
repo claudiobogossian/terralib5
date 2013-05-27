@@ -74,11 +74,6 @@ namespace te
           ~Promoter();
 
           /*!
-            \brief Returns true if promotion is enabled.
-          */
-          bool isPromotionEnabled();
-
-          /*!
             \brief Returns the rows to its original positions.
           */
           void resetPromotion();
@@ -141,8 +136,6 @@ namespace te
           std::map<te::da::ObjectId*, size_t, te::common::LessCmp<te::da::ObjectId*> > m_PkeysRows; //!< Map object id to its position in DataSet.
 
           std::vector<size_t> m_logicalRows;                                                        //!< Map original row to logical postion.
-
-          bool m_enabled;                                                                           //!< Promotion enabling.
       };
     }
   }

@@ -42,9 +42,7 @@ bool toHighlight(te::da::DataSet* dset, const te::da::ObjectIdSet* objs, const i
 
 te::da::ObjectId* GetOId(te::da::DataSet* dset, const std::vector<std::string>& pNames, const int& row, te::qt::widgets::Promoter* promoter)
 {
-  int r = (promoter == 0) ? row : promoter->getLogicalRow(row);
-
-  dset->move(r);
+  dset->move(promoter->getLogicalRow(row));
 
   return te::da::GenerateOID(dset, pNames);
 }
@@ -84,9 +82,7 @@ void te::qt::widgets::HighlightDelegate::paint(QPainter* painter, const QStyleOp
 
   QStyleOptionViewItem opt = option;
 
-  int row = (m_promoter == 0) ? index.row() : m_promoter->getLogicalRow(index.row());
-
-  if(toHighlight(m_dset, m_objs, row))
+  if(toHighlight(m_dset, m_objs, m_promoter->getLogicalRow(index.row())))
   {
     opt.showDecorationSelected = true;
     opt.state |= QStyle::State_Selected;
