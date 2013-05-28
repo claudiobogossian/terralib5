@@ -294,6 +294,18 @@ namespace te
     TESEEXPORT Style* CreateCoverageStyle(const std::vector<te::rst::BandProperty*>& properties);
 
     /*!
+      \brief Try creates an appropriate coverage style based on given number of bands
+
+      \param nBands The number of bands.
+
+      \return A coverage symbolizer based on given geometry type.
+
+      \note The caller of this method will take the ownership of the returned pointer.
+      \note The method will return a NULL pointer if a default style could not be created.
+    */
+    TESEEXPORT Symbolizer* CreateCoverageStyle(const int& nBands);
+
+    /*!
       \brief Creates a random RGB color encoded using two hexadecimal digits per primary-color component prefixed with a hash (#) sign.
 
       \return A random color encoded using two hexadecimal digits per primary-color component prefixed with a hash (#) sign.
