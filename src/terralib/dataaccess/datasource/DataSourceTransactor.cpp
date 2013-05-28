@@ -34,6 +34,7 @@
 #include "../query/Fields.h"
 #include "../query/Select.h"
 #include "../query/Where.h"
+#include "../utils/Utils.h"
 #include "../Exception.h"
 #include "DataSource.h"
 #include "DataSourceCatalog.h"
@@ -64,8 +65,8 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
 
     if(dt.get() != 0)
     {
-      p = dt->getDefaultGeomProperty();
-    
+      p = GetFirstSpatialProperty(dt.get());
+
       if(p == 0)
         throw Exception(TR_DATAACCESS("The dataset doesn't have a default geometric column or you missed it during catalog management!"));
       else
@@ -78,7 +79,7 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
 
   DataSetTypePtr dt(cloader->getDataSetType(name, false));
 
-  p = dt->getDefaultGeomProperty();
+  p = GetFirstSpatialProperty(dt.get());
 
   if(p == 0)
     throw Exception(TR_DATAACCESS("The dataset doesn't have a default geometric column or you missed it during catalog management!"));
@@ -113,7 +114,7 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
 
     if(dt.get() != 0)
     {
-      p = dt->getDefaultGeomProperty();
+      p = GetFirstSpatialProperty(dt.get());
     
       if(p == 0)
         throw Exception(TR_DATAACCESS("The dataset doesn't have a default geometric column or you missed it during catalog management!"));
@@ -127,7 +128,7 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
 
   DataSetTypePtr dt(cloader->getDataSetType(name, false));
 
-  p = dt->getDefaultGeomProperty();
+  p = GetFirstSpatialProperty(dt.get());
 
   if(p == 0)
     throw Exception(TR_DATAACCESS("The dataset doesn't have a default geometric column or you missed it during catalog management!"));

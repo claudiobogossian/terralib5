@@ -72,7 +72,7 @@ void te::qt::widgets::DataSetTreeView::set(const te::da::DataSourceInfoPtr& ds, 
   m_treeModel->setCheckable(m_useCheckableItems);
   m_categoryModel->setCheckable(m_useCheckableItems);
   
-  this->setModel(m_categoryModel.get());
+  this->setModel(m_treeModel.get());
 
   m_isCategoryModel = true;
 }

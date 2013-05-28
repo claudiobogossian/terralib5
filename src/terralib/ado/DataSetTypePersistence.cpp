@@ -34,6 +34,7 @@
 #include "../dataaccess/dataset/CheckConstraint.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/StringProperty.h"
 #include "../datatype/DataType.h"
@@ -105,7 +106,7 @@ void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
     add(dt, dt->getPrimaryKey());
   
   te::gm::GeometryProperty* geomProp = 0;
-  geomProp = dt->getDefaultGeomProperty();
+  geomProp = te::da::GetFirstGeomProperty(dt);
   if(geomProp)
     te::ado::insertInGeometryColumns(adoConn, dt);
 

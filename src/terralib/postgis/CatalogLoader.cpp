@@ -87,13 +87,9 @@ te::da::DataSetType* te::pgis::CatalogLoader::getDataSetType(const std::string& 
 
   getProperties(dt.get());
 
-  if(full)
-  {
-    getConstraints(dt.get());    
-    getIndexes(dt.get());
-  }
+  getConstraints(dt.get());
+  getIndexes(dt.get());
 
-  dt->setFullLoaded(full);
   return dt.release();
 }
 
@@ -127,13 +123,11 @@ void te::pgis::CatalogLoader::getProperties(te::da::DataSetType* dt)
 
     if(p->getType() == te::dt::GEOMETRY_TYPE)
     {
-      dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
-      getGeometryInfo(dt->getName(), dt->getDefaultGeomProperty());
+      getGeometryInfo(dt->getName(), static_cast<te::gm::GeometryProperty*>(p));
     }
     else if(p->getType() == te::dt::RASTER_TYPE)
     {
-      dt->setDefaultRasterProperty(static_cast<te::rst::RasterProperty*>(p));
-      getRasterInfo(dt->getName(), dt->getDefaultRasterProperty());
+      getRasterInfo(dt->getName(), static_cast<te::rst::RasterProperty*>(p));
     }
   }
 }
@@ -331,7 +325,6 @@ void te::pgis::CatalogLoader::loadCatalog(const bool full)
 
     te::da::DataSetTypePtr dt(new te::da::DataSetType(name, dtid));
     dt->setTitle(name);
-    dt->setFullLoaded(full);
 
     catalog->add(dt);
 

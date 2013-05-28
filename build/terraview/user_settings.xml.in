@@ -16,7 +16,8 @@
   
   <SpecificPlugins> </SpecificPlugins>
   
-  <EnabledPlugins> </EnabledPlugins>
+  <EnabledPlugins>${TE_ENABLED_PLUGINS}
+  </EnabledPlugins>
   
   <DataSourcesFile>${TE_DEFAULT_DATASOURCES_FILE}</DataSourcesFile>
   

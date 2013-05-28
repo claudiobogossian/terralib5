@@ -271,7 +271,6 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
     if(!task.isActive())
     {
       cleanLogRowsAndProcessKeys();
-
       CleanAbstractData(order);
 
       return;
@@ -285,11 +284,23 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
     task.pulse();
   }
 
+  task.setCurrentStep(0);
+
   i=0;
   for(m_it=order.begin(); m_it!=order.end(); ++m_it)
   {
+    if(!task.isActive())
+    {
+      cleanLogRowsAndProcessKeys();
+      CleanAbstractData(order);
+
+      return;
+    }
+
     m_logicalRows[i++] = m_it->second;
     te::common::FreeContents(m_it->first);
+
+    task.pulse();
   }
 }
 

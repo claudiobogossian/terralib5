@@ -103,8 +103,8 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
     if(it->get() == 0)
       continue;
 
-    if(!(*it)->isFullLoaded())
-      te::da::LoadFull((*it).get(), datasource->getId());
+    //if(!(*it)->isFullLoaded())
+    //  te::da::LoadFull((*it).get(), datasource->getId());
 
     //create dataset adapter
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter((*it).get(), targetDSPtr->getCapabilities());
@@ -153,7 +153,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
       it->second->getConvertee()->setTitle(m_ui->m_datasetTitleLineEdit->text().trimmed().toStdString());
 
       if(it->second->getConvertee()->hasGeom())
-        it->second->getConvertee()->getDefaultGeomProperty()->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+        te::da::GetFirstGeomProperty(it->second->getConvertee())->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
 
       QString title = QString::fromStdString(it->second->getConvertee()->getTitle());
 
@@ -206,8 +206,8 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
       {
         m_ui->m_sridSearchToolButton->setEnabled(true);
         m_ui->m_sridLineEdit->setEnabled(true);
-        if(dataset->getDefaultGeomProperty())
-          m_ui->m_sridLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(dataset->getDefaultGeomProperty()->getSRID())));
+        if(dataset->hasGeom())
+          m_ui->m_sridLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(te::da::GetFirstGeomProperty(dataset)->getSRID())));
       }
       else
       {

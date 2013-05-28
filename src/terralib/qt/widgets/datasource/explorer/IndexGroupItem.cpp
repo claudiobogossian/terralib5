@@ -103,8 +103,8 @@ void te::qt::widgets::IndexGroupItem::fetchMore()
   if(dt.get() == 0)
     return;
 
-  if(!dt->isFullLoaded() && (parentItem->getDataSource() != 0))
-    te::da::LoadFull(dt.get(), parentItem->getDataSource());
+  //if(!dt->isFullLoaded() && (parentItem->getDataSource() != 0))
+  //  te::da::LoadFull(dt.get(), parentItem->getDataSource());
 
 // create new items
   const std::size_t nidxs = dt->getNumberOfIndexes();
@@ -128,10 +128,11 @@ bool te::qt::widgets::IndexGroupItem::hasChildren() const
   if(dt == 0)
     return false;
 
-  if(!dt->isFullLoaded() && (parentItem->getDataSource() != 0))
-    te::da::LoadFull(dt.get(), parentItem->getDataSource());
+  //if(!dt->isFullLoaded() && (parentItem->getDataSource() != 0))
+  //  te::da::LoadFull(dt.get(), parentItem->getDataSource());
 
-  return (dt->isFullLoaded() && (dt->getNumberOfIndexes() != 0));
+  //return (dt->isFullLoaded() && (dt->getNumberOfIndexes() != 0));
+  return dt->getNumberOfIndexes() != 0;
 }
 
 bool te::qt::widgets::IndexGroupItem::setData(const QVariant& /*value*/, int /*role*/)
