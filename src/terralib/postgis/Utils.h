@@ -224,15 +224,15 @@ namespace te
     */
     inline void Convert2PostGIS(const te::gm::Envelope* e, int srid, std::string& output)
     {
-      output += "SetSRID('BOX3D(";
+      output += "ST_MakeEnvelope(";
       output += te::common::Convert2String(e->m_llx, 15);
-      output += " ";
+      output += ", ";
       output += te::common::Convert2String(e->m_lly, 15);
       output += ", ";
       output += te::common::Convert2String(e->m_urx, 15);
-      output += " ";
+      output += ", ";
       output += te::common::Convert2String(e->m_ury, 15);
-      output += ")'::box3d, ";
+      output += ", ";
       output += te::common::Convert2String(srid);
       output += ")";
     }
