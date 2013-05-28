@@ -61,11 +61,13 @@ te::qt::widgets::DataSetSelectorWidget::DataSetSelectorWidget(QWidget* parent, Q
 
   QVBoxLayout* datasetGroupBoxLayout = new QVBoxLayout(m_ui->m_datasetGroupBox);
   datasetGroupBoxLayout->addWidget(m_datasetTreeView.get(), 1);
-  
+
   m_mapPreview.reset(new te::qt::widgets::DataSetDisplay(m_ui->m_mapPreviewGroupBox));
   QVBoxLayout* mapPreviewGroupBoxLayout = new QVBoxLayout(m_ui->m_mapPreviewGroupBox);
   mapPreviewGroupBoxLayout->addWidget(m_mapPreview.get(), 1);
   m_mapPreview->show();
+
+  m_ui->m_mapPreviewGroupBox->setChecked(false);
 
   m_tblView.reset(new DataSetTableView(m_ui->m_dataPreviewGroupBox));
   QVBoxLayout* dataPreviewGroupBoxLayout = new QVBoxLayout(m_ui->m_dataPreviewGroupBox);

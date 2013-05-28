@@ -166,8 +166,8 @@ void te::map::DataSetLayerRenderer::drawGeometries(DataSetLayer* layer,
   assert(dataSetType.get());
 
 // for while, default geometry. TODO: need a visitor to get which properties the style references
-  assert(dataSetType->hasDefaultGeom());
-  te::gm::GeometryProperty* geometryProperty = dataSetType->getDefaultGeomProperty();
+  assert(dataSetType->hasGeom());
+  te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(dataSetType.get());
 
 // get the associated layer style
   te::se::Style* style = layer->getStyle();
@@ -335,7 +335,7 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
 
 // for while, first raster property
   assert(dataSetType->hasRaster());
-  te::rst::RasterProperty* rasterProperty = dataSetType->findFirstRasterProperty();
+  te::rst::RasterProperty* rasterProperty = te::da::GetFirstRasterProperty(dataSetType.get());
 
 // retrieve the data set
   std::auto_ptr<te::da::DataSet> dataset(transactor->getDataSet(dsname, rasterProperty, &bbox, te::gm::INTERSECTS));

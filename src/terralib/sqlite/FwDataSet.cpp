@@ -55,23 +55,19 @@
 #include <sqlite3.h>
 
 te::sqlite::FwDataSet::FwDataSet(sqlite3_stmt* stmt, DataSourceTransactor* t, const bool releaseStmt)
-  : m_geomFilter(0),
-    m_mbrFilter(0),
-    m_originalsql(0),
+  : m_originalsql(0),
     m_stmt(stmt),
     m_t(t),
     m_dt(0),
     m_releaseStmt(releaseStmt)
 {
   assert(m_stmt != 0);
+
+  m_dt = Convert2TerraLib(m_stmt);
 }
 
 te::sqlite::FwDataSet::~FwDataSet()
 {
-  delete m_geomFilter;
-
-  delete m_mbrFilter;
-
   delete m_originalsql;
 
   if(m_releaseStmt)
@@ -96,154 +92,16 @@ te::common::AccessPolicy te::sqlite::FwDataSet::getAccessPolicy() const
   return te::common::RAccess;
 }
 
-te::da::DataSetType* te::sqlite::FwDataSet::getType()
-{
-  if(m_dt)
-    return m_dt;
-
-  m_dt = Convert2TerraLib(m_stmt);
-
-  m_dt->setCategory(te::da::QUERY_TYPE);
-
-  return m_dt;
-}
-
-const te::da::DataSetType* te::sqlite::FwDataSet::getType() const
-{
-  if(m_dt)
-    return m_dt;
-
-  m_dt = Convert2TerraLib(m_stmt);
-
-  m_dt->setCategory(te::da::QUERY_TYPE);
-
-  return m_dt;
-}
-
-void te::sqlite::FwDataSet::loadTypeInfo()
-{
-  if(m_dt && m_dt->isFullLoaded())
-    return;
-
-  if(m_dt == 0)
-    m_dt = Convert2TerraLib(m_stmt);
-
-  m_dt->setCategory(te::da::QUERY_TYPE);
-
-  const int ncols = sqlite3_column_count(m_stmt);
-
-  if(ncols == 0)
-    return;
-
-// try to find a table name
-  std::string tname = sqlite3_column_table_name(m_stmt, 0);
-
-  for(int i = 0; i < ncols; ++i)  // note: !!start at 0 to test for a geometry column!!
-  {
-    const char* ttname = sqlite3_column_table_name(m_stmt, i);
-
-    if(ttname == 0)
-      continue;
-
-    if(m_dt->getProperty(i)->getType() == te::dt::GEOMETRY_TYPE)
-    {
-      std::auto_ptr<DataSourceCatalogLoader> cloader(m_t->getSQLiteCatalogLoader());
-      
-      std::auto_ptr<te::da::DataSet> ftable(cloader->getGeometryInfo(ttname, m_dt->getProperty(i)->getName()));
-
-      if(!ftable->moveNext())
-        continue;
-
-      std::string gtype = ftable->getString(0);
-
-      std::string coorddim = ftable->getString(1);
-
-      te::gm::GeomType t = Convert2TerraLibGeomType(gtype, coorddim);
-
-      te::gm::GeometryProperty* gp = static_cast<te::gm::GeometryProperty*>(m_dt->getProperty(i));
-
-      gp->setGeometryType(t);
-
-      int srid = ftable->getInt32(2);
-
-      gp->setSRID(srid);
-
-      //bool hasSPIDX = ftable->getInt32(3) != 0;
-    }
-
-// if dataset has columns from more than one table (a join) we can not get more reliable info!
-    if(tname != ttname)
-    {
-      m_dt->setFullLoaded(true);
-      return;
-    }     
-  }
-
-  m_dt->setName(tname);
-
-// let's try to extract at least pk info
-
-  std::string sql  = "PRAGMA table_info(";
-              sql += tname;
-              sql += ")";
-
-  std::auto_ptr<te::da::DataSet> tinfo(m_t->query(sql));
-
-  std::auto_ptr<te::da::PrimaryKey> pk(new te::da::PrimaryKey("", 0, 0));
-
-  while(tinfo->moveNext())
-  {
-    bool ispk = tinfo->getBool(5);
-
-    if(ispk)
-    {
-      int colid = tinfo->getInt32(0);
-
-      std::string colName = tinfo->getString(1);
-
-      te::dt::Property* p = 0;
-
-      if(colid < ncols)
-      {
-        p = m_dt->getProperty(colid);
-
-        if(p && p->getName() != colName)
-        {
-          p = m_dt->getProperty(colName);
-        }
-      }
-      else
-      {
-        p = m_dt->getProperty(colName);
-      }
-
-      if(p == 0)
-        continue;
-
-      pk->add(p);
-    }
-  }
-
-  if(pk->getProperties().size() > 0)
-    m_dt->setPrimaryKey(pk.release());
-
-// todo:
-// 1. look for uk
-// 2. extract more info for geometric columns
-
-  m_dt->setFullLoaded(true);
-}
-
 te::gm::Envelope* te::sqlite::FwDataSet::getExtent(std::size_t i)
 {
   std::string sql("SELECT MIN(MBRMinX(");
-              sql += getType()->getProperty(i)->getName();
+              sql += m_dt->getProperty(i)->getName();
               sql += ")), MIN(MBRMinY(";
-              sql += getType()->getProperty(i)->getName();
+              sql += m_dt->getProperty(i)->getName();
               sql += ")), MAX(MBRMaxX(";
-              sql += getType()->getProperty(i)->getName();
+              sql += m_dt->getProperty(i)->getName();
               sql += ")), MAX(MBRMaxY(";
-              sql += getType()->getProperty(i)->getName();
+              sql += m_dt->getProperty(i)->getName();
               sql += ")) FROM (";
               sql += sqlite3_sql(m_stmt);
               sql += ")";
@@ -263,17 +121,17 @@ te::gm::Envelope* te::sqlite::FwDataSet::getExtent(std::size_t i)
 
 std::size_t te::sqlite::FwDataSet::getNumProperties() const
 {
-  return getType()->size();
+  return m_dt->size();
 }
 
 int te::sqlite::FwDataSet::getPropertyDataType(std::size_t i) const
 {
-  return getType()->getProperty(i)->getType();
+  return m_dt->getProperty(i)->getType();
 }
 
 std::string te::sqlite::FwDataSet::getPropertyName(std::size_t i) const
 {
-  return getType()->getProperty(i)->getName();
+  return m_dt->getProperty(i)->getName();
 }
 
 std::string te::sqlite::FwDataSet::getDatasetNameOfProperty(std::size_t i) const
