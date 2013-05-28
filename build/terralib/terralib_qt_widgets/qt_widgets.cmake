@@ -193,6 +193,7 @@ set (
   ${SRCDIR}/widgets/layer/explorer/LayerTreeView.h
   ${SRCDIR}/widgets/layer/explorer/LegendItem.h
   ${SRCDIR}/widgets/layer/explorer/QueryLayerItem.h
+  ${SRCDIR}/widgets/layer/explorer/RasterLayerItem.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/explorer" MOC)
 

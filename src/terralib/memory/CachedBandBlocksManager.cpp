@@ -212,12 +212,14 @@ void te::mem::CachedBandBlocksManager::free()
   
   m_blocksPointers.clear();
   
+  unsigned char* blockPtr = 0;
   for( std::vector< unsigned char* >::size_type blocksHandlerIdx = 0 ; 
     blocksHandlerIdx < m_blocksHandler.size() ; ++blocksHandlerIdx )
   {
-    if( m_blocksHandler[ blocksHandlerIdx ] )
+    blockPtr = m_blocksHandler[ blocksHandlerIdx ];
+    if( blockPtr )
     {
-      delete[]( m_blocksHandler[ blocksHandlerIdx ] );
+      delete[]( blockPtr );
     }
   }
   m_blocksHandler.clear();

@@ -90,23 +90,61 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
   //get contrast type
   int index = m_ui->m_contrastTypeComboBox->currentIndex();
   int contrastType = m_ui->m_contrastTypeComboBox->itemData(index).toInt();
+  int nBands = m_ui->m_bandTableWidget->rowCount();
 
   te::rp::Contrast::InputParameters algoInputParams;
 
   if(contrastType == te::rp::Contrast::InputParameters::LinearContrastT)
   {
     algoInputParams.m_type = te::rp::Contrast::InputParameters::LinearContrastT;
+
+    for(int i = 0; i < nBands; ++i)
+    {
+      QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+    
+      if(checkBox->isChecked())
+      {
+        QString valueMin = m_ui->m_bandTableWidget->item(i, 1)->text();
+        algoInputParams.m_lCMinInput.push_back(valueMin.toDouble());
+
+        QString valueMax = m_ui->m_bandTableWidget->item(i, 2)->text();
+        algoInputParams.m_lCMaxInput.push_back(valueMax.toDouble());
+      }
+    }
   }
   else if(contrastType == te::rp::Contrast::InputParameters::HistogramEqualizationContrastT)
   {
     algoInputParams.m_type = te::rp::Contrast::InputParameters::HistogramEqualizationContrastT;
+
+    for(int i = 0; i < nBands; ++i)
+    {
+      QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+    
+      if(checkBox->isChecked())
+      {
+        QString valueMax = m_ui->m_bandTableWidget->item(i, 1)->text();
+        algoInputParams.m_hECMaxInput.push_back(valueMax.toDouble());
+      }
+    }
   }
   else if(contrastType == te::rp::Contrast::InputParameters::SetMeanAndStdContrastT)
   {
     algoInputParams.m_type = te::rp::Contrast::InputParameters::SetMeanAndStdContrastT;
-  }
 
-  int nBands = m_ui->m_bandTableWidget->rowCount();
+    for(int i = 0; i < nBands; ++i)
+    {
+      QCheckBox* checkBox = (QCheckBox*)m_ui->m_bandTableWidget->cellWidget(i, 0);
+    
+      if(checkBox->isChecked())
+      {
+        QString valueMean = m_ui->m_bandTableWidget->item(i, 1)->text();
+        algoInputParams.m_sMASCMeanInput.push_back(valueMean.toDouble());
+
+        QString valueStdDev = m_ui->m_bandTableWidget->item(i, 2)->text();
+        algoInputParams.m_sMASCStdInput.push_back(valueStdDev.toDouble());
+      }
+    }
+  }
 
   for(int i = 0; i < nBands; ++i)
   {

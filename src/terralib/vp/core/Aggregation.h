@@ -31,6 +31,7 @@
 #include "../../datatype/Property.h"
 #include "../../geometry/Geometry.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 #include "Config.h"
 #include "Enums.h"
@@ -44,6 +45,7 @@ namespace te
 {
   namespace vp
   {
+
     void Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                      const std::vector<te::dt::Property*>& groupingProperties,
                      const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType,
