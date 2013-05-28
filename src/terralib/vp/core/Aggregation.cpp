@@ -48,6 +48,9 @@
 #include <string>
 #include <vector>
 
+// BOOST
+#include <boost/lexical_cast.hpp> 
+
 //---------------------------------Remove after tests *BEGIN--------------------------------------------------------//
 #include "../../qt/widgets/canvas/Canvas.h"
 #include "../../color/RGBAColor.h"
@@ -405,8 +408,8 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
 
       result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MIN_VALUE", *values.begin() ) );
       result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MAX_VALUE", values[values.size() - 1] ) );
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_COUNT", te::common::Convert2String(values.size())));
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_VALID_COUNT", te::common::Convert2String(values.size())));
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_COUNT", boost::lexical_cast<std::string>(values.size())));
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_VALID_COUNT", boost::lexical_cast<std::string>(values.size())));
     }
     ++it;
   }
