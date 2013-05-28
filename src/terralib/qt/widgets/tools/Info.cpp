@@ -169,8 +169,8 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
     if(ls->hasRaster())
     {
       // Retrieves the data from layer
-      std::auto_ptr<te::da::DataSet> dataset(layer->getData(*ls->getDefaultRasterProperty(), reprojectedEnvelope, te::gm::INTERSECTS));
-      
+      std::auto_ptr<te::da::DataSet> dataset(layer->getData(*te::da::GetFirstRasterProperty(ls.get()), reprojectedEnvelope, te::gm::INTERSECTS));
+
       if(!dataset->moveNext())
         return;
 
