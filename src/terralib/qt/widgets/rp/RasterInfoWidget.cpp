@@ -114,6 +114,23 @@ std::map<std::string, std::string> te::qt::widgets::RasterInfoWidget::getInfo() 
   return rinfo;
 }
 
+std::string te::qt::widgets::RasterInfoWidget::getName() const
+{
+  std::string name = "";
+
+  if(m_ui->m_nameLineEdit->text().isEmpty() == false)
+  {
+    name = m_ui->m_nameLineEdit->text().toStdString();
+  }
+
+  if(m_ui->m_fileRadioButton->isChecked())
+  {
+     name += ".tif";
+  }
+
+  return name;
+}
+
 bool te::qt::widgets::RasterInfoWidget::overight() const
 {
   return m_ui->m_overightRadioButton->isChecked();

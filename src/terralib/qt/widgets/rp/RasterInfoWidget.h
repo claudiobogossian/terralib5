@@ -72,6 +72,8 @@ namespace te
 
           std::map<std::string, std::string> getInfo() const;
 
+          std::string getName() const;
+
           bool overight() const;
 
         protected slots:

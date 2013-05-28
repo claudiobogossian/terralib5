@@ -82,6 +82,22 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  
+  <xsd:element name="RasterLayer" type="te_map:RasterLayerType" substitutionGroup="te_map:AbstractLayer" />
+
+  <xsd:complexType name="RasterLayerType">
+    <xsd:complexContent>
+      <xsd:extension base="te_map:AbstractLayerType">
+        <xsd:sequence>
+          <xsd:element name="ConnectionInfo" type="te_common:ParameterListType" minOccurs="0" maxOccurs="1" />
+          <xsd:element name="SRID" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="Extent" type="te_gm:EnvelopeType" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="RendererId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="Style" type="te_map:StyleType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
 
   <xsd:complexType name="StyleType">
     <xsd:annotation>
@@ -90,6 +106,7 @@
     <xsd:choice minOccurs="1" maxOccurs="1">
       <xsd:element ref="se:FeatureTypeStyle" />
       <xsd:element ref="se:CoverageStyle" />
+	  <xsd:element ref="se:Symbolizer" />
     </xsd:choice>
   </xsd:complexType>
 

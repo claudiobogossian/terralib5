@@ -23,6 +23,7 @@
 #include "../../widgets/layer/explorer/LayerTreeView.h"
 #include "../events/Event.h"
 #include "../events/ProjectEvents.h"
+#include "../events/LayerEvents.h"
 #include "../ApplicationController.h"
 #include "../LayerDecorator.h"
 #include "../Project.h"
@@ -76,19 +77,16 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       QItemSelectionModel* layerTreeSelectionModel = m_explorer->getTreeView()->selectionModel();
       connect(layerTreeSelectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), SLOT(onSelectionChanged(const QItemSelection&, const QItemSelection&)));
     }
+    break;
 
-//          case te::qt::af::evt::LAYER_ADDED:
-//            {
-//              LayerAdded* e = static_cast<LayerAdded*>(evt);
-//              te::qt::widgets::LayerExplorerModel* model = static_cast<te::qt::widgets::LayerExplorerModel*>(m_explorer->model());
-//
-//              int idx = model->rowCount(QModelIndex());
-//
-//              model->insertItem(QModelIndex(), idx, e->m_layer);
-//              model->resetModel();
-//            }
-//          break;
-//
+    case te::qt::af::evt::LAYER_ADDED:
+    {
+      te::qt::af::evt::LayerAdded* e = static_cast<te::qt::af::evt::LayerAdded*>(evt);
+
+      m_explorer->add(e->m_layer);
+    }
+    break;
+
     default:
     break;
   }

@@ -59,6 +59,7 @@ void te::qt::plugins::rp::SegmenterAction::onActionActivated(bool checked)
 
   if(dlg.exec() == QDialog::Accepted)
   {
-
+    //add new layer
+    addNewLayer(dlg.getOutputLayer());
   }
 }

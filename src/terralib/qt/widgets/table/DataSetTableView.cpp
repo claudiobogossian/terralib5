@@ -313,6 +313,8 @@ te::qt::widgets::DataSetTableView::~DataSetTableView()
 
 void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset)
 {
+  ScopedCursor cursor(Qt::WaitCursor);
+
   m_model->setDataSet(dset);
 
   std::vector<int> geoCols;

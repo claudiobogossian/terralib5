@@ -68,9 +68,9 @@ te::qt::af::ApplicationController* te::qt::af::ApplicationController::sm_instanc
 te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
   : QObject(/*parent*/),
     m_msgBoxParentWidget(0),
-    m_initialized(false),
     m_defaultSRID(TE_UNKNOWN_SRS),
     m_selectionColor(QColor(0, 255, 0)),
+    m_initialized(false),
     m_project(0)
 {
   if(sm_instance)

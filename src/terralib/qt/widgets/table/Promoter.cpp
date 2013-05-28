@@ -266,30 +266,40 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
   std::vector<te::dt::AbstractData*> value;
   value.resize(cols.size());
 
-  while (dset->moveNext())
+  try
   {
-    if(!task.isActive())
+    while (dset->moveNext())
     {
-      cleanLogRowsAndProcessKeys();
+      if(!task.isActive())
+        throw;
 
-      CleanAbstractData(order);
+      for(size_t j=0; j<cols.size(); j++)
+        value[j] = (dset->isNull((size_t)cols[j])) ? 0 : dset->getValue((size_t)cols[j]);
 
-      return;
+      order.insert(std::pair<std::vector<te::dt::AbstractData*>, int>(value, i++));
+
+      task.pulse();
     }
 
-    for(size_t j=0; j<cols.size(); j++)
-      value[j] = (dset->isNull((size_t)cols[j])) ? 0 : dset->getValue((size_t)cols[j]);
+    task.setCurrentStep(0);
 
-    order.insert(std::pair<std::vector<te::dt::AbstractData*>, int>(value, i++));
+    i=0;
+    for(m_it=order.begin(); m_it!=order.end(); ++m_it)
+    {
+      if(!task.isActive())
+        throw;
 
-    task.pulse();
+      m_logicalRows[i++] = m_it->second;
+      te::common::FreeContents(m_it->first);
+
+      task.pulse();
+    }
   }
-
-  i=0;
-  for(m_it=order.begin(); m_it!=order.end(); ++m_it)
+  catch(...)
   {
-    m_logicalRows[i++] = m_it->second;
-    te::common::FreeContents(m_it->first);
+    cleanLogRowsAndProcessKeys();
+
+    CleanAbstractData(order);
   }
 }
 
