@@ -34,6 +34,7 @@
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
+#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -90,6 +91,11 @@ void te::qt::widgets::ContrastWizard::setList(std::list<te::map::AbstractLayerPt
   m_layerSearchPage->getSearchWidget()->setList(layerList);
 }
 
+te::map::AbstractLayerPtr te::qt::widgets::ContrastWizard::getOutputLayer()
+{
+  return m_outputLayer;
+}
+
 void te::qt::widgets::ContrastWizard::addPages()
 {
   m_layerSearchPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
@@ -126,11 +132,15 @@ bool te::qt::widgets::ContrastWizard::execute()
   algoOutputParams.m_createdOutRasterInfo = m_rasterInfoPage->getWidget()->getInfo();
   algoOutputParams.m_outRasterBands = algoInputParams.m_inRasterBands;
 
-
   if(algorithmInstance.initialize(algoInputParams))
   {
     if(algorithmInstance.execute(algoOutputParams))
     {
+      algoOutputParams.reset();
+
+      //set output layer
+      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+                                                   m_rasterInfoPage->getWidget()->getInfo());
 
       QMessageBox::information(this, tr("Contrast"), tr("Contrast enhencement ended sucessfully"));
     }

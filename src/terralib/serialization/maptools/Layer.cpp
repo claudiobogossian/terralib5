@@ -32,9 +32,11 @@
 #include "../../maptools/DataSetLayer.h"
 #include "../../maptools/FolderLayer.h"
 #include "../../maptools/QueryLayer.h"
-#include "../../se/Style.h"
+#include "../../maptools/RasterLayer.h"
+#include "../../se/RasterSymbolizer.h"
 #include "../geometry/Envelope.h"
 #include "../se/Style.h"
+#include "../se/Symbolizer.h"
 #include "../Exception.h"
 #include "Layer.h"
 
@@ -48,9 +50,11 @@
 te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader);
+te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader);
 void DataSetLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 void QueryLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 void FolderLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
+void RasterLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 
 te::map::Visibility GetVisibility(const std::string& visible)
 {
@@ -112,6 +116,7 @@ te::serialize::Layer::Layer()
   m_fncts["DATASETLAYER"] = std::make_pair(LayerReadFnctType(&DataSetLayerReader), LayerWriteFnctType(&DataSetLayerWriter));
   m_fncts["QUERYLAYER"] = std::make_pair(LayerReadFnctType(&QueryLayerReader), LayerWriteFnctType(&QueryLayerWriter));
   m_fncts["FOLDERLAYER"] = std::make_pair(LayerReadFnctType(&FolderLayerReader), LayerWriteFnctType(&FolderLayerWriter));
+  m_fncts["RASTERLAYER"] = std::make_pair(LayerReadFnctType(&RasterLayerReader), LayerWriteFnctType(&RasterLayerWriter));
 }
 
 te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
@@ -380,6 +385,129 @@ te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader)
   return flayer.release();
 }
 
+te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
+{
+  std::string id = reader.getAttr(0);
+
+  /* Title Element */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Title");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string title = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  /* Visible Element */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Visible");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string visible = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+/* ConnectionInfo Element */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "ConnectionInfo");
+
+  std::map<std::string, std::string> conninfo;
+
+  while(reader.next() &&
+        (reader.getNodeType() == te::xml::START_ELEMENT) &&
+        (reader.getElementLocalName() == "Parameter"))
+  {
+    // Parameter Name
+    reader.next();
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "Name");
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    std::string paramName = reader.getElementValue();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+    // Parameter Value
+    reader.next();
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "Value");
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    std::string paramValue = reader.getElementValue();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+    conninfo[paramName] = paramValue;
+
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of ConnectionInfo Element
+
+  /* SRID Element */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "SRID");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  int srid = reader.getElementValueAsInt32();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  /* Extent Element */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Extent");
+  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::ReadExtent(reader));
+
+  /* RendererId Element */
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "RendererId");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string rendererId = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  /* has a Style Element ? */
+  reader.next();
+
+  std::auto_ptr<te::se::Symbolizer> style;
+
+  if((reader.getNodeType() == te::xml::START_ELEMENT) &&
+     (reader.getElementLocalName() == "Style"))
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+
+    style.reset(te::serialize::Symbolizer::getInstance().read(reader));
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    assert(reader.getElementLocalName() == "Style");
+
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "RasterLayer");
+
+  reader.next();
+
+  std::auto_ptr<te::map::RasterLayer> layer(new te::map::RasterLayer(id, title, 0));
+  layer->setSRID(srid);
+  layer->setExtent(*mbr.get());
+  layer->setRasterInfo(conninfo);
+  layer->setVisibility(GetVisibility(visible));
+  layer->setRendererType(rendererId);
+  layer->setStyle((te::se::RasterSymbolizer*)style.release());
+
+  return layer.release();
+}
+
 void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
 {
   const te::map::DataSetLayer* layer = dynamic_cast<const te::map::DataSetLayer*>(alayer);
@@ -463,5 +591,56 @@ void FolderLayerWriter(const te::map::AbstractLayer* /*alayer*/, te::xml::Writer
   //writer.writeElement("StyleId", "x");
 
   //writer.writeEndElement("DataSetLayer");
+}
+
+void RasterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
+{
+  const te::map::RasterLayer* layer = dynamic_cast<const te::map::RasterLayer*>(alayer);
+
+  if(layer == 0)
+    return;
+
+  writer.writeStartElement("te_map:RasterLayer");
+
+  std::string visible = (GetVisibility(layer->getVisibility()));
+  
+  writer.writeAttribute("id", layer->getId());
+  writer.writeElement("te_map:Title", layer->getTitle());
+  writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
+
+  writer.writeStartElement("te_map:ConnectionInfo");
+  std::map<std::string, std::string> info = layer->getRasterInfo();
+  std::map<std::string, std::string>::iterator conIt;
+
+  for(conIt=info.begin(); conIt!=info.end(); ++conIt)
+  {
+    writer.writeStartElement("te_map:Parameter");
+
+    writer.writeStartElement("te_map:Name");
+    writer.writeValue(conIt->first);
+    writer.writeEndElement("te_map:Name");
+
+    writer.writeStartElement("te_map:Value");
+    writer.writeValue(conIt->second);
+    writer.writeEndElement("te_map:Value");
+
+    writer.writeEndElement("te_map:Parameter");
+  }
+  writer.writeEndElement("te_map:ConnectionInfo");
+
+  writer.writeElement("te_map:SRID", layer->getSRID());
+  te::serialize::SaveExtent(&layer->getExtent(), writer);
+  writer.writeElement("te_map:RendererId", layer->getRendererType());
+
+  if(layer->getStyle())
+  {
+    writer.writeStartElement("te_map:Style");
+
+    te::serialize::Symbolizer::getInstance().write(layer->getStyle(), writer);
+
+    writer.writeEndElement("te_map:Style");
+  }
+
+  writer.writeEndElement("te_map:RasterLayer");
 }
 

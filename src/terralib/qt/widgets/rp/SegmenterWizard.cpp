@@ -37,6 +37,7 @@
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
 #include "ui_SegmenterAdvancedOptionsWizardPageForm.h"
+#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -93,6 +94,11 @@ void te::qt::widgets::SegmenterWizard::setList(std::list<te::map::AbstractLayerP
   m_layerSearchPage->getSearchWidget()->setList(layerList);
 }
 
+te::map::AbstractLayerPtr te::qt::widgets::SegmenterWizard::getOutputLayer()
+{
+  return m_outputLayer;
+}
+
 void te::qt::widgets::SegmenterWizard::addPages()
 {
   m_layerSearchPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
@@ -136,6 +142,10 @@ bool te::qt::widgets::SegmenterWizard::execute()
   {
     if(algorithmInstance.execute(algoOutputParams))
     {
+      //set output layer
+      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+                                                   m_rasterInfoPage->getWidget()->getInfo());
+
       QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully"));
     }
     else

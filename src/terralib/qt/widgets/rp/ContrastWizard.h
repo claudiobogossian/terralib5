@@ -66,6 +66,8 @@ namespace te
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
+          te::map::AbstractLayerPtr getOutputLayer();
+
         protected:
 
           void addPages();
@@ -77,6 +79,8 @@ namespace te
           std::auto_ptr<te::qt::widgets::ContrastWizardPage> m_contrastPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
+
+          te::map::AbstractLayerPtr m_outputLayer;
       };
     }   // end namespace widgets
   }     // end namespace qt
