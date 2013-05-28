@@ -32,7 +32,7 @@
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/query/Select.h>
 #include <terralib/plugin.h>
-#include <terralib/qt/widgets/dataview/TabularViewer.h>
+#include <terralib/qt/widgets/table/DataSetTableView.h>
 #include <terralib/qt/widgets/query/QueryBuilderWizard.h>
 #include <terralib/qt/widgets/query/QueryLayerBuilderWizard.h>
 
@@ -88,13 +88,13 @@ int main(int argc, char** argv)
 
       QGridLayout* layout = new QGridLayout(&dlg);
 
-      te::qt::widgets::TabularViewer tv(&dlg);
+      te::qt::widgets::DataSetTableView tv(&dlg);
 
       layout->addWidget(&tv);
       tv.show();
 
       //show result
-      tv.showData(dataSet);
+      tv.setDataSet(dataSet);
 
       dlg.exec();
 

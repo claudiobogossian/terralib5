@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -91,6 +91,11 @@ te::mem::DataSet::DataSet(te::da::DataSet& rhs, const std::vector<std::size_t>& 
 
 te::mem::DataSet::~DataSet()
 {
+}
+
+void te::mem::DataSet::clear()
+{
+  m_items->clear();
 }
 
 void te::mem::DataSet::copy(te::da::DataSet& src, std::size_t limit)

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -118,6 +118,9 @@ namespace te
 
         /*! \brief Destructor. */
         ~DataSet();
+
+        /*! \brief It clears all the dataset items. */
+        void clear();
 
         /*!
           \brief It copies up to limit items from the source dataset.

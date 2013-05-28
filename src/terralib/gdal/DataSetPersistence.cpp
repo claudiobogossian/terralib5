@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -50,49 +50,15 @@ te::gdal::DataSetPersistence::~DataSetPersistence()
 {
 }
 
-void te::gdal::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
-{
-  te::rst::RasterProperty* rprop = static_cast<te::rst::RasterProperty*>(dt->getProperty(0));
-
-  GDALDataset* gds = CreateRaster(rprop->getGrid(), rprop->getBandProperties(), rprop->getInfo());
-
-  if(!gds)
-    throw Exception(TR_GDAL("GDAL driver could not persist the raster file."));
-
-  te::rst::Raster* rOut = new Raster(gds, te::common::RWAccess);
-
-  te::rst::Raster* rIn = d->getRaster(0);
-
-  std::complex<double> val;
-
-  for(std::size_t b = 0; b < rIn->getNumberOfBands(); ++b)
-  {
-    for(std::size_t l = 0; l < rIn->getNumberOfRows(); ++l)
-    {
-      for(std::size_t c = 0; c < rIn->getNumberOfColumns(); ++c)
-      {
-        rIn->getValue(c,l,val,b);
-        rOut->setValue(c,l,val,b);
-      }
-    }
-  }
-
-  delete rIn;
-  delete rOut;
-}
-
-void te::gdal::DataSetPersistence::remove(const std::string& /*datasetName*/)
-{
-  // TODO: remover arquivo ou colocar nodata?
-  throw te::common::Exception(TR_GDAL("GDAL driver: not implemented yet."));
-}
-
 void te::gdal::DataSetPersistence::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
 {
   throw te::common::Exception(TR_GDAL("GDAL driver does not support this method."));
 }
 
-void te::gdal::DataSetPersistence::add(const std::string& /*datasetName*/, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
+void te::gdal::DataSetPersistence::add(const std::string& /*datasetName*/,
+                                       te::da::DataSet* /*d*/,
+                                       const std::map<std::string, std::string>& /*options*/,
+                                       std::size_t /*limit*/)
 {
   throw te::common::Exception(TR_GDAL("GDAL driver: not implemented yet."));
 }
@@ -104,6 +70,6 @@ void te::gdal::DataSetPersistence::update(const std::string& /*datasetName*/,
                                           const std::map<std::string, std::string>& /*options*/,
                                           std::size_t /*limit*/)
 {
-  // The raster interface should be used.
+// The raster interface should be used.
   throw te::common::Exception(TR_GDAL("GDAL driver does not support this method."));
 }
