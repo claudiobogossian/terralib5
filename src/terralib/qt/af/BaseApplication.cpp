@@ -488,7 +488,12 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
 
   ProjectInfoDialog editor(this);
   editor.setProject(m_project);
-  editor.exec();
+  
+  if(editor.exec() == QDialog::Accepted)
+  {
+    QString projectTile(tr(" - Project: %1"));
+    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
+  }
 }
 
 void te::qt::af::BaseApplication::onLayerPropertiesTriggered()

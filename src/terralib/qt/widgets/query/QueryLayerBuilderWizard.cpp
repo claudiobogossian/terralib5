@@ -93,7 +93,10 @@ bool te::qt::widgets::QueryLayerBuilderWizard::validateCurrentPage()
     }
 
     te::da::DataSourceInfoPtr dsInfo = *list.begin();
-    te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().find(dsInfo->getId());
+    te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
+
+    if(!dataSource->isOpened())
+      dataSource->open();
 
     setDataSource(dataSource);
 
