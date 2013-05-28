@@ -669,7 +669,7 @@ void te::qt::widgets::UpdateProperty::setGeometryPropertyData()
   geometrySRIDLineEdit->setText(QString().setNum(gp->getSRID()));
 
   // Set the defaultGeometryCheckBox, if this geometry property is the default
-  te::gm::GeometryProperty* defaultGeomProperty = m_propertyParent->getDefaultGeomProperty();
+  te::gm::GeometryProperty* defaultGeomProperty = te::da::GetFirstGeomProperty(m_propertyParent);
   if(gp == defaultGeomProperty)
     defaultGeometryCheckBox->setChecked(true);
   else

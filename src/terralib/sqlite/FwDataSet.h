@@ -70,12 +70,6 @@ namespace te
 
         te::common::AccessPolicy getAccessPolicy() const;
 
-        te::da::DataSetType* getType();
-
-        const te::da::DataSetType* getType() const;
-
-        void loadTypeInfo();
-
         te::gm::Envelope* getExtent(std::size_t i);
 
         std::size_t getNumProperties() const;
@@ -167,8 +161,6 @@ namespace te
 
       private:
 
-        te::gm::Geometry* m_geomFilter;     //!< The geometric filter.
-        te::gm::Envelope* m_mbrFilter;      //!< The MBR filter.
         std::string* m_originalsql;         //!< The original SQL.
         sqlite3_stmt* m_stmt;               //!< A pointer to the internal prepared statement.
         DataSourceTransactor* m_t;          //!< A pointer to the associated transactor.

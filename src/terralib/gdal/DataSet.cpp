@@ -48,7 +48,16 @@ te::gdal::DataSet::DataSet(DataSourceTransactor* t, te::da::DataSetType* dt, te:
   assert(m_transactor);
   assert(m_dsType);
 
-  loadTypeInfo();
+  if(m_dsType == 0)
+  {
+    std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(m_transactor->getCatalogLoader());
+
+    te::da::DataSetType* dt = cloader->getDataSetType(m_dsType->getName(), true);
+
+    assert(dt);
+
+    m_dsType = dt;
+  }
 }
 
 te::gdal::DataSet::~DataSet()
@@ -160,17 +169,3 @@ bool te::gdal::DataSet::isAfterEnd() const
   return (m_i >= m_size);
 }
 
-void te::gdal::DataSet::loadTypeInfo()
-{
-  if(m_dsType->isFullLoaded())
-    return;
-
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(m_transactor->getCatalogLoader());
-
-  te::da::DataSetType* dt = cloader->getDataSetType(m_dsType->getName(), true);
-
-  assert(dt);
-
-  delete m_dsType;
-  m_dsType = dt;
-}

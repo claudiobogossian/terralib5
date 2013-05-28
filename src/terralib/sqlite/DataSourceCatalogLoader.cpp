@@ -125,8 +125,8 @@ te::da::DataSetType* te::sqlite::DataSourceCatalogLoader::getDataSetType(const s
 
     if(p->getType() == te::dt::GEOMETRY_TYPE)
     {
-      dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
-      getGeometryInfo(dt->getDefaultGeomProperty());
+      te::gm::GeometryProperty* gp = static_cast<te::gm::GeometryProperty*>(p);
+      getGeometryInfo(gp);
     }
   }
 
@@ -134,13 +134,9 @@ te::da::DataSetType* te::sqlite::DataSourceCatalogLoader::getDataSetType(const s
   if(!pk->getProperties().empty())
     dt->setPrimaryKey(pk.release());
 
-  if(full)
-  {
-    getIndexes(dt.get());
-    getUniqueKeys(dt.get());
-    //getCheckConstraints(dt.get());
-    dt->setFullLoaded(true);
-  }
+  getIndexes(dt.get());
+  getUniqueKeys(dt.get());
+  //getCheckConstraints(dt.get());
 
   return dt.release();
 }
@@ -174,8 +170,8 @@ void te::sqlite::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
 
     if(p->getType() == te::dt::GEOMETRY_TYPE)
     {
-      dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
-      getGeometryInfo(dt->getDefaultGeomProperty());
+      te::gm::GeometryProperty* gp = static_cast<te::gm::GeometryProperty*>(p);
+      getGeometryInfo(gp);
     }
   }
 }

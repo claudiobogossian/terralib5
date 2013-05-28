@@ -44,39 +44,19 @@
 
 te::da::DataSetType::DataSetType(const std::string& name, unsigned int id)
   : CompositeProperty(name, name, te::dt::DATASET_TYPE, id, 0),
-    m_defaultGeom(0),
-    m_defaultRaster(0),
     m_catalog(0),
     m_pk(0),
-    m_fullLoaded(false),
     m_category(te::da::UNKNOWN_DATASET_TYPE)
 {
 }
 
 te::da::DataSetType::DataSetType(const DataSetType& rhs)
  : CompositeProperty(rhs),
-   m_defaultGeom(0),
-   m_defaultRaster(0),
    m_catalog(0),
    m_pk(0),
    m_title(rhs.m_title),
-   m_fullLoaded(rhs.m_fullLoaded),
    m_category(rhs.m_category)
 {
-// locate geom attribute
-  if(rhs.hasDefaultGeom())
-  {
-    std::size_t pos = rhs.getDefaultGeomPropertyPos();
-    m_defaultGeom = static_cast<te::gm::GeometryProperty*>(getProperty(pos));
-  }
-
-// locate raster attribute
-  if(rhs.hasDefaultRaster())
-  {
-    std::size_t pos = rhs.getDefaultRasterPropertyPos();
-    m_defaultRaster = static_cast<te::rst::RasterProperty*>(getProperty(pos));
-  }
-
   if(rhs.m_idxs.empty() == false)
   {
     const std::size_t size = rhs.m_idxs.size();
@@ -238,36 +218,6 @@ te::da::DataSetType& te::da::DataSetType::operator=(const DataSetType& /*rhs*/)
   //}
 
   //return *this;
-}
-
-te::gm::GeometryProperty* te::da::DataSetType::findFirstGeomProperty() const
-{
-  te::dt::Property* p = findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
-
-  if(p != 0)
-    return static_cast<te::gm::GeometryProperty*>(p);
-  
-  return 0;
-}
-
-std::size_t te::da::DataSetType::getDefaultGeomPropertyPos() const
-{
-  return CompositeProperty::getPropertyPosition(m_defaultGeom);
-}
-
-te::rst::RasterProperty* te::da::DataSetType::findFirstRasterProperty() const
-{
-  te::dt::Property* p = findFirstPropertyOfType(te::dt::RASTER_TYPE);
-
-  if(p != 0)
-    return static_cast<te::rst::RasterProperty*>(p);
-
-  return 0;
-}
-
-std::size_t te::da::DataSetType::getDefaultRasterPropertyPos() const
-{
-  return CompositeProperty::getPropertyPosition(m_defaultRaster);
 }
 
 void te::da::DataSetType::setPrimaryKey(PrimaryKey* pk)
@@ -576,10 +526,6 @@ void te::da::DataSetType::remove(Property* p)
 
 // now the property can be removed!
   CompositeProperty::remove(p);
-
-// if p is the default geometry property, look for another geometric property
-  if(p == m_defaultGeom)
-    m_defaultGeom = findFirstGeomProperty();
 }
 
 void te::da::DataSetType::clear()
@@ -657,10 +603,6 @@ void te::da::DataSetType::replace(Property* p, Property* pp)
         break;
       }
   }
-
-// after replacing it, verify if the replaced property is the default geometry property
-  if(m_defaultGeom == p)
-    m_defaultGeom = static_cast<te::gm::GeometryProperty*>(pp); 
 }
 
 te::dt::Property* te::da::DataSetType::clone() const

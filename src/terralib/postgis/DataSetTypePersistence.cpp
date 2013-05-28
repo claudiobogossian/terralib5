@@ -533,25 +533,22 @@ void te::pgis::DataSetTypePersistence::add(te::da::DataSetType* dt, te::dt::Prop
   }
 
   m_t->execute(sql); 
-  
-  // add property to dataset type
+
+// add property to dataset type
   if(p->getParent() == 0)
     dt->add(p); 
-    
-  if(p->getType() == te::dt::GEOMETRY_TYPE)  
-    dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
-  
-  // get property id in the database
+
+// get property id in the database
   std::auto_ptr<CatalogLoader> loader(m_t->getPGCatalogLoader());
   loader->getPropertyId(p);
-  
+
   if(refresh)
   {  
     loader->getCheckConstraints(dt);
     loader->getIndexes(dt);
   }
 }
-             
+
 void te::pgis::DataSetTypePersistence::drop(te::dt::Property* p, const bool refresh)
 {
   if((p->getParent() == 0) || (p->getParent()->getType() != te::dt::DATASET_TYPE))

@@ -51,7 +51,7 @@ te::da::DataSetType* te::vp::CreateDataSetType(std::string newName,
 {
   te::da::DataSetType* outputDt = new te::da::DataSetType(newName);
 
-  size_t fiGeomPropPos = firstDt->getDefaultGeomPropertyPos();
+  size_t fiGeomPropPos = firstDt->getPropertyPosition(firstDt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
 
   for(size_t i = 0; i < firstProps.size(); ++i)
   {
@@ -68,11 +68,10 @@ te::da::DataSetType* te::vp::CreateDataSetType(std::string newName,
     outputDt->add(prop);
   }
 
-  te::gm::GeometryProperty* fiGeomProp = firstDt->getDefaultGeomProperty();
+  te::gm::GeometryProperty* fiGeomProp = te::da::GetFirstGeomProperty(firstDt);
 
   te::gm::GeometryProperty* newGeomProp = (te::gm::GeometryProperty*)fiGeomProp->clone();
   outputDt->add(newGeomProp);
-  outputDt->setDefaultGeomProperty(newGeomProp);
 
   return outputDt;
 }
@@ -81,7 +80,7 @@ te::vp::DataSetRTree te::vp::CreateRTree(te::da::DataSetType* dt, te::da::DataSe
 {
   te::vp::DataSetRTree rtree(new te::sam::rtree::Index<size_t, 8>);
 
-  size_t secGeomPropPos = dt->getDefaultGeomPropertyPos();
+  size_t secGeomPropPos = dt->getPropertyPosition(dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
 
   size_t secondDsCount = 0;
   while(ds->moveNext())
@@ -161,7 +160,7 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 
       for(size_t i = 0; i < resultProps.size(); ++i)
       {
-        if(resultProps[i] != resultPair.first->getDefaultGeomProperty())
+        if(resultProps[i] != resultPair.first->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE))
           auxProps.push_back(resultProps[i]);
       }
 
@@ -202,10 +201,11 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
   firstMember.ds->moveBeforeFirst();
 
-  size_t fiGeomPropPos = firstMember.dt->getDefaultGeomPropertyPos();
-  te::gm::GeometryProperty* fiGeomProp = firstMember.dt->getDefaultGeomProperty();
 
-  size_t secGeomPropPos = secondMember.dt->getDefaultGeomPropertyPos();
+  te::gm::GeometryProperty* fiGeomProp = te::da::GetFirstGeomProperty(firstMember.dt);
+  size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp);
+
+  size_t secGeomPropPos = secondMember.dt->getPropertyPosition(te::da::GetFirstGeomProperty(secondMember.dt));
 
   // Create the DataSetType and DataSet
   te::da::DataSetType* outputDt = CreateDataSetType(newName, firstMember.dt, firstMember.props, secondMember.dt, secondMember.props);

@@ -401,11 +401,8 @@ void te::sqlite::DataSetTypePersistence::add(te::da::DataSetType* dt, te::dt::Pr
   
 // add property to dataset type
   if(p->getParent() == 0)
-    dt->add(p); 
-    
-  if(p->getType() == te::dt::GEOMETRY_TYPE)  
-    dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
-  
+    dt->add(p);
+
 // get property id in the database
   p->setId(dt->size() - 1);
 }

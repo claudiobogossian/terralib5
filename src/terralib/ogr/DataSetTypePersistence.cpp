@@ -37,6 +37,7 @@
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/Sequence.h"
 #include "../dataaccess/dataset/UniqueKey.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../geometry/GeometryProperty.h"
 #include "DataSource.h"
 #include "DataSetTypePersistence.h"
@@ -63,10 +64,9 @@ te::ogr::DataSetTypePersistence::~DataSetTypePersistence()
 void te::ogr::DataSetTypePersistence::create(te::da::DataSetType* dt, const std::map<std::string, std::string>& /*options*/)
 {
   OGRwkbGeometryType geomType = wkbUnknown;
-  if(dt->hasDefaultGeom())
-    geomType = Convert2OGR(dt->getDefaultGeomProperty()->getGeometryType());
-  else if(dt->hasGeom())
-    geomType = Convert2OGR(dt->findFirstGeomProperty()->getGeometryType());
+
+  if(dt->hasGeom())
+    geomType = Convert2OGR(te::da::GetFirstGeomProperty(dt)->getGeometryType());
 
   OGRDataSource* ogrds = m_t->getOGRDataSource();
   OGRLayer* newLayer = ogrds->CreateLayer(dt->getName().c_str(), 0, geomType);
