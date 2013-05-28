@@ -91,14 +91,14 @@ namespace te
 
           \return a property.
         */
-        te::dt::Property* te::vp::AggregationDialog::getSelectedPropertyByName(std::string propertyName);
+        te::dt::Property* getSelectedPropertyByName(std::string propertyName);
 
         /*!
           \brief Get the selected properties based on selected QListWidgetItem.
 
           \return a Vector with selected properties.
         */
-        std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties();
+        std::vector<te::dt::Property*> getSelectedProperties();
 
         /*!
           \brief Set Grouping Functions Type for combobox 'm_selectAllComboBox' and 'm_rejectAllComboBox' based on a enum.

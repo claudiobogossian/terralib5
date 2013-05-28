@@ -39,10 +39,6 @@
 namespace te
 {
 // Forward declarations 
-  namespace gm { class GeometryProperty; }
-
-  namespace rst { class RasterProperty; }
-
   namespace da
   {
     class CheckConstraint;
@@ -146,89 +142,11 @@ namespace te
         bool hasGeom() const;
 
         /*!
-          \brief It returns true if the DataSetType has a default geometry property; otherwise, it returns false.
-
-          \return True if the DataSetType has a default geometry property; otherwise, it returns false.
-        */
-        bool hasDefaultGeom() const { return m_defaultGeom != 0; }
-
-        /*!
-          \brief It returns the default geometric attribute of the dataset.
-
-          \return The default geometric attribute of the dataset.
-          
-          \pre Call this method only if it has a default geometric property.
-        */
-        te::gm::GeometryProperty* getDefaultGeomProperty() const { return m_defaultGeom; }
-
-        /*!
-          \brief It sets the default geometry property.
-
-          \param p The default geometry property.
-        */
-        void setDefaultGeomProperty(te::gm::GeometryProperty* p) { m_defaultGeom = p; }
-
-        /*!
-          \brief Finds the first geometric property or returns NULL if none is found.
-
-          \return The first geometric property or NULL if none is found.
-        */
-        te::gm::GeometryProperty* findFirstGeomProperty() const;
-
-        /*!
-          \brief It returns the index of the default geometric attribute of the dataset.
-
-          \return The index of the default geometric attribute of the dataset.
-
-          \note The returned value will be npos if it doesn't have a geometry property or if it belongs to a nested dataset.
-        */
-        std::size_t getDefaultGeomPropertyPos() const;
-
-        /*!
           \brief It returns true if the DataSetType has at least one raster property; otherwise, it returns false.
 
           \return True if the DataSetType has at least one raster property; otherwise, it returns false.
         */
         bool hasRaster() const;
-
-        /*!
-          \brief It returns true if the DataSetType has a default raster property; otherwise, it returns false.
-
-          \return True if the DataSetType has a default raster property; otherwise, it returns false.
-        */
-        bool hasDefaultRaster() const { return m_defaultRaster != 0; }
-
-        /*!
-          \brief It returns the default raster attribute of the dataset.
-
-          \return The default raster attribute of the dataset.
-          
-          \pre Call this method only if it has a default raster property.
-        */
-        te::rst::RasterProperty* getDefaultRasterProperty() const { return m_defaultRaster; }
-
-        /*!
-          \brief It sets the default raster property.
-
-          \param p The default raster property.
-        */
-        void setDefaultRasterProperty(te::rst::RasterProperty* p) { m_defaultRaster = p; }
-
-        /*!
-          \brief Finds the first raster property or returns NULL if none is found.
-
-          \return The first raster property or NULL if none is found.
-        */
-        te::rst::RasterProperty* findFirstRasterProperty() const;
-
-        /*!
-          \brief It returns the index of the default raster attribute of the dataset.
-
-          \return The index of the default raster attribute of the dataset.
-
-          \note The returned value will be npos if it doesn't have a raster property or if it belongs to a nested dataset.
-        */
-        std::size_t getDefaultRasterPropertyPos() const;
 
         /*!
           \brief It returns the catalog that owns the DataSetType.
@@ -246,20 +164,6 @@ namespace te
                    remember to detach it from the catalog before calling this method.
         */
         void setCatalog(DataSourceCatalog* catalog) { m_catalog = catalog; }
-
-        /*!
-          \brief It returns if the DataSetType was full loaded from data source.
-
-          \return It returns true if the DataSetType was full loaded and false otherwise.
-        */
-        bool isFullLoaded() const { return m_fullLoaded; }
-        
-        /*!
-          \brief It sets if the DataSetType was full loaded from data source.
-
-          \param fullLoaded It is true if the DataSetType was full loaded and false otherwise.   
-        */
-        void setFullLoaded(const bool fullLoaded) { m_fullLoaded = fullLoaded; }      
 
         /*!
           \brief It returns the dataset category.
@@ -534,7 +438,7 @@ namespace te
         /*! \brief It removes all indexes from the dataset type. */
         void clearIndexes();
 
-        //@}        
+        //@}
 
         /** @name Foreign Key Methods
          *  Methods for managing foreign Keys
@@ -722,8 +626,6 @@ namespace te
 
       private:
 
-        te::gm::GeometryProperty* m_defaultGeom;            //!< A pointer to the default geometry property.
-        te::rst::RasterProperty* m_defaultRaster;           //!< A pointer to the default raster property.
         DataSourceCatalog* m_catalog;                       //!< The associated catalog.        
         PrimaryKey* m_pk;                                   //!< The DataSetType primary key.
         std::string m_title;                                //!< A brief description of the DataSetType.
@@ -731,7 +633,6 @@ namespace te
         std::vector<CheckConstraint*> m_checkConstraints;   //!< A vector of check constraints.
         std::vector<Index*> m_idxs;                         //!< A vector of indexes.
         std::vector<UniqueKey*> m_uniqueKeys;               //!< A vector of unique key constraints.
-        bool m_fullLoaded;                                  //!< A flag to indicate if the data set type was full loaded or not from data source.
         int m_category;                                     //!< A category
     };
 
@@ -749,7 +650,6 @@ namespace te
 
   } // end namespace da
 }   // end namespace te
-
 
 #endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASETTYPE_H
 

@@ -104,8 +104,8 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
     if(it->get() == 0)
       continue;
 
-    if(!(*it)->isFullLoaded())
-      te::da::LoadFull((*it).get(), datasource->getId());
+    //if(!(*it)->isFullLoaded())
+    //  te::da::LoadFull((*it).get(), datasource->getId());
 
     //create dataset adapter
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter((*it).get(), targetDSPtr->getCapabilities());

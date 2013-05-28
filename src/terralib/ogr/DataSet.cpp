@@ -65,8 +65,6 @@ te::ogr::DataSet::DataSet(DataSourceTransactor* trans, OGRLayer* layer, bool isO
   
   assert(m_dt);
 
-  m_dt->setFullLoaded(true);
-
   if(m_dt->hasGeom())
   {
     OGRSpatialReference* osrs = m_layer->GetSpatialRef();

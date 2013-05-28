@@ -290,10 +290,7 @@ void te::mysql::DataSetTypePersistence::add(te::da::DataSetType* dt, te::dt::Pro
 // add property to dataset type
   if(p->getParent() == 0)
     dt->add(p); 
-    
-  if(p->getType() == te::dt::GEOMETRY_TYPE)  
-    dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
-  
+
 // refresh constraints
   //std::auto_ptr<DataSourceCatalogLoader> loader(m_t->getMyCatalogLoader());  
   //loader->getCheckConstraints(dt);

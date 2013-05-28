@@ -27,6 +27,7 @@
 #include "../../common/Translator.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/GeometryProperty.h"
+#include "../../raster/RasterProperty.h"
 #include "../dataset/DataSet.h"
 #include "../dataset/DataSetAdapter.h"
 #include "../dataset/DataSetPersistence.h"
@@ -97,8 +98,6 @@ void te::da::LoadFull(DataSetType* dataset, DataSourceCatalogLoader* cloader)
   cloader->getUniqueKeys(dataset);
 
   cloader->getPrimaryKey(dataset);
-
-  dataset->setFullLoaded(true);
 }
 
 void te::da::LoadProperties(te::da::DataSetType* dataset, const std::string& datasourceId)
@@ -498,6 +497,47 @@ std::size_t te::da::GetPropertyPos(const DataSet* dataset, const std::string& na
   }
 
   return std::string::npos;
+}
+
+te::dt::Property* te::da::GetFirstSpatialProperty(const DataSetType* dt)
+{
+  assert(dt);
+
+  const std::size_t np = dt->size();
+
+  for(std::size_t i = 0; i != np; ++i)
+  {
+    te::dt::Property* p = dt->getProperty(i);
+
+    assert(p);
+
+    int pdt = p->getType();
+
+    if(pdt == te::dt::GEOMETRY_TYPE || pdt == te::dt::RASTER_TYPE)
+    {
+      return p;
+    }
+  }
+
+  return 0;
+}
+
+te::gm::GeometryProperty* te::da::GetFirstGeomProperty(const DataSetType* dt)
+{
+  te::dt::Property* p = dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
+
+  assert(p);
+
+  return static_cast<te::gm::GeometryProperty*>(p);
+}
+
+te::rst::RasterProperty* te::da::GetFirstRasterProperty(const DataSetType* dt)
+{
+  te::dt::Property* p = dt->findFirstPropertyOfType(te::dt::RASTER_TYPE);
+
+  assert(p);
+
+  return static_cast<te::rst::RasterProperty*>(p);
 }
 
 //te::da::DataSetType* te::da::CreateDataSetType(const te::da::DataSet* dataset)
