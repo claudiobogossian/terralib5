@@ -56,7 +56,7 @@
 #include <vector>
 
 // BOOST
-#include <boost/lexical_cast.hpp>
+#include <boost/lexical_cast.hpp> 
 
 //---------------------------------Remove after tests *BEGIN--------------------------------------------------------//
 //#include "../../qt/widgets/canvas/Canvas.h"

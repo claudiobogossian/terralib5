@@ -31,6 +31,7 @@
 #include "../../datatype/Property.h"
 #include "../../geometry/Geometry.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 #include "Config.h"
 #include "Enums.h"

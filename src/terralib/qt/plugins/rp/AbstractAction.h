@@ -27,6 +27,7 @@
 #define __TE_QT_PLUGINS_RP_INTERNAL_ABSTRACTACTION_H
 
 // TerraLib
+#include "../../../maptools/AbstractLayer.h"
 #include "Config.h"
 
 // Qt
@@ -85,6 +86,14 @@ namespace te
               \param pixmap The action pixmap name.
             */
             void createAction(std::string name, std::string pixmap = "");
+
+            /*!
+              \brief Add a new layer into layer explorer widget
+
+              \param layer The layer auto pointer
+
+            */
+            void addNewLayer(te::map::AbstractLayerPtr layer);
 
           protected:
 
