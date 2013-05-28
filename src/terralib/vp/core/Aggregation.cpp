@@ -27,10 +27,17 @@
 #include "../../common/Translator.h"
 #include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/DataSetTypePersistence.h"
+#include "../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Property.h"
 #include "../../datatype/SimpleProperty.h"
+#include "../../datatype/StringProperty.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../maptools/AbstractLayer.h"
@@ -48,35 +55,38 @@
 #include <string>
 #include <vector>
 
+// BOOST
+#include <boost/lexical_cast.hpp>
+
 //---------------------------------Remove after tests *BEGIN--------------------------------------------------------//
-#include "../../qt/widgets/canvas/Canvas.h"
-#include "../../color/RGBAColor.h"
-#include "../../geometry/Envelope.h"
-
-void PrintPair(std::string name, std::pair<te::da::DataSetType*, te::da::DataSet*> pair, te::gm::Envelope e)
-{
-  te::qt::widgets::Canvas canvas(512, 512);
-  canvas.calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
-  canvas.setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
-
-  canvas.setPolygonFillColor(te::color::RGBAColor(255, 0, 0, 0));
-  canvas.setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-
-  te::da::DataSet* ds = pair.second;
-  size_t geomPos = pair.first->getDefaultGeomPropertyPos();
-
-  ds->moveBeforeFirst();
-
-  while(ds->moveNext())
-  {
-    canvas.draw(ds->getGeometry(geomPos));
-  }
-
-  std::string fileName = "C:\\Code\\Shapes\\Test\\Region"+name+".png";
-  canvas.save(fileName.c_str(), te::map::PNG);
-}
-
-te::gm::Envelope e;
+//#include "../../qt/widgets/canvas/Canvas.h"
+//#include "../../color/RGBAColor.h"
+//#include "../../geometry/Envelope.h"
+//
+//void PrintPair(std::string name, std::pair<te::da::DataSetType*, te::da::DataSet*> pair, te::gm::Envelope e)
+//{
+//  te::qt::widgets::Canvas canvas(512, 512);
+//  canvas.calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+//  canvas.setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+//
+//  canvas.setPolygonFillColor(te::color::RGBAColor(255, 0, 0, 0));
+//  canvas.setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
+//
+//  te::da::DataSet* ds = pair.second;
+//  size_t geomPos = pair.first->getDefaultGeomPropertyPos();
+//
+//  ds->moveBeforeFirst();
+//
+//  while(ds->moveNext())
+//  {
+//    canvas.draw(ds->getGeometry(geomPos));
+//  }
+//
+//  std::string fileName = "C:\\Code\\Shapes\\Test\\Region"+name+".png";
+//  canvas.save(fileName.c_str(), te::map::PNG);
+//}
+//
+//te::gm::Envelope e;
 //---------------------------------Remove after tests *END--------------------------------------------------------//
 
 void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
@@ -86,8 +96,7 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                          const std::string& outputLayerName,
                          const te::da::DataSourceInfoPtr& dsInfo)
 {
-  e = inputLayer->getExtent();
-
+  //e = inputLayer->getExtent();
 
   std::auto_ptr<te::mem::DataSet> inputDataSet((te::mem::DataSet*)inputLayer->getData());
   te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(inputDataSet.get());
@@ -183,20 +192,36 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
       }
     }
 
-    outputDataSetItem->setGeometry("Geometry", *geometry);
+    outputDataSetItem->setGeometry("geom", *geometry);
     
     outputDataSet->add(outputDataSetItem);
 
 //---------------------------------Remove after tests *BEGIN--------------------------------------------------------//
-    std::pair<te::da::DataSetType*, te::mem::DataSet*> pair;
-    pair.first = outputDataSetType;
-    pair.second = outputDataSet.get();
+    //std::pair<te::da::DataSetType*, te::mem::DataSet*> pair;
+    //pair.first = outputDataSetType;
+    //pair.second = outputDataSet.get();
 
-    PrintPair(value, pair, e);
+    //PrintPair(value, pair, e);
 //---------------------------------Remove after tests *END--------------------------------------------------------//
 
     ++it;
   }
+
+//--------------------------------Persistência *BEGIN-------------------------------------------------------------------//
+
+  std::pair<te::da::DataSetType*, te::mem::DataSet*> pair;
+  pair.first = outputDataSetType;
+  pair.second = outputDataSet.get();
+
+  const std::map<std::string, std::string> options;
+
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
+  std::auto_ptr<te::da::DataSourceTransactor> t(dataSource->getTransactor());
+  pair.second->moveFirst();
+  te::da::Create(t.get(), pair.first, pair.second, options);
+
+//--------------------------------Persistência *END-------------------------------------------------------------------//
+
  }
 
 te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, const std::vector<te::dt::Property*>& properties, const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType)
@@ -212,10 +237,10 @@ te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, 
   }
 
   propertyResult.erase(propertyResult.begin());
-  te::dt::SimpleProperty* simpleProperty = new te::dt::SimpleProperty(propertyResult, te::dt::STRING_TYPE);
-  dataSetType->add(simpleProperty);
+  te::dt::StringProperty* stringProperty = new te::dt::StringProperty(propertyResult);
+  dataSetType->add(stringProperty);
 
-  te::dt::SimpleProperty* aggregationProperty = new te::dt::SimpleProperty("Aggregation_Count", te::dt::UINT32_TYPE);
+  te::dt::SimpleProperty* aggregationProperty = new te::dt::SimpleProperty("Aggregation_Count", te::dt::INT32_TYPE);
   dataSetType->add(aggregationProperty);
 
   std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >::const_iterator it = groupingFunctionsType.begin();
@@ -232,16 +257,25 @@ te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, 
     {
       functionResult = propertyResult;
       functionResult += GetGroupingFunctionsTypeMap(vectorResult[i]);
-    
-      te::dt::SimpleProperty* functrionProperty = new te::dt::SimpleProperty(functionResult, it->first->getType());
-      dataSetType->add(functrionProperty);
+      
+      if(it->first->getType() == te::dt::STRING_TYPE)
+      {
+        te::dt::StringProperty* functrionProperty = new te::dt::StringProperty(functionResult);
+        dataSetType->add(functrionProperty);
+      }
+      else
+      {
+        te::dt::SimpleProperty* functrionProperty = new te::dt::SimpleProperty(functionResult, te::dt::DOUBLE_TYPE);
+        dataSetType->add(functrionProperty);
+      }
     }
 
     ++it;
   }
   propertyResult.erase(propertyResult.end());
 
-  te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("Geometry");
+  te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
+  geometry->setGeometryType(te::gm::GeometryType);
   dataSetType->add(geometry);
   dataSetType->setDefaultGeomProperty(geometry);
 
@@ -263,6 +297,7 @@ std::size_t te::vp::GetPropertyIndex(const te::map::AbstractLayerPtr& layer, con
       return index;
     }
   }
+  return -1;
 }
 
 std::size_t te::vp::GetPropertyIndex(const te::mem::DataSetItem* item, const std::string propertyName)
@@ -277,6 +312,7 @@ std::size_t te::vp::GetPropertyIndex(const te::mem::DataSetItem* item, const std
       return index;
     }
   }
+  return -1;
 }
 
 std::string te::vp::GetGroupingFunctionsTypeMap(const int type)
@@ -398,15 +434,17 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
       for(std::size_t i = 0; i < items.size(); ++i)
       {
         std::size_t index = GetPropertyIndex(items[i], propertyName);
-        values.push_back(items[i]->getString(index));
+
+        if(index != -1)
+          values.push_back(items[i]->getString(index));
       }
 
       std::sort(values.begin(), values.end());
 
       result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MIN_VALUE", *values.begin() ) );
       result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MAX_VALUE", values[values.size() - 1] ) );
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_COUNT", te::common::Convert2String(values.size())));
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_VALID_COUNT", te::common::Convert2String(values.size())));
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_COUNT", boost::lexical_cast<std::string>(values.size())));
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_VALID_COUNT", boost::lexical_cast<std::string>(values.size())));
     }
     ++it;
   }
@@ -437,7 +475,9 @@ std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions(const std
       for(std::size_t i = 0; i < items.size(); ++i)
       {
         std::size_t index = GetPropertyIndex(items[i], propertyName);
-        values.push_back(items[i]->getDouble(index));
+
+        if(index != -1)
+          values.push_back(items[i]->getDouble(index));
       }
 
       std::sort(values.begin(), values.end());
