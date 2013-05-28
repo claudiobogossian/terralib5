@@ -155,9 +155,10 @@ void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
 
       if(it->second->getResult()->hasGeom())
       {
-        te::gm::GeometryProperty* geomProp = it->second->getResult()->findFirstGeomProperty();
+        te::gm::GeometryProperty* geomProp = dynamic_cast<te::gm::GeometryProperty*>(it->second->getResult()->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
 
-        geomProp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+        if(geomProp)
+          geomProp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
       }
 
       break;
@@ -205,10 +206,10 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
         m_ui->m_sridSearchToolButton->setEnabled(true);
         m_ui->m_sridLineEdit->setEnabled(true);
 
-        te::gm::GeometryProperty* gemProp = dataset->findFirstGeomProperty();
+        te::gm::GeometryProperty* geomProp = dynamic_cast<te::gm::GeometryProperty*>(dataset->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
 
-        if(gemProp)
-          m_ui->m_sridLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(gemProp->getSRID())));
+        if(geomProp)
+          m_ui->m_sridLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(geomProp->getSRID())));
       }
       else
       {
@@ -220,8 +221,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
       m_dataSetAdapterWidget->setAdapterParameters(it->second->getConvertee(), it->second, m_targetDatasource);
 
       // fill constraints
-      te::da::DataSetTypePtr dstypePtr(dataset);
-      m_constraintWidget->setDataSetType(dstypePtr);
+      m_constraintWidget->setDataSetType(dataset);
       break;
     }
     ++it;

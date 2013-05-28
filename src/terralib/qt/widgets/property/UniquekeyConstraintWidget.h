@@ -48,7 +48,7 @@ namespace te
 
         public:
 
-          UniqueKeyConstraintWidget(te::da::DataSetTypePtr dsType, QWidget* parent = 0, Qt::WindowFlags f = 0);
+          UniqueKeyConstraintWidget(te::da::DataSetType* dsType, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           ~UniqueKeyConstraintWidget();
 

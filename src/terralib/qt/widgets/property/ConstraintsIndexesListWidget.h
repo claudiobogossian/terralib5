@@ -69,7 +69,7 @@ namespace te
 
         public:
 
-          void setDataSetType(const te::da::DataSetTypePtr& dsType);
+          void setDataSetType(te::da::DataSetType* dsType);
 
 
         public slots:
@@ -104,7 +104,7 @@ namespace te
         private:
 
          std::auto_ptr<Ui::ConstraintsIndexesListWidgetForm> m_ui;
-         te::da::DataSetTypePtr m_dsType;
+         te::da::DataSetType* m_dsType;
       }; 
 
     } // end namespace widgets
