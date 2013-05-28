@@ -33,7 +33,7 @@
 // Qt
 #include <QtGui/QMessageBox>
 
-te::qt::widgets::ConstraintWidget::ConstraintWidget(const te::da::DataSetTypePtr& dsType, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::ConstraintWidget::ConstraintWidget(te::da::DataSetType* dsType, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::ConstraintWidgetForm)
 {
@@ -50,7 +50,7 @@ te::qt::widgets::ConstraintWidget::ConstraintWidget(const te::da::DataSetTypePtr
   //set properties names
   m_dsType = dsType;
 
-  if(m_dsType.get())
+  if(m_dsType)
   {
     std::vector<std::string> propValues;
 

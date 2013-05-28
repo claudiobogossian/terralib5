@@ -35,7 +35,7 @@
 #include <QtGui/QWidget>
 
 
-te::qt::widgets::PrimaryKeyConstraintWidget::PrimaryKeyConstraintWidget(te::da::DataSetTypePtr dsType, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::PrimaryKeyConstraintWidget::PrimaryKeyConstraintWidget(te::da::DataSetType* dsType, QWidget* parent, Qt::WindowFlags f)
   : ConstraintWidget(dsType, parent, f)
 {
 }
@@ -63,7 +63,7 @@ te::da::Constraint* te::qt::widgets::PrimaryKeyConstraintWidget::getConstraint()
   }
 
   //create constraint
-  te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_dsType.get());
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_dsType);
 
   pk->setName(constraintName);
 

@@ -36,7 +36,7 @@
 #include <QtGui/QWidget>
 
 
-te::qt::widgets::UniqueKeyConstraintWidget::UniqueKeyConstraintWidget(te::da::DataSetTypePtr dsType, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::UniqueKeyConstraintWidget::UniqueKeyConstraintWidget(te::da::DataSetType* dsType, QWidget* parent, Qt::WindowFlags f)
   : ConstraintWidget(dsType, parent, f)
 {
 }
@@ -64,7 +64,7 @@ te::da::Constraint* te::qt::widgets::UniqueKeyConstraintWidget::getConstraint()
   }
 
   //create constraint
-  te::da::UniqueKey* uk = new te::da::UniqueKey(m_dsType.get());
+  te::da::UniqueKey* uk = new te::da::UniqueKey(m_dsType);
 
   uk->setName(constraintName);
 

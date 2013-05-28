@@ -219,6 +219,7 @@ te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType)
 {
   switch(geomType)
   {
+    case te::gm::GeometryType:
     case te::gm::PolygonType:
     case te::gm::PolygonMType:
     case te::gm::PolygonZType:
