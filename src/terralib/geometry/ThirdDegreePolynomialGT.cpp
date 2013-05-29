@@ -33,8 +33,6 @@
 // Boost
 #include <boost/numeric/ublas/matrix.hpp>
 
-#define TETRANSFORMATIONNAME "ThirdDegreePolynomial"
-
 te::gm::ThirdDegreePolynomialGT::ThirdDegreePolynomialGT()
 {  
 }
@@ -45,7 +43,7 @@ te::gm::ThirdDegreePolynomialGT::~ThirdDegreePolynomialGT()
 
 const std::string& te::gm::ThirdDegreePolynomialGT::getName() const
 {
-  static std::string name( TETRANSFORMATIONNAME );
+  static std::string name( "ThirdDegreePolynomial" );
   return name;
 }
 
@@ -242,24 +240,5 @@ bool te::gm::ThirdDegreePolynomialGT::computeParameters( GTParameters& params ) 
   params.m_inverseParameters[ 19 ] = BI( 9, 0 );
 
   return true;
-}
-
-te::gm::ThirdDegreePolynomialGTFactory::ThirdDegreePolynomialGTFactory()
-  : GTFactory( TETRANSFORMATIONNAME )
-{
-}
-
-te::gm::ThirdDegreePolynomialGTFactory::~ThirdDegreePolynomialGTFactory()
-{
-}
-
-te::gm::GeometricTransformation* te::gm::ThirdDegreePolynomialGTFactory::build()
-{
-  return new ThirdDegreePolynomialGT();
-}
-
-namespace
-{
-  te::gm::ThirdDegreePolynomialGTFactory ThirdDegreePolynomialGTFactoryInstance;
 }
 

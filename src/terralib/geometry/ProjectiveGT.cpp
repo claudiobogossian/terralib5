@@ -33,8 +33,6 @@
 // Boost
 #include <boost/numeric/ublas/matrix.hpp>
 
-#define TETRANSFORMATIONNAME "Projective"
-
 te::gm::ProjectiveGT::ProjectiveGT()
 {  
 }
@@ -45,7 +43,7 @@ te::gm::ProjectiveGT::~ProjectiveGT()
 
 const std::string& te::gm::ProjectiveGT::getName() const
 {
-  static std::string name( TETRANSFORMATIONNAME );
+  static std::string name( "Projective" );
   return name;
 }
 
@@ -262,22 +260,4 @@ bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
   return true;
 }
 
-te::gm::ProjectiveGTFactory::ProjectiveGTFactory()
-  : GTFactory( TETRANSFORMATIONNAME )
-{
-}
-
-te::gm::ProjectiveGTFactory::~ProjectiveGTFactory()
-{
-}
-
-te::gm::GeometricTransformation* te::gm::ProjectiveGTFactory::build()
-{
-  return new ProjectiveGT();
-}
-
-namespace
-{
-  te::gm::ProjectiveGTFactory ProjectiveGTFactoryInstance;
-}
 
