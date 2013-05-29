@@ -29,7 +29,6 @@
 // TerraLib
 #include "Config.h"
 #include "GeometricTransformation.h"
-#include "GTFactory.h"
 
 // Boost
 #include <boost/concept_check.hpp>
@@ -90,24 +89,6 @@ namespace te
       protected:
 
         bool computeParameters( GTParameters& params ) const;
-    };
-
-    /*!
-      \class RSTGTFactory
-
-      \brief 2D Rotation/scale/translation(rigid body) Geometric transformation factory.
-    */
-    class TEGEOMEXPORT RSTGTFactory : public GTFactory
-    {
-      public:
-
-        ~RSTGTFactory();
-
-        RSTGTFactory();
-
-      protected:
-
-        GeometricTransformation* build();
     };
 
   } // end namespace gm
