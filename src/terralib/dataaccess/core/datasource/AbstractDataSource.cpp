@@ -190,3 +190,17 @@ te::da::core::DataSet* te::da::core::AbstractDataSource::getDataSet(const std::s
   return 0;
 }
 
+void te::da::core::AbstractDataSource::create(DataSetType* dt)
+{
+  std::map<std::string, std::string> options;
+
+  create(dt, options);
+}
+
+void te::da::core::AbstractDataSource::add(DataSetType* dt, Index* index)
+{
+  std::map<std::string, std::string> options;
+
+  add(dt, index, options);
+}
+
