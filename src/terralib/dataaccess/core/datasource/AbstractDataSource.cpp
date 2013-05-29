@@ -62,7 +62,7 @@ void te::da::core::AbstractDataSource::open(const std::string& connInfo)
 te::da::core::DataSet* te::da::core::AbstractDataSource::getDataSet(const std::string& name,
                                                                     const te::gm::Envelope* e,
                                                                     te::gm::SpatialRelation r,
-                                                                    te::common::TraverseType travType)
+                                                                    te::common::TraverseType travType) throw(Exception)
 {
 //  if(e == 0)
 //    throw Exception(TR_DATAACCESS("You must provide a MBR for using this method!"));
@@ -111,7 +111,7 @@ te::da::core::DataSet* te::da::core::AbstractDataSource::getDataSet(const std::s
 te::da::core::DataSet* te::da::core::AbstractDataSource::getDataSet(const std::string& name,
                                                                     const te::gm::Geometry* g,
                                                                     te::gm::SpatialRelation r,
-                                                                    te::common::TraverseType travType)
+                                                                    te::common::TraverseType travType) throw(Exception)
 {
 //  if(g == 0)
 //    throw Exception(TR_DATAACCESS("You must provide a valid geometry for using this method!"));
@@ -159,7 +159,7 @@ te::da::core::DataSet* te::da::core::AbstractDataSource::getDataSet(const std::s
 
 te::da::core::DataSet* te::da::core::AbstractDataSource::getDataSet(const std::string& name,
                                                                     const ObjectIdSet* oids,
-                                                                    te::common::TraverseType travType)
+                                                                    te::common::TraverseType travType) throw(Exception)
 {
   //assert(!name.empty());
   //assert(oids);
