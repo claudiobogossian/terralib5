@@ -66,7 +66,7 @@ option (EXAMPLE_QT_RASTERVISUAL "Build qt/rastervisual example." ON)
 option (EXAMPLE_QT_RP "Build qt/rp example." ON)  
 option (EXAMPLE_QT_SE "Build qt/se example." ON)
 option (EXAMPLE_QT_SRS "Build qt/srs example." ON)  
-option (EXAMPLE_QT_TABLE "Build qt/table example." ON)
+option (EXAMPLE_QT_TABLE "Build qt/table example." OFF)
 option (EXAMPLE_QT_TOOLS "Build qt/tools example." ON)
 option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
   

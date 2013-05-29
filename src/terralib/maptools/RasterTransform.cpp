@@ -48,7 +48,7 @@ te::map::RasterTransform::RasterTransform(te::rst::Raster* input, te::rst::Raste
   m_transfFuncPtr(&RasterTransform::setExtractRGB),
   m_RGBAFuncPtr(&RasterTransform::getExtractRGB)
 {
-  m_rstMinValue = std::numeric_limits<double>::min();
+  m_rstMinValue = -std::numeric_limits<double>::max();
   m_rstMaxValue = std::numeric_limits<double>::max();
 }
 

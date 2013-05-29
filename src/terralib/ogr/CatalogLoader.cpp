@@ -33,6 +33,7 @@
 #include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/dataset/Sequence.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../geometry/GeometryProperty.h"
 #include "CatalogLoader.h"
 #include "DataSet.h"
@@ -75,7 +76,14 @@ te::da::DataSetType* te::ogr::CatalogLoader::getDataSetType(const std::string& d
   {
     OGRSpatialReference* osrs = layer->GetSpatialRef();
     if(osrs)
-      dt->getDefaultGeomProperty()->setSRID(Convert2TerraLibProjection(osrs));
+    {
+      te::gm::GeometryProperty* gp = dynamic_cast<te::gm::GeometryProperty*>(te::da::GetFirstSpatialProperty(dt));
+
+      if(gp == 0)
+        throw te::common::Exception(TR_OGR("Could not convert spatial property to geometry!"));
+
+      gp->setSRID(Convert2TerraLibProjection(osrs));
+    }
   }
 
   if(full)
@@ -90,12 +98,6 @@ te::da::DataSetType* te::ogr::CatalogLoader::getDataSetType(const std::string& d
         pk->add(dt->getProperty(pos));
       }
     }
-
-    //if(dt->hasGeom())
-    //{
-    //  te::gm::Envelope* env = getExtent(dt->getDefaultGeomProperty());
-    //  dt->getDefaultGeomProperty()->setExtent(env);
-    //}
   }
 
   return dt;

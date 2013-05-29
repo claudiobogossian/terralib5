@@ -32,7 +32,7 @@
 #include "ui_ConstraintsIndexesPropertyDialogForm.h"
 
 
-te::qt::widgets::ConstraintsIndexesPropertyDialog::ConstraintsIndexesPropertyDialog(const te::da::DataSetTypePtr& dsType, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::ConstraintsIndexesPropertyDialog::ConstraintsIndexesPropertyDialog(te::da::DataSetType* dsType, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::ConstraintsIndexesPropertyDialogForm),
     m_pkConstraintWidget(0),

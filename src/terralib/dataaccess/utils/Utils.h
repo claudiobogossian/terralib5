@@ -40,12 +40,16 @@
 namespace te
 {
 // Forward declaration
+  namespace dt { class Property; }
+
   namespace gm
   {
     class Envelope;
     class Geometry;
     class GeometryProperty;
   }
+
+  namespace rst { class RasterProperty; }
 
   namespace da
   {
@@ -217,6 +221,12 @@ namespace te
     TEDATAACCESSEXPORT std::size_t GetFirstPropertyPos(const te::da::DataSet* dataset, int datatype);
 
     TEDATAACCESSEXPORT std::size_t GetPropertyPos(const DataSet* dataset, const std::string& name);
+
+    TEDATAACCESSEXPORT te::dt::Property* GetFirstSpatialProperty(const DataSetType* dt);
+
+    TEDATAACCESSEXPORT te::gm::GeometryProperty* GetFirstGeomProperty(const DataSetType* dt);
+
+    TEDATAACCESSEXPORT te::rst::RasterProperty* GetFirstRasterProperty(const DataSetType* dt);
 
     //TEDATAACCESSEXPORT te::da::DataSetType* CreateDataSetType(const te::da::DataSet* dataset);
 

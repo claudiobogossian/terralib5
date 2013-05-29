@@ -28,10 +28,12 @@
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../../../maptools/FolderLayer.h"
 #include "../../../../maptools/QueryLayer.h"
+#include "../../../../maptools/RasterLayer.h"
 #include "AbstractLayerTreeItemFactory.h"
 #include "DataSetLayerItem.h"
 #include "FolderLayerItem.h"
 #include "QueryLayerItem.h"
+#include "RasterLayerItem.h"
 
 // Boost
 #include <boost/functional/factory.hpp>
@@ -48,6 +50,7 @@ void te::qt::widgets::AbstractLayerTreeItemFactory::initialize()
   sm_factories["DATASETLAYER"] =  boost::bind(boost::factory<DataSetLayerItem*>(),_1, _2);
   sm_factories["QUERYLAYER"] =  boost::bind(boost::factory<QueryLayerItem*>(),_1, _2);
   sm_factories["FOLDERLAYER"] =  boost::bind(boost::factory<FolderLayerItem*>(),_1, _2);
+  sm_factories["RASTERLAYER"] =  boost::bind(boost::factory<RasterLayerItem*>(),_1, _2);
 }
 
 void te::qt::widgets::AbstractLayerTreeItemFactory::finalize()

@@ -219,6 +219,7 @@ te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType)
 {
   switch(geomType)
   {
+    case te::gm::GeometryType:
     case te::gm::PolygonType:
     case te::gm::PolygonMType:
     case te::gm::PolygonZType:
@@ -342,6 +343,54 @@ te::se::Style* te::se::CreateCoverageStyle(const std::vector<te::rst::BandProper
   style->push_back(rule);
 
   return style;
+}
+
+TESEEXPORT te::se::Symbolizer* te::se::CreateCoverageStyle(const int& nBands)
+{
+  // Default raster symbolizer
+  te::se::RasterSymbolizer* rasterSymbolizer = new te::se::RasterSymbolizer;
+
+  // General parameters
+  rasterSymbolizer->setOpacity(new te::se::ParameterValue("1.0"));
+  rasterSymbolizer->setGain(new te::se::ParameterValue("1.0"));
+  rasterSymbolizer->setOffset(new te::se::ParameterValue("0.0"));
+
+  // Channel selection
+  if((nBands == 1) || (nBands == 2))
+  {
+    te::se::SelectedChannel* sc = new te::se::SelectedChannel();
+    sc->setSourceChannelName(std::string("0"));
+
+    te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+    cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
+    cs->setGrayChannel(sc);
+
+    rasterSymbolizer->setChannelSelection(cs);
+  }
+  else if(nBands >= 3)
+  {
+    // Red Channel
+    te::se::SelectedChannel* scr = new te::se::SelectedChannel();
+    scr->setSourceChannelName(std::string("0"));
+
+    // Green Channel
+    te::se::SelectedChannel* scg = new te::se::SelectedChannel();
+    scg->setSourceChannelName(std::string("1"));
+
+    // Blue channel
+    te::se::SelectedChannel* scb = new te::se::SelectedChannel();
+    scb->setSourceChannelName(std::string("2"));
+
+    te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
+    cs->setRedChannel(scr);
+    cs->setGreenChannel(scg);
+    cs->setBlueChannel(scb);
+
+    rasterSymbolizer->setChannelSelection(cs);
+  }
+
+  return rasterSymbolizer;
 }
 
 std::string te::se::GenerateRandomColor()

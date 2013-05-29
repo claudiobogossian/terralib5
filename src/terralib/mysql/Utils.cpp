@@ -444,9 +444,6 @@ te::da::DataSetType* te::mysql::Convert2TerraLibDataSetType(sql::ResultSet* resu
     te::dt::Property* p = Convert2TerraLibProperty(colname, coltypename, isUnsigned, i, dt, colsize, ddigits, nullable, isAutoincrement, defvalue);
 
     dtype->add(p);
-
-    if(p->getType() == te::dt::GEOMETRY_TYPE)
-      dtype->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
   }
 
   return dtype.release();

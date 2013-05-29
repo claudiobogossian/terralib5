@@ -180,8 +180,8 @@ void te::qt::widgets::SegmenterWizardPage::onStrategyTypeComboBoxActivated(int i
       spinBox->setMinimum(0.0);
       spinBox->setMaximum(1.0);
       spinBox->setSingleStep(0.1);
-      spinBox->setDecimals(2);
-      spinBox->setValue(0.33);
+      spinBox->setDecimals(4);
+      spinBox->setValue(0.3333);
 
       m_ui->m_bandTableWidget->setCellWidget(i, 1, spinBox);
     }
