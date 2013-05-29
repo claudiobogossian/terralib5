@@ -28,6 +28,7 @@
 #include "../../../srs/SpatialReferenceSystemManager.h"
 
 #include <ui_SRSManagerDialogForm.h>
+#include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 #include <QSettings>
 #include <QString>
@@ -42,6 +43,11 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   m_selSrsId.first = -1;  
   m_selSrsId.second = "";
   
+  // Assign the edit/add/remove button icons
+  m_ui->m_addSRSToolButton->setIcon(QIcon::fromTheme("list-add"));
+  m_ui->m_removeSRSToolButton->setIcon(QIcon::fromTheme("list-remove"));
+  m_ui->m_editSRSToolButton->setIcon(QIcon::fromTheme("preferences-system"));
+  
   // Signals & slots
   connect(m_ui->m_SRSTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onSRSTreeWidgetItemClicked(QTreeWidgetItem* , int)));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), SLOT(onOkPushButtonClicked()));
@@ -50,6 +56,35 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   connect(m_ui->m_searchedSRSLineEdit, SIGNAL(textChanged(const QString&)),SLOT(onSearchLineEditTextChanged(const QString&)));
   connect(m_ui->m_SRSRecentTableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), SLOT(onSRSRecentTableWidgetItemClicked(QTableWidgetItem*)));
   
+  // Building the table with the recently used SRS ids  
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QString value = sett.value("SRSRecentlyUsed", "").toString();
+  
+  m_ui->m_SRSRecentTableWidget->clear();
+  if (!value.isEmpty())
+  {
+    m_recentSRS = value.split(',');
+    int aux = 0;
+    int srid;
+    QStringList::const_iterator it;
+    for (it = m_recentSRS.constBegin(); it != m_recentSRS.constEnd(); ++it)
+    {
+      srid = (*it).toInt();
+      m_ui->m_SRSRecentTableWidget->setItem(aux, 0, new QTableWidgetItem(te::srs::SpatialReferenceSystemManager::getInstance().getName(srid).c_str()));
+      m_ui->m_SRSRecentTableWidget->setItem(aux, 1, new QTableWidgetItem(QString::number(srid)));    
+      m_ui->m_SRSRecentTableWidget->setItem(aux, 2, new QTableWidgetItem("EPSG"));
+      ++aux;
+    }
+  }
+  m_ui->m_SRSRecentTableWidget->setColumnWidth(0, 440);
+  m_ui->m_SRSRecentTableWidget->setColumnWidth(1, 100);
+  m_ui->m_SRSRecentTableWidget->setColumnWidth(2, 100);
+  QStringList hLabels;
+  hLabels << "Name" << "ID" << "Authority";
+  m_ui->m_SRSRecentTableWidget->setHorizontalHeaderLabels(hLabels);
+  
+  
+  // Building the available SRS tree
   QList<QTreeWidgetItem *> items;
   
   items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Geoographic SRS"))));
@@ -100,44 +135,11 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
     item->setExpanded(true);
   }
   
+  // Set the field with the PJ4 description
   m_ui->m_p4descPlainTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
   QFontMetrics m (m_ui->m_p4descPlainTextEdit->font());
   int RowHeight = m.lineSpacing() ;
   m_ui->m_p4descPlainTextEdit->setFixedHeight(3*RowHeight);
-  
-  // To build and populate the table with the recently used SRSIDS
-  
-  QStringList hLabels;
-  hLabels << "Name" << "ID" << "Authority";
-  m_ui->m_SRSRecentTableWidget->setVerticalHeaderLabels(hLabels);
-  
-  m_ui->m_SRSRecentTableWidget->setColumnWidth(0, 440);
-  m_ui->m_SRSRecentTableWidget->setColumnWidth(1, 100);
-  m_ui->m_SRSRecentTableWidget->setColumnWidth(2, 100);
-  
-  //m_ui->m_SRSRecentTableWidget->horizontalHeader()->setStretchLastSection(true);
-    
-  //m_ui->m_SRSRecentTableWidget->setUpdatesEnabled(false);
-  
-  QSettings settings;
-  QString value = settings.value("SRSRecentlyUsed", "").toString();
-  
-  m_ui->m_SRSRecentTableWidget->clear();
-  if (!value.isEmpty())
-  {
-    m_recentSRS = value.split(',');
-    int aux = 0;
-    int srid;
-    QStringList::const_iterator it;
-    for (it = m_recentSRS.constBegin(); it != m_recentSRS.constEnd(); ++it)
-    {
-      srid = (*it).toInt();
-      m_ui->m_SRSRecentTableWidget->setItem(aux, 0, new QTableWidgetItem(te::srs::SpatialReferenceSystemManager::getInstance().getName(srid).c_str()));
-      m_ui->m_SRSRecentTableWidget->setItem(aux, 1, new QTableWidgetItem(QString::number(srid)));    
-      m_ui->m_SRSRecentTableWidget->setItem(aux, 2, new QTableWidgetItem("EPSG"));
-      ++aux;
-    }
-  }
 }
 
 
@@ -167,7 +169,7 @@ std::pair<int, std::string> te::qt::widgets::SRSManagerDialog::getSRS(QWidget* p
 
 void te::qt::widgets::SRSManagerDialog::onSearchLineEditTextChanged(const QString& text)
 {
-  QList<QTreeWidgetItem*> itens = m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive , 0);
+  QList<QTreeWidgetItem*> itens = m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
   itens.append(m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 1));  
   filter(itens);
 }
@@ -209,8 +211,11 @@ void te::qt::widgets::SRSManagerDialog::onSRSRecentTableWidgetItemClicked(QTable
   if (!item)
     return;
   QString val = m_ui->m_SRSRecentTableWidget->item(item->row(),1)->text();
-  m_ui->m_p4descPlainTextEdit->setPlainText(te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(val.toInt()).c_str());
-  m_ui->m_searchedSRSLineEdit->setText(val);
+  QList<QTreeWidgetItem *> ilist = m_ui->m_SRSTreeWidget->findItems(val,Qt::MatchContains|Qt::MatchRecursive, 1);
+  if (ilist.empty())
+    return;
+  m_ui->m_SRSTreeWidget->setCurrentItem(ilist[0]);
+  onSRSTreeWidgetItemClicked(ilist[0],0);
 }
 
 void te::qt::widgets::SRSManagerDialog::onOkPushButtonClicked()
@@ -226,9 +231,8 @@ void te::qt::widgets::SRSManagerDialog::onOkPushButtonClicked()
         aux << m_recentSRS[i];
     
     QString value = aux.join(",");
-    std::cout << &value << std::endl;
-    QSettings settings;
-    settings.setValue("SRSRecentlyUsed", value);
+    QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    sett.setValue("SRSRecentlyUsed", value);
     accept();
   }
 }
