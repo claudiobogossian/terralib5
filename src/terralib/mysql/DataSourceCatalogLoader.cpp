@@ -144,17 +144,15 @@ te::da::DataSetType* te::mysql::DataSourceCatalogLoader::getDataSetType(const st
 
   getProperties(dt.get());
 
-  if(full)
-  {
+  //if(full)
+  //{
     getPrimaryKey(dt.get());
     getUniqueKeys(dt.get());
     getIndexes(dt.get());
     //TODO:
     //1) getCheckConstraints(dt.get());
     //2) retrieve Foreign Keys
-
-    dt->setFullLoaded(true);
-  }
+  //}
 
   return dt.release();
 }
@@ -171,9 +169,6 @@ void te::mysql::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
     te::dt::Property* p = Convert2TerraLibProperty(columnsResult.get());
 
     dt->add(p);
-
-    if(p->getType() == te::dt::GEOMETRY_TYPE)
-      dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
   }
 }
 

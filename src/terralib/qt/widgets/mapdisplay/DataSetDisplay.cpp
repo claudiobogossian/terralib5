@@ -97,7 +97,7 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
     return;
   }
 
-  te::gm::GeometryProperty* gp = dataset->getDefaultGeomProperty();
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
 
   std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(gp, transactor.get()));
 

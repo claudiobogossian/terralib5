@@ -776,8 +776,7 @@ void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recse
   try
   {
 
-    te::gm::GeometryProperty* geomProp = 0;
-    geomProp = dt->getDefaultGeomProperty();
+    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt);
 
     if(geomProp && (geomProp->getName() == prop->getName()))
     {
@@ -858,8 +857,7 @@ void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recse
 
 void te::ado::insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt)
 {
-  te::gm::GeometryProperty* geomProp = 0;
-  geomProp = dt->getDefaultGeomProperty();
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt);
 
   int coord_dimension = 2;
 

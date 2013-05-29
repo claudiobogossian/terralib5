@@ -66,7 +66,7 @@ Ui::ConstraintsIndexesListWidgetForm* te::qt::widgets::ConstraintsIndexesListWid
   return m_ui.get();
 }
 
-void te::qt::widgets::ConstraintsIndexesListWidget::setDataSetType(const te::da::DataSetTypePtr& dsType)
+void te::qt::widgets::ConstraintsIndexesListWidget::setDataSetType(te::da::DataSetType* dsType)
 {
   m_dsType = dsType;
 
@@ -75,7 +75,7 @@ void te::qt::widgets::ConstraintsIndexesListWidget::setDataSetType(const te::da:
 
 void te::qt::widgets::ConstraintsIndexesListWidget::onAddToolButtonClicked()
 {
-  if(m_dsType.get() == 0)
+  if(m_dsType == 0)
     return;
 
   te::qt::widgets::ConstraintsIndexesPropertyDialog w(m_dsType, this);

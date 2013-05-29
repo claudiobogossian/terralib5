@@ -408,9 +408,6 @@ te::da::DataSetType* te::sqlite::Convert2TerraLib(sqlite3_stmt* pStmt)
     te::dt::Property* p = Convert2TerraLib(i, name, t != 0 ? t : "", false);
 
     dt->add(p);
-
-    if(p->getType() == te::dt::GEOMETRY_TYPE)
-      dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p)); 
   }
 
   return dt;

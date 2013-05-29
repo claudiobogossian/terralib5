@@ -157,7 +157,10 @@ void te::qt::af::ToolbarsWidget::onAddToolbarButtonClicked()
   bool ok;
   QString text = QInputDialog::getText(this, tr("Creating tool bar"), tr("Tool bar name:"), QLineEdit::Normal, tr("Name of the new toolbar"), &ok);
 
-  if (!ok || text.isEmpty())
+  if(!ok)
+    return;
+
+  if (text.isEmpty())
   {
     QMessageBox::warning(this, tr("Creating tool bar"), tr("Empty tool bar name not allowed!"));
     return;

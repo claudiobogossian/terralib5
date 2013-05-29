@@ -28,6 +28,7 @@
 #include "../common/Globals.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../datatype/ArrayProperty.h"
 #include "../datatype/DateTime.h"
 #include "../datatype/DateTimeProperty.h"
@@ -160,8 +161,7 @@ void te::ogr::Convert2TerraLib(OGRFeatureDefn* featDef,  te::da::DataSetType* dt
     te::gm::GeomType geomType = Convert2TerraLib(ogrGeomType);
     te::gm::GeometryProperty* geomPropertyType = new te::gm::GeometryProperty("geom", TE_UNKNOWN_SRS, geomType);
     dt->add(geomPropertyType);
-    dt->setDefaultGeomProperty(geomPropertyType);
-  }  
+  }
 }
 
 te::da::DataSetType* te::ogr::Convert2TerraLib(OGRFeatureDefn* featDef)
@@ -187,14 +187,9 @@ OGRFeatureDefn* te::ogr::Convert2OGR(te::da::DataSetType* dt)
       featDef->AddFieldDefn(Convert2OGR(p));
   }
 
-  if(dt->hasDefaultGeom())
+  if(dt->hasGeom())
   {
-    te::gm::GeometryProperty* geom = dt->getDefaultGeomProperty();
-    featDef->SetGeomType(Convert2OGR(geom->getGeometryType()));
-  }
-  else if(dt->hasGeom())
-  {
-    te::gm::GeometryProperty* geom = dt->findFirstGeomProperty();
+    te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(dt);
     featDef->SetGeomType(Convert2OGR(geom->getGeometryType()));
   }
 

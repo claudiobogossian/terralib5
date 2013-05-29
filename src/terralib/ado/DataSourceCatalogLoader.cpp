@@ -35,6 +35,7 @@
 #include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../datatype.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
@@ -112,15 +113,14 @@ te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std:
 
   getProperties(dt);
 
-  if(full)
-  {
+  //if(full)
+  //{
     getPrimaryKey(dt);
     getUniqueKeys(dt);
     getIndexes(dt);
     getCheckConstraints(dt);
-  }
+  //}
 
-  dt->setFullLoaded(full);
   return dt;
 }
 
@@ -662,7 +662,7 @@ te::gm::Envelope* te::ado::DataSourceCatalogLoader::getExtent(const te::dt::Prop
   bool first = true;
   while(ds->moveNext())
   {
-    te::gm::Geometry* geo = ds->getGeometry(dt->getDefaultGeomProperty()->getName());
+    te::gm::Geometry* geo = ds->getGeometry(te::da::GetFirstGeomProperty(dt)->getName());
     std::string aaaaaa = geo->asText();
     geo->computeMBR(true);
     
@@ -694,7 +694,7 @@ void te::ado::DataSourceCatalogLoader::getGeometryColumn(te::da::DataSetType* dt
   //geomp->getParent()->setName(dt->getName());
   //geomp->setSRID(te::ado::getSRID(adoConn, geomp));
   //geomp->setGeometryType(te::ado::getType(adoConn, geomp));
-  dt->setDefaultGeomProperty(geomp);
+  //dt->setDefaultGeomProperty(geomp);
 }
 
 void te::ado::DataSourceCatalogLoader::loadCatalog(const bool full)
@@ -710,7 +710,7 @@ void te::ado::DataSourceCatalogLoader::loadCatalog(const bool full)
   {
     te::da::DataSetTypePtr dt(new te::da::DataSetType(datasets[i]));
     dt->setTitle(datasets[i]);
-    dt->setFullLoaded(full);
+    //dt->setFullLoaded(full);
 
     catalog->add(dt);
 
