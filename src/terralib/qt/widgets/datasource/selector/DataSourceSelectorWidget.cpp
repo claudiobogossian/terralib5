@@ -173,6 +173,31 @@ std::list<te::da::DataSourceInfoPtr> te::qt::widgets::DataSourceSelectorWidget::
   return selecteds;
 }
 
+void te::qt::widgets::DataSourceSelectorWidget::setDataSource(const QString& dsType)
+{
+  int count = m_ui->m_datasourceTypeListWidget->count();
+  int found = -1;
+
+  for(int i=0; i<count; i++)
+  {
+    QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->item(i);
+    
+    if(item->data(Qt::UserRole).toString() == dsType)
+    {
+      found = i;
+      break;
+    }
+  }
+
+  if (found != -1)
+  {
+    QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->item(found);
+
+    m_ui->m_datasourceTypeListWidget->setCurrentItem(item); 
+    dataSourceTypePressed(item);
+  }
+}
+
 void te::qt::widgets::DataSourceSelectorWidget::addDataSourcePushButtonPressed()
 {
   QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->currentItem();

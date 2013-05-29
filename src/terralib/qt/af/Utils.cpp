@@ -403,6 +403,20 @@ void te::qt::af::SaveProjectInformationsOnSettings(const QString& defaultAuthor,
   sett.endGroup();
 }
 
+void te::qt::af::SaveLastDatasourceOnSettings(const QString& dsType)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.setValue("projects/last datasource used", dsType);
+}
+
+QString te::qt::af::GetLastDatasourceFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  return sett.value("projects/last datasource used").toString();
+}
+
 void te::qt::af::CreateDefaultSettings()
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());

@@ -83,6 +83,8 @@ namespace te
 
           std::list<te::da::DataSourceInfoPtr> getSelecteds() const;
 
+          void setDataSource(const QString& dsType);
+
         //signals:
 
           //void hasSelectedDataSource(bool selected);
