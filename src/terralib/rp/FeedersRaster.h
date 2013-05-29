@@ -29,6 +29,7 @@
 #include "AbstractFeeder.h"
 #include "../raster/Raster.h"
 
+#include <string>
 #include <vector>
 #include <map>
 #include <memory>
@@ -104,7 +105,7 @@ namespace te
       public :
         
         /*!
-          \brief Constructor from a vector of input rasters pointers;
+          \brief Constructor from a vector of input rasters infos;
           \param rTypes The name of the specific drivers to instantiate each raster. 
           \param rInfos The necessary information to instantiate each raster. 
           \note The given rasters must always be avaliable.
@@ -130,6 +131,49 @@ namespace te
         
         FeederConstRasterInfo();
     };    
+    
+    
+    /*!
+      \class FeederConstRasterDirectory
+      \brief A feeder from an input directory name.
+      \ingroup RPModule
+     */
+    class TERPEXPORT FeederConstRasterDirectory : public FeederConstRaster
+    {
+      public :
+        
+        /*!
+          \brief Constructor from an input directory name.
+          \param directoryName The directory full path name. 
+          \param recursive true if a recursive search must be performed. 
+          \param rType The name of the specific driver to instantiate each raster. 
+          \param sortFileNames If true, the file names will be sorted.
+          \param fileExtensions The file extensions filter (example: ".tif"), or an empty vector if all extensions must be accepted.
+        */        
+        FeederConstRasterDirectory( const std::string& directoryName,
+          const bool recursive,
+          const std::string& rType,
+          const bool sortFileNames,
+          const std::vector< std::string >& fileExtensions );
+        
+        ~FeederConstRasterDirectory();
+        
+        //overloads
+        te::rst::Raster const* getCurrentObj() const;
+        bool moveNext();
+        void reset();
+        unsigned int getObjsCount() const;
+        unsigned int getCurrentOffset() const;
+        
+      protected :
+        
+        std::string m_rType;
+        std::vector< std::string >::size_type m_currentOffset;
+        std::vector< std::string > m_filesNames;
+        std::auto_ptr< te::rst::Raster > m_currentRasterPtr;
+        
+        FeederConstRasterDirectory();
+    };      
   } // end namespace rp
 }   // end namespace te
 
