@@ -204,3 +204,10 @@ void te::da::core::AbstractDataSource::add(DataSetType* dt, Index* index)
   add(dt, index, options);
 }
 
+void te::da::core::AbstractDataSource::add(const std::string& datasetName, DataSet* d, std::size_t limit)
+{
+  std::map<std::string, std::string> options;
+
+  add(datasetName, d, options, limit);
+}
+

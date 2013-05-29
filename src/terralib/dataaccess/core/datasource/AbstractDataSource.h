@@ -1315,6 +1315,100 @@ namespace te
           virtual void drop(Sequence* sequence) throw(Exception) = 0;
 
           //@}
+
+          /** @name DataSet Persistence Methods
+           *  Methods that subclasses must implement in order to support the persistence interface.
+           */
+          //@{
+
+          /*!
+            \brief It removes all the informed items from the dataset.
+
+            It removes all data collection identified by an 
+            object identifier from the data source. If no OIDs are
+            informed all data will be removed.
+
+            \param datasetName The dataset name.
+            \param oids        A list of object identifiers used to remove data from the datasource or NULL for all.
+
+            \exception Exception It throws an exception if the dataset items can not be removed.
+          */
+          virtual void remove(const std::string& datasetName, const ObjectIdSet* oids = 0) throw(Exception) = 0;
+
+          /*!
+            \brief It adds more data items to the dataset in the data source.
+
+            \param datasetName The target dataset name.
+            \param d           The data items to be added to the dataset.
+            \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
+          
+            \pre All parameters must be valid pointers.
+
+            \exception Exception It throws an exception if the data items can not be added.
+
+            \note It is the caller responsability to release the dataset 'd' pointer.
+
+            \note DataSetPersistence will start reading the dataset 'd' in the
+                  current position. So, keep in mind that it is the caller responsability
+                  to inform the dataset 'd' in the right position (and a valid one) to start processing it.
+          */
+          virtual void add(const std::string& datasetName,
+                           DataSet* d,
+                           std::size_t limit = 0) throw(Exception);
+
+          /*!
+            \brief It adds more data items to the dataset in the data source.
+
+            \param datasetName The target dataset name.
+            \param d           The data items to be added to the dataset.
+            \param options     A list of optional modifiers. It is driver specific.
+            \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
+
+            \pre All parameters must be valid pointers.
+
+            \exception Exception It throws an exception if the data items can not be added.
+
+            \note It is the caller responsability to release the dataset 'd' pointer.
+
+            \note DataSetPersistence will start reading the dataset 'd' in the
+                  current position. So, keep in mind that it is the caller responsability
+                  to inform the dataset 'd' in the right position (and a valid one) to start processing it.
+          */
+          virtual void add(const std::string& datasetName,
+                           DataSet* d,
+                           const std::map<std::string, std::string>& options,
+                           std::size_t limit = 0) throw(Exception) = 0;
+
+          /*!
+            \brief It updates the dataset items in the data source.
+
+            It updates a dataset in the
+            data source based on OID list.
+
+            \param datasetName The target dataset name.
+            \param dataset     The list of data items to be updated.
+            \param properties  The list of properties of the dataset to be updated.
+            \param oids        The list of objects to be updated.
+            \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
+
+            \pre All parameters must be valid pointers.
+
+            \exception Exception It throws an exception if the dataset can not be updated.
+
+            \note It is the caller responsability to release the dataset pointer.
+
+            \note DataSetPersistence will start reading the dataset 'd' in the
+                  current position. So, keep in mind that it is the caller responsability
+                  to inform the dataset 'd' in the right position (and a valid one) to start processing it.
+          */
+          virtual void update(const std::string& datasetName,
+                              DataSet* dataset,
+                              const std::vector<std::size_t>& properties,
+                              const ObjectIdSet* oids,
+                              const std::map<std::string, std::string>& options,
+                              std::size_t limit = 0) throw(Exception) = 0;
+
+          //@}
       };
 
       typedef boost::shared_ptr<AbstractDataSource> AbstractDataSourcePtr;
