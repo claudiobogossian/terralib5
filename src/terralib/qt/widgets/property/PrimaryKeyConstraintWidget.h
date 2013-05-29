@@ -48,7 +48,7 @@ namespace te
 
         public:
 
-          PrimaryKeyConstraintWidget(te::da::DataSetTypePtr dsType, QWidget* parent = 0, Qt::WindowFlags f = 0);
+          PrimaryKeyConstraintWidget(te::da::DataSetType* dsType, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           ~PrimaryKeyConstraintWidget();
 

@@ -35,7 +35,7 @@
 #include <QtGui/QGridLayout>
 #include <QtGui/QMessageBox>
 
-te::qt::widgets::IndexWidget::IndexWidget(const te::da::DataSetTypePtr& dsType, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::IndexWidget::IndexWidget(te::da::DataSetType* dsType, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::IndexWidgetForm)
 {
@@ -59,7 +59,7 @@ te::qt::widgets::IndexWidget::IndexWidget(const te::da::DataSetTypePtr& dsType, 
 //set properties names
   m_dsType = dsType;
 
-  if(m_dsType.get())
+  if(m_dsType)
   {
     std::vector<std::string> propValues;
 
@@ -106,7 +106,7 @@ te::da::Index* te::qt::widgets::IndexWidget::getIndex()
   }
 
   //create index
-  te::da::Index* idx = new te::da::Index(m_dsType.get());
+  te::da::Index* idx = new te::da::Index(m_dsType);
 
   idx->setName(indexName);
   idx->setIndexType(idxType);

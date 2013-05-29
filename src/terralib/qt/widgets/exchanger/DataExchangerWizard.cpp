@@ -226,12 +226,10 @@ void te::qt::widgets::DataExchangerWizard::commit()
 // stay tunned: create can change idset!
       dtp->create(odset);
 
-      te::da::DataSetAdapter* dsAdapter = te::da::CreateAdapter(dataset.get(), it->second);
+      std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), it->second));
 
       if(dataset->moveNext())
-        dp->add(odset->getName(), dsAdapter);
-
-      delete dsAdapter;
+        dp->add(odset->getName(), dsAdapter.get());
 
       // boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
 

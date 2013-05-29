@@ -180,7 +180,7 @@ void te::qt::widgets::DataSetAdapterWidget::fillDataSetTable()
 {
   assert(m_dataSetConverter);
 
-  te::da::DataSetType* dsType = m_dataSetConverter->getConvertee();
+  te::da::DataSetType* dsType = m_dataSetConverter->getResult();
 
   m_ui->m_tableWidget->setRowCount(0);
 

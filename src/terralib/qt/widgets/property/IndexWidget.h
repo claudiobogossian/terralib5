@@ -56,7 +56,7 @@ namespace te
 
         public:
 
-          IndexWidget(const te::da::DataSetTypePtr& dsType, QWidget* parent = 0, Qt::WindowFlags f = 0);
+          IndexWidget(te::da::DataSetType* dsType, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           ~IndexWidget();
 
@@ -84,7 +84,7 @@ namespace te
 
          std::auto_ptr<Ui::IndexWidgetForm> m_ui;
          te::qt::widgets::DoubleListWidget* m_doubleListWidget;
-         te::da::DataSetTypePtr m_dsType;
+         te::da::DataSetType* m_dsType;
       }; 
 
     } // end namespace widgets

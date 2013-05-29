@@ -806,6 +806,8 @@ void te::qt::af::BaseApplication::checkProjectSave()
 
       te::qt::af::Save(*m_project, m_project->getFileName());
       m_project->projectChanged(false);
+
+      te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
     }
   }
 }
