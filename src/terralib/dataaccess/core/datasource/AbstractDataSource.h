@@ -18,19 +18,19 @@
  */
 
 /*!
-  \file terralib/dataaccess/datasource/AbstractDataSource.h
+  \file terralib/dataaccess/core/datasource/AbstractDataSource.h
 
   \brief An abstract class for data providers like a DBMS, Web Services or a regular file.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_ABSTRACTDATASOURCE_H
-#define __TERRALIB_DATAACCESS_INTERNAL_ABSTRACTDATASOURCE_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_ABSTRACTDATASOURCE_H
+#define __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_ABSTRACTDATASOURCE_H
 
 // TerraLib
 #include "../../../common/Enums.h"
 #include "../../../geometry/Enums.h"
 #include "../../Config.h"
-#include "../../Exception.h"
+#include "../Exception2.h"
 
 // STL
 #include <map>
@@ -106,7 +106,7 @@ namespace te
         Besides the descriptive information about the underlying data repository,
         each data source also provides information about their capabilities.
 
-        \sa DataSourceManager, AbstractDataSet, DataSetType
+        \sa DataSourceManager, DataSourceFactory, AbstractDataSet, DataSetType
       */
       class TEDATAACCESSEXPORT AbstractDataSource : public boost::noncopyable
       {
@@ -335,21 +335,6 @@ namespace te
                                                     const te::gm::Geometry* g,
                                                     te::gm::SpatialRelation r,
                                                     te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception) = 0;
-
-          /*
-           \brief It gets the dataset identified by the given name using the set of object identifications.
-
-           \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
-           \param oids     A pointer to a set of object identifications. Do not pass null. Do not pass an empty set.
-           \param travType The traverse type associated to the returned dataset.
-
-           \return The caller of this method will take the ownership of the returned data set.
-
-           \note Not thread-safe!
-          */
-          virtual std::auto_ptr<DataSet> getDataSet(const std::string& name,
-                                                    const ObjectIdSet* oids, 
-                                                    te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception);
 
           /*!
             \brief It executes a query that may return some data using a generic query.
@@ -708,7 +693,8 @@ namespace te
 
             \note Not thread-safe!
           */
-          virtual std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, const std::string& propertyName) throw(Exception) = 0;
+          virtual std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
+                                                            const std::string& propertyName) throw(Exception) = 0;
 
           /*!
             \brief It retrieves the bounding rectangle for the given dataset and spatial property position.
@@ -720,7 +706,8 @@ namespace te
 
             \note Not thread-safe!
           */
-          virtual std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, std::size_t propertyPos) throw(Exception) = 0;
+          virtual std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
+                                                            std::size_t propertyPos) throw(Exception) = 0;
 
           /*!
             \brief It retrieves the number of items of the given dataset.
@@ -763,7 +750,8 @@ namespace te
 
             \note Not thread-safe!
           */
-          virtual bool primarykeyExists(const std::string& datasetName, const std::string& name) throw(Exception) = 0;
+          virtual bool primarykeyExists(const std::string& datasetName,
+                                        const std::string& name) throw(Exception) = 0;
 
           /*!
             \brief It checks if a unique key with the given name exists in the data source.
@@ -785,7 +773,8 @@ namespace te
 
             \return True, if the foreign key exists in the data source; otherwise, it returns false.
           */
-          virtual bool foreignkeyExists(const std::string& datasetName, const std::string& name) throw(Exception) = 0;
+          virtual bool foreignkeyExists(const std::string& datasetName,
+                                        const std::string& name) throw(Exception) = 0;
 
           /*!
             \brief It checks if a check-constraint with the given name exists in the data source.
@@ -797,7 +786,8 @@ namespace te
 
             \note Not thread-safe!
           */
-          virtual bool checkConstraintExists(const std::string& datasetName, const std::string& name) throw(Exception) = 0;
+          virtual bool checkConstraintExists(const std::string& datasetName,
+                                             const std::string& name) throw(Exception) = 0;
 
           /*!
             \brief It checks if an index with the given name exists in the data source.
@@ -809,7 +799,8 @@ namespace te
 
             \note Not thread-safe!
           */
-          virtual bool indexExists(const std::string& datasetName, const std::string& name) throw(Exception) = 0;
+          virtual bool indexExists(const std::string& datasetName,
+                                   const std::string& name) throw(Exception) = 0;
 
           /*!
             \brief It checks if a sequence with the given name exists in the data source.
@@ -850,7 +841,8 @@ namespace te
 
             \note Not thread-safe!
           */
-          virtual void create(DataSetType* dt, const std::map<std::string, std::string>& options) throw(Exception) = 0;
+          virtual void createDataSet(DataSetType* dt,
+                                     const std::map<std::string, std::string>& options) throw(Exception) = 0;
 
           /*!
             \brief It clones the dataset in the data source.
@@ -870,319 +862,189 @@ namespace te
 
             \param name The dataset name whose schema will be removed from the data source.
 
-            \note The client of this method must take care of needs of changes
-                  propagation through the data source catalog objects: changing in sequences, foreign
-                  keys and other stuffs.
+            \note The client of this method must take care of the changes needed by a data source catalog.
+                  Some attention is needed: changing in sequences, foreign keys and other stuffs.
 
             \note Not thread-safe!
           */
           virtual void dropDataSet(const std::string& name) throw(Exception) = 0;
 
           /*!
-            \brief It renames the DataSetType.
+            \brief It renames a dataset.
 
-            The DataSetType will be renamed in the data source associated to it.
+            \param name    The name of the dataset to be renamed.
+            \param newName The new dataset name.
 
-            If the DataSetType is associated to a data source catalog, this method can cause changes 
-            in the catalog.
-
-            \param dt      The DataSetType to be renamed.
-            \param newName The new DataSetType name.
-
-            \pre The DataSetType must be a valid pointer.
-
-            \post If the DataSetType is associated to a data source catalog, 
-                  it will be renamed in the associate data source catalog. In this case, 
-                  this method can cause a cascade propagation in the data source catalog.
-                  Otherwise, the data source catalog will be not updated.
-            \post The given DataSetType will receive the new name.
+            \note The client of this method must take care of the changes needed by a data source catalog.
 
             \note Not thread-safe!
           */
-          virtual void rename(DataSetType* dt, const std::string& newName) throw(Exception) = 0;
-   
-          /*!
-            \brief It adds a new property to the DataSetType.
-
-            It will create the given property in the DataSetType and associate
-            it to the DataSetType.
-
-            If you want to add a property in a DataSetType with the same data
-            of an existing one from another DataSetType, first of all,
-            you must create a fresh copy of the property (see the method clone()
-            in the Property class). After that, the property will be added to the
-            DataSetType in memory.
-
-            \param dt The DataSetType where the Property will be added.
-            \param p  The new Property to be added.
-
-            \pre The parameters must be valid pointers.
-
-            \post This method can cause a cascade propagation in the data source catalog. 
-
-            \note Not thread-safe!
-          */
-          virtual void add(DataSetType* dt, te::dt::Property* p) throw(Exception) = 0;
+          virtual void renameDataSet(const std::string& name,
+                                     const std::string& newName) throw(Exception) = 0;
 
           /*!
-            \brief It removes a property.
+            \brief It adds a new property to the dataset definition.
 
-            This method will also remove every object
-            associated to the property, such as, unique key, primary
-            key and foreign key.
-
-            The property must be associated to a DataSetType before calling this method.
-
-            \param p The property to be removed from the DataSetType.
-
-            \pre The parameter must be a valid pointer.
-
-            \post After being removed, the property pointer will be invalidated.
-            \post This method can cause a cascade propagation in the data source catalog and in the DataSetType: changing in constraints and other stuffs.
+            \param datasetName The dataset where the property will be added.
+            \param p           The new property to be added.
 
             \note Not thread-safe!
           */
-          virtual void drop(te::dt::Property* p) throw(Exception) = 0;
+          virtual void addProperty(const std::string& datasetName,
+                                   const te::dt::Property* p) throw(Exception) = 0;
 
           /*!
-            \brief It renames the property.
+            \brief It removes a property from a dataset schema.
 
-            In order to rename a property, it must belong to a DataSetType.
-            If the operation is successful, 
-            the property in memory will have its name automatically changed in the dataset type.
+            \param datasetName  The name of the dataset to which the property belongs to.
+            \param propertyName The property to be removed from the dataset schema.
 
-            \param p       The property to be renamed.
-            \param newName The new property name.
-
-            \pre The property must be a valid pointer. 
-
-            \post This method can cause a cascade propagation in the DataSetType and associate objects: changing in constraints and other stuffs.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
-          virtual void rename(te::dt::Property* p, const std::string& newName) throw(Exception) = 0;
+          virtual void dropProperty(const std::string& datasetName,
+                                    const std::string& propertyName) throw(Exception) = 0;
 
           /*!
-            \brief It updates a property.
+            \brief It renames a property from a dataset.
 
-            It will update an old property based on a new property information.
-            Therefore, the old property must belong to a valid DataSetType and 
-            its DataSetType must belong to a data source. The old property will become
-            invalid and the new one will take its place in the associated DataSetType.
+            \param datasetName     The name of the dataset to which the property belongs to.
+            \param propertyName    The property to be removed from the dataset schema.
+            \param newPropertyName The new property name.
 
-            \param oldP The property to be changed.
-            \param newP The property with the new information.
-
-            \note The parameters must be valid pointers. 
-
-            \note The newP must be not associated to another object before calling this method.
-
-            \note If the operation was successful, the new property will be associated to the same DataSetType
-                  of the oldP, and the oldP pointer will be invalidated.
-
-            \warning This method can cause a cascade propagation in the data source catalog: changing in constraints and other stuffs.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
-          virtual void update(te::dt::Property* oldP, te::dt::Property* newP) throw(Exception) = 0;
+          virtual void renameProperty(const std::string& datasetName,
+                                      const std::string& propertyName,
+                                      const std::string& newPropertyName) throw(Exception) = 0;
+
+          /*!
+            \brief It adds a primary key constraint to the dataset schema.
+
+            \param datasetName  The name of the dataset to be added the primary key.
+            \param pk           The primary key constraint.
+
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+            \note Not thread-safe!
+          */
+          virtual void addPrimaryKey(const std::string& datasetName,
+                                     const PrimaryKey* pk) throw(Exception) = 0;
         
           /*!
-            \brief It adds a primary key constraint in the DataSetType.
+            \brief It removes the primary key constraint from the dataset schema.
 
-            The DataSetType must be associated to a data source.
-            After adding the given primary key in the data source, 
-            it will be associated to the DataSetType in memory.
+            \param datasetName    The name of the dataset to be removed the primary key.
+            \param primaryKeyName The primary key constraint name.
 
-            \param dt  The DataSetType where the primary key will be added.
-            \param pk  The primary key constraint.
-
-            \pre The parameters must be valid pointers.           
-            \pre The property that will be updated to the primary key must already exists in the data source. 
-          
-            \post This method can cause a cascade propagation in the DataSetType indexes.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
-          virtual void add(DataSetType* dt, PrimaryKey* pk) throw(Exception) = 0;
-        
-          /*!
-            \brief It removes the primary key constraint from the DataSetType which it is associated.
+          virtual void dropPrimaryKey(const std::string& datasetName,
+                                      const std::string& primaryKeyName) throw(Exception) = 0;
 
-            The given primary key constraint must belong to a DataSetType that must be associated
-            to a data source. After removing the given primary key from the data source, 
-            it will be removed from its DataSetType in memory.
-
-            \param pk The primary key constraint that will be removed.
-
-            \pre The primary key must be a valid pointer. 
-
-            \post After being removed, the primary key pointer will be invalidated.
-            \post This method can cause a cascade propagation in the DataSetType indexes.
-
-            \note Not thread-safe!
-          */
-          virtual void drop(PrimaryKey* pk) throw(Exception) = 0;
-        
           /*!
             \brief It adds a unique key constraint to the DataSetType.
 
-            The DataSetType must be associated to a data source.
-            After adding the given unique key in the data source, 
-            it will be associated to the DataSetType in memory.
 
-            \param dt The DataSetType where the unique key will be added.
-            \param uk The unique key constraint.
+            \param datasetName  The name of the dataset to be added the unique key.
+            \param uk           The unique key constraint.
 
-            \pre The parameters must be valid pointers.
-
-            \post This method can cause a cascade propagation in the DataSetType indexes.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
-          virtual void add(DataSetType* dt, UniqueKey* uk) throw(Exception) = 0; 
-        
-          /*!
-            \brief It removes the unique key constraint from the DataSetType which it is associated.
-
-            The given unique key constraint must belong to a DataSetType and its DataSetType must be associated
-            to a data source. After removing the given unique key from the data source, 
-            it will be removed from its DataSetType in memory.
-
-            \param uk The unique key constraint.
-
-            \post After being removed, the unique key pointer will be invalidated.
-            \post This method can cause a cascade propagation in the DataSetType indexes.
-
-            \pre The parameter must be a valid pointer. 
-
-            \note Not thread-safe!
-          */
-          virtual void drop(UniqueKey* uk) throw(Exception) = 0;
+          virtual void addUniqueKey(const std::string& datasetName,
+                                    const UniqueKey* uk) throw(Exception) = 0;
 
           /*!
-            \brief It adds an index in a DataSetType.
+            \brief It removes the unique key constraint from the dataset schema.
 
-            The DataSetType must be associated to a data source, and the given index
-            must not belong to any DataSetType. After adding the given index in the data source, 
-            it will be associated to the DataSetType in memory.
+            \param datasetName    The name of the dataset to be removed the unique key.
+            \param primaryKeyName The unique key constraint name.
 
-            \param dt       The DataSetType where the index will be added.
-            \param index    The index to be added.
-
-            \pre The parameters must be valid pointers. 
-
-            \post It will automatically attach the index to the DataSetType.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
-          virtual void add(DataSetType* dt, Index* index) throw(Exception);
-        
-          /*!
-            \brief It adds an index in a DataSetType.
-
-            The DataSetType must be associated to a data source, and the given index
-            must not belong to any DataSetType. After adding the given index in the data source, 
-            it will be associated to the DataSetType in memory.
-
-            \param dt       The DataSetType where the index will be added.
-            \param index    The index to be added.
-            \param options  A list of optional modifiers. It is driver specific.
-
-            \pre The parameters must be valid pointers. 
-
-            \post It will automatically attach the index to the DataSetType.
-
-            \note Not thread-safe!
-          */
-          virtual void add(DataSetType* dt, Index* index, const std::map<std::string, std::string>& options) throw(Exception) = 0; 
-        
-          /*!
-            \brief It removes the index from the DataSetType which it is associated.
-
-            The given index must belong to a DataSetType and its DataSetType must be associated
-            to a data source. After removing the index from the data source, 
-            it will be removed from its DataSetType in memory.
-
-            \param index The index associated to a DataSetType.
-
-            \pre The index must be a valid pointer. 
-
-            \post After being removed, the index pointer will be invalidated.
-            \post The changes can propagate to the associated primary key or unique key.
-
-            \note Not thread-safe!
-          */
-          virtual void drop(Index* index) throw(Exception) = 0;
+          virtual void dropUniqueKey(const std::string& datasetName,
+                                     const std::string& uniqueKeyName) throw(Exception) = 0;
 
           /*!
-            \brief It adds a foreign key constraint to a DataSetType.
+            \brief It adds an index to the dataset.
 
-            After adding the given foreign key in the data source, 
-            it will be associated to the DataSetType in memory. 
+            \param datasetName  The dataset where the index will be added.
+            \param idx          The index to be added.
+            \param options      A list of optional modifiers (driver specific).
 
-            \param dt  The DataSetType where the foreign key will be added.
-            \param fk  The foreign key constraint.
-
-            \pre The parameters must be valid pointers. 
-
-            \post It will automatically attach the fk to the DataSetType.
-            \post This may propagate changes to the DataSourceCatalog associated to the persistence.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
-          virtual void add(DataSetType* dt, ForeignKey* fk) throw(Exception) = 0;
+          virtual void addIndex(const std::string& datasetName,
+                                const Index* idx,
+                                const std::map<std::string, std::string>& options) throw(Exception) = 0; 
 
           /*!
-            \brief It removes the foreign key constraint from the DataSetType which it is associated.
+            \brief It removes the index from the dataset schema.
 
-            The given foreign key constraint must belong to a DataSetType and its DataSetType must be associated
-            to a data source. After removing the foreign key constraint from the data source, 
-            it will be removed from its DataSetType in memory.
+            \param datasetName  The dataset where the index will be added.
+            \param idxName      The index to be removed.
 
-            \param fk The foreign key constraint that will be removed.
-
-            \pre The parameter must be a valid pointer. 
-
-            \post It will automatically remove the fk from the DataSetType.
-            \post After being removed, the foreign key pointer will be invalidated.
-            \post This may propagate changes to the DataSourceCatalog associated to the persistence.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
-          virtual void drop(ForeignKey* fk) throw(Exception) = 0;
+          virtual void dropIndex(const std::string& datasetName,
+                                 const std::string& idxName) throw(Exception) = 0;
 
           /*!
-            \brief It adds a check constraint to the DataSetType.
+            \brief It adds a foreign key constraint to a dataset.
 
-            The DataSetType must be associated to a data source.
-            After adding the given check constraint in the data source, 
-            it will be associated to the DataSetType in memory.
+            \param datasetName  The dataset where the foreign key constraint will be added.
+            \param fk           The foreign key constraint.
 
-            \param dt The DataSetType where the check constraint will be added.
-            \param cc The check constraint.
-
-            \pre The parameters must be valid pointers. 
-
-            \post It will automatically attach the cc to the DataSetType.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
-          virtual void add(DataSetType* dt, CheckConstraint* cc) throw(Exception) = 0;
+          virtual void addForeignKey(const std::string& datasetName,
+                                     const ForeignKey* fk) throw(Exception) = 0;
+
+          /*!
+            \brief It removes the foreign key constraint from the dataset schema.
+
+            \param datasetName  The dataset where the foreign key will be removed.
+            \param fkName       The foreign key to be removed.
+
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+            \note Not thread-safe!
+          */
+          virtual void dropForeignKey(const std::string& datasetName,
+                                      const std::string& fkName) throw(Exception) = 0;
+
+          /*!
+            \brief It adds a check constraint to the dataset.
+
+            \param datasetName  The dataset where the constraint will be added.
+            \param cc           The check constraint.
+
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+            \note Not thread-safe!
+          */
+          virtual void addCheckConstraint(const std::string& datasetName,
+                                          const CheckConstraint* cc) throw(Exception) = 0;
    
           /*!
-            \brief It removes the check constraint from the DataSetType which it is associated..
+            \brief It removes the check constraint from the dataset.
 
-            The given check constraint must belong to a DataSetType and its DataSetType must be associated
-            to a data souce. After removing the check constraint from the data source, 
-            it will be removed from its DataSetType in memory.
-          
-            The given check constraint may belong to a DataSetType.
-
-            \param cc The check constraint that will be removed.
-
-            \note The check constraint must be a valid pointer. 
-
-            \note After being removed, the check constraint pointer will be invalidated.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
@@ -1192,30 +1054,18 @@ namespace te
           /*!
             \brief It creates a new sequence in the data source.
 
-            After calling this method, the given sequence will receive a new identification. If
-            it is associated to a data source catalog, the method will automatically 
-            adjust its entry in the catalog.
-          
-            \param sequence The sequence that will be created in the data source.
-
-            \pre The parameters must be valid pointers.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
-          virtual void create(Sequence* sequence) throw(Exception) = 0;
+          virtual void createSequence(const Sequence* sequence) throw(Exception) = 0;
    
           /*!
             \brief It removes the sequence from the data source.
-          
-            If the sequence is associated to a data source catalog, it will
-            be removed from the catalog. 
 
-            \param sequence The sequence that will be removed.
+            \param name The sequence that will be removed.
 
-            \pre The parameter must be a valid pointer. 
-
-            \post After being removed, the sequence pointer will be invalidated.
-            \post If it is associated to a data source catalog, this may propagate changes to it.
+            \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
             \note Not thread-safe!
           */
@@ -1229,6 +1079,25 @@ namespace te
           //@{
 
           /*!
+            \brief It adds data items to the dataset in the data source.
+
+            \param datasetName The target dataset name.
+            \param d           The data items to be added to the dataset.
+            \param options     A list of optional modifiers (driver specific).
+            \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
+
+            \note The dataset reading will start in the current position.
+                  So, keep in mind that it is the caller responsability
+                  to inform the dataset 'd' in the right position (and a valid one) to start processing it.
+
+            \note Not thread-safe!
+          */
+          virtual void add(const std::string& datasetName,
+                           DataSet* d,
+                           const std::map<std::string, std::string>& options,
+                           std::size_t limit = 0) throw(Exception) = 0;
+
+          /*!
             \brief It removes all the informed items from the dataset.
 
             It removes all data collection identified by an 
@@ -1240,56 +1109,13 @@ namespace te
 
             \note Not thread-safe!
           */
-          virtual void remove(const std::string& datasetName, const ObjectIdSet* oids = 0) throw(Exception) = 0;
+          virtual void remove(const std::string& datasetName,
+                              const ObjectIdSet* oids = 0) throw(Exception) = 0;
+
+
 
           /*!
-            \brief It adds more data items to the dataset in the data source.
-
-            \param datasetName The target dataset name.
-            \param d           The data items to be added to the dataset.
-            \param limit       The number of items to be used from the input dataset. If set to 0 (default), all items are used.
-          
-            \pre All parameters must be valid pointers.
-
-            \note It is the caller responsability to release the dataset 'd' pointer.
-
-            \note DataSetPersistence will start reading the dataset 'd' in the
-                  current position. So, keep in mind that it is the caller responsability
-                  to inform the dataset 'd' in the right position (and a valid one) to start processing it.
-
-            \note Not thread-safe!
-          */
-          virtual void add(const std::string& datasetName,
-                           DataSet* d,
-                           std::size_t limit = 0) throw(Exception);
-
-          /*!
-            \brief It adds more data items to the dataset in the data source.
-
-            \param datasetName The target dataset name.
-            \param d           The data items to be added to the dataset.
-            \param options     A list of optional modifiers. It is driver specific.
-            \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
-
-            \pre All parameters must be valid pointers.
-
-            \note It is the caller responsability to release the dataset 'd' pointer.
-
-            \note DataSetPersistence will start reading the dataset 'd' in the
-                  current position. So, keep in mind that it is the caller responsability
-                  to inform the dataset 'd' in the right position (and a valid one) to start processing it.
-
-            \note Not thread-safe!
-          */
-          virtual void add(const std::string& datasetName,
-                           DataSet* d,
-                           const std::map<std::string, std::string>& options,
-                           std::size_t limit = 0) throw(Exception) = 0;
-
-          /*!
-            \brief It updates the dataset items in the data source.
-
-            It updates a dataset in the data source based on OID list.
+            \brief It updates the dataset items in the data source based on OID list.
 
             \param datasetName The target dataset name.
             \param dataset     The list of data items to be updated.
@@ -1298,11 +1124,7 @@ namespace te
             \param options     A list of optional modifiers. It is driver specific.
             \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
 
-            \pre All parameters must be valid pointers.
-
-            \note It is the caller responsability to release the dataset pointer.
-
-            \note DataSetPersistence will start reading the dataset 'd' in the
+            \note The dataset reading will start in the
                   current position. So, keep in mind that it is the caller responsability
                   to inform the dataset 'd' in the right position (and a valid one) to start processing it.
 
@@ -1316,6 +1138,108 @@ namespace te
                               std::size_t limit = 0) throw(Exception) = 0;
 
           //@}
+
+          /** @name ????
+           *  ????????.
+           */
+          //@{
+
+          /*!
+            \brief Create a new repository of a data source.
+
+            \param dsType The type of data source to be created (example: POSTGIS, ORACLE, SQLITE).
+            \param dsInfo The information for creating a new data source.
+
+            \return A data source from the new data repository.
+
+            \note Not thread-safe!
+          */
+          static std::auto_ptr<AbstractDataSource> create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo) throw(Exception);
+
+          /*!
+            \brief Drop a repository of a data source.
+
+            \param dsType The data source type name (example: POSTGIS, ORACLE, SQLITE).
+            \param dsInfo The information for droping the data source.
+
+            \note No other instance of the data source to be dropped can be opened when calling this method.
+
+            \note Not thread-safe!
+          */
+          static void drop(const std::string& dsType, const std::map<std::string, std::string>& dsInfo) throw(Exception);
+
+          /*!
+            \brief It checks if the informed data source exists.
+
+            \param dsType The data source type name (example: POSTGIS, ORACLE, SQLITE).
+            \param dsInfo The data source information.
+
+            \return True if the data source exists of false otherwise.
+
+            \note Not thread-safe!
+          */
+          static bool exists(const std::string& dsType, const std::map<std::string, std::string>& dsInfo) throw(Exception);
+
+          /*!
+            \brief  Retrieve the list of repository names for data sources.
+
+            \param dsType The data source type name (example: POSTGIS, ORACLE, SQLITE).
+            \param dsInfo The data source information.
+
+            \return The list of repository names for data sources.
+
+            \note Not thread-safe!
+          */
+          static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info) throw(Exception);
+
+          //@}
+
+        protected:
+
+          /** @name ????
+           *  ????????.
+           */
+          //@{
+
+          /*!
+            \brief Create a new repository of a data source.
+
+            \param dsInfo The information for creating a new data source.
+
+            \note Not thread-safe!
+          */
+          virtual void create(const std::map<std::string, std::string>& dsInfo) throw(Exception) = 0;
+
+          /*!
+            \brief Drop the repository of a data source.
+
+            \param dsInfo The information for dropping a data source.
+
+            \note Not thread-safe!
+          */
+          virtual void drop(const std::map<std::string, std::string>& dsInfo) throw(Exception) = 0;
+
+          /*!
+            \brief Check the existence f a repository of a data source.
+
+            \param dsInfo The data source information.
+
+            \return True if the data source exists of false otherwise.
+
+            \note Thread-safe!
+          */
+          virtual bool exists(const std::map<std::string, std::string>& dsInfo) throw(Exception) = 0;
+
+          /*!
+            \brief Retrieve the list of repository names for data sources.
+
+            \param dsInfo The data source information.
+
+            \return The list of repository names for data sources.
+          */
+          virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(Exception) = 0;
+
+          //@}
       };
 
       typedef boost::shared_ptr<AbstractDataSource> AbstractDataSourcePtr;
@@ -1324,4 +1248,4 @@ namespace te
   }    // end namespace da
 }      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_ABSTRACTDATASOURCE_H
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_ABSTRACTDATASOURCE_H
