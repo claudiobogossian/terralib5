@@ -42,6 +42,8 @@
 #include "../../widgets/canvas/MapDisplay.h"
 #include "MixtureModelWizardPage.h"
 #include "MapDisplay.h"
+#include "RasterNavigatorWidget.h"
+#include "RasterNavigatorDialog.h"
 #include "ui_MixtureModelWizardPageForm.h"
 
 // Qt
@@ -74,12 +76,28 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
 //connects
   connect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onItemChanged(QTableWidgetItem*)));
   connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked()));
+  connect(m_ui->m_acquireToolButton, SIGNAL(toggled(bool)), this, SLOT(showNavigator(bool)));
+
+
+  //configure raster navigator
+  m_navigatorDlg.reset(new te::qt::widgets::RasterNavigatorDialog(this, Qt::Tool));
+  m_navigatorDlg->setWindowTitle(tr("Referece"));
+  m_navigatorDlg->setMinimumSize(550, 400);
+  m_navigatorDlg->getWidget()->hideGeomTool(true);
+  m_navigatorDlg->getWidget()->hideInfoTool(true);
+
+  //connects
+  connect(m_navigatorDlg.get(), SIGNAL(navigatorClosed()), this, SLOT(onNavigatorClosed()));
+  connect(m_navigatorDlg->getWidget(), SIGNAL(mapDisplayExtentChanged()), this, SLOT(onMapDisplayExtentChanged()));
+  connect(m_navigatorDlg->getWidget(), SIGNAL(pointPicked(double, double, te::qt::widgets::MapDisplay*)), 
+    this, SLOT(onPointPicked(double, double, te::qt::widgets::MapDisplay*)));
 
 // configure page
   this->setTitle(tr("Mixture Model"));
   this->setSubTitle(tr("Select the type of mixture model and set their specific parameters."));
 
   m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("list-remove"));
+  m_ui->m_acquireToolButton->setIcon(QIcon::fromTheme("wand"));
 }
 
 te::qt::widgets::MixtureModelWizardPage::~MixtureModelWizardPage()
@@ -91,9 +109,19 @@ te::qt::widgets::MixtureModelWizardPage::~MixtureModelWizardPage()
   delete m_mark;
 }
 
+bool te::qt::widgets::MixtureModelWizardPage::isComplete() const
+{
+  if(m_ui->m_tableWidget->rowCount() == 0)
+    return false;
+
+  return true;
+}
+
 void te::qt::widgets::MixtureModelWizardPage::set(te::map::AbstractLayerPtr layer)
 {
   m_layer = layer;
+
+  m_navigatorDlg->set(m_layer);
 
   listBands();
 }
@@ -287,6 +315,19 @@ void te::qt::widgets::MixtureModelWizardPage::onRemoveToolButtonClicked()
   }
 }
 
+void te::qt::widgets::MixtureModelWizardPage::showNavigator(bool show)
+{
+  if(show)
+    m_navigatorDlg->show();
+  else
+    m_navigatorDlg->hide();
+}
+
+void te::qt::widgets::MixtureModelWizardPage::onNavigatorClosed()
+{
+  m_ui->m_acquireToolButton->setChecked(false);
+}
+
 void te::qt::widgets::MixtureModelWizardPage::fillMixtureModelTypes()
 {
   m_ui->m_typeComboBox->clear();
@@ -427,4 +468,6 @@ void te::qt::widgets::MixtureModelWizardPage::updateComponents()
   m_ui->m_tableWidget->sortByColumn(0, Qt::AscendingOrder);
 
   drawMarks();
+
+  emit completeChanged();
 }
