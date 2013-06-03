@@ -45,7 +45,6 @@ namespace te
       class MixtureModelWizardPage;
       class LayerSearchWizardPage;
       class RasterInfoWizardPage;
-      class RasterNavigatorWizardPage;
 
       /*!
         \class MixtureModelWizard
@@ -65,6 +64,8 @@ namespace te
 
           virtual bool validateCurrentPage();
 
+          te::map::AbstractLayerPtr getOutputLayer();
+
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
         protected:
@@ -78,7 +79,8 @@ namespace te
           std::auto_ptr<te::qt::widgets::MixtureModelWizardPage> m_mixtureModelPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
-          std::auto_ptr<te::qt::widgets::RasterNavigatorWizardPage> m_navigatorPage;
+
+          te::map::AbstractLayerPtr m_outputLayer;
       };
     }   // end namespace widgets
   }     // end namespace qt
