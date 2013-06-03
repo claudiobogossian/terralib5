@@ -33,6 +33,11 @@
 #include "GeometryConverters.h"
 #include "GEOSGeometryFactory.h"
 #include "Module.h"
+#include "AffineGTFactory.h"
+#include "ProjectiveGTFactory.h"
+#include "RSTGTFactory.h"
+#include "SecondDegreePolynomialGTFactory.h"
+#include "ThirdDegreePolynomialGTFactory.h"
 
 const te::gm::Module& sm_module = te::gm::Module::getInstance();
 
@@ -70,6 +75,12 @@ void te::gm::Module::initialize()
   te::dt::DataConverterManager::getInstance().add(te::dt::GEOMETRY_TYPE, te::dt::STRING_TYPE, GeometryToStringConverter);
   te::dt::DataConverterManager::getInstance().add(te::dt::BYTE_ARRAY_TYPE, te::dt::GEOMETRY_TYPE, ByteArrayToGeometryConverter);
   te::dt::DataConverterManager::getInstance().add(te::dt::STRING_TYPE, te::dt::GEOMETRY_TYPE, StringToGeometryConverter);
+  
+  te::gm::AffineGTFactory::initialize();
+  te::gm::ProjectiveGTFactory::initialize();
+  te::gm::RSTGTFactory::initialize();
+  te::gm::SecondDegreePolynomialGTFactory::initialize();
+  te::gm::ThirdDegreePolynomialGTFactory::initialize();
 
   TE_LOG_TRACE(TR_GEOM("TerraLib Vector Geometry module Initialized!"));
 }
@@ -80,6 +91,12 @@ void te::gm::Module::finalize()
 // it finalizes the GEOS Geometry Factory
   te::gm::GEOSGeometryFactory::finalize();
 #endif
+
+  te::gm::AffineGTFactory::finalize();
+  te::gm::ProjectiveGTFactory::finalize();
+  te::gm::RSTGTFactory::finalize();
+  te::gm::SecondDegreePolynomialGTFactory::finalize();
+  te::gm::ThirdDegreePolynomialGTFactory::finalize();
 
   TE_LOG_TRACE(TR_GEOM("TerraLib Vector Geometry module Finalized!"));
 }

@@ -29,7 +29,6 @@
 // TerraLib
 #include "Config.h"
 #include "GeometricTransformation.h"
-#include "GTFactory.h"
 
 // Boost
 #include <boost/concept_check.hpp>
@@ -70,24 +69,6 @@ namespace te
       protected:
 
         bool computeParameters( GTParameters& params ) const;
-    };
-
-    /*!
-      \class SecondDegreePolynomialGTFactory
-
-      \brief 2D Affine Geometric transformation factory.
-    */
-    class TEGEOMEXPORT SecondDegreePolynomialGTFactory : public GTFactory
-    {
-      public:
-
-        ~SecondDegreePolynomialGTFactory();
-
-        SecondDegreePolynomialGTFactory();
-
-      protected:
-
-        GeometricTransformation* build();
     };
 
   } // end namespace gm

@@ -60,6 +60,11 @@ te::qt::widgets::DataSourceSelectorDialog::~DataSourceSelectorDialog()
 {
 }
 
+void te::qt::widgets::DataSourceSelectorDialog::setDataSourceToUse(const QString& dsType)
+{
+  m_selectorWidget.get()->setDataSource(dsType);
+}
+
 const std::list<te::da::DataSourceInfoPtr>& te::qt::widgets::DataSourceSelectorDialog::getSelecteds() const
 {
   return m_selecteds;

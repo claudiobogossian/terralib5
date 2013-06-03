@@ -99,7 +99,7 @@ namespace te
           virtual void setDataSet(te::da::DataSet* dset);
 
           /*!
-            \brief Sets the object id set. It WILL TAKE the ownership of the \a objs.
+            \brief Sets the object id set. It WILL NOT TAKE the ownership of the \a objs.
           */
           virtual void setObjectIdSet(const te::da::ObjectIdSet* objs);
 
