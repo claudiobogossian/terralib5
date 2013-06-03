@@ -56,6 +56,9 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
   m_view->setDataSet(m_layer->getData());
   m_view->setLayerSchema(m_layer->getSchema());
 
+  if(layer->getSelected() != 0)
+    m_view->highlightOIds(layer->getSelected());
+
   setWindowTitle(m_layer->getTitle().c_str());
 }
 

@@ -29,7 +29,6 @@
 // TerraLib
 #include "Config.h"
 #include "GeometricTransformation.h"
-#include "GTFactory.h"
 
 // Boost
 #include <boost/concept_check.hpp>
@@ -97,24 +96,6 @@ namespace te
       protected:
 
         bool computeParameters( GTParameters& params ) const;
-    };
-
-    /*!
-      \class ProjectiveGTFactory
-
-      \brief 2D Projective Geometric transformation factory.
-    */
-    class TEGEOMEXPORT ProjectiveGTFactory : public GTFactory
-    {
-      public:
-
-        ~ProjectiveGTFactory();
-
-        ProjectiveGTFactory();
-
-      protected:
-
-        GeometricTransformation* build();
     };
 
   } // end namespace gm

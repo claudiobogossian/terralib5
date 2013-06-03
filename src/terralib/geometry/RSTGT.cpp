@@ -33,8 +33,6 @@
 // Boost
 #include <boost/numeric/ublas/matrix.hpp>
 
-#define TETRANSFORMATIONNAME "RST"
-
 te::gm::RSTGT::RSTGT()
 {  
 }
@@ -45,7 +43,7 @@ te::gm::RSTGT::~RSTGT()
 
 const std::string& te::gm::RSTGT::getName() const
 {
-  static std::string name( TETRANSFORMATIONNAME );
+  static std::string name( "RST" );
   return name;
 }
 
@@ -195,22 +193,4 @@ bool te::gm::RSTGT::computeParameters( GTParameters& params ) const
   }
 }
 
-te::gm::RSTGTFactory::RSTGTFactory()
-  : GTFactory( TETRANSFORMATIONNAME )
-{
-}
-
-te::gm::RSTGTFactory::~RSTGTFactory()
-{
-}
-
-te::gm::GeometricTransformation* te::gm::RSTGTFactory::build()
-{
-  return new RSTGT();
-}
-
-namespace
-{
-  te::gm::RSTGTFactory RSTGTFactoryInstance;
-}
 
