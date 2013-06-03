@@ -58,37 +58,6 @@
 // BOOST
 #include <boost/lexical_cast.hpp> 
 
-//---------------------------------Remove after tests *BEGIN--------------------------------------------------------//
-//#include "../../qt/widgets/canvas/Canvas.h"
-//#include "../../color/RGBAColor.h"
-//#include "../../geometry/Envelope.h"
-//
-//void PrintPair(std::string name, std::pair<te::da::DataSetType*, te::da::DataSet*> pair, te::gm::Envelope e)
-//{
-//  te::qt::widgets::Canvas canvas(512, 512);
-//  canvas.calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
-//  canvas.setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
-//
-//  canvas.setPolygonFillColor(te::color::RGBAColor(255, 0, 0, 0));
-//  canvas.setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-//
-//  te::da::DataSet* ds = pair.second;
-//  size_t geomPos = pair.first->getDefaultGeomPropertyPos();
-//
-//  ds->moveBeforeFirst();
-//
-//  while(ds->moveNext())
-//  {
-//    canvas.draw(ds->getGeometry(geomPos));
-//  }
-//
-//  std::string fileName = "C:\\Code\\Shapes\\Test\\Region"+name+".png";
-//  canvas.save(fileName.c_str(), te::map::PNG);
-//}
-//
-//te::gm::Envelope e;
-//---------------------------------Remove after tests *END--------------------------------------------------------//
-
 void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                          const std::vector<te::dt::Property*>& groupingProperties,
                          const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType,
@@ -96,71 +65,27 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                          const std::string& outputLayerName,
                          const te::da::DataSourceInfoPtr& dsInfo)
 {
-  //e = inputLayer->getExtent();
-
   std::auto_ptr<te::mem::DataSet> inputDataSet((te::mem::DataSet*)inputLayer->getData());
-  te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(inputDataSet.get());
-  std::map<std::string, std::vector<te::mem::DataSetItem*> > groupValues;
+  std::auto_ptr<te::mem::DataSetItem> dataSetItem(new te::mem::DataSetItem(inputDataSet.get()));
+
+  std::map<std::string, std::vector<te::mem::DataSetItem*> > groupValues = GetGroups(inputDataSet.get(), groupingProperties);
+  std::map<std::string, std::vector<te::mem::DataSetItem*> >::const_iterator itGroupValues = groupValues.begin();
 
   te::da::DataSetType* outputDataSetType = GetDataSetType(outputLayerName, groupingProperties, groupingFunctionsType);
+  te::mem::DataSet* outputDataSet = new te::mem::DataSet(outputDataSetType);
 
-  while(inputDataSet->moveNext())
+
+  while(itGroupValues != groupValues.end())
   {
-    dataSetItem = inputDataSet->getItem();
+    std::string value = itGroupValues->first.c_str();
+    int aggregationCount = itGroupValues->second.size();
 
-    std::size_t propertyType = 0;
-    std::size_t propertyIndex = 0;
+    std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(groupingFunctionsType, itGroupValues->second);
+    std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(groupingFunctionsType, itGroupValues->second);
 
-    bool found = false;
-    std::vector<te::mem::DataSetItem*> dataSetItemVector;
-    std::map<std::string, std::vector<te::mem::DataSetItem*> >::iterator it;
+    te::gm::Geometry* geometry = GetUnionGeometry(itGroupValues->second);
 
-    std::string propertyName;
-    std::string value;
-
-    for(std::size_t i = 0; i < groupingProperties.size(); ++i)
-    {
-      propertyName += "_" + groupingProperties[i]->getName();
-
-      propertyIndex = GetPropertyIndex(inputLayer, groupingProperties[i]->getName());
-      value += "_" + inputDataSet->getAsString(propertyIndex);
-    }
-
-    propertyName.erase(propertyName.begin());
-    value.erase(value.begin());
-
-    for(it = groupValues.begin(); it != groupValues.end(); ++it)
-    {
-      if(it->first == value)
-      {
-        it->second.push_back(dataSetItem);
-        found = true;
-      }
-    }
-
-    if(found == false)
-    {
-      dataSetItemVector.push_back(dataSetItem);
-      groupValues.insert(std::pair<std::string, std::vector<te::mem::DataSetItem*> >(value, dataSetItemVector));
-    }
-  }
-
-
-  std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType));
-
-  std::map<std::string, std::vector<te::mem::DataSetItem*> >::const_iterator it = groupValues.begin();
-
-  while(it != groupValues.end())
-  {
-    std::string value = it->first.c_str();
-    int aggregationCount = it->second.size();
-
-    std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(groupingFunctionsType, it->second);
-    std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(groupingFunctionsType, it->second);
-
-    te::gm::Geometry* geometry = GetUnionGeometry(it->second);
-
-    te::mem::DataSetItem* outputDataSetItem = new te::mem::DataSetItem(outputDataSet.get());
+    te::mem::DataSetItem* outputDataSetItem = new te::mem::DataSetItem(outputDataSet);
 
     outputDataSetItem->setString(0, value);
     outputDataSetItem->setInt32(1, aggregationCount);
@@ -168,63 +93,44 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
     
     if(!functionResultStringMap.empty())
     {
-      std::map<std::string, std::string>::iterator it = functionResultStringMap.begin();
+      std::map<std::string, std::string>::iterator itFuncResultString = functionResultStringMap.begin();
       
-      while(it != functionResultStringMap.end())
+      while(itFuncResultString != functionResultStringMap.end())
       {
-        if(PropertyExists(it->first.c_str(), outputDataSet))
-          outputDataSetItem->setString(it->first.c_str(), it->second.c_str());
+        if(PropertyExists(itFuncResultString->first.c_str(), outputDataSet))
+          outputDataSetItem->setString(itFuncResultString->first.c_str(), itFuncResultString->second.c_str());
 
-        ++it;
+        ++itFuncResultString;
       }
     }
 
     if(!functionResultDoubleMap.empty())
     {
-      std::map<std::string, double>::iterator it = functionResultDoubleMap.begin();
+      std::map<std::string, double>::iterator itFuncResultDouble = functionResultDoubleMap.begin();
       
-      while(it != functionResultDoubleMap.end())
+      while(itFuncResultDouble != functionResultDoubleMap.end())
       {
-        if(PropertyExists(it->first.c_str(), outputDataSet))
-          outputDataSetItem->setDouble(it->first.c_str(), it->second);
+        if(PropertyExists(itFuncResultDouble->first.c_str(), outputDataSet))
+          outputDataSetItem->setDouble(itFuncResultDouble->first.c_str(), itFuncResultDouble->second);
 
-        ++it;
+        ++itFuncResultDouble;
       }
     }
 
     outputDataSetItem->setGeometry("geom", *geometry);
-    
+
     outputDataSet->add(outputDataSetItem);
 
-//---------------------------------Remove after tests *BEGIN--------------------------------------------------------//
-    //std::pair<te::da::DataSetType*, te::mem::DataSet*> pair;
-    //pair.first = outputDataSetType;
-    //pair.second = outputDataSet.get();
-
-    //PrintPair(value, pair, e);
-//---------------------------------Remove after tests *END--------------------------------------------------------//
-
-    ++it;
+    ++itGroupValues;
   }
 
-//--------------------------------Persistência *BEGIN-------------------------------------------------------------------//
-
-  std::pair<te::da::DataSetType*, te::mem::DataSet*> pair;
-  pair.first = outputDataSetType;
-  pair.second = outputDataSet.get();
-
-  const std::map<std::string, std::string> options;
-
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
-  std::auto_ptr<te::da::DataSourceTransactor> t(dataSource->getTransactor());
-  pair.second->moveFirst();
-  te::da::Create(t.get(), pair.first, pair.second, options);
-
-//--------------------------------Persistência *END-------------------------------------------------------------------//
+  Persistence(outputDataSetType, outputDataSet, dsInfo); 
 
  }
 
-te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, const std::vector<te::dt::Property*>& properties, const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType)
+te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, 
+                                            const std::vector<te::dt::Property*>& properties, 
+                                            const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType)
 {
   te::da::DataSetType* dataSetType = new te::da::DataSetType(outputLayerName);
   std::string propertyResult;
@@ -282,22 +188,54 @@ te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, 
   return dataSetType;
 }
 
-std::size_t te::vp::GetPropertyIndex(const te::map::AbstractLayerPtr& layer, const std::string propertyName)
+
+std::map<std::string, std::vector<te::mem::DataSetItem*> > te::vp::GetGroups( te::mem::DataSet* inputDataSet,
+                                                                              const std::vector<te::dt::Property*>& groupingProperties)
 {
-  std::size_t index = 0;
-  std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
+  std::map<std::string, std::vector<te::mem::DataSetItem*> > groupValues;
 
-  const std::vector<te::dt::Property*>& properties = schema->getProperties();
-
-  for(std::size_t i = 0; i < properties.size(); ++i)
+  while(inputDataSet->moveNext())
   {
-    if(propertyName == properties[i]->getName())
+    te::mem::DataSetItem* dataSetItem = inputDataSet->getItem();
+
+    std::size_t propertyType = 0;
+    std::size_t propertyIndex = 0;
+
+    bool found = false;
+    std::vector<te::mem::DataSetItem*> dataSetItemVector;
+    std::map<std::string, std::vector<te::mem::DataSetItem*> >::iterator it;
+
+    std::string propertyName;
+    std::string value;
+
+    for(std::size_t i = 0; i < groupingProperties.size(); ++i)
     {
-      index = i;
-      return index;
+      propertyName += "_" + groupingProperties[i]->getName();
+
+      propertyIndex = GetPropertyIndex(dataSetItem, groupingProperties[i]->getName());
+      value += "_" + inputDataSet->getAsString(propertyIndex);
+    }
+
+    propertyName.erase(propertyName.begin());
+    value.erase(value.begin());
+
+    for(it = groupValues.begin(); it != groupValues.end(); ++it)
+    {
+      if(it->first == value)
+      {
+        it->second.push_back(dataSetItem);
+        found = true;
+      }
+    }
+
+    if(found == false)
+    {
+      dataSetItemVector.push_back(dataSetItem);
+      groupValues.insert(std::pair<std::string, std::vector<te::mem::DataSetItem*> >(value, dataSetItemVector));
     }
   }
-  return -1;
+
+  return groupValues;
 }
 
 std::size_t te::vp::GetPropertyIndex(const te::mem::DataSetItem* item, const std::string propertyName)
@@ -315,7 +253,7 @@ std::size_t te::vp::GetPropertyIndex(const te::mem::DataSetItem* item, const std
   return -1;
 }
 
-std::string te::vp::GetGroupingFunctionsTypeMap(const int type)
+std::string te::vp::GetGroupingFunctionsTypeMap(const int& type)
 {
   switch(type)
   {
@@ -418,7 +356,7 @@ te::gm::Geometry* te::vp::GetUnionGeometry(const std::vector<te::mem::DataSetIte
 }
 
 std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType, 
-                                                                    const std::vector<te::mem::DataSetItem*>& items)
+                                                                            const std::vector<te::mem::DataSetItem*>& items)
 {
   std::map<std::string, std::string> result;
 
@@ -452,8 +390,8 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
   return result;
 }
 
-std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType,
-                                                                const std::vector<te::mem::DataSetItem*>& items)
+std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType,
+                                                                        const std::vector<te::mem::DataSetItem*>& items)
 {
   std::map<std::string, double> result;
 
@@ -546,8 +484,7 @@ std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions(const std
   return result;
 }
 
-
-bool te::vp::PropertyExists(const std::string& propertyName, const std::auto_ptr<te::mem::DataSet>& dataSet)
+bool te::vp::PropertyExists(const std::string& propertyName, const te::mem::DataSet* dataSet)
 {
   std::string currentPropName;
 
@@ -624,3 +561,19 @@ double te::vp::Mode(const std::vector<double>& values)
 
   return mode;
 }
+
+void te::vp::Persistence( te::da::DataSetType* dataSetType,
+                          te::mem::DataSet* dataSet,
+                          const te::da::DataSourceInfoPtr& dsInfo,
+                          const std::map<std::string, std::string> options)
+{
+  std::pair<te::da::DataSetType*, te::mem::DataSet*> pair;
+  pair.first = dataSetType;
+  pair.second = dataSet;
+
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
+  std::auto_ptr<te::da::DataSourceTransactor> t(dataSource->getTransactor());
+  pair.second->moveFirst();
+  te::da::Create(t.get(), pair.first, pair.second, options);
+}
+
