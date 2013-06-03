@@ -57,11 +57,12 @@ namespace te
                                         const std::vector<te::dt::Property*>& properties, 
                                         const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType);
 
-    std::size_t GetPropertyIndex(const te::map::AbstractLayerPtr& layer, const std::string propertyName);
+    std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::mem::DataSet* inputDataSet,
+                                                                          const std::vector<te::dt::Property*>& groupingProperties);
 
     std::size_t GetPropertyIndex(const te::mem::DataSetItem* item, const std::string propertyName);
 
-    std::string GetGroupingFunctionsTypeMap(const int type);
+    std::string GetGroupingFunctionsTypeMap(const int& type);
 
     te::gm::Geometry* GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items);
 
@@ -71,11 +72,16 @@ namespace te
     std::map<std::string, double> CalculateDoubleGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType,
                                                                    const std::vector<te::mem::DataSetItem*>& items);
 
-    bool PropertyExists(const std::string& propertyName, const std::auto_ptr<te::mem::DataSet>& dataSet);
+    bool PropertyExists(const std::string& propertyName, const te::mem::DataSet* dataSet);
 
     double Sum(const std::vector<double>& values);
 
     double Mode(const std::vector<double>& values);
+
+    void Persistence( te::da::DataSetType* dataSetType,
+                      te::mem::DataSet* dataSet,
+                      const te::da::DataSourceInfoPtr& dsInfo,
+                      const std::map<std::string, std::string> options = std::map<std::string, std::string>());
 
   } // end namespace vp
 }   // end namespace te
