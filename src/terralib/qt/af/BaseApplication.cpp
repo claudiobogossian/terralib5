@@ -288,6 +288,11 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
   {
     std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
 
+    QString dsTypeSett = GetLastDatasourceFromSettings();
+
+    if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
+      dselector->setDataSourceToUse(dsTypeSett);
+
     int retval = dselector->exec();
 
     if(retval == QDialog::Rejected)
@@ -336,6 +341,8 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
 
       ++it;
     }
+
+    SaveLastDatasourceOnSettings(dsTypeId.c_str());
   }
   catch(const std::exception& e)
   {

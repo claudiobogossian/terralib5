@@ -3580,13 +3580,13 @@ namespace te
       // finding the correlation matrix maximas for each line and column
       
       std::vector< double > eachLineMaxABSValues( interestPointsSet1Size,
-        DBL_MAX * (-1.0) );
+        0.0 );
       std::vector< unsigned int > eachLineMaxABSIndexes( interestPointsSet1Size,
-        interestPointsSet2Size + 1 );
+        interestPointsSet2Size );
       std::vector< double > eachColMaxABSValues( interestPointsSet2Size,
-        DBL_MAX * (-1.0) );
+        0.0 );
       std::vector< unsigned int > eachColMaxABSIndexes( interestPointsSet2Size,
-        interestPointsSet1Size + 1 );
+        interestPointsSet1Size );
       double maxCorrelationABSValue = DBL_MAX * (-1.0);
       double minCorrelationABSValue = DBL_MAX;
       double absValue = 0;
@@ -3631,7 +3631,8 @@ namespace te
       {
         col = eachLineMaxABSIndexes[ line ];
         
-        if( eachColMaxABSIndexes[ col ] == line )
+        if( ( col < interestPointsSet2Size ) &&
+          ( eachColMaxABSIndexes[ col ] == line ) )
         {
           correlationAbs = std::abs( corrMatrix( line, col ) );
           
@@ -3889,11 +3890,11 @@ namespace te
       std::vector< double > eachLineMinValues( interestPointsSet1Size,
         DBL_MAX );
       std::vector< unsigned int > eachLineMinIndexes( interestPointsSet1Size,
-        interestPointsSet2Size + 1 );
+        interestPointsSet2Size );
       std::vector< double > eachColMinValues( interestPointsSet2Size,
         DBL_MAX );
       std::vector< unsigned int > eachColMinIndexes( interestPointsSet2Size,
-        interestPointsSet1Size + 1 );
+        interestPointsSet1Size );
       double maxDistValue = DBL_MAX * (-1.0);
       double minDistValue = DBL_MAX;
         
@@ -3936,7 +3937,8 @@ namespace te
       {
         col =  eachLineMinIndexes[ line ];
         
-        if( eachColMinIndexes[ col ] == line )
+        if( ( col < interestPointsSet2Size ) &&
+          ( eachColMinIndexes[ col ] == line ) )
         {
           const double& distValue = distMatrix( line, col );
           

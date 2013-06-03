@@ -64,6 +64,8 @@ namespace te
 
           ~DataSourceSelectorDialog();
 
+          void setDataSourceToUse(const QString& dsType);
+
           const std::list<te::da::DataSourceInfoPtr>& getSelecteds() const;
 
           DataSourceSelectorWidget* getSelectorWidget() const;

@@ -40,29 +40,6 @@ bool toHighlight(te::da::DataSet* dset, const te::da::ObjectIdSet* objs, const i
   return res;
 }
 
-te::da::ObjectId* GetOId(te::da::DataSet* dset, const std::vector<std::string>& pNames, const int& row, te::qt::widgets::Promoter* promoter)
-{
-  dset->move(promoter->getLogicalRow(row));
-
-  return te::da::GenerateOID(dset, pNames);
-}
-
-te::da::ObjectIdSet* GetOIDSet(te::da::DataSet* dset, const te::da::ObjectIdSet* oidSet, const int& initRow, const int& finalRow, te::qt::widgets::Promoter* promoter)
-{
-  te::da::ObjectIdSet* oIds = new te::da::ObjectIdSet;
-  std::vector<std::string> pnames = oidSet->getPropertyNames();
-  std::vector<size_t> ppos = oidSet->getPropertyPos();
-  std::vector<int> ptypes = oidSet->getPropertyTypes();
-
-  for(size_t i=0; i<pnames.size(); i++)
-    oIds->addProperty(pnames[i], ppos[i], ptypes[i]);
-
-  for(int i=initRow; i<=finalRow; i++)
-    oIds->add(GetOId(dset, pnames, i, promoter));
- 
-  return oIds;
-}
-
 te::qt::widgets::HighlightDelegate::HighlightDelegate(QObject* parent) :
 QItemDelegate(parent),
   m_objs(0),

@@ -154,6 +154,20 @@ namespace te
       TEQTAFEXPORT void SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved);
 
       /*!
+        \brief
+
+        \param
+      */
+      TEQTAFEXPORT void SaveLastDatasourceOnSettings(const QString& dsType);
+
+      /*!
+        \brief
+
+        \return
+      */
+      TEQTAFEXPORT QString GetLastDatasourceFromSettings();
+
+      /*!
         \brief Creates a default QSettings.
       */
       TEQTAFEXPORT void CreateDefaultSettings();

@@ -53,6 +53,7 @@ namespace te
     namespace widgets
     {
       class MapDisplay;
+      class RasterNavigatorDialog;
 
       /*!
         \class MixtureModelWizardPage
@@ -84,6 +85,8 @@ namespace te
 
           ~MixtureModelWizardPage();
 
+         bool isComplete() const;
+
         public:
 
           /*!
@@ -109,6 +112,10 @@ namespace te
 
           void onRemoveToolButtonClicked();
 
+          void showNavigator(bool show);
+
+          void onNavigatorClosed();
+
         protected:
 
           void fillMixtureModelTypes();
@@ -122,6 +129,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::MixtureModelWizardPageForm> m_ui;
+          std::auto_ptr<te::qt::widgets::RasterNavigatorDialog> m_navigatorDlg;
 
           std::map<std::string, MixModelComponent > m_components;   //!< The map of selected components
           unsigned int m_countComponents;                           //!< The maximum number of components inserted.
