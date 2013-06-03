@@ -22,6 +22,7 @@
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
 #include "../../widgets/table/DataSetTableView.h"
+#include "../../widgets/utils/ScopedCursor.h"
 #include "events/LayerEvents.h"
 
 te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent) :
@@ -50,8 +51,13 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
   if(m_layer==0)
     return;
 
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+
   m_view->setDataSet(m_layer->getData());
   m_view->setLayerSchema(m_layer->getSchema());
+
+  if(layer->getSelected() != 0)
+    m_view->highlightOIds(layer->getSelected());
 
   setWindowTitle(m_layer->getTitle().c_str());
 }

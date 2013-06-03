@@ -29,7 +29,6 @@
 // TerraLib
 #include "Config.h"
 #include "GeometricTransformation.h"
-#include "GTFactory.h"
 
 // Boost
 #include <boost/concept_check.hpp>
@@ -116,24 +115,6 @@ namespace te
       protected:
 
         bool computeParameters(GTParameters& params) const;
-    };
-
-    /*!
-      \class GTAffineFactory
-
-      \brief 2D Affine Geometric transformation factory.
-    */
-    class TEGEOMEXPORT AffineGTFactory : public GTFactory
-    {
-      public:
-
-        AffineGTFactory();
-
-        ~AffineGTFactory();
-
-      protected:
-
-        GeometricTransformation* build();
     };
 
   } // end namespace gm

@@ -89,7 +89,7 @@ namespace te
           \brief It starts a new transaction.
           
           \note Not thread-safe!
-        */         
+        */
         virtual void begin() = 0;
 
         /*!
@@ -117,7 +117,7 @@ namespace te
         */
         virtual bool isInTransaction() const = 0;
 
-        //@}        
+        //@}
 
         /** @name DataSet Retrieval
          *  Methods for retrieving data from the DataSource.

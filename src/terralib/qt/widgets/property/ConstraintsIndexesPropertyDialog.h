@@ -64,7 +64,7 @@ namespace te
 
         public:
 
-          ConstraintsIndexesPropertyDialog(const te::da::DataSetTypePtr& dsType, QWidget* parent = 0, Qt::WindowFlags f = 0);
+          ConstraintsIndexesPropertyDialog(te::da::DataSetType* dsType, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           ~ConstraintsIndexesPropertyDialog();
 
@@ -82,7 +82,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ConstraintsIndexesPropertyDialogForm> m_ui;
-          te::da::DataSetTypePtr m_dsType;
+          te::da::DataSetType* m_dsType;
           te::qt::widgets::PrimaryKeyConstraintWidget* m_pkConstraintWidget;
           te::qt::widgets::UniqueKeyConstraintWidget* m_ukConstraintWidget;
           te::qt::widgets::IndexWidget* m_indexWidget;

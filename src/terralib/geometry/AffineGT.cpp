@@ -33,8 +33,6 @@
 // Boost
 #include <boost/numeric/ublas/matrix.hpp>
 
-#define TETRANSFORMATIONNAME "Affine"
-
 te::gm::AffineGT::AffineGT()
 {  
 }
@@ -45,7 +43,7 @@ te::gm::AffineGT::~AffineGT()
 
 const std::string& te::gm::AffineGT::getName() const
 {
-  static std::string name( TETRANSFORMATIONNAME );
+  static std::string name( "Affine" );
   return name;
 }
 
@@ -247,22 +245,4 @@ bool te::gm::AffineGT::decompose( const std::vector< double >& transfParams,
   return true;
 }
 
-te::gm::AffineGTFactory::AffineGTFactory()
-  : GTFactory( TETRANSFORMATIONNAME )
-{
-}
-
-te::gm::AffineGTFactory::~AffineGTFactory()
-{
-}
-
-te::gm::GeometricTransformation* te::gm::AffineGTFactory::build()
-{
-  return new AffineGT();
-}
-
-namespace
-{
-  te::gm::AffineGTFactory AffineGTFactoryInstance;
-}
 

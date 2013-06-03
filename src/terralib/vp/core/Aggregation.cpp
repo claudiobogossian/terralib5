@@ -183,7 +183,6 @@ te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName,
   te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
   geometry->setGeometryType(te::gm::GeometryType);
   dataSetType->add(geometry);
-  dataSetType->setDefaultGeomProperty(geometry);
 
   return dataSetType;
 }

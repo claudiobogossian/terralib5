@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../widgets/layer/selector/DataSetLayerSelector.h"
 #include "SQLiteConnector.h"
 #include "SQLiteType.h"
 
@@ -61,8 +62,8 @@ QWidget* te::qt::plugins::sqlite::SQLiteType::getWidget(int widgetType, QWidget*
     case DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new SQLiteConnector(parent, f);
 
-    //case DataSourceType::WIDGET_LAYER_SELECTOR:
-    //  return new DataSetLayerSelector(parent, f);
+    case DataSourceType::WIDGET_LAYER_SELECTOR:
+      return new te::qt::widgets::DataSetLayerSelector(parent, f);
 
     default:
       return 0;

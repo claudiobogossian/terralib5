@@ -288,6 +288,11 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
   {
     std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
 
+    QString dsTypeSett = GetLastDatasourceFromSettings();
+
+    if(!dsTypeSett.isNull() && !dsTypeSett.isEmpty())
+      dselector->setDataSourceToUse(dsTypeSett);
+
     int retval = dselector->exec();
 
     if(retval == QDialog::Rejected)
@@ -336,6 +341,8 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
 
       ++it;
     }
+
+    SaveLastDatasourceOnSettings(dsTypeId.c_str());
   }
   catch(const std::exception& e)
   {
@@ -488,7 +495,12 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
 
   ProjectInfoDialog editor(this);
   editor.setProject(m_project);
-  editor.exec();
+  
+  if(editor.exec() == QDialog::Accepted)
+  {
+    QString projectTile(tr(" - Project: %1"));
+    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
+  }
 }
 
 void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
@@ -801,6 +813,8 @@ void te::qt::af::BaseApplication::checkProjectSave()
 
       te::qt::af::Save(*m_project, m_project->getFileName());
       m_project->projectChanged(false);
+
+      te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
     }
   }
 }

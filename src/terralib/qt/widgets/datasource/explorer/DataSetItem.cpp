@@ -125,8 +125,8 @@ void te::qt::widgets::DataSetItem::fetchMore()
   if(m_dataset.get() == 0)
     return;
 
-  if(!m_dataset->isFullLoaded() && (m_datasource != 0))
-    te::da::LoadFull(m_dataset.get(), m_datasource);
+  //if(!m_dataset->isFullLoaded() && (m_datasource != 0))
+  //  te::da::LoadFull(m_dataset.get(), m_datasource);
 
   if(m_dataset->size() != 0)
     new PropertyGroupItem(this);

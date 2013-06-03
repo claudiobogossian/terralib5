@@ -110,8 +110,8 @@ void te::qt::widgets::ConstraintsItem::fetchMore()
   if(dt.get() == 0)
     return;
 
-  if(!dt->isFullLoaded() && (parentItem->getDataSource() != 0))
-    te::da::LoadFull(dt.get(), parentItem->getDataSource());
+  //if(!dt->isFullLoaded() && (parentItem->getDataSource() != 0))
+  //  te::da::LoadFull(dt.get(), parentItem->getDataSource());
 
   if(dt->getPrimaryKey() != 0)
     new PrimaryKeyItem(dt->getPrimaryKey(), this);
@@ -142,15 +142,12 @@ bool te::qt::widgets::ConstraintsItem::hasChildren() const
   if(dt.get() == 0)
     return false;
 
-  if(!dt->isFullLoaded() && (parentItem->getDataSource() != 0))
-    te::da::LoadFull(dt.get(), parentItem->getDataSource());
+  //if(!dt->isFullLoaded() && (parentItem->getDataSource() != 0))
+  //  te::da::LoadFull(dt.get(), parentItem->getDataSource());
 
-  if(dt->isFullLoaded() && ((dt->getPrimaryKey() != 0) ||
-                            (dt->getNumberOfUniqueKeys() != 0) ||
-                            (dt->getNumberOfCheckConstraints() != 0)))
-    return true;
-  
-  return false;
+  return (dt->getPrimaryKey() != 0) ||
+         (dt->getNumberOfUniqueKeys() != 0) ||
+         (dt->getNumberOfCheckConstraints() != 0);
 }
 
 bool te::qt::widgets::ConstraintsItem::setData(const QVariant& /*value*/, int /*role*/)

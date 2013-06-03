@@ -10,7 +10,7 @@ std::vector<QAction*> GetActions(QList<QAction*> acts)
   QList<QAction*>::iterator it;
 
   for(it=acts.begin(); it != acts.end(); ++it)
-    if((*it)->menu() == 0 && !((*it)->text().isEmpty()))
+    if((*it)->menu() == 0 && !((*it)->text().isEmpty()) && !(*it)->icon().isNull())
       res.push_back(*it);
 
   return res;
