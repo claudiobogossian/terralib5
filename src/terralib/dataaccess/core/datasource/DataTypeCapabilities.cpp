@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "DataTypeCapabilities2.h"
+#include "DataTypeCapabilities.h"
 
 te::da::core::DataTypeCapabilities::DataTypeCapabilities()
 {

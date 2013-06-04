@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../../common/Translator.h"
 #include "AbstractDataSource.h"
-#include "DataSourceFactory2.h"
+#include "DataSourceFactory.h"
 
 // Boost
 #include <boost/format.hpp>
@@ -69,4 +69,3 @@ te::da::core::DataSourceFactory::remove(const std::string& dsType) throw(Excepti
 
   sm_factories.erase(it);
 }
-

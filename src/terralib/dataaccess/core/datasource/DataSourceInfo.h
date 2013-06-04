@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/datasource/DataSourceInfo.h
+  \file terralib/dataaccess/core/datasource/DataSourceInfo.h
 
-  \brief A conteiner class for keeping information about a data source.
+  \brief A container class for keeping information about a data source.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFO_H
-#define __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFO_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCEINFO_H
+#define __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCEINFO_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
 
 // STL
 #include <map>
@@ -41,6 +41,8 @@ namespace te
 {
   namespace da
   {
+    namespace core
+    {
       /*!
         \class DataSourceInfo
 
@@ -100,7 +102,8 @@ namespace te
 
       typedef boost::shared_ptr<DataSourceInfo> DataSourceInfoPtr;
 
-  }// end namespace da
-}  // end namespace te
+    }  // namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFO_H
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCEINFO_H

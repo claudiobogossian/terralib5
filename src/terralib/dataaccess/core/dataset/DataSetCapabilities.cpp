@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "DataSetCapabilities2.h"
+#include "DataSetCapabilities.h"
 
 te::da::core::DataSetCapabilities::DataSetCapabilities()
   : m_bidirectional(false),

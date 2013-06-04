@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/ObjectId.cpp
+  \file terralib/dataaccess/core/dataset/ObjectId.cpp
 
-  \brief This class represents an unique id for a data set element.
+  \brief This class represents an unique id for a dataset element.
 */
 
 // TerraLib
@@ -29,20 +29,20 @@
 // STL
 #include <cassert>
 
-te::da::ObjectId::ObjectId()
+te::da::core::ObjectId::ObjectId()
 {
 }
 
-te::da::ObjectId::~ObjectId()
+te::da::core::ObjectId::~ObjectId()
 {
 }
 
-const boost::ptr_vector<te::dt::AbstractData>& te::da::ObjectId::getValue() const
+const boost::ptr_vector<te::dt::AbstractData>& te::da::core::ObjectId::getValue() const
 {
   return m_data;
 }
 
-std::string te::da::ObjectId::getValueAsString() const
+std::string te::da::core::ObjectId::getValueAsString() const
 {
   std::string value;
 
@@ -52,14 +52,14 @@ std::string te::da::ObjectId::getValueAsString() const
   return value;
 }
 
-void te::da::ObjectId::addValue(te::dt::AbstractData* data)
+void te::da::core::ObjectId::addValue(te::dt::AbstractData* data)
 {
   assert(data);
 
   m_data.push_back(data);
 }
 
-bool te::da::ObjectId::operator<(const ObjectId& rhs) const
+bool te::da::core::ObjectId::operator<(const ObjectId& rhs) const
 {
   return getValueAsString() < rhs.getValueAsString();
 }

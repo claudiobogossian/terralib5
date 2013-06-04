@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,21 +18,21 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/Sequence.cpp
+  \file terralib/dataaccess/core/dataset/Sequence.cpp
 
   \brief It describes a sequence (a number generator).
 */
 
 // TerraLib
-#include "../../datatype/Property.h"
-#include "../datasource/DataSourceCatalog.h"
+#include "../../../datatype/Property.h"
+#include "../../datasource/DataSourceCatalog.h"
 #include "DataSetType.h"
 #include "Sequence.h"
 
 // STL
 #include <climits>
 
-te::da::Sequence::Sequence(DataSourceCatalog* catalog, unsigned int id)
+te::da::core::Sequence::Sequence(DataSourceCatalog* catalog, unsigned int id)
   : m_increment(1),
     m_minValue(INT_MIN),
     m_maxValue(INT_MAX),
@@ -47,7 +47,7 @@ te::da::Sequence::Sequence(DataSourceCatalog* catalog, unsigned int id)
     m_catalog->add(this);
 }
       
-te::da::Sequence::Sequence(const std::string& name,                       
+te::da::core::Sequence::Sequence(const std::string& name,                       
                            boost::int64_t increment,
                            boost::int64_t startValue,
                            DataSourceCatalog* catalog,
@@ -67,7 +67,7 @@ te::da::Sequence::Sequence(const std::string& name,
     m_catalog->add(this);
 }
 
-te::da::Sequence::Sequence(const Sequence& rhs)
+te::da::core::Sequence::Sequence(const Sequence& rhs)
   : m_increment(rhs.m_increment),
     m_minValue(rhs.m_minValue),
     m_maxValue(rhs.m_maxValue),
@@ -81,7 +81,7 @@ te::da::Sequence::Sequence(const Sequence& rhs)
 {
 }
 
-te::da::Sequence& te::da::Sequence::operator=(const Sequence& rhs)
+te::da::core::Sequence& te::da::core::Sequence::operator=(const Sequence& rhs)
 {
   if(this != &rhs)
   {

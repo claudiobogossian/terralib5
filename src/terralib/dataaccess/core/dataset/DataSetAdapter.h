@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-20013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,19 +18,19 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/DataSetAdapter.h
+  \file terralib/dataaccess/core/dataset/DataSetAdapter.h
 
-  \brief An adapter for DataSet.
+  \brief An adapter for  a dataset.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_DATASETADAPTER_H
-#define __TERRALIB_DATAACCESS_INTERNAL_DATASETADAPTER_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASETADAPTER_H
+#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASETADAPTER_H
 
 // TerraLib
-#include "../../common/Holder.h"
-#include "../Config.h"
+#include "../../../common/Holder.h"
+#include "../../Config.h"
 #include "AttributeConverters.h"
-#include "DataSet.h"
+#include "AbstractDataSet.h"
 
 // STL
 #include <vector>
@@ -39,161 +39,164 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class DataSourceCapabilities;
-
-    /*!
-      \class DataSetAdapter
-
-      \brief An adapter for DataSet.
-
-      \sa DataSet
-     */
-    class TEDATAACCESSEXPORT DataSetAdapter : public DataSet
+    namespace core
     {
-      public:
+      // Forward declarations
+      class DataSourceCapabilities;
 
-        /** @name Constructor/Destructor
-         *  Initilizer methods.
-         */
-        //@{
+      /*!
+        \class DataSetAdapter
 
-        /*!
-          \brief Constructor.
+        \brief An adapter for a data set.
 
-          \param dataset A pointer to the DataSet that will be handled by adapter.
-          \param isOwner If true the DataSetAdapter will have the ownership of the given data set pointer.
+        \sa AbstractDataSet
+       */
+      class TEDATAACCESSEXPORT DataSetAdapter : public AbstractDataSet
+      {
+        public:
 
-          \note Here no automatic property adaptation will be made. i.e. The adapater is invalid.
-          \note The method "adapt" can be used to do manual adaptations.
-        */
-        DataSetAdapter(DataSet* dataset, bool isOwner = false);
+          /** @name Constructor/Destructor
+           *  Initilizer methods.
+           */
+          //@{
 
-        /*! \brief Destructor. */
-        ~DataSetAdapter();
+          /*!
+            \brief Constructor.
 
-        //@}
+            \param dataset A pointer to the DataSet that will be handled by adapter.
+            \param isOwner If true the DataSetAdapter will have the ownership of the given data set pointer.
 
-        te::common::TraverseType getTraverseType() const;
+            \note Here no automatic property adaptation will be made. i.e. The adapater is invalid.
+            \note The method "adapt" can be used to do manual adaptations.
+          */
+          DataSetAdapter(AbstractDataSet* dataset, bool isOwner = false);
 
-        te::common::AccessPolicy getAccessPolicy() const;
+          /*! \brief Destructor. */
+          ~DataSetAdapter();
 
-        te::gm::Envelope* getExtent(std::size_t i);
+          //@}
 
-        std::size_t getNumProperties() const;
+          te::common::TraverseType getTraverseType() const;
 
-        int getPropertyDataType(std::size_t pos) const;
+          te::common::AccessPolicy getAccessPolicy() const;
 
-        std::string getPropertyName(std::size_t pos) const;
+          te::gm::Envelope* getExtent(std::size_t i);
 
-        /*!
-          \brief It returns the underlying dataset name of the property at position pos.
+          std::size_t getNumProperties() const;
 
-          \param pos The property position of interest.
+          int getPropertyDataType(std::size_t pos) const;
 
-          \return The underlying dataset name of the property at position pos.
+          std::string getPropertyName(std::size_t pos) const;
 
-          \note This method will always return an empty string for the adapter.
-        */
-        std::string getDatasetNameOfProperty(std::size_t pos) const;
+          /*!
+            \brief It returns the underlying dataset name of the property at position pos.
 
-        bool isEmpty() const;
+            \param pos The property position of interest.
 
-        std::size_t size() const;
+            \return The underlying dataset name of the property at position pos.
 
-        bool moveNext();
+            \note This method will always return an empty string for the adapter.
+          */
+          std::string getDatasetNameOfProperty(std::size_t pos) const;
 
-        bool movePrevious();
+          bool isEmpty() const;
 
-        bool moveBeforeFirst();
+          std::size_t size() const;
 
-        bool moveFirst();
+          bool moveNext();
 
-        bool moveLast();
+          bool movePrevious();
 
-        bool move(std::size_t i);
+          bool moveBeforeFirst();
 
-        bool isAtBegin() const;
+          bool moveFirst();
 
-        bool isBeforeBegin() const;
+          bool moveLast();
 
-        bool isAtEnd() const;
+          bool move(std::size_t i);
 
-        bool isAfterEnd() const;
+          bool isAtBegin() const;
 
-        char getChar(std::size_t i) const;
+          bool isBeforeBegin() const;
 
-        unsigned char getUChar(std::size_t i) const;
+          bool isAtEnd() const;
 
-        boost::int16_t getInt16(std::size_t i) const;
+          bool isAfterEnd() const;
 
-        boost::int32_t getInt32(std::size_t i) const;
+          char getChar(std::size_t i) const;
 
-        boost::int64_t getInt64(std::size_t i) const;
+          unsigned char getUChar(std::size_t i) const;
 
-        bool getBool(std::size_t i) const;
+          boost::int16_t getInt16(std::size_t i) const;
 
-        float getFloat(std::size_t i) const;
+          boost::int32_t getInt32(std::size_t i) const;
 
-        double getDouble(std::size_t i) const;
+          boost::int64_t getInt64(std::size_t i) const;
 
-        std::string getNumeric(std::size_t i) const;
+          bool getBool(std::size_t i) const;
 
-        std::string getString(std::size_t i) const;
+          float getFloat(std::size_t i) const;
 
-        te::dt::ByteArray* getByteArray(std::size_t i) const;
+          double getDouble(std::size_t i) const;
 
-        te::gm::Geometry* getGeometry(std::size_t i) const;
+          std::string getNumeric(std::size_t i) const;
 
-        te::rst::Raster* getRaster(std::size_t i) const;
+          std::string getString(std::size_t i) const;
 
-        te::dt::DateTime* getDateTime(std::size_t i) const;
+          te::dt::ByteArray* getByteArray(std::size_t i) const;
 
-        te::dt::Array* getArray(std::size_t i) const;
+          te::gm::Geometry* getGeometry(std::size_t i) const;
 
-        bool isNull(std::size_t i) const;
+          te::rst::Raster* getRaster(std::size_t i) const;
 
-        /** @name DataSet Adapter Extended Methods
-         *  Methods that exists only in the DataSet Adapter implementation.
-         */
-        //@{
+          te::dt::DateTime* getDateTime(std::size_t i) const;
 
-        /*!
-          \brief This method returns the pointer to the DataSet that is handled by adapter.
+          te::dt::Array* getArray(std::size_t i) const;
 
-          \return The pointer to the DataSet that is handled by adapter.
+          bool isNull(std::size_t i) const;
 
-          \note The caller will NOT take the ownership of the returned pointer.
-        */
-        te::da::DataSet* getAdaptee() const;
+          /** @name DataSet Adapter Extended Methods
+           *  Methods that exists only in the DataSet Adapter implementation.
+           */
+          //@{
 
-        void add(const std::string& newPropertyName,
-                 int newPropertyType,
-                 const std::vector<std::size_t>& adaptedPropertyPos,
-                 AttributeConverter conv);
-        //@}
+          /*!
+            \brief This method returns the pointer to the DataSet that is handled by adapter.
 
-      private:
+            \return The pointer to the DataSet that is handled by adapter.
 
-        /** @name DataSet Adapter Internal Methods
-         *  DataSet Adapter Internal Methods implementation.
-         */
-        //@{
+            \note The caller will NOT take the ownership of the returned pointer.
+          */
+          te::da::core::AbstractDataSet* getAdaptee() const;
 
-        te::dt::AbstractData* getAdaptedValue(std::size_t i) const;
+          void add(const std::string& newPropertyName,
+                   int newPropertyType,
+                   const std::vector<std::size_t>& adaptedPropertyPos,
+                   AttributeConverter conv);
+          //@}
 
-        //@}
+        private:
 
-      private:
+          /** @name DataSet Adapter Internal Methods
+           *  DataSet Adapter Internal Methods implementation.
+           */
+          //@{
 
-        std::vector<int> m_datatypes;                             //!< The datatype for each property.
-        std::vector<std::string> m_pnames;                        //!< The name for each property.
-        te::common::Holder<DataSet> m_ds;                         //!< A pointer to the DataSet that will be handled by adapter
-        std::vector<std::vector<std::size_t> > m_propertyIndexes; //!< A vector that stores the adapted property indexes.
-        std::vector<AttributeConverter> m_converters;             //!< A vector that stores the attribute converters functions.
-    };
+          te::dt::AbstractData* getAdaptedValue(std::size_t i) const;
 
-  } // end namespace da
-}   // end namespace te
+          //@}
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASETADAPTER_H
+        private:
+
+          std::vector<int> m_datatypes;                             //!< The datatype for each property.
+          std::vector<std::string> m_pnames;                        //!< The name for each property.
+          te::common::Holder<AbstractDataSet> m_ds;                         //!< A pointer to the DataSet that will be handled by adapter
+          std::vector<std::vector<std::size_t> > m_propertyIndexes; //!< A vector that stores the adapted property indexes.
+          std::vector<AttributeConverter> m_converters;             //!< A vector that stores the attribute converters functions.
+      };
+
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASETADAPTER_H

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,14 +18,14 @@
  */
 
 /*!
-  \file terralib/dataaccess/datasource/DataSourceInfoManager.cpp
+  \file terralib/dataaccess/core/datasource/DataSourceInfoManager.cpp
 
   \brief A singleton to keep all the registered data sources.
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
-#include "../../common/Translator.h"
+#include "../../../common/STLUtils.h"
+#include "../../../common/Translator.h"
 #include "../Exception.h"
 #include "DataSourceInfo.h"
 #include "DataSourceInfoManager.h"
@@ -37,14 +37,14 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
-te::da::DataSourceInfoPtr te::da::DataSourceInfoManager::get(const std::string& id) const
+te::da::core::DataSourceInfoPtr te::da::core::DataSourceInfoManager::get(const std::string& id) const
 {
   std::map<std::string, DataSourceInfoPtr>::const_iterator it = m_datasources.find(id);
 
   return (it != m_datasources.end()) ? it->second : DataSourceInfoPtr();
 }
 
-void te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
+void te::da::core::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
 {
   if(ds.get() == 0)
     throw Exception(TR_DATAACCESS("Can not insert a NULL data source into the manager!"));
@@ -55,7 +55,7 @@ void te::da::DataSourceInfoManager::add(const DataSourceInfoPtr& ds)
   m_datasources[ds->getId()] = ds;
 }
 
-void te::da::DataSourceInfoManager::remove(const std::string& id)
+void te::da::core::DataSourceInfoManager::remove(const std::string& id)
 {
   std::map<std::string, DataSourceInfoPtr>::iterator it = m_datasources.find(id);
 
@@ -65,7 +65,7 @@ void te::da::DataSourceInfoManager::remove(const std::string& id)
   m_datasources.erase(it);
 }
 
-void te::da::DataSourceInfoManager::removeByType(const std::string& dsTypeName)
+void te::da::core::DataSourceInfoManager::removeByType(const std::string& dsTypeName)
 {
   std::map<std::string, DataSourceInfoPtr>::iterator it = m_datasources.begin();
 
@@ -76,8 +76,7 @@ void te::da::DataSourceInfoManager::removeByType(const std::string& dsTypeName)
       ++it;
 }
 
-
-void te::da::DataSourceInfoManager::getByType(const std::string& dsTypeName, std::vector<DataSourceInfoPtr>& datasources) const
+void te::da::core::DataSourceInfoManager::getByType(const std::string& dsTypeName, std::vector<DataSourceInfoPtr>& datasources) const
 {
   std::map<std::string, DataSourceInfoPtr>::const_iterator it = m_datasources.begin();
   std::map<std::string, DataSourceInfoPtr>::const_iterator itend = m_datasources.end();
@@ -91,36 +90,35 @@ void te::da::DataSourceInfoManager::getByType(const std::string& dsTypeName, std
   }
 }
 
-std::size_t te::da::DataSourceInfoManager::size() const
+std::size_t te::da::core::DataSourceInfoManager::size() const
 {
   return m_datasources.size();
 }
 
-te::da::DataSourceInfoManager::const_iterator te::da::DataSourceInfoManager::begin() const
+te::da::core::DataSourceInfoManager::const_iterator te::da::core::DataSourceInfoManager::begin() const
 {
   return m_datasources.begin();
 }
 
-te::da::DataSourceInfoManager::iterator te::da::DataSourceInfoManager::begin()
+te::da::core::DataSourceInfoManager::iterator te::da::core::DataSourceInfoManager::begin()
 {
   return m_datasources.begin();
 }
 
-te::da::DataSourceInfoManager::const_iterator te::da::DataSourceInfoManager::end() const
+te::da::core::DataSourceInfoManager::const_iterator te::da::core::DataSourceInfoManager::end() const
 {
   return m_datasources.end();
 }
 
-te::da::DataSourceInfoManager::iterator te::da::DataSourceInfoManager::end()
+te::da::core::DataSourceInfoManager::iterator te::da::core::DataSourceInfoManager::end()
 {
   return m_datasources.end();
 }
 
-te::da::DataSourceInfoManager::DataSourceInfoManager()
+te::da::core::DataSourceInfoManager::DataSourceInfoManager()
 {
 }
 
-te::da::DataSourceInfoManager::~DataSourceInfoManager()
+te::da::core::DataSourceInfoManager::~DataSourceInfoManager()
 {
 }
-

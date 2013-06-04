@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,22 +18,22 @@
  */
 
 /*!
-  \file terralib/dataaccess/datasource/PreparedQuery.cpp
+  \file terralib/dataaccess/core/datasource/PreparedQuery.cpp
 
   \brief A class that models a prepared query.
 */
 
 // TerraLib
-#include "../../common/Translator.h"
-#include "../../datatype/AbstractData.h"
-#include "../../datatype/ByteArray.h"
-#include "../../datatype/DateTime.h"
-#include "../../datatype/SimpleData.h"
-#include "../../geometry/Geometry.h"
-#include "../Exception.h"
-#include "PreparedQuery.h"
+#include "../../../common/Translator.h"
+#include "../../../datatype/AbstractData.h"
+#include "../../../datatype/ByteArray.h"
+#include "../../../datatype/DateTime.h"
+#include "../../../datatype/SimpleData.h"
+#include "../../../geometry/Geometry.h"
+#include "../../Exception.h"
+#include "AbstractPreparedQuery.h"
 
-void te::da::PreparedQuery::bind(int i, const te::dt::AbstractData& ad)
+void te::da::core::PreparedQuery::bind(int i, const te::dt::AbstractData& ad)
 {
   switch(ad.getTypeCode())
   {
@@ -145,4 +145,3 @@ void te::da::PreparedQuery::bind(int i, const te::dt::AbstractData& ad)
       throw Exception(TR_DATAACCESS("The TerraLib data type is not supported by default prepared query implementation!"));
   }
 }
-

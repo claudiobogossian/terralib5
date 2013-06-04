@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,43 +18,43 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/CheckConstraint.cpp
+  \file terralib/dataaccess/core/dataset/CheckConstraint.cpp
 
   \brief A class that describes a check constraint.
 */
 
 // TerraLib
-#include "../../datatype/Property.h"
+#include "../../../datatype/Property.h"
 #include "CheckConstraint.h"
 #include "DataSetType.h"
 
-te::da::CheckConstraint::CheckConstraint(DataSetType* dt, unsigned int id)
-  : Constraint(id)
+te::da::core::CheckConstraint::CheckConstraint(te::da::core::DataSetType* dt, unsigned int id)
+  : AbstractConstraint(id)
 {  
   if(dt)
     dt->add(this);
 }
 
-te::da::CheckConstraint::CheckConstraint(const std::string& name,
+te::da::core::CheckConstraint::CheckConstraint(const std::string& name,
                                          DataSetType* dt,
                                          unsigned int id)
-  : Constraint(name, id)
+  : AbstractConstraint(name, id)
 {  
   if(dt)
     dt->add(this);
 }
 
-te::da::CheckConstraint::CheckConstraint(const CheckConstraint& rhs)
-  : Constraint(rhs),
+te::da::core::CheckConstraint::CheckConstraint(const CheckConstraint& rhs)
+  : AbstractConstraint(rhs),
     m_expression(rhs.m_expression)
 {
 }
 
-te::da::CheckConstraint& te::da::CheckConstraint::operator=(const CheckConstraint& rhs)
+te::da::core::CheckConstraint& te::da::core::CheckConstraint::operator=(const CheckConstraint& rhs)
 {
   if(this != &rhs)
   {
-    Constraint::operator=(rhs);
+    AbstractConstraint::operator=(rhs);
 
     m_expression = rhs.m_expression;
   }
@@ -62,8 +62,7 @@ te::da::CheckConstraint& te::da::CheckConstraint::operator=(const CheckConstrain
   return *this;
 }
 
-te::da::Constraint* te::da::CheckConstraint::clone()
+te::da::core::AbstractConstraint* te::da::core::CheckConstraint::clone()
 {
   return new CheckConstraint(*this);
 }
-

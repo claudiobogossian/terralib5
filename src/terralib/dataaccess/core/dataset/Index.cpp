@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -17,18 +17,18 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*!
-  \file terralib/dataaccess/dataset/Index.cpp
+/*!H
+  \file terralib/dataaccess/core/dataset/Index.cpp
 
   \brief It describes an index associated to a DataSetType.
 */
 
 // TerraLib
-#include "../../datatype/Property.h"
+#include "../../../datatype/Property.h"
 #include "DataSetType.h"
 #include "Index.h"
 
-te::da::Index::Index(DataSetType* dt, unsigned int id)
+te::da::core::Index::Index(DataSetType* dt, unsigned int id)
   : m_id(id),
     m_type(B_TREE_TYPE),
     m_dt(dt)
@@ -37,7 +37,7 @@ te::da::Index::Index(DataSetType* dt, unsigned int id)
     m_dt->add(this);
 }
 
-te::da::Index::Index(const std::string& name, IndexType t, DataSetType* dt, unsigned int id)
+te::da::core::Index::Index(const std::string& name, IndexType t, DataSetType* dt, unsigned int id)
   : m_id(id),
     m_type(t),
     m_dt(dt),
@@ -47,7 +47,7 @@ te::da::Index::Index(const std::string& name, IndexType t, DataSetType* dt, unsi
     m_dt->add(this);
 }
 
-te::da::Index::Index(const std::string& name,
+te::da::core::Index::Index(const std::string& name,
                      IndexType t,
                      const std::vector<te::dt::Property*>& properties,
                      DataSetType* dt,
@@ -62,7 +62,7 @@ te::da::Index::Index(const std::string& name,
     m_dt->add(this);
 }
 
-te::da::Index::Index(const Index& rhs)
+te::da::core::Index::Index(const Index& rhs)
   : m_id(rhs.m_id),
     m_type(rhs.m_type),
     m_dt(0),
@@ -71,7 +71,7 @@ te::da::Index::Index(const Index& rhs)
 {
 }
 
-te::da::Index& te::da::Index::operator=(const Index& rhs)
+te::da::core::Index& te::da::core::Index::operator=(const Index& rhs)
 {
   if(this != &rhs)
   {
@@ -85,7 +85,7 @@ te::da::Index& te::da::Index::operator=(const Index& rhs)
   return *this;
 }
 
-bool te::da::Index::has(te::dt::Property* p)
+bool te::da::core::Index::has(te::dt::Property* p)
 {
   size_t size = m_properties.size();
 
@@ -96,7 +96,7 @@ bool te::da::Index::has(te::dt::Property* p)
   return false;
 }
 
-void te::da::Index::replace(te::dt::Property* p, te::dt::Property* pp)
+void te::da::core::Index::replace(te::dt::Property* p, te::dt::Property* pp)
 {
   std::size_t size = m_properties.size();
 
@@ -107,4 +107,3 @@ void te::da::Index::replace(te::dt::Property* p, te::dt::Property* pp)
       break;
     }
 }
-

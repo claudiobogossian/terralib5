@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/ObjectIdSet.cpp
+  \file terralib/dataaccess/core/dataset/ObjectIdSet.cpp
 
-  \brief This class represents a set of unique ids created in the same context. i.e. from the same data set.
+  \brief This class represents a set of unique ids created in the same context. i.e. from the same dataset.
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
-#include "../../common/Translator.h"
-#include "../../datatype/Enums.h"
+#include "../../../common/STLUtils.h"
+#include "../../../common/Translator.h"
+#include "../../../datatype/Enums.h"
 #include "../query/And.h"
 #include "../query/In.h"
 #include "../query/Literal.h"
@@ -38,16 +38,16 @@
 // STL
 #include <cassert>
 
-te::da::ObjectIdSet::ObjectIdSet()
+te::da::core::ObjectIdSet::ObjectIdSet()
 {
 }
 
-te::da::ObjectIdSet::~ObjectIdSet()
+te::da::core::ObjectIdSet::~ObjectIdSet()
 {
   te::common::FreeContents(m_oids);
 }
 
-void te::da::ObjectIdSet::addProperty(const std::string& name, std::size_t pos, int type)
+void te::da::core::ObjectIdSet::addProperty(const std::string& name, std::size_t pos, int type)
 {
   assert(!name.empty());
   m_pnames.push_back(name);
@@ -55,13 +55,13 @@ void te::da::ObjectIdSet::addProperty(const std::string& name, std::size_t pos, 
   m_ptypes.push_back(type);
 }
 
-void te::da::ObjectIdSet::add(te::da::ObjectId* oid)
+void te::da::core::ObjectIdSet::add(te::da::core::ObjectId* oid)
 {
   assert(oid);
   m_oids.insert(oid);
 }
 
-te::da::Expression* te::da::ObjectIdSet::getExpression() const
+te::da::core::Expression* te::da::core::ObjectIdSet::getExpression() const
 {
   assert(m_pnames.size() == m_ptypes.size());
 
@@ -99,53 +99,53 @@ te::da::Expression* te::da::ObjectIdSet::getExpression() const
   return ins;
 }
 
-void te::da::ObjectIdSet::clear()
+void te::da::core::ObjectIdSet::clear()
 {
   te::common::FreeContents(m_oids);
   m_oids.clear();
 }
 
-std::size_t te::da::ObjectIdSet::size() const
+std::size_t te::da::core::ObjectIdSet::size() const
 {
   return m_oids.size();
 }
 
-const std::vector<std::string>& te::da::ObjectIdSet::getPropertyNames() const
+const std::vector<std::string>& te::da::core::ObjectIdSet::getPropertyNames() const
 {
   return m_pnames;
 }
 
-const std::vector<std::size_t>& te::da::ObjectIdSet::getPropertyPos() const
+const std::vector<std::size_t>& te::da::core::ObjectIdSet::getPropertyPos() const
 {
   return m_ppos;
 }
 
-const std::vector<int>& te::da::ObjectIdSet::getPropertyTypes() const
+const std::vector<int>& te::da::core::ObjectIdSet::getPropertyTypes() const
 {
   return m_ptypes;
 }
 
-bool te::da::ObjectIdSet::contains(ObjectId* oid) const
+bool te::da::core::ObjectIdSet::contains(ObjectId* oid) const
 {
   assert(oid);
   return m_oids.find(oid) != m_oids.end();
 }
 
-void te::da::ObjectIdSet::remove(ObjectId* oid)
+void te::da::core::ObjectIdSet::remove(ObjectId* oid)
 {
-  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator it = m_oids.find(oid);
+  std::set<te::da::core::ObjectId*,  te::common::LessCmp<te::da::core::ObjectId*> >::iterator it = m_oids.find(oid);
 
   if(it != m_oids.end())
     m_oids.erase(it);
 }
 
-void te::da::ObjectIdSet::Union(te::da::ObjectIdSet* rhs)
+void te::da::core::ObjectIdSet::Union(te::da::core::ObjectIdSet* rhs)
 {
   assert(rhs);
 
-  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >& newOids = rhs->m_oids;
+  std::set<te::da::core::ObjectId*, te::common::LessCmp<te::da::core::ObjectId*> >& newOids = rhs->m_oids;
 
-  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator it;
+  std::set<te::da::core::ObjectId*,  te::common::LessCmp<te::da::core::ObjectId*> >::iterator it;
   for(it = newOids.begin(); it != newOids.end(); ++it)
     m_oids.find(*it) == m_oids.end() ? add(*it) : delete *it;
 
@@ -155,22 +155,22 @@ void te::da::ObjectIdSet::Union(te::da::ObjectIdSet* rhs)
   rhs = 0;
 }
 
-void te::da::ObjectIdSet::difference(const te::da::ObjectIdSet* rhs)
+void te::da::core::ObjectIdSet::difference(const te::da::core::ObjectIdSet* rhs)
 {
   assert(rhs);
 
   if(m_oids.empty())
     return;
 
-  const std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >& oidsToRemove = rhs->m_oids;
+  const std::set<te::da::core::ObjectId*, te::common::LessCmp<te::da::core::ObjectId*> >& oidsToRemove = rhs->m_oids;
   
   if(oidsToRemove.empty())
     return;
   
-  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
+  std::set<te::da::core::ObjectId*,  te::common::LessCmp<te::da::core::ObjectId*> >::const_iterator it;
   for(it = oidsToRemove.begin(); it != oidsToRemove.end(); ++it)
   {
-    std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator itSearch = m_oids.find(*it);
+    std::set<te::da::core::ObjectId*,  te::common::LessCmp<te::da::core::ObjectId*> >::iterator itSearch = m_oids.find(*it);
 
     if(itSearch == m_oids.end())
       continue;
@@ -180,12 +180,12 @@ void te::da::ObjectIdSet::difference(const te::da::ObjectIdSet* rhs)
   }
 }
 
-std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator te::da::ObjectIdSet::begin() const
+std::set<te::da::core::ObjectId*, te::common::LessCmp<te::da::core::ObjectId*> >::const_iterator te::da::core::ObjectIdSet::begin() const
 {
   return m_oids.begin();
 }
 
-std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator te::da::ObjectIdSet::end() const
+std::set<te::da::core::ObjectId*, te::common::LessCmp<te::da::core::ObjectId*> >::const_iterator te::da::core::ObjectIdSet::end() const
 {
   return m_oids.end();
 }
