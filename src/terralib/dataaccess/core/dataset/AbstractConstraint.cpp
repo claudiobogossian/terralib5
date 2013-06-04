@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,38 +18,38 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/Constraint.cpp
+  \file terralib/dataaccess/core/dataset/Constraint.cpp
 
   \brief A class that describes a constraint.
 */
 
 // TerraLib
-#include "../../datatype/Property.h"
-#include "Constraint.h"
+#include "../../../datatype/Property.h"
+#include "AbstractConstraint.h"
 #include "DataSetType.h"
 
-te::da::Constraint::Constraint(unsigned int id)
+te::da::core::AbstractConstraint::AbstractConstraint(unsigned int id)
   : m_id(id),
     m_dt(0),
     m_name("")
 {  
 }
 
-te::da::Constraint::Constraint(const std::string& name, unsigned int id)
+te::da::core::AbstractConstraint::AbstractConstraint(const std::string& name, unsigned int id)
   : m_id(id),
     m_dt(0),
     m_name(name)
 {
 }
 
-te::da::Constraint::Constraint(const Constraint& rhs)
+te::da::core::AbstractConstraint::AbstractConstraint(const AbstractConstraint& rhs)
   : m_id(rhs.m_id),
     m_dt(0),
     m_name(rhs.m_name)
 {
 }
 
-te::da::Constraint& te::da::Constraint::operator=(const Constraint& rhs)
+te::da::core::AbstractConstraint& te::da::core::AbstractConstraint::operator=(const AbstractConstraint& rhs)
 {
   if(this != &rhs)
   {
@@ -62,5 +62,3 @@ te::da::Constraint& te::da::Constraint::operator=(const Constraint& rhs)
 
   return *this;
 }
-
-

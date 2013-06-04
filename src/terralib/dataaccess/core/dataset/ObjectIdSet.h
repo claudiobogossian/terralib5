@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/ObjectIdSet.h
+  \file terralib/dataaccess/core/dataset/ObjectIdSet.h
 
-  \brief This class represents a set of unique ids created in the same context. i.e. from the same data set.
+  \brief This class represents a set of unique ids created in the same context. i.e. from the same dataset.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_OBJECTIDSET_H
-#define __TERRALIB_DATAACCESS_INTERNAL_OBJECTIDSET_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_OBJECTIDSET_H
+#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_OBJECTIDSET_H
 
 // TerraLib
-#include "../../common/Comparators.h"
-#include "../Config.h"
+#include "../../../common/Comparators.h"
+#include "../../Config.h"
 
 // STL
 #include <set>
@@ -39,153 +39,156 @@ namespace te
 {
   namespace da
   {
-// Forward declaration
-    class ObjectId;
-    class Expression;
-
-    /*!
-      \class ObjectIdSet
-
-      \brief This class represents a set of unique ids created in the same context. i.e. from the same data set.
-
-      \sa DataSet, DataSetType, ObjectId
-    */
-    class TEDATAACCESSEXPORT ObjectIdSet
+    namespace core
     {
-      public:
+      // Forward declaration
+      class ObjectId;
+      class Expression;
 
-        /*! \brief Constructor. */
-        ObjectIdSet();
+      /*!
+        \class ObjectIdSet
 
-        /*! \brief Destructor. */
-        ~ObjectIdSet();
+        \brief This class represents a set of unique ids created in the same context. i.e. from the same data set.
 
-        /*!
-          \brief It adds a property that will be used to generate the unique ids.
+        \sa DataSet, DataSetType, ObjectId
+      */
+      class TEDATAACCESSEXPORT ObjectIdSet
+      {
+        public:
 
-          \param name A property name that will be used to generate the unique ids.
-          \param name The property position.
-          \param type The property data type.
-        */
-        void addProperty(const std::string& name, std::size_t pos, int type);
+          /*! \brief Constructor. */
+          ObjectIdSet();
 
-        /*!
-          \brief It adds an object id to this object id set.
+          /*! \brief Destructor. */
+          ~ObjectIdSet();
 
-          \param The object id that will be added.
+          /*!
+            \brief It adds a property that will be used to generate the unique ids.
 
-          \note This class will take the ownership of the given pointer.
-        */
-        void add(ObjectId* oid);
+            \param name A property name that will be used to generate the unique ids.
+            \param name The property position.
+            \param type The property data type.
+          */
+          void addProperty(const std::string& name, std::size_t pos, int type);
 
-        /*!
-          \brief It returns the expression that can be used to retrieve the data set that contains the all indentified elements.
+          /*!
+            \brief It adds an object id to this object id set.
 
-          \return The expression that can be used to retrieve the data set that contains the all indentified elements.
+            \param The object id that will be added.
 
-          \note The caller will take the ownership of the given pointer.
-        */
-        Expression* getExpression() const;
+            \note This class will take the ownership of the given pointer.
+          */
+          void add(ObjectId* oid);
 
-        /*!
-          \brief It clears this object id set.
-        */
-        void clear();
+          /*!
+            \brief It returns the expression that can be used to retrieve the data set that contains the all indentified elements.
 
-        /*!
-          \brief It returns the object id set size.
+            \return The expression that can be used to retrieve the data set that contains the all indentified elements.
 
-          \return The object id set size.
-        */
-        std::size_t size() const;
+            \note The caller will take the ownership of the given pointer.
+          */
+          Expression* getExpression() const;
 
-        /*!
-          \brief It returns the property names used to generated the oids.
+          /*!
+            \brief It clears this object id set.
+          */
+          void clear();
 
-          \return The property names used to generated the oids.
-        */
-        const std::vector<std::string>& getPropertyNames() const;
+          /*!
+            \brief It returns the object id set size.
 
-        /*!
-          \brief It returns the property positions used to generated the oids.
+            \return The object id set size.
+          */
+          std::size_t size() const;
 
-          \return The property positions used to generated the oids.
-        */
-        const std::vector<std::size_t>& getPropertyPos() const;
+          /*!
+            \brief It returns the property names used to generated the oids.
 
-        /*!
-          \brief It returns the property types used to generated the oids.
+            \return The property names used to generated the oids.
+          */
+          const std::vector<std::string>& getPropertyNames() const;
 
-          \return The property types used to generated the oids.
-        */
-        const std::vector<int>& getPropertyTypes() const;
+          /*!
+            \brief It returns the property positions used to generated the oids.
 
-        /*!
-          \brief It returns if the object id set contains the given oid.
+            \return The property positions used to generated the oids.
+          */
+          const std::vector<std::size_t>& getPropertyPos() const;
 
-          \param oid The object id that will be searched.
+          /*!
+            \brief It returns the property types used to generated the oids.
 
-          \return True if the object id set contains the given oid. False, otherwise.
+            \return The property types used to generated the oids.
+          */
+          const std::vector<int>& getPropertyTypes() const;
 
-          \note The ObjectIdSet will NOT take the ownership of the given pointer.
-        */
-        bool contains(ObjectId* oid) const;
+          /*!
+            \brief It returns if the object id set contains the given oid.
 
-        /*!
-          \brief Removes the object id from set.
+            \param oid The object id that will be searched.
 
-          \param oid Object id to be removed.
+            \return True if the object id set contains the given oid. False, otherwise.
 
-          \note This WILL NOT take the ownership of \a oid.
-        */
-        void remove(ObjectId* oid);
+            \note The ObjectIdSet will NOT take the ownership of the given pointer.
+          */
+          bool contains(ObjectId* oid) const;
 
-        /*!
-          \brief It performs the union operation between this ObjectIdSet and the given ObjectIdSet.
+          /*!
+            \brief Removes the object id from set.
 
-          \param rhs A valid ObjectIdSet that will be used on union operation. Do not pass NULL!
+            \param oid Object id to be removed.
 
-          \note The ObjectIdSet will take the ownership of the given pointer.
+            \note This WILL NOT take the ownership of \a oid.
+          */
+          void remove(ObjectId* oid);
 
-          \note The given pointer will be invalidated at end of union operation.
-        */
-        void Union(ObjectIdSet* rhs);
+          /*!
+            \brief It performs the union operation between this ObjectIdSet and the given ObjectIdSet.
 
-        /*!
-          \brief It performs the difference operation between this ObjectIdSet and the given ObjectIdSet.
+            \param rhs A valid ObjectIdSet that will be used on union operation. Do not pass NULL!
 
-          \param rhs A valid ObjectIdSet that will be used on difference operation. Do not pass NULL!
+            \note The ObjectIdSet will take the ownership of the given pointer.
 
-          \note The ObjectIdSet will NOT take the ownership of the given pointer.
-        */
-        void difference(const ObjectIdSet* rhs);
+            \note The given pointer will be invalidated at end of union operation.
+          */
+          void Union(ObjectIdSet* rhs);
 
-        /*!
-          \brief Returns an iterator for the object ids in container
+          /*!
+            \brief It performs the difference operation between this ObjectIdSet and the given ObjectIdSet.
+
+            \param rhs A valid ObjectIdSet that will be used on difference operation. Do not pass NULL!
+
+            \note The ObjectIdSet will NOT take the ownership of the given pointer.
+          */
+          void difference(const ObjectIdSet* rhs);
+
+          /*!
+            \brief Returns an iterator for the object ids in container
           
-          \return Iterator for the begin element of the container.
+            \return Iterator for the begin element of the container.
 
-          \note When using the iterators it WILL NOT give the ownership of the pointers. 
-          This means that the caller MUST NOT delete the pointers or it will lead to an inconsistent state.
-        */
-        std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator begin() const;
+            \note When using the iterators it WILL NOT give the ownership of the pointers. 
+            This means that the caller MUST NOT delete the pointers or it will lead to an inconsistent state.
+          */
+          std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator begin() const;
 
-        /*!
-          \brief Returns an iterator for the object ids in container
+          /*!
+            \brief Returns an iterator for the object ids in container
           
-          \return Iterator for the ending element of the container.
-        */
-        std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator end() const;
+            \return Iterator for the ending element of the container.
+          */
+          std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator end() const;
 
-      private:
+        private:
 
-        std::vector<std::string> m_pnames;                            //!< The list of property names used to generate the unique ids.
-        std::vector<std::size_t> m_ppos;                              //!< The list of property positions used to generate the unique ids.
-        std::vector<int> m_ptypes;                                    //!< The list of property types used to generate the unique ids.
-        std::set<ObjectId*, te::common::LessCmp<ObjectId*> > m_oids;  //!< The set of unique ids.
-    };
+          std::vector<std::string> m_pnames;                            //!< The list of property names used to generate the unique ids.
+          std::vector<std::size_t> m_ppos;                              //!< The list of property positions used to generate the unique ids.
+          std::vector<int> m_ptypes;                                    //!< The list of property types used to generate the unique ids.
+          std::set<ObjectId*, te::common::LessCmp<ObjectId*> > m_oids;  //!< The set of unique ids.
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_OBJECTIDSET_H
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_OBJECTIDSET_H

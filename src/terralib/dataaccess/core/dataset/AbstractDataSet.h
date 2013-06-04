@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/dataset/DataSet.h
+  \file terralib/dataaccess/core/dataset/AbstractDataSet.h
 
-  \brief A dataset is the unit of information manipulated by the data access module of TerraLib.
+  \brief A dataset is the unit of information manipulated by the TerraLib data access module.
 */
 
-#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASET_H
-#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASET_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTDATASET_H
+#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTDATASET_H
 
 // TerraLib
 #include "../../../common/Enums.h"
@@ -66,609 +66,609 @@ namespace te
 
   namespace da
   {
-// Forward declarations
-    class DataSourceTransactor;
-
-    /*!
-      \class DataSet
-
-      \brief A dataset is the unit of information manipulated by the data access module of TerraLib.
-
-      A dataset is a container for a data collection with an internal pointer
-      pointing to a specific item in the collection. There are move methods
-      that can be used to set the position of this internal pointer.
-
-      When the dataset is created, its internal pointer
-      points to a sentinel location before the first item
-      of the collection. So, in order to retrieve data
-      from this collection one of the move methods must be called before.
-
-      Each item of the dataset is composed by any
-      number of properties. You have special methods to
-      query the property information (name, data type, constraints).
-
-      The individual value of a property of an item in the collection,
-      can be retrieved by an appropriated get method. These methods
-      retrieve the value by an integer index identifying the property position or
-      by a string with the property name.
-
-      When the dataset is the result of a query involving several
-      datasets, you can find out the dataset that gave the original
-      dataset name of a specific property.
-
-      \sa DataSourceCatalogLoader, DataSetType
-
-      \todo Whe can generaliza the dataset API so that a dataset may contain other datasets, in this case it will be a collection of datasets.
-
-      \note A geometric or raster property is represented just like any other data type.
-
-      \note Our design also allows a dataset to have multiple geometric or raster properties.
-    */
-    class TEDATAACCESSEXPORT DataSet : public boost::noncopyable
+    namespace core
     {
-      public:
+      // Forward declaration
+      class DataSourceTransactor;
 
-        /*! \brief Default constructor. */
-        DataSet() {}
+      /*!
+        \class AbstractDataSet
 
-        /*! \brief Virtual destructor. */
-        virtual ~DataSet() {}
+        \brief A dataset is the unit of information manipulated by the TerraLib data access module.
 
-        /** @name DataSet Methods
-         *  Methods for obtaining information about a given dataset.
-         */
-        //@{
+        A dataset is a container for a data collection with an internal pointer
+        pointing to a specific item in the collection. There are move methods
+        that can be used to set the position of this internal pointer.
 
-        /*!
-          \brief It returns the traverse type associated to the dataset.
+        When the dataset is created, its internal pointer
+        points to a sentinel location before the first item
+        of the collection. So, in order to retrieve data
+        from this collection one of the move methods must be called before.
 
-          \return The traverse type associated to the dataset.
-        */
-        virtual te::common::TraverseType getTraverseType() const = 0;
+        Each item of the dataset is composed by any
+        number of properties. You have special methods to
+        query the property information (name, data type, constraints).
 
-        /*!
-          \brief It returns the read and write permission associated to the dataset.
+        The individual value of a property of an item in the collection,
+        can be retrieved by an appropriated get method. These methods
+        retrieve the value by an integer index identifying the property position or
+        by a string with the property name.
 
-          \return The read and write permission associated to the dataset.
-        */
-        virtual te::common::AccessPolicy getAccessPolicy() const = 0;
+        When the dataset is the result of a query involving several
+        datasets, you can find out the dataset that gave the original
+        dataset name of a specific property.
 
-        /*!
-          \brief It computes the bounding rectangle for a spatial property of the dataset.
+        \sa DataSourceCatalogLoader, DataSetType
 
-          \param i The position of a spatial property to get its bounding box.
+        \todo Whe can generaliza the dataset API so that a dataset may contain other datasets, in this case it will be a collection of datasets.
 
-          \return The spatial property bounding rectangle or an invalid box if none is found.
+        \note A geometric or raster property is represented just like any other data type.
 
-          \pre The position i must be associated to a spatial property of the dataset.
+        \note Our design also allows a dataset to have multiple geometric or raster properties.
+      */
+      class TEDATAACCESSEXPORT AbstractDataSet : public boost::noncopyable
+      {
+        public:
 
-          \post The caller of this method will take the ownership of the returned box.
+          /*! \brief Default constructor. */
+          AbstractDataSet() {}
 
-          \exception Exception It throws an exception if something goes wrong during MBR search.
-        */
-        virtual te::gm::Envelope* getExtent(std::size_t i) = 0;
+          /*! \brief Virtual destructor. */
+          virtual ~AbstractDataSet() {}
 
-        /*!
-          \brief It returns the number of properties that composes an item of the dataset.
+          /** @name AbstractDataSet Methods
+           *  Methods for obtaining information about a given dataset.
+           */
+          //@{
 
-          \return The number of properties that composes an item of the dataset.
-        */
-        virtual std::size_t getNumProperties() const = 0;
+          /*!
+            \brief It returns the traverse type associated to the dataset.
 
-        /*!
-          \brief It returns the underlying data type of the property at position pos.
+            \return The traverse type associated to the dataset.
+          */
+          virtual te::common::TraverseType getTraverseType() const = 0;
 
-          \param i The property position of interest.
+          /*!
+            \brief It returns the read and write permission associated to the dataset.
 
-          \return The underlying data type of the property at position pos.
-        */
-        virtual int getPropertyDataType(std::size_t i) const = 0;
+            \return The read and write permission associated to the dataset.
+          */
+          virtual te::common::AccessPolicy getAccessPolicy() const = 0;
 
-        /*!
-          \brief It returns the property name at position pos.
+          /*!
+            \brief It computes the bounding rectangle for a spatial property of the dataset.
 
-          \param i The property name at the position of interest.
+            \param i The position of a spatial property to get its bounding box.
 
-          \return The property name at position pos.
-        */
-        virtual std::string getPropertyName(std::size_t i) const = 0;
+            \return The spatial property bounding rectangle or an invalid box if none is found.
 
-        /*!
-          \brief It returns the underlying dataset name of the property at position pos.
+            \pre The position i must be associated to a spatial property of the dataset.
 
-          \param i The property position of interest.
+            \post The caller of this method will take the ownership of the returned box.
 
-          \return The underlying dataset name of the property at position pos.
-        */
-        virtual std::string getDatasetNameOfProperty(std::size_t i) const = 0;
+            \exception Exception It throws an exception if something goes wrong during MBR search.
+          */
+          virtual te::gm::Envelope* getExtent(std::size_t i) = 0;
 
-        //@}
+          /*!
+            \brief It returns the number of properties that composes an item of the dataset.
 
-        /** @name Collection Methods
-         *  Methods for getting/setting atomic datasets.
-         */
-        //@{
+            \return The number of properties that composes an item of the dataset.
+          */
+          virtual std::size_t getNumProperties() const = 0;
 
-        /*!
-          \brief It returns true if the collection is empty.
+          /*!
+            \brief It returns the underlying data type of the property at position pos.
 
-          \return True, if the collection is empty.
-        */
-        virtual bool isEmpty() const = 0;
+            \param i The property position of interest.
 
-        /*!
-          \brief It returns the collection size, if it is known.
+            \return The underlying data type of the property at position pos.
+          */
+          virtual int getPropertyDataType(std::size_t i) const = 0;
 
-          It may return std::string::npos if the size is not known,
-          or it would be too costly to compute it.
+          /*!
+            \brief It returns the property name at position pos.
 
-          \return The size of the collection if it is known.
-        */
-        virtual std::size_t size() const = 0;
+            \param i The property name at the position of interest.
 
-        /*!
-          \brief It moves the internal pointer to the next item of the collection.
+            \return The property name at position pos.
+          */
+          virtual std::string getPropertyName(std::size_t i) const = 0;
 
-          You always has to call this method in order to move the internal pointer to the first
-          item in the collection. This method can be used to traverse a dataset.
+          /*!
+            \brief It returns the underlying dataset name of the property at position pos.
 
-          \return True if the internal pointer is on a valid item, or false otherwise.
+            \param i The property position of interest.
 
-          \note All dataset types support this method: FORWARDONLY, BIDIRECTIONAL and RANDOM.
-        */
-        virtual bool moveNext() = 0;
+            \return The underlying dataset name of the property at position pos.
+          */
+          virtual std::string getDatasetNameOfProperty(std::size_t i) const = 0;
 
-        /*!
-          \brief It moves the internal pointer to the previous item of the collection.
+          //@}
 
-          \return True, if the internal pointer (cursor position) is on a valid item, or false otherwise.
+          /** @name Collection Methods
+           *  Methods for getting/setting atomic datasets.
+           */
+          //@{
 
-          \note This method is not supported by FORWARDONLY datasets.
-        */
-        virtual bool movePrevious() = 0;
+          /*!
+            \brief It returns true if the collection is empty.
 
-        /*!
-          \brief It moves the internal pointer to a position before the first item in the collection.
+            \return True, if the collection is empty.
+          */
+          virtual bool isEmpty() const = 0;
 
-          \return True, if it was possible to move to a sentinel position before the first item in the collection.
+          /*!
+            \brief It returns the collection size, if it is known.
 
-          \note This method is not supported by FORWARDONLY datasets.
-        */
-        virtual bool moveBeforeFirst() = 0;
+            It may return std::string::npos if the size is not known,
+            or it would be too costly to compute it.
 
-        /*!
-          \brief It moves the internal pointer to the first item in the collection.
+            \return The size of the collection if it is known.
+          */
+          virtual std::size_t size() const = 0;
 
-          \return True, if it was possible to move to the first item in the collection.
+          /*!
+            \brief It moves the internal pointer to the next item of the collection.
 
-          \note This method is not supported by FORWARDONLY datasets.
-        */
-        virtual bool moveFirst() = 0;
+            You always has to call this method in order to move the internal pointer to the first
+            item in the collection. This method can be used to traverse a dataset.
 
-        /*!
-          \brief It sets the dataset internal pointer to the last item in the collection.
+            \return True if the internal pointer is on a valid item, or false otherwise.
 
-          \return True, if it was possible to move to the last item in the collection.
-        */
-        virtual bool moveLast() = 0;
+            \note All dataset types support this method: FORWARDONLY, BIDIRECTIONAL and RANDOM.
+          */
+          virtual bool moveNext() = 0;
 
-        /*!
-          \brief It moves the dataset internal pointer to a given position.
+          /*!
+            \brief It moves the internal pointer to the previous item of the collection.
 
-          \param i The position the dataset internal pointer must be set up.
+            \return True, if the internal pointer (cursor position) is on a valid item, or false otherwise.
 
-          \return True, if it was possible to move the dataset reading to the given position.
+            \note This method is not supported by FORWARDONLY datasets.
+          */
+          virtual bool movePrevious() = 0;
 
-          \note The first item in the collection starts at address 0.
-        */
-        virtual bool move(std::size_t i) = 0;
+          /*!
+            \brief It moves the internal pointer to a position before the first item in the collection.
 
-        /*!
-          \brief It tells if the dataset internal pointer is on the first element of the collection or not.
+            \return True, if it was possible to move to a sentinel position before the first item in the collection.
 
-          \return True if the dataset internal pointer is on the first element otherwise it returns false.
-        */
-        virtual bool isAtBegin() const = 0;
+            \note This method is not supported by FORWARDONLY datasets.
+          */
+          virtual bool moveBeforeFirst() = 0;
 
-        /*!
-          \brief It tells if the dataset internal pointer is in a position before the first element of the collection or not.
+          /*!
+            \brief It moves the internal pointer to the first item in the collection.
 
-          \return True, if the dataset internal pointer is in a position before the first element otherwise it returns false.
-        */
-        virtual bool isBeforeBegin() const = 0;
+            \return True, if it was possible to move to the first item in the collection.
 
-        /*!
-          \brief It tells if the dataset internal pointer is on the last element of the collection.
+            \note This method is not supported by FORWARDONLY datasets.
+          */
+          virtual bool moveFirst() = 0;
 
-          \return True, if the dataset internal pointer is on the last element otherwise it returns false.
-        */
-        virtual bool isAtEnd() const = 0;
+          /*!
+            \brief It sets the dataset internal pointer to the last item in the collection.
 
-        /*!
-          \brief It tells if the dataset internal pointer is on the sentinel position after the last element of the collection or not.
+            \return True, if it was possible to move to the last item in the collection.
+          */
+          virtual bool moveLast() = 0;
 
-          \return True, if the dataset internal pointer is on the sentinel position after the last element otherwise it returns false.
-        */
-        virtual bool isAfterEnd() const = 0;
+          /*!
+            \brief It moves the dataset internal pointer to a given position.
 
-        //@}
+            \param i The position the dataset internal pointer must be set up.
 
-        /** @name DataSet Element Properties
-         *  Methods for retrieving/setting the dataset item component values without the need to explicitly instantiate an item via getItem method.
-         */
-        //@{
+            \return True, if it was possible to move the dataset reading to the given position.
 
-        /*!
-          \brief Method for retrieving a signed character attribute value (1 byte long).
+            \note The first item in the collection starts at address 0.
+          */
+          virtual bool move(std::size_t i) = 0;
 
-          \param i The attribute index.
+          /*!
+            \brief It tells if the dataset internal pointer is on the first element of the collection or not.
 
-          \return The signed character attribute value (1 byte long) in the given position.
-        */
-        virtual char getChar(std::size_t i) const = 0;
+            \return True if the dataset internal pointer is on the first element otherwise it returns false.
+          */
+          virtual bool isAtBegin() const = 0;
 
-        /*!
-          \brief Method for retrieving a signed character attribute value (1 byte long).
+          /*!
+            \brief It tells if the dataset internal pointer is in a position before the first element of the collection or not.
 
-          \param name The attribute name.
+            \return True, if the dataset internal pointer is in a position before the first element otherwise it returns false.
+          */
+          virtual bool isBeforeBegin() const = 0;
 
-          \return The signed character attribute value (1 byte long) with the given name.
-        */
-        virtual char getChar(const std::string& name) const;
+          /*!
+            \brief It tells if the dataset internal pointer is on the last element of the collection.
 
-        /*!
-          \brief Method for retrieving an unsigned character attribute value (1 byte long).
+            \return True, if the dataset internal pointer is on the last element otherwise it returns false.
+          */
+          virtual bool isAtEnd() const = 0;
 
-          \param i The attribute index.
+          /*!
+            \brief It tells if the dataset internal pointer is on the sentinel position after the last element of the collection or not.
 
-          \return The unsigned character attribute value (1 byte long) in the given position.
-        */
-        virtual unsigned char getUChar(std::size_t i) const = 0;
+            \return True, if the dataset internal pointer is on the sentinel position after the last element otherwise it returns false.
+          */
+          virtual bool isAfterEnd() const = 0;
 
-        /*!
-          \brief Method for retrieving an unsigned character attribute value (1 byte long).
+          //@}
 
-          \param name The attribute name.
+          /** @name DataSet Element Properties
+           *  Methods for retrieving/setting the dataset item component values without the need to explicitly instantiate an item via getItem method.
+           */
+          //@{
 
-          \return The unsigned character attribute value (1 byte long) with the given name.
-        */
-        virtual unsigned char getUChar(const std::string& name) const;
+          /*!
+            \brief Method for retrieving a signed character attribute value (1 byte long).
 
-        /*!
-          \brief Method for retrieving a 16-bit integer attribute value (2 bytes long).
+            \param i The attribute index.
 
-          \param i The attribute index.
+            \return The signed character attribute value (1 byte long) in the given position.
+          */
+          virtual char getChar(std::size_t i) const = 0;
 
-          \return The 16-bit integer attribute value (2 bytes long) in the given position.
-        */
-        virtual boost::int16_t getInt16(std::size_t i) const = 0;
+          /*!
+            \brief Method for retrieving a signed character attribute value (1 byte long).
 
-        /*!
-          \brief Method for retrieving a 16-bit integer attribute value (2 bytes long).
+            \param name The attribute name.
 
-          \param name The attribute name.
+            \return The signed character attribute value (1 byte long) with the given name.
+          */
+          virtual char getChar(const std::string& name) const;
 
-          \return The 16-bit integer attribute value (2 bytes long) with the given name.
-        */
-        virtual boost::int16_t getInt16(const std::string& name) const;
+          /*!
+            \brief Method for retrieving an unsigned character attribute value (1 byte long).
 
-        /*!
-          \brief Method for retrieving a 32-bit integer attribute value (4 bytes long).
+            \param i The attribute index.
 
-          \param i The attribute index.
+            \return The unsigned character attribute value (1 byte long) in the given position.
+          */
+          virtual unsigned char getUChar(std::size_t i) const = 0;
 
-          \return The 32-bit integer attribute value in the given position.
-        */
-        virtual boost::int32_t getInt32(std::size_t i) const = 0;
+          /*!
+            \brief Method for retrieving an unsigned character attribute value (1 byte long).
 
-        /*!
-          \brief Method for retrieving a 32-bit integer attribute value (4 bytes long).
+            \param name The attribute name.
 
-          \param name The attribute name.
+            \return The unsigned character attribute value (1 byte long) with the given name.
+          */
+          virtual unsigned char getUChar(const std::string& name) const;
 
-          \return The 32-bit integer attribute value with the given name.
-        */
-        virtual boost::int32_t getInt32(const std::string& name) const;
+          /*!
+            \brief Method for retrieving a 16-bit integer attribute value (2 bytes long).
 
-        /*!
-          \brief Method for retrieving a 64-bit integer attribute value (8 bytes long).
+            \param i The attribute index.
 
-          \param i The attribute index.
+            \return The 16-bit integer attribute value (2 bytes long) in the given position.
+          */
+          virtual boost::int16_t getInt16(std::size_t i) const = 0;
 
-          \return The 64-bit integer attribute value in the given position.
-        */
-        virtual boost::int64_t getInt64(std::size_t i) const = 0;
+          /*!
+            \brief Method for retrieving a 16-bit integer attribute value (2 bytes long).
 
-        /*!
-          \brief Method for retrieving a 64-bit integer attribute value (8 bytes long).
+            \param name The attribute name.
 
-          \param name The attribute name.
+            \return The 16-bit integer attribute value (2 bytes long) with the given name.
+          */
+          virtual boost::int16_t getInt16(const std::string& name) const;
 
-          \return The 64-bit integer attribute value with the given name.
-        */
-        virtual boost::int64_t getInt64(const std::string& name) const;
+          /*!
+            \brief Method for retrieving a 32-bit integer attribute value (4 bytes long).
 
-        /*!
-          \brief Method for retrieving a boolean attribute value.
+            \param i The attribute index.
 
-          \param i The attribute index.
+            \return The 32-bit integer attribute value in the given position.
+          */
+          virtual boost::int32_t getInt32(std::size_t i) const = 0;
 
-          \return The boolean attribute value in the given position.
-        */
-        virtual bool getBool(std::size_t i) const = 0;
+          /*!
+            \brief Method for retrieving a 32-bit integer attribute value (4 bytes long).
 
-        /*!
-          \brief Method for retrieving a boolean attribute value.
+            \param name The attribute name.
 
-          \param name The attribute name.
+            \return The 32-bit integer attribute value with the given name.
+          */
+          virtual boost::int32_t getInt32(const std::string& name) const;
 
-          \return The boolean attribute value with the given name.
-        */
-        virtual bool getBool(const std::string& name) const;
+          /*!
+            \brief Method for retrieving a 64-bit integer attribute value (8 bytes long).
 
-        /*!
-          \brief Method for retrieving a float attribute value.
+            \param i The attribute index.
 
-          \param i The attribute index.
+            \return The 64-bit integer attribute value in the given position.
+          */
+          virtual boost::int64_t getInt64(std::size_t i) const = 0;
 
-          \return The float attribute value in the given position.
-        */
-        virtual float getFloat(std::size_t i) const = 0;
+          /*!
+            \brief Method for retrieving a 64-bit integer attribute value (8 bytes long).
 
-        /*!
-          \brief Method for retrieving a float attribute value.
+            \param name The attribute name.
 
-          \param name The attribute name.
+            \return The 64-bit integer attribute value with the given name.
+          */
+          virtual boost::int64_t getInt64(const std::string& name) const;
 
-          \return The float attribute value with the given name.
-        */
-        virtual float getFloat(const std::string& name) const;
+          /*!
+            \brief Method for retrieving a boolean attribute value.
 
-        /*!
-          \brief Method for retrieving a double attribute value.
+            \param i The attribute index.
 
-          \param i The attribute index.
+            \return The boolean attribute value in the given position.
+          */
+          virtual bool getBool(std::size_t i) const = 0;
 
-          \return The double attribute value in the given position.
-        */
-        virtual double getDouble(std::size_t i) const = 0;
+          /*!
+            \brief Method for retrieving a boolean attribute value.
 
-        /*!
-          \brief Method for retrieving a double attribute value.
+            \param name The attribute name.
 
-          \param name The attribute name.
+            \return The boolean attribute value with the given name.
+          */
+          virtual bool getBool(const std::string& name) const;
 
-          \return The double attribute value with the given name.
-        */
-        virtual double getDouble(const std::string& name) const;
+          /*!
+            \brief Method for retrieving a float attribute value.
 
-        /*!
-          \brief Method for retrieving a numeric attribute value.
+            \param i The attribute index.
 
-          \param i The attribute index.
+            \return The float attribute value in the given position.
+          */
+          virtual float getFloat(std::size_t i) const = 0;
 
-          \return The numeric attribute value in the given position.
-        */
-        virtual std::string getNumeric(std::size_t i) const = 0;
+          /*!
+            \brief Method for retrieving a float attribute value.
 
-        /*!
-          \brief Method for retrieving a numeric attribute value.
+            \param name The attribute name.
 
-          \param name The attribute name.
+            \return The float attribute value with the given name.
+          */
+          virtual float getFloat(const std::string& name) const;
 
-          \return The numeric attribute value with the given name.
-        */
-        virtual std::string getNumeric(const std::string& name) const;
+          /*!
+            \brief Method for retrieving a double attribute value.
 
-        /*!
-          \brief Method for retrieving a string value attribute.
+            \param i The attribute index.
 
-          \param i The attribute index.
+            \return The double attribute value in the given position.
+          */
+          virtual double getDouble(std::size_t i) const = 0;
 
-          \return The string attribute value in the given position.
-        */
-        virtual std::string getString(std::size_t i) const = 0;
+          /*!
+            \brief Method for retrieving a double attribute value.
 
-        /*!
-          \brief Method for retrieving a string attribute value.
+            \param name The attribute name.
 
-          \param name The attribute name.
+            \return The double attribute value with the given name.
+          */
+          virtual double getDouble(const std::string& name) const;
 
-          \return The string attribute value with the given name.
-        */
-        virtual std::string getString(const std::string& name) const;
+          /*!
+            \brief Method for retrieving a numeric attribute value.
 
-        /*!
-          \brief Method for retrieving a byte array.
+            \param i The attribute index.
 
-          You can use this method in order to retrieve a BLOB data.
+            \return The numeric attribute value in the given position.
+          */
+          virtual std::string getNumeric(std::size_t i) const = 0;
 
-          \param i The attribute index.
+          /*!
+            \brief Method for retrieving a numeric attribute value.
+
+            \param name The attribute name.
+
+            \return The numeric attribute value with the given name.
+          */
+          virtual std::string getNumeric(const std::string& name) const;
+
+          /*!
+            \brief Method for retrieving a string value attribute.
+
+            \param i The attribute index.
+
+            \return The string attribute value in the given position.
+          */
+          virtual std::string getString(std::size_t i) const = 0;
+
+          /*!
+            \brief Method for retrieving a string attribute value.
+
+            \param name The attribute name.
+
+            \return The string attribute value with the given name.
+          */
+          virtual std::string getString(const std::string& name) const;
+
+          /*!
+            \brief Method for retrieving a byte array.
+
+            You can use this method in order to retrieve a BLOB data.
+
+            \param i The attribute index.
           
-          \return The byte array attribute.
+            \return The byte array attribute.
 
-          \note The caller of this method will take the ownership of the returned byte array.
-        */
-        virtual te::dt::ByteArray* getByteArray(std::size_t i) const = 0;
+            \note The caller of this method will take the ownership of the returned byte array.
+          */
+          virtual te::dt::ByteArray* getByteArray(std::size_t i) const = 0;
 
-        /*!
-          \brief Method for retrieving a byte array.
+          /*!
+            \brief Method for retrieving a byte array.
 
-          You can use this method in order to retrieve a BLOB data.
+            You can use this method in order to retrieve a BLOB data.
 
-          \param name The attribute name.
+            \param name The attribute name.
           
-          \return The byte array attribute.
+            \return The byte array attribute.
 
-          \note The caller of this method will take the ownership of the returned byte array.
-        */
-        virtual te::dt::ByteArray* getByteArray(const std::string& name) const;
+            \note The caller of this method will take the ownership of the returned byte array.
+          */
+          virtual te::dt::ByteArray* getByteArray(const std::string& name) const;
 
-        /*!
-          \brief Method for retrieving a geometric attribute value.
+          /*!
+            \brief Method for retrieving a geometric attribute value.
 
-          \param i The attribute index.
+            \param i The attribute index.
 
-          \return The geometric attribute value in the given position.
+            \return The geometric attribute value in the given position.
 
-          \note The caller of this method will take the ownership of the returned Geometry.
-        */
-        virtual te::gm::Geometry* getGeometry(std::size_t i) const = 0;
+            \note The caller of this method will take the ownership of the returned Geometry.
+          */
+          virtual te::gm::Geometry* getGeometry(std::size_t i) const = 0;
 
-        /*!
-          \brief Method for retrieving a geometric attribute value.
+          /*!
+            \brief Method for retrieving a geometric attribute value.
 
-          \param name The attribute name.
+            \param name The attribute name.
 
-          \return The geometric attribute value with the given name.
+            \return The geometric attribute value with the given name.
 
-          \note The caller of this method will take the ownership of the returned Geometry.
-        */
-        virtual te::gm::Geometry* getGeometry(const std::string& name) const;
+            \note The caller of this method will take the ownership of the returned Geometry.
+          */
+          virtual te::gm::Geometry* getGeometry(const std::string& name) const;
 
-        /*!
-          \brief Method for retrieving a raster attribute value.
+          /*!
+            \brief Method for retrieving a raster attribute value.
 
-          \param i The attribute index.
+            \param i The attribute index.
 
-          \return The raster attribute value in the given position.
+            \return The raster attribute value in the given position.
 
-          \note The caller of this method will take the ownership of the returned raster.
-        */
-        virtual te::rst::Raster* getRaster(std::size_t i) const = 0;
+            \note The caller of this method will take the ownership of the returned raster.
+          */
+          virtual te::rst::Raster* getRaster(std::size_t i) const = 0;
 
-        /*!
-          \brief Method for retrieving a raster attribute value.
+          /*!
+            \brief Method for retrieving a raster attribute value.
 
-          \param name The attribute name.
+            \param name The attribute name.
 
-          \return The raster attribute value with the given name.
+            \return The raster attribute value with the given name.
 
-          \note The caller of this method will take the ownership of the returned raster.
-        */
-        virtual te::rst::Raster* getRaster(const std::string& name) const;
+            \note The caller of this method will take the ownership of the returned raster.
+          */
+          virtual te::rst::Raster* getRaster(const std::string& name) const;
 
-        /*!
-          \brief Method for retrieving a date and time attribute value.
+          /*!
+            \brief Method for retrieving a date and time attribute value.
 
-          \param i The attribute index.
+            \param i The attribute index.
 
-          \return The date and time attribute value in the given position.
+            \return The date and time attribute value in the given position.
 
-          \note The caller of this method will take the ownership of the returned datetime.
-        */
-        virtual te::dt::DateTime* getDateTime(std::size_t i) const = 0;
+            \note The caller of this method will take the ownership of the returned datetime.
+          */
+          virtual te::dt::DateTime* getDateTime(std::size_t i) const = 0;
 
-        /*!
-          \brief Method for retrieving a date and time attribute value.
+          /*!
+            \brief Method for retrieving a date and time attribute value.
 
-          \param name The attribute name.
+            \param name The attribute name.
 
-          \return The date and time attribute value with the given name.
+            \return The date and time attribute value with the given name.
 
-          \note The caller of this method will take the ownership of the returned datetime.
-        */
-        virtual te::dt::DateTime* getDateTime(const std::string& name) const;
+            \note The caller of this method will take the ownership of the returned datetime.
+          */
+          virtual te::dt::DateTime* getDateTime(const std::string& name) const;
 
-        /*!
-          \brief Method for retrieving an array.
+          /*!
+            \brief Method for retrieving an array.
 
-          \param i The attribute index.
+            \param i The attribute index.
 
-          \return An array. The caller will take its ownership.
-        */
-        virtual te::dt::Array* getArray(std::size_t i) const = 0;
+            \return An array. The caller will take its ownership.
+          */
+          virtual te::dt::Array* getArray(std::size_t i) const = 0;
 
-        /*!
-          \brief Method for retrieving an array.
+          /*!
+            \brief Method for retrieving an array.
 
-          \param name The attribute name.
+            \param name The attribute name.
 
-          \return An array. The caller will take its ownership.
+            \return An array. The caller will take its ownership.
 
-          \return An array. The caller will take its ownership.
-        */
-        virtual te::dt::Array* getArray(const std::string& name) const;
+            \return An array. The caller will take its ownership.
+          */
+          virtual te::dt::Array* getArray(const std::string& name) const;
 
-        /*!
-          \brief Method for retrieving any other type of data value stored in the data source.
+          /*!
+            \brief Method for retrieving any other type of data value stored in the data source.
 
-          This method can be use for extensible datatypes.
+            This method can be use for extensible datatypes.
 
-          \param i The attribute index.
+            \param i The attribute index.
 
-          \return A pointer to the data value.
+            \return A pointer to the data value.
 
-          \note The caller of this method will take the ownership of the returned pointer.
-        */
-        virtual te::dt::AbstractData* getValue(std::size_t i) const;
+            \note The caller of this method will take the ownership of the returned pointer.
+          */
+          virtual te::dt::AbstractData* getValue(std::size_t i) const;
 
-        /*!
-          \brief Method for retrieving any other type of data value stored in the data source.
+          /*!
+            \brief Method for retrieving any other type of data value stored in the data source.
 
-          This method can be use for extensible datatypes.
+            This method can be use for extensible datatypes.
 
-          \param name The attribute name.
+            \param name The attribute name.
 
-          \return A pointer to the data value.
+            \return A pointer to the data value.
 
-          \note The caller of this method will take the ownership of the returned pointer.
-         */
-        virtual te::dt::AbstractData* getValue(const std::string& name) const;
+            \note The caller of this method will take the ownership of the returned pointer.
+           */
+          virtual te::dt::AbstractData* getValue(const std::string& name) const;
 
-        /*!
-          \brief Method for retrieving a data value as a string plain representation.
+          /*!
+            \brief Method for retrieving a data value as a string plain representation.
 
-          \param i         The attribute index.
-          \param precision The precision in the conversion.
+            \param i         The attribute index.
+            \param precision The precision in the conversion.
           
-          \return The attribute value in a string format.
+            \return The attribute value in a string format.
 
-          \note It is safe to call this method for any data type, the data source implementation will
-                take care of how to convert the internal representation to a string.
-        */
-        virtual std::string getAsString(std::size_t i, int precision = 0) const;
+            \note It is safe to call this method for any data type, the data source implementation will
+                  take care of how to convert the internal representation to a string.
+          */
+          virtual std::string getAsString(std::size_t i, int precision = 0) const;
 
-        /*!
-          \brief Method for retrieving a data value as a string plain representation.
+          /*!
+            \brief Method for retrieving a data value as a string plain representation.
 
-          \param name The attribute name.
-          \param precision The precision in the conversion.
+            \param name The attribute name.
+            \param precision The precision in the conversion.
 
-          \return The attribute value in a string format.
+            \return The attribute value in a string format.
 
-          \note It is safe to call this method for any data type, the data source implementation will
-                take care of how to convert the internal representation to a string.
-        */
-        virtual std::string getAsString(const std::string& name, int precision = 0) const;
+            \note It is safe to call this method for any data type, the data source implementation will
+                  take care of how to convert the internal representation to a string.
+          */
+          virtual std::string getAsString(const std::string& name, int precision = 0) const;
 
-        /*!
-          \brief It checks if the attribute value is NULL.
+          /*!
+            \brief It checks if the attribute value is NULL.
 
-          \param i The attribute index.
+            \param i The attribute index.
 
-          \return True if the attribute value is NULL.
-        */
-        virtual bool isNull(std::size_t i) const = 0;
+            \return True if the attribute value is NULL.
+          */
+          virtual bool isNull(std::size_t i) const = 0;
 
-        /*!
-          \brief It checks if the attribute value is NULL.
+          /*!
+            \brief It checks if the attribute value is NULL.
 
-          \param name The attribute name.
+            \param name The attribute name.
 
-          \return True if the attribute value is NULL.
-        */
-        virtual bool isNull(const std::string& name) const;
+            \return True if the attribute value is NULL.
+          */
+          virtual bool isNull(const std::string& name) const;
 
-        //@}
-    };
+          //@}
+      };
 
-    typedef boost::shared_ptr<DataSet> DataSetPtr;
+      typedef boost::shared_ptr<AbstractDataSet> DataSetPtr;
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-
-#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASET_H
-
-
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTDATASET_H

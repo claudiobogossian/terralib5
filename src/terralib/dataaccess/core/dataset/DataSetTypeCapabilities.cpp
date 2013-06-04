@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "DataSetTypeCapabilities2.h"
+#include "DataSetTypeCapabilities.h"
 
 te::da::core::DataSetTypeCapabilities::DataSetTypeCapabilities()
   : m_supportPrimaryKey(false),

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,18 +18,18 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/DataSetType.cpp
+  \file terralib/dataaccess/core/dataset/DataSetType.cpp
 
   \brief A class that models the description of a dataset.
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
-#include "../../common/Translator.h"
-#include "../../datatype/Enums.h"
-#include "../../geometry/GeometryProperty.h"
-#include "../../raster/RasterProperty.h"
-#include "../datasource/DataSourceCatalog.h"
+#include "../../../common/STLUtils.h"
+#include "../../../common/Translator.h"
+#include "../../../datatype/Enums.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../raster/RasterProperty.h"
+#include "../../datasource/DataSourceCatalog.h"
 #include "../Exception.h"
 #include "CheckConstraint.h"
 #include "DataSetType.h"
@@ -42,7 +42,7 @@
 // STL
 #include <cassert>
 
-te::da::DataSetType::DataSetType(const std::string& name, unsigned int id)
+te::da::core::DataSetType::DataSetType(const std::string& name, unsigned int id)
   : CompositeProperty(name, name, te::dt::DATASET_TYPE, id, 0),
     m_catalog(0),
     m_pk(0),
@@ -50,7 +50,7 @@ te::da::DataSetType::DataSetType(const std::string& name, unsigned int id)
 {
 }
 
-te::da::DataSetType::DataSetType(const DataSetType& rhs)
+te::da::core::DataSetType::DataSetType(const DataSetType& rhs)
  : CompositeProperty(rhs),
    m_catalog(0),
    m_pk(0),
@@ -201,7 +201,7 @@ te::da::DataSetType::DataSetType(const DataSetType& rhs)
   } 
 }
 
-te::da::DataSetType::~DataSetType()
+te::da::core::DataSetType::~DataSetType()
 {
   delete m_pk;
   te::common::FreeContents(m_foreignKeys);
@@ -210,7 +210,7 @@ te::da::DataSetType::~DataSetType()
   te::common::FreeContents(m_uniqueKeys);
 }
 
-te::da::DataSetType& te::da::DataSetType::operator=(const DataSetType& /*rhs*/)
+te::da::core::DataSetType& te::da::core::DataSetType::operator=(const DataSetType& /*rhs*/)
 {
   //if(this != &rhs)
   //{
@@ -220,7 +220,7 @@ te::da::DataSetType& te::da::DataSetType::operator=(const DataSetType& /*rhs*/)
   //return *this;
 }
 
-void te::da::DataSetType::setPrimaryKey(PrimaryKey* pk)
+void te::da::core::DataSetType::setPrimaryKey(PrimaryKey* pk)
 {
   if(pk == m_pk)
     return;
@@ -233,7 +233,7 @@ void te::da::DataSetType::setPrimaryKey(PrimaryKey* pk)
   m_pk = pk;
 }
 
-void te::da::DataSetType::add(te::da::Constraint* c)
+void te::da::core::DataSetType::add(AbstractConstraint* c)
 {
   assert(c);
 
@@ -262,7 +262,7 @@ void te::da::DataSetType::add(te::da::Constraint* c)
   }  
 }
 
-void te::da::DataSetType::remove(te::da::Constraint* c)
+void te::da::core::DataSetType::remove(te::da::core::AbstractConstraint* c)
 {
   assert(c);
 
@@ -289,7 +289,7 @@ void te::da::DataSetType::remove(te::da::Constraint* c)
   }
 }
 
-te::da::UniqueKey* te::da::DataSetType::getUniqueKey(const std::string& name) const
+te::da::core::UniqueKey* te::da::core::DataSetType::getUniqueKey(const std::string& name) const
 {
   std::size_t size = m_uniqueKeys.size();
   
@@ -302,7 +302,7 @@ te::da::UniqueKey* te::da::DataSetType::getUniqueKey(const std::string& name) co
   return 0;
 }
 
-void te::da::DataSetType::remove(UniqueKey* uk)
+void te::da::core::DataSetType::remove(UniqueKey* uk)
 {
   std::size_t size = m_uniqueKeys.size();
   
@@ -317,13 +317,13 @@ void te::da::DataSetType::remove(UniqueKey* uk)
   }
 }
 
-void te::da::DataSetType::clearUniqueKeys()
+void te::da::core::DataSetType::clearUniqueKeys()
 {
   te::common::FreeContents(m_uniqueKeys);
   m_uniqueKeys.clear();
 }
 
-void te::da::DataSetType::add(const std::vector<CheckConstraint*>& ccs)
+void te::da::core::DataSetType::add(const std::vector<CheckConstraint*>& ccs)
 {
   std::size_t size = ccs.size();
 
@@ -331,7 +331,7 @@ void te::da::DataSetType::add(const std::vector<CheckConstraint*>& ccs)
     add(ccs[i]);
 }
 
-te::da::CheckConstraint* te::da::DataSetType::getCheckConstraint(const std::string& name) const
+te::da::core::CheckConstraint* te::da::core::DataSetType::getCheckConstraint(const std::string& name) const
 {
   std::size_t size = m_checkConstraints.size();
   
@@ -344,7 +344,7 @@ te::da::CheckConstraint* te::da::DataSetType::getCheckConstraint(const std::stri
   return 0;
 }
 
-void te::da::DataSetType::remove(CheckConstraint* cc)
+void te::da::core::DataSetType::remove(CheckConstraint* cc)
 {
   std::size_t size = m_checkConstraints.size();
   
@@ -359,20 +359,20 @@ void te::da::DataSetType::remove(CheckConstraint* cc)
   }
 }
 
-void te::da::DataSetType::clearCheckConstraints()
+void te::da::core::DataSetType::clearCheckConstraints()
 {
   te::common::FreeContents(m_checkConstraints);
   m_checkConstraints.clear();  
 }
 
-void te::da::DataSetType::add(Index* idx)
+void te::da::core::DataSetType::add(Index* idx)
 {
   assert(idx);
   idx->setDataSetType(this);
   m_idxs.push_back(idx);
 }
 
-void te::da::DataSetType::add(const std::vector<Index*>& idxs)
+void te::da::core::DataSetType::add(const std::vector<Index*>& idxs)
 {
   std::size_t size = idxs.size();
 
@@ -380,7 +380,7 @@ void te::da::DataSetType::add(const std::vector<Index*>& idxs)
     add(idxs[i]);
 }
 
-te::da::Index* te::da::DataSetType::getIndex(const std::string& name) const
+te::da::core::Index* te::da::core::DataSetType::getIndex(const std::string& name) const
 {
   std::size_t size = m_idxs.size();
 
@@ -391,7 +391,7 @@ te::da::Index* te::da::DataSetType::getIndex(const std::string& name) const
   return 0;
 }
 
-void te::da::DataSetType::remove(Index* idx)
+void te::da::core::DataSetType::remove(Index* idx)
 {
 // is there associated pk?
   if(m_pk && m_pk->getAssociatedIndex() == idx)
@@ -431,7 +431,7 @@ void te::da::DataSetType::remove(Index* idx)
   }
 }
 
-void te::da::DataSetType::clearIndexes()
+void te::da::core::DataSetType::clearIndexes()
 {
   std::size_t size = m_idxs.size();
 
@@ -456,7 +456,7 @@ void te::da::DataSetType::clearIndexes()
   m_idxs.clear();
 }
 
-te::da::ForeignKey* te::da::DataSetType::getForeignKey(const std::string& name) const
+te::da::core::ForeignKey* te::da::core::DataSetType::getForeignKey(const std::string& name) const
 {
   std::size_t size = m_foreignKeys.size();
 
@@ -469,7 +469,7 @@ te::da::ForeignKey* te::da::DataSetType::getForeignKey(const std::string& name) 
   return 0;
 }
 
-void te::da::DataSetType::add(ForeignKey* fk)
+void te::da::core::DataSetType::add(ForeignKey* fk)
 {
   assert(fk);
 
@@ -480,7 +480,7 @@ void te::da::DataSetType::add(ForeignKey* fk)
   m_foreignKeys.push_back(fk);
 }
 
-void te::da::DataSetType::remove(ForeignKey* fk)
+void te::da::core::DataSetType::remove(ForeignKey* fk)
 {
   assert(fk);
 
@@ -503,7 +503,7 @@ void te::da::DataSetType::remove(ForeignKey* fk)
   }
 }
 
-void te::da::DataSetType::remove(Property* p)
+void te::da::core::DataSetType::remove(Property* p)
 {
 // TODO: Check Constraints...
 
@@ -528,11 +528,11 @@ void te::da::DataSetType::remove(Property* p)
   CompositeProperty::remove(p);
 }
 
-void te::da::DataSetType::clear()
+void te::da::core::DataSetType::clear()
 {
 }
 
-void te::da::DataSetType::replace(Property* p, Property* pp)
+void te::da::core::DataSetType::replace(Property* p, Property* pp)
 {
 // let's replace primary key attributes
   if(m_pk)
@@ -605,12 +605,12 @@ void te::da::DataSetType::replace(Property* p, Property* pp)
   }
 }
 
-te::dt::Property* te::da::DataSetType::clone() const
+te::dt::Property* te::da::core::DataSetType::clone() const
 {
   return new DataSetType(*this);
 }
 
-void te::da::DataSetType::removeUniqueKeys(Property* p)
+void te::da::core::DataSetType::removeUniqueKeys(Property* p)
 {
   std::size_t size = m_uniqueKeys.size();
   std::size_t i = 0;
@@ -628,7 +628,7 @@ void te::da::DataSetType::removeUniqueKeys(Property* p)
   }
 }
 
-void te::da::DataSetType::removeIndexes(Property* p)
+void te::da::core::DataSetType::removeIndexes(Property* p)
 {
   std::size_t size = m_idxs.size();
   std::size_t i = 0;
@@ -646,7 +646,7 @@ void te::da::DataSetType::removeIndexes(Property* p)
   }
 }
 
-void te::da::DataSetType::removeForeignKeys(Property* p)
+void te::da::core::DataSetType::removeForeignKeys(Property* p)
 {
 // first of all, let's see if property takes part
 // in a self foreign key.

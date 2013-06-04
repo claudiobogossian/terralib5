@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,26 +18,26 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/AttributeConverters.cpp
+  \file terralib/dataaccess/core/dataset/AttributeConverters.cpp
 
-  \brief Definition of attribute converter and a set of them.
+  \brief Definition of an attribute converter and a set of them.
 */
 
 // TerraLib
-#include "../../datatype/DataConverterManager.h"
-#include "../../datatype/SimpleData.h"
-#include "../../geometry/Point.h"
-#include "../../geometry/PointM.h"
-#include "../../geometry/PointZ.h"
-#include "../../geometry/PointZM.h"
+#include "../../../datatype/DataConverterManager.h"
+#include "../../../datatype/SimpleData.h"
+#include "../../../geometry/Point.h"
+#include "../../../geometry/PointM.h"
+#include "../../../geometry/PointZ.h"
+#include "../../../geometry/PointZM.h"
 #include "AttributeConverters.h"
-#include "DataSet.h"
+#include "AbstractDataSet.h"
 
 // STL
 #include <cassert>
 #include <memory>
 
-te::dt::AbstractData* te::da::GenericAttributeConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType)
+te::dt::AbstractData* te::da::core::GenericAttributeConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType)
 {
   assert(indexes.size() == 1);
 
@@ -60,7 +60,7 @@ te::dt::AbstractData* te::da::GenericAttributeConverter(DataSet* dataset, const 
   return convertedData;
 }
 
-te::dt::AbstractData* te::da::XYToPointConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
+te::dt::AbstractData* te::da::core::XYToPointConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
 {
   assert(dataset);
   assert(indexes.size() == 2);
@@ -71,7 +71,7 @@ te::dt::AbstractData* te::da::XYToPointConverter(DataSet* dataset, const std::ve
   return new te::gm::Point(x, y);
 }
 
-te::dt::AbstractData* te::da::XYZToPointConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
+te::dt::AbstractData* te::da::core::XYZToPointConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
 {
   assert(dataset);
   assert(indexes.size() == 3);
@@ -83,7 +83,7 @@ te::dt::AbstractData* te::da::XYZToPointConverter(DataSet* dataset, const std::v
   return new te::gm::PointZ(x, y, z);
 }
 
-te::dt::AbstractData* te::da::XYMToPointConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
+te::dt::AbstractData* te::da::core::XYMToPointConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
 {
   assert(dataset);
   assert(indexes.size() == 3);
@@ -95,7 +95,7 @@ te::dt::AbstractData* te::da::XYMToPointConverter(DataSet* dataset, const std::v
   return new te::gm::PointM(x, y, m);
 }
 
-te::dt::AbstractData* te::da::XYZMToPointConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
+te::dt::AbstractData* te::da::core::XYZMToPointConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
 {
   assert(dataset);
   assert(indexes.size() == 4);
@@ -108,7 +108,7 @@ te::dt::AbstractData* te::da::XYZMToPointConverter(DataSet* dataset, const std::
   return new te::gm::PointZM(x, y, z, m);
 }
 
-te::dt::AbstractData* te::da::PointToXConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
+te::dt::AbstractData* te::da::core::PointToXConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
 {
   assert(dataset);
   assert(indexes.size() == 1);
@@ -118,7 +118,7 @@ te::dt::AbstractData* te::da::PointToXConverter(DataSet* dataset, const std::vec
   return new te::dt::Double(pt->getX());
 }
 
-te::dt::AbstractData* te::da::PointToYConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
+te::dt::AbstractData* te::da::core::PointToYConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
 {
   assert(dataset);
   assert(indexes.size() == 1);
@@ -128,7 +128,7 @@ te::dt::AbstractData* te::da::PointToYConverter(DataSet* dataset, const std::vec
   return new te::dt::Double(pt->getY());
 }
 
-te::dt::AbstractData* te::da::PointToZConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
+te::dt::AbstractData* te::da::core::PointToZConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
 {
   assert(dataset);
   assert(indexes.size() == 1);
@@ -138,7 +138,7 @@ te::dt::AbstractData* te::da::PointToZConverter(DataSet* dataset, const std::vec
   return new te::dt::Double(pt->getZ());
 }
 
-te::dt::AbstractData* te::da::PointToMConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
+te::dt::AbstractData* te::da::core::PointToMConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
 {
   assert(dataset);
   assert(indexes.size() == 1);
@@ -148,7 +148,7 @@ te::dt::AbstractData* te::da::PointToMConverter(DataSet* dataset, const std::vec
   return new te::dt::Double(pt->getM());
 }
 
-te::dt::AbstractData* te::da::TupleToStringConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
+te::dt::AbstractData* te::da::core::TupleToStringConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int /*dstType*/)
 {
   assert(dataset);
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/ObjectId.h
+  \file terralib/dataaccess/core/dataset/ObjectId.h
 
-  \brief This class represents an unique id for a data set element.
+  \brief This class represents an unique id for a dataset element.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_OBJECTID_H
-#define __TERRALIB_DATAACCESS_INTERNAL_OBJECTID_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_OBJECTID_H
+#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_OBJECTID_H
 
 // TerraLib
-#include "../../datatype/AbstractData.h"
-#include "../Config.h"
+#include "../../../datatype/AbstractData.h"
+#include "../../Config.h"
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -37,56 +37,59 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class ObjectId
-
-      \brief This class represents an unique id for a data set element.
-
-      \sa AbstractData, ObjectIdSet
-    */
-    class TEDATAACCESSEXPORT ObjectId
+    namespace core
     {
-      public:
+      /*!
+        \class ObjectId
 
-        /*! \brief Default constructor. */
-        ObjectId();
+        \brief This class represents an unique id for a data set element.
 
-        /*! \brief Destructor. */
-        ~ObjectId();
+        \sa AbstractData, ObjectIdSet
+      */
+      class TEDATAACCESSEXPORT ObjectId
+      {
+        public:
 
-        /*!
-          \brief It gets the properties values used to uniquely identify a data set element.
+          /*! \brief Default constructor. */
+          ObjectId();
+
+          /*! \brief Destructor. */
+          ~ObjectId();
+
+          /*!
+            \brief It gets the properties values used to uniquely identify a data set element.
           
-          \return A vector with the property values.
+            \return A vector with the property values.
 
-          \note The caller will NOT take the ownership of the returned pointers.
-        */
-        const boost::ptr_vector<te::dt::AbstractData>& getValue() const;
+            \note The caller will NOT take the ownership of the returned pointers.
+          */
+          const boost::ptr_vector<te::dt::AbstractData>& getValue() const;
 
-        /*!
-          \brief It gets the properties values used to uniquely identify a data set element as string.
+          /*!
+            \brief It gets the properties values used to uniquely identify a data set element as string.
 
-          \return A string that represents the set of values.
-        */
-        std::string getValueAsString() const;
+            \return A string that represents the set of values.
+          */
+          std::string getValueAsString() const;
 
-        /*!
-          \brief It adds a property value to uniquely identify a data set element.
+          /*!
+            \brief It adds a property value to uniquely identify a data set element.
 
-          \param data The value of the property.
+            \param data The value of the property.
 
-          \note This class will take the ownership of the given pointer.
-        */
-        void addValue(te::dt::AbstractData* data);
+            \note This class will take the ownership of the given pointer.
+          */
+          void addValue(te::dt::AbstractData* data);
 
-        bool operator<(const ObjectId& rhs) const;
+          bool operator<(const ObjectId& rhs) const;
 
-      private:
+        private:
 
-        boost::ptr_vector<te::dt::AbstractData> m_data; //!< A vector of property values.
-    };
+          boost::ptr_vector<te::dt::AbstractData> m_data; //!< A vector of property values.
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_OBJECTID_H
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_OBJECTID_H
