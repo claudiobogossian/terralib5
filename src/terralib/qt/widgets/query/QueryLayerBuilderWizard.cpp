@@ -184,7 +184,7 @@ te::map::AbstractLayerPtr te::qt::widgets::QueryLayerBuilderWizard::getQueryLaye
   te::da::Select* s = new te::da::Select(getSelectQuery());
 
   te::map::QueryLayerPtr layer(new te::map::QueryLayer(id, title));
-
+  layer->setDataSourceId(m_ds->getId());
   layer->setQuery(s);
 
   return layer;
