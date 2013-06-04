@@ -104,7 +104,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
   std::vector<std::size_t> objIdIdx;
   te::da::GetOIDPropertyPos(dataType, objIdIdx);
 
-  std::map<double, std::vector<te::da::ObjectId*>> valuesIdsByinterval;
+  std::map<double, std::vector<te::da::ObjectId*> > valuesIdsByinterval;
   std::vector<te::da::ObjectId*> valuesOIds;
 
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
@@ -268,7 +268,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
    {
 
      std::map<double, unsigned int>* histogramValues = new std::map<double,  unsigned int>;
-     std::map<double, std::vector<te::da::ObjectId*>> valuesIdsByinterval;
+     std::map<double, std::vector<te::da::ObjectId*> > valuesIdsByinterval;
      std::vector<te::da::ObjectId*> valuesOIds;
 
      double minValue, maxValue;
@@ -388,7 +388,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       std::set <std::string> intervals;
       std::set <std::string>::iterator intervalsIt;
       std::map<std::string,  unsigned int>* histogramValues = new std::map<std::string,  unsigned int>;
-      std::map<std::string, std::vector<te::da::ObjectId*>> valuesIdsByinterval;
+      std::map<std::string, std::vector<te::da::ObjectId*> > valuesIdsByinterval;
       std::vector<te::da::ObjectId*> valuesOIds;
 
       //Adjusting the histogram's intervals

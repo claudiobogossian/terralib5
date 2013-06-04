@@ -102,7 +102,7 @@ namespace te
             \return A  map containing the histogram values' objectIds. 
           */
 
-          std::map<double, std::vector<te::da::ObjectId*>> getValuesOIDs();
+          std::map<double, std::vector<te::da::ObjectId*> > getValuesOIDs();
 
           /*!            
             \brief It sets the map containing the histogram values' objectIds. 
@@ -110,7 +110,7 @@ namespace te
             \param new_values The new map of values' objectIds
           */
 
-          void setValuesOIDs( std::map<double, std::vector<te::da::ObjectId*>> new_ids);
+          void setValuesOIDs( std::map<double, std::vector<te::da::ObjectId*> > new_ids);
 
           /*!            
             \brief It returns the map containing the histogram String values. 
@@ -140,7 +140,7 @@ namespace te
             \return A  map containing the histogram values' objectIds. 
           */
 
-          std::map<std::string, std::vector<te::da::ObjectId*>> getStringOIDs();
+          std::map<std::string, std::vector<te::da::ObjectId*> > getStringOIDs();
 
           /*!            
             \brief It sets the map containing the histogram string values' objectIds. 
@@ -148,7 +148,7 @@ namespace te
             \param new_values The new map of values' objectIds
           */
 
-          void setStringOIDs( std::map<std::string, std::vector<te::da::ObjectId*>> new_ids);
+          void setStringOIDs( std::map<std::string, std::vector<te::da::ObjectId*> > new_ids);
 
           double& getMinValue();
       
@@ -204,9 +204,9 @@ namespace te
 
           int m_histogramType;                                                 //!< Histogram's type
           std::map<double, unsigned int>* m_values;                            //!< Histogram's numeric values
-          std::map<double, std::vector<te::da::ObjectId*>> m_valuesOIDs;       //!< The objectIds organized by the histogram's intervals;
+          std::map<double, std::vector<te::da::ObjectId*> > m_valuesOIDs;       //!< The objectIds organized by the histogram's intervals;
           std::map<std::string, unsigned int>* m_StringValues;                 //!< Histogram string values 
-          std::map<std::string, std::vector<te::da::ObjectId*>> m_stringOIDs;  //!< The objectIds organized by the histogram's string intervals;
+          std::map<std::string, std::vector<te::da::ObjectId*> > m_stringOIDs;  //!< The objectIds organized by the histogram's string intervals;
           double m_minValue;                                                   //!< Histogram's minimum numeric value
           double m_interval;                                                   //!< Histogram's numeric interval
           std::set <std::string> m_StringIntervals;                            //!< Histogram unique strings set, represents string intervals
