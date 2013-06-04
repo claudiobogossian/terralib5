@@ -117,6 +117,12 @@ namespace te
       NDR = 1   /*!< Little endian. */
     };
 
+    enum CharacterEncodingType
+    {
+      UTF8,
+      UTF16
+    };
+
   } // end namespace common
 }   // end namespace te
 
