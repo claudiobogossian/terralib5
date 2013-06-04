@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/AggregationAction.cpp
+  \file terralib/qt/plugins/vp/BufferAction.cpp
 
-  \brief This file defines the Aggregation class
+  \brief This file defines the Buffer class
 */
 
 // Terralib
-#include "../../../vp/qt/AggregationDialog.h"
+#include "../../../vp/qt/BufferDialog.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/Project.h"
-#include "AggregationAction.h"
+#include "BufferAction.h"
 
 // Qt
 #include <QtCore/QObject>
@@ -35,19 +35,19 @@
 // STL
 #include <memory>
 
-te::qt::plugins::vp::AggregationAction::AggregationAction(QMenu* menu)
+te::qt::plugins::vp::BufferAction::BufferAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Aggregation...").toStdString());
+  createAction(tr("Buffer...").toStdString());
 }
 
-te::qt::plugins::vp::AggregationAction::~AggregationAction()
+te::qt::plugins::vp::BufferAction::~BufferAction()
 {
 }
 
-void te::qt::plugins::vp::AggregationAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::BufferAction::onActionActivated(bool checked)
 {
-  te::vp::AggregationDialog dlg(0);
+  te::vp::BufferDialog dlg(0);
 
   // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();

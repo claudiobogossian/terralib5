@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/AggregationAction.h
+  \file terralib/qt/plugins/vp/BufferAction.h
 
-  \brief This file defines the Aggregation class
+  \brief This file defines the Buffer class
 */
 
-#ifndef __TE_QT_PLUGINS_VP_INTERNAL_AGGREGATIONACTION_H
-#define __TE_QT_PLUGINS_VP_INTERNAL_AGGREGATIONACTION_H
+#ifndef __TE_QT_PLUGINS_VP_INTERNAL_BUFFERACTION_H
+#define __TE_QT_PLUGINS_VP_INTERNAL_BUFFERACTION_H
 
 // TerraLib
 #include "Config.h"
@@ -39,20 +39,20 @@ namespace te
       namespace vp
       {
         /*!
-          \class AggregationAction
+          \class BufferAction
 
           \brief This class register the contrast action into VP Plugin.
 
         */
-        class AggregationAction : public te::qt::plugins::vp::AbstractAction
+        class BufferAction : public te::qt::plugins::vp::AbstractAction
         {
           Q_OBJECT
 
           public:
 
-            AggregationAction(QMenu* menu);
+            BufferAction(QMenu* menu);
 
-            virtual ~AggregationAction();
+            virtual ~BufferAction();
 
           protected slots:
 
@@ -64,4 +64,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_VP_INTERNAL_AGGREGATIONACTION_H
+#endif //__TE_QT_PLUGINS_VP_INTERNAL_BUFFERACTION_H
