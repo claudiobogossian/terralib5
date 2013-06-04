@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/dataset/Constraint.h
+  \file terralib/dataaccess/core/dataset/AbstractConstraint.h
 
-  \brief A class that describes a constraint.
+  \brief A base class for constraints.
 */
 
 #ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H
@@ -40,12 +40,12 @@ namespace te
     namespace core
     {
       // Forward declaration
-      class DataSetType;    
+      class DataSetType;
 
       /*!
-        \class DataSetConstraint
-      
-        \brief A class that describes a constraint.
+        \class AbstractConstraint
+
+        \brief A base class for constraints.
 
         \sa DataSetType, PrimaryKey, ForeignKey, UniqueKey, CheckConstraint
       */
@@ -56,23 +56,11 @@ namespace te
           /*!
             \brief Constructor.
 
-            \param id   The constraint identifier.
-
-            \note The new constraint will belong to the given DataSetType.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          AbstractConstraint(unsigned int id = 0);
-
-          /*!
-            \brief Constructor.
-
             \param name The constraint name.
-            \param id   The constraint identifier.
 
             \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
           */
-          AbstractConstraint(const std::string& name, unsigned int id = 0);
+          AbstractConstraint(const std::string& name = "");
 
           /*!
             \brief Copy constructor not allowed.
@@ -96,24 +84,6 @@ namespace te
           AbstractConstraint& operator=(const AbstractConstraint& rhs);
 
           /*!
-            \brief It returns the constraint identifier.
-
-            \return A number that identifies the constraint.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          virtual unsigned int getId() const { return m_id; }
-
-          /*!
-            \brief It sets the constraint identifier.
-
-            \param id A number that identifies the constraint.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          virtual void setId(unsigned int id) { m_id = id; }
-
-          /*!
             \brief It returns the constraint name.
 
             \return The constraint name.
@@ -126,23 +96,6 @@ namespace te
             \param name The constraint name.
           */
           virtual void setName(const std::string& name) { m_name = name; }
-        
-          /*!
-            \brief It returns the DataSetType associated to the constraint.
-
-            \return The DataSetType associated to the constraint.
-          */
-          virtual DataSetType* getDataSetType() const { return m_dt; }
-
-          /*!
-            \brief It sets the DataSetType associated to the constraint.
-
-            \param dt The DataSetType associated to this constraint.
-
-            \warning Take care when calling this method. If the constraint belongs to a DataSetType,
-                     remember to detach it from the DataSetType before calling this method.
-          */
-          virtual void setDataSetType(DataSetType* dt) { m_dt = dt; }
 
           /*!
             \brief It returns the constraint type.
@@ -164,8 +117,6 @@ namespace te
 
         private:
 
-          unsigned int m_id;    //!< An identification number for the constraint.
-          DataSetType* m_dt;    //!< The associated DataSetType.
           std::string m_name;   //!< The constraint name.
       };
 

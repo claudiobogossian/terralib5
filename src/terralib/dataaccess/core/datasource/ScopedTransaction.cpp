@@ -24,23 +24,23 @@
 */
 
 // TerraLib
-#include "DataSourceTransactor.h"
+#include "AbstractDataSource.h"
 #include "ScopedTransaction.h"
 
-te::da::core::ScopedTransaction::ScopedTransaction(te::da::core::DataSourceTransactor& transactor)
-  : m_t(transactor),
+te::da::core::ScopedTransaction::ScopedTransaction(AbstractDataSource& ds)
+  : m_ds(ds),
     m_rollback(true)
 {
-  if(m_t.isInTransaction())
+  if(m_ds.isInTransaction())
     m_rollback = false;
 
-  m_t.begin();
+  m_ds.begin();
 }
 
 te::da::core::ScopedTransaction::~ScopedTransaction()
 {
   if(m_rollback)
-    m_t.rollBack();
+    m_ds.rollBack();
 }
 
 void te::da::core::ScopedTransaction::commit()
@@ -48,7 +48,7 @@ void te::da::core::ScopedTransaction::commit()
   if(!m_rollback)
     return;
 
-  m_t.commit();
+  m_ds.commit();
 
   m_rollback = false;
 }
