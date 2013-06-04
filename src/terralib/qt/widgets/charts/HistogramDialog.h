@@ -39,12 +39,8 @@ namespace Ui { class HistogramDialogForm; }
 
 namespace te
 {
-
-  namespace da
-  {
     //forward declarations
-    class DataSet;
-  }
+  namespace da  { class DataSet; class DataSetType; }
 
   namespace qt
   {
@@ -52,6 +48,7 @@ namespace te
     {
 
     //forward declarations
+    class ChartDisplayWidget;
     class HistogramDataWidget;
 
     /*!
@@ -66,9 +63,11 @@ namespace te
 
         public:
 
-          HistogramDialog(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          HistogramDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           ~HistogramDialog();
+
+          te::qt::widgets::ChartDisplayWidget* getDisplayWidget();
 
         protected slots:
 
@@ -79,7 +78,7 @@ namespace te
 
           std::auto_ptr<Ui::HistogramDialogForm>  m_ui;                   //!< The dialog form.
           te::qt::widgets::HistogramDataWidget*   m_histogramDataWidget;  //!< The histogram's data widget used to configure the basic parameters of the new histogram.
-
+          te::qt::widgets::ChartDisplayWidget*    m_displayWidget;        //!< The display's widget that will be populated by this widget.
       };
     } // end namespace widgets
   }   // end namespace qt

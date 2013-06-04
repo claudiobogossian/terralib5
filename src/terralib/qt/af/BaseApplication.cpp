@@ -61,6 +61,7 @@
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
 #include "../widgets/srs/SRSManagerDialog.h"
+#include "connectors/ChartDisplayDockWidget.h"
 #include "connectors/DataSetTableDockWidget.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
@@ -570,12 +571,22 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
       return;
     }
-    const te::map::LayerSchema* schema = (*(layers.begin()))->getLayer()->getSchema();
-    te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
+    te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+    const te::map::LayerSchema* schema = (lay->getSchema());
+    te::da::DataSet* dataset = (lay->getData());
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
-    dlg.exec();
+    int res = dlg.exec();
+    if (res = QDialog::Accepted)
+    {
+      ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
+      doc->setWindowTitle("Histogram");
+      doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
+      doc->setLayer(lay.get());
+      ApplicationController::getInstance().addListener(doc);
+      doc->show();
+    }
   }
   catch(const std::exception& e)
   {
@@ -594,11 +605,22 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
       return;
     }
-    
-    te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
-    te::qt::widgets::ScatterDialog dlg(dataset, this);
+    te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+    const te::map::LayerSchema* schema = (lay->getSchema());
+    te::da::DataSet* dataset = (lay->getData());
+    te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+    te::qt::widgets::ScatterDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));
-    dlg.exec();
+    int res = dlg.exec();
+    if (res = QDialog::Accepted)
+    {
+      ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
+      doc->setWindowTitle("Scatter");
+      doc->setWindowIcon(QIcon::fromTheme("chart-scatter"));
+      ApplicationController::getInstance().addListener(doc);
+      doc->setLayer(lay.get());
+      doc->show();
+    }
   }
   catch(const std::exception& e)
   {

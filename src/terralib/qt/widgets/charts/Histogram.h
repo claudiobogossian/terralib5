@@ -33,9 +33,13 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace te
 {
+
+  namespace da    { class ObjectId; }
+
   namespace qt
   {
     namespace widgets
@@ -83,7 +87,7 @@ namespace te
           */
 
           std::map<double, unsigned int>* getValues();
-      
+
           /*!            
             \brief It sets the map containing the histogram values. 
 
@@ -92,7 +96,22 @@ namespace te
 
           void setValues(std::map<double, unsigned int>* new_values);
 
-          
+          /*!            
+            \brief It returns the map containing the histogram values' objectIds. 
+
+            \return A  map containing the histogram values' objectIds. 
+          */
+
+          std::map<double, std::vector<te::da::ObjectId*>> getValuesOIDs();
+
+          /*!            
+            \brief It sets the map containing the histogram values' objectIds. 
+
+            \param new_values The new map of values' objectIds
+          */
+
+          void setValuesOIDs( std::map<double, std::vector<te::da::ObjectId*>> new_ids);
+
           /*!            
             \brief It returns the map containing the histogram String values. 
 
@@ -114,6 +133,22 @@ namespace te
 
             \return The histogram's minimum value. 
           */
+
+          /*!            
+            \brief It returns the map containing the histogram string values' objectIds. 
+
+            \return A  map containing the histogram values' objectIds. 
+          */
+
+          std::map<std::string, std::vector<te::da::ObjectId*>> getStringOIDs();
+
+          /*!            
+            \brief It sets the map containing the histogram string values' objectIds. 
+
+            \param new_values The new map of values' objectIds
+          */
+
+          void setStringOIDs( std::map<std::string, std::vector<te::da::ObjectId*>> new_ids);
 
           double& getMinValue();
       
@@ -167,12 +202,14 @@ namespace te
 
         private:
 
-          int m_histogramType;                                    //!< Histogram's type
-          std::map<double, unsigned int>* m_values;               //!< Histogram's numeric values
-          std::map<std::string, unsigned int>* m_StringValues;    //!< Histogram string values 
-          double m_minValue;                                      //!< Histogram's minimum numeric value
-          double m_interval;                                      //!< Histogram's numeric interval
-          std::set <std::string> m_StringIntervals;               //!< Histogram unique strings set, represents string intervals
+          int m_histogramType;                                                 //!< Histogram's type
+          std::map<double, unsigned int>* m_values;                            //!< Histogram's numeric values
+          std::map<double, std::vector<te::da::ObjectId*>> m_valuesOIDs;       //!< The objectIds organized by the histogram's intervals;
+          std::map<std::string, unsigned int>* m_StringValues;                 //!< Histogram string values 
+          std::map<std::string, std::vector<te::da::ObjectId*>> m_stringOIDs;  //!< The objectIds organized by the histogram's string intervals;
+          double m_minValue;                                                   //!< Histogram's minimum numeric value
+          double m_interval;                                                   //!< Histogram's numeric interval
+          std::set <std::string> m_StringIntervals;                            //!< Histogram unique strings set, represents string intervals
       };
     } // end namespace widgets
   }   // end namespace qt
