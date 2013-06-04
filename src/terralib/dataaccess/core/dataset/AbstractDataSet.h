@@ -68,9 +68,6 @@ namespace te
   {
     namespace core
     {
-      // Forward declaration
-      class DataSourceTransactor;
-
       /*!
         \class AbstractDataSet
 
@@ -97,8 +94,6 @@ namespace te
         When the dataset is the result of a query involving several
         datasets, you can find out the dataset that gave the original
         dataset name of a specific property.
-
-        \sa DataSourceCatalogLoader, DataSetType
 
         \todo Whe can generaliza the dataset API so that a dataset may contain other datasets, in this case it will be a collection of datasets.
 
