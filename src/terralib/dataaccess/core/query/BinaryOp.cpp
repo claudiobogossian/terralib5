@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -26,20 +26,18 @@
 // TerraLib
 #include "BinaryOp.h"
 
-te::da::BinaryOp::BinaryOp(const BinaryOp& rhs)
+te::da::core::BinaryOp::BinaryOp(const BinaryOp& rhs)
   : BinaryFunction(rhs)
 {
 }
 
-te::da::BinaryOp& te::da::BinaryOp::operator=(const BinaryOp& rhs)
+te::da::core::BinaryOp& te::da::core::BinaryOp::operator=(const BinaryOp& rhs)
 {
   BinaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::BinaryOp::clone() const
+te::da::core::Expression* te::da::core::BinaryOp::clone() const
 {
   return new BinaryOp(*this);
 }
-
-

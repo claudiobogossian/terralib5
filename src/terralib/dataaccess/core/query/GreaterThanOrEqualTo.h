@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/GreaterThanOrEqualTo.h
+  \file terralib/dataaccess/core/query/GreaterThanOrEqualTo.h
 
   \brief It models the inequality operator greater than or equal to (>=) - syntatic-suggar.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_GREATERTHANOREQUALTO_H
-#define __TERRALIB_DATAACCESS_INTERNAL_GREATERTHANOREQUALTO_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_GREATERTHANOREQUALTO_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_GREATERTHANOREQUALTO_H
 
 // TerraLib
 #include "BinaryOp.h"
@@ -34,54 +34,56 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class GreaterThanOrEqualTo
-      
-      \brief It models the inequality operator greater than or equal to (>=).
-
-      This operator is just a syntatic-suggar.
-
-      \sa BinaryOp
-    */
-    class TEDATAACCESSEXPORT GreaterThanOrEqualTo : public BinaryOp
+    namespace core
     {
-      public:
+      /*!
+        \class GreaterThanOrEqualTo
+      
+        \brief It models the inequality operator greater than or equal to (>=).
 
-        TE_DEFINE_VISITABLE
+        This operator is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa BinaryOp
+      */
+      class TEDATAACCESSEXPORT GreaterThanOrEqualTo : public BinaryOp
+      {
+        public:
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          TE_DEFINE_VISITABLE
 
-          \note The addition operator will take the ownership of the given arguments.
-        */
-        GreaterThanOrEqualTo(Expression* arg1, Expression* arg2) : BinaryOp(te::da::FunctionNames::sm_GreaterThanOrEqualTo, arg1, arg2) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
-        */
-        GreaterThanOrEqualTo(const Expression& arg1, const Expression& arg2) : BinaryOp(te::da::FunctionNames::sm_GreaterThanOrEqualTo, arg1, arg2) {}
+            \note The addition operator will take the ownership of the given arguments.
+          */
+          GreaterThanOrEqualTo(Expression* arg1, Expression* arg2) : BinaryOp(te::da::core::FunctionNames::sm_GreaterThanOrEqualTo, arg1, arg2) {}
 
-        /*! \brief Copy constructor. */
-        GreaterThanOrEqualTo(const GreaterThanOrEqualTo& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~GreaterThanOrEqualTo() {}
+            \param arg1 The first argument.
+            \param arg2 The second argument.
+          */
+          GreaterThanOrEqualTo(const Expression& arg1, const Expression& arg2) : BinaryOp(te::da::core::FunctionNames::sm_GreaterThanOrEqualTo, arg1, arg2) {}
 
-        /*! Assignment operator.  */
-        GreaterThanOrEqualTo& operator=(const GreaterThanOrEqualTo& rhs);
+          /*! \brief Copy constructor. */
+          GreaterThanOrEqualTo(const GreaterThanOrEqualTo& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~GreaterThanOrEqualTo() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          GreaterThanOrEqualTo& operator=(const GreaterThanOrEqualTo& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_GREATERTHANOREQUALTO_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_GREATERTHANOREQUALTO_H

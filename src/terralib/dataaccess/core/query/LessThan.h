@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LessThan.h
+  \file terralib/dataaccess/core/query/LessThan.h
 
   \brief It models the inequality operator less than (<) - syntatic-suggar.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LESSTHAN_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LESSTHAN_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LESSTHAN_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LESSTHAN_H
 
 // TerraLib
 #include "BinaryOp.h"
@@ -34,54 +34,56 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class LessThan
-      
-      \brief It models the inequality operator less than (<).
-
-      This operator is just a syntatic-suggar.
-
-      \sa BinaryOp
-    */
-    class TEDATAACCESSEXPORT LessThan : public BinaryOp
+    namespace core
     {
-      public:
+      /*!
+        \class LessThan
+      
+        \brief It models the inequality operator less than (<).
 
-        TE_DEFINE_VISITABLE
+        This operator is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa BinaryOp
+      */
+      class TEDATAACCESSEXPORT LessThan : public BinaryOp
+      {
+        public:
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          TE_DEFINE_VISITABLE
 
-          \note The addition operator will take the ownership of the given arguments.
-        */
-        LessThan(Expression* arg1, Expression* arg2) : BinaryOp(te::da::FunctionNames::sm_LessThan, arg1, arg2) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
-        */
-        LessThan(const Expression& arg1, const Expression& arg2) : BinaryOp(te::da::FunctionNames::sm_LessThan, arg1, arg2) {}
+            \note The addition operator will take the ownership of the given arguments.
+          */
+          LessThan(Expression* arg1, Expression* arg2) : BinaryOp(te::da::core::FunctionNames::sm_LessThan, arg1, arg2) {}
 
-        /*! \brief Copy constructor. */
-        LessThan(const LessThan& rhs);
+          /*!
+            \brief Constructor.
+
+            \param arg1 The first argument.
+            \param arg2 The second argument.
+          */
+          LessThan(const Expression& arg1, const Expression& arg2) : BinaryOp(te::da::core::FunctionNames::sm_LessThan, arg1, arg2) {}
+
+          /*! \brief Copy constructor. */
+          LessThan(const LessThan& rhs);
         
-        /*! \brief Destructor. */
-        ~LessThan() {}
+          /*! \brief Destructor. */
+          ~LessThan() {}
 
-        /*! Assignment operator.  */
-        LessThan& operator=(const LessThan& rhs);
+          /*! Assignment operator.  */
+          LessThan& operator=(const LessThan& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  // namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LESSTHAN_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LESSTHAN_H

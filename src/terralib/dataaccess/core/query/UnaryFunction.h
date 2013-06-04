@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryFunction.h
+  \file terralib/dataaccess/core/query/UnaryFunction.h
 
   \brief A base class for unary functions.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_UNARYFUNCTION_H
-#define __TERRALIB_DATAACCESS_INTERNAL_UNARYFUNCTION_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_UNARYFUNCTION_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_UNARYFUNCTION_H
 
 // TerraLib
 #include "Function.h"
@@ -33,68 +33,70 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class UnaryFunction
-      
-      \brief A base class for unary functions.
-
-      \sa Function, UnaryOp
-     */
-    class TEDATAACCESSEXPORT UnaryFunction : public Function
+    namespace core
     {
-      public:
+      /*!
+        \class UnaryFunction
+      
+        \brief A base class for unary functions.
 
-        TE_DEFINE_VISITABLE
+        \sa Function, UnaryOp
+       */
+      class TEDATAACCESSEXPORT UnaryFunction : public Function
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          TE_DEFINE_VISITABLE
 
-          \param name The function name.
-          \param arg  The single function argument.
+          /*!
+            \brief Constructor.
 
-          \note The UnaryFunction will take the ownership of the given argument.
-        */
-        UnaryFunction(const std::string& name, Expression* arg);
+            \param name The function name.
+            \param arg  The single function argument.
 
-        /*!
-          \brief Constructor.
+            \note The UnaryFunction will take the ownership of the given argument.
+          */
+          UnaryFunction(const std::string& name, Expression* arg);
 
-          \param name The function name.
-          \param arg  The single function argument.
-        */
-        UnaryFunction(const std::string& name, const Expression& arg);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        UnaryFunction(const UnaryFunction& rhs);
+            \param name The function name.
+            \param arg  The single function argument.
+          */
+          UnaryFunction(const std::string& name, const Expression& arg);
 
-        /*! \brief Virtual Destructor. */
-        virtual ~UnaryFunction();
+          /*! \brief Copy constructor. */
+          UnaryFunction(const UnaryFunction& rhs);
 
-        /*! Assignment operator.  */
-        UnaryFunction& operator=(const UnaryFunction& rhs);
+          /*! \brief Virtual Destructor. */
+          virtual ~UnaryFunction();
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
+          /*! Assignment operator.  */
+          UnaryFunction& operator=(const UnaryFunction& rhs);
 
-        /*!
-          \brief It returns the function associated argument.
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
 
-          \return The function associated argument.
-        */
-        Expression* getArgument() const;
+          /*!
+            \brief It returns the function associated argument.
 
-        /*!
-          \brief It sets the function argument.
+            \return The function associated argument.
+          */
+          Expression* getArgument() const;
 
-          \param arg The single function argument.
+          /*!
+            \brief It sets the function argument.
 
-          \note The UnaryFunction will take the ownership of the given argument.
-        */
-        void setArgument(Expression* arg);
-    };
+            \param arg The single function argument.
 
-  } // end namespace da
-}   // end namespace te
+            \note The UnaryFunction will take the ownership of the given argument.
+          */
+          void setArgument(Expression* arg);
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_UNARYFUNCTION_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_UNARYFUNCTION_H

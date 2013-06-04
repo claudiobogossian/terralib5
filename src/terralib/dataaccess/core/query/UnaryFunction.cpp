@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryFunction.cpp
+  \file terralib/dataaccess/core/query/UnaryFunction.cpp
 
   \brief A base class for unary functions.
 */
@@ -29,49 +29,48 @@
 // STL
 #include <cassert>
 
-te::da::UnaryFunction::UnaryFunction(const std::string& name, Expression* arg)
+te::da::core::UnaryFunction::UnaryFunction(const std::string& name, Expression* arg)
   : Function(name)
 {
   assert(arg);
   m_args.push_back(arg);
 }
 
-te::da::UnaryFunction::UnaryFunction(const std::string& name, const Expression& arg)
+te::da::core::UnaryFunction::UnaryFunction(const std::string& name, const Expression& arg)
   : Function(name)
 {
   m_args.push_back(arg.clone());
 }
 
-te::da::UnaryFunction::UnaryFunction(const UnaryFunction& rhs)
+te::da::core::UnaryFunction::UnaryFunction(const UnaryFunction& rhs)
   : Function(rhs)
 {
 }
 
-te::da::UnaryFunction::~UnaryFunction()
+te::da::core::UnaryFunction::~UnaryFunction()
 {
 }
 
-te::da::UnaryFunction& te::da::UnaryFunction::operator=(const UnaryFunction& rhs)
+te::da::core::UnaryFunction& te::da::core::UnaryFunction::operator=(const UnaryFunction& rhs)
 {
   Function::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::UnaryFunction::clone() const
+te::da::core::Expression* te::da::core::UnaryFunction::clone() const
 {
   return new UnaryFunction(*this);
 }
 
-te::da::Expression* te::da::UnaryFunction::getArgument() const
+te::da::core::Expression* te::da::core::UnaryFunction::getArgument() const
 {
   assert(m_args.size() == 1);
   return m_args[0];
 }
 
-void te::da::UnaryFunction::setArgument(Expression* arg)
+void te::da::core::UnaryFunction::setArgument(Expression* arg)
 {
   assert(m_args.size() == 1);
   delete m_args[0];
   m_args[0] = arg;
 }
-

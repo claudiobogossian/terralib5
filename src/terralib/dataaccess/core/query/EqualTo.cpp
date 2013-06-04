@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/EqualTo.cpp
+  \file terralib/dataaccess/core/query/EqualTo.cpp
 
   \brief It models the comparison operator - syntatic-suggar.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "EqualTo.h"
 
-te::da::EqualTo::EqualTo(const EqualTo& rhs)
+te::da::core::EqualTo::EqualTo(const EqualTo& rhs)
   : BinaryOp(rhs)
 {
 }
 
-te::da::EqualTo& te::da::EqualTo::operator=(const EqualTo& rhs)
+te::da::core::EqualTo& te::da::core::EqualTo::operator=(const EqualTo& rhs)
 {
   BinaryOp::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::EqualTo::clone() const
+te::da::core::Expression* te::da::core::EqualTo::clone() const
 {
   return new EqualTo(*this);
 }
-

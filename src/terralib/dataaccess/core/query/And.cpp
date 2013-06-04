@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/And.cpp
+  \file terralib/dataaccess/core/query/And.cpp
 
   \brief Boolean logic operator: AND - syntatic-suggar.
 */
@@ -26,18 +26,18 @@
 // TerraLib
 #include "And.h"
 
-te::da::And::And(const And& rhs)
+te::da::core::And::And(const And& rhs)
   : BinaryOp(rhs)
 {
 }
 
-te::da::And& te::da::And::operator=(const And& rhs)
+te::da::core::And& te::da::core::And::operator=(const And& rhs)
 {
   BinaryOp::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::And::clone() const
+te::da::core::Expression* te::da::core::And::clone() const
 {
   return new And(*this);
 }

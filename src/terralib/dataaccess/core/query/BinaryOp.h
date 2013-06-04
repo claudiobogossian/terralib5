@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/BinaryOp.h
+  \file terralib/dataaccess/core/query/BinaryOp.h
 
   \brief A base class for binary operations.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_BINARYOP_H
-#define __TERRALIB_DATAACCESS_INTERNAL_BINARYOP_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_BINARYOP_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_BINARYOP_H
 
 // TerraLib
 #include "BinaryFunction.h"
@@ -33,56 +33,58 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class BinaryOp
-      
-      \brief A base class for binary operations.
-
-      \sa BinaryFunction
-    */
-    class TEDATAACCESSEXPORT BinaryOp : public BinaryFunction
+    namespace core
     {
-      public:
+      /*!
+        \class BinaryOp
+      
+        \brief A base class for binary operations.
 
-        TE_DEFINE_VISITABLE
+        \sa BinaryFunction
+      */
+      class TEDATAACCESSEXPORT BinaryOp : public BinaryFunction
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          TE_DEFINE_VISITABLE
 
-          \param name The operator name.
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          /*!
+            \brief Constructor.
 
-          \note The BinaryOp will take the ownership of the given arguments.
-        */
-        BinaryOp(const std::string& name, Expression* arg1, Expression* arg2) : BinaryFunction(name, arg1, arg2) {}
+            \param name The operator name.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-        /*!
-          \brief Constructor.
+            \note The BinaryOp will take the ownership of the given arguments.
+          */
+          BinaryOp(const std::string& name, Expression* arg1, Expression* arg2) : BinaryFunction(name, arg1, arg2) {}
 
-          \param name The operator name.
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          /*!
+            \brief Constructor.
 
-          \note The BinaryOp will take the ownership of the given arguments.
-        */
-        BinaryOp(const std::string& name, const Expression& arg1, const Expression& arg2) : BinaryFunction(name, arg1, arg2) {}
+            \param name The operator name.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-        /*! \brief Copy constructor. */
-        BinaryOp(const BinaryOp& rhs);
+            \note The BinaryOp will take the ownership of the given arguments.
+          */
+          BinaryOp(const std::string& name, const Expression& arg1, const Expression& arg2) : BinaryFunction(name, arg1, arg2) {}
 
-        /*! \brief Virtual Destructor. */
-        virtual ~BinaryOp() {}
+          /*! \brief Copy constructor. */
+          BinaryOp(const BinaryOp& rhs);
 
-        /*! Assignment operator.  */
-        BinaryOp& operator=(const BinaryOp& rhs);
+          /*! \brief Virtual Destructor. */
+          virtual ~BinaryOp() {}
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! Assignment operator.  */
+          BinaryOp& operator=(const BinaryOp& rhs);
 
-  } // end namespace da
-}   // end namespace te
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_BINARYOP_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_BINARYOP_H

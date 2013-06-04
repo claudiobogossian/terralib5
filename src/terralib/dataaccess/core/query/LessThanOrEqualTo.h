@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LessThanOrEqualTo.h
+  \file terralib/dataaccess/core/query/LessThanOrEqualTo.h
 
   \brief It models the inequality operator less than or equal to (<=) - syntatic-suggar.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LESSTHANOREQUALTO_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LESSTHANOREQUALTO_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LESSTHANOREQUALTO_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LESSTHANOREQUALTO_H
 
 // TerraLib
 #include "BinaryOp.h"
@@ -34,56 +34,58 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class LessThanOrEqualTo
-      
-      \brief It models the inequality operator less than or equal to (<=).
-
-      This operator is just a syntatic-suggar.
-
-      \sa BinaryOp
-    */
-    class TEDATAACCESSEXPORT LessThanOrEqualTo : public BinaryOp
+    namespace core
     {
-      public:
+      /*!
+        \class LessThanOrEqualTo
+      
+        \brief It models the inequality operator less than or equal to (<=).
 
-        TE_DEFINE_VISITABLE
+        This operator is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa BinaryOp
+      */
+      class TEDATAACCESSEXPORT LessThanOrEqualTo : public BinaryOp
+      {
+        public:
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          TE_DEFINE_VISITABLE
 
-          \note The addition operator will take the ownership of the given arguments.
-        */
-        LessThanOrEqualTo(Expression* arg1, Expression* arg2) : BinaryOp(te::da::FunctionNames::sm_LessThanOrEqualTo, arg1, arg2) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+            \note The addition operator will take the ownership of the given arguments.
+          */
+          LessThanOrEqualTo(Expression* arg1, Expression* arg2) : BinaryOp(te::da::core::FunctionNames::sm_LessThanOrEqualTo, arg1, arg2) {}
 
-          \note The addition operator will take the ownership of the given arguments.
-        */
-        LessThanOrEqualTo(const Expression& arg1, const Expression& arg2) : BinaryOp(te::da::FunctionNames::sm_LessThanOrEqualTo, arg1, arg2) {}
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        LessThanOrEqualTo(const LessThanOrEqualTo& rhs);
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-        /*! \brief Destructor. */
-        ~LessThanOrEqualTo() {}
+            \note The addition operator will take the ownership of the given arguments.
+          */
+          LessThanOrEqualTo(const Expression& arg1, const Expression& arg2) : BinaryOp(te::da::core::FunctionNames::sm_LessThanOrEqualTo, arg1, arg2) {}
 
-        /*! Assignment operator.  */
-        LessThanOrEqualTo& operator=(const LessThanOrEqualTo& rhs);
+          /*! \brief Copy constructor. */
+          LessThanOrEqualTo(const LessThanOrEqualTo& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~LessThanOrEqualTo() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          LessThanOrEqualTo& operator=(const LessThanOrEqualTo& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LESSTHANOREQUALTO_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LESSTHANOREQUALTO_H

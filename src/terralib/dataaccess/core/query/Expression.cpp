@@ -79,4 +79,3 @@ te::da::core::Expression* operator<=(const te::da::core::Expression& e1, const t
 {
   return new te::da::core::LessThanOrEqualTo(e1.clone(), e2.clone());
 }
-

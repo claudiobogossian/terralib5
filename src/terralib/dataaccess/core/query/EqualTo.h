@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/EqualTo.h
+  \file terralib/dataaccess/core/query/EqualTo.h
 
   \brief It models the comparison operator - syntatic-suggar.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_EQUALTO_H
-#define __TERRALIB_DATAACCESS_INTERNAL_EQUALTO_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_EQUALTO_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_EQUALTO_H
 
 // TerraLib
 #include "BinaryOp.h"
@@ -34,54 +34,56 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class EqualTo
-      
-      \brief It models the comparison operator.
-
-      This operator is just a syntatic-suggar.
-
-      \sa BinaryOp
-    */
-    class TEDATAACCESSEXPORT EqualTo : public BinaryOp
+    namespace core
     {
-      public:
+      /*!
+        \class EqualTo
+      
+        \brief It models the comparison operator.
 
-        TE_DEFINE_VISITABLE
+        This operator is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa BinaryOp
+      */
+      class TEDATAACCESSEXPORT EqualTo : public BinaryOp
+      {
+        public:
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          TE_DEFINE_VISITABLE
 
-          \note The addition operator will take the ownership of the given arguments.
-        */
-        EqualTo(Expression* arg1, Expression* arg2) : BinaryOp(FunctionNames::sm_EqualTo, arg1, arg2) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
-        */
-        EqualTo(const Expression& arg1, const Expression& arg2) : BinaryOp(FunctionNames::sm_EqualTo, arg1, arg2) {}
+            \note The addition operator will take the ownership of the given arguments.
+          */
+          EqualTo(Expression* arg1, Expression* arg2) : BinaryOp(FunctionNames::sm_EqualTo, arg1, arg2) {}
 
-        /*! \brief Copy constructor. */
-        EqualTo(const EqualTo& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~EqualTo() {}
+            \param arg1 The first argument.
+            \param arg2 The second argument.
+          */
+          EqualTo(const Expression& arg1, const Expression& arg2) : BinaryOp(FunctionNames::sm_EqualTo, arg1, arg2) {}
 
-        /*! Assignment operator.  */
-        EqualTo& operator=(const EqualTo& rhs);
+          /*! \brief Copy constructor. */
+          EqualTo(const EqualTo& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~EqualTo() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          EqualTo& operator=(const EqualTo& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_EQUALTO_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_EQUALTO_H

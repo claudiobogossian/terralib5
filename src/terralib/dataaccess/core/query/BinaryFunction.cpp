@@ -29,7 +29,7 @@
 // STL
 #include <cassert>
 
-te::da::BinaryFunction::BinaryFunction(const std::string& name, Expression* arg1, Expression* arg2)
+te::da::core::BinaryFunction::BinaryFunction(const std::string& name, Expression* arg1, Expression* arg2)
   : Function(name)
 {
   assert(arg1 && arg2);
@@ -37,58 +37,55 @@ te::da::BinaryFunction::BinaryFunction(const std::string& name, Expression* arg1
   m_args.push_back(arg2);
 }
 
-te::da::BinaryFunction::BinaryFunction(const std::string& name, const Expression& arg1, const Expression& arg2)
+te::da::core::BinaryFunction::BinaryFunction(const std::string& name, const Expression& arg1, const Expression& arg2)
   : Function(name)
 {
   m_args.push_back(arg1.clone());
   m_args.push_back(arg2.clone());
 }
 
-te::da::BinaryFunction::BinaryFunction(const BinaryFunction& rhs)
+te::da::core::BinaryFunction::BinaryFunction(const BinaryFunction& rhs)
   : Function(rhs)
 {
 }
 
-te::da::BinaryFunction::~BinaryFunction()
+te::da::core::BinaryFunction::~BinaryFunction()
 {
 }
 
-te::da::BinaryFunction& te::da::BinaryFunction::operator=(const BinaryFunction& rhs)
+te::da::core::BinaryFunction& te::da::core::BinaryFunction::operator=(const BinaryFunction& rhs)
 {
   Function::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::BinaryFunction::clone() const
+te::da::core::Expression* te::da::core::BinaryFunction::clone() const
 {
   return new BinaryFunction(*this);
 }
 
-te::da::Expression* te::da::BinaryFunction::getFirst() const
+te::da::core::Expression* te::da::core::BinaryFunction::getFirst() const
 {
   assert(m_args.size() == 2);
   return m_args[0];
 }
 
-void te::da::BinaryFunction::setFirst(Expression* arg)
+void te::da::core::BinaryFunction::setFirst(Expression* arg)
 {
   assert(m_args.size() == 2);
   delete m_args[0];
   m_args[0] = arg;
 }
 
-te::da::Expression* te::da::BinaryFunction::getSecond() const
+te::da::core::Expression* te::da::core::BinaryFunction::getSecond() const
 {
   assert(m_args.size() == 2);
   return m_args[1];
 }
 
-void te::da::BinaryFunction::setSecond(Expression* arg)
+void te::da::core::BinaryFunction::setSecond(Expression* arg)
 {
   assert(m_args.size() == 2);
   delete m_args[1];
   m_args[1] = arg;
 }
-
-
-

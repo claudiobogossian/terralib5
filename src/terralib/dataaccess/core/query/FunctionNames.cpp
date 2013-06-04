@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionNames.cpp
+  \file terralib/dataaccess/core/query/FunctionNames.cpp
 
   \brief A static class with global function name definitions.
 */
@@ -26,34 +26,34 @@
 // TerraLib
 #include "FunctionNames.h"
 
-const std::string te::da::FunctionNames::sm_Not("not");
-const std::string te::da::FunctionNames::sm_And("and");
-const std::string te::da::FunctionNames::sm_Or("or");
-const std::string te::da::FunctionNames::sm_EqualTo("=");
-const std::string te::da::FunctionNames::sm_NotEqualTo("<>");
-const std::string te::da::FunctionNames::sm_GreaterThan(">");
-const std::string te::da::FunctionNames::sm_GreaterThanOrEqualTo(">=");
-const std::string te::da::FunctionNames::sm_LessThan("<");
-const std::string te::da::FunctionNames::sm_LessThanOrEqualTo("<=");
-const std::string te::da::FunctionNames::sm_Add("+");
-const std::string te::da::FunctionNames::sm_Sub("-");
-const std::string te::da::FunctionNames::sm_Mul("*");
-const std::string te::da::FunctionNames::sm_Div("/");
-const std::string te::da::FunctionNames::sm_Equals("st_equals");
-const std::string te::da::FunctionNames::sm_Disjoint("st_disjoint");
-const std::string te::da::FunctionNames::sm_DWithin("st_dwithin");
-const std::string te::da::FunctionNames::sm_Beyond("st_beyond");
-const std::string te::da::FunctionNames::sm_Touches("st_touches");
-const std::string te::da::FunctionNames::sm_Within("st_within");
-const std::string te::da::FunctionNames::sm_Overlaps("st_overlaps");
-const std::string te::da::FunctionNames::sm_Crosses("st_crosses");
-const std::string te::da::FunctionNames::sm_Intersects("st_intersects");
-const std::string te::da::FunctionNames::sm_Contains("st_contains");
-const std::string te::da::FunctionNames::sm_ST_Intersects("st_intersects");
-const std::string te::da::FunctionNames::sm_ST_Relate("st_relate");
-const std::string te::da::FunctionNames::sm_ST_Transform("st_transform");
-const std::string te::da::FunctionNames::sm_Substring("substring");
-const std::string te::da::FunctionNames::sm_Like("like");
-const std::string te::da::FunctionNames::sm_Sum("sum");
-const std::string te::da::FunctionNames::sm_IsNull("isnull");
-const std::string te::da::FunctionNames::sm_In("in");
+const std::string te::da::core::FunctionNames::sm_Not("not");
+const std::string te::da::core::FunctionNames::sm_And("and");
+const std::string te::da::core::FunctionNames::sm_Or("or");
+const std::string te::da::core::FunctionNames::sm_EqualTo("=");
+const std::string te::da::core::FunctionNames::sm_NotEqualTo("<>");
+const std::string te::da::core::FunctionNames::sm_GreaterThan(">");
+const std::string te::da::core::FunctionNames::sm_GreaterThanOrEqualTo(">=");
+const std::string te::da::core::FunctionNames::sm_LessThan("<");
+const std::string te::da::core::FunctionNames::sm_LessThanOrEqualTo("<=");
+const std::string te::da::core::FunctionNames::sm_Add("+");
+const std::string te::da::core::FunctionNames::sm_Sub("-");
+const std::string te::da::core::FunctionNames::sm_Mul("*");
+const std::string te::da::core::FunctionNames::sm_Div("/");
+const std::string te::da::core::FunctionNames::sm_Equals("st_equals");
+const std::string te::da::core::FunctionNames::sm_Disjoint("st_disjoint");
+const std::string te::da::core::FunctionNames::sm_DWithin("st_dwithin");
+const std::string te::da::core::FunctionNames::sm_Beyond("st_beyond");
+const std::string te::da::core::FunctionNames::sm_Touches("st_touches");
+const std::string te::da::core::FunctionNames::sm_Within("st_within");
+const std::string te::da::core::FunctionNames::sm_Overlaps("st_overlaps");
+const std::string te::da::core::FunctionNames::sm_Crosses("st_crosses");
+const std::string te::da::core::FunctionNames::sm_Intersects("st_intersects");
+const std::string te::da::core::FunctionNames::sm_Contains("st_contains");
+const std::string te::da::core::FunctionNames::sm_ST_Intersects("st_intersects");
+const std::string te::da::core::FunctionNames::sm_ST_Relate("st_relate");
+const std::string te::da::core::FunctionNames::sm_ST_Transform("st_transform");
+const std::string te::da::core::FunctionNames::sm_Substring("substring");
+const std::string te::da::core::FunctionNames::sm_Like("like");
+const std::string te::da::core::FunctionNames::sm_Sum("sum");
+const std::string te::da::core::FunctionNames::sm_IsNull("isnull");
+const std::string te::da::core::FunctionNames::sm_In("in");
