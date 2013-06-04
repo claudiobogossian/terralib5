@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,89 +18,88 @@
  */
 
 /*!
-  \file terralib/dataaccess/datasource/DataSourceInfo.cpp
+  \file terralib/dataaccess/core/datasource/DataSourceInfo.cpp
 
-  \brief A conteiner class for keeping information about a data source.
+  \brief A container class for keeping information about a data source.
 */
 
 // TerraLib
 #include "DataSourceInfo.h"
 
-te::da::DataSourceInfo::DataSourceInfo()
+te::da::core::DataSourceInfo::DataSourceInfo()
 {
 }
 
-te::da::DataSourceInfo::~DataSourceInfo()
+te::da::core::DataSourceInfo::~DataSourceInfo()
 {
 }
 
-const std::string& te::da::DataSourceInfo::getId() const
+const std::string& te::da::core::DataSourceInfo::getId() const
 {
   return m_id;
 }
 
-void te::da::DataSourceInfo::setId(const std::string& id)
+void te::da::core::DataSourceInfo::setId(const std::string& id)
 {
   m_id = id;
 }
 
-const std::string& te::da::DataSourceInfo::getType() const
+const std::string& te::da::core::DataSourceInfo::getType() const
 {
   return m_dsType;
 }
 
-void te::da::DataSourceInfo::setType(const std::string& dsType)
+void te::da::core::DataSourceInfo::setType(const std::string& dsType)
 {
   m_dsType = dsType;
 }
 
-const std::string& te::da::DataSourceInfo::getAccessDriver() const
+const std::string& te::da::core::DataSourceInfo::getAccessDriver() const
 {
   return m_accessDriver;
 }
 
-void te::da::DataSourceInfo::setAccessDriver(const std::string& d)
+void te::da::core::DataSourceInfo::setAccessDriver(const std::string& d)
 {
   m_accessDriver = d;
 }
 
-const std::string& te::da::DataSourceInfo::getTitle() const
+const std::string& te::da::core::DataSourceInfo::getTitle() const
 {
   return m_title;
 }
 
-void te::da::DataSourceInfo::setTitle(const std::string& title)
+void te::da::core::DataSourceInfo::setTitle(const std::string& title)
 {
   m_title = title;
 }
 
-const std::string& te::da::DataSourceInfo::getDescription() const
+const std::string& te::da::core::DataSourceInfo::getDescription() const
 {
   return m_description;
 }
 
-void te::da::DataSourceInfo::setDescription(const std::string& d)
+void te::da::core::DataSourceInfo::setDescription(const std::string& d)
 {
   m_description = d;
 }
 
-const std::map<std::string, std::string>& te::da::DataSourceInfo::getConnInfo() const
+const std::map<std::string, std::string>& te::da::core::DataSourceInfo::getConnInfo() const
 {
   return m_conninfo;
 }
 
-std::map<std::string, std::string>& te::da::DataSourceInfo::getConnInfo()
+std::map<std::string, std::string>& te::da::core::DataSourceInfo::getConnInfo()
 {
   return m_conninfo;
 }
 
-void te::da::DataSourceInfo::setConnInfo(const std::map<std::string, std::string>& conninfo)
+void te::da::core::DataSourceInfo::setConnInfo(const std::map<std::string, std::string>& conninfo)
 {
   m_conninfo = conninfo;
 }
 
-bool te::da::DataSourceInfo::operator<(const DataSourceInfo& rhs) const
+bool te::da::core::DataSourceInfo::operator<(const DataSourceInfo& rhs) const
 {
   return m_id < rhs.m_id;
 }
-

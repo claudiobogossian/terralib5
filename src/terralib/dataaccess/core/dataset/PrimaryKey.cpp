@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,44 +18,44 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/PrimaryKey.cpp
+  \file terralib/dataaccess/core/dataset/PrimaryKey.cpp
 
   \brief A PrimaryKey describes a primary key (pk) constraint.
 */
 
 // TerraLib
-#include "../../datatype/Property.h"
+#include "../../../datatype/Property.h"
 #include "DataSetType.h"
 #include "PrimaryKey.h"
 
-te::da::PrimaryKey::PrimaryKey(DataSetType* dt, unsigned int id)
-  : Constraint(id),
+te::da::core::PrimaryKey::PrimaryKey(te::da::core::DataSetType* dt, unsigned int id)
+  : AbstractConstraint(id),
     m_index(0)
 {
   if(dt)
     dt->add(this);
 }
 
-te::da::PrimaryKey::PrimaryKey(const std::string& name, DataSetType* dt, unsigned int id)
-  : Constraint(name, id),
+te::da::core::PrimaryKey::PrimaryKey(const std::string& name, DataSetType* dt, unsigned int id)
+  : AbstractConstraint(name, id),
     m_index(0)    
 { 
   if(dt)
     dt->add(this);
 }
 
-te::da::PrimaryKey::PrimaryKey(const PrimaryKey& rhs)
-  : Constraint(rhs.getName(), 0),
+te::da::core::PrimaryKey::PrimaryKey(const PrimaryKey& rhs)
+  : AbstractConstraint(rhs.getName(), 0),
     m_index(rhs.m_index),
     m_properties(rhs.m_properties)
 {
 }
 
-te::da::PrimaryKey& te::da::PrimaryKey::operator=(const PrimaryKey& rhs)
+te::da::core::PrimaryKey& te::da::core::PrimaryKey::operator=(const PrimaryKey& rhs)
 {
   if(this != &rhs)
   {
-    Constraint::operator=(rhs);
+    AbstractConstraint::operator=(rhs);
     m_index = rhs.m_index;
     m_properties = rhs.m_properties;
   }
@@ -63,7 +63,7 @@ te::da::PrimaryKey& te::da::PrimaryKey::operator=(const PrimaryKey& rhs)
   return *this;
 }
 
-bool te::da::PrimaryKey::has(const te::dt::Property* p) const
+bool te::da::core::PrimaryKey::has(const te::dt::Property* p) const
 {
   std::size_t size = m_properties.size();
 
@@ -74,7 +74,7 @@ bool te::da::PrimaryKey::has(const te::dt::Property* p) const
   return false;
 }
 
-void te::da::PrimaryKey::replace(te::dt::Property* p, te::dt::Property* pp)
+void te::da::core::PrimaryKey::replace(te::dt::Property* p, te::dt::Property* pp)
 {
   std::size_t size = m_properties.size();
 
@@ -86,8 +86,7 @@ void te::da::PrimaryKey::replace(te::dt::Property* p, te::dt::Property* pp)
     }
 }
 
-te::da::Constraint* te::da::PrimaryKey::clone()
+te::da::core::AbstractConstraint* te::da::core::PrimaryKey::clone()
 {
   return new PrimaryKey(*this);
 }
-

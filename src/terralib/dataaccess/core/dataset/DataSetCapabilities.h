@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASETCAPABILITIES_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
 
 namespace te
 {

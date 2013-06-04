@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,35 +18,35 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/ForeignKey.cpp
+  \file terralib/dataaccess/core/dataset/ForeignKey.cpp
 
   \brief It models a foreign key constraint for a DataSetType.
 */
 
 // TerraLib
-#include "../../datatype/Property.h"
+#include "../../../datatype/Property.h"
 #include "DataSetType.h"
 #include "ForeignKey.h"
 
-te::da::ForeignKey::ForeignKey(unsigned int id)
-  : Constraint(id),
+te::da::core::ForeignKey::ForeignKey(unsigned int id)
+  : AbstractConstraint(id),
     m_onDelete(NO_ACTION),
     m_onUpdate(NO_ACTION),
     m_refDt(0)    
 {
 }
 
-te::da::ForeignKey::ForeignKey(const std::string& name,
+te::da::core::ForeignKey::ForeignKey(const std::string& name,
                                unsigned int id)
-  : Constraint(name, id),
+  : AbstractConstraint(name, id),
     m_onDelete(NO_ACTION),
     m_onUpdate(NO_ACTION),
     m_refDt(0)
 {
 }
 
-te::da::ForeignKey::ForeignKey(const ForeignKey& rhs)
-  : Constraint(rhs),
+te::da::core::ForeignKey::ForeignKey(const ForeignKey& rhs)
+  : AbstractConstraint(rhs),
     m_onDelete(rhs.m_onDelete),
     m_onUpdate(rhs.m_onUpdate),
     m_refDt(rhs.m_refDt),
@@ -55,11 +55,11 @@ te::da::ForeignKey::ForeignKey(const ForeignKey& rhs)
 {
 }
 
-te::da::ForeignKey& te::da::ForeignKey::operator=(const ForeignKey& rhs)
+te::da::core::ForeignKey& te::da::core::ForeignKey::operator=(const ForeignKey& rhs)
 {
   if(this != &rhs)
   {
-    Constraint::operator=(rhs);
+    AbstractConstraint::operator=(rhs);
 
     m_onDelete = rhs.m_onDelete;
 
@@ -75,7 +75,7 @@ te::da::ForeignKey& te::da::ForeignKey::operator=(const ForeignKey& rhs)
   return *this;
 }
 
-bool te::da::ForeignKey::has(te::dt::Property* p)
+bool te::da::core::ForeignKey::has(te::dt::Property* p)
 {
   size_t size = m_properties.size();
 
@@ -86,7 +86,7 @@ bool te::da::ForeignKey::has(te::dt::Property* p)
   return false;
 }
 
-bool te::da::ForeignKey::isReferenced(te::dt::Property* p)
+bool te::da::core::ForeignKey::isReferenced(te::dt::Property* p)
 {
   size_t size = m_refProperties.size();
 
@@ -97,7 +97,7 @@ bool te::da::ForeignKey::isReferenced(te::dt::Property* p)
   return false;
 }
 
-void te::da::ForeignKey::replace(te::dt::Property* p, te::dt::Property* pp)
+void te::da::core::ForeignKey::replace(te::dt::Property* p, te::dt::Property* pp)
 {
   {
     std::size_t size = m_properties.size();
@@ -122,8 +122,7 @@ void te::da::ForeignKey::replace(te::dt::Property* p, te::dt::Property* pp)
   }
 }
 
-te::da::Constraint* te::da::ForeignKey::clone()
+te::da::core::AbstractConstraint* te::da::core::ForeignKey::clone()
 {
   return new ForeignKey(*this);
 }
-

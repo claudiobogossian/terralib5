@@ -23,115 +23,119 @@
   \brief A class that represents the known capabilities of a specific data source.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_DATASOURCECAPABILITIES_H
-#define __TERRALIB_DATAACCESS_INTERNAL_DATASOURCECAPABILITIES_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCECAPABILITIES_H
+#define __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCECAPABILITIES_H
 
 // TerraLib
 #include "../../../common/Enums.h"
-#include "../dataset/DataSetCapabilities2.h"
-#include "../dataset/DataSetTypeCapabilities2.h"
-#include "../query/QueryCapabilities2.h"
+#include "../dataset/DataSetCapabilities.h"
+#include "../dataset/DataSetTypeCapabilities.h"
+#include "../query/QueryCapabilities.h"
 #include "../../Config.h"
-#include "DataTypeCapabilities2.h"
+#include "DataTypeCapabilities.h"
 
 // STL
 #include <map>
 #include <string>
+#include <vector>
 
 namespace te
 {
   namespace da
   {
-    /*!
-      \class DataSourceCapabilities
-
-      \brief A class that represents the known capabilities of a specific data source,
-             i.e. this class informs all information about what the data source can perform.
-             Here you will find if the data source implementation supports primary keys,
-             foreign keys, if it can be used in a thread environment and much more information.
-    */
-    class TEDATAACCESSEXPORT DataSourceCapabilities
+    namespace core
     {
-      public:
+      /*!
+        \class DataSourceCapabilities
 
-        /*! \brief Constructor. */
-        DataSourceCapabilities();
+        \brief A class that represents the known capabilities of a specific data source,
+               i.e. this class informs all information about what the data source can perform.
+               Here you will find if the data source implementation supports primary keys,
+               foreign keys, if it can be used in a thread environment and much more information.
+      */
+      class TEDATAACCESSEXPORT DataSourceCapabilities
+      {
+        public:
 
-        /*! \brief Destructor. */
-        ~DataSourceCapabilities();
+          /*! \brief Constructor. */
+          DataSourceCapabilities();
 
-      public:
+          /*! \brief Destructor. */
+          ~DataSourceCapabilities();
 
-        te::common::AccessPolicy getAccessPolicy() const;
+        public:
 
-        void setAccessPolicy(const te::common::AccessPolicy& accessPolicy);
+          te::common::AccessPolicy getAccessPolicy() const;
 
-        bool supportsTransactions() const;
+          void setAccessPolicy(const te::common::AccessPolicy& accessPolicy);
 
-        void setSupportTransactions(const bool& support);
+          bool supportsTransactions() const;
 
-        bool supportsDataSetPesistenceAPI() const;
+          void setSupportTransactions(const bool& support);
 
-        void setSupportDataSetPesistenceAPI(const bool& support);
+          bool supportsDataSetPesistenceAPI() const;
 
-        bool supportsDataSetTypePesistenceAPI() const;
+          void setSupportDataSetPesistenceAPI(const bool& support);
 
-        void setSupportDataSetTypePesistenceAPI(const bool& support);
+          bool supportsDataSetTypePesistenceAPI() const;
 
-        bool supportsPreparedQueryAPI() const;
+          void setSupportDataSetTypePesistenceAPI(const bool& support);
 
-        void setSupportPreparedQueryAPI(const bool& support);
+          bool supportsPreparedQueryAPI() const;
 
-        bool supportsBatchExecutorAPI() const;
+          void setSupportPreparedQueryAPI(const bool& support);
 
-        void setSupportBatchExecutorAPI(const bool& support);
+          bool supportsBatchExecutorAPI() const;
 
-        const DataTypeCapabilities& getDataTypeCapabilities() const;
+          void setSupportBatchExecutorAPI(const bool& support);
 
-        void setDataTypeCapabilities(const DataTypeCapabilities& capabilities);
+          const DataTypeCapabilities& getDataTypeCapabilities() const;
 
-        const DataSetTypeCapabilities& getDataSetTypeCapabilities() const;
+          void setDataTypeCapabilities(const DataTypeCapabilities& capabilities);
 
-        void setDataSetTypeCapabilities(const DataSetTypeCapabilities& capabilities);
+          const DataSetTypeCapabilities& getDataSetTypeCapabilities() const;
 
-        const DataSetCapabilities& getDataSetCapabilities() const;
+          void setDataSetTypeCapabilities(const DataSetTypeCapabilities& capabilities);
 
-        void setDataSetCapabilities(const DataSetCapabilities& capabilities);
+          const DataSetCapabilities& getDataSetCapabilities() const;
 
-        const QueryCapabilities& getQueryCapabilities() const;
+          void setDataSetCapabilities(const DataSetCapabilities& capabilities);
 
-        void setQueryCapabilities(const QueryCapabilities& capabilities);
+          const QueryCapabilities& getQueryCapabilities() const;
 
-        const std::map<std::string, std::string>& getSpecificCapabilities() const;
+          void setQueryCapabilities(const QueryCapabilities& capabilities);
 
-        void addSpecificCapability(const std::string& key, const std::string& value);
+          const std::map<std::string, std::string>& getSpecificCapabilities() const;
 
-        void setSupportAll();
+          void addSpecificCapability(const std::string& key, const std::string& value);
 
-        const std::vector<te::commom::CharacterEncodingType>& getCharEncodings() const;
+          void setSupportAll();
 
-        void setCharEncodings(const std::vector<te::commom::CharacterEncodingType>& encodings);
+          const std::vector<te::common::CharacterEncodingType>& getCharEncodings() const;
 
-      private:
+          void setCharEncodings(const std::vector<te::common::CharacterEncodingType>& encodings);
 
-        te::common::AccessPolicy m_accessPolicy; //!< A value that indicates the data source access policy.
-        bool m_supportTransactions;              //!< A flag that indicates if the data source supports ACID transactions.
-        bool m_supportDataSetPesistenceAPI;      //!< A flag that indicates if the data source supports the DataSetPersistence API.
-        bool m_supportDataSetTypePesistenceAPI;  //!< A flag that indicates if the data source supports the DataSetTypePersistence API.
-        bool m_supportPreparedQueryAPI;          //!< A flag that indicates if the data source supports the PreparedQuery API.
-        bool m_supportBatchExecutorAPI;          //!< A flag that indicates if the data source supports the BatchExecutor API.
+        private:
 
-        DataTypeCapabilities m_dataTypeCapabilities;       //!< The DataType Capabilities.
-        DataSetTypeCapabilities m_dataSetTypeCapabilities; //!< The DataSetType Capabilities.
-        DataSetCapabilities m_dataSetCapabilities;         //!< The DataSet Capabilities.
-        QueryCapabilities m_queryCapabilities;             //!< The Query Capabilities.
+          te::common::AccessPolicy m_accessPolicy; //!< A value that indicates the data source access policy.
+          bool m_supportTransactions;              //!< A flag that indicates if the data source supports ACID transactions.
+          bool m_supportDataSetPesistenceAPI;      //!< A flag that indicates if the data source supports the DataSetPersistence API.
+          bool m_supportDataSetTypePesistenceAPI;  //!< A flag that indicates if the data source supports the DataSetTypePersistence API.
+          bool m_supportPreparedQueryAPI;          //!< A flag that indicates if the data source supports the PreparedQuery API.
+          bool m_supportBatchExecutorAPI;          //!< A flag that indicates if the data source supports the BatchExecutor API.
 
-        std::vector<te::commom::CharacterEncodingType> m_charEncodings; //!< The set of supported character encodings.
+          DataTypeCapabilities m_dataTypeCapabilities;       //!< The DataType Capabilities.
+          DataSetTypeCapabilities m_dataSetTypeCapabilities; //!< The DataSetType Capabilities.
+          DataSetCapabilities m_dataSetCapabilities;         //!< The DataSet Capabilities.
+          QueryCapabilities m_queryCapabilities;             //!< The Query Capabilities.
 
-        std::map<std::string, std::string> m_specificCapabilities; //!< A list of key-value-pairs that data source driver can supply with specifics capabilities.
-    };
+          std::vector<te::common::CharacterEncodingType> m_charEncodings; //!< The set of supported character encodings.
 
-  } // end namespace da
-}   // end namespace te
+          std::map<std::string, std::string> m_specificCapabilities; //!< A list of key-value-pairs that data source driver can supply with specifics capabilities.
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASOURCECAPABILITIES_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCECAPABILITIES_H

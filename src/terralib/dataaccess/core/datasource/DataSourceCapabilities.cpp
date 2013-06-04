@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "DataSourceCapabilities2.h"
+#include "DataSourceCapabilities.h"
 
 te::da::core::DataSourceCapabilities::DataSourceCapabilities()
   : m_accessPolicy(te::common::NoAccess),
@@ -159,13 +159,12 @@ void te::da::core::DataSourceCapabilities::setSupportAll()
   m_supportBatchExecutorAPI = true;
 }
 
-const std::vector<te::commom::CharacterEncodingType>& te::da::core::DataSourceCapabilities::getCharEncodings() const
+const std::vector<te::common::CharacterEncodingType>& te::da::core::DataSourceCapabilities::getCharEncodings() const
 {
   return m_charEncodings;
 }
 
-void te::da::core::DataSourceCapabilities::setCharEncodings(const std::vector<te::commom::CharacterEncodingType>& encodings)
+void te::da::core::DataSourceCapabilities::setCharEncodings(const std::vector<te::common::CharacterEncodingType>& encodings)
 {
   m_charEncodings = encodings;
 }
-

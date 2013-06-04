@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2010 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/DataSetTypeConverter.cpp
+  \file terralib/dataaccess/core/dataset/DataSetTypeConverter.cpp
 
-  \brief An converter for DataSetType.
+  \brief An converter for a dataset schema.
 */
 
 // TerraLib
-#include "../../common/Translator.h"
+#include "../../../common/Translator.h"
 #include "../datasource/DataSourceCapabilities.h"
 #include "../Exception.h"
 #include "DataSetType.h"
@@ -33,7 +33,7 @@
 // STL
 #include <cassert>
 
-te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type)
+te::da::core::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type)
   : m_inDataSetType(type)
 {
   assert(type);
@@ -46,7 +46,7 @@ te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type)
   m_outDataSetType = new DataSetType(type->getName(), type->getId());
 }
 
-te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities)
+te::da::core::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities)
   : m_inDataSetType(type)
 {
   assert(type);
@@ -85,17 +85,17 @@ te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const Data
   }
 }
 
-te::da::DataSetTypeConverter::~DataSetTypeConverter()
+te::da::core::DataSetTypeConverter::~DataSetTypeConverter()
 {
   delete m_outDataSetType;
 }
 
-te::da::DataSetType* te::da::DataSetTypeConverter::getConvertee()
+te::da::core::DataSetType* te::da::core::DataSetTypeConverter::getConvertee()
 {
   return m_inDataSetType;
 }
 
-void te::da::DataSetTypeConverter::getNonConvertedProperties(std::vector<std::string>& propertyNames) const
+void te::da::core::DataSetTypeConverter::getNonConvertedProperties(std::vector<std::string>& propertyNames) const
 {
   for(std::size_t i = 0; i < m_inDataSetType->size(); ++i)
   {
@@ -104,7 +104,7 @@ void te::da::DataSetTypeConverter::getNonConvertedProperties(std::vector<std::st
   }
 }
 
-void te::da::DataSetTypeConverter::getNonConvertedProperties(std::vector<std::size_t>& propertyPos) const
+void te::da::core::DataSetTypeConverter::getNonConvertedProperties(std::vector<std::size_t>& propertyPos) const
 {
   for(std::size_t i = 0; i < m_inDataSetType->size(); ++i)
   {
@@ -113,7 +113,7 @@ void te::da::DataSetTypeConverter::getNonConvertedProperties(std::vector<std::si
   }
 }
 
-void te::da::DataSetTypeConverter::getConvertedProperties(const std::string& propertyName, std::vector<std::size_t>& convertedPropertyPos)
+void te::da::core::DataSetTypeConverter::getConvertedProperties(const std::string& propertyName, std::vector<std::size_t>& convertedPropertyPos)
 {
   std::size_t pos = m_outDataSetType->getPropertyPosition(propertyName);
   assert(pos != std::string::npos);
@@ -121,7 +121,7 @@ void te::da::DataSetTypeConverter::getConvertedProperties(const std::string& pro
   return getConvertedProperties(pos, convertedPropertyPos);
 }
 
-void te::da::DataSetTypeConverter::getConvertedProperties(std::size_t propertyPos, std::vector<std::size_t>& convertedPropertyPos)
+void te::da::core::DataSetTypeConverter::getConvertedProperties(std::size_t propertyPos, std::vector<std::size_t>& convertedPropertyPos)
 {
   assert(propertyPos >= 0 && propertyPos < m_propertyIndexes.size());
 
@@ -134,13 +134,13 @@ void te::da::DataSetTypeConverter::getConvertedProperties(std::size_t propertyPo
   }
 }
 
-void te::da::DataSetTypeConverter::remove(const std::string& propertyName)
+void te::da::core::DataSetTypeConverter::remove(const std::string& propertyName)
 {
   std::size_t pos = m_outDataSetType->getPropertyPosition(propertyName);
   remove(pos);
 }
 
-void te::da::DataSetTypeConverter::remove(std::size_t propertyPos)
+void te::da::core::DataSetTypeConverter::remove(std::size_t propertyPos)
 {
   assert(propertyPos >= 0 && propertyPos < m_outDataSetType->size());
 
@@ -161,20 +161,20 @@ void te::da::DataSetTypeConverter::remove(std::size_t propertyPos)
   m_converters.erase(m_converters.begin() + propertyPos);
 }
 
-void te::da::DataSetTypeConverter::add(const std::string& propertyName, te::dt::Property* p, AttributeConverter conv)
+void te::da::core::DataSetTypeConverter::add(const std::string& propertyName, te::dt::Property* p, AttributeConverter conv)
 {
   std::size_t pos = m_inDataSetType->getPropertyPosition(propertyName);
   add(pos, p);
 }
 
-void te::da::DataSetTypeConverter::add(std::size_t propertyPos, te::dt::Property* p, AttributeConverter conv)
+void te::da::core::DataSetTypeConverter::add(std::size_t propertyPos, te::dt::Property* p, AttributeConverter conv)
 {
   std::vector<std::size_t> indexes;
   indexes.push_back(propertyPos);
   add(indexes, p, conv);
 }
 
-void te::da::DataSetTypeConverter::add(const std::vector<std::string>& propertyNames, te::dt::Property* p, AttributeConverter conv)
+void te::da::core::DataSetTypeConverter::add(const std::vector<std::string>& propertyNames, te::dt::Property* p, AttributeConverter conv)
 {
   std::vector<std::size_t> indexes;
 
@@ -184,7 +184,7 @@ void te::da::DataSetTypeConverter::add(const std::vector<std::string>& propertyN
   add(indexes, p, conv);
 }
 
-void te::da::DataSetTypeConverter::add(const std::vector<std::size_t>& propertyPos, te::dt::Property* p, AttributeConverter conv)
+void te::da::core::DataSetTypeConverter::add(const std::vector<std::size_t>& propertyPos, te::dt::Property* p, AttributeConverter conv)
 {
   assert(!propertyPos.empty());
   assert(p);
@@ -203,7 +203,7 @@ void te::da::DataSetTypeConverter::add(const std::vector<std::size_t>& propertyP
     m_convertedProperties[propertyPos[i]]++;
 }
 
-bool te::da::DataSetTypeConverter::needConverter(DataSetType* type, const DataSourceCapabilities& capabilities)
+bool te::da::core::DataSetTypeConverter::needConverter(DataSetType* type, const DataSourceCapabilities& capabilities)
 {
   assert(type);
 
@@ -223,22 +223,22 @@ bool te::da::DataSetTypeConverter::needConverter(DataSetType* type, const DataSo
   return false;
 }
 
-te::da::DataSetType* te::da::DataSetTypeConverter::getResult() const
+te::da::core::DataSetType* te::da::core::DataSetTypeConverter::getResult() const
 {
   return m_outDataSetType;
 }
 
-const std::vector<std::vector<std::size_t> >& te::da::DataSetTypeConverter::getConvertedPropertyIndexes() const
+const std::vector<std::vector<std::size_t> >& te::da::core::DataSetTypeConverter::getConvertedPropertyIndexes() const
 {
   return m_propertyIndexes;
 }
 
-const std::vector<te::da::AttributeConverter>& te::da::DataSetTypeConverter::getConverters() const
+const std::vector<te::da::core::AttributeConverter>& te::da::core::DataSetTypeConverter::getConverters() const
 {
   return m_converters;
 }
 
-bool te::da::DataSetTypeConverter::isConverted(std::size_t i) const
+bool te::da::core::DataSetTypeConverter::isConverted(std::size_t i) const
 {
   assert(i < m_convertedProperties.size());
   return m_convertedProperties[i] > 0;

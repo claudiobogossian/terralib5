@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/Constraint.h
+  \file terralib/dataaccess/core/dataset/Constraint.h
 
   \brief A class that describes a constraint.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_CONSTRAINT_H
-#define __TERRALIB_DATAACCESS_INTERNAL_CONSTRAINT_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H
+#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H
 
 // TerraLib
-#include "../Config.h"
-#include "../Enums.h"
+#include "../../Config.h"
+#include "../../Enums.h"
 
 // STL
 #include <string>
@@ -37,138 +37,140 @@ namespace te
 {
   namespace da
   {
-// Forward declaration
-    class DataSetType;    
-
-    /*!
-      \class DataSetConstraint
-      
-      \brief A class that describes a constraint.
-
-      \sa DataSetType, PrimaryKey, ForeignKey, UniqueKey, CheckConstraint
-    */
-    class TEDATAACCESSEXPORT Constraint
+    namespace core
     {
-      public:
+      // Forward declaration
+      class DataSetType;    
 
-        /*!
-          \brief Constructor.
+      /*!
+        \class DataSetConstraint
+      
+        \brief A class that describes a constraint.
 
-          \param id   The constraint identifier.
+        \sa DataSetType, PrimaryKey, ForeignKey, UniqueKey, CheckConstraint
+      */
+      class TEDATAACCESSEXPORT AbstractConstraint
+      {
+        public:
 
-          \note The new constraint will belong to the given DataSetType.
+          /*!
+            \brief Constructor.
 
-          \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-        */
-        Constraint(unsigned int id = 0);
+            \param id   The constraint identifier.
 
-        /*!
-          \brief Constructor.
+            \note The new constraint will belong to the given DataSetType.
 
-          \param name The constraint name.
-          \param id   The constraint identifier.
+            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
+          */
+          AbstractConstraint(unsigned int id = 0);
 
-          \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-        */
-        Constraint(const std::string& name, unsigned int id = 0);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Copy constructor not allowed.
+            \param name The constraint name.
+            \param id   The constraint identifier.
 
-          The new object will not have an associated DataSetType.
+            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
+          */
+          AbstractConstraint(const std::string& name, unsigned int id = 0);
 
-          \param rhs Right-hand-side instance.
-        */
-        Constraint(const Constraint& rhs);
+          /*!
+            \brief Copy constructor not allowed.
 
-        /*! \brief Virtual destructor. */
-        virtual ~Constraint() {}
+            The new object will not have an associated DataSetType.
 
-        /*!
-          \brief Assignment operator not allowed.
+            \param rhs Right-hand-side instance.
+          */
+          AbstractConstraint(const AbstractConstraint& rhs);
 
-          \param rhs Right-hand-side instance.
+          /*! \brief Virtual destructor. */
+          virtual ~AbstractConstraint() {}
 
-          \return A reference to this object.
-        */
-        Constraint& operator=(const Constraint& rhs);
+          /*!
+            \brief Assignment operator not allowed.
 
-        /*!
-          \brief It returns the constraint identifier.
+            \param rhs Right-hand-side instance.
 
-          \return A number that identifies the constraint.
+            \return A reference to this object.
+          */
+          AbstractConstraint& operator=(const AbstractConstraint& rhs);
 
-          \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-        */
-        virtual unsigned int getId() const { return m_id; }
+          /*!
+            \brief It returns the constraint identifier.
 
-        /*!
-          \brief It sets the constraint identifier.
+            \return A number that identifies the constraint.
 
-          \param id A number that identifies the constraint.
+            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
+          */
+          virtual unsigned int getId() const { return m_id; }
 
-          \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-        */
-        virtual void setId(unsigned int id) { m_id = id; }
+          /*!
+            \brief It sets the constraint identifier.
 
-        /*!
-          \brief It returns the constraint name.
+            \param id A number that identifies the constraint.
 
-          \return The constraint name.
-        */
-        virtual const std::string& getName() const { return m_name; }
+            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
+          */
+          virtual void setId(unsigned int id) { m_id = id; }
 
-        /*!
-          \brief It sets the constraint name.
+          /*!
+            \brief It returns the constraint name.
 
-          \param name The constraint name.
-        */
-        virtual void setName(const std::string& name) { m_name = name; }
+            \return The constraint name.
+          */
+          virtual const std::string& getName() const { return m_name; }
+
+          /*!
+            \brief It sets the constraint name.
+
+            \param name The constraint name.
+          */
+          virtual void setName(const std::string& name) { m_name = name; }
         
-        /*!
-          \brief It returns the DataSetType associated to the constraint.
+          /*!
+            \brief It returns the DataSetType associated to the constraint.
 
-          \return The DataSetType associated to the constraint.
-        */
-        virtual DataSetType* getDataSetType() const { return m_dt; }
+            \return The DataSetType associated to the constraint.
+          */
+          virtual DataSetType* getDataSetType() const { return m_dt; }
 
-        /*!
-          \brief It sets the DataSetType associated to the constraint.
+          /*!
+            \brief It sets the DataSetType associated to the constraint.
 
-          \param dt The DataSetType associated to this constraint.
+            \param dt The DataSetType associated to this constraint.
 
-          \warning Take care when calling this method. If the constraint belongs to a DataSetType,
-                   remember to detach it from the DataSetType before calling this method.
-        */
-        virtual void setDataSetType(DataSetType* dt) { m_dt = dt; }
+            \warning Take care when calling this method. If the constraint belongs to a DataSetType,
+                     remember to detach it from the DataSetType before calling this method.
+          */
+          virtual void setDataSetType(DataSetType* dt) { m_dt = dt; }
 
-        /*!
-          \brief It returns the constraint type.
+          /*!
+            \brief It returns the constraint type.
           
-          \return The constraint type.
+            \return The constraint type.
 
-          \note Each child has to implement this method and return its specialized type.
-        */
-        virtual ConstraintType getType() const = 0;
+            \note Each child has to implement this method and return its specialized type.
+          */
+          virtual ConstraintType getType() const = 0;
 
-        /*!
-          \brief It returns a clone of the object.
+          /*!
+            \brief It returns a clone of the object.
 
-          The new object will not have an associated DataSetType.
+            The new object will not have an associated DataSetType.
 
-          \return A clone of the object.
-        */
-        virtual Constraint* clone() = 0;
+            \return A clone of the object.
+          */
+          virtual AbstractConstraint* clone() = 0;
 
-      private:
+        private:
 
-        unsigned int m_id;    //!< An identification number for the constraint.
-        DataSetType* m_dt;    //!< The associated DataSetType.
-        std::string m_name;   //!< The constraint name.
-    };
+          unsigned int m_id;    //!< An identification number for the constraint.
+          DataSetType* m_dt;    //!< The associated DataSetType.
+          std::string m_name;   //!< The constraint name.
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  //end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_CONSTRAINT_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/datasource/ScopedTransaction.cpp
+  \file terralib/dataaccess/core/datasource/ScopedTransaction.cpp
 
-  \brief An utitily class to coordinate transactions.
+  \brief An utility class to coordinate transactions.
 */
 
 // TerraLib
 #include "DataSourceTransactor.h"
 #include "ScopedTransaction.h"
 
-te::da::ScopedTransaction::ScopedTransaction(te::da::DataSourceTransactor& transactor)
+te::da::core::ScopedTransaction::ScopedTransaction(te::da::core::DataSourceTransactor& transactor)
   : m_t(transactor),
     m_rollback(true)
 {
@@ -37,13 +37,13 @@ te::da::ScopedTransaction::ScopedTransaction(te::da::DataSourceTransactor& trans
   m_t.begin();
 }
 
-te::da::ScopedTransaction::~ScopedTransaction()
+te::da::core::ScopedTransaction::~ScopedTransaction()
 {
   if(m_rollback)
     m_t.rollBack();
 }
 
-void te::da::ScopedTransaction::commit()
+void te::da::core::ScopedTransaction::commit()
 {
   if(!m_rollback)
     return;
@@ -52,4 +52,3 @@ void te::da::ScopedTransaction::commit()
 
   m_rollback = false;
 }
-

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/datasource/DataSourceInfoManager.h
+  \file terralib/dataaccess/core/datasource/DataSourceInfoManager.h
 
   \brief A singleton to keep all the registered data sources.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFOMANAGER_H
-#define __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFOMANAGER_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCEINFOMANAGER_H
+#define __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCEINFOMANAGER_H
 
 // TerraLib
-#include "../../common/Singleton.h"
+#include "../../../common/Singleton.h"
 #include "DataSourceInfo.h"
 
 // STL
@@ -39,6 +39,8 @@ namespace te
 {
   namespace da
   {
+    namespace core
+    {
       /*!
         \class DataSourceInfoManager
 
@@ -84,7 +86,8 @@ namespace te
           std::map<std::string, DataSourceInfoPtr> m_datasources;
       }; 
 
-  }   // end namespace da
-}     // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFOMANAGER_H
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCEINFOMANAGER_H
