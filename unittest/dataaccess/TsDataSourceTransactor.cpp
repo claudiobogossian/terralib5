@@ -165,7 +165,6 @@ void TsDataSourceTransactor::tcGetDataSetByGeometry()
     
       CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), &m_pt, te::gm::INTERSECTS)); //point
       int nprop = dt->getNumProperties();
-      int i;
       int pos = static_cast<int>(te::da::GetFirstSpatialPropertyPos(dt));
       dt->moveNext();
       m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());
@@ -207,7 +206,7 @@ void TsDataSourceTransactor::tcGetDataSetByProperty()
   te::da::DataSet* dt;
   std::vector<std::string>::iterator it = m_vecDtNames.begin();
   te::da::DataSetType* datasetType = cl->getDataSetType(*it);
-  te::gm::GeometryProperty* p = datasetType->getDefaultGeomProperty();
+  te::dt::Property* p = datasetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
 
   //Testing getDataSet(name,property,geometry, ...)
 
@@ -217,7 +216,7 @@ void TsDataSourceTransactor::tcGetDataSetByProperty()
     {
       dt = t-> getDataSet((*it),p, &m_pt, te::gm::INTERSECTS);
       CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet((*it),p, &m_pt, te::gm::INTERSECTS)); //point
-      int pos = datasetType->getDefaultGeomPropertyPos();
+      int pos = datasetType->getPropertyPosition(p->getName());
       dt->moveNext();
       m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());
       m_geom->computeMBR(true);
@@ -256,7 +255,7 @@ void TsDataSourceTransactor::tcGetDataSetByEnvRec()
 
   std::vector<std::string>::iterator it = m_vecDtNames.begin();
   te::da::DataSetType* datasetType = cl->getDataSetType(*it);
-  te::gm::GeometryProperty* p = datasetType->getDefaultGeomProperty();
+  te::dt::Property* p = datasetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
   
   te::gm::Envelope *rec = new te::gm::Envelope(-60.0,-20.0,-35.0,2.0);
 
@@ -288,8 +287,6 @@ void TsDataSourceTransactor::tcGetDataSetByEnvRec1()
   CPPUNIT_ASSERT(t.get());
 
   te::da::DataSet* dtRec;
-  te::gm::GeometryProperty* dtGeomRec;
-  te::gm::Envelope* envRec;
   te::gm::Envelope recE;
   std::string dtname;
 
