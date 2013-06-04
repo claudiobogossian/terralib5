@@ -27,8 +27,8 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONNAMES_H
 
 // TerraLib
-#include "../../common/Static.h"
-#include "../Config.h"
+#include "../../../common/Static.h"
+#include "../../Config.h"
 
 // STL
 #include <string>

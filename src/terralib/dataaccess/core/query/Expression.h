@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,66 +18,69 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Expression.h
+  \file terralib/dataaccess/core/query/Expression.h
   
   \brief This is an abstract class that models a query expression.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_EXPRESSION_H
-#define __TERRALIB_DATAACCESS_INTERNAL_EXPRESSION_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_EXPRESSION_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_EXPRESSION_H
 
 // TerraLib
-#include "../../common/BaseVisitable.h"
+#include "../../../common/BaseVisitable.h"
 #include "QueryVisitor.h"
 
 namespace te
 {
   namespace da
   {
-    /*!
-      \class Expression
+    namespace core
+    {
+      /*!
+        \class Expression
       
-      \brief This is an abstract class that models a query expression.
+        \brief This is an abstract class that models a query expression.
 
-      An expression is a combination of one or more
-      functions, literals or property names that can be evaluated.
+        An expression is a combination of one or more
+        functions, literals or property names that can be evaluated.
 
-      \sa PropertyName, Function, Literal
-    */
-    class TEDATAACCESSEXPORT Expression : public te::common::BaseVisitable<QueryVisitor>
-    {
-      public:
+        \sa PropertyName, Function, Literal
+      */
+      class TEDATAACCESSEXPORT Expression : public te::common::BaseVisitable<QueryVisitor>
+      {
+        public:
 
-        TE_DEFINE_VISITABLE
+          TE_DEFINE_VISITABLE
 
-        /*! \brief Default constructor. */
-        Expression() {}
+          /*! \brief Default constructor. */
+          Expression() {}
 
-        /*! \brief Virtual destructor. */
-        virtual ~Expression() {}
+          /*! \brief Virtual destructor. */
+          virtual ~Expression() {}
 
-        /*! \brief It creates a new copy of this expression. */
-        virtual Expression* clone() const = 0;
-    };
+          /*! \brief It creates a new copy of this expression. */
+          virtual Expression* clone() const = 0;
+      };
 
-    /*! \brief For use with boost conteiners. */
-    inline Expression* new_clone(const Expression& a)
-    {
-      return a.clone();
-    }
+      /*! \brief For use with boost conteiners. */
+      inline Expression* new_clone(const Expression& a)
+      {
+        return a.clone();
+      }
 
-  } // end namespace da
-}   // end namespace te
+    } // end namespace core
+  }   // end namespace da
+}     // end namespace te
 
-TEDATAACCESSEXPORT te::da::Expression* operator==(const te::da::Expression& e1, const te::da::Expression& e2);
-TEDATAACCESSEXPORT te::da::Expression* operator!=(const te::da::Expression& e1, const te::da::Expression& e2);
-TEDATAACCESSEXPORT te::da::Expression* operator&&(const te::da::Expression& e1, const te::da::Expression& e2);
-TEDATAACCESSEXPORT te::da::Expression* operator||(const te::da::Expression& e1, const te::da::Expression& e2);
-TEDATAACCESSEXPORT te::da::Expression* operator~(const te::da::Expression& e);
-TEDATAACCESSEXPORT te::da::Expression* operator>(const te::da::Expression& e1, const te::da::Expression& e2);
-TEDATAACCESSEXPORT te::da::Expression* operator>=(const te::da::Expression& e1, const te::da::Expression& e2);
-TEDATAACCESSEXPORT te::da::Expression* operator<(const te::da::Expression& e1, const te::da::Expression& e2);
-TEDATAACCESSEXPORT te::da::Expression* operator<=(const te::da::Expression& e1, const te::da::Expression& e2);
+TEDATAACCESSEXPORT te::da::core::Expression* operator==(const te::da::core::Expression& e1, const te::da::core::Expression& e2);
+TEDATAACCESSEXPORT te::da::core::Expression* operator!=(const te::da::core::Expression& e1, const te::da::core::Expression& e2);
+TEDATAACCESSEXPORT te::da::core::Expression* operator&&(const te::da::core::Expression& e1, const te::da::core::Expression& e2);
+TEDATAACCESSEXPORT te::da::core::Expression* operator||(const te::da::core::Expression& e1, const te::da::core::Expression& e2);
+TEDATAACCESSEXPORT te::da::core::Expression* operator~(const te::da::core::Expression& e);
+TEDATAACCESSEXPORT te::da::core::Expression* operator>(const te::da::core::Expression& e1, const te::da::core::Expression& e2);
+TEDATAACCESSEXPORT te::da::core::Expression* operator>=(const te::da::core::Expression& e1, const te::da::core::Expression& e2);
+TEDATAACCESSEXPORT te::da::core::Expression* operator<(const te::da::core::Expression& e1, const te::da::core::Expression& e2);
+TEDATAACCESSEXPORT te::da::core::Expression* operator<=(const te::da::core::Expression& e1, const te::da::core::Expression& e2);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_EXPRESSION_H
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_EXPRESSION_H
 

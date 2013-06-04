@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/QueryCapabilities.h
+  \file terralib/dataaccess/core/query/QueryCapabilities.h
 
   \brief A class that informs the query support of a given data source.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_QUERYCAPABILITIES_H
-#define __TERRALIB_DATAACCESS_INTERNAL_QUERYCAPABILITIES_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_QUERYCAPABILITIES_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_QUERYCAPABILITIES_H
 
 // TerraLib
-#include "../../geometry/Enums.h"
-#include "../Config.h"
+#include "../../../geometry/Enums.h"
+#include "../../Config.h"
 
 // STL
 #include <set>
@@ -38,106 +38,109 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class QueryCapabilities
-
-      \brief A class that informs the query support of a given data source.
-    */
-    class TEDATAACCESSEXPORT QueryCapabilities
+    namespace core
     {
-      public:
+      /*!
+        \class QueryCapabilities
 
-        /*! \brief Constructor. */
-        QueryCapabilities();
+        \brief A class that informs the query support of a given data source.
+      */
+      class TEDATAACCESSEXPORT QueryCapabilities
+      {
+        public:
 
-        /*! \brief Destructor. */
-        ~QueryCapabilities();
+          /*! \brief Constructor. */
+          QueryCapabilities();
 
-      public:
+          /*! \brief Destructor. */
+          ~QueryCapabilities();
 
-        bool supportsSQLDialect() const;
+        public:
 
-        void setSupportSQLDialect(const bool& support);
+          bool supportsSQLDialect() const;
 
-        bool supportsInsert() const;
+          void setSupportSQLDialect(const bool& support);
 
-        void setSupportInsert(const bool& support);
+          bool supportsInsert() const;
 
-        bool supportsUpdate() const;
+          void setSupportInsert(const bool& support);
 
-        void setSupportUpdate(const bool& support);
+          bool supportsUpdate() const;
 
-        bool supportsDelete() const;
+          void setSupportUpdate(const bool& support);
 
-        void setSupportDelete(const bool& support);
+          bool supportsDelete() const;
 
-        bool supportsCreate() const;
+          void setSupportDelete(const bool& support);
 
-        void setSupportCreate(const bool& support);
+          bool supportsCreate() const;
 
-        bool supportsDrop() const;
+          void setSupportCreate(const bool& support);
 
-        void setSupportDrop(const bool& support);
+          bool supportsDrop() const;
 
-        bool supportsAlter() const;
+          void setSupportDrop(const bool& support);
 
-        void setSupportAlter(const bool& support);
+          bool supportsAlter() const;
 
-        bool supportsSelect() const;
+          void setSupportAlter(const bool& support);
 
-        void setSupportSelect(const bool& support);
+          bool supportsSelect() const;
 
-        bool supportsSelectInto() const;
+          void setSupportSelect(const bool& support);
 
-        void setSupportSelectInto(const bool& support);
+          bool supportsSelectInto() const;
 
-        void setSupportAll();
+          void setSupportSelectInto(const bool& support);
 
-        const std::set<std::string>& getSpatialOperators() const;
+          void setSupportAll();
 
-        void addSpatialOperator(const std::string& op);
+          const std::set<std::string>& getSpatialOperators() const;
 
-        const std::set<std::string>& getLogicalOperators() const;
+          void addSpatialOperator(const std::string& op);
 
-        void addLogicalOperator(const std::string& op);
+          const std::set<std::string>& getLogicalOperators() const;
 
-        const std::set<std::string>& getComparsionOperators() const;
+          void addLogicalOperator(const std::string& op);
 
-        void addComparsionOperator(const std::string& op);
+          const std::set<std::string>& getComparsionOperators() const;
 
-        const std::set<std::string>& getArithmeticOperators() const;
+          void addComparsionOperator(const std::string& op);
 
-        void addArithmeticOperator(const std::string& op);
+          const std::set<std::string>& getArithmeticOperators() const;
 
-        const std::set<std::string>& getFunctions() const;
+          void addArithmeticOperator(const std::string& op);
 
-        void addFunction(const std::string& op);
+          const std::set<std::string>& getFunctions() const;
 
-        const std::set<te::gm::GeomType>& getGeometryOperands() const;
+          void addFunction(const std::string& op);
 
-        void addGeometryOperand(const te::gm::GeomType& type);
+          const std::set<te::gm::GeomType>& getGeometryOperands() const;
 
-      private:
+          void addGeometryOperand(const te::gm::GeomType& type);
 
-        bool m_sqlDialect; //!< A flag that indicates if the data source supports Query API.
-        bool m_insert;     //!< A flag that indicates if the data source supports the INSERT command.
-        bool m_update;     //!< A flag that indicates if the data source supports the UPDATE command.
-        bool m_delete;     //!< A flag that indicates if the data source supports the DELETE command.
-        bool m_create;     //!< A flag that indicates if the data source supports the CREATE command.
-        bool m_drop;       //!< A flag that indicates if the data source supports the DROP command.
-        bool m_alter;      //!< A flag that indicates if the data source supports the ALTER command.
-        bool m_select;     //!< A flag that indicates if the data source supports the SELECT command.
-        bool m_selectInto; //!< A flag that indicates if the data source supports the SELECT INTO command.
+        private:
 
-        std::set<std::string> m_spatialOperators;    //!< The names of spatial supported operators.
-        std::set<std::string> m_logicalOperators;    //!< The names of logical supported operators.
-        std::set<std::string> m_comparsionOperators; //!< The names of comparsion supported operators.
-        std::set<std::string> m_arithmeticOperators; //!< The names of arithmetic supported operators.
-        std::set<std::string> m_functions;           //!< The names of supported functions.
-        std::set<te::gm::GeomType> m_geomOperands;   //!< The types of geometry supported operands.
-    };
+          bool m_sqlDialect; //!< A flag that indicates if the data source supports Query API.
+          bool m_insert;     //!< A flag that indicates if the data source supports the INSERT command.
+          bool m_update;     //!< A flag that indicates if the data source supports the UPDATE command.
+          bool m_delete;     //!< A flag that indicates if the data source supports the DELETE command.
+          bool m_create;     //!< A flag that indicates if the data source supports the CREATE command.
+          bool m_drop;       //!< A flag that indicates if the data source supports the DROP command.
+          bool m_alter;      //!< A flag that indicates if the data source supports the ALTER command.
+          bool m_select;     //!< A flag that indicates if the data source supports the SELECT command.
+          bool m_selectInto; //!< A flag that indicates if the data source supports the SELECT INTO command.
 
-  } // end namespace da
-}   // end namespace te
+          std::set<std::string> m_spatialOperators;    //!< The names of spatial supported operators.
+          std::set<std::string> m_logicalOperators;    //!< The names of logical supported operators.
+          std::set<std::string> m_comparsionOperators; //!< The names of comparsion supported operators.
+          std::set<std::string> m_arithmeticOperators; //!< The names of arithmetic supported operators.
+          std::set<std::string> m_functions;           //!< The names of supported functions.
+          std::set<te::gm::GeomType> m_geomOperands;   //!< The types of geometry supported operands.
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_QUERYCAPABILITIES_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_QUERYCAPABILITIES_H
