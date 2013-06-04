@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/dataset/Constraint.cpp
+  \file terralib/dataaccess/core/dataset/AbstractConstraint.cpp
 
-  \brief A class that describes a constraint.
+  \brief A base class for constraints.
 */
 
 // TerraLib

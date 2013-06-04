@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../common/Singleton.h"
+#include "../Exception.h"
 #include "DataSourceInfo.h"
 
 // STL
@@ -55,11 +56,11 @@ namespace te
           typedef std::map<std::string, DataSourceInfoPtr>::const_iterator const_iterator;
           typedef std::map<std::string, DataSourceInfoPtr>::iterator iterator;
 
-          DataSourceInfoPtr get(const std::string& id) const;
+          DataSourceInfoPtr get(const std::string& id) const throw();
 
-          void add(const DataSourceInfoPtr& ds);
+          void add(const DataSourceInfoPtr& ds) throw(Exception);
 
-          void remove(const std::string& id);
+          void remove(const std::string& id) throw(Exception);
 
           void removeByType(const std::string& dsTypeName);
 
