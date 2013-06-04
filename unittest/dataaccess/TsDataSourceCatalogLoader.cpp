@@ -51,12 +51,41 @@ void TsDataSourceCatalogLoader::setUp()
   m_vecCcNames = TsManagerDataSource::sm_vecCcNames;
   m_vecSeqNames = TsManagerDataSource::sm_vecSeqNames;
   m_vecDtNamesAndEnvelops = TsManagerDataSource::sm_vecDtNamesAndEnvelops;
+  CPPUNIT_ASSERT(m_ds);
+  if (!m_ds->isOpened() )
+  {
+    CPPUNIT_ASSERT_NO_THROW(m_ds->open(m_connInfo));
+    CPPUNIT_ASSERT(m_ds->isOpened()== true);
+    CPPUNIT_ASSERT(m_ds->getCatalog() != 0);
+  }
 }
 
 void TsDataSourceCatalogLoader::tearDown()
 {
   m_ds = 0;
   m_dsType = "";
+}
+
+void TsDataSourceCatalogLoader::tcHasDataSets()
+{
+//#ifdef TE_COMPILE_ALL
+  boost::ptr_vector<std::string> datasets;
+  CPPUNIT_ASSERT(m_ds->isOpened()== true);
+
+// get a transactor to retrieve the data source catalog
+  std::auto_ptr<te::da::DataSourceTransactor> t(0);
+  CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+  CPPUNIT_ASSERT(t.get());
+
+// get a catalogloader
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+  CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
+  CPPUNIT_ASSERT(cl.get());
+
+// catalogLoader has DataSets?
+  CPPUNIT_ASSERT( cl->hasDataSets());
+
+//#endif  // TE_COMPILE_ALL
 }
 
 void TsDataSourceCatalogLoader::tcGetDataSets()
@@ -106,7 +135,8 @@ void TsDataSourceCatalogLoader::tcGetDataSetType()
       CPPUNIT_ASSERT(dt);
 
       // As the second parameter of getDataSetType is false - nothing below were loaded
-      // loading fk,pk,uk,idx,cc, seq  if they exist
+      // loading fk,pk,uk,idx,cc, seq  if they exist - 
+      // IT IS ALREARY LOADED BY cl->getDataSetType(*it) => who ask for capabilities????
  
       if ((m_capabilit.getDataSetTypeCapabilities()).supportsPrimaryKey())
       {
@@ -141,6 +171,146 @@ void TsDataSourceCatalogLoader::tcGetDataSetType()
           CPPUNIT_ASSERT(seq->getName().compare(*ss) == 0);
         }
       }
+    }
+  }
+  catch (te::common::Exception  e)
+  { 
+    throw e;
+  }
+
+//#endif  // TE_COMPILE_ALL
+}
+
+void TsDataSourceCatalogLoader::tcGetDataSetTypeTrue()
+{
+//#ifdef TE_COMPILE_ALL
+  CPPUNIT_ASSERT(m_ds->isOpened()== true);
+
+// get a transactor to retrieve information about the data source 
+  std::auto_ptr<te::da::DataSourceTransactor> t(0);
+  CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+  CPPUNIT_ASSERT(t.get());
+
+// get a catalogloader and load the dataSetType information
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+  CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
+  CPPUNIT_ASSERT(cl.get());
+
+  try
+  { 
+    std::vector<std::string>::iterator it = m_vecDtNames.begin();
+    for(it = m_vecDtNames.begin(); it < m_vecDtNames.end(); it++)
+    {
+      te::da::DataSetType *dt =  cl->getDataSetType(*it,true);
+      CPPUNIT_ASSERT(dt->getTitle()  == *it);
+      CPPUNIT_ASSERT(dt);
+      // As the second parameter of getDataSetType is true - pk, uk, Cc, Idx, Seq should be loaded
+      if ((m_capabilit.getDataSetTypeCapabilities()).supportsPrimaryKey() )
+        CPPUNIT_ASSERT(dt->getPrimaryKey() >= 0);
+      if ((m_capabilit.getDataSetTypeCapabilities()).supportsUniqueKey() ) 
+        CPPUNIT_ASSERT(dt->getNumberOfUniqueKeys() >=0);
+      if ((m_capabilit.getDataSetTypeCapabilities()).supportsIndex())
+        CPPUNIT_ASSERT(dt->getNumberOfIndexes()>=0);
+      if ((m_capabilit.getDataSetTypeCapabilities()).supportsCheckConstraints() ) 
+        CPPUNIT_ASSERT(dt->getNumberOfCheckConstraints() >= 0);
+      //getting foreign keys
+      if ((m_capabilit.getDataSetTypeCapabilities()).supportsForeignKey())
+      {
+        std::vector<std::string> fknames;
+        std::vector<std::string> rdts;
+        CPPUNIT_ASSERT_NO_THROW(cl->getForeignKeys(dt, fknames, rdts));
+        std::vector<std::string>::iterator itfk, itref;
+        for(itfk = fknames.begin(), itref = rdts.begin(); itfk < fknames.end(), itref < rdts.end(); itfk++, itref++)
+        { 
+          std::string fkname = *itfk; 
+          std::string rdtname = *itref;
+          te::da::DataSetType* dtref = cl->getDataSetType(rdtname);
+          te::da::ForeignKey* fk = cl->getForeignKey(fkname,dt,dtref);
+          dt->add(fk);
+        }
+      }
+      //getting sequences
+      if ((m_capabilit.getDataSetTypeCapabilities()).supportsSequence())
+      {
+        std::vector<std::string*> sequences;
+        CPPUNIT_ASSERT_NO_THROW(cl->getSequences(sequences));
+        std::vector<std::string*>::iterator itseq;
+        for(itseq = sequences.begin(); itseq < sequences.end(); itseq++)
+        { 
+          std::string* ss = *itseq;
+          te::da::Sequence* seq = cl->getSequence(*ss);
+          CPPUNIT_ASSERT(seq->getName().compare(*ss) == 0);
+        }
+      }
+    }
+  }
+  catch (te::common::Exception  e)
+  { 
+    throw e;
+  }
+
+//#endif  // TE_COMPILE_ALL
+}
+
+void TsDataSourceCatalogLoader::tcGetProperties()
+{
+//#ifdef TE_COMPILE_ALL
+  CPPUNIT_ASSERT(m_ds->isOpened()== true);
+
+// get a transactor to retrieve information about the data source 
+  std::auto_ptr<te::da::DataSourceTransactor> t(0);
+  CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+  CPPUNIT_ASSERT(t.get());
+
+// get a catalogloader and load the dataSetType information
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+  CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
+  CPPUNIT_ASSERT(cl.get());
+  CPPUNIT_ASSERT_NO_THROW(cl->loadCatalog());
+
+  try
+  { 
+    std::vector<std::string>::iterator it = m_vecDtNames.begin();
+    for(it = m_vecDtNames.begin(); it < m_vecDtNames.end(); it++)
+    {
+      te::da::DataSetType *dt =  cl->getDataSetType(*it);
+      CPPUNIT_ASSERT_NO_THROW(cl->getProperties(dt));
+    }
+  }
+  catch (te::common::Exception  e)
+  { 
+    throw e;
+  }
+
+//#endif  // TE_COMPILE_ALL
+}
+
+void TsDataSourceCatalogLoader::tcGetProperty()
+{
+//#ifdef TE_COMPILE_ALL
+  CPPUNIT_ASSERT(m_ds->isOpened()== true);
+
+// get a transactor to retrieve information about the data source 
+  std::auto_ptr<te::da::DataSourceTransactor> t(0);
+  CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+  CPPUNIT_ASSERT(t.get());
+
+// get a catalogloader and load the dataSetType information
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+  CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
+  CPPUNIT_ASSERT(cl.get());
+  CPPUNIT_ASSERT_NO_THROW(cl->loadCatalog());
+
+  try
+  { 
+    std::vector<std::string>::iterator it = m_vecDtNames.begin();
+    for(it = m_vecDtNames.begin(); it < m_vecDtNames.end(); it++)
+    {
+      te::dt::Property* p = cl->getProperty(*it, "geom") ; //TODO:inserir dados no json com nomes de properties para cada dt
+      CPPUNIT_ASSERT(p);
+      p = cl->getProperty(*it, "gid") ; 
+      CPPUNIT_ASSERT(p);
+
     }
   }
   catch (te::common::Exception  e)
@@ -231,6 +401,122 @@ void TsDataSourceCatalogLoader::tcLoadCatalogFull()
 //#endif  // TE_COMPILE_ALL
 }
 
+void TsDataSourceCatalogLoader::tcGetPrimaryKey()
+{
+//#ifdef TE_COMPILE_ALL
+
+  CPPUNIT_ASSERT(m_ds->isOpened()== true);
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsPrimaryKey())
+  {
+    // get a transactor to retrieve information about the data source 
+    std::auto_ptr<te::da::DataSourceTransactor> t(0);
+    CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+    CPPUNIT_ASSERT(t.get());
+
+    // get a catalogloader and load the dataSetType by its name 
+    std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+    CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
+    CPPUNIT_ASSERT(cl.get());
+
+    std::vector<std::string>::iterator it = m_vecDtNames.begin();
+    for(it = m_vecDtNames.begin(); it < m_vecDtNames.end(); it++)
+    {
+      te::da::DataSetType *dt =  cl->getDataSetType(*it);
+      te::da::DataSetType *dtfull =  cl->getDataSetType(*it,true); 
+      CPPUNIT_ASSERT_NO_THROW(cl->getPrimaryKey(dt));
+      CPPUNIT_ASSERT_NO_THROW(dt->getPrimaryKey());
+    } 
+  }
+//#endif  // TE_COMPILE_ALL
+}
+
+void TsDataSourceCatalogLoader::tcGetUniqueKeys()
+{
+//#ifdef TE_COMPILE_ALL
+
+  CPPUNIT_ASSERT(m_ds->isOpened()== true);
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsUniqueKey())
+  {
+    // get a transactor to retrieve information about the data source 
+    std::auto_ptr<te::da::DataSourceTransactor> t(0);
+    CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+    CPPUNIT_ASSERT(t.get());
+
+    // get a catalogloader and load the dataSetType by its name 
+    std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+    CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
+    CPPUNIT_ASSERT(cl.get());
+
+    std::vector<std::string>::iterator it = m_vecDtNames.begin();
+    for(it = m_vecDtNames.begin(); it < m_vecDtNames.end(); it++)
+    {
+      te::da::DataSetType *dt =  cl->getDataSetType(*it);
+      te::da::DataSetType *dtfull =  cl->getDataSetType(*it,true); 
+      CPPUNIT_ASSERT_NO_THROW(cl->getUniqueKeys(dt));
+      CPPUNIT_ASSERT(dt->getNumberOfUniqueKeys() == dtfull->getNumberOfUniqueKeys());
+    } 
+  }
+//#endif  // TE_COMPILE_ALL
+}
+
+void TsDataSourceCatalogLoader::tcGetIndexes()
+{
+//#ifdef TE_COMPILE_ALL
+
+  CPPUNIT_ASSERT(m_ds->isOpened()== true);
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsIndex())
+  {
+    // get a transactor to retrieve information about the data source 
+    std::auto_ptr<te::da::DataSourceTransactor> t(0);
+    CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+    CPPUNIT_ASSERT(t.get());
+
+    // get a catalogloader and load the dataSetType by its name 
+    std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+    CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
+    CPPUNIT_ASSERT(cl.get());
+
+    std::vector<std::string>::iterator it = m_vecDtNames.begin();
+    for(it = m_vecDtNames.begin(); it < m_vecDtNames.end(); it++)
+    {
+      te::da::DataSetType *dt =  cl->getDataSetType(*it);
+      te::da::DataSetType *dtfull =  cl->getDataSetType(*it,true); 
+      CPPUNIT_ASSERT_NO_THROW(cl->getIndexes(dt));
+      CPPUNIT_ASSERT(dt->getNumberOfIndexes() == dtfull->getNumberOfIndexes() );
+    } 
+  }
+//#endif  // TE_COMPILE_ALL
+}
+
+void TsDataSourceCatalogLoader::tcGetCheckConstraints()
+{
+//#ifdef TE_COMPILE_ALL
+
+  CPPUNIT_ASSERT(m_ds->isOpened()== true);
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsCheckConstraints())
+  {
+    // get a transactor to retrieve information about the data source 
+    std::auto_ptr<te::da::DataSourceTransactor> t(0);
+    CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+    CPPUNIT_ASSERT(t.get());
+
+    // get a catalogloader and load the dataSetType by its name 
+    std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+    CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
+    CPPUNIT_ASSERT(cl.get());
+
+    std::vector<std::string>::iterator it = m_vecDtNames.begin();
+    for(it = m_vecDtNames.begin(); it < m_vecDtNames.end(); it++)
+    {
+      te::da::DataSetType *dt =  cl->getDataSetType(*it); //it is already loading pk,uk,idx,Cc (don´t load fk)
+      te::da::DataSetType *dtfull =  cl->getDataSetType(*it,true); 
+      CPPUNIT_ASSERT(dt->getNumberOfCheckConstraints() >= 0);
+      CPPUNIT_ASSERT_NO_THROW(cl->getCheckConstraints(dt)); //it will Clear Cc and load again
+      CPPUNIT_ASSERT(dt->getNumberOfCheckConstraints() == dtfull->getNumberOfCheckConstraints());
+    }
+  }
+//#endif  // TE_COMPILE_ALL
+}
 
 void TsDataSourceCatalogLoader::tcAllGets()
 {
@@ -257,26 +543,26 @@ void TsDataSourceCatalogLoader::tcAllGets()
 
     if ((m_capabilit.getDataSetTypeCapabilities()).supportsUniqueKey())
     {
-      CPPUNIT_ASSERT(dt->getNumberOfUniqueKeys() == 0);
+      size_t n = dt->getNumberOfUniqueKeys();
       CPPUNIT_ASSERT_NO_THROW(cl->getUniqueKeys(dt));
       CPPUNIT_ASSERT(dt->getNumberOfUniqueKeys() == dtfull->getNumberOfUniqueKeys());
 
     }
     if ((m_capabilit.getDataSetTypeCapabilities()).supportsCheckConstraints())
     {
-        CPPUNIT_ASSERT(dt->getNumberOfCheckConstraints() == 0);
+        size_t n = dt->getNumberOfCheckConstraints(); 
         CPPUNIT_ASSERT_NO_THROW(cl->getCheckConstraints(dt));
         CPPUNIT_ASSERT(dt->getNumberOfCheckConstraints() == dtfull->getNumberOfCheckConstraints());
     }
     if ((m_capabilit.getDataSetTypeCapabilities()).supportsIndex())
     {
-      CPPUNIT_ASSERT(dt->getNumberOfIndexes() == 0);
+      size_t n = dt->getNumberOfIndexes();
       CPPUNIT_ASSERT_NO_THROW(cl->getIndexes(dt));
       CPPUNIT_ASSERT(dt->getNumberOfIndexes() == dtfull->getNumberOfIndexes());
     }
     if ((m_capabilit.getDataSetTypeCapabilities()).supportsForeignKey())
     {
-      CPPUNIT_ASSERT(dt->getNumberOfForeignKeys() == 0);
+      size_t n = dt->getNumberOfForeignKeys();
       CPPUNIT_ASSERT(dt->getNumberOfForeignKeys() == dtfull->getNumberOfForeignKeys());
       std::vector<std::string> fknames;
       std::vector<std::string> rdts;
@@ -292,7 +578,7 @@ void TsDataSourceCatalogLoader::tcAllGets()
     {
       if (dt->hasGeom())
       {
-        te::gm::GeometryProperty* geomt = dt->getDefaultGeomProperty();
+        te::dt::Property* geomt = dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
         CPPUNIT_ASSERT(geomt);
         te::gm::Envelope* bbox;
         CPPUNIT_ASSERT_NO_THROW(bbox = cl->getExtent(geomt));
@@ -300,10 +586,18 @@ void TsDataSourceCatalogLoader::tcAllGets()
         delete bbox;
       }
     }
-    // testing raster property ???TODO
+    // testing raster property ???TODO Inserir dados raster no postgis e implementar getExtent Gdal
     if ((m_capabilit.getDataTypeCapabilities()).supportsRaster())
     {
-      //te::dt::Property rr = dt->getProperty(0);
+      if (dt->hasRaster())
+      {        
+        te::dt::Property* rstp = dt->findFirstPropertyOfType(te::dt::RASTER_TYPE);
+        CPPUNIT_ASSERT(rstp);
+        //te::gm::Envelope* bbox;
+        //bbox = cl->getExtent((rstp));
+        //CPPUNIT_ASSERT(bbox->isValid() == true);
+        //delete bbox;
+      }      
     }
   }
 
@@ -393,12 +687,10 @@ void TsDataSourceCatalogLoader::tcGetExtent()
 
       if (dt->hasGeom())
       {
-        te::gm::GeometryProperty* geomt = dt->getDefaultGeomProperty();
+        te::dt::Property* geomt = dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
         CPPUNIT_ASSERT(geomt);
         te::gm::Envelope* bbox;
         CPPUNIT_ASSERT_NO_THROW(bbox = cl->getExtent(geomt));
-
-
         CPPUNIT_ASSERT(bbox->isValid() == true);
         delete bbox;
       }
@@ -433,7 +725,7 @@ void TsDataSourceCatalogLoader::tcGetExtentAll()
 
       if (dt->hasGeom())
       {
-        te::gm::GeometryProperty* geomt = dt->getDefaultGeomProperty();
+        te::dt::Property* geomt = dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
         CPPUNIT_ASSERT(geomt);
         te::gm::Envelope* env;
         CPPUNIT_ASSERT_NO_THROW(env = cl->getExtent(geomt));
@@ -638,6 +930,10 @@ void TsDataSourceCatalogLoader::tcGetFks()
     std::vector<std::string> rdts;
     CPPUNIT_ASSERT_NO_THROW(cl->getForeignKeys(dt, fknames, rdts));
     size_t n_fk = dt->getNumberOfForeignKeys();
+    for(size_t i = 0 ; i < n_fk; i++)
+    {
+      CPPUNIT_ASSERT(cl->getForeignKey(fknames[i], dt,cl->getDataSetType(rdts[i])));
+    }
     CPPUNIT_ASSERT_MESSAGE("Alert: Foreign keys are not being loaded by methods getDataSetType with true param and method getForeignKeys as the other get´s methods uk,pk, etc!", n_fk >0);
   }
 
