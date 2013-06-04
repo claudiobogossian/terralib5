@@ -91,7 +91,7 @@ void te::qt::af::LayerDecorator::select(te::da::ObjectIdSet* oids)
 {
   m_decorated->select(oids);
 
-  te::qt::af::evt::HighlightObjects evt(this);
+  te::qt::af::evt::LayerSelectionChanged evt(this);
 
   ApplicationController::getInstance().broadcast(&evt);
 }
@@ -100,7 +100,7 @@ void te::qt::af::LayerDecorator::deselect(const te::da::ObjectIdSet* oids)
 {
   m_decorated->deselect(oids);
 
-  te::qt::af::evt::HighlightObjects evt(this);
+  te::qt::af::evt::LayerSelectionChanged evt(this);
 
   ApplicationController::getInstance().broadcast(&evt);
 }

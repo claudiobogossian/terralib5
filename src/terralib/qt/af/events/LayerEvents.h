@@ -58,8 +58,8 @@ namespace te
             \param newLayer Pointer to the layer created.
           */
           LayerAdded(te::map::AbstractLayer* newlayer) : 
-          Event(LAYER_ADDED),
-          m_layer(newlayer)
+            Event(LAYER_ADDED),
+            m_layer(newlayer)
           {
           }
 
@@ -83,9 +83,9 @@ namespace te
             \param visible The new visibility state: true -> visible, false -> not visible.
           */
           LayerVisibilityChanged(te::map::AbstractLayer* layer, const bool& visible) :
-          Event(LAYER_VISIBILTY_CHANGED),
-          m_layer(layer),
-          m_visible(visible)
+            Event(LAYER_VISIBILTY_CHANGED),
+            m_layer(layer),
+            m_visible(visible)
           {
           };
 
@@ -108,8 +108,8 @@ namespace te
             \param layer The new selected layer.
           */
           LayerSelected(te::map::AbstractLayer* layer) :
-          Event(LAYER_SELECTED),
-          m_layer(layer)
+            Event(LAYER_SELECTED),
+            m_layer(layer)
           {
           }
   
@@ -117,24 +117,24 @@ namespace te
         };
 
         /*!
-          \struct HighlightObjects
+          \struct LayerSelectionChanged
 
           \brief This event signals that the selected objects in the layer has changed.
         */
-        struct HighlightObjects : public Event
+        struct LayerSelectionChanged : public Event
         {
           /*!
             \brief Constructor
 
             \param layer The layer that its selected objects has changed.
           */
-          HighlightObjects(te::map::AbstractLayer* layer) :
-          Event(LAYER_HIGHLIGHT_OBJECTS),
+          LayerSelectionChanged(te::map::AbstractLayer* layer) :
+            Event(LAYER_SELECTION_CHANGED),
             m_layer(layer)
           {
           }
 
-          te::map::AbstractLayer* m_layer;    //!< Layer that has changed its selection.
+          te::map::AbstractLayer* m_layer; //!< Layer that has changed its selection.
         };
       }
     }
