@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/dataaccess/datasource/PreparedQuery.h
+  \file terralib/dataaccess/core/datasource/PreparedQuery.h
 
   \brief A class that models a prepared query.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_PREPAREDQUERY_H
-#define __TERRALIB_DATAACCESS_INTERNAL_PREPAREDQUERY_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_PREPAREDQUERY_H
+#define __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_PREPAREDQUERY_H
 
 // TerraLib
-#include "../../common/Enums.h"
-#include "../Config.h"
+#include "../../../common/Enums.h"
+#include "../../Config.h"
 
 // STL
 #include <string>
@@ -55,9 +55,11 @@ namespace te
 
   namespace da
   {
-    class DataSet;
-    class DataSourceTransactor;
-    class Query;
+    namespace core
+    {
+      class DataSet;
+      class DataSourceTransactor;
+      class Query;
 
     /*!
       \class PreparedQuery
@@ -66,211 +68,211 @@ namespace te
 
       \sa DataSourceTransactor, DataSet, Query, Literal
     */
-    class TEDATAACCESSEXPORT PreparedQuery : public boost::noncopyable
-    {
-      public:
+      class TEDATAACCESSEXPORT PreparedQuery : public boost::noncopyable
+      {
+        public:
 
-        /*! \brief Constructor. */
-        PreparedQuery() {}
+          /*! \brief Constructor. */
+          PreparedQuery() {}
         
-        /*! \brief Virtual destructor. */
-        virtual ~PreparedQuery() {}
+          /*! \brief Virtual destructor. */
+          virtual ~PreparedQuery() {}
 
-        /*!
-          \brief It returns the prepared query name.
+          /*!
+            \brief It returns the prepared query name.
 
-          \param return The prepared query name.
-        */
-        virtual std::string getName() const = 0;
+            \param return The prepared query name.
+          */
+          virtual std::string getName() const = 0;
 
-        /*!
-          \brief It prepares the query that may be used for commands that are used mutiple times (select, insert, update and delete).
+          /*!
+            \brief It prepares the query that may be used for commands that are used mutiple times (select, insert, update and delete).
 
-          This command will submit a request to create a prepared query with the given parameters.
+            This command will submit a request to create a prepared query with the given parameters.
 
-          \param query      The query to be prepared.
-          \param paramTypes The list of parameters data type.
+            \param query      The query to be prepared.
+            \param paramTypes The list of parameters data type.
 
-          \exception Exception It throws an exception if the prepared query can not be created. For example
-                               if another prepared query with the same name already exists, this may throws an exception.
-        */
-        virtual void prepare(const Query& query, const std::vector<te::dt::Property*>& paramTypes) = 0;
+            \exception Exception It throws an exception if the prepared query can not be created. For example
+                                 if another prepared query with the same name already exists, this may throws an exception.
+          */
+          virtual void prepare(const Query& query, const std::vector<te::dt::Property*>& paramTypes) = 0;
 
-        /*!
-          \brief It prepares the query using native dialect.
+          /*!
+            \brief It prepares the query using native dialect.
 
-          This command may be used for commands that are used mutiple times (select, insert, update and delete).
+            This command may be used for commands that are used mutiple times (select, insert, update and delete).
 
-          This command will submit a request to create a prepared query with the given parameters.
+            This command will submit a request to create a prepared query with the given parameters.
 
-          \param query      The query to be prepared.
-          \param paramTypes The list of parameters data type.
+            \param query      The query to be prepared.
+            \param paramTypes The list of parameters data type.
 
-          \exception Exception It throws an exception if the prepared query can not be created. For example
-                               if another prepared query with the same name already exists, this may throws an exception.
-        */
-        virtual void prepare(const std::string& query, const std::vector<te::dt::Property*>& paramTypes) = 0;
+            \exception Exception It throws an exception if the prepared query can not be created. For example
+                                 if another prepared query with the same name already exists, this may throws an exception.
+          */
+          virtual void prepare(const std::string& query, const std::vector<te::dt::Property*>& paramTypes) = 0;
 
-        /*
-          \brief It executes a prepared query with parameters informed by bind methods.
+          /*
+            \brief It executes a prepared query with parameters informed by bind methods.
 
-          \exception Excpetion It throws na exception if something goes wrong.
-        */
-        virtual void execute() = 0;
+            \exception Excpetion It throws na exception if something goes wrong.
+          */
+          virtual void execute() = 0;
 
-        /*
-          \brief It executes a retrieval prepared query with parameters informed by bind methods.
+          /*
+            \brief It executes a retrieval prepared query with parameters informed by bind methods.
           
-          \param travType    The traverse type associated to the returned dataset (if any is returned). 
-          \param rwRole      The read and write permission associated to the returned dataset (if any is returned). 
+            \param travType    The traverse type associated to the returned dataset (if any is returned). 
+            \param rwRole      The read and write permission associated to the returned dataset (if any is returned). 
 
-          \return A dataset with the result of the given query. The caller will take its ownership.
+            \return A dataset with the result of the given query. The caller will take its ownership.
 
-          \exception Excpetion It throws na exception if something goes wrong.
-        */
-        virtual DataSet* query(te::common::TraverseType travType = te::common::FORWARDONLY, 
-                               te::common::AccessPolicy rwRole = te::common::RAccess) = 0;
+            \exception Excpetion It throws na exception if something goes wrong.
+          */
+          virtual DataSet* query(te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                 te::common::AccessPolicy rwRole = te::common::RAccess) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, char value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, char value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, unsigned char value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, unsigned char value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, boost::int16_t value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, boost::int16_t value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, boost::int32_t value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, boost::int32_t value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, boost::int64_t value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, boost::int64_t value) = 0;
 
-       /*!
-          \brief Binds the i-th parameter of the query to a value.
+         /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, bool value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, bool value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, float value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, float value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, double value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, double value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
+            \param i     The parameter index.
+            \param value The parameter value.
 
-          \todo The name of this method will change when we have a numeric type!
-        */
-        virtual void bindNumeric(int i, const std::string& value) = 0;
+            \todo The name of this method will change when we have a numeric type!
+          */
+          virtual void bindNumeric(int i, const std::string& value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, const std::string& value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, const std::string& value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, const te::dt::ByteArray& value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, const te::dt::ByteArray& value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, const te::gm::Geometry& value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, const te::gm::Geometry& value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, const te::rst::Raster& value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, const te::rst::Raster& value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, const te::dt::DateTime& value) = 0; 
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, const te::dt::DateTime& value) = 0; 
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, const DataSet& value) = 0;
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, const DataSet& value) = 0;
 
-        /*!
-          \brief Binds the i-th parameter of the query to a value.
+          /*!
+            \brief Binds the i-th parameter of the query to a value.
 
-          \param i     The parameter index.
-          \param value The parameter value.
-        */
-        virtual void bind(int i, const te::dt::AbstractData& ad);
+            \param i     The parameter index.
+            \param value The parameter value.
+          */
+          virtual void bind(int i, const te::dt::AbstractData& ad);
 
-        /*!
-          \brief It returns a pointer to the underlying data source transactor.
+          /*!
+            \brief It returns a pointer to the underlying data source transactor.
 
-          \return A pointer to the underlying data source transactor.
-        */
-        virtual DataSourceTransactor* getTransactor() const = 0;
-    };
+            \return A pointer to the underlying data source transactor.
+          */
+          virtual DataSourceTransactor* getTransactor() const = 0;
+      };
 
-  } // end namespace da
-}   // end namespace te
+    } // namespace core
+  }   // end namespace da
+}     // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_PREPAREDQUERY_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_PREPAREDQUERY_H

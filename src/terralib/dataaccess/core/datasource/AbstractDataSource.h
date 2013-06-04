@@ -30,7 +30,7 @@
 #include "../../../common/Enums.h"
 #include "../../../geometry/Enums.h"
 #include "../../Config.h"
-#include "../Exception2.h"
+#include "../Exception.h"
 
 // STL
 #include <map>

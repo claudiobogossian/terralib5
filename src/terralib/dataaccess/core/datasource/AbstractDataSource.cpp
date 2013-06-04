@@ -25,9 +25,9 @@
 
 // TerraLib
 #include "../../../common/Translator.h"
-#include "../Exception2.h"
+#include "../Exception.h"
 #include "AbstractDataSource.h"
-#include "DataSourceFactory2.h"
+#include "DataSourceFactory.h"
 
 
 std::auto_ptr<te::da::core::AbstractDataSource>
