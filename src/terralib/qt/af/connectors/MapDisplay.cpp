@@ -185,9 +185,9 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       clear();
     break;
 
-    case te::qt::af::evt::LAYER_HIGHLIGHT_OBJECTS:
+    case te::qt::af::evt::LAYER_SELECTION_CHANGED:
     {
-      te::qt::af::evt::HighlightObjects* highlight = static_cast<te::qt::af::evt::HighlightObjects*>(e);
+      te::qt::af::evt::LayerSelectionChanged* layerSelectionChanged = static_cast<te::qt::af::evt::LayerSelectionChanged*>(e);
 
       QPixmap* content = m_display->getDisplayPixmap();
       content->fill(Qt::transparent);
@@ -196,7 +196,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.drawPixmap(0, 0, m_lastDisplayContent);
       painter.end();
 
-      drawLayerSelection(highlight->m_layer);
+      drawLayerSelection(layerSelectionChanged->m_layer);
     }
     break;
 

@@ -61,12 +61,26 @@ class TsDataSourceCatalogLoader : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE( TsDataSourceCatalogLoader );
 
 // It registers the class methods as Test Cases belonging to the suit 
-  CPPUNIT_TEST( tcLoadCatalog );
+
+  CPPUNIT_TEST( tcHasDataSets );
   CPPUNIT_TEST( tcGetDataSets );
+  CPPUNIT_TEST( tcGetDataSetType );
+  CPPUNIT_TEST( tcGetDataSetTypeTrue );
+  CPPUNIT_TEST( tcIdxExists );
+  CPPUNIT_TEST( tcGetProperties );
+  //CPPUNIT_TEST( tcGetProperty ); //Not implemented yet by Postgis
   CPPUNIT_TEST( tcDataSetExists );
+  CPPUNIT_TEST( tcGetDataSetTypeInvalid );
+  CPPUNIT_TEST( tcGetPrimaryKey );
+  CPPUNIT_TEST( tcGetUniqueKeys );
+  CPPUNIT_TEST( tcGetIndexes );
+  CPPUNIT_TEST( tcGetCheckConstraints );
+
+  CPPUNIT_TEST( tcLoadCatalog );
+  CPPUNIT_TEST( tcGetExtent );
+  CPPUNIT_TEST( tcGetExtentAll );
   CPPUNIT_TEST( tcGetSequences  );
   CPPUNIT_TEST( tcGetTransactor  );
-  CPPUNIT_TEST( tcGetExtentAll );
   CPPUNIT_TEST( tcPkExists );
   CPPUNIT_TEST( tcUkExists );
   CPPUNIT_TEST( tcCcExists );
@@ -95,17 +109,27 @@ class TsDataSourceCatalogLoader : public CPPUNIT_NS::TestFixture
     /*!
       \brief Test Case: Testing DataSourceCatalogLoader of an given datasource.
     */
-
     void tcLoadCatalog();
-    virtual void tcLoadCatalogFull();
+    void tcLoadCatalogFull();
     void tcGetDataSets();
     void tcGetDataSetType();
-    void tcAllGets();
-    virtual void tcGetDataSetTypeInvalid();
-    virtual void tcDataSetExists();
-    virtual void tcGetSequences();
+    void tcGetDataSetTypeTrue();
+    void tcGetProperties();
+    void tcGetProperty();
+    void tcGetPrimaryKey();
+    void tcGetUniqueKeys();
+    void tcGetForeignKeys();
+    void tcGetForeignKey();
+    void tcGetIndexes();
+    void tcGetCheckConstraints();
+    void tcGetSequences();
+    void tcGetSequence();
+    void tcGetExtent();
+    void tcHasDataSets();
+    void tcDataSetExists();
 
-    virtual void tcGetExtent();
+    void tcAllGets();
+    void tcGetDataSetTypeInvalid();
 
     /*!
       \brief Test Case: get the envelop of all dataSets defined in the m_vecDtNamesAndEnvelops.
@@ -114,15 +138,17 @@ class TsDataSourceCatalogLoader : public CPPUNIT_NS::TestFixture
       The vector of pairs contains the dataSet names and its envelops. The envelop returned is compared 
       with the given envelop.
      */
-    virtual void tcGetExtentAll();
+    void tcGetExtentAll();
 
-    virtual void tcGetTransactor();
-    virtual void tcPkExists();
-    virtual void tcUkExists();
-    virtual void tcCcExists();
-    virtual void tcIdxExists();
-    virtual void tcFkExists();
-    virtual void tcGetFks();
+    void tcPkExists();
+    void tcUkExists();
+    void tcCcExists();
+    void tcIdxExists();
+    void tcFkExists();
+    void tcGetFks();
+    void tcIndexExists();
+    void tcSequenceExists();
+    void tcGetTransactor();
 
   public:
 // It will come from the setUp of the derived database class (see:TsPostGISCatalogLoader, TsSQLiteCatalogLoader, etc)
@@ -138,28 +164,5 @@ class TsDataSourceCatalogLoader : public CPPUNIT_NS::TestFixture
     std::vector<std::string> m_vecCcNames;
     std::vector<std::string> m_vecSeqNames;
     std::vector<std::pair<std::string, te::gm::Envelope> > m_vecDtNamesAndEnvelops;
-
-    //size_t m_nroDataSets;
-    //std::string m_newDataSetType;
 };
-/*
-#define INSERT_DATASOURCECATALOGLOADER_TC \
-                             CPPUNIT_TEST( tcGetDataSetTypeInvalid ); \
-                             CPPUNIT_TEST( tcLoadCatalog  ); \
-                             CPPUNIT_TEST( tcGetDataSets  ); \
-                             CPPUNIT_TEST( tcGetDataSetType  ); \
-                             CPPUNIT_TEST( tcDataSetExists  ); \
-                             CPPUNIT_TEST( tcGetSequences  ); \
-                             CPPUNIT_TEST( tcGetTransactor  ); \
-                             CPPUNIT_TEST( tcGetExtent ); \
-                             CPPUNIT_TEST( tcGetExtentAll ); \
-                             CPPUNIT_TEST( tcPkExists ); \
-                             CPPUNIT_TEST( tcUkExists ); \
-                             CPPUNIT_TEST( tcCcExists ); \
-                             CPPUNIT_TEST( tcIdxExists ); \
-                             CPPUNIT_TEST( tcFkExists ); \
-                             CPPUNIT_TEST( tcAllGets ); \
-                             CPPUNIT_TEST( tcGetFks ); \
-                             CPPUNIT_TEST( tcLoadCatalogFull ); \
-*/
 #endif  // __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_DATASOURCECATALOGLOADER_H

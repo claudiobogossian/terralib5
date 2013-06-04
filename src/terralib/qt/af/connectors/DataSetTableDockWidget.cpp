@@ -54,7 +54,7 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
   m_view->setDataSet(m_layer->getData());
-  m_view->setLayerSchema(m_layer->getSchema());
+  m_view->setLayerSchema(m_layer->getSchema(true));
 
   if(layer->getSelected() != 0)
     m_view->highlightOIds(layer->getSelected());
@@ -71,13 +71,13 @@ void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt:
 {
   switch(evt->m_id)
   {
-    case te::qt::af::evt::LAYER_HIGHLIGHT_OBJECTS:
-      {
-        te::qt::af::evt::HighlightObjects* ev = static_cast<te::qt::af::evt::HighlightObjects*>(evt);
+    case te::qt::af::evt::LAYER_SELECTION_CHANGED:
+    {
+      te::qt::af::evt::LayerSelectionChanged* ev = static_cast<te::qt::af::evt::LayerSelectionChanged*>(evt);
 
-        if(ev->m_layer->getId() == m_layer->getId())
-          m_view->highlightOIds(ev->m_layer->getSelected());
-      }
+      if(ev->m_layer->getId() == m_layer->getId())
+        m_view->highlightOIds(ev->m_layer->getSelected());
+    }
     break;
   }
 }
