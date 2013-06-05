@@ -24,28 +24,17 @@
 */
 
 // TerraLib
-#include "../../../datatype/Property.h"
 #include "AbstractConstraint.h"
-#include "DataSetType.h"
 
-te::da::core::AbstractConstraint::AbstractConstraint(unsigned int id)
-  : m_id(id),
-    m_dt(0),
-    m_name("")
-{  
-}
-
-te::da::core::AbstractConstraint::AbstractConstraint(const std::string& name, unsigned int id)
-  : m_id(id),
-    m_dt(0),
-    m_name(name)
+te::da::core::AbstractConstraint::AbstractConstraint(const std::string& name)
+  : m_name(name),
+    m_dt(0)
 {
 }
 
 te::da::core::AbstractConstraint::AbstractConstraint(const AbstractConstraint& rhs)
-  : m_id(rhs.m_id),
-    m_dt(0),
-    m_name(rhs.m_name)
+  : m_name(rhs.m_name),
+    m_dt(0)
 {
 }
 
@@ -53,11 +42,9 @@ te::da::core::AbstractConstraint& te::da::core::AbstractConstraint::operator=(co
 {
   if(this != &rhs)
   {
-    m_id = rhs.m_id;
+    m_name = rhs.m_name;
 
     m_dt = 0;
-
-    m_name = rhs.m_name;
   }
 
   return *this;

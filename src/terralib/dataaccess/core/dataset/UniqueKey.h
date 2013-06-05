@@ -20,7 +20,7 @@
 /*!
   \file terralib/dataaccess/core/dataset/UniqueKey.h
 
-  \brief It describes a unique key (uk) constraint.
+  \brief It describes an unique key (uk) constraint.
 */
 
 #ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_UNIQUEKEY_H
@@ -30,27 +30,20 @@
 #include "AbstractConstraint.h"
 
 // STL
-#include <string>
 #include <vector>
 
 namespace te
 {
-// Forward declarations
-  namespace dt { class Property; }
-
   namespace da
   {
     namespace core
     {
-      // Forward declarations
-      class Index;    
-
       /*!
         \class UniqueKey
       
-        \brief It describes a unique key (uk) constraint.
+        \brief It describes a unique key (pk) constraint.
 
-        \sa DataSetType, Index, PrimaryKey, ForeignKey, DataSetTypeCheckRestriction
+        \sa AbstractConstraint, PrimaryKey, ForeignKey, CheckConstraint
       */
       class TEDATAACCESSEXPORT UniqueKey : public AbstractConstraint
       {
@@ -59,44 +52,22 @@ namespace te
           /*!
             \brief Constructor.
 
-            \param dt The DataSetType associated to this uk.
-            \param id The uk identifier.
-
-            \post If dt is provided, the uk will belong to the given DataSetType.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
+            \param name The unique key constraint name.
           */
-          UniqueKey(DataSetType* dt = 0, unsigned int id = 0);
-
-          /*!
-            \brief Constructor.
-
-            \param name The unique key (uk) constraint name.
-            \param dt   The DataSetType associated to this uk.
-            \param id   The uk identifier.
-
-            \post If dt is provided, the uk will belong to the given DataSetType.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          UniqueKey(const std::string& name, DataSetType* dt = 0, unsigned int id = 0);
+          UniqueKey(const std::string& name = "");
 
           /*!
             \brief Copy constructor.
 
-            The new object will not have an associated DataSetType.
-
             \param rhs Right-hand-side instance.
           */
-          UniqueKey(const UniqueKey& rhs);        
+          UniqueKey(const UniqueKey& rhs);
 
           /*! \brief Destructor. */
-          ~UniqueKey() {}
+          virtual ~UniqueKey() {}
 
           /*!
             \brief Assignment operator.
-
-            The new object will not have an assigned DataSetType.
 
             \param rhs Right-hand-side instance.
 
@@ -105,83 +76,55 @@ namespace te
           UniqueKey& operator=(const UniqueKey& rhs);
 
           /*!
-            \brief It returns the properties that form the unique key.
+            \brief It returns the properties that take part of the unique key.
 
-            \return The properties that form the unique key.
+            \return The properties that take part of the unique key.
           */
-          const std::vector<te::dt::Property*>& getProperties() const { return m_properties; }
+          const std::vector<std::size_t>& getProperties() const { return m_properties; }
+
+          /*!
+            \brief It returns the properties that take part of the unique key.
+
+            \return The properties that take part of the unique key.
+          */
+          std::vector<std::size_t>& getProperties() { return m_properties; }
 
           /*!
             \brief It sets the properties that form the unique key.
 
             \param properties The properties that form the unique key.
           */
-          void setProperties(const std::vector<te::dt::Property*>& properties) { m_properties = properties; }
+          void setProperties(const std::vector<std::size_t>& properties) { m_properties = properties; }
 
           /*!
-            \brief It adds the property to the list of properties that participates in the unique key.
+            \brief It adds a property to the list of properties of the unique key.
 
-            \param p The Property that will take part of the unique key.
-           */
-          void add(te::dt::Property* p) { m_properties.push_back(p); }        
+            \param porpertyPos The property position (possible in a dataset) that will take part of the unique key.
+          */
+          void add(std::size_t porpertyPos) { m_properties.push_back(porpertyPos); }
 
           /*!
-            \brief It returns the associated index if one exists.
+            \brief It returns the constraint type: PRIMARY_KEY.
 
-            \return An associated index if one exists.
+            \return The constraint type PRIMARYKEY.
           */
-          Index* getAssociatedIndex() const { return m_index; }
-
-          /*!
-            \brief It sets the associated index.
-
-            \param idx A index associated to the unique key.
-          */
-          void setAssociatedIndex(Index* idx) { m_index = idx; }
-
-          /*!
-            \brief It verifies if Property is associated to the unique key.
-
-            \param p The Property to be verified.
-
-            \return True if Property is associated to the unique key, false otherwise.
-          */
-          bool has(const te::dt::Property* p) const;
-
-          /*
-            \brief It changes a reference to property p to pp.
-
-            \param p  A property that takes part of the unique key.
-            \param pp The property that will take p place.
-
-            \note If the property p is not in the uk attribute list this method does nothing.
-          */
-          void replace(te::dt::Property* p, te::dt::Property* pp);
-
-          /*!
-            \brief It returns the constraint type: UNIQUEKEY.
-          
-            \return The constraint type UNIQUEKEY.
-          */
-          ConstraintType getType() const { return UNIQUE_KEY; }
+          virtual ConstraintType getType() const { return PRIMARY_KEY; }
 
           /*!
             \brief It returns a clone of the object.
 
-            The new object will not have an associated DataSetType.
-
             \return A clone of the object.
           */
-          AbstractConstraint* clone();
+          virtual AbstractConstraint* clone();
 
         private:
-        
-          Index* m_index;                               //!< A pointer to an associated index.
-          std::vector<te::dt::Property*> m_properties;  //!< The properties that are part of the unique key constraint.
+
+          std::vector<std::size_t> m_properties;  //!< The properties that take part of unique key constraint.
       };
 
     }  // end namespace core
   }    // end namespace da
-}      // end namespace terralib
+}      // end namespace te
 
 #endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_UNIQUEKEY_H
+

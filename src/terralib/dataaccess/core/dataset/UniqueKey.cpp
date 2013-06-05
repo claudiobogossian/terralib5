@@ -20,33 +20,19 @@
 /*!
   \file terralib/dataaccess/core/dataset/UniqueKey.cpp
 
-  \brief It describes a unique key (uk) constraint.
+  \brief It describes an unique key (uk) constraint.
 */
 
 // TerraLib
-#include "../../../datatype/Property.h"
-#include "DataSetType.h"
 #include "UniqueKey.h"
 
-te::da::core::UniqueKey::UniqueKey(DataSetType* dt, unsigned int id)
-  : AbstractConstraint(id),
-    m_index(0)
-{
-  if(dt)
-    dt->add(this);
-}
-
-te::da::core::UniqueKey::UniqueKey(const std::string& name, DataSetType* dt, unsigned int id)
-  : AbstractConstraint(name, id),
-    m_index(0)
+te::da::core::UniqueKey::UniqueKey(const std::string& name)
+  : AbstractConstraint(name)
 { 
-  if(dt)
-    dt->add(this);
 }
 
 te::da::core::UniqueKey::UniqueKey(const UniqueKey& rhs)
-  : AbstractConstraint(rhs.getName(), 0),
-    m_index(rhs.m_index),
+  : AbstractConstraint(rhs.getName()),
     m_properties(rhs.m_properties)
 {
 }
@@ -56,36 +42,10 @@ te::da::core::UniqueKey& te::da::core::UniqueKey::operator=(const UniqueKey& rhs
   if(this != &rhs)
   {
     AbstractConstraint::operator=(rhs);
-
-    m_index = rhs.m_index;
-
     m_properties = rhs.m_properties;
   }
 
   return *this;
-}
-
-bool te::da::core::UniqueKey::has(const te::dt::Property* p) const
-{
-  std::size_t size = m_properties.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    if(m_properties[i] == p)
-      return true;
-
-  return false;
-}
-
-void te::da::core::UniqueKey::replace(te::dt::Property* p, te::dt::Property* pp)
-{
-  std::size_t size = m_properties.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    if(m_properties[i] == p)
-    {
-      m_properties[i] = pp;
-      break;
-    }
 }
 
 te::da::core::AbstractConstraint* te::da::core::UniqueKey::clone()

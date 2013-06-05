@@ -27,8 +27,8 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H
 
 // TerraLib
-#include "../../Config.h"
-#include "../../Enums.h"
+#include "../Config.h"
+#include "../Enums.h"
 
 // STL
 #include <string>
@@ -39,7 +39,7 @@ namespace te
   {
     namespace core
     {
-      // Forward declaration
+// Forward declaration
       class DataSetType;
 
       /*!
@@ -47,7 +47,7 @@ namespace te
 
         \brief A base class for constraints.
 
-        \sa DataSetType, PrimaryKey, ForeignKey, UniqueKey, CheckConstraint
+        \sa PrimaryKey, ForeignKey, UniqueKey, CheckConstraint
       */
       class TEDATAACCESSEXPORT AbstractConstraint
       {
@@ -57,15 +57,11 @@ namespace te
             \brief Constructor.
 
             \param name The constraint name.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
           */
           AbstractConstraint(const std::string& name = "");
 
           /*!
             \brief Copy constructor not allowed.
-
-            The new object will not have an associated DataSetType.
 
             \param rhs Right-hand-side instance.
           */
@@ -82,6 +78,20 @@ namespace te
             \return A reference to this object.
           */
           AbstractConstraint& operator=(const AbstractConstraint& rhs);
+
+          /*!
+            \brief It returns the dataset schema associated to the constraint.
+
+            \return The dataset schema associated to the constraint.
+          */
+          DataSetType* getDataSetType() const { return m_dt; }
+
+          /*!
+            \brief It sets the DataSetType associated to the constraint.
+
+            \param dt The dataset schema associated to this constraint.
+          */
+          void setDataSetType(DataSetType* dt) { m_dt = dt; }
 
           /*!
             \brief It returns the constraint name.
@@ -118,6 +128,7 @@ namespace te
         private:
 
           std::string m_name;   //!< The constraint name.
+          DataSetType* m_dt;    //!< The associated dataset schema.
       };
 
     }  //end namespace core

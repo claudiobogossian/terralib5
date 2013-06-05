@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ATTRIBUTECONVERTERS_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 // Boost
 #include <boost/function.hpp>
@@ -47,7 +47,7 @@ namespace te
   {
     namespace core
     {
-      // Forward declarations
+// Forward declarations
       class AbstractDataSet;
 
       /*!

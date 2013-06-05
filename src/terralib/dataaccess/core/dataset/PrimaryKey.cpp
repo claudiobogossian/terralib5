@@ -24,69 +24,28 @@
 */
 
 // TerraLib
-#include "../../../datatype/Property.h"
-#include "DataSetType.h"
 #include "PrimaryKey.h"
 
-te::da::core::PrimaryKey::PrimaryKey(te::da::core::DataSetType* dt, unsigned int id)
-  : AbstractConstraint(id),
-    m_index(0)
-{
-  if(dt)
-    dt->add(this);
-}
-
-te::da::core::PrimaryKey::PrimaryKey(const std::string& name, DataSetType* dt, unsigned int id)
-  : AbstractConstraint(name, id),
-    m_index(0)    
+te::da::core::PrimaryKey::PrimaryKey(const std::string& name)
+  : UniqueKey(name)
 { 
-  if(dt)
-    dt->add(this);
 }
 
 te::da::core::PrimaryKey::PrimaryKey(const PrimaryKey& rhs)
-  : AbstractConstraint(rhs.getName(), 0),
-    m_index(rhs.m_index),
-    m_properties(rhs.m_properties)
+  : UniqueKey(rhs.getName())
 {
 }
 
 te::da::core::PrimaryKey& te::da::core::PrimaryKey::operator=(const PrimaryKey& rhs)
 {
   if(this != &rhs)
-  {
-    AbstractConstraint::operator=(rhs);
-    m_index = rhs.m_index;
-    m_properties = rhs.m_properties;
-  }
+    UniqueKey::operator=(rhs);
 
   return *this;
-}
-
-bool te::da::core::PrimaryKey::has(const te::dt::Property* p) const
-{
-  std::size_t size = m_properties.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    if(m_properties[i] == p)
-      return true;
-
-  return false;
-}
-
-void te::da::core::PrimaryKey::replace(te::dt::Property* p, te::dt::Property* pp)
-{
-  std::size_t size = m_properties.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    if(m_properties[i] == p)
-    {
-      m_properties[i] = pp;
-      break;
-    }
 }
 
 te::da::core::AbstractConstraint* te::da::core::PrimaryKey::clone()
 {
   return new PrimaryKey(*this);
 }
+

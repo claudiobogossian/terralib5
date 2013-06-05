@@ -34,61 +34,40 @@
 
 namespace te
 {
-// Forward declarations
-  namespace dt { class Property; }
-
   namespace da
   {
     namespace core
     {
       /*!
         \class ForeignKey
-      
+
         \brief It models a foreign key constraint for a DataSetType.
 
-        \sa DataSetType, PrimaryKey, UniqueKey, CheckConstraint
+        \sa AbstractConstraint, PrimaryKey, UniqueKey, CheckConstraint
       */
-      class TEDATAACCESSEXPORT ForeignKey : public AbstractConstraint
+      class  ForeignKey : public AbstractConstraint
       {
         public:
 
           /*!
             \brief Constructor.
 
-            The default fk will have the actions OnDelete and OnUpdate set as NO_ACTION.
-
-            \param id The fk identifier.
-      
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          ForeignKey(unsigned int id = 0);
-
-          /*!
-            \brief Constructor.
-
             \param name The foreign key constraint name.
-            \param id   The fk identifier.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
           */
-          ForeignKey(const std::string& name, unsigned int id = 0);
+          ForeignKey(const std::string& name = "");
 
           /*!
             \brief Copy constructor not allowed.
-
-            The new object will not have an associated DataSetType.
 
             \param rhs Right-hand-side instance.
           */
           ForeignKey(const ForeignKey& rhs);
   
           /*! \brief Destructor. */
-          ~ForeignKey() {}
+          ~ForeignKey() { }
 
           /*!
             \brief Assignment operator.
-
-            The new object will not have an assigned DataSetType.
 
             \param rhs Right-hand-side instance.
 
@@ -96,37 +75,40 @@ namespace te
           */
           ForeignKey& operator=(const ForeignKey& rhs);
 
-           /*!
+          /*!
             \brief It returns the properties that take part of the foreign key constraint.
 
             \return The properties that take part of the foreign key constraint.
           */
-          const std::vector<te::dt::Property*>& getProperties() const { return m_properties; }
-        
+          const std::vector<std::size_t>& getProperties() const { return m_properties; }
+
+          /*!
+            \brief It returns the properties that take part of the foreign key constraint.
+
+            \return The properties that take part of the foreign key constraint.
+          */
+          std::vector<std::size_t>& getProperties() { return m_properties; }
+
           /*!
             \brief It adds a property to the foreign key constraint.
 
             \param p The property to be added to the foreign key constraint.
-
-            \pre All properties added must belong to the same DataSetType.
           */
-          void add(te::dt::Property* p) { m_properties.push_back(p); }
-
-          /*!
-            \brief It sets the properties that take part of the foreign key constraint.
-
-            \param properties The properties that take part of the foreign key constraint.
-
-            \pre All properties added must belong to the same DataSetType.
-          */
-          void setProperties(const std::vector<te::dt::Property*>& properties) { m_properties = properties; }
+          void add(const std::size_t propertyPos) { m_properties.push_back(propertyPos); }
 
           /*!
             \brief It returns the referenced properties (on the referenced DataSetType) of this foreign key constraint.
 
             \return The referenced properties (on the referenced DataSetType) of this foreign key constraint.
           */
-          const std::vector<te::dt::Property*>& getReferencedProperties() const { return m_refProperties; }
+          const std::vector<std::size_t>& getReferencedProperties() const { return m_refProperties; }
+
+          /*!
+            \brief It returns the referenced properties (on the referenced DataSetType) of this foreign key constraint.
+
+            \return The referenced properties (on the referenced DataSetType) of this foreign key constraint.
+          */
+          std::vector<std::size_t>& getReferencedProperties() { return m_refProperties; }
 
           /*!
             \brief It adds a reference property (on the referenced DataSetType) of this foreign key constraint.
@@ -135,30 +117,21 @@ namespace te
 
             \pre All properties being added must reference the same DataSetType.
           */
-          void addRefProperty(te::dt::Property* p) { m_refProperties.push_back(p); }
+          void addRefProperty(const std::size_t propertyPos) { m_refProperties.push_back(propertyPos); }
 
           /*!
-            \brief It sets the referenced properties (on the referenced DataSetType) of this foreign key constraint.
+            \brief It returns the name of the referenced dataset of this foreign key constraint.
 
-            \param properties The referenced properties (on the referenced DataSetType) of this foreign key constraint.
-
-            \pre All properties must reference the same DataSetType.
+            \return The name of the referenced dataset of this foreign key constraint.
           */
-          void setReferencedProperties(const std::vector<te::dt::Property*>& properties) { m_refProperties = properties; }
-
-          /*!
-            \brief It returns the referenced DataSetType of this foreign key constraint.
-
-            \return The referenced DataSetType of this foreign key constraint.
-          */
-          DataSetType* getReferencedDataSetType() const { return m_refDt; }
+          const std::string& getReferencedDataSet() const { return m_refDataset; }
 
           /*!
             \brief It sets the referenced DataSetType of this foreign key constraint.
 
             \param refDt The referenced DataSetType of this foreign key constraint.
           */
-          void setReferencedDataSetType(DataSetType* refDt) { m_refDt = refDt; }
+          void setReferencedDataSet(const std::string& refDataset) { m_refDataset = refDataset; }
 
           /*!
             \brief It returns the action performed when a referenced element value in the referenced DataSetType is being deleted.
@@ -189,41 +162,11 @@ namespace te
           void setOnUpdateAction(FKActionType a) { m_onUpdate = a; }
 
           /*!
-            \brief It verifies if Property takes part of the foreign key.
-
-            \param p The Property to be verified.
-
-            \return True if Property takes part of the foreign key, false otherwise.
-          */
-          bool has(te::dt::Property* p);
-
-          /*!
-            \brief It verifies if Property is referenced by the foreign key.
-
-            \param p The Property to be verified.
-
-            \return True if Property is referenced by the foreign key, false otherwise.
-          */
-          bool isReferenced(te::dt::Property* p);
-
-          /*!
-            \brief It changes a reference to property p to pp.
-
-            \param p  A property that takes part of the foreign key or is referenced by it.
-            \param pp The property that will take p place.
-
-            \note This method will replace property checking both property list (referenced and the properties in the fk).
-
-            \note If the property p is not in the fk attribute list this method does nothing.
-          */
-          void replace(te::dt::Property* p, te::dt::Property* pp);
-
-          /*!
             \brief It returns the constraint type: FOREIGNKEY.
           
             \return The constraint type FOREIGNKEY.
           */
-          ConstraintType getType() const { return FOREIGN_KEY; } 
+          ConstraintType getType() const { return FOREIGN_KEY; }
 
           /*!
             \brief It returns a clone of the object.
@@ -236,11 +179,12 @@ namespace te
 
         private:
 
-          FKActionType m_onDelete;                            //!< The action to be performed when a referenced element value in the referenced DataSetType is being deleted.
-          FKActionType m_onUpdate;                            //!< The action to be performed when a referenced element value in the referenced DataSetType is being updated to a new value.
-          DataSetType* m_refDt;                         //!< The referenced DataSetType of this foreign key constraint.
-          std::vector<te::dt::Property*> m_properties;      //!< The properties that are part of the foreign key constraint.        
-          std::vector<te::dt::Property*> m_refProperties;   //!< The referenced properties (on the referenced DataSetType) of this foreign key constraint.
+          std::string m_refDataset;                   //!< The referenced dataset of this foreign key constraint.
+          std::vector<std::size_t> m_properties;      //!< The properties that are part of the foreign key constraint.
+          std::vector<std::size_t> m_refProperties;   //!< The referenced properties (on the referenced dataset) of this foreign key constraint.
+          FKActionType m_onDelete;                    //!< The action to be performed when a referenced element value in the referenced dataset is being deleted.
+          FKActionType m_onUpdate;                    //!< The action to be performed when a referenced element value in the referenced dataset is being updated to a new value.
+
       };
 
     }  // end namespace core

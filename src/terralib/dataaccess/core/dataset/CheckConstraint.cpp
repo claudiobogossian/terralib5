@@ -24,24 +24,13 @@
 */
 
 // TerraLib
-#include "../../../datatype/Property.h"
 #include "CheckConstraint.h"
-#include "DataSetType.h"
-
-te::da::core::CheckConstraint::CheckConstraint(te::da::core::DataSetType* dt, unsigned int id)
-  : AbstractConstraint(id)
-{  
-  if(dt)
-    dt->add(this);
-}
 
 te::da::core::CheckConstraint::CheckConstraint(const std::string& name,
-                                         DataSetType* dt,
-                                         unsigned int id)
-  : AbstractConstraint(name, id)
-{  
-  if(dt)
-    dt->add(this);
+                                               const std::string& expression)
+  : AbstractConstraint(name),
+    m_expression(expression)
+{
 }
 
 te::da::core::CheckConstraint::CheckConstraint(const CheckConstraint& rhs)
