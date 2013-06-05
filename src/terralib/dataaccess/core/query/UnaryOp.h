@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryOp.h
+  \file terralib/dataaccess/core/query/UnaryOp.h
 
   \brief A base class for unary operators.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_UNARYOP_H
-#define __TERRALIB_DATAACCESS_INTERNAL_UNARYOP_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_UNARYOP_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_UNARYOP_H
 
 // TerraLib
 #include "UnaryFunction.h"
@@ -33,52 +33,54 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class UnaryOp
-      
-      \brief A base class for unary operators.
-
-      \sa UnaryFunction
-    */
-    class TEDATAACCESSEXPORT UnaryOp : public UnaryFunction
+    namespace core
     {
-      TE_DEFINE_VISITABLE
+      /*!
+        \class UnaryOp
+      
+        \brief A base class for unary operators.
 
-      public:
+        \sa UnaryFunction
+      */
+      class TEDATAACCESSEXPORT UnaryOp : public UnaryFunction
+      {
+        TE_DEFINE_VISITABLE
 
-        /*!
-          \brief Constructor.
+        public:
 
-          \param name The operator name.
-          \param arg  The single operator argument.
+          /*!
+            \brief Constructor.
 
-          \note The UnaryOp will take the ownership of the given argument.
-        */
-        UnaryOp(const std::string& name, Expression* arg) : UnaryFunction(name, arg) { }
+            \param name The operator name.
+            \param arg  The single operator argument.
 
-        /*!
-          \brief Constructor.
+            \note The UnaryOp will take the ownership of the given argument.
+          */
+          UnaryOp(const std::string& name, Expression* arg) : UnaryFunction(name, arg) { }
 
-          \param name The operator name.
-          \param arg  The single operator argument.
-        */
-        UnaryOp(const std::string& name, const Expression& arg) : UnaryFunction(name, arg) { }
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        UnaryOp(const UnaryOp& rhs);
+            \param name The operator name.
+            \param arg  The single operator argument.
+          */
+          UnaryOp(const std::string& name, const Expression& arg) : UnaryFunction(name, arg) { }
 
-        /*! \brief Virtual Destructor. */
-        virtual ~UnaryOp() {}
+          /*! \brief Copy constructor. */
+          UnaryOp(const UnaryOp& rhs);
 
-        /*! Assignment operator.  */
-        UnaryOp& operator=(const UnaryOp& rhs);
+          /*! \brief Virtual Destructor. */
+          virtual ~UnaryOp() {}
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! Assignment operator.  */
+          UnaryOp& operator=(const UnaryOp& rhs);
 
-  } // end namespace da
-}   // end namespace te
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_UNARYOP_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_UNARYOP_H

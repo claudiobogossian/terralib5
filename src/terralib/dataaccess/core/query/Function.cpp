@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,30 +18,30 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Function.cpp
+  \file terralib/dataaccess/core/query/Function.cpp
 
   \brief A class that models a Function expression.
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
+#include "../../../common/STLUtils.h"
 #include "Function.h"
 
 // STL
 #include <cassert>
 
-te::da::Function::Function(const Function& rhs)
+te::da::core::Function::Function(const Function& rhs)
   : m_name(rhs.m_name)
 {
   te::common::Clone(rhs.m_args, m_args);
 }
 
-te::da::Function::~Function()
+te::da::core::Function::~Function()
 {
   te::common::FreeContents(m_args);
 }
 
-te::da::Function& te::da::Function::operator=(const Function& rhs)
+te::da::core::Function& te::da::core::Function::operator=(const Function& rhs)
 {
   if(this != &rhs)
   {
@@ -54,30 +54,29 @@ te::da::Function& te::da::Function::operator=(const Function& rhs)
   return *this;
 }
 
-te::da::Expression* te::da::Function::clone() const
+te::da::core::Expression* te::da::core::Function::clone() const
 {
   return new Function(*this);
 }
 
-std::size_t te::da::Function::getNumArgs() const
+std::size_t te::da::core::Function::getNumArgs() const
 {
   return m_args.size();
 }
 
-te::da::Expression* te::da::Function::getArg(size_t i) const
+te::da::core::Expression* te::da::core::Function::getArg(size_t i) const
 {
   assert(i < m_args.size());
   return m_args[i];
 }
 
-te::da::Expression* te::da::Function::operator[](size_t i) const
+te::da::core::Expression* te::da::core::Function::operator[](size_t i) const
 {
   assert(i < m_args.size());
   return m_args[i];
 }
 
-void te::da::Function::add(Expression* arg)
+void te::da::core::Function::add(Expression* arg)
 {
   m_args.push_back(arg);
 }
-

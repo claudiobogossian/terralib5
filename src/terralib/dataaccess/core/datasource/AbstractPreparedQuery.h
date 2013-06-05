@@ -58,7 +58,6 @@ namespace te
     namespace core
     {
       class DataSet;
-      class DataSourceTransactor;
       class Query;
 
     /*!
@@ -66,7 +65,7 @@ namespace te
 
       \brief A class that model a prepared query.
 
-      \sa DataSourceTransactor, DataSet, Query, Literal
+      \sa DataSet, Query, Literal
     */
       class TEDATAACCESSEXPORT PreparedQuery : public boost::noncopyable
       {
@@ -262,13 +261,6 @@ namespace te
             \param value The parameter value.
           */
           virtual void bind(int i, const te::dt::AbstractData& ad);
-
-          /*!
-            \brief It returns a pointer to the underlying data source transactor.
-
-            \return A pointer to the underlying data source transactor.
-          */
-          virtual DataSourceTransactor* getTransactor() const = 0;
       };
 
     } // namespace core

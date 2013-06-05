@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/GreaterThan.cpp
+  \file terralib/dataaccess/core/query/GreaterThan.cpp
 
   \brief It models the inequality operator greater than (>) - syntatic-suggar.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "GreaterThan.h"
 
-te::da::GreaterThan::GreaterThan(const GreaterThan& rhs)
+te::da::core::GreaterThan::GreaterThan(const GreaterThan& rhs)
   : BinaryOp(rhs)
 {
 }
 
-te::da::GreaterThan& te::da::GreaterThan::operator=(const GreaterThan& rhs)
+te::da::core::GreaterThan& te::da::core::GreaterThan::operator=(const GreaterThan& rhs)
 {
   BinaryOp::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::GreaterThan::clone() const
+te::da::core::Expression* te::da::core::GreaterThan::clone() const
 {
   return new GreaterThan(*this);
 }
-

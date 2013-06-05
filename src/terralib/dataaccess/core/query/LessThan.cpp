@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LessThan.cpp
+  \file terralib/dataaccess/core/query/LessThan.cpp
 
   \brief It models the inequality operator less than (<) - syntatic-suggar.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "LessThan.h"
 
-te::da::LessThan::LessThan(const LessThan& rhs)
+te::da::core::LessThan::LessThan(const LessThan& rhs)
   : BinaryOp(rhs)
 {
 }
 
-te::da::LessThan& te::da::LessThan::operator=(const LessThan& rhs)
+te::da::core::LessThan& te::da::core::LessThan::operator=(const LessThan& rhs)
 {
   BinaryOp::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::LessThan::clone() const
+te::da::core::Expression* te::da::core::LessThan::clone() const
 {
   return new LessThan(*this);
 }
-

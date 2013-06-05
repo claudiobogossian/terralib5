@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryOp.cpp
+  \file terralib/dataaccess/core/query/UnaryOp.cpp
 
   \brief A base class for unary operators.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "UnaryOp.h"
 
-te::da::UnaryOp::UnaryOp(const UnaryOp& rhs)
+te::da::core::UnaryOp::UnaryOp(const UnaryOp& rhs)
   : UnaryFunction(rhs)
 {
 }
 
-te::da::UnaryOp& te::da::UnaryOp::operator=(const UnaryOp& rhs)
+te::da::core::UnaryOp& te::da::core::UnaryOp::operator=(const UnaryOp& rhs)
 {
   UnaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::UnaryOp::clone() const
+te::da::core::Expression* te::da::core::UnaryOp::clone() const
 {
   return new UnaryOp(*this);
 }
-
