@@ -418,9 +418,10 @@ bool te::pgis::CatalogLoader::indexExists(const std::string& name)
   
   SplitTableName(name, m_t->getPGDataSource()->getCurrentSchema(), sname, tname);
 
-  std::string sql("SELECT pg_class.oid "
+std::string sql("SELECT pg_class.oid, pg_class.relname "
                   "FROM pg_class, pg_namespace "
-                  "WHERE pg_class.relnamespace = pg_namespace.oid " 
+                  "WHERE pg_class.relkind = 'i' "              
+                  "AND pg_class.relnamespace = pg_namespace.oid " 
                   "AND lower(pg_class.relname) = '");
 
   sql += te::common::Convert2LCase(tname);

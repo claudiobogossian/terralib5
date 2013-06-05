@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,87 +31,89 @@ namespace te
 {
   namespace da
   {
-    //class AbstractFunction;
-    class Add;
-    class And;
-    class BinaryFunction;
-    class BinaryOp;
-    class BinaryOpEncoder;
-    class DataSetName;
-    class Div;
-    class EqualTo;
-    class Expression;    
-    class Field;
-    class FromFunctionCall;
-    class FromItem;
-    class Function;
-    class FunctionCatalog;
-    class FunctionCatalogManager;
-    class FunctionDefn;
-    class FunctionEncoder;
-    class FunctionNames;
-    class FunctionNoArgsEncoder;
-    class FunctionParameter;
-    class GreaterThan;
-    class GreaterThanOrEqualTo;
-    class GroupByItem;
-    class Having;
-    class In;
-    class IsNull;
-    class Join;
-    class JoinCondition;
-    class JoinConditionOn;
-    class JoinConditionUsing;
-    class LessThan;
-    class LessThanOrEqualTo;
-    class Like;
-    class Literal;
-    class LiteralByteArray;
-    class LiteralDateTime;
-    class LiteralDouble;
-    class LiteralEnvelope;
-    class LiteralGeom;
-    class LiteralInt16;
-    class LiteralInt32;
-    class LiteralInt64;
-    class LiteralString;
-    class Mul;
-    class Not;
-    class NotEqualTo;
-    class Or;
-    class OrderByItem;
-    class PropertyName;
-    class Query;
-    class QueryVisitor;
-    class Select;
-    class SQLDialect;
-    class SQLFunctionEncoder;
-    class SQLVisitor;
-    class ST_Beyond;
-    class ST_Contains;
-    class ST_Crosses;
-    class ST_Disjoint;
-    class ST_DistanceBuffer;
-    class ST_DWithin;
-    class ST_Equals;
-    class ST_Intersects;
-    class ST_Overlaps;
-    class ST_Relate;
-    class ST_Touches;
-    class ST_Transform;
-    class ST_Within;
-    class Sub;
-    class SubSelect;
-    class Substring;
-    class Sum;
-    class TemplateEncoder;
-    class UnaryFunction;
-    class UnaryOp;
-    class UnaryOpEncoder;
-    class Where;
+    namespace core
+    {
+      //class AbstractFunction;
+      class Add;
+      class And;
+      class BinaryFunction;
+      class BinaryOp;
+      class BinaryOpEncoder;
+      class DataSetName;
+      class Div;
+      class EqualTo;
+      class Expression;    
+      class Field;
+      class FromFunctionCall;
+      class FromItem;
+      class Function;
+      class FunctionCatalog;
+      class FunctionCatalogManager;
+      class FunctionDefn;
+      class FunctionEncoder;
+      class FunctionNames;
+      class FunctionNoArgsEncoder;
+      class FunctionParameter;
+      class GreaterThan;
+      class GreaterThanOrEqualTo;
+      class GroupByItem;
+      class Having;
+      class In;
+      class IsNull;
+      class Join;
+      class JoinCondition;
+      class JoinConditionOn;
+      class JoinConditionUsing;
+      class LessThan;
+      class LessThanOrEqualTo;
+      class Like;
+      class Literal;
+      class LiteralByteArray;
+      class LiteralDateTime;
+      class LiteralDouble;
+      class LiteralEnvelope;
+      class LiteralGeom;
+      class LiteralInt16;
+      class LiteralInt32;
+      class LiteralInt64;
+      class LiteralString;
+      class Mul;
+      class Not;
+      class NotEqualTo;
+      class Or;
+      class OrderByItem;
+      class PropertyName;
+      class Query;
+      class QueryVisitor;
+      class Select;
+      class SQLDialect;
+      class SQLFunctionEncoder;
+      class SQLVisitor;
+      class ST_Beyond;
+      class ST_Contains;
+      class ST_Crosses;
+      class ST_Disjoint;
+      class ST_DistanceBuffer;
+      class ST_DWithin;
+      class ST_Equals;
+      class ST_Intersects;
+      class ST_Overlaps;
+      class ST_Relate;
+      class ST_Touches;
+      class ST_Transform;
+      class ST_Within;
+      class Sub;
+      class SubSelect;
+      class Substring;
+      class Sum;
+      class TemplateEncoder;
+      class UnaryFunction;
+      class UnaryOp;
+      class UnaryOpEncoder;
+      class Where;
 
-  } // end namespace da
-}   // end namespace te
+    }  //end namespace core
+  }    // end namespace da
+}      // end namespace te
 
 #endif // __TERRALIB_DATAACCESS_INTERNAL_QUERY_FW_H
-

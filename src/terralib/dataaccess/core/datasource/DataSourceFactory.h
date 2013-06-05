@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../../common/Static.h"
 #include "../../Config.h"
-#include "../Exception2.h"
+#include "../Exception.h"
 
 // STL
 #include <map>
@@ -76,4 +76,3 @@ namespace te
 }     // end namespace te
 
 #endif  // __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCEFACTORY_H
-

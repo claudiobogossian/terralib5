@@ -75,7 +75,7 @@ void TsTiePointsLocator::saveImagesAndTiePoints(
     }
   
   std::map<std::string, std::string> rInfo2;
-  rInfo2["URI"] = TE_DATA_DIR "/" + tifFileNameBeginning + "_raster2.tif";
+  rInfo2["URI"] = tifFileNameBeginning + "_raster2.tif";
   
   std::vector<te::rst::BandProperty*> bandsProperties2;
   bandsProperties2.push_back(new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE, "" ));
