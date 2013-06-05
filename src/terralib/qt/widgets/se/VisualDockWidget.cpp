@@ -33,8 +33,10 @@
 #include "RasterVisualWidget.h"
 #include "StyleControllerWidget.h"
 
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../se.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../maptools/DataSetLayer.h"
 #include "../../../raster/RasterProperty.h"
 
 
@@ -175,19 +177,11 @@ void te::qt::widgets::VisualDockWidget::onSymbolizerSelected(te::se::Symbolizer*
 
     m_tabWidget->setTabEnabled(3, true);
 
-    //te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(m_currentLayer);
-    //
-    //if(layer)
-    //{
-    //  te::rst::RasterProperty* prop = 0;
-    //  prop = (te::rst::RasterProperty*)layer->getRasterProperty()->clone();
+    te::rst::RasterProperty* prop = te::da::GetFirstRasterProperty(m_currentLayer->getSchema());
 
-    //  m_visualWidget->setRasterSymbolizer(dynamic_cast<te::se::RasterSymbolizer*>(s));
+    m_visualWidget->setRasterSymbolizer(dynamic_cast<te::se::RasterSymbolizer*>(s));
 
-    //  m_visualWidget->setBandProperty(prop->getBandProperties());
-
-    //  delete prop;
-    //}
+    m_visualWidget->setBandProperty(prop->getBandProperties());
   }
 }
 

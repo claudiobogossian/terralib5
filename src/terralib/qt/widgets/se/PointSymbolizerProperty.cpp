@@ -64,22 +64,16 @@ te::qt::widgets::PointSymbolizerProperty::PointSymbolizerProperty(QWidget* paren
 
 te::qt::widgets::PointSymbolizerProperty::~PointSymbolizerProperty()
 {
-  delete m_symb;
 }
 
-void te::qt::widgets::PointSymbolizerProperty::setSymbolizer(const te::se::PointSymbolizer* symb)
+void te::qt::widgets::PointSymbolizerProperty::setSymbolizer( te::se::PointSymbolizer* symb)
 {
-  assert(symb);
-
-  delete m_symb;
-
-  m_symb = static_cast<te::se::PointSymbolizer*>(symb->clone());
-
+  m_symb = symb;
 }
 
 te::se::Symbolizer* te::qt::widgets::PointSymbolizerProperty::getSymbolizer() const
 {
-  return m_symb->clone();
+  return m_symb;
 }
 
 void te::qt::widgets::PointSymbolizerProperty::onGraphicChanged()

@@ -89,7 +89,7 @@ namespace te
             \note The widget will NOT take the ownership of the given symbolizer.
             \note The widget form will be update based on given symbolizer parameters.
           */
-          void setSymbolizer(const te::se::PolygonSymbolizer* symb);
+          void setSymbolizer(te::se::PolygonSymbolizer* symb);
 
           /*!
             \brief Gets the configured polygon symbolizer element.

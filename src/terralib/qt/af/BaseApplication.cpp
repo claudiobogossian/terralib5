@@ -52,7 +52,7 @@
 #include "../widgets/progress/ProgressViewerDialog.h"
 #include "../widgets/progress/ProgressViewerWidget.h"
 #include "../widgets/query/QueryLayerBuilderWizard.h"
-#include "../widgets/se/RasterVisualDockWidget.h"
+#include "../widgets/se/VisualDockWidget.h"
 #include "../widgets/tools/Info.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
@@ -63,6 +63,7 @@
 #include "connectors/DataSetTableDockWidget.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
+#include "connectors/SymbolizerExplorer.h"
 #include "events/LayerEvents.h"
 #include "events/ProjectEvents.h"
 #include "events/ApplicationEvents.h"
@@ -183,6 +184,7 @@ te::qt::af::BaseApplication::~BaseApplication()
 {
   delete m_explorer;
   delete m_display;
+  delete m_symbolizerExplorer;
   delete m_project;
   delete m_progressDockWidget;
 
@@ -897,6 +899,18 @@ void te::qt::af::BaseApplication::makeDialog()
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   m_display = new te::qt::af::MapDisplay(map);
 
+// 3. Symbolizer Explorer
+
+  te::qt::widgets::VisualDockWidget* visualDock = new te::qt::widgets::VisualDockWidget(tr("Styler Explorer"), this);
+  QMainWindow::addDockWidget(Qt::RightDockWidgetArea, visualDock);
+  visualDock->connect(m_viewStyleExplorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  m_viewStyleExplorer->setChecked(false);
+  visualDock->setVisible(false);
+
+  m_symbolizerExplorer = new te::qt::af::SymbolizerExplorer(visualDock, this);
+
+  lexplorer->getTreeView()->add(m_viewStyleExplorer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+
   initStatusBar();
 
 // 3. Data Table
@@ -908,6 +922,7 @@ void te::qt::af::BaseApplication::makeDialog()
   te::qt::af::ApplicationController::getInstance().addListener(this);
   te::qt::af::ApplicationController::getInstance().addListener(m_explorer);
   te::qt::af::ApplicationController::getInstance().addListener(m_display);
+  te::qt::af::ApplicationController::getInstance().addListener(m_symbolizerExplorer);
   //te::qt::af::ApplicationController::getInstance().addListener(m_viewer);
 
 
@@ -925,14 +940,6 @@ void te::qt::af::BaseApplication::makeDialog()
   m_viewDataTable->setChecked(false);
   doc->setVisible(false);
 */
-
-//// Raster Visual Dock widget
-//  m_rasterVisualDock = new te::qt::widgets::RasterVisualDockWidget(tr("Raster Enhancement"), this);
-//  connect(m_rasterVisualDock, SIGNAL(symbolizerChanged()), this, SLOT(drawLayers()));
-//  QMainWindow::addDockWidget(Qt::RightDockWidgetArea, m_rasterVisualDock);
-//  m_rasterVisualDock->connect(m_ui->m_viewRasterVisual, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-//  m_ui->m_viewRasterVisual->setChecked(false);
-//  m_rasterVisualDock->setVisible(false);
 
 // Progress support
   te::qt::widgets::ProgressViewerBar* pvb = new te::qt::widgets::ProgressViewerBar(this);
@@ -993,7 +1000,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_viewLayerExplorer, "view-layer-explorer", "View.Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true, m_menubar);
   initAction(m_viewMapDisplay, "view-map-display", "View.Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true, m_menubar);
   initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, false, m_menubar);
-  initAction(m_viewStyleExplorer, "grid-visible", "View.Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, false, m_menubar);
+  initAction(m_viewStyleExplorer, "grid-visible", "View.Style Explorer", tr("&Styler Explorer"), tr("Show or hide the style explorer"), true, true, true, m_menubar);
   initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, true, true, m_menubar);
   initAction(m_viewRefresh, "view-refresh", "View.Refresh", tr("&Refresh"), tr(""), true, false, false, m_menubar);
   //initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
