@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Where.cpp
+  \file terralib/dataaccess/core/query/Where.cpp
 
   \brief A class that can be used to model a filter expression that can be applied to a query.
 */
@@ -27,27 +27,27 @@
 #include "Expression.h"
 #include "Where.h"
 
-te::da::Where::Where(Expression* e)
+te::da::core::Where::Where(Expression* e)
   : m_exp(e)
 {
 }
 
-te::da::Where::Where(const Expression& e)
+te::da::core::Where::Where(const Expression& e)
   : m_exp(e.clone())
 {
 }
 
-te::da::Where::Where(const Where& rhs)
+te::da::core::Where::Where(const Where& rhs)
   : m_exp(0)
 {
   m_exp.reset(rhs.m_exp.get() ? rhs.m_exp->clone() : 0);
 }
 
-te::da::Where::~Where()
+te::da::core::Where::~Where()
 {
 }
         
-te::da::Where& te::da::Where::operator=(const Where& rhs)
+te::da::core::Where& te::da::core::Where::operator=(const Where& rhs)
 {
   if(this != &rhs)
   {
@@ -57,13 +57,12 @@ te::da::Where& te::da::Where::operator=(const Where& rhs)
   return *this;
 }
 
-te::da::Expression* te::da::Where::getExp() const
+te::da::core::Expression* te::da::core::Where::getExp() const
 {
   return m_exp.get();
 }
 
-void te::da::Where::setExp(Expression* exp)
+void te::da::core::Where::setExp(Expression* exp)
 {
   m_exp.reset(exp);
 }
-

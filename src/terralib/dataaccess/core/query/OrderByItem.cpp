@@ -83,7 +83,7 @@ void te::da::core::OrderByItem::setSortOrder(SortOrder o)
   m_order = o;
 }
 
-te::da::SortOrder te::da::core::OrderByItem::getSortOrder() const
+te::da::core::SortOrder te::da::core::OrderByItem::getSortOrder() const
 {
   return m_order;
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Not.cpp
+  \file terralib/dataaccess/core/query/Not.cpp
 
   \brief Boolean NOT operator - syntatic-suggar.
 */
@@ -26,18 +26,18 @@
 // TerraLib
 #include "Not.h"
 
-te::da::Not::Not(const Not& rhs)
+te::da::core::Not::Not(const Not& rhs)
   : UnaryOp(rhs)
 {
 }
 
-te::da::Not& te::da::Not::operator=(const Not& rhs)
+te::da::core::Not& te::da::core::Not::operator=(const Not& rhs)
 {
   UnaryOp::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::Not::clone() const
+te::da::core::Expression* te::da::core::Not::clone() const
 {
   return new Not(*this);
 }
