@@ -18,27 +18,27 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/dataset/AbstractConstraint.cpp
+  \file terralib/dataaccess/core/dataset/Constraint.cpp
 
   \brief A base class for constraints.
 */
 
 // TerraLib
-#include "AbstractConstraint.h"
+#include "Constraint.h"
 
-te::da::core::AbstractConstraint::AbstractConstraint(const std::string& name)
+te::da::core::Constraint::Constraint(const std::string& name)
   : m_name(name),
     m_dt(0)
 {
 }
 
-te::da::core::AbstractConstraint::AbstractConstraint(const AbstractConstraint& rhs)
+te::da::core::Constraint::Constraint(const Constraint& rhs)
   : m_name(rhs.m_name),
     m_dt(0)
 {
 }
 
-te::da::core::AbstractConstraint& te::da::core::AbstractConstraint::operator=(const AbstractConstraint& rhs)
+te::da::core::Constraint& te::da::core::Constraint::operator=(const Constraint& rhs)
 {
   if(this != &rhs)
   {

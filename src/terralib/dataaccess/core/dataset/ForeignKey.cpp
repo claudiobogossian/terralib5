@@ -27,14 +27,14 @@
 #include "ForeignKey.h"
 
 te::da::core::ForeignKey::ForeignKey(const std::string& name)
-  : AbstractConstraint(name),
+  : Constraint(name),
     m_onDelete(NO_ACTION),
     m_onUpdate(NO_ACTION)
 {
 }
 
 te::da::core::ForeignKey::ForeignKey(const ForeignKey& rhs)
-  : AbstractConstraint(rhs),
+  : Constraint(rhs),
     m_refDataset(rhs.m_refDataset),
     m_properties(rhs.m_properties),
     m_refProperties(rhs.m_refProperties),
@@ -47,7 +47,7 @@ te::da::core::ForeignKey& te::da::core::ForeignKey::operator=(const ForeignKey& 
 {
   if(this != &rhs)
   {
-    AbstractConstraint::operator=(rhs);
+    Constraint::operator=(rhs);
 
     m_refDataset = rhs.m_refDataset;
 
@@ -63,7 +63,7 @@ te::da::core::ForeignKey& te::da::core::ForeignKey::operator=(const ForeignKey& 
   return *this;
 }
 
-te::da::core::AbstractConstraint* te::da::core::ForeignKey::clone()
+te::da::core::Constraint* te::da::core::ForeignKey::clone()
 {
   return new ForeignKey(*this);
 }

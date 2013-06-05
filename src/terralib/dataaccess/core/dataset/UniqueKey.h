@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_UNIQUEKEY_H
 
 // TerraLib
-#include "AbstractConstraint.h"
+#include "Constraint.h"
 
 // STL
 #include <vector>
@@ -43,9 +43,9 @@ namespace te
       
         \brief It describes a unique key (pk) constraint.
 
-        \sa AbstractConstraint, PrimaryKey, ForeignKey, CheckConstraint
+        \sa Constraint, PrimaryKey, ForeignKey, CheckConstraint
       */
-      class TEDATAACCESSEXPORT UniqueKey : public AbstractConstraint
+      class TEDATAACCESSEXPORT UniqueKey : public Constraint
       {
         public:
 
@@ -115,7 +115,7 @@ namespace te
 
             \return A clone of the object.
           */
-          virtual AbstractConstraint* clone();
+          virtual Constraint* clone();
 
         private:
 

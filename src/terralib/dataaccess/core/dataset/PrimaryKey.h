@@ -40,7 +40,7 @@ namespace te
 
         \brief It describes a primary key (pk) constraint.
 
-        \sa AbstractConstraint, UniqueKey, ForeignKey, CheckConstraint
+        \sa Constraint, UniqueKey, ForeignKey, CheckConstraint
       */
       class TEDATAACCESSEXPORT PrimaryKey : public UniqueKey
       {
@@ -84,7 +84,7 @@ namespace te
 
             \return A clone of the object.
           */
-          AbstractConstraint* clone();
+          Constraint* clone();
       };
 
     }  // end namespace core

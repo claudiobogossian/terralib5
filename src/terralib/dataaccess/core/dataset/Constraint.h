@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/dataset/AbstractConstraint.h
+  \file terralib/dataaccess/core/dataset/Constraint.h
 
   \brief A base class for constraints.
 */
 
-#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H
-#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_CONSTRAINT_H
+#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_CONSTRAINT_H
 
 // TerraLib
 #include "../Config.h"
@@ -43,13 +43,13 @@ namespace te
       class DataSetType;
 
       /*!
-        \class AbstractConstraint
+        \class Constraint
 
         \brief A base class for constraints.
 
         \sa PrimaryKey, ForeignKey, UniqueKey, CheckConstraint
       */
-      class TEDATAACCESSEXPORT AbstractConstraint
+      class TEDATAACCESSEXPORT Constraint
       {
         public:
 
@@ -58,17 +58,17 @@ namespace te
 
             \param name The constraint name.
           */
-          AbstractConstraint(const std::string& name = "");
+          Constraint(const std::string& name = "");
 
           /*!
             \brief Copy constructor not allowed.
 
             \param rhs Right-hand-side instance.
           */
-          AbstractConstraint(const AbstractConstraint& rhs);
+          Constraint(const Constraint& rhs);
 
           /*! \brief Virtual destructor. */
-          virtual ~AbstractConstraint() {}
+          virtual ~Constraint() {}
 
           /*!
             \brief Assignment operator not allowed.
@@ -77,7 +77,7 @@ namespace te
 
             \return A reference to this object.
           */
-          AbstractConstraint& operator=(const AbstractConstraint& rhs);
+          Constraint& operator=(const Constraint& rhs);
 
           /*!
             \brief It returns the dataset schema associated to the constraint.
@@ -123,7 +123,7 @@ namespace te
 
             \return A clone of the object.
           */
-          virtual AbstractConstraint* clone() = 0;
+          virtual Constraint* clone() = 0;
 
         private:
 
@@ -135,4 +135,4 @@ namespace te
   }    // end namespace da
 }      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_CONSTRAINT_H

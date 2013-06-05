@@ -45,7 +45,6 @@ namespace te
     namespace core
     {
       class CheckConstraint;
-      class AbstractConstraint;
       class DataSourceCatalog;
       class ForeignKey;
       class Index;

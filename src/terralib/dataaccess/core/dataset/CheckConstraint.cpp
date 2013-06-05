@@ -28,13 +28,13 @@
 
 te::da::core::CheckConstraint::CheckConstraint(const std::string& name,
                                                const std::string& expression)
-  : AbstractConstraint(name),
+  : Constraint(name),
     m_expression(expression)
 {
 }
 
 te::da::core::CheckConstraint::CheckConstraint(const CheckConstraint& rhs)
-  : AbstractConstraint(rhs),
+  : Constraint(rhs),
     m_expression(rhs.m_expression)
 {
 }
@@ -43,7 +43,7 @@ te::da::core::CheckConstraint& te::da::core::CheckConstraint::operator=(const Ch
 {
   if(this != &rhs)
   {
-    AbstractConstraint::operator=(rhs);
+    Constraint::operator=(rhs);
 
     m_expression = rhs.m_expression;
   }
@@ -51,7 +51,7 @@ te::da::core::CheckConstraint& te::da::core::CheckConstraint::operator=(const Ch
   return *this;
 }
 
-te::da::core::AbstractConstraint* te::da::core::CheckConstraint::clone()
+te::da::core::Constraint* te::da::core::CheckConstraint::clone()
 {
   return new CheckConstraint(*this);
 }

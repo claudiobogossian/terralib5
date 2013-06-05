@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_CHECKCONSTRAINT_H
 
 // TerraLib
-#include "AbstractConstraint.h"
+#include "Constraint.h"
 
 namespace te
 {
@@ -42,7 +42,7 @@ namespace te
 
         \sa Constraint, PrimaryKey, UniqueKey, ForeignKey
       */
-      class TEDATAACCESSEXPORT CheckConstraint : public AbstractConstraint
+      class TEDATAACCESSEXPORT CheckConstraint : public Constraint
       {
         public:
 
@@ -102,7 +102,7 @@ namespace te
 
             \return A clone of the object.
           */
-          AbstractConstraint* clone();
+          Constraint* clone();
       
         private:
 

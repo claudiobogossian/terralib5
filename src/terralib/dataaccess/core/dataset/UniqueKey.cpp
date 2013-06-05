@@ -27,12 +27,12 @@
 #include "UniqueKey.h"
 
 te::da::core::UniqueKey::UniqueKey(const std::string& name)
-  : AbstractConstraint(name)
+  : Constraint(name)
 { 
 }
 
 te::da::core::UniqueKey::UniqueKey(const UniqueKey& rhs)
-  : AbstractConstraint(rhs.getName()),
+  : Constraint(rhs.getName()),
     m_properties(rhs.m_properties)
 {
 }
@@ -41,14 +41,14 @@ te::da::core::UniqueKey& te::da::core::UniqueKey::operator=(const UniqueKey& rhs
 {
   if(this != &rhs)
   {
-    AbstractConstraint::operator=(rhs);
+    Constraint::operator=(rhs);
     m_properties = rhs.m_properties;
   }
 
   return *this;
 }
 
-te::da::core::AbstractConstraint* te::da::core::UniqueKey::clone()
+te::da::core::Constraint* te::da::core::UniqueKey::clone()
 {
   return new UniqueKey(*this);
 }

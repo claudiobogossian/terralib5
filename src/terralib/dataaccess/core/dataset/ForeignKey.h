@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_FOREIGNKEY_H
 
 // TerraLib
-#include "AbstractConstraint.h"
+#include "Constraint.h"
 
 // STL includes
 #include <vector>
@@ -43,9 +43,9 @@ namespace te
 
         \brief It models a foreign key constraint for a DataSetType.
 
-        \sa AbstractConstraint, PrimaryKey, UniqueKey, CheckConstraint
+        \sa Constraint, PrimaryKey, UniqueKey, CheckConstraint
       */
-      class  ForeignKey : public AbstractConstraint
+      class  ForeignKey : public Constraint
       {
         public:
 
@@ -175,7 +175,7 @@ namespace te
 
             \return A clone of the object.
           */
-          AbstractConstraint* clone();
+          Constraint* clone();
 
         private:
 

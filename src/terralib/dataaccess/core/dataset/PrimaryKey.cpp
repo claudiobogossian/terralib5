@@ -44,7 +44,7 @@ te::da::core::PrimaryKey& te::da::core::PrimaryKey::operator=(const PrimaryKey& 
   return *this;
 }
 
-te::da::core::AbstractConstraint* te::da::core::PrimaryKey::clone()
+te::da::core::Constraint* te::da::core::PrimaryKey::clone()
 {
   return new PrimaryKey(*this);
 }

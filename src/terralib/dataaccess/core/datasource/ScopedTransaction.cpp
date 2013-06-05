@@ -24,10 +24,10 @@
 */
 
 // TerraLib
-#include "AbstractDataSource.h"
+#include "DataSource.h"
 #include "ScopedTransaction.h"
 
-te::da::core::ScopedTransaction::ScopedTransaction(AbstractDataSource& ds)
+te::da::core::ScopedTransaction::ScopedTransaction(DataSource& ds)
   : m_ds(ds),
     m_rollback(true)
 {
