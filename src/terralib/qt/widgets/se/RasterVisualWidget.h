@@ -90,9 +90,9 @@ namespace te
 
           //@}
 
-          void setRasterSymbolizer(const te::se::RasterSymbolizer* rs);
+          void setRasterSymbolizer(te::se::RasterSymbolizer* rs);
 
-          te::se::RasterSymbolizer* getRasterSymbolizer() { return (te::se::RasterSymbolizer*)m_symbolizer->clone(); }
+          te::se::RasterSymbolizer* getRasterSymbolizer() { return m_symbolizer; }
 
           void setBandProperty(std::vector<te::rst::BandProperty*> bp);
 

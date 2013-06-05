@@ -79,7 +79,11 @@ void te::map::RasterTransformConfigurer::getGeneralProperties()
   {
     double gain = te::map::GetDouble(m_rstSymbolizer->getGain());
 
-    m_rstTransform->setGain(gain);
+    double curGain = m_rstTransform->getGain();
+
+    curGain += gain;
+
+    m_rstTransform->setGain(curGain);
   }
 
   //get offset
@@ -87,7 +91,11 @@ void te::map::RasterTransformConfigurer::getGeneralProperties()
   {
     double offset = te::map::GetDouble(m_rstSymbolizer->getOffset());
 
-    m_rstTransform->setOffset(offset);
+    double curOffset = m_rstTransform->getOffset();
+
+    curOffset += offset;
+
+    m_rstTransform->setOffset(curOffset);
   }
 }
 
