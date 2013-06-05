@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/JoinConditionOn.h
+  \file terralib/dataaccess/core/query/JoinConditionOn.h
 
-  \brief JoinConditionOn is a boolean expression and it specifies which items in a join are considered to match.
+  \brief JoinConditionOn is a boolean expression specifying which items in a join are considered to match.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_JOINCONDITIONON_H
-#define __TERRALIB_DATAACCESS_INTERNAL_JOINCONDITIONON_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOINCONDITIONON_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOINCONDITIONON_H
 
 // TerraLib
 #include "JoinCondition.h"
@@ -36,73 +36,75 @@ namespace te
 {
   namespace da
   {
-// Forward declaraton
-    class Expression;
-
-    /*!
-      \class JoinConditionOn
-      
-      \brief JoinConditionOn is a boolean expression and it specifies which items in a join are considered to match.
-
-      \sa JoinCondition, JoinConditionUsing
-    */
-    class TEDATAACCESSEXPORT JoinConditionOn : public JoinCondition
+    namespace core
     {
-      public:
+      // Forward declaration
+      class Expression;
 
-        TE_DEFINE_VISITABLE
+      /*!
+        \class JoinConditionOn
+      
+        \brief JoinConditionOn is a boolean expression and it specifies which items in a join are considered to match.
 
-        /*!
-          \brief Constructor.
+        \sa JoinCondition, JoinConditionUsing
+      */
+      class TEDATAACCESSEXPORT JoinConditionOn : public JoinCondition
+      {
+        public:
+
+          TE_DEFINE_VISITABLE
+
+          /*!
+            \brief Constructor.
           
-          \param e A join condition expression.
+            \param e A join condition expression.
 
-          \note The JoinConditionOn will take the ownership of the given expression.
-        */
-        JoinConditionOn(Expression* e);
+            \note The JoinConditionOn will take the ownership of the given expression.
+          */
+          JoinConditionOn(Expression* e);
 
-        /*!
-          \brief Constructor.
+          /*!
+            \brief Constructor.
           
-          \param e A join condition expression.
-        */
-        JoinConditionOn(const Expression& e);
+            \param e A join condition expression.
+          */
+          JoinConditionOn(const Expression& e);
 
-        /*! \brief Copy constructor. */
-        JoinConditionOn(const JoinConditionOn& rhs);
+          /*! \brief Copy constructor. */
+          JoinConditionOn(const JoinConditionOn& rhs);
 
-        /*! \brief Destructor. */
-        ~JoinConditionOn();
+          /*! \brief Destructor. */
+          ~JoinConditionOn();
 
-        /*! Assignment operator.  */
-        JoinConditionOn& operator=(const JoinConditionOn& rhs);
+          /*! Assignment operator.  */
+          JoinConditionOn& operator=(const JoinConditionOn& rhs);
 
-        /*! \brief It creates a new copy of this JoinCondition. */
-        JoinCondition* clone() const;
+          /*! \brief It creates a new copy of this JoinCondition. */
+          JoinCondition* clone() const;
 
-        /*!
-          \brief It sets the join condition expression.
+          /*!
+            \brief It sets the join condition expression.
 
-          \param c A join condition expression.
+            \param c A join condition expression.
 
-          \note The JoinConditionOn will take the ownership of the given expression.
-        */
-        void setCondition(Expression* c);
+            \note The JoinConditionOn will take the ownership of the given expression.
+          */
+          void setCondition(Expression* c);
 
-        /*!
-          \brief It returns a pointer to a join condition.
+          /*!
+            \brief It returns a pointer to a join condition.
 
-          \return A pointer to a join condition.
-        */
-        Expression* getCondition() const;
+            \return A pointer to a join condition.
+          */
+          Expression* getCondition() const;
 
-      private:
+        private:
 
-        std::auto_ptr<Expression> m_condition;  //!< The join expression.
-    };
+          std::auto_ptr<Expression> m_condition;  //!< The join expression.
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_JOINCONDITIONON_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOINCONDITIONON_H

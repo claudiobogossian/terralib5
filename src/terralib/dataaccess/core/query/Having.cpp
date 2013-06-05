@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Having.cpp
+  \file terralib/dataaccess/core/query/Having.cpp
 
   \brief A Having is a filter expression that can be applied to a query with a group by clause.
 */
@@ -27,27 +27,27 @@
 #include "Expression.h"
 #include "Having.h"
 
-te::da::Having::Having(Expression* e)
+te::da::core::Having::Having(Expression* e)
   : m_exp(e)
 {
 }
 
-te::da::Having::Having(const Expression& e)
+te::da::core::Having::Having(const Expression& e)
   : m_exp(e.clone())
 {
 }
 
-te::da::Having::Having(const Having& rhs)
+te::da::core::Having::Having(const Having& rhs)
   : m_exp(0)
 {
   m_exp.reset(rhs.m_exp.get() ? rhs.m_exp->clone() : 0);
 }
 
-te::da::Having::~Having()
+te::da::core::Having::~Having()
 {
 }
         
-te::da::Having& te::da::Having::operator=(const Having& rhs)
+te::da::core::Having& te::da::core::Having::operator=(const Having& rhs)
 {
   if(this != &rhs)
   {
@@ -57,15 +57,12 @@ te::da::Having& te::da::Having::operator=(const Having& rhs)
   return *this;
 }
 
-te::da::Expression* te::da::Having::getExp() const
+te::da::core::Expression* te::da::core::Having::getExp() const
 {
   return m_exp.get();
 }
 
-void te::da::Having::setExp(Expression* exp)
+void te::da::core::Having::setExp(Expression* exp)
 {
   m_exp.reset(exp);
 }
-
-
-

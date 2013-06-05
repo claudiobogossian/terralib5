@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FromItem.cpp
+  \file terralib/dataaccess/core/query/FromItem.cpp
 
   \brief An abstract class that models a source of data in a query.
 */
@@ -26,12 +26,12 @@
 // TerraLib
 #include "FromItem.h"
 
-te::da::FromItem::FromItem(const FromItem& rhs)
+te::da::core::FromItem::FromItem(const FromItem& rhs)
   : m_alias(rhs.m_alias)
 {
 }
 
-te::da::FromItem& te::da::FromItem::operator=(const FromItem& rhs)
+te::da::core::FromItem& te::da::core::FromItem::operator=(const FromItem& rhs)
 {
   if(this != &rhs)
     m_alias = rhs.m_alias;
@@ -39,13 +39,12 @@ te::da::FromItem& te::da::FromItem::operator=(const FromItem& rhs)
   return *this;
 }
 
-void te::da::FromItem::setAlias(const std::string& alias)
+void te::da::core::FromItem::setAlias(const std::string& alias)
 {
   m_alias = alias;
 }
 
-const std::string& te::da::FromItem::getAlias() const
+const std::string& te::da::core::FromItem::getAlias() const
 {
   return m_alias;
 }
-

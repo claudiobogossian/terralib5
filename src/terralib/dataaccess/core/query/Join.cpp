@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Join.cpp
+  \file terralib/dataaccess/core/query/Join.cpp
 
-  \brief A Join clause combines two FromItems.
+  \brief A Join clause is used to combine two FromItems.
 */
 
 // TerraLib
 #include "Join.h"
 #include "JoinCondition.h"
 
-te::da::Join::Join(FromItem* first, FromItem* second, JoinType t, JoinCondition* c)
+te::da::core::Join::Join(FromItem* first, FromItem* second, JoinType t, JoinCondition* c)
   : FromItem(""),
     m_first(first),
     m_second(second),
@@ -37,7 +37,7 @@ te::da::Join::Join(FromItem* first, FromItem* second, JoinType t, JoinCondition*
 {
 }
 
-te::da::Join::Join(const FromItem& first, const FromItem& second, JoinType t, const JoinCondition& c)
+te::da::core::Join::Join(const FromItem& first, const FromItem& second, JoinType t, const JoinCondition& c)
   : FromItem(""),
     m_first(0),
     m_second(0),
@@ -50,7 +50,7 @@ te::da::Join::Join(const FromItem& first, const FromItem& second, JoinType t, co
   m_condition.reset(c.clone());
 }
 
-te::da::Join::Join(const Join& rhs)
+te::da::core::Join::Join(const Join& rhs)
   : FromItem(rhs),
     m_first(0),
     m_second(0),
@@ -63,11 +63,11 @@ te::da::Join::Join(const Join& rhs)
   m_condition.reset(rhs.m_condition.get() ? rhs.m_condition->clone() : 0);
 }
 
-te::da::Join::~Join()
+te::da::core::Join::~Join()
 {
 }
 
-te::da::Join& te::da::Join::operator=(const Join& rhs)
+te::da::core::Join& te::da::core::Join::operator=(const Join& rhs)
 {
   if(this != &rhs)
   {
@@ -83,48 +83,47 @@ te::da::Join& te::da::Join::operator=(const Join& rhs)
   return *this;
 }
 
-te::da::FromItem* te::da::Join::clone() const
+te::da::core::FromItem* te::da::core::Join::clone() const
 {
   return new Join(*this);
 }
 
-te::da::FromItem* te::da::Join::getFirst() const
+te::da::core::FromItem* te::da::core::Join::getFirst() const
 {
   return m_first.get();
 }
 
-void te::da::Join::setFirst(FromItem* item)
+void te::da::core::Join::setFirst(FromItem* item)
 {
   m_first.reset(item);
 }
 
-te::da::FromItem* te::da::Join::getSecond() const
+te::da::core::FromItem* te::da::core::Join::getSecond() const
 {
   return m_second.get();
 }
 
-void te::da::Join::setSecond(FromItem* item)
+void te::da::core::Join::setSecond(FromItem* item)
 {
   m_second.reset(item);
 }
 
-te::da::JoinType te::da::Join::getType() const
+te::da::JoinType te::da::core::Join::getType() const
 {
   return m_type;
 }
 
-void te::da::Join::setType(JoinType t)
+void te::da::core::Join::setType(JoinType t)
 {
   m_type = t;
 }
 
-te::da::JoinCondition* te::da::Join::getCondition() const
+te::da::core::JoinCondition* te::da::core::Join::getCondition() const
 {
   return m_condition.get();
 }
 
-void te::da::Join::setCondition(JoinCondition* c)
+void te::da::core::Join::setCondition(JoinCondition* c)
 {
   m_condition.reset(c);
 }
-

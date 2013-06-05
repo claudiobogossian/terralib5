@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,49 +18,47 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralDouble.cpp
+  \file terralib/dataaccess/core/query/LiteralDouble.cpp
 
   \brief A class that models a literal for double values.
 */
 
 // TerraLib
-#include "../../datatype/SimpleData.h"
+#include "../../../datatype/SimpleData.h"
 #include "LiteralDouble.h"
 
-te::da::LiteralDouble::LiteralDouble(te::dt::AbstractData* v)
+te::da::core::LiteralDouble::LiteralDouble(te::dt::AbstractData* v)
   : Literal(v)
 {
 }
 
-te::da::LiteralDouble::LiteralDouble(const te::dt::AbstractData& v)
+te::da::core::LiteralDouble::LiteralDouble(const te::dt::AbstractData& v)
   : Literal(v)
 {
 }
 
-te::da::LiteralDouble::LiteralDouble(const double& v)
+te::da::core::LiteralDouble::LiteralDouble(const double& v)
   : Literal(new te::dt::Double(v))
 {
 }
 
-te::da::LiteralDouble::LiteralDouble(const LiteralDouble& rhs)
+te::da::core::LiteralDouble::LiteralDouble(const LiteralDouble& rhs)
   : Literal(rhs)
 {
 }
 
-te::da::LiteralDouble::~LiteralDouble()
+te::da::core::LiteralDouble::~LiteralDouble()
 {
 }
 
-te::da::LiteralDouble& te::da::LiteralDouble::operator=(const LiteralDouble& rhs)
+te::da::core::LiteralDouble& te::da::core::LiteralDouble::operator=(const LiteralDouble& rhs)
 {
   Literal::operator=(rhs);
 
   return *this;
 }
 
-te::da::Expression* te::da::LiteralDouble::clone() const
+te::da::core::Expression* te::da::core::LiteralDouble::clone() const
 {
   return new LiteralDouble(*this);
 }
-
-

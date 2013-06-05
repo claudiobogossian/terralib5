@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralGeom.h
+  \file terralib/dataaccess/core/query/LiteralGeom.h
 
   \brief A class that models a literal for Geometry values.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LITERALGEOM_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LITERALGEOM_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALGEOM_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALGEOM_H
 
 // TerraLib
 #include "Literal.h"
@@ -36,50 +36,52 @@ namespace te
 
   namespace da
   {
-    /*!
-      \class LiteralGeom
-      
-      \brief A class that models a literal for Geometry values.
-
-      \sa Literal
-    */
-    class TEDATAACCESSEXPORT LiteralGeom : public Literal
+    namespace core
     {
-      public:
+      /*!
+        \class LiteralGeom
+      
+        \brief A class that models a literal for Geometry values.
 
-        TE_DEFINE_VISITABLE
+        \sa Literal
+      */
+      class TEDATAACCESSEXPORT LiteralGeom : public Literal
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          TE_DEFINE_VISITABLE
 
-          \param g The geometry value.
+          /*!
+            \brief Constructor.
 
-          \note The LiteralGeom will take the ownership of the given geometry.
-        */
-        LiteralGeom(te::gm::Geometry* g);
+            \param g The geometry value.
 
-        /*!
-          \brief Constructor.
+            \note The LiteralGeom will take the ownership of the given geometry.
+          */
+          LiteralGeom(te::gm::Geometry* g);
 
-          \param g The geometry value.
-        */
-        LiteralGeom(const te::gm::Geometry& g);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        LiteralGeom(const LiteralGeom& rhs);
+            \param g The geometry value.
+          */
+          LiteralGeom(const te::gm::Geometry& g);
 
-        /*! \brief Destructor. */
-        ~LiteralGeom();
+          /*! \brief Copy constructor. */
+          LiteralGeom(const LiteralGeom& rhs);
 
-        /*! Assignment operator.  */
-        LiteralGeom& operator=(const LiteralGeom& rhs);
+          /*! \brief Destructor. */
+          ~LiteralGeom();
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! Assignment operator.  */
+          LiteralGeom& operator=(const LiteralGeom& rhs);
 
-  } // end namespace da
-}   // end namespace te
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LITERALGEOM_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALGEOM_H

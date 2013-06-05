@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/JoinConditionOn.cpp
+  \file terralib/dataaccess/core/query/JoinConditionOn.cpp
 
   \brief JoinConditionOn is a boolean expression and it specifies which items in a join are considered to match.
 */
@@ -27,29 +27,29 @@
 #include "Expression.h"
 #include "JoinConditionOn.h"
 
-te::da::JoinConditionOn::JoinConditionOn(Expression* e)
+te::da::core::JoinConditionOn::JoinConditionOn(Expression* e)
   : m_condition(e)
 {
 }
 
-te::da::JoinConditionOn::JoinConditionOn(const Expression& e)
+te::da::core::JoinConditionOn::JoinConditionOn(const Expression& e)
   : m_condition(0)
 {
   m_condition.reset(e.clone());
 }
 
-te::da::JoinConditionOn::JoinConditionOn(const JoinConditionOn& rhs)
+te::da::core::JoinConditionOn::JoinConditionOn(const JoinConditionOn& rhs)
   : m_condition(0)
 {
   m_condition.reset(rhs.m_condition.get() ? rhs.m_condition->clone() : 0);
 }
 
-te::da::JoinConditionOn::~JoinConditionOn()
+te::da::core::JoinConditionOn::~JoinConditionOn()
 {
 }
 
 
-te::da::JoinConditionOn& te::da::JoinConditionOn::operator=(const JoinConditionOn& rhs)
+te::da::core::JoinConditionOn& te::da::core::JoinConditionOn::operator=(const JoinConditionOn& rhs)
 {
   if(this != &rhs)
   {
@@ -59,18 +59,17 @@ te::da::JoinConditionOn& te::da::JoinConditionOn::operator=(const JoinConditionO
   return *this;
 }
 
-te::da::JoinCondition* te::da::JoinConditionOn::clone() const
+te::da::core::JoinCondition* te::da::core::JoinConditionOn::clone() const
 {
   return new JoinConditionOn(*this);
 }
 
-void te::da::JoinConditionOn::setCondition(Expression* c)
+void te::da::core::JoinConditionOn::setCondition(Expression* c)
 {
   m_condition.reset(c);
 }
 
-te::da::Expression* te::da::JoinConditionOn::getCondition() const
+te::da::core::Expression* te::da::core::JoinConditionOn::getCondition() const
 {
   return m_condition.get();
 }
-

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/DataSetName.cpp
+  \file terralib/dataaccess/core/query/DataSetName.cpp
 
   \brief A class that models the name of a dataset used in a From clause.
 */
@@ -26,19 +26,19 @@
 // TerraLib
 #include "DataSetName.h"
 
-te::da::DataSetName::DataSetName(const std::string& name, const std::string& alias)
+te::da::core::DataSetName::DataSetName(const std::string& name, const std::string& alias)
   : FromItem(alias),
     m_name(name)
 {
 }
 
-te::da::DataSetName::DataSetName(const DataSetName& rhs)
+te::da::core::DataSetName::DataSetName(const DataSetName& rhs)
   : FromItem(rhs),
     m_name(rhs.m_name)
 {  
 }
 
-te::da::DataSetName& te::da::DataSetName::operator=(const DataSetName& rhs)
+te::da::core::DataSetName& te::da::core::DataSetName::operator=(const DataSetName& rhs)
 {
   if(this != &rhs)
   {
@@ -49,18 +49,17 @@ te::da::DataSetName& te::da::DataSetName::operator=(const DataSetName& rhs)
   return *this;
 }
 
-te::da::FromItem* te::da::DataSetName::clone() const
+te::da::core::FromItem* te::da::core::DataSetName::clone() const
 {
   return new DataSetName(*this);
 }
 
-const std::string& te::da::DataSetName::getName() const
+const std::string& te::da::core::DataSetName::getName() const
 {
   return m_name;
 }
 
-void te::da::DataSetName::setName(const std::string& name)
+void te::da::core::DataSetName::setName(const std::string& name)
 {
   m_name = name;
 }
-

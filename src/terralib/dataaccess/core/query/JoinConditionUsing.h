@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/JoinConditionUsing.h
+  \file terralib/dataaccess/core/query/JoinConditionUsing.h
 
   \brief JoinConditionUsing class can be used to model a USING clause in a Join.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_JOINCONDITIONUSING_H
-#define __TERRALIB_DATAACCESS_INTERNAL_JOINCONDITIONUSING_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOINCONDITIONUSING_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOINCONDITIONUSING_H
 
 // TerraLib
 #include "JoinCondition.h"
@@ -36,74 +36,76 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class JoinConditionUsing
-      
-      \brief JoinConditionUsing class can be used to model a USING clause in a Join.
-
-      \sa JoinCondition, JoinConditionOn
-    */
-    class TEDATAACCESSEXPORT JoinConditionUsing : public JoinCondition
+    namespace core
     {
-      public:
+      /*!
+        \class JoinConditionUsing
+      
+        \brief JoinConditionUsing class can be used to model a USING clause in a Join.
 
-        TE_DEFINE_VISITABLE
+        \sa JoinCondition, JoinConditionOn
+      */
+      class TEDATAACCESSEXPORT JoinConditionUsing : public JoinCondition
+      {
+        public:
 
-        /*! \brief Default constructor. */
-        JoinConditionUsing() {}
+          TE_DEFINE_VISITABLE
 
-        /*! \brief Copy constructor. */
-        JoinConditionUsing(const JoinConditionUsing& rhs);
+          /*! \brief Default constructor. */
+          JoinConditionUsing() {}
 
-        /*! \brief Destructor. */
-        ~JoinConditionUsing();
+          /*! \brief Copy constructor. */
+          JoinConditionUsing(const JoinConditionUsing& rhs);
 
-        /*! Assignment operator.  */
-        JoinConditionUsing& operator=(const JoinConditionUsing& rhs);
+          /*! \brief Destructor. */
+          ~JoinConditionUsing();
 
-        /*! \brief It creates a new copy of this JoinCondition. */
-        JoinCondition* clone() const;
+          /*! Assignment operator.  */
+          JoinConditionUsing& operator=(const JoinConditionUsing& rhs);
 
-        /*!
-          \brief It returns the number of fields in this join condition.
+          /*! \brief It creates a new copy of this JoinCondition. */
+          JoinCondition* clone() const;
 
-          \return The number of fields in this join condition.
-        */
-        std::size_t getNumFields() const { return m_fields.size(); }
+          /*!
+            \brief It returns the number of fields in this join condition.
 
-        /*!
-          \brief It adds the condition to the conteiner.
+            \return The number of fields in this join condition.
+          */
+          std::size_t getNumFields() const { return m_fields.size(); }
 
-          \param e The condition to be added to the join.
-        */
-        void push_back(Expression* e);
+          /*!
+            \brief It adds the condition to the conteiner.
 
-        /*!
-          \brief It returns the i-th condition.
+            \param e The condition to be added to the join.
+          */
+          void push_back(Expression* e);
 
-          \param i The condition position.
+          /*!
+            \brief It returns the i-th condition.
 
-          \return The i-th condition.
-        */
-        const Expression* operator[](std::size_t i) const;
+            \param i The condition position.
 
-        /*!
-          \brief It releases the i-th condition expression and trim the conteiner.
+            \return The i-th condition.
+          */
+          const Expression* operator[](std::size_t i) const;
 
-          \param i The condition to be removed.
-        */
-        void erase(std::size_t i);
+          /*!
+            \brief It releases the i-th condition expression and trim the conteiner.
 
-        /*! \brief It will release all condition expressions and then it will clear the conteiner. */
-        void clear();
+            \param i The condition to be removed.
+          */
+          void erase(std::size_t i);
 
-      private:
+          /*! \brief It will release all condition expressions and then it will clear the conteiner. */
+          void clear();
 
-        boost::ptr_vector<Expression> m_fields;  //!< The join column list.
-    };
+        private:
 
+          boost::ptr_vector<Expression> m_fields;  //!< The join column list.
+      };
+
+    }  // end namespace core
   } // end namespace da
 }   // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_JOINCONDITIONUSING_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOINCONDITIONUSING_H

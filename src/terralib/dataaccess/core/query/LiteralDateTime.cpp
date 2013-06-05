@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,42 +18,42 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralDateTime.cpp
+  \file terralib/dataaccess/core/query/LiteralDateTime.cpp
 
   \brief A class that models a literal for Date and Time values.
 */
 
 // TerraLib
-#include "../../datatype/DateTime.h"
+#include "../../../datatype/DateTime.h"
 #include "LiteralDateTime.h"
 
-te::da::LiteralDateTime::LiteralDateTime(te::dt::DateTime* d)
+te::da::core::LiteralDateTime::LiteralDateTime(te::dt::DateTime* d)
   : Literal(d)
 {
 }
 
-te::da::LiteralDateTime::LiteralDateTime(const te::dt::DateTime& d)
+te::da::core::LiteralDateTime::LiteralDateTime(const te::dt::DateTime& d)
   : Literal(d)
 {
 }
 
-te::da::LiteralDateTime::LiteralDateTime(const LiteralDateTime& rhs)
+te::da::core::LiteralDateTime::LiteralDateTime(const LiteralDateTime& rhs)
   : Literal(rhs)
 {
 }
 
-te::da::LiteralDateTime::~LiteralDateTime()
+te::da::core::LiteralDateTime::~LiteralDateTime()
 {
 }
 
-te::da::LiteralDateTime& te::da::LiteralDateTime::operator=(const LiteralDateTime& rhs)
+te::da::core::LiteralDateTime& te::da::core::LiteralDateTime::operator=(const LiteralDateTime& rhs)
 {
   Literal::operator=(rhs);
 
   return *this;
 }
 
-te::da::Expression* te::da::LiteralDateTime::clone() const
+te::da::core::Expression* te::da::core::LiteralDateTime::clone() const
 {
   return new LiteralDateTime(*this);
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FromItem.h
+  \file terralib/dataaccess/core/query/FromItem.h
 
   \brief An abstract class that models a source of data in a query.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_FROMITEM_H
-#define __TERRALIB_DATAACCESS_INTERNAL_FROMITEM_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FROMITEM_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FROMITEM_H
 
 // TerraLib
-#include "../../common/BaseVisitable.h"
+#include "../../../common/BaseVisitable.h"
 #include "QueryVisitor.h"
 
 // STL
@@ -37,70 +37,72 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class Expression;
+    namespace core
+    {
+      // Forward declarations
+      class Expression;
 
-    /*!
-      \class FromItem
+      /*!
+        \class FromItem
       
-      \brief An abstract class that models a source of data in a query.
+        \brief An abstract class that models a source of data in a query.
 
-      \sa From, DataSetType, DataSetName, SubSelect, DataSet, FromFunctionCall, Join
-    */
-    class TEDATAACCESSEXPORT FromItem : public te::common::BaseVisitable<QueryVisitor>
-    {
-      public:
+        \sa From, DataSetType, DataSetName, SubSelect, DataSet, FromFunctionCall, Join
+      */
+      class TEDATAACCESSEXPORT FromItem : public te::common::BaseVisitable<QueryVisitor>
+      {
+        public:
 
-        TE_DEFINE_VISITABLE
+          TE_DEFINE_VISITABLE
 
-        /*!
-          \brief Constructor.
+          /*!
+            \brief Constructor.
 
-          \param alias An alias to the source data item.
-        */
-        FromItem(const std::string& alias) : m_alias(alias) {}
+            \param alias An alias to the source data item.
+          */
+          FromItem(const std::string& alias) : m_alias(alias) {}
 
-        /*! \brief Copy constructor. */
-        FromItem(const FromItem& rhs);
+          /*! \brief Copy constructor. */
+          FromItem(const FromItem& rhs);
 
-        /*! \brief Virtual destructor. */
-        virtual ~FromItem() {}
+          /*! \brief Virtual destructor. */
+          virtual ~FromItem() {}
 
-        /*! Assignment operator.  */
-        FromItem& operator=(const FromItem& rhs);
+          /*! Assignment operator.  */
+          FromItem& operator=(const FromItem& rhs);
 
-        /*! \brief It creates a new copy of this FromItem. */
-        virtual FromItem* clone() const = 0;
+          /*! \brief It creates a new copy of this FromItem. */
+          virtual FromItem* clone() const = 0;
 
-        /*!
-          \brief It sets the alias for a from source item.
+          /*!
+            \brief It sets the alias for a from source item.
 
-          \param alias The alias for a from source item.
+            \param alias The alias for a from source item.
 
-          \note The FromItem will take the ownership of the given alias.
-        */
-        void setAlias(const std::string& alias);
+            \note The FromItem will take the ownership of the given alias.
+          */
+          void setAlias(const std::string& alias);
 
-        /*!
-          \brief It returns the alias associated to the source item.
+          /*!
+            \brief It returns the alias associated to the source item.
 
-          \return The alias for the source item.
-        */
-        const std::string& getAlias() const;
+            \return The alias for the source item.
+          */
+          const std::string& getAlias() const;
 
-      protected:
+        protected:
 
-        std::string m_alias; //!< An alias for the output name.
-    };
+          std::string m_alias; //!< An alias for the output name.
+      };
 
-    /*! \brief For use with boost conteiners. */
-    inline FromItem* new_clone(const FromItem& a)
-    {
-      return a.clone();
-    }
+      /*! \brief For use with boost conteiners. */
+      inline FromItem* new_clone(const FromItem& a)
+      {
+        return a.clone();
+      }
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_FROMITEM_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FROMITEM_H

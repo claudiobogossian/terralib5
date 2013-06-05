@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralByteArray.h
+  \file terralib/dataaccess/core/query/LiteralByteArray.h
 
   \brief A class that models a literal for ByteArray values.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LITERALBYTEARRAY_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LITERALBYTEARRAY_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALBYTEARRAY_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALBYTEARRAY_H
 
 // TerraLib
 #include "Literal.h"
@@ -36,52 +36,54 @@ namespace te
 
   namespace da
   {
-    /*!
-      \class LiteralByteArray
-      
-      \brief A class that models a literal for ByteArray values.
-
-      This class is just a syntatic-suggar.
-
-      \sa Literal
-    */
-    class TEDATAACCESSEXPORT LiteralByteArray : public Literal
+    namespace core
     {
-      public:
+      /*!
+        \class LiteralByteArray
+      
+        \brief A class that models a literal for ByteArray values.
 
-        TE_DEFINE_VISITABLE
+        This class is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa Literal
+      */
+      class TEDATAACCESSEXPORT LiteralByteArray : public Literal
+      {
+        public:
 
-          \param b The ByteArray value.
+          TE_DEFINE_VISITABLE
 
-          \note The LiteralByteArray will take the ownership of the given byte array.
-        */
-        LiteralByteArray(te::dt::ByteArray* b);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param b The ByteArray value.
 
-          \param b The ByteArray value.
-        */
-        LiteralByteArray(const te::dt::ByteArray& b);
+            \note The LiteralByteArray will take the ownership of the given byte array.
+          */
+          LiteralByteArray(te::dt::ByteArray* b);
 
-        /*! \brief Copy constructor. */
-        LiteralByteArray(const LiteralByteArray& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~LiteralByteArray();
+            \param b The ByteArray value.
+          */
+          LiteralByteArray(const te::dt::ByteArray& b);
 
-        /*! Assignment operator.  */
-        LiteralByteArray& operator=(const LiteralByteArray& rhs);
+          /*! \brief Copy constructor. */
+          LiteralByteArray(const LiteralByteArray& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~LiteralByteArray();
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          LiteralByteArray& operator=(const LiteralByteArray& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LITERALBYTEARRAY_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALBYTEARRAY_H

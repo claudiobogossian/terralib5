@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,11 +18,10 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Join.cpp
+  \file terralib/dataaccess/core/query/Join.cpp
 
   \brief A condition to be used in a Join clause.
 */
 
 // TerraLib
 #include "JoinCondition.h"
-

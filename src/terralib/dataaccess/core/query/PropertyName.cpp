@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/PropertyName.cpp
+  \file terralib/dataaccess/core/query/PropertyName.cpp
 
   \brief A class that models the name of any property of an object.
 */
@@ -26,12 +26,12 @@
 // TerraLib
 #include "PropertyName.h"
 
-te::da::PropertyName::PropertyName(const PropertyName& rhs)
+te::da::core::PropertyName::PropertyName(const PropertyName& rhs)
   : m_name(rhs.m_name)
 {
 }
 
-te::da::PropertyName& te::da::PropertyName::operator=(const PropertyName& rhs)
+te::da::core::PropertyName& te::da::core::PropertyName::operator=(const PropertyName& rhs)
 {
   if(this != &rhs)
     m_name = rhs.m_name;
@@ -39,8 +39,7 @@ te::da::PropertyName& te::da::PropertyName::operator=(const PropertyName& rhs)
   return *this;
 }
 
-te::da::Expression* te::da::PropertyName::clone() const
+te::da::core::Expression* te::da::core::PropertyName::clone() const
 {
   return new PropertyName(*this);
 }
-

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Literal.h
+  \file terralib/dataaccess/core/query/Literal.h
 
   \brief This class models a literal value.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LITERAL_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LITERAL_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERAL_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERAL_H
 
 // TerraLib
 #include "Expression.h"
@@ -39,66 +39,68 @@ namespace te
 
   namespace da
   {
-    /*!
-      \class Literal
-      
-      \brief This class models a literal value.
-
-      \sa Expression, te::dt::AbstractData,
-          LiteralGeom, LiteralByteArray,
-          LiteralFloat, LiteralDouble,
-          LiteralInt32, LiteralInt64,
-          LiteralString, LiteralDateTime
-    */
-    class TEDATAACCESSEXPORT Literal : public Expression
+    namespace core
     {
-      public:
+      /*!
+        \class Literal
+      
+        \brief This class models a literal value.
 
-        TE_DEFINE_VISITABLE
+        \sa Expression, te::dt::AbstractData,
+            LiteralGeom, LiteralByteArray,
+            LiteralFloat, LiteralDouble,
+            LiteralInt32, LiteralInt64,
+            LiteralString, LiteralDateTime
+      */
+      class TEDATAACCESSEXPORT Literal : public Expression
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          TE_DEFINE_VISITABLE
 
-          \param value The value to be assigned to the literal. The literal takes its ownership.
-        */
-        Literal(te::dt::AbstractData* value);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param value The value to be assigned to the literal. The literal takes its ownership.
+          */
+          Literal(te::dt::AbstractData* value);
 
-          \param value The value to be assigned to the literal.
-        */
-        Literal(const te::dt::AbstractData& value);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        Literal(const Literal& rhs);
+            \param value The value to be assigned to the literal.
+          */
+          Literal(const te::dt::AbstractData& value);
 
-        /*! \brief Virtual destructor. */
-        virtual ~Literal();
+          /*! \brief Copy constructor. */
+          Literal(const Literal& rhs);
 
-        /*! Assignment operator.  */
-        Literal& operator=(const Literal& rhs);
+          /*! \brief Virtual destructor. */
+          virtual ~Literal();
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
+          /*! Assignment operator.  */
+          Literal& operator=(const Literal& rhs);
 
-        /*! \brief It returns the value associated to the literal. */
-        te::dt::AbstractData* getValue() const;
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
 
-        /*!
-          \brief It sets the value associated to the literal.
+          /*! \brief It returns the value associated to the literal. */
+          te::dt::AbstractData* getValue() const;
+
+          /*!
+            \brief It sets the value associated to the literal.
           
-          \param v The value to be assigned to the literal. The literal takes its ownership.
-        */
-        void setValue(te::dt::AbstractData* v);
+            \param v The value to be assigned to the literal. The literal takes its ownership.
+          */
+          void setValue(te::dt::AbstractData* v);
 
-      protected:
+        protected:
 
-        std::auto_ptr<te::dt::AbstractData> m_value;
-    };
+          std::auto_ptr<te::dt::AbstractData> m_value;
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LITERAL_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERAL_H

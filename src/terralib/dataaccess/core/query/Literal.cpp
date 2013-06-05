@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,36 +18,36 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Literal.cpp
+  \file terralib/dataaccess/core/query/Literal.cpp
 
   \brief This class models a literal value.
 */
 
 // TerraLib
-#include "../../datatype/AbstractData.h"
+#include "../../../datatype/AbstractData.h"
 #include "Literal.h"
 
-te::da::Literal::Literal(te::dt::AbstractData* value)
+te::da::core::Literal::Literal(te::dt::AbstractData* value)
   : m_value(value)
 {
 }
 
-te::da::Literal::Literal(const te::dt::AbstractData& value)
+te::da::core::Literal::Literal(const te::dt::AbstractData& value)
   : m_value(value.clone())
 {
 }
 
-te::da::Literal::Literal(const Literal& rhs)
+te::da::core::Literal::Literal(const Literal& rhs)
   : m_value(0)
 {
   m_value.reset(rhs.m_value.get() ? rhs.m_value->clone() : 0);
 }
 
-te::da::Literal::~Literal()
+te::da::core::Literal::~Literal()
 {
 }
 
-te::da::Literal& te::da::Literal::operator=(const Literal& rhs)
+te::da::core::Literal& te::da::core::Literal::operator=(const Literal& rhs)
 {
   if(this != &rhs)
   {
@@ -57,18 +57,17 @@ te::da::Literal& te::da::Literal::operator=(const Literal& rhs)
   return *this;
 }
 
-te::da::Expression* te::da::Literal::clone() const
+te::da::core::Expression* te::da::core::Literal::clone() const
 {
   return new Literal(*this);
 }
 
-te::dt::AbstractData* te::da::Literal::getValue() const
+te::dt::AbstractData* te::da::core::Literal::getValue() const
 {
   return m_value.get();
 }
 
-void te::da::Literal::setValue(te::dt::AbstractData* v)
+void te::da::core::Literal::setValue(te::dt::AbstractData* v)
 {
   m_value.reset(v);
 }
-

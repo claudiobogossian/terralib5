@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -23,8 +23,8 @@
   \brief A class that models a Literal for a integer value.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LITERALINT16_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LITERALINT16_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALINT16_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALINT16_H
 
 // TerraLib
 #include "Literal.h"
@@ -39,41 +39,43 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class LiteralInt
-      
-      \brief A class that models a Literal for a integer value.
-
-      \sa Literal
-    */
-    class TEDATAACCESSEXPORT LiteralInt16 : public Literal
+    namespace core
     {
-      public:
+      /*!
+        \class LiteralInt
+      
+        \brief A class that models a Literal for a integer value.
 
-        TE_DEFINE_VISITABLE
+        \sa Literal
+      */
+      class TEDATAACCESSEXPORT LiteralInt16 : public Literal
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          TE_DEFINE_VISITABLE
 
-          \param i The integer value.
-        */
-        LiteralInt16(boost::int16_t i);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        LiteralInt16(const LiteralInt16& rhs);
+            \param i The integer value.
+          */
+          LiteralInt16(boost::int16_t i);
 
-        /*! \brief Destructor. */
-        ~LiteralInt16() {}
+          /*! \brief Copy constructor. */
+          LiteralInt16(const LiteralInt16& rhs);
 
-        /*! Assignment operator.  */
-        LiteralInt16& operator=(const LiteralInt16& rhs);
+          /*! \brief Destructor. */
+          ~LiteralInt16() {}
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! Assignment operator.  */
+          LiteralInt16& operator=(const LiteralInt16& rhs);
 
-  } // end namespace da
-}   // end namespace te
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LITERALINT16_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALINT16_H

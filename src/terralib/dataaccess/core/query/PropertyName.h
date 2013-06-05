@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/PropertyName.h
+  \file terralib/dataaccess/core/query/PropertyName.h
 
   \brief A class that models the name of any property of an object.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_PROPERTYNAME_H
-#define __TERRALIB_DATAACCESS_INTERNAL_PROPERTYNAME_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_PROPERTYNAME_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_PROPERTYNAME_H
 
 // TerraLib
 #include "Expression.h"
@@ -36,63 +36,65 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class PropertyName
-      
-      \brief A class that models the name of any property of an object.
-
-      The property name can be used in scalar or spatial expressions to represent
-      the value of that property
-      for a particualr instance of an object.
-
-      \sa Expression
-    */
-    class TEDATAACCESSEXPORT PropertyName : public Expression
+    namespace core
     {
-      public:
+      /*!
+        \class PropertyName
+      
+        \brief A class that models the name of any property of an object.
 
-        TE_DEFINE_VISITABLE
+        The property name can be used in scalar or spatial expressions to represent
+        the value of that property
+        for a particualr instance of an object.
 
-        /*!
-          \brief Constructor.
+        \sa Expression
+      */
+      class TEDATAACCESSEXPORT PropertyName : public Expression
+      {
+        public:
 
-          \param name The property name.
-        */
-        PropertyName(const std::string& name) : m_name(name) {}
+          TE_DEFINE_VISITABLE
 
-        /*! \brief Copy constructor. */
-        PropertyName(const PropertyName& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~PropertyName() {}
+            \param name The property name.
+          */
+          PropertyName(const std::string& name) : m_name(name) {}
 
-        /*! Assignment operator.  */
-        PropertyName& operator=(const PropertyName& rhs);
+          /*! \brief Copy constructor. */
+          PropertyName(const PropertyName& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
+          /*! \brief Destructor. */
+          ~PropertyName() {}
 
-        /*!
-          \brief It returns the property name.
+          /*! Assignment operator.  */
+          PropertyName& operator=(const PropertyName& rhs);
 
-          \return The property name.
-         */
-        const std::string& getName() const { return m_name; }
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
 
-        /*!
-          \brief It sets the property name.
+          /*!
+            \brief It returns the property name.
 
-          \param name The property name.
-         */
-        void setName(const std::string& name) { m_name = name; }
+            \return The property name.
+           */
+          const std::string& getName() const { return m_name; }
 
-      private:
+          /*!
+            \brief It sets the property name.
 
-        std::string m_name;  //!< The property name.
-    };
+            \param name The property name.
+           */
+          void setName(const std::string& name) { m_name = name; }
 
-  } // end namespace da
-}   // end namespace te
+        private:
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_PROPERTYNAME_H
+          std::string m_name;  //!< The property name.
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_PROPERTYNAME_H

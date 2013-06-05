@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralEnvelope.h
+  \file terralib/dataaccess/core/query/LiteralEnvelope.h
 
   \brief A class that models a literal for Envelope values.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LITERALENVELOPE_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LITERALENVELOPE_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALENVELOPE_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALENVELOPE_H
 
 // TerraLib
 #include "Literal.h"
@@ -39,89 +39,91 @@ namespace te
 
   namespace da
   {
-    /*!
-      \class LiteralEnvelope
-      
-      \brief A class that models a literal for Envelope values.
-
-      \sa Expression
-
-      \note This class doesn't derive from Literal! In future we will do something to adjust this point!
-    */
-    class TEDATAACCESSEXPORT LiteralEnvelope : public Expression
+    namespace core
     {
-      public:
+      /*!
+        \class LiteralEnvelope
+      
+        \brief A class that models a literal for Envelope values.
 
-        TE_DEFINE_VISITABLE
+        \sa Expression
 
-        /*!
-          \brief Constructor.
+        \note This class doesn't derive from Literal! In future we will do something to adjust this point!
+      */
+      class TEDATAACCESSEXPORT LiteralEnvelope : public Expression
+      {
+        public:
 
-          \param e    The envelope value.
-          \param srid The envelope SRS.
+          TE_DEFINE_VISITABLE
 
-          \note The LiteralEnvelope will take the ownership of the given envelope.
-        */
-        LiteralEnvelope(te::gm::Envelope* e, int srid);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param e    The envelope value.
+            \param srid The envelope SRS.
 
-          \param e    The envelope value.
-          \param srid The envelope SRS.
-        */
-        LiteralEnvelope(const te::gm::Envelope& e, int srid);
+            \note The LiteralEnvelope will take the ownership of the given envelope.
+          */
+          LiteralEnvelope(te::gm::Envelope* e, int srid);
 
-        /*! \brief Copy constructor. */
-        LiteralEnvelope(const LiteralEnvelope& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~LiteralEnvelope();
+            \param e    The envelope value.
+            \param srid The envelope SRS.
+          */
+          LiteralEnvelope(const te::gm::Envelope& e, int srid);
 
-        /*! Assignment operator.  */
-        LiteralEnvelope& operator=(const LiteralEnvelope& rhs);
+          /*! \brief Copy constructor. */
+          LiteralEnvelope(const LiteralEnvelope& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
+          /*! \brief Destructor. */
+          ~LiteralEnvelope();
 
-        /*!
-          \brief It returns the associated envelope value.
+          /*! Assignment operator.  */
+          LiteralEnvelope& operator=(const LiteralEnvelope& rhs);
 
-          \return The associated envelope value.
-        */
-        te::gm::Envelope* getValue() const;
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
 
-        /*!
-          \brief It sets the envelope value associated to the Literal.
+          /*!
+            \brief It returns the associated envelope value.
 
-          \param e The envelope value.
+            \return The associated envelope value.
+          */
+          te::gm::Envelope* getValue() const;
 
-          \note The LiteralEnvelope will take the ownership of the given envelope.
-        */
-        void setValue(te::gm::Envelope* e);
+          /*!
+            \brief It sets the envelope value associated to the Literal.
 
-        /*!
-          \brief It returns the envelope SRS id.
+            \param e The envelope value.
 
-          \return The envelope SRS id.
-        */
-        int getSRID() const { return m_srid; }
+            \note The LiteralEnvelope will take the ownership of the given envelope.
+          */
+          void setValue(te::gm::Envelope* e);
 
-        /*!
-          \brief It sets the envelope SRS id.
+          /*!
+            \brief It returns the envelope SRS id.
 
-          \param srid The envelope SRS id.
-        */
-        void setSRID(int srid) { m_srid = srid; }
+            \return The envelope SRS id.
+          */
+          int getSRID() const { return m_srid; }
 
-      private:
+          /*!
+            \brief It sets the envelope SRS id.
 
-        std::auto_ptr<te::gm::Envelope> m_eval;   //!< The envelope value.
-        int m_srid;                               //!< The envelope SRS ID.
-    };
+            \param srid The envelope SRS id.
+          */
+          void setSRID(int srid) { m_srid = srid; }
 
-  } // end namespace da
-}   // end namespace te
+        private:
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LITERALENVELOPE_H
+          std::auto_ptr<te::gm::Envelope> m_eval;   //!< The envelope value.
+          int m_srid;                               //!< The envelope SRS ID.
+      };
 
+    } // end namespace core
+  }   // end namespace da
+}     // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALENVELOPE_H

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/DataSetName.h
+  \file terralib/dataaccess/core/query/DataSetName.h
 
   \brief A class that models the name of a dataset used in a From clause.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_DATASETNAME_H
-#define __TERRALIB_DATAACCESS_INTERNAL_DATASETNAME_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_DATASETNAME_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_DATASETNAME_H
 
 // TerraLib
 #include "FromItem.h"
@@ -33,60 +33,62 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class DataSetName
-      
-      \brief A class that models the name of a dataset used in a From clause.
-
-      \sa FromItem, SubSelect, FromFunctionCall, Join 
-    */
-    class TEDATAACCESSEXPORT DataSetName : public FromItem
+    namespace core
     {
-      public:
+      /*!
+        \class DataSetName
+      
+        \brief A class that models the name of a dataset used in a From clause.
 
-        TE_DEFINE_VISITABLE
+        \sa FromItem, SubSelect, FromFunctionCall, Join 
+      */
+      class TEDATAACCESSEXPORT DataSetName : public FromItem
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          TE_DEFINE_VISITABLE
 
-          \param name  The dataset name.
-          \param alias An alias to the dataset.
-        */
-        DataSetName(const std::string& name, const std::string& alias = "");
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        DataSetName(const DataSetName& rhs);
+            \param name  The dataset name.
+            \param alias An alias to the dataset.
+          */
+          DataSetName(const std::string& name, const std::string& alias = "");
 
-        /*! \brief Destructor. */
-        ~DataSetName() {}
+          /*! \brief Copy constructor. */
+          DataSetName(const DataSetName& rhs);
 
-        /*! Assignment operator.  */
-        DataSetName& operator=(const DataSetName& rhs);
+          /*! \brief Destructor. */
+          ~DataSetName() {}
 
-        /*! \brief It creates a new copy of this FromItem. */
-        FromItem* clone() const;
+          /*! Assignment operator.  */
+          DataSetName& operator=(const DataSetName& rhs);
 
-        /*!
-          \brief It returns the dataset name.
+          /*! \brief It creates a new copy of this FromItem. */
+          FromItem* clone() const;
 
-          \return The dataset name.
-        */
-        const std::string& getName() const;
+          /*!
+            \brief It returns the dataset name.
 
-        /*!
-          \brief It sets the dataset name.
+            \return The dataset name.
+          */
+          const std::string& getName() const;
 
-          \param name The dataset name.
-        */
-        void setName(const std::string& name);
+          /*!
+            \brief It sets the dataset name.
 
-      private:
+            \param name The dataset name.
+          */
+          void setName(const std::string& name);
 
-        std::string m_name;  //!< The dataset name.
-    };
+        private:
 
-  } // end namespace da
-}   // end namespace te
+          std::string m_name;  //!< The dataset name.
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASETNAME_H
+    }  //end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_DATASETNAME_H

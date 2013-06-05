@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/In.h
+  \file terralib/dataaccess/core/query/In.h
 
   \brief A class that represents the IN operator.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_IN_H
-#define __TERRALIB_DATAACCESS_INTERNAL_IN_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_IN_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_IN_H
 
 // TerraLib
 #include "Function.h"
@@ -38,79 +38,81 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class PropertyName;
-    class Literal;
-
-    /*!
-      \class In
-      
-      \brief A class that represents the IN operator.
-
-      \sa Expression
-    */
-    class TEDATAACCESSEXPORT In : public Function
+    namespace core
     {
-      public:
+      // Forward declarations
+      class PropertyName;
+      class Literal;
 
-        TE_DEFINE_VISITABLE
+      /*!
+        \class In
+      
+        \brief A class that represents the IN operator.
 
-        /*!
-          \brief Constructor.
+        \sa Expression
+      */
+      class TEDATAACCESSEXPORT In : public Function
+      {
+        public:
 
-          \param name The property name.
+          TE_DEFINE_VISITABLE
 
-          \note The In will take the ownership of the given property.
-        */
-        In(PropertyName* p);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param name The property name.
 
-          \param name The property name.
-        */
-        In(const PropertyName& p);
+            \note The In will take the ownership of the given property.
+          */
+          In(PropertyName* p);
 
-        /*!
-          \brief Constructor.
+          /*!
+            \brief Constructor.
 
-          \param name The property name.
-        */
-        In(const std::string& name);
+            \param name The property name.
+          */
+          In(const PropertyName& p);
 
-        /*! \brief Copy constructor. */
-        In(const In& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~In();
+            \param name The property name.
+          */
+          In(const std::string& name);
 
-        /*! Assignment operator.  */
-        In& operator=(const In& rhs);
+          /*! \brief Copy constructor. */
+          In(const In& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
+          /*! \brief Destructor. */
+          ~In();
 
-        /*!
-          \brief It returns the property name.
+          /*! Assignment operator.  */
+          In& operator=(const In& rhs);
 
-          \return The property name.
-        */
-        PropertyName* getPropertyName() const;
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
 
-        /*!
-          \brief It sets the property name.
+          /*!
+            \brief It returns the property name.
 
-          \param name The property name.
-        */
-        void setPropertyName(PropertyName* p);
+            \return The property name.
+          */
+          PropertyName* getPropertyName() const;
 
-      private:
+          /*!
+            \brief It sets the property name.
 
-        std::auto_ptr<PropertyName> m_name; //!< The property name.
-    };
+            \param name The property name.
+          */
+          void setPropertyName(PropertyName* p);
 
-  } // end namespace da
-}   // end namespace te
+        private:
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_IN_H
+          std::auto_ptr<PropertyName> m_name; //!< The property name.
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_IN_H

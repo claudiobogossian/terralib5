@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Field.h
+  \file terralib/dataaccess/core/query/Field.h
 
   \brief The Field class can be used to model an expression that takes part of the output items of a SELECT.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_FIELD_H
-#define __TERRALIB_DATAACCESS_INTERNAL_FIELD_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FIELD_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FIELD_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
 
 // STL
 #include <memory>
@@ -37,95 +37,97 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class Expression;
-
-    /*!
-      \class Field
-      
-      \brief The Field class can be used to model an expression that takes part of the output items of a SELECT.
-
-      \sa Fields
-    */
-    class TEDATAACCESSEXPORT Field
+    namespace core
     {
-      public:
+      // Forward declarations
+      class Expression;
 
-        /*!
-          \brief Constructor.
+      /*!
+        \class Field
+      
+        \brief The Field class can be used to model an expression that takes part of the output items of a SELECT.
 
-          \param e     The output expression to be used in a Select clause.
-          \param alias An alias to the output expression.
-        */
-        Field(const Expression& e, const std::string& alias = std::string(""));
+        \sa Fields
+      */
+      class TEDATAACCESSEXPORT Field
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          /*!
+            \brief Constructor.
 
-          \param e     The output expression to be used in a Select clause.
-          \param alias An alias to the output expression.
+            \param e     The output expression to be used in a Select clause.
+            \param alias An alias to the output expression.
+          */
+          Field(const Expression& e, const std::string& alias = std::string(""));
 
-          \note The Field will take the ownership of Expression and alias.
-        */
-        Field(Expression* e, std::string* alias = 0);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param e     The output expression to be used in a Select clause.
+            \param alias An alias to the output expression.
 
-          \param propertyName The property name.
-          \param alias        The property alias.
-        */
-        Field(const std::string& propertyName, const std::string& alias = std::string(""));
+            \note The Field will take the ownership of Expression and alias.
+          */
+          Field(Expression* e, std::string* alias = 0);
 
-        /*! \brief Copy constructor. */
-        Field(const Field& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~Field();
+            \param propertyName The property name.
+            \param alias        The property alias.
+          */
+          Field(const std::string& propertyName, const std::string& alias = std::string(""));
 
-        /*! Assignment operator.  */
-        Field& operator=(const Field& rhs);
+          /*! \brief Copy constructor. */
+          Field(const Field& rhs);
 
-        /*!
-          \brief It sets the an expression that can be used in a Select query.
+          /*! \brief Destructor. */
+          ~Field();
 
-          \param e An expression that can be used in a Select query.
+          /*! Assignment operator.  */
+          Field& operator=(const Field& rhs);
 
-          \note The Field will take the ownership of the given expression.
-        */
-        void setExpression(Expression* e);
+          /*!
+            \brief It sets the an expression that can be used in a Select query.
 
-        /*!
-          \brief It returns the expression set for an output select query.
+            \param e An expression that can be used in a Select query.
 
-          \return The expression set for an output select query.
-        */
-        Expression* getExpression() const;
+            \note The Field will take the ownership of the given expression.
+          */
+          void setExpression(Expression* e);
 
-        /*!
-          \brief As you know, sometimes is better to give an alias to an output expression.
+          /*!
+            \brief It returns the expression set for an output select query.
 
-          \param alias An aliast fo the output expression.
+            \return The expression set for an output select query.
+          */
+          Expression* getExpression() const;
 
-          \note The Field object will take the ownership of the alias.
-        */
-        void setAlias(std::string* alias);
+          /*!
+            \brief As you know, sometimes is better to give an alias to an output expression.
 
-        /*!
-          \brief It returns the alias for the outout expression.
+            \param alias An aliast fo the output expression.
 
-          \return The alias for the outout expression.
-        */
-        std::string* getAlias() const;
+            \note The Field object will take the ownership of the alias.
+          */
+          void setAlias(std::string* alias);
 
-      private:
+          /*!
+            \brief It returns the alias for the outout expression.
 
-        std::auto_ptr<Expression> m_field;  //!< A valid expression.
-        std::auto_ptr<std::string> m_alias; //!< An alias for the output name.
-    };
+            \return The alias for the outout expression.
+          */
+          std::string* getAlias() const;
 
-  } // end namespace da
-}   // end namespace te
+        private:
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_FIELD_H
+          std::auto_ptr<Expression> m_field;  //!< A valid expression.
+          std::auto_ptr<std::string> m_alias; //!< An alias for the output name.
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FIELD_H

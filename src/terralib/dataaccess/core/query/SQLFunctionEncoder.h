@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/SQLFunctionEncoder.h
+  \file terralib/dataaccess/core/query/SQLFunctionEncoder.h
 
   \brief A base class for encoders of SQL function expressions.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_SQLFUNCTIONENCODER_H
-#define __TERRALIB_DATAACCESS_INTERNAL_SQLFUNCTIONENCODER_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SQLFUNCTIONENCODER_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SQLFUNCTIONENCODER_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
 
 // STL
 #include <string>
@@ -39,57 +39,59 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class Function;
-    class SQLVisitor;
-
-    /*!
-      \class SQLFunctionEncoder
-      
-      \brief A base class for encoders of SQL function expressions.
-
-      A Function is a named procedure that performs a distinct computation.
-
-      \sa Function, TemplateEncoder, BinaryOpEncoder, UnaryOpEncoder, FunctionEncoder
-    */
-    class TEDATAACCESSEXPORT SQLFunctionEncoder : public boost::noncopyable
+    namespace core
     {
-      public:
+      // Forward declarations
+      class Function;
+      class SQLVisitor;
 
-        /*!
-          \brief Constructor.
+      /*!
+        \class SQLFunctionEncoder
+      
+        \brief A base class for encoders of SQL function expressions.
 
-          \param name The function name.
-        */
-        SQLFunctionEncoder(const std::string& name) : m_name(name) {}
+        A Function is a named procedure that performs a distinct computation.
 
-        /*! \brief Virtual Destructor. */
-        virtual ~SQLFunctionEncoder() {}
+        \sa Function, TemplateEncoder, BinaryOpEncoder, UnaryOpEncoder, FunctionEncoder
+      */
+      class TEDATAACCESSEXPORT SQLFunctionEncoder : public boost::noncopyable
+      {
+        public:
 
-        /*!
-          \brief It encodes the function to a SQL notation.
+          /*!
+            \brief Constructor.
 
-          Subclasses must provide implementations for the many ways a function
-          can be called in a database native language. For example, the '+' operator
-          is called A + B, while the ST_Intersects function is called ST_Intersects(A, B).
+            \param name The function name.
+          */
+          SQLFunctionEncoder(const std::string& name) : m_name(name) {}
 
-          Notice that this method will visit the expression arguments of a function.
+          /*! \brief Virtual Destructor. */
+          virtual ~SQLFunctionEncoder() {}
 
-          \param f    The function to be translated to a SQL notation.
-          \param buff The destination string buffer where the translation will be written.
-          \param v    The SQL visitor that will be used to visit the arguments expression.
-        */
-        virtual void toSQL(const Function& f,
-                           std::string& buff,
-                           SQLVisitor& v) const = 0;
+          /*!
+            \brief It encodes the function to a SQL notation.
 
-      protected:
+            Subclasses must provide implementations for the many ways a function
+            can be called in a database native language. For example, the '+' operator
+            is called A + B, while the ST_Intersects function is called ST_Intersects(A, B).
 
-        std::string m_name; //!< The alias to the function.
-    };
+            Notice that this method will visit the expression arguments of a function.
 
-  } // end namespace da
-}   // end namespace te
+            \param f    The function to be translated to a SQL notation.
+            \param buff The destination string buffer where the translation will be written.
+            \param v    The SQL visitor that will be used to visit the arguments expression.
+          */
+          virtual void toSQL(const Function& f,
+                             std::string& buff,
+                             SQLVisitor& v) const = 0;
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_SQLFUNCTIONENCODER_H
+        protected:
 
+          std::string m_name; //!< The alias to the function.
+      };
+
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SQLFUNCTIONENCODER_H

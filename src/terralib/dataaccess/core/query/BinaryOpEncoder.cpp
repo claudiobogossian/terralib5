@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/BinaryOpEncoder.cpp
+  \file terralib/dataaccess/core/query/BinaryOpEncoder.cpp
 
-  \brief An SQL encoder for binary operator expressions.
+  \brief A query encoder for binary operations.
 */
 
 // TerraLib
@@ -31,7 +31,7 @@
 // STL
 #include <cassert>
 
-void te::da::BinaryOpEncoder::toSQL(const Function& f,
+void te::da::core::BinaryOpEncoder::toSQL(const Function& f,
                                     std::string& buff,
                                     SQLVisitor& v) const
 {
@@ -44,4 +44,3 @@ void te::da::BinaryOpEncoder::toSQL(const Function& f,
   f[1]->accept(v);
   buff += ")";
 }
-

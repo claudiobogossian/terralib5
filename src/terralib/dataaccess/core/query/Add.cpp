@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Add.cpp
+  \file terralib/dataaccess/core/query/Add.cpp
 
   \brief The addition operator - syntatic-suggar.
 */
@@ -26,20 +26,19 @@
 // TerraLib
 #include "Add.h"
 
-te::da::Add::Add(const Add& rhs)
+te::da::core::Add::Add(const Add& rhs)
   : BinaryOp(rhs)
 {
 }
 
-te::da::Add& te::da::Add::operator=(const Add& rhs)
+te::da::core::Add& te::da::core::Add::operator=(const Add& rhs)
 {
   BinaryOp::operator=(rhs);
 
   return *this;
 }
 
-te::da::Expression* te::da::Add::clone() const
+te::da::core::Expression* te::da::core::Add::clone() const
 {
   return new Add(*this);
 }
-

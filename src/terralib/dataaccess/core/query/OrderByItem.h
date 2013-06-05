@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/OrderByItem.h
+  \file terralib/dataaccess/core/query/OrderByItem.h
 
   \brief A class that can be used in an ORDER BY clause to sort the items of a resulting query.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_ORDERBYITEM_H
-#define __TERRALIB_DATAACCESS_INTERNAL_ORDERBYITEM_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ORDERBYITEM_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ORDERBYITEM_H
 
 // TerraLib
-#include "../Config.h"
-#include "../Enums.h"
+#include "../../Config.h"
+#include "../../Enums.h"
 
 // STL
 #include <memory>
@@ -38,95 +38,97 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class Expression;
-
-    /*!
-      \class OrderByItem
-      
-      \brief A class that can be used in an ORDER BY clause to sort the items of a resulting query.
-
-      The order default will be ascendent if none is informed.
-
-      \sa OrderBy
-    */
-    class TEDATAACCESSEXPORT OrderByItem
+    namespace core
     {
-      public:   
+      // Forward declarations
+      class Expression;
 
-        /*!
-          \brief Constructor.
+      /*!
+        \class OrderByItem
+      
+        \brief A class that can be used in an ORDER BY clause to sort the items of a resulting query.
 
-          \param e     An expression to be used in an ORDER BY clause.
-          \param order The sort order.
-        */
-        explicit OrderByItem(const Expression& e, SortOrder order = ASC);
+        The order default will be ascendent if none is informed.
 
-        /*!
-          \brief Constructor.
+        \sa OrderBy
+      */
+      class TEDATAACCESSEXPORT OrderByItem
+      {
+        public:   
 
-          \param e     An expression to be used in an ORDER BY clause.
-          \param order The sort order.
+          /*!
+            \brief Constructor.
 
-          \note The OrderByItem will take the ownership of Expression.
-        */
-        explicit OrderByItem(Expression* e, SortOrder order = ASC);
+            \param e     An expression to be used in an ORDER BY clause.
+            \param order The sort order.
+          */
+          explicit OrderByItem(const Expression& e, SortOrder order = ASC);
 
-        /*!
-          \brief Constructor.
+          /*!
+            \brief Constructor.
 
-          \param propertyName  A property name.
-          \param order         The sort order.
-        */
-        explicit OrderByItem(const std::string& propertyName, SortOrder order = ASC);
+            \param e     An expression to be used in an ORDER BY clause.
+            \param order The sort order.
 
-        /*! \brief Copy constructor. */
-        explicit OrderByItem(const OrderByItem& rhs);
+            \note The OrderByItem will take the ownership of Expression.
+          */
+          explicit OrderByItem(Expression* e, SortOrder order = ASC);
 
-        /*! \brief Destructor. */
-        ~OrderByItem();        
+          /*!
+            \brief Constructor.
 
-        /*! Assignment operator.  */
-        OrderByItem& operator=(const OrderByItem& rhs);
+            \param propertyName  A property name.
+            \param order         The sort order.
+          */
+          explicit OrderByItem(const std::string& propertyName, SortOrder order = ASC);
 
-        /*!
-          \brief It sets the expression to sort the result of a query.
+          /*! \brief Copy constructor. */
+          explicit OrderByItem(const OrderByItem& rhs);
 
-          \param e The expression to be used to sort the result of a query.
+          /*! \brief Destructor. */
+          ~OrderByItem();        
 
-          \note The OrderByItem will take the expression ownership.
-        */
-        void setExpression(Expression* e);
+          /*! Assignment operator.  */
+          OrderByItem& operator=(const OrderByItem& rhs);
 
-        /*!
-          \brief It returns the exprsssion to be used to sort the result of a query.
+          /*!
+            \brief It sets the expression to sort the result of a query.
 
-          \return The exprsssion to be used to sort the result of a query.
-        */
-        Expression* getExpression() const;
+            \param e The expression to be used to sort the result of a query.
 
-        /*!
-          \brief It sets the order to be used during the sorting of a query.
+            \note The OrderByItem will take the expression ownership.
+          */
+          void setExpression(Expression* e);
 
-          \param o The order to be used during the sorting of a query.
-        */
-        void setSortOrder(SortOrder o);
+          /*!
+            \brief It returns the exprsssion to be used to sort the result of a query.
 
-        /*!
-          \brief It returns the order of sorting: Asc or Desc.
+            \return The exprsssion to be used to sort the result of a query.
+          */
+          Expression* getExpression() const;
 
-          \return The order of sorting: Asc or Desc.
-        */
-        SortOrder getSortOrder() const;
+          /*!
+            \brief It sets the order to be used during the sorting of a query.
 
-      private:
+            \param o The order to be used during the sorting of a query.
+          */
+          void setSortOrder(SortOrder o);
 
-        std::auto_ptr<Expression> m_field;  //!< A valid expression.
-        SortOrder m_order;                  //!< Sort order.
-    };
+          /*!
+            \brief It returns the order of sorting: Asc or Desc.
 
-  } // end namespace da
-}   // end namespace te
+            \return The order of sorting: Asc or Desc.
+          */
+          SortOrder getSortOrder() const;
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_ORDERBYITEM_H
+        private:
 
+          std::auto_ptr<Expression> m_field;  //!< A valid expression.
+          SortOrder m_order;                  //!< Sort order.
+      };
+
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ORDERBYITEM_H
