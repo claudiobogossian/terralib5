@@ -49,7 +49,7 @@ bool te::da::core::DataSetTypeCapabilities::supportsPrimaryKey() const
   return m_supportPrimaryKey;
 }
 
-void te::da::core::DataSetTypeCapabilities::setSupportPrimaryKey(const bool& support)
+void te::da::core::DataSetTypeCapabilities::setSupportPrimaryKey(const bool support)
 {
   m_supportPrimaryKey = support;
 }
@@ -59,7 +59,7 @@ bool te::da::core::DataSetTypeCapabilities::supportsUniqueKey() const
   return m_supportUniqueKey;
 }
 
-void te::da::core::DataSetTypeCapabilities::setSupportUniqueKey(const bool& support)
+void te::da::core::DataSetTypeCapabilities::setSupportUniqueKey(const bool support)
 {
   m_supportUniqueKey = support;
 }
@@ -69,7 +69,7 @@ bool te::da::core::DataSetTypeCapabilities::supportsForeignKey() const
   return m_supportForeignKey;
 }
 
-void te::da::core::DataSetTypeCapabilities::setSupportForeingKey(const bool& support)
+void te::da::core::DataSetTypeCapabilities::setSupportForeingKey(const bool support)
 {
   m_supportForeignKey = support;
 }
@@ -79,7 +79,7 @@ bool te::da::core::DataSetTypeCapabilities::supportsSequence() const
   return m_supportSequence;
 }
 
-void te::da::core::DataSetTypeCapabilities::setSupportSequence(const bool& support)
+void te::da::core::DataSetTypeCapabilities::setSupportSequence(const bool support)
 {
   m_supportSequence = support;
 }
@@ -89,7 +89,7 @@ bool te::da::core::DataSetTypeCapabilities::supportsCheckConstraints() const
   return m_supportCheckConstraints;
 }
 
-void te::da::core::DataSetTypeCapabilities::setSupportCheckConstraints(const bool& support)
+void te::da::core::DataSetTypeCapabilities::setSupportCheckConstraints(const bool support)
 {
   m_supportCheckConstraints = support;
 }
@@ -99,7 +99,7 @@ bool te::da::core::DataSetTypeCapabilities::supportsIndex() const
   return m_supportIndex;
 }
 
-void te::da::core::DataSetTypeCapabilities::setSupportIndex(const bool& support)
+void te::da::core::DataSetTypeCapabilities::setSupportIndex(const bool support)
 {
   m_supportIndex = support;
 }
@@ -109,7 +109,7 @@ bool te::da::core::DataSetTypeCapabilities::supportsRTreeIndex() const
   return m_supportRTreeIndex;
 }
 
-void te::da::core::DataSetTypeCapabilities::setSupportRTreeIndex(const bool& support)
+void te::da::core::DataSetTypeCapabilities::setSupportRTreeIndex(const bool support)
 {
   m_supportRTreeIndex = support;
 }
@@ -119,7 +119,7 @@ bool te::da::core::DataSetTypeCapabilities::supportsBTreeIndex() const
   return m_supportBTreeIndex;
 }
 
-void te::da::core::DataSetTypeCapabilities::setSupportBTreeIndex(const bool& support)
+void te::da::core::DataSetTypeCapabilities::setSupportBTreeIndex(const bool support)
 {
   m_supportBTreeIndex = support;
 }
@@ -129,7 +129,7 @@ bool te::da::core::DataSetTypeCapabilities::supportsHashIndex() const
   return m_supportHashIndex;
 }
 
-void te::da::core::DataSetTypeCapabilities::setSupportHashIndex(const bool& support)
+void te::da::core::DataSetTypeCapabilities::setSupportHashIndex(const bool support)
 {
   m_supportHashIndex = support;
 }
@@ -139,7 +139,7 @@ bool te::da::core::DataSetTypeCapabilities::supportsQuadTreeIndex() const
   return m_supportQuadTreeIndex;
 }
 
-void te::da::core::DataSetTypeCapabilities::setSupportQuadTreeIndex(const bool& support)
+void te::da::core::DataSetTypeCapabilities::setSupportQuadTreeIndex(const bool support)
 {
   m_supportQuadTreeIndex = support;
 }

@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../common/Comparators.h"
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
 #include <set>
@@ -41,7 +41,7 @@ namespace te
   {
     namespace core
     {
-      // Forward declaration
+// Forward declaration
       class ObjectId;
       class Expression;
 

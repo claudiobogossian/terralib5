@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../datatype/AbstractData.h"
-#include "../../Config.h"
+#include "../Config.h"
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
