@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONCATALOG_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
 
 // STL
 #include <map>
