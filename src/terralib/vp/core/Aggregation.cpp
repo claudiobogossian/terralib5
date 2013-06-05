@@ -308,7 +308,7 @@ std::string te::vp::GetGroupingFunctionsTypeMap(const int& type)
 
 te::gm::Geometry* te::vp::GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items)
 {
-  te::gm::Geometry* resultGeometry; 
+  te::gm::Geometry* resultGeometry = 0; 
   te::gm::Geometry* seedGeometry;
   std::vector<te::gm::Geometry*> geomVector;
 

@@ -51,7 +51,7 @@ te::da::DataSetType* te::vp::CreateDataSetType(std::string newName,
 {
   te::da::DataSetType* outputDt = new te::da::DataSetType(newName);
 
-  size_t fiGeomPropPos = firstDt->getPropertyPosition(firstDt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+//  size_t fiGeomPropPos = firstDt->getPropertyPosition(firstDt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
 
   for(size_t i = 0; i < firstProps.size(); ++i)
   {
