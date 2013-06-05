@@ -56,7 +56,7 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   connect(m_ui->m_searchedSRSLineEdit, SIGNAL(textChanged(const QString&)),SLOT(onSearchLineEditTextChanged(const QString&)));
   connect(m_ui->m_SRSRecentTableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), SLOT(onSRSRecentTableWidgetItemClicked(QTableWidgetItem*)));
   
-  // Building the table with the recently used SRS ids  
+  // Builds the table with the recently used SRS ids  
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   QString value = sett.value("SRSRecentlyUsed", "").toString();
   
@@ -76,15 +76,17 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
       ++aux;
     }
   }
-  m_ui->m_SRSRecentTableWidget->setColumnWidth(0, 440);
-  m_ui->m_SRSRecentTableWidget->setColumnWidth(1, 100);
-  m_ui->m_SRSRecentTableWidget->setColumnWidth(2, 100);
+  
   QStringList hLabels;
   hLabels << "Name" << "ID" << "Authority";
   m_ui->m_SRSRecentTableWidget->setHorizontalHeaderLabels(hLabels);
   
+  m_ui->m_SRSRecentTableWidget->resizeColumnToContents(0);
+  m_ui->m_SRSRecentTableWidget->resizeColumnToContents(1);
+  m_ui->m_SRSRecentTableWidget->resizeColumnToContents(2);
   
-  // Building the available SRS tree
+  
+  // Builds the available SRS tree
   QList<QTreeWidgetItem *> items;
   
   items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Geoographic SRS"))));
@@ -123,10 +125,6 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
     }
     ++its.first;
   }  
-
-  m_ui->m_SRSTreeWidget->setColumnWidth(0, 440);
-  m_ui->m_SRSTreeWidget->setColumnWidth(1, 100);
-  m_ui->m_SRSTreeWidget->setColumnWidth(2, 100);
   
   unsigned int ntl =  m_ui->m_SRSTreeWidget->topLevelItemCount();
   for(unsigned int i = 0; i < ntl; ++i)
@@ -134,6 +132,10 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
     QTreeWidgetItem* item = m_ui->m_SRSTreeWidget->topLevelItem(i);
     item->setExpanded(true);
   }
+  
+  m_ui->m_SRSTreeWidget->resizeColumnToContents(0);
+  m_ui->m_SRSTreeWidget->resizeColumnToContents(1);
+  m_ui->m_SRSTreeWidget->resizeColumnToContents(2);
   
   // Set the field with the PJ4 description
   m_ui->m_p4descPlainTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);

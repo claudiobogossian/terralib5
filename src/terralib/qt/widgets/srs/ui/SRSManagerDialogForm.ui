@@ -9,14 +9,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>737</width>
+    <width>694</width>
     <height>693</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Spatial Reference Systems for Coordinates Manager</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QFrame" name="frame_2">
      <property name="styleSheet">
@@ -56,7 +56,7 @@
        <widget class="QTableWidget" name="m_SRSRecentTableWidget">
         <property name="minimumSize">
          <size>
-          <width>683</width>
+          <width>600</width>
           <height>145</height>
          </size>
         </property>
@@ -110,8 +110,8 @@
      <property name="title">
       <string>SRSs available</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -142,13 +142,13 @@
         </item>
        </layout>
       </item>
-      <item row="1" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QTreeWidget" name="m_SRSTreeWidget">
           <property name="minimumSize">
            <size>
-            <width>640</width>
+            <width>600</width>
             <height>200</height>
            </size>
           </property>

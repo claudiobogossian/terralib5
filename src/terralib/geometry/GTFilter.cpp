@@ -391,6 +391,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
         )
       )
     );
+
   RansacItCounterT dynamicMaxIterationsEstimation = 0;
   RansacItCounterT consecutiveInvalidIterations = 0;
   double randomValue = 0;
@@ -528,7 +529,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
       }
       else if( ! bestTiePoins.empty() )
       {
-        dynamicMaxIterationsEstimation =
+        RansacItCounterT dynamicMaxIterationsEstimation = 
           (
             (
               (RansacItCounterT)(

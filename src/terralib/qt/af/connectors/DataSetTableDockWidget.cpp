@@ -71,13 +71,13 @@ void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt:
 {
   switch(evt->m_id)
   {
-    case te::qt::af::evt::LAYER_HIGHLIGHT_OBJECTS:
-      {
-        te::qt::af::evt::HighlightObjects* ev = static_cast<te::qt::af::evt::HighlightObjects*>(evt);
+    case te::qt::af::evt::LAYER_SELECTION_CHANGED:
+    {
+      te::qt::af::evt::LayerSelectionChanged* ev = static_cast<te::qt::af::evt::LayerSelectionChanged*>(evt);
 
-        if(ev->m_layer->getId() == m_layer->getId())
-          m_view->highlightOIds(ev->m_layer->getSelected());
-      }
+      if(ev->m_layer->getId() == m_layer->getId())
+        m_view->highlightOIds(ev->m_layer->getSelected());
+    }
     break;
   }
 }

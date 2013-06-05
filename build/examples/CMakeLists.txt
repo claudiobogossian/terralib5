@@ -91,8 +91,8 @@ if(EXAMPLE_PLUGIN_HELLOWORLD)
   add_subdirectory(terralib_example_cppplugin_helloworld)
 endif()
 
-if(EXAMPLE_DATAGRID)
-  add_subdirectory(terralib_example_datagrid)
+if(EXAMPLE_DATAACCESS)
+  add_subdirectory(terralib_example_dataaccess)
 endif()
 
 if(EXAMPLE_DATASETMANAGEMENT)

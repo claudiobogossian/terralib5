@@ -164,11 +164,11 @@ void TsCanvas::tcPerformance()
     if(dt->hasGeom() == false)
       continue;
 
-    int geomCol = dt->getDefaultGeomPropertyPos();
+    //int geomCol = dt->getDefaultGeomPropertyPos();
 
-    te::gm::GeometryProperty* gcol = static_cast<te::gm::GeometryProperty*>(dt->getProperty(geomCol));
-    
-//    const te::gm::Envelope* extent = gcol->getExtent();
+    te::gm::GeometryProperty* gcol = static_cast<te::gm::GeometryProperty*>(dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+    int geomCol = dt->getPropertyPosition(gcol->getName());
+
     const te::gm::Envelope* extent = cl->getExtent(gcol);
     if(extent == 0)
       continue;
@@ -205,7 +205,7 @@ void TsCanvas::tcPerformance()
     wh = ury - lly;
     canvas.setWindow(llx-ww/10., lly-wh/10., urx+ww/10, ury+wh/10.);
 
-    if(gcol->getGeometryType() == te::gm::MultiPolygonType ||
+    if(gcol->getType() /*getGeometryType()*/ == te::gm::MultiPolygonType ||
        gcol->getGeometryType() == te::gm::PolygonType)
     {
       canvas.setPolygonFillColor(te::color::RGBAColor(255, 255, 0, 255));

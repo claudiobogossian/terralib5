@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/plugins/vp/AggregationAction.cpp
 
-  \brief This file defines the Intersection class
+  \brief This file defines the Aggregation class
 */
 
 // Terralib

@@ -24,9 +24,29 @@
 */
 
 // TerraLib
+#include "../common/StringUtils.h"
+#include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "../dataaccess/query/DataSetName.h"
+#include "../dataaccess/query/Expression.h"
+#include "../dataaccess/query/Field.h"
+#include "../dataaccess/query/Function.h"
+#include "../dataaccess/query/FromItem.h"
+#include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/Select.h"
+#include "../dataaccess/utils/Utils.h"
+#include "../datatype/Property.h"
 #include "../se/Style.h"
+#include "Exception.h"
 #include "QueryLayer.h"
+#include "RendererFactory.h"
+#include "Utils.h"
+
+// STL
+#include <memory>
 
 const std::string te::map::QueryLayer::sm_type("QUERYLAYER");
 
@@ -59,9 +79,41 @@ te::map::QueryLayer::~QueryLayer()
   delete m_style;
 }
 
-const te::map::LayerSchema* te::map::QueryLayer::getSchema(const bool /*full*/) const
+const te::map::LayerSchema* te::map::QueryLayer::getSchema(const bool full) const
 {
-  return 0;
+  std::auto_ptr<te::map::LayerSchema> output(new te::map::LayerSchema(getTitle()));
+
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  // Get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  assert(t.get());
+
+  // Get a catalog loader
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
+  assert(cloader.get());
+
+  const te::da::Fields* fields = m_query->getFields();
+
+  for(size_t i = 0; i < fields->size(); ++i)
+  {
+    te::da::Field field = fields->at(i);
+    te::da::Expression* exp = field.getExpression();
+
+    te::da::PropertyName* pName = dynamic_cast<te::da::PropertyName*>(exp);
+
+    std::vector<std::string> tokens;
+    te::common::Tokenize(pName->getName(), tokens, ".");
+
+    std::auto_ptr<te::da::DataSetType> dt(cloader->getDataSetType(tokens[0]));
+    te::dt::Property* pRef = dt->getProperty(tokens[1]);
+    std::auto_ptr<te::dt::Property> p(pRef->clone());
+    p->setName(tokens[0]+"."+tokens[1]);
+
+    output->add(p.release());
+  }
+
+  return output.release();
 }
 
 te::da::DataSet* te::map::QueryLayer::getData(te::common::TraverseType /*travType*/, 
