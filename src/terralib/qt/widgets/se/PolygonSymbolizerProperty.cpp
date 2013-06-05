@@ -61,16 +61,11 @@ te::qt::widgets::PolygonSymbolizerProperty::PolygonSymbolizerProperty(QWidget* p
 
 te::qt::widgets::PolygonSymbolizerProperty::~PolygonSymbolizerProperty()
 {
-  delete m_symb;
 }
 
-void te::qt::widgets::PolygonSymbolizerProperty::setSymbolizer(const te::se::PolygonSymbolizer* symb)
+void te::qt::widgets::PolygonSymbolizerProperty::setSymbolizer(te::se::PolygonSymbolizer* symb)
 {
-  assert(symb);
-
-  delete m_symb;
-
-  m_symb = static_cast<te::se::PolygonSymbolizer*>(symb->clone());
+  m_symb = symb;
 
   if(m_symb->getFill())
     m_bf->setFill(m_symb->getFill());
@@ -81,7 +76,7 @@ void te::qt::widgets::PolygonSymbolizerProperty::setSymbolizer(const te::se::Pol
 
 te::se::Symbolizer* te::qt::widgets::PolygonSymbolizerProperty::getSymbolizer() const
 {
-  return m_symb->clone();
+  return m_symb;
 }
 
 void te::qt::widgets::PolygonSymbolizerProperty::onStrokeChanged()

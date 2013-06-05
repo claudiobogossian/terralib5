@@ -114,17 +114,13 @@ te::qt::widgets::RasterVisualWidget::RasterVisualWidget(QWidget* parent, Qt::Win
 te::qt::widgets::RasterVisualWidget::~RasterVisualWidget()
 {
   m_ceNames.clear();
-
-  delete m_symbolizer;
 }
 
-void  te::qt::widgets::RasterVisualWidget::setRasterSymbolizer(const te::se::RasterSymbolizer* rs)
+void  te::qt::widgets::RasterVisualWidget::setRasterSymbolizer(te::se::RasterSymbolizer* rs)
 {
   assert(rs);
 
-  delete m_symbolizer;
-
-  m_symbolizer = static_cast<te::se::RasterSymbolizer*>(rs->clone());
+  m_symbolizer = rs;
 
   if(m_symbolizer->getChannelSelection())
   {
@@ -258,17 +254,17 @@ void te::qt::widgets::RasterVisualWidget::initialize()
   //set the pixmaps
   m_ui->m_gainLabel->setPixmap(QIcon::fromTheme("gain").pixmap(16,16));
   m_ui->m_offSetLabel->setPixmap(QIcon::fromTheme("offset").pixmap(16,16));
-  m_ui->m_gainPlusPushButton->setIcon(QIcon::fromTheme("plus"));
+  m_ui->m_gainPlusPushButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_gainPlusPushButton->setIconSize(QSize(16,16));
-  m_ui->m_gainMinusPushButton->setIcon(QIcon::fromTheme("minus"));
+  m_ui->m_gainMinusPushButton->setIcon(QIcon::fromTheme("list-remove"));
   m_ui->m_gainMinusPushButton->setIconSize(QSize(16,16));
-  m_ui->m_gainResetPushButton->setIcon(QIcon::fromTheme("undo"));
+  m_ui->m_gainResetPushButton->setIcon(QIcon::fromTheme("edit-undo"));
   m_ui->m_gainResetPushButton->setIconSize(QSize(16,16));
-  m_ui->m_offsetPlusPushButton->setIcon(QIcon::fromTheme("plus"));
+  m_ui->m_offsetPlusPushButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_offsetPlusPushButton->setIconSize(QSize(16,16));
-  m_ui->m_offsetMinusPushButton->setIcon(QIcon::fromTheme("minus"));
+  m_ui->m_offsetMinusPushButton->setIcon(QIcon::fromTheme("list-remove"));
   m_ui->m_offsetMinusPushButton->setIconSize(QSize(16,16));
-  m_ui->m_offsetResetPushButton->setIcon(QIcon::fromTheme("undo"));
+  m_ui->m_offsetResetPushButton->setIcon(QIcon::fromTheme("edit-undo"));
   m_ui->m_offsetResetPushButton->setIconSize(QSize(16,16));
 
   m_ui->m_composeMonoLabel->setPixmap(QIcon::fromTheme("bullet-black").pixmap(16,16));
@@ -309,7 +305,7 @@ void te::qt::widgets::RasterVisualWidget::initialize()
   m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[te::se::ContrastEnhancement::ENHANCEMENT_NONE]));
 
   // other values
-  m_gainValue = 1.0;
+  m_gainValue = 0.0;
   m_offsetValue = 0.0;
   m_gainOriginalValue = m_gainValue;
   m_offsetOriginalValue = m_offsetValue;

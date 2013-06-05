@@ -86,7 +86,7 @@ namespace te
             \note The widget will NOT take the ownership of the given symbolizer.
             \note The widget form will be update based on given symbolizer parameters.
           */
-          void setSymbolizer(const te::se::LineSymbolizer* symb);
+          void setSymbolizer(te::se::LineSymbolizer* symb);
 
           /*!
             \brief Gets the configured line symbolizer element.
