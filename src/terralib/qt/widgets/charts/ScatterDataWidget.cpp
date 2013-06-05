@@ -31,10 +31,11 @@
 #include "../../../raster.h"
 #include "ScatterDataWidget.h"
 
-te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::ScatterDataWidgetForm),
-    m_dataSet (dataSet)
+    m_dataSet (dataSet),
+    m_dataType(dataType)
 {
     m_ui->setupUi(this);
 
@@ -71,12 +72,12 @@ Ui::ScatterDataWidgetForm* te::qt::widgets::ScatterDataWidget::getForm()
 te::qt::widgets::Scatter* te::qt::widgets::ScatterDataWidget::getScatter()
 {
   //Acquiring the dataset Properties types and creating a new scatter
-    std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet.get(), te::dt::RASTER_TYPE);
 
   if(rpos != std::string::npos)
-    return te::qt::widgets::createScatter(m_dataSet, m_ui->m_propertyXComboBox->currentIndex(), m_ui->m_propertyYComboBox->currentIndex());
+    return te::qt::widgets::createScatter(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyXComboBox->currentIndex(), m_ui->m_propertyYComboBox->currentIndex());
   else
-    return te::qt::widgets::createScatter(m_dataSet, te::da::GetPropertyPos(m_dataSet, m_ui->m_propertyXComboBox->currentText().toStdString()), te::da::GetPropertyPos(m_dataSet, m_ui->m_propertyYComboBox->currentText().toStdString()));
+    return te::qt::widgets::createScatter(m_dataSet.get(), m_dataType.get(), te::da::GetPropertyPos(m_dataSet.get(), m_ui->m_propertyXComboBox->currentText().toStdString()), te::da::GetPropertyPos(m_dataSet.get(), m_ui->m_propertyYComboBox->currentText().toStdString()));
 }
 
 te::qt::widgets::ScatterDataWidget::~ScatterDataWidget()

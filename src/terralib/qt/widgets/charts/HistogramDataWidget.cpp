@@ -39,10 +39,11 @@
 
 #include <iostream>
 
-te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::HistogramDataWidgetForm),
-    m_dataSet (dataSet)
+    m_dataSet (dataSet),
+    m_dataType(dataType)
 {
   m_ui->setupUi(this);
 
@@ -90,11 +91,11 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
   if(rpos != std::string::npos)
   {
-    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_ui->m_propertyComboBox->currentIndex());
+    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyComboBox->currentIndex());
   }
   else
   {
-    //Getting the Columns that will be used to populate the graph
+    //Getting the Columns that will be used to populate the chart
 
     size_t selectedPropertyIdx = 0;
 
@@ -108,11 +109,11 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
     {
-      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), selectedPropertyIdx);
+      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx);
     }
     else
     {
-      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
     }
   }
   return histogram;
