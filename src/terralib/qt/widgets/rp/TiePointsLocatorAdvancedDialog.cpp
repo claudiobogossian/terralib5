@@ -127,25 +127,25 @@ namespace te
           m_inputParameters.m_maxTiePoints ) );
           
         m_uiPtr->m_correlationWindowWidthLineEdit->setText( QString::number(
-          m_inputParameters.m_correlationWindowWidth ) );
+          m_inputParameters.m_moravecCorrelationWindowWidth ) );
           
         m_uiPtr->m_gaussianFilterIterationsLineEdit->setText( QString::number(
-          m_inputParameters.m_gaussianFilterIterations ) );
+          m_inputParameters.m_moravecGaussianFilterIterations ) );
           
         m_uiPtr->m_minAbsCorrelationLineEdit->setText( QString::number(
-          m_inputParameters.m_minAbsCorrelation ) );
+          m_inputParameters.m_moravecMinAbsCorrelation ) );
           
         m_uiPtr->m_moravecWindowWidthLineEdit->setText( QString::number(
           m_inputParameters.m_moravecWindowWidth ) );
           
         m_uiPtr->m_maxNormEuclideanDistLineEdit->setText( QString::number(
-          m_inputParameters.m_maxNormEuclideanDist ) );
+          m_inputParameters.m_surfMaxNormEuclideanDist ) );
           
         m_uiPtr->m_octavesNumberLineEdit->setText( QString::number(
-          m_inputParameters.m_octavesNumber ) );
+          m_inputParameters.m_surfOctavesNumber ) );
           
         m_uiPtr->m_scalesNumberLineEdit->setText( QString::number(
-          m_inputParameters.m_scalesNumber ) );
+          m_inputParameters.m_surfScalesNumber ) );
       }
 
       void TiePointsLocatorAdvancedDialog::on_okPushButton_clicked()
@@ -193,25 +193,25 @@ namespace te
         m_inputParameters.m_maxTiePoints =  
           m_uiPtr->m_maxTiePointsLineEdit->text().toUInt();
           
-        m_inputParameters.m_correlationWindowWidth = 
+        m_inputParameters.m_moravecCorrelationWindowWidth = 
           m_uiPtr->m_correlationWindowWidthLineEdit->text().toUInt();
           
-        m_inputParameters.m_gaussianFilterIterations = 
+        m_inputParameters.m_moravecGaussianFilterIterations = 
           m_uiPtr->m_gaussianFilterIterationsLineEdit->text().toUInt();
           
-        m_inputParameters.m_minAbsCorrelation = 
+        m_inputParameters.m_moravecMinAbsCorrelation = 
           m_uiPtr->m_minAbsCorrelationLineEdit->text().toDouble();
           
         m_inputParameters.m_moravecWindowWidth =
            m_uiPtr->m_moravecWindowWidthLineEdit->text().toUInt();
            
-        m_inputParameters.m_maxNormEuclideanDist =
+        m_inputParameters.m_surfMaxNormEuclideanDist =
           m_uiPtr->m_maxNormEuclideanDistLineEdit->text().toDouble();
           
-        m_inputParameters.m_octavesNumber = 
+        m_inputParameters.m_surfOctavesNumber = 
           m_uiPtr->m_octavesNumberLineEdit->text().toUInt();
           
-        m_inputParameters.m_scalesNumber =
+        m_inputParameters.m_surfScalesNumber =
           m_uiPtr->m_scalesNumberLineEdit->text().toUInt();
           
         hide();
