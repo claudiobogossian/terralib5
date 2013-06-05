@@ -20,7 +20,7 @@
 /*!
   \file terralib/vp/AggregationDialog.cpp
 
-  \brief A dialog for intersection operation
+  \brief A dialog for aggregation operation
 */
 
 // TerraLib
@@ -151,11 +151,13 @@ std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > te::vp:
     {
       outputGroupingFunctionsType[auxProperty] = vectorGroupingFunctionsType;
       vectorGroupingFunctionsType.clear();
-      vectorGroupingFunctionsType.push_back(enumGroupingFunctionsType);
+      
+      if(!propertyName.empty())
+        vectorGroupingFunctionsType.push_back(enumGroupingFunctionsType);
     }
     else
     {
-      vectorGroupingFunctionsType.push_back(enumGroupingFunctionsType);
+        vectorGroupingFunctionsType.push_back(enumGroupingFunctionsType);
 
       if(i == itemList.size() - 1)
       {

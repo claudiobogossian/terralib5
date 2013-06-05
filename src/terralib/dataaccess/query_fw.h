@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -109,9 +109,7 @@ namespace te
     class UnaryOp;
     class UnaryOpEncoder;
     class Where;
-
-  } // end namespace da
-}   // end namespace te
+  }    // end namespace da
+}      // end namespace te
 
 #endif // __TERRALIB_DATAACCESS_INTERNAL_QUERY_FW_H
-

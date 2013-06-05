@@ -34,6 +34,7 @@
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../canvas/Canvas.h"
+#include "../Utils.h"
 #include "DataSetDisplay.h"
 
 // STL
@@ -107,6 +108,51 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
   m_canvas->calcAspectRatio(mbr.get());
 
   m_canvas->setWindow(mbr->getLowerLeftX(), mbr->getLowerLeftY(), mbr->getUpperRightX(), mbr->getUpperRightY());
+
+  switch(gp->getGeometryType())
+  {
+    case te::gm::PolygonType:
+    case te::gm::PolygonZType:
+    case te::gm::PolygonMType:
+    case te::gm::PolygonZMType:
+    case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZMType:
+    {
+      Config2DrawPolygons(m_canvas.get(), Qt::red, Qt::black);
+    }
+    break;
+
+    case te::gm::LineStringType:
+    case te::gm::LineStringZType:
+    case te::gm::LineStringMType:
+    case te::gm::LineStringZMType:
+    case te::gm::MultiLineStringType:
+    case te::gm::MultiLineStringZType:
+    case te::gm::MultiLineStringMType:
+    case te::gm::MultiLineStringZMType:
+    {
+      Config2DrawLines(m_canvas.get(), Qt::black);
+    }
+    break;
+
+    case te::gm::PointType:
+    case te::gm::PointZType:
+    case te::gm::PointMType:
+    case te::gm::PointZMType:
+    case te::gm::MultiPointType:
+    case te::gm::MultiPointZType:
+    case te::gm::MultiPointMType:
+    case te::gm::MultiPointZMType:
+    {
+      Config2DrawPoints(m_canvas.get(), "circle", 1, Qt::black, Qt::transparent, 1);
+    }
+    break;
+
+    default:
+      break;
+  }
 
   std::auto_ptr<te::da::DataSet> feature(transactor->getDataSet(dataset->getName()));
 

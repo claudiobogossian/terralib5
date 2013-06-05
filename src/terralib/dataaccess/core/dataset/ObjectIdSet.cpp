@@ -1,0 +1,191 @@
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/dataaccess/core/dataset/ObjectIdSet.cpp
+
+  \brief This class represents a set of unique ids created in the same context. i.e. from the same dataset.
+*/
+
+// TerraLib
+#include "../../../common/STLUtils.h"
+#include "../../../common/Translator.h"
+#include "../../../datatype/Enums.h"
+#include "../query/And.h"
+#include "../query/In.h"
+#include "../query/Literal.h"
+#include "../query/LiteralString.h"
+#include "../Exception.h"
+#include "ObjectId.h"
+#include "ObjectIdSet.h"
+
+// STL
+#include <cassert>
+
+te::da::core::ObjectIdSet::ObjectIdSet()
+{
+}
+
+te::da::core::ObjectIdSet::~ObjectIdSet()
+{
+  te::common::FreeContents(m_oids);
+}
+
+void te::da::core::ObjectIdSet::addProperty(const std::string& name, std::size_t pos, int type)
+{
+  assert(!name.empty());
+  m_pnames.push_back(name);
+  m_ppos.push_back(pos);
+  m_ptypes.push_back(type);
+}
+
+void te::da::core::ObjectIdSet::add(te::da::core::ObjectId* oid)
+{
+  assert(oid);
+  m_oids.insert(oid);
+}
+
+te::da::core::Expression* te::da::core::ObjectIdSet::getExpression() const
+{
+  assert(m_pnames.size() == m_ptypes.size());
+
+  Expression* ins = 0;
+  Expression* tmp = 0;
+  
+  // for each property used to be part of the object identification builds a IN clause
+  for(std::size_t i = 0; i < m_pnames.size(); ++i)
+  {
+    In* in = new In(m_pnames[i]);
+
+    // for each object in the set include its property value in the IN clause
+    std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator it;
+    for(it = m_oids.begin(); it != m_oids.end(); ++it)
+    {
+      const boost::ptr_vector<te::dt::AbstractData>& data = (*it)->getValue();
+
+      if(m_ptypes[i] == te::dt::STRING_TYPE)
+        in->add(new LiteralString(data[i].toString()));
+      else
+        in->add(new Literal(data[i]));
+    }
+
+    if(i > 0)
+    {
+      tmp = *ins && *in;
+      delete ins;
+      delete in;
+      ins = tmp;
+    }
+    else
+      ins = in;
+  }
+
+  return ins;
+}
+
+void te::da::core::ObjectIdSet::clear()
+{
+  te::common::FreeContents(m_oids);
+  m_oids.clear();
+}
+
+std::size_t te::da::core::ObjectIdSet::size() const
+{
+  return m_oids.size();
+}
+
+const std::vector<std::string>& te::da::core::ObjectIdSet::getPropertyNames() const
+{
+  return m_pnames;
+}
+
+const std::vector<std::size_t>& te::da::core::ObjectIdSet::getPropertyPos() const
+{
+  return m_ppos;
+}
+
+const std::vector<int>& te::da::core::ObjectIdSet::getPropertyTypes() const
+{
+  return m_ptypes;
+}
+
+bool te::da::core::ObjectIdSet::contains(ObjectId* oid) const
+{
+  assert(oid);
+  return m_oids.find(oid) != m_oids.end();
+}
+
+void te::da::core::ObjectIdSet::remove(ObjectId* oid)
+{
+  std::set<te::da::core::ObjectId*,  te::common::LessCmp<te::da::core::ObjectId*> >::iterator it = m_oids.find(oid);
+
+  if(it != m_oids.end())
+    m_oids.erase(it);
+}
+
+void te::da::core::ObjectIdSet::Union(te::da::core::ObjectIdSet* rhs)
+{
+  assert(rhs);
+
+  std::set<te::da::core::ObjectId*, te::common::LessCmp<te::da::core::ObjectId*> >& newOids = rhs->m_oids;
+
+  std::set<te::da::core::ObjectId*,  te::common::LessCmp<te::da::core::ObjectId*> >::iterator it;
+  for(it = newOids.begin(); it != newOids.end(); ++it)
+    m_oids.find(*it) == m_oids.end() ? add(*it) : delete *it;
+
+  newOids.clear();
+
+  delete rhs;
+  rhs = 0;
+}
+
+void te::da::core::ObjectIdSet::difference(const te::da::core::ObjectIdSet* rhs)
+{
+  assert(rhs);
+
+  if(m_oids.empty())
+    return;
+
+  const std::set<te::da::core::ObjectId*, te::common::LessCmp<te::da::core::ObjectId*> >& oidsToRemove = rhs->m_oids;
+  
+  if(oidsToRemove.empty())
+    return;
+  
+  std::set<te::da::core::ObjectId*,  te::common::LessCmp<te::da::core::ObjectId*> >::const_iterator it;
+  for(it = oidsToRemove.begin(); it != oidsToRemove.end(); ++it)
+  {
+    std::set<te::da::core::ObjectId*,  te::common::LessCmp<te::da::core::ObjectId*> >::iterator itSearch = m_oids.find(*it);
+
+    if(itSearch == m_oids.end())
+      continue;
+
+    delete *itSearch;
+    m_oids.erase(itSearch);
+  }
+}
+
+std::set<te::da::core::ObjectId*, te::common::LessCmp<te::da::core::ObjectId*> >::const_iterator te::da::core::ObjectIdSet::begin() const
+{
+  return m_oids.begin();
+}
+
+std::set<te::da::core::ObjectId*, te::common::LessCmp<te::da::core::ObjectId*> >::const_iterator te::da::core::ObjectIdSet::end() const
+{
+  return m_oids.end();
+}
