@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/dataset/AbstractDataSet.cpp
+  \file terralib/dataaccess/core/dataset/DataSet.cpp
 
   \brief A dataset is the unit of information manipulated by the TerraLib data access module.
 */
@@ -34,7 +34,7 @@
 #include "../../../datatype/SimpleData.h"
 #include "../../../raster/Raster.h"
 #include "../utils/Utils.h"
-#include "AbstractDataSet.h"
+#include "DataSet.h"
 #include "DataSetType.h"
 
 // STL
@@ -43,112 +43,112 @@
 // Boost
 #include <boost/lexical_cast.hpp>
 
-char te::da::core::AbstractDataSet::getChar(const std::string& name) const
+char te::da::core::DataSet::getChar(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getChar(i);
 }
 
-unsigned char te::da::core::AbstractDataSet::getUChar(const std::string& name) const
+unsigned char te::da::core::DataSet::getUChar(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getUChar(i);
 }
 
-boost::int16_t te::da::core::AbstractDataSet::getInt16(const std::string& name) const
+boost::int16_t te::da::core::DataSet::getInt16(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getInt16(i);
 }
 
-boost::int32_t te::da::core::AbstractDataSet::getInt32(const std::string& name) const
+boost::int32_t te::da::core::DataSet::getInt32(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getInt32(i);
 }
 
-boost::int64_t te::da::core::AbstractDataSet::getInt64(const std::string& name) const
+boost::int64_t te::da::core::DataSet::getInt64(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getInt64(i);
 }
 
-bool te::da::core::AbstractDataSet::getBool(const std::string& name) const
+bool te::da::core::DataSet::getBool(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getBool(i);
 }
 
-float te::da::core::AbstractDataSet::getFloat(const std::string& name) const
+float te::da::core::DataSet::getFloat(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getFloat(i);
 }
 
-double te::da::core::AbstractDataSet::getDouble(const std::string& name) const
+double te::da::core::DataSet::getDouble(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getDouble(i);
 }
 
-std::string te::da::core::AbstractDataSet::getNumeric(const std::string& name) const
+std::string te::da::core::DataSet::getNumeric(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getNumeric(i);
 }
 
-std::string te::da::core::AbstractDataSet::getString(const std::string& name) const
+std::string te::da::core::DataSet::getString(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getString(i);
 }
 
-te::dt::ByteArray* te::da::core::AbstractDataSet::getByteArray(const std::string& name) const
+te::dt::ByteArray* te::da::core::DataSet::getByteArray(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getByteArray(i);
 }
 
-te::gm::Geometry* te::da::core::AbstractDataSet::getGeometry(const std::string& name) const
+te::gm::Geometry* te::da::core::DataSet::getGeometry(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getGeometry(i);
 }
 
-te::rst::Raster* te::da::core::AbstractDataSet::getRaster(const std::string& name) const
+te::rst::Raster* te::da::core::DataSet::getRaster(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getRaster(i);
 }
 
-te::dt::DateTime* te::da::core::AbstractDataSet::getDateTime(const std::string& name) const
+te::dt::DateTime* te::da::core::DataSet::getDateTime(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getDateTime(i);
 }
 
-te::dt::Array* te::da::core::AbstractDataSet::getArray(const std::string& name) const
+te::dt::Array* te::da::core::DataSet::getArray(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getArray(i);
 }
 
-te::dt::AbstractData* te::da::core::AbstractDataSet::getValue(std::size_t i) const
+te::dt::AbstractData* te::da::core::DataSet::getValue(std::size_t i) const
 {
   switch(getPropertyDataType(i))
   {
@@ -208,14 +208,14 @@ te::dt::AbstractData* te::da::core::AbstractDataSet::getValue(std::size_t i) con
   }
 }
 
-te::dt::AbstractData* te::da::core::AbstractDataSet::getValue(const std::string& name) const
+te::dt::AbstractData* te::da::core::DataSet::getValue(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getValue(i);
 }
 
-std::string te::da::core::AbstractDataSet::getAsString(std::size_t i, int precision) const
+std::string te::da::core::DataSet::getAsString(std::size_t i, int precision) const
 {
   std::string value;
 
@@ -303,14 +303,14 @@ std::string te::da::core::AbstractDataSet::getAsString(std::size_t i, int precis
   return value;
 }
 
-std::string te::da::core::AbstractDataSet::getAsString(const std::string& name, int precision) const
+std::string te::da::core::DataSet::getAsString(const std::string& name, int precision) const
 {
   std::size_t i = GetPropertyPos(this, name);
 
   return getAsString(i, precision);
 }
 
-bool te::da::core::AbstractDataSet::isNull(const std::string& name) const
+bool te::da::core::DataSet::isNull(const std::string& name) const
 {
   std::size_t i = GetPropertyPos(this, name);
 

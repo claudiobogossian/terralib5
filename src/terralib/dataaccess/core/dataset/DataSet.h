@@ -18,19 +18,19 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/dataset/AbstractDataSet.h
+  \file terralib/dataaccess/core/dataset/DataSet.h
 
   \brief A dataset is the unit of information manipulated by the TerraLib data access module.
 */
 
-#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTDATASET_H
-#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTDATASET_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASET_H
+#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASET_H
 
 // TerraLib
 #include "../../../common/Enums.h"
 #include "../../../datatype/Enums.h"
 #include "../../../geometry/Enums.h"
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -69,7 +69,7 @@ namespace te
     namespace core
     {
       /*!
-        \class AbstractDataSet
+        \class DataSet
 
         \brief A dataset is the unit of information manipulated by the TerraLib data access module.
 
@@ -101,17 +101,17 @@ namespace te
 
         \note Our design also allows a dataset to have multiple geometric or raster properties.
       */
-      class TEDATAACCESSEXPORT AbstractDataSet : public boost::noncopyable
+      class TEDATAACCESSEXPORT DataSet : public boost::noncopyable
       {
         public:
 
           /*! \brief Default constructor. */
-          AbstractDataSet() {}
+          DataSet() {}
 
           /*! \brief Virtual destructor. */
-          virtual ~AbstractDataSet() {}
+          virtual ~DataSet() {}
 
-          /** @name AbstractDataSet Methods
+          /** @name DataSet Methods
            *  Methods for obtaining information about a given dataset.
            */
           //@{
@@ -660,10 +660,10 @@ namespace te
           //@}
       };
 
-      typedef boost::shared_ptr<AbstractDataSet> DataSetPtr;
+      typedef boost::shared_ptr<DataSet> DataSetPtr;
 
     }  // end namespace core
   }    // end namespace da
 }      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTDATASET_H
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASET_H

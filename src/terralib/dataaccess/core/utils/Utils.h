@@ -56,8 +56,8 @@ namespace te
     namespace core
     {
 // Forward declaration
-      class AbstractDataSet;
-      class AbstractDataSource;
+      class DataSet;
+      class DataSource;
       class DataSetAdapter;
       class DataSetType;
       class DataSetTypeConverter;
@@ -68,7 +68,7 @@ namespace te
 
       TEDATAACCESSEXPORT void LoadFull(te::da::core::DataSetType* dataset, const std::string& datasourceId);
 
-      TEDATAACCESSEXPORT void LoadFull(te::da::core::DataSetType* dataset, te::da::core::AbstractDataSource* datasource);
+      TEDATAACCESSEXPORT void LoadFull(te::da::core::DataSetType* dataset, te::da::core::DataSource* datasource);
 
       TEDATAACCESSEXPORT void LoadFull(te::da::core::DataSetType* dataset, te::da::DataSourceTransactor* transactor);
 
@@ -89,7 +89,7 @@ namespace te
 
         \exception Exception It throws an exception if something goes wrong during MBR search.
       */
-      TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(AbstractDataSet* dataset);
+      TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(DataSet* dataset);
 
       /*!
         \return The data extent considering the informed property. The caller will take the ownership of the returned box.
@@ -126,9 +126,9 @@ namespace te
 
       TEDATAACCESSEXPORT bool HasDataSet(te::da::DataSourceTransactor* transactor);
 
-      TEDATAACCESSEXPORT te::da::core::AbstractDataSet* GetDataSet(const std::string& name, const std::string& datasourceId);
+      TEDATAACCESSEXPORT te::da::core::DataSet* GetDataSet(const std::string& name, const std::string& datasourceId);
 
-      TEDATAACCESSEXPORT te::da::core::AbstractDataSet* GetDataSet(const std::string& name, te::da::DataSource* datasource);
+      TEDATAACCESSEXPORT te::da::core::DataSet* GetDataSet(const std::string& name, te::da::DataSource* datasource);
 
       /*!
         \brief Search for a data source with the informed id in the DataSourceManager.
@@ -190,7 +190,7 @@ namespace te
 
         \return The object id set generated from the given dataset.
       */
-      TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(AbstractDataSet* dataset, const DataSetType* type);
+      TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const DataSetType* type);
 
       /*
         \brief It generates the set of object ids for every element of the given dataset using a set of attributes.
@@ -200,7 +200,7 @@ namespace te
      
         \return The object id set generated from the given dataset.
       */
-      TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(AbstractDataSet* dataset, const std::vector<std::string>& names);
+      TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const std::vector<std::string>& names);
 
       /*
         \brief It generates an object id for the current element of the given dataset using the informed set of attributes.
@@ -210,7 +210,7 @@ namespace te
      
         \return The object id generated for the current element of the given dataset.
       */
-      TEDATAACCESSEXPORT ObjectId* GenerateOID(AbstractDataSet* dataset, const std::vector<std::string>& names);
+      TEDATAACCESSEXPORT ObjectId* GenerateOID(DataSet* dataset, const std::vector<std::string>& names);
 
       /*!
         \brief It returns the first dataset spatial property or NULL if none is found.
@@ -219,11 +219,11 @@ namespace te
 
         \return The first dataset spatial property or NULL if none is found.
       */
-      TEDATAACCESSEXPORT std::size_t GetFirstSpatialPropertyPos(const AbstractDataSet* dataset);
+      TEDATAACCESSEXPORT std::size_t GetFirstSpatialPropertyPos(const DataSet* dataset);
 
-      TEDATAACCESSEXPORT std::size_t GetFirstPropertyPos(const AbstractDataSet* dataset, int datatype);
+      TEDATAACCESSEXPORT std::size_t GetFirstPropertyPos(const DataSet* dataset, int datatype);
 
-      TEDATAACCESSEXPORT std::size_t GetPropertyPos(const AbstractDataSet* dataset, const std::string& name);
+      TEDATAACCESSEXPORT std::size_t GetPropertyPos(const DataSet* dataset, const std::string& name);
 
       TEDATAACCESSEXPORT te::dt::Property* GetFirstSpatialProperty(const DataSetType* dt);
 
@@ -237,7 +237,7 @@ namespace te
                                               std::vector<std::string>& pnames,
                                               std::vector<int>& ptypes);
 
-      TEDATAACCESSEXPORT void GetPropertyInfo(const AbstractDataSet* const dataset,
+      TEDATAACCESSEXPORT void GetPropertyInfo(const DataSet* const dataset,
                                               std::vector<std::string>& pnames,
                                               std::vector<int>& ptypes);
 
@@ -262,7 +262,7 @@ namespace te
               current position. So, keep in mind that it is the caller responsability
               to inform the dataset 'd' in the right position (and a valid one) to start processing it.
       */
-      TEDATAACCESSEXPORT void Create(DataSourceTransactor* t, DataSetType* dt, AbstractDataSet* d, std::size_t limit = 0);
+      TEDATAACCESSEXPORT void Create(DataSourceTransactor* t, DataSetType* dt, DataSet* d, std::size_t limit = 0);
 
       /*!
         \brief It creates the dataset definition in a data source and then fill it with data from the input dataset.
@@ -287,17 +287,17 @@ namespace te
       */
       TEDATAACCESSEXPORT void Create(DataSourceTransactor* t,
                                      DataSetType* dt,
-                                     AbstractDataSet* d,
+                                     DataSet* d,
                                      const std::map<std::string, std::string>& options,
                                      std::size_t limit = 0);
 
-      TEDATAACCESSEXPORT DataSetAdapter* CreateAdapter(AbstractDataSet* ds, DataSetTypeConverter* converter, bool isOwner = false);
+      TEDATAACCESSEXPORT DataSetAdapter* CreateAdapter(DataSet* ds, DataSetTypeConverter* converter, bool isOwner = false);
 
       TEDATAACCESSEXPORT std::string GetSQLValueNames(const DataSetType* dt);
 
-      TEDATAACCESSEXPORT std::string GetSQLValueNames(const AbstractDataSet* dataset);
+      TEDATAACCESSEXPORT std::string GetSQLValueNames(const DataSet* dataset);
 
-      TEDATAACCESSEXPORT std::vector<int> GetPropertyDataTypes(const AbstractDataSet* dataset);
+      TEDATAACCESSEXPORT std::vector<int> GetPropertyDataTypes(const DataSet* dataset);
 
     }  // end namespace core
   }    // end namespace da

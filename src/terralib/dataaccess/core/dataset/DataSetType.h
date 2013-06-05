@@ -28,9 +28,10 @@
 
 // TerraLib
 #include "../../../datatype/CompositeProperty.h"
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
+#include <memory>
 #include <string>
 
 // Boost
@@ -44,7 +45,6 @@ namespace te
     namespace core
     {
       class CheckConstraint;
-      class AbstractConstraint;
       class DataSourceCatalog;
       class ForeignKey;
       class Index;
@@ -91,7 +91,7 @@ namespace te
 
             \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
           */
-          DataSetType(const std::string& name, unsigned int id = 0);
+          DataSetType(const std::string& name);
 
           /*!
             \brief Copy constructor.
@@ -204,7 +204,7 @@ namespace te
 
             \note If you inform a NULL pointer, it ill just release the internal primary key.
           */
-          void setPrimaryKey(PrimaryKey* pk);
+          void setPrimaryKey(std::auto_ptr<PrimaryKey> pk);
 
           /*!
             \brief It returns the primary key associated to the dataset type.
@@ -212,47 +212,6 @@ namespace te
             \rerturn The primary key associated to the dataset type or NULL if none exists.
           */
           PrimaryKey* getPrimaryKey() const { return m_pk; }
-
-          //@}
-
-          /** @name Constraint Methods
-           *  Methods for managing constraints
-           */
-          //@{
-
-           /*!
-            \brief It adds a new constraint.
-
-            A constraint can be a: foreign key, unique key, check constraint or primary key
-
-            \param c The constraint to be added to the DataSetType.
-
-            \pre Don't inform a NULL pointer.
-            \pre For foreign keys, if the DataSetType is associated to a DataSourceCatalog the DataSetType 
-                  referenced in the foreign key must already be in the catalog.
-
-            \post The constraint will be attached to the DataSetType.
-            \post The DataSetType will take the ownership of the informed constraint.
-            \post For foreign keys, if the DataSetType is associated to a DataSourceCatalog, this method
-                  will register in the catalog an association between the foreign key and its referenced DataSetType.
-
-            \exception Exception For foreign keys, it throws an exception if the DataSetType is associated to a DataSourceCatalog
-                                 and the foreign key is referencing another DataSetType that is not.
-          */
-          void add(AbstractConstraint* c);
-
-           /*!
-            \brief It removes the constraint.
-
-            A constraint can be a: foreign key, unique key, check constraint or primary key
-
-            \param c The constraint to be removed from the DataSetType.
-
-            \pre Don't inform a NULL pointer or a unique key that doesn't belong to the DataSetType.
-
-            \post The constraint pointer will be invalidated.
-          */
-          void remove(AbstractConstraint* c);
 
           //@}
 
@@ -319,18 +278,6 @@ namespace te
           std::size_t getNumberOfCheckConstraints() const { return m_checkConstraints.size(); }
 
           /*!
-            \brief It adds the check constraints.
-
-            \param ccs The check constraints to be added to the DataSetType.
-
-            \pre Don't inform NULL pointers in the list.
-
-            \post The check constraints will be attached to the DataSetType.
-            \post The DataSetType will take the ownership of the informed check constraints.
-          */
-          void add(const std::vector<CheckConstraint*>& ccs);
-
-          /*!
             \brief It returns the i-th check-constraint associated to the dataset type.
 
             \param i The check-constraint position.
@@ -388,19 +335,7 @@ namespace te
             \post The index will be attached to the DataSetType.
             \post The DataSetType will take the ownership of the informed index.
           */
-          void add(Index* idx);
-
-          /*!
-            \brief It adds all the indexes.
-
-            \param idxs A list of indexes to be added to the DataSetType.
-
-            \pre Don't inform a NULL pointer in the list.
-
-            \post The indexes will be attached to the DataSetType.
-            \post The DataSetType will take the ownership of the informed indexes.
-          */
-          void add(const std::vector<Index*>& idxs);
+          void add(std::auto_ptr<Index> idx);
 
           /*!
             \brief It returns the i-th index associated to the dataset type.
@@ -492,7 +427,7 @@ namespace te
             \exception Exception It throws an exception if the DataSetType is associated to a DataSourceCatalog
                                  and the fk is referencing another DataSetType that is not.
           */
-          void add(ForeignKey* fk);
+          void add(std::auto_ptr<ForeignKey> fk);
 
           /*!
             \brief It removes the foreign key.
@@ -628,7 +563,7 @@ namespace te
 
         private:
 
-          DataSourceCatalog* m_catalog;                       //!< The associated catalog.        
+          DataSourceCatalog* m_catalog;                       //!< The associated catalog.
           PrimaryKey* m_pk;                                   //!< The DataSetType primary key.
           std::string m_title;                                //!< A brief description of the DataSetType.
           std::vector<ForeignKey*> m_foreignKeys;             //!< A vector of foreign key constraints.

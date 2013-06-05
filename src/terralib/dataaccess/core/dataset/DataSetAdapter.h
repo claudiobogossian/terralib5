@@ -20,7 +20,7 @@
 /*!
   \file terralib/dataaccess/core/dataset/DataSetAdapter.h
 
-  \brief An adapter for  a dataset.
+  \brief An adapter for a dataset.
 */
 
 #ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASETADAPTER_H
@@ -28,9 +28,9 @@
 
 // TerraLib
 #include "../../../common/Holder.h"
-#include "../../Config.h"
+#include "../Config.h"
 #include "AttributeConverters.h"
-#include "AbstractDataSet.h"
+#include "DataSet.h"
 
 // STL
 #include <vector>
@@ -41,7 +41,7 @@ namespace te
   {
     namespace core
     {
-      // Forward declarations
+// Forward declarations
       class DataSourceCapabilities;
 
       /*!
@@ -49,9 +49,9 @@ namespace te
 
         \brief An adapter for a data set.
 
-        \sa AbstractDataSet
+        \sa DataSet
        */
-      class TEDATAACCESSEXPORT DataSetAdapter : public AbstractDataSet
+      class TEDATAACCESSEXPORT DataSetAdapter : public DataSet
       {
         public:
 
@@ -69,7 +69,7 @@ namespace te
             \note Here no automatic property adaptation will be made. i.e. The adapater is invalid.
             \note The method "adapt" can be used to do manual adaptations.
           */
-          DataSetAdapter(AbstractDataSet* dataset, bool isOwner = false);
+          DataSetAdapter(DataSet* dataset, bool isOwner = false);
 
           /*! \brief Destructor. */
           ~DataSetAdapter();
@@ -161,13 +161,11 @@ namespace te
           //@{
 
           /*!
-            \brief This method returns the pointer to the DataSet that is handled by adapter.
+            \brief This method returns the pointer to the dataset that is handled by adapter.
 
-            \return The pointer to the DataSet that is handled by adapter.
-
-            \note The caller will NOT take the ownership of the returned pointer.
+            \return The pointer to the dataset that is handled by adapter.
           */
-          te::da::core::AbstractDataSet* getAdaptee() const;
+          te::da::core::DataSet* getAdaptee() const;
 
           void add(const std::string& newPropertyName,
                    int newPropertyType,
@@ -190,7 +188,7 @@ namespace te
 
           std::vector<int> m_datatypes;                             //!< The datatype for each property.
           std::vector<std::string> m_pnames;                        //!< The name for each property.
-          te::common::Holder<AbstractDataSet> m_ds;                         //!< A pointer to the DataSet that will be handled by adapter
+          te::common::Holder<DataSet> m_ds;                 //!< A pointer to the DataSet that will be handled by adapter
           std::vector<std::vector<std::size_t> > m_propertyIndexes; //!< A vector that stores the adapted property indexes.
           std::vector<AttributeConverter> m_converters;             //!< A vector that stores the attribute converters functions.
       };
