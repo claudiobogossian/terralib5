@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASETTYPECONVERTER_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 #include "AttributeConverters.h"
 
 // STL
@@ -45,7 +45,7 @@ namespace te
   {
     namespace core
     {
-      // Forward declaration
+// Forward declaration
       class DataSetAdapter;
       class DataSetType;
       class DataSourceCapabilities;

@@ -41,7 +41,7 @@ namespace te
   // Forward declarations
   namespace color { class RGBAColor; }
   namespace se    { class Font; class Fill; class Stroke; class Mark; }
-  namespace da    { class DataSet; }
+  namespace da    { class DataSet; class DataSetType; class ObjectId; }
   namespace dt    { class DateTime; }
   namespace qt
   {
@@ -55,6 +55,8 @@ namespace te
     
     double getDouble(te::dt::DateTime* dateTime);
 
+    void getObjectIds (te::da::DataSet* dataset, std::vector<std::size_t> pkeys, std::vector<te::da::ObjectId*>& valuesOIDs);
+
     /*!
         \brief Scatter Creator
 
@@ -65,7 +67,7 @@ namespace te
 
         \return a new Scatter
     */
-    TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, int propX, int propY);
+    TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY);
 
     /*!
         \brief Histogram Creator
@@ -79,7 +81,7 @@ namespace te
 
         \return a new Scatter
     */
-    TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, int propId, int slices);
+    TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices);
 
     /*!
         \brief Histogram Creator
@@ -91,7 +93,7 @@ namespace te
         \note It will traverse the data set, using the moveNext() method
         \note It will not take the ownership of the DataSet pointer. 
     */
-    TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, int propId);
+    TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId);
 
     /*!
         \function Terralib2Qwt
@@ -136,7 +138,6 @@ namespace te
         \note It will not take the ownership of the Mark pointer.
       */
       TEQTWIDGETSEXPORT QwtSymbol* Terralib2Qwt(te::se::Mark* mark);
-
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

@@ -40,11 +40,8 @@ namespace Ui { class ScatterDataWidgetForm; }
 
 namespace te
 {
-
-  namespace da
-  {
-    class DataSet;
-  }
+    //forward declarations
+  namespace da  { class DataSet; class DataSetType; }
 
   namespace qt
   {
@@ -65,7 +62,7 @@ namespace te
 
         public:
 
-          ScatterDataWidget(te::da::DataSet* dataSet, QWidget* parent = 0, Qt::WindowFlags f = 0);
+          ScatterDataWidget(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           ~ScatterDataWidget();
 
@@ -77,8 +74,9 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ScatterDataWidgetForm>  m_ui;       //!< THe widget Form.
-          te::da::DataSet*                          m_dataSet;  //!< The dataset that will be used to generate the Scatter graph.
+          std::auto_ptr<Ui::ScatterDataWidgetForm>  m_ui;        //!< THe widget Form.
+          std::auto_ptr<te::da::DataSet>            m_dataSet;   //!< The dataset that will be used to generate the Scatter graphic.
+          std::auto_ptr<te::da::DataSetType>        m_dataType;  //!< The type of the dataset that will be used to generate the Scatter graphic.
       };
     } // end namespace widgets
   }   // end namespace qt
