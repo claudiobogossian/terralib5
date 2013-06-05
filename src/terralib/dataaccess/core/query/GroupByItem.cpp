@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/GroupByItem.cpp
+  \file terralib/dataaccess/core/query/GroupByItem.cpp
 
-  \brief A class that can be used in an ORDER BY clause to sort the items of a resulting query.
+  \brief A class that can be used in a GROUP BY clause.
 */
 
 // TerraLib
@@ -28,32 +28,32 @@
 #include "GroupByItem.h"
 #include "PropertyName.h"
 
-te::da::GroupByItem::GroupByItem(const Expression& e)
+te::da::core::GroupByItem::GroupByItem(const Expression& e)
   : m_field(e.clone())
 {
 }
 
-te::da::GroupByItem::GroupByItem(Expression* e)
+te::da::core::GroupByItem::GroupByItem(Expression* e)
   : m_field(e)
 {
 }
 
-te::da::GroupByItem::GroupByItem(const std::string& propertyName)
+te::da::core::GroupByItem::GroupByItem(const std::string& propertyName)
   : m_field(new PropertyName(propertyName))
 {
 }
 
-te::da::GroupByItem::GroupByItem(const GroupByItem& rhs)
+te::da::core::GroupByItem::GroupByItem(const GroupByItem& rhs)
   : m_field(0)
 {
   m_field.reset(rhs.m_field.get() ? rhs.m_field->clone() : 0);
 }
 
-te::da::GroupByItem::~GroupByItem()
+te::da::core::GroupByItem::~GroupByItem()
 {
 }
 
-te::da::GroupByItem& te::da::GroupByItem::operator=(const GroupByItem& rhs)
+te::da::core::GroupByItem& te::da::core::GroupByItem::operator=(const GroupByItem& rhs)
 {
   if(this != &rhs)
   {
@@ -63,13 +63,12 @@ te::da::GroupByItem& te::da::GroupByItem::operator=(const GroupByItem& rhs)
   return *this;
 }
 
-void te::da::GroupByItem::setExpression(Expression* e)
+void te::da::core::GroupByItem::setExpression(Expression* e)
 {
   m_field.reset(e);
 }
 
-te::da::Expression* te::da::GroupByItem::getExpression() const
+te::da::core::Expression* te::da::core::GroupByItem::getExpression() const
 {
   return m_field.get();
 }
-

@@ -27,62 +27,36 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_CHECKCONSTRAINT_H
 
 // TerraLib
-#include "AbstractConstraint.h"
+#include "Constraint.h"
 
 namespace te
 {
-// Forward declarations
-  namespace dt { class Property; }
-
   namespace da
   {
     namespace core
     {
-      // Forward declaration
-      class DataSetType;
-
       /*!
         \class CheckConstraint
-      
+
         \brief A class that describes a check constraint.
 
-        \sa DataSetType, Constraint, PrimaryKey, UniqueKey, ForeignKey
+        \sa Constraint, PrimaryKey, UniqueKey, ForeignKey
       */
-      class TEDATAACCESSEXPORT CheckConstraint : public AbstractConstraint
+      class TEDATAACCESSEXPORT CheckConstraint : public Constraint
       {
         public:
 
           /*!
             \brief Constructor.
 
-            \param dt   The DataSetType associated to the check constraint.
-            \param id   The constraint identifier.
-
-            \note The new constraint will belong to the given DataSetType.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
+            \param name       The check constraint name.
+            \param expression The check constraint expression.
           */
-          CheckConstraint(te::da::core::DataSetType* dt = 0, unsigned int id = 0);
-
-          /*!
-            \brief Constructor.
-
-            \param name   The check constraint name.
-            \param parent The parent DataSetType of this check constraint.
-            \param id     The constraint identifier.
-
-            \note The new constraint will belong to the given DataSetType.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          CheckConstraint(const std::string& name,
-                          DataSetType* dt = 0,
-                          unsigned int id = 0);
+          CheckConstraint(const std::string& name = "",
+                          const std::string& expression =  "");
 
           /*!
             \brief Copy constructor not allowed.
-
-            The new object will not have an associated DataSetType.
 
             \param rhs Right-hand-side instance.
           */
@@ -93,8 +67,6 @@ namespace te
 
           /*!
             \brief Assignment operator.
-
-            The new object will not have an assigned DataSetType.
 
             \param rhs Right-hand-side instance.
 
@@ -112,7 +84,7 @@ namespace te
           /*!
             \brief It sets the check constraint expression.
 
-            \param name The check constraint expression.
+            \param e The check constraint expression.
           */
           void setExpression(const std::string& e) { m_expression = e; } 
 
@@ -121,7 +93,7 @@ namespace te
           
             \return The constraint type CHECK.
           */
-          ConstraintType getType() const { return CHECK; } 
+          ConstraintType getType() const { return CHECK; }
 
           /*!
             \brief It returns a clone of the object.
@@ -130,7 +102,7 @@ namespace te
 
             \return A clone of the object.
           */
-          AbstractConstraint* clone();
+          Constraint* clone();
       
         private:
 

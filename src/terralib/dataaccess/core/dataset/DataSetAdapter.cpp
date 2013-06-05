@@ -46,7 +46,7 @@
 #include <cassert>
 #include <memory>
 
-te::da::core::DataSetAdapter::DataSetAdapter(AbstractDataSet* dataset, bool isOwner)
+te::da::core::DataSetAdapter::DataSetAdapter(DataSet* dataset, bool isOwner)
   : m_ds(dataset, isOwner)
 {
   assert(dataset);
@@ -252,7 +252,7 @@ bool te::da::core::DataSetAdapter::isNull(std::size_t i) const
   return data.get() != 0;
 }
 
-te::da::core::AbstractDataSet* te::da::core::DataSetAdapter::getAdaptee() const
+te::da::core::DataSet* te::da::core::DataSetAdapter::getAdaptee() const
 {
   return m_ds.get();
 }

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/datasource/AbstractDataSource.cpp
+  \file terralib/dataaccess/core/datasource/DataSource.cpp
 
   \brief An abstract class for data providers like a DBMS, Web Services or a regular file.
 */
@@ -26,15 +26,15 @@
 // TerraLib
 #include "../../../common/Translator.h"
 #include "../Exception.h"
-#include "AbstractDataSource.h"
+#include "DataSource.h"
 #include "DataSourceFactory.h"
 
 
-std::auto_ptr<te::da::core::AbstractDataSource>
-te::da::core::AbstractDataSource::create(const std::string& dsType,
-                                         const std::map<std::string, std::string>& dsInfo) throw(Exception)
+std::auto_ptr<te::da::core::DataSource>
+te::da::core::DataSource::create(const std::string& dsType,
+                                 const std::map<std::string, std::string>& dsInfo) throw(Exception)
 {
-  std::auto_ptr<AbstractDataSource> ds(DataSourceFactory::make(dsType));
+  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   ds->create(dsInfo);
 
@@ -42,28 +42,28 @@ te::da::core::AbstractDataSource::create(const std::string& dsType,
 }
 
 void
-te::da::core::AbstractDataSource::drop(const std::string& dsType,
-                                       const std::map<std::string, std::string>& dsInfo) throw(Exception)
+te::da::core::DataSource::drop(const std::string& dsType,
+                               const std::map<std::string, std::string>& dsInfo) throw(Exception)
 {
-  std::auto_ptr<AbstractDataSource> ds(DataSourceFactory::make(dsType));
+  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   ds->drop(dsInfo);
 }
 
 bool
-te::da::core::AbstractDataSource::exists(const std::string& dsType,
-                                         const std::map<std::string, std::string>& dsInfo) throw(Exception)
+te::da::core::DataSource::exists(const std::string& dsType,
+                                 const std::map<std::string, std::string>& dsInfo) throw(Exception)
 {
-  std::auto_ptr<AbstractDataSource> ds(DataSourceFactory::make(dsType));
+  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   return ds->exists(dsInfo);
 }
 
 std::vector<std::string>
-te::da::core::AbstractDataSource::getDataSourceNames(const std::string& dsType,
-                                                     const std::map<std::string, std::string>& info) throw(Exception)
+te::da::core::DataSource::getDataSourceNames(const std::string& dsType,
+                                             const std::map<std::string, std::string>& info) throw(Exception)
 {
-  std::auto_ptr<AbstractDataSource> ds(DataSourceFactory::make(dsType));
+  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
 
   return ds->getDataSourceNames(info);
 }

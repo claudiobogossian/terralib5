@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,34 +18,33 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralInt32.cpp
+  \file terralib/dataaccess/core/query/LiteralInt32.cpp
 
   \brief A class that models a Literal for a integer value.
  */
 
 // TerraLib
-#include "../../datatype/SimpleData.h"
+#include "../../../datatype/SimpleData.h"
 #include "LiteralInt32.h"
 
-te::da::LiteralInt32::LiteralInt32(boost::int32_t i)
+te::da::core::LiteralInt32::LiteralInt32(boost::int32_t i)
   : Literal(new te::dt::Int32(i))
 {
 }
 
-te::da::LiteralInt32::LiteralInt32(const LiteralInt32& rhs)
+te::da::core::LiteralInt32::LiteralInt32(const LiteralInt32& rhs)
   : Literal(rhs)
 {
 }
 
-te::da::LiteralInt32& te::da::LiteralInt32::operator=(const LiteralInt32& rhs)
+te::da::core::LiteralInt32& te::da::core::LiteralInt32::operator=(const LiteralInt32& rhs)
 {
   Literal::operator=(rhs);
 
   return *this;
 }
 
-te::da::Expression* te::da::LiteralInt32::clone() const
+te::da::core::Expression* te::da::core::LiteralInt32::clone() const
 {
   return new LiteralInt32(*this);
 }
-

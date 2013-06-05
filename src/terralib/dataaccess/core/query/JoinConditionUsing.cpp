@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,29 +18,29 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/JoinConditionUsing.cpp
+  \file terralib/dataaccess/core/query/JoinConditionUsing.cpp
 
   \brief JoinConditionUsing class can be used to model a USING clause in a Join.
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
+#include "../../../common/STLUtils.h"
 #include "Expression.h"
 #include "JoinConditionUsing.h"
 
 // STL
 #include <cassert>
 
-te::da::JoinConditionUsing::JoinConditionUsing(const JoinConditionUsing& rhs)
+te::da::core::JoinConditionUsing::JoinConditionUsing(const JoinConditionUsing& rhs)
   : m_fields(rhs.m_fields)
 {
 }
 
-te::da::JoinConditionUsing::~JoinConditionUsing()
+te::da::core::JoinConditionUsing::~JoinConditionUsing()
 {
 }
 
-te::da::JoinConditionUsing& te::da::JoinConditionUsing::operator=(const JoinConditionUsing& rhs)
+te::da::core::JoinConditionUsing& te::da::core::JoinConditionUsing::operator=(const JoinConditionUsing& rhs)
 {
   if(this != &rhs)
   {
@@ -50,30 +50,29 @@ te::da::JoinConditionUsing& te::da::JoinConditionUsing::operator=(const JoinCond
   return *this;
 }
 
-te::da::JoinCondition* te::da::JoinConditionUsing::clone() const
+te::da::core::JoinCondition* te::da::core::JoinConditionUsing::clone() const
 {
   return new JoinConditionUsing(*this);
 }
 
-void te::da::JoinConditionUsing::push_back(Expression* e)
+void te::da::core::JoinConditionUsing::push_back(Expression* e)
 {
   m_fields.push_back(e);
 }
 
-const te::da::Expression* te::da::JoinConditionUsing::operator[](std::size_t i) const
+const te::da::core::Expression* te::da::core::JoinConditionUsing::operator[](std::size_t i) const
 {
   assert(i < m_fields.size());
   return &(m_fields[i]);
 }
 
-void te::da::JoinConditionUsing::erase(std::size_t i)
+void te::da::core::JoinConditionUsing::erase(std::size_t i)
 {
   assert(i < m_fields.size());
   m_fields.erase(m_fields.begin() + i);
 }
 
-void te::da::JoinConditionUsing::clear()
+void te::da::core::JoinConditionUsing::clear()
 {
   m_fields.clear();
 }
-

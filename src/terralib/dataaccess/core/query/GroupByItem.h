@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/GroupByItem.h
+  \file terralib/dataaccess/core/query/GroupByItem.h
 
   \brief A class that can be used in a GROUP BY clause.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_GROUPBYITEM_H
-#define __TERRALIB_DATAACCESS_INTERNAL_GROUPBYITEM_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_GROUPBYITEM_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_GROUPBYITEM_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
 
 // STL
 #include <memory>
@@ -37,78 +37,80 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class Expression;
-
-    /*!
-      \class GroupByItem
-      
-      \brief A class that can be used in a GROUP BY clause.
-
-      \sa GroupBy
-    */
-    class TEDATAACCESSEXPORT GroupByItem
+    namespace core
     {
-      public:   
+      // Forward declarations
+      class Expression;
 
-        /*!
-          \brief Constructor.
+      /*!
+        \class GroupByItem
+      
+        \brief A class that can be used in a GROUP BY clause.
 
-          \param e     An expression to be used in an GROUP BY clause.
-          \param order The sort order.
-        */
-        explicit GroupByItem(const Expression& e);
+        \sa GroupBy
+      */
+      class TEDATAACCESSEXPORT GroupByItem
+      {
+        public:   
 
-        /*!
-          \brief Constructor.
+          /*!
+            \brief Constructor.
 
-          \param e     An expression to be used in an GROUP BY clause.
-          \param order The sort order.
+            \param e     An expression to be used in an GROUP BY clause.
+            \param order The sort order.
+          */
+          explicit GroupByItem(const Expression& e);
 
-          \note The GroupByItem will take the ownership of Expression.
-        */
-        explicit GroupByItem(Expression* e);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param e     An expression to be used in an GROUP BY clause.
+            \param order The sort order.
 
-          \param propertyName  A property name.
-          \param order         The sort order.
-        */
-        explicit GroupByItem(const std::string& propertyName);
+            \note The GroupByItem will take the ownership of Expression.
+          */
+          explicit GroupByItem(Expression* e);
 
-        /*! \brief Copy constructor. */
-        explicit GroupByItem(const GroupByItem& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~GroupByItem();        
+            \param propertyName  A property name.
+            \param order         The sort order.
+          */
+          explicit GroupByItem(const std::string& propertyName);
 
-        /*! Assignment operator.  */
-        GroupByItem& operator=(const GroupByItem& rhs);
+          /*! \brief Copy constructor. */
+          explicit GroupByItem(const GroupByItem& rhs);
 
-        /*!
-          \brief It sets the expression to sort the result of a query.
+          /*! \brief Destructor. */
+          ~GroupByItem();        
 
-          \param e The expression to be used to sort the result of a query.
+          /*! Assignment operator.  */
+          GroupByItem& operator=(const GroupByItem& rhs);
 
-          \note The GroupByItem will take the expression ownership.
-        */
-        void setExpression(Expression* e);
+          /*!
+            \brief It sets the expression to sort the result of a query.
 
-        /*!
-          \brief It returns the exprsssion to be used to sort the result of a query.
+            \param e The expression to be used to sort the result of a query.
 
-          \return The exprsssion to be used to sort the result of a query.
-        */
-        Expression* getExpression() const;
+            \note The GroupByItem will take the expression ownership.
+          */
+          void setExpression(Expression* e);
 
-      private:
+          /*!
+            \brief It returns the exprsssion to be used to sort the result of a query.
 
-        std::auto_ptr<Expression> m_field;  //!< A valid expression.
-    };
+            \return The exprsssion to be used to sort the result of a query.
+          */
+          Expression* getExpression() const;
 
-  } // end namespace da
-}   // end namespace te
+        private:
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_GROUPBYITEM_H
+          std::auto_ptr<Expression> m_field;  //!< A valid expression.
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_GROUPBYITEM_H

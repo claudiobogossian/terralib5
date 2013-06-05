@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralInt32.h
+  \file terralib/dataaccess/core/query/LiteralInt32.h
 
   \brief A class that models a Literal for a integer value.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LITERALINT32_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LITERALINT32_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALINT32_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALINT32_H
 
 // TerraLib
 #include "Literal.h"
@@ -39,41 +39,43 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class LiteralInt
-      
-      \brief A class that models a Literal for a integer value.
-
-      \sa Literal
-    */
-    class TEDATAACCESSEXPORT LiteralInt32 : public Literal
+    namespace core
     {
-      public:
+      /*!
+        \class LiteralInt
+      
+        \brief A class that models a Literal for a integer value.
 
-        TE_DEFINE_VISITABLE
+        \sa Literal
+      */
+      class TEDATAACCESSEXPORT LiteralInt32 : public Literal
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          TE_DEFINE_VISITABLE
 
-          \param i The integer value.
-        */
-        LiteralInt32(boost::int32_t i);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        LiteralInt32(const LiteralInt32& rhs);
+            \param i The integer value.
+          */
+          LiteralInt32(boost::int32_t i);
 
-        /*! \brief Destructor. */
-        ~LiteralInt32() {}
+          /*! \brief Copy constructor. */
+          LiteralInt32(const LiteralInt32& rhs);
 
-        /*! Assignment operator.  */
-        LiteralInt32& operator=(const LiteralInt32& rhs);
+          /*! \brief Destructor. */
+          ~LiteralInt32() {}
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! Assignment operator.  */
+          LiteralInt32& operator=(const LiteralInt32& rhs);
 
-  } // end namespace da
-}   // end namespace te
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LITERALINT32_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALINT32_H

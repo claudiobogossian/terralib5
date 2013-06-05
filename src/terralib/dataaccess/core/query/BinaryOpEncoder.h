@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/BinaryOpEncoder.h
+  \file terralib/dataaccess/core/query/BinaryOpEncoder.h
 
   \brief A query encoder for binary operations.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_BINARYOPENCODER_H
-#define __TERRALIB_DATAACCESS_INTERNAL_BINARYOPENCODER_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_BINARYOPENCODER_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_BINARYOPENCODER_H
 
 // TerraLib
 #include "SQLFunctionEncoder.h"
@@ -33,47 +33,49 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class BinaryOpEncoder
-      
-      \brief A query encoder for binary operations.
-
-      It encodes a binary operator using the following convention: (arg1 op-name arg2).
-
-      \sa Function, TemplateEncoder, SQLFunctionEncoder, UnaryOpEncoder, FunctionEncoder, FunctionNoArgsEncoder
-    */
-    class TEDATAACCESSEXPORT BinaryOpEncoder : public SQLFunctionEncoder
+    namespace core
     {
-      public:
+      /*!
+        \class BinaryOpEncoder
+      
+        \brief A query encoder for binary operations.
 
-        /*!
-          \brief Constructor.
+        It encodes a binary operator using the following convention: (arg1 op-name arg2).
 
-          \param name An alias to the operator name.
-        */
-        BinaryOpEncoder(const std::string& name) : SQLFunctionEncoder(name) {}
+        \sa Function, TemplateEncoder, SQLFunctionEncoder, UnaryOpEncoder, FunctionEncoder, FunctionNoArgsEncoder
+      */
+      class TEDATAACCESSEXPORT BinaryOpEncoder : public SQLFunctionEncoder
+      {
+        public:
 
-        /*! \brief Destructor. */
-        ~BinaryOpEncoder() {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief It encodes the function to a SQL notation.
+            \param name An alias to the operator name.
+          */
+          BinaryOpEncoder(const std::string& name) : SQLFunctionEncoder(name) {}
 
-          This method will encode the function in infix binary operator notation: (firstOperand op secondOperand).
-          For example, the '+' function is encoded as: (A + B).
+          /*! \brief Destructor. */
+          ~BinaryOpEncoder() {}
 
-          \param f     The function to be translated to a SQL notation.
-          \param alias The function alias in the data source query language.
-          \param buff  The destination string buffer where the translation will be written.
-          \param v     The SQL visitor that will be used to visit the arguments expression.
-        */
-        void toSQL(const Function& f,
-                   std::string& buff,
-                   SQLVisitor& v) const;
-    };
+          /*!
+            \brief It encodes the function to a SQL notation.
 
-  } // end namespace da
-}   // end namespace te
+            This method will encode the function in infix binary operator notation: (firstOperand op secondOperand).
+            For example, the '+' function is encoded as: (A + B).
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_BINARYOPENCODER_H
+            \param f     The function to be translated to a SQL notation.
+            \param alias The function alias in the data source query language.
+            \param buff  The destination string buffer where the translation will be written.
+            \param v     The SQL visitor that will be used to visit the arguments expression.
+          */
+          void toSQL(const Function& f,
+                     std::string& buff,
+                     SQLVisitor& v) const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_BINARYOPENCODER_H

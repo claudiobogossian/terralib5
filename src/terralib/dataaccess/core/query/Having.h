@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Having.h
+  \file terralib/dataaccess/core/query/Having.h
 
   \brief A Having is a filter expression that can be applied to a query with a group by clause.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_HAVING_H
-#define __TERRALIB_DATAACCESS_INTERNAL_HAVING_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_HAVING_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_HAVING_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
 
 // STL
 #include <memory>
@@ -36,53 +36,55 @@ namespace te
 {
   namespace da
   {
-// Forward declaration
-    class Expression;
-
-    /*!
-      \class Having
-
-      \brief A class that can be used to model a filter expression that can be applied to a query.
-    */
-    class TEDATAACCESSEXPORT Having
+    namespace core
     {
-      public:
+      // Forward declaration
+      class Expression;
 
-        /*!
-          \brief Constructor.
+      /*!
+        \class Having
 
-          \param e The where expression.
+        \brief A class that can be used to model a filter expression that can be applied to a query.
+      */
+      class TEDATAACCESSEXPORT Having
+      {
+        public:
 
-          \note The Having clause will take the ownership of the expression.
-        */
-        explicit Having(Expression* e);
+          /*!
+            \brief Constructor.
 
-        explicit Having(const Expression& e);
+            \param e The where expression.
 
-        Having(const Having& rhs);
+            \note The Having clause will take the ownership of the expression.
+          */
+          explicit Having(Expression* e);
 
-        ~Having();
+          explicit Having(const Expression& e);
+
+          Having(const Having& rhs);
+
+          ~Having();
         
-        Having& operator=(const Having& rhs);
+          Having& operator=(const Having& rhs);
 
-        Expression* getExp() const;
+          Expression* getExp() const;
 
-        /*!
-          \brief Sets the expression.
+          /*!
+            \brief Sets the expression.
 
-          \param e The where expression.
+            \param e The where expression.
 
-          \note The Having clause will take the ownership of the expression.
-        */
-        void setExp(Expression* exp);
+            \note The Having clause will take the ownership of the expression.
+          */
+          void setExp(Expression* exp);
 
-      private:
+        private:
 
-        std::auto_ptr<Expression> m_exp;  //!< The expression that defines the where clause.
-    };
+          std::auto_ptr<Expression> m_exp;  //!< The expression that defines the where clause.
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_HAVING_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_HAVING_H

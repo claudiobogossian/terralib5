@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Join.h
+  \file terralib/dataaccess/core/query/Join.h
 
-  \brief A Join clause combines two FromItems.
+  \brief A Join clause is used to combine two FromItems.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_JOIN_H
-#define __TERRALIB_DATAACCESS_INTERNAL_JOIN_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOIN_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOIN_H
 
 // TerraLib
-#include "../Enums.h"
+#include "../../Enums.h"
 #include "FromItem.h"
 
 // STL
@@ -37,143 +37,145 @@ namespace te
 {
   namespace da
   {
-// Forward declaration
-    class JoinCondition;
-
-    /*!
-      \class Join
-      
-      \brief A Join clause combines two FromItems.
-
-      \sa FromItem, DataSetName, FromFunctionCall, SubSelect
-    */
-    class TEDATAACCESSEXPORT Join : public FromItem
+    namespace core
     {
-      public:
+      // Forward declaration
+      class JoinCondition;
 
-        TE_DEFINE_VISITABLE
+      /*!
+        \class Join
+      
+        \brief A Join clause is used to combine two FromItems.
 
-        /*!
-          \brief Constructor.
+        \sa FromItem, DataSetName, FromFunctionCall, SubSelect
+      */
+      class TEDATAACCESSEXPORT Join : public FromItem
+      {
+        public:
 
-          \param first  The first FromItem to be combined.
-          \param second The second FromItem to be combined.
-          \param t      The join type.
-          \param c      The join condition.
+          TE_DEFINE_VISITABLE
 
-          \note The Join will take the ownership of the First, Second and JoinCondition.
-        */
-        Join(FromItem* first, FromItem* second, JoinType t, JoinCondition* c);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param first  The first FromItem to be combined.
+            \param second The second FromItem to be combined.
+            \param t      The join type.
+            \param c      The join condition.
 
-          \param first  The first FromItem to be combined.
-          \param second The second FromItem to be combined.
-          \param t      The join type.
-          \param c      The join condition.
-        */
-        Join(const FromItem& first, const FromItem& second, JoinType t, const JoinCondition& c);
+            \note The Join will take the ownership of the First, Second and JoinCondition.
+          */
+          Join(FromItem* first, FromItem* second, JoinType t, JoinCondition* c);
 
-        /*! \brief Copy constructor. */
-        Join(const Join& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~Join();
+            \param first  The first FromItem to be combined.
+            \param second The second FromItem to be combined.
+            \param t      The join type.
+            \param c      The join condition.
+          */
+          Join(const FromItem& first, const FromItem& second, JoinType t, const JoinCondition& c);
 
-        /*! Assignment operator.  */
-        Join& operator=(const Join& rhs);
+          /*! \brief Copy constructor. */
+          Join(const Join& rhs);
 
-        /*! \brief It creates a new copy of this FromItem. */
-        FromItem* clone() const;
+          /*! \brief Destructor. */
+          ~Join();
 
-        /*!
-          \brief It returns the first from item involved in the join.
+          /*! Assignment operator.  */
+          Join& operator=(const Join& rhs);
 
-          \return The first item involved in the join.
-        */
-        FromItem* getFirst() const;
+          /*! \brief It creates a new copy of this FromItem. */
+          FromItem* clone() const;
 
-        /*!
-          \brief It sets first item involved in the join.
+          /*!
+            \brief It returns the first from item involved in the join.
 
-          \param item The first item involved in the join.
+            \return The first item involved in the join.
+          */
+          FromItem* getFirst() const;
 
-          \note The Join will take the ownership of the given item.
-        */
-        void setFirst(FromItem* item);
+          /*!
+            \brief It sets first item involved in the join.
 
-        /*!
-          \brief It returns the second item involved in the join.
+            \param item The first item involved in the join.
 
-          \return The second item involved in the join.
-        */
-        FromItem* getSecond() const;
+            \note The Join will take the ownership of the given item.
+          */
+          void setFirst(FromItem* item);
 
-        /*!
-          \brief It sets second item involved in the join.
+          /*!
+            \brief It returns the second item involved in the join.
 
-          \param item The second item involved in the join.
+            \return The second item involved in the join.
+          */
+          FromItem* getSecond() const;
 
-          \note The Join will take the ownership of the given item.
-        */
-        void setSecond(FromItem* item);
+          /*!
+            \brief It sets second item involved in the join.
 
-        /*!
-          \brief It returns the join type.
+            \param item The second item involved in the join.
 
-          \return The join type.
-        */
-        JoinType getType() const;
+            \note The Join will take the ownership of the given item.
+          */
+          void setSecond(FromItem* item);
 
-        /*!
-          \brief It sets join type.
+          /*!
+            \brief It returns the join type.
 
-          \param t The join type.
-        */
-        void setType(JoinType t);
+            \return The join type.
+          */
+          JoinType getType() const;
 
-        /*!
-          \brief It tells if the join is Natural.
+          /*!
+            \brief It sets join type.
 
-          \return True if it is a Natural join, otherwise, false.
-        */
-        bool isNatural() const { return m_isNatural; }
+            \param t The join type.
+          */
+          void setType(JoinType t);
 
-        /*!
-          \brief It marks if the join is a natural join.
+          /*!
+            \brief It tells if the join is Natural.
 
-          \param n If true this will be a natural join.
-        */
-        void setNatural(bool n) { m_isNatural = n; }
+            \return True if it is a Natural join, otherwise, false.
+          */
+          bool isNatural() const { return m_isNatural; }
 
-        /*!
-          \brief It returns the join condition.
+          /*!
+            \brief It marks if the join is a natural join.
 
-          \return The join condition.
-        */
-        JoinCondition* getCondition() const;
+            \param n If true this will be a natural join.
+          */
+          void setNatural(bool n) { m_isNatural = n; }
 
-        /*!
-          \brief It sets the join condition.
+          /*!
+            \brief It returns the join condition.
 
-          \param c The join condition.
+            \return The join condition.
+          */
+          JoinCondition* getCondition() const;
 
-          \note The Join will take the ownership of the given condition.
-        */
-        void setCondition(JoinCondition* c);
+          /*!
+            \brief It sets the join condition.
 
-      private:
+            \param c The join condition.
 
-        std::auto_ptr<FromItem> m_first;          //!< The first item involved in the join.
-        std::auto_ptr<FromItem> m_second;         //!< The first item involved in the join.
-        std::auto_ptr<JoinCondition> m_condition; //!< The join condition.
-        JoinType m_type;                          //!< The join type.
-        bool m_isNatural;                         //!< Natural is a shorthand for a JoinConditionUsing list that mentions all columns in the two tables that have the same names.
-    };
+            \note The Join will take the ownership of the given condition.
+          */
+          void setCondition(JoinCondition* c);
 
-  } // end namespace da
-}   // end namespace te
+        private:
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_JOIN_H
+          std::auto_ptr<FromItem> m_first;          //!< The first item involved in the join.
+          std::auto_ptr<FromItem> m_second;         //!< The first item involved in the join.
+          std::auto_ptr<JoinCondition> m_condition; //!< The join condition.
+          JoinType m_type;                          //!< The join type.
+          bool m_isNatural;                         //!< Natural is a shorthand for a JoinConditionUsing list that mentions all columns in the two tables that have the same names.
+      };
 
+    } // end namespace core
+  }   // end namespace da
+}     // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOIN_H

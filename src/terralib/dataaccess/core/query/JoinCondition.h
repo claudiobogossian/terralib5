@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,53 +18,55 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/JoinCondition.h
+  \file terralib/dataaccess/core/query/JoinCondition.h
 
   \brief A condition to be used in a Join clause.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_JOINCONDITION_H
-#define __TERRALIB_DATAACCESS_INTERNAL_JOINCONDITION_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOINCONDITION_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOINCONDITION_H
 
 // TerraLib
-#include "../../common/BaseVisitable.h"
+#include "../../../common/BaseVisitable.h"
 #include "QueryVisitor.h"
 
 namespace te
 {
   namespace da
   {
-    /*!
-      \class JoinCondition
+    namespace core
+    {
+      /*!
+        \class JoinCondition
       
-      \brief A condition to be used in a Join clause.
+        \brief A condition to be used in a Join clause.
 
-      \sa Join, JoinConditionNatural, JoinConditionOn, JoinConditionUsing
-    */
-    class TEDATAACCESSEXPORT JoinCondition : public te::common::BaseVisitable<QueryVisitor>
-    {
-      public:
+        \sa Join, JoinConditionNatural, JoinConditionOn, JoinConditionUsing
+      */
+      class TEDATAACCESSEXPORT JoinCondition : public te::common::BaseVisitable<QueryVisitor>
+      {
+        public:
 
-        TE_DEFINE_VISITABLE
+          TE_DEFINE_VISITABLE
 
-        /*! \brief Default constructor. */
-        JoinCondition() {}
+          /*! \brief Default constructor. */
+          JoinCondition() {}
 
-        /*! \brief Virtual destructor. */
-        virtual ~JoinCondition() {}
+          /*! \brief Virtual destructor. */
+          virtual ~JoinCondition() {}
 
-        /*! \brief It creates a new copy of this JoinCondition. */
-        virtual JoinCondition* clone() const = 0;
-    };
+          /*! \brief It creates a new copy of this JoinCondition. */
+          virtual JoinCondition* clone() const = 0;
+      };
 
-    /*! \brief For use with boost conteiners. */
-    inline JoinCondition* new_clone(const JoinCondition& a)
-    {
-      return a.clone();
-    }
+      /*! \brief For use with boost conteiners. */
+      inline JoinCondition* new_clone(const JoinCondition& a)
+      {
+        return a.clone();
+      }
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_JOINCONDITION_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOINCONDITION_H

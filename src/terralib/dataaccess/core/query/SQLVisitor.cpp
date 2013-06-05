@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/SQLVisitor.cpp
+  \file terralib/dataaccess/core/query/SQLVisitor.cpp
 
   \brief A visitor for building an SQL statement from a given Query hierarchy.
 */
 
 // TerraLib
-#include "../../common/StringUtils.h"
-#include "../../common/Translator.h"
-#include "../../datatype/AbstractData.h"
+#include "../../../common/StringUtils.h"
+#include "../../../common/Translator.h"
+#include "../../../datatype/AbstractData.h"
 #include "../Exception.h"
 #include "DataSetName.h"
 #include "Distinct.h"
@@ -62,11 +62,11 @@
 // STL
 #include <cassert>
 
-void te::da::SQLVisitor::visit(const Expression& /*visited*/)
+void te::da::core::SQLVisitor::visit(const Expression& /*visited*/)
 {
 }
 
-void te::da::SQLVisitor::visit(const DataSetName& visited)
+void te::da::core::SQLVisitor::visit(const DataSetName& visited)
 {
   m_sql += visited.getName();
 
@@ -77,11 +77,11 @@ void te::da::SQLVisitor::visit(const DataSetName& visited)
   }
 }
 
-void te::da::SQLVisitor::visit(const FromItem& /*visited*/)
+void te::da::core::SQLVisitor::visit(const FromItem& /*visited*/)
 {
 }
 
-void te::da::SQLVisitor::visit(const Function& visited)
+void te::da::core::SQLVisitor::visit(const Function& visited)
 {
   const std::string& fname = visited.getName();
 
@@ -93,7 +93,7 @@ void te::da::SQLVisitor::visit(const Function& visited)
   encoder->toSQL(visited, m_sql, *this);
 }
 
-void te::da::SQLVisitor::visit(const Join& visited)
+void te::da::core::SQLVisitor::visit(const Join& visited)
 {
   assert(visited.getFirst() && visited.getSecond());
 
@@ -145,11 +145,11 @@ void te::da::SQLVisitor::visit(const Join& visited)
   m_sql += ")";
 }
 
-void te::da::SQLVisitor::visit(const JoinCondition& /*visited*/)
+void te::da::core::SQLVisitor::visit(const JoinCondition& /*visited*/)
 { 
 }
 
-void te::da::SQLVisitor::visit(const JoinConditionOn& visited)
+void te::da::core::SQLVisitor::visit(const JoinConditionOn& visited)
 {
   assert(visited.getCondition());  
   m_sql += "ON (";
@@ -157,7 +157,7 @@ void te::da::SQLVisitor::visit(const JoinConditionOn& visited)
   m_sql += ")";
 }
 
-void te::da::SQLVisitor::visit(const JoinConditionUsing& visited)
+void te::da::core::SQLVisitor::visit(const JoinConditionUsing& visited)
 {
   m_sql += "USING (";
 
@@ -175,59 +175,59 @@ void te::da::SQLVisitor::visit(const JoinConditionUsing& visited)
   m_sql += ")";
 }
 
-void te::da::SQLVisitor::visit(const Literal& visited)
+void te::da::core::SQLVisitor::visit(const Literal& visited)
 {
   if(visited.getValue())
     m_sql += visited.getValue()->toString();
 }
 
-void te::da::SQLVisitor::visit(const LiteralByteArray& visited)
+void te::da::core::SQLVisitor::visit(const LiteralByteArray& visited)
 {
   if(visited.getValue())
     m_sql += visited.getValue()->toString();
 }
 
-void te::da::SQLVisitor::visit(const LiteralDateTime& visited)
+void te::da::core::SQLVisitor::visit(const LiteralDateTime& visited)
 {
   if(visited.getValue())
     m_sql += visited.getValue()->toString();
 }
 
-void te::da::SQLVisitor::visit(const LiteralDouble& visited)
+void te::da::core::SQLVisitor::visit(const LiteralDouble& visited)
 {
   if(visited.getValue())
     m_sql += visited.getValue()->toString();
 }
 
-void te::da::SQLVisitor::visit(const LiteralEnvelope& /*visited*/)
+void te::da::core::SQLVisitor::visit(const LiteralEnvelope& /*visited*/)
 {
 }
 
-void te::da::SQLVisitor::visit(const LiteralGeom& visited)
-{
-  if(visited.getValue())
-    m_sql += visited.getValue()->toString();
-}
-
-void te::da::SQLVisitor::visit(const LiteralInt16& visited)
+void te::da::core::SQLVisitor::visit(const LiteralGeom& visited)
 {
   if(visited.getValue())
     m_sql += visited.getValue()->toString();
 }
 
-void te::da::SQLVisitor::visit(const LiteralInt32& visited)
+void te::da::core::SQLVisitor::visit(const LiteralInt16& visited)
 {
   if(visited.getValue())
     m_sql += visited.getValue()->toString();
 }
 
-void te::da::SQLVisitor::visit(const LiteralInt64& visited)
+void te::da::core::SQLVisitor::visit(const LiteralInt32& visited)
 {
   if(visited.getValue())
     m_sql += visited.getValue()->toString();
 }
 
-void te::da::SQLVisitor::visit(const LiteralString& visited)
+void te::da::core::SQLVisitor::visit(const LiteralInt64& visited)
+{
+  if(visited.getValue())
+    m_sql += visited.getValue()->toString();
+}
+
+void te::da::core::SQLVisitor::visit(const LiteralString& visited)
 {
   if(visited.getValue())
   {
@@ -237,16 +237,16 @@ void te::da::SQLVisitor::visit(const LiteralString& visited)
   }
 }
 
-void te::da::SQLVisitor::visit(const PropertyName& visited)
+void te::da::core::SQLVisitor::visit(const PropertyName& visited)
 {
   m_sql += visited.getName();
 }
 
-void te::da::SQLVisitor::visit(const Query& /*visited*/)
+void te::da::core::SQLVisitor::visit(const Query& /*visited*/)
 {
 }
 
-void te::da::SQLVisitor::visit(const Select& visited)
+void te::da::core::SQLVisitor::visit(const Select& visited)
 {
   m_sql += "SELECT ";
 
@@ -292,7 +292,7 @@ void te::da::SQLVisitor::visit(const Select& visited)
     visit(*(visited.getOrderBy()));
 }
 
-void te::da::SQLVisitor::visit(const SubSelect& visited)
+void te::da::core::SQLVisitor::visit(const SubSelect& visited)
 {
   assert(visited.getSelect());
   visited.getSelect()->accept(*this);
@@ -304,7 +304,7 @@ void te::da::SQLVisitor::visit(const SubSelect& visited)
   }  
 }
 
-void te::da::SQLVisitor::visit(const In& visited)
+void te::da::core::SQLVisitor::visit(const In& visited)
 {
   assert(visited.getPropertyName());
   visited.getPropertyName()->accept(*this);
@@ -324,7 +324,7 @@ void te::da::SQLVisitor::visit(const In& visited)
   m_sql += ")";
 }
 
-void te::da::SQLVisitor::visitDistinct(const te::da::Distinct& visited)
+void te::da::core::SQLVisitor::visitDistinct(const te::da::core::Distinct& visited)
 {
   if(visited.empty())
   {
@@ -348,7 +348,7 @@ void te::da::SQLVisitor::visitDistinct(const te::da::Distinct& visited)
   }
 }
 
-void te::da::SQLVisitor::visit(const te::da::Fields& visited)
+void te::da::core::SQLVisitor::visit(const te::da::core::Fields& visited)
 {
   std::size_t size = visited.size();
 
@@ -364,7 +364,7 @@ void te::da::SQLVisitor::visit(const te::da::Fields& visited)
   }
 }
 
-void te::da::SQLVisitor::visit(const te::da::From& visited)
+void te::da::core::SQLVisitor::visit(const te::da::core::From& visited)
 {
   std::size_t size = visited.size();
 
@@ -379,7 +379,7 @@ void te::da::SQLVisitor::visit(const te::da::From& visited)
   }
 }
 
-void te::da::SQLVisitor::visit(const te::da::GroupBy& visited)
+void te::da::core::SQLVisitor::visit(const te::da::core::GroupBy& visited)
 {
   m_sql += "GROUP BY ";
 
@@ -394,7 +394,7 @@ void te::da::SQLVisitor::visit(const te::da::GroupBy& visited)
   }
 }
 
-void te::da::SQLVisitor::visit(const te::da::OrderBy& visited)
+void te::da::core::SQLVisitor::visit(const te::da::core::OrderBy& visited)
 {
   std::size_t size = visited.size();
 

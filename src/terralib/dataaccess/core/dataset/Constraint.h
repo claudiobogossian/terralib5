@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/dataset/AbstractConstraint.h
+  \file terralib/dataaccess/core/dataset/Constraint.h
 
   \brief A base class for constraints.
 */
 
-#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H
-#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H
+#ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_CONSTRAINT_H
+#define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_CONSTRAINT_H
 
 // TerraLib
-#include "../../Config.h"
-#include "../../Enums.h"
+#include "../Config.h"
+#include "../Enums.h"
 
 // STL
 #include <string>
@@ -39,17 +39,17 @@ namespace te
   {
     namespace core
     {
-      // Forward declaration
+// Forward declaration
       class DataSetType;
 
       /*!
-        \class AbstractConstraint
+        \class Constraint
 
         \brief A base class for constraints.
 
-        \sa DataSetType, PrimaryKey, ForeignKey, UniqueKey, CheckConstraint
+        \sa PrimaryKey, ForeignKey, UniqueKey, CheckConstraint
       */
-      class TEDATAACCESSEXPORT AbstractConstraint
+      class TEDATAACCESSEXPORT Constraint
       {
         public:
 
@@ -57,22 +57,18 @@ namespace te
             \brief Constructor.
 
             \param name The constraint name.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
           */
-          AbstractConstraint(const std::string& name = "");
+          Constraint(const std::string& name = "");
 
           /*!
             \brief Copy constructor not allowed.
 
-            The new object will not have an associated DataSetType.
-
             \param rhs Right-hand-side instance.
           */
-          AbstractConstraint(const AbstractConstraint& rhs);
+          Constraint(const Constraint& rhs);
 
           /*! \brief Virtual destructor. */
-          virtual ~AbstractConstraint() {}
+          virtual ~Constraint() {}
 
           /*!
             \brief Assignment operator not allowed.
@@ -81,7 +77,21 @@ namespace te
 
             \return A reference to this object.
           */
-          AbstractConstraint& operator=(const AbstractConstraint& rhs);
+          Constraint& operator=(const Constraint& rhs);
+
+          /*!
+            \brief It returns the dataset schema associated to the constraint.
+
+            \return The dataset schema associated to the constraint.
+          */
+          DataSetType* getDataSetType() const { return m_dt; }
+
+          /*!
+            \brief It sets the DataSetType associated to the constraint.
+
+            \param dt The dataset schema associated to this constraint.
+          */
+          void setDataSetType(DataSetType* dt) { m_dt = dt; }
 
           /*!
             \brief It returns the constraint name.
@@ -113,15 +123,16 @@ namespace te
 
             \return A clone of the object.
           */
-          virtual AbstractConstraint* clone() = 0;
+          virtual Constraint* clone() = 0;
 
         private:
 
           std::string m_name;   //!< The constraint name.
+          DataSetType* m_dt;    //!< The associated dataset schema.
       };
 
     }  //end namespace core
   }    // end namespace da
 }      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ABSTRACTCONSTRAINT_H
+#endif  // __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_CONSTRAINT_H

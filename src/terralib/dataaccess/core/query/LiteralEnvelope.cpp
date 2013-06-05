@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,39 +18,39 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralEnvelope.cpp
+  \file terralib/dataaccess/core/query/LiteralEnvelope.cpp
 
   \brief A class that models a literal for Envelope values.
 */
 
 // TerraLib
-#include "../../geometry/Envelope.h"
+#include "../../../geometry/Envelope.h"
 #include "LiteralEnvelope.h"
 
-te::da::LiteralEnvelope::LiteralEnvelope(te::gm::Envelope* e, int srid)
+te::da::core::LiteralEnvelope::LiteralEnvelope(te::gm::Envelope* e, int srid)
   : m_eval(e),
     m_srid(srid)
 {
 }
 
-te::da::LiteralEnvelope::LiteralEnvelope(const te::gm::Envelope& e, int srid)
+te::da::core::LiteralEnvelope::LiteralEnvelope(const te::gm::Envelope& e, int srid)
   : m_eval(new te::gm::Envelope(e)),
     m_srid(srid)
 {
 }
 
-te::da::LiteralEnvelope::LiteralEnvelope(const LiteralEnvelope& rhs)
+te::da::core::LiteralEnvelope::LiteralEnvelope(const LiteralEnvelope& rhs)
   : m_eval(0),
     m_srid(rhs.m_srid)
 {
   m_eval.reset(rhs.m_eval.get() ? new te::gm::Envelope(*rhs.m_eval) : 0);
 }
 
-te::da::LiteralEnvelope::~LiteralEnvelope()
+te::da::core::LiteralEnvelope::~LiteralEnvelope()
 {
 }
 
-te::da::LiteralEnvelope& te::da::LiteralEnvelope::operator=(const LiteralEnvelope& rhs)
+te::da::core::LiteralEnvelope& te::da::core::LiteralEnvelope::operator=(const LiteralEnvelope& rhs)
 {
   if(this != &rhs)
   {
@@ -62,18 +62,17 @@ te::da::LiteralEnvelope& te::da::LiteralEnvelope::operator=(const LiteralEnvelop
   return *this;
 }
 
-te::da::Expression* te::da::LiteralEnvelope::clone() const
+te::da::core::Expression* te::da::core::LiteralEnvelope::clone() const
 {
   return new LiteralEnvelope(*this);
 }
 
-te::gm::Envelope* te::da::LiteralEnvelope::getValue() const
+te::gm::Envelope* te::da::core::LiteralEnvelope::getValue() const
 {
   return m_eval.get();
 }
 
-void te::da::LiteralEnvelope::setValue(te::gm::Envelope* e)
+void te::da::core::LiteralEnvelope::setValue(te::gm::Envelope* e)
 {
   m_eval.reset(e);
 }
-

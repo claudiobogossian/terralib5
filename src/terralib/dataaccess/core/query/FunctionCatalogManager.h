@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../common/Singleton.h"
-#include "../Config.h"
+#include "../../Config.h"
 
 // STL
 #include <map>

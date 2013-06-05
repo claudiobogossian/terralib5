@@ -45,22 +45,22 @@ namespace te
   {
     namespace core
     {
-      class AbstractDataSource;
+      class DataSource;
 
       /*!
         \class DataSourceFactory
 
         \brief A factory of data sources.
 
-        \sa AbstractDataSource
+        \sa DataSource
       */
       class TEDATAACCESSEXPORT DataSourceFactory : public te::common::Static
       {
         public:
 
-          typedef boost::function<AbstractDataSource* ()> FactoryFnctType;
+          typedef boost::function<DataSource* ()> FactoryFnctType;
 
-          static std::auto_ptr<AbstractDataSource> make(const std::string& dsType) throw(Exception);
+          static std::auto_ptr<DataSource> make(const std::string& dsType) throw(Exception);
 
           static void add(const std::string& dsType, FactoryFnctType f) throw(Exception);
 

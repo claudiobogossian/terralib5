@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,34 +18,33 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralString.cpp
+  \file terralib/dataaccess/core/query/LiteralString.cpp
 
   \brief A class that models a Literal String value.
 */
 
 // TerraLib
-#include "../../datatype/SimpleData.h"
+#include "../../../datatype/SimpleData.h"
 #include "LiteralString.h"
 
-te::da::LiteralString::LiteralString(const std::string& s)
+te::da::core::LiteralString::LiteralString(const std::string& s)
   : Literal(new te::dt::String(s))
 {
 }
 
-te::da::LiteralString::LiteralString(const LiteralString& rhs)
+te::da::core::LiteralString::LiteralString(const LiteralString& rhs)
   : Literal(rhs)
 {
 }
 
-te::da::LiteralString& te::da::LiteralString::operator=(const LiteralString& rhs)
+te::da::core::LiteralString& te::da::core::LiteralString::operator=(const LiteralString& rhs)
 {
   Literal::operator=(rhs);
 
   return *this;
 }
 
-te::da::Expression* te::da::LiteralString::clone() const
+te::da::core::Expression* te::da::core::LiteralString::clone() const
 {
   return new LiteralString(*this);
 }
-

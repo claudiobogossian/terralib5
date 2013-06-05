@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralString.h
+  \file terralib/dataaccess/core/query/LiteralString.h
 
   \brief A class that models a Literal String value.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LITERALSTRING_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LITERALSTRING_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALSTRING_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALSTRING_H
 
 // TerraLib
 #include "Literal.h"
@@ -36,41 +36,43 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class LiteralString
-      
-      \brief This class models a string Literal value.
-
-      \sa Literal
-    */
-    class TEDATAACCESSEXPORT LiteralString : public Literal
+    namespace core
     {
-      public:
+      /*!
+        \class LiteralString
+      
+        \brief This class models a string Literal value.
 
-        TE_DEFINE_VISITABLE
+        \sa Literal
+      */
+      class TEDATAACCESSEXPORT LiteralString : public Literal
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          TE_DEFINE_VISITABLE
 
-          \param s The string value.
-        */
-        LiteralString(const std::string& s);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        LiteralString(const LiteralString& rhs);
+            \param s The string value.
+          */
+          LiteralString(const std::string& s);
 
-        /*! \brief Destructor. */
-        ~LiteralString() { }
+          /*! \brief Copy constructor. */
+          LiteralString(const LiteralString& rhs);
 
-        /*! Assignment operator.  */
-        LiteralString& operator=(const LiteralString& rhs);
+          /*! \brief Destructor. */
+          ~LiteralString() { }
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! Assignment operator.  */
+          LiteralString& operator=(const LiteralString& rhs);
 
-  } // end namespace da
-}   // end namespace te
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LITERALSTRING_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALSTRING_H

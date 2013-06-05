@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,43 +18,42 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralGeom.cpp
+  \file terralib/dataaccess/core/query/LiteralGeom.cpp
 
   \brief A class that models a literal for Geometry values.
 */
 
 // TerraLib
-#include "../../geometry/Geometry.h"
+#include "../../../geometry/Geometry.h"
 #include "LiteralGeom.h"
 
-te::da::LiteralGeom::LiteralGeom(te::gm::Geometry* g)
+te::da::core::LiteralGeom::LiteralGeom(te::gm::Geometry* g)
   : Literal(g)
 {
 }
 
-te::da::LiteralGeom::LiteralGeom(const te::gm::Geometry& g)
+te::da::core::LiteralGeom::LiteralGeom(const te::gm::Geometry& g)
   : Literal(g.clone())
 {
 }
 
-te::da::LiteralGeom::LiteralGeom(const LiteralGeom& rhs)
+te::da::core::LiteralGeom::LiteralGeom(const LiteralGeom& rhs)
   : Literal(rhs)
 {
 }
 
-te::da::LiteralGeom::~LiteralGeom()
+te::da::core::LiteralGeom::~LiteralGeom()
 {
 }
 
-te::da::LiteralGeom& te::da::LiteralGeom::operator=(const LiteralGeom& rhs)
+te::da::core::LiteralGeom& te::da::core::LiteralGeom::operator=(const LiteralGeom& rhs)
 {
   Literal::operator=(rhs);
 
   return *this;
 }
 
-te::da::Expression* te::da::LiteralGeom::clone() const
+te::da::core::Expression* te::da::core::LiteralGeom::clone() const
 {
   return new LiteralGeom(*this);
 }
-

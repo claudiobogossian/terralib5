@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
+#include "../../../common/STLUtils.h"
 #include "In.h"
 #include "FunctionNames.h"
 #include "PropertyName.h"
@@ -32,38 +32,38 @@
 // STL
 #include <cassert>
 
-te::da::In::In(te::da::PropertyName* p)
+te::da::core::In::In(te::da::core::PropertyName* p)
   : Function(FunctionNames::sm_In),
     m_name(p)
 {
 }
 
-te::da::In::In(const te::da::PropertyName& p)
+te::da::core::In::In(const te::da::core::PropertyName& p)
   : Function(FunctionNames::sm_In),
     m_name(0)
 {
   m_name.reset(static_cast<PropertyName*>(p.clone()));
 }
 
-te::da::In::In(const std::string& name)
+te::da::core::In::In(const std::string& name)
   : Function(FunctionNames::sm_In),
     m_name(0)
 {
-  m_name.reset(new te::da::PropertyName(name));
+  m_name.reset(new te::da::core::PropertyName(name));
 }
 
-te::da::In::In(const In& rhs)
+te::da::core::In::In(const In& rhs)
   : Function(rhs),
     m_name(0)
 {
   m_name.reset(rhs.m_name.get() ? static_cast<PropertyName*>(rhs.m_name->clone()) : 0);
 }
 
-te::da::In::~In() 
+te::da::core::In::~In() 
 {
 }
 
-te::da::In& te::da::In::operator=(const In& rhs)
+te::da::core::In& te::da::core::In::operator=(const In& rhs)
 {
   if(this != &rhs)
   {
@@ -74,17 +74,17 @@ te::da::In& te::da::In::operator=(const In& rhs)
   return *this;
 }
 
-te::da::Expression* te::da::In::clone() const
+te::da::core::Expression* te::da::core::In::clone() const
 {
   return new In(*this);
 }
 
-te::da::PropertyName* te::da::In::getPropertyName() const
+te::da::core::PropertyName* te::da::core::In::getPropertyName() const
 { 
   return m_name.get(); 
 }
 
-void te::da::In::setPropertyName(te::da::PropertyName* p)
+void te::da::core::In::setPropertyName(te::da::core::PropertyName* p)
 { 
   m_name.reset(p); 
 }

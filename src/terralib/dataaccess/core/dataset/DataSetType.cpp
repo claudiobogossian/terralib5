@@ -29,7 +29,7 @@
 #include "../../../datatype/Enums.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../raster/RasterProperty.h"
-#include "../../datasource/DataSourceCatalog.h"
+#include "../datasource/DataSourceCatalog.h"
 #include "../Exception.h"
 #include "CheckConstraint.h"
 #include "DataSetType.h"
@@ -42,8 +42,8 @@
 // STL
 #include <cassert>
 
-te::da::core::DataSetType::DataSetType(const std::string& name, unsigned int id)
-  : CompositeProperty(name, name, te::dt::DATASET_TYPE, id, 0),
+te::da::core::DataSetType::DataSetType(const std::string& name)
+  : CompositeProperty(name, name, te::dt::DATASET_TYPE),
     m_catalog(0),
     m_pk(0),
     m_category(te::da::UNKNOWN_DATASET_TYPE)
@@ -220,73 +220,17 @@ te::da::core::DataSetType& te::da::core::DataSetType::operator=(const DataSetTyp
   //return *this;
 }
 
-void te::da::core::DataSetType::setPrimaryKey(PrimaryKey* pk)
+void te::da::core::DataSetType::setPrimaryKey(std::auto_ptr<PrimaryKey> pk)
 {
-  if(pk == m_pk)
+  if(pk.get() == m_pk)
     return;
 
   delete m_pk;
 
-  if(pk)
+  if(pk.get())
     pk->setDataSetType(this);
 
-  m_pk = pk;
-}
-
-void te::da::core::DataSetType::add(AbstractConstraint* c)
-{
-  assert(c);
-
-  switch(c->getType())
-  {
-    case te::da::PRIMARY_KEY :
-      setPrimaryKey(static_cast<PrimaryKey*>(c));
-    break;
-
-    case te::da::FOREIGN_KEY :
-      add(static_cast<ForeignKey*>(c));
-    break;
-    
-    case te::da::UNIQUE_KEY :
-      c->setDataSetType(this);
-      m_uniqueKeys.push_back(static_cast<UniqueKey*>(c));
-    break; 
-    
-    case te::da::CHECK :
-      c->setDataSetType(this);
-      m_checkConstraints.push_back(static_cast<CheckConstraint*>(c));
-    break;
-
-    default:
-    break;
-  }  
-}
-
-void te::da::core::DataSetType::remove(te::da::core::AbstractConstraint* c)
-{
-  assert(c);
-
-  switch(c->getType())
-  {
-    case te::da::PRIMARY_KEY:
-      setPrimaryKey(0);
-    break;
-
-    case te::da::FOREIGN_KEY:
-      remove(static_cast<ForeignKey*>(c));
-    break;
-
-    case te::da::UNIQUE_KEY:
-      remove(static_cast<UniqueKey*>(c));
-    break;
-
-    case te::da::CHECK:
-      remove(static_cast<CheckConstraint*>(c));
-    break;
-
-    default:
-    break;
-  }
+  m_pk = pk.release();
 }
 
 te::da::core::UniqueKey* te::da::core::DataSetType::getUniqueKey(const std::string& name) const
@@ -323,14 +267,6 @@ void te::da::core::DataSetType::clearUniqueKeys()
   m_uniqueKeys.clear();
 }
 
-void te::da::core::DataSetType::add(const std::vector<CheckConstraint*>& ccs)
-{
-  std::size_t size = ccs.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    add(ccs[i]);
-}
-
 te::da::core::CheckConstraint* te::da::core::DataSetType::getCheckConstraint(const std::string& name) const
 {
   std::size_t size = m_checkConstraints.size();
@@ -365,19 +301,11 @@ void te::da::core::DataSetType::clearCheckConstraints()
   m_checkConstraints.clear();  
 }
 
-void te::da::core::DataSetType::add(Index* idx)
+void te::da::core::DataSetType::add(std::auto_ptr<Index> idx)
 {
   assert(idx);
   idx->setDataSetType(this);
   m_idxs.push_back(idx);
-}
-
-void te::da::core::DataSetType::add(const std::vector<Index*>& idxs)
-{
-  std::size_t size = idxs.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    add(idxs[i]);
 }
 
 te::da::core::Index* te::da::core::DataSetType::getIndex(const std::string& name) const
@@ -469,7 +397,7 @@ te::da::core::ForeignKey* te::da::core::DataSetType::getForeignKey(const std::st
   return 0;
 }
 
-void te::da::core::DataSetType::add(ForeignKey* fk)
+void te::da::core::DataSetType::add(std::suto_ptr<ForeignKey> fk)
 {
   assert(fk);
 

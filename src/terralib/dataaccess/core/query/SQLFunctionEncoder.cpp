@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,11 +18,10 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/SQLFunctionEncoder.cpp
+  \file terralib/dataaccess/core/query/SQLFunctionEncoder.cpp
 
   \brief A base class for encoders of SQL function expressions.
 */
 
 // TerraLib
 #include "SQLFunctionEncoder.h"
-

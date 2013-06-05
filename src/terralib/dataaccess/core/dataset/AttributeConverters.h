@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_ATTRIBUTECONVERTERS_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 // Boost
 #include <boost/function.hpp>
@@ -47,8 +47,8 @@ namespace te
   {
     namespace core
     {
-      // Forward declarations
-      class AbstractDataSet;
+// Forward declarations
+      class DataSet;
 
       /*!
         \brief The type of attribute converter functions.
@@ -61,27 +61,27 @@ namespace te
         <ol>third input parameter: destination data type (int)</ol>
         </ul>
       */
-      typedef boost::function3<te::dt::AbstractData*, AbstractDataSet*, const std::vector<std::size_t>&, int> AttributeConverter;
+      typedef boost::function3<te::dt::AbstractData*, DataSet*, const std::vector<std::size_t>&, int> AttributeConverter;
 
-      TEDATAACCESSEXPORT te::dt::AbstractData* GenericAttributeConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+      TEDATAACCESSEXPORT te::dt::AbstractData* GenericAttributeConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
-      TEDATAACCESSEXPORT te::dt::AbstractData* XYToPointConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+      TEDATAACCESSEXPORT te::dt::AbstractData* XYToPointConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
-      TEDATAACCESSEXPORT te::dt::AbstractData* XYZToPointConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+      TEDATAACCESSEXPORT te::dt::AbstractData* XYZToPointConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
-      TEDATAACCESSEXPORT te::dt::AbstractData* XYMToPointConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+      TEDATAACCESSEXPORT te::dt::AbstractData* XYMToPointConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
-      TEDATAACCESSEXPORT te::dt::AbstractData* XYZMToPointConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+      TEDATAACCESSEXPORT te::dt::AbstractData* XYZMToPointConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
-      TEDATAACCESSEXPORT te::dt::AbstractData* PointToXConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+      TEDATAACCESSEXPORT te::dt::AbstractData* PointToXConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
-      TEDATAACCESSEXPORT te::dt::AbstractData* PointToYConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+      TEDATAACCESSEXPORT te::dt::AbstractData* PointToYConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
     
-      TEDATAACCESSEXPORT te::dt::AbstractData* PointToZConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+      TEDATAACCESSEXPORT te::dt::AbstractData* PointToZConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
-      TEDATAACCESSEXPORT te::dt::AbstractData* PointToMConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+      TEDATAACCESSEXPORT te::dt::AbstractData* PointToMConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
-      TEDATAACCESSEXPORT te::dt::AbstractData* TupleToStringConverter(AbstractDataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
+      TEDATAACCESSEXPORT te::dt::AbstractData* TupleToStringConverter(DataSet* dataset, const std::vector<std::size_t>& indexes, int dstType);
 
     } // end namespace core
   }   // end namespace da

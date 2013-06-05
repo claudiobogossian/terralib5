@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralDouble.h
+  \file terralib/dataaccess/core/query/LiteralDouble.h
 
   \brief A class that models a literal for double values.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LITERALDOUBLE_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LITERALDOUBLE_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALDOUBLE_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALDOUBLE_H
 
 // TerraLib
 #include "Literal.h"
@@ -33,55 +33,57 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class LiteralDouble
-      
-      \brief A class that models a literal for double values.
-
-      \sa Literal
-    */
-    class TEDATAACCESSEXPORT LiteralDouble : public Literal
+    namespace core
     {
-      public:
+      /*!
+        \class LiteralDouble
+      
+        \brief A class that models a literal for double values.
 
-        TE_DEFINE_VISITABLE
+        \sa Literal
+      */
+      class TEDATAACCESSEXPORT LiteralDouble : public Literal
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          TE_DEFINE_VISITABLE
 
-          \param v The double value. The literal will take its ownership
-        */
-        LiteralDouble(te::dt::AbstractData* v);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param v The double value. The literal will take its ownership
+          */
+          LiteralDouble(te::dt::AbstractData* v);
 
-          \param v The double value.
-        */
-        LiteralDouble(const te::dt::AbstractData& v);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param v The double value.
+          */
+          LiteralDouble(const te::dt::AbstractData& v);
 
-          \param v The double value.
-        */
-        LiteralDouble(const double& v);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        LiteralDouble(const LiteralDouble& rhs);
+            \param v The double value.
+          */
+          LiteralDouble(const double& v);
 
-        /*! \brief Destructor. */
-        ~LiteralDouble();
+          /*! \brief Copy constructor. */
+          LiteralDouble(const LiteralDouble& rhs);
 
-        /*! Assignment operator.  */
-        LiteralDouble& operator=(const LiteralDouble& rhs);
+          /*! \brief Destructor. */
+          ~LiteralDouble();
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! Assignment operator.  */
+          LiteralDouble& operator=(const LiteralDouble& rhs);
 
-  } // end namespace da
-}   // end namespace te
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LITERALDOUBLE_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALDOUBLE_H

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/datasource/AbstractDataSource.h
+  \file terralib/dataaccess/core/datasource/DataSource.h
 
   \brief An abstract class for data providers like a DBMS, Web Services or a regular file.
 */
@@ -77,7 +77,7 @@ namespace te
       class UniqueKey;
 
       /*!
-        \class AbstractDataSource
+        \class DataSource
 
         \brief An abstract class for data providers like a DBMS, Web Services or a regular file.
 
@@ -106,17 +106,17 @@ namespace te
         Besides the descriptive information about the underlying data repository,
         each data source also provides information about their capabilities.
 
-        \sa DataSourceManager, DataSourceFactory, AbstractDataSet, DataSetType
+        \sa DataSourceManager, DataSourceFactory, DataSet, DataSetType
       */
-      class TEDATAACCESSEXPORT AbstractDataSource : public boost::noncopyable
+      class TEDATAACCESSEXPORT DataSource : public boost::noncopyable
       {
         public:
 
           /*! \brief Default constructor that can be called by subclasses. */
-          AbstractDataSource() { }
+          DataSource() { }
 
           /*! \brief Virtual destructor. */
-          virtual ~AbstractDataSource() { }
+          virtual ~DataSource() { }
 
           /** @name Basic Methods of a Data Source
            *  Basic Methods for operating a data source.
@@ -1154,7 +1154,7 @@ namespace te
 
             \note Not thread-safe!
           */
-          static std::auto_ptr<AbstractDataSource> create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo) throw(Exception);
+          static std::auto_ptr<DataSource> create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo) throw(Exception);
 
           /*!
             \brief Drop a repository of a data source.
@@ -1242,7 +1242,7 @@ namespace te
           //@}
       };
 
-      typedef boost::shared_ptr<AbstractDataSource> AbstractDataSourcePtr;
+      typedef boost::shared_ptr<DataSource> DataSourcePtr;
 
     }  // end namespace core
   }    // end namespace da

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,45 +18,42 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralByteArray.cpp
+  \file terralib/dataaccess/core/query/LiteralByteArray.cpp
 
   \brief A class that models a literal for ByteArray values.
 */
 
 // TerraLib
-#include "../../datatype/ByteArray.h"
+#include "../../../datatype/ByteArray.h"
 #include "LiteralByteArray.h"
 
-te::da::LiteralByteArray::LiteralByteArray(te::dt::ByteArray* b)
+te::da::core::LiteralByteArray::LiteralByteArray(te::dt::ByteArray* b)
   : Literal(b)
 {
 }
 
-te::da::LiteralByteArray::LiteralByteArray(const te::dt::ByteArray& b)
+te::da::core::LiteralByteArray::LiteralByteArray(const te::dt::ByteArray& b)
   : Literal(b)
 {
 }
 
-te::da::LiteralByteArray::LiteralByteArray(const LiteralByteArray& rhs)
+te::da::core::LiteralByteArray::LiteralByteArray(const LiteralByteArray& rhs)
   : Literal(rhs)
 {
 }
 
-te::da::LiteralByteArray::~LiteralByteArray()
+te::da::core::LiteralByteArray::~LiteralByteArray()
 {
 }
 
-te::da::LiteralByteArray& te::da::LiteralByteArray::operator=(const LiteralByteArray& rhs)
+te::da::core::LiteralByteArray& te::da::core::LiteralByteArray::operator=(const LiteralByteArray& rhs)
 {
   Literal::operator=(rhs);
 
   return *this;
 }
 
-te::da::Expression* te::da::LiteralByteArray::clone() const
+te::da::core::Expression* te::da::core::LiteralByteArray::clone() const
 {
   return new LiteralByteArray(*this);
 }
-
-
-

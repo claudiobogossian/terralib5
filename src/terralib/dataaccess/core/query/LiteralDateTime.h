@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralDateTime.h
+  \file terralib/dataaccess/core/query/LiteralDateTime.h
 
   \brief A class that models a literal for Date and Time values.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LITERALDATETIME_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LITERALDATETIME_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALDATETIME_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALDATETIME_H
 
 // TerraLib
 #include "Literal.h"
@@ -36,52 +36,54 @@ namespace te
 
   namespace da
   {
-    /*!
-      \class LiteralDateTime
-      
-      \brief A class that models a literal for Date and Time values.
-
-      This class is just a syntatic-suggar.
-
-      \sa Literal
-    */
-    class TEDATAACCESSEXPORT LiteralDateTime : public Literal
+    namespace core
     {
-      public:
+      /*!
+        \class LiteralDateTime
+      
+        \brief A class that models a literal for Date and Time values.
 
-        TE_DEFINE_VISITABLE
+        This class is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa Literal
+      */
+      class TEDATAACCESSEXPORT LiteralDateTime : public Literal
+      {
+        public:
 
-          \param g The geometry value.
+          TE_DEFINE_VISITABLE
 
-          \note The LiteralDateTime will take the ownership of the given geometry.
-        */
-        LiteralDateTime(te::dt::DateTime* d);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param g The geometry value.
 
-          \param g The geometry value.
-        */
-        LiteralDateTime(const te::dt::DateTime& d);
+            \note The LiteralDateTime will take the ownership of the given geometry.
+          */
+          LiteralDateTime(te::dt::DateTime* d);
 
-        /*! \brief Copy constructor. */
-        LiteralDateTime(const LiteralDateTime& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~LiteralDateTime();
+            \param g The geometry value.
+          */
+          LiteralDateTime(const te::dt::DateTime& d);
 
-        /*! Assignment operator.  */
-        LiteralDateTime& operator=(const LiteralDateTime& rhs);
+          /*! \brief Copy constructor. */
+          LiteralDateTime(const LiteralDateTime& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~LiteralDateTime();
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          LiteralDateTime& operator=(const LiteralDateTime& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LITERALDATETIME_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LITERALDATETIME_H

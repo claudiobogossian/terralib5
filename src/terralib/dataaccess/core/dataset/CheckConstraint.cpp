@@ -24,28 +24,17 @@
 */
 
 // TerraLib
-#include "../../../datatype/Property.h"
 #include "CheckConstraint.h"
-#include "DataSetType.h"
-
-te::da::core::CheckConstraint::CheckConstraint(te::da::core::DataSetType* dt, unsigned int id)
-  : AbstractConstraint(id)
-{  
-  if(dt)
-    dt->add(this);
-}
 
 te::da::core::CheckConstraint::CheckConstraint(const std::string& name,
-                                         DataSetType* dt,
-                                         unsigned int id)
-  : AbstractConstraint(name, id)
-{  
-  if(dt)
-    dt->add(this);
+                                               const std::string& expression)
+  : Constraint(name),
+    m_expression(expression)
+{
 }
 
 te::da::core::CheckConstraint::CheckConstraint(const CheckConstraint& rhs)
-  : AbstractConstraint(rhs),
+  : Constraint(rhs),
     m_expression(rhs.m_expression)
 {
 }
@@ -54,7 +43,7 @@ te::da::core::CheckConstraint& te::da::core::CheckConstraint::operator=(const Ch
 {
   if(this != &rhs)
   {
-    AbstractConstraint::operator=(rhs);
+    Constraint::operator=(rhs);
 
     m_expression = rhs.m_expression;
   }
@@ -62,7 +51,7 @@ te::da::core::CheckConstraint& te::da::core::CheckConstraint::operator=(const Ch
   return *this;
 }
 
-te::da::core::AbstractConstraint* te::da::core::CheckConstraint::clone()
+te::da::core::Constraint* te::da::core::CheckConstraint::clone()
 {
   return new CheckConstraint(*this);
 }
