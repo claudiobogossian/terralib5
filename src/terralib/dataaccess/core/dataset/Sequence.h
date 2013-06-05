@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_SEQUENCE_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -44,54 +44,37 @@ namespace te
   {
     namespace core
     {
-      // Forward declaration
-      class DataSetType;
-      class DataSourceCatalog;    
+// Forward declaration
+      class DataSourceCatalog;
 
       /*!
         \class Sequence
       
         \brief It describes a sequence (a number generator).
 
-        \sa DataSourceCatalog, DataSetType, Property
+        \sa DataSourceCatalog
       */
       class TEDATAACCESSEXPORT Sequence
       {
         public:
 
-          /*!
-            \brief It constructs a new sequence.
+          /*! \brief It constructs a new sequence. */
+          Sequence();
 
-            A sequence may belongs to the global catalog of a given data source,
-            and it can be associated to a given property of a specific dataset type.
-
-            \param catalog The catalog associated to the sequence.
-            \param id      The sequence identifier.
-
-            \post If catalog is provided, the sequence will belong to the given DataSourceCatalog.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          Sequence(DataSourceCatalog* catalog = 0, unsigned int id = 0);
-        
           /*!
             \brief It creates a new sequence.
 
             \param name       The sequence name.
             \param increment  The value to be added to the current sequence value to create the new value (default = 1).
             \param startValue The sequence starting value (default = 1).
-            \param catalog    The catalog associated to the sequence.
-            \param id         The sequence identifier.
 
             \post If catalog is provided, the sequence will belong to the given DataSourceCatalog.
 
             \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
           */
-          Sequence(const std::string& name,                       
+          Sequence(const std::string& name,
                    boost::int64_t increment = 1,
-                   boost::int64_t startValue = 1,
-                   DataSourceCatalog* catalog = 0,
-                   unsigned int id = 0);
+                   boost::int64_t startValue = 1);
 
           /*!
             \brief Copy constructor.
@@ -100,10 +83,10 @@ namespace te
 
             \param rhs Right-hand-side instance.
           */
-          Sequence(const Sequence& rhs);        
+          Sequence(const Sequence& rhs);
 
           /*! \brief Destructor. */
-          ~Sequence() {}
+          ~Sequence() { }
 
           /*!
             \brief Assignment operator.
@@ -115,24 +98,6 @@ namespace te
             \return A reference to this object.
           */
           Sequence& operator=(const Sequence& rhs);
-
-          /*!
-            \brief It returns the sequence identifier.
-
-            \return A number that identifies the sequence.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          unsigned int getId() const { return m_id; }
-
-          /*!
-            \brief It sets the sequence identifier.
-
-            \param id A number that identifies the sequence.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          void setId(unsigned int id) { m_id = id; }
 
           /*!
             \brief It returns the sequence name.
@@ -236,7 +201,7 @@ namespace te
 
             \return The property type associated to the sequence.
           */
-          te::dt::Property* getOwner() const { return m_ownedBy; }
+          const std::string& getOwnerDataSet() const { return m_ownedByDataSet; }
 
           /*!
             \brief It causes the sequence to be associated with a specific property type.
@@ -246,7 +211,24 @@ namespace te
 
             \param owner The property type owner of this sequence.
           */
-          void setOwner(te::dt::Property* owner) { m_ownedBy = owner; }
+          void setOwnerDataSet(const std::string& owner) { m_ownedByDataSet = owner; }
+
+          /*!
+            \brief It returns the property type associated to the sequence.
+
+            \return The property type associated to the sequence.
+          */
+          const std::size_t getOwnerProperty() const { return m_ownedByPropertyPos; }
+
+          /*!
+            \brief It causes the sequence to be associated with a specific property type.
+
+            When the dataset type is dropped (or its whole catalog), the sequence
+            will be automatically dropped as well.
+
+            \param owner The property type owner of this sequence.
+          */
+          void setOwnerProperty(const std::size_t propertyPos) { m_ownedByPropertyPos = propertyPos; }
 
           /*!
             \brief It returns the catalog associated to the sequence.
@@ -259,24 +241,21 @@ namespace te
             \brief It sets the catalog associated to the sequence.
 
             \param catalog The data source catalog to which this sequence belongs.
-
-            \warning Take care when calling this method. If the sequence belongs to a DataSourceCatalog
-                     remember to detach it from the catalog before calling this method.
           */
           void setCatalog(DataSourceCatalog* catalog) { m_catalog = catalog; }
-      
+
         private:
 
-          boost::int64_t m_increment;     //!< The value to be added to the current sequence value to create the new value.
-          boost::int64_t m_minValue;      //!< The minimum value that the sequence can generate.
-          boost::int64_t m_maxValue;      //!< The maximum value that the sequence can generate.
-          boost::int64_t m_startValue;    //!< The sequence starting value.        
-          boost::int64_t m_cachedValues;  //!< It specifies how many sequence numbers are to be preallocated for faster access.
-          DataSourceCatalog* m_catalog;   //!< The DataSourceCatalog associated to this sequence.
-          te::dt::Property* m_ownedBy;    //!< The sequence may be associated with a specific property type (owned by a property).
-          unsigned int m_id;              //!< An identification number for the sequence.
+          std::string m_name;                //!< The sequence name.
+          std::string m_ownedByDataSet;      //!< The sequence may be associated with a specific property type (owned by a property).
+          boost::int64_t m_increment;        //!< The value to be added to the current sequence value to create the new value.
+          boost::int64_t m_minValue;         //!< The minimum value that the sequence can generate.
+          boost::int64_t m_maxValue;         //!< The maximum value that the sequence can generate.
+          boost::int64_t m_startValue;       //!< The sequence starting value.        
+          boost::int64_t m_cachedValues;     //!< It specifies how many sequence numbers are to be preallocated for faster access.
+          DataSourceCatalog* m_catalog;      //!< The DataSourceCatalog associated to this sequence.
+          std::size_t m_ownedByPropertyPos;  //!< The sequence may be associated with a specific property type (owned by a property).
           bool m_cycled;                  //!< If it is true, the sequence can wrap when it reaches the maximum value in the case of an ascendent sequence or wrap when it reaches the minimum value in the case of a descendant sequence.
-          std::string m_name;             //!< The sequence name.
       };
 
     }  //end namespace core

@@ -108,8 +108,10 @@ namespace te
             double m_maxDirectMapError;
             double m_maxInverseMapError;
             double m_assurance;
-            RansacItCounterT m_maxIterations;
-            RansacItCounterT m_maxIterationsDivFactor;
+            bool m_useDynamicIterationsNumber;
+            RansacItCounterT* m_dynamicMaxIterationsPtr;
+            RansacItCounterT m_iterationsDivFactor;
+            RansacItCounterT* m_dynamicMaxConsecutiveInvalidIterationsPtr;
             bool* m_returnValuePtr;
             boost::mutex* m_mutexPtr;
             bool* m_keepRunningFlagPtr;
@@ -120,37 +122,14 @@ namespace te
             double* m_bestParamsConvexHullAreaPtr;
             std::vector< te::gm::GTParameters::TiePoint >* m_bestTiePoinsPtr;
 
-            ApplyRansacThreadEntryThreadParams() {};
+            ApplyRansacThreadEntryThreadParams();
 
-            ApplyRansacThreadEntryThreadParams( const ApplyRansacThreadEntryThreadParams& other )
-            {
-              operator=( other );
-            };
+            ApplyRansacThreadEntryThreadParams( const ApplyRansacThreadEntryThreadParams& other );
 
-            ~ApplyRansacThreadEntryThreadParams() {};
+            ~ApplyRansacThreadEntryThreadParams();
 
             const ApplyRansacThreadEntryThreadParams& operator=(
-              const ApplyRansacThreadEntryThreadParams& other )
-            {
-              m_transfNamePtr = other.m_transfNamePtr;
-              m_inputGTParamsPtr = other.m_inputGTParamsPtr;
-              m_maxDirectMapError = other.m_maxDirectMapError;
-              m_maxInverseMapError = other.m_maxInverseMapError;
-              m_assurance = other.m_assurance;
-              m_maxIterations = other.m_maxIterations;
-              m_maxIterationsDivFactor = other.m_maxIterationsDivFactor;
-              m_returnValuePtr = other.m_returnValuePtr;
-              m_mutexPtr = other.m_mutexPtr;
-              m_keepRunningFlagPtr = other.m_keepRunningFlagPtr;
-              m_tpsMapPtr = other.m_tpsMapPtr;
-              m_bestTransformationPtrPtr = other.m_bestTransformationPtrPtr;
-              m_bestParamsMaxDMapErrorPtr = other.m_bestParamsMaxDMapErrorPtr;
-              m_bestParamsMaxIMapErrorPtr = other.m_bestParamsMaxIMapErrorPtr;
-              m_bestParamsConvexHullAreaPtr = other.m_bestParamsConvexHullAreaPtr;
-              m_bestTiePoinsPtr = other.m_bestTiePoinsPtr;
-              
-              return other;
-            };
+              const ApplyRansacThreadEntryThreadParams& other );
         };
 
         /*!

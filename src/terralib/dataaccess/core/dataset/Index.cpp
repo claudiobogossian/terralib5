@@ -20,54 +20,34 @@
 /*!H
   \file terralib/dataaccess/core/dataset/Index.cpp
 
-  \brief It describes an index associated to a DataSetType.
+  \brief It describes an index associated to a dataset schema.
 */
 
 // TerraLib
-#include "../../../datatype/Property.h"
-#include "DataSetType.h"
 #include "Index.h"
 
-te::da::core::Index::Index(DataSetType* dt, unsigned int id)
-  : m_id(id),
-    m_type(B_TREE_TYPE),
-    m_dt(dt)
+te::da::core::Index::Index(const std::string& name, IndexType t)
+  : m_name(name),
+    m_dt(0),
+    m_type(t)
 {
-  if(m_dt)
-    m_dt->add(this);
-}
-
-te::da::core::Index::Index(const std::string& name, IndexType t, DataSetType* dt, unsigned int id)
-  : m_id(id),
-    m_type(t),
-    m_dt(dt),
-    m_name(name)  
-{
-  if(m_dt)
-    m_dt->add(this);
 }
 
 te::da::core::Index::Index(const std::string& name,
-                     IndexType t,
-                     const std::vector<te::dt::Property*>& properties,
-                     DataSetType* dt,
-                     unsigned int id)
-  : m_id(id),
-    m_type(t),
-    m_dt(dt),
-    m_name(name),    
-    m_properties(properties)
+                           IndexType t,
+                           const std::vector<std::size_t>& properties)
+  : m_name(name),
+    m_properties(properties),
+    m_dt(0),
+    m_type(t)
 {
-  if(m_dt)
-    m_dt->add(this);
 }
 
 te::da::core::Index::Index(const Index& rhs)
-  : m_id(rhs.m_id),
-    m_type(rhs.m_type),
+  : m_name(rhs.m_name),
+    m_properties(rhs.m_properties),
     m_dt(0),
-    m_name(rhs.m_name),
-    m_properties(rhs.m_properties)
+    m_type(rhs.m_type)
 {
 }
 
@@ -75,35 +55,12 @@ te::da::core::Index& te::da::core::Index::operator=(const Index& rhs)
 {
   if(this != &rhs)
   {
-    m_id = rhs.m_id;
-    m_type = rhs.m_type;
-    m_dt = 0;
     m_name = rhs.m_name;
     m_properties = rhs.m_properties;
+    m_dt = 0;
+    m_type = rhs.m_type;
   }
 
   return *this;
 }
 
-bool te::da::core::Index::has(te::dt::Property* p)
-{
-  size_t size = m_properties.size();
-
-  for(size_t i = 0; i < size; ++i)
-    if(m_properties[i] == p)
-      return true;
-
-  return false;
-}
-
-void te::da::core::Index::replace(te::dt::Property* p, te::dt::Property* pp)
-{
-  std::size_t size = m_properties.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    if(m_properties[i] == p)
-    {
-      m_properties[i] = pp;
-      break;
-    }
-}

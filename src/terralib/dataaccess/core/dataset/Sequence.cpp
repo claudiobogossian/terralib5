@@ -24,60 +24,49 @@
 */
 
 // TerraLib
-#include "../../../datatype/Property.h"
-#include "../../datasource/DataSourceCatalog.h"
-#include "DataSetType.h"
+#include "../datasource/DataSourceCatalog.h"
 #include "Sequence.h"
 
 // STL
 #include <climits>
 
-te::da::core::Sequence::Sequence(DataSourceCatalog* catalog, unsigned int id)
+te::da::core::Sequence::Sequence()
   : m_increment(1),
     m_minValue(INT_MIN),
     m_maxValue(INT_MAX),
     m_startValue(1),
     m_cachedValues(1),
-    m_catalog(catalog),
-    m_ownedBy(0),
-    m_id(id),
+    m_catalog(0),
     m_cycled(false)
 {
-  if(m_catalog)
-    m_catalog->add(this);
 }
-      
-te::da::core::Sequence::Sequence(const std::string& name,                       
-                           boost::int64_t increment,
-                           boost::int64_t startValue,
-                           DataSourceCatalog* catalog,
-                           unsigned int id)
- : m_increment(increment),
+
+te::da::core::Sequence::Sequence(const std::string& name,
+                                 boost::int64_t increment,
+                                 boost::int64_t startValue)
+ : m_name(name),
+   m_increment(increment),
    m_minValue(INT_MIN),
    m_maxValue(INT_MAX),
    m_startValue(startValue),
    m_cachedValues(1),
-   m_catalog(catalog),
-   m_ownedBy(0),
-   m_id(id),
-   m_cycled(false),
-   m_name(name)
+   m_catalog(0),
+   m_cycled(false)
 {
-  if(m_catalog)
-    m_catalog->add(this);
 }
 
 te::da::core::Sequence::Sequence(const Sequence& rhs)
-  : m_increment(rhs.m_increment),
+  : m_name(rhs.m_name),
+    m_ownedByDataSet(rhs.m_ownedByDataSet),
+    m_increment(rhs.m_increment),
     m_minValue(rhs.m_minValue),
     m_maxValue(rhs.m_maxValue),
     m_startValue(rhs.m_startValue),
-    m_cachedValues(rhs.m_cachedValues),    
+    m_cachedValues(rhs.m_cachedValues),
     m_catalog(0),
-    m_ownedBy(rhs.m_ownedBy),
-    m_id(rhs.m_id),
-    m_cycled(rhs.m_cycled),
-    m_name(rhs.m_name)
+    m_ownedByPropertyPos(rhs.m_ownedByPropertyPos),
+    m_cycled(rhs.m_cycled)
+
 {
 }
 
@@ -85,16 +74,16 @@ te::da::core::Sequence& te::da::core::Sequence::operator=(const Sequence& rhs)
 {
   if(this != &rhs)
   {
+    m_name = rhs.m_name;
+    m_ownedByDataSet = rhs.m_ownedByDataSet;
     m_increment = rhs.m_increment;
     m_minValue = rhs.m_minValue;
     m_maxValue = rhs.m_maxValue;
     m_startValue = rhs.m_startValue;
     m_cachedValues = rhs.m_cachedValues;
     m_catalog = 0;
-    m_ownedBy = rhs.m_ownedBy;
-    m_id = rhs.m_id;
+    m_ownedByPropertyPos = rhs.m_ownedByPropertyPos;
     m_cycled = rhs.m_cycled;
-    m_name = rhs.m_name;  
   }
 
   return *this;

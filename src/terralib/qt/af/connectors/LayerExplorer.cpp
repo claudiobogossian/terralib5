@@ -18,6 +18,7 @@
  */
 
 // TerraLib
+#include "../../widgets/layer/explorer/AbstractLayerTreeItem.h"
 #include "../../widgets/layer/explorer/LayerExplorer.h"
 #include "../../widgets/layer/explorer/LayerTreeModel.h"
 #include "../../widgets/layer/explorer/LayerTreeView.h"
@@ -92,21 +93,21 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
   }
 }
 
-void te::qt::af::LayerExplorer::onSelectionChanged(const QItemSelection& /*selected*/, const QItemSelection& /*deselected*/)
+void te::qt::af::LayerExplorer::onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
-//        QModelIndexList lst = selected.indexes();
-//
-//        if(lst.isEmpty())
-//          return;
-//
-//        te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>((*lst.begin()).internalPointer());
-//
-//        if(item != 0 && item->isLayerItem())
-//        {
-//          te::map::AbstractLayerPtr abs_lay = item->getRefLayer();
-//          te::qt::af::LayerSelected ls_ev(abs_lay.get());
-//          ApplicationController::getInstance().broadcast(&ls_ev);
-//        }
+  QModelIndexList lst = selected.indexes();
+
+  if(lst.isEmpty())
+    return;
+
+  te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>((*lst.begin()).internalPointer());
+
+  if(item != 0)
+  {
+    te::map::AbstractLayerPtr abs_lay = item->getLayer();
+    te::qt::af::evt::LayerSelected ls_ev(abs_lay.get());
+    ApplicationController::getInstance().broadcast(&ls_ev);
+  }
 }
 
 void te::qt::af::LayerExplorer::layerVisibility(te::qt::widgets::AbstractLayerTreeItem* item, bool checked)

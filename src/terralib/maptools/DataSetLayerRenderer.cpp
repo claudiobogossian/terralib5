@@ -387,10 +387,6 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
 // create a raster transform
   RasterTransform rasterTransform(raster.get(), 0);
 
-// configure the raster transformation based on the raster symbolizer
-  RasterTransformConfigurer rtc(rasterSymbolizer, &rasterTransform);
-  rtc.configure();
-
 //check band data type
   if(raster->getBandDataType(0) != te::dt::UCHAR_TYPE)
   {
@@ -405,6 +401,14 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
     // *** aqui temos a questão da variável global que diz se é para normalizar ou não os valores do raster ***
     rasterTransform.setLinearTransfParameters(min, max, 0, 255);
   }
+  else
+  {
+    rasterTransform.setLinearTransfParameters(0, 255, 0, 255);
+  }
+
+// configure the raster transformation based on the raster symbolizer
+  RasterTransformConfigurer rtc(rasterSymbolizer, &rasterTransform);
+  rtc.configure();
 
 // verify if is necessary convert the raster to the given srid
   bool needRemap = false;
@@ -455,7 +459,7 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
 
       if((x >= 0 && x < (int)(raster->getNumberOfColumns())) &&
          (y >= 0 && y < (int)(raster->getNumberOfRows())))
-        color = rasterTransform.apply(x, y);
+           color = rasterTransform.apply(x, y);
 
       columns[c] = color;
     }

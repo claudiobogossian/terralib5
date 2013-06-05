@@ -44,6 +44,7 @@
 #include <cfloat>
 #include <cstdio>
 #include <cmath>
+#include <boost/concept_check.hpp>
 
 namespace te
 {
@@ -91,17 +92,17 @@ namespace te
       m_pixelSizeYRelation = 1;
       m_geomTransfName = "Affine";
       m_geomTransfMaxError = 2;
-      m_correlationWindowWidth = 11;
+      m_moravecCorrelationWindowWidth = 11;
       m_moravecWindowWidth = 5;
       m_maxR1ToR2Offset = 0;
       m_enableGeometryFilter = true;
       m_geometryFilterAssurance = 0.5;
-      m_gaussianFilterIterations = 1;
-      m_scalesNumber = 3;
-      m_octavesNumber = 2;
+      m_moravecGaussianFilterIterations = 1;
+      m_surfScalesNumber = 3;
+      m_surfOctavesNumber = 2;
       m_rastersRescaleFactor = 1.0;
-      m_maxNormEuclideanDist = 0.5;
-      m_minAbsCorrelation = 0.5;
+      m_surfMaxNormEuclideanDist = 0.5;
+      m_moravecMinAbsCorrelation = 0.5;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
     }
 
@@ -132,17 +133,17 @@ namespace te
       m_pixelSizeYRelation = params.m_pixelSizeYRelation;
       m_geomTransfName = params.m_geomTransfName;
       m_geomTransfMaxError = params.m_geomTransfMaxError;
-      m_correlationWindowWidth = params.m_correlationWindowWidth;
+      m_moravecCorrelationWindowWidth = params.m_moravecCorrelationWindowWidth;
       m_moravecWindowWidth = params.m_moravecWindowWidth;
       m_maxR1ToR2Offset = params.m_maxR1ToR2Offset;
       m_enableGeometryFilter = params.m_enableGeometryFilter;
       m_geometryFilterAssurance = params.m_geometryFilterAssurance;
-      m_gaussianFilterIterations = params.m_gaussianFilterIterations;
-      m_scalesNumber = params.m_scalesNumber;
-      m_octavesNumber = params.m_octavesNumber;
+      m_moravecGaussianFilterIterations = params.m_moravecGaussianFilterIterations;
+      m_surfScalesNumber = params.m_surfScalesNumber;
+      m_surfOctavesNumber = params.m_surfOctavesNumber;
       m_rastersRescaleFactor = params.m_rastersRescaleFactor;
-      m_maxNormEuclideanDist = params.m_maxNormEuclideanDist;
-      m_minAbsCorrelation = params.m_minAbsCorrelation;
+      m_surfMaxNormEuclideanDist = params.m_surfMaxNormEuclideanDist;
+      m_moravecMinAbsCorrelation = params.m_moravecMinAbsCorrelation;
       m_interpMethod = params.m_interpMethod;
 
       return *this;
@@ -457,7 +458,7 @@ namespace te
           
         // applying the noise filter
 
-        if( m_inputParameters.m_gaussianFilterIterations )
+        if( m_inputParameters.m_moravecGaussianFilterIterations )
         {
           boost::shared_ptr< DoublesMatrix > tempMatrix( 
             new DoublesMatrix );
@@ -470,7 +471,7 @@ namespace te
           
           TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
             *(raster1Data[ 0 ]), 
-            *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
+            *tempMatrix, m_inputParameters.m_moravecGaussianFilterIterations ),
             "Gaussian filter error" );
             
           raster1Data[ 0 ]->reset();
@@ -509,7 +510,7 @@ namespace te
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
           raster1InterestPoints,
-          m_inputParameters.m_correlationWindowWidth,
+          m_inputParameters.m_moravecCorrelationWindowWidth,
           *(raster1Data[ 0 ]),
           true,
           raster1Features,
@@ -561,7 +562,7 @@ namespace te
           
         // applying the noise filter
         
-        if( m_inputParameters.m_gaussianFilterIterations )
+        if( m_inputParameters.m_moravecGaussianFilterIterations )
         {
           boost::shared_ptr< DoublesMatrix > tempMatrix( 
             new DoublesMatrix );
@@ -576,7 +577,7 @@ namespace te
           
           TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
             *(raster2Data[ 0 ]), 
-            *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
+            *tempMatrix, m_inputParameters.m_moravecGaussianFilterIterations ),
             "Gaussian filter error" );
 
           raster2Data[ 0 ] = tempMatrix;          
@@ -614,7 +615,7 @@ namespace te
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
           raster2InterestPoints,
-          m_inputParameters.m_correlationWindowWidth,
+          m_inputParameters.m_moravecCorrelationWindowWidth,
           *(raster2Data[ 0 ]),
           true,
           raster2Features,
@@ -643,7 +644,7 @@ namespace te
         raster2InterestPoints,
         m_inputParameters.m_maxR1ToR2Offset,
         m_inputParameters.m_enableMultiThread,
-        m_inputParameters.m_minAbsCorrelation,
+        m_inputParameters.m_moravecMinAbsCorrelation,
         matchedPoints ),
         "Error matching features" );
       
@@ -833,8 +834,8 @@ namespace te
           maskRasterData.getLinesNumber() ? (&maskRasterData) : 0, 
           raster1MaxInterestPoints,
           m_inputParameters.m_enableMultiThread,
-          m_inputParameters.m_scalesNumber,
-          m_inputParameters.m_octavesNumber,
+          m_inputParameters.m_surfScalesNumber,
+          m_inputParameters.m_surfOctavesNumber,
           candidateInterestPoints ),
           "Error locating raster 1 interest points" );
           
@@ -921,8 +922,8 @@ namespace te
           maskRasterData.getLinesNumber() ? (&maskRasterData) : 0, 
           raster2MaxInterestPoints,
           m_inputParameters.m_enableMultiThread,
-          m_inputParameters.m_scalesNumber,
-          m_inputParameters.m_octavesNumber,
+          m_inputParameters.m_surfScalesNumber,
+          m_inputParameters.m_surfOctavesNumber,
           candidateInterestPoints ),
           "Error locating raster interest points" );
           
@@ -959,7 +960,7 @@ namespace te
         raster1InterestPoints,
         raster2InterestPoints,
         m_inputParameters.m_maxR1ToR2Offset,
-        m_inputParameters.m_maxNormEuclideanDist * 2.0, /* since surf feature vectors are unitary verctors */
+        m_inputParameters.m_surfMaxNormEuclideanDist * 2.0, /* since surf feature vectors are unitary verctors */
         m_inputParameters.m_enableMultiThread,
         matchedPoints ),
         "Error matching features" );
@@ -968,6 +969,77 @@ namespace te
       {
         progress.pulse();
         if( ! progress.isActive() ) return false;
+      }
+      
+      // Removing the repeated matched points (those present in more than one scale)
+      // keeping the higher MatchedInterestPointsT::m_feature value
+      
+      {
+        MatchedInterestPointsSetT::iterator it1 = matchedPoints.begin();
+        MatchedInterestPointsSetT::iterator it2;
+        MatchedInterestPointsSetT::iterator eraseIt;
+        
+        while( it1 != matchedPoints.end() )
+        {
+          it2 = it1;
+          ++it2;
+          eraseIt = matchedPoints.end();
+          
+          while( it2 != matchedPoints.end() )
+          {
+            if( 
+                ( it1->m_point1.m_x == it2->m_point1.m_x )
+                &&
+                ( it1->m_point1.m_y == it2->m_point1.m_y )
+                &&
+                ( it1->m_point2.m_x == it2->m_point2.m_x )
+                &&
+                ( it1->m_point2.m_y == it2->m_point2.m_y )   
+              )
+            {
+              if( it1->m_feature < it2->m_feature )
+              {
+                eraseIt = it1;
+              }
+              else if( it1->m_feature > it2->m_feature )
+              {
+                eraseIt = it2;
+              }
+              
+              break;
+            }
+            else
+            {
+              ++it2;
+            }
+          }
+          
+          if( eraseIt == it1 )
+          {
+            ++it1;
+            matchedPoints.erase( eraseIt );
+          }
+          else if( eraseIt != matchedPoints.end() )
+          {
+            matchedPoints.erase( eraseIt );
+            ++it1;
+          }
+          else
+          {
+            ++it1;
+          }
+        }
+      }
+      
+      // Removing the worse mathed points to fitting the required amount of matched points      
+      {
+        const unsigned int maxMatchedInterestPoints = std::max( raster1MaxInterestPoints,
+          raster2MaxInterestPoints );
+          
+        while( matchedPoints.size() > maxMatchedInterestPoints )
+        {
+          matchedPoints.erase( matchedPoints.begin() );
+        }
       }      
       
       // Generating the  output tie-points
@@ -1243,8 +1315,8 @@ namespace te
             m_inputParameters.m_maxTiePoints = 
               ( m_inputParameters.m_raster1TargetAreaWidth *
               m_inputParameters.m_raster1TargetAreaWidth ) /
-              ( 50 * m_inputParameters.m_correlationWindowWidth *
-              m_inputParameters.m_correlationWindowWidth );
+              ( m_inputParameters.m_moravecCorrelationWindowWidth *
+              m_inputParameters.m_moravecCorrelationWindowWidth );
           }
           
           break;
@@ -1261,12 +1333,12 @@ namespace te
           if( m_inputParameters.m_maxTiePoints == 0 )
           {
             m_inputParameters.m_maxTiePoints = 
-              getSurfFilterSize( m_inputParameters.m_octavesNumber - 1, 
-                 m_inputParameters.m_scalesNumber - 1 );
+              getSurfFilterSize( m_inputParameters.m_surfOctavesNumber - 1, 
+                 m_inputParameters.m_surfScalesNumber - 1 );
             m_inputParameters.m_maxTiePoints = 
               ( m_inputParameters.m_raster1TargetAreaWidth *
               m_inputParameters.m_raster1TargetAreaWidth ) /            
-              ( 50 * m_inputParameters.m_maxTiePoints *
+              ( m_inputParameters.m_maxTiePoints *
               m_inputParameters.m_maxTiePoints );
           }            
             
@@ -1293,10 +1365,10 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_geomTransfMaxError > 0,
         "Invalid m_geomTransfMaxError" )        
         
-      m_inputParameters.m_correlationWindowWidth += 
-        m_inputParameters.m_correlationWindowWidth % 2 ? 0 : 1;
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_correlationWindowWidth > 2,
-        "Invalid m_correlationWindowWidth" );
+      m_inputParameters.m_moravecCorrelationWindowWidth += 
+        m_inputParameters.m_moravecCorrelationWindowWidth % 2 ? 0 : 1;
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_moravecCorrelationWindowWidth > 2,
+        "Invalid m_moravecCorrelationWindowWidth" );
 
       m_inputParameters.m_moravecWindowWidth += 
         m_inputParameters.m_moravecWindowWidth % 2 ? 0 : 1;
@@ -1307,22 +1379,22 @@ namespace te
         m_inputParameters.m_geomTransfName ),
         "Invalid m_geomTransfName" );
         
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_scalesNumber > 2,
-        "Invalid m_scalesNumber" );        
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_surfScalesNumber > 2,
+        "Invalid m_surfScalesNumber" );        
         
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_octavesNumber > 0,
-        "Invalid m_octavesNumber" );           
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_surfOctavesNumber > 0,
+        "Invalid m_surfOctavesNumber" );           
         
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_rastersRescaleFactor > 0,
-        "Invalid m_octavesNumber" );  
+        "Invalid m_rastersRescaleFactor" );  
         
-      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_maxNormEuclideanDist >= 0 ) &&
-        ( m_inputParameters.m_maxNormEuclideanDist <= 1.0 ),
-        "Invalid m_octavesNumber" );         
+      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_surfMaxNormEuclideanDist >= 0 ) &&
+        ( m_inputParameters.m_surfMaxNormEuclideanDist <= 1.0 ),
+        "Invalid m_surfMaxNormEuclideanDist" );         
         
-      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_minAbsCorrelation >= 0 ) &&
-        ( m_inputParameters.m_minAbsCorrelation <= 1.0 ),
-        "Invalid m_minAbsCorrelation" );         
+      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_moravecMinAbsCorrelation >= 0 ) &&
+        ( m_inputParameters.m_moravecMinAbsCorrelation <= 1.0 ),
+        "Invalid m_moravecMinAbsCorrelation" );         
         
       TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_geometryFilterAssurance >= 0 ) &&
         ( m_inputParameters.m_geometryFilterAssurance <= 1.0 ),
@@ -2147,7 +2219,10 @@ namespace te
       for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
         rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
       {
-        InterestPointsSetT blockMaximas; // the maxima points found inside the current raster block
+        // the maxima points found inside the current raster block
+        // for each combination of octaves and scales
+        std::vector< InterestPointsSetT > blockMaximas( paramsPtr->m_scalesNumber *
+          paramsPtr->m_octavesNumber, InterestPointsSetT() ); 
         
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
          
@@ -2181,7 +2256,6 @@ namespace te
           double dXX = 0;
           double dYY = 0;
           double dXY = 0;
-          bool isLocalMaxima = false;
           InterestPointT auxInterestPoint;
           double** currScaleBufferPtr = 0;
           unsigned char** currLaplacianSignBufferPtr = 0;
@@ -2287,7 +2361,6 @@ namespace te
               {
                 prevResponseBufferColIdx = windCenterCol - 1;
                 nextResponseBufferColIdx = windCenterCol + 1;
-                isLocalMaxima = false;
                 auxInterestPoint.m_feature1 = (-1.0) * DBL_MAX;
                     
                 for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
@@ -2360,51 +2433,44 @@ namespace te
                           nextScaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ] )                          
                         && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ] )
+                        && ( 
+                              maskRasterBufferPtr 
+                              ? 
+                              ( maskRasterBufferPtr[ 0 ][ windCenterCol ] != 0 ) 
+                              :
+                              true
+                            )
                       )
                     {
-                      isLocalMaxima = true;
+                      auxInterestPoint.m_feature1 = windowCenterPixelValue;
+                      auxInterestPoint.m_feature2 = (double)getSurfFilterSize(
+                        octaveIdx, scaleIdx );
+                      auxInterestPoint.m_feature3 = (double)
+                        laplacianSignBufferHandlers[ octaveIdx ][ scaleIdx ][ 
+                        maxGausFilterRadius ][ windCenterCol ] ;
+                        
+                      auxInterestPoint.m_x = windCenterCol;
+                      auxInterestPoint.m_y = rasterLine - ( 2 * maxGausFilterRadius) ;
+                      assert( auxInterestPoint.m_x < 
+                        paramsPtr->m_integralRasterDataPtr->getColumnsNumber() );
+                      assert( auxInterestPoint.m_y < 
+                        paramsPtr->m_integralRasterDataPtr->getLinesNumber() );                          
+                        
+                      assert( ( ( octaveIdx * paramsPtr->m_scalesNumber ) + 
+                        scaleIdx ) < blockMaximas.size() );
+                      InterestPointsSetT& currScalePointsSet = blockMaximas[
+                        ( octaveIdx * paramsPtr->m_scalesNumber ) + scaleIdx ];
+                        
+                      currScalePointsSet.insert( auxInterestPoint);
                       
-                      if( windowCenterPixelValue > auxInterestPoint.m_feature1 )
+                      if( currScalePointsSet.size() > 
+                        paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
                       {
-                        auxInterestPoint.m_feature1 = windowCenterPixelValue;
-                        auxInterestPoint.m_feature2 = (double)getSurfFilterSize(
-                          octaveIdx, scaleIdx );
-                        auxInterestPoint.m_feature3 = (double)
-                          laplacianSignBufferHandlers[ octaveIdx ][ scaleIdx ][ 
-                          maxGausFilterRadius ][ windCenterCol ] ;
-                      }
+                        currScalePointsSet.erase( currScalePointsSet.begin() );
+                      }                        
                     }
                   }
                 }
-                
-                if( isLocalMaxima )
-                {
-                  if( maskRasterBufferPtr )
-                  {
-                    if( maskRasterBufferPtr[ 0 ][ windCenterCol ] == 0 )
-                    {
-                      isLocalMaxima = false;
-                    }
-                  }
-                  
-                  if( isLocalMaxima )
-                  {
-                    auxInterestPoint.m_x = windCenterCol;
-                    auxInterestPoint.m_y = rasterLine - ( 2 * maxGausFilterRadius) ;
-                    assert( auxInterestPoint.m_x < 
-                      paramsPtr->m_integralRasterDataPtr->getColumnsNumber() );
-                    assert( auxInterestPoint.m_y < 
-                      paramsPtr->m_integralRasterDataPtr->getLinesNumber() );                       
-                    
-                    blockMaximas.insert( auxInterestPoint);
-                    
-                    if( blockMaximas.size() > 
-                      paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
-                    {
-                      blockMaximas.erase( blockMaximas.begin() );
-                    }
-                  }
-                }                
               }
             }
           }
@@ -2418,21 +2484,12 @@ namespace te
         
         paramsPtr->m_interestPointsAccessMutexPtr->lock();
         
-        unsigned int pointsToAdd = std::min( 
-          paramsPtr->m_maxInterestPointsPerRasterLinesBlock, 
-          (unsigned int)blockMaximas.size() );
-        InterestPointsSetT::const_reverse_iterator blockMaximasIt =
-          blockMaximas.rbegin();
-          
-        while( pointsToAdd )
+        for( unsigned int blockMaximasIdx = 0 ; blockMaximasIdx <
+          blockMaximas.size() ; ++blockMaximasIdx )
         {
-//            std::cout << std::endl << blockMaximasIt->m_featureValue
-//              << std::endl;
-            
-          paramsPtr->m_interestPointsPtr->insert( *blockMaximasIt );
-          
-          ++blockMaximasIt;
-          --pointsToAdd;
+          paramsPtr->m_interestPointsPtr->insert( 
+            blockMaximas[ blockMaximasIdx ].begin(),
+            blockMaximas[ blockMaximasIdx ].end() );
         }
         
         paramsPtr->m_interestPointsAccessMutexPtr->unlock();         
@@ -3599,7 +3656,7 @@ namespace te
         {
           absValue = std::abs( linePtr[ col ] );
           
-          if( absValue != 0.0 )
+          if( absValue >= minAllowedAbsCorrelation )
           {
             if( absValue > eachLineMaxABSValues[ line ] )
             {
@@ -3636,15 +3693,12 @@ namespace te
         {
           correlationAbs = std::abs( corrMatrix( line, col ) );
           
-          if( correlationAbs >= minAllowedAbsCorrelation )
-          {
-            auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
-            auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ];
-            auxMatchedPoints.m_feature = 
-              ( correlationAbs - minCorrelationABSValue ) / correlationABSValueRange;
-            
-            matchedPoints.insert( auxMatchedPoints );
-          }
+          auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
+          auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ];
+          auxMatchedPoints.m_feature = 
+            ( correlationAbs - minCorrelationABSValue ) / correlationABSValueRange;
+          
+          matchedPoints.insert( auxMatchedPoints );
         }
       }
         
@@ -3727,11 +3781,11 @@ namespace te
             selectedFeaturesSet2IndexesSize = selectedFeaturesSet2Indexes.size();
           }          
           
-          paramsPtr->m_syncMutexPtr->unlock();
-          
           corrMatrixLinePtr = paramsPtr->m_corrMatrixPtr->operator[]( feat1Idx );
           
           feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
+          
+          paramsPtr->m_syncMutexPtr->unlock();
           
           for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
             selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )
@@ -3856,7 +3910,6 @@ namespace te
       params.m_distMatrixPtr = &distMatrix;
       params.m_syncMutexPtr = &syncMutex;
       params.m_maxPt1ToPt2PixelDistance = maxPt1ToPt2PixelDistance;
-      params.m_maxEuclideanDist = maxEuclideanDist;
       params.m_interestPointsSet2RTreePtr = &interestPointsSet2RTree;
       
       if( enableMultiThread )
@@ -3906,7 +3959,7 @@ namespace te
         {
           const double& value = linePtr[ col ];
           
-          if( value != DBL_MAX )
+          if( value <= maxEuclideanDist )
           {
             if( value < eachLineMinValues[ line ] )
             {
@@ -3942,17 +3995,12 @@ namespace te
         {
           const double& distValue = distMatrix( line, col );
           
-          if( ( distValue != DBL_MAX ) && ( distValue <= maxEuclideanDist ) )
-          {
-            auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
-            auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ],
-            auxMatchedPoints.m_feature = ( maxDistValue - distValue )  / 
-              distValueRange;
-            auxMatchedPoints.m_feature = std::max( 0.0000001, 
-              auxMatchedPoints.m_feature );
-            
-            matchedPoints.insert( auxMatchedPoints );
-          }
+          auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
+          auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ],
+          auxMatchedPoints.m_feature = ( maxDistValue - distValue )  / 
+            distValueRange;
+          
+          matchedPoints.insert( auxMatchedPoints );
         }
       }
         
@@ -4035,11 +4083,11 @@ namespace te
             selectedFeaturesSet2IndexesSize = selectedFeaturesSet2Indexes.size();
           }          
           
-          paramsPtr->m_syncMutexPtr->unlock();
-          
           corrMatrixLinePtr = paramsPtr->m_distMatrixPtr->operator[]( feat1Idx );
           
           feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
+          
+          paramsPtr->m_syncMutexPtr->unlock();
           
           for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
             selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )

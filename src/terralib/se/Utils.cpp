@@ -298,7 +298,7 @@ te::se::Style* te::se::CreateCoverageStyle(const std::vector<te::rst::BandProper
 
   // General parameters
   rasterSymbolizer->setOpacity(new te::se::ParameterValue("1.0"));
-  rasterSymbolizer->setGain(new te::se::ParameterValue("1.0"));
+  rasterSymbolizer->setGain(new te::se::ParameterValue("0.0"));
   rasterSymbolizer->setOffset(new te::se::ParameterValue("0.0"));
 
   // Channel selection

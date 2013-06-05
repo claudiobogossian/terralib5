@@ -64,6 +64,11 @@ namespace te
         {
           public:
             
+            /**
+            * \name Global parameters
+            */
+            /**@{*/            
+            
             /*! \enum The strategy used to locate tie points.*/
             enum InteresPointsLocationStrategyType
             {
@@ -116,29 +121,45 @@ namespace te
             
             double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:2).
             
-            unsigned int m_correlationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 11).
-            
-            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 5 ).
-            
             unsigned int m_maxR1ToR2Offset; //!< The maximum offset (pixels units) between a raster 1 point end the respective raster 2 point (default:0 - no offset restriction).
             
             bool m_enableGeometryFilter; //!< Enable/disable the geometry filter/outliers remotion (default:true).
             
             double m_geometryFilterAssurance; //!< Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - default:0.5 - Use 0-zero to let this number be automatically found.
             
-            unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
-            
-            unsigned int m_scalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3, minimum:3).
-            
-            unsigned int m_octavesNumber; //!< The number of octaves to generate, when applicable (default: 2, minimum:1).
-            
             double m_rastersRescaleFactor; //!< Global rescale factor to apply to all input rasters (default:1, valid range: non-zero positive values).
             
-            double m_maxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.5, valid range: [0,1].
-            
-            double m_minAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.5, valid range: [0,1].
-            
             te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
+            
+            //@}
+            
+            /**
+            * \name Moravec parameters
+            */
+            /**@{*/            
+            
+            unsigned int m_moravecCorrelationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 11).
+            
+            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 5 ).
+            
+            unsigned int m_moravecGaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
+            
+            double m_moravecMinAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.5, valid range: [0,1].
+            
+            //@}
+            
+            /**
+            * \name SURF parameters
+            */
+            /**@{*/
+            
+            unsigned int m_surfScalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3, minimum:3).
+            
+            unsigned int m_surfOctavesNumber; //!< The number of octaves to generate, when applicable (default: 2, minimum:1).
+            
+            double m_surfMaxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.5, valid range: [0,1].
+            
+            //@}
             
             InputParameters();
             
@@ -368,7 +389,7 @@ namespace te
             
             unsigned int m_octavesNumber; //!< The number of octaves to generate (minimum:1).
             
-            unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
+            unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block for each scale.
             
             DoublesMatrix const* m_integralRasterDataPtr; //!< The integral image raster data.
             
@@ -441,8 +462,6 @@ namespace te
             boost::mutex* m_syncMutexPtr;
             
             unsigned int m_maxPt1ToPt2PixelDistance; //!< Zero (disabled) or the maximum pixel distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
-            
-            double m_maxEuclideanDist; //!< The maximum acceptable euclidean distance when matching features.
             
             te::sam::rtree::Index< unsigned int > const* m_interestPointsSet2RTreePtr; //!> A pointer to a RTree indexing interest point set points to their respective indexes.
             
@@ -613,7 +632,7 @@ namespace te
           
           \param octavesNumber The number of octaves to generate.
           
-          \param maxInterestPoints The maximum number of interest points to find over raster 1.
+          \param maxInterestPoints The maximum number of interest points to find over raster 1 (for each scale).
           
           \param enableMultiThread Enable/disable multi-thread.
           
