@@ -283,7 +283,7 @@ void te::qt::widgets::RasterNavigatorWidget::onZoomOutToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_mapDisplay, 2.0, te::qt::widgets::Zoom::Out);
+  te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_mapDisplay, Qt::BlankCursor, 2.0, te::qt::widgets::Zoom::Out);
   setCurrentTool(zoomOut);
 }
 

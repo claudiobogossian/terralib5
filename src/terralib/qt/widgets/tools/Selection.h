@@ -71,12 +71,13 @@ namespace te
             \brief It constructs a selection tool associated with the given map display.
 
             \param display The map display associated with the tool.
+            \param cursor The tool cursor.
             \param layer The layer list that will be selected.
             \param parent The tool's parent.
 
             \note The tool will NOT take the ownership of the given pointers.
           */
-          Selection(MapDisplay* display, const std::list<te::map::AbstractLayerPtr>& layers, QObject* parent = 0);
+          Selection(MapDisplay* display, const QCursor& cursor, const std::list<te::map::AbstractLayerPtr>& layers, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~Selection();

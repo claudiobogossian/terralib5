@@ -60,13 +60,12 @@ namespace te
             \brief It constructs a rubber band associated with the given map display and with the specified cursor.
 
             \param display The map display associated with the tool.
-            \param cursor The tool cursor.
             \param parent The tool's parent.
 
             \note The tool will NOT take the ownership of the given pointers.
             \note If the given cursor is different of Qt::BlankCursor, it will be setted on map display.
           */
-          RubberBand(MapDisplay* display, QObject* parent = 0, const QCursor& cursor = Qt::BlankCursor);
+          RubberBand(MapDisplay* display, QObject* parent = 0);
 
           /*! \brief Destructor. */
           virtual ~RubberBand();

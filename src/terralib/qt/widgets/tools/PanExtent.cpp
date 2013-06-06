@@ -36,10 +36,12 @@
 #include <QtGui/QPixmap>
 
 te::qt::widgets::PanExtent::PanExtent(te::qt::widgets::MapDisplay* display, const QCursor& cursor, const QCursor& actionCursor, QObject* parent) 
-  : AbstractTool(display, parent, cursor),
+  : AbstractTool(display, parent),
     m_panStarted(false),
     m_actionCursor(actionCursor)
 {
+  setCursor(cursor);
+
   m_pen.setColor(QColor(0, 0, 0));
   m_pen.setWidth(2);
   m_brush = QColor(233, 88, 63, 80);

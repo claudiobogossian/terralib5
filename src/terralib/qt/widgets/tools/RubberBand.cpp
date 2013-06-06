@@ -32,8 +32,8 @@
 #include <QPainter>
 #include <QPixmap>
 
-te::qt::widgets::RubberBand::RubberBand(te::qt::widgets::MapDisplay* display, QObject* parent, const QCursor& cursor) 
-  : AbstractTool(display, parent, cursor)
+te::qt::widgets::RubberBand::RubberBand(te::qt::widgets::MapDisplay* display, QObject* parent) 
+  : AbstractTool(display, parent)
 {
   // Setups the rubber band style
   m_pen.setStyle(Qt::SolidLine);

@@ -34,10 +34,11 @@
 #include <QtGui/QPixmap>
 
 te::qt::widgets::Pan::Pan(te::qt::widgets::MapDisplay* display, const QCursor& cursor, const QCursor& actionCursor, QObject* parent) 
-  : AbstractTool(display, parent, cursor),
+  : AbstractTool(display, parent),
     m_panStarted(false),
     m_actionCursor(actionCursor)
 {
+  setCursor(cursor);
 }
 
 te::qt::widgets::Pan::~Pan()
