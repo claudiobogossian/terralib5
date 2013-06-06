@@ -138,7 +138,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_explorer(0),
     m_display(0),
     m_project(0),
-    m_controller(0)
+    m_controller(0),
+    m_mapCursorSize(QSize(20, 20))
 {
   m_controller = new ApplicationController;
 
@@ -633,7 +634,9 @@ void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::ZoomClick* zoomIn = new te::qt::widgets::ZoomClick(m_display->getDisplay(), 2.0);
+  QCursor zoomInCursor(QIcon::fromTheme("zoom-in").pixmap(m_mapCursorSize));
+
+  te::qt::widgets::ZoomClick* zoomIn = new te::qt::widgets::ZoomClick(m_display->getDisplay(), zoomInCursor, 2.0);
   m_display->setCurrentTool(zoomIn);
 }
 
@@ -642,7 +645,9 @@ void te::qt::af::BaseApplication::onZoomOutToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_display->getDisplay(), 2.0, te::qt::widgets::Zoom::Out);
+  QCursor zoomOutCursor(QIcon::fromTheme("zoom-out").pixmap(m_mapCursorSize));
+
+  te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_display->getDisplay(), zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
   m_display->setCurrentTool(zoomOut);
 }
 
@@ -651,7 +656,9 @@ void te::qt::af::BaseApplication::onZoomAreaToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_display->getDisplay(), Qt::BlankCursor);
+  QCursor zoomAreaCursor(QIcon::fromTheme("zoom-area").pixmap(m_mapCursorSize));
+
+  te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_display->getDisplay(), zoomAreaCursor);
   m_display->setCurrentTool(zoomArea);
 }
 
@@ -679,7 +686,9 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), m_project->getLayers());
+  QCursor infoCursor(QIcon::fromTheme("pointer-info").pixmap(m_mapCursorSize));
+
+  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_project->getLayers());
   m_display->setCurrentTool(info);
 }
 
@@ -688,7 +697,9 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), m_project->getLayers());
+  QCursor selectionCursor(QIcon::fromTheme("pointer-selection").pixmap(m_mapCursorSize));
+
+  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), selectionCursor, m_project->getLayers());
   m_display->setCurrentTool(selection);
 }
 
