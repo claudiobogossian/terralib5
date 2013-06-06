@@ -18,6 +18,7 @@
  */
 
 // TerraLib
+#include "../../widgets/layer/explorer/AbstractLayerTreeItem.h"
 #include "../../widgets/layer/explorer/LayerExplorer.h"
 #include "../../widgets/layer/explorer/LayerTreeModel.h"
 #include "../../widgets/layer/explorer/LayerTreeView.h"
@@ -35,7 +36,7 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explore
 {
   assert(explorer);
   
-  connect (explorer->getTreeView(), SIGNAL(toggled(te::qt::widgets::AbstractLayerTreeItem*, bool)), SLOT(layerVisibility(te::qt::widgets::AbstractLayerTreeItem*, bool)));
+  connect (explorer->getTreeView(), SIGNAL(toggled(te::qt::widgets::AbstractLayerTreeItem*, bool)), SLOT(onLayerToggled(te::qt::widgets::AbstractLayerTreeItem*, bool)));
 }
 
 te::qt::af::LayerExplorer::~LayerExplorer()
@@ -109,9 +110,11 @@ void te::qt::af::LayerExplorer::onSelectionChanged(const QItemSelection& /*selec
 //        }
 }
 
-void te::qt::af::LayerExplorer::layerVisibility(te::qt::widgets::AbstractLayerTreeItem* item, bool checked)
+void te::qt::af::LayerExplorer::onLayerToggled(te::qt::widgets::AbstractLayerTreeItem* item, bool checked)
 {
-  te::qt::af::evt::ProjectUnsaved evt;
-  ApplicationController::getInstance().broadcast(&evt);
-}
+  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
 
+  te::qt::af::evt::LayerVisibilityChanged layerVisibilityChangedEvent(item->getLayer().get(), checked);
+  ApplicationController::getInstance().broadcast(&layerVisibilityChangedEvent);
+}
