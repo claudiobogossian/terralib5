@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Sum.cpp
+  \file terralib/dataaccess/core/query/Sum.cpp
 
   \brief Sum aggregate operator.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "Sum.h"
 
-te::da::Sum::Sum(const Sum& rhs)
+te::da::core::Sum::Sum(const Sum& rhs)
   : UnaryFunction(rhs)
 {
 }
 
-te::da::Sum& te::da::Sum::operator=(const Sum& rhs)
+te::da::core::Sum& te::da::core::Sum::operator=(const Sum& rhs)
 {
   UnaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::Sum::clone() const
+te::da::core::Expression* te::da::core::Sum::clone() const
 {
   return new Sum(*this);
 }
-

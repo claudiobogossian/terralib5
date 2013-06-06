@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Fields.h
+  \file terralib/dataaccess/core/query/Fields.h
 
   \brief The Fields class can be used to model a set of expressions that form the output items of a SELECT.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_FIELDS_H
-#define __TERRALIB_DATAACCESS_INTERNAL_FIELDS_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FIELDS_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FIELDS_H
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -33,14 +33,16 @@ namespace te
 {
   namespace da
   {
-// Forward declaration
-    class Field;
+    namespace core
+    {
+      // Forward declaration
+      class Field;
 
-    /*! \brief Fields is just a boost::ptr_vector of Field pointers. */
-    typedef boost::ptr_vector<Field> Fields;
+      /*! \brief Fields is just a boost::ptr_vector of Field pointers. */
+      typedef boost::ptr_vector<Field> Fields;
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_FIELDS_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FIELDS_H

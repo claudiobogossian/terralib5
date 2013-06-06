@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/TemplateEncoder.cpp
+  \file terralib/dataaccess/core/query/TemplateEncoder.cpp
 
   \brief A query encoder for binary operator expressions.
 */
@@ -32,7 +32,7 @@
 #include <cassert>
 #include <cstdlib>
 
-te::da::TemplateEncoder::TemplateEncoder(const std::string& name,
+te::da::core::TemplateEncoder::TemplateEncoder(const std::string& name,
                                          const std::string& t)
   : SQLFunctionEncoder(name)
 {
@@ -80,7 +80,7 @@ te::da::TemplateEncoder::TemplateEncoder(const std::string& name,
     m_chuncks.push_back(chunk);
 }
 
-void te::da::TemplateEncoder::toSQL(const Function& f,
+void te::da::core::TemplateEncoder::toSQL(const Function& f,
                                     std::string& buff,
                                     SQLVisitor& v) const
 {
@@ -104,4 +104,3 @@ void te::da::TemplateEncoder::toSQL(const Function& f,
     }
   }
 }
-

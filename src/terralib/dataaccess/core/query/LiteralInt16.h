@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/LiteralInt16.h
+  \file terralib/dataaccess/core/query/LiteralInt16.h
 
   \brief A class that models a Literal for a integer value.
 */

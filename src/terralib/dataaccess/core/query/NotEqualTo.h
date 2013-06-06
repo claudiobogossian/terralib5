@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/NotEqualTo.h
+  \file terralib/dataaccess/core/query/NotEqualTo.h
 
-  \brief Tells if two values are not equal - syntatic-suggar.
+  \brief It reports if two values are not equal - syntatic-suggar.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_NOTEQUALTO_H
-#define __TERRALIB_DATAACCESS_INTERNAL_NOTEQUALTO_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_NOTEQUALTO_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_NOTEQUALTO_H
 
 // TerraLib
 #include "BinaryOp.h"
@@ -34,54 +34,56 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class NotEqualTo
-      
-      \brief Tells if two values are not equal.
-
-      This operator is just a syntatic-suggar.
-
-      \sa BinaryOp
-    */
-    class TEDATAACCESSEXPORT NotEqualTo : public BinaryOp
+    namespace core
     {
-      public:
+      /*!
+        \class NotEqualTo
+      
+        \brief Tells if two values are not equal.
 
-        TE_DEFINE_VISITABLE
+        This operator is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa BinaryOp
+      */
+      class TEDATAACCESSEXPORT NotEqualTo : public BinaryOp
+      {
+        public:
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          TE_DEFINE_VISITABLE
 
-          \note The addition operator will take the ownership of the given arguments.
-        */
-        NotEqualTo(Expression* arg1, Expression* arg2) : BinaryOp(FunctionNames::sm_NotEqualTo, arg1, arg2) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
-        */
-        NotEqualTo(const Expression& arg1, const Expression& arg2) : BinaryOp(FunctionNames::sm_NotEqualTo, arg1, arg2) {}
+            \note The addition operator will take the ownership of the given arguments.
+          */
+          NotEqualTo(Expression* arg1, Expression* arg2) : BinaryOp(FunctionNames::sm_NotEqualTo, arg1, arg2) {}
 
-        /*! \brief Copy constructor. */
-        NotEqualTo(const NotEqualTo& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~NotEqualTo() {}
+            \param arg1 The first argument.
+            \param arg2 The second argument.
+          */
+          NotEqualTo(const Expression& arg1, const Expression& arg2) : BinaryOp(FunctionNames::sm_NotEqualTo, arg1, arg2) {}
 
-        /*! Assignment operator.  */
-        NotEqualTo& operator=(const NotEqualTo& rhs);
+          /*! \brief Copy constructor. */
+          NotEqualTo(const NotEqualTo& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~NotEqualTo() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          NotEqualTo& operator=(const NotEqualTo& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_NOTEQUAL_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_NOTEQUALTO_H

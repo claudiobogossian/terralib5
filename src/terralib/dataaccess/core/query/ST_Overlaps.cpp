@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Overlaps.cpp
+  \file terralib/dataaccess/core/query/ST_Overlaps.cpp
 
   \brief Spatial Overlaps operator.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "ST_Overlaps.h"
 
-te::da::ST_Overlaps::ST_Overlaps(const ST_Overlaps& rhs)
+te::da::core::ST_Overlaps::ST_Overlaps(const ST_Overlaps& rhs)
   : BinaryFunction(rhs)
 {
 }
 
-te::da::ST_Overlaps& te::da::ST_Overlaps::operator=(const ST_Overlaps& rhs)
+te::da::core::ST_Overlaps& te::da::core::ST_Overlaps::operator=(const ST_Overlaps& rhs)
 {
   BinaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Overlaps::clone() const
+te::da::core::Expression* te::da::core::ST_Overlaps::clone() const
 {
   return new ST_Overlaps(*this);
 }
-

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Substring.cpp
+  \file terralib/dataaccess/core/query/Substring.cpp
 
   \brief Allows the extraction of substrings.
 */
@@ -30,7 +30,7 @@
 // STL
 #include <cassert>
 
-te::da::Substring::Substring(Expression* str, Expression* start, Expression* len)
+te::da::core::Substring::Substring(Expression* str, Expression* start, Expression* len)
   : Function(FunctionNames::sm_Substring)
 {
   m_args.push_back(str);
@@ -38,58 +38,57 @@ te::da::Substring::Substring(Expression* str, Expression* start, Expression* len
   m_args.push_back(len);
 }
 
-te::da::Substring::Substring(const Substring& rhs)
+te::da::core::Substring::Substring(const Substring& rhs)
   : Function(rhs)
 {
 }
 
-te::da::Substring& te::da::Substring::operator=(const Substring& rhs)
+te::da::core::Substring& te::da::core::Substring::operator=(const Substring& rhs)
 {
   Function::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::Substring::clone() const
+te::da::core::Expression* te::da::core::Substring::clone() const
 {
   return new Substring(*this);
 }
 
-te::da::Expression* te::da::Substring::getString() const
+te::da::core::Expression* te::da::core::Substring::getString() const
 {
   assert(m_args.size() == 3);
   return m_args[0];
 }
 
-void te::da::Substring::setString(Expression* str)
+void te::da::core::Substring::setString(Expression* str)
 {
   assert(m_args.size() == 3);
   delete m_args[0];
   m_args[0] = str;
 }
 
-te::da::Expression* te::da::Substring::getStartPosition()
+te::da::core::Expression* te::da::core::Substring::getStartPosition()
 {
   assert(m_args.size() == 3);
   return m_args[1];
 }
 
-void te::da::Substring::setStartPosition(Expression* start)
+void te::da::core::Substring::setStartPosition(Expression* start)
 {
   assert(m_args.size() == 3);
   delete m_args[1];
   m_args[1] = start;
 }
 
-te::da::Expression* te::da::Substring::getLength()
+te::da::core::Expression* te::da::core::Substring::getLength()
 {
   assert(m_args.size() == 3);
   return m_args[2];
 }
 
-void te::da::Substring::setLength(Expression* len)
+void te::da::core::Substring::setLength(Expression* len)
 {
   assert(m_args.size() == 3);
   delete m_args[2];
   m_args[2] = len;
 }
-

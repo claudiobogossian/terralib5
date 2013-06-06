@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Sum.h
+  \file terralib/dataaccess/core/query/Sum.h
 
-  \brief Sum aggregate operator.
+  \brief The Sum aggregate operator.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_SUM_H
-#define __TERRALIB_DATAACCESS_INTERNAL_SUM_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUM_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUM_H
 
 // TerraLib
 #include "FunctionNames.h"
@@ -34,52 +34,54 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class Sum
-      
-      \brief Sum aggregate operator.
-
-      This function is just a syntatic-suggar.
-
-      \sa UnaryFunction
-    */
-    class TEDATAACCESSEXPORT Sum : public UnaryFunction
+    namespace core
     {
-      public:
+      /*!
+        \class Sum
+      
+        \brief Sum aggregate operator.
 
-        TE_DEFINE_VISITABLE
+        This function is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa UnaryFunction
+      */
+      class TEDATAACCESSEXPORT Sum : public UnaryFunction
+      {
+        public:
 
-          \param arg The single function argument.
+          TE_DEFINE_VISITABLE
 
-          \note The Sum function will take the ownership of the given argument.
-        */
-        Sum(Expression* arg) : UnaryFunction(FunctionNames::sm_Sum, arg) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg The single function argument.
 
-          \param arg The single function argument.
-        */
-        Sum(const Expression& arg) : UnaryFunction(FunctionNames::sm_Sum, arg) {}
+            \note The Sum function will take the ownership of the given argument.
+          */
+          Sum(Expression* arg) : UnaryFunction(FunctionNames::sm_Sum, arg) {}
 
-        /*! \brief Copy constructor. */
-        Sum(const Sum& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~Sum() {}
+            \param arg The single function argument.
+          */
+          Sum(const Expression& arg) : UnaryFunction(FunctionNames::sm_Sum, arg) {}
 
-        /*! Assignment operator.  */
-        Sum& operator=(const Sum& rhs);
+          /*! \brief Copy constructor. */
+          Sum(const Sum& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~Sum() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          Sum& operator=(const Sum& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_SUM_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUM_H

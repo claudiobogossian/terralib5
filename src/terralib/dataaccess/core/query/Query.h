@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,53 +18,55 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Query.h
+  \file terralib/dataaccess/core/query/Query.h
 
   \brief The base class for queries.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_QUERY_H
-#define __TERRALIB_DATAACCESS_INTERNAL_QUERY_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_QUERY_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_QUERY_H
 
 // TerraLib
-#include "../../common/BaseVisitable.h"
+#include "../../../common/BaseVisitable.h"
 #include "QueryVisitor.h"
 
 namespace te
 {
   namespace da
   {
-    /*!
-      \class Query
+    namespace core
+    {
+      /*!
+        \class Query
       
-      \brief A Query is independent from the data source language/dialect.
+        \brief A Query is independent from the data source language/dialect.
 
-      \sa Select, Insert, Update, Delete, CreateDataSet, DropDataSet, AlterDataSet, CreateIndex, DropIndex
-    */
-    class TEDATAACCESSEXPORT Query : public te::common::BaseVisitable<QueryVisitor>
-    {
-      public:
+        \sa Select, Insert, Update, Delete, CreateDataSet, DropDataSet, AlterDataSet, CreateIndex, DropIndex
+      */
+      class TEDATAACCESSEXPORT Query : public te::common::BaseVisitable<QueryVisitor>
+      {
+        public:
 
-        TE_DEFINE_VISITABLE
+          TE_DEFINE_VISITABLE
 
-        /*! \brief Default constructor. */
-        Query() {}
+          /*! \brief Default constructor. */
+          Query() {}
 
-        /*! \brief Virtual destructor. */
-        virtual ~Query() {}
+          /*! \brief Virtual destructor. */
+          virtual ~Query() {}
 
-        /*! \brief It creates a new copy of this query. */
-        virtual Query* clone() const = 0;
-    };
+          /*! \brief It creates a new copy of this query. */
+          virtual Query* clone() const = 0;
+      };
 
-    /*! \brief For use with boost conteiners. */
-    inline Query* new_clone(const Query& a)
-    {
-      return a.clone();
-    }
+      /*! \brief For use with boost conteiners. */
+      inline Query* new_clone(const Query& a)
+      {
+        return a.clone();
+      }
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_QUERY_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_QUERY_H

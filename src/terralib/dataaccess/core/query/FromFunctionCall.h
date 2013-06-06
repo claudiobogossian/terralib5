@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FromFunctionCall.h
+  \file terralib/dataaccess/core/query/FromFunctionCall.h
 
-  \brief A function can be used as a source of information in another query.
+  \brief A function that can be used as a source of information in another query.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_FROMFUNCTIONCALL_H
-#define __TERRALIB_DATAACCESS_INTERNAL_FROMFUNCTIONCALL_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FROMFUNCTIONCALL_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FROMFUNCTIONCALL_H
 
 // TerraLib
 #include "FromItem.h"
@@ -36,71 +36,73 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class Function;
-
-    /*!
-      \class FromFunctionCall
-      
-      \brief A Select can be used as a source of information in another query.
-
-      \sa FromItem, DataSetName, DataSetType, DataSet, FromFunctionCall, Join 
-    */
-    class TEDATAACCESSEXPORT FromFunctionCall : public FromItem
+    namespace core
     {
-      public:
+      // Forward declarations
+      class Function;
 
-        TE_DEFINE_VISITABLE
+      /*!
+        \class FromFunctionCall
+      
+        \brief A Select can be used as a source of information in another query.
 
-        /*!
-          \brief Constructor.
+        \sa FromItem, DataSetName, DataSetType, DataSet, FromFunctionCall, Join 
+      */
+      class TEDATAACCESSEXPORT FromFunctionCall : public FromItem
+      {
+        public:
 
-          \param f The function to be associated to this object.
+          TE_DEFINE_VISITABLE
 
-          \note The FromFunctionCall will take the ownership of the function.
-        */
-        FromFunctionCall(Function* f, const std::string& alias);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param f The function to be associated to this object.
 
-          \param f The function to be associated to this object.
-        */
-        FromFunctionCall(const Function& f, const std::string& alias);
+            \note The FromFunctionCall will take the ownership of the function.
+          */
+          FromFunctionCall(Function* f, const std::string& alias);
 
-        /*! \brief Copy constructor. */
-        FromFunctionCall(const FromFunctionCall& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~FromFunctionCall();
+            \param f The function to be associated to this object.
+          */
+          FromFunctionCall(const Function& f, const std::string& alias);
 
-        /*! Assignment operator.  */
-        FromFunctionCall& operator=(const FromFunctionCall& rhs);
+          /*! \brief Copy constructor. */
+          FromFunctionCall(const FromFunctionCall& rhs);
 
-        /*! \brief It creates a new copy of this FromItem. */
-        FromItem* clone() const;
+          /*! \brief Destructor. */
+          ~FromFunctionCall();
 
-        /*!
-          \brief It returns the associated function.
+          /*! Assignment operator.  */
+          FromFunctionCall& operator=(const FromFunctionCall& rhs);
 
-          \return The associated function.
-        */
-        Function* getFunction() const;
+          /*! \brief It creates a new copy of this FromItem. */
+          FromItem* clone() const;
 
-        /*!
-          \brief It sets the function associated to this object.
+          /*!
+            \brief It returns the associated function.
 
-          \param f The function to be associated to the FromItem object.
-        */
-        void setFunction(Function* f);
+            \return The associated function.
+          */
+          Function* getFunction() const;
 
-      private:
+          /*!
+            \brief It sets the function associated to this object.
 
-        std::auto_ptr<Function> m_f;  //!< The associated function.
-    };
+            \param f The function to be associated to the FromItem object.
+          */
+          void setFunction(Function* f);
 
-  } // end namespace da
-}   // end namespace te
+        private:
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_FROMFUNCTIONCALL_H
+          std::auto_ptr<Function> m_f;  //!< The associated function.
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FROMFUNCTIONCALL_H

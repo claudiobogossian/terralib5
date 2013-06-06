@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Where.h
+  \file terralib/dataaccess/core/query/Where.h
 
   \brief A class that can be used to model a filter expression that can be applied to a query.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_WHERE_H
-#define __TERRALIB_DATAACCESS_INTERNAL_WHERE_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_WHERE_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_WHERE_H
 
 // TerraLib
 #include "../../Config.h"
@@ -36,53 +36,55 @@ namespace te
 {
   namespace da
   {
-// Forward declaration
-    class Expression;
-
-    /*!
-      \class Where
-
-      \brief A class that can be used to model a filter expression that can be applied to a query.
-    */
-    class TEDATAACCESSEXPORT Where
+    namespace core
     {
-      public:
+      // Forward declaration
+      class Expression;
 
-        /*!
-          \brief Constructor.
+      /*!
+        \class Where
 
-          \param e The where expression.
+        \brief A class that can be used to model a filter expression that can be applied to a query.
+      */
+      class TEDATAACCESSEXPORT Where
+      {
+        public:
 
-          \note The Where clause will take the ownership of the expression.
-        */
-        explicit Where(Expression* e);
+          /*!
+            \brief Constructor.
 
-        explicit Where(const Expression& e);
+            \param e The where expression.
 
-        Where(const Where& rhs);
+            \note The Where clause will take the ownership of the expression.
+          */
+          explicit Where(Expression* e);
 
-        ~Where();
+          explicit Where(const Expression& e);
+
+          Where(const Where& rhs);
+
+          ~Where();
         
-        Where& operator=(const Where& rhs);
+          Where& operator=(const Where& rhs);
 
-        Expression* getExp() const;
+          Expression* getExp() const;
 
-        /*!
-          \brief Sets the expression.
+          /*!
+            \brief Sets the expression.
 
-          \param e The where expression.
+            \param e The where expression.
 
-          \note The Where clause will take the ownership of the expression.
-        */
-        void setExp(Expression* exp);
+            \note The Where clause will take the ownership of the expression.
+          */
+          void setExp(Expression* exp);
 
-      private:
+        private:
 
-        std::auto_ptr<Expression> m_exp;  //!< The expression that defines the where clause.
-    };
+          std::auto_ptr<Expression> m_exp;  //!< The expression that defines the where clause.
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_WHERE_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_WHERE_H

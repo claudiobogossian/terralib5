@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Select.h
+  \file terralib/dataaccess/core/query/Select.h
 
   \brief A Select models a query to be used when retrieving data from a data source.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_SELECT_H
-#define __TERRALIB_DATAACCESS_INTERNAL_SELECT_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SELECT_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SELECT_H
 
 // TerraLib
 #include "../Enums.h"
@@ -42,410 +42,412 @@ namespace te
 {
   namespace da
   {
-// Forward declaration
-    class DataSetName;
-    class Field;
-    class GroupByItem;
-    class Having;
-    class OrderByItem;
-    class PropertyName;
-    class Where;
-
-    /*!
-      \class Select
-      
-      \brief A Select models a query to be used when retrieving data from a DataSource.
-
-      \sa Query, Fields, From, Expression, GroupBy, Expression, OrderBy, Distinct
-
-      \todo Ainda falta incluir a possibilidade de construir consultas com operacoes de INTERSECT/UNION/EXCEPT e etc...
-    */
-    class TEDATAACCESSEXPORT Select : public Query
+    namespace core
     {
-      public:
+      // Forward declarations
+      class DataSetName;
+      class Field;
+      class GroupByItem;
+      class Having;
+      class OrderByItem;
+      class PropertyName;
+      class Where;
 
-        TE_DEFINE_VISITABLE
+      /*!
+        \class Select
+      
+        \brief A Select models a query to be used when retrieving data from a DataSource.
 
-        /*! \brief Default constructor. */
-        Select();
+        \sa Query, Fields, From, Expression, GroupBy, Expression, OrderBy, Distinct
 
-        Select(Fields* fds, From* f = 0, Where* w = 0, OrderBy* o = 0);
+        \todo Ainda falta incluir a possibilidade de construir consultas com operacoes de INTERSECT/UNION/EXCEPT e etc...
+      */
+      class TEDATAACCESSEXPORT Select : public Query
+      {
+        public:
 
-        Select(const Fields& fds);
+          TE_DEFINE_VISITABLE
 
-        Select(const Fields& fds, const From& f);
+          /*! \brief Default constructor. */
+          Select();
 
-        Select(const Fields& fds, const From& f, const Where& w);
+          Select(Fields* fds, From* f = 0, Where* w = 0, OrderBy* o = 0);
 
-        Select(const Fields& fds, const From& f, const Where& w, const OrderBy& o);
+          Select(const Fields& fds);
 
-        Select(Fields* fds, From* f, OrderBy* o);
+          Select(const Fields& fds, const From& f);
 
-        Select(const Fields& fds, const From& f, const OrderBy& o);
+          Select(const Fields& fds, const From& f, const Where& w);
 
-        Select(Fields* fds, From* f, Where* w, GroupBy* gb, OrderBy* o = 0);
+          Select(const Fields& fds, const From& f, const Where& w, const OrderBy& o);
 
-        Select(const Fields& fds, const From& f, const Where& w, const GroupBy& gb);
+          Select(Fields* fds, From* f, OrderBy* o);
 
-        Select(const Fields& fds, const From& f, const Where& w, const GroupBy& gb, const OrderBy& o);
+          Select(const Fields& fds, const From& f, const OrderBy& o);
 
-        Select(Fields* fds, From* f, GroupBy* gb, OrderBy* o = 0);
+          Select(Fields* fds, From* f, Where* w, GroupBy* gb, OrderBy* o = 0);
 
-        Select(const Fields& fds, const From& f, const GroupBy& gb);
+          Select(const Fields& fds, const From& f, const Where& w, const GroupBy& gb);
 
-        Select(const Fields& fds, const From& f, const GroupBy& gb, const OrderBy& o);
+          Select(const Fields& fds, const From& f, const Where& w, const GroupBy& gb, const OrderBy& o);
 
-        Select(Fields* fds, From* f, Where* w, GroupBy* gb, Having* h, OrderBy* o = 0);
+          Select(Fields* fds, From* f, GroupBy* gb, OrderBy* o = 0);
 
-        Select(const Fields& fds, const From& f, const Where& w, const GroupBy& gb, const Having& h);
+          Select(const Fields& fds, const From& f, const GroupBy& gb);
 
-        Select(const Fields& fds, const From& f, const Where& w, const GroupBy& gb, const Having& h, const OrderBy& o);
+          Select(const Fields& fds, const From& f, const GroupBy& gb, const OrderBy& o);
 
-        Select(Field* f);
+          Select(Fields* fds, From* f, Where* w, GroupBy* gb, Having* h, OrderBy* o = 0);
 
-        Select(const Field& f);
+          Select(const Fields& fds, const From& f, const Where& w, const GroupBy& gb, const Having& h);
 
-        Select(const std::string& propertyName);
+          Select(const Fields& fds, const From& f, const Where& w, const GroupBy& gb, const Having& h, const OrderBy& o);
 
-        Select(const std::string& propertyName, const std::string& alias);
+          Select(Field* f);
 
-        Select(const Select& rhs);
+          Select(const Field& f);
 
-        Select(const Select* rhs);
+          Select(const std::string& propertyName);
 
-        /*! \brief Destructor. */
-        ~Select();
+          Select(const std::string& propertyName, const std::string& alias);
 
-        /*! Assignment operator.  */
-        Select& operator=(const Select& rhs);
+          Select(const Select& rhs);
 
-        /*! \brief It creates a new copy of this query. */
-        Query* clone() const;
+          Select(const Select* rhs);
 
-// fields
-        Select& fields(const Fields& f);
+          /*! \brief Destructor. */
+          ~Select();
 
-        Select& fields(Fields* f);
+          /*! Assignment operator.  */
+          Select& operator=(const Select& rhs);
 
-        Fields& fields();
+          /*! \brief It creates a new copy of this query. */
+          Query* clone() const;
 
-        const Fields& fields() const;
+  // fields
+          Select& fields(const Fields& f);
 
-        Select& operator()(const Field& f);
+          Select& fields(Fields* f);
 
-        Select& operator()(Field* f);
+          Fields& fields();
 
-        Select& operator()(const std::string& propertyName);
+          const Fields& fields() const;
 
-        Select& operator()(const std::string& propertyName, const std::string& alias);
+          Select& operator()(const Field& f);
 
-// from / join
-        Select& from(const FromItem& item);
+          Select& operator()(Field* f);
 
-        Select& from(FromItem* item);
+          Select& operator()(const std::string& propertyName);
 
-        Select& from(const FromItem& i1, const FromItem& i2);
+          Select& operator()(const std::string& propertyName, const std::string& alias);
 
-        Select& from(FromItem* i1, FromItem* i2);
+  // from / join
+          Select& from(const FromItem& item);
 
-        Select& from(const FromItem& i1, const FromItem& i2, const FromItem& i3);
+          Select& from(FromItem* item);
 
-        Select& from(FromItem* i1, FromItem* i2, FromItem* i3);
+          Select& from(const FromItem& i1, const FromItem& i2);
 
-        Select& from(const std::string& datasetName);        
+          Select& from(FromItem* i1, FromItem* i2);
 
-        Select& from(From* f);
+          Select& from(const FromItem& i1, const FromItem& i2, const FromItem& i3);
 
-        Select& from(const From& rhs);
+          Select& from(FromItem* i1, FromItem* i2, FromItem* i3);
+
+          Select& from(const std::string& datasetName);        
+
+          Select& from(From* f);
+
+          Select& from(const From& rhs);
         
-        From& from();
+          From& from();
 
-        const From& from() const;
+          const From& from() const;
 
-        Select& Join(FromItem* d2, JoinType t, JoinCondition* c);
+          Select& Join(FromItem* d2, JoinType t, JoinCondition* c);
 
-        Select& Join(const FromItem& d2, JoinType t, const JoinCondition& c);
+          Select& Join(const FromItem& d2, JoinType t, const JoinCondition& c);
 
-        Select& InnerJoin(FromItem* d2, JoinCondition* c);
+          Select& InnerJoin(FromItem* d2, JoinCondition* c);
 
-        Select& InnerJoin(const FromItem& d2, const JoinCondition& c);
+          Select& InnerJoin(const FromItem& d2, const JoinCondition& c);
 
-        Select& LeftJoin(FromItem* d2, JoinCondition* c);
+          Select& LeftJoin(FromItem* d2, JoinCondition* c);
 
-        Select& LeftJoin(const FromItem& d2, const JoinCondition& c);
+          Select& LeftJoin(const FromItem& d2, const JoinCondition& c);
 
-        Select& RightJoin(FromItem* d2, JoinCondition* c);
+          Select& RightJoin(FromItem* d2, JoinCondition* c);
 
-        Select& RightJoin(const FromItem& d2, const JoinCondition& c);
+          Select& RightJoin(const FromItem& d2, const JoinCondition& c);
 
-        Select& FullOuterJoin(FromItem* d2, JoinCondition* c);
+          Select& FullOuterJoin(FromItem* d2, JoinCondition* c);
 
-        Select& FullOuterJoin(const FromItem& d2, const JoinCondition& c);
+          Select& FullOuterJoin(const FromItem& d2, const JoinCondition& c);
 
-        Select& CrossJoin(FromItem* d2);
+          Select& CrossJoin(FromItem* d2);
 
-        Select& CrossJoin(const FromItem& d2);
+          Select& CrossJoin(const FromItem& d2);
 
-        Select& NaturalJoin(FromItem* d2, JoinType t);
+          Select& NaturalJoin(FromItem* d2, JoinType t);
 
-        Select& NaturalJoin(const FromItem& d2, JoinType t);
+          Select& NaturalJoin(const FromItem& d2, JoinType t);
 
-// where
-        Select& where(Expression* e);
+  // where
+          Select& where(Expression* e);
 
-        Select& where(const Expression& e);
+          Select& where(const Expression& e);
 
-        Select& where(Where* w);
+          Select& where(Where* w);
 
-        Select& where(const Where& rhs);
+          Select& where(const Where& rhs);
 
-        Where& where();
+          Where& where();
 
-        const Where& where() const;
+          const Where& where() const;
 
-// group by
-        Select& groupBy(const GroupByItem& item);
+  // group by
+          Select& groupBy(const GroupByItem& item);
 
-        Select& groupBy(GroupByItem* item);
+          Select& groupBy(GroupByItem* item);
 
-        Select& groupBy(const Expression& e);
+          Select& groupBy(const Expression& e);
 
-        Select& groupBy(const std::string& propertyName);
+          Select& groupBy(const std::string& propertyName);
 
-        Select& groupBy(GroupBy* gb);
+          Select& groupBy(GroupBy* gb);
 
-        Select& groupBy(const GroupBy& rhs);        
+          Select& groupBy(const GroupBy& rhs);        
 
-        GroupBy& groupBy();
+          GroupBy& groupBy();
 
-        const GroupBy& groupBy() const;
+          const GroupBy& groupBy() const;
 
-// having
+  // having
 
-        Select& having(Expression* e);
+          Select& having(Expression* e);
 
-        Select& having(const Expression& e);
+          Select& having(const Expression& e);
 
-        Select& having(Having* h);
+          Select& having(Having* h);
 
-        Select& having(const Having& rhs);
+          Select& having(const Having& rhs);
 
-        Having& having();
+          Having& having();
 
-        const Having& having() const;
+          const Having& having() const;
 
-// order by
-        Select& orderBy(const OrderByItem& item);
+  // order by
+          Select& orderBy(const OrderByItem& item);
 
-        Select& orderBy(OrderByItem* item);
+          Select& orderBy(OrderByItem* item);
 
-        Select& orderBy(const Expression& e, SortOrder o = ASC);
+          Select& orderBy(const Expression& e, SortOrder o = ASC);
 
-        Select& orderBy(const std::string& propertyName, SortOrder o = ASC);
+          Select& orderBy(const std::string& propertyName, SortOrder o = ASC);
 
-        Select& orderBy(OrderBy* o);
+          Select& orderBy(OrderBy* o);
 
-        Select& orderBy(const OrderBy& rhs);
+          Select& orderBy(const OrderBy& rhs);
 
-        OrderBy& orderBy();
+          OrderBy& orderBy();
 
-        const OrderBy& orderBy() const;
+          const OrderBy& orderBy() const;
 
-// distinct
-        Select& distinct(Expression* e);
+  // distinct
+          Select& distinct(Expression* e);
 
-        Select& distinct(const Expression& e);
+          Select& distinct(const Expression& e);
 
-        Select& distinct(const std::string& propertyName);
+          Select& distinct(const std::string& propertyName);
 
-        Select& distinct(Distinct* d);
+          Select& distinct(Distinct* d);
 
-        Select& distinct(const Distinct& rhs);
+          Select& distinct(const Distinct& rhs);
 
-        Distinct& distinct();
+          Distinct& distinct();
 
-        const Distinct& distinct() const;
+          const Distinct& distinct() const;
 
-// limit and offset
-        Select& limit(std::size_t l);
+  // limit and offset
+          Select& limit(std::size_t l);
 
-        Select& offset(std::size_t i);
+          Select& offset(std::size_t i);
 
-        /*!
-          \brief It sets the list of output expressions used to form the result set.
+          /*!
+            \brief It sets the list of output expressions used to form the result set.
 
-          \param f The list of output expressions used to form the result set.
+            \param f The list of output expressions used to form the result set.
 
-          \note Select will take the ownership of Fields.
-        */
-        void setFields(Fields* f);
+            \note Select will take the ownership of Fields.
+          */
+          void setFields(Fields* f);
 
-        /*!
-          \brief It returns the list of output expressions used to form the result set.
+          /*!
+            \brief It returns the list of output expressions used to form the result set.
 
-          \return The list of output expressions used to form the result set.
-        */
-        const Fields* getFields() const;
+            \return The list of output expressions used to form the result set.
+          */
+          const Fields* getFields() const;
 
-        /*!
-          \brief It sets the list of source information.
+          /*!
+            \brief It sets the list of source information.
 
-          \param f The list of source information.
+            \param f The list of source information.
 
-          \note Select will take the ownership of From.
-        */
-        void setFrom(From* f);
+            \note Select will take the ownership of From.
+          */
+          void setFrom(From* f);
 
-        /*!
-          \brief It returns the list of source information to be used by the query.
+          /*!
+            \brief It returns the list of source information to be used by the query.
 
-          \return The list of source information to be used by the query.
-        */
-        const From* getFrom() const;
+            \return The list of source information to be used by the query.
+          */
+          const From* getFrom() const;
 
-        /*!
-          \brief It sets the filter codition.
+          /*!
+            \brief It sets the filter codition.
 
-          \param w The filter condition.
+            \param w The filter condition.
 
-          \note Select will take the ownership of Where.
-        */
-        void setWhere(Where* w);
+            \note Select will take the ownership of Where.
+          */
+          void setWhere(Where* w);
 
-        /*!
-          \brief It returns the filter condition.
+          /*!
+            \brief It returns the filter condition.
 
-          \return The filter condition.
-        */
-        Where* getWhere() const;
+            \return The filter condition.
+          */
+          Where* getWhere() const;
 
-        /*!
-          \brief It sets the list of expressions used to condense the result set.
+          /*!
+            \brief It sets the list of expressions used to condense the result set.
 
-          \param g The list of expressions used to condense the result set.
+            \param g The list of expressions used to condense the result set.
 
-          \note Select will take the ownership of GroupBy.
-        */
-        void setGroupBy(GroupBy* g);
+            \note Select will take the ownership of GroupBy.
+          */
+          void setGroupBy(GroupBy* g);
 
-        /*!
-          \brief It returns the list of expressions used to condense the result set.
+          /*!
+            \brief It returns the list of expressions used to condense the result set.
 
-          \return The list of expressions used to condense the result set.
-        */
-        const GroupBy* getGroupBy() const;
+            \return The list of expressions used to condense the result set.
+          */
+          const GroupBy* getGroupBy() const;
 
-        /*!
-          \brief It sets the list of expressions used to eliminate group row that doesn't satisfy the condition.
+          /*!
+            \brief It sets the list of expressions used to eliminate group row that doesn't satisfy the condition.
 
-          \param h The list of expressions used to eliminate group row that doesn't satisfy the condition.
+            \param h The list of expressions used to eliminate group row that doesn't satisfy the condition.
 
-          \note Select will take the ownership of Having.
-        */
-        void setHaving(Having* h);
+            \note Select will take the ownership of Having.
+          */
+          void setHaving(Having* h);
 
-        /*!
-          \brief It returns the list of expressions used to eliminate group row that doesn't satisfy the condition.
+          /*!
+            \brief It returns the list of expressions used to eliminate group row that doesn't satisfy the condition.
 
-          \return The list of expressions used to eliminate group row that doesn't satisfy the condition.
-        */
-        const Having* getHaving() const;
+            \return The list of expressions used to eliminate group row that doesn't satisfy the condition.
+          */
+          const Having* getHaving() const;
 
-        /*!
-          \brief It sets the list of expressions used to sort the output result.
+          /*!
+            \brief It sets the list of expressions used to sort the output result.
 
-          \param o The list of expressions used to sort the output result.
+            \param o The list of expressions used to sort the output result.
 
-          \note Select will take the ownership of OrderBy.
-        */
-        void setOrderBy(OrderBy* o);
+            \note Select will take the ownership of OrderBy.
+          */
+          void setOrderBy(OrderBy* o);
 
-        /*!
-          \brief It returns the list of expressions used to sort the output result.
+          /*!
+            \brief It returns the list of expressions used to sort the output result.
 
-          \return The list of expressions used to sort the output result.
-        */
-        const OrderBy* getOrderBy() const;
+            \return The list of expressions used to sort the output result.
+          */
+          const OrderBy* getOrderBy() const;
 
-        /*!
-          \brief If Distinct is specified, all duplicate rows are removed from the result set (one row is kept from each group of duplicates).
+          /*!
+            \brief If Distinct is specified, all duplicate rows are removed from the result set (one row is kept from each group of duplicates).
 
-          \param d The Distinct modifier.
+            \param d The Distinct modifier.
 
-          \note Select will take the ownership of Distinct.
-        */
-        void setDistinct(Distinct* d);
+            \note Select will take the ownership of Distinct.
+          */
+          void setDistinct(Distinct* d);
 
-        /*!
-          \brief It returns the Distinct modifier.
+          /*!
+            \brief It returns the Distinct modifier.
 
-          \return The Distinct modifier.
-        */
-        const Distinct* getDistinct() const;
+            \return The Distinct modifier.
+          */
+          const Distinct* getDistinct() const;
 
-        /*!
-          \brief It specifies the maximum number of rows to return.
+          /*!
+            \brief It specifies the maximum number of rows to return.
 
-          \param m The maximum number of rows to return.
-        */
-        void setLimit(std::size_t m);
+            \param m The maximum number of rows to return.
+          */
+          void setLimit(std::size_t m);
 
-        /*!
-          \brief It tells the maximum number of rows to return.
+          /*!
+            \brief It tells the maximum number of rows to return.
 
-          \return The maximum number of rows to return.
-        */
-        std::size_t getLimit() const;
+            \return The maximum number of rows to return.
+          */
+          std::size_t getLimit() const;
 
-        /*!
-          \brief It specifies the number of rows to skip before starting to return rows.
+          /*!
+            \brief It specifies the number of rows to skip before starting to return rows.
 
-          \param o The number of rows to skip before starting to return rows.
-        */
-        void setOffset(std::size_t o);
+            \param o The number of rows to skip before starting to return rows.
+          */
+          void setOffset(std::size_t o);
 
-        /*!
-          \brief It tells the number of rows to skip before starting to return rows.
+          /*!
+            \brief It tells the number of rows to skip before starting to return rows.
 
-          \return The number of rows to skip before starting to return rows.
-        */
-        std::size_t getOffset() const;
+            \return The number of rows to skip before starting to return rows.
+          */
+          std::size_t getOffset() const;
 
-        Select& operator+(const te::da::From& f);
+          Select& operator+(const te::da::core::From& f);
 
-        Select& operator+(te::da::From* f);
+          Select& operator+(te::da::core::From* f);
 
-        Select& operator+(const te::da::Where& w) ;
+          Select& operator+(const te::da::core::Where& w) ;
 
-        Select& operator+(te::da::Where* w) ;
+          Select& operator+(te::da::core::Where* w) ;
 
-        Select& operator+(const te::da::GroupBy& g);
+          Select& operator+(const te::da::core::GroupBy& g);
 
-        Select& operator+(te::da::GroupBy* g);
+          Select& operator+(te::da::core::GroupBy* g);
 
-        Select& operator+(const te::da::Having& h);
+          Select& operator+(const te::da::core::Having& h);
 
-        Select& operator+(te::da::Having* h);
+          Select& operator+(te::da::core::Having* h);
 
-        Select& operator+(const te::da::OrderBy& o);
+          Select& operator+(const te::da::core::OrderBy& o);
 
-        Select& operator+(te::da::OrderBy* o);
+          Select& operator+(te::da::core::OrderBy* o);
 
-      private:
+        private:
 
-        std::auto_ptr<Fields> m_fields;       //!< .
-        std::auto_ptr<From> m_from;           //!< .
-        std::auto_ptr<Where> m_where;         //!< .
-        std::auto_ptr<GroupBy> m_groupBy;     //!< .
-        std::auto_ptr<Having> m_having;       //!< .
-        std::auto_ptr<OrderBy> m_orderBy;     //!< .
-        std::auto_ptr<Distinct> m_distinct;   //!< .
-        std::size_t m_limit;                  //!< .
-        std::size_t m_offset;                 //!< .
-    };
+          std::auto_ptr<Fields> m_fields;       //!< .
+          std::auto_ptr<From> m_from;           //!< .
+          std::auto_ptr<Where> m_where;         //!< .
+          std::auto_ptr<GroupBy> m_groupBy;     //!< .
+          std::auto_ptr<Having> m_having;       //!< .
+          std::auto_ptr<OrderBy> m_orderBy;     //!< .
+          std::auto_ptr<Distinct> m_distinct;   //!< .
+          std::size_t m_limit;                  //!< .
+          std::size_t m_offset;                 //!< .
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  //end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_SELECT_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SELECT_H
