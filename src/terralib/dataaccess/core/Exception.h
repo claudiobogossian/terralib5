@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../common/Exception.h"
-#include "../Config.h"
+#include "Config.h"
 
 
 namespace te

@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ORDERBYITEM_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 #include "../Enums.h"
 
 // STL

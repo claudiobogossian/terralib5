@@ -31,7 +31,7 @@
 #include "../../../datatype/SimpleData.h"
 #include "../../../geometry/Geometry.h"
 #include "../Exception.h"
-#include "AbstractPreparedQuery.h"
+#include "PreparedQuery.h"
 
 void te::da::core::PreparedQuery::bind(int i, const te::dt::AbstractData& ad)
 {

@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "Exception2.h"
+#include "Exception.h"
 
 namespace te
 {

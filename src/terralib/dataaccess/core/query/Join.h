@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_JOIN_H
 
 // TerraLib
-#include "../../Enums.h"
+#include "../Enums.h"
 #include "FromItem.h"
 
 // STL

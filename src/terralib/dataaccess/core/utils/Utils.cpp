@@ -29,109 +29,21 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../raster/RasterProperty.h"
 #include "../dataset/DataSet.h"
-#include "../../dataset/DataSetAdapter.h"
-//#include "../dataset/DataSetPersistence.h"
+#include "../dataset/DataSetAdapter.h"
 #include "../dataset/DataSetType.h"
 #include "../dataset/DataSetTypeConverter.h"
-//#include "../dataset/DataSetTypePersistence.h"
 #include "../dataset/ObjectId.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../dataset/PrimaryKey.h"
 #include "../dataset/UniqueKey.h"
 #include "../datasource/DataSourceInfoManager.h"
-#include "../../datasource/DataSourceManager.h"
-//#include "../datasource/DataSourceCatalogLoader.h"
-//#include "../datasource/DataSourceTransactor.h"
-#include "../../Enums.h"
+#include "../Enums.h"
 #include "../Exception.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
-
-void te::da::core::LoadFull(te::da::core::DataSetType* dataset, const std::string& datasourceId)
-{
-  assert(dataset);
-  assert(!datasourceId.empty());
-
-  DataSourcePtr datasource(te::da::core::DataSourceManager::getInstance().find(datasourceId));
-
-  if(datasource.get() == 0)
-    return;
-
-  LoadFull(dataset, datasource.get());
-}
-
-void te::da::core::LoadFull(te::da::core::DataSetType* dataset, te::da::core::DataSource* datasource)
-{
-  assert(dataset);
-  assert(datasource);
-
-  std::auto_ptr<DataSourceTransactor> transactor(datasource->getTransactor());
-
-  LoadFull(dataset, transactor.get());
-}
-
-void te::da::core::LoadFull(te::da::core::DataSetType* dataset, DataSourceTransactor* transactor)
-{
-  assert(dataset);
-  assert(transactor);
-
-  std::auto_ptr<DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
-
-  LoadFull(dataset, cloader.get());
-}
-
-void te::da::core::LoadFull(te::da::core::DataSetType* dataset, DataSourceCatalogLoader* cloader)
-{
-  assert(dataset);
-  assert(cloader);
-
-  if(dataset->size() == 0)
-    cloader->getProperties(dataset);
-
-  cloader->getCheckConstraints(dataset);
-
-  cloader->getIndexes(dataset);
-
-  cloader->getUniqueKeys(dataset);
-
-  cloader->getPrimaryKey(dataset);
-}
-
-void te::da::core::LoadProperties(te::da::core::DataSetType* dataset, const std::string& datasourceId)
-{
-  assert(dataset);
-  assert(!datasourceId.empty());
-
-  DataSourcePtr datasource(te::da::core::DataSourceManager::getInstance().find(datasourceId));
-
-  if(datasource.get() == 0)
-    return;
-
-  LoadProperties(dataset, datasource.get());
-}
-
-void te::da::core::LoadProperties(te::da::core::DataSetType* dataset, te::da::core::DataSource* datasource)
-{
-  assert(dataset);
-  assert(datasource);
-
-  std::auto_ptr<DataSourceTransactor> transactor(datasource->getTransactor());
-
-  LoadProperties(dataset, transactor.get());
-}
-
-void te::da::core::LoadProperties(te::da::core::DataSetType* dataset, te::da::DataSourceTransactor* transactor)
-{
-  assert(dataset);
-  assert(transactor);
-
-  std::auto_ptr<DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
-
-  cloader->getProperties(dataset);
-}
 
 te::gm::Envelope* te::da::core::GetExtent(DataSet* dataset)
 {
@@ -143,180 +55,40 @@ te::gm::Envelope* te::da::core::GetExtent(DataSet* dataset)
   return new te::gm::Envelope;
 }
 
-te::gm::Envelope* te::da::core::GetExtent(te::gm::GeometryProperty* gp, const std::string& datasourceId)
-{
-  assert(gp);
-  assert(!datasourceId.empty());
-
-  DataSourcePtr datasource(te::da::core::DataSourceManager::getInstance().find(datasourceId));
-
-  if(datasource.get() == 0)
-    throw Exception(TR_DATAACCESS("Could not retrieve data source in order to search for a property extent!"));
-
-  return GetExtent(gp, datasource.get());
-}
-
-te::gm::Envelope* te::da::core::GetExtent(te::gm::GeometryProperty* gp, te::da::core::DataSource* datasource)
-{
-  assert(gp);
-  assert(datasource);
-
-  std::auto_ptr<DataSourceTransactor> transactor(datasource->getTransactor());
-
-  return GetExtent(gp, transactor.get());
-}
-
-te::gm::Envelope* te::da::core::GetExtent(te::gm::GeometryProperty* gp, te::da::DataSourceTransactor* transactor)
-{
-  assert(gp);
-  assert(transactor);
-
-  std::auto_ptr<DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
-
-  te::gm::Envelope* mbr = cloader->getExtent(gp);
-
-  return mbr;
-}
-
-void te::da::core::GetDataSets(boost::ptr_vector<std::string>& datasets, const std::string& datasourceId)
-{
-  assert(!datasourceId.empty());
-
-  DataSourcePtr datasource(te::da::core::DataSourceManager::getInstance().find(datasourceId));
-
-  if(datasource.get() == 0)
-    return;
-
-  GetDataSets(datasets, datasource.get());
-}
-
-void te::da::core::GetDataSets(boost::ptr_vector<std::string>& datasets, te::da::core::DataSource* datasource)
-{
-  assert(datasource);
-
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(datasource->getTransactor());
-
-  GetDataSets(datasets, transactor.get());
-}
-
-void te::da::core::GetDataSets(boost::ptr_vector<std::string>& datasets, te::da::DataSourceTransactor* transactor)
-{
-  assert(transactor);
-
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
-
-  cloader->getDataSets(datasets);
-}
-
 std::string te::da::core::GetDataSetCategoryName(int category)
 {
   switch(category)
   {
-    case te::da::UNKNOWN_DATASET_TYPE:
+    case UNKNOWN_DATASET_TYPE:
       return "Unknown";
 
-    case te::da::TABLE_TYPE:
+    case TABLE_TYPE:
       return "Table";
 
-    case te::da::SYSTEM_TABLE_TYPE:
+    case SYSTEM_TABLE_TYPE:
       return "System";
 
-    case te::da::VIEW_TYPE:
+    case VIEW_TYPE:
       return "View";
 
-    case te::da::QUERY_TYPE:
+    case QUERY_TYPE:
       return "Query";
 
-    case te::da::INDEX_TYPE:
+    case INDEX_TYPE:
       return "Index";
 
-    case te::da::SEQUENCE_TYPE:
+    case SEQUENCE_TYPE:
       return "Sequence";
 
-    case te::da::TRIGGER_TYPE:
+    case TRIGGER_TYPE:
       return "Trigger";
 
-    case te::da::REGULAR_FILE_TYPE:
+    case REGULAR_FILE_TYPE:
       return "Regular File";
 
     default:
       return "";
   }
-}
-
-bool te::da::core::HasDataSet(const std::string& datasourceId)
-{
-  assert(!datasourceId.empty());
-
-  DataSourcePtr datasource(te::da::core::DataSourceManager::getInstance().find(datasourceId));
-
-  if(datasource.get() == 0)
-    return false;
-
-  return HasDataSet(datasource.get());
-}
-
-bool te::da::core::HasDataSet(te::da::core::DataSource* datasource)
-{
-  assert(datasource);
-
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(datasource->getTransactor());
-
-  return HasDataSet(transactor.get());
-}
-
-bool te::da::core::HasDataSet(te::da::DataSourceTransactor* transactor)
-{
-  assert(transactor);
-
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
-
-  return cloader->hasDataSets();
-}
-
-te::da::core::DataSet* te::da::core::GetDataSet(const std::string& name, const std::string& datasourceId)
-{
-  assert(!datasourceId.empty());
-
-  DataSourcePtr datasource(te::da::core::DataSourceManager::getInstance().find(datasourceId));
-
-  if(datasource.get() == 0)
-    return false;
-
-  return GetDataSet(name, datasource.get());
-}
-
-te::da::core::DataSet* te::da::core::GetDataSet(const std::string& name, te::da::core::DataSource* datasource)
-{
-  assert(datasource);
-
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(datasource->getTransactor());
-
-  return transactor->getDataSet(name);
-}
-
-te::da::core::DataSourcePtr te::da::core::GetDataSource(const std::string& datasourceId, const bool opened)
-{
-  assert(!datasourceId.empty());
-
-  DataSourcePtr datasource(te::da::core::DataSourceManager::getInstance().find(datasourceId));
-
-  if(datasource.get() == 0)
-  {
-    DataSourceInfoPtr dsinfo = te::da::core::DataSourceInfoManager::getInstance().get(datasourceId);
-
-    if(dsinfo.get() == 0)
-      throw Exception(TR_DATAACCESS("Could not find data source!"));
-
-    datasource = te::da::core::DataSourceManager::getInstance().make(datasourceId, dsinfo->getAccessDriver());
-
-    datasource->setConnectionInfo(dsinfo->getConnInfo());
-  }
-
-  if(opened && !datasource->isOpened())
-    datasource->open();
-
-  return datasource;
 }
 
 void te::da::core::GetEmptyOIDSet(const te::da::core::DataSetType* type, te::da::core::ObjectIdSet*& set)
@@ -346,37 +118,39 @@ void te::da::core::GetOIDPropertyNames(const te::da::core::DataSetType* type, st
 {
   assert(type);
 
-  // Looking for the primary key properties
+// Looking for the primary key properties
   PrimaryKey* pk = type->getPrimaryKey();
+
   if(pk != 0)
   {
-    const std::vector<te::dt::Property*>& pkProperties = pk->getProperties();
+    const std::vector<std::size_t>& pkProperties = pk->getProperties();
 
     for(std::size_t i = 0; i < pkProperties.size(); ++i)
-      pnames.push_back(pkProperties[i]->getName());
+      pnames.push_back(type->getProperty(pkProperties[i])->getName());
 
     return;
   }
 
-  // Looking for the unique key properties
+// Looking for the unique key properties
   if(type->getNumberOfUniqueKeys() > 0)
   {
     for(std::size_t i = 0; i < type->getNumberOfUniqueKeys(); ++i)
     {
       UniqueKey* uk = type->getUniqueKey(i);
 
-      const std::vector<te::dt::Property*>& ukProperties = uk->getProperties();
+      const std::vector<std::size_t>& ukProperties = uk->getProperties();
 
       for(std::size_t j = 0; j < ukProperties.size(); ++j)
-        pnames.push_back(ukProperties[j]->getName());
+        pnames.push_back(type->getProperty(ukProperties[j])->getName());
     }
 
     return;
   }
-  
-  // Here, the data set type do not have primary key properties or unique key properties.
-  // So, use all the non geometric properties.
+
+// Here, the data set type do not have primary key properties or unique key properties.
+// So, use all the non geometric properties.
   const std::vector<te::dt::Property*>& props = type->getProperties();
+
   for(std::size_t i = 0; i < props.size(); ++i)
   {
     if(props[i]->getType() == te::dt::GEOMETRY_TYPE || props[i]->getType() == te::dt::RASTER_TYPE)
@@ -584,28 +358,6 @@ void te::da::core::GetPropertyInfo(const DataSet* const dataset,
     pnames.push_back(dataset->getPropertyName(i));
     ptypes.push_back(dataset->getPropertyDataType(i));
   }
-}
-
-void te::da::core::Create(DataSourceTransactor* t, DataSetType* dt, DataSet* d, std::size_t limit)
-{
-  std::map<std::string, std::string> options;
-
-  Create(t, dt, d, options, limit);
-}
-
-void te::da::core::Create(DataSourceTransactor* t,
-                    DataSetType* dt,
-                    DataSet* d,
-                    const std::map<std::string, std::string>& options,
-                    std::size_t limit)
-{
-  std::auto_ptr<te::da::DataSetTypePersistence> dtp(t->getDataSetTypePersistence());
-
-  dtp->create(dt);
-
-  std::auto_ptr<te::da::DataSetPersistence> dp(t->getDataSetPersistence());
-
-  dp->add(dt->getName(), d, options, limit);
 }
 
 te::da::core::DataSetAdapter* te::da::core::CreateAdapter(DataSet* ds, DataSetTypeConverter* converter, bool isOwner)
