@@ -153,9 +153,9 @@ namespace te
             */
             /**@{*/
             
-            unsigned int m_surfScalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3, minimum:3).
+            unsigned int m_surfScalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:4, minimum:3).
             
-            unsigned int m_surfOctavesNumber; //!< The number of octaves to generate, when applicable (default: 2, minimum:1).
+            unsigned int m_surfOctavesNumber; //!< The number of octaves to generate, when applicable (default: 3, minimum:1).
             
             double m_surfMaxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.5, valid range: [0,1].
             
