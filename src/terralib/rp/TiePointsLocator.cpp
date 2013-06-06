@@ -2174,12 +2174,20 @@ namespace te
           return;
         }
         unsigned int laplacianSignBufferDataHandlerLine = 0;
+        unsigned int laplacianSignBufferDataHandlerCol = 0;
         unsigned char* laplacianSignBufferDataHandlerLinePtr = 0;
         for( laplacianSignBufferDataHandlerLine = 0; laplacianSignBufferDataHandlerLine < 
           laplacianSignBufferDataHandlerLines ; ++laplacianSignBufferDataHandlerLine )
         {
           laplacianSignBufferDataHandlerLinePtr = laplacianSignBufferDataHandler[ 
             laplacianSignBufferDataHandlerLine ];
+            
+          for( laplacianSignBufferDataHandlerCol = 0; laplacianSignBufferDataHandlerCol < 
+            buffersCols ; ++laplacianSignBufferDataHandlerCol )
+          {
+            laplacianSignBufferDataHandlerLinePtr[ laplacianSignBufferDataHandlerCol ] =
+              255;
+          }
         }
         
         laplacianSignBufferDataHandlerLine = 0;
@@ -2250,7 +2258,6 @@ namespace te
           unsigned int filterWidth = 0;
           unsigned int filterLobeWidth = 0;
           unsigned int filterLobeRadius = 0;
-          unsigned int filterRadius = 0;
           unsigned int filterCenterBufCol = 0 ;
 //          unsigned int filterCenterBufColBound = 0 ;
           double dXX = 0;
@@ -2320,7 +2327,6 @@ namespace te
                   
                   filterLobeWidth = filterWidth / 3; 
                   filterLobeRadius = filterLobeWidth / 2;
-                  filterRadius = filterWidth / 2;
                     
                   for( filterCenterBufCol = maxGausFilterRadius ; filterCenterBufCol < 
                     maxGausFilterCenterBufferColBound ; ++filterCenterBufCol )
