@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,12 +18,10 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Query.cpp
+  \file terralib/dataaccess/core/query/Query.cpp
 
   \brief The base class for queries.
 */
 
 // TerraLib
 #include "Query.h"
-
-

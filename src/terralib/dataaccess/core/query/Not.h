@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Not.h
+  \file terralib/dataaccess/core/query/Not.h
 
   \brief Boolean NOT operator - syntatic-suggar.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_NOT_H
-#define __TERRALIB_DATAACCESS_INTERNAL_NOT_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_NOT_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_NOT_H
 
 // TerraLib
 #include "UnaryOp.h"
@@ -34,54 +34,56 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class Not
-      
-      \brief Boolean NOT operator.
-
-      This operator is just a syntatic-suggar.
-
-      \sa UnaryOp
-    */
-    class TEDATAACCESSEXPORT Not : public UnaryOp
+    namespace core
     {
-      public:
+      /*!
+        \class Not
+      
+        \brief Boolean NOT operator.
 
-        TE_DEFINE_VISITABLE
+        This operator is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa UnaryOp
+      */
+      class TEDATAACCESSEXPORT Not : public UnaryOp
+      {
+        public:
 
-          \param arg The single function argument.
+          TE_DEFINE_VISITABLE
 
-          \note The Not function will take the ownership of the given argument.
-         */
-        Not(Expression* arg) : UnaryOp(FunctionNames::sm_Not, arg) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg The single function argument.
 
-          \param arg The single function argument.
+            \note The Not function will take the ownership of the given argument.
+           */
+          Not(Expression* arg) : UnaryOp(FunctionNames::sm_Not, arg) {}
 
-          \note The Not function will take the ownership of the given argument.
-        */
-        Not(const Expression& arg) : UnaryOp(FunctionNames::sm_Not, arg) {}
+          /*!
+            \brief Constructor.
 
-        /*! \brief Copy constructor. */
-        Not(const Not& rhs);
+            \param arg The single function argument.
 
-        /*! \brief Destructor. */
-        ~Not() {}
+            \note The Not function will take the ownership of the given argument.
+          */
+          Not(const Expression& arg) : UnaryOp(FunctionNames::sm_Not, arg) {}
 
-        /*! Assignment operator.  */
-        Not& operator=(const Not& rhs);
+          /*! \brief Copy constructor. */
+          Not(const Not& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~Not() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          Not& operator=(const Not& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_NOT_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_NOT_H

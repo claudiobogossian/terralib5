@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionCatalogManager.h
+  \file terralib/dataaccess/core/query/FunctionCatalogManager.h
 
   \brief A FunctionCatalogManager is a singleton that can be used to manage function catalogs of data source implementations.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONCATALOGMANAGER_H
-#define __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONCATALOGMANAGER_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONCATALOGMANAGER_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONCATALOGMANAGER_H
 
 // TerraLib
-#include "../../common/Singleton.h"
+#include "../../../common/Singleton.h"
 #include "../../Config.h"
 
 // STL
@@ -38,63 +38,64 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class FunctionCatalog;
-
-    /*!
-      \class FunctionCatalogManager
-      
-      \brief A FunctionCatalogManager is a singleton that can be used to manage function catalogs of data source implementations.
-
-      Each data source implementation must register its function catalog
-      in this singleton. This can be achieved by providing the data source
-      identification token (a string) and its catalog.
-
-      \sa FunctionCatalog
-    */
-    class TEDATAACCESSEXPORT FunctionCatalogManager : public te::common::Singleton<FunctionCatalogManager>
+    namespace core
     {
-      friend class te::common::Singleton<FunctionCatalogManager>;
+      // Forward declarations
+      class FunctionCatalog;
 
-      public:  
+      /*!
+        \class FunctionCatalogManager
+      
+        \brief A FunctionCatalogManager is a singleton that can be used to manage function catalogs of data source implementations.
 
-        /*! \brief Destructor. */
-        ~FunctionCatalogManager();
+        Each data source implementation must register its function catalog
+        in this singleton. This can be achieved by providing the data source
+        identification token (a string) and its catalog.
 
-        /*!
-          \brief It inserts the function catalog associated to the given data source type.
+        \sa FunctionCatalog
+      */
+      class TEDATAACCESSEXPORT FunctionCatalogManager : public te::common::Singleton<FunctionCatalogManager>
+      {
+        friend class te::common::Singleton<FunctionCatalogManager>;
 
-          \param dsType   The type of data source.
-          \param fcatalog The function catalog. The manager will take the ownership of the given function catalog.
+        public:  
 
-          \exception Exception It throws an exception if a catalog is already registered for the given data source type.
-        */
-        void insert(const std::string& dsType, FunctionCatalog* fcatalog);
+          /*! \brief Destructor. */
+          ~FunctionCatalogManager();
 
-        /*!
-          \brief It finds the function catalog with the given data source type.
+          /*!
+            \brief It inserts the function catalog associated to the given data source type.
 
-          \param dsType The data source type.
+            \param dsType   The type of data source.
+            \param fcatalog The function catalog. The manager will take the ownership of the given function catalog.
 
-          \return The catalog fr the given data source type.
+            \exception Exception It throws an exception if a catalog is already registered for the given data source type.
+          */
+          void insert(const std::string& dsType, FunctionCatalog* fcatalog);
 
-          \note Don't delete the returned pointer, it belongs to the manager!
-        */
-        FunctionCatalog* find(const std::string& dsType);
+          /*!
+            \brief It finds the function catalog with the given data source type.
 
-      protected:   
+            \param dsType The data source type.
 
-        /*! \brief No constructor available for clients. */
-        FunctionCatalogManager() {}
+            \return The catalog fr the given data source type.
 
-      private:
+            \note Don't delete the returned pointer, it belongs to the manager!
+          */
+          FunctionCatalog* find(const std::string& dsType);
 
-        std::map<std::string, FunctionCatalog*> m_fcatalogMap;  //!< Function map: datasource-type -> FunctionCatalog*.
-    };
+        protected:   
 
-  } // end namespace da
-}   // end namespace te
+          /*! \brief No constructor available for clients. */
+          FunctionCatalogManager() {}
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONCATALOGMANAGER_H
+        private:
 
+          std::map<std::string, FunctionCatalog*> m_fcatalogMap;  //!< Function map: datasource-type -> FunctionCatalog*.
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONCATALOGMANAGER_H

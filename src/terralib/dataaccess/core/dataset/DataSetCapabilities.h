@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASETCAPABILITIES_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 namespace te
 {
@@ -52,51 +52,51 @@ namespace te
 
           bool supportsBidirectionalTraversing() const;
 
-          void setSupportBidirectionalTraversing(const bool& support);
+          void setSupportBidirectionalTraversing(const bool support);
 
           bool supportsRandomTraversing() const;
 
-          void setSupportRandomTraversing(const bool& support);
+          void setSupportRandomTraversing(const bool support);
 
           bool supportsIndexedTraversing() const;
 
-          void setSupportIndexedTraversing(const bool& support);
+          void setSupportIndexedTraversing(const bool support);
 
           bool supportsEfficientMovePrevious() const;
 
-          void setSupportEfficientMovePrevious(const bool& support);
+          void setSupportEfficientMovePrevious(const bool support);
 
           bool supportsEfficientMoveBeforeFirst() const;
 
-          void setSupportEfficientMoveBeforeFirst(const bool& support);
+          void setSupportEfficientMoveBeforeFirst(const bool support);
 
           bool supportsEfficientMoveLast() const;
 
-          void setSupportEfficientMoveLast(const bool& support);
+          void setSupportEfficientMoveLast(const bool support);
 
           bool supportsEfficientMoveAfterLast() const;
 
-          void setSupportEfficientMoveAfterLast(const bool& support);
+          void setSupportEfficientMoveAfterLast(const bool support);
 
           bool supportsEfficientMove() const;
 
-          void setSupportEfficientMove(const bool& support);
+          void setSupportEfficientMove(const bool support);
 
           bool supportsEfficientDataSetSize() const;
 
-          void setSupportEfficientDataSetSize(const bool& support);
+          void setSupportEfficientDataSetSize(const bool support);
 
           bool supportsInsertion() const;
 
-          void setSupportInsertion(const bool& support);
+          void setSupportInsertion(const bool support);
 
           bool supportsUpdate() const;
 
-          void setSupportUpdate(const bool& support);
+          void setSupportUpdate(const bool support);
 
           bool supportsDeletion() const;
 
-          void setSupportDeletion(const bool& support);
+          void setSupportDeletion(const bool support);
 
           void setSupportAll();
 

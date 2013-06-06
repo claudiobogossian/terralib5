@@ -39,12 +39,8 @@ namespace Ui { class ScatterDialogForm; }
 
 namespace te
 {
-
-  namespace da
-  {
     //forward declarations
-    class DataSet;
-  }
+  namespace da  { class DataSet; class DataSetType; }
 
   namespace qt
   {
@@ -52,6 +48,7 @@ namespace te
     {
 
     //forward declarations
+    class ChartDisplayWidget;
     class ScatterDataWidget;
 
     /*!
@@ -66,9 +63,11 @@ namespace te
 
         public:
 
-          ScatterDialog(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          ScatterDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           ~ScatterDialog();
+
+          te::qt::widgets::ChartDisplayWidget* getDisplayWidget();
 
         protected slots:
 
@@ -79,6 +78,7 @@ namespace te
 
           std::auto_ptr<Ui::ScatterDialogForm>  m_ui;                 //!< The dialog form.
           te::qt::widgets::ScatterDataWidget*   m_scatterDataWidget;  //!< The scatter's data widget used to configure the basic parameters of the new scatter.
+          te::qt::widgets::ChartDisplayWidget*  m_displayWidget;      //!< The display's widget that will be populated by this widget.
       };
     } // end namespace widgets
   }   // end namespace qt

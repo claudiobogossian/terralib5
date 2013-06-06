@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Div.cpp
+  \file terralib/dataaccess/core/query/Div.cpp
 
   \brief The division operator - syntatic-suggar.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "Div.h"
 
-te::da::Div::Div(const Div& rhs)
+te::da::core::Div::Div(const Div& rhs)
   : BinaryOp(rhs)
 {
 }
 
-te::da::Div& te::da::Div::operator=(const Div& rhs)
+te::da::core::Div& te::da::core::Div::operator=(const Div& rhs)
 {
   BinaryOp::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::Div::clone() const
+te::da::core::Expression* te::da::core::Div::clone() const
 {
   return new Div(*this);
 }
-

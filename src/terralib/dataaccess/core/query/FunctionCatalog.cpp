@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionCatalog.cpp
+  \file terralib/dataaccess/core/query/FunctionCatalog.cpp
 
   \brief A FunctionCatalog can be used to keep track of registered functions.
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
+#include "../../../common/STLUtils.h"
 #include "FunctionCatalog.h"
 #include "FunctionDefn.h"
 
-te::da::FunctionCatalog::~FunctionCatalog()
+te::da::core::FunctionCatalog::~FunctionCatalog()
 {
   std::map<std::string, std::vector<FunctionDefn*>* >::const_iterator it = m_fMap.begin();
   std::map<std::string, std::vector<FunctionDefn*>* >::const_iterator it_end = m_fMap.end();
@@ -41,7 +41,7 @@ te::da::FunctionCatalog::~FunctionCatalog()
   }
 }
 
-void te::da::FunctionCatalog::insert(FunctionDefn* fdfn)
+void te::da::core::FunctionCatalog::insert(FunctionDefn* fdfn)
 {
   std::map<std::string, std::vector<FunctionDefn*>* >::const_iterator it = m_fMap.find(fdfn->getName());
 
@@ -57,8 +57,7 @@ void te::da::FunctionCatalog::insert(FunctionDefn* fdfn)
   }
 }
 
-std::vector<te::da::FunctionDefn*>* te::da::FunctionCatalog::find(const std::string& functionName) const
+std::vector<te::da::core::FunctionDefn*>* te::da::core::FunctionCatalog::find(const std::string& functionName) const
 {
   return te::common::GetPValue(m_fMap, functionName);
 }
-

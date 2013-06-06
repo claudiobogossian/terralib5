@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/From.h
+  \file terralib/dataaccess/core/query/From.h
 
   \brief It models the FROM clause for a query.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_FROM_H
-#define __TERRALIB_DATAACCESS_INTERNAL_FROM_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FROM_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FROM_H
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -33,14 +33,16 @@ namespace te
 {
   namespace da
   {
-// Forward declaration
-    class FromItem;
+    namespace core
+    {
+      // Forward declaration
+      class FromItem;
 
-    /*! \brief It models the FROM clause for a query. */
-    typedef boost::ptr_vector<FromItem> From;
+      /*! \brief It models the FROM clause for a query. */
+      typedef boost::ptr_vector<FromItem> From;
 
-  } // end namespace da
-}   // end namespace te
+    }  // namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_FROM_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FROM_H

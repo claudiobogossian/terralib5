@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_DATASETTYPECAPABILITIES_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 namespace te
 {
@@ -52,43 +52,43 @@ namespace te
 
           bool supportsPrimaryKey() const;
 
-          void setSupportPrimaryKey(const bool& support);
+          void setSupportPrimaryKey(const bool support);
 
           bool supportsUniqueKey() const;
 
-          void setSupportUniqueKey(const bool& support);
+          void setSupportUniqueKey(const bool support);
 
           bool supportsForeignKey() const;
 
-          void setSupportForeingKey(const bool& support);
+          void setSupportForeingKey(const bool support);
 
           bool supportsSequence() const;
 
-          void setSupportSequence(const bool& support);
+          void setSupportSequence(const bool support);
 
           bool supportsCheckConstraints() const;
 
-          void setSupportCheckConstraints(const bool& support);
+          void setSupportCheckConstraints(const bool support);
 
           bool supportsIndex() const;
 
-          void setSupportIndex(const bool& support);
+          void setSupportIndex(const bool support);
 
           bool supportsRTreeIndex() const;
 
-          void setSupportRTreeIndex(const bool& support);
+          void setSupportRTreeIndex(const bool support);
 
           bool supportsBTreeIndex() const;
 
-          void setSupportBTreeIndex(const bool& support);
+          void setSupportBTreeIndex(const bool support);
 
           bool supportsHashIndex() const;
 
-          void setSupportHashIndex(const bool& support);
+          void setSupportHashIndex(const bool support);
 
           bool supportsQuadTreeIndex() const;
 
-          void setSupportQuadTreeIndex(const bool& support);
+          void setSupportQuadTreeIndex(const bool support);
 
           void setSupportAll();
 

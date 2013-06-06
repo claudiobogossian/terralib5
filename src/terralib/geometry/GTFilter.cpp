@@ -202,7 +202,7 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
   double bestParamsConvexHullArea = -1.0;
   bool returnValue = true;
   bool keepRunningFlag = true;
-  RansacItCounterT m_dynamicMaxIterations = ( maxIterations == 0 ) ?
+  RansacItCounterT dynamicMaxIterations = ( maxIterations == 0 ) ?
     ( 
       (RansacItCounterT)boost::math::binomial_coefficient< long double >(
         (unsigned int)inputParams.m_tiePoints.size(), 
@@ -210,7 +210,7 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
     ) / procsNumber
     :
     ( maxIterations / procsNumber );
-  RansacItCounterT m_dynamicMaxConsecutiveInvalidIterationsPtr =
+  RansacItCounterT dynamicMaxConsecutiveInvalidIterationsPtr =
     std::max( 
       (RansacItCounterT)1, 
       (
@@ -218,13 +218,13 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
         ?
         (
           (RansacItCounterT)( 
-            ((long double)m_dynamicMaxIterations) 
+            ((long double)dynamicMaxIterations) 
             * 
             ((long double)assurance) 
           )
         )
         :
-        ( m_dynamicMaxIterations / 2 )
+        ( dynamicMaxIterations / 2 )
       )
     );  
   
@@ -235,11 +235,11 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
   baseThreadParams.m_maxInverseMapError = maxInverseMapError;
   baseThreadParams.m_assurance = assurance;
   baseThreadParams.m_useDynamicIterationsNumber = ( maxIterations == 0 );
-  baseThreadParams.m_dynamicMaxIterationsPtr = &m_dynamicMaxIterations;
+  baseThreadParams.m_dynamicMaxIterationsPtr = &dynamicMaxIterations;
   baseThreadParams.m_iterationsDivFactor = enableMultiThread ?
     ((RansacItCounterT)procsNumber) : 1;
   baseThreadParams.m_dynamicMaxConsecutiveInvalidIterationsPtr = 
-    &m_dynamicMaxConsecutiveInvalidIterationsPtr;
+    &dynamicMaxConsecutiveInvalidIterationsPtr;
   baseThreadParams.m_returnValuePtr = &returnValue;
   baseThreadParams.m_mutexPtr = &syncMutex;
   baseThreadParams.m_keepRunningFlagPtr = &keepRunningFlag;

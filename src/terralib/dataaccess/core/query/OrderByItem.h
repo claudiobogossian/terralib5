@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../Config.h"
-#include "../../Enums.h"
+#include "../Enums.h"
 
 // STL
 #include <memory>

@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../Config.h"
-#include "../../query_fw.h"
+#include "../query_fw.h"
 
 namespace te
 {

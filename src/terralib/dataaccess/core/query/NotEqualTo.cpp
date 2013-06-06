@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,27 +18,26 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/NotEqualTo.cpp
+  \file terralib/dataaccess/core/query/NotEqualTo.cpp
 
-  \brief Tells if two values are not equal - syntatic-suggar.
+  \brief It reports if two values are not equal - syntatic-suggar.
 */
 
 // TerraLib
 #include "NotEqualTo.h"
 
-te::da::NotEqualTo::NotEqualTo(const NotEqualTo& rhs)
+te::da::core::NotEqualTo::NotEqualTo(const NotEqualTo& rhs)
   : BinaryOp(rhs)
 {
 }
 
-te::da::NotEqualTo& te::da::NotEqualTo::operator=(const NotEqualTo& rhs)
+te::da::core::NotEqualTo& te::da::core::NotEqualTo::operator=(const NotEqualTo& rhs)
 {
   BinaryOp::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::NotEqualTo::clone() const
+te::da::core::Expression* te::da::core::NotEqualTo::clone() const
 {
   return new NotEqualTo(*this);
 }
-

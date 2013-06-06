@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,25 +18,25 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionCatalogManager.cpp
+  \file terralib/dataaccess/core/query/FunctionCatalogManager.cpp
 
   \brief A FunctionCatalogManager is a singleton that can be used to manage function catalogs of data source implementations.
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
-#include "../../common/Translator.h"
+#include "../../../common/STLUtils.h"
+#include "../../../common/Translator.h"
 #include "../Exception.h"
 #include "FunctionCatalog.h"
 #include "FunctionCatalogManager.h"
 #include "FunctionDefn.h"
 
-te::da::FunctionCatalogManager::~FunctionCatalogManager()
+te::da::core::FunctionCatalogManager::~FunctionCatalogManager()
 {
   te::common::FreeContents(m_fcatalogMap);
 }
 
-void te::da::FunctionCatalogManager::insert(const std::string& dsType, FunctionCatalog* fcatalog)
+void te::da::core::FunctionCatalogManager::insert(const std::string& dsType, FunctionCatalog* fcatalog)
 {
   if(te::common::GetPValue(m_fcatalogMap, dsType) != 0)
     throw Exception(TR_DATAACCESS("There is already a function catalog resgistered for the data source type!"));
@@ -44,8 +44,7 @@ void te::da::FunctionCatalogManager::insert(const std::string& dsType, FunctionC
   m_fcatalogMap.insert(std::map<std::string, FunctionCatalog*>::value_type(dsType, fcatalog));
 }
 
-te::da::FunctionCatalog* te::da::FunctionCatalogManager::find(const std::string& dsType)
+te::da::core::FunctionCatalog* te::da::core::FunctionCatalogManager::find(const std::string& dsType)
 {
   return te::common::GetPValue(m_fcatalogMap, dsType);
 }
-

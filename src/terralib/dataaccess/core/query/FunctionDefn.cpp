@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,20 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionDefn.cpp
+  \file terralib/dataaccess/core/query/FunctionDefn.cpp
 
   \brief The definition of a function that can be used in a query object.
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
+#include "../../../common/STLUtils.h"
 #include "FunctionDefn.h"
 #include "FunctionParameter.h"
 
 // STL
 #include <cassert>
 
-te::da::FunctionDefn::FunctionDefn(const std::string& name,
+te::da::core::FunctionDefn::FunctionDefn(const std::string& name,
                                    int retValType,
                                    bool isAggregate,
                                    std::string* description)
@@ -42,15 +42,14 @@ te::da::FunctionDefn::FunctionDefn(const std::string& name,
 {
 }
 
-te::da::FunctionDefn::~FunctionDefn()
+te::da::core::FunctionDefn::~FunctionDefn()
 {
   te::common::FreeContents(m_params);
   delete m_description;
 }
 
-void te::da::FunctionDefn::setDescription(std::string* description)
+void te::da::core::FunctionDefn::setDescription(std::string* description)
 {
   delete m_description;
   m_description = description;
 }
-
