@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,18 +18,18 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_DistanceBuffer.cpp
+  \file terralib/dataaccess/core/query/ST_DistanceBuffer.cpp
 
   \brief Spatial distance buffer operator.
 */
 
 // TerraLib
-#include "../../common/Distance.h"
-#include "../../geometry/Geometry.h"
+#include "../../../common/Distance.h"
+#include "../../../geometry/Geometry.h"
 #include "ST_DistanceBuffer.h"
 
-te::da::ST_DistanceBuffer::ST_DistanceBuffer(const std::string& name,
-                                             te::da::Expression* e, 
+te::da::core::ST_DistanceBuffer::ST_DistanceBuffer(const std::string& name,
+                                             te::da::core::Expression* e, 
                                              te::gm::Geometry* g,
                                              te::common::Distance* d)
   : Function(name),
@@ -39,8 +39,8 @@ te::da::ST_DistanceBuffer::ST_DistanceBuffer(const std::string& name,
   m_args.push_back(e);
 }
 
-te::da::ST_DistanceBuffer::ST_DistanceBuffer(const std::string& name,
-                                             const te::da::Expression& e, 
+te::da::core::ST_DistanceBuffer::ST_DistanceBuffer(const std::string& name,
+                                             const te::da::core::Expression& e, 
                                              const te::gm::Geometry& g,
                                              const te::common::Distance& d)
   : Function(name),
@@ -52,7 +52,7 @@ te::da::ST_DistanceBuffer::ST_DistanceBuffer(const std::string& name,
   m_d.reset(new te::common::Distance(d));
 }
 
-te::da::ST_DistanceBuffer::ST_DistanceBuffer(const ST_DistanceBuffer& rhs)
+te::da::core::ST_DistanceBuffer::ST_DistanceBuffer(const ST_DistanceBuffer& rhs)
   : Function(rhs),
     m_geom(0),
     m_d(0)
@@ -61,11 +61,11 @@ te::da::ST_DistanceBuffer::ST_DistanceBuffer(const ST_DistanceBuffer& rhs)
   m_d.reset(rhs.m_d.get() ? new te::common::Distance(*rhs.m_d) : 0);
 }
 
-te::da::ST_DistanceBuffer::~ST_DistanceBuffer()
+te::da::core::ST_DistanceBuffer::~ST_DistanceBuffer()
 {
 }
 
-te::da::ST_DistanceBuffer& te::da::ST_DistanceBuffer::operator=(const ST_DistanceBuffer& rhs)
+te::da::core::ST_DistanceBuffer& te::da::core::ST_DistanceBuffer::operator=(const ST_DistanceBuffer& rhs)
 {
   if(this != &rhs)
   {
@@ -78,27 +78,27 @@ te::da::ST_DistanceBuffer& te::da::ST_DistanceBuffer::operator=(const ST_Distanc
   return *this;
 }
 
-te::da::Expression* te::da::ST_DistanceBuffer::clone() const
+te::da::core::Expression* te::da::core::ST_DistanceBuffer::clone() const
 {
   return new ST_DistanceBuffer(*this);
 }
 
-void te::da::ST_DistanceBuffer::setGeometry(te::gm::Geometry* g)
+void te::da::core::ST_DistanceBuffer::setGeometry(te::gm::Geometry* g)
 {
   m_geom.reset(g);
 }
 
-te::gm::Geometry* te::da::ST_DistanceBuffer::getGeometry() const
+te::gm::Geometry* te::da::core::ST_DistanceBuffer::getGeometry() const
 {
   return m_geom.get();
 }
 
-void te::da::ST_DistanceBuffer::setDistance(te::common::Distance* d)
+void te::da::core::ST_DistanceBuffer::setDistance(te::common::Distance* d)
 {
   m_d.reset(d);
 }
 
-te::common::Distance* te::da::ST_DistanceBuffer::getDistance() const
+te::common::Distance* te::da::core::ST_DistanceBuffer::getDistance() const
 {
   return m_d.get();
 }

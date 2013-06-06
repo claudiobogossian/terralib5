@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Sub.h
+  \file terralib/dataaccess/core/query/Sub.h
 
   \brief The subtraction operator.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_SUB_H
-#define __TERRALIB_DATAACCESS_INTERNAL_SUB_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUB_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUB_H
 
 // TerraLib
 #include "BinaryOp.h"
@@ -33,55 +33,57 @@
 namespace te
 {
   namespace da
-  {    
-    /*!
-      \class Sub
-      
-      \brief The subtraction operator.
-
-      This operator is just a syntatic-suggar.
-
-      \sa BinaryOp
-    */
-    class TEDATAACCESSEXPORT Sub : public BinaryOp
+  {
+    namespace core
     {
-      public:
+      /*!
+        \class Sub
+      
+        \brief The subtraction operator.
 
-        TE_DEFINE_VISITABLE
+        This operator is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa BinaryOp
+      */
+      class TEDATAACCESSEXPORT Sub : public BinaryOp
+      {
+        public:
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          TE_DEFINE_VISITABLE
 
-          \note The operator will take the ownership of the given arguments.
-        */
-        Sub(Expression* arg1, Expression* arg2) : BinaryOp(FunctionNames::sm_Sub, arg1, arg2) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
-        */
-        Sub(const Expression& arg1, const Expression& arg2) : BinaryOp(FunctionNames::sm_Sub, arg1, arg2) {}
+            \note The operator will take the ownership of the given arguments.
+          */
+          Sub(Expression* arg1, Expression* arg2) : BinaryOp(FunctionNames::sm_Sub, arg1, arg2) {}
 
-        /*! \brief Copy constructor. */
-        Sub(const Sub& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~Sub() {}
+            \param arg1 The first argument.
+            \param arg2 The second argument.
+          */
+          Sub(const Expression& arg1, const Expression& arg2) : BinaryOp(FunctionNames::sm_Sub, arg1, arg2) {}
 
-        /*! Assignment operator.  */
-        Sub& operator=(const Sub& rhs);
+          /*! \brief Copy constructor. */
+          Sub(const Sub& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~Sub() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          Sub& operator=(const Sub& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_SUB_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUB_H

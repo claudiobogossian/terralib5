@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/In.cpp
+  \file terralib/dataaccess/core/query/In.cpp
 
   \brief A class that represents the IN operator.
 */

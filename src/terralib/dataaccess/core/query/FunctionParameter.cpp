@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,11 +18,10 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionParameter.cpp
+  \file terralib/dataaccess/core/query/FunctionParameter.cpp
 
   \brief A FunctionParameter models the parameter of a function definition.
 */
 
 // TerraLib
 #include "FunctionParameter.h"
-

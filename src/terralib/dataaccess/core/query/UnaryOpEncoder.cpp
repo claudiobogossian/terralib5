@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/UnaryOpEncoder.cpp
+  \file terralib/dataaccess/core/query/UnaryOpEncoder.cpp
 
   \brief A query encoder for unary operator expressions.
 */
@@ -31,7 +31,7 @@
 // STL
 #include <cassert>
 
-void te::da::UnaryOpEncoder::toSQL(const Function& f,
+void te::da::core::UnaryOpEncoder::toSQL(const Function& f,
                                    std::string& buff,
                                    SQLVisitor& v) const
 {
@@ -41,4 +41,3 @@ void te::da::UnaryOpEncoder::toSQL(const Function& f,
   f[0]->accept(v);
   //buff += ")";
 }
-

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionEncoder.cpp
+  \file terralib/dataaccess/core/query/FunctionEncoder.cpp
 
   \brief A query encoder for general function expressions.
 */
@@ -31,7 +31,7 @@
 // STL
 #include <cassert>
 
-void te::da::FunctionEncoder::toSQL(const Function& f,
+void te::da::core::FunctionEncoder::toSQL(const Function& f,
                                     std::string& buff,
                                     SQLVisitor& v) const
 {
@@ -50,4 +50,3 @@ void te::da::FunctionEncoder::toSQL(const Function& f,
 
   buff += ")";
 }
-

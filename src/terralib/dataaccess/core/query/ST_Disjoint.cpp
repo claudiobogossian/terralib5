@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Disjoint.cpp
+  \file terralib/dataaccess/core/query/ST_Disjoint.cpp
 
   \brief Spatial disjoint operator.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "ST_Disjoint.h"
 
-te::da::ST_Disjoint::ST_Disjoint(const ST_Disjoint& rhs)
+te::da::core::ST_Disjoint::ST_Disjoint(const ST_Disjoint& rhs)
   : BinaryFunction(rhs)
 {
 }
 
-te::da::ST_Disjoint& te::da::ST_Disjoint::operator=(const ST_Disjoint& rhs)
+te::da::core::ST_Disjoint& te::da::core::ST_Disjoint::operator=(const ST_Disjoint& rhs)
 {
   BinaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Disjoint::clone() const
+te::da::core::Expression* te::da::core::ST_Disjoint::clone() const
 {
   return new ST_Disjoint(*this);
 }
-

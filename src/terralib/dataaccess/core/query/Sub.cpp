@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Sub.cpp
+  \file terralib/dataaccess/core/query/Sub.cpp
 
   \brief The subtraction operator.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "Sub.h"
 
-te::da::Sub::Sub(const Sub& rhs)
+te::da::core::Sub::Sub(const Sub& rhs)
   : BinaryOp(rhs)
 {
 }
 
-te::da::Sub& te::da::Sub::operator=(const Sub& rhs)
+te::da::core::Sub& te::da::core::Sub::operator=(const Sub& rhs)
 {
   BinaryOp::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::Sub::clone() const
+te::da::core::Expression* te::da::core::Sub::clone() const
 {
   return new Sub(*this);
 }
-

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Beyond.cpp
+  \file terralib/dataaccess/core/query/ST_Beyond.cpp
 
   \brief Spatial Distance Buffer Beyond operator.
 */
@@ -27,29 +27,28 @@
 #include "FunctionNames.h"
 #include "ST_Beyond.h"
 
-te::da::ST_Beyond::ST_Beyond(te::da::Expression* e, te::gm::Geometry* g, te::common::Distance* d)
+te::da::core::ST_Beyond::ST_Beyond(te::da::core::Expression* e, te::gm::Geometry* g, te::common::Distance* d)
    : ST_DistanceBuffer(FunctionNames::sm_Beyond, e, g, d)
 {
 }
 
-te::da::ST_Beyond::ST_Beyond(const te::da::Expression& e, const te::gm::Geometry& g, const te::common::Distance& d)
+te::da::core::ST_Beyond::ST_Beyond(const te::da::core::Expression& e, const te::gm::Geometry& g, const te::common::Distance& d)
    : ST_DistanceBuffer(FunctionNames::sm_Beyond, e, g, d)
 {
 }
 
-te::da::ST_Beyond::ST_Beyond(const ST_Beyond& rhs)
+te::da::core::ST_Beyond::ST_Beyond(const ST_Beyond& rhs)
   : ST_DistanceBuffer(rhs)
 {
 }
 
-te::da::ST_Beyond& te::da::ST_Beyond::operator=(const ST_Beyond& rhs)
+te::da::core::ST_Beyond& te::da::core::ST_Beyond::operator=(const ST_Beyond& rhs)
 {
   ST_DistanceBuffer::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Beyond::clone() const
+te::da::core::Expression* te::da::core::ST_Beyond::clone() const
 {
   return new ST_Beyond(*this);
 }
-

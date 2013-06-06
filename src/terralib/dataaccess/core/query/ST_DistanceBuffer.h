@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_DistanceBuffer.h
+  \file terralib/dataaccess/core/query/ST_DistanceBuffer.h
 
   \brief Spatial distance buffer operator.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_ST_DISTANCEBUFFER_H
-#define __TERRALIB_DATAACCESS_INTERNAL_ST_DISTANCEBUFFER_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_DISTANCEBUFFER_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_DISTANCEBUFFER_H
 
 // TerraLib
 #include "Function.h"
@@ -40,95 +40,97 @@ namespace te
 
   namespace da
   {
-    /*!
-      \class ST_DistanceBuffer
-      
-      \brief Spatial Distance Buffer operator.
-
-      This function is just a syntatic-suggar.
-
-      \sa Function
-    */
-    class TEDATAACCESSEXPORT ST_DistanceBuffer : public Function
+    namespace core
     {
-      public:
+      /*!
+        \class ST_DistanceBuffer
+      
+        \brief Spatial Distance Buffer operator.
 
-        TE_DEFINE_VISITABLE
+        This function is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa Function
+      */
+      class TEDATAACCESSEXPORT ST_DistanceBuffer : public Function
+      {
+        public:
 
-          \param name The distance buffer operator name.
-          \param e    The expression.
-          \param g    The geometry literal.
-          \param d    Distance.
+          TE_DEFINE_VISITABLE
 
-          \note The operator will take the ownership of the given arguments.
-        */
-        ST_DistanceBuffer(const std::string& name, Expression* e, te::gm::Geometry* g, te::common::Distance* d);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param name The distance buffer operator name.
+            \param e    The expression.
+            \param g    The geometry literal.
+            \param d    Distance.
 
-          \param name The distance buffer operator name.
-          \param e    The expression.
-          \param g    The geometry literal.
-          \param d    Distance.
-        */
-        ST_DistanceBuffer(const std::string& name, const Expression& e, const te::gm::Geometry& g, const te::common::Distance& d);
+            \note The operator will take the ownership of the given arguments.
+          */
+          ST_DistanceBuffer(const std::string& name, Expression* e, te::gm::Geometry* g, te::common::Distance* d);
 
-         /*! \brief Copy constructor. */
-        ST_DistanceBuffer(const ST_DistanceBuffer& rhs);
+          /*!
+            \brief Constructor.
+
+            \param name The distance buffer operator name.
+            \param e    The expression.
+            \param g    The geometry literal.
+            \param d    Distance.
+          */
+          ST_DistanceBuffer(const std::string& name, const Expression& e, const te::gm::Geometry& g, const te::common::Distance& d);
+
+           /*! \brief Copy constructor. */
+          ST_DistanceBuffer(const ST_DistanceBuffer& rhs);
         
-        /*! \brief Destructor. */
-        ~ST_DistanceBuffer();
+          /*! \brief Destructor. */
+          ~ST_DistanceBuffer();
 
-        /*! Assignment operator.  */
-        ST_DistanceBuffer& operator=(const ST_DistanceBuffer& rhs);
+          /*! Assignment operator.  */
+          ST_DistanceBuffer& operator=(const ST_DistanceBuffer& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
 
-        /*!
-          \brief It sets the geometry.
+          /*!
+            \brief It sets the geometry.
 
-          \param g The geometry.
+            \param g The geometry.
 
-          \note It will take the ownership of the geometry.
-        */
-        void setGeometry(te::gm::Geometry* g);
+            \note It will take the ownership of the geometry.
+          */
+          void setGeometry(te::gm::Geometry* g);
 
-        /*! 
-          \brief It returns the geometry.
+          /*! 
+            \brief It returns the geometry.
 
-          \return The geometry.
-        */
-        te::gm::Geometry* getGeometry() const;
+            \return The geometry.
+          */
+          te::gm::Geometry* getGeometry() const;
 
-        /*!
-          \brief It sets the distance.
+          /*!
+            \brief It sets the distance.
 
-          \param d The distance.
+            \param d The distance.
 
-          \note It will take the ownership of the distance.
-        */
-        void setDistance(te::common::Distance* d);
+            \note It will take the ownership of the distance.
+          */
+          void setDistance(te::common::Distance* d);
 
-        /*!
-          \brief It returns the distance.
+          /*!
+            \brief It returns the distance.
 
-          \return The distance.
-        */
-        te::common::Distance* getDistance() const;
+            \return The distance.
+          */
+          te::common::Distance* getDistance() const;
 
-      protected:
+        protected:
 
-        std::auto_ptr<te::gm::Geometry> m_geom;     //!< Geometry literal.
-        std::auto_ptr<te::common::Distance> m_d;    //!< Distance.
-    };
+          std::auto_ptr<te::gm::Geometry> m_geom;     //!< Geometry literal.
+          std::auto_ptr<te::common::Distance> m_d;    //!< Distance.
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_ST_DISTANCEBUFFER_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_DISTANCEBUFFER_H

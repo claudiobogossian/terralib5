@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_DWithin.h
+  \file terralib/dataaccess/core/query/ST_DWithin.h
 
   \brief Spatial Distance Buffer Within operator.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_ST_DWITHIN_H
-#define __TERRALIB_DATAACCESS_INTERNAL_ST_DWITHIN_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_DWITHIN_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_DWITHIN_H
 
 // TerraLib
 #include "ST_DistanceBuffer.h"
@@ -33,56 +33,58 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class ST_DWithin
-      
-      \brief Spatial Distance Buffer Within operator.
-
-      This function is just a syntatic-suggar.
-
-      \sa ST_DistanceBuffer
-    */
-    class TEDATAACCESSEXPORT ST_DWithin : public ST_DistanceBuffer
+    namespace core
     {
-      public:
+      /*!
+        \class ST_DWithin
+      
+        \brief Spatial Distance Buffer Within operator.
 
-        TE_DEFINE_VISITABLE
+        This function is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa ST_DistanceBuffer
+      */
+      class TEDATAACCESSEXPORT ST_DWithin : public ST_DistanceBuffer
+      {
+        public:
 
-          \param e The expression.
-          \param g The geometry literal.
-          \param d Distance.
+          TE_DEFINE_VISITABLE
 
-          \note The operator will take the ownership of the given arguments.
-        */
-        ST_DWithin(Expression* e, te::gm::Geometry* g, te::common::Distance* d);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param e The expression.
+            \param g The geometry literal.
+            \param d Distance.
 
-          \param e The expression.
-          \param g The geometry literal.
-          \param d Distance.
-        */
-        ST_DWithin(const Expression& e, const te::gm::Geometry& g, const te::common::Distance& d);
+            \note The operator will take the ownership of the given arguments.
+          */
+          ST_DWithin(Expression* e, te::gm::Geometry* g, te::common::Distance* d);
 
-        /*! \brief Copy constructor. */
-        ST_DWithin(const ST_DWithin& rhs);
+          /*!
+            \brief Constructor.
+
+            \param e The expression.
+            \param g The geometry literal.
+            \param d Distance.
+          */
+          ST_DWithin(const Expression& e, const te::gm::Geometry& g, const te::common::Distance& d);
+
+          /*! \brief Copy constructor. */
+          ST_DWithin(const ST_DWithin& rhs);
         
-        /*! \brief Destructor. */
-        ~ST_DWithin() {}
+          /*! \brief Destructor. */
+          ~ST_DWithin() {}
 
-        /*! Assignment operator.  */
-        ST_DWithin& operator=(const ST_DWithin& rhs);
+          /*! Assignment operator.  */
+          ST_DWithin& operator=(const ST_DWithin& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_ST_DWITHIN_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_DWITHIN_H

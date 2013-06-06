@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionParameter.h
+  \file terralib/dataaccess/core/query/FunctionParameter.h
 
   \brief A FunctionParameter models the parameter of a function definition.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONPARAMETER_H
-#define __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONPARAMETER_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONPARAMETER_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONPARAMETER_H
 
 // TerraLib
 #include "../../Config.h"
@@ -36,65 +36,66 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class FunctionParameter
-      
-      \brief A FunctionParameter models the parameter of a function definition.
-
-      \sa FunctionDefn
-    */
-    class TEDATAACCESSEXPORT FunctionParameter
+    namespace core
     {
-      public:
+      /*!
+        \class FunctionParameter
+      
+        \brief A FunctionParameter models the parameter of a function definition.
 
-        /*!
-          \brief Constructor.
+        \sa FunctionDefn
+      */
+      class TEDATAACCESSEXPORT FunctionParameter
+      {
+        public:
 
-          \param name The parameter name.
-          \param t    The parameter type.
-        */
-        FunctionParameter(const std::string& name, int t) : m_name(name), m_type(t) {}
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~FunctionParameter() {}
+            \param name The parameter name.
+            \param t    The parameter type.
+          */
+          FunctionParameter(const std::string& name, int t) : m_name(name), m_type(t) {}
 
-        /*!
-          \brief It returns the function name.
+          /*! \brief Destructor. */
+          ~FunctionParameter() {}
 
-          \return The function name.
-        */
-        const std::string& getName() const { return m_name; }
+          /*!
+            \brief It returns the function name.
 
-        /*!
-          \brief It sets the function name.
+            \return The function name.
+          */
+          const std::string& getName() const { return m_name; }
 
-          \param name The function name.
-        */
-        void setName(const std::string& name) { m_name = name; }
+          /*!
+            \brief It sets the function name.
 
-        /*!
-          \brief It returns the parameter type.
+            \param name The function name.
+          */
+          void setName(const std::string& name) { m_name = name; }
 
-          \return The parameter type.
-        */
-        int getType() const { return m_type; }
+          /*!
+            \brief It returns the parameter type.
 
-        /*!
-          \brief It sets the parameter type.
+            \return The parameter type.
+          */
+          int getType() const { return m_type; }
 
-          \param t The parameter type.
-        */
-        void setType(int t) { m_type = t; }
+          /*!
+            \brief It sets the parameter type.
 
-      private:
+            \param t The parameter type.
+          */
+          void setType(int t) { m_type = t; }
 
-        std::string m_name;   //!< Parameter name.
-        int m_type;           //!< Parameter type.
-    };
+        private:
 
-  } // end namespace da
-}   // end namespace te
+          std::string m_name;   //!< Parameter name.
+          int m_type;           //!< Parameter type.
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONPARAMETER_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONPARAMETER_H

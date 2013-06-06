@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Mul.cpp
+  \file terralib/dataaccess/core/query/Mul.cpp
 
   \brief The multiply operator - syntatic-suggar.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "Mul.h"
 
-te::da::Mul::Mul(const Mul& rhs)
+te::da::core::Mul::Mul(const Mul& rhs)
   : BinaryOp(rhs)
 {
 }
 
-te::da::Mul& te::da::Mul::operator=(const Mul& rhs)
+te::da::core::Mul& te::da::core::Mul::operator=(const Mul& rhs)
 {
   BinaryOp::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::Mul::clone() const
+te::da::core::Expression* te::da::core::Mul::clone() const
 {
   return new Mul(*this);
 }
-

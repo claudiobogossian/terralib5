@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Like.h
+  \file terralib/dataaccess/core/query/Like.h
 
   \brief It is intended to encode a character string comparison operator with pattern matching.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_LIKE_H
-#define __TERRALIB_DATAACCESS_INTERNAL_LIKE_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LIKE_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LIKE_H
 
 // TerraLib
 #include "Function.h"
@@ -33,129 +33,131 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class Like
-      
-      \brief It is intended to encode a character string comparison operator with pattern matching.
-
-      \sa Function
-    */
-    class TEDATAACCESSEXPORT Like : public Function
+    namespace core
     {
-      public:
+      /*!
+        \class Like
+      
+        \brief It is intended to encode a character string comparison operator with pattern matching.
 
-        TE_DEFINE_VISITABLE
+        \sa Function
+      */
+      class TEDATAACCESSEXPORT Like : public Function
+      {
+        public:
 
-        /*!
-          \brief Constructor.
+          TE_DEFINE_VISITABLE
 
-          \param str The operator will take the expression ownership.
-        */
-        Like(Expression* str,
-             const std::string& pattern,
-             const std::string& wildCard = "%",
-             const std::string& singleChar = "_",
-             const std::string& escapeChar = "\\");
+          /*!
+            \brief Constructor.
 
-        /*! \brief Constructor. */
-        Like(const Expression& str,
-             const std::string& pattern,
-             const std::string& wildCard = "%",
-             const std::string& singleChar = "_",
-             const std::string& escapeChar = "\\");
+            \param str The operator will take the expression ownership.
+          */
+          Like(Expression* str,
+               const std::string& pattern,
+               const std::string& wildCard = "%",
+               const std::string& singleChar = "_",
+               const std::string& escapeChar = "\\");
 
-        /*! \brief Destructor. */
-        ~Like();
+          /*! \brief Constructor. */
+          Like(const Expression& str,
+               const std::string& pattern,
+               const std::string& wildCard = "%",
+               const std::string& singleChar = "_",
+               const std::string& escapeChar = "\\");
 
-        /*! \brief Copy constructor. */
-        Like(const Like& rhs);
+          /*! \brief Destructor. */
+          ~Like();
 
-        /*! Assignment operator.  */
-        Like& operator=(const Like& rhs);
+          /*! \brief Copy constructor. */
+          Like(const Like& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
+          /*! Assignment operator.  */
+          Like& operator=(const Like& rhs);
 
-        /*!
-          \brief It returns the string expression to be compared with the like operator.
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
 
-          \return The string expression to be compared with the like operator.
-        */
-        Expression* getString() const;
+          /*!
+            \brief It returns the string expression to be compared with the like operator.
 
-        /*!
-          \brief It sets the string expression to be compared with the like operator.
+            \return The string expression to be compared with the like operator.
+          */
+          Expression* getString() const;
 
-          \param str The string expression to be compared with the like operator.
-        */
-        void setString(Expression* str);
+          /*!
+            \brief It sets the string expression to be compared with the like operator.
 
-        /*!
-          \brief It returns the pattern used in the comparison.
+            \param str The string expression to be compared with the like operator.
+          */
+          void setString(Expression* str);
 
-          \return The pattern used in the comparison.
-        */
-        const std::string& getPattern();
+          /*!
+            \brief It returns the pattern used in the comparison.
 
-        /*!
-          \brief It sets the pattern to be used in the comparison.
+            \return The pattern used in the comparison.
+          */
+          const std::string& getPattern();
 
-          \param p The pattern to be used in the comparison.
-        */
-        void setPattern(const std::string& p);
+          /*!
+            \brief It sets the pattern to be used in the comparison.
 
-        /*!
-          \brief It sets the wild character.
+            \param p The pattern to be used in the comparison.
+          */
+          void setPattern(const std::string& p);
 
-          \param w The wild character.
-        */
-        void setWildCard(const std::string& w);
+          /*!
+            \brief It sets the wild character.
 
-        /*!
-          \brief It returns the wild character.
+            \param w The wild character.
+          */
+          void setWildCard(const std::string& w);
 
-          \return The wild character.
-        */
-        const std::string& getWildCard() const;
+          /*!
+            \brief It returns the wild character.
 
-        /*!
-          \brief It sets the wild single character.
+            \return The wild character.
+          */
+          const std::string& getWildCard() const;
 
-          \param s The wild single character.
-        */
-        void setSingleChar(const std::string& s);
+          /*!
+            \brief It sets the wild single character.
 
-        /*!
-          \brief It returns the single wild character.
+            \param s The wild single character.
+          */
+          void setSingleChar(const std::string& s);
 
-          \return The single wild character.
-        */
-        const std::string& getSingleChar() const;
+          /*!
+            \brief It returns the single wild character.
 
-        /*!
-          \brief It sets the escape character.
+            \return The single wild character.
+          */
+          const std::string& getSingleChar() const;
 
-          \param e The escape character.
-        */
-        void setEscapeChar(const std::string& e);
+          /*!
+            \brief It sets the escape character.
 
-        /*!
-          \brief It returns the escape character.
+            \param e The escape character.
+          */
+          void setEscapeChar(const std::string& e);
 
-          \return The escape character.
-        */
-        const std::string& getEscapeChar() const;
+          /*!
+            \brief It returns the escape character.
 
-      private:
+            \return The escape character.
+          */
+          const std::string& getEscapeChar() const;
 
-        std::string m_pattern;      //!< The literal string pattern.
-        std::string m_wildCard;     //!< The wild card character matches zero or more characters.
-        std::string m_singleChar;   //!< The single char character matches exactly one character.
-        std::string m_escapeChar;   //!< The escape char character is used to escape the meaning of the wild card, single char and escape char itself.
-    };
+        private:
 
-  } // end namespace da
-}   // end namespace te
+          std::string m_pattern;      //!< The literal string pattern.
+          std::string m_wildCard;     //!< The wild card character matches zero or more characters.
+          std::string m_singleChar;   //!< The single char character matches exactly one character.
+          std::string m_escapeChar;   //!< The escape char character is used to escape the meaning of the wild card, single char and escape char itself.
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_LIKE_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_LIKE_H
