@@ -570,5 +570,3 @@ void te::vp::AggregationDialog::onCancelPushButtonClicked()
 {
   reject();
 }
-
-

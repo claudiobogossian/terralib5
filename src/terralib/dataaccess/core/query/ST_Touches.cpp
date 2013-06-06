@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Touches.cpp
+  \file terralib/dataaccess/core/query/ST_Touches.cpp
 
   \brief Spatial touches operator.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "ST_Touches.h"
 
-te::da::ST_Touches::ST_Touches(const ST_Touches& rhs)
+te::da::core::ST_Touches::ST_Touches(const ST_Touches& rhs)
   : BinaryFunction(rhs)
 {
 }
 
-te::da::ST_Touches& te::da::ST_Touches::operator=(const ST_Touches& rhs)
+te::da::core::ST_Touches& te::da::core::ST_Touches::operator=(const ST_Touches& rhs)
 {
   BinaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Touches::clone() const
+te::da::core::Expression* te::da::core::ST_Touches::clone() const
 {
   return new ST_Touches(*this);
 }
-

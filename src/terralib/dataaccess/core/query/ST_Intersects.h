@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Intersects.h
+  \file terralib/dataaccess/core/query/ST_Intersects.h
 
   \brief Spatial intersects operator.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_ST_INTERSECTS_H
-#define __TERRALIB_DATAACCESS_INTERNAL_ST_INTERSECTS_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_INTERSECTS_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_INTERSECTS_H
 
 // TerraLib
 #include "BinaryFunction.h"
@@ -34,54 +34,56 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class ST_Intersects
-      
-      \brief Spatial intersects operator.
-
-      This function is just a syntatic-suggar.
-
-      \sa BinaryFunction
-    */
-    class TEDATAACCESSEXPORT ST_Intersects : public BinaryFunction
+    namespace core
     {
-      public:
+      /*!
+        \class ST_Intersects
+      
+        \brief Spatial intersects operator.
 
-        TE_DEFINE_VISITABLE
+        This function is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa BinaryFunction
+      */
+      class TEDATAACCESSEXPORT ST_Intersects : public BinaryFunction
+      {
+        public:
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          TE_DEFINE_VISITABLE
 
-          \note The operator will take the ownership of the given arguments.
-        */
-        ST_Intersects(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_ST_Intersects, arg1, arg2) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
-        */
-        ST_Intersects(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_ST_Intersects, arg1, arg2) {}
+            \note The operator will take the ownership of the given arguments.
+          */
+          ST_Intersects(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_ST_Intersects, arg1, arg2) {}
 
-        /*! \brief Copy constructor. */
-        ST_Intersects(const ST_Intersects& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~ST_Intersects() {}
+            \param arg1 The first argument.
+            \param arg2 The second argument.
+          */
+          ST_Intersects(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_ST_Intersects, arg1, arg2) {}
 
-        /*! Assignment operator.  */
-        ST_Intersects& operator=(const ST_Intersects& rhs);
+          /*! \brief Copy constructor. */
+          ST_Intersects(const ST_Intersects& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~ST_Intersects() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          ST_Intersects& operator=(const ST_Intersects& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_ST_INTERSECTS_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_INTERSECTS_H

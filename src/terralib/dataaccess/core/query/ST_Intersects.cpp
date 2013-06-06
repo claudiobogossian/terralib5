@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Intersects.cpp
+  \file terralib/dataaccess/core/query/ST_Intersects.cpp
 
   \brief Spatial intersects operator.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "ST_Intersects.h"
 
-te::da::ST_Intersects::ST_Intersects(const ST_Intersects& rhs)
+te::da::core::ST_Intersects::ST_Intersects(const ST_Intersects& rhs)
   : BinaryFunction(rhs)
 {
 }
 
-te::da::ST_Intersects& te::da::ST_Intersects::operator=(const ST_Intersects& rhs)
+te::da::core::ST_Intersects& te::da::core::ST_Intersects::operator=(const ST_Intersects& rhs)
 {
   BinaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Intersects::clone() const
+te::da::core::Expression* te::da::core::ST_Intersects::clone() const
 {
   return new ST_Intersects(*this);
 }
-

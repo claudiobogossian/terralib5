@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,27 +18,26 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Within.cpp
+  \file terralib/dataaccess/core/query/ST_Within.cpp
 
-  \brief Spatial within operator.
+  \brief Spatial Within operator.
 */
 
 // TerraLib
 #include "ST_Within.h"
 
-te::da::ST_Within::ST_Within(const ST_Within& rhs)
+te::da::core::ST_Within::ST_Within(const ST_Within& rhs)
   : BinaryFunction(rhs)
 {
 }
 
-te::da::ST_Within& te::da::ST_Within::operator=(const ST_Within& rhs)
+te::da::core::ST_Within& te::da::core::ST_Within::operator=(const ST_Within& rhs)
 {
   BinaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Within::clone() const
+te::da::core::Expression* te::da::core::ST_Within::clone() const
 {
   return new ST_Within(*this);
 }
-
