@@ -61,6 +61,8 @@ te::se::ContrastEnhancement* te::serialize::ReadContrastEnhancement(te::xml::Rea
     assert(reader.getNodeType() == te::xml::VALUE);
     ce->setGammaValue(reader.getElementValueAsDouble());
     reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
