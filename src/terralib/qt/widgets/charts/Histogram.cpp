@@ -55,6 +55,11 @@ std::map<double,  unsigned int>* te::qt::widgets::Histogram::getValues()
   return m_values;
 }
 
+std::map<double, std::vector<te::da::ObjectId*> > te::qt::widgets::Histogram::getValuesOIDs()
+{
+  return m_valuesOIDs;
+}
+
 std::map<std::string,  unsigned int>* te::qt::widgets::Histogram::getStringValues()
 {
   return m_StringValues;
@@ -65,9 +70,24 @@ void te::qt::widgets::Histogram::setValues(std::map<double,  unsigned int>* new_
   m_values = new_values;
 }
 
+std::map<std::string, std::vector<te::da::ObjectId*> > te::qt::widgets::Histogram::getStringOIDs()
+{
+  return m_stringOIDs;
+}
+
+void te::qt::widgets::Histogram::setStringOIDs( std::map<std::string, std::vector<te::da::ObjectId*> > new_ids)
+{
+  m_stringOIDs = new_ids;
+}
+
 void te::qt::widgets::Histogram::setStringValues(std::map<std::string,  unsigned int>* new_values)
 {
   m_StringValues = new_values;
+}
+
+void te::qt::widgets::Histogram::setValuesOIDs( std::map<double, std::vector<te::da::ObjectId*> > new_ids)
+{
+  m_valuesOIDs = new_ids;
 }
 
 double& te::qt::widgets::Histogram::getMinValue()

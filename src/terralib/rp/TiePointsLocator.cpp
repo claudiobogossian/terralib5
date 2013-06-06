@@ -44,6 +44,7 @@
 #include <cfloat>
 #include <cstdio>
 #include <cmath>
+#include <boost/concept_check.hpp>
 
 namespace te
 {
@@ -91,17 +92,17 @@ namespace te
       m_pixelSizeYRelation = 1;
       m_geomTransfName = "Affine";
       m_geomTransfMaxError = 2;
-      m_correlationWindowWidth = 11;
+      m_moravecCorrelationWindowWidth = 11;
       m_moravecWindowWidth = 5;
       m_maxR1ToR2Offset = 0;
       m_enableGeometryFilter = true;
       m_geometryFilterAssurance = 0.5;
-      m_gaussianFilterIterations = 1;
-      m_scalesNumber = 3;
-      m_octavesNumber = 2;
+      m_moravecGaussianFilterIterations = 1;
+      m_surfScalesNumber = 4;
+      m_surfOctavesNumber = 3;
       m_rastersRescaleFactor = 1.0;
-      m_maxNormEuclideanDist = 0.5;
-      m_minAbsCorrelation = 0.5;
+      m_surfMaxNormEuclideanDist = 0.5;
+      m_moravecMinAbsCorrelation = 0.5;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
     }
 
@@ -132,17 +133,17 @@ namespace te
       m_pixelSizeYRelation = params.m_pixelSizeYRelation;
       m_geomTransfName = params.m_geomTransfName;
       m_geomTransfMaxError = params.m_geomTransfMaxError;
-      m_correlationWindowWidth = params.m_correlationWindowWidth;
+      m_moravecCorrelationWindowWidth = params.m_moravecCorrelationWindowWidth;
       m_moravecWindowWidth = params.m_moravecWindowWidth;
       m_maxR1ToR2Offset = params.m_maxR1ToR2Offset;
       m_enableGeometryFilter = params.m_enableGeometryFilter;
       m_geometryFilterAssurance = params.m_geometryFilterAssurance;
-      m_gaussianFilterIterations = params.m_gaussianFilterIterations;
-      m_scalesNumber = params.m_scalesNumber;
-      m_octavesNumber = params.m_octavesNumber;
+      m_moravecGaussianFilterIterations = params.m_moravecGaussianFilterIterations;
+      m_surfScalesNumber = params.m_surfScalesNumber;
+      m_surfOctavesNumber = params.m_surfOctavesNumber;
       m_rastersRescaleFactor = params.m_rastersRescaleFactor;
-      m_maxNormEuclideanDist = params.m_maxNormEuclideanDist;
-      m_minAbsCorrelation = params.m_minAbsCorrelation;
+      m_surfMaxNormEuclideanDist = params.m_surfMaxNormEuclideanDist;
+      m_moravecMinAbsCorrelation = params.m_moravecMinAbsCorrelation;
       m_interpMethod = params.m_interpMethod;
 
       return *this;
@@ -457,7 +458,7 @@ namespace te
           
         // applying the noise filter
 
-        if( m_inputParameters.m_gaussianFilterIterations )
+        if( m_inputParameters.m_moravecGaussianFilterIterations )
         {
           boost::shared_ptr< DoublesMatrix > tempMatrix( 
             new DoublesMatrix );
@@ -470,7 +471,7 @@ namespace te
           
           TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
             *(raster1Data[ 0 ]), 
-            *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
+            *tempMatrix, m_inputParameters.m_moravecGaussianFilterIterations ),
             "Gaussian filter error" );
             
           raster1Data[ 0 ]->reset();
@@ -509,7 +510,7 @@ namespace te
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
           raster1InterestPoints,
-          m_inputParameters.m_correlationWindowWidth,
+          m_inputParameters.m_moravecCorrelationWindowWidth,
           *(raster1Data[ 0 ]),
           true,
           raster1Features,
@@ -561,7 +562,7 @@ namespace te
           
         // applying the noise filter
         
-        if( m_inputParameters.m_gaussianFilterIterations )
+        if( m_inputParameters.m_moravecGaussianFilterIterations )
         {
           boost::shared_ptr< DoublesMatrix > tempMatrix( 
             new DoublesMatrix );
@@ -576,7 +577,7 @@ namespace te
           
           TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
             *(raster2Data[ 0 ]), 
-            *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
+            *tempMatrix, m_inputParameters.m_moravecGaussianFilterIterations ),
             "Gaussian filter error" );
 
           raster2Data[ 0 ] = tempMatrix;          
@@ -614,7 +615,7 @@ namespace te
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
           raster2InterestPoints,
-          m_inputParameters.m_correlationWindowWidth,
+          m_inputParameters.m_moravecCorrelationWindowWidth,
           *(raster2Data[ 0 ]),
           true,
           raster2Features,
@@ -643,7 +644,7 @@ namespace te
         raster2InterestPoints,
         m_inputParameters.m_maxR1ToR2Offset,
         m_inputParameters.m_enableMultiThread,
-        m_inputParameters.m_minAbsCorrelation,
+        m_inputParameters.m_moravecMinAbsCorrelation,
         matchedPoints ),
         "Error matching features" );
       
@@ -833,8 +834,8 @@ namespace te
           maskRasterData.getLinesNumber() ? (&maskRasterData) : 0, 
           raster1MaxInterestPoints,
           m_inputParameters.m_enableMultiThread,
-          m_inputParameters.m_scalesNumber,
-          m_inputParameters.m_octavesNumber,
+          m_inputParameters.m_surfScalesNumber,
+          m_inputParameters.m_surfOctavesNumber,
           candidateInterestPoints ),
           "Error locating raster 1 interest points" );
           
@@ -921,8 +922,8 @@ namespace te
           maskRasterData.getLinesNumber() ? (&maskRasterData) : 0, 
           raster2MaxInterestPoints,
           m_inputParameters.m_enableMultiThread,
-          m_inputParameters.m_scalesNumber,
-          m_inputParameters.m_octavesNumber,
+          m_inputParameters.m_surfScalesNumber,
+          m_inputParameters.m_surfOctavesNumber,
           candidateInterestPoints ),
           "Error locating raster interest points" );
           
@@ -959,7 +960,7 @@ namespace te
         raster1InterestPoints,
         raster2InterestPoints,
         m_inputParameters.m_maxR1ToR2Offset,
-        m_inputParameters.m_maxNormEuclideanDist * 2.0, /* since surf feature vectors are unitary verctors */
+        m_inputParameters.m_surfMaxNormEuclideanDist * 2.0, /* since surf feature vectors are unitary verctors */
         m_inputParameters.m_enableMultiThread,
         matchedPoints ),
         "Error matching features" );
@@ -968,6 +969,77 @@ namespace te
       {
         progress.pulse();
         if( ! progress.isActive() ) return false;
+      }
+      
+      // Removing the repeated matched points (those present in more than one scale)
+      // keeping the higher MatchedInterestPointsT::m_feature value
+      
+      {
+        MatchedInterestPointsSetT::iterator it1 = matchedPoints.begin();
+        MatchedInterestPointsSetT::iterator it2;
+        MatchedInterestPointsSetT::iterator eraseIt;
+        
+        while( it1 != matchedPoints.end() )
+        {
+          it2 = it1;
+          ++it2;
+          eraseIt = matchedPoints.end();
+          
+          while( it2 != matchedPoints.end() )
+          {
+            if( 
+                ( it1->m_point1.m_x == it2->m_point1.m_x )
+                &&
+                ( it1->m_point1.m_y == it2->m_point1.m_y )
+                &&
+                ( it1->m_point2.m_x == it2->m_point2.m_x )
+                &&
+                ( it1->m_point2.m_y == it2->m_point2.m_y )   
+              )
+            {
+              if( it1->m_feature < it2->m_feature )
+              {
+                eraseIt = it1;
+              }
+              else if( it1->m_feature > it2->m_feature )
+              {
+                eraseIt = it2;
+              }
+              
+              break;
+            }
+            else
+            {
+              ++it2;
+            }
+          }
+          
+          if( eraseIt == it1 )
+          {
+            ++it1;
+            matchedPoints.erase( eraseIt );
+          }
+          else if( eraseIt != matchedPoints.end() )
+          {
+            matchedPoints.erase( eraseIt );
+            ++it1;
+          }
+          else
+          {
+            ++it1;
+          }
+        }
+      }
+      
+      // Removing the worse mathed points to fitting the required amount of matched points      
+      {
+        const unsigned int maxMatchedInterestPoints = std::max( raster1MaxInterestPoints,
+          raster2MaxInterestPoints );
+          
+        while( matchedPoints.size() > maxMatchedInterestPoints )
+        {
+          matchedPoints.erase( matchedPoints.begin() );
+        }
       }      
       
       // Generating the  output tie-points
@@ -1243,8 +1315,8 @@ namespace te
             m_inputParameters.m_maxTiePoints = 
               ( m_inputParameters.m_raster1TargetAreaWidth *
               m_inputParameters.m_raster1TargetAreaWidth ) /
-              ( 50 * m_inputParameters.m_correlationWindowWidth *
-              m_inputParameters.m_correlationWindowWidth );
+              ( m_inputParameters.m_moravecCorrelationWindowWidth *
+              m_inputParameters.m_moravecCorrelationWindowWidth );
           }
           
           break;
@@ -1261,12 +1333,12 @@ namespace te
           if( m_inputParameters.m_maxTiePoints == 0 )
           {
             m_inputParameters.m_maxTiePoints = 
-              getSurfFilterSize( m_inputParameters.m_octavesNumber - 1, 
-                 m_inputParameters.m_scalesNumber - 1 );
+              getSurfFilterSize( m_inputParameters.m_surfOctavesNumber - 1, 
+                 m_inputParameters.m_surfScalesNumber - 1 );
             m_inputParameters.m_maxTiePoints = 
               ( m_inputParameters.m_raster1TargetAreaWidth *
               m_inputParameters.m_raster1TargetAreaWidth ) /            
-              ( 50 * m_inputParameters.m_maxTiePoints *
+              ( m_inputParameters.m_maxTiePoints *
               m_inputParameters.m_maxTiePoints );
           }            
             
@@ -1293,10 +1365,10 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_geomTransfMaxError > 0,
         "Invalid m_geomTransfMaxError" )        
         
-      m_inputParameters.m_correlationWindowWidth += 
-        m_inputParameters.m_correlationWindowWidth % 2 ? 0 : 1;
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_correlationWindowWidth > 2,
-        "Invalid m_correlationWindowWidth" );
+      m_inputParameters.m_moravecCorrelationWindowWidth += 
+        m_inputParameters.m_moravecCorrelationWindowWidth % 2 ? 0 : 1;
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_moravecCorrelationWindowWidth > 2,
+        "Invalid m_moravecCorrelationWindowWidth" );
 
       m_inputParameters.m_moravecWindowWidth += 
         m_inputParameters.m_moravecWindowWidth % 2 ? 0 : 1;
@@ -1307,22 +1379,22 @@ namespace te
         m_inputParameters.m_geomTransfName ),
         "Invalid m_geomTransfName" );
         
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_scalesNumber > 2,
-        "Invalid m_scalesNumber" );        
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_surfScalesNumber > 2,
+        "Invalid m_surfScalesNumber" );        
         
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_octavesNumber > 0,
-        "Invalid m_octavesNumber" );           
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_surfOctavesNumber > 0,
+        "Invalid m_surfOctavesNumber" );           
         
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_rastersRescaleFactor > 0,
-        "Invalid m_octavesNumber" );  
+        "Invalid m_rastersRescaleFactor" );  
         
-      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_maxNormEuclideanDist >= 0 ) &&
-        ( m_inputParameters.m_maxNormEuclideanDist <= 1.0 ),
-        "Invalid m_octavesNumber" );         
+      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_surfMaxNormEuclideanDist >= 0 ) &&
+        ( m_inputParameters.m_surfMaxNormEuclideanDist <= 1.0 ),
+        "Invalid m_surfMaxNormEuclideanDist" );         
         
-      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_minAbsCorrelation >= 0 ) &&
-        ( m_inputParameters.m_minAbsCorrelation <= 1.0 ),
-        "Invalid m_minAbsCorrelation" );         
+      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_moravecMinAbsCorrelation >= 0 ) &&
+        ( m_inputParameters.m_moravecMinAbsCorrelation <= 1.0 ),
+        "Invalid m_moravecMinAbsCorrelation" );         
         
       TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_geometryFilterAssurance >= 0 ) &&
         ( m_inputParameters.m_geometryFilterAssurance <= 1.0 ),
@@ -2102,12 +2174,20 @@ namespace te
           return;
         }
         unsigned int laplacianSignBufferDataHandlerLine = 0;
+        unsigned int laplacianSignBufferDataHandlerCol = 0;
         unsigned char* laplacianSignBufferDataHandlerLinePtr = 0;
         for( laplacianSignBufferDataHandlerLine = 0; laplacianSignBufferDataHandlerLine < 
           laplacianSignBufferDataHandlerLines ; ++laplacianSignBufferDataHandlerLine )
         {
           laplacianSignBufferDataHandlerLinePtr = laplacianSignBufferDataHandler[ 
             laplacianSignBufferDataHandlerLine ];
+            
+          for( laplacianSignBufferDataHandlerCol = 0; laplacianSignBufferDataHandlerCol < 
+            buffersCols ; ++laplacianSignBufferDataHandlerCol )
+          {
+            laplacianSignBufferDataHandlerLinePtr[ laplacianSignBufferDataHandlerCol ] =
+              255;
+          }
         }
         
         laplacianSignBufferDataHandlerLine = 0;
@@ -2147,7 +2227,10 @@ namespace te
       for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
         rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
       {
-        InterestPointsSetT blockMaximas; // the maxima points found inside the current raster block
+        // the maxima points found inside the current raster block
+        // for each combination of octaves and scales
+        std::vector< InterestPointsSetT > blockMaximas( paramsPtr->m_scalesNumber *
+          paramsPtr->m_octavesNumber, InterestPointsSetT() ); 
         
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
          
@@ -2175,13 +2258,11 @@ namespace te
           unsigned int filterWidth = 0;
           unsigned int filterLobeWidth = 0;
           unsigned int filterLobeRadius = 0;
-          unsigned int filterRadius = 0;
           unsigned int filterCenterBufCol = 0 ;
 //          unsigned int filterCenterBufColBound = 0 ;
           double dXX = 0;
           double dYY = 0;
           double dXY = 0;
-          bool isLocalMaxima = false;
           InterestPointT auxInterestPoint;
           double** currScaleBufferPtr = 0;
           unsigned char** currLaplacianSignBufferPtr = 0;
@@ -2246,7 +2327,6 @@ namespace te
                   
                   filterLobeWidth = filterWidth / 3; 
                   filterLobeRadius = filterLobeWidth / 2;
-                  filterRadius = filterWidth / 2;
                     
                   for( filterCenterBufCol = maxGausFilterRadius ; filterCenterBufCol < 
                     maxGausFilterCenterBufferColBound ; ++filterCenterBufCol )
@@ -2287,7 +2367,6 @@ namespace te
               {
                 prevResponseBufferColIdx = windCenterCol - 1;
                 nextResponseBufferColIdx = windCenterCol + 1;
-                isLocalMaxima = false;
                 auxInterestPoint.m_feature1 = (-1.0) * DBL_MAX;
                     
                 for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
@@ -2360,51 +2439,44 @@ namespace te
                           nextScaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ] )                          
                         && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ] )
+                        && ( 
+                              maskRasterBufferPtr 
+                              ? 
+                              ( maskRasterBufferPtr[ 0 ][ windCenterCol ] != 0 ) 
+                              :
+                              true
+                            )
                       )
                     {
-                      isLocalMaxima = true;
+                      auxInterestPoint.m_feature1 = windowCenterPixelValue;
+                      auxInterestPoint.m_feature2 = (double)getSurfFilterSize(
+                        octaveIdx, scaleIdx );
+                      auxInterestPoint.m_feature3 = (double)
+                        laplacianSignBufferHandlers[ octaveIdx ][ scaleIdx ][ 
+                        maxGausFilterRadius ][ windCenterCol ] ;
+                        
+                      auxInterestPoint.m_x = windCenterCol;
+                      auxInterestPoint.m_y = rasterLine - ( 2 * maxGausFilterRadius) ;
+                      assert( auxInterestPoint.m_x < 
+                        paramsPtr->m_integralRasterDataPtr->getColumnsNumber() );
+                      assert( auxInterestPoint.m_y < 
+                        paramsPtr->m_integralRasterDataPtr->getLinesNumber() );                          
+                        
+                      assert( ( ( octaveIdx * paramsPtr->m_scalesNumber ) + 
+                        scaleIdx ) < blockMaximas.size() );
+                      InterestPointsSetT& currScalePointsSet = blockMaximas[
+                        ( octaveIdx * paramsPtr->m_scalesNumber ) + scaleIdx ];
+                        
+                      currScalePointsSet.insert( auxInterestPoint);
                       
-                      if( windowCenterPixelValue > auxInterestPoint.m_feature1 )
+                      if( currScalePointsSet.size() > 
+                        paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
                       {
-                        auxInterestPoint.m_feature1 = windowCenterPixelValue;
-                        auxInterestPoint.m_feature2 = (double)getSurfFilterSize(
-                          octaveIdx, scaleIdx );
-                        auxInterestPoint.m_feature3 = (double)
-                          laplacianSignBufferHandlers[ octaveIdx ][ scaleIdx ][ 
-                          maxGausFilterRadius ][ windCenterCol ] ;
-                      }
+                        currScalePointsSet.erase( currScalePointsSet.begin() );
+                      }                        
                     }
                   }
                 }
-                
-                if( isLocalMaxima )
-                {
-                  if( maskRasterBufferPtr )
-                  {
-                    if( maskRasterBufferPtr[ 0 ][ windCenterCol ] == 0 )
-                    {
-                      isLocalMaxima = false;
-                    }
-                  }
-                  
-                  if( isLocalMaxima )
-                  {
-                    auxInterestPoint.m_x = windCenterCol;
-                    auxInterestPoint.m_y = rasterLine - ( 2 * maxGausFilterRadius) ;
-                    assert( auxInterestPoint.m_x < 
-                      paramsPtr->m_integralRasterDataPtr->getColumnsNumber() );
-                    assert( auxInterestPoint.m_y < 
-                      paramsPtr->m_integralRasterDataPtr->getLinesNumber() );                       
-                    
-                    blockMaximas.insert( auxInterestPoint);
-                    
-                    if( blockMaximas.size() > 
-                      paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
-                    {
-                      blockMaximas.erase( blockMaximas.begin() );
-                    }
-                  }
-                }                
               }
             }
           }
@@ -2418,21 +2490,12 @@ namespace te
         
         paramsPtr->m_interestPointsAccessMutexPtr->lock();
         
-        unsigned int pointsToAdd = std::min( 
-          paramsPtr->m_maxInterestPointsPerRasterLinesBlock, 
-          (unsigned int)blockMaximas.size() );
-        InterestPointsSetT::const_reverse_iterator blockMaximasIt =
-          blockMaximas.rbegin();
-          
-        while( pointsToAdd )
+        for( unsigned int blockMaximasIdx = 0 ; blockMaximasIdx <
+          blockMaximas.size() ; ++blockMaximasIdx )
         {
-//            std::cout << std::endl << blockMaximasIt->m_featureValue
-//              << std::endl;
-            
-          paramsPtr->m_interestPointsPtr->insert( *blockMaximasIt );
-          
-          ++blockMaximasIt;
-          --pointsToAdd;
+          paramsPtr->m_interestPointsPtr->insert( 
+            blockMaximas[ blockMaximasIdx ].begin(),
+            blockMaximas[ blockMaximasIdx ].end() );
         }
         
         paramsPtr->m_interestPointsAccessMutexPtr->unlock();         
@@ -3048,54 +3111,7 @@ namespace te
       validInterestPoints.clear();
       
       /* globals  */
-      
-      unsigned int featureWindowRasterXStart = 0;
-      unsigned int featureWindowRasterYStart = 0;
-      double currIPointScale = 0;
-      double currIPointXIntensity = 0;
-      double currIPointYIntensity = 0;
-      double currIPointRotationNorm = 0;
-      double currIPointRotationSin = 0;
-      double currIPointRotationCos = 0;
-      unsigned int currIPointFeatureElementIndex = 0;
-      unsigned int featureWindowWidth = 0;
-      unsigned int featureWindowRadius = 0;
-      double featureWindowRadiusDouble = 0;
-      unsigned int feature90DegreeRotatedWindowRadius = 0;
-      unsigned int currIPointCenterXAllowedMin = 0 ;
-      unsigned int currIPointCenterXAllowedMax = 0 ;
-      unsigned int currIPointCenterYAllowedMin = 0 ;
-      unsigned int currIPointCenterYAllowedMax = 0 ;
-      unsigned int featureWindowSampleStep = 0;
-      unsigned int featureSubWindowWidth = 0;
-      unsigned int featureSubWindowBlockStartX = 0;
-      unsigned int featureSubWindowBlockStartY = 0;
-      unsigned int featureSubWindowXOffset = 0;
-      unsigned int featureSubWindowYOffset = 0;
-      double featureSubWindowHaarSumX = 0;
-      double featureSubWindowHaarSumY = 0;
-      double featureSubWindowHaarAbsSumX = 0;
-      double featureSubWindowHaarAbsSumY = 0;            
-      double featureElementZeroCenteredOriginalXIdx = 0;
-      double featureElementZeroCenteredOriginalYIdx = 0;
-      double featureElementZeroCenteredRotatedXIdx = 0;
-      double featureElementZeroCenteredRotatedYIdx = 0;
-      double featureElementRotatedXIdx = 0;
-      double featureElementRotatedYIdx = 0;      
-      unsigned int featureElementRasterRotatedXIdx = 0;
-      unsigned int featureElementRasterRotatedYIdx = 0;
-      double featureElementOriginalHaarXIntensity = 0;
-      double featureElementOriginalHaarYIntensity = 0;
-      double featureElementZeroCenteredOriginalHaarXIntensity = 0;
-      double featureElementZeroCenteredOriginalHaarYIntensity = 0;
-      double featureElementRotatedHaarXIntensity = 0;
-      double featureElementRotatedHaarYIntensity = 0;
-      double featureElementZeroCenteredRotatedHaarXIntensity = 0;
-      double featureElementZeroCenteredRotatedHaarYIntensity = 0;      
-      unsigned int featureElementHaarWindowRadius = 0;
-      double featureElementsNormalizeFactor = 0;
-      double* currentFeaturePtr = 0;
-      
+
       std::vector< boost::shared_array< double > > internalFeaturesData;
       
       // iterating over each input innterest point
@@ -3108,12 +3124,15 @@ namespace te
       
         const unsigned int& currIPointCenterX = iPointsIt->m_x;
         const unsigned int& currIPointCenterY = iPointsIt->m_y;
-        currIPointScale = 1.2 * iPointsIt->m_feature2 / 9.0;
-        featureWindowWidth = (unsigned int)( 20.0 * currIPointScale );
-        featureWindowWidth += ( ( featureWindowWidth % 4 ) ?
-          ( 4 - ( featureWindowWidth % 4 ) ) : 0 );
+        const double currIPointScale = 1.2 * iPointsIt->m_feature2 / 9.0;
+        
+        unsigned int featureWindowWidth = (unsigned int)( 20.0 * currIPointScale );
         featureWindowWidth += ( ( featureWindowWidth % 2 ) ? 0 : 1 );
-        feature90DegreeRotatedWindowRadius = (unsigned int)
+        
+        const unsigned int featureWindowRadius = featureWindowWidth / 2;
+        const double featureWindowRadiusDouble = (double)featureWindowRadius;        
+        
+        const unsigned int feature90DegreeRotatedWindowRadius = (unsigned int)
           (
             std::ceil( 
               std::sqrt( 
@@ -3127,13 +3146,18 @@ namespace te
               ) 
             ) / 2.0
           );
-        featureElementHaarWindowRadius = ((unsigned int)( 2.0 * currIPointScale )) / 2;
-        currIPointCenterXAllowedMin = featureElementHaarWindowRadius + 
+          
+        const unsigned int featureSubWindowWidth = featureWindowWidth / 4;
+          
+        const unsigned int featureElementHaarWindowRadius = 
+          ((unsigned int)( 2.0 * currIPointScale )) / 2;
+          
+        const unsigned int currIPointCenterXAllowedMin = featureElementHaarWindowRadius + 
           feature90DegreeRotatedWindowRadius + 1;
-        currIPointCenterXAllowedMax = integralRasterData.getColumnsNumber() - 
+        const unsigned int currIPointCenterXAllowedMax = integralRasterData.getColumnsNumber() - 
           currIPointCenterXAllowedMin - 1;
-        currIPointCenterYAllowedMin = currIPointCenterXAllowedMin;
-        currIPointCenterYAllowedMax = integralRasterData.getLinesNumber() - 
+        const unsigned int currIPointCenterYAllowedMin = currIPointCenterXAllowedMin;
+        const unsigned int currIPointCenterYAllowedMax = integralRasterData.getLinesNumber() - 
           currIPointCenterXAllowedMin - 1;
           
 //         std::cout << std:: endl << "currIPointCenterX =";
@@ -3159,18 +3183,24 @@ namespace te
           
           // intenal vars
           
-          featureWindowRadius = featureWindowWidth / 2;
-          featureWindowRadiusDouble = (double)featureWindowRadius;
-          featureSubWindowWidth = featureWindowWidth / 4;
-          featureWindowSampleStep = MAX( 1u, featureWindowWidth / 9 );
-          featureWindowRasterXStart = currIPointCenterX - featureWindowRadius;
-          featureWindowRasterYStart = currIPointCenterY - featureWindowRadius;
+
+//          featureSubWindowWidth = featureWindowWidth / 4;
+//          featureWindowSampleStep = MAX( 1u, featureWindowWidth / 9 );
+          const unsigned int featureWindowRasterXStart = currIPointCenterX - 
+            featureWindowRadius;
+          const unsigned int featureWindowRasterYStart = currIPointCenterY - 
+            featureWindowRadius;
           
           // Allocating the internal features vector
           
-          currentFeaturePtr = new double[ 65 ];
+          double* const currentFeaturePtr = new double[ 65 ];
           internalFeaturesData.push_back( boost::shared_array< double >(
             currentFeaturePtr ) );
+            
+          unsigned int currentFeaturePtrStartIdx = 0;
+          
+          for( ; currentFeaturePtrStartIdx < 65 ; ++currentFeaturePtrStartIdx )
+            currentFeaturePtr[ currentFeaturePtrStartIdx ] = 0.0;
             
           // Estimating the intensity vectors
           
@@ -3183,24 +3213,23 @@ namespace te
           assert( currIPointCenterY + 
             featureWindowRadius < integralRasterData.getLinesNumber() );          
           
-          currIPointXIntensity = getHaarXVectorIntensity( integralRasterData, currIPointCenterX,
+          const double currIPointXIntensity = getHaarXVectorIntensity( integralRasterData, currIPointCenterX,
             currIPointCenterY, featureWindowRadius );
-          currIPointYIntensity = getHaarYVectorIntensity( integralRasterData, currIPointCenterX,
+          const double currIPointYIntensity = getHaarYVectorIntensity( integralRasterData, currIPointCenterX,
             currIPointCenterY, featureWindowRadius );
           
           // Calculating the rotation parameters
           
-          currIPointRotationNorm = sqrt( ( currIPointXIntensity * currIPointXIntensity ) + 
+          const double currIPointRotationNorm = sqrt( ( currIPointXIntensity * currIPointXIntensity ) + 
             ( currIPointYIntensity * currIPointYIntensity ) );
           
+          double currIPointRotationSin = 0; // default: no rotation
+          double currIPointRotationCos = 1.0; // default: no rotation
+            
           if( currIPointRotationNorm != 0.0 ) 
           {
             currIPointRotationCos = currIPointXIntensity / currIPointRotationNorm;
             currIPointRotationSin = currIPointYIntensity / currIPointRotationNorm;
-          } else {
-            /* No rotation */
-            currIPointRotationCos = 1.0;
-            currIPointRotationSin = 0.0;
           }
           
           assert( ( currIPointRotationCos >= -1.0 ) && ( currIPointRotationCos <= 1.0 ) );
@@ -3222,149 +3251,143 @@ namespace te
             | v | == |-sin  cos| x |Y|
           */
           
-          currIPointFeatureElementIndex = 0;
-          featureElementsNormalizeFactor = 0;
+          unsigned int featureWindowYOffset = 0;
+          unsigned int featureWindowXOffset = 0;
+          double featureElementZeroCenteredOriginalXIdx = 0;
+          double featureElementZeroCenteredOriginalYIdx = 0;          
+          double featureElementZeroCenteredRotatedXIdx = 0;
+          double featureElementZeroCenteredRotatedYIdx = 0;    
+          double featureElementRotatedXIdx = 0;
+          double featureElementRotatedYIdx = 0; 
+          unsigned int featureElementRasterRotatedXIdx = 0;
+          unsigned int featureElementRasterRotatedYIdx = 0;    
+          double featureElementOriginalHaarXIntensity = 0;
+          double featureElementOriginalHaarYIntensity = 0;  
+          double featureElementZeroCenteredOriginalHaarXIntensity = 0;
+          double featureElementZeroCenteredOriginalHaarYIntensity = 0;   
+          double featureElementRotatedHaarXIntensity = 0;
+          double featureElementRotatedHaarYIntensity = 0;
+          double featureElementZeroCenteredRotatedHaarXIntensity = 0;
+          double featureElementZeroCenteredRotatedHaarYIntensity = 0;  
+          unsigned int featureSubWindowYIdx = 0;
+          unsigned int featureSubWindowXIdx = 0;
           
-          for( featureSubWindowBlockStartY = 0 ; 
-              featureSubWindowBlockStartY < featureWindowWidth ; 
-              featureSubWindowBlockStartY += featureSubWindowWidth, 
-                featureSubWindowBlockStartY += ( ( featureSubWindowBlockStartY == 
-                featureWindowRadius ) ? 1 : 0 ) )
+          for( featureWindowYOffset = 0 ; featureWindowYOffset < featureWindowWidth ; 
+            featureWindowYOffset += 5 )
           {
-            for( featureSubWindowBlockStartX = 0 ; 
-              featureSubWindowBlockStartX < featureWindowWidth ; 
-              featureSubWindowBlockStartX += featureSubWindowWidth, 
-                featureSubWindowBlockStartX += ( ( featureSubWindowBlockStartX == 
-                featureWindowRadius ) ? 1 : 0 ) )
+            featureElementZeroCenteredOriginalYIdx = ((double)featureWindowYOffset)
+              - featureWindowRadiusDouble;            
+              
+            featureSubWindowYIdx = featureWindowYOffset / featureSubWindowWidth;
+            
+            for( featureWindowXOffset = 0 ; featureWindowXOffset < featureWindowWidth ; 
+              featureWindowXOffset += 5 )
             {
-              featureSubWindowHaarSumX = 0;
-              featureSubWindowHaarSumY = 0;
-              featureSubWindowHaarAbsSumX = 0;
-              featureSubWindowHaarAbsSumY = 0;
+              featureSubWindowXIdx = featureWindowXOffset / featureSubWindowWidth;
               
-              for( featureSubWindowYOffset = 0 ; featureSubWindowYOffset < 
-                featureSubWindowWidth ; featureSubWindowYOffset += featureWindowSampleStep ) 
-              {
-                featureElementZeroCenteredOriginalYIdx = ((double)featureSubWindowYOffset)
-                  - featureWindowRadiusDouble;
-                  
-                for( featureSubWindowXOffset = 0 ; featureSubWindowXOffset < 
-                  featureSubWindowWidth ; featureSubWindowXOffset += featureWindowSampleStep ) 
-                {
-                  featureElementZeroCenteredOriginalXIdx = ((double)featureSubWindowXOffset)
-                    - featureWindowRadiusDouble;
-                  
-                  /* finding the correspondent point over the original raster
-                     using a clockwize rotation */ 
-                  
-                  featureElementZeroCenteredRotatedXIdx = 
-                    ( currIPointRotationCos * featureElementZeroCenteredOriginalXIdx ) + 
-                    ( currIPointRotationSin * featureElementZeroCenteredOriginalYIdx );
-                  featureElementZeroCenteredRotatedYIdx = 
-                    ( currIPointRotationCos * featureElementZeroCenteredOriginalYIdx )
-                    - ( currIPointRotationSin * featureElementZeroCenteredOriginalXIdx );
-                    
-                  featureElementRotatedXIdx = featureElementZeroCenteredRotatedXIdx +
-                    featureWindowRadiusDouble;
-                  featureElementRotatedYIdx = featureElementZeroCenteredRotatedYIdx +
-                    featureWindowRadiusDouble;
-                    
-                  featureElementRasterRotatedXIdx = featureWindowRasterXStart +
-                    (unsigned int)ROUND( featureElementRotatedXIdx );
-                  featureElementRasterRotatedYIdx = featureWindowRasterYStart +
-                    (unsigned int)ROUND( featureElementRotatedYIdx );
-                    
-                  assert( ((long int)featureElementRasterRotatedXIdx) -
-                    ((long int)featureElementHaarWindowRadius) >= 0 );
-                  assert( ((long int)featureElementRasterRotatedYIdx) -
-                    ((long int)featureElementHaarWindowRadius) >= 0 );
-                  assert( featureElementRasterRotatedXIdx + 
-                    featureElementHaarWindowRadius < integralRasterData.getColumnsNumber() );
-                  assert( featureElementRasterRotatedYIdx + 
-                    featureElementHaarWindowRadius < integralRasterData.getLinesNumber() );
-                    
-                  // Finding the original haar intesity vectors
-                    
-                  featureElementOriginalHaarXIntensity = getHaarXVectorIntensity( integralRasterData, 
-                    featureElementRasterRotatedXIdx, featureElementRasterRotatedYIdx, 
-                    featureElementHaarWindowRadius );
-                  featureElementOriginalHaarYIntensity = getHaarYVectorIntensity( integralRasterData, 
-                    featureElementRasterRotatedXIdx, featureElementRasterRotatedYIdx, 
-                    featureElementHaarWindowRadius );
-                    
-                  // Rotating the intensities by the central point haar intensities vectors
-                  // usigng a counterclockwise rotation
-                  
-                  featureElementZeroCenteredOriginalHaarXIntensity = featureElementOriginalHaarXIntensity +
-                    featureElementZeroCenteredOriginalXIdx;
-                  featureElementZeroCenteredOriginalHaarYIntensity = featureElementOriginalHaarYIntensity + 
-                    featureElementZeroCenteredOriginalYIdx;
-                  
-                  featureElementZeroCenteredRotatedHaarXIntensity = 
-                    ( currIPointRotationCos * featureElementZeroCenteredOriginalHaarXIntensity ) + 
-                    ( currIPointRotationSin * featureElementZeroCenteredOriginalHaarYIntensity );
-                  featureElementZeroCenteredRotatedHaarYIntensity = 
-                    ( currIPointRotationCos * featureElementZeroCenteredOriginalHaarYIntensity )
-                    - ( currIPointRotationSin * featureElementZeroCenteredOriginalHaarXIntensity );
-                    
-                  featureElementRotatedHaarXIntensity = featureElementZeroCenteredRotatedHaarXIntensity
-                    - featureElementZeroCenteredRotatedXIdx;
-                  featureElementRotatedHaarYIntensity = featureElementZeroCenteredRotatedHaarYIntensity 
-                    - featureElementZeroCenteredRotatedYIdx;
-                    
-                  // Haar intensity sum
-                    
-                  featureSubWindowHaarSumX += featureElementRotatedHaarXIntensity;
-                  featureSubWindowHaarSumY += featureElementRotatedHaarYIntensity;
-                  
-                  featureSubWindowHaarAbsSumX += std::abs( featureElementRotatedHaarXIntensity );
-                  featureSubWindowHaarAbsSumY += std::abs( featureElementRotatedHaarYIntensity );
-                }
-              }
+              currentFeaturePtrStartIdx = ( featureSubWindowYIdx * 4 ) + 
+                featureSubWindowXIdx;
               
+              featureElementZeroCenteredOriginalXIdx = ((double)featureWindowXOffset)
+                - featureWindowRadiusDouble;              
+                
+              /* finding the correspondent point over the original raster
+                  using a clockwize rotation */ 
+              
+              featureElementZeroCenteredRotatedXIdx = 
+                ( currIPointRotationCos * featureElementZeroCenteredOriginalXIdx ) + 
+                ( currIPointRotationSin * featureElementZeroCenteredOriginalYIdx );
+              featureElementZeroCenteredRotatedYIdx = 
+                ( currIPointRotationCos * featureElementZeroCenteredOriginalYIdx )
+                - ( currIPointRotationSin * featureElementZeroCenteredOriginalXIdx );
+                
+              featureElementRotatedXIdx = featureElementZeroCenteredRotatedXIdx +
+                featureWindowRadiusDouble;
+              featureElementRotatedYIdx = featureElementZeroCenteredRotatedYIdx +
+                featureWindowRadiusDouble;
+                
+              featureElementRasterRotatedXIdx = featureWindowRasterXStart +
+                (unsigned int)ROUND( featureElementRotatedXIdx );
+              featureElementRasterRotatedYIdx = featureWindowRasterYStart +
+                (unsigned int)ROUND( featureElementRotatedYIdx );
+                
+              assert( ((long int)featureElementRasterRotatedXIdx) -
+                ((long int)featureElementHaarWindowRadius) >= 0 );
+              assert( ((long int)featureElementRasterRotatedYIdx) -
+                ((long int)featureElementHaarWindowRadius) >= 0 );
+              assert( featureElementRasterRotatedXIdx + 
+                featureElementHaarWindowRadius < integralRasterData.getColumnsNumber() );
+              assert( featureElementRasterRotatedYIdx + 
+                featureElementHaarWindowRadius < integralRasterData.getLinesNumber() );                
+                
+              // Finding the original haar intesity vectors
+                
+              featureElementOriginalHaarXIntensity = getHaarXVectorIntensity( integralRasterData, 
+                featureElementRasterRotatedXIdx, featureElementRasterRotatedYIdx, 
+                featureElementHaarWindowRadius );
+              featureElementOriginalHaarYIntensity = getHaarYVectorIntensity( integralRasterData, 
+                featureElementRasterRotatedXIdx, featureElementRasterRotatedYIdx, 
+                featureElementHaarWindowRadius );
+                
+              // Rotating the intensities by the central point haar intensities vectors
+              // usigng a counterclockwise rotation
+              
+              featureElementZeroCenteredOriginalHaarXIntensity = featureElementOriginalHaarXIntensity +
+                featureElementZeroCenteredOriginalXIdx;
+              featureElementZeroCenteredOriginalHaarYIntensity = featureElementOriginalHaarYIntensity + 
+                featureElementZeroCenteredOriginalYIdx;
+              
+              featureElementZeroCenteredRotatedHaarXIntensity = 
+                ( currIPointRotationCos * featureElementZeroCenteredOriginalHaarXIntensity ) + 
+                ( currIPointRotationSin * featureElementZeroCenteredOriginalHaarYIntensity );
+              featureElementZeroCenteredRotatedHaarYIntensity = 
+                ( currIPointRotationCos * featureElementZeroCenteredOriginalHaarYIntensity )
+                - ( currIPointRotationSin * featureElementZeroCenteredOriginalHaarXIntensity );
+                
+              featureElementRotatedHaarXIntensity = featureElementZeroCenteredRotatedHaarXIntensity
+                - featureElementZeroCenteredRotatedXIdx;
+              featureElementRotatedHaarYIntensity = featureElementZeroCenteredRotatedHaarYIntensity 
+                - featureElementZeroCenteredRotatedYIdx;                
+                
               // Generating the related portion inside the output features vector
               
-              assert( currIPointFeatureElementIndex < 61 );
+              assert( currentFeaturePtrStartIdx < 61 );
               
-              currentFeaturePtr[ currIPointFeatureElementIndex ] = 
-                featureSubWindowHaarSumX;
-              currentFeaturePtr[ currIPointFeatureElementIndex + 1 ] = 
-                featureSubWindowHaarSumY;
-              currentFeaturePtr[ currIPointFeatureElementIndex + 2 ] = 
-                featureSubWindowHaarAbsSumX;
-              currentFeaturePtr[ currIPointFeatureElementIndex + 3 ] = 
-                featureSubWindowHaarAbsSumY;
-                
-              // Calculating the feature normalization factor
-                
-              featureElementsNormalizeFactor += ( featureSubWindowHaarSumX *
-                featureSubWindowHaarSumX );
-              featureElementsNormalizeFactor += ( featureSubWindowHaarSumY *
-                featureSubWindowHaarSumY );
-              featureElementsNormalizeFactor += ( featureSubWindowHaarAbsSumX *
-                featureSubWindowHaarAbsSumX );
-              featureElementsNormalizeFactor += ( featureSubWindowHaarAbsSumY *
-                featureSubWindowHaarAbsSumY );
-              
-              currIPointFeatureElementIndex += 4;
+              currentFeaturePtr[ currentFeaturePtrStartIdx ] += 
+                featureElementRotatedHaarXIntensity;
+              currentFeaturePtr[ currentFeaturePtrStartIdx + 1 ] += 
+                featureElementRotatedHaarYIntensity;
+              currentFeaturePtr[ currentFeaturePtrStartIdx + 2 ] += 
+                std::abs( featureElementRotatedHaarXIntensity );
+              currentFeaturePtr[ currentFeaturePtrStartIdx + 3 ] += 
+                std::abs( featureElementRotatedHaarYIntensity );                
             }
           }
           
           // turning the descriptor into a unit vector.(Invariance to contrast)
           
+          double featureElementsNormalizeFactor = 0.0;
+          
+          for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
+            ++currentFeaturePtrStartIdx )
+          {
+            featureElementsNormalizeFactor += ( currentFeaturePtr[ currentFeaturePtrStartIdx ]
+              * currentFeaturePtr[ currentFeaturePtrStartIdx ] );
+          }
+          
           featureElementsNormalizeFactor = std::sqrt( featureElementsNormalizeFactor );
           
-          if( featureElementsNormalizeFactor != 0 )
+          if( featureElementsNormalizeFactor != 0.0 )
           {
-            for( currIPointFeatureElementIndex = 0 ; currIPointFeatureElementIndex < 64 ;
-              ++currIPointFeatureElementIndex )
+            for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
+              ++currentFeaturePtrStartIdx )
             {
-              currentFeaturePtr[ currIPointFeatureElementIndex ] /=
+              currentFeaturePtr[ currentFeaturePtrStartIdx ] /=
                 featureElementsNormalizeFactor;
-              TERP_DEBUG_TRUE_OR_THROW( ( currentFeaturePtr[ currIPointFeatureElementIndex ] <= 1.0 ),
-                currentFeaturePtr[ currIPointFeatureElementIndex ] );
-              TERP_DEBUG_TRUE_OR_THROW( ( currentFeaturePtr[ currIPointFeatureElementIndex ] >= -1.0 ),
-                currentFeaturePtr[ currIPointFeatureElementIndex ] );
+              TERP_DEBUG_TRUE_OR_THROW( ( currentFeaturePtr[ currentFeaturePtrStartIdx ] <= 1.0 ),
+                currentFeaturePtr[ currentFeaturePtrStartIdx ] );
+              TERP_DEBUG_TRUE_OR_THROW( ( currentFeaturePtr[ currentFeaturePtrStartIdx ] >= -1.0 ),
+                currentFeaturePtr[ currentFeaturePtrStartIdx ] );
             }
           }
           
@@ -3372,7 +3395,7 @@ namespace te
           // distinguishes bright blobs 
           // on dark backgrounds from the reverse situation.
           
-          currentFeaturePtr[ 64 ] = (double)( iPointsIt->m_feature3 * 64 );
+          currentFeaturePtr[ 64 ] = (double)( iPointsIt->m_feature3 * 64.0 );
         }
         
         ++iPointsIt;
@@ -3599,7 +3622,7 @@ namespace te
         {
           absValue = std::abs( linePtr[ col ] );
           
-          if( absValue != 0.0 )
+          if( absValue >= minAllowedAbsCorrelation )
           {
             if( absValue > eachLineMaxABSValues[ line ] )
             {
@@ -3636,15 +3659,12 @@ namespace te
         {
           correlationAbs = std::abs( corrMatrix( line, col ) );
           
-          if( correlationAbs >= minAllowedAbsCorrelation )
-          {
-            auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
-            auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ];
-            auxMatchedPoints.m_feature = 
-              ( correlationAbs - minCorrelationABSValue ) / correlationABSValueRange;
-            
-            matchedPoints.insert( auxMatchedPoints );
-          }
+          auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
+          auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ];
+          auxMatchedPoints.m_feature = 
+            ( correlationAbs - minCorrelationABSValue ) / correlationABSValueRange;
+          
+          matchedPoints.insert( auxMatchedPoints );
         }
       }
         
@@ -3727,11 +3747,11 @@ namespace te
             selectedFeaturesSet2IndexesSize = selectedFeaturesSet2Indexes.size();
           }          
           
-          paramsPtr->m_syncMutexPtr->unlock();
-          
           corrMatrixLinePtr = paramsPtr->m_corrMatrixPtr->operator[]( feat1Idx );
           
           feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
+          
+          paramsPtr->m_syncMutexPtr->unlock();
           
           for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
             selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )
@@ -3856,7 +3876,6 @@ namespace te
       params.m_distMatrixPtr = &distMatrix;
       params.m_syncMutexPtr = &syncMutex;
       params.m_maxPt1ToPt2PixelDistance = maxPt1ToPt2PixelDistance;
-      params.m_maxEuclideanDist = maxEuclideanDist;
       params.m_interestPointsSet2RTreePtr = &interestPointsSet2RTree;
       
       if( enableMultiThread )
@@ -3906,7 +3925,7 @@ namespace te
         {
           const double& value = linePtr[ col ];
           
-          if( value != DBL_MAX )
+          if( value <= maxEuclideanDist )
           {
             if( value < eachLineMinValues[ line ] )
             {
@@ -3942,17 +3961,12 @@ namespace te
         {
           const double& distValue = distMatrix( line, col );
           
-          if( ( distValue != DBL_MAX ) && ( distValue <= maxEuclideanDist ) )
-          {
-            auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
-            auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ],
-            auxMatchedPoints.m_feature = ( maxDistValue - distValue )  / 
-              distValueRange;
-            auxMatchedPoints.m_feature = std::max( 0.0000001, 
-              auxMatchedPoints.m_feature );
-            
-            matchedPoints.insert( auxMatchedPoints );
-          }
+          auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
+          auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ],
+          auxMatchedPoints.m_feature = ( maxDistValue - distValue )  / 
+            distValueRange;
+          
+          matchedPoints.insert( auxMatchedPoints );
         }
       }
         
@@ -4035,11 +4049,11 @@ namespace te
             selectedFeaturesSet2IndexesSize = selectedFeaturesSet2Indexes.size();
           }          
           
-          paramsPtr->m_syncMutexPtr->unlock();
-          
           corrMatrixLinePtr = paramsPtr->m_distMatrixPtr->operator[]( feat1Idx );
           
           feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
+          
+          paramsPtr->m_syncMutexPtr->unlock();
           
           for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
             selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )

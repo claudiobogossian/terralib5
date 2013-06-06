@@ -32,7 +32,6 @@ if(WIN32)
 endif()
 
 list (APPEND TE_DEP_LIBS
-    terralib_annotationtext
 	terralib_common
 	terralib_dataaccess
 	terralib_datatype
@@ -41,8 +40,6 @@ list (APPEND TE_DEP_LIBS
 	terralib_memory
 	terralib_qt_widgets
     terralib_plugin
-	terralib_serialization
-	terralib_srs
 	terralib_symbology
 )
 
@@ -74,6 +71,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/qt/IntersectionDialog.h
   ${SRCDIR}/qt/AggregationDialog.h
+  ${SRCDIR}/qt/BufferDialog.h
   ${SRCDIR}/qt/LayerItem.h
   ${SRCDIR}/qt/LegendGroupItem.h
   ${SRCDIR}/qt/PropertyGroupItem.h  

@@ -77,7 +77,9 @@ te::da::DataSetType* te::gdal::CatalogLoader::getDataSetType(const std::string& 
   const te::da::DataSetTypePtr& dt = catalog->getDataSetType(datasetName);
 
   if(dt.get() == 0)
-    throw Exception((boost::format(TR_GDAL("Dataset %1% doesn't exist!")) % datasetName).str()); 
+    throw Exception((boost::format(TR_GDAL("Dataset %1% doesn't exist!")) % datasetName).str());
+
+  dt->setTitle(datasetName);
 
   return static_cast<te::da::DataSetType*>(dt->clone());
 }

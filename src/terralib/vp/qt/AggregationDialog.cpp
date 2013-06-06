@@ -20,7 +20,7 @@
 /*!
   \file terralib/vp/AggregationDialog.cpp
 
-  \brief A dialog for intersection operation
+  \brief A dialog for aggregation operation
 */
 
 // TerraLib
@@ -570,5 +570,3 @@ void te::vp::AggregationDialog::onCancelPushButtonClicked()
 {
   reject();
 }
-
-

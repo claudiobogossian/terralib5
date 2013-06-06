@@ -41,8 +41,9 @@ namespace te
     {
       namespace vp
       {
+        class AggregationAction;
+        class BufferAction;
         class IntersectionAction;
-		    class AggregationAction;
 
         class Plugin : public te::plugin::Plugin
         {
@@ -74,8 +75,9 @@ namespace te
 
             QMenu* m_vpMenu;                                    //!< VP Main Menu registered.
 
+            te::qt::plugins::vp::AggregationAction* m_aggregation;    //!< Aggregation Operation Action
+            te::qt::plugins::vp::BufferAction* m_buffer;    //!< Buffer Operation Action
             te::qt::plugins::vp::IntersectionAction* m_intersection;    //!< Intersection Operation Action
-			      te::qt::plugins::vp::AggregationAction* m_aggregation;    //!< Intersection Operation Action
 
         };
 

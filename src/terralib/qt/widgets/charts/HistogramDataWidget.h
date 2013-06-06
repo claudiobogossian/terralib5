@@ -39,12 +39,8 @@ namespace Ui { class HistogramDataWidgetForm; }
 
 namespace te
 {
-
-  namespace da
-  {
     //forward declarations
-    class DataSet;
-  }
+  namespace da  { class DataSet; class DataSetType; }
 
   namespace qt
   {
@@ -67,7 +63,7 @@ namespace te
 
         public:
 
-          HistogramDataWidget(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          HistogramDataWidget(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           ~HistogramDataWidget();
 
@@ -81,8 +77,9 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::HistogramDataWidgetForm>  m_ui;       //!< The widget form.
-          std::auto_ptr<te::da::DataSet>            m_dataSet;  //!< The dataset that will be used to generate the histogram graph.
+          std::auto_ptr<Ui::HistogramDataWidgetForm>  m_ui;        //!< The widget form.
+          std::auto_ptr<te::da::DataSet>              m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
+          std::auto_ptr<te::da::DataSetType>          m_dataType;  //!< The type of the dataset that will be used to generate the histogram graphic.
        };
     } // end namespace widgets
   }   // end namespace qt

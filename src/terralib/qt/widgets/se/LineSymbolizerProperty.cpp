@@ -58,22 +58,16 @@ te::qt::widgets::LineSymbolizerProperty::LineSymbolizerProperty(QWidget* parent)
 
 te::qt::widgets::LineSymbolizerProperty::~LineSymbolizerProperty()
 {
-  delete m_symb;
 }
 
-void te::qt::widgets::LineSymbolizerProperty::setSymbolizer(const te::se::LineSymbolizer* symb)
+void te::qt::widgets::LineSymbolizerProperty::setSymbolizer(te::se::LineSymbolizer* symb)
 {
-  assert(symb);
-
-  delete m_symb;
-
-  m_symb = static_cast<te::se::LineSymbolizer*>(symb->clone());
-
+  m_symb = symb;
 }
 
 te::se::Symbolizer* te::qt::widgets::LineSymbolizerProperty::getSymbolizer() const
 {
-  return m_symb->clone();
+  return m_symb;
 }
 
 void te::qt::widgets::LineSymbolizerProperty::onStrokeChanged()

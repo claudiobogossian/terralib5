@@ -53,6 +53,7 @@ namespace te
       class MapDisplay;
       class Project;
       class DataSetTableDockWidget;
+      class SymbolizerExplorer;
 
       namespace evt
       {
@@ -260,6 +261,7 @@ namespace te
 // Well known Widgets
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
+          SymbolizerExplorer* m_symbolizerExplorer;
 
           std::vector<DataSetTableDockWidget*> m_tableDocks;
 
@@ -267,8 +269,6 @@ namespace te
           Project* m_project;
 
           QDockWidget* m_progressDockWidget; //!< Dock widget used to show progress information
-
-          //te::qt::widgets::RasterVisualDockWidget* m_rasterVisualDock;    //!< Used to raster enhancement operations
 
           te::qt::af::ApplicationController* m_controller;
       };

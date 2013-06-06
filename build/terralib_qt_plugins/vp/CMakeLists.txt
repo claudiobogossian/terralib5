@@ -31,8 +31,10 @@ endif()
 set (
   HDRS_TO_MOC
   ${SRCDIR}/AbstractAction.h
-  ${SRCDIR}/IntersectionAction.h
   ${SRCDIR}/AggregationAction.h
+  ${SRCDIR}/BufferAction.h
+  ${SRCDIR}/IntersectionAction.h
+  
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/vp" MOC)
 

@@ -20,7 +20,7 @@
 /*!
   \file terralib/vp/qt/AggregationDialog.h
 
-  \brief A dialog intersection operation
+  \brief A dialog aggregation operation
 */
 
 #ifndef __TERRALIB_VP_INTERNAL_AGGREGATIONDIALOG_H

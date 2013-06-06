@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../common/Translator.h"
-#include "AbstractDataSource.h"
-#include "DataSourceFactory2.h"
+#include "DataSource.h"
+#include "DataSourceFactory.h"
 
 // Boost
 #include <boost/format.hpp>
@@ -34,7 +34,7 @@
 std::map<std::string, te::da::core::DataSourceFactory::FactoryFnctType>
 te::da::core::DataSourceFactory::sm_factories;
 
-std::auto_ptr<te::da::core::AbstractDataSource>
+std::auto_ptr<te::da::core::DataSource>
 te::da::core::DataSourceFactory::make(const std::string& dsType) throw(Exception)
 {
   std::map<std::string, FactoryFnctType>::const_iterator it = sm_factories.find(dsType);
@@ -42,7 +42,7 @@ te::da::core::DataSourceFactory::make(const std::string& dsType) throw(Exception
   if(it == sm_factories.end())
     throw Exception((boost::format(TR_DATAACCESS("Could not find a data source factory named: %1.")) % dsType).str());
 
-  std::auto_ptr<AbstractDataSource> ds(sm_factories[dsType]());
+  std::auto_ptr<DataSource> ds(sm_factories[dsType]());
 
   return ds;
 }
@@ -69,4 +69,3 @@ te::da::core::DataSourceFactory::remove(const std::string& dsType) throw(Excepti
 
   sm_factories.erase(it);
 }
-
