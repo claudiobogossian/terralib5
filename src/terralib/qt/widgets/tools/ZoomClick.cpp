@@ -30,9 +30,10 @@
 // Qt
 #include <QtGui/QMouseEvent>
 
-te::qt::widgets::ZoomClick::ZoomClick(te::qt::widgets::MapDisplay* display, const double& zoomFactor, const ZoomType& type, QObject* parent) 
+te::qt::widgets::ZoomClick::ZoomClick(te::qt::widgets::MapDisplay* display, const QCursor& cursor, const double& zoomFactor, const ZoomType& type, QObject* parent) 
   : Zoom(display, zoomFactor, type, parent)
 {
+  setCursor(cursor);
 }
 
 te::qt::widgets::ZoomClick::~ZoomClick()

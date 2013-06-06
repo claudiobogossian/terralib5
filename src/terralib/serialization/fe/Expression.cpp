@@ -177,13 +177,20 @@ te::fe::Expression* LiteralReader(te::xml::Reader& reader)
   if(reader.getElementLocalName() == "Literal")
   {
     reader.next();
-    assert(reader.getNodeType() == te::xml::VALUE);
-    std::string value = reader.getElementValue();
-    exp->setValue(value);
-    reader.next();
+    if(reader.getNodeType() == te::xml::END_ELEMENT)
+    {
+      reader.next();
+    }
+    else
+    {
+      assert(reader.getNodeType() == te::xml::VALUE);
+      std::string value = reader.getElementValue();
+      exp->setValue(value);
+      reader.next();
 
-    assert(reader.getNodeType() == te::xml::END_ELEMENT);
-    reader.next();
+      assert(reader.getNodeType() == te::xml::END_ELEMENT);
+      reader.next();
+    }
 
     return exp.release();
   }

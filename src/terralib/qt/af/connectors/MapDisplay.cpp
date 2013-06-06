@@ -133,6 +133,7 @@ void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& la
         continue;
 
       m_display->setSRID(layer->getSRID(), false);
+
       break;
     }
   }
@@ -197,6 +198,12 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.end();
 
       drawLayerSelection(layerSelectionChanged->m_layer);
+    }
+    break;
+
+    case te::qt::af::evt::LAYER_VISIBILTY_CHANGED:
+    {
+      // TODO
     }
     break;
 
