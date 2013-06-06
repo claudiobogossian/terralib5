@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Beyond.h
+  \file terralib/dataaccess/core/query/ST_Beyond.h
 
   \brief Spatial Distance Buffer Beyond operator.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_ST_BEYOND_H
-#define __TERRALIB_DATAACCESS_INTERNAL_ST_BEYOND_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_BEYOND_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_BEYOND_H
 
 // TerraLib
 #include "ST_DistanceBuffer.h"
@@ -33,56 +33,58 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class ST_Beyond
-      
-      \brief Spatial Distance Buffer Beyond operator.
-
-      This function is just a syntatic-suggar.
-
-      \sa ST_DistanceBuffer
-    */
-    class TEDATAACCESSEXPORT ST_Beyond : public ST_DistanceBuffer
+    namespace core
     {
-      public:
+      /*!
+        \class ST_Beyond
+      
+        \brief Spatial Distance Buffer Beyond operator.
 
-        TE_DEFINE_VISITABLE
+        This function is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa ST_DistanceBuffer
+      */
+      class TEDATAACCESSEXPORT ST_Beyond : public ST_DistanceBuffer
+      {
+        public:
 
-          \param e The expression.
-          \param g The geometry literal.
-          \param d Distance.
+          TE_DEFINE_VISITABLE
 
-          \note The operator will take the ownership of the given arguments.
-        */
-        ST_Beyond(Expression* e, te::gm::Geometry* g, te::common::Distance* d);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param e The expression.
+            \param g The geometry literal.
+            \param d Distance.
 
-          \param e The expression.
-          \param g The geometry literal.
-          \param d Distance.
-        */
-        ST_Beyond(const Expression& e, const te::gm::Geometry& g, const te::common::Distance& d);
+            \note The operator will take the ownership of the given arguments.
+          */
+          ST_Beyond(Expression* e, te::gm::Geometry* g, te::common::Distance* d);
 
-        /*! \brief Copy constructor. */
-        ST_Beyond(const ST_Beyond& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~ST_Beyond() { }
+            \param e The expression.
+            \param g The geometry literal.
+            \param d Distance.
+          */
+          ST_Beyond(const Expression& e, const te::gm::Geometry& g, const te::common::Distance& d);
 
-        /*! Assignment operator.  */
-        ST_Beyond& operator=(const ST_Beyond& rhs);
+          /*! \brief Copy constructor. */
+          ST_Beyond(const ST_Beyond& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~ST_Beyond() { }
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          ST_Beyond& operator=(const ST_Beyond& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_ST_BEYOND_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_BEYOND_H

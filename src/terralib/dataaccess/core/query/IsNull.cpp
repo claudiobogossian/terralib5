@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,26 +18,26 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/IsNull.cpp
+  \file terralib/dataaccess/core/query/IsNull.cpp
 
-  \brief Tells if a values is NULL.
+  \brief It reports if a value is NULL.
 */
 
 // TerraLib
 #include "IsNull.h"
 
-te::da::IsNull::IsNull(const IsNull& rhs)
+te::da::core::IsNull::IsNull(const IsNull& rhs)
   : UnaryFunction(rhs)
 {
 }
 
-te::da::IsNull& te::da::IsNull::operator=(const IsNull& rhs)
+te::da::core::IsNull& te::da::core::IsNull::operator=(const IsNull& rhs)
 {
   UnaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::IsNull::clone() const
+te::da::core::Expression* te::da::core::IsNull::clone() const
 {
   return new IsNull(*this);
 }

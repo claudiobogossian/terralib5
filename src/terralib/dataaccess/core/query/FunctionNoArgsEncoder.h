@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionNoArgsEncoder.h
+  \file terralib/dataaccess/core/query/FunctionNoArgsEncoder.h
 
   \brief A query encoder for functions with no arguments that is invoked just by its name.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONNOARGSENCODERENCODER_H
-#define __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONNOARGSENCODERENCODER_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONNOARGSENCODERENCODER_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONNOARGSENCODERENCODER_H
 
 // TerraLib
 #include "SQLFunctionEncoder.h"
@@ -33,46 +33,48 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class FunctionNoArgsEncoder
-      
-      \brief An SQL encoder for functions with no arguments that is invoked just by its name.
-
-      It encodes a function using just its name, following this convention: function-name.
-
-      \sa Function, TemplateEncoder, SQLFunctionEncoder, BinaryOpEncoder, UnaryOpEncoder, FunctionEncoder
-    */
-    class TEDATAACCESSEXPORT FunctionNoArgsEncoder : public SQLFunctionEncoder
+    namespace core
     {
-      public:
+      /*!
+        \class FunctionNoArgsEncoder
+      
+        \brief An SQL encoder for functions with no arguments that is invoked just by its name.
 
-        /*!
-          \brief Constructor.
+        It encodes a function using just its name, following this convention: function-name.
 
-          \param name The function alias as understood by some data source implmentation.
-        */
-        FunctionNoArgsEncoder(const std::string& name) : SQLFunctionEncoder(name) {}
+        \sa Function, TemplateEncoder, SQLFunctionEncoder, BinaryOpEncoder, UnaryOpEncoder, FunctionEncoder
+      */
+      class TEDATAACCESSEXPORT FunctionNoArgsEncoder : public SQLFunctionEncoder
+      {
+        public:
 
-        /*! \brief Destructor. */
-        ~FunctionNoArgsEncoder() {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief It encodes the function to a SQL notation.
+            \param name The function alias as understood by some data source implmentation.
+          */
+          FunctionNoArgsEncoder(const std::string& name) : SQLFunctionEncoder(name) {}
 
-          This method will encode the function in prefix unary operator notation: (op operand).
-          For example, the '-' function is encoded as: -A.
+          /*! \brief Destructor. */
+          ~FunctionNoArgsEncoder() {}
 
-          \param f     The function to be translated to a SQL notation.
-          \param buff  The destination string buffer where the translation will be written.
-          \param v     The SQL visitor that will be used to visit the arguments expression.
-        */
-        void toSQL(const Function& f,
-                   std::string& buff,
-                   SQLVisitor& v) const;
-    };
+          /*!
+            \brief It encodes the function to a SQL notation.
 
-  } // end namespace da
-}   // end namespace te
+            This method will encode the function in prefix unary operator notation: (op operand).
+            For example, the '-' function is encoded as: -A.
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONNOARGSENCODERENCODER_H
+            \param f     The function to be translated to a SQL notation.
+            \param buff  The destination string buffer where the translation will be written.
+            \param v     The SQL visitor that will be used to visit the arguments expression.
+          */
+          void toSQL(const Function& f,
+                     std::string& buff,
+                     SQLVisitor& v) const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONNOARGSENCODERENCODER_H

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Crosses.h
+  \file terralib/dataaccess/core/query/ST_Crosses.h
 
   \brief Spatial crosses operator.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_ST_CROSSES_H
-#define __TERRALIB_DATAACCESS_INTERNAL_ST_CROSSES_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_CROSSES_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_CROSSES_H
 
 // TerraLib
 #include "BinaryFunction.h"
@@ -34,54 +34,56 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class ST_Crosses
-      
-      \brief Spatial crosses operator.
-
-      This function is just a syntatic-suggar.
-
-      \sa BinaryFunction
-    */
-    class TEDATAACCESSEXPORT ST_Crosses : public BinaryFunction
+    namespace core
     {
-      public:
+      /*!
+        \class ST_Crosses
+      
+        \brief Spatial crosses operator.
 
-        TE_DEFINE_VISITABLE
+        This function is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa BinaryFunction
+      */
+      class TEDATAACCESSEXPORT ST_Crosses : public BinaryFunction
+      {
+        public:
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          TE_DEFINE_VISITABLE
 
-          \note The operator will take the ownership of the given arguments.
-        */
-        ST_Crosses(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_Crosses, arg1, arg2) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
-        */
-        ST_Crosses(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_Crosses, arg1, arg2) {}
+            \note The operator will take the ownership of the given arguments.
+          */
+          ST_Crosses(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_Crosses, arg1, arg2) {}
 
-        /*! \brief Copy constructor. */
-        ST_Crosses(const ST_Crosses& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~ST_Crosses() {}
+            \param arg1 The first argument.
+            \param arg2 The second argument.
+          */
+          ST_Crosses(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_Crosses, arg1, arg2) {}
 
-        /*! Assignment operator.  */
-        ST_Crosses& operator=(const ST_Crosses& rhs);
+          /*! \brief Copy constructor. */
+          ST_Crosses(const ST_Crosses& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~ST_Crosses() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          ST_Crosses& operator=(const ST_Crosses& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_ST_CROSSES_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ST_CROSSES_H

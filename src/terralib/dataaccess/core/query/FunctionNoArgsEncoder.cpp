@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionNoArgsEncoder.cpp
+  \file terralib/dataaccess/core/query/FunctionNoArgsEncoder.cpp
 
   \brief A query encoder for functions with no arguments that is invoked just by its name.
 */
@@ -31,7 +31,7 @@
 // STL
 #include <cassert>
 
-void te::da::FunctionNoArgsEncoder::toSQL(const Function& f,
+void te::da::core::FunctionNoArgsEncoder::toSQL(const Function& f,
                                           std::string& buff,
                                           SQLVisitor& /*v*/) const
 {
@@ -40,4 +40,3 @@ void te::da::FunctionNoArgsEncoder::toSQL(const Function& f,
   buff += m_name;
   //buff += ")";
 }
-

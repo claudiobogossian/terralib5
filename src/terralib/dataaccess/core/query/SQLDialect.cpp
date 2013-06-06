@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,24 +18,24 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/SQLDialect.cpp
+  \file terralib/dataaccess/core/query/SQLDialect.cpp
 
   \brief It represents the SQL query dialect accepted by a given data source.
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
-#include "../../common/Translator.h"
+#include "../../../common/STLUtils.h"
+#include "../../../common/Translator.h"
 #include "../Exception.h"
 #include "SQLDialect.h"
 #include "SQLFunctionEncoder.h"
 
-te::da::SQLDialect::~SQLDialect()
+te::da::core::SQLDialect::~SQLDialect()
 {
   te::common::FreeContents(m_regFunctions);
 }
 
-void te::da::SQLDialect::insert(const std::string& funcName, SQLFunctionEncoder* encoder)
+void te::da::core::SQLDialect::insert(const std::string& funcName, SQLFunctionEncoder* encoder)
 {
   if(te::common::GetPValue(m_regFunctions, funcName) != 0)
     throw Exception(TR_DATAACCESS("There is already a function registered with the given name!"));
@@ -43,8 +43,7 @@ void te::da::SQLDialect::insert(const std::string& funcName, SQLFunctionEncoder*
   m_regFunctions.insert(std::map<std::string, SQLFunctionEncoder*>::value_type(funcName, encoder));
 }
 
-const te::da::SQLFunctionEncoder* te::da::SQLDialect::find(const std::string& funcName) const
+const te::da::core::SQLFunctionEncoder* te::da::core::SQLDialect::find(const std::string& funcName) const
 {
   return te::common::GetPValue(m_regFunctions, funcName);
 }
-

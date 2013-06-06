@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Mul.h
+  \file terralib/dataaccess/core/query/Mul.h
 
   \brief The multiply operator - syntatic-suggar.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_MUL_H
-#define __TERRALIB_DATAACCESS_INTERNAL_MUL_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_MUL_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_MUL_H
 
 // TerraLib
 #include "BinaryOp.h"
@@ -33,55 +33,57 @@
 namespace te
 {
   namespace da
-  {    
-    /*!
-      \class Mul
-      
-      \brief The multiply operator.
-
-      This operator is just a syntatic-suggar.
-
-      \sa BinaryOp
-    */
-    class TEDATAACCESSEXPORT Mul : public BinaryOp
+  {
+    namespace core
     {
-      public:
+      /*!
+        \class Mul
+      
+        \brief The multiply operator.
 
-        TE_DEFINE_VISITABLE
+        This operator is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa BinaryOp
+      */
+      class TEDATAACCESSEXPORT Mul : public BinaryOp
+      {
+        public:
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
+          TE_DEFINE_VISITABLE
 
-          \note The addition operator will take the ownership of the given arguments.
-        */
-        Mul(Expression* arg1, Expression* arg2) : BinaryOp(FunctionNames::sm_Mul, arg1, arg2) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg1 The first argument.
+            \param arg2 The second argument.
 
-          \param arg1 The first argument.
-          \param arg2 The second argument.
-        */
-        Mul(const Expression& arg1, const Expression& arg2) : BinaryOp(FunctionNames::sm_Mul, arg1, arg2) {}
+            \note The addition operator will take the ownership of the given arguments.
+          */
+          Mul(Expression* arg1, Expression* arg2) : BinaryOp(FunctionNames::sm_Mul, arg1, arg2) {}
 
-        /*! \brief Copy constructor. */
-        Mul(const Mul& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~Mul() {}
+            \param arg1 The first argument.
+            \param arg2 The second argument.
+          */
+          Mul(const Expression& arg1, const Expression& arg2) : BinaryOp(FunctionNames::sm_Mul, arg1, arg2) {}
 
-        /*! Assignment operator.  */
-        Mul& operator=(const Mul& rhs);
+          /*! \brief Copy constructor. */
+          Mul(const Mul& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~Mul() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          Mul& operator=(const Mul& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_MUL_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_MUL_H
