@@ -60,6 +60,8 @@ namespace te
       */
       class TEQTWIDGETSEXPORT Selection : public RubberBand
       {
+        Q_OBJECT
+
         public:
 
           /** @name Initializer Methods
@@ -102,6 +104,11 @@ namespace te
         private:
 
           void executeSelection(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e);
+
+        signals:
+
+          /*! This signal is emitted when the layer selection changed. */
+          void layerSelectionChanged(const te::map::AbstractLayerPtr& layer);
 
         private:
 

@@ -727,6 +727,8 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
 
   te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), selectionCursor, m_project->getLayers());
   m_display->setCurrentTool(selection);
+
+  connect(selection, SIGNAL(layerSelectionChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectionChanged(const te::map::AbstractLayerPtr&)));
 }
 
 void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
@@ -783,6 +785,14 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::af::DataSetTableDock
 void te::qt::af::BaseApplication::onFullScreenToggled(bool checked)
 {
   checked ? showFullScreen() : showMaximized();
+}
+
+void te::qt::af::BaseApplication::onLayerSelectionChanged(const te::map::AbstractLayerPtr& layer)
+{
+  assert(layer.get());
+
+  te::qt::af::evt::LayerSelectionChanged e(layer.get());
+  ApplicationController::getInstance().broadcast(&e);
 }
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
