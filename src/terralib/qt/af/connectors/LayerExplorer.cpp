@@ -26,7 +26,6 @@
 #include "../events/ProjectEvents.h"
 #include "../events/LayerEvents.h"
 #include "../ApplicationController.h"
-#include "../LayerDecorator.h"
 #include "../Project.h"
 #include "LayerExplorer.h"
 
@@ -56,21 +55,12 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     {
       assert(m_explorer);
 
-      te::qt::af::evt::ProjectAdded* nevt = static_cast<te::qt::af::evt::ProjectAdded*>(evt);
+      te::qt::af::evt::ProjectAdded* projectAdded = static_cast<te::qt::af::evt::ProjectAdded*>(evt);
 
-      if(nevt == 0 || nevt->m_proj == 0)
+      if(projectAdded == 0 || projectAdded->m_proj == 0)
         return;
 
-      std::list<te::map::AbstractLayerPtr> layers;
-      std::list<te::map::AbstractLayerPtr>::iterator it;
-
-      for(it = nevt->m_proj->getLayers().begin(); it != nevt->m_proj->getLayers().end(); ++it)
-      {
-        te::map::AbstractLayerPtr layer(((LayerDecorator*)it->get())->getDecorated());
-        layers.push_back(layer);
-      }
-
-      m_explorer->set(layers);
+      m_explorer->set(projectAdded->m_proj->getLayers());
 
       assert(m_explorer->getTreeView());
       assert(m_explorer->getTreeView()->selectionModel());
