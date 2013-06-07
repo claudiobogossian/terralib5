@@ -55,6 +55,7 @@ namespace te
   {
 // Forward declaration
     class Canvas;
+    class Grouping;
 
     typedef te::da::DataSetType LayerSchema;
 
@@ -208,6 +209,20 @@ namespace te
           \brief It clears the selected group of this Layer.
         */
         virtual void clearSelected();
+
+        /*!
+          \brief It returns the Grouping associated to the Layer.
+
+          \return The Grouping associated to the Layer.
+        */
+        virtual te::map::Grouping* getGrouping() const;
+
+        /*!
+          \brief It sets the Grouping associated to the Layer.
+
+          \param grouping The Grouping to be associated to the Layer.
+        */
+        virtual void setGrouping(te::map::Grouping* grouping);
 
         /*!
           \brief It returns the layer schema.
@@ -427,6 +442,8 @@ namespace te
       protected:
 
         te::da::ObjectIdSet* m_selected;  //!< The selected group of the layer.
+
+        te::map::Grouping* m_grouping;    //!< The grouping information
     };
 
     typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;

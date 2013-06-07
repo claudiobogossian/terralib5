@@ -30,8 +30,10 @@
 #include "Config.h"
 #include "Enums.h"
 
+// STL
 #include <cstdlib>
-#include<string>
+#include <string>
+#include <vector>
 
 namespace te
 {
@@ -43,6 +45,8 @@ namespace te
 
   namespace map
   {
+    class GroupingItem;
+
     /*!
       \class Grouping
 
@@ -136,6 +140,20 @@ namespace te
         */
         void setStdDeviation(float stdDeviation);
 
+        /*!
+          \brief It gets the vector of grouping itens.
+
+          \return The vector of grouping itens.
+        */
+        const std::vector<te::map::GroupingItem*>& getGroupingItens() const;
+
+        /*!
+          \brief It sets the vector of grouping itens.
+
+          \param The vector of grouping itens.
+        */
+        void setGroupingItens(std::vector<te::map::GroupingItem*>& itens);
+
       private:
 
         std::string m_propertyName;      //!< The property name whose values will be used to make the grouping.
@@ -143,6 +161,8 @@ namespace te
         size_t m_precision;              //!< The precision of the values.
         size_t m_numSlices;              //!< The number of slices used in the Equal Steps and Quantil groupings.
         float m_stdDeviation;            //!< The standard deviation used in the Standard Deviation grouping.
+
+        std::vector<te::map::GroupingItem*> m_itens; //!< The vector of grouping itens.
     };
 
   } // end namespace map

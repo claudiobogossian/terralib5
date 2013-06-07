@@ -29,7 +29,7 @@
 // TerraLib
 #include "Config.h"
 #include "../common/StringUtils.h"
-#include "../maptools/LegendItem.h"
+#include "../maptools/GroupingItem.h"
 
 // STL
 #include <string>
@@ -39,11 +39,11 @@
 
 
 #ifndef MIN
-#define MIN(a,b) ( (a<b) ? a : b )	//!< Macro that returns min between two values
+#define MIN(a,b) ( (a<b) ? a : b )  //!< Macro that returns min between two values
 #endif
 
 #ifndef MAX
-#define MAX(a,b) ( (a>b) ? a : b )	//!< Macro that returns max between two values
+#define MAX(a,b) ( (a>b) ? a : b )  //!< Macro that returns max between two values
 #endif
 
 
@@ -62,7 +62,7 @@ namespace te
       \output             The groups will be stored in the container of legend items.
     */
     TEMAPEXPORT void GroupingByUniqueValues(std::vector<std::string>& inputValues, int dataType,
-                                            std::vector<te::map::LegendItem*>& legend, int precision);
+                                            std::vector<te::map::GroupingItem*>& legend, int precision);
 
     /*!
       \brief It adjusts a value to the precision specified
@@ -88,29 +88,29 @@ namespace te
       \output               The groups will be stored in the container of legend items.
     */
     template<class iterator>
-    void GroupingByEqualSteps(iterator begin, iterator end, int nSteps, std::vector<te::map::LegendItem*>& legend,
-				                      int precision = 0, bool countElements = true)
+    void GroupingByEqualSteps(iterator begin, iterator end, int nSteps, std::vector<te::map::GroupingItem*>& legend,
+                              int precision = 0, bool countElements = true)
     {
-	    double min = std::numeric_limits<double>::max();
-	    double max = -std::numeric_limits<double>::max();
+      double min = std::numeric_limits<double>::max();
+      double max = -std::numeric_limits<double>::max();
 
       iterator it = begin;
 
       while(it < end)
       {
-	      min = MIN(min, *it);
-	      max = MAX(max, *it);
-	      ++it;
+        min = MIN(min, *it);
+        max = MAX(max, *it);
+        ++it;
       }
 
       double slice = (max - min)/double(nSteps);
     
       for(int i = 0; i < nSteps; ++i)
       {
-        te::map::LegendItem* legendItem = new te::map::LegendItem;
-	      legendItem->setLowerLimit(te::common::Convert2String(min + double(i) * slice, precision));
-	      legendItem->setUpperLimit(te::common::Convert2String(min + double(i+1) * slice, precision));
-	      legend.push_back(legendItem);
+        te::map::GroupingItem* legendItem = new te::map::GroupingItem;
+        legendItem->setLowerLimit(te::common::Convert2String(min + double(i) * slice, precision));
+        legendItem->setUpperLimit(te::common::Convert2String(min + double(i+1) * slice, precision));
+        legend.push_back(legendItem);
       }
 
       min = te::map::AdjustToPrecision(min, precision, true);
@@ -120,7 +120,7 @@ namespace te
 
       // Set the number of elements for each slice
       if (countElements == true)
-	      SetNumberOfElementsByLegendItem(begin, end, legend);
+        SetNumberOfElementsByLegendItem(begin, end, legend);
     }
 
     /*!
@@ -136,47 +136,47 @@ namespace te
       \output               The groups will be stored in the container of legend items.
     */
     template<class iterator>
-    void GroupingByQuantil(iterator begin, iterator end, int nSteps, std::vector<te::map::LegendItem*>& legend,
-				                  int precision = 0, bool countElements = true)
+    void GroupingByQuantil(iterator begin, iterator end, int nSteps, std::vector<te::map::GroupingItem*>& legend,
+                          int precision = 0, bool countElements = true)
     {
-	    sort(begin, end);
+      sort(begin, end);
 
-	    int size = end - begin;
-	    double steps = (double)size / (double)nSteps;
+      int size = end - begin;
+      double steps = (double)size / (double)nSteps;
 
-	    int	n = 0;
-	    iterator it = begin;
-	    while(it < end)
-	    {
-        te::map::LegendItem* legendItem = new te::map::LegendItem;
-	      legendItem->setLowerLimit(te::common::Convert2String(*it, precision));
+      int  n = 0;
+      iterator it = begin;
+      while(it < end)
+      {
+        te::map::GroupingItem* legendItem = new te::map::GroupingItem;
+        legendItem->setLowerLimit(te::common::Convert2String(*it, precision));
 
-		    int p = (int)(steps * (double)++n + .5);
+        int p = (int)(steps * (double)++n + .5);
 
-		    it = begin + p;
-		    if(it < end)
+        it = begin + p;
+        if(it < end)
           legendItem->setUpperLimit(te::common::Convert2String(*it, precision));
-		    else
+        else
           legendItem->setUpperLimit(te::common::Convert2String(*(it-1), precision));
 
-		    legend.push_back(legendItem);
-	    }
+        legend.push_back(legendItem);
+      }
 
-	    if(end-begin > 1)
-	    {
-		    double min = (*begin);
-		    double max = (*(end-1));
+      if(end-begin > 1)
+      {
+        double min = (*begin);
+        double max = (*(end-1));
 
         min = te::map::AdjustToPrecision(min, precision, true);
-		    legend[0]->setLowerLimit(te::common::Convert2String(min, precision));
+        legend[0]->setLowerLimit(te::common::Convert2String(min, precision));
 
-		    max = te::map::AdjustToPrecision(max, precision, false);
-		    legend[legend.size()-1]->setUpperLimit(te::common::Convert2String(max, precision));
-	    }
+        max = te::map::AdjustToPrecision(max, precision, false);
+        legend[legend.size()-1]->setUpperLimit(te::common::Convert2String(max, precision));
+      }
 
-	    // Set the number of elements for each slice
-	    if (countElements == true)
-		    SetNumberOfElementsByLegendItem(begin, end, legend);
+      // Set the number of elements for each slice
+      if (countElements == true)
+        SetNumberOfElementsByLegendItem(begin, end, legend);
     }
 
     /*!
@@ -193,85 +193,85 @@ namespace te
       \output               The groups will be stored in the container of legend items.
     */
     template<class iterator>
-    void GroupingByStdDeviation(iterator begin, iterator end, double nDevs, std::vector<te::map::LegendItem*>& legend,
+    void GroupingByStdDeviation(iterator begin, iterator end, double nDevs, std::vector<te::map::GroupingItem*>& legend,
                                 std::string& rmean, int precision = 0, bool countElements = true)
     {
-	    // Compute min, max and mean
-	    double min = std::numeric_limits<double>::max();
-	    double max = -std::numeric_limits<double>::max();
-	    long double	sum = 0.;
-	    long double	sm2 = 0.;
+      // Compute min, max and mean
+      double min = std::numeric_limits<double>::max();
+      double max = -std::numeric_limits<double>::max();
+      long double  sum = 0.;
+      long double  sm2 = 0.;
 
-	    iterator it = begin;
-	    while(it < end)
-	    {
-		    min = MIN(min, *it);
-		    max = MAX(max, *it);
-		    sum += (*it);
-		    sm2 += ((*it) * (*it));
-		    ++it;
-	    }
+      iterator it = begin;
+      while(it < end)
+      {
+        min = MIN(min, *it);
+        max = MAX(max, *it);
+        sum += (*it);
+        sm2 += ((*it) * (*it));
+        ++it;
+      }
 
-	    double count = (double)(end - begin);
-	    double mean = (double)(sum/count);
-	    long double var = (sm2 / count) - (mean * mean);
-	    double stdDev = sqrt(var);
+      double count = (double)(end - begin);
+      double mean = (double)(sum/count);
+      long double var = (sm2 / count) - (mean * mean);
+      double stdDev = sqrt(var);
 
-	    double slice = stdDev * nDevs;
+      double slice = stdDev * nDevs;
 
-      std::vector<te::map::LegendItem*> aux;
+      std::vector<te::map::GroupingItem*> aux;
 
-	    rmean = te::common::Convert2String(mean, precision);
+      rmean = te::common::Convert2String(mean, precision);
 
-	    double val = mean;
-	    while(val - slice > min - slice)
-	    {
-        te::map::LegendItem* legendItem = new te::map::LegendItem;
+      double val = mean;
+      while(val - slice > min - slice)
+      {
+        te::map::GroupingItem* legendItem = new te::map::GroupingItem;
 
-		    double v = val - slice;
+        double v = val - slice;
 
-		    legendItem->setLowerLimit(te::common::Convert2String(v, precision));
-		    legendItem->setUpperLimit(te::common::Convert2String(val, precision));
-		    aux.push_back(legendItem);
-		    val = v;
-	    }
+        legendItem->setLowerLimit(te::common::Convert2String(v, precision));
+        legendItem->setUpperLimit(te::common::Convert2String(val, precision));
+        aux.push_back(legendItem);
+        val = v;
+      }
 
-	    std::vector<te::map::LegendItem*>::reverse_iterator sit;
-	    for(sit = aux.rbegin(); sit != aux.rend(); ++sit)
-		    legend.push_back(*sit);
+      std::vector<te::map::GroupingItem*>::reverse_iterator sit;
+      for(sit = aux.rbegin(); sit != aux.rend(); ++sit)
+        legend.push_back(*sit);
 
-	    std::string media = "mean = " + rmean;
+      std::string media = "mean = " + rmean;
 
-	    te::map::LegendItem* legendItem = new te::map::LegendItem;
-	    legendItem->setLowerLimit(media);
-	    legend.push_back(legendItem);
+      te::map::GroupingItem* legendItem = new te::map::GroupingItem;
+      legendItem->setLowerLimit(media);
+      legend.push_back(legendItem);
 
-	    val = mean;
-	    while(val + slice < max + slice)
-	    {
-	      te::map::LegendItem* legendItem = new te::map::LegendItem;
+      val = mean;
+      while(val + slice < max + slice)
+      {
+        te::map::GroupingItem* legendItem = new te::map::GroupingItem;
 
-		    double v = val + slice;
+        double v = val + slice;
 
-		    legendItem->setLowerLimit(te::common::Convert2String(val, precision));
-		    legendItem->setUpperLimit(te::common::Convert2String(v, precision));
-		    legend.push_back(legendItem);
+        legendItem->setLowerLimit(te::common::Convert2String(val, precision));
+        legendItem->setUpperLimit(te::common::Convert2String(v, precision));
+        legend.push_back(legendItem);
 
-		    val = v;
-	    }
+        val = v;
+      }
 
-	    if(legend.size() > 2)
-	    {
-		    if(legend[0]->getLowerLimit().find("mean") == std::string::npos)
-			    legend[0]->setLowerLimit(te::common::Convert2String(min, precision));
+      if(legend.size() > 2)
+      {
+        if(legend[0]->getLowerLimit().find("mean") == std::string::npos)
+          legend[0]->setLowerLimit(te::common::Convert2String(min, precision));
 
-		    if (legend[legend.size()-1]->getLowerLimit().find("mean") == std::string::npos)
-			    legend[legend.size()-1]->setUpperLimit(te::common::Convert2String(max, precision));
-	    }
+        if (legend[legend.size()-1]->getLowerLimit().find("mean") == std::string::npos)
+          legend[legend.size()-1]->setUpperLimit(te::common::Convert2String(max, precision));
+      }
 
-	    // Set the number of elements for each slice
-	    if (countElements == true)
-		    SetNumberOfElementsByLegendItem(begin, end, legend);
+      // Set the number of elements for each slice
+      if (countElements == true)
+        SetNumberOfElementsByLegendItem(begin, end, legend);
     }
 
     /*!
@@ -284,28 +284,28 @@ namespace te
       \return        The number of elements will be stored in each legend item.
     */
     template<class iterator>
-    void SetNumberOfElementsByLegendItem(iterator begin, iterator end, std::vector<te::map::LegendItem*>& legend)
+    void SetNumberOfElementsByLegendItem(iterator begin, iterator end, std::vector<te::map::GroupingItem*>& legend)
     {
-    	iterator it;
-    	double from, to;
+      iterator it;
+      double from, to;
       int count;
     
-    	for (unsigned int i = 0; i < legend.size(); ++i)
-    	{
-    		te::map::LegendItem* legendItem = legend[i];
+      for (unsigned int i = 0; i < legend.size(); ++i)
+      {
+        te::map::GroupingItem* legendItem = legend[i];
 
         from = atof(legendItem->getLowerLimit().c_str());
         to =   atof(legendItem->getUpperLimit().c_str());
         count = 0;
 
-    		for (it = begin; it != end; ++it)
-    		{
-    			if(*it >= from && *it < to)
-    				++count;
-    		}
+        for (it = begin; it != end; ++it)
+        {
+          if(*it >= from && *it < to)
+            ++count;
+        }
 
         legendItem->setCount(count);
-    	}
+      }
     }
   }      // end namespace map
 }        // end namespace te

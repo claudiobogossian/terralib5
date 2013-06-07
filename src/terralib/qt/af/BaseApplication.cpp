@@ -53,6 +53,7 @@
 #include "../widgets/progress/ProgressViewerWidget.h"
 #include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/se/VisualDockWidget.h"
+#include "../widgets/se/GroupingDialog.h"
 #include "../widgets/tools/Info.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
@@ -606,6 +607,32 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onLayerGroupingTriggered()
+{
+  try
+  {
+    std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+    if(layers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+      return;
+    }
+
+    te::map::AbstractLayerPtr l = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+
+    te::qt::widgets::GroupingDialog dlg(this);
+
+    dlg.setLayer(l);
+
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::onMapSRIDTriggered()
 {
   te::qt::widgets::SRSManagerDialog srsDialog(this);
@@ -884,6 +911,7 @@ void te::qt::af::BaseApplication::makeDialog()
   lexplorer->getTreeView()->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
   lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  lexplorer->getTreeView()->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 
@@ -1045,6 +1073,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerEdit, "layer-edit", "Layer.Edit", tr("&Edit"), tr(""), true, false, false, m_menubar);
   initAction(m_layerRename, "layer-rename", "Layer.Rename", tr("R&ename"), tr(""), true, false, false, m_menubar);
   initAction(m_layerExport, "document-export", "Layer.Export", tr("E&xport..."), tr(""), true, false, false, m_menubar);
+  initAction(m_layerGrouping, "", "Layer.Grouping", tr("&Grouping..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerShowTable, "", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
   initAction(m_layerRaise, "layer-raise", "Layer.Raise", tr("&Raise"), tr(""), true, false, false, m_menubar);
@@ -1179,6 +1208,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerEdit);
   m_layerMenu->addAction(m_layerRename);
   m_layerMenu->addAction(m_layerExport);
+  m_layerMenu->addAction(m_layerGrouping);
   m_layerMenu->addAction(m_layerProperties);
   m_layerMenu->addAction(m_layerShowTable);
   m_layerMenu->addSeparator();
@@ -1369,6 +1399,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
+  connect(m_layerGrouping, SIGNAL(triggered()), SLOT(onLayerGroupingTriggered()));
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));

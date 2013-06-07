@@ -18,32 +18,39 @@
  */
 
 /*!
-  \file LegendItem.cpp
+  \file GroupingItem.cpp
 
-  \brief This class contains information about a legend item associated to a layer.
+  \brief This class contains information about a grouping item associated to a layer.
 */
 
 // TerraLib
-#include "LegendItem.h"
+#include "../common/STLUtils.h"
+#include "../se/Symbolizer.h"
+#include "GroupingItem.h"
 
 
-te::map::LegendItem::LegendItem(const std::string& from, const std::string& to)
+te::map::GroupingItem::GroupingItem(const std::string& from, const std::string& to)
   : m_from(from), m_to(to),m_count(0), m_title("")
 {
-  m_color.setColor(0, 0, 0, 255);
+
 }
 
-te::map::LegendItem::~LegendItem()
-{  
-}
-
-te::map::LegendItem::LegendItem(const LegendItem& rhs)
-  : m_from(rhs.m_from), m_to(rhs.m_to), m_count(rhs.m_count),
-    m_title(rhs.m_title), m_color(rhs.m_color)
+te::map::GroupingItem::~GroupingItem()
 {
+  te::common::FreeContents(m_symbolizers);
 }
 
-te::map::LegendItem& te::map::LegendItem::operator=(const LegendItem& rhs)
+te::map::GroupingItem::GroupingItem(const GroupingItem& rhs)
+  : m_from(rhs.m_from), m_to(rhs.m_to), m_count(rhs.m_count),
+    m_title(rhs.m_title)
+{
+  for(size_t t = 0; t < rhs.m_symbolizers.size(); ++t)
+  {
+    m_symbolizers.push_back(rhs.m_symbolizers[t]->clone());
+  }
+}
+
+te::map::GroupingItem& te::map::GroupingItem::operator=(const GroupingItem& rhs)
 {
   if(this != &rhs)
   {
@@ -51,33 +58,37 @@ te::map::LegendItem& te::map::LegendItem::operator=(const LegendItem& rhs)
     m_to = rhs.m_to;
     m_count = rhs.m_count;
     m_title = rhs.m_title;
-    m_color = rhs.m_color;
+
+    for(size_t t = 0; t < rhs.m_symbolizers.size(); ++t)
+    {
+      m_symbolizers.push_back(rhs.m_symbolizers[t]->clone());
+    }
   }
 
   return *this;
 }
 
-const std::string& te::map::LegendItem::getLowerLimit() const
+const std::string& te::map::GroupingItem::getLowerLimit() const
 {
   return m_from;
 }
 
-void te::map::LegendItem::setLowerLimit(const std::string& from)
+void te::map::GroupingItem::setLowerLimit(const std::string& from)
 {
   m_from = from;
 }
 
-const std::string& te::map::LegendItem::getUpperLimit() const
+const std::string& te::map::GroupingItem::getUpperLimit() const
 {
   return m_to;
 }
 
-void te::map::LegendItem::setUpperLimit(const std::string& to)
+void te::map::GroupingItem::setUpperLimit(const std::string& to)
 {
   m_to = to;
 }
 
-std::string te::map::LegendItem::getTitle()
+std::string te::map::GroupingItem::getTitle()
 {
   if(m_title.empty() == true)
   {
@@ -90,27 +101,27 @@ std::string te::map::LegendItem::getTitle()
   return m_title;
 }
 
-void te::map::LegendItem::setTitle(const std::string& title)
+void te::map::GroupingItem::setTitle(const std::string& title)
 {
   m_title = title;
 }
 
-std::size_t te::map::LegendItem::getCount() const
+std::size_t te::map::GroupingItem::getCount() const
 {
   return m_count;
 }
 
-void te::map::LegendItem::setCount(std::size_t count)
+void te::map::GroupingItem::setCount(std::size_t count)
 {
   m_count = count;
 }
 
-const te::color::RGBAColor& te::map::LegendItem::getColor() const
+std::vector<te::se::Symbolizer*>& te::map::GroupingItem::getSymbolizers()
 {
-  return m_color;
+  return m_symbolizers;
 }
 
-void te::map::LegendItem::setColor(const te::color::RGBAColor& color)
+void te::map::GroupingItem::setSymbolizers(std::vector<te::se::Symbolizer*> symbolizers)
 {
-  m_color = color;
+  m_symbolizers = symbolizers;
 }

@@ -27,12 +27,14 @@
 #include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../srs/Config.h"
 #include "AbstractLayer.h"
+#include "Grouping.h"
 
 te::map::AbstractLayer::AbstractLayer(AbstractLayer* parent)
   : te::common::TreeItem(parent),
     m_srid(TE_UNKNOWN_SRS),
     m_visibility(NOT_VISIBLE),
-    m_selected(0)
+    m_selected(0),
+    m_grouping(0)
 {
 }
 
@@ -41,7 +43,8 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id, AbstractLayer* pare
     m_id(id),
     m_srid(TE_UNKNOWN_SRS),
     m_visibility(NOT_VISIBLE),
-    m_selected(0)
+    m_selected(0),
+    m_grouping(0)
 {
 }
 
@@ -53,13 +56,15 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id,
     m_title(title),
     m_srid(TE_UNKNOWN_SRS),
     m_visibility(NOT_VISIBLE),
-    m_selected(0)
+    m_selected(0),
+    m_grouping(0)
 {
 }
 
 te::map::AbstractLayer::~AbstractLayer()
 {
   delete m_selected;
+  delete m_grouping;
 }
 
 const std::string& te::map::AbstractLayer::getId() const
@@ -206,4 +211,14 @@ void te::map::AbstractLayer::adjustVisibility()
     else if(allNotVisible)
       m_visibility = te::map::NOT_VISIBLE;
   }
+}
+
+te::map::Grouping* te::map::AbstractLayer::getGrouping() const
+{
+  return m_grouping;
+}
+
+void te::map::AbstractLayer::setGrouping(te::map::Grouping* grouping)
+{
+  m_grouping = grouping;
 }
