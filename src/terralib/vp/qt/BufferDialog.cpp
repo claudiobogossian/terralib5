@@ -42,6 +42,7 @@
 
 // Qt
 #include <QtCore/QList>
+#include <QtCore/QSize.h>
 #include <QtGui/QFileDialog>
 #include <QtGui/QListWidget>
 #include <QtGui/QListWidgetItem>
@@ -58,11 +59,19 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
 
 // add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-buffer-hint").pixmap(112,48));
-  m_ui->m_withoutBoundariesLabel->setPixmap(QIcon::fromTheme("buffer_without-boundaries").pixmap(48,48));
-  m_ui->m_withBoundariesLabel->setPixmap(QIcon::fromTheme("buffer-with-boundaries").pixmap(48,48));
+  
+  QSize iconSize(96, 48);
+
+  m_ui->m_withoutBoundRadioButton->setIconSize(iconSize);
+  m_ui->m_withoutBoundRadioButton->setIcon(QIcon::fromTheme("buffer-without-boundaries"));
+
+  m_ui->m_withBoundRadioButton->setIconSize(iconSize);
+  m_ui->m_withBoundRadioButton->setIcon(QIcon::fromTheme("buffer-with-boundaries"));
+
   m_ui->m_ruleImgLabel->setPixmap(QIcon::fromTheme("buffer-inside-outside").pixmap(150,60));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));  
 
+//signals
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));

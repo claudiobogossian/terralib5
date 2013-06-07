@@ -121,6 +121,9 @@
           <property name="text">
            <string>Fixed at</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item row="0" column="1" rowspan="2">
@@ -152,8 +155,20 @@
      </item>
      <item row="3" column="0" colspan="2">
       <widget class="QTabWidget" name="tabWidget">
+       <property name="tabShape">
+        <enum>QTabWidget::Rounded</enum>
+       </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>1</number>
+       </property>
+       <property name="documentMode">
+        <bool>false</bool>
+       </property>
+       <property name="tabsClosable">
+        <bool>false</bool>
+       </property>
+       <property name="movable">
+        <bool>false</bool>
        </property>
        <widget class="QWidget" name="m_rulePolTab">
         <attribute name="title">
@@ -162,9 +177,9 @@
         <widget class="QWidget" name="">
          <property name="geometry">
           <rect>
-           <x>9</x>
-           <y>9</y>
-           <width>280</width>
+           <x>0</x>
+           <y>10</y>
+           <width>317</width>
            <height>74</height>
           </rect>
          </property>
@@ -180,9 +195,12 @@
             <property name="text">
              <string>Inside and Outside</string>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
-          <item row="0" column="1" rowspan="3">
+          <item row="0" column="2" rowspan="3">
            <widget class="QLabel" name="m_ruleImgLabel">
             <property name="minimumSize">
              <size>
@@ -208,6 +226,19 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="1" rowspan="2">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
           <item row="2" column="0">
            <widget class="QRadioButton" name="m_ruleOnlyInRadioButton">
             <property name="text">
@@ -225,88 +256,39 @@
         <widget class="QWidget" name="">
          <property name="geometry">
           <rect>
-           <x>9</x>
-           <y>9</y>
-           <width>251</width>
-           <height>88</height>
+           <x>12</x>
+           <y>10</y>
+           <width>327</width>
+           <height>99</height>
           </rect>
          </property>
-         <layout class="QGridLayout" name="gridLayout_11">
+         <layout class="QGridLayout" name="gridLayout_16">
           <property name="leftMargin">
            <number>10</number>
           </property>
           <property name="topMargin">
            <number>10</number>
           </property>
-          <item row="0" column="0" colspan="2">
+          <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="0" column="0">
              <widget class="QRadioButton" name="m_withoutBoundRadioButton">
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>50</height>
+               </size>
+              </property>
               <property name="text">
                <string/>
               </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="m_withoutBoundariesLabel">
-              <property name="minimumSize">
-               <size>
-                <width>48</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>48</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Imagem</string>
+              <property name="checked">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="0" column="3">
-             <widget class="QRadioButton" name="m_withBoundRadioButton">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
-             <widget class="QLabel" name="m_withBoundariesLabel">
-              <property name="minimumSize">
-               <size>
-                <width>48</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>48</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Imagem</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="5">
-             <spacer name="horizontalSpacer_3">
+            <item row="1" column="0">
+             <spacer name="horizontalSpacer_5">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -320,8 +302,8 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="0">
-           <spacer name="horizontalSpacer_5">
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -333,15 +315,32 @@
             </property>
            </spacer>
           </item>
-          <item row="1" column="1">
-           <widget class="QCheckBox" name="m_copyColumnsCheckBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Copy input columns</string>
-            </property>
-           </widget>
+          <item row="0" column="2">
+           <layout class="QGridLayout" name="gridLayout_11">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="m_withBoundRadioButton">
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>50</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="m_copyColumnsCheckBox">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Copy input columns</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -350,7 +349,15 @@
         <attribute name="title">
          <string>Multiple Levels</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>170</width>
+           <height>31</height>
+          </rect>
+         </property>
          <layout class="QGridLayout" name="gridLayout_9">
           <property name="leftMargin">
            <number>10</number>
