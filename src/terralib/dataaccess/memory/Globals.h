@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/memory/Globals.h
-   
+  \file terralib/dataccess/memory/Globals.h
+
   \brief An static class with global definitions for the TerraLib In-Memory driver.
 */
 
-#ifndef __TERRALIB_MEMORY_INTERNAL_GLOBAL_H
-#define __TERRALIB_MEMORY_INTERNAL_GLOBAL_H
+#ifndef __TERRALIB_DATACCESS_MEMORY_INTERNAL_GLOBAL_H
+#define __TERRALIB_DATACCESS_MEMORY_INTERNAL_GLOBAL_H
 
 // TerraLib
-#include "../common/Static.h"
+#include "../../common/Static.h"
 #include "Config.h"
 
 // STL
@@ -35,22 +35,25 @@
 
 namespace te
 {
-  namespace mem
+  namespace da
   {
-    /*!
-      \class Globals
-
-      \brief An static class with global definitions for the TerraLib In-Memory driver.
-    */
-    class TEMEMORYEXPORT Globals : public te::common::Static
+    namespace mem
     {
-      public:
+      /*!
+        \class Globals
 
-        static const std::string sm_driverIdentifier;  //!< The MEMORY driver identifier.
-    };
+        \brief An static class with global definitions for the TerraLib In-Memory driver.
+      */
+      class TEMEMORYEXPORT Globals : public te::common::Static
+      {
+        public:
 
-  } // end namespace mem
-}   // end namespace te
+          static const std::string sm_driverIdentifier;  //!< The MEMORY driver identifier.
+      };
 
-#endif  // __TERRALIB_MEMORY_INTERNAL_GLOBAL_H
+    } // end namespace mem
+  }   // end namespace da
+}     // end namespace te
+
+#endif  // __TERRALIB_DATACCESS_MEMORY_INTERNAL_GLOBAL_H
 

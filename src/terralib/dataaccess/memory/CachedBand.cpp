@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,22 +18,23 @@
  */
 
 /*!
-  \file terralib/memory/CachedBand.cpp
+  \file terralib/dataaccess/memory/CachedBand.cpp
  
   \brief RAM cached and tiled raster band.
 */
 
 // TerraLib
+#include "../../raster/BandProperty.h"
 #include "CachedBand.h"
-#include "../raster/BandProperty.h"
 
+// STL
 #include <cstring>
 
-te::mem::CachedBandBlocksManager te::mem::CachedBand::dummyBlocksManager;
+te::da::mem::CachedBandBlocksManager te::da::mem::CachedBand::dummyBlocksManager;
 
-te::mem::CachedBand::CachedBand( CachedBandBlocksManager& blocksManager,
-  std::size_t idx )
-: te::rst::Band( new te::rst::BandProperty( 
+te::da::mem::CachedBand::CachedBand( CachedBandBlocksManager& blocksManager,
+                                     std::size_t idx )
+  : te::rst::Band( new te::rst::BandProperty( 
   *(blocksManager.getRaster()->getBand( idx )->getProperty()) ), idx ),
   m_blocksManager( blocksManager )
 {
@@ -45,8 +46,8 @@ te::mem::CachedBand::CachedBand( CachedBandBlocksManager& blocksManager,
     blocksManager.getRaster()->getBand( idx )->getProperty()->getType());
 }
 
-te::mem::CachedBand::CachedBand()
-: te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ), m_blocksManager( dummyBlocksManager )
+te::da::mem::CachedBand::CachedBand()
+  : te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ), m_blocksManager( dummyBlocksManager )
 {
   m_blkWidth = 0;
   m_blkHeight = 0;
@@ -57,24 +58,11 @@ te::mem::CachedBand::CachedBand()
   m_setBuffI = 0;
 }
 
-te::mem::CachedBand::CachedBand(const CachedBand& )
-: te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ),
-  m_blocksManager( dummyBlocksManager )
-{
-  m_blkWidth = 0;
-  m_blkHeight = 0;
-  m_blkSizeBytes = 0;
-  m_getBuff = 0;
-  m_getBuffI = 0;
-  m_setBuff = 0;
-  m_setBuffI = 0;
-}
-
-te::mem::CachedBand::~CachedBand()
+te::da::mem::CachedBand::~CachedBand()
 {
 }
 
-void te::mem::CachedBand::getValue(unsigned int c, unsigned int r, double& value) const
+void te::da::mem::CachedBand::getValue(unsigned int c, unsigned int r, double& value) const
 {
   m_setGetBlkX = c / m_blkWidth;
   m_setGetBlkY = r / m_blkHeight;
@@ -85,7 +73,7 @@ void te::mem::CachedBand::getValue(unsigned int c, unsigned int r, double& value
   m_getBuff(m_setGetPos, m_setGetBufPtr, &value );
 }
 
-void te::mem::CachedBand::setValue(unsigned int c, unsigned int r, const double value)
+void te::da::mem::CachedBand::setValue(unsigned int c, unsigned int r, const double value)
 {
   m_setGetBlkX = c / m_blkWidth;
   m_setGetBlkY = r / m_blkHeight;
@@ -96,7 +84,7 @@ void te::mem::CachedBand::setValue(unsigned int c, unsigned int r, const double 
   m_setBuff(m_setGetPos, m_setGetBufPtr, &value );
 }
 
-void te::mem::CachedBand::getIValue(unsigned int c, unsigned int r, double& value) const
+void te::da::mem::CachedBand::getIValue(unsigned int c, unsigned int r, double& value) const
 {
   m_setGetBlkX = c / m_blkWidth;
   m_setGetBlkY = r / m_blkHeight;
@@ -107,7 +95,7 @@ void te::mem::CachedBand::getIValue(unsigned int c, unsigned int r, double& valu
   m_getBuffI(m_setGetPos, m_setGetBufPtr, &value );
 }
 
-void te::mem::CachedBand::setIValue(unsigned int c, unsigned int r, const double value)
+void te::da::mem::CachedBand::setIValue(unsigned int c, unsigned int r, const double value)
 {
   m_setGetBlkX = c / m_blkWidth;
   m_setGetBlkY = r / m_blkHeight;
@@ -118,20 +106,18 @@ void te::mem::CachedBand::setIValue(unsigned int c, unsigned int r, const double
   m_setBuffI(m_setGetPos, m_setGetBufPtr, &value );
 }
 
-void te::mem::CachedBand::read(int x, int y, void* buffer) const
+void te::da::mem::CachedBand::read(int x, int y, void* buffer) const
 {
   assert( m_blocksManager.isInitialized() );
   memcpy( buffer, m_blocksManager.getBlockPointer( m_idx, x, y ),
     m_blkSizeBytes );
 }
 
-void te::mem::CachedBand::write(int x, int y, void* buffer)
+void te::da::mem::CachedBand::write(int x, int y, void* buffer)
 {
   assert( m_blocksManager.isInitialized() );
   memcpy( m_blocksManager.getBlockPointer( m_idx, x, y ), buffer,
-    m_blkSizeBytes );
+          m_blkSizeBytes );
 }
-
-
 
 

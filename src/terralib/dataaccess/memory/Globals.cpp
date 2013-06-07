@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/memory/Globals.cpp
-   
+  \file terralib/dataccess/memory/Globals.cpp
+
   \brief An static class with global definitions for the TerraLib In-Memory driver.
 */
 
 // TerraLib
 #include "Globals.h"
 
-const std::string te::mem::Globals::sm_driverIdentifier(TE_MEMORY_DRIVER_IDENTIFIER);
+const std::string te::da::mem::Globals::sm_driverIdentifier(TE_MEMORY_DRIVER_IDENTIFIER);
 
