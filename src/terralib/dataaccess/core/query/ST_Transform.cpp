@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Transform.cpp
+  \file terralib/dataaccess/core/query/ST_Transform.cpp
 
   \brief Spatial reference system transformation function.
 */
@@ -28,33 +28,32 @@
 #include "LiteralInt32.h"
 #include "ST_Transform.h"
 
-te::da::ST_Transform::ST_Transform(Expression* arg, int srid)
+te::da::core::ST_Transform::ST_Transform(Expression* arg, int srid)
   : Function(FunctionNames::sm_ST_Transform)
 {
   m_args.push_back(arg);
   m_args.push_back(new LiteralInt32(srid));
 }
 
-te::da::ST_Transform::ST_Transform(const Expression& arg, int srid)
+te::da::core::ST_Transform::ST_Transform(const Expression& arg, int srid)
   : Function(FunctionNames::sm_ST_Transform)
 {
   m_args.push_back(arg.clone());
   m_args.push_back(new LiteralInt32(srid));
 }
 
-te::da::ST_Transform::ST_Transform(const ST_Transform& rhs)
+te::da::core::ST_Transform::ST_Transform(const ST_Transform& rhs)
   : Function(rhs)
 {
 }
 
-te::da::ST_Transform& te::da::ST_Transform::operator=(const ST_Transform& rhs)
+te::da::core::ST_Transform& te::da::core::ST_Transform::operator=(const ST_Transform& rhs)
 {
   Function::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Transform::clone() const
+te::da::core::Expression* te::da::core::ST_Transform::clone() const
 {
   return new ST_Transform(*this);
 }
-

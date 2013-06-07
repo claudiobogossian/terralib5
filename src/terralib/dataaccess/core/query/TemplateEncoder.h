@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/TemplateEncoder.h
+  \file terralib/dataaccess/core/query/TemplateEncoder.h
 
   \brief A query encoder for functions that needs special translation.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_TEMPLATEENCODER_H
-#define __TERRALIB_DATAACCESS_INTERNAL_TEMPLATEENCODER_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_TEMPLATEENCODER_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_TEMPLATEENCODER_H
 
 // TerraLib
 #include "SQLFunctionEncoder.h"
@@ -36,53 +36,55 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class TemplateEncoder
-      
-      \brief A query encoder for binary operator expressions.
-
-      You can use a special notation in order to translate the function arguments to a specific dialect convetion.
-
-      You can write an expression like: ($1 from $2 for $3) in order to write
-      a function with arguments in differnt positions.
-      The $n numbers will be used to map the arguments to its right place.
-
-      \sa Function, TemplateEncoder, AbstractOperatorEncoder, UnaryOperatorEncoder, FunctionEncoder, FunctionNoArgsEncoder
-     */
-    class TEDATAACCESSEXPORT TemplateEncoder : public SQLFunctionEncoder
+    namespace core
     {
-      public:
+      /*!
+        \class TemplateEncoder
+      
+        \brief A query encoder for binary operator expressions.
 
-        /*!
-          \brief Constructor.
+        You can use a special notation in order to translate the function arguments to a specific dialect convetion.
+
+        You can write an expression like: ($1 from $2 for $3) in order to write
+        a function with arguments in differnt positions.
+        The $n numbers will be used to map the arguments to its right place.
+
+        \sa Function, TemplateEncoder, AbstractOperatorEncoder, UnaryOperatorEncoder, FunctionEncoder, FunctionNoArgsEncoder
+       */
+      class TEDATAACCESSEXPORT TemplateEncoder : public SQLFunctionEncoder
+      {
+        public:
+
+          /*!
+            \brief Constructor.
         
-          \param name The function alias name.
-          \param t    The expression template.
-        */
-        TemplateEncoder(const std::string& name, const std::string& t);
+            \param name The function alias name.
+            \param t    The expression template.
+          */
+          TemplateEncoder(const std::string& name, const std::string& t);
 
-        /*! \brief Destructor. */
-        ~TemplateEncoder() {}
+          /*! \brief Destructor. */
+          ~TemplateEncoder() {}
 
-        /*!
-          \brief It encodes the function to a SQL notation.
+          /*!
+            \brief It encodes the function to a SQL notation.
 
-          \param f     The function to be translated to a SQL notation.
-          \param buff  The destination string buffer where the translation will be written.
-          \param v     The SQL visitor that will be used to visit the arguments expression.
-        */
-        void toSQL(const Function& f,
-                   std::string& buff,
-                   SQLVisitor& v) const;
+            \param f     The function to be translated to a SQL notation.
+            \param buff  The destination string buffer where the translation will be written.
+            \param v     The SQL visitor that will be used to visit the arguments expression.
+          */
+          void toSQL(const Function& f,
+                     std::string& buff,
+                     SQLVisitor& v) const;
 
-      private:
+        private:
 
-        std::vector<std::string> m_chuncks; //!< We split the input template into some pieces and make them prepared to concatenate.
-        std::vector<std::size_t> m_argIdx;  //!< The arguments index.
-    };
+          std::vector<std::string> m_chuncks; //!< We split the input template into some pieces and make them prepared to concatenate.
+          std::vector<std::size_t> m_argIdx;  //!< The arguments index.
+      };
 
-  } // end namespace da
-}   // end namespace te
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_TEMPLATEENCODER_H
-
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_TEMPLATEENCODER_H

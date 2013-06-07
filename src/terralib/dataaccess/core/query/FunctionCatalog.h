@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/FunctionCatalog.h
+  \file terralib/dataaccess/core/query/FunctionCatalog.h
 
   \brief A FunctionCatalog can be used to keep track of registered functions.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONCATALOG_H
-#define __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONCATALOG_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONCATALOG_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONCATALOG_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
 #include <map>
@@ -41,57 +41,58 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class FunctionDefn;
-
-    /*!
-      \class FunctionCatalog
-      
-      \brief A FunctionCatalog can be used to keep track of registered functions.
-
-      \sa FunctionDefn, FunctionCatalogManager
-    */
-    class TEDATAACCESSEXPORT FunctionCatalog : public boost::noncopyable
+    namespace core
     {
-      public:
+      // Forward declarations
+      class FunctionDefn;
 
-        /*!
-          \brief Constructor.
+      /*!
+        \class FunctionCatalog
+      
+        \brief A FunctionCatalog can be used to keep track of registered functions.
 
-          \param name The parameter name.
-          \param t    The parameter type.
-        */
-        FunctionCatalog() {}
+        \sa FunctionDefn, FunctionCatalogManager
+      */
+      class TEDATAACCESSEXPORT FunctionCatalog : public boost::noncopyable
+      {
+        public:
 
-        /*! \brief Destructor. */
-        ~FunctionCatalog();
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief It inserts the function into the catalog.
+            \param name The parameter name.
+            \param t    The parameter type.
+          */
+          FunctionCatalog() {}
 
-          \param fdfn The function definition. The catalog will take the ownership of the given pointer.
-        */
-        void insert(FunctionDefn* fdfn);
+          /*! \brief Destructor. */
+          ~FunctionCatalog();
 
-        /*!
-          \brief It finds the function with the given name.
+          /*!
+            \brief It inserts the function into the catalog.
 
-          \param functionName The function name you are looking information for.
+            \param fdfn The function definition. The catalog will take the ownership of the given pointer.
+          */
+          void insert(FunctionDefn* fdfn);
 
-          \return The list of functions with the given name. Remember, a function name may be overloaded. If none is found, return NULL.
+          /*!
+            \brief It finds the function with the given name.
 
-          \note Don't delete the returned pointer, it belongs to the catalog!
-        */
-        std::vector<FunctionDefn*>* find(const std::string& functionName) const;
+            \param functionName The function name you are looking information for.
 
-      private:
+            \return The list of functions with the given name. Remember, a function name may be overloaded. If none is found, return NULL.
 
-        std::map<std::string, std::vector<FunctionDefn*>* > m_fMap;  //!< Function map: function-name -> std::vector<FunctionDef*>*.
-    };
+            \note Don't delete the returned pointer, it belongs to the catalog!
+          */
+          std::vector<FunctionDefn*>* find(const std::string& functionName) const;
 
-  } // end namespace da
-}   // end namespace te
+        private:
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_FUNCTIONCATALOG_H
+          std::map<std::string, std::vector<FunctionDefn*>* > m_fMap;  //!< Function map: function-name -> std::vector<FunctionDef*>*.
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONCATALOG_H

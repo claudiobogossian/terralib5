@@ -407,7 +407,7 @@ void te::da::core::SQLVisitor::visit(const te::da::core::OrderBy& visited)
 
     visited[i].getExpression()->accept(*this);
     
-    if(visited[i].getSortOrder() == te::da::ASC)
+    if(visited[i].getSortOrder() == te::da::core::ASC)
       m_sql += " ASC";
     else
       m_sql += " DESC";

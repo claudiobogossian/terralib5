@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/BinaryOp.cpp
+  \file terralib/dataaccess/core/query/BinaryOp.cpp
 
   \brief A base class for binary operations.
 */

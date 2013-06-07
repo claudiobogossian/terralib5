@@ -30,6 +30,7 @@
 #include "../../common/STLUtils.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
+#include "../../maptools/AbstractLayer.h"
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
@@ -61,6 +62,7 @@
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
 #include "../widgets/srs/SRSManagerDialog.h"
+#include "connectors/ChartDisplayDockWidget.h"
 #include "connectors/DataSetTableDockWidget.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
@@ -140,7 +142,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_explorer(0),
     m_display(0),
     m_project(0),
-    m_controller(0)
+    m_controller(0),
+    m_mapCursorSize(QSize(20, 20))
 {
   m_controller = new ApplicationController;
 
@@ -572,11 +575,22 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
       return;
     }
-    
-    te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
-    te::qt::widgets::HistogramDialog dlg(dataset, this);
+    te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+    const te::map::LayerSchema* schema = (lay->getSchema());
+    te::da::DataSet* dataset = (lay->getData());
+    te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+    te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
-    dlg.exec();
+    int res = dlg.exec();
+    if (res = QDialog::Accepted)
+    {
+      ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
+      doc->setWindowTitle("Histogram");
+      doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
+      doc->setLayer(lay.get());
+      ApplicationController::getInstance().addListener(doc);
+      doc->show();
+    }
   }
   catch(const std::exception& e)
   {
@@ -595,11 +609,22 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
       return;
     }
-    
-    te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
-    te::qt::widgets::ScatterDialog dlg(dataset, this);
+    te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+    const te::map::LayerSchema* schema = (lay->getSchema());
+    te::da::DataSet* dataset = (lay->getData());
+    te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
+    te::qt::widgets::ScatterDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));
-    dlg.exec();
+    int res = dlg.exec();
+    if (res = QDialog::Accepted)
+    {
+      ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
+      doc->setWindowTitle("Scatter");
+      doc->setWindowIcon(QIcon::fromTheme("chart-scatter"));
+      ApplicationController::getInstance().addListener(doc);
+      doc->setLayer(lay.get());
+      doc->show();
+    }
   }
   catch(const std::exception& e)
   {
@@ -662,7 +687,9 @@ void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::ZoomClick* zoomIn = new te::qt::widgets::ZoomClick(m_display->getDisplay(), 2.0);
+  QCursor zoomInCursor(QIcon::fromTheme("zoom-in").pixmap(m_mapCursorSize));
+
+  te::qt::widgets::ZoomClick* zoomIn = new te::qt::widgets::ZoomClick(m_display->getDisplay(), zoomInCursor, 2.0);
   m_display->setCurrentTool(zoomIn);
 }
 
@@ -671,7 +698,9 @@ void te::qt::af::BaseApplication::onZoomOutToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_display->getDisplay(), 2.0, te::qt::widgets::Zoom::Out);
+  QCursor zoomOutCursor(QIcon::fromTheme("zoom-out").pixmap(m_mapCursorSize));
+
+  te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_display->getDisplay(), zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
   m_display->setCurrentTool(zoomOut);
 }
 
@@ -680,7 +709,9 @@ void te::qt::af::BaseApplication::onZoomAreaToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_display->getDisplay(), Qt::BlankCursor);
+  QCursor zoomAreaCursor(QIcon::fromTheme("zoom-area").pixmap(m_mapCursorSize));
+
+  te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_display->getDisplay(), zoomAreaCursor);
   m_display->setCurrentTool(zoomArea);
 }
 
@@ -708,7 +739,9 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), m_project->getLayers());
+  QCursor infoCursor(QIcon::fromTheme("pointer-info").pixmap(m_mapCursorSize));
+
+  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_project->getLayers());
   m_display->setCurrentTool(info);
 }
 
@@ -717,8 +750,12 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), m_project->getLayers());
+  QCursor selectionCursor(QIcon::fromTheme("pointer-selection").pixmap(m_mapCursorSize));
+
+  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), selectionCursor, m_project->getLayers());
   m_display->setCurrentTool(selection);
+
+  connect(selection, SIGNAL(layerSelectionChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectionChanged(const te::map::AbstractLayerPtr&)));
 }
 
 void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
@@ -775,6 +812,14 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::af::DataSetTableDock
 void te::qt::af::BaseApplication::onFullScreenToggled(bool checked)
 {
   checked ? showFullScreen() : showMaximized();
+}
+
+void te::qt::af::BaseApplication::onLayerSelectionChanged(const te::map::AbstractLayerPtr& layer)
+{
+  assert(layer.get());
+
+  te::qt::af::evt::LayerSelectionChanged e(layer.get());
+  ApplicationController::getInstance().broadcast(&e);
 }
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)

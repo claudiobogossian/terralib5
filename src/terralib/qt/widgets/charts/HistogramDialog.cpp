@@ -40,14 +40,14 @@
 #include <QtGui/QDialog>
 #include <QtGui/QDockWidget>
 
-te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::HistogramDialogForm)
 {
   m_ui->setupUi(this);
 
   // Histogram data Widget
-  m_histogramDataWidget = new te::qt::widgets::HistogramDataWidget(dataSet, this, 0);
+  m_histogramDataWidget = new te::qt::widgets::HistogramDataWidget(dataSet, dataType, this, 0);
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_dataWidgetFrame);
@@ -62,6 +62,11 @@ te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, QWid
 te::qt::widgets::HistogramDialog::~HistogramDialog()
 {
   delete m_histogramDataWidget;
+}
+
+te::qt::widgets::ChartDisplayWidget* te::qt::widgets::HistogramDialog::getDisplayWidget()
+{
+  return m_displayWidget;
 }
 
 void te::qt::widgets::HistogramDialog::onHelpPushButtonClicked(){}
@@ -82,16 +87,9 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
   chartDisplay->replot();
 
   //Adjusting the chart widget
-  te::qt::widgets::ChartDisplayWidget* chartWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay, this->parentWidget());
-  chartWidget->setDisplay(chartDisplay);
+  m_displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay, this->parentWidget());
 
-  // Docking
-  QDockWidget* doc = new QDockWidget(this->parentWidget(), Qt::Dialog);
-  doc->setWidget(chartWidget);
-  doc->setWindowTitle("Histogram");
-  doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
+  this->accept();
 
-  chartWidget->setParent(doc);
-  this->close();
-  doc->show();
+
 }

@@ -31,9 +31,9 @@
 #include <QtGui/QMouseEvent>
 
 te::qt::widgets::PointPicker::PointPicker(te::qt::widgets::MapDisplay* display, const QCursor& cursor, QObject* parent) 
-  : AbstractTool(display, parent, cursor)
+  : AbstractTool(display, parent)
 {
-
+  setCursor(cursor);
 }
 
 te::qt::widgets::PointPicker::~PointPicker()

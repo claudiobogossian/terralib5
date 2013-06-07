@@ -33,10 +33,10 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::AbstractTool::AbstractTool(te::qt::widgets::MapDisplay* display, QObject* parent, const QCursor& cursor)
+te::qt::widgets::AbstractTool::AbstractTool(te::qt::widgets::MapDisplay* display, QObject* parent)
   : QObject(parent),
     m_display(display),
-    m_cursor(cursor)
+    m_cursor(Qt::BlankCursor)
 {
   assert(m_display);
 }
@@ -93,4 +93,9 @@ bool te::qt::widgets::AbstractTool::mouseReleaseEvent(QMouseEvent* e)
 bool te::qt::widgets::AbstractTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   return false;
+}
+
+void te::qt::widgets::AbstractTool::setCursor(const QCursor& cursor)
+{
+  m_cursor = cursor;
 }

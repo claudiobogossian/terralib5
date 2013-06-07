@@ -27,6 +27,7 @@
 #define __TERRALIB_COMMON_INTERNAL_STLUTILS_H
 
 // STL 
+#include <algorithm>
 #include <list>
 #include <map>
 #include <set>
@@ -257,6 +258,11 @@ namespace te
 
       for(std::size_t i = 0; i < size; ++i)
         dst.push_back(new T(*src[i]));
+    }
+
+    template<class T> inline bool Contains(const std::vector<T>& src, const T& value)
+    {
+      return std::find(src.begin(), src.end(), value) != src.end();
     }
 
   } // end namespace common

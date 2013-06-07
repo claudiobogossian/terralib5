@@ -20,15 +20,15 @@
 /*!
   \file terralib/dataaccess/core/dataset/Index.h
 
-  \brief It describes an index associated to a DataSetType.
+  \brief It describes an index associated to a dataset schema.
 */
 
 #ifndef __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_INDEX_H
 #define __TERRALIB_DATAACCESS_CORE_DATASET_INTERNAL_INDEX_H
 
 // TerraLib
-#include "../../Config.h"
-#include "../../Enums.h"
+#include "../Config.h"
+#include "../Enums.h"
 
 // STL
 #include <vector>
@@ -36,22 +36,19 @@
 
 namespace te
 {
-// Forward declarations
-  namespace dt { class Property; }
-
   namespace da
   {
     namespace core
     {
   // Forward declarations
-      class DataSetType;   
+      class DataSetType;
 
       /*!
         \class Index
 
-        \brief It describes an index associated to a DataSetType.
+        \brief It describes an index associated to a dataset schema.
 
-        \sa DataSetType, PrimaryKey, ForeignKey, CheckConstraint, UniqueKey
+        \sa DataSetType
       */
       class TEDATAACCESSEXPORT Index
       {
@@ -60,32 +57,13 @@ namespace te
           /*!
             \brief Constructor.
 
-            \param dt The DataSetType associated to this index.
-            \param id The index identifier.
-
-            \post If dt is provided, the index will belong to the given DataSetType.
-            \post By default the index type is BTreeType.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          Index(DataSetType* parent = 0, unsigned int id = 0);
-
-          /*!
-            \brief Constructor.
-
             \param name The index name.
             \param t    The index type.
-            \param dt   The DataSetType associated to this index.
-            \param id   The index identifier.
 
             \post If dt is provided, the index will belong to the given DataSetType.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
           */
           Index(const std::string& name,
-                IndexType t = B_TREE_TYPE,
-                DataSetType* dt = 0,
-                unsigned int id = 0);
+                IndexType t = B_TREE_TYPE);
 
           /*!
             \brief Constructor.
@@ -93,20 +71,14 @@ namespace te
             \param name       The index name.
             \param t          The index type.
             \param properties The properties that form the index.
-            \param dt         The DataSetType associated to this index.
-            \param id         The index identifier.
 
             \pre The properties must belong to the same DataSetType as the index.
 
             \post If dt is provided, the index will belong to the given DataSetType.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
           */
           Index(const std::string& name,
                 IndexType t,
-                const std::vector<te::dt::Property*>& properties,
-                DataSetType* dt = 0,
-                unsigned int id = 0);
+                const std::vector<std::size_t>& properties);
 
           /*!
             \brief Copy constructor.
@@ -118,7 +90,7 @@ namespace te
           Index(const Index& rhs);
 
           /*! \brief Destructor. */
-          ~Index() {}
+          ~Index() { }
 
           /*!
             \brief Assignment operator.
@@ -130,24 +102,6 @@ namespace te
             \return A reference to this.
           */
           Index& operator=(const Index& rhs);
-
-          /*!
-            \brief It returns the index identifier.
-
-            \return A number that identifies the index.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          unsigned int getId() const { return m_id; }
-
-          /*!
-            \brief It sets the DataSetType identifier.
-
-            \param id A unique number that identifies the DataSetType in its DataSource.
-
-            \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-          */
-          void setId(unsigned int id) { m_id = id; }
 
           /*!
             \brief It returns the index name.
@@ -182,21 +136,21 @@ namespace te
 
             \return The properties that take part of the index.
           */
-          const std::vector<te::dt::Property*>& getProperties() const { return m_properties; }
+          const std::vector<std::size_t>& getProperties() const { return m_properties; }
 
           /*!
-            \brief It sets the properties that take part of the index.
+            \brief It returns the properties that take part of the index.
 
-            \param properties The properties that take part of the index.
+            \return The properties that take part of the index.
           */
-          void setProperties(const std::vector<te::dt::Property*>& properties) { m_properties = properties; }
+          std::vector<std::size_t>& getProperties() { return m_properties; }
 
           /*!
             \brief It adds the property to the list of properties of the index.
 
-            \param p The property that will take part of the index.
+            \param propertyPos The property that will take part of the index.
           */
-          void add(te::dt::Property* p) { m_properties.push_back(p); }
+          void add(std::size_t propertyPos) { m_properties.push_back(propertyPos); }
 
           /*!
             \brief It returns the DataSetType associated to the index.
@@ -215,32 +169,12 @@ namespace te
           */
           void setDataSetType(DataSetType* dt) { m_dt = dt; }
 
-          /*!
-            \brief It verifies if Property is associated to the index.
-
-            \param p The Property to be verified.
-
-            \return True if Property is associated to the index, false otherwise.
-          */
-          bool has(te::dt::Property* p);
-
-          /*!
-            \brief It changes the reference to property p to pp.
-
-            \param p  A property that takes part of the index.
-            \param pp The property that will take p place.
-
-            \note If the property p is not in the idx attribute list this method does nothing.
-          */
-          void replace(te::dt::Property* p, te::dt::Property* pp);
-
         private:
 
-          unsigned int m_id;                            //!< An identification number for the index.
-          IndexType m_type;                             //!< The index type.
-          DataSetType* m_dt;                            //!< The parent DataSetType.
-          std::string m_name;                           //!< The index name.
-          std::vector<te::dt::Property*> m_properties;  //!< The list of properties that form the index.
+          std::string m_name;                     //!< The index name.
+          std::vector<std::size_t> m_properties;  //!< The list of properties that form the index.
+          DataSetType* m_dt;                      //!< The associated dataset.
+          IndexType m_type;                       //!< The index type.
       };
 
     }  // end namespace core

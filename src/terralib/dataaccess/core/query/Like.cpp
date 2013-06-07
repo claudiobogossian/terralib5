@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Like.cpp
+  \file terralib/dataaccess/core/query/Like.cpp
 
   \brief It is intended to encode a character string comparison operator with pattern matching.
 */
@@ -32,7 +32,7 @@
 // STL
 #include <cassert>
 
-te::da::Like::Like(Expression* str,
+te::da::core::Like::Like(Expression* str,
                    const std::string& pattern,
                    const std::string& wildCard,
                    const std::string& singleChar,
@@ -46,7 +46,7 @@ te::da::Like::Like(Expression* str,
   m_args.push_back(str);
 }
 
-te::da::Like::Like(const Expression& str,
+te::da::core::Like::Like(const Expression& str,
                    const std::string& pattern,
                    const std::string& wildCard,
                    const std::string& singleChar,
@@ -60,11 +60,11 @@ te::da::Like::Like(const Expression& str,
   m_args.push_back(str.clone());
 }
 
-te::da::Like::~Like()
+te::da::core::Like::~Like()
 {
 }
 
-te::da::Like::Like(const Like& rhs)
+te::da::core::Like::Like(const Like& rhs)
   : Function(rhs),
     m_pattern(rhs.m_pattern),
     m_wildCard(rhs.m_wildCard),
@@ -73,7 +73,7 @@ te::da::Like::Like(const Like& rhs)
 {
 }
 
-te::da::Like& te::da::Like::operator=(const Like& rhs)
+te::da::core::Like& te::da::core::Like::operator=(const Like& rhs)
 {
   if(this != &rhs)
   {
@@ -87,59 +87,58 @@ te::da::Like& te::da::Like::operator=(const Like& rhs)
   return *this;
 }
 
-te::da::Expression* te::da::Like::clone() const
+te::da::core::Expression* te::da::core::Like::clone() const
 {
   return new Like(*this);
 }
 
-te::da::Expression* te::da::Like::getString() const
+te::da::core::Expression* te::da::core::Like::getString() const
 {
   return m_args[0];
 }
 
-void te::da::Like::setString(Expression* str)
+void te::da::core::Like::setString(Expression* str)
 {
   delete m_args[0];
   m_args[0] = str;
 }
 
-const std::string& te::da::Like::getPattern()
+const std::string& te::da::core::Like::getPattern()
 {
   return m_pattern;
 }
 
-void te::da::Like::setPattern(const std::string& p)
+void te::da::core::Like::setPattern(const std::string& p)
 {
   m_pattern = p;
 }
 
-void te::da::Like::setWildCard(const std::string& w)
+void te::da::core::Like::setWildCard(const std::string& w)
 {
   m_wildCard = w;
 }
 
-const std::string& te::da::Like::getWildCard() const
+const std::string& te::da::core::Like::getWildCard() const
 {
   return m_wildCard;
 }
 
-void te::da::Like::setSingleChar(const std::string& s)
+void te::da::core::Like::setSingleChar(const std::string& s)
 {
   m_singleChar = s;
 }
 
-const std::string& te::da::Like::getSingleChar() const
+const std::string& te::da::core::Like::getSingleChar() const
 {
   return m_singleChar;
 }
 
-void te::da::Like::setEscapeChar(const std::string& e)
+void te::da::core::Like::setEscapeChar(const std::string& e)
 {
   m_escapeChar = e;
 }
 
-const std::string& te::da::Like::getEscapeChar() const
+const std::string& te::da::core::Like::getEscapeChar() const
 {
   return m_escapeChar;
 }
-

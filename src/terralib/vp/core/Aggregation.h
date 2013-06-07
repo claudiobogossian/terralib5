@@ -45,7 +45,18 @@ namespace te
 {
   namespace vp
   {
+     /*!
+      \brief It groups the values defined by a range of iterators using the standard deviation algorithm.
 
+      \param inputLayer             The input layer witch is used in aggregation operation.
+      \param groupingProperties     Selected properties based on selected layer.
+      \param groupingFunctionsType  Map of selected functions based on layer properties.
+      \param memoryUse              The memory use while processing.
+      \param outputLayerName        The name of output layer.
+      \param dsInfo                 Information of datasource persistence.
+
+      \output                     The aggregation result.
+    */
     void Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                      const std::vector<te::dt::Property*>& groupingProperties,
                      const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType,
@@ -53,31 +64,118 @@ namespace te
                      const std::string& outputLayerName,
                      const te::da::DataSourceInfoPtr& dsInfo);
 
+    /*!
+      \brief It returns the output DataSetType.
+
+      \param outputLayerName        The name of output layer.
+      \param properties             Selected properties based on selected layer.
+      \param groupingFunctionsType  Map of selected functions based on layer properties.
+
+      \output The output DataSetType.
+    */
     te::da::DataSetType* GetDataSetType(const std::string& outputLayerName, 
                                         const std::vector<te::dt::Property*>& properties, 
                                         const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType);
 
+    /*!
+      \brief It returns a map with a key group and items related to it.
+
+      \param inputDataSet         The input DataSet.
+      \param groupingProperties   Selected properties based on selected layer.
+
+      \output The aggregation groups.
+    */
     std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::mem::DataSet* inputDataSet,
                                                                           const std::vector<te::dt::Property*>& groupingProperties);
+    
+    /*!
+      \brief It returns the index of a property.
 
+      \param item           The DataSetItem.
+      \param propertyName   The property name.
+
+      \output The property index.
+    */
     std::size_t GetPropertyIndex(const te::mem::DataSetItem* item, const std::string propertyName);
 
+    /*!
+      \brief It returns the function name.
+
+      \param type   The int value related to the enumerator.
+
+      \output The function name.
+    */
     std::string GetGroupingFunctionsTypeMap(const int& type);
 
+    /*!
+      \brief It returns the union of a geometry vector.
+
+      \param items  Vector of itens that represents a group.
+
+      \output Union of the geometry.
+    */
     te::gm::Geometry* GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items);
 
+    /*!
+      \brief It returns the result of statistics for string properties.
+
+      \param groupingFunctionsType  A map of Property as Key and related functions.
+      \param items                  Itens that represents a group.
+
+      \output The result of statistics.
+    */
     std::map<std::string, std::string> CalculateStringGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType, 
                                                                         const std::vector<te::mem::DataSetItem*>& items);
 
+    /*!
+      \brief It returns the result of statistics for double properties.
+
+      \param groupingFunctionsType  A map of Property as Key and related functions.
+      \param items                  Itens that represents a group.
+
+      \output The result of statistics.
+    */
     std::map<std::string, double> CalculateDoubleGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType,
                                                                    const std::vector<te::mem::DataSetItem*>& items);
+    
+    /*!
+      \brief It verify if the property exists.
 
+      \param propertyName   The property name.
+      \param dataSet        The output DataSet.
+
+      \output A bool value.
+    */
     bool PropertyExists(const std::string& propertyName, const te::mem::DataSet* dataSet);
+    
+    /*!
+      \brief It returns the sum of the values.
 
+      \param values   Vector of values.
+
+      \output The sum of values.
+    */
     double Sum(const std::vector<double>& values);
 
+    /*!
+      \brief It returns the mode of the values.
+
+      \param values   Vector of values.
+
+      \output The mode of values.
+    */
     double Mode(const std::vector<double>& values);
 
+    /*!
+      \brief It persists the aggregation result.
+
+      \param dataSetType  The output DataSetType.
+      \param dataSet      The output DataSet.
+      \param dsInfo       Information of datasource persistence.
+      \param options      A list of optional modifiers. It is driver specific.
+
+      \output The aggregation result persistence.
+    */
     void Persistence( te::da::DataSetType* dataSetType,
                       te::mem::DataSet* dataSet,
                       const te::da::DataSourceInfoPtr& dsInfo,

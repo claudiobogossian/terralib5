@@ -108,7 +108,7 @@ void te::da::core::Join::setSecond(FromItem* item)
   m_second.reset(item);
 }
 
-te::da::JoinType te::da::core::Join::getType() const
+te::da::core::JoinType te::da::core::Join::getType() const
 {
   return m_type;
 }

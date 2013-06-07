@@ -51,7 +51,7 @@ bool te::da::core::DataSetCapabilities::supportsBidirectionalTraversing() const
   return m_bidirectional;
 }
 
-void te::da::core::DataSetCapabilities::setSupportBidirectionalTraversing(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportBidirectionalTraversing(const bool support)
 {
   m_bidirectional = support;
 }
@@ -61,7 +61,7 @@ bool te::da::core::DataSetCapabilities::supportsRandomTraversing() const
   return m_random;
 }
 
-void te::da::core::DataSetCapabilities::setSupportRandomTraversing(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportRandomTraversing(const bool support)
 {
   m_random = support;
 }
@@ -71,7 +71,7 @@ bool te::da::core::DataSetCapabilities::supportsIndexedTraversing() const
   return m_indexed;
 }
 
-void te::da::core::DataSetCapabilities::setSupportIndexedTraversing(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportIndexedTraversing(const bool support)
 {
   m_indexed = support;
 }
@@ -81,7 +81,7 @@ bool te::da::core::DataSetCapabilities::supportsEfficientMovePrevious() const
   return m_efficientMovePrevious;
 }
 
-void te::da::core::DataSetCapabilities::setSupportEfficientMovePrevious(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportEfficientMovePrevious(const bool support)
 {
   m_efficientMovePrevious = support;
 }
@@ -91,7 +91,7 @@ bool te::da::core::DataSetCapabilities::supportsEfficientMoveBeforeFirst() const
   return m_efficientMoveBeforeFirst;
 }
 
-void te::da::core::DataSetCapabilities::setSupportEfficientMoveBeforeFirst(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportEfficientMoveBeforeFirst(const bool support)
 {
   m_efficientMoveBeforeFirst = support;
 }
@@ -101,7 +101,7 @@ bool te::da::core::DataSetCapabilities::supportsEfficientMoveLast() const
   return m_efficientMoveLast;
 }
 
-void te::da::core::DataSetCapabilities::setSupportEfficientMoveLast(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportEfficientMoveLast(const bool support)
 {
   m_efficientMoveLast = support;
 }
@@ -111,7 +111,7 @@ bool te::da::core::DataSetCapabilities::supportsEfficientMoveAfterLast() const
   return m_efficientMoveAfterLast;
 }
 
-void te::da::core::DataSetCapabilities::setSupportEfficientMoveAfterLast(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportEfficientMoveAfterLast(const bool support)
 {
   m_efficientMoveAfterLast = support;
 }
@@ -121,7 +121,7 @@ bool te::da::core::DataSetCapabilities::supportsEfficientMove() const
   return m_efficientMove;
 }
 
-void te::da::core::DataSetCapabilities::setSupportEfficientMove(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportEfficientMove(const bool support)
 {
   m_efficientMove = support;
 }
@@ -131,7 +131,7 @@ bool te::da::core::DataSetCapabilities::supportsEfficientDataSetSize() const
   return m_efficientSize;
 }
 
-void te::da::core::DataSetCapabilities::setSupportEfficientDataSetSize(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportEfficientDataSetSize(const bool support)
 {
   m_efficientSize = support;
 }
@@ -141,7 +141,7 @@ bool te::da::core::DataSetCapabilities::supportsInsertion() const
   return m_insertion;
 }
 
-void te::da::core::DataSetCapabilities::setSupportInsertion(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportInsertion(const bool support)
 {
   m_insertion = support;
 }
@@ -151,7 +151,7 @@ bool te::da::core::DataSetCapabilities::supportsUpdate() const
   return m_update;
 }
 
-void te::da::core::DataSetCapabilities::setSupportUpdate(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportUpdate(const bool support)
 {
   m_update = support;
 }
@@ -161,7 +161,7 @@ bool te::da::core::DataSetCapabilities::supportsDeletion() const
   return m_deletion;
 }
 
-void te::da::core::DataSetCapabilities::setSupportDeletion(const bool& support)
+void te::da::core::DataSetCapabilities::setSupportDeletion(const bool support)
 {
   m_deletion = support;
 }

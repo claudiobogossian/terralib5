@@ -40,20 +40,23 @@
 #include "ui_ScatterDialogForm.h"
 #include "ui_ScatterDataWidgetForm.h"
 
+#include "../../../common/progress/ProgressManager.h"
+#include "../../../qt/widgets/progress/ProgressViewerDialog.h"
+
 //QT
 #include <QtGui/QDockWidget>
 
 //QWT
 #include <qwt_symbol.h>
 
-te::qt::widgets::ScatterDialog::ScatterDialog(te::da::DataSet* dataSet, QWidget* parent,  Qt::WindowFlags f)
+te::qt::widgets::ScatterDialog::ScatterDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent,  Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::ScatterDialogForm)
 {
     m_ui->setupUi(this);
 
   // Scatter data Widget
-  m_scatterDataWidget = new te::qt::widgets::ScatterDataWidget(dataSet, this, 0);
+  m_scatterDataWidget = new te::qt::widgets::ScatterDataWidget(dataSet, dataType, this, 0);
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_dataWidgetFrame);
@@ -70,11 +73,20 @@ te::qt::widgets::ScatterDialog::~ScatterDialog()
   delete m_scatterDataWidget;
 }
 
+te::qt::widgets::ChartDisplayWidget* te::qt::widgets::ScatterDialog::getDisplayWidget()
+{
+  return m_displayWidget;
+}
+
 void te::qt::widgets::ScatterDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
 {
+  //te::qt::widgets::ProgressViewerDialog* ptest =  new te::qt::widgets::ProgressViewerDialog(this);
+  //int idViewer = te::common::ProgressManager::getInstance().addViewer(ptest);
   te::qt::widgets::ScatterChart* chart = new te::qt::widgets::ScatterChart(m_scatterDataWidget->getScatter());
+  //te::common::ProgressManager::getInstance().removeViewer(idViewer);
+  //delete ptest;
   chart->setScatterStyle(new te::qt::widgets::ScatterStyle());
   if(chart->getScatter()->sizeX() > 100 || chart->getScatter()->sizeY() > 100)
     chart->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::lightGray, 2 ), QSize( 1, 1 )));
@@ -90,16 +102,7 @@ void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
   chartDisplay->replot();
 
   //Adjusting the chart widget
-  te::qt::widgets::ChartDisplayWidget* chartWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::SCATTER_CHART, chartDisplay, this->parentWidget());
-  chartWidget->setDisplay(chartDisplay);
+  m_displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::SCATTER_CHART, chartDisplay, this->parentWidget());
 
-  // Docking
-  QDockWidget* doc = new QDockWidget(this->parentWidget(), Qt::Dialog);
-  doc->setWidget(chartWidget);
-  doc->setWindowTitle("Scatter");
-  doc->setWindowIcon(QIcon::fromTheme("chart-scatter"));
-
-  chartWidget->setParent(doc);
-  this->close();
-  doc->show();
+  this->accept();
 }

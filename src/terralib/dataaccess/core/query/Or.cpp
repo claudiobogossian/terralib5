@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Or.cpp
+  \file terralib/dataaccess/core/query/Or.cpp
 
   \brief Boolean logic operator: OR - syntatic-suggar.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "Or.h"
 
-te::da::Or::Or(const Or& rhs)
+te::da::core::Or::Or(const Or& rhs)
   : BinaryOp(rhs)
 {
 }
 
-te::da::Or& te::da::Or::operator=(const Or& rhs)
+te::da::core::Or& te::da::core::Or::operator=(const Or& rhs)
 {
   BinaryOp::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::Or::clone() const
+te::da::core::Expression* te::da::core::Or::clone() const
 {
   return new Or(*this);
 }
-

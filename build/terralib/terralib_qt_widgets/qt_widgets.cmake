@@ -411,6 +411,7 @@ set (
   ${SRCDIR}/widgets/tools/PointPicker.h
   ${SRCDIR}/widgets/tools/PolygonAcquire.h
   ${SRCDIR}/widgets/tools/ReadPixelTool.h
+  ${SRCDIR}/widgets/tools/Selection.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/tools" MOC)
 

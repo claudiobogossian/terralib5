@@ -81,12 +81,13 @@ namespace te
             \brief It constructs a info tool associated with the given map display.
 
             \param display The map display associated with the tool.
+            \param cursor The tool cursor.
             \param layers  The layer list that will be queried.
             \param parent  The tool's parent.
 
             \note The tool will NOT take the ownership of the given pointers.
           */
-          Info(MapDisplay* display, const std::list<te::map::AbstractLayerPtr>& layers, QObject* parent = 0);
+          Info(MapDisplay* display, const QCursor& cursor, const std::list<te::map::AbstractLayerPtr>& layers, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~Info();

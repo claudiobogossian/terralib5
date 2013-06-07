@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_AF_INTERNAL_BASEAPPLICATION_H
 
 // TerraLib
+#include "../../maptools/AbstractLayer.h"
 #include "Config.h"
 
 // STL
@@ -142,6 +143,8 @@ namespace te
 
           void onFullScreenToggled(bool checked);
 
+          void onLayerSelectionChanged(const te::map::AbstractLayerPtr& layer);
+
         protected:
 
           virtual void openProject(const QString& projectFileName);
@@ -234,6 +237,7 @@ namespace te
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
           QAction* m_mapStopDraw;
+          QSize m_mapCursorSize;
 
           QWidget* m_centralwidget;
 

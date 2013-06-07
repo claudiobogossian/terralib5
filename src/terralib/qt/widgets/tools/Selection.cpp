@@ -45,13 +45,15 @@
 #include <exception>
 #include <memory>
 
-te::qt::widgets::Selection::Selection(te::qt::widgets::MapDisplay* display, const std::list<te::map::AbstractLayerPtr>& layers, QObject* parent) 
+te::qt::widgets::Selection::Selection(te::qt::widgets::MapDisplay* display, const QCursor& cursor, const std::list<te::map::AbstractLayerPtr>& layers, QObject* parent) 
   : RubberBand(display, parent),
     m_layers(layers),
     m_selectionStarted(false),
     m_keepPreviousSelection(false),
     m_selectionByPointing(false)
 {
+  setCursor(cursor);
+
   // Setups the rubber band style
   m_pen.setStyle(Qt::DashLine);
   m_pen.setColor(QColor(255, 255, 100));
@@ -176,6 +178,8 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
 
     // Adjusts the layer selection
     layer->select(oids);
+
+    emit layerSelectionChanged(layer);
   }
   catch(std::exception& e)
   {

@@ -43,7 +43,7 @@ te::da::core::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type)
     m_convertedProperties.push_back(0);
 
   // Creates the empty converted DataSetType
-  m_outDataSetType = new DataSetType(type->getName(), type->getId());
+  m_outDataSetType = new DataSetType(type->getName());
 }
 
 te::da::core::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities)
@@ -56,7 +56,7 @@ te::da::core::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, cons
     m_convertedProperties.push_back(0);
 
   // Creates the empty converted DataSetType
-  m_outDataSetType = new DataSetType(type->getName(), type->getId());
+  m_outDataSetType = new DataSetType(type->getName());
 
   // Gets the DataTypeCapabilities
   const DataTypeCapabilities& dtCapabilities = capabilities.getDataTypeCapabilities();

@@ -56,11 +56,13 @@
 #include <cassert>
 #include <memory>
 
-te::qt::widgets::Info::Info(te::qt::widgets::MapDisplay* display, const std::list<te::map::AbstractLayerPtr>& layers, QObject* parent) 
+te::qt::widgets::Info::Info(te::qt::widgets::MapDisplay* display, const QCursor& cursor, const std::list<te::map::AbstractLayerPtr>& layers, QObject* parent) 
   : AbstractTool(display, parent),
     m_layers(layers),
     m_infoWidget(new QTreeWidget(display))
 {
+  setCursor(cursor);
+
   // Setup the widget that will be used to show the informations
   m_infoWidget->setWindowTitle(tr("Information"));
   m_infoWidget->setWindowFlags(Qt::Tool);

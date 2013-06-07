@@ -27,8 +27,8 @@
 #define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_QUERYVISITOR_H
 
 // TerraLib
-#include "../../Config.h"
-#include "../../query_fw.h"
+#include "../Config.h"
+#include "../query_fw.h"
 
 namespace te
 {

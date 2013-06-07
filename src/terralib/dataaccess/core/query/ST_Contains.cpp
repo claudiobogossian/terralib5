@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,27 +18,26 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Contains.cpp
+  \file terralib/dataaccess/core/query/ST_Contains.cpp
 
-  \brief Spatial contains operation.
+  \brief Spatial Contains operation.
 */
 
 // TerraLib
 #include "ST_Contains.h"
 
-te::da::ST_Contains::ST_Contains(const ST_Contains& rhs)
+te::da::core::ST_Contains::ST_Contains(const ST_Contains& rhs)
   : BinaryFunction(rhs)
 {
 }
 
-te::da::ST_Contains& te::da::ST_Contains::operator=(const ST_Contains& rhs)
+te::da::core::ST_Contains& te::da::core::ST_Contains::operator=(const ST_Contains& rhs)
 {
   BinaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Contains::clone() const
+te::da::core::Expression* te::da::core::ST_Contains::clone() const
 {
   return new ST_Contains(*this);
 }
-

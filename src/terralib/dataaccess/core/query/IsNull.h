@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/IsNull.h
+  \file terralib/dataaccess/core/query/IsNull.h
 
-  \brief Tells if a value is NULL.
+  \brief It reports if a value is NULL.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_ISNULL_H
-#define __TERRALIB_DATAACCESS_INTERNAL_ISNULL_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ISNULL_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ISNULL_H
 
 // TerraLib
 #include "FunctionNames.h"
@@ -34,52 +34,54 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class IsNull
-      
-      \brief Tells if a value is NULL.
-
-      This function is just a syntatic-suggar.
-
-      \sa UnaryFunction
-    */
-    class TEDATAACCESSEXPORT IsNull : public UnaryFunction
+    namespace core
     {
-      public:
+      /*!
+        \class IsNull
+      
+        \brief Tells if a value is NULL.
 
-        TE_DEFINE_VISITABLE
+        This function is just a syntatic-suggar.
 
-        /*!
-          \brief Constructor.
+        \sa UnaryFunction
+      */
+      class TEDATAACCESSEXPORT IsNull : public UnaryFunction
+      {
+        public:
 
-          \param arg The argument.
+          TE_DEFINE_VISITABLE
 
-          \note The addition operator will take the ownership of the given arguments.
-        */
-        IsNull(Expression* arg) : UnaryFunction(FunctionNames::sm_IsNull, arg) {}
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param arg The argument.
 
-          \param arg The argument.
-        */
-        IsNull(const Expression& arg) : UnaryFunction(FunctionNames::sm_IsNull, arg) {}
+            \note The addition operator will take the ownership of the given arguments.
+          */
+          IsNull(Expression* arg) : UnaryFunction(FunctionNames::sm_IsNull, arg) {}
 
-        /*! \brief Copy constructor. */
-        IsNull(const IsNull& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~IsNull() {}
+            \param arg The argument.
+          */
+          IsNull(const Expression& arg) : UnaryFunction(FunctionNames::sm_IsNull, arg) {}
 
-        /*! Assignment operator.  */
-        IsNull& operator=(const IsNull& rhs);
+          /*! \brief Copy constructor. */
+          IsNull(const IsNull& rhs);
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
-    };
+          /*! \brief Destructor. */
+          ~IsNull() {}
 
-  } // end namespace da
-}   // end namespace te
+          /*! Assignment operator.  */
+          IsNull& operator=(const IsNull& rhs);
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_ISNULL_H
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_ISNULL_H

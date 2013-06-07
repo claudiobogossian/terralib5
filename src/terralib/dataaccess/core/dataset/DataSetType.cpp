@@ -40,13 +40,14 @@
 #include "UniqueKey.h"
 
 // STL
+#include <algorithm>
 #include <cassert>
 
 te::da::core::DataSetType::DataSetType(const std::string& name)
   : CompositeProperty(name, name, te::dt::DATASET_TYPE),
     m_catalog(0),
     m_pk(0),
-    m_category(te::da::UNKNOWN_DATASET_TYPE)
+    m_category(UNKNOWN_DATASET_TYPE)
 {
 }
 
@@ -57,148 +58,78 @@ te::da::core::DataSetType::DataSetType(const DataSetType& rhs)
    m_title(rhs.m_title),
    m_category(rhs.m_category)
 {
-  if(rhs.m_idxs.empty() == false)
+
+// copy indexes
   {
     const std::size_t size = rhs.m_idxs.size();
 
-    for(std::size_t i = 0; i < size; ++i)
+    for(std::size_t i = 0; i != size; ++i)
     {
-      Index* rhsIdx = rhs.m_idxs[i];
+      const Index* rhsIdx = rhs.m_idxs[i];
 
       Index* idx = new Index(*rhsIdx);
+
       idx->setDataSetType(this);
-
-      const std::vector<te::dt::Property*>& idxProperties = rhsIdx->getProperties();
-
-      std::vector<te::dt::Property*> properties;
-
-      const std::size_t idxSize = idxProperties.size();
-
-      for(std::size_t j = 0; j < idxSize; ++j)
-      {
-        const std::size_t pos = getPropertyPosition(idxProperties[j]->getName());
-        properties.push_back(m_properties[pos]);
-      }
-
-      idx->setProperties(properties);
 
       m_idxs.push_back(idx);
     }
   }
 
+// copy primary key
   if(rhs.m_pk)
   {
-    m_pk = new PrimaryKey(rhs.m_pk->getName(), this);
-    
-    const std::vector<te::dt::Property*>& pkProperties = rhs.m_pk->getProperties();
+    m_pk = new PrimaryKey(*rhs.m_pk);
 
-    const std::size_t size = pkProperties.size();
-
-    for(std::size_t i = 0; i < size; ++i)
-    {
-      const std::size_t pos = getPropertyPosition(pkProperties[i]->getName());
-      m_pk->add(m_properties[pos]);
-    }
-
-// get associated index
-    if(rhs.m_pk->getAssociatedIndex())
-    {
-      Index* idx = rhs.m_pk->getAssociatedIndex();
-      std::size_t s = m_idxs.size();
-      for(std::size_t i = 0; i<s; ++i)
-      {
-        if(m_idxs[i]->getName()==idx->getName())
-        {
-          m_pk->setAssociatedIndex(m_idxs[i]);
-          break;
-        }
-      }      
-    }    
+    m_pk->setDataSetType(this);
   }
 
-  if(rhs.m_uniqueKeys.empty() == false)
+// copy unique keys
   {
     const std::size_t size = rhs.m_uniqueKeys.size();
 
-    for(std::size_t i = 0; i < size; ++i)
+    for(std::size_t i = 0; i != size; ++i)
     {
       UniqueKey* rhsUk = rhs.m_uniqueKeys[i];
 
-      UniqueKey* uk = new UniqueKey(rhsUk->getName(), this);
+      UniqueKey* uk = new UniqueKey(rhsUk->getName());
 
-      const std::vector<te::dt::Property*>& ukProperties = rhsUk->getProperties();
+      uk->setDataSetType(this);
 
-      const std::size_t ukSize = ukProperties.size();
-
-      for(std::size_t j = 0; j < ukSize; ++j)
-      {
-        const std::size_t pos = getPropertyPosition(ukProperties[j]->getName());
-        uk->add(m_properties[pos]);
-      }
-
-// get associated index
-      if(rhsUk->getAssociatedIndex())
-      {
-        Index* idx = rhsUk->getAssociatedIndex();
-        std::size_t s = m_idxs.size();
-        for(std::size_t i = 0; i<s; ++i)
-        {
-          if(m_idxs[i]->getName()==idx->getName())
-          {
-            uk->setAssociatedIndex(m_idxs[i]);
-            break;
-          }
-        }
-      }
-      //m_uniqueKeys.push_back(uk);
+      m_uniqueKeys.push_back(uk);
     }
   }
 
-  if(rhs.m_checkConstraints.empty() == false)
+// copy check constraints
   {
     const std::size_t size = rhs.m_checkConstraints.size();
 
-    for(std::size_t i = 0; i < size; ++i)
+    for(std::size_t i = 0; i != size; ++i)
     {
       CheckConstraint* rhsCk = rhs.m_checkConstraints[i];
 
       CheckConstraint* ck = new CheckConstraint(*rhsCk);
+
       ck->setDataSetType(this);
 
       m_checkConstraints.push_back(ck);
     }
   }
 
-  if(rhs.m_foreignKeys.empty() == false)
+// copy foreign keys
   {
     const std::size_t size = rhs.m_foreignKeys.size();
   
-    for(std::size_t i = 0; i < size; ++i)
+    for(std::size_t i = 0; i != size; ++i)
     {
       ForeignKey* rhsFk = rhs.m_foreignKeys[i];
 
-      ForeignKey* fk = new ForeignKey(rhsFk->getName());
-      fk->setOnDeleteAction(rhsFk->getOnDeleteAction());
-      fk->setOnUpdateAction(rhsFk->getOnUpdateAction());
+      ForeignKey* fk = new ForeignKey(*rhsFk);
+
       fk->setDataSetType(this);
 
-      //referenced dataset type and properties
-      fk->setReferencedDataSetType(rhsFk->getReferencedDataSetType());
-      const std::vector<te::dt::Property*> refProperties = fk->getReferencedProperties();
-      fk->setReferencedProperties(refProperties);
-
-      //own properties
-      const std::vector<te::dt::Property*>& fkProperties = rhsFk->getProperties();
-      const std::size_t fkSize = fkProperties.size();
-
-      for(std::size_t j = 0; j < fkSize; ++j)
-      {
-        const std::size_t pos = getPropertyPosition(fkProperties[j]->getName());
-        fk->add(m_properties[pos]);
-      }
       m_foreignKeys.push_back(fk);
     }
-  } 
+  }
 }
 
 te::da::core::DataSetType::~DataSetType()
@@ -210,14 +141,14 @@ te::da::core::DataSetType::~DataSetType()
   te::common::FreeContents(m_uniqueKeys);
 }
 
-te::da::core::DataSetType& te::da::core::DataSetType::operator=(const DataSetType& /*rhs*/)
+te::da::core::DataSetType& te::da::core::DataSetType::operator=(const DataSetType& rhs)
 {
-  //if(this != &rhs)
-  //{
+  if(this != &rhs)
+  {
     throw Exception(TR_DATAACCESS("Not implemented yet!"));
-  //}
+  }
 
-  //return *this;
+  return *this;
 }
 
 void te::da::core::DataSetType::setPrimaryKey(std::auto_ptr<PrimaryKey> pk)
@@ -298,14 +229,14 @@ void te::da::core::DataSetType::remove(CheckConstraint* cc)
 void te::da::core::DataSetType::clearCheckConstraints()
 {
   te::common::FreeContents(m_checkConstraints);
-  m_checkConstraints.clear();  
+  m_checkConstraints.clear();
 }
 
 void te::da::core::DataSetType::add(std::auto_ptr<Index> idx)
 {
-  assert(idx);
+  assert(idx.get());
   idx->setDataSetType(this);
-  m_idxs.push_back(idx);
+  m_idxs.push_back(idx.release());
 }
 
 te::da::core::Index* te::da::core::DataSetType::getIndex(const std::string& name) const
@@ -321,66 +252,23 @@ te::da::core::Index* te::da::core::DataSetType::getIndex(const std::string& name
 
 void te::da::core::DataSetType::remove(Index* idx)
 {
-// is there associated pk?
-  if(m_pk && m_pk->getAssociatedIndex() == idx)
-  {
-    delete m_pk;
-    m_pk = 0;
-  }
-
-// is there associated uk?
-  {
-    std::size_t size = m_uniqueKeys.size();
-
-    for(std::size_t i = 0; i < size; ++i)
-    {
-      if(m_uniqueKeys[i]->getAssociatedIndex() == idx)
-      {
-        delete m_uniqueKeys[i];
-        m_uniqueKeys.erase(m_uniqueKeys.begin() + i);
-        break;
-      }
-    }
-  }
-
 // let's find the index to drop it
-  {
-    std::size_t size = m_idxs.size();
+  std::size_t size = m_idxs.size();
     
-    for(std::size_t i = 0; i < size; ++i)
+  for(std::size_t i = 0; i != size; ++i)
+  {
+    if(m_idxs[i] == idx)
     {
-      if(m_idxs[i] == idx)
-      {
-        m_idxs.erase(m_idxs.begin() + i);
-        delete idx;
-        break;
-      }
+      m_idxs.erase(m_idxs.begin() + i);
+      delete idx;
+      break;
     }
   }
 }
 
 void te::da::core::DataSetType::clearIndexes()
 {
-  std::size_t size = m_idxs.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-  {
-// is there associated pk?
-    if(m_pk && m_pk->getAssociatedIndex() == m_idxs[i])
-      m_pk->setAssociatedIndex(0);
-
-// is there associated uk?
-    std::size_t ssize = m_uniqueKeys.size();
-
-    for(std::size_t j = 0; j < ssize; ++j)
-    {
-      if(m_uniqueKeys[j]->getAssociatedIndex() == m_idxs[i])
-        m_uniqueKeys[j]->setAssociatedIndex(0);
-    }
-
-    delete m_idxs[i];
-  }
-
+  te::common::FreeContents(m_idxs);
   m_idxs.clear();
 }
 
@@ -397,15 +285,16 @@ te::da::core::ForeignKey* te::da::core::DataSetType::getForeignKey(const std::st
   return 0;
 }
 
-void te::da::core::DataSetType::add(std::suto_ptr<ForeignKey> fk)
+void te::da::core::DataSetType::add(std::auto_ptr<ForeignKey> fk)
 {
-  assert(fk);
+  assert(fk.get());
 
   if(m_catalog)
-    m_catalog->addRef(fk);
+    m_catalog->addRef(fk.get());
 
   fk->setDataSetType(this);
-  m_foreignKeys.push_back(fk);
+
+  m_foreignKeys.push_back(fk.release());
 }
 
 void te::da::core::DataSetType::remove(ForeignKey* fk)
@@ -431,13 +320,19 @@ void te::da::core::DataSetType::remove(ForeignKey* fk)
   }
 }
 
-void te::da::core::DataSetType::remove(Property* p)
+void te::da::core::DataSetType::remove(te::dt::Property* p)
 {
-// TODO: Check Constraints...
+  if(p == 0)
+    throw Exception(TR_DATAACCESS("Null property is not allowed!"));
+
+  if(p->getParent() != this)
+    throw Exception(TR_DATAACCESS("Property doesn't belong to this dataset schema!"));
+
+  const std::size_t pos = getPropertyPosition(p);
 
 // if the property is associated to the pk, let's remove the pk!
-  if(m_pk && m_pk->has(p))
-    setPrimaryKey(0);
+  if(m_pk && te::common::Contains(m_pk->getProperties(), pos))
+    setPrimaryKey(std::auto_ptr<PrimaryKey>(0));
 
 // if the property is associated to a uk, let's remove the uk!
   removeUniqueKeys(p);
@@ -458,79 +353,20 @@ void te::da::core::DataSetType::remove(Property* p)
 
 void te::da::core::DataSetType::clear()
 {
-}
+  delete m_pk;
+  m_pk = 0;
 
-void te::da::core::DataSetType::replace(Property* p, Property* pp)
-{
-// let's replace primary key attributes
-  if(m_pk)
-    m_pk->replace(p, pp);
+  te::common::FreeContents(m_foreignKeys);
+  m_foreignKeys.clear();
 
-// let's replace unique keys
-  {
-    std::size_t size = m_uniqueKeys.size();
+  te::common::FreeContents(m_checkConstraints);
+  m_checkConstraints.clear();
 
-    for(std::size_t i = 0; i < size; ++i)
-      m_uniqueKeys[i]->replace(p, pp);
-  }
+  te::common::FreeContents(m_idxs);
+  m_idxs.clear();
 
-// let's replace indexes
-  {
-    std::size_t size = m_idxs.size();
-
-    for(std::size_t i = 0; i < size; ++i)
-      m_idxs[i]->replace(p, pp);
-  }
-
-// if dataset type is associated to the data source catalog, let's fix foreign keys and sequences
-  if(m_catalog)
-  {
-// replace sequences
-// TODO: !!in the future try to explorer the catalog index for dt and sequences!!
-    {
-      std::size_t size = m_catalog->getNumberOfSequences();
-
-      for(std::size_t i = 0; i < size; ++i)
-        if(m_catalog->getSequence(i)->getOwner() == p)
-          m_catalog->getSequence(i)->setOwner(pp);
-    }
-
-// replace foreign keys in all datasets
-// TODO: !!in the future try to explore the catalog index for dt and fk!!
-    {
-      std::size_t size = m_catalog->getNumberOfDataSets();
-
-      for(std::size_t i = 0; i < size; ++i)
-      {
-        const DataSetTypePtr& dt = m_catalog->getDataSetType(i);
-
-        std::size_t ssize = dt->getNumberOfForeignKeys();
-
-        for(std::size_t j = 0; j < ssize; ++j)
-          dt->getForeignKey(j)->replace(p, pp);
-      }
-    }
-  }
-  else
-  {
-// let's replace foreign key in this dataset
-    std::size_t size = m_foreignKeys.size();
-
-    for(std::size_t i = 0; i < size; ++i)
-      m_foreignKeys[i]->replace(p, pp);
-  }
-
-// and now... to finish... let's replace p by pp in the properties vector
-  {
-    std::size_t size = m_properties.size();
-
-    for(std::size_t i = 0; i < size; ++i)
-      if(m_properties[i] == p)
-      {
-        m_properties[i] = pp;
-        break;
-      }
-  }
+  te::common::FreeContents(m_uniqueKeys);
+  m_uniqueKeys.clear();
 }
 
 te::dt::Property* te::da::core::DataSetType::clone() const
@@ -540,12 +376,20 @@ te::dt::Property* te::da::core::DataSetType::clone() const
 
 void te::da::core::DataSetType::removeUniqueKeys(Property* p)
 {
+  if(p == 0)
+    throw Exception(TR_DATAACCESS("Null property is not allowed!"));
+
+  if(p->getParent() != this)
+    throw Exception(TR_DATAACCESS("Property doesn't belong to this dataset schema!"));
+
+  const std::size_t pos = getPropertyPosition(p);
+
   std::size_t size = m_uniqueKeys.size();
   std::size_t i = 0;
 
   while(i < size)
   {
-    if(m_uniqueKeys[i]->has(p))
+    if(te::common::Contains(m_uniqueKeys[i]->getProperties(), pos))
     {
       delete m_uniqueKeys[i];
       m_uniqueKeys.erase(m_uniqueKeys.begin() + i);
@@ -558,12 +402,20 @@ void te::da::core::DataSetType::removeUniqueKeys(Property* p)
 
 void te::da::core::DataSetType::removeIndexes(Property* p)
 {
+  if(p == 0)
+    throw Exception(TR_DATAACCESS("Null property is not allowed!"));
+
+  if(p->getParent() != this)
+    throw Exception(TR_DATAACCESS("Property doesn't belong to this dataset schema!"));
+
+  const std::size_t pos = getPropertyPosition(p);
+
   std::size_t size = m_idxs.size();
   std::size_t i = 0;
 
   while(i < size)
   {
-    if(m_idxs[i]->has(p))
+    if(te::common::Contains(m_idxs[i]->getProperties(), pos))
     {
       delete m_idxs[i];
       m_idxs.erase(m_idxs.begin() + i);
@@ -576,6 +428,14 @@ void te::da::core::DataSetType::removeIndexes(Property* p)
 
 void te::da::core::DataSetType::removeForeignKeys(Property* p)
 {
+  if(p == 0)
+    throw Exception(TR_DATAACCESS("Null property is not allowed!"));
+
+  if(p->getParent() != this)
+    throw Exception(TR_DATAACCESS("Property doesn't belong to this dataset schema!"));
+
+  const std::size_t pos = getPropertyPosition(p);
+
 // first of all, let's see if property takes part
 // in a self foreign key.
   {
@@ -584,7 +444,7 @@ void te::da::core::DataSetType::removeForeignKeys(Property* p)
 
     while(i < size)
     {
-      if(m_foreignKeys[i]->has(p))
+      if(te::common::Contains(m_foreignKeys[i]->getProperties(), pos))
       {
         if(m_catalog)
           m_catalog->removeRef(m_foreignKeys[i]);
@@ -611,7 +471,7 @@ void te::da::core::DataSetType::removeForeignKeys(Property* p)
       std::multimap<DataSetType*, ForeignKey*>::const_iterator it = range.first; // keep a pointer to current element... maybe we will erase it!
       ++range.first;
 
-      if(it->second->isReferenced(p))
+      if(te::common::Contains(it->second->getReferencedProperties(), pos))
       {
         DataSetType* fkFT = it->second->getDataSetType();
         fkFT->remove(it->second);

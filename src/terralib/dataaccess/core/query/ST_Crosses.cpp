@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Crosses.cpp
+  \file terralib/dataaccess/core/query/ST_Crosses.cpp
 
   \brief Spatial crosses operator.
 */
@@ -26,19 +26,18 @@
 // TerraLib
 #include "ST_Crosses.h"
 
-te::da::ST_Crosses::ST_Crosses(const ST_Crosses& rhs)
+te::da::core::ST_Crosses::ST_Crosses(const ST_Crosses& rhs)
   : BinaryFunction(rhs)
 {
 }
 
-te::da::ST_Crosses& te::da::ST_Crosses::operator=(const ST_Crosses& rhs)
+te::da::core::ST_Crosses& te::da::core::ST_Crosses::operator=(const ST_Crosses& rhs)
 {
   BinaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Crosses::clone() const
+te::da::core::Expression* te::da::core::ST_Crosses::clone() const
 {
   return new ST_Crosses(*this);
 }
-

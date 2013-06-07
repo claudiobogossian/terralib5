@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/SubSelect.cpp
+  \file terralib/dataaccess/core/query/SubSelect.cpp
 
   \brief A Select can be used as a source of information in another query.
 */
@@ -27,30 +27,30 @@
 #include "Select.h"
 #include "SubSelect.h"
 
-te::da::SubSelect::SubSelect(Select* s, const std::string& alias)
+te::da::core::SubSelect::SubSelect(Select* s, const std::string& alias)
   : FromItem(alias),
     m_select(s)
 {
 }
 
-te::da::SubSelect::SubSelect(const Select& s, const std::string& alias)
+te::da::core::SubSelect::SubSelect(const Select& s, const std::string& alias)
   : FromItem(alias),
     m_select(static_cast<Select*>(s.clone()))
 {
 }
 
-te::da::SubSelect::SubSelect(const SubSelect& rhs)
+te::da::core::SubSelect::SubSelect(const SubSelect& rhs)
   : FromItem(rhs),
     m_select(0)
 {
   m_select.reset(rhs.m_select.get() ? static_cast<Select*>(rhs.m_select->clone()) : 0);
 }
 
-te::da::SubSelect::~SubSelect()
+te::da::core::SubSelect::~SubSelect()
 {
 }
 
-te::da::SubSelect& te::da::SubSelect::operator=(const SubSelect& rhs)
+te::da::core::SubSelect& te::da::core::SubSelect::operator=(const SubSelect& rhs)
 {
   if(this != &rhs)
   {
@@ -61,18 +61,17 @@ te::da::SubSelect& te::da::SubSelect::operator=(const SubSelect& rhs)
   return *this;
 }
 
-te::da::FromItem* te::da::SubSelect::clone() const
+te::da::core::FromItem* te::da::core::SubSelect::clone() const
 {
   return new SubSelect(*this);
 }
 
-te::da::Select* te::da::SubSelect::getSelect() const
+te::da::core::Select* te::da::core::SubSelect::getSelect() const
 {
   return m_select.get();
 }
 
-void te::da::SubSelect::setSelect(Select* s)
+void te::da::core::SubSelect::setSelect(Select* s)
 {
   m_select.reset(s);
 }
-

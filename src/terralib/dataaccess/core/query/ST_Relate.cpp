@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Relate.cpp
+  \file terralib/dataaccess/core/query/ST_Relate.cpp
 
   \brief Spatial relation function.
 */
@@ -28,7 +28,7 @@
 #include "LiteralString.h"
 #include "ST_Relate.h"
 
-te::da::ST_Relate::ST_Relate(Expression* g1, Expression* g2, LiteralString* intersectionMatrix)
+te::da::core::ST_Relate::ST_Relate(Expression* g1, Expression* g2, LiteralString* intersectionMatrix)
   : Function(FunctionNames::sm_ST_Relate)
 {
   m_args.push_back(g1);
@@ -38,7 +38,7 @@ te::da::ST_Relate::ST_Relate(Expression* g1, Expression* g2, LiteralString* inte
     m_args.push_back(intersectionMatrix);
 }
 
-te::da::ST_Relate::ST_Relate(const Expression& g1, const Expression& g2, const std::string& intersectionMatrix)
+te::da::core::ST_Relate::ST_Relate(const Expression& g1, const Expression& g2, const std::string& intersectionMatrix)
   : Function(FunctionNames::sm_ST_Relate)
 {
   m_args.push_back(g1.clone());
@@ -48,19 +48,18 @@ te::da::ST_Relate::ST_Relate(const Expression& g1, const Expression& g2, const s
     m_args.push_back(new LiteralString(intersectionMatrix));
 }
 
-te::da::ST_Relate::ST_Relate(const ST_Relate& rhs)
+te::da::core::ST_Relate::ST_Relate(const ST_Relate& rhs)
   : Function(rhs)
 {
 }
 
-te::da::ST_Relate& te::da::ST_Relate::operator=(const ST_Relate& rhs)
+te::da::core::ST_Relate& te::da::core::ST_Relate::operator=(const ST_Relate& rhs)
 {
   Function::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Relate::clone() const
+te::da::core::Expression* te::da::core::ST_Relate::clone() const
 {
   return new ST_Relate(*this);
 }
-

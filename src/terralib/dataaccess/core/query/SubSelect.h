@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/SubSelect.h
+  \file terralib/dataaccess/core/query/SubSelect.h
 
    \brief A Select can be used as a source of information in another query.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_SUBSELECT_H
-#define __TERRALIB_DATAACCESS_INTERNAL_SUBSELECT_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUBSELECT_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUBSELECT_H
 
 // TerraLib
 #include "FromItem.h"
@@ -36,73 +36,75 @@ namespace te
 {
   namespace da
   {
-// Forward declarations
-    class Select;
-
-    /*!
-      \class SubSelect
-      
-      \brief A Select can be used as a source of information in another query.
-
-      \sa FromItem, DataSetName, DataSetType, DataSet, FromFunctionCall, Join 
-    */
-    class TEDATAACCESSEXPORT SubSelect : public FromItem
+    namespace core
     {
-      public:
+      // Forward declarations
+      class Select;
 
-        TE_DEFINE_VISITABLE
+      /*!
+        \class SubSelect
+      
+        \brief A Select can be used as a source of information in another query.
 
-        /*!
-          \brief Constructor.
+        \sa FromItem, DataSetName, DataSetType, DataSet, FromFunctionCall, Join 
+      */
+      class TEDATAACCESSEXPORT SubSelect : public FromItem
+      {
+        public:
 
-          \param s The real SubSelect to be associated to this object.
+          TE_DEFINE_VISITABLE
 
-          \note The SubSelect will take the ownership of the Select.
-        */
-        SubSelect(Select* s, const std::string& alias);
+          /*!
+            \brief Constructor.
 
-        /*!
-          \brief Constructor.
+            \param s The real SubSelect to be associated to this object.
 
-          \param s The real SubSelect to be associated to this object.
-        */
-        SubSelect(const Select& s, const std::string& alias);        
+            \note The SubSelect will take the ownership of the Select.
+          */
+          SubSelect(Select* s, const std::string& alias);
 
-        /*! \brief Copy constructor. */
-        SubSelect(const SubSelect& rhs);
+          /*!
+            \brief Constructor.
 
-        /*! \brief Destructor. */
-        ~SubSelect();
+            \param s The real SubSelect to be associated to this object.
+          */
+          SubSelect(const Select& s, const std::string& alias);        
 
-        /*! Assignment operator.  */
-        SubSelect& operator=(const SubSelect& rhs);
+          /*! \brief Copy constructor. */
+          SubSelect(const SubSelect& rhs);
 
-        /*! \brief It creates a new copy of this FromItem. */
-        FromItem* clone() const;
+          /*! \brief Destructor. */
+          ~SubSelect();
 
-        /*!
-          \brief It returns the associated subselect.
+          /*! Assignment operator.  */
+          SubSelect& operator=(const SubSelect& rhs);
 
-          \return The associated subselect.
-        */
-        Select* getSelect() const;
+          /*! \brief It creates a new copy of this FromItem. */
+          FromItem* clone() const;
 
-        /*!
-          \brief It sets the real SubSelect associated to this object.
+          /*!
+            \brief It returns the associated subselect.
 
-          \param s The SubSelect to be associated to the FromItem object.
+            \return The associated subselect.
+          */
+          Select* getSelect() const;
 
-          \note The SubSelect will take the ownership of the Select.
-        */
-        void setSelect(Select* s);
+          /*!
+            \brief It sets the real SubSelect associated to this object.
 
-      private:
+            \param s The SubSelect to be associated to the FromItem object.
 
-        std::auto_ptr<Select> m_select;  //!< The associated SubSelect.
-    };
+            \note The SubSelect will take the ownership of the Select.
+          */
+          void setSelect(Select* s);
 
-  } // end namespace da
-}   // end namespace te
+        private:
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_SUBSELECT_H
+          std::auto_ptr<Select> m_select;  //!< The associated SubSelect.
+      };
 
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUBSELECT_H

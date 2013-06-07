@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/Substring.h
+  \file terralib/dataaccess/core/query/Substring.h
 
   \brief Allows the extraction of substrings.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_SUBSTRING_H
-#define __TERRALIB_DATAACCESS_INTERNAL_SUBSTRING_H
+#ifndef __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUBSTRING_H
+#define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUBSTRING_H
 
 // TerraLib
 #include "Function.h"
@@ -33,47 +33,49 @@ namespace te
 {
   namespace da
   {
-    /*!
-      \class Substring
-      
-      \brief Allows the extraction of substrings.
-
-      \sa Function
-    */
-    class TEDATAACCESSEXPORT Substring : public Function
+    namespace core
     {
-      public:
+      /*!
+        \class Substring
+      
+        \brief Allows the extraction of substrings.
 
-        /*! \brief Default constructor. */
-        Substring(Expression* str, Expression* start, Expression* len);
+        \sa Function
+      */
+      class TEDATAACCESSEXPORT Substring : public Function
+      {
+        public:
 
-        /*! \brief Copy constructor. */
-        Substring(const Substring& rhs);
+          /*! \brief Default constructor. */
+          Substring(Expression* str, Expression* start, Expression* len);
 
-        /*! \brief Destructor. */
-        ~Substring() {}
+          /*! \brief Copy constructor. */
+          Substring(const Substring& rhs);
 
-        /*! Assignment operator.  */
-        Substring& operator=(const Substring& rhs);
+          /*! \brief Destructor. */
+          ~Substring() {}
 
-        /*! \brief It creates a new copy of this expression. */
-        Expression* clone() const;
+          /*! Assignment operator.  */
+          Substring& operator=(const Substring& rhs);
 
-        Expression* getString() const;
+          /*! \brief It creates a new copy of this expression. */
+          Expression* clone() const;
 
-        void setString(Expression* str);
+          Expression* getString() const;
 
-        Expression* getStartPosition();
+          void setString(Expression* str);
 
-        void setStartPosition(Expression* start);
+          Expression* getStartPosition();
 
-        Expression* getLength();
+          void setStartPosition(Expression* start);
 
-        void setLength(Expression* len);
-    };
+          Expression* getLength();
 
-  } // end namespace da
-}   // end namespace te
+          void setLength(Expression* len);
+      };
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_SUBSTRING_H
+    }  // end namespace core
+  }    // end namespace da
+}      // end namespace te
 
+#endif  // __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_SUBSTRING_H

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_DWithin.cpp
+  \file terralib/dataaccess/core/query/ST_DWithin.cpp
 
   \brief Spatial Distance Buffer Within operator.
 */
@@ -27,29 +27,28 @@
 #include "FunctionNames.h"
 #include "ST_DWithin.h"
 
-te::da::ST_DWithin::ST_DWithin(te::da::Expression* e, te::gm::Geometry* g, te::common::Distance* d)
+te::da::core::ST_DWithin::ST_DWithin(te::da::core::Expression* e, te::gm::Geometry* g, te::common::Distance* d)
   : ST_DistanceBuffer(FunctionNames::sm_DWithin, e, g, d)
 {
 }
 
-te::da::ST_DWithin::ST_DWithin(const te::da::Expression& e, const te::gm::Geometry& g, const te::common::Distance& d)
+te::da::core::ST_DWithin::ST_DWithin(const te::da::core::Expression& e, const te::gm::Geometry& g, const te::common::Distance& d)
   : ST_DistanceBuffer(FunctionNames::sm_DWithin, e, g, d)
 {
 }
 
-te::da::ST_DWithin::ST_DWithin(const ST_DWithin& rhs)
+te::da::core::ST_DWithin::ST_DWithin(const ST_DWithin& rhs)
   : ST_DistanceBuffer(rhs)
 {
 }
 
-te::da::ST_DWithin& te::da::ST_DWithin::operator=(const ST_DWithin& rhs)
+te::da::core::ST_DWithin& te::da::core::ST_DWithin::operator=(const ST_DWithin& rhs)
 {
   ST_DistanceBuffer::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_DWithin::clone() const
+te::da::core::Expression* te::da::core::ST_DWithin::clone() const
 {
   return new ST_DWithin(*this);
 }
-
