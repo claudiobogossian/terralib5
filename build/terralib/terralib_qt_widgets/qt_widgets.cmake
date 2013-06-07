@@ -356,6 +356,7 @@ set (
   ${SRCDIR}/widgets/se/GraphicPropertyItem.h
   ${SRCDIR}/widgets/se/GraphicFillWidget.h
   ${SRCDIR}/widgets/se/GraphicSelectorWidget.h
+  ${SRCDIR}/widgets/se/GroupingWidget.h
   ${SRCDIR}/widgets/se/ImageOutlineWidget.h
   ${SRCDIR}/widgets/se/LineSymbolizerProperty.h
   ${SRCDIR}/widgets/se/LineSymbolizerWidget.h
@@ -410,6 +411,7 @@ set (
   ${SRCDIR}/widgets/tools/PointPicker.h
   ${SRCDIR}/widgets/tools/PolygonAcquire.h
   ${SRCDIR}/widgets/tools/ReadPixelTool.h
+  ${SRCDIR}/widgets/tools/Selection.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/tools" MOC)
 

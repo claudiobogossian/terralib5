@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../../common/Enums.h"
 #include "../../../geometry/Enums.h"
-#include "../../Config.h"
+#include "../Config.h"
 #include "../Exception.h"
 
 // STL
@@ -132,7 +132,7 @@ namespace te
 
             \note Thread-safe!
           */
-          virtual const std::string& getType() const throw() = 0;
+          virtual std::string getType() const throw() = 0;
 
           /*!
             \brief It returns the set of parameters used to set up the access channel to the underlying repository.

@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_QUERY_INTERNAL_FUNCTIONPARAMETER_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
 #include <string>

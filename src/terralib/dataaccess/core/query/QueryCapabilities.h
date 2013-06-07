@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../geometry/Enums.h"
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
 #include <set>

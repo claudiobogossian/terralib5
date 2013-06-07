@@ -1,0 +1,299 @@
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/qt/widgets/se/GroupingWidget.cpp
+
+  \brief A widget used to build a grouping.
+*/
+
+// TerraLib
+#include "../../../color/ColorBar.h"
+#include "../../../common/STLUtils.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../maptools/Enums.h"
+#include "../../../maptools/Grouping.h"
+#include "../../../maptools/GroupingAlgorithms.h"
+#include "../../../maptools/GroupingItem.h"
+#include "../colorbar/ColorBar.h"
+#include "../se/SymbologyPreview.h"
+#include "GroupingWidget.h"
+#include "ui_GroupingWidgetForm.h"
+
+// STL
+#include <cassert>
+
+#define MAX_SLICES 200
+#define PRECISION 15
+
+te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags f)
+  : QWidget(parent, f),
+    m_ui(new Ui::GroupingWidgetForm)
+{
+  m_ui->setupUi(this);
+
+  QGridLayout* l = new QGridLayout(m_ui->m_colorBarWidget);
+  l->setContentsMargins(0,0,0,0);
+  m_colorBar = new  te::qt::widgets::colorbar::ColorBar(m_ui->m_colorBarWidget);
+  l->addWidget(m_colorBar);
+
+  initialize();
+}
+
+te::qt::widgets::GroupingWidget::~GroupingWidget()
+{
+  te::common::FreeContents(m_legend);
+}
+
+void te::qt::widgets::GroupingWidget::setLayer(te::map::AbstractLayerPtr layer)
+{
+  m_layer = layer;
+
+  //set data type
+  std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)m_layer->getSchema());
+
+  setDataSetType(dsType);
+
+  //set grouping
+  if(m_layer->getGrouping())
+    setGrouping(m_layer->getGrouping());
+}
+
+std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
+{
+  std::string attr = m_ui->m_attrComboBox->currentText().toStdString();
+
+  int index = m_ui->m_typeComboBox->currentIndex();
+
+  int type = m_ui->m_typeComboBox->itemData(index).toInt();
+
+  std::auto_ptr<te::map::Grouping> group(new te::map::Grouping(attr, (te::map::GroupingType)type));
+
+  group->setNumSlices(m_ui->m_slicesSpinBox->value());
+
+  group->setPrecision(m_ui->m_precSpinBox->value());
+
+  group->setStdDeviation(m_ui->m_stdDevDoubleSpinBox->value());
+
+  std::vector<te::map::GroupingItem*> groupingItens;
+  for(size_t t = 0; t < m_legend.size(); ++t)
+  {
+    te::map::GroupingItem* gi = new te::map::GroupingItem(*m_legend[t]);
+
+    groupingItens.push_back(gi);
+  }
+  group->setGroupingItens(groupingItens);
+
+  return group;
+}
+
+void te::qt::widgets::GroupingWidget::initialize()
+{
+  // create color bar
+  m_cb = new te::color::ColorBar(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), te::color::RGBAColor(0, 0, 0, TE_OPAQUE), 256);
+
+  m_colorBar->setHeight(20);
+  m_colorBar->setColorBar(m_cb);
+  m_colorBar->setScaleVisible(false);
+
+  // fill grouping type combo box
+  m_ui->m_typeComboBox->addItem(tr("Equal Steps"), te::map::EQUAL_STEPS);
+  m_ui->m_typeComboBox->addItem(tr("Quantil"), te::map::QUANTIL);
+  m_ui->m_typeComboBox->addItem(tr("Standard Deviation"), te::map::STD_DEVIATION);
+  m_ui->m_typeComboBox->addItem(tr("Unique Value"), te::map::UNIQUE_VALUE);
+
+  //set number of slices
+  m_ui->m_slicesSpinBox->setMinimum(1);
+  m_ui->m_slicesSpinBox->setMaximum(MAX_SLICES);
+  m_ui->m_slicesSpinBox->setValue(5);
+  m_ui->m_slicesSpinBox->setSingleStep(1);
+
+  //set standard deviation values
+  m_ui->m_stdDevDoubleSpinBox->setMinimum(0.25);
+  m_ui->m_stdDevDoubleSpinBox->setMaximum(1.0);
+  m_ui->m_stdDevDoubleSpinBox->setValue(0.5);
+  m_ui->m_stdDevDoubleSpinBox->setSingleStep(0.25);
+
+  //set number of precision
+  m_ui->m_precSpinBox->setMinimum(1);
+  m_ui->m_precSpinBox->setMaximum(PRECISION);
+  m_ui->m_precSpinBox->setValue(6);
+  m_ui->m_precSpinBox->setSingleStep(1);
+
+  //adjust table
+  m_ui->m_tableWidget->resizeColumnsToContents();
+  m_ui->m_tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+}
+
+void te::qt::widgets::GroupingWidget::updateUi()
+{
+  m_ui->m_tableWidget->setRowCount(0);
+
+  for(size_t t = 0; t < m_legend.size(); ++t)
+  {
+    te::map::GroupingItem* gi = m_legend[t];
+
+    int newrow = m_ui->m_tableWidget->rowCount();
+    m_ui->m_tableWidget->insertRow(newrow);
+
+    //symbol
+    {
+      std::vector<te::se::Symbolizer*> ss = gi->getSymbolizers();
+      QPixmap pix = te::qt::widgets::SymbologyPreview::build(ss, QSize(24, 24));
+      QIcon icon(pix);
+      QTableWidgetItem* item = new QTableWidgetItem(icon, "");
+      m_ui->m_tableWidget->setItem(newrow, 0, item);
+    }
+
+    //title
+    {
+      QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getTitle()));
+      m_ui->m_tableWidget->setItem(newrow, 1, item);
+    }
+
+    //Min
+    {
+      QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getLowerLimit()));
+      m_ui->m_tableWidget->setItem(newrow, 2, item);
+    }
+
+    //Max
+    {
+      QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getUpperLimit()));
+      m_ui->m_tableWidget->setItem(newrow, 3, item);
+    }
+
+    //Count
+    {
+      QTableWidgetItem* item = new QTableWidgetItem(QString::number(gi->getCount()));
+      m_ui->m_tableWidget->setItem(newrow, 4, item);
+    }
+  }
+
+  m_ui->m_tableWidget->resizeColumnsToContents();
+  m_ui->m_tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+}
+
+void te::qt::widgets::GroupingWidget::setDataSetType(std::auto_ptr<te::da::DataSetType> dsType)
+{
+  m_ui->m_attrComboBox->clear();
+
+  for(size_t t = 0; t < dsType->getProperties().size(); ++t)
+  {
+    te::dt::Property* p = dsType->getProperty(t);
+
+    //TODO Check data types
+
+    m_ui->m_attrComboBox->addItem(p->getName().c_str(), p->getType());
+  }
+}
+
+void te::qt::widgets::GroupingWidget::setGrouping(te::map::Grouping* grouping)
+{
+  //type
+  te::map::GroupingType type = grouping->getType();
+  
+  for(int i = 0; i < m_ui->m_typeComboBox->count(); ++i)
+  {
+    if(type == m_ui->m_typeComboBox->itemData(i).toInt())
+    {
+      m_ui->m_typeComboBox->setCurrentIndex(i);
+      break;
+    }
+  }
+
+  //attr name
+  std::string attrName = grouping->getPropertyName();
+
+  for(int i = 0; i < m_ui->m_attrComboBox->count(); ++i)
+  {
+    if(attrName == m_ui->m_attrComboBox->itemText(i).toStdString())
+    {
+      m_ui->m_attrComboBox->setCurrentIndex(i);
+      break;
+    }
+  }
+
+  //precision
+  size_t prec = grouping->getPrecision();
+
+  m_ui->m_precSpinBox->setValue((int)prec);
+
+  //slices
+  size_t slices = grouping->getNumSlices();
+
+  m_ui->m_slicesSpinBox->setValue((int)slices);
+
+  //std dev
+  float stdDev = grouping->getStdDeviation();
+
+  m_ui->m_stdDevDoubleSpinBox->setValue((double)stdDev);
+
+  //grouping itens
+  te::common::FreeContents(m_legend);
+
+  for(size_t t = 0; t < grouping->getGroupingItens().size(); ++t)
+  {
+    te::map::GroupingItem* gi = new te::map::GroupingItem(*grouping->getGroupingItens()[t]);
+
+    m_legend.push_back(gi);
+  }
+
+  updateUi();
+}
+
+void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
+{
+  int index = m_ui->m_typeComboBox->currentIndex();
+
+  int type = m_ui->m_typeComboBox->itemData(index).toInt();
+  int slices = m_ui->m_slicesSpinBox->value();
+  int prec = m_ui->m_precSpinBox->value();
+  double stdDev = m_ui->m_stdDevDoubleSpinBox->value();
+
+  std::string attr = m_ui->m_attrComboBox->currentText().toStdString();
+  int attrIdx =  m_ui->m_attrComboBox->currentIndex();
+  int attrType = m_ui->m_attrComboBox->itemData(attrIdx).toInt();
+
+  te::common::FreeContents(m_legend);
+
+  if(type == te::map::EQUAL_STEPS)
+  {
+    std::vector<double> vec;
+    te::map::GroupingByEqualSteps(vec.begin(), vec.end(), slices, m_legend, prec);
+  }
+  else if(type == te::map::QUANTIL) 
+  {
+    std::vector<double> vec;
+    te::map::GroupingByQuantil(vec.begin(), vec.end(), slices, m_legend, prec);
+  }
+  else if(type == te::map::STD_DEVIATION) 
+  {
+    std::vector<double> vec;
+    std::string mean = "0";
+    te::map::GroupingByStdDeviation(vec.begin(), vec.end(), stdDev, m_legend, mean, prec);
+  }
+  else if(type == te::map::UNIQUE_VALUE) 
+  {
+    std::vector<std::string> vec;
+    te::map::GroupingByUniqueValues(vec, attrType, m_legend, prec);
+  }
+
+  updateUi();
+}

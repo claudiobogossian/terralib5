@@ -34,9 +34,7 @@
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../raster/Raster.h"
-#include "../../datasource/DataSourceCapabilities.h"
-#include "../../datasource/DataSourceCatalogLoader.h"
-#include "../../datasource/DataSourceTransactor.h"
+#include "../datasource/DataSourceCapabilities.h"
 #include "../utils/Utils.h"
 #include "../Exception.h"
 #include "DataSetAdapter.h"
@@ -66,7 +64,7 @@ te::common::AccessPolicy te::da::core::DataSetAdapter::getAccessPolicy() const
   return m_ds->getAccessPolicy();
 }
 
-te::gm::Envelope* te::da::core::DataSetAdapter::getExtent(std::size_t i)
+te::gm::Envelope* te::da::core::DataSetAdapter::getExtent(std::size_t /*i*/)
 {
   throw Exception(TR_DATAACCESS("Not Implemented Yet!"));
 }
@@ -86,7 +84,7 @@ std::string te::da::core::DataSetAdapter::getPropertyName(std::size_t pos) const
   return m_pnames[pos];
 }
 
-std::string te::da::core::DataSetAdapter::getDatasetNameOfProperty(std::size_t pos) const
+std::string te::da::core::DataSetAdapter::getDatasetNameOfProperty(std::size_t /*pos*/) const
 {
   return "";
 }

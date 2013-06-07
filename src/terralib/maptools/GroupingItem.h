@@ -18,49 +18,53 @@
  */
 
 /*!
-  \file LegendItem.h
+  \file GroupingItem.h
 
-  \brief This class contains information about a legend item associated to a layer.
+  \brief This class contains information about a grouping item associated to a layer.
 */
 
-#ifndef __TERRALIB_MAPTOOLS_INTERNAL_LEGENDITEM_H
-#define __TERRALIB_MAPTOOLS_INTERNAL_LEGENDITEM_H
+#ifndef __TERRALIB_MAPTOOLS_INTERNAL_GROUPINGITEM_H
+#define __TERRALIB_MAPTOOLS_INTERNAL_GROUPINGITEM_H
 
 // TerraLib
+#include "../se/Symbolizer.h"
 #include "Config.h"
-#include "../color/RGBAColor.h"
+
+// STL
+#include <memory>
+
 
 namespace te
 {
   namespace map
   {
     /*!
-      \class LegendItem
+      \class GroupingItem
 
-      \brief A LegendItem contains information about a legend item associated to a layer.
+      \brief A GroupingItem contains information about a grouping item associated to a layer.
     
       \sa AbstractLayer, Layer
     */
-    class TEMAPEXPORT LegendItem
+    class TEMAPEXPORT GroupingItem
     {
       public:
 
         /*!
-          \brief It initializes a new LegendItem.
+          \brief It initializes a new GroupingItem.
 
           \param from The value of the lower limit of the legend item.
           \param to   The value of the upper limit of the legend item.
         */
-        LegendItem(const std::string& from = "", const std::string& to = "");
+        GroupingItem(const std::string& from = "", const std::string& to = "");
 
         /*! \brief Destructor. */
-        ~LegendItem();
+        ~GroupingItem();
 
         /*! \brief Copy constructor. */
-        LegendItem(const LegendItem& rhs);
+        GroupingItem(const GroupingItem& rhs);
 
         /*! Assignment operator.  */
-        LegendItem& operator=(const LegendItem& rhs);
+        GroupingItem& operator=(const GroupingItem& rhs);
 
         /*!
           \brief It gets the lower limit value of the legend item.
@@ -119,30 +123,30 @@ namespace te
         void setCount(std::size_t count);
 
         /*!
-          \brief It gets the color of the legend item.
+          \brief It gets the symbolizer of the legend item.
 
-          \output The color of the legend item.
+          \output The symbolizer of the legend item.
         */
-        const te::color::RGBAColor& getColor() const;
+        std::vector<te::se::Symbolizer*>& getSymbolizers();
 
         /*!
-          \brief It sets the color of the legend item.
+          \brief It sets the symbolizer of the legend item.
 
-          \param color The color of the legend item..
+          \param symbolizer The symbolizer of the legend item..
         */
-        void setColor(const te::color::RGBAColor& color);
+        void setSymbolizers(std::vector<te::se::Symbolizer*> symbolizers);
 
       private:
 
-        std::string m_from;                //!< The value of the lower limit of the legend item.
-        std::string m_to;                  //!< The value of the upper limit of the legend item.
-        std::size_t m_count;               //!< The number of objects whose values are between the lower and upper limits.
-        std::string m_title;               //!< A text that can be used to identify this legend item.
-        te::color::RGBAColor m_color;      //!< The color of the legend item.
+        std::string m_from;                               //!< The value of the lower limit of the legend item.
+        std::string m_to;                                 //!< The value of the upper limit of the legend item.
+        std::size_t m_count;                              //!< The number of objects whose values are between the lower and upper limits.
+        std::string m_title;                              //!< A text that can be used to identify this legend item.
+        std::vector<te::se::Symbolizer*> m_symbolizers;   //!< The color of the legend item.
     };
 
   } // end namespace map
 }   // end namespace te
 
-#endif  // __TERRALIB_MAPTOOLS_INTERNAL_LEGENDITEM_H
+#endif  // __TERRALIB_MAPTOOLS_INTERNAL_GROUPINGITEM_H
 

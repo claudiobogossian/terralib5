@@ -230,7 +230,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
 
   std::vector<te::color::RGBAColor> colorVec = m_cb->getSlices(sliceValue);
 
-  std::vector<te::map::LegendItem*> legVec;
+  std::vector<te::map::GroupingItem*> legVec;
 
   std::vector<double> vec;
   vec.push_back(m_ui->m_minValueLineEdit->text().toDouble());
@@ -281,7 +281,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
 
   std::vector<te::color::RGBAColor> colorVec = m_cb->getSlices(sliceValue + 1);
   
-  std::vector<te::map::LegendItem*> legVec;
+  std::vector<te::map::GroupingItem*> legVec;
 
   std::vector<double> vec;
   vec.push_back(m_ui->m_minValueLineEdit->text().toDouble());

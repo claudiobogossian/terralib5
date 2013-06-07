@@ -444,7 +444,7 @@ namespace te
           */
           void remove(ForeignKey* fk);
 
-          //@}        
+          //@}
 
           /** @name Re-implementation from CompositeProperty
            *  Re-implementation from CompositeProperty.
@@ -470,34 +470,12 @@ namespace te
 
             \todo Update CheckConstraint entries!
           */
-          void remove(Property* p);
+          void remove(te::dt::Property* p);
 
           /*! \brief It clears the DataSetType definition. */
           void clear();
 
           //@}
-
-          /** @name Auxiliary Methods
-           *  Auxiliary methods.
-           */
-          //@{
-
-          /*!
-            \brief It replaces the property p by pp and adjust all pointers inclusive in the catalog.
-
-            \param p  The property to be replaced.
-            \param pp The property that will be added in the datasettype.
-
-            \note If the property p is the owner of a sequence, the new property pp will take the ownership.
-
-            \note The caller of this method will take the ownership of p pointer. So, it is the caller responsability to free it!
-
-            \note The DataSetType will take the ownership of pp pointer.
-          */
-          void replace(Property* p, Property* pp); 
-
-          //@}
-
 
           /** @name Implementation From Superclass Property
            *  Methods re-implemented from the superclass Property.

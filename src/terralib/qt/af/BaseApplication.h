@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_AF_INTERNAL_BASEAPPLICATION_H
 
 // TerraLib
+#include "../../maptools/AbstractLayer.h"
 #include "Config.h"
 
 // STL
@@ -108,6 +109,8 @@ namespace te
 
           void onLayerScatterTriggered();
 
+          void onLayerGroupingTriggered();
+
           void onMapSRIDTriggered();
 
           void onDrawTriggered();
@@ -139,6 +142,8 @@ namespace te
           void onLayerTableClose(te::qt::af::DataSetTableDockWidget* wid);
 
           void onFullScreenToggled(bool checked);
+
+          void onLayerSelectionChanged(const te::map::AbstractLayerPtr& layer);
 
         protected:
 
@@ -207,6 +212,7 @@ namespace te
           QAction* m_layerToBottom;
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
+          QAction* m_layerGrouping;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;

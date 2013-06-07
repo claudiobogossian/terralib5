@@ -24,7 +24,9 @@
 */
 
 // TerraLib
+#include "../common/STLUtils.h"
 #include "Grouping.h"
+#include "GroupingItem.h"
 
 
 te::map::Grouping::Grouping(const std::string& propertyName, te::map::GroupingType type, size_t precision)
@@ -33,7 +35,8 @@ te::map::Grouping::Grouping(const std::string& propertyName, te::map::GroupingTy
 }
 
 te::map::Grouping::~Grouping()
-{  
+{
+  te::common::FreeContents(m_itens);
 }
 
 std::string te::map::Grouping::getPropertyName() const
@@ -86,4 +89,14 @@ const float te::map::Grouping::getStdDeviation() const
 void te::map::Grouping::setStdDeviation(float stdDeviation)
 {
   m_stdDeviation = stdDeviation;
+}
+
+const std::vector<te::map::GroupingItem*>& te::map::Grouping::getGroupingItens() const
+{
+  return m_itens;
+}
+
+void te::map::Grouping::setGroupingItens(std::vector<te::map::GroupingItem*>& itens)
+{
+  m_itens = itens;
 }

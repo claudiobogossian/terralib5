@@ -23,11 +23,12 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../widgets/table/DataSetTableView.h"
 #include "../../widgets/utils/ScopedCursor.h"
-#include "events/LayerEvents.h"
+#include "../events/LayerEvents.h"
+#include "../ApplicationController.h"
 
-te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent) :
-QDockWidget(parent, Qt::Widget),
-  m_layer(0)
+te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
+  : QDockWidget(parent, Qt::Widget),
+    m_layer(0)
 {
   m_view = new te::qt::widgets::DataSetTableView(this);
 
@@ -48,7 +49,7 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
 {
   m_layer = layer;
 
-  if(m_layer==0)
+  if(m_layer == 0)
     return;
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
@@ -88,6 +89,9 @@ void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* o
     m_layer->clearSelected();
 
   m_layer->select(oids);
+
+  te::qt::af::evt::LayerSelectionChanged e(m_layer);
+  ApplicationController::getInstance().broadcast(&e);
 }
 
 void te::qt::af::DataSetTableDockWidget::removeSelectedOIds(te::da::ObjectIdSet* oids)

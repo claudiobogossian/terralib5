@@ -36,77 +36,77 @@
 
 
 void te::map::GroupingByUniqueValues(std::vector<std::string>& inputValues, int dataType,
-                                     std::vector<te::map::LegendItem*>& legend, int precision)
+                                     std::vector<te::map::GroupingItem*>& legend, int precision)
 {
-	size_t i, j;
+  size_t i, j;
 
   size_t valSize = inputValues.size();
-		
+    
   // Sort the input values
-	if (dataType == te::dt::INT16_TYPE || dataType == te::dt::UINT16_TYPE ||
+  if (dataType == te::dt::INT16_TYPE || dataType == te::dt::UINT16_TYPE ||
       dataType == te::dt::INT32_TYPE || dataType == te::dt::UINT32_TYPE ||
       dataType == te::dt::INT64_TYPE || dataType == te::dt::UINT64_TYPE)
-	{
-		std::vector<boost::int64_t> v;
+  {
+    std::vector<boost::int64_t> v;
 
-		for(i = 0; i < valSize; ++i)
-			v.push_back(atoi(inputValues[i].c_str()));
+    for(i = 0; i < valSize; ++i)
+      v.push_back(atoi(inputValues[i].c_str()));
 
-		sort(v.begin(), v.end());
+    sort(v.begin(), v.end());
 
-		for (i = 0; i < v.size(); ++i)
-			inputValues[i] = te::common::Convert2String(v[i]);
-	}
-	else if(dataType == te::dt::FLOAT_TYPE || dataType == te::dt::DOUBLE_TYPE)
-	{
-		std::vector<double> v;
+    for (i = 0; i < v.size(); ++i)
+      inputValues[i] = te::common::Convert2String(v[i]);
+  }
+  else if(dataType == te::dt::FLOAT_TYPE || dataType == te::dt::DOUBLE_TYPE)
+  {
+    std::vector<double> v;
 
-		for (i = 0; i < valSize; ++i)
-		{
-			double a = atof(inputValues[i].c_str());
-			v.push_back(a);
-		}
+    for (i = 0; i < valSize; ++i)
+    {
+      double a = atof(inputValues[i].c_str());
+      v.push_back(a);
+    }
 
-		stable_sort(v.begin(), v.end());
+    stable_sort(v.begin(), v.end());
 
-		for (i = 0; i < v.size(); ++i)
-			inputValues[i] = te::common::Convert2String(v[i], precision);
-	}
-	else
-	{
-		sort(inputValues.begin(), inputValues.end());
-	}
+    for (i = 0; i < v.size(); ++i)
+      inputValues[i] = te::common::Convert2String(v[i], precision);
+  }
+  else
+  {
+    sort(inputValues.begin(), inputValues.end());
+  }
 
-	// Check the elements that are equal, incrementing
-	// the count variable associated to each one
-	int count = 1;
-  te::map::LegendItem* legendItem;
+  // Check the elements that are equal, incrementing
+  // the count variable associated to each one
+  int count = 1;
+  te::map::GroupingItem* legendItem;
 
-	for (i = 0, j = 1; i < valSize - 1 && j < valSize; ++i, ++j)
-	{
-		if (inputValues[i] == inputValues[j])
-			++count;
-		else
-		{
-      legendItem = new te::map::LegendItem;
-			legendItem->setLowerLimit(inputValues[i]);
+  for (i = 0, j = 1; i < valSize - 1 && j < valSize; ++i, ++j)
+  {
+    if (inputValues[i] == inputValues[j])
+      ++count;
+    else
+    {
+      legendItem = new te::map::GroupingItem;
+      legendItem->setLowerLimit(inputValues[i]);
       legendItem->setCount(count);
-			legend.push_back(legendItem);
-			count = 1;
-		}
-	}
+      legend.push_back(legendItem);
+      count = 1;
+    }
+  }
 
    if((i > 1) && (inputValues[i] == inputValues[i-1])) 
    {
-     legendItem = new te::map::LegendItem;
-		 legendItem->setLowerLimit(inputValues[i]);
+     legendItem = new te::map::GroupingItem;
+     legendItem->setLowerLimit(inputValues[i]);
      legendItem->setCount(count);
      legend.push_back(legendItem);
    }
    else
    {
-     legendItem = new te::map::LegendItem;
-		 legendItem->setLowerLimit(inputValues[i]);
+     legendItem = new te::map::GroupingItem;
+     legendItem->setLowerLimit(inputValues[i]);
      legendItem->setCount(1);
      legend.push_back(legendItem);
    } 
@@ -114,10 +114,10 @@ void te::map::GroupingByUniqueValues(std::vector<std::string>& inputValues, int 
 
 double te::map::AdjustToPrecision(double val, int precision, bool reduce)
 {
-	double p = pow(10.0, (double)-precision);
-	
-	if (reduce)
-		return (val - p);
+  double p = pow(10.0, (double)-precision);
+  
+  if (reduce)
+    return (val - p);
 
-	return (val + p);
+  return (val + p);
 }
