@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,14 +18,14 @@
  */
 
 /*!
-  \file terralib/memory/TiledBand.cpp
+  \file terralib/dataaccess/memory/TiledBand.cpp
  
   \brief A tiled band implementation for the In-Memory Raster.
 */
 
 // TerraLib
-#include "../common/Translator.h" 
-#include "../raster/BandProperty.h"
+#include "../../common/Translator.h" 
+#include "../../raster/BandProperty.h"
 #include "Exception.h"
 #include "Raster.h"
 #include "TiledBand.h"
@@ -34,7 +34,7 @@
 #include <cassert>
 #include <cstring>
 
-te::mem::TiledBand::TiledBand(Raster* r, te::rst::BandProperty* p, std::size_t idx)
+te::da::mem::TiledBand::TiledBand(Raster* r, te::rst::BandProperty* p, std::size_t idx)
   : te::rst::Band(p, idx),
     m_raster(r),
     m_buff(0),
@@ -76,7 +76,7 @@ te::mem::TiledBand::TiledBand(Raster* r, te::rst::BandProperty* p, std::size_t i
   te::rst::SetBlockFunctions(&m_getBuff, &m_getBuffI, &m_setBuff, &m_setBuffI, m_property->getType());
 }
 
-te::mem::TiledBand::TiledBand(const TiledBand& rhs)
+te::da::mem::TiledBand::TiledBand(const TiledBand& rhs)
   : te::rst::Band(rhs),
     m_raster(0),
     m_buff(0),
@@ -107,7 +107,7 @@ te::mem::TiledBand::TiledBand(const TiledBand& rhs)
   }
 }
 
-te::mem::TiledBand::~TiledBand()
+te::da::mem::TiledBand::~TiledBand()
 {
   for(int i = 0; i < m_nblksy; ++i)
   {
@@ -125,12 +125,12 @@ te::mem::TiledBand::~TiledBand()
   delete [] m_buff;
 }
 
-te::rst::Raster* te::mem::TiledBand::getRaster() const
+te::rst::Raster* te::da::mem::TiledBand::getRaster() const
 {
   return m_raster;
 }
 
-te::mem::TiledBand& te::mem::TiledBand::operator=(const TiledBand& rhs)
+te::da::mem::TiledBand& te::da::mem::TiledBand::operator=(const TiledBand& rhs)
 {
   if(&rhs != this)
   {
@@ -164,7 +164,7 @@ te::mem::TiledBand& te::mem::TiledBand::operator=(const TiledBand& rhs)
   return *this;
 }
 
-void te::mem::TiledBand::getValue(unsigned int c, unsigned int r, double& value) const
+void te::da::mem::TiledBand::getValue(unsigned int c, unsigned int r, double& value) const
 {
   int blkx = c / m_blkw;
 
@@ -177,7 +177,7 @@ void te::mem::TiledBand::getValue(unsigned int c, unsigned int r, double& value)
   m_getBuff(pos, m_buff[blky][blkx], &value);
 }
 
-void te::mem::TiledBand::setValue(unsigned int c, unsigned int r, const double value)
+void te::da::mem::TiledBand::setValue(unsigned int c, unsigned int r, const double value)
 {
   int blkx = c / m_blkw;
 
@@ -190,7 +190,7 @@ void te::mem::TiledBand::setValue(unsigned int c, unsigned int r, const double v
   m_setBuff(pos, m_buff[blky][blkx], &value);
 }
 
-void te::mem::TiledBand::getIValue(unsigned int c, unsigned int r, double& value) const
+void te::da::mem::TiledBand::getIValue(unsigned int c, unsigned int r, double& value) const
 {
   int blkx = c / m_blkw;
 
@@ -203,7 +203,7 @@ void te::mem::TiledBand::getIValue(unsigned int c, unsigned int r, double& value
   m_getBuffI(pos, m_buff[blky][blkx], &value);
 }
 
-void te::mem::TiledBand::setIValue(unsigned int c, unsigned int r, const double value)
+void te::da::mem::TiledBand::setIValue(unsigned int c, unsigned int r, const double value)
 {
   int blkx = c / m_blkw;
 
@@ -216,28 +216,28 @@ void te::mem::TiledBand::setIValue(unsigned int c, unsigned int r, const double 
   m_setBuffI(pos, m_buff[blky][blkx], &value);
 }
 
-void te::mem::TiledBand::read(int x, int y, void* buffer) const
+void te::da::mem::TiledBand::read(int x, int y, void* buffer) const
 {
   assert(x < m_nblksx && y < m_nblksy);
 
   memcpy(buffer, m_buff[y][x], m_blksize);
 }
 
-void* te::mem::TiledBand::read(int x, int y)
+void* te::da::mem::TiledBand::read(int x, int y)
 {
   assert(x < m_nblksx && y < m_nblksy);
 
   return m_buff[y][x];
 }
 
-void te::mem::TiledBand::write(int x, int y, void* buffer)
+void te::da::mem::TiledBand::write(int x, int y, void* buffer)
 {
   assert(x < m_nblksx && y < m_nblksy);
 
   memcpy(m_buff[y][x], buffer, m_blksize);
 }
 
-void te::mem::TiledBand::setRaster(Raster* r)
+void te::da::mem::TiledBand::setRaster(Raster* r)
 {
   m_raster = r;
 }

@@ -41,20 +41,20 @@
 // Boost
 #include <boost/format.hpp>
 
-te::da::DataSetTypePtr te::da::DataSourceCatalog::sm_nullds;
+te::da::core::DataSetTypePtr te::da::core::DataSourceCatalog::sm_nullds;
 
-te::da::DataSourceCatalog::DataSourceCatalog()
+te::da::core::DataSourceCatalog::DataSourceCatalog()
   : m_id(0),
     m_ds(0)
 {
 }
 
-te::da::DataSourceCatalog::~DataSourceCatalog()
+te::da::core::DataSourceCatalog::~DataSourceCatalog()
 {
   te::common::FreeContents(m_sequences.begin(), m_sequences.end());
 }
 
-void te::da::DataSourceCatalog::clear()
+void te::da::core::DataSourceCatalog::clear()
 {
 // datasets
   m_datasets.clear();
@@ -69,14 +69,14 @@ void te::da::DataSourceCatalog::clear()
   m_dependentFkIdx.clear();
 }
 
-bool te::da::DataSourceCatalog::datasetExists(const std::string& name) const
+bool te::da::core::DataSourceCatalog::datasetExists(const std::string& name) const
 {
   dataset_idx_type::const_iterator it = m_datasets.find(name);
 
   return (it != m_datasets.end());
 }
 
-void te::da::DataSourceCatalog::add(const DataSetTypePtr& dt)
+void te::da::core::DataSourceCatalog::add(const DataSetTypePtr& dt)
 {
   if(dt.get() == 0)
     throw Exception(TR_DATAACCESS("Can not add a NULL dataset schema to the catalog!"));
@@ -97,7 +97,7 @@ void te::da::DataSourceCatalog::add(const DataSetTypePtr& dt)
   indexFKs(dt.get());
 }
 
-void te::da::DataSourceCatalog::remove(DataSetType* dt, const bool cascade)
+void te::da::core::DataSourceCatalog::remove(DataSetType* dt, const bool cascade)
 {
   if(dt == 0)
     throw Exception(TR_DATAACCESS("Can not remove a NULL dataset schema from the catalog!"));
@@ -126,7 +126,7 @@ void te::da::DataSourceCatalog::remove(DataSetType* dt, const bool cascade)
   m_datasets.erase(dt->getName());
 }
 
-void te::da::DataSourceCatalog::rename(DataSetType* dt, const std::string& newName)
+void te::da::core::DataSourceCatalog::rename(DataSetType* dt, const std::string& newName)
 {
   if(dt == 0)
     throw Exception(TR_DATAACCESS("Can not rename a NULL dataset schema!"));
@@ -154,7 +154,7 @@ void te::da::DataSourceCatalog::rename(DataSetType* dt, const std::string& newNa
   m_datasets.insert(aux);
 }
 
-const te::da::DataSetTypePtr& te::da::DataSourceCatalog::getDataSetType(std::size_t i) const
+const te::da::core::DataSetTypePtr& te::da::core::DataSourceCatalog::getDataSetType(std::size_t i) const
 {
   assert(i < m_datasets.size());
 
@@ -163,7 +163,7 @@ const te::da::DataSetTypePtr& te::da::DataSourceCatalog::getDataSetType(std::siz
   return pos_idx[i];
 }
 
-const te::da::DataSetTypePtr& te::da::DataSourceCatalog::getDataSetType(const std::string& name) const
+const te::da::core::DataSetTypePtr& te::da::core::DataSourceCatalog::getDataSetType(const std::string& name) const
 {
   assert(!name.empty());
 
@@ -175,7 +175,7 @@ const te::da::DataSetTypePtr& te::da::DataSourceCatalog::getDataSetType(const st
   return sm_nullds;
 }
 
-void te::da::DataSourceCatalog::add(Sequence* s)
+void te::da::core::DataSourceCatalog::add(Sequence* s)
 {
   if(getSequence(s->getName()))
     throw Exception(TR_DATAACCESS("Could not add Sequence because there is already another Sequence with the same name in the catalog!"));
@@ -186,26 +186,26 @@ void te::da::DataSourceCatalog::add(Sequence* s)
   indexSequenceDependency(s);
 }
 
-void te::da::DataSourceCatalog::remove(Sequence* s)
+void te::da::core::DataSourceCatalog::remove(Sequence* s)
 {
   detach(s);
   delete s;
 }
 
-void te::da::DataSourceCatalog::detach(Sequence* s)
+void te::da::core::DataSourceCatalog::detach(Sequence* s)
 {
   m_sequences.erase(s->getName());
   dropDependentSequenceEntry(s);
 }
 
-te::da::Sequence* te::da::DataSourceCatalog::getSequence(std::size_t i) const
+te::da::core::Sequence* te::da::core::DataSourceCatalog::getSequence(std::size_t i) const
 {
   const sequence_idx_type::nth_index<1>::type& pos_idx = m_sequences.get<1>();
 
   return pos_idx[i];
 }
 
-te::da::Sequence* te::da::DataSourceCatalog::getSequence(const std::string& name) const
+te::da::core::Sequence* te::da::core::DataSourceCatalog::getSequence(const std::string& name) const
 {
   sequence_idx_type::const_iterator it = m_sequences.find(name);
 
@@ -215,242 +215,242 @@ te::da::Sequence* te::da::DataSourceCatalog::getSequence(const std::string& name
   return 0;
 }
 
-void te::da::DataSourceCatalog::addRef(ForeignKey* fk)
+void te::da::core::DataSourceCatalog::addRef(ForeignKey* fk)
 {
-  te::da::DataSetType* refFT = fk->getReferencedDataSetType();
+  //DataSetType* refFT = fk->getReferencedDataSetType();
 
-  if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
-    throw Exception(TR_DATAACCESS("Could not find the DataSetType referenced in foreign key!"));
+  //if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
+  //  throw Exception(TR_DATAACCESS("Could not find the DataSetType referenced in foreign key!"));
 
-  m_dependentFkIdx.insert(std::pair<DataSetType*, ForeignKey*>(refFT, fk));
+  //m_dependentFkIdx.insert(std::pair<DataSetType*, ForeignKey*>(refFT, fk));
 }
 
-void te::da::DataSourceCatalog::removeRef(ForeignKey* fk)
+void te::da::core::DataSourceCatalog::removeRef(ForeignKey* fk)
 {
-  te::da::DataSetType* refFT = fk->getReferencedDataSetType();
-
-  if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
-    throw Exception(TR_DATAACCESS("Could not find the DataSetType referenced in foreign key!"));
-
-  std::pair<std::multimap<DataSetType*, ForeignKey*>::iterator,
-            std::multimap<DataSetType*, ForeignKey*>::iterator> range = m_dependentFkIdx.equal_range(refFT);
-
-  while(range.first != range.second)
-  {
-    std::multimap<DataSetType*, ForeignKey*>::iterator it = range.first; // keep a pointer to current element... we must erase it!
-
-    ++range.first;  // go to next element before erasing current!
-
-// is the iterator pointing to the right entry?
-    if(it->second == fk)
-    {
-      m_dependentFkIdx.erase(it);
-      return;
-    }
-  }
-
-  throw Exception(TR_DATAACCESS("Something went wrong when removing the association of a foreign key and a DataSetType in the DataSourceCatalog!"));
+//  DataSetType* refFT = fk->getReferencedDataSetType();
+//
+//  if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
+//    throw Exception(TR_DATAACCESS("Could not find the DataSetType referenced in foreign key!"));
+//
+//  std::pair<std::multimap<DataSetType*, ForeignKey*>::iterator,
+//            std::multimap<DataSetType*, ForeignKey*>::iterator> range = m_dependentFkIdx.equal_range(refFT);
+//
+//  while(range.first != range.second)
+//  {
+//    std::multimap<DataSetType*, ForeignKey*>::iterator it = range.first; // keep a pointer to current element... we must erase it!
+//
+//    ++range.first;  // go to next element before erasing current!
+//
+//// is the iterator pointing to the right entry?
+//    if(it->second == fk)
+//    {
+//      m_dependentFkIdx.erase(it);
+//      return;
+//    }
+//  }
+//
+//  throw Exception(TR_DATAACCESS("Something went wrong when removing the association of a foreign key and a DataSetType in the DataSourceCatalog!"));
 }
 
-void te::da::DataSourceCatalog::dropDependentSequences(te::dt::Property* p)
+void te::da::core::DataSourceCatalog::dropDependentSequences(te::dt::Property* p)
 {
-  te::dt::Property* parent = p;
-
-  while(parent)
-  {
-    parent = parent->getParent();
-
-    if(parent &&
-       (parent->getType() == te::dt::DATASET_TYPE) &&
-       (getDataSetType(parent->getName()).get() == parent))
-    {
-      te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);
-
-// is the dt owner of a sequence?
-      std::pair<std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator,
-                std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator> range = m_seqFTIdx.equal_range(dt);
-
-      while(range.first != range.second)
-      {
-        std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator it = range.first;
-        ++range.first;
-
-        te::da::Sequence* s = *(it->second);
-
-// is the property owner of the sequence?
-        if(s->getOwner() == p)
-        {
-          m_sequences.erase(it->second);
-          delete s;
-          m_seqFTIdx.erase(it);
-        }
-      }
-
-      return;
-    }
-  }
+//  te::dt::Property* parent = p;
+//
+//  while(parent)
+//  {
+//    parent = parent->getParent();
+//
+//    if(parent &&
+//       (parent->getType() == te::dt::DATASET_TYPE) &&
+//       (getDataSetType(parent->getName()).get() == parent))
+//    {
+//      te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);
+//
+//// is the dt owner of a sequence?
+//      std::pair<std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator,
+//                std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator> range = m_seqFTIdx.equal_range(dt);
+//
+//      while(range.first != range.second)
+//      {
+//        std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator it = range.first;
+//        ++range.first;
+//
+//        te::da::Sequence* s = *(it->second);
+//
+//// is the property owner of the sequence?
+//        if(s->getOwner() == p)
+//        {
+//          m_sequences.erase(it->second);
+//          delete s;
+//          m_seqFTIdx.erase(it);
+//        }
+//      }
+//
+//      return;
+//    }
+//  }
 }
 
-void te::da::DataSourceCatalog::checkSequenceDependency(Sequence* s) const
+void te::da::core::DataSourceCatalog::checkSequenceDependency(Sequence* s) const
 {
-  if(s->getOwner() == 0)
-    return;
-
-  te::dt::Property* parent = s->getOwner();
-
-  while(parent)
-  {
-    parent = parent->getParent();
-
-// if the parent is a FetaureType and it is in the catalog, stop!
-    if(parent &&
-       (parent->getType() == te::dt::DATASET_TYPE) &&
-       (getDataSetType(parent->getName()).get() == parent))
-        return;
-  }
-
-  throw Exception(TR_DATAACCESS("Could not find in the catalog the DataSetType that owns the given sequence!"));
+//  if(s->getOwner() == 0)
+//    return;
+//
+//  te::dt::Property* parent = s->getOwner();
+//
+//  while(parent)
+//  {
+//    parent = parent->getParent();
+//
+//// if the parent is a FetaureType and it is in the catalog, stop!
+//    if(parent &&
+//       (parent->getType() == te::dt::DATASET_TYPE) &&
+//       (getDataSetType(parent->getName()).get() == parent))
+//        return;
+//  }
+//
+//  throw Exception(TR_DATAACCESS("Could not find in the catalog the DataSetType that owns the given sequence!"));
 }
 
-void te::da::DataSourceCatalog::indexSequenceDependency(Sequence* s)
+void te::da::core::DataSourceCatalog::indexSequenceDependency(Sequence* s)
 {
-  if(s->getOwner() == 0)
-    return;
-
-  te::dt::Property* parent = s->getOwner();
-
-  sequence_idx_type::iterator it = m_sequences.find(s->getName());
-
-  while(parent)
-  {
-    parent = parent->getParent();
-
-// if the parent is a FetaureType and it is in the catalog, make index and stop!
-    if(parent &&
-       (parent->getType() == te::dt::DATASET_TYPE) &&
-       (getDataSetType(parent->getName()).get() == parent))
-      {
-        te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);
-        m_seqFTIdx.insert(std::pair<DataSetType*, sequence_idx_type::iterator>(dt, it));
-        return;
-      }
-  }
-
-  throw Exception(TR_DATAACCESS("Could not find in the catalog the DataSetType that owns the given sequence!"));
+//  if(s->getOwner() == 0)
+//    return;
+//
+//  te::dt::Property* parent = s->getOwner();
+//
+//  sequence_idx_type::iterator it = m_sequences.find(s->getName());
+//
+//  while(parent)
+//  {
+//    parent = parent->getParent();
+//
+//// if the parent is a FetaureType and it is in the catalog, make index and stop!
+//    if(parent &&
+//       (parent->getType() == te::dt::DATASET_TYPE) &&
+//       (getDataSetType(parent->getName()).get() == parent))
+//      {
+//        te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);
+//        m_seqFTIdx.insert(std::pair<DataSetType*, sequence_idx_type::iterator>(dt, it));
+//        return;
+//      }
+//  }
+//
+//  throw Exception(TR_DATAACCESS("Could not find in the catalog the DataSetType that owns the given sequence!"));
 }
 
-void te::da::DataSourceCatalog::dropDependentSequences(DataSetType* dt)
+void te::da::core::DataSourceCatalog::dropDependentSequences(DataSetType* dt)
 {
-  std::pair<std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator,
-            std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator> range = m_seqFTIdx.equal_range(dt);
-
-  while(range.first != range.second)
-  {
-    std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator it = range.first;
-    ++range.first;
-
-// remove sequence and all its entry in the catalog
-// !! DON'T CALL remove(s) THIS WILL NEED EXTRA COMPUTATIONS AND ALSO WILL NEED TO CHANGE THE LOGIC OF CODE BLOCK!!
-    te::da::Sequence* s = *(it->second);
-    m_sequences.erase(it->second);
-    delete s;
-    m_seqFTIdx.erase(it);
-  }
+//  std::pair<std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator,
+//            std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator> range = m_seqFTIdx.equal_range(dt);
+//
+//  while(range.first != range.second)
+//  {
+//    std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator it = range.first;
+//    ++range.first;
+//
+//// remove sequence and all its entry in the catalog
+//// !! DON'T CALL remove(s) THIS WILL NEED EXTRA COMPUTATIONS AND ALSO WILL NEED TO CHANGE THE LOGIC OF CODE BLOCK!!
+//    te::da::Sequence* s = *(it->second);
+//    m_sequences.erase(it->second);
+//    delete s;
+//    m_seqFTIdx.erase(it);
+//  }
 }
 
-void te::da::DataSourceCatalog::dropDependentSequenceEntry(Sequence* s)
+void te::da::core::DataSourceCatalog::dropDependentSequenceEntry(Sequence* s)
 {
-  if(s->getOwner() == 0)
-    return;
-
-  te::dt::Property* parent = s->getOwner();
-  
-  sequence_idx_type::iterator itpos = m_sequences.find(s->getName());
-
-  while(parent)
-  {
-    parent = parent->getParent();
-
-// if the parent is a FetaureType and it is in the catalog, make index and stop!
-    if(parent &&
-       (parent->getType() == te::dt::DATASET_TYPE) &&
-       (getDataSetType(parent->getName()).get() == parent))
-      {
-        te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);
-
-        std::pair<std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator,
-                  std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator> range = m_seqFTIdx.equal_range(dt);
-
-        while(range.first != range.second)
-        {
-          std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator it = range.first;
-          ++range.first;
-
-          if(*(it->second) == *itpos)
-          {
-            m_seqFTIdx.erase(it);
-            return;
-          }
-        }
-      }
-  }
-
-  throw Exception(TR_DATAACCESS("Could not find in the catalog the DataSetType that owns the given sequence in order to remove the sequence entry!"));
+//  if(s->getOwner() == 0)
+//    return;
+//
+//  te::dt::Property* parent = s->getOwner();
+//  
+//  sequence_idx_type::iterator itpos = m_sequences.find(s->getName());
+//
+//  while(parent)
+//  {
+//    parent = parent->getParent();
+//
+//// if the parent is a FetaureType and it is in the catalog, make index and stop!
+//    if(parent &&
+//       (parent->getType() == te::dt::DATASET_TYPE) &&
+//       (getDataSetType(parent->getName()).get() == parent))
+//      {
+//        te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);
+//
+//        std::pair<std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator,
+//                  std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator> range = m_seqFTIdx.equal_range(dt);
+//
+//        while(range.first != range.second)
+//        {
+//          std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator it = range.first;
+//          ++range.first;
+//
+//          if(*(it->second) == *itpos)
+//          {
+//            m_seqFTIdx.erase(it);
+//            return;
+//          }
+//        }
+//      }
+//  }
+//
+//  throw Exception(TR_DATAACCESS("Could not find in the catalog the DataSetType that owns the given sequence in order to remove the sequence entry!"));
 }
 
-void te::da::DataSourceCatalog::checkFKsDependency(DataSetType* dt) const
+void te::da::core::DataSourceCatalog::checkFKsDependency(DataSetType* dt) const
 {
-  std::size_t size = dt->getNumberOfForeignKeys();
+  //std::size_t size = dt->getNumberOfForeignKeys();
 
-  for(std::size_t i = 0; i < size; ++i)
-  {
-    te::da::ForeignKey* fk = dt->getForeignKey(i);
-    te::da::DataSetType* refFT = fk->getReferencedDataSetType();
+  //for(std::size_t i = 0; i < size; ++i)
+  //{
+  //  te::da::ForeignKey* fk = dt->getForeignKey(i);
+  //  te::da::DataSetType* refFT = fk->getReferencedDataSetType();
 
-    if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
-      throw Exception(TR_DATAACCESS("There is a foreign key in the DataSetType referencing another DataSetType that is not in the catalog!"));
-  }
+  //  if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
+  //    throw Exception(TR_DATAACCESS("There is a foreign key in the DataSetType referencing another DataSetType that is not in the catalog!"));
+  //}
 }
 
-void te::da::DataSourceCatalog::indexFKs(DataSetType* dt)
+void te::da::core::DataSourceCatalog::indexFKs(DataSetType* dt)
 {
-  std::size_t size = dt->getNumberOfForeignKeys();
+  //std::size_t size = dt->getNumberOfForeignKeys();
 
-  for(std::size_t i = 0; i < size; ++i)
-  {
-    te::da::ForeignKey* fk = dt->getForeignKey(i);
-    te::da::DataSetType* refFT = fk->getReferencedDataSetType();
-    
-    assert(getDataSetType(refFT->getName()).get() == refFT);
+  //for(std::size_t i = 0; i < size; ++i)
+  //{
+  //  te::da::ForeignKey* fk = dt->getForeignKey(i);
+  //  te::da::DataSetType* refFT = fk->getReferencedDataSetType();
+  //  
+  //  assert(getDataSetType(refFT->getName()).get() == refFT);
 
-    m_dependentFkIdx.insert(std::pair<DataSetType*, ForeignKey*>(refFT, fk));
-  }
+  //  m_dependentFkIdx.insert(std::pair<DataSetType*, ForeignKey*>(refFT, fk));
+  //}
 }
 
-void te::da::DataSourceCatalog::dropDependentFKs(DataSetType* dt)
+void te::da::core::DataSourceCatalog::dropDependentFKs(DataSetType* dt)
 {
-  std::pair<std::multimap<DataSetType*, ForeignKey*>::iterator,
-            std::multimap<DataSetType*, ForeignKey*>::iterator> range = m_dependentFkIdx.equal_range(dt);
-
-  while(range.first != range.second)
-  {
-    std::multimap<DataSetType*, ForeignKey*>::iterator it = range.first; // keep a pointer to current element... we must erase it!
-
-    ++range.first;  // go to next element before erasing current!
-
-// who is the owner of the fk? ask it to drop the fk!
-    te::da::ForeignKey* fk = it->second;
-    te::da::DataSetType* fkOwner = fk->getDataSetType();
-    fkOwner->remove(fk);
-  }
+//  std::pair<std::multimap<DataSetType*, ForeignKey*>::iterator,
+//            std::multimap<DataSetType*, ForeignKey*>::iterator> range = m_dependentFkIdx.equal_range(dt);
+//
+//  while(range.first != range.second)
+//  {
+//    std::multimap<DataSetType*, ForeignKey*>::iterator it = range.first; // keep a pointer to current element... we must erase it!
+//
+//    ++range.first;  // go to next element before erasing current!
+//
+//// who is the owner of the fk? ask it to drop the fk!
+//    te::da::ForeignKey* fk = it->second;
+//    te::da::DataSetType* fkOwner = fk->getDataSetType();
+//    fkOwner->remove(fk);
+//  }
 }
 
-te::da::DataSourceCatalog::dataset_name_cmp::result_type te::da::DataSourceCatalog::dataset_name_cmp::operator()(const DataSetTypePtr& dt) const
+te::da::core::DataSourceCatalog::dataset_name_cmp::result_type te::da::core::DataSourceCatalog::dataset_name_cmp::operator()(const DataSetTypePtr& dt) const
 {
   return dt->getName();
 }
 
-te::da::DataSourceCatalog::sequence_name_cmp::result_type te::da::DataSourceCatalog::sequence_name_cmp::operator()(const Sequence* const s) const
+te::da::core::DataSourceCatalog::sequence_name_cmp::result_type te::da::core::DataSourceCatalog::sequence_name_cmp::operator()(const Sequence* const s) const
 {
   return s->getName();
 }

@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../common/Static.h"
-#include "../../Config.h"
+#include "../Config.h"
 #include "../Exception.h"
 
 // STL

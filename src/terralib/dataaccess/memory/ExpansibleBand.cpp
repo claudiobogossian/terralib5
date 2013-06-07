@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,21 +18,22 @@
  */
 
 /*!
-  \file terralib/memory/ExpansibleBand.cpp
+  \file terralib/dataaccess/memory/ExpansibleBand.cpp
  
   \brief Expansible raster band.
 */
 
 // TerraLib
+#include "../../raster/BandProperty.h"
+#include "../../raster/Utils.h"
 #include "ExpansibleBand.h"
-#include "../raster/BandProperty.h"
-#include "../raster/Utils.h"
 
+// STL
 #include <cstring>
 
-te::mem::ExpansibleBandBlocksManager te::mem::ExpansibleBand::dummyBlocksManager;
+te::da::mem::ExpansibleBandBlocksManager te::da::mem::ExpansibleBand::dummyBlocksManager;
 
-te::mem::ExpansibleBand::ExpansibleBand( ExpansibleBandBlocksManager& blocksManager,
+te::da::mem::ExpansibleBand::ExpansibleBand( ExpansibleBandBlocksManager& blocksManager,
           te::rst::Raster& parentRaster, 
           const te::rst::BandProperty& bandProperty,  std::size_t idx )
 : te::rst::Band( new te::rst::BandProperty( bandProperty ), idx ),
@@ -47,7 +48,7 @@ te::mem::ExpansibleBand::ExpansibleBand( ExpansibleBandBlocksManager& blocksMana
     m_property->m_type );
 }
 
-te::mem::ExpansibleBand::ExpansibleBand()
+te::da::mem::ExpansibleBand::ExpansibleBand()
 : te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ), 
   m_blocksManager( dummyBlocksManager )
 {
@@ -57,21 +58,11 @@ te::mem::ExpansibleBand::ExpansibleBand()
   m_setBuffI = 0;
 }
 
-te::mem::ExpansibleBand::ExpansibleBand(const ExpansibleBand& )
-: te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ),
-  m_blocksManager( dummyBlocksManager )
-{
-  m_getBuff = 0;
-  m_getBuffI = 0;
-  m_setBuff = 0;
-  m_setBuffI = 0;
-}
-
-te::mem::ExpansibleBand::~ExpansibleBand()
+te::da::mem::ExpansibleBand::~ExpansibleBand()
 {
 }
 
-void te::mem::ExpansibleBand::getValue(unsigned int c, unsigned int r, double& value) const
+void te::da::mem::ExpansibleBand::getValue(unsigned int c, unsigned int r, double& value) const
 {
   m_setGetBlkX = c / m_blkWidth;
   m_setGetBlkY = r / m_blkHeight;
@@ -82,7 +73,7 @@ void te::mem::ExpansibleBand::getValue(unsigned int c, unsigned int r, double& v
   m_getBuff(m_setGetPos, m_setGetBufPtr, &value );
 }
 
-void te::mem::ExpansibleBand::setValue(unsigned int c, unsigned int r, const double value)
+void te::da::mem::ExpansibleBand::setValue(unsigned int c, unsigned int r, const double value)
 {
   m_setGetBlkX = c / m_blkWidth;
   m_setGetBlkY = r / m_blkHeight;
@@ -93,7 +84,7 @@ void te::mem::ExpansibleBand::setValue(unsigned int c, unsigned int r, const dou
   m_setBuff(m_setGetPos, m_setGetBufPtr, &value );
 }
 
-void te::mem::ExpansibleBand::getIValue(unsigned int c, unsigned int r, double& value) const
+void te::da::mem::ExpansibleBand::getIValue(unsigned int c, unsigned int r, double& value) const
 {
   m_setGetBlkX = c / m_blkWidth;
   m_setGetBlkY = r / m_blkHeight;
@@ -104,7 +95,7 @@ void te::mem::ExpansibleBand::getIValue(unsigned int c, unsigned int r, double& 
   m_getBuffI(m_setGetPos, m_setGetBufPtr, &value );
 }
 
-void te::mem::ExpansibleBand::setIValue(unsigned int c, unsigned int r, const double value)
+void te::da::mem::ExpansibleBand::setIValue(unsigned int c, unsigned int r, const double value)
 {
   m_setGetBlkX = c / m_blkWidth;
   m_setGetBlkY = r / m_blkHeight;
@@ -115,14 +106,14 @@ void te::mem::ExpansibleBand::setIValue(unsigned int c, unsigned int r, const do
   m_setBuffI(m_setGetPos, m_setGetBufPtr, &value );
 }
 
-void te::mem::ExpansibleBand::read(int x, int y, void* buffer) const
+void te::da::mem::ExpansibleBand::read(int x, int y, void* buffer) const
 {
   assert( m_blocksManager.isInitialized() );
   memcpy( buffer, m_blocksManager.getBlockPointer( m_idx, x, y ),
     m_blkSizeBytes );
 }
 
-void te::mem::ExpansibleBand::write(int x, int y, void* buffer)
+void te::da::mem::ExpansibleBand::write(int x, int y, void* buffer)
 {
   assert( m_blocksManager.isInitialized() );
   memcpy( m_blocksManager.getBlockPointer( m_idx, x, y ), buffer,

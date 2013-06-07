@@ -31,7 +31,7 @@
 #include "../dataset/DataSetCapabilities.h"
 #include "../dataset/DataSetTypeCapabilities.h"
 #include "../query/QueryCapabilities.h"
-#include "../../Config.h"
+#include "../Config.h"
 #include "DataTypeCapabilities.h"
 
 // STL

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,14 +18,14 @@
  */
 
 /*!
-  \file terralib/memory/RasterFactory.cpp
+  \file terralib/dataaccess/memory/RasterFactory.cpp
 
   \brief This is the concrete factory for In-Memory driver.
 */
 
 // TerraLib
-#include "../common/StringUtils.h"
-#include "../common/Translator.h"
+#include "../../common/StringUtils.h"
+#include "../../common/Translator.h"
 #include "Exception.h"
 #include "Globals.h"
 #include "Raster.h"
@@ -34,18 +34,18 @@
 // STL
 #include <memory>
 
-te::mem::RasterFactory te::mem::RasterFactory::sm_factory;
+te::da::mem::RasterFactory te::da::mem::RasterFactory::sm_factory;
 
-te::mem::RasterFactory::~RasterFactory()
+te::da::mem::RasterFactory::~RasterFactory()
 {
 }
 
-const std::string& te::mem::RasterFactory::getType() const
+const std::string& te::da::mem::RasterFactory::getType() const
 {
   return Globals::sm_driverIdentifier;
 }
 
-void te::mem::RasterFactory::getCreationalParameters(std::vector< std::pair<std::string, std::string> >& params) const
+void te::da::mem::RasterFactory::getCreationalParameters(std::vector< std::pair<std::string, std::string> >& params) const
 {
   params.push_back(std::pair<std::string, std::string>("MEM_SRC_RASTER_DRIVER_TYPE", ""));
   params.push_back(std::pair<std::string, std::string>("MEM_TILED_RASTER", ""));
@@ -78,12 +78,12 @@ void te::mem::RasterFactory::getCreationalParameters(std::vector< std::pair<std:
   params.push_back(std::pair<std::string, std::string>("MEM_RASTER_MAX_Y", ""));
 }
 
-te::mem::RasterFactory::RasterFactory()
+te::da::mem::RasterFactory::RasterFactory()
   : te::rst::RasterFactory(TE_MEMORY_DRIVER_IDENTIFIER)
 {
 }
 
-te::rst::Raster* te::mem::RasterFactory::create(te::rst::Grid* g,
+te::rst::Raster* te::da::mem::RasterFactory::create(te::rst::Grid* g,
                                                 const std::vector<te::rst::BandProperty*> bands,
                                                 const std::map<std::string, std::string>& rinfo,
                                                 void* h,
@@ -96,12 +96,12 @@ te::rst::Raster* te::mem::RasterFactory::create(te::rst::Grid* g,
   return raster.release();
 }
 
-te::rst::Raster* te::mem::RasterFactory::build()
+te::rst::Raster* te::da::mem::RasterFactory::build()
 {
   return new Raster;
 }
 
-std::map<std::string, std::string> te::mem::RasterFactory::getCapabilities() const
+std::map<std::string, std::string> te::da::mem::RasterFactory::getCapabilities() const
 {
   std::map<std::string, std::string> capabilities = std::map<std::string, std::string>();
 

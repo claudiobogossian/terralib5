@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_SCOPEDTRANSACTION_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 // Boost
 #include <boost/noncopyable.hpp>

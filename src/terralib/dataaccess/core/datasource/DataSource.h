@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../../common/Enums.h"
 #include "../../../geometry/Enums.h"
-#include "../../Config.h"
+#include "../Config.h"
 #include "../Exception.h"
 
 // STL

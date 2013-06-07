@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -19,18 +19,20 @@
 
 /*!
   \file terralib/memory/CachedBandBlocksManager.cpp
- 
+
   \brief RAM cached and tiled raster band blocks manager.
 */
 
+// TerraLib
+#include "../../common/PlatformUtils.h"
+#include "../../raster/Band.h"
+#include "../../raster/BandProperty.h"
 #include "CachedBandBlocksManager.h"
-#include "../raster/Band.h"
-#include "../raster/BandProperty.h"
-#include "../common/PlatformUtils.h"
 
+// STL
 #include <algorithm>
 
-void te::mem::CachedBandBlocksManager::initState()
+void te::da::mem::CachedBandBlocksManager::initState()
 {
   m_rasterPtr = 0;
   m_dataPrefetchThreshold = 0;
@@ -42,30 +44,17 @@ void te::mem::CachedBandBlocksManager::initState()
   m_getBlockPointer_BlkPtr = 0;
 }
 
-te::mem::CachedBandBlocksManager::CachedBandBlocksManager()
+te::da::mem::CachedBandBlocksManager::CachedBandBlocksManager()
 {
   initState();
 }
 
-te::mem::CachedBandBlocksManager::CachedBandBlocksManager(
-  const CachedBandBlocksManager& )
-{
-  initState();
-}
-
-te::mem::CachedBandBlocksManager::~CachedBandBlocksManager()
+te::da::mem::CachedBandBlocksManager::~CachedBandBlocksManager()
 {
   free();
 }
 
-const  te::mem::CachedBandBlocksManager& 
-  te::mem::CachedBandBlocksManager::operator=( 
-  const CachedBandBlocksManager& rhs )
-{
-  return rhs;
-}
-
-bool te::mem::CachedBandBlocksManager::initialize( 
+bool te::da::mem::CachedBandBlocksManager::initialize( 
   const te::rst::Raster& externalRaster, const unsigned char maxMemPercentUsed, 
   const unsigned int dataPrefetchThreshold)
 {
@@ -94,7 +83,7 @@ bool te::mem::CachedBandBlocksManager::initialize(
   return initialize( maxNumberOfCacheBlocks, externalRaster, dataPrefetchThreshold );
 }
 
-bool te::mem::CachedBandBlocksManager::initialize( 
+bool te::da::mem::CachedBandBlocksManager::initialize( 
   const unsigned int maxNumberOfCacheBlocks, 
   const te::rst::Raster& externalRaster, 
   const unsigned int dataPrefetchThreshold)
@@ -164,7 +153,7 @@ bool te::mem::CachedBandBlocksManager::initialize(
   return true;
 }
 
-void te::mem::CachedBandBlocksManager::free()
+void te::da::mem::CachedBandBlocksManager::free()
 {
   // Stopping the thread
   
@@ -231,7 +220,7 @@ void te::mem::CachedBandBlocksManager::free()
   initState();
 }
 
-void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band, 
+void* te::da::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band, 
   unsigned int x, unsigned int y )
 {
   assert( m_rasterPtr );
@@ -363,7 +352,7 @@ void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band,
   return m_getBlockPointer_BlkPtr;  
 }
 
-void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
+void te::da::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
 {
 //  std::cout << std::endl << "Thread started" << std::endl;
   

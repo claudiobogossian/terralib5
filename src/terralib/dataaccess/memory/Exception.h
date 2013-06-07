@@ -18,20 +18,30 @@
  */
 
 /*!
-  \file terralib/memory/Exception.cpp
+  \file terralib/dataaccess/memory/Exception.h
 
   \brief An exception class for the TerraLib In-Memory Data Access driver.
 */
 
+#ifndef __TERRALIB_DATAACCESS_MEMORY_INTERNAL_EXCEPTION_H
+#define __TERRALIB_DATAACCESS_MEMORY_INTERNAL_EXCEPTION_H
+
 // TerraLib
-#include "Exception.h"
+#include "../core/Exception.h"
+#include "Config.h"
+
 
 namespace te
 {
-  namespace mem
+  namespace da
   {
-    TE_DEFINE_EXCEPTION_CLASS(Exception, te::da::Exception, "te::mem::Exception")
+    namespace mem
+    {
+      TE_DECLARE_EXCEPTION_CLASS(TEMEMORYEXPORT, Exception, te::da::core::Exception)
 
-  } // end namespace mem
-}   // end namespace te
+    } // end namespace mem
+  }   // end namespace da
+}     // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_MEMORY_INTERNAL_EXCEPTION_H
 

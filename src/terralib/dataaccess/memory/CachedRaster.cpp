@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,27 +18,27 @@
  */
 
 /*!
-  \file terralib/memory/CachedRaster.cpp
+  \file terralib/dataaccess/memory/CachedRaster.cpp
 
   \brief A RAM cache adaptor to an external existent raster that must always be avaliable.
 */
 
 // TerraLib
-#include "../common/Translator.h"
-#include "Exception.h"
-#include "CachedRaster.h"
+#include "../../common/Translator.h"
 #include "CachedBand.h"
+#include "CachedRaster.h"
+#include "Exception.h"
 
-te::mem::CachedRaster::CachedRaster()
+te::da::mem::CachedRaster::CachedRaster()
 {
 }
 
-te::mem::CachedRaster::CachedRaster( te::rst::Grid* grid, te::common::AccessPolicy p )
+te::da::mem::CachedRaster::CachedRaster( te::rst::Grid* grid, te::common::AccessPolicy p )
 : te::rst::Raster( grid, p )
 {
 }
 
-te::mem::CachedRaster::CachedRaster( const te::rst::Raster& rhs, 
+te::da::mem::CachedRaster::CachedRaster( const te::rst::Raster& rhs, 
   const unsigned char maxMemPercentUsed, 
   const unsigned int dataPrefetchThreshold )
 : te::rst::Raster( rhs )
@@ -48,10 +48,10 @@ te::mem::CachedRaster::CachedRaster( const te::rst::Raster& rhs,
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < rhs.getNumberOfBands() ; 
     ++bandsIdx )
-    m_bands.push_back( new te::mem::CachedBand( m_blocksManager, bandsIdx ) );
+    m_bands.push_back( new te::da::mem::CachedBand( m_blocksManager, bandsIdx ) );
 }
 
-te::mem::CachedRaster::CachedRaster( const unsigned int maxNumberOfCacheBlocks,
+te::da::mem::CachedRaster::CachedRaster( const unsigned int maxNumberOfCacheBlocks,
   const te::rst::Raster& rhs, 
   const unsigned int dataPrefetchThreshold )
 : te::rst::Raster( rhs )
@@ -62,27 +62,27 @@ te::mem::CachedRaster::CachedRaster( const unsigned int maxNumberOfCacheBlocks,
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < rhs.getNumberOfBands() ; 
     ++bandsIdx )
-    m_bands.push_back( new te::mem::CachedBand( m_blocksManager, bandsIdx ) );
+    m_bands.push_back( new te::da::mem::CachedBand( m_blocksManager, bandsIdx ) );
 }
 
-te::mem::CachedRaster::~CachedRaster()
+te::da::mem::CachedRaster::~CachedRaster()
 {
   free();
 }
 
-void te::mem::CachedRaster::open(const std::map<std::string, std::string>& rinfo, 
-  te::common::AccessPolicy p)
+void te::da::mem::CachedRaster::open(const std::map<std::string, std::string>& /*rinfo*/,
+                                     te::common::AccessPolicy /*p*/)
 {
 }
 
-te::dt::AbstractData* te::mem::CachedRaster::clone() const
+te::dt::AbstractData* te::da::mem::CachedRaster::clone() const
 {
   assert( m_blocksManager.isInitialized() );
   return new CachedRaster( m_blocksManager.getMaxNumberOfCacheBlocks(),
     *m_blocksManager.getRaster(), m_blocksManager.getDataPrefetchThreshold() );
 }
 
-void te::mem::CachedRaster::free()
+void te::da::mem::CachedRaster::free()
 {
   if( m_bands.size() > 0 )
   {

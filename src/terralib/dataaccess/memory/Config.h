@@ -27,7 +27,7 @@
 #define __TERRALIB_MEMORY_INTERNAL_CONFIG_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
 
 /** @name General Defines
  *  Configs for Memory module.

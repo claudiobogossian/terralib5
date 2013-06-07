@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,30 +18,31 @@
  */
 
 /*!
-  \file terralib/memory/ExpansibleBandBlocksManager.cpp
- 
+  \file terralib/dataaccess/memory/ExpansibleBandBlocksManager.cpp
+
   \brief RAM cached and tiled raster band blocks manager.
 */
 
-#include "ExpansibleBandBlocksManager.h"
+// TerraLib
+#include "../../common/PlatformUtils.h"
+#include "../../common/Translator.h"
+#include "../../raster/Band.h"
+#include "../../raster/BandProperty.h"
 #include "Exception.h"
-#include "../raster/Band.h"
-#include "../raster/BandProperty.h"
-#include "../common/PlatformUtils.h"
-#include "../common/Translator.h"
+#include "ExpansibleBandBlocksManager.h"
 
+// STL
 #include <algorithm>
-
 #include <cassert>
 
 // ---------------------------------------------------------------------------
 
-te::mem::ExpansibleBandBlocksManager::OpenDiskFileHandler::OpenDiskFileHandler()
+te::da::mem::ExpansibleBandBlocksManager::OpenDiskFileHandler::OpenDiskFileHandler()
 : m_filePtr( 0 ) 
 {
 } 
 
-te::mem::ExpansibleBandBlocksManager::OpenDiskFileHandler::~OpenDiskFileHandler()
+te::da::mem::ExpansibleBandBlocksManager::OpenDiskFileHandler::~OpenDiskFileHandler()
 {
   if( m_filePtr ) 
   {
@@ -51,7 +52,7 @@ te::mem::ExpansibleBandBlocksManager::OpenDiskFileHandler::~OpenDiskFileHandler(
 
 // ---------------------------------------------------------------------------
 
-void te::mem::ExpansibleBandBlocksManager::initState()
+void te::da::mem::ExpansibleBandBlocksManager::initState()
 {
   m_isInitialized = false;
   m_maxNumberRAMBlocks = 0;
@@ -62,17 +63,17 @@ void te::mem::ExpansibleBandBlocksManager::initState()
   
 }
 
-te::mem::ExpansibleBandBlocksManager::ExpansibleBandBlocksManager()
+te::da::mem::ExpansibleBandBlocksManager::ExpansibleBandBlocksManager()
 {
   initState();
 }
 
-te::mem::ExpansibleBandBlocksManager::~ExpansibleBandBlocksManager()
+te::da::mem::ExpansibleBandBlocksManager::~ExpansibleBandBlocksManager()
 {
   free();
 }
 
-bool te::mem::ExpansibleBandBlocksManager::initialize( 
+bool te::da::mem::ExpansibleBandBlocksManager::initialize( 
   const unsigned int maxNumberRAMBlocks,
   const std::vector< unsigned int>& numbersOfBlocksX,
   const std::vector< unsigned int>& numbersOfBlocksY,
@@ -212,7 +213,7 @@ bool te::mem::ExpansibleBandBlocksManager::initialize(
   return true;
 }
 
-void te::mem::ExpansibleBandBlocksManager::free()
+void te::da::mem::ExpansibleBandBlocksManager::free()
 {
   m_activeRAMBlocksHandler.clear();
   m_ramBlocksPointers.clear();
@@ -224,7 +225,7 @@ void te::mem::ExpansibleBandBlocksManager::free()
   initState();
 }
 
-void* te::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band, 
+void* te::da::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band, 
   unsigned int x, unsigned int y )
 {
   assert( m_isInitialized );
@@ -319,7 +320,7 @@ void* te::mem::ExpansibleBandBlocksManager::getBlockPointer(unsigned int band,
   }
 }
 
-bool te::mem::ExpansibleBandBlocksManager::addTopBlocks( 
+bool te::da::mem::ExpansibleBandBlocksManager::addTopBlocks( 
   const unsigned int& expansionSize, const unsigned int& band,
   std::vector< BlockIndex3D >& addedBlocksCoords )
 {
@@ -375,7 +376,7 @@ bool te::mem::ExpansibleBandBlocksManager::addTopBlocks(
   return true;
 }
 
-bool te::mem::ExpansibleBandBlocksManager::addBottomBlocks( 
+bool te::da::mem::ExpansibleBandBlocksManager::addBottomBlocks( 
   const unsigned int& expansionSize, const unsigned int& band,
   std::vector< BlockIndex3D >& addedBlocksCoords )
 {
@@ -431,7 +432,7 @@ bool te::mem::ExpansibleBandBlocksManager::addBottomBlocks(
   return true;
 }
 
-bool te::mem::ExpansibleBandBlocksManager::addLeftBlocks( 
+bool te::da::mem::ExpansibleBandBlocksManager::addLeftBlocks( 
   const unsigned int& expansionSize, const unsigned int& band,
   std::vector< BlockIndex3D >& addedBlocksCoords )
 {
@@ -487,7 +488,7 @@ bool te::mem::ExpansibleBandBlocksManager::addLeftBlocks(
   return true;
 }
 
-bool te::mem::ExpansibleBandBlocksManager::addRightBlocks( 
+bool te::da::mem::ExpansibleBandBlocksManager::addRightBlocks( 
   const unsigned int& expansionSize, const unsigned int& band,
   std::vector< BlockIndex3D >& addedBlocksCoords )
 {
@@ -543,7 +544,7 @@ bool te::mem::ExpansibleBandBlocksManager::addRightBlocks(
   return true;
 }
 
-bool te::mem::ExpansibleBandBlocksManager::addTopBands( 
+bool te::da::mem::ExpansibleBandBlocksManager::addTopBands( 
   const unsigned int& expansionSize,
   std::vector< BlockIndex3D >& addedBlocksCoords )
 {
@@ -607,7 +608,7 @@ bool te::mem::ExpansibleBandBlocksManager::addTopBands(
   return true;
 }
 
-bool te::mem::ExpansibleBandBlocksManager::addBottomBands( const unsigned int& expansionSize,
+bool te::da::mem::ExpansibleBandBlocksManager::addBottomBands( const unsigned int& expansionSize,
   std::vector< BlockIndex3D >& addedBlocksCoords )
 {
   assert( m_isInitialized );
@@ -668,7 +669,7 @@ bool te::mem::ExpansibleBandBlocksManager::addBottomBands( const unsigned int& e
   return true;
 }
 
-bool te::mem::ExpansibleBandBlocksManager::allocateDiskBlocks( 
+bool te::da::mem::ExpansibleBandBlocksManager::allocateDiskBlocks( 
   const unsigned int blocksNumber,
   std::vector< DiskBlockInfo >& diskBlocksInfos,                       
   OpenDiskFilesHandlerT& diskFilesHandler ) const
@@ -713,7 +714,7 @@ bool te::mem::ExpansibleBandBlocksManager::allocateDiskBlocks(
   return true;
 }
 
-bool te::mem::ExpansibleBandBlocksManager::allocateAndActivateDiskBlocks( 
+bool te::da::mem::ExpansibleBandBlocksManager::allocateAndActivateDiskBlocks( 
   const std::vector< BlockIndex3D >& blocksIndxes )
 {
   if( ! blocksIndxes.empty() )
@@ -753,7 +754,7 @@ bool te::mem::ExpansibleBandBlocksManager::allocateAndActivateDiskBlocks(
   return true;
 }
 
-bool te::mem::ExpansibleBandBlocksManager::createNewDiskFile( unsigned long int size,
+bool te::da::mem::ExpansibleBandBlocksManager::createNewDiskFile( unsigned long int size,
   FILE** fileptr ) const
 {
   //(*fileptr) = fopen( filename.c_str(), "wb+" );

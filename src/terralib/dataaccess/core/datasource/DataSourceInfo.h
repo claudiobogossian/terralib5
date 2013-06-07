@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_CORE_DATASOURCE_INTERNAL_DATASOURCEINFO_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
 #include <map>
