@@ -31,6 +31,7 @@
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../maptools/FolderLayer.h"
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
@@ -87,6 +88,7 @@
 #include <QtGui/QCloseEvent>
 #include <QtGui/QDockWidget>
 #include <QtGui/QFileDialog>
+#include <QtGui/QInputDialog>
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QMessageBox>
@@ -508,6 +510,28 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onLayerNewLayerGroupTriggered()
+{
+  bool ok;
+  QString text = QInputDialog::getText(this, ApplicationController::getInstance().getAppTitle(),
+                                      tr("Layer name:"), QLineEdit::Normal,
+                                      tr("Insert name"), &ok);
+
+  if (!ok)
+    return;
+
+  if(text.isEmpty())
+  {
+    QMessageBox::warning(this, ApplicationController::getInstance().getAppTitle(), tr("Enter the layer name!"));
+    return;
+  }
+
+  te::map::AbstractLayerPtr folder(new te::map::FolderLayer);
+  folder->setTitle(text.toStdString());
+
+  m_explorer->getExplorer()->add(folder);
+}
+
 void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 {
   std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
@@ -927,6 +951,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
   lexplorer->getTreeView()->add(m_projectAddLayerDataset, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  lexplorer->getTreeView()->add(m_layerNewLayerGroup, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
   lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
 
@@ -1090,6 +1115,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerEdit, "layer-edit", "Layer.Edit", tr("&Edit"), tr(""), true, false, false, m_menubar);
   initAction(m_layerRename, "layer-rename", "Layer.Rename", tr("R&ename"), tr(""), true, false, false, m_menubar);
   initAction(m_layerExport, "document-export", "Layer.Export", tr("E&xport..."), tr(""), true, false, false, m_menubar);
+  initAction(m_layerNewLayerGroup, "", "Layer.New Layer Group", tr("&New Layer Group..."), tr(""), false, false, true, m_menubar);
   initAction(m_layerProperties, "", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerShowTable, "", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
   initAction(m_layerRaise, "layer-raise", "Layer.Raise", tr("&Raise"), tr(""), true, false, false, m_menubar);
@@ -1224,6 +1250,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerEdit);
   m_layerMenu->addAction(m_layerRename);
   m_layerMenu->addAction(m_layerExport);
+  m_layerMenu->addAction(m_layerNewLayerGroup);
   m_layerMenu->addAction(m_layerProperties);
   m_layerMenu->addAction(m_layerShowTable);
   m_layerMenu->addSeparator();
@@ -1413,6 +1440,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
+  connect(m_layerNewLayerGroup, SIGNAL(triggered()), SLOT(onLayerNewLayerGroupTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));

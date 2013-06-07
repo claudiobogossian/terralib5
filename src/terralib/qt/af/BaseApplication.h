@@ -101,6 +101,8 @@ namespace te
 
           void onProjectPropertiesTriggered();
 
+          void onLayerNewLayerGroupTriggered();
+
           void onLayerPropertiesTriggered();
 
           void onLayerShowTableTriggered();
@@ -202,6 +204,7 @@ namespace te
           QAction* m_layerEdit;
           QAction* m_layerRename;
           QAction* m_layerExport;
+          QAction* m_layerNewLayerGroup;
           QAction* m_layerProperties;
           QAction* m_layerShowTable;
           QAction* m_layerRaise;
