@@ -364,6 +364,8 @@ namespace te
           int m_i;                                                      //!< The index of the current item.
       };
 
+      typedef boost::shared_ptr<DataSet> DataSetPtr;
+
     } // end namespace mem
   }   // end namespace da
 }     // end namespace te

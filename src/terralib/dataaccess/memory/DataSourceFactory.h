@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_MEMORY_INTERNAL_DATASOURCEFACTORY_H
 
 // TerraLib
-//#include "Config.h"
+#include "DataSource.h"
 
 namespace te
 {
@@ -37,7 +37,7 @@ namespace te
     {
       inline te::da::core::DataSource* Build()
       {
-        return 0;
+        return new DataSource;
       }
 
     } // end namespace mem
