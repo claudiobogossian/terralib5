@@ -28,8 +28,9 @@
 #include "../../common/TerraLib.h"
 #include "../../common/Translator.h"
 #include "../core/datasource/DataSourceCapabilities.h"
+#include "../core/datasource/DataSourceFactory.h"
 #include "Config.h"
-//#include "DataSource.h"
+#include "DataSourceFactory.h"
 #include "Module.h"
 
 const te::da::mem::Module& sm_module = te::da::mem::Module::getInstance();
@@ -55,6 +56,9 @@ te::da::mem::Module::~Module()
 
 void te::da::mem::Module::initialize()
 {
+// register data source factory
+  te::da::core::DataSourceFactory::add(TE_MEMORY_DRIVER_IDENTIFIER, te::da::mem::Build);
+
   //// DataSource Capabilities
   //te::da::DataSourceCapabilities capabilities;
   //capabilities.setAccessPolicy(te::common::RWAccess);
@@ -91,6 +95,9 @@ void te::da::mem::Module::initialize()
 
 void te::da::mem::Module::finalize()
 {
+// unregister data source factory
+  te::da::core::DataSourceFactory::remove(TE_MEMORY_DRIVER_IDENTIFIER);
+
   TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver finalized!"));
 }
 
