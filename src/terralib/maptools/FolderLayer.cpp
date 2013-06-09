@@ -49,6 +49,76 @@ te::map::FolderLayer::~FolderLayer()
 {
 }
 
+void te::map::FolderLayer::setVisibility(Visibility v)
+{
+  if(hasChildren())
+  {
+    int numChildren = getChildrenCount();
+    std::vector<AbstractLayer*> childrenVec(numChildren);
+
+    for(int i = 0; i < numChildren; ++i)
+    {
+      childrenVec[i] = static_cast<AbstractLayer*>(getChild(i).get());
+      childrenVec[i]->setVisibility(v);
+    }
+  }
+
+  // Set the status of the flag that indicates if the layer visibility has changed
+  m_visibilityChanged = false;
+  Visibility prevVisibility = m_visibility;
+  m_visibility = v;
+  
+  if(m_visibility != prevVisibility)
+    m_visibilityChanged = true;
+}
+
+void te::map::FolderLayer::updateVisibility()
+{
+  Visibility prevVisibility = m_visibility;
+  m_visibilityChanged = false;
+
+  if(hasChildren() == false)
+  {
+    m_visibility = te::map::NOT_VISIBLE;
+
+    if(m_visibility != prevVisibility)
+      m_visibilityChanged = true;
+
+    return;
+  }
+
+  bool allVisible = true;
+  bool allNotVisible = true;
+
+  int numChildren = getChildrenCount();
+  std::vector<AbstractLayer*> childrenVec(numChildren);
+
+  for(int i = 0; i < numChildren; ++i)
+  {
+    childrenVec[i] = static_cast<AbstractLayer*>(getChild(i).get());
+
+    if(childrenVec[i]->getVisibility() == te::map::NOT_VISIBLE)
+      allVisible = false;
+    else if(childrenVec[i]->getVisibility() == te::map::VISIBLE)
+      allNotVisible = false;
+    else if(childrenVec[i]->getVisibility() == te::map::PARTIALLY_VISIBLE)
+    {
+      allVisible = false;
+      allNotVisible = false;
+    }
+  }
+
+  m_visibility = te::map::PARTIALLY_VISIBLE;
+
+  if(allVisible)
+    m_visibility = te::map::VISIBLE;
+  else if(allNotVisible)
+    m_visibility = te::map::NOT_VISIBLE;
+
+  if(m_visibility != prevVisibility)
+    m_visibilityChanged = true;
+}
+
 const te::map::LayerSchema* te::map::FolderLayer::getSchema(const bool /*full*/) const
 {
   return 0;

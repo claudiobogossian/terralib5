@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-20013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -62,9 +62,9 @@ namespace te
     /*!
       \class AbstractLayer
 
-      \brief This is the base class for Layers.
+      \brief This is the base class for layers.
 
-      \sa TreeItem, DataSetLayer, QueryLayer, RasterLayer, FolderLayer
+      \sa TreeItem, DataSetLayer, QueryLayer, FolderLayer
     */
     class TEMAPEXPORT AbstractLayer : public te::common::TreeItem
     {
@@ -126,27 +126,60 @@ namespace te
         virtual void setTitle(const std::string& title);
 
         /*!
+          \brief It returns a list with the descendants of this layer.
+
+          \return A list containing the descendants of this layer.
+        */
+        std::vector<te::map::AbstractLayer*> getDescendants();
+
+        /*!
+          \brief It returns a list with the ancestors of this layer.
+
+          \return A list containing the ancestors of this layer.
+        */
+        std::vector<te::map::AbstractLayer*> getAncestors();
+
+        /*!
           \brief It returns the layer visibility.
 
-          This information can be used for instance to know if the layer must be drawn.
+          This information can be used, for instance, to know if the layer must be drawn.
 
           \return The layer visibility.
         */
         virtual Visibility getVisibility() const;
 
         /*!
-          \brief It sets the visibility status of the layer.
+          \brief It sets the layer visibility.
 
-          This information can be used for instance to know if the layer must be drawn.
+          This information can be used, for instance, to know if the layer must be drawn.
 
           \param v The layer visibility.
         */
         virtual void setVisibility(Visibility v);
 
-        /*!
-          \brief It adjusts the visibility of the descendants layers having children(folder layers).
+        /*! 
+          \brief It gets the flag that indicates if the layer visibility has changed.
+
+          \return If true, the layer visibility has changed.
         */
-        virtual void adjustVisibility();
+        bool hasVisibilityChanged();
+
+        /*! 
+          \brief It sets that the status of the layer visibility is to be changed or not..
+
+          \param visChanged If true, the status of the layer visibility is to be changed; otherwise, it returns false.
+        */
+        void setVisibilityAsChanged(bool visChanged);
+
+        /*!
+          \brief It updates the visibility of the ancestors of this layer, if any.
+        */
+        void updateVisibilityOfAncestors();
+
+        /*!
+          \brief It updates the visibility of this layer.
+        */
+        virtual void updateVisibility();
 
         /*!
           \brief It returns the Layer extent (or minimum bounding box).
@@ -183,18 +216,9 @@ namespace te
 
           \param oids The oids that will be added.
 
-          \note The Layer will take the ownership of the given pointer.
+          \note The layer will take the ownership of the given pointer.
         */
         virtual void select(te::da::ObjectIdSet* oids);
-
-        /*!
-          \brief It removes the given oids from the selected group of this Layer.
-
-          \param oids The oids that will be removed.
-
-          \note The Layer will NOT take the ownership of the given pointer.
-        */
-        virtual void deselect(const te::da::ObjectIdSet* oids);
 
         /*!
           \brief It returns the selected group of this Layer.
@@ -204,6 +228,15 @@ namespace te
           \note The caller will NOT take the ownership of the given pointer.
         */
         virtual const te::da::ObjectIdSet* getSelected() const;
+
+        /*!
+          \brief It removes the given oids from the selected group of this Layer.
+
+          \param oids The oids that will be removed.
+
+          \note The layer will NOT take the ownership of the given pointer.
+        */
+        virtual void deselect(const te::da::ObjectIdSet* oids);
 
         /*!
           \brief It clears the selected group of this Layer.
@@ -431,18 +464,15 @@ namespace te
         */
         virtual void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid) = 0;
 
-      private:
+      protected:
 
         std::string m_id;                 //!< Layer id.
         std::string m_title;              //!< A brief description of this Layer that can be used by applications to show a text identifying this layer.
         te::gm::Envelope m_mbr;           //!< The layer bounding box.
         int m_srid;                       //!< The identifier of the layer spatial reference system.
-        Visibility m_visibility;          //!< A flag that indicates the visibility status of the layer.
-
-      protected:
-
+        Visibility m_visibility;          //!< It indicates the layer visibility.
+        bool m_visibilityChanged;         //!< It indicates if the layer visibility has changed.
         te::da::ObjectIdSet* m_selected;  //!< The selected group of the layer.
-
         te::map::Grouping* m_grouping;    //!< The grouping information
     };
 
