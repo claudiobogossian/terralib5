@@ -103,7 +103,7 @@ namespace te
           */
           void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
-          void onLayerToggled(te::qt::widgets::AbstractLayerTreeItem* item, bool checked);
+          void onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);
 
         protected:
 
