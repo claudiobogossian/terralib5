@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/layer/explorer/LayerTreeModel.h
 
-  \brief The class that defines the model used in the Qt Model/View architecture.
+  \brief This class defines the model used in the Qt Model/View architecture for the tree of layers.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_LAYER_EXLORER_INTERNAL_LAYERTREEMODEL_H
@@ -53,15 +53,15 @@ namespace te
           /*!
             \brief It constructs a layer tree model with the given parent.
 
-            \param parent The model's parent object.
+            \param parent The parent object of the layer tree model.
           */
           LayerTreeModel(QObject* parent = 0);
 
           /*!
             \brief It constructs a layer tree model with the given parent.
 
-            \param layers The layers which will be associated to the model indexes.
-            \param parent The model's parent object.
+            \param layers The layers that will be associated to the layer items of the layer tree model.
+            \param parent The parent object of the layer tree model.
           */
           LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject* parent = 0);
 
@@ -69,20 +69,27 @@ namespace te
           ~LayerTreeModel();
 
           /*!
-            \brief It sets the list of layers associated to the model.
+            \brief It sets the list of layers associated to the items of the model.
 
-            \param layers The layers which will be associated to the model indexes.
+            \param layers The layers that will be associated to the items of the model.
           */
           void set(const std::list<te::map::AbstractLayerPtr>& layers);
 
           /*!
-            \brief It fetches more data for parent.
+            \brief It fetches more data for the given parent.
 
             \param parent The object used to fetch more data.
 
             \return It returns true if there is more data available for parent.
           */
           bool canFetchMore(const QModelIndex& parent) const;
+
+          /*!
+            \brief It fetches any available data for the items with the parent specified by the parent index.
+
+            \param parent The object used to fetch available data.
+          */
+          void fetchMore(const QModelIndex& parent);
 
           /*!
             \brief It returns the number of columns for the children of the given parent.
@@ -94,39 +101,13 @@ namespace te
           int columnCount(const QModelIndex& parent = QModelIndex()) const;
 
           /*!
-            \brief It returns the data stored under the given role for the item referred to by the index.
+            \brief It returns the number of rows of the given parent.
+            
+            \param parent The parent index.
 
-            \param index The item index.
-            \param role  The role that is used by the view to indicate to the model which type of data it needs.
-
-            \return The data stored under the given role for the item referred to by the index.
+            \return The number of rows of the given parent.
           */
-          QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-
-          /*!
-            \brief It fetches any available data for the items with the parent specified by the parent index.
-
-            \param parent The object used to fetch available data.
-          */
-          void fetchMore(const QModelIndex& parent);
-
-          /*!
-            \brief It returns the item flags for the given index.
-
-            \param index The item index.
-
-            \return The item flags for the given index.
-          */
-          Qt::ItemFlags flags(const QModelIndex& index) const;
-
-          /*!
-            \brief It checks if the given index has children.
-
-            \param parent The item index.
-
-            \return It returns true if the given index has children.
-          */
-          bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
+          int rowCount(const QModelIndex & parent = QModelIndex()) const;
 
           /*!
             \brief It returns the index of the item in the model specified by the given row, column and parent index.
@@ -143,11 +124,68 @@ namespace te
           QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
 
           /*!
+            \brief It returns the item parent of the given index, or QModelIndex(), if it has no parent.
+
+            \param index The item index.
+
+            \return The parent index of the item with the given index, or QModelIndex(), if it has no parent.
+          */
+          QModelIndex parent(const QModelIndex & index) const;
+
+          /*!
+            \brief It returns the item flags for the given index.
+
+            \param index The item index.
+
+            \return The item flags for the given index.
+          */
+          Qt::ItemFlags flags(const QModelIndex& index) const;
+
+          /*!
+            \brief It returns the data stored under the given role for the item referred to by the index.
+
+            \param index The item index.
+            \param role  The role that is used by the view to indicate to the model which type of data it needs.
+
+            \return The data stored under the given role for the item referred to by the index.
+          */
+          QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+
+          /*!
+            \brief It sets the role data for the item at index to value.
+
+            \param index The item index.
+            \param value The value to be assigned to the item.
+            \param role  The role used.
+
+            \return It returns true if successful; otherwise, it returns false.
+
+            \note The dataChanged() signal is emitted if the data was successfully set.
+          */
+          bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+
+          /*!
+            \brief It checks if the given index has children.
+
+            \param parent The item index.
+
+            \return It returns true if the given index has children.
+          */
+          bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
+
+          /*!
             \brief It returns a list of MIME types that can be used to describe a list of model indexes.
 
             \return The list of MIME types that can be used to describe a list of model indexes.
           */
           QStringList mimeTypes() const;
+
+          /*!
+            \brief It returns the drop actions supported by this model.
+
+            \return The drop actions supported by this model.
+          */
+          Qt::DropActions supportedDropActions() const;
 
           /*!
             \brief It returns an object that contains serialized items of data corresponding to the list of indexes specified.
@@ -187,44 +225,6 @@ namespace te
           bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
 
           /*!
-            \brief It returns the item parent of the given index, or QModelIndex(), if it has no parent.
-
-            \param index The item index.
-
-            \return The parent index of the item with the given index, or QModelIndex(), if it has no parent.
-          */
-          QModelIndex parent(const QModelIndex & index) const;
-
-          /*!
-            \brief It returns the number of rows of the given parent.
-            
-            \param parent The parent index.
-
-            \return The number of rows of the given parent.
-          */
-          int rowCount(const QModelIndex & parent = QModelIndex()) const;
-
-          /*!
-            \brief It sets the role data for the item at index to value.
-
-            \param index The item index.
-            \param value The value to be assigned to the item.
-            \param role  The role used.
-
-            \return It returns true if successful; otherwise, it returns false.
-
-            \note The dataChanged() signal is emitted if the data was successfully set.
-          */
-          bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-
-          /*!
-            \brief It returns the drop actions supported by this model.
-
-            \return The drop actions supported by this model.
-          */
-          Qt::DropActions supportedDropActions() const;
-
-          /*!
             \brief It sets the model items as checkable or not.
 
             \param checkable Flag that indicates if the model items are checkable.
@@ -245,6 +245,10 @@ namespace te
           */
           void add(const te::map::AbstractLayerPtr& layer);
 
+        signals:
+
+          void visibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);
+
         protected:
 
           /*!
@@ -252,14 +256,14 @@ namespace te
 
             \param parent The item index whose descendants will have the dataChanged signal emitted.
           */
-          void dataChangedForDescendants(const QModelIndex& parent);
+          void emitDataChangedForDescendants(const QModelIndex& parent);
 
           /*!
-            \brief It emits the dataChanged signal for the ascendents indexes of the given index.
+            \brief It emits the dataChanged signal for the indexes that are ancestors of the given index.
 
-            \param index The item index whose descendants will have the dataChanged signal emitted.
+            \param index The item index whose ancestors will have the dataChanged signal emitted.
           */
-          void dataChangedForAscendents(const QModelIndex& index);
+          void emitDataChangedForAncestors(const QModelIndex& index);
 
         private:
 
