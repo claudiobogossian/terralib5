@@ -35,7 +35,8 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explore
 {
   assert(explorer);
   
-  connect (explorer->getTreeView(), SIGNAL(toggled(te::qt::widgets::AbstractLayerTreeItem*, bool)), SLOT(onLayerToggled(te::qt::widgets::AbstractLayerTreeItem*, bool)));
+  connect(explorer->getTreeView(), SIGNAL(visibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)), SLOT(onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)));
+  connect(explorer->getTreeModel(), SIGNAL(visibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)), SLOT(onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)));
 }
 
 te::qt::af::LayerExplorer::~LayerExplorer()
@@ -100,11 +101,12 @@ void te::qt::af::LayerExplorer::onSelectionChanged(const QItemSelection& selecte
   }
 }
 
-void te::qt::af::LayerExplorer::onLayerToggled(te::qt::widgets::AbstractLayerTreeItem* item, bool checked)
+void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item)
 {
   te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
   ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
 
-  te::qt::af::evt::LayerVisibilityChanged layerVisibilityChangedEvent(item->getLayer().get(), checked);
+  te::map::AbstractLayer* layer = item->getLayer().get();
+  te::qt::af::evt::LayerVisibilityChanged layerVisibilityChangedEvent(layer, layer->getVisibility());
   ApplicationController::getInstance().broadcast(&layerVisibilityChangedEvent);
 }
