@@ -201,7 +201,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     }
     break;
 
-    case te::qt::af::evt::LAYER_VISIBILTY_CHANGED:
+    case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
     {
       // TODO
     }
