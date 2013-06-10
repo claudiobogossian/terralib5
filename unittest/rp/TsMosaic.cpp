@@ -366,7 +366,7 @@ void TsMosaic::SequenceMosaicTest()
   
   algoInputParams.m_noDataValue = 0.0;
   
-  algoInputParams.m_forceInputNoDataValue = true;
+  algoInputParams.m_forceInputNoDataValue = false;
   
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
   
