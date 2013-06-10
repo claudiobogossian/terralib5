@@ -46,12 +46,11 @@ te::qt::widgets::colorbar::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(
   setClickPrecision(0.0035);
   setMouseTracking(true);
 
-  //setScaleEngine();
+  setScaleEngine();
 
   // Color pickers
   m_pinPicker = new te::qt::widgets::ColorPickerToolButton(m_pinMenu);
   m_colorBarPicker = new te::qt::widgets::ColorPickerToolButton(m_colorBarMenu);
-  //
 
   // Set the actions for the color bar menu
   m_colorBarMenu = new QMenu(this);
@@ -63,7 +62,6 @@ te::qt::widgets::colorbar::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(
   connect(m_colorBarPicker, SIGNAL(colorChanged(const QColor&)), this, SLOT(addPin()));
    m_colorBarMenu->addAction(m_addPinAction);
    m_colorBarMenu->addAction(m_equalStepAction);
-   //
 
   // Set the actions for the color bar pin menu
   m_pinMenu = new QMenu(this);
@@ -76,12 +74,17 @@ te::qt::widgets::colorbar::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(
   connect(m_removePinAction, SIGNAL(triggered()), this, SLOT(removePin()));
   m_pinMenu->addAction(m_editPinAction);
   m_pinMenu->addAction(m_removePinAction);
-  //
-
 }
 
 te::qt::widgets::colorbar::ColorBar::~ColorBar()
 {
+}
+
+void te::qt::widgets::colorbar::ColorBar::setScaleVisible(bool flag)
+{
+  this->scaleDraw()->enableComponent(QwtScaleDraw::Backbone, flag);
+  this->scaleDraw()->enableComponent(QwtScaleDraw::Ticks, flag);
+  this->scaleDraw()->enableComponent(QwtScaleDraw::Labels, flag);
 }
 
 void te::qt::widgets::colorbar::ColorBar::setHeight(int value)
@@ -96,7 +99,7 @@ void te::qt::widgets::colorbar::ColorBar::setInterval(double min, double max)
   m_interval.setMinValue(min);
   m_interval.setMaxValue(max);
 
-  //setScaleEngine();
+  setScaleEngine();
 }
 
 void te::qt::widgets::colorbar::ColorBar::setColorBar(te::color::ColorBar* cb)

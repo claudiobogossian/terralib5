@@ -44,6 +44,7 @@ namespace te
         class AggregationAction;
         class BufferAction;
         class IntersectionAction;
+        class TransformationAction;
 
         class Plugin : public te::plugin::Plugin
         {
@@ -78,6 +79,7 @@ namespace te
             te::qt::plugins::vp::AggregationAction* m_aggregation;    //!< Aggregation Operation Action
             te::qt::plugins::vp::BufferAction* m_buffer;    //!< Buffer Operation Action
             te::qt::plugins::vp::IntersectionAction* m_intersection;    //!< Intersection Operation Action
+            te::qt::plugins::vp::TransformationAction* m_transformation;    //!< Transformation Operation Action
 
         };
 

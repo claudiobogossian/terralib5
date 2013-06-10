@@ -55,7 +55,7 @@ namespace te
   namespace rp
   {
     bool createNewRaster( const te::rst::Grid& rasterGrid,
-      std::vector< te::rst::BandProperty* > bandsProperties,
+      const std::vector< te::rst::BandProperty* >& bandsProperties,
       const std::string& outDataSetName,
       te::da::DataSource& outDataSource,
       RasterHandler& outRasterHandler )

@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/vp/qt/BufferDialog.h
+  \file terralib/vp/qt/TransformationDialog.h
 
-  \brief A dialog buffer operation
+  \brief A dialog transformation operation
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_BUFFERDIALOG_H
-#define __TERRALIB_VP_INTERNAL_BUFFERDIALOG_H
+#ifndef __TERRALIB_VP_INTERNAL_TRANSFORMATIONDIALOG_H
+#define __TERRALIB_VP_INTERNAL_TRANSFORMATIONDIALOG_H
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -41,7 +41,7 @@
 // Qt
 #include <QtGui/QDialog>
 
-namespace Ui { class BufferDialogForm; }
+namespace Ui { class TransformationDialogForm; }
 
 // Forward declarations
 class QListWidgetItem;
@@ -54,15 +54,13 @@ namespace te
 // Forward declarations
     class LayerTreeModel;
 
-    class TEVPEXPORT BufferDialog : public QDialog
+    class TEVPEXPORT TransformationDialog : public QDialog
     {
-      Q_OBJECT
-
       public:
 
-        BufferDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+        TransformationDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-        ~BufferDialog();
+        ~TransformationDialog();
 
         /*!
           \brief Set the layer that can be used
@@ -83,12 +81,12 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::BufferDialogForm> m_ui;
+        std::auto_ptr<Ui::TransformationDialogForm> m_ui;
         te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
+        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for transformation
     };
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_BUFFERDIALOG_H
+#endif  // __TERRALIB_VP_INTERNAL_TRANSFORMATIONDIALOG_H

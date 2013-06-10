@@ -109,16 +109,13 @@ bool te::qt::widgets::DataSetLayerItem::setData(int column, const QVariant& valu
 {
   if(role == Qt::CheckStateRole)
   {
-    bool ok = false;
-    Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt(&ok));
-
-    if(!ok)
-      return false;
-
+    Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt());
     if(checkState == Qt::Checked)
       m_layer->setVisibility(te::map::VISIBLE);
     else if(checkState == Qt::Unchecked)
       m_layer->setVisibility(te::map::NOT_VISIBLE);
+
+    m_layer->updateVisibilityOfAncestors();
 
     return true;
   }

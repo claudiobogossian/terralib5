@@ -98,11 +98,19 @@ namespace te
             //@{
 
             /*!
+            \brief Sets scale of color bar visibility.
+
+            \param flag Boolean value to set the scale of color bar visibility.
+
+            \note TRUE is the defaul behavior.
+            */
+            void setScaleVisible(bool flag);
+
+            /*!
             \brief Sets the height of colobar.
 
             \param Value of height.
             */
-
             void setHeight(int value);
 
             /*!
@@ -111,7 +119,6 @@ namespace te
             \param Minimum value.
             \param Maximum value.
             */
-
             void setInterval(double min, double max);
 
             /*!
@@ -119,7 +126,6 @@ namespace te
 
             \param te::color::colorBar to paint in the colorbar.
             */
-
             void setColorBar(te::color::ColorBar* cb);
 
             /*!
@@ -135,7 +141,6 @@ namespace te
 
             \return Current color bar.
             */
-
             te::color::ColorBar* getColorBar();
 
             //@}
@@ -149,13 +154,11 @@ namespace te
             /*!
             \brief Sets the transformation and the scale of colorbar values.
             */
-
             void setScaleEngine();
 
             /*!
             \brief It build and paint the colorbar.
             */
-
             void buildColorBar();
 
             /*!
@@ -165,7 +168,6 @@ namespace te
 
             \return Pin found or -1, if not found.
             */
-
             double getPin(int pos);
 
             /*!
@@ -182,7 +184,6 @@ namespace te
 
             \param QPaintEvent
             */
-
             virtual void paintEvent(QPaintEvent* e);
 
             /*!
@@ -192,7 +193,6 @@ namespace te
             \note In this case, it treat the remove colorStops funciontion
             \note and sets the start position to move stops.
             */
-
             virtual void mousePressEvent(QMouseEvent* e);
 
             /*!
@@ -201,7 +201,6 @@ namespace te
             \param QMouseEvent
             \note In this case, it treat the finalization of move colorStops.
             */
-
             virtual void mouseReleaseEvent(QMouseEvent* e);
 
             /*!
@@ -210,7 +209,6 @@ namespace te
             \param QMouseEvent
             \note In this case, it treat the moce of colorStops.
             */
-
             virtual void mouseMoveEvent(QMouseEvent* e);
 
             /*!
@@ -219,7 +217,6 @@ namespace te
             \param QWheelEvent
             \note In this case, it change the color lightness.
             */
-
             virtual void wheelEvent(QWheelEvent* e);
 
             //@}

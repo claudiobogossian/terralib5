@@ -111,6 +111,8 @@ namespace te
 
           void onLayerScatterTriggered();
 
+          void onLayerGroupingTriggered();
+
           void onMapSRIDTriggered();
 
           void onDrawTriggered();
@@ -213,6 +215,7 @@ namespace te
           QAction* m_layerToBottom;
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
+          QAction* m_layerGrouping;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;

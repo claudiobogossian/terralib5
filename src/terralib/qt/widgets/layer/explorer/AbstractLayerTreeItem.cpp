@@ -35,4 +35,38 @@ te::qt::widgets::AbstractLayerTreeItem::~AbstractLayerTreeItem()
 {
 }
 
+std::vector<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::AbstractLayerTreeItem::getDescendants()
+{
+  std::vector<AbstractLayerTreeItem*> descendantItems;
+  std::vector<AbstractLayerTreeItem*> childrenItems;
 
+  if(hasChildren())
+  {
+    int numChildren = children().count();
+    for(int i = 0; i < numChildren; ++i)
+    {
+      AbstractLayerTreeItem* childItem = static_cast<AbstractLayerTreeItem*>(children().at(i));
+      descendantItems.push_back(childItem);
+      childrenItems = childItem->getDescendants();
+    }
+  }
+
+  for(std::size_t i = 0; i < childrenItems.size(); ++i)
+    descendantItems.push_back(childrenItems[i]);
+
+  return descendantItems;
+}
+
+std::vector<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::AbstractLayerTreeItem::getAncestors()
+{
+  std::vector<AbstractLayerTreeItem*> ancestorLayers;
+
+  AbstractLayerTreeItem* itemParent = static_cast<AbstractLayerTreeItem*>(parent());
+  while(itemParent)
+  {
+    ancestorLayers.push_back(itemParent);
+    itemParent = static_cast<AbstractLayerTreeItem*>(itemParent->parent());
+  }
+
+  return ancestorLayers;
+}

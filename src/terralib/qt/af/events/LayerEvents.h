@@ -80,17 +80,17 @@ namespace te
 
             \param layer The pointer to the layer.
 
-            \param visible The new visibility state: true -> visible, false -> not visible.
+            \param visibility The new visibility state: VISIBLE, NOT_VISIBLE, PARTIALLY_VISIBLE.
           */
-          LayerVisibilityChanged(te::map::AbstractLayer* layer, const bool& visible) :
-            Event(LAYER_VISIBILTY_CHANGED),
+          LayerVisibilityChanged(te::map::AbstractLayer* layer, te::map::Visibility visibility) :
+            Event(LAYER_VISIBILITY_CHANGED),
             m_layer(layer),
-            m_visible(visible)
+            m_visibility(visibility)
           {
           };
 
-          te::map::AbstractLayer* m_layer;  //!< Pointer to the layer.
-          bool m_visible;                   //!< Visibility.
+          te::map::AbstractLayer* m_layer;     //!< Pointer to the layer.
+          te::map::Visibility m_visibility;    //!< Layer visibility.
         };
 
         /*!

@@ -34,6 +34,7 @@ set (
   ${SRCDIR}/AggregationAction.h
   ${SRCDIR}/BufferAction.h
   ${SRCDIR}/IntersectionAction.h
+  ${SRCDIR}/TransformationAction.h
   
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/vp" MOC)
