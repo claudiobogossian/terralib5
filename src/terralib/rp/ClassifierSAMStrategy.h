@@ -57,35 +57,8 @@ namespace te
         typedef std::vector< double > SampleT; //!< Class sample type definition.
         
         typedef std::vector< SampleT > SamplesT; //!< Class samples container type definition.    
-          
-        /*!
-          \class ClassSamples
-          
-          \brief Class spectral samples.
-        */    
-        class TERPEXPORT ClassSamples
-        {
-          public :
-            
-            /*!
-              \brief Maximum angular distance.
-              
-              \details This is the maximum acceptable angle (radians) between 
-              one pixel spectra and the reference spectra (pixels with angular 
-              distance higher than this value will not be classifyed as 
-              belonging to this class (default:0.1 radians).
-            */            
-            double m_maxAngularDist;
-            
-            /**
-            * @brief Class samples.
-            */          
-            ClassifierSAMStrategy::SamplesT m_samples;
-          
-            ClassSamples() : m_maxAngularDist( 0.1 ) {};
-            
-            ~ClassSamples();
-        };        
+        
+        typedef std::map< ClassIDT, SamplesT > ClassesSamplesT; //!< Classes samples container type definition.
       
         /*!
           \class Parameters
@@ -96,9 +69,9 @@ namespace te
         {
           public:
             
-            typedef std::map< ClassIDT, ClassSamples > ClassesSamplesT; //!< Classes samples container type definition.
-            
             ClassesSamplesT const* m_trainSamplesPtr; //!< A pointer to a always-valid structure where trainning samples are stored.
+            
+            std::vector< double > m_maxAngularDistances; //!< This is a vector of maximum acceptable angles (radians) between one pixel spectra and the reference spectra for each class (pixels with angular distance higher than this value will not be classifyed as belonging to each class (common used default:0.1 radians).
 
             Parameters();
 

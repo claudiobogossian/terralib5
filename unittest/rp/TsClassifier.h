@@ -42,6 +42,8 @@
 class TsClassifier : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsClassifier );
+  
+  CPPUNIT_TEST( SAM );
 
   CPPUNIT_TEST( MAP );
 
@@ -58,6 +60,8 @@ class TsClassifier : public CPPUNIT_NS::TestFixture
     void MAP();
 
     void EM();
+    
+    void SAM();
 };
 
 #endif  // __TERRALIB_UNITTEST_RP_CLASSIFIER_INTERNAL_H

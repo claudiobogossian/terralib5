@@ -33,6 +33,7 @@
 #include <terralib/rp/ClassifierEMStrategy.h>
 #include <terralib/rp/ClassifierISOSegStrategy.h>
 #include <terralib/rp/ClassifierMAPStrategy.h>
+#include <terralib/rp/ClassifierSAMStrategy.h>
 #include <terralib/rp/Segmenter.h>
 #include <terralib/rp/SegmenterRegionGrowingStrategy.h>
 #include "TsClassifier.h"
@@ -272,3 +273,79 @@ void TsClassifier::EM()
 // clean up
   delete rin;
 }
+
+
+void TsClassifier::SAM()
+{
+// first open the input image
+  std::map<std::string, std::string> rinfo;
+  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+
+  te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = TE_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_SAM_Test.tif";
+
+// Defining the classes samples
+
+  te::rp::ClassifierSAMStrategy::SampleT sampleC1_1;
+  sampleC1_1.push_back( 166 );
+  sampleC1_1.push_back( 255 );
+  sampleC1_1.push_back( 255 );
+  te::rp::ClassifierSAMStrategy::SamplesT class1Samples;
+  class1Samples.push_back( sampleC1_1 );
+
+  te::rp::ClassifierSAMStrategy::SampleT sampleC2_1;
+  sampleC2_1.push_back( 36 );
+  sampleC2_1.push_back( 255 );
+  sampleC2_1.push_back( 76 );
+  te::rp::ClassifierSAMStrategy::SamplesT class2Samples;
+  class2Samples.push_back( sampleC2_1 );
+  
+  te::rp::ClassifierSAMStrategy::SampleT sampleC3_1;
+  sampleC3_1.push_back( 36 );
+  sampleC3_1.push_back( 36 );
+  sampleC3_1.push_back( 76 );
+  te::rp::ClassifierSAMStrategy::SamplesT class3Samples;
+  class3Samples.push_back( sampleC3_1 );  
+
+  te::rp::ClassifierSAMStrategy::ClassesSamplesT allClassesSamples;
+  allClassesSamples[ 1 ] = class1Samples;
+  allClassesSamples[ 2 ] = class2Samples;
+  allClassesSamples[ 3 ] = class3Samples;
+
+// define classification parameters
+
+// input parameters
+  te::rp::Classifier::InputParameters algoInputParameters;
+  algoInputParameters.m_inputRasterPtr = rin;
+  algoInputParameters.m_inputRasterBands.push_back(0);
+  algoInputParameters.m_inputRasterBands.push_back(1);
+  algoInputParameters.m_inputRasterBands.push_back(2);
+
+// link specific parameters with chosen implementation
+  te::rp::ClassifierSAMStrategy::Parameters classifierparameters;
+  classifierparameters.m_trainSamplesPtr = &allClassesSamples;
+  classifierparameters.m_maxAngularDistances.push_back( 0.2 );
+  classifierparameters.m_maxAngularDistances.push_back( 0.2 );
+  classifierparameters.m_maxAngularDistances.push_back( 0.2 );
+  algoInputParameters.m_strategyName = "sam";
+  algoInputParameters.setClassifierStrategyParams(classifierparameters);
+
+// output parameters
+  te::rp::Classifier::OutputParameters algoOutputParameters;
+  algoOutputParameters.m_rInfo = orinfo;
+  algoOutputParameters.m_rType = "GDAL";
+
+// execute the algorithm
+  te::rp::Classifier algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize(algoInputParameters) );
+  CPPUNIT_ASSERT( algorithmInstance.execute(algoOutputParameters) );
+
+// clean up
+  delete rin;
+}
+
+
