@@ -315,7 +315,8 @@ void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex& index)
     std::vector<AbstractLayerTreeItem*> descendantItems = item->getDescendants();
     for(std::size_t i = 0; i < descendantItems.size(); ++i)
     {
-      if(descendantItems[i]->getLayer().get()->hasVisibilityChanged())
+      te::map::AbstractLayer* descendantLayer = descendantItems[i]->getLayer().get();
+      if((descendantLayer != 0) && descendantLayer->hasVisibilityChanged())
         emit visibilityChanged(descendantItems[i]);
     }
 
@@ -323,7 +324,8 @@ void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex& index)
     std::vector<AbstractLayerTreeItem*> ancestorItems = item->getAncestors();
     for(std::size_t i = 0; i < ancestorItems.size(); ++i)
     {
-      if(ancestorItems[i]->getLayer().get()->hasVisibilityChanged())
+      te::map::AbstractLayer* ancestorLayer = ancestorItems[i]->getLayer().get();
+      if((ancestorLayer != 0) && ancestorLayer->hasVisibilityChanged())
         emit visibilityChanged(ancestorItems[i]);
     }
   }
