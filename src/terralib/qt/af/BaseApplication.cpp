@@ -446,6 +446,32 @@ void te::qt::af::BaseApplication::onOpenProjectTriggered()
   openProject(file);
 }
 
+void te::qt::af::BaseApplication::onSaveProjectTriggered()
+{
+  std::string fName = m_project->getFileName();
+
+  if(fName.empty())
+  {
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
+
+    if(!fileName.isEmpty())
+    {
+      fName = fileName.toStdString();
+      m_project->setFileName(fName);
+    }
+    else
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("Project not saved."));
+      return;
+    }
+  }
+
+  te::qt::af::Save(*m_project, m_project->getFileName());
+  m_project->projectChanged(false);
+
+  te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
+}
+
 void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
 {
   if(m_project == 0)
@@ -891,36 +917,15 @@ void te::qt::af::BaseApplication::checkProjectSave()
     int btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg, QMessageBox::No, QMessageBox::Yes);
 
     if(btn == QMessageBox::Yes)
-    {
-      std::string fName = m_project->getFileName();
-
-      if(fName.empty())
-      {
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
-
-        if(!fileName.isEmpty())
-        {
-          fName = fileName.toStdString();
-          m_project->setFileName(fName);
-        }
-        else
-        {
-          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("Project not saved."));
-          return;
-        }
-      }
-
-      te::qt::af::Save(*m_project, m_project->getFileName());
-      m_project->projectChanged(false);
-
-      te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
-    }
+      onSaveProjectTriggered();
   }
 }
 
 void te::qt::af::BaseApplication::newProject()
 {
   CloseAllTables(m_tableDocks);
+
+  checkProjectSave();
 
   delete m_project;
 
@@ -940,6 +945,8 @@ void te::qt::af::BaseApplication::newProject()
   setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
   te::qt::af::ApplicationController::getInstance().set(m_project);
+
+  m_project->projectChanged(false);
 
   te::qt::af::evt::ProjectAdded evt(m_project);
 
@@ -1464,6 +1471,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
   connect(m_fileNewProject, SIGNAL(triggered()), SLOT(onNewProjectTriggered()));
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
+  connect(m_fileSaveProject, SIGNAL(triggered()), SLOT(onSaveProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));

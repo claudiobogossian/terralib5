@@ -93,6 +93,8 @@ namespace te
 
           void onOpenProjectTriggered();
 
+          void onSaveProjectTriggered();
+
           void onSaveProjectAsTriggered();
 
           void onToolsCustomizeTriggered();
