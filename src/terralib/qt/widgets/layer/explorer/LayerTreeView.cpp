@@ -306,7 +306,8 @@ void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex& index)
 
   // If the item visibility was changed, emit the signal of visibilityChanged for this item,
   // for their descendants(if any) and for their ancestors
-  if(item->getLayer().get()->hasVisibilityChanged())
+  te::map::AbstractLayer* itemLayer = item->getLayer().get();
+  if((itemLayer != 0) && itemLayer->hasVisibilityChanged())
   {
     emit visibilityChanged(item);
 
