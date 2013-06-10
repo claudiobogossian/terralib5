@@ -29,6 +29,9 @@
 #include "Macros.h"
 #include "../common/progress/TaskProgress.h"
 
+#include <cfloat>
+#include <cmath>
+
 namespace
 {
   static te::rp::ClassifierSAMStrategyFactory classifierMAPStrategyFactoryInstance;
@@ -50,6 +53,7 @@ const te::rp::ClassifierSAMStrategy::Parameters& te::rp::ClassifierSAMStrategy::
   reset();
 
   m_trainSamplesPtr = rhs.m_trainSamplesPtr;
+  m_maxAngularDistances = rhs.m_maxAngularDistances;
 
   return *this;
 }
@@ -57,6 +61,7 @@ const te::rp::ClassifierSAMStrategy::Parameters& te::rp::ClassifierSAMStrategy::
 void te::rp::ClassifierSAMStrategy::Parameters::reset() throw(te::rp::Exception)
 {
   m_trainSamplesPtr = 0;
+  m_maxAngularDistances.clear();
 }
 
 te::common::AbstractParameters* te::rp::ClassifierSAMStrategy::Parameters::clone() const
@@ -87,6 +92,19 @@ bool te::rp::ClassifierSAMStrategy::initialize(
     dynamic_cast< ClassifierSAMStrategy::Parameters const * >( strategyParams );
   TERP_TRUE_OR_RETURN_FALSE( castParamsPtr, "Invalid parameters" );
   
+  // Checking the angluar distances
+  
+  TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_maxAngularDistances.size() ==
+    castParamsPtr->m_trainSamplesPtr->size(),
+    "Mismatch between the classes number and the max angular distances" );
+    
+  for( unsigned int maxAngularDistancesIdx = 0 ; maxAngularDistancesIdx <
+    castParamsPtr->m_maxAngularDistances.size() ; ++ maxAngularDistancesIdx )
+  {
+    TERP_TRUE_OR_RETURN_FALSE( ( castParamsPtr->m_maxAngularDistances[
+      maxAngularDistancesIdx ] >= 0.0 ),
+      "Invalid max angular distance" );
+  }  
   
   // Calculating m_classesMeans and m_classesIndex2ID
   
@@ -94,17 +112,17 @@ bool te::rp::ClassifierSAMStrategy::initialize(
     "Invalid classes samples pointer" )
   TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_trainSamplesPtr->size() > 0,
     "Invalid classes samples number" )
-  TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_trainSamplesPtr->begin()->second.m_samples.size() > 0,
+  TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_trainSamplesPtr->begin()->second.size() > 0,
     "Invalid classe samples number" )    
   const unsigned int dimsNumber = (unsigned int)
-    castParamsPtr->m_trainSamplesPtr->begin()->second.m_samples[ 0 ].size();
+    castParamsPtr->m_trainSamplesPtr->begin()->second.operator[]( 0 ).size();
   TERP_TRUE_OR_RETURN_FALSE( dimsNumber > 0,
     "Invalid dimensions number" )       
   
   {
-    Parameters::ClassesSamplesT::const_iterator classesIt = 
+    ClassesSamplesT::const_iterator classesIt = 
       castParamsPtr->m_trainSamplesPtr->begin();
-    const Parameters::ClassesSamplesT::const_iterator classesItE = 
+    const ClassesSamplesT::const_iterator classesItE = 
       castParamsPtr->m_trainSamplesPtr->end();
     unsigned int dimIdx = 0;
     SamplesT::const_iterator samplesIt;
@@ -113,9 +131,10 @@ bool te::rp::ClassifierSAMStrategy::initialize(
     while( classesIt != classesItE )
     {
       const ClassIDT& classID = classesIt->first;
+      TERP_TRUE_OR_RETURN_FALSE( classID > 0, "Invalid class ID" );
       
-      const ClassSamples& classSamples = classesIt->second;
-      TERP_TRUE_OR_RETURN_FALSE( classSamples.m_samples.size() > 0,
+      const SamplesT& classSamples = classesIt->second;
+      TERP_TRUE_OR_RETURN_FALSE( classSamples.size() > 0,
         "Invalid class samples number" );
         
       SampleT classMeans( dimsNumber );      
@@ -125,8 +144,8 @@ bool te::rp::ClassifierSAMStrategy::initialize(
         double& dimMean = classMeans[ dimIdx ];
         dimMean = 0.0;
         
-        samplesIt = classSamples.m_samples.begin();
-        samplesItE = classSamples.m_samples.end();
+        samplesIt = classSamples.begin();
+        samplesItE = classSamples.end();
           
         while( samplesIt != samplesItE )
         {
@@ -137,7 +156,7 @@ bool te::rp::ClassifierSAMStrategy::initialize(
           ++samplesIt;
         }
         
-        dimMean /= (double)( classSamples.m_samples.size() );
+        dimMean /= (double)( classSamples.size() );
       }
       
       m_classesMeans.push_back( classMeans );
@@ -193,58 +212,68 @@ bool te::rp::ClassifierSAMStrategy::execute(const te::rst::Raster& inputRaster,
   const unsigned int nDims = (unsigned int)m_classesMeans[ 0 ].size();
   unsigned int col = 0;
   unsigned int dim = 0;
-  unsigned int bandIdx = 0;
   unsigned int classIdx = 0;
-  unsigned int closestClassIdx = 0;
+  double angularTR = 0;
+  double angularTT = 0;
+  double angularRR = 0;  
+  double angularDist = 0;
+  double readedValue = 0;
+  double minAngularDist = 0;
+  unsigned int minAngularDistClassIdx = 0;
   
   for( unsigned int row = 0 ; row < nRows ; ++row )
   {
     for( col = 0 ; col < nCols ; ++col )
     {
-      // Creating the sample
-      
-//       for( dim = 0 ; dim < nDims ; ++dim )
-//       {
-//         bandIdx = inputRasterBands[ dim ];
-//         TERP_DEBUG_TRUE_OR_THROW( bandIdx < inputRaster.getNumberOfBands(),
-//           "Invalid band index" );
-//           
-//         inputRaster.getValue( col, row, sample( dim, 0 ), bandIdx );
-//       }
-      
       // Looking the the closest class
       
-//       closestClassdiscriminantFunctionValue = -1.0 * DBL_MAX;
-//       
-//       for( classIdx = 0 ; classIdx < classesNumber ; ++classIdx )
-//       {
-//         const Parameters::ClassSampleT& classMeans = m_classesMeans[ classIdx ];
-//         
-//         for( dim = 0 ; dim < nDims ; ++dim )
-//         {
-//           sampleMinusMean( dim, 0 ) = sampleMinusMeanT( 0, dim ) =
-//             ( sample( dim, 0 ) - classMeans[ dim ] );
-//         }
-//         
-//         //calculate the mahalanobis distance: (x-mean)T * CovMatrizInvert * (x-mean)
-//         auxMatrix = boost::numeric::ublas::prod( sampleMinusMeanT, 
-//           m_classesCovarianceInvMatrixes[ classIdx ] );
-//         mahalanobisDistanceMatrix = boost::numeric::ublas::prod( auxMatrix, sampleMinusMean );
-//         TERP_DEBUG_TRUE_OR_THROW( mahalanobisDistanceMatrix.size1() == 1, "Internal error" );
-//         TERP_DEBUG_TRUE_OR_THROW( mahalanobisDistanceMatrix.size2() == 1, "Internal error" );
-//         
-//         discriminantFunctionValue = logPrioriProbs[ classIdx ] 
-//           + m_classesOptizedMAPDiscriminantTerm[ classIdx ]
-//           - ( 0.5 * mahalanobisDistanceMatrix( 0, 0 ) );
-//         
-//         if( discriminantFunctionValue > closestClassdiscriminantFunctionValue )
-//         {
-//           closestClassdiscriminantFunctionValue = discriminantFunctionValue;
-//           closestClassIdx = classIdx;
-//         }
-//       }
+      minAngularDist = DBL_MAX;
+      minAngularDistClassIdx = classesNumber;
       
-      outputRaster.setValue( col, row, m_classesIndex2ID[ closestClassIdx ] );      
+      for( classIdx = 0 ; classIdx < classesNumber ; ++classIdx )
+      {
+        const SampleT& classMeans = m_classesMeans[ classIdx ];
+              
+        angularTR = 0;
+        angularTT = 0;
+        angularRR = 0;           
+        
+        for( dim = 0 ; dim < nDims ; ++dim )
+        {
+          const double& meanValue = classMeans[ dim ];
+          
+          inputRaster.getValue( col, row, readedValue, inputRasterBands[ dim ] );
+          
+          angularTR += readedValue * meanValue;
+          angularRR += meanValue * meanValue;
+          angularTT += readedValue * readedValue;
+        }
+        
+        angularDist = angularTR / ( sqrt( angularTT ) *
+          sqrt( angularRR ) );
+          
+        if( std::abs( angularDist ) > 1.0 )
+        {
+          angularDist = DBL_MAX;
+        }
+        else
+        {
+          angularDist = acos( angularDist );
+        }
+      
+        if( ( angularDist < minAngularDist ) && ( angularDist < 
+          m_initParams.m_maxAngularDistances[ classIdx ] ) )
+        {
+          minAngularDist = angularDist;
+          minAngularDistClassIdx = classIdx;
+        }
+      }
+      
+      if( minAngularDistClassIdx == classesNumber )
+        outputRaster.setValue( col, row, 0, 0 );
+      else
+        outputRaster.setValue( col, row, m_classesIndex2ID[ minAngularDistClassIdx ], 
+          0 );      
     }    
     
     if( enableProgressInterface )
