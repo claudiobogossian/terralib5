@@ -39,6 +39,8 @@ namespace te
   {
     namespace widgets
     {
+      class LayerPropertiesInfo;
+
       class TEQTWIDGETSEXPORT LayerPropertiesInfoWidget : public QWidget
       {
         public:
@@ -46,6 +48,10 @@ namespace te
           LayerPropertiesInfoWidget(te::map::AbstractLayer* layer, QWidget* parent=0);
 
           ~LayerPropertiesInfoWidget();
+
+        protected:
+
+          LayerPropertiesInfo* m_info;
       };
     }
   }

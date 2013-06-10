@@ -549,6 +549,7 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 
   doc->setWidget(info);
   doc->setWindowTitle(info->windowTitle());
+  doc->setAttribute(Qt::WA_DeleteOnClose, true);
 
   doc->show();
 }
@@ -952,7 +953,8 @@ void te::qt::af::BaseApplication::makeDialog()
   lexplorer->getTreeView()->add(m_projectAddLayerDataset, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_layerNewLayerGroup, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  lexplorer->getTreeView()->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
