@@ -58,7 +58,7 @@ te::vp::SummarizationDialog::SummarizationDialog(QWidget* parent, Qt::WindowFlag
   m_ui->setupUi(this);
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-summarization-hint").pixmap(112,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-summarization-hint").pixmap(62,48));
 
 //signals
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
