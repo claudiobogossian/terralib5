@@ -1188,8 +1188,8 @@ void te::qt::widgets::Canvas::draw(const te::at::Text* txt)
   while(txt->getElements()[i]->getAttributes() == 0 && i < size)
     ++i;
 
-  te::at::HorizontalAlignment hAlign;
-  te::at::VerticalAlignment vAlign;
+  te::at::HorizontalAlignment hAlign = te::at::Start;
+  te::at::VerticalAlignment vAlign = te::at::Baseline;
 
   while(i < size)
   {
