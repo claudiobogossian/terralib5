@@ -120,6 +120,8 @@ namespace te
       
       std::pair<unsigned int,std::string> m_srid;
     };
+    
+    typedef std::auto_ptr<SpatialReferenceSystem> SpatialReferenceSystemPtr;
   }
 }
 
