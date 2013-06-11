@@ -20,14 +20,14 @@
 /*!
   \file terralib/maptools/RasterLayer.cpp
 
-  \brief A layer with reference to a dataset.
+  \brief A layer with reference to a raster.
 */
 
 // TerraLib
 #include "../common/Translator.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterFactory.h"
-#include "../se/RasterSymbolizer.h"
+#include "../se/CoverageStyle.h"
 #include "Exception.h"
 #include "RasterLayer.h"
 #include "RendererFactory.h"
@@ -103,25 +103,25 @@ void te::map::RasterLayer::setRendererType(const std::string& t)
   m_rendererType = t;
 }
 
-te::se::RasterSymbolizer* te::map::RasterLayer::getStyle() const
+te::se::CoverageStyle* te::map::RasterLayer::getStyle() const
 {
   return m_style;
 }
 
-void te::map::RasterLayer::setStyle(te::se::RasterSymbolizer* style)
+void te::map::RasterLayer::setStyle(te::se::CoverageStyle* style)
 {
   delete m_style;
 
   m_style = style;
 }
 
- te::rst::Raster* te::map::RasterLayer::getRaster() const
- {
+te::rst::Raster* te::map::RasterLayer::getRaster() const
+{
   te::rst::Raster* r = te::rst::RasterFactory::open(m_rinfo);
 
   return r;
- }
- 
+}
+
 void  te::map::RasterLayer::setRasterInfo(const std::map<std::string, std::string>& rinfo)
 {
   m_rinfo = rinfo;
@@ -141,4 +141,3 @@ std::map<std::string, std::string> te::map::RasterLayer::getRasterInfo() const
 {
   return m_rinfo;
 }
-
