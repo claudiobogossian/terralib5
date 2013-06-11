@@ -88,7 +88,7 @@ const std::map<double, te::color::RGBAColor>& te::color::ColorBar::getColorMap()
 
 void te::color::ColorBar::generateColorBar() //private
 {
-  int i, j, p, pp, s;
+  int i, p, pp, s;
   double rd, gd, bd, ad;
   RGBAColor c, cc, cor;
   std::map<int, RGBAColor> colorMap;
@@ -102,7 +102,6 @@ void te::color::ColorBar::generateColorBar() //private
   }
 
   s = 1;
-  j = 0;
   std::map<int, RGBAColor>::iterator it = colorMap.begin();
   while(it != colorMap.end())
   {

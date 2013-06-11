@@ -69,9 +69,11 @@ set (MOC "")
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/qt/IntersectionDialog.h
   ${SRCDIR}/qt/AggregationDialog.h
   ${SRCDIR}/qt/BufferDialog.h
+  ${SRCDIR}/qt/GeneralGeographicOperationDialog.h
+  ${SRCDIR}/qt/IntersectionDialog.h
+  ${SRCDIR}/qt/TransformationDialog.h
   ${SRCDIR}/qt/LayerItem.h
   ${SRCDIR}/qt/LegendGroupItem.h
   ${SRCDIR}/qt/PropertyGroupItem.h  

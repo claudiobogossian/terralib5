@@ -40,9 +40,16 @@
 namespace te
 {
 // Forward declarations
+  namespace common
+  {
+    class TaskProgress;
+  }
+
   namespace da
   {
     class DataSet;
+    class DataSetType;
+    class DataSourceTransactor;
   }
 
   namespace rst
@@ -53,8 +60,11 @@ namespace te
 
   namespace se
   {
+    class CoverageStyle;
+    class FeatureTypeStyle;
     class Fill;
     class ParameterValue;
+    class RasterSymbolizer;
     class Stroke;
   }
 
@@ -234,6 +244,43 @@ namespace te
       \note The caller will take the ownership of the returned pointer.
     */
     TEMAPEXPORT te::da::DataSet* DataSet2Memory(te::da::DataSet* dataset);
+
+    /*!
+      \brief It draws the data set geometries in the given canvas using the informed SRID and style.
+
+      The informed bounding box (bbox) is used to constraint the data set to be drawn.
+      Here, we assume that the given bbox was pre-processed. i.e. the bbox was clipped and contains the same projection of data set geometries.
+
+      \param type        The data set type that describes the data set that will be drawn.
+      \param transactor  A transactor that will be used to retrieve the data set objects.
+      \param canvas      The canvas were the data set geometries will be drawn.
+      \param bbox        The interest area to render the geometries.
+      \param bboxSRID    The SRID of interest area.
+      \param srid        The SRID to be used to draw the data set geometries.
+      \param style       The style that will be used.
+    */
+    void DrawGeometries(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor, Canvas* canvas,
+                        const te::gm::Envelope& bbox, int bboxSRID,
+                        int srid, te::se::FeatureTypeStyle* style);
+
+    /*!
+      \brief It draws the data set geometries in the given canvas using the informed SRS.
+
+      \param dataset     The data set that will be drawn.
+      \param gpos        The geometry property position that will be drawn.
+      \param canvas      The canvas were the data set geometries will be drawn.
+      \param fromSRID    The SRID of data set geometries.
+      \param srid        The SRID to be used to draw the data set geometries.
+      \param task        An optional task that can be used cancel the draw process.
+    */
+    void DrawGeometries(te::da::DataSet* dataset, const std::size_t& gpos,
+                        Canvas* canvas, int fromSRID, int toSRID, te::common::TaskProgress* task = 0);
+
+    void DrawRaster(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor, Canvas* canvas,
+                    const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
+
+    void DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,
+                    const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
 
   } // end namespace map
 }   // end namespace te

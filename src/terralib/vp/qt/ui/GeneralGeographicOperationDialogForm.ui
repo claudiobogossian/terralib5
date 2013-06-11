@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TransformationDialogForm</class>
- <widget class="QDialog" name="TransformationDialogForm">
+ <class>GeneralGeographicOperationDialogForm</class>
+ <widget class="QDialog" name="GeneralGeographicOperationDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>597</width>
-    <height>545</height>
+    <width>610</width>
+    <height>540</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Transformation of a vector layer</string>
+   <string>General Geographic Operation Operation</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_8">
+  <layout class="QGridLayout" name="gridLayout_9">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_7">
+    <layout class="QGridLayout" name="gridLayout_8">
      <item row="0" column="0">
       <widget class="QFrame" name="frame_2">
        <property name="styleSheet">
@@ -47,7 +47,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Transformation of a vector layer</string>
+           <string>General Geographic Operation</string>
           </property>
          </widget>
         </item>
@@ -66,7 +66,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Imagem</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -74,67 +74,15 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <layout class="QGridLayout" name="gridLayout_6">
+      <layout class="QGridLayout" name="gridLayout_7">
        <item row="0" column="0">
-        <widget class="QGroupBox" name="m_transformationGroupBox">
+        <widget class="QGroupBox" name="m_inputLayerGroupBox">
          <property name="minimumSize">
           <size>
-           <width>276</width>
-           <height>302</height>
+           <width>0</width>
+           <height>0</height>
           </size>
          </property>
-         <property name="title">
-          <string>Transformation</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_10">
-          <item row="0" column="0">
-           <widget class="QLabel" name="m_multiToSingleLabel">
-            <property name="text">
-             <string>Multi* -&gt; Single*</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="m_multToSimpleRadioButton">
-            <property name="minimumSize">
-             <size>
-              <width>230</width>
-              <height>100</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="m_singleToMultLabel_2">
-            <property name="text">
-             <string>Single* -&gt; Multi*</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QRadioButton" name="m_simpleToMultRadioButton">
-            <property name="minimumSize">
-             <size>
-              <width>230</width>
-              <height>100</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="m_inputLayerGroupBox">
          <property name="title">
           <string>Input layer and the group attribute(s)</string>
          </property>
@@ -169,6 +117,81 @@
              <widget class="QLineEdit" name="m_filterLineEdit"/>
             </item>
            </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="m_operationGroupBox">
+         <property name="minimumSize">
+          <size>
+           <width>275</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Operation</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="m_convexHullCheckBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Convex Hull</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="m_centroidCheckBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Centroid</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="m_areaCheckBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Area</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="m_lineLengthCheckBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Line Length</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QCheckBox" name="m_perimeterPolygonsCheckBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Perimeter of Polygons</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QCheckBox" name="m_mbrCheckBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Minimum Bounding Rectangle (MBR)</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -231,7 +254,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QGroupBox" name="m_outputGroupBox">
+        <widget class="QGroupBox" name="groupBox_2">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -345,7 +368,6 @@
     </layout>
    </item>
   </layout>
-  <zorder></zorder>
  </widget>
  <resources/>
  <connections/>

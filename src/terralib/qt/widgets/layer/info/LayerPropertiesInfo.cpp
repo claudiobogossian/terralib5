@@ -54,7 +54,7 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   //setting values
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(id_prop, m_layer->getId().c_str());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(title_prop, m_layer->getTitle().c_str());
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(id_prop, m_layer->getSRID());
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(srid_prop, m_layer->getSRID());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(llx_prop, m_layer->getExtent().getLowerLeftX());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(lly_prop, m_layer->getExtent().getLowerLeftY());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(urx_prop, m_layer->getExtent().getUpperRightX());

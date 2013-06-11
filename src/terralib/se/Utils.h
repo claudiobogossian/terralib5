@@ -53,6 +53,7 @@ namespace te
     class Stroke;
     class Style;
     class Symbolizer;
+    class RasterSymbolizer;
     class TextSymbolizer;
 
     /*!
@@ -290,20 +291,34 @@ namespace te
 
       \note The caller of this method will take the ownership of the returned pointer.
       \note The method will return a NULL pointer if a default style could not be created.
+      
+      \todo Review this method in order to extract the maximum information about the given band properties.
     */
     TESEEXPORT Style* CreateCoverageStyle(const std::vector<te::rst::BandProperty*>& properties);
 
     /*!
-      \brief Try creates an appropriate coverage style based on given number of bands
+      \brief Try creates an appropriate coverage style based on given number of bands.
 
       \param nBands The number of bands.
 
-      \return A coverage symbolizer based on given geometry type.
+      \return A coverage style based on given geometry type.
 
       \note The caller of this method will take the ownership of the returned pointer.
       \note The method will return a NULL pointer if a default style could not be created.
     */
-    TESEEXPORT Symbolizer* CreateCoverageStyle(const int& nBands);
+    TESEEXPORT Style* CreateCoverageStyle(const std::size_t& nBands);
+
+    /*!
+      \brief Try creates an appropriate raster symbolizer style based on given number of bands.
+
+      \param nBands The number of bands.
+
+      \return A raster symbolizer based on number of bands.
+
+      \note The caller of this method will take the ownership of the returned pointer.
+      \note The method will return a NULL pointer if a default raster symbolizer could not be created.
+    */
+    TESEEXPORT RasterSymbolizer* CreateRasterSymbolizer(const std::size_t& nBands);
 
     /*!
       \brief Creates a random RGB color encoded using two hexadecimal digits per primary-color component prefixed with a hash (#) sign.
