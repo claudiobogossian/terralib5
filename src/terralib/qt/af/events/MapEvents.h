@@ -18,16 +18,20 @@
  */
 
 /*!
-  \file terralib/qt/af/events/Enums.h
+  \file MapEvents.h
 
-  \brief Enumerations for the TerraLib Application Framework.
+  \brief Contains a list of the map display events.
 */
 
-#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
-#define __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
+#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_MAPEVENTS_H
+#define __TERRALIB_QT_AF_EVENTS_INTERNAL_MAPEVENTS_H
 
-// TerraLib
 #include "Event.h"
+#include "Enums.h"
+
+// STL
+#include <string>
+#include <utility>
 
 namespace te
 {
@@ -37,30 +41,31 @@ namespace te
     {
       namespace evt
       {
-        enum
+        /*!
+          \struct MapSRIDChanged
+
+          \brief This event signals that the srid of the map display changed.
+
+          \ingroup afevents
+         */
+        struct MapSRIDChanged : public Event
         {
-          APP_CLOSED,
-          TOOLBAR_ADDED,
-          DISPLAY_RESIZED,
-          LAYER_ADDED,
-          LAYER_SELECTED,
-          LAYER_VISIBILITY_CHANGED,
-          LAYER_SELECTION_CHANGED,
-          TOOL_CHANGED,
-          COORDINATE_TRACKED,
-          POINT_GEOMETRIES,
-          VISIBLE_BBOX_CHANGED,
-          STYLE_CHANGED,
-          PROJECT_ADDED,
-          PROJECT_UNSAVED,
-          MAP_SRID_CHANGED,
-          CUSTOM = 1024
+          /*!
+            \brief Constructor.
+
+            \param srid The new SRID of map display.
+          */
+          MapSRIDChanged(std::pair<int, std::string> srid)
+            : Event(MAP_SRID_CHANGED),
+              m_srid(srid)
+          {
+          }
+
+          std::pair<int, std::string> m_srid;
         };
+      }
+    }
+  }
+}
 
-      } // end namespace evt
-    }   // end namespace af
-  }     // end namesopace qt
-}       // end namespace te
-
-#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
-
+#endif //__TERRALIB_QT_AF_EVENTS_INTERNAL_MAPEVENTS_H
