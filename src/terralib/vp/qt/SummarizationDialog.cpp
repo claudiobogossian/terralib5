@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/vp/GeneralGeographicOperationDialog.cpp
+  \file terralib/vp/SummarizationDialog.cpp
 
-  \brief A dialog with general geographic operation
+  \brief A dialog for summarization operation
 */
 
 // TerraLib
@@ -36,8 +36,8 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
 #include "../core/Exception.h"
-#include "GeneralGeographicOperationDialog.h"
-#include "ui_GeneralGeographicOperationDialogForm.h"
+#include "SummarizationDialog.h"
+#include "ui_SummarizationDialogForm.h"
 #include "VectorProcessingConfig.h"
 
 // Qt
@@ -48,9 +48,9 @@
 #include <QtGui/QListWidgetItem>
 #include <QtGui/QMessageBox>
 
-te::vp::GeneralGeographicOperationDialog::GeneralGeographicOperationDialog(QWidget* parent, Qt::WindowFlags f)
+te::vp::SummarizationDialog::SummarizationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::GeneralGeographicOperationDialogForm),
+    m_ui(new Ui::SummarizationDialogForm),
     m_layers(std::list<te::map::AbstractLayerPtr>()),
     m_selectedLayer(0)
 {
@@ -58,26 +58,7 @@ te::vp::GeneralGeographicOperationDialog::GeneralGeographicOperationDialog(QWidg
   m_ui->setupUi(this);
 
 // add icons
-
-  QSize iconSize(32, 32);
-
-  m_ui->m_convexHullCheckBox->setIconSize(iconSize);
-  m_ui->m_convexHullCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-convex-hull-hint"));
-
-  m_ui->m_centroidCheckBox->setIconSize(iconSize);
-  m_ui->m_centroidCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-centroid-hint"));
-
-  m_ui->m_areaCheckBox->setIconSize(iconSize);
-  m_ui->m_areaCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-area-hint"));
-
-  m_ui->m_lineLengthCheckBox->setIconSize(iconSize);
-  m_ui->m_lineLengthCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-line-length-hint"));
-
-  m_ui->m_perimeterPolygonsCheckBox->setIconSize(iconSize);
-  m_ui->m_perimeterPolygonsCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-perimeter-hint"));
-
-  m_ui->m_mbrCheckBox->setIconSize(iconSize);
-  m_ui->m_mbrCheckBox->setIcon(QIcon::fromTheme(VP_IMAGES"/vp-mbr-hint"));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-summarization-hint").pixmap(112,48));
 
 //signals
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
@@ -85,11 +66,11 @@ te::vp::GeneralGeographicOperationDialog::GeneralGeographicOperationDialog(QWidg
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 }
 
-te::vp::GeneralGeographicOperationDialog::~GeneralGeographicOperationDialog()
+te::vp::SummarizationDialog::~SummarizationDialog()
 {
 }
 
-void te::vp::GeneralGeographicOperationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
+void te::vp::SummarizationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
   
@@ -97,22 +78,23 @@ void te::vp::GeneralGeographicOperationDialog::setLayers(std::list<te::map::Abst
 
   while(it != m_layers.end())
   {  
-    m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    m_ui->m_inputLayerForComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    m_ui->m_inputLayerFromComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
 }
 
-void te::vp::GeneralGeographicOperationDialog::onHelpPushButtonClicked()
+void te::vp::SummarizationDialog::onHelpPushButtonClicked()
 {
   QMessageBox::information(this, "Help", "Under development");
 }
 
-void te::vp::GeneralGeographicOperationDialog::onOkPushButtonClicked()
+void te::vp::SummarizationDialog::onOkPushButtonClicked()
 {
   QMessageBox::information(this, "Ok", "Under development");
 }
 
-void te::vp::GeneralGeographicOperationDialog::onCancelPushButtonClicked()
+void te::vp::SummarizationDialog::onCancelPushButtonClicked()
 {
   reject();
 }
