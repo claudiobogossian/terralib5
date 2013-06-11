@@ -73,12 +73,13 @@ set (
   ${SRCDIR}/qt/BufferDialog.h
   ${SRCDIR}/qt/GeneralGeographicOperationDialog.h
   ${SRCDIR}/qt/IntersectionDialog.h
-  ${SRCDIR}/qt/TransformationDialog.h
   ${SRCDIR}/qt/LayerItem.h
+  ${SRCDIR}/qt/LayerTreeModel.h
   ${SRCDIR}/qt/LegendGroupItem.h
   ${SRCDIR}/qt/PropertyGroupItem.h  
   ${SRCDIR}/qt/PropertyItem.h
-  ${SRCDIR}/qt/LayerTreeModel.h
+  ${SRCDIR}/qt/SummarizationDialog.h
+  ${SRCDIR}/qt/TransformationDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/vp/qt" MOC)
 
