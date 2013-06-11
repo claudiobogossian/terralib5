@@ -39,6 +39,9 @@
 class QMenu;
 class QWidget;
 
+// STL
+#include <vector>
+
 namespace te
 {
   namespace qt
@@ -55,10 +58,14 @@ namespace te
 
           virtual ~AbstractLayerTreeItem();
 
-          // Returns the number of columns for the children of the item
+          std::vector<te::qt::widgets::AbstractLayerTreeItem*> getDescendants();
+
+          std::vector<te::qt::widgets::AbstractLayerTreeItem*> getAncestors();
+
+          // Return the number of columns for the children of the item
           virtual int columnCount() const = 0;
 
-          //Returns the data stored under the given role
+          // Return the data stored under the given role
           //http://doc.qt.nokia.com/4.7/qt.html#ItemDataRole-enum
           virtual QVariant data(int column, int role) const = 0;
 

@@ -137,7 +137,8 @@ void te::qt::widgets::GlyphMarkPropertyItem::valueChanged(QtProperty* p, const Q
 
 void te::qt::widgets::GlyphMarkPropertyItem::valueChanged(QtProperty* p, const QString &value)
 {
-  updateMarkName();
+  if( m_charProperty == p )
+    updateMarkName();
 }
 
 void te::qt::widgets::GlyphMarkPropertyItem::setDlg(QWidget *parent, QtProperty * prop)

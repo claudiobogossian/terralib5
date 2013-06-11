@@ -37,6 +37,8 @@
   #include <vector>
   #include <memory>
   
+  #include <boost/scoped_array.hpp>
+  
   namespace te 
   {
     namespace rp
@@ -372,7 +374,7 @@
           \brief An auxiliar line used when swapping
           data to/from disk.
           */              
-          mutable std::auto_ptr< TemplateElementType > m_swapMemoryBlockHandler;      
+          mutable boost::scoped_array< TemplateElementType > m_swapMemoryBlockHandler;      
         
           /*!
           \brief Reset the internal variables to the initial state.

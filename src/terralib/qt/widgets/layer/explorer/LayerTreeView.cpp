@@ -290,7 +290,7 @@ void te::qt::widgets::LayerTreeView::itemActivated(const QModelIndex & index)
   emit activated(item);
 }
 
-void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex & index)
+void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex& index)
 {
   AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
 
@@ -304,12 +304,31 @@ void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex & index)
   if(!model->isCheckable())
     return;
 
-  QVariant value = item->data(0, Qt::CheckStateRole);
+  // If the item visibility was changed, emit the signal of visibilityChanged for this item,
+  // for their descendants(if any) and for their ancestors
+  te::map::AbstractLayer* itemLayer = item->getLayer().get();
+  if((itemLayer != 0) && itemLayer->hasVisibilityChanged())
+  {
+    emit visibilityChanged(item);
 
-  if(value.isNull())
-    return;
+    // For their descendants
+    std::vector<AbstractLayerTreeItem*> descendantItems = item->getDescendants();
+    for(std::size_t i = 0; i < descendantItems.size(); ++i)
+    {
+      te::map::AbstractLayer* descendantLayer = descendantItems[i]->getLayer().get();
+      if((descendantLayer != 0) && descendantLayer->hasVisibilityChanged())
+        emit visibilityChanged(descendantItems[i]);
+    }
 
-  emit toggled(item, value.toBool());
+    // For their ancestors
+    std::vector<AbstractLayerTreeItem*> ancestorItems = item->getAncestors();
+    for(std::size_t i = 0; i < ancestorItems.size(); ++i)
+    {
+      te::map::AbstractLayer* ancestorLayer = ancestorItems[i]->getLayer().get();
+      if((ancestorLayer != 0) && ancestorLayer->hasVisibilityChanged())
+        emit visibilityChanged(ancestorItems[i]);
+    }
+  }
 }
 
 void te::qt::widgets::LayerTreeView::itemDoubleClicked(const QModelIndex & index)
@@ -329,6 +348,9 @@ void te::qt::widgets::LayerTreeView::itemEntered(const QModelIndex & index)
 void te::qt::widgets::LayerTreeView::itemPressed(const QModelIndex & index)
 {
   AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
+
+  te::map::AbstractLayer* layer = static_cast<te::map::AbstractLayer*>(item->getLayer().get());
+  layer->setVisibilityAsChanged(false);
 
   emit pressed(item);
 }

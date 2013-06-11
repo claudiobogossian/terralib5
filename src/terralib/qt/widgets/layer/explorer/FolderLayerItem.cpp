@@ -112,18 +112,13 @@ bool te::qt::widgets::FolderLayerItem::setData(int column, const QVariant& value
 {
   if(role == Qt::CheckStateRole)
   {
-    bool ok = false;
-    Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt(&ok));
-
-    if(!ok)
-      return false;
-
+    Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt());
     if(checkState == Qt::Checked)
       m_layer->setVisibility(te::map::VISIBLE);
     else if(checkState == Qt::Unchecked)
       m_layer->setVisibility(te::map::NOT_VISIBLE);
-    else if (checkState == Qt::PartiallyChecked)
-      m_layer->setVisibility(te::map::PARTIALLY_VISIBLE);
+
+    m_layer->updateVisibilityOfAncestors();
 
     return true;
   }
@@ -135,7 +130,3 @@ te::map::AbstractLayerPtr te::qt::widgets::FolderLayerItem::getLayer() const
 {
   return m_layer;
 }
-
-
-
-

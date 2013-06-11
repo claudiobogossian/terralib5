@@ -36,7 +36,7 @@
 namespace te
 {
 // Forward declaration
-  namespace se { class RasterSymbolizer; }
+  namespace se { class CoverageStyle; }
 
   namespace rst { class Raster; }
 
@@ -141,14 +141,14 @@ namespace te
 
           \return
         */
-        te::se::RasterSymbolizer* getStyle() const;
+        te::se::CoverageStyle* getStyle() const;
 
         /*!
           \brief
 
           \param style
         */
-        void setStyle(te::se::RasterSymbolizer* style);
+        void setStyle(te::se::CoverageStyle* style);
 
         /*!
           \brief
@@ -176,11 +176,8 @@ namespace te
       private:
 
         std::string m_rendererType;                 //!< A pointer to the internal renderer used to paint this layer.
-
-        std::map<std::string, std::string> m_rinfo; //!< A raster connection info
-
-        te::se::RasterSymbolizer* m_style;          //!< The style to be applied to the geographic objects in the layer.
-
+        std::map<std::string, std::string> m_rinfo; //!< A raster connection info.
+        te::se::CoverageStyle* m_style;             //!< The style to be applied to the geographic objects in the layer.
         static const std::string sm_type;           //!< A static data member used in the implementation of getType method.
     };
 
@@ -190,4 +187,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_MAPTOOLS_INTERNAL_RASTERLAYER_H
-

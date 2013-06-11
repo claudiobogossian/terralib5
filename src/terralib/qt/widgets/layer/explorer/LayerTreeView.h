@@ -90,7 +90,7 @@ namespace te
 
           void pressed(te::qt::widgets::AbstractLayerTreeItem* item);
 
-          void toggled(te::qt::widgets::AbstractLayerTreeItem* item, bool checked);
+          void visibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);
 
         public slots:
 

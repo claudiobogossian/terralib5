@@ -60,7 +60,7 @@ namespace te
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
     bool createNewRaster( const te::rst::Grid& rasterGrid,
-      std::vector< te::rst::BandProperty* > bandsProperties,
+      const std::vector< te::rst::BandProperty* >& bandsProperties,
       const std::string& outDataSetName,
       te::da::DataSource& outDataSource,
       RasterHandler& outRasterHandler );

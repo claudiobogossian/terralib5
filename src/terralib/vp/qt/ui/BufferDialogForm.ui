@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Buffer</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_15">
    <item row="0" column="0">
@@ -174,7 +174,7 @@
         <attribute name="title">
          <string>Rule for polygons</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>0</x>
@@ -253,7 +253,7 @@
         <attribute name="title">
          <string>Boundaries between buffers</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>12</x>

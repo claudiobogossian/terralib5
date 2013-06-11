@@ -86,7 +86,7 @@ namespace te
         std::auto_ptr<Ui::BufferDialogForm> m_ui;
         te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for aggregation
+        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
     };
   }   // end namespace vp
 }     // end namespace te

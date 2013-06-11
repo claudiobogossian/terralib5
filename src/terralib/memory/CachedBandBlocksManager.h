@@ -31,6 +31,7 @@
 #include "../raster/Raster.h"
 
 #include <boost/thread.hpp>
+#include <boost/scoped_array.hpp>
 
 #include <vector>
 #include <memory>
@@ -192,7 +193,7 @@ namespace te
             
             boost::condition_variable m_taskFinishedCondVar; //!< Used to wait for the required task finishment.
             
-            std::auto_ptr< unsigned char > m_threadDataBlockHandler; //!< A extra block used in exchange when a read-ahead task is performed.
+            boost::scoped_array< unsigned char > m_threadDataBlockHandler; //!< A extra block used in exchange when a read-ahead task is performed.
             
             ThreadParameters() 
             : m_rasterPtr( 0 ), 

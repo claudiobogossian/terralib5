@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/maptools/AbstractLayer.cpp
 
-  \brief This is the base class for Layers.
+  \brief This is the base class for layers.
  */
 
 // TerraLib
@@ -33,6 +33,7 @@ te::map::AbstractLayer::AbstractLayer(AbstractLayer* parent)
   : te::common::TreeItem(parent),
     m_srid(TE_UNKNOWN_SRS),
     m_visibility(NOT_VISIBLE),
+    m_visibilityChanged(false),
     m_selected(0),
     m_grouping(0)
 {
@@ -43,6 +44,7 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id, AbstractLayer* pare
     m_id(id),
     m_srid(TE_UNKNOWN_SRS),
     m_visibility(NOT_VISIBLE),
+    m_visibilityChanged(false),
     m_selected(0),
     m_grouping(0)
 {
@@ -56,6 +58,7 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id,
     m_title(title),
     m_srid(TE_UNKNOWN_SRS),
     m_visibility(NOT_VISIBLE),
+    m_visibilityChanged(false),
     m_selected(0),
     m_grouping(0)
 {
@@ -87,9 +90,116 @@ void te::map::AbstractLayer::setTitle(const std::string& title)
   m_title = title;
 }
 
+std::vector<te::map::AbstractLayer*> te::map::AbstractLayer::getDescendants()
+{
+  std::vector<AbstractLayer*> layers;
+  std::vector<AbstractLayer*> childrenLayers;
+
+  if(hasChildren())
+  {
+    int numChildren = getChildrenCount();
+    for(int i = 0; i < numChildren; ++i)
+    {
+      AbstractLayer* childLayer = static_cast<AbstractLayer*>(getChild(i).get());
+      layers.push_back(childLayer);
+      childrenLayers = childLayer->getDescendants();
+    }
+  }
+
+  for(std::size_t i = 0; i < childrenLayers.size(); ++i)
+    layers.push_back(childrenLayers[i]);
+
+  return layers;
+}
+
+std::vector<te::map::AbstractLayer*> te::map::AbstractLayer::getAncestors()
+{
+  std::vector<AbstractLayer*> layers;
+
+  AbstractLayer* parentLayer = static_cast<AbstractLayer*>(getParent());
+  while(parentLayer)
+  {
+    layers.push_back(parentLayer);
+    parentLayer = static_cast<AbstractLayer*>(parentLayer->getParent());
+  }
+
+  return layers;
+}
+
 te::map::Visibility te::map::AbstractLayer::getVisibility() const
 {
   return m_visibility;
+}
+
+void te::map::AbstractLayer::setVisibility(Visibility v)
+{
+  Visibility prevVisibility = m_visibility;
+
+  m_visibilityChanged = false;
+
+  m_visibility = v;
+
+  if(m_visibility != prevVisibility)
+    m_visibilityChanged = true;
+}
+
+bool te::map::AbstractLayer::hasVisibilityChanged()
+{
+  return m_visibilityChanged;
+}
+
+void te::map::AbstractLayer::setVisibilityAsChanged(bool visChanged)
+{
+  m_visibilityChanged = visChanged;
+}
+
+void te::map::AbstractLayer::updateVisibilityOfAncestors()
+{
+  AbstractLayer* parent = static_cast<AbstractLayer*>(getParent());
+  while(parent)
+  {
+    bool allVisible = true;
+    bool allNotVisible = true;
+
+    Visibility prevParentVisibility = parent->getVisibility();
+    parent->m_visibilityChanged = false;
+
+    int numChildren = parent->getChildrenCount();
+    std::vector<AbstractLayer*> childrenVec(numChildren);
+
+    for(int i = 0; i < numChildren; ++i)
+    {
+      childrenVec[i] = static_cast<AbstractLayer*>(parent->getChild(i).get());
+
+      if(childrenVec[i]->getVisibility() == te::map::NOT_VISIBLE)
+        allVisible = false;
+      else if(childrenVec[i]->getVisibility() == te::map::VISIBLE)
+        allNotVisible = false;
+      else if(childrenVec[i]->getVisibility() == te::map::PARTIALLY_VISIBLE)
+      {
+        allVisible = false;
+        allNotVisible = false;
+      }
+    }
+
+    // Set parent visibility;
+    Visibility parentVisibility = te::map::PARTIALLY_VISIBLE;
+    if(allVisible)
+      parentVisibility = te::map::VISIBLE;
+    else if(allNotVisible)
+      parentVisibility = te::map::NOT_VISIBLE;
+
+    parent->m_visibility = parentVisibility;
+
+    if(parentVisibility != prevParentVisibility)
+      parent->m_visibilityChanged = true;
+
+    parent = static_cast<AbstractLayer*>(parent->getParent());
+  }
+}
+
+void te::map::AbstractLayer::updateVisibility()
+{
 }
 
 const te::gm::Envelope& te::map::AbstractLayer::getExtent() const
@@ -143,74 +253,6 @@ void te::map::AbstractLayer::deselect(const te::da::ObjectIdSet* oids)
   assert(m_selected);
 
   m_selected->difference(oids);
-}
-
-void te::map::AbstractLayer::setVisibility(Visibility v)
-{
-  if(v == te::map::PARTIALLY_VISIBLE)
-    return;
-
-  m_visibility = v;
-
-  if(hasChildren())
-  {
-    int numChildren = getChildrenCount();
-    std::vector<AbstractLayer*> childrenVec(numChildren);
-
-    for(int i = 0; i < numChildren; ++i)
-    {
-      childrenVec[i] = static_cast<AbstractLayer*>(getChild(i).get());
-      childrenVec[i]->setVisibility(v);
-    }
-  }
-
-  // Adjust the visibility of the ascendent layers that are folders
-  AbstractLayer* parentLayer = static_cast<AbstractLayer*>(getParent());
-  while(parentLayer != 0)
-  {
-    parentLayer->adjustVisibility();
-    parentLayer = static_cast<AbstractLayer*>(parentLayer->getParent());
-  }
-}
-
-void te::map::AbstractLayer::adjustVisibility()
-{
-  if(getType() != "FOLDERLAYER")
-    return;
-
-  if(hasChildren())
-  {
-    int numChildren = getChildrenCount();
-    std::vector<AbstractLayer*> childrenVec(numChildren);
-
-    for(int i = 0; i < numChildren; ++i)
-    {
-      childrenVec[i] = static_cast<AbstractLayer*>(getChild(i).get());
-      childrenVec[i]->adjustVisibility();
-    }
-
-    bool allVisible = true;
-    bool allNotVisible = true;
-
-    for(int i = 0; i < numChildren; ++i)
-    {
-      if(childrenVec[i]->getVisibility() == te::map::NOT_VISIBLE)
-        allVisible = false;
-      else if(childrenVec[i]->getVisibility() == te::map::VISIBLE)
-        allNotVisible = false;
-      else if(childrenVec[i]->getVisibility() == te::map::PARTIALLY_VISIBLE)
-      {
-        allVisible = false;
-        allNotVisible = false;
-      }
-    }
-
-    m_visibility = te::map::PARTIALLY_VISIBLE;
-    if(allVisible)
-      m_visibility = te::map::VISIBLE;
-    else if(allNotVisible)
-      m_visibility = te::map::NOT_VISIBLE;
-  }
 }
 
 te::map::Grouping* te::map::AbstractLayer::getGrouping() const

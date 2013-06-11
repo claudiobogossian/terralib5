@@ -44,7 +44,7 @@ namespace te
           DISPLAY_RESIZED,
           LAYER_ADDED,
           LAYER_SELECTED,
-          LAYER_VISIBILTY_CHANGED,
+          LAYER_VISIBILITY_CHANGED,
           LAYER_SELECTION_CHANGED,
           TOOL_CHANGED,
           COORDINATE_TRACKED,
@@ -53,6 +53,7 @@ namespace te
           STYLE_CHANGED,
           PROJECT_ADDED,
           PROJECT_UNSAVED,
+          MAP_SRID_CHANGED,
           CUSTOM = 1024
         };
 

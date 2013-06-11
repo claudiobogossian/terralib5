@@ -297,51 +297,17 @@ te::se::Style* te::se::CreateFeatureTypeStyle(const te::gm::GeomType& geomType)
 
 te::se::Style* te::se::CreateCoverageStyle(const std::vector<te::rst::BandProperty*>& properties)
 {
-  if(properties.empty())
+  // TODO: Review this method in order to extract the maximum information about the given band properties.
+  return CreateCoverageStyle(properties.size());
+}
+
+te::se::Style* te::se::CreateCoverageStyle(const std::size_t& nBands)
+{
+  if(nBands == 0)
     return 0;
 
   // Default raster symbolizer
-  te::se::RasterSymbolizer* rasterSymbolizer = new te::se::RasterSymbolizer;
-
-  // General parameters
-  rasterSymbolizer->setOpacity(new te::se::ParameterValue("1.0"));
-  rasterSymbolizer->setGain(new te::se::ParameterValue("0.0"));
-  rasterSymbolizer->setOffset(new te::se::ParameterValue("0.0"));
-
-  // Channel selection
-  if((properties.size() == 1) || (properties.size() == 2))
-  {
-    te::se::SelectedChannel* sc = new te::se::SelectedChannel();
-    sc->setSourceChannelName(properties[0]->m_description.empty() ? std::string("0") : properties[0]->m_description);
-
-    te::se::ChannelSelection* cs = new te::se::ChannelSelection();
-    cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
-    cs->setGrayChannel(sc);
-
-    rasterSymbolizer->setChannelSelection(cs);
-  }
-  else if(properties.size() >= 3)
-  {
-    // Red Channel
-    te::se::SelectedChannel* scr = new te::se::SelectedChannel();
-    scr->setSourceChannelName(properties[0]->m_description.empty() ? std::string("0") : properties[0]->m_description);
-
-    // Green Channel
-    te::se::SelectedChannel* scg = new te::se::SelectedChannel();
-    scg->setSourceChannelName(properties[1]->m_description.empty() ? std::string("1") : properties[1]->m_description);
-
-    // Blue channel
-    te::se::SelectedChannel* scb = new te::se::SelectedChannel();
-    scb->setSourceChannelName(properties[2]->m_description.empty() ? std::string("2") : properties[2]->m_description);
-
-    te::se::ChannelSelection* cs = new te::se::ChannelSelection();
-    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
-    cs->setRedChannel(scr);
-    cs->setGreenChannel(scg);
-    cs->setBlueChannel(scb);
-
-    rasterSymbolizer->setChannelSelection(cs);
-  }
+  te::se::RasterSymbolizer* rasterSymbolizer = CreateRasterSymbolizer(nBands);
 
   te::se::Rule* rule = new te::se::Rule();
   rule->push_back(rasterSymbolizer);
@@ -352,14 +318,15 @@ te::se::Style* te::se::CreateCoverageStyle(const std::vector<te::rst::BandProper
   return style;
 }
 
-TESEEXPORT te::se::Symbolizer* te::se::CreateCoverageStyle(const int& nBands)
+
+te::se::RasterSymbolizer* te::se::CreateRasterSymbolizer(const std::size_t& nBands)
 {
   // Default raster symbolizer
   te::se::RasterSymbolizer* rasterSymbolizer = new te::se::RasterSymbolizer;
 
   // General parameters
   rasterSymbolizer->setOpacity(new te::se::ParameterValue("1.0"));
-  rasterSymbolizer->setGain(new te::se::ParameterValue("1.0"));
+  rasterSymbolizer->setGain(new te::se::ParameterValue("0.0"));
   rasterSymbolizer->setOffset(new te::se::ParameterValue("0.0"));
 
   // Channel selection

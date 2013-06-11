@@ -93,6 +93,8 @@ namespace te
 
           void onOpenProjectTriggered();
 
+          void onSaveProjectTriggered();
+
           void onSaveProjectAsTriggered();
 
           void onToolsCustomizeTriggered();
@@ -100,6 +102,8 @@ namespace te
           void onToolsDataExchangerTriggered();
 
           void onProjectPropertiesTriggered();
+
+          void onLayerNewLayerGroupTriggered();
 
           void onLayerPropertiesTriggered();
 
@@ -204,6 +208,7 @@ namespace te
           QAction* m_layerEdit;
           QAction* m_layerRename;
           QAction* m_layerExport;
+          QAction* m_layerNewLayerGroup;
           QAction* m_layerProperties;
           QAction* m_layerShowTable;
           QAction* m_layerRaise;

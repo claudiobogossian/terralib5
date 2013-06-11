@@ -61,7 +61,7 @@ void te::qt::af::SymbolizerExplorer::onApplicationTriggered(te::qt::af::evt::Eve
       {
         te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(m_layer);
 
-        if(l)
+        if(l && (l->getStyle() != 0))
           m_explorer->setStyle(l->getStyle(), l);
       }
     }

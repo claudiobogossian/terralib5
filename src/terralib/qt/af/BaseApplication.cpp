@@ -31,6 +31,7 @@
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../maptools/FolderLayer.h"
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
@@ -67,9 +68,10 @@
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/SymbolizerExplorer.h"
-#include "events/LayerEvents.h"
-#include "events/ProjectEvents.h"
 #include "events/ApplicationEvents.h"
+#include "events/LayerEvents.h"
+#include "events/MapEvents.h"
+#include "events/ProjectEvents.h"
 #include "events/ToolEvents.h"
 #include "settings/SettingsDialog.h"
 #include "ApplicationController.h"
@@ -88,6 +90,7 @@
 #include <QtGui/QCloseEvent>
 #include <QtGui/QDockWidget>
 #include <QtGui/QFileDialog>
+#include <QtGui/QInputDialog>
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QMessageBox>
@@ -283,6 +286,18 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
     }
     break;
 
+    case te::qt::af::evt::MAP_SRID_CHANGED:
+    {
+      te::qt::af::evt::MapSRIDChanged* e = static_cast<te::qt::af::evt::MapSRIDChanged*>(evt);
+
+      std::pair<int, std::string> srid = e->m_srid;
+
+      QString sridText(srid.second.c_str());
+      sridText += ":" + QString::number(srid.first);
+      m_mapSRIDLineEdit->setText(sridText);
+    }
+    break;
+
     default:
       break;
   }
@@ -444,6 +459,32 @@ void te::qt::af::BaseApplication::onOpenProjectTriggered()
   openProject(file);
 }
 
+void te::qt::af::BaseApplication::onSaveProjectTriggered()
+{
+  std::string fName = m_project->getFileName();
+
+  if(fName.empty())
+  {
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
+
+    if(!fileName.isEmpty())
+    {
+      fName = fileName.toStdString();
+      m_project->setFileName(fName);
+    }
+    else
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("Project not saved."));
+      return;
+    }
+  }
+
+  te::qt::af::Save(*m_project, m_project->getFileName());
+  m_project->projectChanged(false);
+
+  te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
+}
+
 void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
 {
   if(m_project == 0)
@@ -509,6 +550,28 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onLayerNewLayerGroupTriggered()
+{
+  bool ok;
+  QString text = QInputDialog::getText(this, ApplicationController::getInstance().getAppTitle(),
+                                      tr("Layer name:"), QLineEdit::Normal,
+                                      tr("Insert name"), &ok);
+
+  if (!ok)
+    return;
+
+  if(text.isEmpty())
+  {
+    QMessageBox::warning(this, ApplicationController::getInstance().getAppTitle(), tr("Enter the layer name!"));
+    return;
+  }
+
+  te::map::AbstractLayerPtr folder(new te::map::FolderLayer);
+  folder->setTitle(text.toStdString());
+
+  m_explorer->getExplorer()->add(folder);
+}
+
 void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 {
   std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
@@ -526,6 +589,7 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 
   doc->setWidget(info);
   doc->setWindowTitle(info->windowTitle());
+  doc->setAttribute(Qt::WA_DeleteOnClose, true);
 
   doc->show();
 }
@@ -672,11 +736,11 @@ void te::qt::af::BaseApplication::onMapSRIDTriggered()
     return;
 
   std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
-  m_display->getDisplay()->setSRID(srid.first);
 
-  QString sridText(srid.second.c_str());
-  sridText += ":" + QString::number(srid.first);
-  m_mapSRIDLineEdit->setText(sridText);
+  te::qt::af::evt::MapSRIDChanged mapSRIDChagned(srid);
+  ApplicationController::getInstance().broadcast(&mapSRIDChagned);
+
+  m_display->getDisplay()->setSRID(srid.first);
 }
 
 void te::qt::af::BaseApplication::onDrawTriggered()
@@ -871,36 +935,15 @@ void te::qt::af::BaseApplication::checkProjectSave()
     int btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg, QMessageBox::No, QMessageBox::Yes);
 
     if(btn == QMessageBox::Yes)
-    {
-      std::string fName = m_project->getFileName();
-
-      if(fName.empty())
-      {
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
-
-        if(!fileName.isEmpty())
-        {
-          fName = fileName.toStdString();
-          m_project->setFileName(fName);
-        }
-        else
-        {
-          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("Project not saved."));
-          return;
-        }
-      }
-
-      te::qt::af::Save(*m_project, m_project->getFileName());
-      m_project->projectChanged(false);
-
-      te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
-    }
+      onSaveProjectTriggered();
   }
 }
 
 void te::qt::af::BaseApplication::newProject()
 {
   CloseAllTables(m_tableDocks);
+
+  checkProjectSave();
 
   delete m_project;
 
@@ -920,6 +963,8 @@ void te::qt::af::BaseApplication::newProject()
   setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
   te::qt::af::ApplicationController::getInstance().set(m_project);
+
+  m_project->projectChanged(false);
 
   te::qt::af::evt::ProjectAdded evt(m_project);
 
@@ -959,7 +1004,9 @@ void te::qt::af::BaseApplication::makeDialog()
 
   lexplorer->getTreeView()->add(m_projectAddLayerDataset, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  lexplorer->getTreeView()->add(m_layerNewLayerGroup, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
+  lexplorer->getTreeView()->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
   lexplorer->getTreeView()->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
@@ -1123,6 +1170,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerEdit, "layer-edit", "Layer.Edit", tr("&Edit"), tr(""), true, false, false, m_menubar);
   initAction(m_layerRename, "layer-rename", "Layer.Rename", tr("R&ename"), tr(""), true, false, false, m_menubar);
   initAction(m_layerExport, "document-export", "Layer.Export", tr("E&xport..."), tr(""), true, false, false, m_menubar);
+  initAction(m_layerNewLayerGroup, "", "Layer.New Layer Group", tr("&New Layer Group..."), tr(""), false, false, true, m_menubar);
   initAction(m_layerGrouping, "", "Layer.Grouping", tr("&Grouping..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerShowTable, "", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
@@ -1135,7 +1183,7 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
-  initAction(m_fileSaveProject, "document-save", "File.Save Project", tr("&Save Project"), tr(""), true, false, false, m_menubar);
+  initAction(m_fileSaveProject, "document-save", "File.Save Project", tr("&Save Project"), tr(""), true, false, true, m_menubar);
   initAction(m_fileSaveProjectAs, "document-save-as", "File.Save Project As", tr("Save Project &As..."), tr(""), true, false, false, m_menubar);
   initAction(m_fileOpenProject, "document-open", "File.Open Project", tr("&Open Project..."), tr(""), true, false, true, m_menubar);
   initAction(m_fileExit, "system-log-out", "File.Exit", tr("E&xit"), tr(""), true, false, true, m_menubar);
@@ -1187,7 +1235,6 @@ void te::qt::af::BaseApplication::initMenus()
 
   m_fileMenu->addAction(m_fileNewProject);
   m_fileMenu->addAction(m_fileOpenProject);
-  m_fileMenu->addAction(m_fileSaveProject);
   m_fileMenu->addAction(m_fileSaveProject);
   m_fileMenu->addAction(m_fileSaveProjectAs);
   m_fileMenu->addSeparator();
@@ -1259,6 +1306,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerRename);
   m_layerMenu->addAction(m_layerExport);
   m_layerMenu->addAction(m_layerGrouping);
+  m_layerMenu->addAction(m_layerNewLayerGroup);
   m_layerMenu->addAction(m_layerProperties);
   m_layerMenu->addAction(m_layerShowTable);
   m_layerMenu->addSeparator();
@@ -1441,6 +1489,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
   connect(m_fileNewProject, SIGNAL(triggered()), SLOT(onNewProjectTriggered()));
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
+  connect(m_fileSaveProject, SIGNAL(triggered()), SLOT(onSaveProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
@@ -1448,6 +1497,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
+  connect(m_layerNewLayerGroup, SIGNAL(triggered()), SLOT(onLayerNewLayerGroupTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
   connect(m_layerGrouping, SIGNAL(triggered()), SLOT(onLayerGroupingTriggered()));
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
