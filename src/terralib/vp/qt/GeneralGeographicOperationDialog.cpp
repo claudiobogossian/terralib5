@@ -58,7 +58,6 @@ te::vp::GeneralGeographicOperationDialog::GeneralGeographicOperationDialog(QWidg
   m_ui->setupUi(this);
 
 // add icons
-  /*m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-buffer-hint").pixmap(112,48));*/
 
   QSize iconSize(32, 32);
 
