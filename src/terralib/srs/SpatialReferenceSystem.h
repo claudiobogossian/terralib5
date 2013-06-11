@@ -29,13 +29,14 @@
 // TerraLib
 #include "Config.h"
 
-//STL
+// STL
+#include <memory>
 #include <string>
 
 namespace te
 {
-	namespace srs
-	{
+  namespace srs
+  {
     /*!
      \class SpatialReferenceSystem
      \brief A Spatial Reference System, also known as a Coordinate System.
@@ -62,7 +63,7 @@ namespace te
        \brief Sets the SRS name.
        \param The SRS name.
        */
-      void setName(const std::string&);      
+      void setName(const std::string&);
       
       /*! 
        \brief Returns the SRS name.
@@ -74,13 +75,13 @@ namespace te
        \brief Sets the SRS unit name.
        \param The SRS unit name.
        */
-       void setUnitName(const std::string&);    
+       void setUnitName(const std::string&);
       
       /*
        \brief Returns the SRS unit name.
        \return The SRS unit name.
        */
-      const std::string& getUnitName() const;   
+      const std::string& getUnitName() const;
       
       /*!
        \brief Sets the SRS integer identification.

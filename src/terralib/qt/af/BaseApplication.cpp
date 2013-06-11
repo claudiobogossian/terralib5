@@ -68,9 +68,10 @@
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/SymbolizerExplorer.h"
-#include "events/LayerEvents.h"
-#include "events/ProjectEvents.h"
 #include "events/ApplicationEvents.h"
+#include "events/LayerEvents.h"
+#include "events/MapEvents.h"
+#include "events/ProjectEvents.h"
 #include "events/ToolEvents.h"
 #include "settings/SettingsDialog.h"
 #include "ApplicationController.h"
@@ -282,6 +283,18 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
       te::qt::af::evt::CoordinateTracked* e = static_cast<te::qt::af::evt::CoordinateTracked*>(evt);
       QString text = "(" + QString::number(e->m_x, 'f', 5) + " , " + QString::number(e->m_y, 'f', 5) + ")";
       m_coordinateLineEdit->setText(text);
+    }
+    break;
+
+    case te::qt::af::evt::MAP_SRID_CHANGED:
+    {
+      te::qt::af::evt::MapSRIDChanged* e = static_cast<te::qt::af::evt::MapSRIDChanged*>(evt);
+
+      std::pair<int, std::string> srid = e->m_srid;
+
+      QString sridText(srid.second.c_str());
+      sridText += ":" + QString::number(srid.first);
+      m_mapSRIDLineEdit->setText(sridText);
     }
     break;
 
@@ -718,11 +731,11 @@ void te::qt::af::BaseApplication::onMapSRIDTriggered()
     return;
 
   std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
-  m_display->getDisplay()->setSRID(srid.first);
 
-  QString sridText(srid.second.c_str());
-  sridText += ":" + QString::number(srid.first);
-  m_mapSRIDLineEdit->setText(sridText);
+  te::qt::af::evt::MapSRIDChanged mapSRIDChagned(srid);
+  ApplicationController::getInstance().broadcast(&mapSRIDChagned);
+
+  m_display->getDisplay()->setSRID(srid.first);
 }
 
 void te::qt::af::BaseApplication::onDrawTriggered()
