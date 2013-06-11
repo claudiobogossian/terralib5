@@ -29,6 +29,7 @@
 // TerraLib
 #include "../common/Singleton.h"
 #include "Config.h"
+#include "SpatialReferenceSystem.h"
 
 // STL
 #include <map>
@@ -46,8 +47,6 @@ namespace te
 {
   namespace srs
   {
-    class SpatialReferenceSystem;
-    
     /*!
      \class SpatialReferenceSystemManager
      
@@ -190,7 +189,7 @@ namespace te
        \param authName The authority responsible for the id. Default "EPSG".
        \return A pointer to a coordinate system if the identification is recognized or a null pointer otherwise. Caller is responsible for deleting the returned pointer.
        */
-      SpatialReferenceSystem* getSpatialReferenceSystem(unsigned int id, const std::string& authName="EPSG") const;
+      SpatialReferenceSystemPtr getSpatialReferenceSystem(unsigned int id, const std::string& authName="EPSG") const;
       
       /*!
        \brief Removes a coordinate system representation from the manager, given its identification.

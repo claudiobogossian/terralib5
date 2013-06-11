@@ -30,6 +30,7 @@
 #include "../../af/ApplicationController.h"
 #include "AggregationAction.h"
 #include "BufferAction.h"
+#include "GeneralGeographicOperationAction.h"
 #include "IntersectionAction.h"
 #include "Plugin.h"
 #include "TransformationAction.h"
@@ -88,6 +89,7 @@ void te::qt::plugins::vp::Plugin::registerActions()
 {
   m_aggregation = new te::qt::plugins::vp::AggregationAction(m_vpMenu);
   m_buffer = new te::qt::plugins::vp::BufferAction(m_vpMenu);
+  m_generalGeographicOperation = new te::qt::plugins::vp::GeneralGeographicOperationAction(m_vpMenu);
   m_intersection = new te::qt::plugins::vp::IntersectionAction(m_vpMenu);  
   m_transformation = new te::qt::plugins::vp::TransformationAction(m_vpMenu);  
 }
@@ -96,6 +98,7 @@ void  te::qt::plugins::vp::Plugin::unRegisterActions()
 {
   delete m_aggregation;
   delete m_buffer;
+  delete m_generalGeographicOperation;
   delete m_intersection;
   delete m_transformation;
 }

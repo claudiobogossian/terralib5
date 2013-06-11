@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/vp/qt/TransformationDialog.h
+  \file terralib/vp/qt/GeneralGeographicOperationDialog.h
 
-  \brief A dialog transformation operation
+  \brief A dialog with general geographic operation
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_TRANSFORMATIONDIALOG_H
-#define __TERRALIB_VP_INTERNAL_TRANSFORMATIONDIALOG_H
+#ifndef __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
+#define __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -41,7 +41,7 @@
 // Qt
 #include <QtGui/QDialog>
 
-namespace Ui { class TransformationDialogForm; }
+namespace Ui { class GeneralGeographicOperationDialogForm; }
 
 // Forward declarations
 class QListWidgetItem;
@@ -54,15 +54,15 @@ namespace te
 // Forward declarations
     class LayerTreeModel;
 
-    class TEVPEXPORT TransformationDialog : public QDialog
+    class TEVPEXPORT GeneralGeographicOperationDialog : public QDialog
     {
       Q_OBJECT
 
       public:
 
-        TransformationDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+        GeneralGeographicOperationDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-        ~TransformationDialog();
+        ~GeneralGeographicOperationDialog();
 
         /*!
           \brief Set the layer that can be used
@@ -83,12 +83,12 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::TransformationDialogForm> m_ui;
+        std::auto_ptr<Ui::GeneralGeographicOperationDialogForm> m_ui;
         te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for transformation
+        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
     };
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_TRANSFORMATIONDIALOG_H
+#endif  // __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H

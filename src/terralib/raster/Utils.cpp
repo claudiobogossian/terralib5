@@ -108,7 +108,7 @@ std::vector<te::rst::BandProperty*> te::rst::GetBandProperties(const std::map<st
 te::rst::Grid* te::rst::GetGrid(const std::map<std::string, std::string>& rinfo)
 {
   unsigned nCols, nRows;
-  double resX, resY, ulX, ulY;
+  double resX = 1.0, resY = 1.0, ulX =0.0, ulY=0.0;
   int srid;
   te::gm::Coord2D* ulc;
 
@@ -127,39 +127,24 @@ te::rst::Grid* te::rst::GetGrid(const std::map<std::string, std::string>& rinfo)
   nRows = atoi(it->second.c_str());
 
   it = rinfo.find("RESX");
-
-  if(it == rinfo.end())
-    resX = 1.0;
-
-  resX = atof(it->second.c_str());
+  if(it != rinfo.end())
+    resX = atof(it->second.c_str());
 
   it = rinfo.find("RESY");
-
-  if(it == rinfo.end())
-    resY = 1.0;
-
-  resY = atof(it->second.c_str());
+  if(it != rinfo.end())
+    resY = atof(it->second.c_str());
 
   it = rinfo.find("SRID");
-
-  if(it == rinfo.end())
-    srid = -1;
-
-  srid = atoi(it->second.c_str());
+  if(it != rinfo.end())
+    srid = atoi(it->second.c_str());
 
   it = rinfo.find("ULX");
-
-  if(it == rinfo.end())
-    ulX = 0.0;
-
-  ulX = atof(it->second.c_str());
+  if(it != rinfo.end())
+    ulX = atof(it->second.c_str());
 
   it = rinfo.find("ULY");
-
-  if(it == rinfo.end())
-    ulY = 0.0;
-
-  ulY = atof(it->second.c_str());
+  if(it != rinfo.end())
+    ulY = atof(it->second.c_str());
 
   ulc = new te::gm::Coord2D(ulX, ulY);
 

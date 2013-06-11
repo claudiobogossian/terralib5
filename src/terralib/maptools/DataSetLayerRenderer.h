@@ -61,43 +61,6 @@ namespace te
         ~DataSetLayerRenderer();
 
         void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
-
-      private:
-
-        /*!
-          \brief It draws the data set layer in the given canvas using the SRS informed.
-
-          The informed bounding box (bbox) is used to constraint the data set layer objects to be drawn.
-          Here, we assume that the given bbox was pre-processed. i.e. the bbox was clipped and contains the same projection of data set layer.
-
-          \param layer      The data set layer that will be drawn.
-          \param transactor A transactor that will be used to retrieve the data set objects.
-          \param canvas     The canvas were the data set layer objects will be drawn.
-          \param bbox       The interest area to render the map.
-          \param srid       The SRS to be used to draw the data set layer objects.
-
-          \note This method consider that the referenced data set contains vetorial data.
-        */
-        void drawGeometries(DataSetLayer* layer, te::da::DataSourceTransactor* transactor, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
-
-        /*!
-          \brief It draws the data set layer in the given canvas using the SRS informed.
-
-          The informed bounding box (bbox) is used to constraint the data set layer objects to be drawn.
-          Here, we assume that the given bbox was pre-processed. i.e. the bbox was clipped and contains the same projection of data set layer.
-
-          \param layer       The data set layer that will be drawn.
-          \param transactor  A transactor that will be used to retrieve the data set objects.
-          \param canvas      The canvas were the data set layer objects will be drawn.
-          \param bbox        The interest area to render the map.
-          \param visibleArea The original area requested to render the map.
-          \param srid        The SRS to be used to draw the data set layer objects.
-
-          \note The renderer will NOT take the owership of the given pointers.
-
-          \note This method consider that the referenced data set contains raster data.
-        */
-        void drawRaster(DataSetLayer* layer, te::da::DataSourceTransactor* transactor, Canvas* canvas, const te::gm::Envelope& bbox, const te::gm::Envelope& visibleArea, int srid);
     };
 
   } // end namespace map

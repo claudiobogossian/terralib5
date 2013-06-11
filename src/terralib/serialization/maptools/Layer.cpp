@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../common/Translator.h"
 #include "../../geometry/Envelope.h"
+#include "../../se/CoverageStyle.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "../../maptools/AbstractLayer.h"
@@ -476,7 +477,7 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
   /* has a Style Element ? */
   reader.next();
 
-  std::auto_ptr<te::se::Symbolizer> style;
+  std::auto_ptr<te::se::Style> style;
 
   if((reader.getNodeType() == te::xml::START_ELEMENT) &&
      (reader.getElementLocalName() == "Style"))
@@ -484,7 +485,7 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
     reader.next();
     assert(reader.getNodeType() == te::xml::START_ELEMENT);
 
-    style.reset(te::serialize::Symbolizer::getInstance().read(reader));
+    style.reset(te::serialize::Style::getInstance().read(reader));
 
     assert(reader.getNodeType() == te::xml::END_ELEMENT);
     assert(reader.getElementLocalName() == "Style");
@@ -503,7 +504,7 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
   layer->setRasterInfo(conninfo);
   layer->setVisibility(GetVisibility(visible));
   layer->setRendererType(rendererId);
-  layer->setStyle((te::se::RasterSymbolizer*)style.release());
+  layer->setStyle(dynamic_cast<te::se::CoverageStyle*>(style.release()));
 
   return layer.release();
 }
@@ -636,7 +637,7 @@ void RasterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wr
   {
     writer.writeStartElement("te_map:Style");
 
-    te::serialize::Symbolizer::getInstance().write(layer->getStyle(), writer);
+    te::serialize::Style::getInstance().write(layer->getStyle(), writer);
 
     writer.writeEndElement("te_map:Style");
   }

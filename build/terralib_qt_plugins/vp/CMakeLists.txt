@@ -33,6 +33,7 @@ set (
   ${SRCDIR}/AbstractAction.h
   ${SRCDIR}/AggregationAction.h
   ${SRCDIR}/BufferAction.h
+  ${SRCDIR}/GeneralGeographicOperationAction.h
   ${SRCDIR}/IntersectionAction.h
   ${SRCDIR}/TransformationAction.h
   
