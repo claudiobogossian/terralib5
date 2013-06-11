@@ -270,6 +270,19 @@ namespace te
     TESEEXPORT Symbolizer* CreateSymbolizer(const te::gm::GeomType& geomType);
 
     /*!
+      \brief Try creates an appropriate symbolizer based on given geometry type and a default color.
+
+      \param geomType The geometry type.
+      \param color     The fill color enconded hexadecimal i.e "#FF0000".
+
+      \return A symbolizer based on given geometry type.
+
+      \note The caller of this method will take the ownership of the returned pointer.
+      \note The method will return a NULL pointer if a default symbolizer could not be created.
+    */
+    TESEEXPORT Symbolizer* CreateSymbolizer(const te::gm::GeomType& geomType, const std::string& color);
+
+    /*!
       \brief Try creates an appropriate feature type style based on given geometry type.
 
       \param geomType The geometry type.
