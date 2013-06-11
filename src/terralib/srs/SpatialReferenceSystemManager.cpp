@@ -31,7 +31,6 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "Exception.h"
-#include "SpatialReferenceSystem.h"
 #include "SpatialReferenceSystemManager.h"
 #include "WKTReader.h"
 
@@ -129,23 +128,23 @@ bool te::srs::SpatialReferenceSystemManager::recognizes(unsigned int id, const s
   return (it != boost::multi_index::get<0>(m_set).end());
 }
 
-te::srs::SpatialReferenceSystem* te::srs::SpatialReferenceSystemManager::getSpatialReferenceSystem(unsigned int id, const std::string& authName) const
+std::auto_ptr<te::srs::SpatialReferenceSystem> te::srs::SpatialReferenceSystemManager::getSpatialReferenceSystem(unsigned int id, const std::string& authName) const
 {
   assert(id > 0);
   
   std::string wkt = getWkt(id,authName);
   if (wkt.empty())
-    return 0;
+    return std::auto_ptr<te::srs::SpatialReferenceSystem>();
   
   try
   {
-    return te::srs::WKTReader::read(wkt.c_str());
+    return std::auto_ptr<te::srs::SpatialReferenceSystem>(te::srs::WKTReader::read(wkt.c_str()));
   }
   catch(...)
   {
     throw te::srs::Exception(TR_SRS("Error parsing the registered CS WKT."));
   }
-  return 0;
+  return std::auto_ptr<te::srs::SpatialReferenceSystem>();
 }
 
 
