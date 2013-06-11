@@ -24,24 +24,55 @@
 */
 
 // TerraLib
+#include "../common/progress/TaskProgress.h"
 #include "../common/Translator.h"
+#include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "../dataaccess/query/And.h"
+#include "../dataaccess/query/DataSetName.h"
+#include "../dataaccess/query/Field.h"
+#include "../dataaccess/query/LiteralEnvelope.h"
+#include "../dataaccess/query/PropertyName.h"
+#include "../dataaccess/query/Select.h"
+#include "../dataaccess/query/ST_Intersects.h"
+#include "../dataaccess/query/Where.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../fe/Literal.h"
+#include "../geometry/GeometryProperty.h"
+#include "../geometry/Utils.h"
 #include "../memory/DataSet.h"
+#include "../raster/Grid.h"
+#include "../raster/Raster.h"
+#include "../raster/RasterProperty.h"
+#include "../raster/RasterSummary.h"
+#include "../raster/RasterSummaryManager.h"
+#include "../raster/Utils.h"
+#include "../se/CoverageStyle.h"
+#include "../se/FeatureTypeStyle.h"
 #include "../se/Fill.h"
+#include "../se/ImageOutline.h"
 #include "../se/ParameterValue.h"
 #include "../se/Stroke.h"
 #include "../se/SvgParameter.h"
+#include "../se/RasterSymbolizer.h"
+#include "../se/Rule.h"
 #include "../srs/Config.h"
-#include "../raster/Raster.h"
-#include "../raster/RasterProperty.h"
+#include "../srs/Converter.h"
+#include "Canvas.h"
+#include "CanvasConfigurer.h"
 #include "DataSetLayer.h"
 #include "Exception.h"
+#include "QueryEncoder.h"
+#include "RasterTransform.h"
+#include "RasterTransformConfigurer.h"
 #include "Utils.h"
+
+// Boost
+#include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
 
 // STL
 #include <cassert>
@@ -275,4 +306,364 @@ te::da::DataSet* te::map::DataSet2Memory(te::da::DataSet* dataset)
     throw Exception(TR_MAP("Could not copy the data set to memory!"));
 
   return new te::mem::DataSet(*dataset);
+}
+
+void te::map::DrawGeometries(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor,
+                             Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,
+                             int srid, te::se::FeatureTypeStyle* style)
+{
+  assert(type);
+  assert(type->hasGeom());
+  assert(transactor);
+  assert(canvas);
+  assert(bbox.isValid());
+  assert(style);
+
+  const std::string& datasetName = type->getName();
+  assert(!datasetName.empty());
+
+// for while, default geometry. TODO: need a visitor to get which properties the style references
+  te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(type);
+
+// create a canvas configurer
+  te::map::CanvasConfigurer cc(canvas);
+
+// number of rules defined on feature type style
+  std::size_t nRules = style->getRules().size();
+
+  for(std::size_t i = 0; i < nRules; ++i) // for each <Rule>
+  {
+// the current rule
+    const te::se::Rule* rule = style->getRule(i);
+    assert(rule);
+
+// TODO: should be verified the MinScaleDenominator and MaxScaleDenominator. Where will we put the current scale information? Method parameter?
+
+// gets the rule filter
+    const te::fe::Filter* filter = rule->getFilter();
+
+// let's retrieve the correct dataset
+    std::auto_ptr<te::da::DataSet> dataset(0);
+    if(!filter)
+    {
+// there isn't a Filter expression. Gets the dataset using only box restriction...
+      dataset.reset(transactor->getDataSet(datasetName, &bbox, te::gm::INTERSECTS));
+    }
+    else
+    {
+// get an enconder
+      te::map::QueryEncoder queryConverter; 
+
+// convert the Filter expression to a TerraLib Expression!
+      te::da::Expression* exp = queryConverter.getExpression(filter);
+      if(exp == 0)
+        throw Exception(TR_MAP("Could not convert the OGC Filter expression to TerraLib expression!"));
+
+/* 1) Creating te::da::Where object with this expression + box restriction */
+
+// the box restriction
+      te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, srid);
+      te::da::PropertyName* geometryPropertyName = new te::da::PropertyName(geometryProperty->getName());
+      te::da::ST_Intersects* intersects = new te::da::ST_Intersects(geometryPropertyName, lenv);
+
+// combining the expressions (Filter expression + box restriction)
+      te::da::And* finalRestriction = new te::da::And(exp, intersects);
+      
+      te::da::Where* wh = new te::da::Where(exp);
+      wh->setExp(finalRestriction);
+
+// fields
+      te::da::Fields* all = new te::da::Fields;
+      all->push_back(new te::da::Field("*"));
+
+// from
+      te::da::FromItem* fi = new te::da::DataSetName(datasetName);
+      te::da::From* from = new te::da::From;
+      from->push_back(fi);
+
+// build the Select
+      te::da::Select select(all, from, wh);
+
+/* 2) Calling the transactor query method to get the correct restricted dataset. */
+      dataset.reset(transactor->query(select));
+    }
+
+    if(dataset.get() == 0)
+      throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1%.")) % datasetName).str());
+
+    if(dataset->moveNext() == false)
+      continue;
+
+// get the set of symbolizers defined on current rule
+    const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
+    std::size_t nSymbolizers = symbolizers.size();
+
+// build task message; e.g. ("Drawing the dataset Countries. Rule 1 of 3.")
+    std::string message = TR_MAP("Drawing the dataset");
+    message += " " + datasetName + ". ";
+    message += TR_MAP("Rule");
+    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TR_MAP("of") + " ";
+    message += boost::lexical_cast<std::string>(nRules) + ".";
+
+// create a draw task
+    te::common::TaskProgress task(message, te::common::TaskProgress::DRAW);
+    //task.setTotalSteps(nSymbolizers * dataset->size()); // Removed! The te::da::DataSet size() method would be too costly to compute.
+
+    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
+    {
+// the current symbolizer
+      te::se::Symbolizer* symb = symbolizers[j];
+
+// let's config de canvas based on the current symbolizer
+      cc.config(symb);
+
+// for while, first geometry. TODO: get which property the symbolizer references
+      std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+
+// let's draw! for each data set geometry...
+      DrawGeometries(dataset.get(), gpos, canvas, bboxSRID, srid, &task);
+
+// prepare to draw the other symbolizer
+      dataset->moveFirst();
+
+    } // end for each <Symbolizer>
+
+  }   // end for each <Rule>
+}
+
+void te::map::DrawGeometries(te::da::DataSet* dataset, const std::size_t& gpos, Canvas* canvas, int fromSRID, int toSRID, te::common::TaskProgress* task)
+{
+  assert(dataset);
+  assert(canvas);
+
+// verify if is necessary convert the data set geometries to the given srid
+  bool needRemap = false;
+  if((fromSRID != TE_UNKNOWN_SRS) && (toSRID != TE_UNKNOWN_SRS) && (fromSRID != toSRID))
+    needRemap = true;
+
+  do
+  {
+    if(task)
+    {
+      if(!task->isActive())
+        return;
+
+      // update the draw task
+      task->pulse();
+    }
+
+    te::gm::Geometry* geom = 0;
+    try
+    {
+      geom = dataset->getGeometry(gpos);
+      if(geom == 0)
+        continue;
+    }
+    catch(std::exception& /*e*/)
+    {
+      continue;
+    }
+
+// if necessary, geometry remap
+    if(needRemap)
+    {
+      geom->setSRID(fromSRID);
+      geom->transform(toSRID);
+    }
+
+    canvas->draw(geom);
+
+    delete geom;
+
+  }while(dataset->moveNext()); // next geometry!
+}
+
+void te::map::DrawRaster(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor, Canvas* canvas,
+                         const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style)
+{
+  assert(type);
+  assert(type->hasRaster());
+  assert(transactor);
+  assert(canvas);
+  assert(bbox.isValid());
+  assert(visibleArea.isValid());
+  assert(style);
+
+  const std::string& datasetName = type->getName();
+  assert(!datasetName.empty());
+
+// for while, first raster property
+  te::rst::RasterProperty* rasterProperty = te::da::GetFirstRasterProperty(type);
+
+// retrieve the data set
+  std::auto_ptr<te::da::DataSet> dataset(transactor->getDataSet(datasetName, rasterProperty, &bbox, te::gm::INTERSECTS));
+  if(dataset.get() == 0)
+    throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1%.")) % datasetName).str());
+
+// retrieve the raster
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+  std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
+  if(dataset.get() == 0)
+    throw Exception((boost::format(TR_MAP("Could not retrieve the raster from the data set %1%.")) % datasetName).str());
+
+  DrawRaster(raster.get(), canvas, bbox, bboxSRID, visibleArea, srid, style);
+}
+
+void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,
+                         const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style)
+{
+  assert(raster);
+  assert(canvas);
+  assert(bbox.isValid());
+  assert(visibleArea.isValid());
+  assert(style);
+
+// build the grid canvas. i.e. a grid with canvas dimensions and requested mbr
+  te::gm::Envelope* gmbr = new te::gm::Envelope(visibleArea);
+  std::auto_ptr<te::rst::Grid> gridCanvas(new te::rst::Grid(static_cast<unsigned int>(canvas->getWidth()), static_cast<unsigned int>(canvas->getHeight()), gmbr, srid));
+
+// create a raster transform
+  RasterTransform rasterTransform(raster, 0);
+
+//check band data type
+  if(raster->getBandDataType(0) != te::dt::UCHAR_TYPE)
+  {
+    // raster min / max values
+    const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster, te::rst::SUMMARY_MIN);
+    const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster, te::rst::SUMMARY_MAX);
+    const std::complex<double>* cmin = rsMin->at(0).m_minVal;
+    const std::complex<double>* cmax = rsMax->at(0).m_maxVal;
+    double min = cmin->real();
+    double max = cmax->real();
+
+    // *** aqui temos a questão da variável global que diz se é para normalizar ou não os valores do raster ***
+    rasterTransform.setLinearTransfParameters(min, max, 0, 255);
+  }
+  else
+  {
+    rasterTransform.setLinearTransfParameters(0, 255, 0, 255);
+  }
+
+// get the raster symbolizer
+  std::size_t nRules = style->getRules().size();
+  assert(nRules >= 1);
+
+// for while, consider one rule
+  const te::se::Rule* rule = style->getRule(0);
+
+  const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
+  assert(!symbolizers.empty());
+
+// for while, consider one raster symbolizer
+  te::se::RasterSymbolizer* rasterSymbolizer = dynamic_cast<te::se::RasterSymbolizer*>(symbolizers[0]);
+  assert(rasterSymbolizer);
+
+// configure the raster transformation based on the raster symbolizer
+  RasterTransformConfigurer rtc(rasterSymbolizer, &rasterTransform);
+  rtc.configure();
+
+// verify if is necessary convert the raster to the given srid
+  bool needRemap = false;
+  if((bboxSRID != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (bboxSRID != srid))
+    needRemap = true;
+
+// build task message; e.g. ("Drawing the raster cbers_sao_jose_dos_campos.")
+  std::string message = TR_MAP("Drawing raster");
+  const std::string& rasterName = raster->getName();
+  !rasterName.empty() ? message += " " + raster->getName() + ". " : message += ".";
+
+// create the draw task
+  te::common::TaskProgress task(message, te::common::TaskProgress::DRAW, gridCanvas->getNumberOfRows());
+
+// create a RGBA array that will be drawn in the canvas. i.e. This array is the result of the render process.
+  //te::color::RGBAColor** rgba = new te::color::RGBAColor*[gridCanvas->getNumberOfRows()];
+
+// create a RGBA array that will be drawn in the canvas. i.e. This array represents a row of the render process.
+  te::color::RGBAColor** row = new te::color::RGBAColor*[1];
+  te::color::RGBAColor* columns = new te::color::RGBAColor[gridCanvas->getNumberOfColumns()];
+  row[0] = columns;
+
+// create a SRS converter
+  std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+    
+  if(needRemap)
+  {
+    converter->setSourceSRID(srid);
+    converter->setTargetSRID(bboxSRID);
+  }
+
+// fill the result RGBA array
+  for(unsigned int r = 0; r < gridCanvas->getNumberOfRows(); ++r)
+  {
+    for(unsigned int c = 0; c < gridCanvas->getNumberOfColumns(); ++c)
+    {
+      te::gm::Coord2D inputGeo = gridCanvas->gridToGeo(c, r);
+
+      if(needRemap)
+        converter->convert(inputGeo.x, inputGeo.y, inputGeo.x, inputGeo.y);
+
+      te::gm::Coord2D outputGrid = raster->getGrid()->geoToGrid(inputGeo.x, inputGeo.y);
+
+// TODO: round or truncate?
+      int x = te::rst::Round(outputGrid.x);
+      int y = te::rst::Round(outputGrid.y);
+
+      te::color::RGBAColor color(255, 255, 255, 0);
+
+      if((x >= 0 && x < (int)(raster->getNumberOfColumns())) &&
+         (y >= 0 && y < (int)(raster->getNumberOfRows())))
+           color = rasterTransform.apply(x, y);
+
+      columns[c] = color;
+    }
+
+    //rgba[r] = columns;
+
+    if(!task.isActive())
+    {
+// draw the part of result
+      //canvas->drawImage(0, 0, rgba, canvas->getWidth(), r + 1);
+      canvas->drawImage(0, r, row, canvas->getWidth(), 1);
+
+// free memory
+      //te::common::Free(rgba, r + 1);
+      te::common::Free(row, 1);
+
+      return;
+    }
+
+    canvas->drawImage(0, r, row, canvas->getWidth(), 1);
+
+    task.pulse();
+  }
+
+// put the result in the canvas
+  //canvas->drawImage(0, 0, rgba, canvas->getWidth(), canvas->getHeight());
+
+// free memory
+  //te::common::Free(rgba, gridCanvas->getNumberOfRows());
+  te::common::Free(row, 1);
+
+// image outline
+  if(rasterSymbolizer->getImageOutline() == 0)
+    return;
+
+// get the symbolizer that will be used to draw the image outline
+  te::se::Symbolizer* outlineSymbolizer = rasterSymbolizer->getImageOutline()->getSymbolizer();
+  if(outlineSymbolizer == 0)
+    return;
+
+// create a canvas configurer
+  te::map::CanvasConfigurer cc(canvas);
+  cc.config(outlineSymbolizer);
+
+// creates the image outline
+  std::auto_ptr<te::gm::Geometry> geom(te::gm::GetGeomFromEnvelope(raster->getExtent(), bboxSRID));
+  if(needRemap)
+  {
+    geom->setSRID(bboxSRID);
+    geom->transform(srid);
+  }
+
+  canvas->draw(geom.get());
 }
