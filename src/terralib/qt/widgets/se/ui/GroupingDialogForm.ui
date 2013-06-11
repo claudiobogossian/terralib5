@@ -91,6 +91,9 @@
          </item>
          <item row="0" column="3">
           <widget class="QPushButton" name="m_okPushButton">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="text">
             <string>Ok</string>
            </property>
@@ -127,12 +130,28 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>323</x>
-     <y>53</y>
+     <x>625</x>
+     <y>465</y>
     </hint>
     <hint type="destinationlabel">
      <x>360</x>
      <y>72</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_okPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>GroupingDialogForm</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>490</x>
+     <y>455</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>471</y>
     </hint>
    </hints>
   </connection>
