@@ -54,3 +54,8 @@ void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
 {
   m_groupingWidget->setLayer(layer);
 }
+
+std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingDialog::getGrouping()
+{
+  return m_groupingWidget->getGrouping();
+}

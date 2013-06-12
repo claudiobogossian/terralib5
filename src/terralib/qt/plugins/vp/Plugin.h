@@ -45,6 +45,7 @@ namespace te
         class BufferAction;
         class GeneralGeographicOperationAction;
         class IntersectionAction;
+        class SummarizationAction;
         class TransformationAction;
 
         class Plugin : public te::plugin::Plugin
@@ -81,6 +82,7 @@ namespace te
             te::qt::plugins::vp::BufferAction* m_buffer;    //!< Buffer Operation Action
             te::qt::plugins::vp::GeneralGeographicOperationAction* m_generalGeographicOperation;    //!< General Geographic Operation
             te::qt::plugins::vp::IntersectionAction* m_intersection;    //!< Intersection Operation Action
+            te::qt::plugins::vp::SummarizationAction* m_summarization;    //!< Summarization Operation Action
             te::qt::plugins::vp::TransformationAction* m_transformation;    //!< Transformation Operation Action
 
         };

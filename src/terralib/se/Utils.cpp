@@ -217,6 +217,13 @@ te::se::Description* te::se::CreateDescription(const std::string& title, const s
 
 te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType)
 {
+  std::string color = GenerateRandomColor();
+
+  return CreateSymbolizer(geomType, color);
+}
+
+te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType, const std::string& color)
+{
   switch(geomType)
   {
     case te::gm::GeometryType:
@@ -229,7 +236,7 @@ te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType)
     case te::gm::MultiPolygonZType:
     case te::gm::MultiPolygonZMType:
     {
-      te::se::Fill* fill = CreateFill(GenerateRandomColor(), "1.0");
+      te::se::Fill* fill = CreateFill(color, "1.0");
       te::se::Stroke* stroke = CreateStroke("#000000", "1");
       te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
       symbolizer->setFill(fill);
@@ -246,7 +253,7 @@ te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType)
     case te::gm::MultiLineStringZType:
     case te::gm::MultiLineStringZMType:
     {
-      te::se::Stroke* stroke = CreateStroke(GenerateRandomColor(), "1");
+      te::se::Stroke* stroke = CreateStroke(color, "1");
       te::se::LineSymbolizer* symbolizer = new te::se::LineSymbolizer;
       symbolizer->setStroke(stroke);
       return symbolizer;
@@ -261,7 +268,7 @@ te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType)
     case te::gm::MultiPointZType:
     case te::gm::MultiPointZMType:
     {
-      te::se::Fill* markFill = CreateFill(GenerateRandomColor(), "1.0");
+      te::se::Fill* markFill = CreateFill(color, "1.0");
       te::se::Stroke* markStroke = CreateStroke("#000000", "1");
       te::se::Mark* mark = CreateMark("circle", markStroke, markFill);
       te::se::Graphic* graphic = CreateGraphic(mark, "12", "", "");
