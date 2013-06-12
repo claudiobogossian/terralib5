@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/vp/qt/GeneralGeographicOperationDialog.h
+  \file terralib/vp/qt/BasicGeographicOperationDialog.h
 
-  \brief A dialog with general geographic operation
+  \brief A dialog with basic geographic operation
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
-#define __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
+#ifndef __TERRALIB_VP_INTERNAL_BASICGEOGRAPHICOPERATIONDIALOG_H
+#define __TERRALIB_VP_INTERNAL_BASICGEOGRAPHICOPERATIONDIALOG_H
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -41,7 +41,7 @@
 // Qt
 #include <QtGui/QDialog>
 
-namespace Ui { class GeneralGeographicOperationDialogForm; }
+namespace Ui { class BasicGeographicOperationDialogForm; }
 
 // Forward declarations
 class QListWidgetItem;
@@ -54,15 +54,15 @@ namespace te
 // Forward declarations
     class LayerTreeModel;
 
-    class TEVPEXPORT GeneralGeographicOperationDialog : public QDialog
+    class TEVPEXPORT BasicGeographicOperationDialog : public QDialog
     {
       Q_OBJECT
 
       public:
 
-        GeneralGeographicOperationDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+        BasicGeographicOperationDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-        ~GeneralGeographicOperationDialog();
+        ~BasicGeographicOperationDialog();
 
         /*!
           \brief Set the layer that can be used
@@ -83,7 +83,7 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::GeneralGeographicOperationDialogForm> m_ui;
+        std::auto_ptr<Ui::BasicGeographicOperationDialogForm> m_ui;
         te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
         te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
@@ -91,4 +91,4 @@ namespace te
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
+#endif  // __TERRALIB_VP_INTERNAL_BASICGEOGRAPHICOPERATIONDIALOG_H

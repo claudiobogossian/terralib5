@@ -58,9 +58,9 @@ te::vp::TransformationDialog::TransformationDialog(QWidget* parent, Qt::WindowFl
   m_ui->setupUi(this);
 
 // add icons
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-transformation-hint").pixmap(112,48));
+  //m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-transformation-hint").pixmap(112,48));
   
-  QSize iconSize(224, 96);
+  QSize iconSize(112,48);
 
   m_ui->m_multToSimpleRadioButton->setIconSize(iconSize);
   m_ui->m_multToSimpleRadioButton->setIcon(QIcon::fromTheme("transformation-multi-single"));
