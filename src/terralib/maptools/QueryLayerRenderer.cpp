@@ -40,8 +40,8 @@
 #include "../dataaccess/query/Where.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../geometry/Envelope.h"
-#include "../geometry/GeometryProperty.h"
 #include "../geometry/Geometry.h"
+#include "../geometry/GeometryProperty.h"
 #include "../geometry/Utils.h"
 #include "../se/CoverageStyle.h"
 #include "../se/FeatureTypeStyle.h"
@@ -78,46 +78,40 @@ void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
                                        const te::gm::Envelope& bbox,
                                        int srid)
 {
-// Is this a query dataset?
-  std::auto_ptr<te::map::QueryLayer> qLayer(dynamic_cast<te::map::QueryLayer*>(layer));
+// Is this a query layer?
+  te::map::QueryLayer* qlayer = dynamic_cast<te::map::QueryLayer*>(layer);
 
-  if(qLayer.get() == 0)
+  if(qlayer == 0)
     throw Exception(TR_MAP("Wrong type render type for this layer!"));
 
-  // check if layer extent intersects the drawing area and so compute bounding box intersection
+// check if layer extent intersects the drawing area and so compute bounding box intersection
   te::gm::Envelope reprojectedBBOX(bbox);
 
-  if((qLayer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS))
+  if((qlayer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS))
   {
-    reprojectedBBOX.transform(srid, qLayer->getSRID());
+    reprojectedBBOX.transform(srid, qlayer->getSRID());
   }
-  else if(qLayer->getSRID() != srid)
+  else if(qlayer->getSRID() != srid)
   {
     throw Exception(TR_MAP("The layer or map don't have a valid SRID!"));
   }
 
-  if(!reprojectedBBOX.intersects(qLayer->getExtent()))
+  if(!reprojectedBBOX.intersects(qlayer->getExtent()))
     return;
 
-  te::gm::Envelope ibbox = reprojectedBBOX.intersection(qLayer->getExtent());
-
-// retrieve the associated data source
-  te::da::DataSourcePtr ds = te::da::GetDataSource(qLayer->getDataSourceId(), true);
-
-// get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
-  assert(transactor.get());
+  te::gm::Envelope ibbox = reprojectedBBOX.intersection(qlayer->getExtent());
 
 // get dataset information
-  std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)qLayer->getSchema());
+  std::auto_ptr<const te::map::LayerSchema> schema(qlayer->getSchema());
+  assert(schema.get());
 
-  if(dsType->hasGeom())
+  if(schema->hasGeom())
   {
-    drawGeometries(qLayer, transactor, canvas, reprojectedBBOX, srid);
+    drawGeometries(qlayer, canvas, ibbox, srid);
   }
-  else if(dsType->hasRaster())
+  else if(schema->hasRaster())
   {
-    drawRaster(qLayer, transactor, canvas, reprojectedBBOX, bbox, srid);
+    drawRaster(qlayer, canvas, ibbox, bbox, srid);
   }
   else
   {
@@ -125,14 +119,13 @@ void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
   }
 }
 
-void te::map::QueryLayerRenderer::drawGeometries(std::auto_ptr<QueryLayer> layer, 
-                            std::auto_ptr<te::da::DataSourceTransactor> transactor, 
-                            Canvas* canvas, 
-                            const te::gm::Envelope& bbox, 
-                            int srid)
+void te::map::QueryLayerRenderer::drawGeometries(QueryLayer* layer,
+                                                 Canvas* canvas,
+                                                 const te::gm::Envelope& bbox, 
+                                                 int srid)
 {
-  std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)layer->getSchema());
-  assert(dsType.get());
+  std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
+  assert(schema.get());
 
 // verify if is necessary convert the data set geometries to the given srid
   bool needRemap = false;
@@ -140,8 +133,8 @@ void te::map::QueryLayerRenderer::drawGeometries(std::auto_ptr<QueryLayer> layer
     needRemap = true;
 
 // for while, default geometry. TODO: need a visitor to get which properties the style references
-  assert(dsType->hasGeom());
-  te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(dsType.get());
+  assert(schema->hasGeom());
+  te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(schema.get());
 
 // get the associated layer style
   te::se::Style* style = layer->getStyle();
@@ -183,49 +176,16 @@ void te::map::QueryLayerRenderer::drawGeometries(std::auto_ptr<QueryLayer> layer
     if(!filter)
     {
 // there isn't a Filter expression. Gets the dataset using only box restriction...
-      dataset = std::auto_ptr<te::da::DataSet>(transactor->getDataSet(dsType->getName(), geometryProperty, &bbox, te::gm::INTERSECTS));
+      dataset.reset(layer->getData(*geometryProperty, bbox, te::gm::INTERSECTS));
     }
     else
     {
-// get an enconder
-      te::map::QueryEncoder queryConverter;
-
-// convert the Filter expression to a TerraLib Expression!
-      te::da::Expression* exp = queryConverter.getExpression(filter);
-      if(exp == 0)
-        throw Exception(TR_MAP("Could not convert the OGC Filter expression to TerraLib expression!"));
-
-/* 1) Creating te::da::Where object with this expression + box restriction */
-
-// the box restriction
-      te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, srid);
-      te::da::PropertyName* geometryPropertyName = new te::da::PropertyName(geometryProperty->getName());
-      te::da::ST_Intersects* intersects = new te::da::ST_Intersects(geometryPropertyName, lenv);
-
-// combining the expressions (Filter expression + box restriction)
-      te::da::And* finalRestriction = new te::da::And(exp, intersects);
-      
-      te::da::Where* wh = new te::da::Where(exp);
-      wh->setExp(finalRestriction);
-
-// fields
-      te::da::Fields* all = new te::da::Fields;
-      all->push_back(new te::da::Field("*"));
-
-// from
-      te::da::FromItem* fi = new te::da::DataSetName(dsType->getName());
-      te::da::From* from = new te::da::From;
-      from->push_back(fi);
-
-// build the Select
-      te::da::Select select(all, from, wh);
-
-/* 2) Calling the transactor query method to get the correct restricted dataset. */
-      dataset = std::auto_ptr<te::da::DataSet>(transactor->query(select));
+      // TODO!
+      throw Exception(TR_MAP("No implemented yet!"));
     }
 
     if(dataset.get() == 0)
-      throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1% referenced by the layer %2%.")) % dsType->getName() % layer->getTitle()).str());
+      throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1% referenced by the layer %2%.")) % schema->getName() % layer->getTitle()).str());
 
     if(dataset->moveNext() == false)
       continue;
@@ -290,12 +250,10 @@ void te::map::QueryLayerRenderer::drawGeometries(std::auto_ptr<QueryLayer> layer
   }   // end for each <Rule>
 }
 
-void te::map::QueryLayerRenderer::drawRaster(std::auto_ptr<QueryLayer> layer, 
-                        std::auto_ptr<te::da::DataSourceTransactor> transactor, 
-                        Canvas* canvas, 
-                        const te::gm::Envelope& bbox, 
-                        const te::gm::Envelope& visibleArea, 
-                        int srid)
+void te::map::QueryLayerRenderer::drawRaster(QueryLayer* layer,
+                                             Canvas* canvas,
+                                             const te::gm::Envelope& bbox, 
+                                             const te::gm::Envelope& visibleArea, 
+                                             int srid)
 {
-  
 }
