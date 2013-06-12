@@ -39,6 +39,8 @@
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
+#include "../memory/DataSet.h"
+#include "../memory/DataSetItem.h"
 #include "../se/Style.h"
 #include "Exception.h"
 #include "QueryLayer.h"
@@ -49,6 +51,14 @@
 #include <memory>
 
 const std::string te::map::QueryLayer::sm_type("QUERYLAYER");
+
+std::string getOnlyPropertyName(std::string fullName)
+{
+  std::vector<std::string> tokens;
+  te::common::Tokenize(fullName, tokens, ".");
+
+  return tokens[1];
+}
 
 te::map::QueryLayer::QueryLayer(AbstractLayer* parent)
   : AbstractLayer(parent),
@@ -119,7 +129,33 @@ const te::map::LayerSchema* te::map::QueryLayer::getSchema(const bool full) cons
 te::da::DataSet* te::map::QueryLayer::getData(te::common::TraverseType /*travType*/, 
                                               te::common::AccessPolicy /*rwRole*/) const
 {
-  return 0;
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  te::da::DataSetType* dt = (te::da::DataSetType*)getSchema();
+
+  // Get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  assert(t.get());
+
+  te::da::DataSet* dset = t->query(m_query);
+
+  te::mem::DataSet* newDs = new te::mem::DataSet(dt);
+
+  while(dset->moveNext())
+  {
+    newDs->moveNext();
+    te::mem::DataSetItem* item = new te::mem::DataSetItem(newDs);
+    for(size_t i = 0; i < newDs->getNumProperties(); ++i)
+    {
+      std::vector<std::string> tokens;
+      te::common::Tokenize(newDs->getPropertyName(i), tokens, ".");
+
+      item->setValue(newDs->getPropertyName(i), dset->getValue(tokens[1]));
+    }
+    newDs->add(item);
+  }
+
+  return newDs;
 }
 
 te::da::DataSet* te::map::QueryLayer::getData(const te::gm::Envelope& /*e*/,

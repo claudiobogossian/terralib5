@@ -29,10 +29,20 @@
 // TerraLib
 #include "AbstractRenderer.h"
 
+// STL
+#include <memory>
+
 namespace te
 {
+  namespace da
+  {
+    class DataSourceTransactor;
+  }
+
   namespace map
   {
+    class QueryLayer;
+
     /*!
       \class QueryLayerRenderer
 
@@ -51,6 +61,21 @@ namespace te
         ~QueryLayerRenderer();
 
         void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+
+      private:
+
+        void drawGeometries(std::auto_ptr<QueryLayer> layer, 
+                            std::auto_ptr<te::da::DataSourceTransactor> transactor, 
+                            Canvas* canvas, 
+                            const te::gm::Envelope& bbox, 
+                            int srid);
+
+        void drawRaster(std::auto_ptr<QueryLayer> layer, 
+                        std::auto_ptr<te::da::DataSourceTransactor> transactor, 
+                        Canvas* canvas, 
+                        const te::gm::Envelope& bbox, 
+                        const te::gm::Envelope& visibleArea, 
+                        int srid);
     };
 
   } // end namespace map
