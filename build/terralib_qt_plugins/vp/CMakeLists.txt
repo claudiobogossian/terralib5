@@ -35,6 +35,7 @@ set (
   ${SRCDIR}/BufferAction.h
   ${SRCDIR}/GeneralGeographicOperationAction.h
   ${SRCDIR}/IntersectionAction.h
+  ${SRCDIR}/PolygonToLineAction.h
   ${SRCDIR}/SummarizationAction.h
   ${SRCDIR}/TransformationAction.h
 )

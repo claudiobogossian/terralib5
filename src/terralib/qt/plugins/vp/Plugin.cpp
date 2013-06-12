@@ -33,6 +33,7 @@
 #include "GeneralGeographicOperationAction.h"
 #include "IntersectionAction.h"
 #include "Plugin.h"
+#include "PolygonToLineAction.h"
 #include "SummarizationAction.h"
 #include "TransformationAction.h"
 
@@ -92,6 +93,7 @@ void te::qt::plugins::vp::Plugin::registerActions()
   m_buffer = new te::qt::plugins::vp::BufferAction(m_vpMenu);
   m_generalGeographicOperation = new te::qt::plugins::vp::GeneralGeographicOperationAction(m_vpMenu);
   m_intersection = new te::qt::plugins::vp::IntersectionAction(m_vpMenu);
+  m_polygonToLine = new te::qt::plugins::vp::PolygonToLineAction(m_vpMenu);
   m_summarization = new te::qt::plugins::vp::SummarizationAction(m_vpMenu);
   m_transformation = new te::qt::plugins::vp::TransformationAction(m_vpMenu);
 }
@@ -102,6 +104,7 @@ void  te::qt::plugins::vp::Plugin::unRegisterActions()
   delete m_buffer;
   delete m_generalGeographicOperation;
   delete m_intersection;
+  delete m_polygonToLine;
   delete m_summarization;
   delete m_transformation;
 }

@@ -76,6 +76,7 @@ set (
   ${SRCDIR}/qt/LayerItem.h
   ${SRCDIR}/qt/LayerTreeModel.h
   ${SRCDIR}/qt/LegendGroupItem.h
+  ${SRCDIR}/qt/PolygonToLineDialog.h
   ${SRCDIR}/qt/PropertyGroupItem.h  
   ${SRCDIR}/qt/PropertyItem.h
   ${SRCDIR}/qt/SummarizationDialog.h
