@@ -187,6 +187,7 @@ te::map::AbstractLayerPtr te::qt::widgets::QueryLayerBuilderWizard::getQueryLaye
   layer->setDataSourceId(m_ds->getId());
   layer->setRendererType("QUERY_LAYER_RENDERER");
   layer->setQuery(s);
+  layer->computeExtent();
 
   return layer;
 }

@@ -34,11 +34,6 @@
 
 namespace te
 {
-  namespace da
-  {
-    class DataSourceTransactor;
-  }
-
   namespace map
   {
     class QueryLayer;
@@ -48,7 +43,7 @@ namespace te
 
       \brief It renders the objects associated to a query layer.
 
-      \sa AbstractLayer, AbstractRenderer, CoverageStyleRenderer, FeatureTypeStyleRenderer, DataSetLayerRenderer, Canvas, te::se::Style
+      \sa AbstractLayer, AbstractRenderer, DataSetLayerRenderer, Canvas, te::se::Style, QueryLayer
     */
     class TEMAPEXPORT QueryLayerRenderer : public AbstractRenderer
     {
@@ -64,14 +59,12 @@ namespace te
 
       private:
 
-        void drawGeometries(std::auto_ptr<QueryLayer> layer, 
-                            std::auto_ptr<te::da::DataSourceTransactor> transactor, 
+        void drawGeometries(QueryLayer* layer,
                             Canvas* canvas, 
                             const te::gm::Envelope& bbox, 
                             int srid);
 
-        void drawRaster(std::auto_ptr<QueryLayer> layer, 
-                        std::auto_ptr<te::da::DataSourceTransactor> transactor, 
+        void drawRaster(QueryLayer* layer, 
                         Canvas* canvas, 
                         const te::gm::Envelope& bbox, 
                         const te::gm::Envelope& visibleArea, 
