@@ -243,6 +243,11 @@ namespace te
             */
             void equalStep();
 
+          signals:
+
+            void colorBarChanged();
+
+
           protected:
 
             te::color::ColorBar* m_colorBar;       //!< Color map information

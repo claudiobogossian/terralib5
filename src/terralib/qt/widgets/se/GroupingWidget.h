@@ -126,6 +126,7 @@ namespace te
 
           void onAttrComboBoxActivated(int idx);
 
+          void onColorBarChanged();
 
         private:
 

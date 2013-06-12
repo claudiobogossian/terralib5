@@ -38,6 +38,7 @@ te::map::GroupingItem::GroupingItem(const std::string& from, const std::string& 
 te::map::GroupingItem::~GroupingItem()
 {
   te::common::FreeContents(m_symbolizers);
+  m_symbolizers.clear();
 }
 
 te::map::GroupingItem::GroupingItem(const GroupingItem& rhs)
@@ -123,5 +124,8 @@ std::vector<te::se::Symbolizer*>& te::map::GroupingItem::getSymbolizers()
 
 void te::map::GroupingItem::setSymbolizers(std::vector<te::se::Symbolizer*> symbolizers)
 {
+  te::common::FreeContents(m_symbolizers);
+  m_symbolizers.clear();
+
   m_symbolizers = symbolizers;
 }

@@ -58,6 +58,7 @@ te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags
   l->addWidget(m_colorBar);
 
 //connects
+  connect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onColorBarChanged()));
   connect(m_ui->m_typeComboBox, SIGNAL(activated(int)), this, SLOT(onTypeComboBoxActivated(int)));
   connect(m_ui->m_attrComboBox, SIGNAL(activated(int)), this, SLOT(onAttrComboBoxActivated(int)));
 
@@ -359,6 +360,16 @@ void te::qt::widgets::GroupingWidget::onTypeComboBoxActivated(int idx)
 void te::qt::widgets::GroupingWidget::onAttrComboBoxActivated(int idx)
 {
   int attrType = m_ui->m_attrComboBox->itemData(idx).toInt();
+}
+
+void te::qt::widgets::GroupingWidget::onColorBarChanged()
+{
+  if(m_layer.get())
+  {
+    buildSymbolizer();
+
+    updateUi();
+  }
 }
 
 void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType)
