@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/GeneralGeographicOperationAction.cpp
+  \file terralib/qt/plugins/vp/PolygonToLineAction.cpp
 
-  \brief This file defines the GeneralGeographicOperation class
+  \brief This file defines the PolygonToLineAction class
 */
 
 // Terralib
-#include "../../../vp/qt/GeneralGeographicOperationDialog.h"
+#include "../../../vp/qt/PolygonToLineDialog.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/Project.h"
-#include "GeneralGeographicOperationAction.h"
+#include "PolygonToLineAction.h"
 
 // Qt
 #include <QtCore/QObject>
@@ -35,19 +35,19 @@
 // STL
 #include <memory>
 
-te::qt::plugins::vp::GeneralGeographicOperationAction::GeneralGeographicOperationAction(QMenu* menu)
+te::qt::plugins::vp::PolygonToLineAction::PolygonToLineAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("General Geographic Operation...").toStdString());
+  createAction(tr("Polygon to Line...").toStdString());
 }
 
-te::qt::plugins::vp::GeneralGeographicOperationAction::~GeneralGeographicOperationAction()
+te::qt::plugins::vp::PolygonToLineAction::~PolygonToLineAction()
 {
 }
 
-void te::qt::plugins::vp::GeneralGeographicOperationAction::onActionActivated(bool checked)
+void te::qt::plugins::vp::PolygonToLineAction::onActionActivated(bool checked)
 {
-  te::vp::GeneralGeographicOperationDialog dlg(0);
+  te::vp::PolygonToLineDialog dlg(0);
 
   // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();

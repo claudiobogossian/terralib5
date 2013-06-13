@@ -177,6 +177,14 @@ namespace te
         */
         void setStyle(te::se::Style* style);
 
+        void computeExtent();
+
+      private:
+
+         te::da::DataSet* getData(te::da::Select* query,
+                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                  te::common::AccessPolicy rwRole = te::common::RAccess) const;
+
       private:
 
         std::string m_datasourceId;     //!< The DataSource associated to this Layer2.

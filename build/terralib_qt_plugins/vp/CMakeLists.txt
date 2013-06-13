@@ -32,11 +32,12 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/AbstractAction.h
   ${SRCDIR}/AggregationAction.h
+  ${SRCDIR}/BasicGeographicOperationAction.h
   ${SRCDIR}/BufferAction.h
-  ${SRCDIR}/GeneralGeographicOperationAction.h
   ${SRCDIR}/IntersectionAction.h
+  ${SRCDIR}/PolygonToLineAction.h
+  ${SRCDIR}/SummarizationAction.h
   ${SRCDIR}/TransformationAction.h
-  
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/vp" MOC)
 
