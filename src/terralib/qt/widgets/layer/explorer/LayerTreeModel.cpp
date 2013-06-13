@@ -34,6 +34,7 @@
 #include "LayerTreeModel.h"
 
 // Qt
+#include <QtGui/QMessageBox>
 #include <QtCore/QMimeData>
 #include <QtCore/QStringList>
 
@@ -279,6 +280,12 @@ QMimeData* te::qt::widgets::LayerTreeModel::mimeData(const QModelIndexList& inde
 {
   if(indexes.empty())
     return 0;
+
+  if(indexes.count() > 1)
+  {
+    QMessageBox::warning(0, tr("Operation Not Allowed"), tr("Only one layer at a time can be dragged!"));
+    return 0;
+  }
 
   const QModelIndex& lindex = indexes.first();
 
