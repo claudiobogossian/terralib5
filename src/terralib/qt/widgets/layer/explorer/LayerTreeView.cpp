@@ -95,7 +95,7 @@ class te::qt::widgets::LayerTreeView::Impl
 
       if(selectedLayers.empty())
       {
-// if no layers were selected, we only show the NO_LAYER_SELECTED actions
+        // if no layers were selected, we only show the NO_LAYER_SELECTED actions
         for(std::list<tuple_type>::const_iterator it = m_menus.begin();
             it != m_menus.end();
             ++it)
@@ -113,7 +113,7 @@ class te::qt::widgets::LayerTreeView::Impl
       }
       else if(selectedLayers.size() == 1)
       {
-// If just one layer is selected we show their actions
+        // If just one layer is selected we show their actions
         QString layerType(QString::fromStdString(selectedLayers.front()->getLayer()->getType()));
 
         for(std::list<tuple_type>::const_iterator it = m_menus.begin();
@@ -134,10 +134,10 @@ class te::qt::widgets::LayerTreeView::Impl
       }
       else
       {
-// if more than one layer is selected we must look for common actions depending on the layer types
+        // if more than one layer is selected we must look for common actions depending on the layer types
         std::map<std::string, std::vector<QAction*> > actionsByLayerType;
 
-// determine the layer types
+        // determine the layer types
         for(std::list<AbstractLayerTreeItem*>::const_iterator it = selectedLayers.begin();
             it != selectedLayers.end();
             ++it)
@@ -147,7 +147,7 @@ class te::qt::widgets::LayerTreeView::Impl
           actionsByLayerType[layer->getType()] = std::vector<QAction*>();
         }
 
-// add actions to each group
+        // add actions to each group
         for(std::list<tuple_type>::const_iterator it = m_menus.begin();
             it != m_menus.end();
             ++it)
@@ -177,27 +177,26 @@ class te::qt::widgets::LayerTreeView::Impl
           }
         }
 
-// determine the common list of actions
-        std::size_t k = 0;
-        std::vector<QAction*> commonActions;
-        std::vector<QAction*>::iterator outIt;
+        // determine the common list of actions
+        std::vector<std::vector<QAction*> > setVec;
         for(std::map<std::string, std::vector<QAction*> >::iterator it = actionsByLayerType.begin();
-            it != actionsByLayerType.end();
-            ++it)
+            it != actionsByLayerType.end(); ++it)
         {
-          if(k == 0)
-            commonActions = it->second;
-          else
-          {
-            outIt = std::set_intersection(commonActions.begin(), commonActions.end(),
-                                          it->second.begin(),it->second.end(), commonActions.begin());
-
-          }
-          commonActions.resize(outIt - commonActions.begin());
-          ++k;
+          setVec.push_back(it->second);
         }
 
-// add the actions to the popup menu
+        std::vector<QAction*> commonActions = setVec[0];
+        for(std::size_t i = 1; i < setVec.size(); ++i)
+        {
+          std::vector<QAction*> intersect;
+          std::set_intersection(commonActions.begin(), commonActions.end(),
+                                setVec[i].begin(), setVec[i].end(),
+                                std::inserter(intersect, intersect.begin()));
+
+          commonActions = intersect;
+        }
+
+        // add the actions to the popup menu
         for(std::size_t i = 0; i < commonActions.size(); ++ i)
           menu.addAction(commonActions[i]);
       }
