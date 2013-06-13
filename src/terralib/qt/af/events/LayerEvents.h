@@ -26,6 +26,7 @@
 #ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_LAYEREVENTS_H
 #define __TERRALIB_QT_AF_EVENTS_INTERNAL_LAYEREVENTS_H
 
+#include "../../../maptools/Enums.h"
 #include "Event.h"
 #include "Enums.h"
 

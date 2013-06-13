@@ -18,49 +18,50 @@
  */
 
 /*!
-  \file terralib/qt/af/events/Enums.h
+  \file terralib/qt/plugins/vp/PolygonToLineAction.h
 
-  \brief Enumerations for the TerraLib Application Framework.
+  \brief This file defines the PolygonToLine class
 */
 
-#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
-#define __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
+#ifndef __TE_QT_PLUGINS_VP_INTERNAL_POLYGONTOLINEACTION_H
+#define __TE_QT_PLUGINS_VP_INTERNAL_POLYGONTOLINEACTION_H
 
 // TerraLib
-#include "Event.h"
+#include "Config.h"
+#include "AbstractAction.h"
 
 namespace te
 {
   namespace qt
   {
-    namespace af
+    namespace plugins
     {
-      namespace evt
+      namespace vp
       {
-        enum
+        /*!
+          \class PolygonToLineAction
+
+          \brief This class register the contrast action into VP Plugin.
+
+        */
+        class PolygonToLineAction : public te::qt::plugins::vp::AbstractAction
         {
-          APP_CLOSED,
-          TOOLBAR_ADDED,
-          DISPLAY_RESIZED,
-          LAYER_ADDED,
-          LAYER_SELECTED,
-          LAYER_VISIBILITY_CHANGED,
-          LAYER_SELECTION_CHANGED,
-          TOOL_CHANGED,
-          COORDINATE_TRACKED,
-          POINT_GEOMETRIES,
-          VISIBLE_BBOX_CHANGED,
-          STYLE_CHANGED,
-          PROJECT_ADDED,
-          PROJECT_UNSAVED,
-          MAP_SRID_CHANGED,
-          CUSTOM = 1024
+          Q_OBJECT
+
+          public:
+
+            PolygonToLineAction(QMenu* menu);
+
+            virtual ~PolygonToLineAction();
+
+          protected slots:
+
+            virtual void onActionActivated(bool checked);
         };
 
-      } // end namespace evt
-    }   // end namespace af
-  }     // end namesopace qt
+      } // end namespace vp
+    }   // end namespace plugins
+  }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
-
+#endif //__TE_QT_PLUGINS_VP_INTERNAL_POLYGONTOLINEACTION_H

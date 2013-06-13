@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/vp/GeneralGeographicOperationDialog.cpp
+  \file terralib/vp/BasicGeographicOperationDialog.cpp
 
   \brief A dialog with general geographic operation
 */
@@ -36,8 +36,8 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
 #include "../core/Exception.h"
-#include "GeneralGeographicOperationDialog.h"
-#include "ui_GeneralGeoraphicOperationDialogForm.h"
+#include "BasicGeographicOperationDialog.h"
+#include "ui_BasicGeographicOperationDialogForm.h"
 #include "VectorProcessingConfig.h"
 
 // Qt
@@ -48,9 +48,9 @@
 #include <QtGui/QListWidgetItem>
 #include <QtGui/QMessageBox>
 
-te::vp::GeneralGeographicOperationDialog::GeneralGeographicOperationDialog(QWidget* parent, Qt::WindowFlags f)
+te::vp::BasicGeographicOperationDialog::BasicGeographicOperationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::GeneralGeographicOperationDialogForm),
+    m_ui(new Ui::BasicGeographicOperationDialogForm),
     m_layers(std::list<te::map::AbstractLayerPtr>()),
     m_selectedLayer(0)
 {
@@ -58,7 +58,6 @@ te::vp::GeneralGeographicOperationDialog::GeneralGeographicOperationDialog(QWidg
   m_ui->setupUi(this);
 
 // add icons
-  /*m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-buffer-hint").pixmap(112,48));*/
 
   QSize iconSize(32, 32);
 
@@ -86,11 +85,11 @@ te::vp::GeneralGeographicOperationDialog::GeneralGeographicOperationDialog(QWidg
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 }
 
-te::vp::GeneralGeographicOperationDialog::~GeneralGeographicOperationDialog()
+te::vp::BasicGeographicOperationDialog::~BasicGeographicOperationDialog()
 {
 }
 
-void te::vp::GeneralGeographicOperationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
+void te::vp::BasicGeographicOperationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
   
@@ -103,17 +102,17 @@ void te::vp::GeneralGeographicOperationDialog::setLayers(std::list<te::map::Abst
   }
 }
 
-void te::vp::GeneralGeographicOperationDialog::onHelpPushButtonClicked()
+void te::vp::BasicGeographicOperationDialog::onHelpPushButtonClicked()
 {
   QMessageBox::information(this, "Help", "Under development");
 }
 
-void te::vp::GeneralGeographicOperationDialog::onOkPushButtonClicked()
+void te::vp::BasicGeographicOperationDialog::onOkPushButtonClicked()
 {
   QMessageBox::information(this, "Ok", "Under development");
 }
 
-void te::vp::GeneralGeographicOperationDialog::onCancelPushButtonClicked()
+void te::vp::BasicGeographicOperationDialog::onCancelPushButtonClicked()
 {
   reject();
 }

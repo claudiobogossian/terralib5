@@ -26,6 +26,8 @@
 // TerraLib
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess/dataset/DataSetType.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../geometry/GeometryProperty.h"
@@ -62,6 +64,13 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
   layer->setDataSourceId(m_datasourceId);
   layer->setVisibility(te::map::NOT_VISIBLE);
   layer->setRendererType("DATASET_LAYER_RENDERER");
+
+  if(dataset->size() == 0)
+  {
+    te::da::DataSourcePtr ds(te::da::DataSourceManager::getInstance().find(m_datasourceId));
+    std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
+    te::da::LoadProperties(dataset.get(), transactor.get());
+  }
 
   if(dataset->hasGeom())
   {

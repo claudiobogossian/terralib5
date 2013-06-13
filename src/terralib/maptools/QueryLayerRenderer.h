@@ -29,16 +29,21 @@
 // TerraLib
 #include "AbstractRenderer.h"
 
+// STL
+#include <memory>
+
 namespace te
 {
   namespace map
   {
+    class QueryLayer;
+
     /*!
       \class QueryLayerRenderer
 
       \brief It renders the objects associated to a query layer.
 
-      \sa AbstractLayer, AbstractRenderer, CoverageStyleRenderer, FeatureTypeStyleRenderer, DataSetLayerRenderer, Canvas, te::se::Style
+      \sa AbstractLayer, AbstractRenderer, DataSetLayerRenderer, Canvas, te::se::Style, QueryLayer
     */
     class TEMAPEXPORT QueryLayerRenderer : public AbstractRenderer
     {
@@ -51,6 +56,19 @@ namespace te
         ~QueryLayerRenderer();
 
         void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+
+      private:
+
+        void drawGeometries(QueryLayer* layer,
+                            Canvas* canvas, 
+                            const te::gm::Envelope& bbox, 
+                            int srid);
+
+        void drawRaster(QueryLayer* layer, 
+                        Canvas* canvas, 
+                        const te::gm::Envelope& bbox, 
+                        const te::gm::Envelope& visibleArea, 
+                        int srid);
     };
 
   } // end namespace map

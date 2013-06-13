@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/plugins/vp/GeneralGeographicOperationAction.h
+  \file terralib/qt/plugins/vp/BasicGeographicOperationAction.h
 
-  \brief This file defines the GeneralGeographicOperation class
+  \brief This file defines the BasicGeographicOperation class
 */
 
-#ifndef __TE_QT_PLUGINS_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONACTION_H
-#define __TE_QT_PLUGINS_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONACTION_H
+#ifndef __TE_QT_PLUGINS_VP_INTERNAL_BASICGEOGRAPHICOPERATIONACTION_H
+#define __TE_QT_PLUGINS_VP_INTERNAL_BASICGEOGRAPHICOPERATIONACTION_H
 
 // TerraLib
 #include "Config.h"
@@ -39,20 +39,20 @@ namespace te
       namespace vp
       {
         /*!
-          \class GeneralGeographicOperationAction
+          \class BasicGeographicOperationAction
 
           \brief This class register the contrast action into VP Plugin.
 
         */
-        class GeneralGeographicOperationAction : public te::qt::plugins::vp::AbstractAction
+        class BasicGeographicOperationAction : public te::qt::plugins::vp::AbstractAction
         {
           Q_OBJECT
 
           public:
 
-            GeneralGeographicOperationAction(QMenu* menu);
+            BasicGeographicOperationAction(QMenu* menu);
 
-            virtual ~GeneralGeographicOperationAction();
+            virtual ~BasicGeographicOperationAction();
 
           protected slots:
 
@@ -64,4 +64,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONACTION_H
+#endif //__TE_QT_PLUGINS_VP_INTERNAL_BASICGEOGRAPHICOPERATIONACTION_H

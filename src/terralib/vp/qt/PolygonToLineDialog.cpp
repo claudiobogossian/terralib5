@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/vp/TransformationDialog.cpp
+  \file terralib/vp/PolygonToLineDialog.cpp
 
-  \brief A dialog for transformation operation
+  \brief A dialog for polygon to line operation
 */
 
 // TerraLib
@@ -36,8 +36,8 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
 #include "../core/Exception.h"
-#include "TransformationDialog.h"
-#include "ui_TransformationDialogForm.h"
+#include "PolygonToLineDialog.h"
+#include "ui_PolygonToLineDialogForm.h"
 #include "VectorProcessingConfig.h"
 
 // Qt
@@ -48,9 +48,9 @@
 #include <QtGui/QListWidgetItem>
 #include <QtGui/QMessageBox>
 
-te::vp::TransformationDialog::TransformationDialog(QWidget* parent, Qt::WindowFlags f)
+te::vp::PolygonToLineDialog::PolygonToLineDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::TransformationDialogForm),
+    m_ui(new Ui::PolygonToLineDialogForm),
     m_layers(std::list<te::map::AbstractLayerPtr>()),
     m_selectedLayer(0)
 {
@@ -58,17 +58,7 @@ te::vp::TransformationDialog::TransformationDialog(QWidget* parent, Qt::WindowFl
   m_ui->setupUi(this);
 
 // add icons
-  //m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-transformation-hint").pixmap(112,48));
-  
-  QSize iconSize(112,48);
-
-  m_ui->m_multToSimpleRadioButton->setIconSize(iconSize);
-  m_ui->m_multToSimpleRadioButton->setIcon(QIcon::fromTheme("transformation-multi-single"));
-
-  m_ui->m_simpleToMultRadioButton->setIconSize(iconSize);
-  m_ui->m_simpleToMultRadioButton->setIcon(QIcon::fromTheme("transformation-single-multi"));
-
-  m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));  
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-polygon-line-hint").pixmap(112,48));
 
 //signals
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
@@ -76,11 +66,11 @@ te::vp::TransformationDialog::TransformationDialog(QWidget* parent, Qt::WindowFl
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
 }
 
-te::vp::TransformationDialog::~TransformationDialog()
+te::vp::PolygonToLineDialog::~PolygonToLineDialog()
 {
 }
 
-void te::vp::TransformationDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
+void te::vp::PolygonToLineDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
   
@@ -93,17 +83,17 @@ void te::vp::TransformationDialog::setLayers(std::list<te::map::AbstractLayerPtr
   }
 }
 
-void te::vp::TransformationDialog::onHelpPushButtonClicked()
+void te::vp::PolygonToLineDialog::onHelpPushButtonClicked()
 {
   QMessageBox::information(this, "Help", "Under development");
 }
 
-void te::vp::TransformationDialog::onOkPushButtonClicked()
+void te::vp::PolygonToLineDialog::onOkPushButtonClicked()
 {
   QMessageBox::information(this, "Ok", "Under development");
 }
 
-void te::vp::TransformationDialog::onCancelPushButtonClicked()
+void te::vp::PolygonToLineDialog::onCancelPushButtonClicked()
 {
   reject();
 }
