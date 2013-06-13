@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_da="http://www.terralib.org/schemas/dataaccess"
+<xsd:schema xmlns:te_map="http://www.terralib.org/schemas/maptools"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://www.terralib.org/schemas/dataaccess"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
-
+			
   <xsd:annotation>
     <xsd:appinfo>Data Access - Select Schema</xsd:appinfo>
     <xsd:documentation>A simple schema for the Select part of data access module</xsd:documentation>
   </xsd:annotation>
 
+  <xsd:import namespace="http://www.terralib.org/schemas/datatype" schemaLocation="../datatype/datatype.xsd" />
+  
   <xsd:element name="Select" type="te_da:SelectType" />
 
   <xsd:complexType name="SelectType">
