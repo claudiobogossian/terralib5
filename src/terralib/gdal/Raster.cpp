@@ -57,13 +57,15 @@
 
 te::gdal::Raster::Raster()
   : te::rst::Raster(0),
-    m_gdataset(0)
+    m_gdataset(0),
+    m_deleter( 0 )
 {
 }
 
 te::gdal::Raster::Raster(const std::string& rinfo, te::common::AccessPolicy p)
   : te::rst::Raster(0, p),
-    m_gdataset(0)
+    m_gdataset(0),
+    m_deleter( 0 )
 {
   GDALAllRegister();
 
@@ -81,7 +83,8 @@ te::gdal::Raster::Raster(te::rst::Grid* grid,
                          const std::vector<te::rst::BandProperty*>& bprops,
                          const std::map<std::string, std::string>& optParams,
                          te::common::AccessPolicy p)
-  : te::rst::Raster(grid, p)
+  : te::rst::Raster(grid, p),
+    m_deleter( 0 )
 {
   create(grid, bprops, optParams, 0, 0);
 }
@@ -100,7 +103,7 @@ te::gdal::Raster::Raster(GDALDataset* gdataset, te::common::AccessPolicy p)
 te::gdal::Raster::Raster(const Raster& rhs)
   : te::rst::Raster(rhs),
     m_gdataset(0),
-    m_bands(0)
+    m_deleter( 0 )    
 {
   if(rhs.m_gdataset)
   {

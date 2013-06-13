@@ -103,14 +103,28 @@ namespace te
           /*! \brief Updates the widget form based on internal fill element. */
           void updateUi();
 
-          void setDataSetType(std::auto_ptr<te::da::DataSetType> dsType);
+          void setDataSetType();
 
-          void setGrouping(te::map::Grouping* grouping);
+          void setGrouping();
+
+          void getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType);
+
+          void getDataAsString(std::vector<std::string>& vec, const std::string& attrName);
+
+          int getGeometryType();
+
+          void buildSymbolizer();
+
+          void listAttributes();
 
 
         public slots:
 
           void onApplyPushButtonClicked();
+
+          void onTypeComboBoxActivated(int idx);
+
+          void onAttrComboBoxActivated(int idx);
 
 
         private:

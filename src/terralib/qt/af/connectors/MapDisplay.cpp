@@ -39,6 +39,7 @@
 #include "../../widgets/tools/CoordTracking.h"
 #include "../../widgets/Utils.h"
 #include "../events/LayerEvents.h"
+#include "../events/MapEvents.h"
 #include "../events/ProjectEvents.h"
 #include "../events/ToolEvents.h"
 #include "../ApplicationController.h"
@@ -51,6 +52,7 @@
 
 // STL
 #include <cassert>
+#include <utility>
 
 te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   : QObject(display),
@@ -133,6 +135,10 @@ void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& la
         continue;
 
       m_display->setSRID(layer->getSRID(), false);
+
+      std::pair<int, std::string> srid(layer->getSRID(), "EPSG");
+      te::qt::af::evt::MapSRIDChanged mapSRIDChagned(srid);
+      ApplicationController::getInstance().broadcast(&mapSRIDChagned);
 
       break;
     }

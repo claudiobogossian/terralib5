@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/vp/qt/GeneralGeographicOperationDialog.h
+  \file terralib/vp/qt/SummarizationDialog.h
 
-  \brief A dialog with general geographic operation
+  \brief A dialog summarization operation
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
-#define __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
+#ifndef __TERRALIB_VP_INTERNAL_SUMMARIZATIONDIALOG_H
+#define __TERRALIB_VP_INTERNAL_SUMMARIZATIONDIALOG_H
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -41,7 +41,7 @@
 // Qt
 #include <QtGui/QDialog>
 
-namespace Ui { class GeneralGeographicOperationDialogForm; }
+namespace Ui { class SummarizationDialogForm; }
 
 // Forward declarations
 class QListWidgetItem;
@@ -54,20 +54,20 @@ namespace te
 // Forward declarations
     class LayerTreeModel;
 
-    class TEVPEXPORT GeneralGeographicOperationDialog : public QDialog
+    class TEVPEXPORT SummarizationDialog : public QDialog
     {
       Q_OBJECT
 
       public:
 
-        GeneralGeographicOperationDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+        SummarizationDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-        ~GeneralGeographicOperationDialog();
+        ~SummarizationDialog();
 
         /*!
           \brief Set the layer that can be used
 
-          \param layers   List of AbstractLayerPtr
+          \param layers List of AbstractLayerPtr
         */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
@@ -83,12 +83,12 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::GeneralGeographicOperationDialogForm> m_ui;
+        std::auto_ptr<Ui::SummarizationDialogForm> m_ui;
         te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
+        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for summarization
     };
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
+#endif  // __TERRALIB_VP_INTERNAL_SUMMARIZATIONDIALOG_H

@@ -68,9 +68,10 @@
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/SymbolizerExplorer.h"
-#include "events/LayerEvents.h"
-#include "events/ProjectEvents.h"
 #include "events/ApplicationEvents.h"
+#include "events/LayerEvents.h"
+#include "events/MapEvents.h"
+#include "events/ProjectEvents.h"
 #include "events/ToolEvents.h"
 #include "settings/SettingsDialog.h"
 #include "ApplicationController.h"
@@ -282,6 +283,18 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
       te::qt::af::evt::CoordinateTracked* e = static_cast<te::qt::af::evt::CoordinateTracked*>(evt);
       QString text = "(" + QString::number(e->m_x, 'f', 5) + " , " + QString::number(e->m_y, 'f', 5) + ")";
       m_coordinateLineEdit->setText(text);
+    }
+    break;
+
+    case te::qt::af::evt::MAP_SRID_CHANGED:
+    {
+      te::qt::af::evt::MapSRIDChanged* e = static_cast<te::qt::af::evt::MapSRIDChanged*>(evt);
+
+      std::pair<int, std::string> srid = e->m_srid;
+
+      QString sridText(srid.second.c_str());
+      sridText += ":" + QString::number(srid.first);
+      m_mapSRIDLineEdit->setText(sridText);
     }
     break;
 
@@ -701,7 +714,12 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
 
     dlg.setLayer(l);
 
-    dlg.exec();
+    if(dlg.exec() == QDialog::Accepted)
+    {
+      std::auto_ptr<te::map::Grouping> grouping = dlg.getGrouping();
+
+      l->setGrouping(grouping.release());
+    }
   }
   catch(const std::exception& e)
   {
@@ -718,11 +736,11 @@ void te::qt::af::BaseApplication::onMapSRIDTriggered()
     return;
 
   std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
-  m_display->getDisplay()->setSRID(srid.first);
 
-  QString sridText(srid.second.c_str());
-  sridText += ":" + QString::number(srid.first);
-  m_mapSRIDLineEdit->setText(sridText);
+  te::qt::af::evt::MapSRIDChanged mapSRIDChagned(srid);
+  ApplicationController::getInstance().broadcast(&mapSRIDChagned);
+
+  m_display->getDisplay()->setSRID(srid.first);
 }
 
 void te::qt::af::BaseApplication::onDrawTriggered()
@@ -989,7 +1007,7 @@ void te::qt::af::BaseApplication::makeDialog()
   lexplorer->getTreeView()->add(m_layerNewLayerGroup, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
   lexplorer->getTreeView()->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
@@ -1142,7 +1160,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_helpAbout, "", "Help.About", tr("&About..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Project- actions
-  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, false, m_menubar);
+  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, false, m_menubar);
   initAction(m_projectProperties, "", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   initAction(m_projectAddLayerDataset, "", "Project.Add Layer.Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);

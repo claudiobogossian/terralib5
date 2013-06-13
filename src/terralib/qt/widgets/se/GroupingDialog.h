@@ -41,6 +41,8 @@ namespace Ui { class GroupingDialogForm; }
 
 namespace te
 {
+  namespace map { class Grouping; }
+
   namespace qt
   {
     namespace widgets
@@ -74,6 +76,8 @@ namespace te
         public:
 
           void setLayer(te::map::AbstractLayerPtr layer);
+
+          std::auto_ptr<te::map::Grouping> getGrouping();
 
         private:
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GeneralGeographicOperationDialogForm</class>
- <widget class="QDialog" name="GeneralGeographicOperationDialogForm">
+ <class>BasicGeographicOperationDialogForm</class>
+ <widget class="QDialog" name="BasicGeographicOperationDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>General Geographic Operation Operation</string>
+   <string>Basic Geographic Operation</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_9">
    <item row="0" column="0">
@@ -47,7 +47,7 @@
            </font>
           </property>
           <property name="text">
-           <string>General Geographic Operation</string>
+           <string>Basic Geographic Operation</string>
           </property>
          </widget>
         </item>
@@ -169,7 +169,7 @@
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>Line Length</string>
+             <string>Line</string>
             </property>
            </widget>
           </item>
@@ -179,7 +179,7 @@
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>Perimeter of Polygons</string>
+             <string>Perimeter</string>
             </property>
            </widget>
           </item>
