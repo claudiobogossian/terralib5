@@ -32,6 +32,8 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../maptools/FolderLayer.h"
+#include "../../maptools/Grouping.h"
+#include "../../maptools/GroupingItem.h"
 #include "../../maptools/QueryLayer.h"
 #include "../../maptools/RasterLayer.h"
 #include "../../se/RasterSymbolizer.h"
@@ -43,6 +45,7 @@
 
 // STL
 #include <cassert>
+#include <memory>
 
 // Boost
 #include <boost/algorithm/string/case_conv.hpp>
@@ -59,20 +62,203 @@ void RasterLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& wri
 
 te::map::Visibility GetVisibility(const std::string& visible)
 {
-  return (visible == "VISIBLE") ?
-    te::map::VISIBLE :
-    (visible == "NOT_VISIBLE") ?
-      te::map::NOT_VISIBLE :
-      te::map::PARTIALLY_VISIBLE;
+  return (visible == "VISIBLE") ? te::map::VISIBLE :
+         (visible == "NOT_VISIBLE") ? te::map::NOT_VISIBLE :
+         te::map::PARTIALLY_VISIBLE;
 }
 
 std::string GetVisibility(const te::map::Visibility& visible)
 {
-  return (visible == te::map::VISIBLE) ?
-    "VISIBLE" :
-    (visible == te::map::NOT_VISIBLE) ?
-      "NOT_VISIBLE" :
-      "PARTIALLY_VISIBLE";
+  return (visible == te::map::VISIBLE) ? "VISIBLE" :
+         (visible == te::map::NOT_VISIBLE) ? "NOT_VISIBLE" :
+         "PARTIALLY_VISIBLE";
+}
+
+te::map::GroupingType GetGroupingType(const std::string& type)
+{
+  if(type == "EQUAL_STEPS")
+    return te::map::EQUAL_STEPS;
+
+  if(type == "QUANTIL")
+    return te::map::QUANTIL;
+
+  if(type == "STD_DEVIATION")
+    return te::map::STD_DEVIATION;
+
+  assert(type == "UNIQUE_VALUE");
+
+  return te::map::UNIQUE_VALUE;
+}
+
+std::string ReadLayerTitle(te::xml::Reader& reader)
+{
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Title");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string title = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  return title;
+}
+
+std::string ReadLayerVisibility(te::xml::Reader& reader)
+{
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Visible");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string visible = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  return visible;
+}
+
+te::map::GroupingItem* ReadGroupingItem(te::xml::Reader& reader)
+{
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "GroupingItem");
+
+  std::auto_ptr<te::map::GroupingItem> item(new te::map::GroupingItem);
+
+  /* Title */
+  assert(reader.getElementLocalName() == "Title");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string title = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  item->setTitle(title);
+
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+
+  if(reader.getElementLocalName() == "From")
+  {
+    /* From */
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    std::string fromValue = reader.getElementValue();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+    item->setLowerLimit(fromValue);
+
+    reader.next();
+
+    /* To */
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "To");
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    std::string toValue = reader.getElementValue();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+    item->setUpperLimit(toValue);
+
+    reader.next();
+  }
+  else
+  {
+    /* Value */
+    assert(reader.getElementLocalName() == "Value");
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    std::string value = reader.getElementValue();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+    item->setValue(value);
+
+    reader.next();
+  }
+
+  /* Symbolizers */
+  std::vector<te::se::Symbolizer*> symbs;
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "Symbolizer")
+  {
+    symbs.push_back(te::serialize::Symbolizer::getInstance().read(reader));
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
+  item->setSymbolizers(symbs);
+
+  return item.release();
+}
+
+te::map::Grouping* ReadLayerGrouping(te::xml::Reader& reader)
+{
+  if(reader.getElementLocalName() != "Grouping")
+    return 0;
+
+  /* Property Name */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PropertyName");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string propertyName = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  /* Grouping Type */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Type");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string type = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  /* Precision */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Precision");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  double precision = reader.getElementValueAsDouble();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  std::auto_ptr<te::map::Grouping> g(new te::map::Grouping(propertyName, GetGroupingType(type), precision));
+
+  reader.next();
+  if(reader.getElementLocalName() == "StandardDeviation")
+  {
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    double stdDeviation = reader.getElementValueAsDouble();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    
+    g->setStdDeviation(stdDeviation);
+
+    reader.next();
+  }
+
+  /* Grouping Items */
+  std::vector<te::map::GroupingItem*> items;
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "GroupingItem")
+  {
+    items.push_back(ReadGroupingItem(reader));
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
+  g->setGroupingItens(items);
+
+  return g.release();
 }
 
 void te::serialize::Layer::reg(const std::string& layerType, const LayerFnctSerializeType& fncts)
@@ -126,23 +312,11 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
 
   /* Title Element */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Title");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string title = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  std::string title = ReadLayerTitle(reader);
 
   /* Visible Element */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Visible");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string visible = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  std::string visible = ReadLayerVisibility(reader);
 
   /* DataSetName Element */
   reader.next();
@@ -231,23 +405,11 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
 
  /* Title Element */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Title");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string title = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  std::string title = ReadLayerTitle(reader);
 
   /* Visible Element */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Visible");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string visible = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  std::string visible = ReadLayerVisibility(reader);
 
   /* Query Element */
   reader.next();
@@ -336,23 +498,11 @@ te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader)
 
   /* Title Element */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Title");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string title = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  std::string title = ReadLayerTitle(reader);
 
   /* Visible Element */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Visible");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string visible = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  std::string visible = ReadLayerVisibility(reader);
 
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -392,25 +542,13 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
 
   /* Title Element */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Title");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string title = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  std::string title = ReadLayerTitle(reader);
 
   /* Visible Element */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Visible");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string visible = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  std::string visible = ReadLayerVisibility(reader);
 
-/* ConnectionInfo Element */
+  /* ConnectionInfo Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ConnectionInfo");

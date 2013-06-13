@@ -183,6 +183,8 @@ void te::qt::widgets::GroupingDialog::onPushButtonClicked()
 
       cs->setGrayChannel(scGray);
     }
+
+    cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
   }
 
   accept();

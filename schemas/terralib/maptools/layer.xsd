@@ -33,6 +33,7 @@
     <xsd:sequence>
       <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Visible" type="te_map:VisibilityType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Grouping" type="te_map:GroupingType" minOccurs="0" maxOccurs="1" />
     </xsd:sequence>
     <xsd:attribute name="id" type="xsd:string" use="required" />
   </xsd:complexType>
@@ -106,7 +107,6 @@
     <xsd:choice minOccurs="1" maxOccurs="1">
       <xsd:element ref="se:FeatureTypeStyle" />
       <xsd:element ref="se:CoverageStyle" />
-	  <xsd:element ref="se:Symbolizer" />
     </xsd:choice>
   </xsd:complexType>
 
@@ -118,6 +118,43 @@
       <xsd:enumeration value="VISIBLE" />
       <xsd:enumeration value="NOT_VISIBLE" />
       <xsd:enumeration value="PARTIALLY_VISIBLE" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:element name="Grouping" type="te_map:GroupingType" />
+
+  <xsd:complexType name="GroupingType">
+    <xsd:sequence>
+      <xsd:element name="PropertyName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Type" type="te_map:GroupingMethodType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Precision" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="StandardDeviation" type="xsd:double" minOccurs="0" maxOccurs="1" />
+      <xsd:element ref="te_map:GroupingItem" minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="GroupingItem" type="te_map:GroupingItemType" />
+
+  <xsd:complexType name="GroupingItemType">
+    <xsd:sequence>
+      <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:choice minOccurs="1" maxOccurs="1">
+        <xsd:sequence>
+          <xsd:element name="From" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="To" type="xsd:string" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:element name="Value" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      </xsd:choice>
+      <xsd:element ref="se:Symbolizer" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="GroupingMethodType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="EQUAL_STEPS" />
+      <xsd:enumeration value="QUANTIL" />
+      <xsd:enumeration value="STD_DEVIATION" />
+      <xsd:enumeration value="UNIQUE_VALUE" />
     </xsd:restriction>
   </xsd:simpleType>
 
