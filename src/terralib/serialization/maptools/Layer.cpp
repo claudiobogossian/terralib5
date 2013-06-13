@@ -256,7 +256,7 @@ te::map::Grouping* ReadLayerGrouping(te::xml::Reader& reader)
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
   reader.next();
 
-  g->setGroupingItens(items);
+  g->setGroupingItems(items);
 
   return g.release();
 }
