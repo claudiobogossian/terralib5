@@ -35,6 +35,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <limits>
+#include <memory>
 
 // boost
 #include <boost/math/special_functions/binomial.hpp>
@@ -650,6 +651,12 @@ double te::gm::GTFilter::getPt1ConvexHullArea(const std::vector< GTParameters::T
         tiePoints[ tiePointsIdx ].first.y ) );
     }
     
-    return ( (te::gm::Surface*)points.convexHull() )->getArea();
+    std::auto_ptr< te::gm::Surface > convexHullPtr( 
+      (te::gm::Surface*)points.convexHull() );
+    
+    if( convexHullPtr.get() )
+      return convexHullPtr->getArea();
+    else
+      return 0;
   }
 }

@@ -174,8 +174,8 @@ te::da::DataSet* te::map::QueryLayer::getData(const te::dt::Property& p,
   te::da::Expression* exp = wh->getExp()->clone();
 
   // The final restriction: original restriction expression + extent restriction
-  te::da::And* and = new te::da::And(exp, intersects);
-  wh->setExp(and);
+  te::da::And* andop = new te::da::And(exp, intersects);
+  wh->setExp(andop);
 
   return getData(select.get(), travType, rwRole);
 }
