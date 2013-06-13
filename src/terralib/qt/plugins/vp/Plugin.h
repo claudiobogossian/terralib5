@@ -42,9 +42,11 @@ namespace te
       namespace vp
       {
         class AggregationAction;
+		class BasicGeographicOperationAction;
         class BufferAction;
-        class GeneralGeographicOperationAction;
         class IntersectionAction;
+        class PolygonToLineAction;
+        class SummarizationAction;
         class TransformationAction;
 
         class Plugin : public te::plugin::Plugin
@@ -78,9 +80,11 @@ namespace te
             QMenu* m_vpMenu;                                    //!< VP Main Menu registered.
 
             te::qt::plugins::vp::AggregationAction* m_aggregation;    //!< Aggregation Operation Action
-            te::qt::plugins::vp::BufferAction* m_buffer;    //!< Buffer Operation Action
-            te::qt::plugins::vp::GeneralGeographicOperationAction* m_generalGeographicOperation;    //!< General Geographic Operation
+            te::qt::plugins::vp::BasicGeographicOperationAction* m_basicGeographicOperation;    //!< Basic Geographic Operation
+			te::qt::plugins::vp::BufferAction* m_buffer;    //!< Buffer Operation Action
             te::qt::plugins::vp::IntersectionAction* m_intersection;    //!< Intersection Operation Action
+            te::qt::plugins::vp::PolygonToLineAction* m_polygonToLine;    //!< Polygon to Line Operation Action
+            te::qt::plugins::vp::SummarizationAction* m_summarization;    //!< Summarization Operation Action
             te::qt::plugins::vp::TransformationAction* m_transformation;    //!< Transformation Operation Action
 
         };

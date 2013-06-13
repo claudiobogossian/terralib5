@@ -1002,7 +1002,7 @@ void te::qt::af::BaseApplication::makeDialog()
   lexplorer->getTreeView()->add(m_layerNewLayerGroup, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
   lexplorer->getTreeView()->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
@@ -1155,7 +1155,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_helpAbout, "", "Help.About", tr("&About..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Project- actions
-  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, false, m_menubar);
+  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, false, m_menubar);
   initAction(m_projectProperties, "", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   initAction(m_projectAddLayerDataset, "", "Project.Add Layer.Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);

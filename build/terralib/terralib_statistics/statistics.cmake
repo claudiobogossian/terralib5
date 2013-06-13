@@ -8,7 +8,7 @@ if(QT4_FOUND)
   set (TE_DEP_LIBS ${QT_LIBRARIES})
 endif()
 
-find_package(Boost ${_Boost_VERSION} COMPONENTS date_time filesystem system REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS filesystem system REQUIRED)
 if(Boost_FOUND)
   list (APPEND TE_DEP_LIBS ${Boost_LIBRARIES})
   list (APPEND TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
@@ -39,8 +39,7 @@ list (APPEND TE_DEP_LIBS
 	terralib_maptools
 	terralib_memory
 	terralib_qt_widgets
-    terralib_plugin
-	terralib_symbology
+    	terralib_plugin
 )
 
 # Files to process.
@@ -48,7 +47,7 @@ list (APPEND TE_DEP_LIBS
 set (
   _DIRS
   .
-  qt
+#  qt
   core
 )
 
@@ -67,22 +66,11 @@ getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 set (MOC "")
 
 # Select the header files for moc'ing
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/qt/AggregationDialog.h
-  ${SRCDIR}/qt/BasicGeographicOperationDialog.h
-  ${SRCDIR}/qt/BufferDialog.h
-  ${SRCDIR}/qt/IntersectionDialog.h
-  ${SRCDIR}/qt/LayerItem.h
-  ${SRCDIR}/qt/LayerTreeModel.h
-  ${SRCDIR}/qt/LegendGroupItem.h
-  ${SRCDIR}/qt/PolygonToLineDialog.h
-  ${SRCDIR}/qt/PropertyGroupItem.h  
-  ${SRCDIR}/qt/PropertyItem.h
-  ${SRCDIR}/qt/SummarizationDialog.h
-  ${SRCDIR}/qt/TransformationDialog.h
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/vp/qt" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/qt/.../h
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/vp/qt" MOC)
 
 # Select the FORMS widgets
 file(
@@ -98,14 +86,13 @@ qt4_wrap_ui(UI ${FORMS})
 
 install (
   FILES ${UI}
-  DESTINATION terralib/vp/ui
+  DESTINATION terralib/statistics/ui
   COMPONENT HEADERS
 )
 
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI})
 
-set(VP_IMAGES "${ROOT}/resources/images/svg" CACHE STRING "Path to Vector Processing images.")
 
 # Include directory of the image files
 list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
@@ -117,6 +104,6 @@ set (TE_AUX_DIRS ${TE_AUX_DIRS} "${CMAKE_CURRENT_BINARY_DIR}" PARENT_SCOPE)
 list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}" "${qt_pb_headers_MOC}" "${qt_pb_resources_RCC}")
 
 #exporting module information
-exportModuleInformation("vp" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")
+exportModuleInformation("statistics" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")
 
-configure_file (VectorProcessingConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/VectorProcessingConfig.h)
+configure_file (StatisticsConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/StatisticsConfig.h)

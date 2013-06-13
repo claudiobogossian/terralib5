@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/vp/qt/GeneralGeographicOperationDialog.h
+  \file terralib/vp/qt/PolygonToLineDialog.h
 
-  \brief A dialog with general geographic operation
+  \brief A dialog polygon to line operation
 */
 
-#ifndef __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
-#define __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
+#ifndef __TERRALIB_VP_INTERNAL_POLYGONTOLINEDIALOG_H
+#define __TERRALIB_VP_INTERNAL_POLYGONTOLINEDIALOG_H
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -41,7 +41,7 @@
 // Qt
 #include <QtGui/QDialog>
 
-namespace Ui { class GeneralGeographicOperationDialogForm; }
+namespace Ui { class PolygonToLineDialogForm; }
 
 // Forward declarations
 class QListWidgetItem;
@@ -54,15 +54,15 @@ namespace te
 // Forward declarations
     class LayerTreeModel;
 
-    class TEVPEXPORT GeneralGeographicOperationDialog : public QDialog
+    class TEVPEXPORT PolygonToLineDialog : public QDialog
     {
       Q_OBJECT
 
       public:
 
-        GeneralGeographicOperationDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+        PolygonToLineDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-        ~GeneralGeographicOperationDialog();
+        ~PolygonToLineDialog();
 
         /*!
           \brief Set the layer that can be used
@@ -83,7 +83,7 @@ namespace te
 
       private:
 
-        std::auto_ptr<Ui::GeneralGeographicOperationDialogForm> m_ui;
+        std::auto_ptr<Ui::PolygonToLineDialogForm> m_ui;
         te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
         te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
@@ -91,4 +91,4 @@ namespace te
   }   // end namespace vp
 }     // end namespace te
 
-#endif  // __TERRALIB_VP_INTERNAL_GENERALGEOGRAPHICOPERATIONDIALOG_H
+#endif  // __TERRALIB_VP_INTERNAL_POLYGONTOLINEDIALOG_H

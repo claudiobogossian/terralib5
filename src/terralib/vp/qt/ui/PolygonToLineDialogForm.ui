@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SummarizationDialogForm</class>
- <widget class="QDialog" name="SummarizationDialogForm">
+ <class>PolygonToLineDialogForm</class>
+ <widget class="QDialog" name="PolygonToLineDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>540</height>
+    <width>327</width>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Summarization Operation</string>
+   <string>Polygon to Line Operation</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_8">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_5">
-     <item row="0" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_7">
+     <item row="0" column="0">
       <widget class="QFrame" name="frame_2">
        <property name="styleSheet">
         <string notr="true">QWidget { background: white }</string>
@@ -37,11 +37,25 @@
         <property name="horizontalSpacing">
          <number>9</number>
         </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="m_datasourceTypeTitleLabel">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Polygon to Line operation</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="1">
          <widget class="QLabel" name="m_imgLabel">
           <property name="minimumSize">
            <size>
-            <width>62</width>
+            <width>112</width>
             <height>48</height>
            </size>
           </property>
@@ -56,190 +70,45 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="m_datasourceTypeTitleLabel">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>The summarization operation is applied by two layers</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QGroupBox" name="m_inputLayerForGroupBox">
-       <property name="minimumSize">
-        <size>
-         <width>306</width>
-         <height>70</height>
-        </size>
-       </property>
-       <property name="title">
-        <string>Input layer to assign data to</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <widget class="QComboBox" name="m_inputLayerForComboBox"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="m_onlySelectedForCheckBox">
-          <property name="text">
-           <string>Only Selected</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="1" rowspan="3">
-      <widget class="QGroupBox" name="m_outputAttribGroupBox">
-       <property name="minimumSize">
-        <size>
-         <width>306</width>
-         <height>297</height>
-        </size>
-       </property>
-       <property name="title">
-        <string>Output Attributes</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_4">
-            <item>
-             <widget class="QLabel" name="m_selectAllLabel">
-              <property name="text">
-               <string>Select all:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="m_rejectAllLabel">
-              <property name="text">
-               <string>Reject all:</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Input polygon layer</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QComboBox" name="m_layersComboBox"/>
           </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
-            <item>
-             <widget class="QComboBox" name="m_selectAllComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="m_onlySelectedCheckBox">
+            <property name="text">
+             <string>Only Selected</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Filter:</string>
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QComboBox" name="m_rejectAllComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="m_filterLineEdit"/>
             </item>
            </layout>
           </item>
          </layout>
-        </item>
-        <item>
-         <widget class="QListWidget" name="m_outputListWidget">
-          <property name="selectionMode">
-           <enum>QAbstractItemView::MultiSelection</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QGroupBox" name="m_inputLayerFromGroupBox">
-       <property name="minimumSize">
-        <size>
-         <width>306</width>
-         <height>70</height>
-        </size>
-       </property>
-       <property name="title">
-        <string>Input layer to assign data from</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_7">
-        <item row="0" column="0">
-         <widget class="QComboBox" name="m_inputLayerFromComboBox"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="m_onlySelectedFromCheckBox">
-          <property name="text">
-           <string>Only Selected</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QGroupBox" name="m_spatialRelationshipGroupBox">
-       <property name="minimumSize">
-        <size>
-         <width>306</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="title">
-        <string>Spatial Relationship</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QRadioButton" name="m_insideRadioButton">
-          <property name="text">
-           <string>Inside</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QRadioButton" name="m_inCoveredRadioButton">
-          <property name="text">
-           <string>Inside or Covered by</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QRadioButton" name="m_intersectsRadioButton">
-          <property name="text">
-           <string>Intersects</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QRadioButton" name="m_crossesRadioButton">
-          <property name="text">
-           <string>Crosses</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="4" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1">
-       <property name="spacing">
-        <number>9</number>
-       </property>
-       <item>
+        </widget>
+       </item>
+       <item row="1" column="0">
         <widget class="QGroupBox" name="m_advancedOptionsGroupBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -296,8 +165,8 @@
          </layout>
         </widget>
        </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_2">
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="m_outputGroupBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -305,7 +174,7 @@
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Output</string>
+          <string>Output line layer</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="1" column="0">
@@ -363,15 +232,15 @@
        </item>
       </layout>
      </item>
-     <item row="5" column="0" colspan="2">
+     <item row="2" column="0">
       <widget class="Line" name="line_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
-     <item row="6" column="0" colspan="2">
-      <layout class="QGridLayout" name="gridLayout_4">
+     <item row="3" column="0">
+      <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
         <widget class="QPushButton" name="m_helpPushButton">
          <property name="text">
