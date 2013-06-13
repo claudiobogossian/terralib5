@@ -81,12 +81,12 @@ void te::map::Grouping::setNumSlices(size_t numSlices)
   m_numSlices = numSlices;
 }
 
-const float te::map::Grouping::getStdDeviation() const
+const double te::map::Grouping::getStdDeviation() const
 {
   return m_stdDeviation;
 }
 
-void te::map::Grouping::setStdDeviation(float stdDeviation)
+void te::map::Grouping::setStdDeviation(double stdDeviation)
 {
   m_stdDeviation = stdDeviation;
 }
