@@ -714,12 +714,7 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
 
     dlg.setLayer(l);
 
-    if(dlg.exec() == QDialog::Accepted)
-    {
-      std::auto_ptr<te::map::Grouping> grouping = dlg.getGrouping();
-
-      l->setGrouping(grouping.release());
-    }
+    dlg.exec();
   }
   catch(const std::exception& e)
   {

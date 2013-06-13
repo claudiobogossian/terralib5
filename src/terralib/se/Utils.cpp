@@ -367,6 +367,29 @@ te::se::RasterSymbolizer* te::se::CreateRasterSymbolizer(const std::size_t& nBan
   return rasterSymbolizer;
 }
 
+te::se::RasterSymbolizer* te::se::GetRasterSymbolizer(te::se::Style* s)
+{
+  assert(s);
+
+  std::size_t nRules = s->getRules().size();
+
+  if(nRules <= 0)
+    return 0;
+
+  // for while, consider one rule
+  const te::se::Rule* r = s->getRule(0);
+
+  const std::vector<te::se::Symbolizer*> symbolizers = r->getSymbolizers();
+
+  if(symbolizers.empty())
+    return 0;
+
+  // for while, consider one raster symbolizer
+  te::se::RasterSymbolizer* rasterSymbolizer = dynamic_cast<te::se::RasterSymbolizer*>(symbolizers[0]);
+
+  return rasterSymbolizer;
+}
+
 std::string te::se::GenerateRandomColor()
 {
   te::color::ColorTransform t;

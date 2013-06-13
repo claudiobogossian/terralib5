@@ -30,7 +30,7 @@
 
 
 te::map::GroupingItem::GroupingItem(const std::string& from, const std::string& to)
-  : m_from(from), m_to(to),m_count(0), m_title("")
+  : m_from(from), m_to(to), m_count(0), m_title("")
 {
 
 }
@@ -42,8 +42,8 @@ te::map::GroupingItem::~GroupingItem()
 }
 
 te::map::GroupingItem::GroupingItem(const GroupingItem& rhs)
-  : m_from(rhs.m_from), m_to(rhs.m_to), m_count(rhs.m_count),
-    m_title(rhs.m_title)
+  : m_from(rhs.m_from), m_to(rhs.m_to), m_value(rhs.m_value),
+    m_count(rhs.m_count), m_title(rhs.m_title)
 {
   for(size_t t = 0; t < rhs.m_symbolizers.size(); ++t)
   {
@@ -57,6 +57,7 @@ te::map::GroupingItem& te::map::GroupingItem::operator=(const GroupingItem& rhs)
   {
     m_from = rhs.m_from;
     m_to = rhs.m_to;
+    m_value = rhs.m_value;
     m_count = rhs.m_count;
     m_title = rhs.m_title;
 
@@ -67,6 +68,16 @@ te::map::GroupingItem& te::map::GroupingItem::operator=(const GroupingItem& rhs)
   }
 
   return *this;
+}
+
+const std::string& te::map::GroupingItem::getValue() const
+{
+  return m_value;
+}
+
+void te::map::GroupingItem::setValue(const std::string& value)
+{
+  m_value = value;
 }
 
 const std::string& te::map::GroupingItem::getLowerLimit() const
@@ -93,10 +104,12 @@ std::string te::map::GroupingItem::getTitle()
 {
   if(m_title.empty() == true)
   {
-    if(m_from.empty() == false && m_to.empty() == false)
+    if(m_value.empty() == false)
+      m_title = m_value;
+    else if(m_from.empty() == false && m_to.empty() == false)
       m_title = m_from + " - " + m_to;
-    else if(m_to.empty() == true)
-      m_title = m_from;
+    else 
+      m_title = "";
   }
 
   return m_title;

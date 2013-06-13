@@ -26,20 +26,21 @@
 // TerraLib
 
 #include "../../../color/ColorBar.h"
-#include "../../widgets/colorbar/ColorBar.h"
-#include "../../../se/ColorMap.h"
-#include "../../../se/Categorize.h"
-#include "../../../se/Interpolate.h"
-#include "../../../se/InterpolationPoint.h"
-#include "../../../se/ParameterValue.h"
-#include "ColorMapWidget.h"
+#include "../../../common/STLUtils.h"
 #include "../../../datatype.h"
 #include "../../../maptools/GroupingAlgorithms.h"
+#include "../../../maptools/Utils.h"
 #include "../../../raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
-#include "../../../common/STLUtils.h"
-#include "../../../maptools/Utils.h"
+#include "../../../se/ColorMap.h"
+#include "../../../se/Categorize.h"
+#include "../../../se/Enums.h"
+#include "../../../se/Interpolate.h"
+#include "../../../se/InterpolationPoint.h"
+#include "../../../se/ParameterValue.h"
+#include "../../widgets/colorbar/ColorBar.h"
+#include "ColorMapWidget.h"
 #include "ui_ColorMapWidgetForm.h"
 
 // Qt
@@ -69,13 +70,15 @@ te::qt::widgets::ColorMapWidget::ColorMapWidget(QWidget* parent, Qt::WindowFlags
   initialize();
 
   // Signals & slots
-  connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
+  connect(m_cbWidget, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_bandComboBox, SIGNAL(activated(QString)), this, SLOT(onBandSelected(QString)));
 }
 
 te::qt::widgets::ColorMapWidget::~ColorMapWidget()
 {
   delete m_cb;
+
+  delete m_cm;
 }
 
 void te::qt::widgets::ColorMapWidget::setRaster(te::rst::Raster* r)
@@ -87,7 +90,6 @@ void te::qt::widgets::ColorMapWidget::setRaster(te::rst::Raster* r)
   int nBands = m_raster->getNumberOfBands();
 
   m_ui->m_bandComboBox->clear();
-  m_ui->m_bandComboBox->addItem("");
 
   for(int i = 0; i < nBands; ++i)
   {
@@ -96,20 +98,33 @@ void te::qt::widgets::ColorMapWidget::setRaster(te::rst::Raster* r)
 
     m_ui->m_bandComboBox->addItem(strBand);
   }
+
+  if(nBands > 0)
+    onBandSelected(m_ui->m_bandComboBox->itemText(0));
 }
 
 void te::qt::widgets::ColorMapWidget::setColorMap(te::se::ColorMap* cm) 
 {
   assert(cm);
 
-  m_cm = cm;
+  m_cm = cm->clone();
 
   updateUi();
 }
 
 te::se::ColorMap* te::qt::widgets::ColorMapWidget::getColorMap()
 {
-  return m_cm;
+  return m_cm->clone();
+}
+
+std::string te::qt::widgets::ColorMapWidget::getCurrentBand()
+{
+  if(m_ui->m_bandComboBox->count() != 0)
+  {
+    return m_ui->m_bandComboBox->currentText().toStdString();
+  }
+
+  return "";
 }
 
 void te::qt::widgets::ColorMapWidget::initialize()
@@ -118,6 +133,13 @@ void te::qt::widgets::ColorMapWidget::initialize()
 
   m_cbWidget->setHeight(20);
   m_cbWidget->setColorBar(m_cb);
+  m_cbWidget->setScaleVisible(false);
+
+  m_ui->m_transformComboBox->clear();
+
+  m_ui->m_transformComboBox->addItem(tr("Categorize"), te::se::CATEGORIZE_TRANSFORMATION);
+  m_ui->m_transformComboBox->addItem(tr("Interpolate"), te::se::INTERPOLATE_TRANSFORMATION);
+  //m_ui->m_transformComboBox->addItem(tr("Recode"), te::se::RECODE_TRANSFORMATION);
 }
 
 void te::qt::widgets::ColorMapWidget::updateUi()
@@ -342,18 +364,18 @@ void te::qt::widgets::ColorMapWidget::buildRecodingMap()
 void te::qt::widgets::ColorMapWidget::onApplyPushButtonClicked()
 {
   int index = m_ui->m_transformComboBox->currentIndex();
-  
-  //using index position from a combo box... must better this
 
-  if(index == 0)  // Categorization
+  int type = m_ui->m_transformComboBox->itemData(index).toInt();
+  
+  if(type == te::se::CATEGORIZE_TRANSFORMATION)
   {
     buildCategorizationMap();
   }
-  else if(index == 1) // Interpolation
+  else if(type == te::se::INTERPOLATE_TRANSFORMATION)
   {
     buildInterpolationMap();
   }
-  else if(index == 2) // Recoding
+  else if(type == te::se::RECODE_TRANSFORMATION)
   {
     buildRecodingMap();
   }

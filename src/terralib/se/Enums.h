@@ -45,6 +45,18 @@ namespace te
       UNKNOWN_COMPOSITION   /*!< Color composition unknown or not defined       */
     };
 
+    /*!
+      \enum ColorMapTransformationType
+
+      \brief Allowed color transformations type.
+    */
+    enum ColorMapTransformationType
+    {
+      CATEGORIZE_TRANSFORMATION,  /*!< The transformation of continuous values to a number of values (Interpolate function). */
+      INTERPOLATE_TRANSFORMATION, /*!< The transformation of continuous values to distinct values (Categorize function)      */
+      RECODE_TRANSFORMATION       /*!< Transformation of discrete values to other values.                                    */
+    };
+
   } // end namespace se
 }   // end namespace te
 

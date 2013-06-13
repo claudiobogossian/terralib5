@@ -89,7 +89,7 @@ void te::map::GroupingByUniqueValues(std::vector<std::string>& inputValues, int 
     else
     {
       legendItem = new te::map::GroupingItem;
-      legendItem->setLowerLimit(inputValues[i]);
+      legendItem->setValue(inputValues[i]);
       legendItem->setCount(count);
       legend.push_back(legendItem);
       count = 1;
@@ -99,14 +99,14 @@ void te::map::GroupingByUniqueValues(std::vector<std::string>& inputValues, int 
    if((i > 1) && (inputValues[i] == inputValues[i-1])) 
    {
      legendItem = new te::map::GroupingItem;
-     legendItem->setLowerLimit(inputValues[i]);
+     legendItem->setValue(inputValues[i]);
      legendItem->setCount(count);
      legend.push_back(legendItem);
    }
    else
    {
      legendItem = new te::map::GroupingItem;
-     legendItem->setLowerLimit(inputValues[i]);
+     legendItem->setValue(inputValues[i]);
      legendItem->setCount(1);
      legend.push_back(legendItem);
    } 

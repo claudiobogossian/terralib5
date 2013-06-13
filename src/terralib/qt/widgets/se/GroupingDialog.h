@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../maptools/Grouping.h"
 #include "../Config.h"
 
 // Qt
@@ -43,11 +44,14 @@ namespace te
 {
   namespace map { class Grouping; }
 
+  namespace se { class RasterSymbolizer; }
+
   namespace qt
   {
     namespace widgets
     {
 // Forward declarations
+      class ColorMapWidget;
       class GroupingWidget;
 
       /*!
@@ -58,6 +62,8 @@ namespace te
       */
       class TEQTWIDGETSEXPORT GroupingDialog : public QDialog
       {
+        Q_OBJECT
+
         public:
 
           /** @name Initializer Methods
@@ -77,12 +83,25 @@ namespace te
 
           void setLayer(te::map::AbstractLayerPtr layer);
 
-          std::auto_ptr<te::map::Grouping> getGrouping();
+        protected:
+
+          void buildVectorialGroupingInteface();
+
+          void buildRasterGroupingInteface();
+
+        protected slots:
+
+          void onPushButtonClicked();
 
         private:
 
           std::auto_ptr<Ui::GroupingDialogForm> m_ui;        //!< Dialog form.
-          te::qt::widgets::GroupingWidget* m_groupingWidget; //!< Grouping Widget used to configure the grouping ooperation.
+          te::qt::widgets::GroupingWidget* m_groupingWidget; //!< Grouping Widget used to configure the grouping operation.
+          te::qt::widgets::ColorMapWidget* m_colorMapWidget; //!< Color Map Widget used to configure the grouping operation over a raster.
+
+          te::map::AbstractLayerPtr m_layer;                  //!< Layer ptr.
+
+          te::se::RasterSymbolizer* m_rasterSymb;
       }; 
 
     } // end namespace widgets

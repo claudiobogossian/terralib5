@@ -357,6 +357,7 @@ set (
   ${SRCDIR}/widgets/se/GraphicFillWidget.h
   ${SRCDIR}/widgets/se/GraphicSelectorWidget.h
   ${SRCDIR}/widgets/se/GroupingWidget.h
+  ${SRCDIR}/widgets/se/GroupingDialog.h
   ${SRCDIR}/widgets/se/ImageOutlineWidget.h
   ${SRCDIR}/widgets/se/LineSymbolizerProperty.h
   ${SRCDIR}/widgets/se/LineSymbolizerWidget.h

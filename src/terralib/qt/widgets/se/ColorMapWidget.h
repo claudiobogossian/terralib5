@@ -98,6 +98,8 @@ namespace te
 
           te::se::ColorMap* getColorMap();
 
+          std::string getCurrentBand();
+
         protected:
 
           /*! \brief Internal method to initialize the widget (e.g.: color, combos, icons, etc.) */
