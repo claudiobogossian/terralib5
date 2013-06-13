@@ -171,13 +171,13 @@ std::pair<int, std::string> te::qt::widgets::SRSManagerDialog::getSRS(QWidget* p
 
 void te::qt::widgets::SRSManagerDialog::onSearchLineEditTextChanged(const QString& text)
 {
-  QList<QTreeWidgetItem*> itens = m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
-  itens.append(m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 1));  
-  filter(itens);
+  QList<QTreeWidgetItem*> items = m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
+  items.append(m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 1));  
+  filter(items);
 }
 
 
-void te::qt::widgets::SRSManagerDialog::filter(const QList<QTreeWidgetItem*>& itens)
+void te::qt::widgets::SRSManagerDialog::filter(const QList<QTreeWidgetItem*>& items)
 {
   for(int i = 0; i < m_ui->m_SRSTreeWidget->topLevelItemCount(); ++i)
   {
@@ -186,7 +186,7 @@ void te::qt::widgets::SRSManagerDialog::filter(const QList<QTreeWidgetItem*>& it
     for(int j = 0; j < item->childCount(); ++j)
     {
       QTreeWidgetItem* srs = item->child(j);
-      bool hide = itens.indexOf(srs) == -1;
+      bool hide = items.indexOf(srs) == -1;
       srs->setHidden(hide);
     }
   }

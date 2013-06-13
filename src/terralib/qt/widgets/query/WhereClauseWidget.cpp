@@ -147,9 +147,9 @@ void te::qt::widgets::WhereClauseWidget::setDataSource(const te::da::DataSourceP
   m_ds = ds;
 }
 
-void te::qt::widgets::WhereClauseWidget::setFromItens(std::vector<std::pair<std::string, std::string> > vec)
+void te::qt::widgets::WhereClauseWidget::setFromItems(std::vector<std::pair<std::string, std::string> > vec)
 {
-  m_fromItens = vec;
+  m_fromItems = vec;
 }
 
 void te::qt::widgets::WhereClauseWidget::setAttributeList(const std::vector<std::string>& vec)
@@ -273,9 +273,9 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
 
   te::da::From* from = new te::da::From;
 
-  for(size_t t = 0; t < m_fromItens.size(); ++t)
+  for(size_t t = 0; t < m_fromItems.size(); ++t)
   {
-    te::da::FromItem* fi = new te::da::DataSetName(m_fromItens[t].first, m_fromItens[t].second);
+    te::da::FromItem* fi = new te::da::DataSetName(m_fromItems[t].first, m_fromItems[t].second);
 
     from->push_back(fi);
   }
@@ -343,11 +343,11 @@ te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QStr
   std::string propertyName = propName.substr(pos + 1, propName.size() - 1);
   std::string dataSetName = "";
 
-  for(size_t t = 0; t < m_fromItens.size(); ++t)
+  for(size_t t = 0; t < m_fromItems.size(); ++t)
   {
-    if(m_fromItens[t].second == dataSetAliasName)
+    if(m_fromItems[t].second == dataSetAliasName)
     {
-      dataSetName = m_fromItens[t].first;
+      dataSetName = m_fromItems[t].first;
       break;
     }
   }

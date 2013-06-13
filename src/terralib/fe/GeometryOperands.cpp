@@ -38,7 +38,7 @@ te::fe::GeometryOperands::GeometryOperands()
 
 te::fe::GeometryOperands::~GeometryOperands()
 {
-// we will not clear the vector itens beacuse they are just reference to an internal list of operands.
+// we will not clear the vector items because they are just reference to an internal list of operands.
 }
 
 size_t te::fe::GeometryOperands::size() const

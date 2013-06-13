@@ -131,7 +131,7 @@ namespace te
         public slots:
 
           /*!
-            \brief This slot is connect to all cancel buttons of each progress itens
+            \brief This slot is connect to all cancel buttons of each progress items
 
             \param id value used to inform what task was canceled.
           */
@@ -140,7 +140,7 @@ namespace te
         protected:
 
           std::map<int, te::common::TaskProgress*> m_tasks;   //!< Task container.
-          std::map<int, ProgressWidgetItem*> m_itens;         //!< Custom widget progress item  container.
+          std::map<int, ProgressWidgetItem*> m_items;         //!< Custom widget progress item  container.
           QGridLayout* m_MainLayout;                          //!< GUI Objects used to build the custom widget.
           QGridLayout* m_widgetLayout;                        //!< GUI Objects used to build the custom widget.
           QScrollArea* m_scroll;                              //!< GUI Objects used to build the custom widget.

@@ -73,7 +73,7 @@ namespace te
 
         protected:
 
-          void getOrderItens(std::vector<std::pair<std::string, std::string> >& list); // pair namer, order type
+          void getOrderItems(std::vector<std::pair<std::string, std::string> >& list); // pair namer, order type
 
         public slots:
 

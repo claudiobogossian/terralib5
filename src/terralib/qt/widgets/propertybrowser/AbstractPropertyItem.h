@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/se/AbstractPropertyItem.h
 
-  \brief A widget used to define the main property itens
+  \brief A widget used to define the main property items
          that can be used to describe a se object.
 */
 
@@ -44,7 +44,7 @@ namespace te
       /*!
         \class AbstractPropertyItem
 
-        \brief A widget used to define the main property itens
+        \brief A widget used to define the main property items
               that can be used to describe a se object.
 
       */
