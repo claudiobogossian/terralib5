@@ -102,7 +102,7 @@ namespace te
       private:
 
         ParameterValue* m_lookupValue;     //!< Mandatory.
-        std::vector<MapItem*> m_mapItens;  //!< Mandatory.
+        std::vector<MapItem*> m_mapItems;  //!< Mandatory.
     };
 
   } // end namespace se

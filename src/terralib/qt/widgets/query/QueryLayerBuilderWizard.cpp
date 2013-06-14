@@ -109,7 +109,7 @@ bool te::qt::widgets::QueryLayerBuilderWizard::validateCurrentPage()
     //used to get distinct values from a selected property
     std::vector<std::pair<std::string, std::string> > vec;
     m_dataSetPage->getWidget()->getDataSetNames(vec);
-    m_whereClausePage->getWidget()->setFromItens(vec);
+    m_whereClausePage->getWidget()->setFromItems(vec);
 
     return m_dataSetPage->isComplete();
   }

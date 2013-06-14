@@ -51,6 +51,9 @@ te::se::ChannelSelection* te::serialize::ReadChannelSelection(te::xml::Reader& r
     cs->setGrayChannel(ReadSelectedChannel(reader));
     cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
 
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+
     return cs.release();
   }
 
@@ -99,10 +102,16 @@ void te::serialize::Save(const te::se::ChannelSelection* cs, te::xml::Writer& wr
 
   writer.writeStartElement("se:ChannelSelection");
 
-  WriteSelectedChannelHelper("se:GrayChannel", cs->getGrayChannel(), writer);
-  WriteSelectedChannelHelper("se:RedChannel", cs->getRedChannel(), writer);
-  WriteSelectedChannelHelper("se:GreenChannel", cs->getGreenChannel(), writer);
-  WriteSelectedChannelHelper("se:BlueChannel", cs->getBlueChannel(), writer);
+  if(cs->getGrayChannel())
+  {
+    WriteSelectedChannelHelper("se:GrayChannel", cs->getGrayChannel(), writer);
+  }
+  else
+  {
+    WriteSelectedChannelHelper("se:RedChannel", cs->getRedChannel(), writer);
+    WriteSelectedChannelHelper("se:GreenChannel", cs->getGreenChannel(), writer);
+    WriteSelectedChannelHelper("se:BlueChannel", cs->getBlueChannel(), writer);
+  }
 
   writer.writeEndElement("se:ChannelSelection");
 }

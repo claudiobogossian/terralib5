@@ -105,7 +105,7 @@ namespace te
           in the DataSetType class).
 
           \param dt      The DataSetType to be created. It may be changed if the underlying data source
-                         creates new dataset type itens or if it doesn't have support for some of them.
+                         creates new dataset type items or if it doesn't have support for some of them.
 
           \pre All parameters must be valid pointers.
           \pre The DataSetTypes referenced by foreign keys must be already in the data source catalog.
@@ -136,7 +136,7 @@ namespace te
           in the DataSetType class).
 
           \param dt      The DataSetType to be created. It may be changed if the underlying data source
-                         creates new dataset type itens or if it doesn't have support for some of them.
+                         creates new dataset type items or if it doesn't have support for some of them.
           \param options A list of optional modifiers. It is driver specific.
 
           \pre All parameters must be valid pointers.

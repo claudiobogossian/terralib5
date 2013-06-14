@@ -75,7 +75,7 @@ namespace te
 
           void fillTreeView(std::list<te::map::AbstractLayerPtr>& layerList);
 
-          void filter(const QList<QTreeWidgetItem*>& itens);
+          void filter(const QList<QTreeWidgetItem*>& items);
 
         private slots:
 

@@ -98,14 +98,14 @@ std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
 
   group->setStdDeviation(m_ui->m_stdDevDoubleSpinBox->value());
 
-  std::vector<te::map::GroupingItem*> groupingItens;
+  std::vector<te::map::GroupingItem*> groupingItems;
   for(size_t t = 0; t < m_legend.size(); ++t)
   {
     te::map::GroupingItem* gi = new te::map::GroupingItem(*m_legend[t]);
 
-    groupingItens.push_back(gi);
+    groupingItems.push_back(gi);
   }
-  group->setGroupingItens(groupingItens);
+  group->setGroupingItems(groupingItems);
 
   return group;
 }
@@ -255,13 +255,13 @@ void te::qt::widgets::GroupingWidget::setGrouping()
 
   m_ui->m_stdDevDoubleSpinBox->setValue((double)stdDev);
 
-  //grouping itens
+  //grouping items
   te::common::FreeContents(m_legend);
   m_legend.clear();
 
-  for(size_t t = 0; t < grouping->getGroupingItens().size(); ++t)
+  for(size_t t = 0; t < grouping->getGroupingItems().size(); ++t)
   {
-    te::map::GroupingItem* gi = new te::map::GroupingItem(*grouping->getGroupingItens()[t]);
+    te::map::GroupingItem* gi = new te::map::GroupingItem(*grouping->getGroupingItems()[t]);
 
     m_legend.push_back(gi);
   }

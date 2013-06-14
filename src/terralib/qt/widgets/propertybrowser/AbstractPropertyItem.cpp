@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/se/AbstractPropertyItem.cpp
 
-  \brief A widget used to define the main property itens
+  \brief A widget used to define the main property items
          that can be used to describe a se object.
 */
 

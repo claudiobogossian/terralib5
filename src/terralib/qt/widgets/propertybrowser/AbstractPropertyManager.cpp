@@ -21,7 +21,7 @@
   \file terralib/qt/widgets/AbstractPropertyManager.cpp
 
   \brief A singleton for holding the property browser 
-          itens factories.
+          items factories.
 */
 
 // TerraLib
