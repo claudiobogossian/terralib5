@@ -46,6 +46,77 @@ bool IsPkey(const int& column, const std::vector<size_t>& pkeys)
   return false;
 }
 
+QString columnType(const int& type)
+{
+
+  switch(type)
+  {
+    case te::dt::VOID_TYPE:
+      return QObject::tr("Void");
+    break;
+
+    case te::dt::BIT_TYPE:
+      return QObject::tr("Bit");
+    break;
+
+    case te::dt::CHAR_TYPE:
+      return QObject::tr("Char");
+    break;
+
+    case te::dt::UCHAR_TYPE:
+      return QObject::tr("Unsigned char");
+    break;
+
+    case te::dt::INT16_TYPE:
+    case te::dt::INT32_TYPE:
+    case te::dt::INT64_TYPE:
+      return QObject::tr("Integer");
+    break;
+
+    case te::dt::UINT16_TYPE:
+    case te::dt::UINT32_TYPE:
+    case te::dt::UINT64_TYPE:
+      return QObject::tr("Unsigned integer");
+    break;
+
+    case te::dt::BOOLEAN_TYPE:
+      return QObject::tr("Boolean");
+    break;
+
+    case te::dt::FLOAT_TYPE:
+      return QObject::tr("Float");
+    break;
+
+    case te::dt::DOUBLE_TYPE:
+      return QObject::tr("Double");
+    break;
+
+    case te::dt::NUMERIC_TYPE:
+      return QObject::tr("Numeric");
+    break;
+
+    case te::dt::STRING_TYPE:
+      return QObject::tr("String");
+    break;
+
+    case te::dt::BYTE_ARRAY_TYPE:
+      return QObject::tr("Byte array");
+    break;
+
+    case te::dt::GEOMETRY_TYPE:
+      return QObject::tr("Geometry");
+    break;
+
+    case te::dt::DATETIME_TYPE:
+      return QObject::tr("Date time");
+    break;
+
+    default:
+      return QObject::tr("Unknown");
+    break;
+  }
+}
+
 te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
   : QAbstractTableModel(parent),
     m_dataset(0),
@@ -206,6 +277,10 @@ QVariant te::qt::widgets::DataSetTableModel::headerData(int section, Qt::Orienta
         return (m_OIdsVisible && IsPkey(section, m_pkeysColumns)) ?
           QIcon::fromTheme("key") :
           QVariant();
+      break;
+
+      case Qt::ToolTipRole:
+       return columnType(m_dataset->getPropertyDataType(section));
       break;
 
       default:

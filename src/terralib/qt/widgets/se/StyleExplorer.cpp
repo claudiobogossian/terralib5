@@ -251,12 +251,17 @@ void te::qt::widgets::StyleExplorer::onSymbolizerChanged(te::se::Symbolizer* sym
 {
   QTreeWidgetItem* symbolizerItem = getSelectedItem();
 
-  const te::se::Rule* rule = getCurrentRule();
-  assert(rule);
-
-  // rule->setSymbolizer(index, symb);
-
   // Updating item
   symbolizerItem->setText(0, tr(symb->getType().c_str()));
   symbolizerItem->setIcon(0, QIcon(SymbologyPreview::build(symb, iconSize())));
+
+  te::se::Rule* rule = getCurrentRule();
+  QTreeWidgetItem* ruleItem = symbolizerItem->parent();
+
+  if(rule && ruleItem)
+  {
+    std::vector<te::se::Symbolizer*> symbs = rule->getSymbolizers();
+
+    ruleItem->setIcon(0, QIcon(SymbologyPreview::build(symbs, iconSize())));
+  }
 }

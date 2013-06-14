@@ -67,6 +67,20 @@ namespace te
         GroupingItem& operator=(const GroupingItem& rhs);
 
         /*!
+          \brief It gets the value of the legend item.
+
+          \output The value of the legend item.
+        */
+        const std::string& getValue() const;
+
+        /*!
+          \brief It sets value of the legend item.
+
+          \param value The value of the legend item.
+        */
+        void setValue(const std::string& value);
+
+        /*!
           \brief It gets the lower limit value of the legend item.
 
           \output The lower limit value of the legend item.
@@ -140,6 +154,7 @@ namespace te
 
         std::string m_from;                               //!< The value of the lower limit of the legend item.
         std::string m_to;                                 //!< The value of the upper limit of the legend item.
+        std::string m_value;                              //!< The value of the legend item.
         std::size_t m_count;                              //!< The number of objects whose values are between the lower and upper limits.
         std::string m_title;                              //!< A text that can be used to identify this legend item.
         std::vector<te::se::Symbolizer*> m_symbolizers;   //!< The color of the legend item.

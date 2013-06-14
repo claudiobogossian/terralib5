@@ -37,7 +37,7 @@ te::se::Recode::Recode()
 te::se::Recode::~Recode()
 {
   delete m_lookupValue;
-  te::common::FreeContents(m_mapItens);
+  te::common::FreeContents(m_mapItems);
 }
 
 void te::se::Recode::setLookupValue(ParameterValue* v)
@@ -48,5 +48,5 @@ void te::se::Recode::setLookupValue(ParameterValue* v)
 
 void te::se::Recode::add(MapItem* m)
 {
-  m_mapItens.push_back(m);
+  m_mapItems.push_back(m);
 }

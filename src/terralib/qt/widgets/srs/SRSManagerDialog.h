@@ -101,7 +101,7 @@ namespace te
         
       private:
         
-        void filter(const QList<QTreeWidgetItem*>& itens);
+        void filter(const QList<QTreeWidgetItem*>& items);
         
         Ui::SRSManagerDialogForm* m_ui;         //!< Dialog form.    
         std::pair<int, std::string> m_selSrsId; //!< The selected SRS

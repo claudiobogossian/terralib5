@@ -36,7 +36,7 @@ te::map::Grouping::Grouping(const std::string& propertyName, te::map::GroupingTy
 
 te::map::Grouping::~Grouping()
 {
-  te::common::FreeContents(m_itens);
+  te::common::FreeContents(m_items);
 }
 
 std::string te::map::Grouping::getPropertyName() const
@@ -81,22 +81,22 @@ void te::map::Grouping::setNumSlices(size_t numSlices)
   m_numSlices = numSlices;
 }
 
-const float te::map::Grouping::getStdDeviation() const
+const double te::map::Grouping::getStdDeviation() const
 {
   return m_stdDeviation;
 }
 
-void te::map::Grouping::setStdDeviation(float stdDeviation)
+void te::map::Grouping::setStdDeviation(double stdDeviation)
 {
   m_stdDeviation = stdDeviation;
 }
 
-const std::vector<te::map::GroupingItem*>& te::map::Grouping::getGroupingItens() const
+const std::vector<te::map::GroupingItem*>& te::map::Grouping::getGroupingItems() const
 {
-  return m_itens;
+  return m_items;
 }
 
-void te::map::Grouping::setGroupingItens(std::vector<te::map::GroupingItem*>& itens)
+void te::map::Grouping::setGroupingItems(std::vector<te::map::GroupingItem*>& items)
 {
-  m_itens = itens;
+  m_items = items;
 }

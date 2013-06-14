@@ -96,9 +96,9 @@ void te::qt::widgets::ProgressViewerWidget::updateValue(int taskId)
 
   if(it != m_tasks.end())
   {
-    std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_itens.find(taskId);
+    std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_items.find(taskId);
 
-    if(itItem != m_itens.end())
+    if(itItem != m_items.end())
     {
       itItem->second->setValue(it->second->getProportionalValue());
     } 
@@ -111,9 +111,9 @@ void te::qt::widgets::ProgressViewerWidget::updateMessage(int taskId)
 
   if(it != m_tasks.end())
   {
-    std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_itens.find(taskId);
+    std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_items.find(taskId);
 
-    if(itItem != m_itens.end())
+    if(itItem != m_items.end())
     {
       itItem->second->setLabel(it->second->getMessage());
     }
@@ -130,7 +130,7 @@ void te::qt::widgets::ProgressViewerWidget::customEvent(QEvent* e)
 
     item->setLabel(createEvent->m_label.toStdString());
 
-    m_itens.insert(std::map<int, ProgressWidgetItem*>::value_type(createEvent->m_taskId, item));
+    m_items.insert(std::map<int, ProgressWidgetItem*>::value_type(createEvent->m_taskId, item));
 
     connect(item, SIGNAL(taskCanceled(int)), this, SLOT(cancel(int)));
 
@@ -145,12 +145,12 @@ void te::qt::widgets::ProgressViewerWidget::customEvent(QEvent* e)
   {
     RemoveProgressWidgetItemEvent* removeEvent = static_cast<RemoveProgressWidgetItemEvent*>(e);
     
-    std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_itens.find(removeEvent->m_taskId);
-    if(itItem == m_itens.end())
+    std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_items.find(removeEvent->m_taskId);
+    if(itItem == m_items.end())
       return;
 
     delete itItem->second;
-    m_itens.erase(itItem);
+    m_items.erase(itItem);
   }
 }
 

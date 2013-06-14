@@ -126,7 +126,7 @@ namespace te
           void initialize();
 
           /*! \brief  Auxiliary internal method to filter the symbols. */
-          void filter(const QList<QTreeWidgetItem*>& itens);
+          void filter(const QList<QTreeWidgetItem*>& items);
 
           /*! \brief Auxiliary internal method that returns the selected symbol. */
           Symbol* getSelectedSymbol() const;

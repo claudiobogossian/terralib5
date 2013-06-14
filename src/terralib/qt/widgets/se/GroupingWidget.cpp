@@ -58,6 +58,7 @@ te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags
   l->addWidget(m_colorBar);
 
 //connects
+  connect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onColorBarChanged()));
   connect(m_ui->m_typeComboBox, SIGNAL(activated(int)), this, SLOT(onTypeComboBoxActivated(int)));
   connect(m_ui->m_attrComboBox, SIGNAL(activated(int)), this, SLOT(onAttrComboBoxActivated(int)));
 
@@ -97,14 +98,14 @@ std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
 
   group->setStdDeviation(m_ui->m_stdDevDoubleSpinBox->value());
 
-  std::vector<te::map::GroupingItem*> groupingItens;
+  std::vector<te::map::GroupingItem*> groupingItems;
   for(size_t t = 0; t < m_legend.size(); ++t)
   {
     te::map::GroupingItem* gi = new te::map::GroupingItem(*m_legend[t]);
 
-    groupingItens.push_back(gi);
+    groupingItems.push_back(gi);
   }
-  group->setGroupingItens(groupingItens);
+  group->setGroupingItems(groupingItems);
 
   return group;
 }
@@ -254,13 +255,13 @@ void te::qt::widgets::GroupingWidget::setGrouping()
 
   m_ui->m_stdDevDoubleSpinBox->setValue((double)stdDev);
 
-  //grouping itens
+  //grouping items
   te::common::FreeContents(m_legend);
   m_legend.clear();
 
-  for(size_t t = 0; t < grouping->getGroupingItens().size(); ++t)
+  for(size_t t = 0; t < grouping->getGroupingItems().size(); ++t)
   {
-    te::map::GroupingItem* gi = new te::map::GroupingItem(*grouping->getGroupingItens()[t]);
+    te::map::GroupingItem* gi = new te::map::GroupingItem(*grouping->getGroupingItems()[t]);
 
     m_legend.push_back(gi);
   }
@@ -359,6 +360,16 @@ void te::qt::widgets::GroupingWidget::onTypeComboBoxActivated(int idx)
 void te::qt::widgets::GroupingWidget::onAttrComboBoxActivated(int idx)
 {
   int attrType = m_ui->m_attrComboBox->itemData(idx).toInt();
+}
+
+void te::qt::widgets::GroupingWidget::onColorBarChanged()
+{
+  if(m_layer.get())
+  {
+    buildSymbolizer();
+
+    updateUi();
+  }
 }
 
 void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType)

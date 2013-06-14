@@ -117,14 +117,14 @@ void te::qt::widgets::LayerSearchWidget::fillTreeView(std::list<te::map::Abstrac
   m_ui->m_treeWidget->expandAll();
 }
 
-void te::qt::widgets::LayerSearchWidget::filter(const QList<QTreeWidgetItem*>& itens)
+void te::qt::widgets::LayerSearchWidget::filter(const QList<QTreeWidgetItem*>& items)
 {
   QTreeWidgetItemIterator it(m_ui->m_treeWidget);
 
   while(*it)
   {
     QTreeWidgetItem* layerItem = *it;
-    bool hide = itens.indexOf(layerItem) == -1;
+    bool hide = items.indexOf(layerItem) == -1;
     layerItem->setHidden(hide);
 
     ++it;
@@ -135,7 +135,7 @@ void te::qt::widgets::LayerSearchWidget::filter(const QList<QTreeWidgetItem*>& i
 
 void te::qt::widgets::LayerSearchWidget::onNameLineEditTextChanged(const QString& text)
 {
-  QList<QTreeWidgetItem*> itens = m_ui->m_treeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
+  QList<QTreeWidgetItem*> items = m_ui->m_treeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
 
-  filter(itens);
+  filter(items);
 }

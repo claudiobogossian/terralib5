@@ -396,6 +396,8 @@ void te::qt::widgets::DataSetTableView::highlightRow(const int& row, const bool&
 
       delete oids;
 
+      viewport()->repaint();
+
       return;
     }
   }
@@ -424,6 +426,8 @@ void te::qt::widgets::DataSetTableView::highlightRows(const int& initRow, const 
   te::da::ObjectIdSet* oids = m_model->getObjectIdSet(ini, final);
 
   emit selectOIds(oids, true);
+
+  viewport()->repaint();
 }
 
 void te::qt::widgets::DataSetTableView::promote()

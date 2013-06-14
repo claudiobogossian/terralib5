@@ -114,12 +114,14 @@ void te::serialize::Save(const te::se::Categorize* c, te::xml::Writer& writer)
 
   std::vector<te::se::ParameterValue*> thresholds = c->getThresholds();
   std::vector<te::se::ParameterValue*> values = c->getThresholdValues();
-  assert(thresholds.size() == values.size());
+  assert(thresholds.size() == values.size()-1);
 
-  for(std::size_t i = 0; i < thresholds.size(); ++i)
+  for(std::size_t i = 0; i < values.size(); ++i)
   {
-    WriteParameterValuePtrHelper("se:Threshold", thresholds[i], writer);
     WriteParameterValuePtrHelper("se:Value", values[i], writer);
+
+    if(i != values.size()-1)
+      WriteParameterValuePtrHelper("se:Threshold", thresholds[i], writer);
   }
 
   writer.writeEndElement("se:Categorize");

@@ -6,17 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>488</width>
-    <height>319</height>
+    <width>481</width>
+    <height>322</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Raster Visual</string>
   </property>
   <layout class="QGridLayout" name="m_mainGridLayout">
-   <property name="margin">
-    <number>0</number>
-   </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="m_internalGridLayout">
      <item row="0" column="0">
@@ -70,7 +67,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">
+               <iconset>
                 <normaloff>:/tvLite/images/plus.png</normaloff>:/tvLite/images/plus.png</iconset>
               </property>
               <property name="flat">
@@ -90,7 +87,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">
+               <iconset>
                 <normaloff>:/tvLite/images/minus.png</normaloff>:/tvLite/images/minus.png</iconset>
               </property>
               <property name="flat">
@@ -146,7 +143,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">
+               <iconset>
                 <normaloff>:/tvLite/images/plus.png</normaloff>:/tvLite/images/plus.png</iconset>
               </property>
               <property name="flat">
@@ -166,7 +163,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">
+               <iconset>
                 <normaloff>:/tvLite/images/minus.png</normaloff>:/tvLite/images/minus.png</iconset>
               </property>
               <property name="flat">
@@ -236,7 +233,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">:/bullets/images/bullet_blue.png</pixmap>
+                <pixmap>:/bullets/images/bullet_blue.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -271,7 +268,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">:/bullets/images/bullet_green.png</pixmap>
+                <pixmap>:/bullets/images/bullet_green.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -306,7 +303,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">:/bullets/images/bullet_red.png</pixmap>
+                <pixmap>:/bullets/images/bullet_red.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -354,7 +351,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">:/bullets/images/bullet_gray.png</pixmap>
+                <pixmap>:/bullets/images/bullet_gray.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -417,27 +414,6 @@
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Type</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="m_contrastTypeComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
           <item row="1" column="0">
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
@@ -452,7 +428,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">:/bullets/images/bullet_red.png</pixmap>
+               <pixmap>:/bullets/images/bullet_red.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>true</bool>
@@ -502,7 +478,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">:/bullets/images/bullet_green.png</pixmap>
+               <pixmap>:/bullets/images/bullet_green.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>true</bool>
@@ -552,7 +528,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">:/bullets/images/bullet_blue.png</pixmap>
+               <pixmap>:/bullets/images/bullet_blue.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>true</bool>
@@ -602,7 +578,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap resource="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc">:/bullets/images/bullet_gray.png</pixmap>
+               <pixmap>:/bullets/images/bullet_gray.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>true</bool>
@@ -637,6 +613,27 @@
               </property>
               <property name="tickInterval">
                <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="m_contrastTypeLabel">
+              <property name="text">
+               <string>Type</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="m_contrastTypeComboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
              </widget>
             </item>

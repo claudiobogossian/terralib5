@@ -71,7 +71,7 @@ namespace te
 
           void setDataSource(const te::da::DataSourcePtr& ds);
 
-          void setFromItens(std::vector<std::pair<std::string, std::string> > vec);
+          void setFromItems(std::vector<std::pair<std::string, std::string> > vec);
 
           void setAttributeList(const std::vector<std::string>& vec);
 
@@ -99,7 +99,7 @@ namespace te
 
           te::da::DataSourcePtr m_ds;
 
-          std::vector<std::pair<std::string, std::string> > m_fromItens;
+          std::vector<std::pair<std::string, std::string> > m_fromItems;
       }; 
 
     } // end namespace widgets

@@ -215,8 +215,6 @@ void te::qt::widgets::RasterVisualWidget::setBandProperty(std::vector<te::rst::B
     }
   }
 
-  std::string bandName = bandNames.begin()->toStdString();
-
   m_ui->m_composeMComboBox->clear();
   m_ui->m_composeMComboBox->addItems(bandNames);
 
@@ -303,6 +301,9 @@ void te::qt::widgets::RasterVisualWidget::initialize()
   }
 
   m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[te::se::ContrastEnhancement::ENHANCEMENT_NONE]));
+
+  m_ui->m_contrastTypeComboBox->setVisible(false);
+  m_ui->m_contrastTypeLabel->setVisible(false);
 
   // other values
   m_gainValue = 0.0;

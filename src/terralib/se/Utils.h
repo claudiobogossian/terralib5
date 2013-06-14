@@ -334,6 +334,17 @@ namespace te
     TESEEXPORT RasterSymbolizer* CreateRasterSymbolizer(const std::size_t& nBands);
 
     /*!
+      \brief Try to get raster symbolizer from a style.
+
+      \param s Style.
+
+      \return A raster symbolizer.
+
+      \note The method will return a NULL pointer if the symbolizer does not have a  raster symbolizer.
+    */
+    TESEEXPORT RasterSymbolizer* GetRasterSymbolizer(Style* s);
+
+    /*!
       \brief Creates a random RGB color encoded using two hexadecimal digits per primary-color component prefixed with a hash (#) sign.
 
       \return A random color encoded using two hexadecimal digits per primary-color component prefixed with a hash (#) sign.

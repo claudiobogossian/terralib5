@@ -131,28 +131,28 @@ namespace te
 
           \output The standard deviation.
         */
-        const float getStdDeviation() const;
+        const double getStdDeviation() const;
 
        /*!
           \brief It sets the standard deviation for the Standard Deviation grouping.
 
           \param stdDeviation The standard deviation.
         */
-        void setStdDeviation(float stdDeviation);
+        void setStdDeviation(double stdDeviation);
 
         /*!
-          \brief It gets the vector of grouping itens.
+          \brief It gets the vector of grouping items.
 
-          \return The vector of grouping itens.
+          \return The vector of grouping items.
         */
-        const std::vector<te::map::GroupingItem*>& getGroupingItens() const;
+        const std::vector<te::map::GroupingItem*>& getGroupingItems() const;
 
         /*!
-          \brief It sets the vector of grouping itens.
+          \brief It sets the vector of grouping items.
 
-          \param The vector of grouping itens.
+          \param The vector of grouping items.
         */
-        void setGroupingItens(std::vector<te::map::GroupingItem*>& itens);
+        void setGroupingItems(std::vector<te::map::GroupingItem*>& items);
 
       private:
 
@@ -160,9 +160,9 @@ namespace te
         GroupingType m_type;             //!< The grouping type.
         size_t m_precision;              //!< The precision of the values.
         size_t m_numSlices;              //!< The number of slices used in the Equal Steps and Quantil groupings.
-        float m_stdDeviation;            //!< The standard deviation used in the Standard Deviation grouping.
+        double m_stdDeviation;            //!< The standard deviation used in the Standard Deviation grouping.
 
-        std::vector<te::map::GroupingItem*> m_itens; //!< The vector of grouping itens.
+        std::vector<te::map::GroupingItem*> m_items; //!< The vector of grouping items.
     };
 
   } // end namespace map

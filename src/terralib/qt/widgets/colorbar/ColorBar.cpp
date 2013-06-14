@@ -154,6 +154,8 @@ void te::qt::widgets::colorbar::ColorBar::buildColorBar()
     }
 
     this->setColorMap(m_interval, colormap);
+
+    emit colorBarChanged();
   }
 }
 
