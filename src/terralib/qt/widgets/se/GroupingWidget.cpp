@@ -497,6 +497,7 @@ void te::qt::widgets::GroupingWidget::listAttributes()
         case te::dt::INT64_TYPE:
         case te::dt::FLOAT_TYPE:
         case te::dt::DOUBLE_TYPE:
+        case te::dt::NUMERIC_TYPE:
         case te::dt::STRING_TYPE:
           m_ui->m_attrComboBox->addItem(p->getName().c_str(), p->getType());
 
