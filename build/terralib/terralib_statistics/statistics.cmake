@@ -16,7 +16,7 @@ endif()
 
 #Definitions for Windows compiling
 if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEVPDLL -DBOOST_ALL_NO_LIB
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESTATDLL -DBOOST_ALL_NO_LIB
 		              -DUNICODE
 		              -DQT_LARGEFILE_SUPPORT
 		              -DQT_DLL

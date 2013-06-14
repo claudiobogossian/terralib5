@@ -29,11 +29,30 @@
 #include "SummaryFunctions.h"
 
 // BOOST
-#include <boost/lexical_cast.hpp> 
+#include <boost/lexical_cast.hpp>
 
-// STL
-#include <map>
+void te::stat::getStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss)
+{
+  std::sort(values.begin(), values.end());
+  
+  ss.m_minVal = *values.begin();
+  ss.m_maxVal = values[values.size() - 1];
 
+  ss.m_count = values.size();
+
+  for(std::size_t i = 0; i < values.size(); ++i)
+  {
+    if(!values[i].empty())
+    {
+      ++ss.m_validCount;
+    }
+  }
+}
+
+void te::stat::getNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss)
+{
+
+}
 
 double te::stat::Mode(const std::vector<double>& values)
 {

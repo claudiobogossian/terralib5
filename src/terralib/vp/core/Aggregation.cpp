@@ -43,6 +43,9 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
+#include "../../statistics/core/SummaryFunctions.h"
+#include "../../statistics/core/StringStatisticalSummary.h"
+#include "../../statistics/core/NumericStatisticalSummary.h"
 #include "Aggregation.h"
 #include "AggregationDialog.h"
 #include "Config.h"
@@ -376,12 +379,13 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
           values.push_back(items[i]->getString(index));
       }
 
-      std::sort(values.begin(), values.end());
+      te::stat::StringStatisticalSummary ss;
+      te::stat::getStringStatisticalSummary(values, ss);
 
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MIN_VALUE", *values.begin() ) );
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MAX_VALUE", values[values.size() - 1] ) );
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_COUNT", boost::lexical_cast<std::string>(values.size())));
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_VALID_COUNT", boost::lexical_cast<std::string>(values.size())));
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MIN_VALUE", ss.m_minVal ) );
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MAX_VALUE", ss.m_maxVal ) );
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_COUNT", boost::lexical_cast<std::string>(ss.m_count) ) );
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_VALID_COUNT", boost::lexical_cast<std::string>(ss.m_validCount) ) );
     }
     ++it;
   }
@@ -432,30 +436,30 @@ std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const st
       mean = sum/count;
 
       for(int i=0; i<count; i++)
-	    {
-		    double v= values[i];
-		    variance += pow((v-mean),2); 
-		    skewness += pow((v-mean),3);   
-		    kurtosis += pow((v-mean),4); 
-	    }
+      {
+        double v= values[i];
+        variance += pow((v-mean),2); 
+        skewness += pow((v-mean),3);   
+        kurtosis += pow((v-mean),4); 
+      }
 
       //if(!count)
-		    //return false;
+        //return false;
 
-	    variance /= count; 
-	    standardDeviation = pow(variance,0.5); 
-	    skewness /= count;
-	    skewness /= pow(standardDeviation,3); 
-	    kurtosis /= count;
-	    kurtosis /= pow(standardDeviation,4); 
+      variance /= count; 
+      standardDeviation = pow(variance,0.5); 
+      skewness /= count;
+      skewness /= pow(standardDeviation,3); 
+      kurtosis /= count;
+      kurtosis /= pow(standardDeviation,4); 
 
-	    varCoeff = (100*standardDeviation)/mean;
-	    amplitude = maxValue-minValue; 
+      varCoeff = (100*standardDeviation)/mean;
+      amplitude = maxValue-minValue; 
 
       if((count%2)==0)
-		    median = (values[(count/2)]+values[(count/2-1)])/2;
-	    else
-		    median = values[(count-1)/2];
+        median = (values[(count/2)]+values[(count/2-1)])/2;
+      else
+        median = values[(count-1)/2];
 
 
       mode = Mode(values);
