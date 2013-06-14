@@ -41,6 +41,24 @@
 #include <boost/math/special_functions/binomial.hpp>
 #include <boost/random.hpp>
 
+#define ransacGetMaxConsecutiveInvalidIterations( assurance, dynamicMaxIterations ) \
+  std::max(                                                                         \
+    (RansacItCounterT)1,                                                            \
+    (                                                                               \
+      ( assurance > 0.0 )                                                           \
+      ?                                                                             \
+      (                                                                             \
+        (RansacItCounterT)(                                                         \
+          ((long double)dynamicMaxIterations)                                       \
+          *                                                                         \
+          ((long double)assurance)                                                  \
+        )                                                                           \
+      )                                                                             \
+      :                                                                             \
+      ( dynamicMaxIterations / 2 )                                                  \
+    )                                                                               \
+  )                                                                                 \
+
 // ---------------------------------------------------------------------------
 
 te::gm::GTFilter::ApplyRansacThreadEntryThreadParams::ApplyRansacThreadEntryThreadParams()
@@ -53,7 +71,6 @@ te::gm::GTFilter::ApplyRansacThreadEntryThreadParams::ApplyRansacThreadEntryThre
   m_useDynamicIterationsNumber = 0;
   m_dynamicMaxIterationsPtr = 0;
   m_iterationsDivFactor = 0;
-  m_dynamicMaxConsecutiveInvalidIterationsPtr = 0;
   m_returnValuePtr = 0;
   m_mutexPtr = 0;
   m_keepRunningFlagPtr = 0;
@@ -87,7 +104,6 @@ const te::gm::GTFilter::ApplyRansacThreadEntryThreadParams&
   m_useDynamicIterationsNumber = other.m_useDynamicIterationsNumber;
   m_dynamicMaxIterationsPtr = other.m_dynamicMaxIterationsPtr;
   m_iterationsDivFactor = other.m_iterationsDivFactor;
-  m_dynamicMaxConsecutiveInvalidIterationsPtr = other.m_dynamicMaxConsecutiveInvalidIterationsPtr;
   m_returnValuePtr = other.m_returnValuePtr;
   m_mutexPtr = other.m_mutexPtr;
   m_keepRunningFlagPtr = other.m_keepRunningFlagPtr;
@@ -211,23 +227,6 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
     ) / procsNumber
     :
     ( maxIterations / procsNumber );
-  RansacItCounterT dynamicMaxConsecutiveInvalidIterationsPtr =
-    std::max( 
-      (RansacItCounterT)1, 
-      (
-        ( assurance > 0.0 )
-        ?
-        (
-          (RansacItCounterT)( 
-            ((long double)dynamicMaxIterations) 
-            * 
-            ((long double)assurance) 
-          )
-        )
-        :
-        ( dynamicMaxIterations / 2 )
-      )
-    );  
   
   ApplyRansacThreadEntryThreadParams baseThreadParams;
   baseThreadParams.m_transfNamePtr = &transfName;
@@ -239,8 +238,6 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
   baseThreadParams.m_dynamicMaxIterationsPtr = &dynamicMaxIterations;
   baseThreadParams.m_iterationsDivFactor = enableMultiThread ?
     ((RansacItCounterT)procsNumber) : 1;
-  baseThreadParams.m_dynamicMaxConsecutiveInvalidIterationsPtr = 
-    &dynamicMaxConsecutiveInvalidIterationsPtr;
   baseThreadParams.m_returnValuePtr = &returnValue;
   baseThreadParams.m_mutexPtr = &syncMutex;
   baseThreadParams.m_keepRunningFlagPtr = &keepRunningFlag;
@@ -327,9 +324,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
   const bool& keepRunningFlag = (*(paramsPtr->m_keepRunningFlagPtr));    
   const double& assurance = paramsPtr->m_assurance;
   const bool& useDynamicIterationsNumber = paramsPtr->m_useDynamicIterationsNumber;
-  RansacItCounterT& dynamicMaxIterations = (*(paramsPtr->m_dynamicMaxIterationsPtr));
-  RansacItCounterT& dynamicMaxConsecutiveInvalidIterations = 
-    (*(paramsPtr->m_dynamicMaxConsecutiveInvalidIterationsPtr));
+  RansacItCounterT& globalDynamicMaxIterations = (*(paramsPtr->m_dynamicMaxIterationsPtr));
   boost::mutex& mutex = (*(paramsPtr->m_mutexPtr));
   
   // Checking the number of required tie-points
@@ -393,7 +388,13 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
       )
     );
 
+  RansacItCounterT dynamicMaxIterations = globalDynamicMaxIterations;
   RansacItCounterT dynamicMaxIterationsEstimation = 0;
+  RansacItCounterT dynamicMaxConsecutiveInvalidIterations =
+    ransacGetMaxConsecutiveInvalidIterations( assurance, dynamicMaxIterations );
+  RansacItCounterT threadSyncMaxIterations = dynamicMaxIterations / 10;
+  RansacItCounterT threadSyncIteration = 0;
+
   RansacItCounterT consecutiveInvalidIterations = 0;
   double randomValue = 0;
     
@@ -524,8 +525,14 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
       if( bestTiePoins.size() == inputTPNmb )
       {
         mutex.lock();
+        
         dynamicMaxIterations = 0;
         dynamicMaxConsecutiveInvalidIterations = 0;
+        globalDynamicMaxIterations = 0;
+        
+        // Forcing thread sync
+        threadSyncIteration = threadSyncMaxIterations;
+        
         mutex.unlock();
       }
       else if( ! bestTiePoins.empty() )
@@ -554,8 +561,6 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
             /
             maxIterationsDivFactor
           );
-          
-        mutex.lock();
         
         if( dynamicMaxIterationsEstimation < dynamicMaxIterations )
         {
@@ -563,74 +568,84 @@ void te::gm::GTFilter::applyRansacThreadEntry(te::gm::GTFilter::ApplyRansacThrea
             ( dynamicMaxIterations - ( ( dynamicMaxIterations - dynamicMaxIterationsEstimation ) / 2 ) );
             
           dynamicMaxConsecutiveInvalidIterations =
-            std::max( 
-              (RansacItCounterT)1, 
-              (
-                ( assurance > 0.0 )
-                ?
-                (
-                  (RansacItCounterT)( 
-                    ((long double)dynamicMaxIterations) 
-                    * 
-                    ((long double)assurance) 
-                  )
-                )
-                :
-                ( dynamicMaxIterations / 2 )
-              )
-            );
+            ransacGetMaxConsecutiveInvalidIterations( assurance, dynamicMaxIterations );
+            
+          threadSyncMaxIterations = dynamicMaxIterations / 10;
         }
         
-        mutex.unlock();
+        if( globalDynamicMaxIterations < dynamicMaxIterations )
+        {
+          dynamicMaxIterations = globalDynamicMaxIterations;
+            
+          dynamicMaxConsecutiveInvalidIterations =
+            ransacGetMaxConsecutiveInvalidIterations( assurance, dynamicMaxIterations );
+            
+          threadSyncMaxIterations = dynamicMaxIterations / 10;
+        } 
       }
     }
     
-    ++currentIteration;
-  }
-  
-  // Comparing with the global best transformation
+    // Sync with the other threads
     
-  if( bestTransfPtr->initialize( bestParams ) )
-  {
-    mutex.lock();
-    
-    if(
-        ( paramsPtr->m_bestTransformationPtrPtr->get() == 0 )
+    if( 
+        ( threadSyncIteration >= threadSyncMaxIterations )
         ||
-        (
-          ( bestTiePoins.size() >
-            (*paramsPtr->m_bestTransformationPtrPtr)->getParameters().m_tiePoints.size() )
-          ||
-          (
-            ( bestTiePoins.size() ==
-              (*paramsPtr->m_bestTransformationPtrPtr)->getParameters().m_tiePoints.size() )
-            &&
+        ( currentIteration >= dynamicMaxIterations )
+        ||
+        ( consecutiveInvalidIterations >= dynamicMaxConsecutiveInvalidIterations )
+      )
+    {
+      threadSyncIteration = 0;
+      
+      mutex.lock();
+      
+      if( bestTransfPtr->initialize( bestParams ) )
+      {
+        if(
+            ( paramsPtr->m_bestTransformationPtrPtr->get() == 0 )
+            ||
             (
-              ( bestParamsConvexHullArea > (*paramsPtr->m_bestParamsConvexHullAreaPtr) )
+              ( bestTiePoins.size() >
+                (*paramsPtr->m_bestTransformationPtrPtr)->getParameters().m_tiePoints.size() )
               ||
               (
-                ( bestParamsConvexHullArea == (*paramsPtr->m_bestParamsConvexHullAreaPtr) )
+                ( bestTiePoins.size() ==
+                  (*paramsPtr->m_bestTransformationPtrPtr)->getParameters().m_tiePoints.size() )
                 &&
                 (
-                  ( bestParamsMaxDMapErrorPtr < (*paramsPtr->m_bestParamsMaxDMapErrorPtr) )
-                  &&
-                  ( bestParamsMaxIMapErrorPtr < (*paramsPtr->m_bestParamsMaxIMapErrorPtr) )
+                  ( bestParamsConvexHullArea > (*paramsPtr->m_bestParamsConvexHullAreaPtr) )
+                  ||
+                  (
+                    ( bestParamsConvexHullArea == (*paramsPtr->m_bestParamsConvexHullAreaPtr) )
+                    &&
+                    (
+                      ( bestParamsMaxDMapErrorPtr < (*paramsPtr->m_bestParamsMaxDMapErrorPtr) )
+                      &&
+                      ( bestParamsMaxIMapErrorPtr < (*paramsPtr->m_bestParamsMaxIMapErrorPtr) )
+                    )
+                  )
                 )
               )
             )
           )
-        )
-      )
-    {
-      (*paramsPtr->m_bestTransformationPtrPtr).reset( 
-        bestTransfPtr.release() );
-      (*paramsPtr->m_bestParamsMaxDMapErrorPtr) = bestParamsMaxDMapErrorPtr;
-      (*paramsPtr->m_bestParamsMaxIMapErrorPtr) = bestParamsMaxIMapErrorPtr;
-      (*paramsPtr->m_bestParamsConvexHullAreaPtr) = bestParamsConvexHullArea;
-      (*paramsPtr->m_bestTiePoinsPtr) = bestTiePoins;
-    }
+        {
+          (*paramsPtr->m_bestTransformationPtrPtr).reset( 
+            bestTransfPtr->clone() );
+          (*paramsPtr->m_bestParamsMaxDMapErrorPtr) = bestParamsMaxDMapErrorPtr;
+          (*paramsPtr->m_bestParamsMaxIMapErrorPtr) = bestParamsMaxIMapErrorPtr;
+          (*paramsPtr->m_bestParamsConvexHullAreaPtr) = bestParamsConvexHullArea;
+          (*paramsPtr->m_bestTiePoinsPtr) = bestTiePoins;
+        }
+      }      
       
-    mutex.unlock();
+      if( dynamicMaxIterations < globalDynamicMaxIterations )
+        globalDynamicMaxIterations = dynamicMaxIterations;
+      
+      mutex.unlock();       
+    }
+    
+    ++threadSyncIteration;
+    ++currentIteration;
   }
 }
 
