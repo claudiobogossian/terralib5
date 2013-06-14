@@ -75,7 +75,7 @@ te::da::OrderBy* te::qt::widgets::OrderByWidget::gerOrderBy()
 {
   std::vector<std::pair<std::string, std::string> > vec;
 
-  getOrderItens(vec);
+  getOrderItems(vec);
 
   if(vec.empty())
     return 0;
@@ -107,7 +107,7 @@ void te::qt::widgets::OrderByWidget::setAttributeList(const std::vector<std::str
   }
 }
 
-void te::qt::widgets::OrderByWidget::getOrderItens(std::vector<std::pair<std::string, std::string> >& list)
+void te::qt::widgets::OrderByWidget::getOrderItems(std::vector<std::pair<std::string, std::string> >& list)
 {
   int row = m_ui->m_orderTableWidget->rowCount();
 

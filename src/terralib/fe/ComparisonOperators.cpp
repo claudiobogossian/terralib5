@@ -38,7 +38,7 @@ te::fe::ComparisonOperators::ComparisonOperators()
 
 te::fe::ComparisonOperators::~ComparisonOperators()
 {
-// we will not clear the vector itens beacuse they are just reference to an internal list of operators.
+// we will not clear the vector items beacuse they are just reference to an internal list of operators.
 }
 
 void te::fe::ComparisonOperators::push_back(const char* c)

@@ -21,7 +21,7 @@
   \file terralib/qt/widgets/AbstractPropertyManager.h
 
   \brief A singleton for holding the property browser 
-    itens factories.
+    items factories.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_ABSTRACTPROPERTYMANAGER_H
@@ -47,7 +47,7 @@ namespace te
         \class AbstractPropertyManager
 
         \brief A singleton for holding the property browser 
-                itens factories.
+                items factories.
       */
       class TEQTWIDGETSEXPORT AbstractPropertyManager : public te::common::Singleton<AbstractPropertyManager>, public QWidget
       {

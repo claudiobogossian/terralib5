@@ -138,11 +138,11 @@ void te::qt::widgets::SymbolSelectorDialog::onLoadSymbolLibraryPushButtonPressed
 
 void te::qt::widgets::SymbolSelectorDialog::onSearchLineEditTextChanged(const QString& text)
 {
-  QList<QTreeWidgetItem*> itens = m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
-  itens.append(m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 1));
-  itens.append(m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 2));
+  QList<QTreeWidgetItem*> items = m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
+  items.append(m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 1));
+  items.append(m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 2));
 
-  filter(itens);
+  filter(items);
 }
 
 void te::qt::widgets::SymbolSelectorDialog::initialize()
@@ -187,7 +187,7 @@ void te::qt::widgets::SymbolSelectorDialog::initialize()
   m_ui->m_symbolLibraryTreeWidget->expandAll();
 }
 
-void te::qt::widgets::SymbolSelectorDialog::filter(const QList<QTreeWidgetItem*>& itens)
+void te::qt::widgets::SymbolSelectorDialog::filter(const QList<QTreeWidgetItem*>& items)
 {
   for(int i = 0; i < m_ui->m_symbolLibraryTreeWidget->topLevelItemCount(); ++i)
   {
@@ -198,7 +198,7 @@ void te::qt::widgets::SymbolSelectorDialog::filter(const QList<QTreeWidgetItem*>
     {
       QTreeWidgetItem* symbol = library->child(j);
       assert(symbol && symbol->type() == SYMBOL);
-      bool hide = itens.indexOf(symbol) == -1;
+      bool hide = items.indexOf(symbol) == -1;
       symbol->setHidden(hide);
     }
   }
