@@ -111,7 +111,6 @@ namespace te
             bool m_useDynamicIterationsNumber;
             RansacItCounterT* m_dynamicMaxIterationsPtr;
             RansacItCounterT m_iterationsDivFactor;
-            RansacItCounterT* m_dynamicMaxConsecutiveInvalidIterationsPtr;
             bool* m_returnValuePtr;
             boost::mutex* m_mutexPtr;
             bool* m_keepRunningFlagPtr;
