@@ -96,6 +96,8 @@ namespace te
 
           void add(const te::map::AbstractLayerPtr& layer);
 
+          void childrenAdded(const QModelIndex& idx);
+
         public:
 
           /*!

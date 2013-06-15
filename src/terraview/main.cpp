@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
     waitVal = app.exec();
   }
-  catch(const std::exception& /*e*/)
+  catch(const std::exception& e)
   {
     return EXIT_FAILURE;
   }

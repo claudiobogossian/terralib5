@@ -249,6 +249,8 @@ namespace te
 
           void visibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);
 
+          void expand(const QModelIndex&);
+
         protected:
 
           /*!

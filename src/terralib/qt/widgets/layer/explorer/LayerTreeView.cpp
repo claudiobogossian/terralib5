@@ -269,6 +269,30 @@ void te::qt::widgets::LayerTreeView::add(const te::map::AbstractLayerPtr& layer)
   model->add(layer);
 }
 
+void te::qt::widgets::LayerTreeView::childrenAdded(const QModelIndex& idx)
+{
+//  setUpdatesEnabled(false);
+
+  QModelIndex parent = idx.parent();
+
+  if (parent.isValid())
+    childrenAdded(parent);
+
+  te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(idx.internalPointer());
+
+  if(item != 0)
+  {
+    te::map::AbstractLayerPtr layer = item->getLayer();
+
+    if(layer.get() !=0 && layer.get()->getType().compare("FOLDERLAYER") == 0)
+      setExpanded(idx, true);
+  }
+
+//  setUpdatesEnabled(true);
+
+  viewport()->repaint();
+}
+
 void te::qt::widgets::LayerTreeView::add(QAction* action,
                                          const QString& menu,
                                          const QString& layerType,

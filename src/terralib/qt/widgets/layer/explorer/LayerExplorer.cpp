@@ -60,6 +60,8 @@ te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent, Qt::WindowFlags f
 
   m_treeView->setHeaderHidden(true);
   m_treeView->setIndentation(TE_QTWIDGETS_DEFAULT_TREEVIEW_IDENTATION);
+
+  m_treeView->connect (m_treeModel, SIGNAL(expand(const QModelIndex&)), SLOT(childrenAdded(const QModelIndex&)));
 }
 
 te::qt::widgets::LayerExplorer::~LayerExplorer()
