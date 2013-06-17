@@ -382,6 +382,9 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
 
   while(ds->moveNext())
   {
+    if(ds->isNull(attrName))
+      continue;
+
     switch(dataType)
     {
       case te::dt::INT16_TYPE:
@@ -415,7 +418,8 @@ void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& 
 
   while(ds->moveNext())
   {
-    vec.push_back(ds->getAsString(attrName));
+    if(!ds->isNull(attrName))
+      vec.push_back(ds->getAsString(attrName));
   }
 }
 
