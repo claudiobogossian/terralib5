@@ -18,7 +18,7 @@
 */
 
 /*!
-  \file terralib/statistics/Enums.h
+  \file terralib/statistics/core/Enums.h
 
   \brief Enumerations related to Vector Processing module.
 */
@@ -45,14 +45,13 @@ namespace te
       COUNT,              //!< Total number of values.
       VALID_COUNT,        //!< Total not null values.
       STANDARD_DEVIATION, //!< Standard deviation.
-      KERNEL,             //!< Kernel.
       VARIANCE,           //!< Variance.
       SKEWNESS,           //!< Skewness.
       KURTOSIS,           //!< Kurtosis.
       AMPLITUDE,          //!< Amplitude.
       MEDIAN,             //!< Median.
       VAR_COEFF,          //!< Coefficient variation.
-      MODE               //!< Mode.
+      MODE                //!< Mode.
     };
   }
 }

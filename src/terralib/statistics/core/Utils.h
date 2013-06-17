@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,35 +18,45 @@
  */
 
 /*!
-  \file SummaryFunctions.h
-   
-  \brief Statistical summary functions.
+  \file terralib/statistics/core/Utils.h
+
+  \brief Utility functions for Statistics.
 */
 
-#ifndef __TERRALIB_STATISTICAL_CORE_INTERNAL_SUMMARYFUNCTIONS_H
-#define __TERRALIB_STATISTICAL_CORE_INTERNAL_SUMMARYFUNCTIONS_H
+#ifndef __TERRALIB_STATISTICAL_CORE_INTERNAL_UTILS_H
+#define __TERRALIB_STATISTICAL_CORE_INTERNAL_UTILS_H
 
-//Terralib
+// Terralib
 #include "Config.h"
 #include "Enums.h"
-#include "NumericStatisticalSummary.h"
-#include "StringStatisticalSummary.h"
 
 // STL
-#include <vector>
+#include <list>
+#include <string>
 
 namespace te
 {
   namespace stat
   {
-    TESTATEXPORT void GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss);
+    /*!
+      \brief Get the StatisticalSummary short name filtered by enum;
 
-    TESTATEXPORT void GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss);
+      \param e   The enumerator.
 
-    TESTATEXPORT double Mode(const std::vector<double>& values);
+      \return The short name of enum.
+    */
+    TESTATEXPORT std::string GetStatSummaryShortName(const int& e);
 
-  } // end namespace stat
+    /*!
+      \brief Get the StatisticalSummary full name filtered by enum;
+
+      \param e   The enumerator.
+
+      \return The full name of enum.
+    */
+    TESTATEXPORT std::string GetStatSummaryFullName(const int& e);
+
+  } // end namespace vp
 }   // end namespace te
 
-#endif  // __TERRALIB_STATISTICAL_CORE_INTERNAL_SUMMARYFUNCTIONS_H
-
+#endif  // __TERRALIB_STATISTICAL_CORE_INTERNAL_UTILS_H
