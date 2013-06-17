@@ -28,6 +28,9 @@
 
 //Terralib
 #include "Config.h"
+#include "Enums.h"
+#include "NumericStatisticalSummary.h"
+#include "StringStatisticalSummary.h"
 
 // STL
 #include <vector>
@@ -36,14 +39,11 @@ namespace te
 {
   namespace stat
   {
-    /*!
-      \brief It returns the mode of the values.
+    TESTATEXPORT void getStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss);
 
-      \param values   Vector of values.
+    TESTATEXPORT void getNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss);
 
-      \output The mode of values.
-    */
-    double Mode(const std::vector<double>& values);
+    TESTATEXPORT double Mode(const std::vector<double>& values);
 
   } // end namespace stat
 }   // end namespace te

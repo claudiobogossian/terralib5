@@ -40,6 +40,7 @@ list (APPEND TE_DEP_LIBS
 	terralib_memory
 	terralib_qt_widgets
     terralib_plugin
+	terralib_statistics
 	terralib_symbology
 )
 
