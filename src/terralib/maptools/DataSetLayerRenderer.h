@@ -44,7 +44,7 @@ namespace te
 
       \brief It renders the objects associated to a dataset layer.
 
-      \sa AbstractLayer, AbstractRenderer, CoverageStyleRenderer, FeatureTypeStyleRenderer, QueryLayerRenderer, Canvas, te::se::Style
+      \sa AbstractLayer, AbstractRenderer, QueryLayerRenderer, Canvas, te::se::Style
 
       \todo Tratar o caso de ter raster e geometry como atributos do mesmo dataset!
 
@@ -61,6 +61,10 @@ namespace te
         ~DataSetLayerRenderer();
 
         void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+
+      private:
+
+        void drawGrouping(DataSetLayer* layer, te::da::DataSourceTransactor* transactor, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
     };
 
   } // end namespace map
