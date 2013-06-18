@@ -85,12 +85,15 @@ void te::qt::widgets::GroupingWidget::setLayer(te::map::AbstractLayerPtr layer)
 std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
 {
   std::string attr = m_ui->m_attrComboBox->currentText().toStdString();
+  int attrIdx =  m_ui->m_attrComboBox->currentIndex();
+  int attrType = m_ui->m_attrComboBox->itemData(attrIdx).toInt();
 
   int index = m_ui->m_typeComboBox->currentIndex();
-
   int type = m_ui->m_typeComboBox->itemData(index).toInt();
 
   std::auto_ptr<te::map::Grouping> group(new te::map::Grouping(attr, (te::map::GroupingType)type));
+
+  group->setPropertyType(attrType);
 
   group->setNumSlices(m_ui->m_slicesSpinBox->value());
 

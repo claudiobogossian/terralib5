@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/STLUtils.h"
+#include "../datatype/Enums.h"
 #include "Grouping.h"
 #include "GroupingItem.h"
 
@@ -32,6 +33,7 @@
 te::map::Grouping::Grouping(const std::string& propertyName, te::map::GroupingType type, size_t precision)
   : m_propertyName(propertyName), m_type(type), m_precision(precision)
 {
+  m_propertyType = te::dt::UNKNOWN_TYPE;
 }
 
 te::map::Grouping::~Grouping()
@@ -48,6 +50,16 @@ std::string te::map::Grouping::getPropertyName() const
 void te::map::Grouping::setPropertyName(const std::string& name)
 {
   m_propertyName = name;
+}
+
+int te::map::Grouping::getPropertyType() const
+{
+  return m_propertyType;
+}
+
+void te::map::Grouping::setPropertyType(const int& type)
+{
+  m_propertyType = type;
 }
 
 
