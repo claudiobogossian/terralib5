@@ -78,4 +78,3 @@ void te::stat::StringStatisticalSummary::clear()
   m_count = 0;
   m_validCount = 0;
 }
-

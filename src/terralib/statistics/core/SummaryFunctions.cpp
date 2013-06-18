@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Aggregation.h
+  \file SummaryFunctions.cpp
 
   \brief Statistical summary functions.
 */
@@ -31,7 +31,10 @@
 // BOOST
 #include <boost/lexical_cast.hpp>
 
-void te::stat::getStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss)
+//STL
+#include <numeric>
+
+void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss)
 {
   std::sort(values.begin(), values.end());
   
@@ -49,9 +52,45 @@ void te::stat::getStringStatisticalSummary(std::vector<std::string>& values, te:
   }
 }
 
-void te::stat::getNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss)
+void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss)
 {
+  std::sort(values.begin(), values.end());
 
+  ss.m_minVal = *values.begin();
+  ss.m_maxVal = values[values.size() - 1];
+  ss.m_count = values.size();
+  ss.m_validCount = values.size();
+  
+  int init = 0;
+  ss.m_sum = std::accumulate(values.begin(), values.end(), init);
+
+  ss.m_mean = ss.m_sum/ss.m_count;
+
+  for(int i = 0; i < ss.m_count; ++i)
+  {
+    double v= values[i];
+    ss.m_variance += pow((v-ss.m_mean),2); 
+    ss.m_skewness += pow((v-ss.m_mean),3);   
+    ss.m_kurtosis += pow((v-ss.m_mean),4); 
+  }
+
+  ss.m_variance /= ss.m_count; 
+  ss.m_stdDeviation = pow(ss.m_variance, 0.5); 
+  ss.m_skewness /= ss.m_count;
+  ss.m_skewness /= pow(ss.m_stdDeviation, 3); 
+  ss.m_kurtosis /= ss.m_count;
+  ss.m_kurtosis /= pow(ss.m_stdDeviation, 4); 
+
+  ss.m_varCoeff = (100* ss.m_stdDeviation) / ss.m_mean;
+  ss.m_amplitude = ss.m_maxVal - ss.m_minVal;
+
+  if((ss.m_count % 2) == 0)
+    ss.m_median = (values[(ss.m_count/2)] + values[(ss.m_count/2-1)])/2;
+  else
+    ss.m_median = values[(ss.m_count-1)/2];
+
+
+  ss.m_mode = Mode(values);
 }
 
 double te::stat::Mode(const std::vector<double>& values)
