@@ -385,26 +385,16 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
     if(ds->isNull(attrName))
       continue;
 
-    switch(dataType)
-    {
-      case te::dt::INT16_TYPE:
-        vec.push_back((double)ds->getInt16(attrName));
-
-      case te::dt::INT32_TYPE:
-        vec.push_back((double)ds->getInt32(attrName));
-
-      case te::dt::INT64_TYPE:
-        vec.push_back((double)ds->getInt64(attrName));
-
-      case te::dt::FLOAT_TYPE:
-        vec.push_back((double)ds->getFloat(attrName));
-
-      case te::dt::DOUBLE_TYPE:
-        vec.push_back(ds->getDouble(attrName));
-
-      default:
-        continue;
-    }
+    if(dataType == te::dt::INT16_TYPE)
+      vec.push_back((double)ds->getInt16(attrName));
+    else if(dataType == te::dt::INT32_TYPE)
+      vec.push_back((double)ds->getInt32(attrName));
+    else if(dataType == te::dt::INT64_TYPE)
+      vec.push_back((double)ds->getInt64(attrName));
+    else if(dataType == te::dt::FLOAT_TYPE)
+      vec.push_back((double)ds->getFloat(attrName));
+    else if(dataType == te::dt::DOUBLE_TYPE)
+      vec.push_back(ds->getDouble(attrName));
   }
 }
 
