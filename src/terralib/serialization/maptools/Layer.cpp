@@ -232,6 +232,16 @@ te::map::Grouping* ReadLayerGrouping(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* Property Data Type */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PropertyDataType");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  int propertyType = reader.getElementValueAsInt32();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
   /* Grouping Type */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -253,6 +263,7 @@ te::map::Grouping* ReadLayerGrouping(te::xml::Reader& reader)
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   std::auto_ptr<te::map::Grouping> g(new te::map::Grouping(propertyName, GetGroupingType(type), precision));
+  g->setPropertyType(propertyType);
 
   reader.next();
   if(reader.getElementLocalName() == "StandardDeviation")
@@ -301,6 +312,7 @@ void WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& wr
   te::map::GroupingType type = g->getType();
 
   writer.writeElement("te_map:PropertyName", g->getPropertyName());
+  writer.writeElement("te_map:PropertyDataType", g->getPropertyType());
   writer.writeElement("te_map:Type", GetGroupingType(type));
   writer.writeElement("te_map:Precision", g->getPrecision());
   
