@@ -104,9 +104,9 @@ std::string te::map::GroupingItem::getTitle()
 {
   if(m_title.empty())
   {
-    if(m_value.empty())
+    if(!m_value.empty())
       m_title = m_value;
-    else if(m_from.empty() && m_to.empty())
+    else if(!m_from.empty() && !m_to.empty())
       m_title = m_from + " - " + m_to;
     else 
       m_title = "";
