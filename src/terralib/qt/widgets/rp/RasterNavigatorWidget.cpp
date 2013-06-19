@@ -429,7 +429,7 @@ void te::qt::widgets::RasterNavigatorWidget::getCompositionInfo()
 // for while, consider one rule
   const te::se::Rule* rule = cs->getRule(0);
 
-  const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
+  const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
   assert(!symbolizers.empty());
 
 // for while, consider one raster symbolizer

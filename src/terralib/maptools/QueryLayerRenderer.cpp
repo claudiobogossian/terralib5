@@ -191,7 +191,7 @@ void te::map::QueryLayerRenderer::drawGeometries(QueryLayer* layer,
       continue;
 
 // get the set of symbolizers defined on current rule
-    const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
+    const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
     std::size_t nSymbolizers = symbolizers.size();
 
 // build task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
