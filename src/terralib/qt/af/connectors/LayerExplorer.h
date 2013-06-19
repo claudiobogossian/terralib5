@@ -29,8 +29,12 @@
 // Terralib
 #include "../Config.h"
 
+#include "../../../maptools/AbstractLayer.h"
+
 // Qt
 #include <QtCore/QObject>
+
+#include <vector>
 
 // Forward declarations
 class QItemSelection;
@@ -104,6 +108,8 @@ namespace te
           void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
           void onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);
+
+          void layersChanged(const std::vector<te::map::AbstractLayerPtr>& layers);
 
         protected:
 

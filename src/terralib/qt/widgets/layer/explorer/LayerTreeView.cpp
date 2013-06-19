@@ -271,8 +271,6 @@ void te::qt::widgets::LayerTreeView::add(const te::map::AbstractLayerPtr& layer)
 
 void te::qt::widgets::LayerTreeView::childrenAdded(const QModelIndex& idx)
 {
-//  setUpdatesEnabled(false);
-
   QModelIndex parent = idx.parent();
 
   if (parent.isValid())
@@ -288,7 +286,17 @@ void te::qt::widgets::LayerTreeView::childrenAdded(const QModelIndex& idx)
       setExpanded(idx, true);
   }
 
-//  setUpdatesEnabled(true);
+  LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());
+
+  if(model == 0)
+  {
+    QMessageBox::warning(this,
+                         tr("TerraLib"),
+                         tr("Can not add a layer to an empty model!"));
+    return;
+  }
+
+  emit layersChanged(model->getTopLevelLayers());
 
   viewport()->repaint();
 }

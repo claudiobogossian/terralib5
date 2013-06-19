@@ -92,6 +92,8 @@ namespace te
 
           void visibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);
 
+          void layersChanged(const std::vector<te::map::AbstractLayerPtr>&);
+
         public slots:
 
           void add(const te::map::AbstractLayerPtr& layer);

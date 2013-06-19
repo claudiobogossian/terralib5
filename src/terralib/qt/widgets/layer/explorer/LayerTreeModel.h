@@ -245,6 +245,13 @@ namespace te
           */
           void add(const te::map::AbstractLayerPtr& layer);
 
+          /*!
+            \brief Returns the top level layers vector.
+
+            \return A vector with the top level layers.
+          */
+          std::vector<te::map::AbstractLayerPtr> getTopLevelLayers();
+
         signals:
 
           void visibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);

@@ -571,27 +571,26 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
   writer.writeEndElement("te_map:QueryLayer");
 }
 
-void FolderLayerWriter(const te::map::AbstractLayer* /*alayer*/, te::xml::Writer& /*writer*/)
+void FolderLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
 {
-  throw te::serialize::Exception("Not implemented yet!");
-  //const te::map::DataSetLayer* layer = dynamic_cast<const te::map::DataSetLayer*>(alayer);
+  const te::map::FolderLayer* folderLayer = static_cast<const te::map::FolderLayer*>(alayer);
 
-  //if(layer == 0)
-  //  return;
+  writer.writeStartElement("te_map:FolderLayer");
 
-  //writer.writeStartElement("DataSetLayer");
+  writer.writeAttribute("id", folderLayer->getId());
+  writer.writeElement("te_map:Title", folderLayer->getTitle());
+  writer.writeElement("te_map:Visible", GetVisibility(folderLayer->getVisibility()));
 
-  //writer.writeAttribute("id", layer->getId());
-  //writer.writeElement("Title", layer->getTitle());
-  //writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
-  //writer.writeElement("DataSetName", layer->getDataSetName());
-  //writer.writeElement("DataSourceId", layer->getDataSourceId());
-  //writer.writeElement("SRID", layer->getSRID());
-  //te::serialize::SaveExtent(&layer->getExtent(), writer);
-  //writer.writeElement("RendererId", layer->getRendererType());
-  //writer.writeElement("StyleId", "x");
+  writer.writeStartElement("te_map:LayerList");
+ 
+  size_t count = folderLayer->getChildrenCount();
 
-  //writer.writeEndElement("DataSetLayer");
+  for(size_t i=0; i<count; i++)
+    te::serialize::Layer::getInstance().write((const te::map::AbstractLayer*) folderLayer->getChild(i).get(), writer);
+
+  writer.writeEndElement("te_map:LayerList");
+
+  writer.writeEndElement("te_map:FolderLayer");
 }
 
 void RasterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)

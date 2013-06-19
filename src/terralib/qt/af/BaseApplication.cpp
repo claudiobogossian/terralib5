@@ -105,6 +105,8 @@
 
 // Boost
 #include <boost/format.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::map::AbstractLayerPtr FindLayerInProject(te::map::AbstractLayer* layer, te::qt::af::Project* proj)
 {
@@ -296,6 +298,18 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
       sridText += ":" + QString::number(srid.first);
       m_mapSRIDLineEdit->setText(sridText);
     }
+    break;
+
+    case te::qt::af::evt::LAYERS_CHANGED:
+      {
+        te::qt::af::evt::LayersChanged* e = static_cast<te::qt::af::evt::LayersChanged*>(evt);
+        m_project->clear();
+
+        std::vector<te::map::AbstractLayerPtr>::iterator it;
+
+        for(it=e->m_layers.begin(); it!=e->m_layers.end(); ++it)
+          m_project->add(*it);
+      }
     break;
 
     default:
@@ -566,8 +580,13 @@ void te::qt::af::BaseApplication::onLayerNewLayerGroupTriggered()
     return;
   }
 
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+
   te::map::AbstractLayerPtr folder(new te::map::FolderLayer);
   folder->setTitle(text.toStdString());
+  folder->setId(id);
 
   m_explorer->getExplorer()->add(folder);
 }

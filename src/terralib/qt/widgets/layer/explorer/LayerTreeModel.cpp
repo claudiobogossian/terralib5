@@ -744,6 +744,17 @@ void te::qt::widgets::LayerTreeModel::add(const te::map::AbstractLayerPtr& layer
   endInsertRows();
 }
 
+std::vector<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeModel::getTopLevelLayers()
+{
+  std::vector<te::map::AbstractLayerPtr> layers;
+  std::vector<te::qt::widgets::AbstractLayerTreeItem*>::iterator it;
+ 
+  for(it=m_items.begin(); it!=m_items.end(); ++it)
+    layers.push_back((*it)->getLayer());
+
+  return layers;
+}
+
 void te::qt::widgets::LayerTreeModel::emitDataChangedForDescendants(const QModelIndex& parent)
 {
   if(!parent.isValid())
