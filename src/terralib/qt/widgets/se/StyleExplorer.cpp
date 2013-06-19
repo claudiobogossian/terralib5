@@ -145,7 +145,7 @@ void te::qt::widgets::StyleExplorer::initialize()
   for(std::size_t i = 0; i < nRules; ++i) // for each rule
   {
     const te::se::Rule* rule = m_style->getRule(i);
-    std::vector<te::se::Symbolizer*> symbs = rule->getSymbolizers();
+    const std::vector<te::se::Symbolizer*>& symbs = rule->getSymbolizers();
 
     QTreeWidgetItem* ruleItem = new QTreeWidgetItem(root, RULE);
     ruleItem->setText(0, tr("Rule"));
@@ -186,7 +186,7 @@ te::se::Symbolizer* te::qt::widgets::StyleExplorer::getSymbolizer(QTreeWidgetIte
   assert(rule);
 
   // Gets the rule symbolizers
-  std::vector<te::se::Symbolizer*> symbs = rule->getSymbolizers();
+  const std::vector<te::se::Symbolizer*>& symbs = rule->getSymbolizers();
 
   // Gets the Symbolizer index
   std::size_t index = item->data(0, Qt::UserRole).toUInt();
@@ -260,7 +260,7 @@ void te::qt::widgets::StyleExplorer::onSymbolizerChanged(te::se::Symbolizer* sym
 
   if(rule && ruleItem)
   {
-    std::vector<te::se::Symbolizer*> symbs = rule->getSymbolizers();
+    const std::vector<te::se::Symbolizer*>& symbs = rule->getSymbolizers();
 
     ruleItem->setIcon(0, QIcon(SymbologyPreview::build(symbs, iconSize())));
   }

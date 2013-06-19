@@ -102,11 +102,11 @@ void te::map::GroupingItem::setUpperLimit(const std::string& to)
 
 std::string te::map::GroupingItem::getTitle()
 {
-  if(m_title.empty() == true)
+  if(m_title.empty())
   {
-    if(m_value.empty() == false)
+    if(!m_value.empty())
       m_title = m_value;
-    else if(m_from.empty() == false && m_to.empty() == false)
+    else if(!m_from.empty() && !m_to.empty())
       m_title = m_from + " - " + m_to;
     else 
       m_title = "";
@@ -130,12 +130,12 @@ void te::map::GroupingItem::setCount(std::size_t count)
   m_count = count;
 }
 
-std::vector<te::se::Symbolizer*>& te::map::GroupingItem::getSymbolizers()
+const std::vector<te::se::Symbolizer*>& te::map::GroupingItem::getSymbolizers() const
 {
   return m_symbolizers;
 }
 
-void te::map::GroupingItem::setSymbolizers(std::vector<te::se::Symbolizer*> symbolizers)
+void te::map::GroupingItem::setSymbolizers(const std::vector<te::se::Symbolizer*>& symbolizers)
 {
   te::common::FreeContents(m_symbolizers);
   m_symbolizers.clear();
