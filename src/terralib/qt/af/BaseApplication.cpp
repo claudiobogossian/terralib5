@@ -623,7 +623,7 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
     return;
   }
 
-  te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+  te::map::AbstractLayerPtr lay = (*layers.begin())->getLayer();
 
   te::qt::af::DataSetTableDockWidget* doc = GetLayerDock(lay.get(), m_tableDocks);
 

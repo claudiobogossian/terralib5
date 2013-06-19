@@ -50,15 +50,16 @@ void RemoveLayerFromList(const te::map::AbstractLayer* layer, std::vector<te::qt
     }
 }
 
-void RemoveLayer(const te::map::AbstractLayer* layer, std::vector<te::qt::widgets::AbstractLayerTreeItem*>& layers)
+void RemoveLayer(te::map::AbstractLayer* layer, std::vector<te::qt::widgets::AbstractLayerTreeItem*>& layers)
 {
   if (layer->getParent() == 0)
     RemoveLayerFromList(layer, layers);
   else
   {
     size_t idx = layer->getIndex();
-    layer->getParent()->remove(idx);
-    ((te::map::AbstractLayer*)layer->getParent())->updateVisibility();
+    te::map::AbstractLayer* parent = (te::map::AbstractLayer*)layer->getParent();
+    parent->remove(idx);
+    parent->updateVisibility();
   }
 }
 
@@ -69,6 +70,17 @@ size_t GetLayerPosition(const te::qt::widgets::AbstractLayerTreeItem* layer, std
       return i;
 
   return -1;
+}
+
+te::qt::widgets::AbstractLayerTreeItem* FindChild(const te::map::AbstractLayer* layer, const std::vector<te::qt::widgets::AbstractLayerTreeItem*>& layers)
+{
+  std::vector<te::qt::widgets::AbstractLayerTreeItem*>::const_iterator it;
+
+  for(it=layers.begin(); it!=layers.end(); ++it)
+    if(layer->getId() == (*it)->getLayer()->getId())
+      return *it;
+
+  return 0;
 }
 
 te::qt::widgets::LayerTreeModel::LayerTreeModel(QObject* parent)
@@ -174,7 +186,12 @@ QModelIndex te::qt::widgets::LayerTreeModel::index(int row, int column, const QM
   if(row >= parentItem->children().count())
     return QModelIndex();
 
-  AbstractLayerTreeItem* item = dynamic_cast<AbstractLayerTreeItem*>(parentItem->children().at(row));
+  AbstractLayerTreeItem* item = 0;
+
+  if(parentItem->getLayer().get()->hasChildren())
+    item = FindChild((te::map::AbstractLayer*)parentItem->getLayer()->getChild(row).get(), parentItem->getDescendants());
+  else
+    item = dynamic_cast<AbstractLayerTreeItem*>(parentItem->children().at(row));
 
   if(item == 0)
     throw Exception(TR_QT_WIDGETS("The layer item is not an AbstractLayerTreeItem!"));
@@ -465,20 +482,13 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
 
         if(parent.isValid())
         {
-          drag_item->setParent(0);
+          parent_item->getLayer()->remove(oldRow);
 
           if(oldRow < row) // priority down
-          {
-            parent_item->getLayer()->insert(row, drag_item->getLayer());
-            parent_item->getLayer()->remove(oldRow);
-          }
+            parent_item->getLayer()->insert(row-1, drag_item->getLayer());
           else        //priority up
-          {
-            parent_item->getLayer()->remove(oldRow);
             parent_item->getLayer()->insert(row, drag_item->getLayer());
-          }
 
-          drag_item->setParent(parent_item);
         }
         else
         {
