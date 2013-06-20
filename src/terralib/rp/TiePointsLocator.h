@@ -487,10 +487,6 @@ namespace te
           
           \param raster2YRescFact The Y axis rescale factor to be aplied into raster 2.
           
-          \param raster1MaxInterestPoints The maximum number of interes points to be found over raster 1.
-          
-          \param raster2MaxInterestPoints The maximum number of interes points to be found over raster 2.
-          
           \param raster1Data The raster 1 loaded data.
           
           \param maskRaster1Data The mask raster 1 loaded data.
@@ -506,8 +502,6 @@ namespace te
           const double raster1YRescFact,
           const double raster2XRescFact,
           const double raster2YRescFact,
-          const unsigned int raster1MaxInterestPoints,
-          const unsigned int raster2MaxInterestPoints,
           te::common::TaskProgress& progress,
           TiePointsLocator::OutputParameters* outParamsPtr,
           std::vector< double >& tiePointsWeights )
@@ -524,10 +518,6 @@ namespace te
           
           \param raster2YRescFact The Y axis rescale factor to be aplied into raster 2.
           
-          \param raster1MaxInterestPoints The maximum number of interes points to be found over raster 1.
-          
-          \param raster2MaxInterestPoints The maximum number of interes points to be found over raster 2.
-          
           \param raster1Data The raster 1 loaded data.
           
           \param maskRaster1Data The mask raster 1 loaded data.
@@ -543,8 +533,6 @@ namespace te
           const double raster1YRescFact,
           const double raster2XRescFact,
           const double raster2YRescFact,
-          const unsigned int raster1MaxInterestPoints,
-          const unsigned int raster2MaxInterestPoints,
           te::common::TaskProgress& progress,
           TiePointsLocator::OutputParameters* outParamsPtr,
           std::vector< double >& tiePointsWeights )
@@ -628,14 +616,6 @@ namespace te
           
           \param maskRasterDataPtr The loaded mask raster data pointer (or zero if no mask is avaliable).
           
-          \param scalesNumber The number of sub-sampling scales to generate.
-          
-          \param octavesNumber The number of octaves to generate.
-          
-          \param maxInterestPoints The maximum number of interest points to find over raster 1 (for each scale).
-          
-          \param enableMultiThread Enable/disable multi-thread.
-          
           \param interestPoints The found interest points (coords related to rasterData lines/cols).          
 
           \return true if ok, false on errors.
@@ -644,14 +624,10 @@ namespace te
           InterestPointT::m_feature2 will be used filter width (pixels),
           InterestPointT::m_feature3 will 1 if the laplacian sign is positive or zero if negative.
         */             
-        static bool locateSurfInterestPoints( 
+        bool locateSurfInterestPoints( 
           const DoublesMatrix& integralRasterData,
           UCharsMatrix const* maskRasterDataPtr,
-          const unsigned int maxInterestPoints,
-          const unsigned int enableMultiThread,
-          const unsigned int scalesNumber,
-          const unsigned int octavesNumber,
-          InterestPointsSetT& interestPoints );          
+          InterestPointsSetT& interestPoints ) const;          
           
         /*! 
           \brief Movavec locator thread entry.

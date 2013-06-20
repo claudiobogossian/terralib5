@@ -275,35 +275,6 @@ namespace te
       raster2XRescFact *= m_inputParameters.m_rastersRescaleFactor;
       raster2YRescFact *= m_inputParameters.m_rastersRescaleFactor;
       
-      /* Calculating the maximum interest points number and the Moravec window
-        width for each image trying to keep the same density for both images 
-        - this is usefull for the case where the area covered by raster 1
-        is different from the area covered by raster 1*/
-      
-      unsigned int raster1MaxInterestPoints = m_inputParameters.m_maxTiePoints;
-      unsigned int raster2MaxInterestPoints = m_inputParameters.m_maxTiePoints;
-      {
-        double rescRaster1Area = 
-          ( (double)( m_inputParameters.m_raster1TargetAreaWidth ) * raster1XRescFact ) *
-          ( (double)( m_inputParameters.m_raster1TargetAreaHeight ) * raster1YRescFact );
-        double rescRaster2Area =
-          ( (double)( m_inputParameters.m_raster2TargetAreaWidth ) * raster2XRescFact ) *
-          ( (double)( m_inputParameters.m_raster2TargetAreaHeight ) * raster2YRescFact );;
-          
-        if( rescRaster1Area > rescRaster2Area )
-        {
-          raster1MaxInterestPoints = (unsigned int)( 
-            rescRaster1Area / 
-            ( rescRaster2Area / ( (double)m_inputParameters.m_maxTiePoints ) ) );
-        }
-        else if( rescRaster1Area < rescRaster2Area )
-        {
-          raster2MaxInterestPoints = (unsigned int)( 
-            rescRaster2Area / 
-            ( rescRaster1Area / ( (double)m_inputParameters.m_maxTiePoints ) ) ); 
-        }
-      }
-      
       // progress
       
       std::auto_ptr< te::common::TaskProgress > progressPtr;
@@ -333,8 +304,6 @@ namespace te
             raster1YRescFact,
             raster2XRescFact,
             raster2YRescFact,
-            raster1MaxInterestPoints,
-            raster2MaxInterestPoints,
             *progressPtr,
             outParamsPtr,
             tiePointsWeights ),
@@ -348,8 +317,6 @@ namespace te
             raster1YRescFact,
             raster2XRescFact,
             raster2YRescFact,
-            raster1MaxInterestPoints,
-            raster2MaxInterestPoints,
             *progressPtr,
             outParamsPtr,
             tiePointsWeights ),
@@ -410,8 +377,6 @@ namespace te
       const double raster1YRescFact,
       const double raster2XRescFact,
       const double raster2YRescFact,
-      const unsigned int raster1MaxInterestPoints,
-      const unsigned int raster2MaxInterestPoints,
       te::common::TaskProgress& progress,
       TiePointsLocator::OutputParameters* outParamsPtr,
       std::vector< double >& tiePointsWeights ) 
@@ -419,6 +384,32 @@ namespace te
     {
       outParamsPtr->m_tiePoints.clear();
       tiePointsWeights.clear();
+      
+      // Calculating the number of tie points to be found
+      
+      unsigned int raster1MaxInterestPoints = m_inputParameters.m_maxTiePoints;
+      unsigned int raster2MaxInterestPoints = m_inputParameters.m_maxTiePoints;
+      {
+        double rescRaster1Area = 
+          ( (double)( m_inputParameters.m_raster1TargetAreaWidth ) * raster1XRescFact ) *
+          ( (double)( m_inputParameters.m_raster1TargetAreaHeight ) * raster1YRescFact );
+        double rescRaster2Area =
+          ( (double)( m_inputParameters.m_raster2TargetAreaWidth ) * raster2XRescFact ) *
+          ( (double)( m_inputParameters.m_raster2TargetAreaHeight ) * raster2YRescFact );;
+          
+        if( rescRaster1Area > rescRaster2Area )
+        {
+          raster1MaxInterestPoints = (unsigned int)( 
+            rescRaster1Area / 
+            ( rescRaster2Area / ( (double)m_inputParameters.m_maxTiePoints ) ) );
+        }
+        else if( rescRaster1Area < rescRaster2Area )
+        {
+          raster2MaxInterestPoints = (unsigned int)( 
+            rescRaster2Area / 
+            ( rescRaster1Area / ( (double)m_inputParameters.m_maxTiePoints ) ) ); 
+        }
+      }
       
       // Updating the progress interface steps number
       
@@ -759,8 +750,6 @@ namespace te
       const double raster1YRescFact,
       const double raster2XRescFact,
       const double raster2YRescFact,
-      const unsigned int raster1MaxInterestPoints,
-      const unsigned int raster2MaxInterestPoints,
       te::common::TaskProgress& progress,
       TiePointsLocator::OutputParameters* outParamsPtr,
       std::vector< double >& tiePointsWeights ) 
@@ -832,10 +821,6 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( locateSurfInterestPoints( 
           integralRaster, 
           maskRasterData.getLinesNumber() ? (&maskRasterData) : 0, 
-          raster1MaxInterestPoints,
-          m_inputParameters.m_enableMultiThread,
-          m_inputParameters.m_surfScalesNumber,
-          m_inputParameters.m_surfOctavesNumber,
           candidateInterestPoints ),
           "Error locating raster 1 interest points" );
           
@@ -920,10 +905,6 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( locateSurfInterestPoints( 
           integralRaster, 
           maskRasterData.getLinesNumber() ? (&maskRasterData) : 0, 
-          raster2MaxInterestPoints,
-          m_inputParameters.m_enableMultiThread,
-          m_inputParameters.m_surfScalesNumber,
-          m_inputParameters.m_surfOctavesNumber,
           candidateInterestPoints ),
           "Error locating raster interest points" );
           
@@ -1032,15 +1013,11 @@ namespace te
       }
       
       // Removing the worse mathed points to fitting the required amount of matched points      
+      
+      while( matchedPoints.size() > m_inputParameters.m_maxTiePoints )
       {
-        const unsigned int maxMatchedInterestPoints = std::max( raster1MaxInterestPoints,
-          raster2MaxInterestPoints );
-          
-        while( matchedPoints.size() > maxMatchedInterestPoints )
-        {
-          matchedPoints.erase( matchedPoints.begin() );
-        }
-      }      
+        matchedPoints.erase( matchedPoints.begin() );
+      }
       
       // Generating the  output tie-points
       
@@ -1932,11 +1909,7 @@ namespace te
     bool TiePointsLocator::locateSurfInterestPoints( 
       const DoublesMatrix& integralRasterData,
       UCharsMatrix const* maskRasterDataPtr,
-      const unsigned int maxInterestPoints,
-      const unsigned int enableMultiThread,
-      const unsigned int scalesNumber,
-      const unsigned int octavesNumber,
-      InterestPointsSetT& interestPoints )
+      InterestPointsSetT& interestPoints ) const
     {
       interestPoints.clear();
       
@@ -1956,14 +1929,14 @@ namespace te
       threadParams.m_interestPointsPtr = &interestPoints;
       threadParams.m_integralRasterDataPtr = &integralRasterData;
       threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
-      threadParams.m_scalesNumber = scalesNumber;
-      threadParams.m_octavesNumber = octavesNumber;
+      threadParams.m_scalesNumber = m_inputParameters.m_surfScalesNumber;
+      threadParams.m_octavesNumber = m_inputParameters.m_surfOctavesNumber;
       
-      if( enableMultiThread )
+      if( m_inputParameters.m_enableMultiThread )
       {
         const unsigned int procsNumber = te::common::GetPhysProcNumber();
         const unsigned int maxGausFilterWidth = getSurfFilterSize( 
-          octavesNumber - 1, scalesNumber - 1 );          
+          m_inputParameters.m_surfOctavesNumber - 1, m_inputParameters.m_surfScalesNumber - 1 );          
         
         threadParams.m_maxRasterLinesBlockMaxSize = std::max(
           4 * maxGausFilterWidth, integralRasterData.getLinesNumber() / procsNumber );
@@ -1976,7 +1949,7 @@ namespace te
           ( ( integralRasterData.getLinesNumber() % threadParams.m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
 
         threadParams.m_maxInterestPointsPerRasterLinesBlock =
-          maxInterestPoints / rasterLinesBlocksNumber;
+          m_inputParameters.m_maxTiePoints / rasterLinesBlocksNumber;
         
         boost::thread_group threads;
         
@@ -1993,7 +1966,7 @@ namespace te
       else
       {
         threadParams.m_maxRasterLinesBlockMaxSize = integralRasterData.getLinesNumber();
-        threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
+        threadParams.m_maxInterestPointsPerRasterLinesBlock = m_inputParameters.m_maxTiePoints;
         
         locateSurfInterestPointsThreadEntry( &threadParams );
       }
