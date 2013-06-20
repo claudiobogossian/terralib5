@@ -178,33 +178,6 @@ namespace te
         };
         
         /*!
-          \class DoublesMatrix
-          \brief A matrix do store double values.
-         */        
-        class DoublesMatrix : public te::rp::Matrix< double >
-        { 
-          public :
-            
-            DoublesMatrix();
-            
-            ~DoublesMatrix();
-        };
-        
-        /*!
-          \class UCharsMatrix
-          \brief A matrix do store unsigned char values.
-         */        
-        class UCharsMatrix : public te::rp::Matrix< unsigned char >
-        { 
-          public :
-            
-            UCharsMatrix();
-            
-            ~UCharsMatrix();
-        };
-                
-        
-        /*!
           \class OutputParameters
           \brief TiePointsLocator output parameters
          */        
@@ -248,6 +221,24 @@ namespace te
         bool isInitialized() const;
 
       protected:
+        
+        /*!
+          \typedef FloatsMatrix
+          \brief A matrix do store float values.
+         */        
+        typedef te::rp::Matrix< float > FloatsMatrix;      
+        
+        /*!
+          \typedef DoublesMatrix
+          \brief A matrix do store double values.
+         */        
+        typedef te::rp::Matrix< double > DoublesMatrix;
+        
+        /*!
+          \typedef UCharsMatrix
+          \brief A matrix do store unsigned char values.
+         */    
+        typedef te::rp::Matrix< unsigned char > UCharsMatrix;
         
         /*! Interest point type */
         class InterestPointT
@@ -447,9 +438,9 @@ namespace te
         {
           public :
             
-            DoublesMatrix const* m_featuresSet1Ptr;
+            FloatsMatrix const* m_featuresSet1Ptr;
             
-            DoublesMatrix const* m_featuresSet2Ptr;
+            FloatsMatrix const* m_featuresSet2Ptr;
             
             InterestPointT const* m_interestPointsSet1Ptr;
 
@@ -457,7 +448,7 @@ namespace te
             
             unsigned int* m_nextFeatureIdx1ToProcessPtr;
             
-            DoublesMatrix* m_distMatrixPtr;
+            FloatsMatrix* m_distMatrixPtr;
             
             boost::mutex* m_syncMutexPtr;
             
@@ -790,17 +781,17 @@ namespace te
           
           \param integralRasterData The integral raster data.
           
-          \param features The generated features matrix (one feature per line, one feature per interest point).
+          \param validInterestPoints The valid interest points.
           
-          \param validInterestPoints The valid interest pionts related to each feature inside the features matrix (some interest points may be invalid and are removed).
+          \param features The generated features matrix (one feature per line, one feature per interest point).
           
           \return true if ok, false on errors.
         */             
         static bool generateSurfFeatures( 
           const InterestPointsSetT& interestPoints,
           const DoublesMatrix& integralRasterData,
-          DoublesMatrix& features,
-          InterestPointsSetT& validInterestPoints );          
+          InterestPointsSetT& validInterestPoints,
+          FloatsMatrix& features );          
           
         /*!
           \brief Save the generated features to tif files.
@@ -877,8 +868,8 @@ namespace te
           \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the inverse normalized distance in the range (0,1].
         */          
         static bool executeMatchingByEuclideanDist( 
-          const DoublesMatrix& featuresSet1,
-          const DoublesMatrix& featuresSet2,
+          const FloatsMatrix& featuresSet1,
+          const FloatsMatrix& featuresSet2,
           const InterestPointsSetT& interestPointsSet1,
           const InterestPointsSetT& interestPointsSet2,
           const unsigned int maxPt1ToPt2PixelDistance,
