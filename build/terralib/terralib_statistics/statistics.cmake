@@ -38,8 +38,7 @@ list (APPEND TE_DEP_LIBS
 	terralib_geometry
 	terralib_maptools
 	terralib_memory
-	terralib_qt_widgets
-    	terralib_plugin
+	terralib_plugin
 )
 
 # Files to process.
@@ -47,7 +46,7 @@ list (APPEND TE_DEP_LIBS
 set (
   _DIRS
   .
-#  qt
+  qt
   core
 )
 
@@ -66,11 +65,11 @@ getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 set (MOC "")
 
 # Select the header files for moc'ing
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/qt/.../h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/vp/qt" MOC)
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/qt/StatisticsDialog.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/statistics/qt" MOC)
 
 # Select the FORMS widgets
 file(
