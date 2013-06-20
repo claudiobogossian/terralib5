@@ -262,6 +262,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
 
   te::se::Categorize* c = new te::se::Categorize();
 
+  c->setFallbackValue("#000000");
   c->setLookupValue(new te::se::ParameterValue("Rasterdata"));
 
   QColor cWhite(Qt::white);
@@ -314,6 +315,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
 
   te::se::Interpolate* interpolate = new te::se::Interpolate();
 
+  interpolate->setFallbackValue("#000000");
   interpolate->setLookupValue(new te::se::ParameterValue("Rasterdata"));
   interpolate->setMethodType(te::se::Interpolate::COLOR);
 

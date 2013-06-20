@@ -66,6 +66,8 @@ namespace te
 
           te::da::Fields* getFields();
 
+          void setFields(const te::da::Fields* fields);
+
         public slots:
 
           void onItemChanged();

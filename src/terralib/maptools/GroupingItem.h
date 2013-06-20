@@ -32,7 +32,7 @@
 
 // STL
 #include <memory>
-
+#include <vector>
 
 namespace te
 {
@@ -111,7 +111,7 @@ namespace te
         /*!
           \brief It gets the title of the legend item.
 
-          \output The title of the legend item.
+          \return The title of the legend item.
         */
         std::string getTitle();
 
@@ -141,14 +141,14 @@ namespace te
 
           \output The symbolizer of the legend item.
         */
-        std::vector<te::se::Symbolizer*>& getSymbolizers();
+        const std::vector<te::se::Symbolizer*>& getSymbolizers() const;
 
         /*!
-          \brief It sets the symbolizer of the legend item.
+          \brief It sets the symbolizers of the legend item.
 
-          \param symbolizer The symbolizer of the legend item..
+          \param symbolizers The symbolizers of the legend item..
         */
-        void setSymbolizers(std::vector<te::se::Symbolizer*> symbolizers);
+        void setSymbolizers(const std::vector<te::se::Symbolizer*>& symbolizers);
 
       private:
 

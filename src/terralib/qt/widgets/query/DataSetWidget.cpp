@@ -76,6 +76,25 @@ te::da::From* te::qt::widgets::DataSetWidget::getFrom()
   return from;
 }
 
+void te::qt::widgets::DataSetWidget::setFrom(const te::da::From* from)
+{
+  std::vector<std::pair<std::string, std::string> > list;
+
+  for(std::size_t i = 0; i < from->size(); ++i)
+  {
+    const te::da::FromItem& item = from->at(i);
+
+    const te::da::DataSetName* dsName = dynamic_cast<const te::da::DataSetName*>(&item);
+
+    std::pair<std::string, std::string> p;
+    p.first = dsName->getName();
+    p.second = dsName->getAlias();
+    list.push_back(p);
+  }
+
+  setDataSetNames(list);
+}
+
 void te::qt::widgets::DataSetWidget::setDataSetNames(const boost::ptr_vector<std::string>& names)
 {
   QStringList list;
@@ -90,6 +109,39 @@ void te::qt::widgets::DataSetWidget::setDataSetNames(const boost::ptr_vector<std
 
   if(names.empty() == false)
     onDataSetComboBoxActivated(m_ui->m_dataSetComboBox->currentText());
+}
+
+void te::qt::widgets::DataSetWidget::setDataSetNames(std::vector<std::pair<std::string, std::string> >& list)
+{
+  for(std::size_t i = 0; i < list.size(); ++i)
+  {
+    int newrow = m_ui->m_dataSetTableWidget->rowCount();
+
+    //check if already exist an alias with this name
+    for(int i = 0; i < newrow; ++i)
+    {
+      QTableWidgetItem* itemName = m_ui->m_dataSetTableWidget->item(i, 1);
+
+      if(itemName->text().toStdString() == list[i].second)
+      {
+        QMessageBox::warning(this, tr("Query Editor"), tr("Data Set Alias already defined."));
+        return;
+      }
+    }
+
+    //new entry
+    m_ui->m_dataSetTableWidget->insertRow(newrow);
+
+    QTableWidgetItem* itemDataSet = new QTableWidgetItem(QString::fromStdString(list[i].first));
+    m_ui->m_dataSetTableWidget->setItem(newrow, 0, itemDataSet);
+
+    QTableWidgetItem* itemAlias = new QTableWidgetItem(QString::fromStdString(list[i].second));
+    m_ui->m_dataSetTableWidget->setItem(newrow, 1, itemAlias);
+
+    m_ui->m_dataSetTableWidget->resizeColumnToContents(0);
+
+    emit itemChanged();
+  }
 }
 
 void te::qt::widgets::DataSetWidget::getDataSetNames(std::vector<std::pair<std::string, std::string> >& list)

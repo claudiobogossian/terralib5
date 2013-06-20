@@ -43,6 +43,10 @@
 #include "../../maptools/AbstractLayer.h"
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
+#include "../../statistics/core/SummaryFunctions.h"
+#include "../../statistics/core/StringStatisticalSummary.h"
+#include "../../statistics/core/NumericStatisticalSummary.h"
+#include "../../statistics/core/Utils.h"
 #include "Aggregation.h"
 #include "AggregationDialog.h"
 #include "Config.h"
@@ -60,7 +64,7 @@
 
 void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                          const std::vector<te::dt::Property*>& groupingProperties,
-                         const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType,
+                         const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                          const te::vp::MemoryUse memoryUse,
                          const std::string& outputLayerName,
                          const te::da::DataSourceInfoPtr& dsInfo)
@@ -71,7 +75,7 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
   std::map<std::string, std::vector<te::mem::DataSetItem*> > groupValues = GetGroups(inputDataSet.get(), groupingProperties);
   std::map<std::string, std::vector<te::mem::DataSetItem*> >::const_iterator itGroupValues = groupValues.begin();
 
-  te::da::DataSetType* outputDataSetType = GetDataSetType(outputLayerName, groupingProperties, groupingFunctionsType);
+  te::da::DataSetType* outputDataSetType = GetDataSetType(outputLayerName, groupingProperties, statisticalSummary);
   te::mem::DataSet* outputDataSet = new te::mem::DataSet(outputDataSetType);
 
 
@@ -80,8 +84,8 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
     std::string value = itGroupValues->first.c_str();
     int aggregationCount = itGroupValues->second.size();
 
-    std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(groupingFunctionsType, itGroupValues->second);
-    std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(groupingFunctionsType, itGroupValues->second);
+    std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(statisticalSummary, itGroupValues->second);
+    std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(statisticalSummary, itGroupValues->second);
 
     te::gm::Geometry* geometry = GetUnionGeometry(itGroupValues->second);
 
@@ -130,12 +134,12 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
 
 te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, 
                                             const std::vector<te::dt::Property*>& properties, 
-                                            const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType)
+                                            const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary)
 {
   te::da::DataSetType* dataSetType = new te::da::DataSetType(outputLayerName);
   std::string propertyResult;
   std::string functionResult;
-  std::vector<te::vp::GroupingFunctionsType> vectorResult;
+  std::vector<te::stat::StatisticalSummary> vectorResult;
 
   for(std::size_t i = 0; i < properties.size(); ++i)
   {
@@ -149,9 +153,9 @@ te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName,
   te::dt::SimpleProperty* aggregationProperty = new te::dt::SimpleProperty("Aggregation_Count", te::dt::INT32_TYPE);
   dataSetType->add(aggregationProperty);
 
-  std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >::const_iterator it = groupingFunctionsType.begin();
+  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator it = statisticalSummary.begin();
 
-  while(it != groupingFunctionsType.end())
+  while(it != statisticalSummary.end())
   {
     propertyResult = "";
     propertyResult = it->first->getName();
@@ -162,7 +166,7 @@ te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName,
     for(std::size_t i = 0; i < vectorResult.size(); ++i)
     {
       functionResult = propertyResult;
-      functionResult += GetGroupingFunctionsTypeMap(vectorResult[i]);
+      functionResult += te::stat::GetStatSummaryShortName(vectorResult[i]);
       
       if(it->first->getType() == te::dt::STRING_TYPE)
       {
@@ -252,60 +256,6 @@ std::size_t te::vp::GetPropertyIndex(const te::mem::DataSetItem* item, const std
   return -1;
 }
 
-std::string te::vp::GetGroupingFunctionsTypeMap(const int& type)
-{
-  switch(type)
-  {
-    case MIN_VALUE:
-      return TR_VP("MIN_VALUE");
-      
-    case MAX_VALUE:
-      return TR_VP("MAX_VALUE");
-    
-    case MEAN:
-      return TR_VP("MEAN");
-    
-    case SUM:
-      return TR_VP("SUM");
-    
-    case COUNT:
-      return TR_VP("COUNT");
-    
-    case VALID_COUNT:
-      return TR_VP("VALID_COUNT");
-    
-    case STANDARD_DEVIATION:
-      return TR_VP("STANDARD_DEVIATION");
-    
-    case KERNEL:
-      return TR_VP("KERNEL");
-    
-    case VARIANCE:
-      return TR_VP("VARIANCE");
-    
-    case SKEWNESS:
-      return TR_VP("SKEWNESS");
-    
-    case KURTOSIS:
-      return TR_VP("KURTOSIS");
-    
-    case AMPLITUDE:
-      return TR_VP("AMPLITUDE");
-    
-    case MEDIAN:
-      return TR_VP("MEDIAN");
-    
-    case VAR_COEFF:
-      return TR_VP("VAR_COEFF");
-    
-    case MODE:
-      return TR_VP("MODE");
-
-    default:
-      return ("");
-  }
-}
-
 te::gm::Geometry* te::vp::GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items)
 {
   te::gm::Geometry* resultGeometry = 0; 
@@ -354,14 +304,14 @@ te::gm::Geometry* te::vp::GetUnionGeometry(const std::vector<te::mem::DataSetIte
   return resultGeometry;
 }
 
-std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType, 
+std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary, 
                                                                             const std::vector<te::mem::DataSetItem*>& items)
 {
   std::map<std::string, std::string> result;
 
-  std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >::const_iterator it = groupingFunctionsType.begin();
+  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator it = statisticalSummary.begin();
 
-  while(it != groupingFunctionsType.end())
+  while(it != statisticalSummary.end())
   {
     if(it->first->getType() == te::dt::STRING_TYPE)
     {
@@ -376,12 +326,13 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
           values.push_back(items[i]->getString(index));
       }
 
-      std::sort(values.begin(), values.end());
+      te::stat::StringStatisticalSummary ss;
+      te::stat::GetStringStatisticalSummary(values, ss);
 
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MIN_VALUE", *values.begin() ) );
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MAX_VALUE", values[values.size() - 1] ) );
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_COUNT", boost::lexical_cast<std::string>(values.size())));
-      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_VALID_COUNT", boost::lexical_cast<std::string>(values.size())));
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MIN_VALUE", ss.m_minVal ) );
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MAX_VALUE", ss.m_maxVal ) );
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_COUNT", boost::lexical_cast<std::string>(ss.m_count) ) );
+      result.insert( std::map<std::string, std::string>::value_type( propertyName + "_VALID_COUNT", boost::lexical_cast<std::string>(ss.m_validCount) ) );
     }
     ++it;
   }
@@ -389,20 +340,14 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
   return result;
 }
 
-std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >& groupingFunctionsType,
+std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                                                         const std::vector<te::mem::DataSetItem*>& items)
 {
   std::map<std::string, double> result;
 
-  int validCount,count;
-  validCount = count = 0;
+  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator it = statisticalSummary.begin();
 
-  double maxValue, minValue, mean, sum, standardDeviation, kernel, variance, skewness, kurtosis, amplitude, median, varCoeff, mode;
-  maxValue, minValue, mean = sum = standardDeviation = kernel = variance = skewness = kurtosis = amplitude = median = varCoeff = mode = 0.0;
-
-  std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> >::const_iterator it = groupingFunctionsType.begin();
-
-  while(it != groupingFunctionsType.end())
+  while(it != statisticalSummary.end())
   {
     if(it->first->getType() != te::dt::STRING_TYPE)
     {
@@ -417,64 +362,23 @@ std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const st
           values.push_back(items[i]->getDouble(index));
       }
 
-      std::sort(values.begin(), values.end());
+      te::stat::NumericStatisticalSummary ss;
+      te::stat::GetNumericStatisticalSummary(values, ss);
 
-      //Operations
-
-      minValue = *values.begin();
-
-      maxValue = values[values.size() - 1];
-
-      count = values.size();
-
-      sum = Sum(values);
-
-      mean = sum/count;
-
-      for(int i=0; i<count; i++)
-	    {
-		    double v= values[i];
-		    variance += pow((v-mean),2); 
-		    skewness += pow((v-mean),3);   
-		    kurtosis += pow((v-mean),4); 
-	    }
-
-      //if(!count)
-		    //return false;
-
-	    variance /= count; 
-	    standardDeviation = pow(variance,0.5); 
-	    skewness /= count;
-	    skewness /= pow(standardDeviation,3); 
-	    kurtosis /= count;
-	    kurtosis /= pow(standardDeviation,4); 
-
-	    varCoeff = (100*standardDeviation)/mean;
-	    amplitude = maxValue-minValue; 
-
-      if((count%2)==0)
-		    median = (values[(count/2)]+values[(count/2-1)])/2;
-	    else
-		    median = values[(count-1)/2];
-
-
-      mode = Mode(values);
-
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_MIN_VALUE", minValue ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_MAX_VALUE", maxValue ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_COUNT", count ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_VALID_COUNT", validCount ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_MEAN", mean ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_SUM", sum ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_STANDARD_DEVIATION", standardDeviation ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_KERNEL", kernel ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_VARIANCE", variance ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_SKEWNESS", skewness ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_KURTOSIS", kurtosis ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_AMPLITUDE", amplitude ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_MEDIAN", median ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_VAR_COEFF", varCoeff ) );
-      result.insert( std::map<std::string, double>::value_type( propertyName + "_MODE", mode ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_MIN_VALUE", ss.m_minVal ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_MAX_VALUE", ss.m_maxVal ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_COUNT", ss.m_count ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_VALID_COUNT", ss.m_validCount ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_MEAN", ss.m_mean ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_SUM", ss.m_sum ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_STANDARD_DEVIATION", ss.m_stdDeviation ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_VARIANCE", ss.m_variance ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_SKEWNESS", ss.m_skewness ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_KURTOSIS", ss.m_kurtosis ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_AMPLITUDE", ss.m_amplitude ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_MEDIAN", ss.m_median ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_VAR_COEFF", ss.m_varCoeff ) );
+      result.insert( std::map<std::string, double>::value_type( propertyName + "_MODE", ss.m_mode ) );
 
     }
     ++it;
@@ -495,70 +399,6 @@ bool te::vp::PropertyExists(const std::string& propertyName, const te::mem::Data
       return true;
   }
   return false;
-}
-
-double te::vp::Sum(const std::vector<double>& values)
-{
-  double sum = 0.0;
-
-  for(std::size_t i = 0; i < values.size(); ++i)
-  {
-    sum+= values[i];
-  }
-
-  return sum;
-
-}
-
-double te::vp::Mode(const std::vector<double>& values)
-{
-  bool found;
-  double mode = 0.0;
-  std::map<double, int> mapMode;
-
-  for(std::size_t i = 0; i < values.size(); ++i)
-  {
-    found = false;
-
-    if(!mapMode.empty())
-    {
-      std::map<double, int>::iterator itMode = mapMode.begin();
-
-      while(itMode != mapMode.end())
-      {
-        if(itMode->first == values[i])
-        {
-          ++itMode->second;
-          found = true;
-        }
-        
-        ++itMode;
-      }
-      if(found == false)
-      {
-        mapMode.insert( std::map<double, int>::value_type( values[i] , 1 ) );
-      }
-    }
-    else
-      mapMode.insert( std::map<double, int>::value_type( values[i] , 1 ) );
-  }
-
-  std::map<double, int>::iterator itMode = mapMode.begin();
-  int aux = 0;
-  int repeat = 0;
-
-  while(itMode != mapMode.end())
-  {
-    if(repeat < itMode->second)
-    {
-      repeat = itMode->second;
-      mode = itMode->first;
-    }
-
-    ++itMode;
-  }
-
-  return mode;
 }
 
 void te::vp::Persistence( te::da::DataSetType* dataSetType,

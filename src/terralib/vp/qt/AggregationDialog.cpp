@@ -34,6 +34,7 @@
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../statistics/core/Utils.h"
 #include "../core/Config.h"
 #include "../core/Exception.h"
 #include "Aggregation.h"
@@ -64,8 +65,8 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-aggregation-hint").pixmap(112,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
 
-  setGroupingFunctionsType();
-  setGroupingFunctionsTypeMap();
+  setStatisticalSummary();
+  setStatisticalSummaryMap();
 
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
@@ -113,9 +114,9 @@ int te::vp::AggregationDialog::getMemoryUse()
     return WHOLE_MEM;
 }
 
-std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > te::vp::AggregationDialog::getGroupingFunctionsType()
+std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::AggregationDialog::getStatisticalSummary()
 {
-  std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > outputGroupingFunctionsType;
+  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > outputStatisticalSummary;
 
   QList<QListWidgetItem*> itemList = m_ui->m_outputListWidget->selectedItems();
 
@@ -123,9 +124,8 @@ std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > te::vp:
   std::string aux = "";
   te::dt::Property* currentToken;
   te::dt::Property* auxProperty;
-  std::string groupingFunctionType = "";
-  te::vp::GroupingFunctionsType enumGroupingFunctionsType;
-  std::vector<te::vp::GroupingFunctionsType> vectorGroupingFunctionsType;
+  te::stat::StatisticalSummary enumStatisticalSummary;
+  std::vector<te::stat::StatisticalSummary> vectorStatisticalSummary;
   
   for(int i = 0; i < itemList.size(); ++i)
   {
@@ -145,24 +145,24 @@ std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > te::vp:
       currentToken = getSelectedPropertyByName(propertyName);
     }
 
-    enumGroupingFunctionsType = (te::vp::GroupingFunctionsType)itemList[i]->data(Qt::UserRole).toInt();
+    enumStatisticalSummary = (te::stat::StatisticalSummary)itemList[i]->data(Qt::UserRole).toInt();
 
     if(propertyName != aux && aux != "")
     {
-      outputGroupingFunctionsType[auxProperty] = vectorGroupingFunctionsType;
-      vectorGroupingFunctionsType.clear();
+      outputStatisticalSummary[auxProperty] = vectorStatisticalSummary;
+      vectorStatisticalSummary.clear();
       
       if(!propertyName.empty())
-        vectorGroupingFunctionsType.push_back(enumGroupingFunctionsType);
+        vectorStatisticalSummary.push_back(enumStatisticalSummary);
     }
     else
     {
-        vectorGroupingFunctionsType.push_back(enumGroupingFunctionsType);
+        vectorStatisticalSummary.push_back(enumStatisticalSummary);
 
       if(i == itemList.size() - 1)
       {
         auxProperty = currentToken;
-        outputGroupingFunctionsType[auxProperty] = vectorGroupingFunctionsType;
+        outputStatisticalSummary[auxProperty] = vectorStatisticalSummary;
       }
     }
 
@@ -170,7 +170,7 @@ std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > te::vp:
     auxProperty = currentToken;
   }
 
-  return outputGroupingFunctionsType;
+  return outputStatisticalSummary;
 }
 
 te::dt::Property* te::vp::AggregationDialog::getSelectedPropertyByName(std::string propertyName)
@@ -206,61 +206,57 @@ std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties(
   return selProperties;
 }
 
-void te::vp::AggregationDialog::setGroupingFunctionsType()
+void te::vp::AggregationDialog::setStatisticalSummary()
 {
   m_ui->m_selectAllComboBox->addItem("");
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Minimum value"), MIN_VALUE);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Maximum value"), MAX_VALUE);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Mean"), MEAN);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Sum of values"), SUM);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Total number of values"), COUNT);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Total not null values"), VALID_COUNT);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Standard deviation"), STANDARD_DEVIATION);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Kernel"), KERNEL);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Variance"), VARIANCE);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Skewness"), SKEWNESS);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Kurtosis"), KURTOSIS);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Amplitude"), AMPLITUDE);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Median"), MEDIAN);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Coefficient variation"), VAR_COEFF);
-  m_ui->m_selectAllComboBox->addItem(TR_VP("Mode"), MODE);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), te::stat::MEAN);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), te::stat::SUM);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), te::stat::COUNT);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), te::stat::VALID_COUNT);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), te::stat::STANDARD_DEVIATION);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), te::stat::VARIANCE);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SKEWNESS).c_str()), te::stat::SKEWNESS);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::KURTOSIS).c_str()), te::stat::KURTOSIS);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), te::stat::AMPLITUDE);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
+  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
 
   m_ui->m_rejectAllComboBox->addItem("");
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Minimum value"), MIN_VALUE);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Maximum value"), MAX_VALUE);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Mean"), MEAN);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Sum of values"), SUM);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Total number of values"), COUNT);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Total not null values"), VALID_COUNT);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Standard deviation"), STANDARD_DEVIATION);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Kernel"), KERNEL);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Variance"), VARIANCE);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Skewness"), SKEWNESS);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Kurtosis"), KURTOSIS);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Amplitude"), AMPLITUDE);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Median"), MEDIAN);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Coefficient variation"), VAR_COEFF);
-  m_ui->m_rejectAllComboBox->addItem(TR_VP("Mode"), MODE);
-
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), te::stat::MEAN);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), te::stat::SUM);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), te::stat::COUNT);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), te::stat::VALID_COUNT);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), te::stat::STANDARD_DEVIATION);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), te::stat::VARIANCE);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SKEWNESS).c_str()), te::stat::SKEWNESS);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::KURTOSIS).c_str()), te::stat::KURTOSIS);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), te::stat::AMPLITUDE);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
+  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
 }
 
-void te::vp::AggregationDialog::setGroupingFunctionsTypeMap()
+void te::vp::AggregationDialog::setStatisticalSummaryMap()
 {
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(MIN_VALUE, TR_VP("Minimum value")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(MAX_VALUE, TR_VP("Maximum value")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(MEAN, TR_VP("Mean")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(SUM, TR_VP("Sum of values")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(COUNT, TR_VP("Total number of values")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(VALID_COUNT, TR_VP("Total not null values")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(STANDARD_DEVIATION, TR_VP("Standard deviation")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(KERNEL, TR_VP("Kernel")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(VARIANCE, TR_VP("Variance")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(SKEWNESS, TR_VP("Skewness")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(KURTOSIS, TR_VP("Kurtosis")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(AMPLITUDE, TR_VP("Amplitude")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(MEDIAN, TR_VP("Median")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(VAR_COEFF, TR_VP("Coefficient variation")));
-  m_GroupingFunctionsTypeMap.insert(std::map<GroupingFunctionsType, std::string>::value_type(MODE, TR_VP("Mode")));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::MIN_VALUE, te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::MAX_VALUE, te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::MEAN, te::stat::GetStatSummaryFullName(te::stat::MEAN)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::SUM, te::stat::GetStatSummaryFullName(te::stat::SUM)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::COUNT, te::stat::GetStatSummaryFullName(te::stat::COUNT)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::VALID_COUNT, te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::STANDARD_DEVIATION, te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::VARIANCE, te::stat::GetStatSummaryFullName(te::stat::VARIANCE)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::SKEWNESS, te::stat::GetStatSummaryFullName(te::stat::SKEWNESS)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::KURTOSIS, te::stat::GetStatSummaryFullName(te::stat::KURTOSIS)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::AMPLITUDE, te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::MEDIAN, te::stat::GetStatSummaryFullName(te::stat::MEDIAN)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::VAR_COEFF, te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF)));
+  m_StatisticalSummaryMap.insert(StaticalSummaryMap::value_type(te::stat::MODE, te::stat::GetStatSummaryFullName(te::stat::MODE)));
 }
 
 void te::vp::AggregationDialog::setFunctionsByLayer(std::vector<te::dt::Property*> properties)
@@ -279,20 +275,20 @@ void te::vp::AggregationDialog::setFunctionsByLayer(std::vector<te::dt::Property
     {
       if(propertyType == te::dt::STRING_TYPE)
       {  
-        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MIN_VALUE].c_str());
-        item->setData(Qt::UserRole, QVariant(MIN_VALUE));
+        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MAX_VALUE].c_str());
-        item->setData(Qt::UserRole, QVariant(MAX_VALUE));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
         m_ui->m_outputListWidget->addItem(item);
         
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[COUNT].c_str());
-        item->setData(Qt::UserRole, QVariant(COUNT));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[VALID_COUNT].c_str());
-        item->setData(Qt::UserRole, QVariant(VALID_COUNT));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
         m_ui->m_outputListWidget->addItem(item);
 
         item = new QListWidgetItem("");
@@ -300,64 +296,60 @@ void te::vp::AggregationDialog::setFunctionsByLayer(std::vector<te::dt::Property
       }
       else
       {
-        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MIN_VALUE].c_str());
-        item->setData(Qt::UserRole, QVariant(MIN_VALUE));
+        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MAX_VALUE].c_str());
-        item->setData(Qt::UserRole, QVariant(MAX_VALUE));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MEAN].c_str());
-        item->setData(Qt::UserRole, QVariant(MEAN));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEAN].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[SUM].c_str());
-        item->setData(Qt::UserRole, QVariant(SUM));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SUM].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::SUM));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[COUNT].c_str());
-        item->setData(Qt::UserRole, QVariant(COUNT));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[VALID_COUNT].c_str());
-        item->setData(Qt::UserRole, QVariant(VALID_COUNT));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[STANDARD_DEVIATION].c_str());
-        item->setData(Qt::UserRole, QVariant(STANDARD_DEVIATION));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[KERNEL].c_str());
-        item->setData(Qt::UserRole, QVariant(KERNEL));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VARIANCE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[VARIANCE].c_str());
-        item->setData(Qt::UserRole, QVariant(VARIANCE));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SKEWNESS].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::SKEWNESS));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[SKEWNESS].c_str());
-        item->setData(Qt::UserRole, QVariant(SKEWNESS));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::KURTOSIS].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::KURTOSIS));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[KURTOSIS].c_str());
-        item->setData(Qt::UserRole, QVariant(KURTOSIS));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::AMPLITUDE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[AMPLITUDE].c_str());
-        item->setData(Qt::UserRole, QVariant(AMPLITUDE));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEDIAN].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MEDIAN));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MEDIAN].c_str());
-        item->setData(Qt::UserRole, QVariant(MEDIAN));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VAR_COEFF].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::VAR_COEFF));
         m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[VAR_COEFF].c_str());
-        item->setData(Qt::UserRole, QVariant(VAR_COEFF));
-        m_ui->m_outputListWidget->addItem(item);
-
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_GroupingFunctionsTypeMap[MODE].c_str());
-        item->setData(Qt::UserRole, QVariant(MODE));
+        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MODE].c_str());
+        item->setData(Qt::UserRole, QVariant(te::stat::MODE));
         m_ui->m_outputListWidget->addItem(item);
 
         item = new QListWidgetItem("");
@@ -532,7 +524,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     return;
   }
   
-  std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > outputGroupingFunctions = getGroupingFunctionsType();
+  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > outputStatisticalSummary = getStatisticalSummary();
       
   te::vp::MemoryUse memoryUse = (te::vp::MemoryUse)getMemoryUse();
       
@@ -554,7 +546,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
   try
   {
-    te::vp::Aggregation(m_selectedLayer, selProperties, outputGroupingFunctions, memoryUse, outputLayerName, m_outputDatasource);
+    te::vp::Aggregation(m_selectedLayer, selProperties, outputStatisticalSummary, memoryUse, outputLayerName, m_outputDatasource);
   }
   catch(const std::exception& e)
   {

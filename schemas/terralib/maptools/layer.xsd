@@ -126,6 +126,7 @@
   <xsd:complexType name="GroupingType">
     <xsd:sequence>
       <xsd:element name="PropertyName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+	  <xsd:element name="PropertyDataType" type="xsd:interger" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Type" type="te_map:GroupingMethodType" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Precision" type="xsd:integer" minOccurs="1" maxOccurs="1" />
       <xsd:element name="StandardDeviation" type="xsd:double" minOccurs="0" maxOccurs="1" />

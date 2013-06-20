@@ -30,6 +30,7 @@
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../statistics/core/Enums.h"
 #include "../core/Config.h"
 #include "../core/Enums.h"
 
@@ -84,7 +85,7 @@ namespace te
 
           \return Map with Properties and Grouping Functions Type.
         */
-        std::map<te::dt::Property*, std::vector<te::vp::GroupingFunctionsType> > getGroupingFunctionsType();
+        std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > getStatisticalSummary();
 
         /*!
           \brief Get the selected property based on selected QListWidgetItem using the name of property.
@@ -101,14 +102,14 @@ namespace te
         std::vector<te::dt::Property*> getSelectedProperties();
 
         /*!
-          \brief Set Grouping Functions Type for combobox 'm_selectAllComboBox' and 'm_rejectAllComboBox' based on a enum.
+          \brief Set Statistical Summary Type for combobox 'm_selectAllComboBox' and 'm_rejectAllComboBox' based on a enum.
         */
-        void setGroupingFunctionsType();
+        void setStatisticalSummary();
 
         /*!
-          \brief Map Grouping Functions Type enum for an intuitive name.
+          \brief Map Statistical Summary Type enum for an intuitive name.
         */
-        void setGroupingFunctionsTypeMap();
+        void setStatisticalSummaryMap();
 
         /*!
           \brief Set Grouping Functions Type for 'm_outputListWidget' based on Selected Layer.
@@ -141,12 +142,14 @@ namespace te
 
       private:
 
+        typedef std::map<te::stat::StatisticalSummary, std::string> StaticalSummaryMap;
+
         std::auto_ptr<Ui::AggregationDialogForm> m_ui;
         te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
         te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for aggregation
-        std::vector<te::dt::Property*> m_properties;                                       //!< Properties related to the selected Layer
-        std::map<te::vp::GroupingFunctionsType, std::string> m_GroupingFunctionsTypeMap;  //!< Maping of GroupingFunctionsType enum
+        std::vector<te::dt::Property*> m_properties;                                      //!< Properties related to the selected Layer
+        StaticalSummaryMap m_StatisticalSummaryMap;      //!< Maping of Statistical Summary enum
     };
   }   // end namespace vp
 }     // end namespace te
