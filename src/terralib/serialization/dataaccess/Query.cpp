@@ -55,7 +55,7 @@ te::da::Expression* te::serialize::ReadExpression(te::xml::Reader& reader)
   throw te::serialize::Exception("Not implemented yet!");
 }
 
-te::da::Field* te::serialize::ReadField(te::xml::Reader& reader)
+te::da::Field* te::serialize::ReadQueryField(te::xml::Reader& reader)
 {
   throw te::serialize::Exception("Not implemented yet!");
 }
@@ -332,14 +332,14 @@ void te::serialize::Save(const te::da::Select* select, te::xml::Writer& writer)
   if(select->getLimit() != 0) // Limit
   {
     writer.writeStartElement("te_da:Limit");
-    writer.writeValue(select->getLimit());
+    writer.writeValue(static_cast<unsigned int>(select->getLimit()));
     writer.writeEndElement("te_da:Limit");
   }
 
   if(select->getOffset() != 0) // Offset
   {
     writer.writeStartElement("te_da:Offset");
-    writer.writeValue(select->getOffset());
+    writer.writeValue(static_cast<unsigned int>(select->getOffset()));
     writer.writeEndElement("te_da:Offset");
   }
 

@@ -85,6 +85,20 @@ namespace te
         void setPropertyName(const std::string& name);
 
         /*!
+          \brief It gets the property type whose values will be grouped.
+
+          \return The property type.
+        */
+        int getPropertyType() const;
+
+        /*!
+          \brief It sets the property type whose values will be grouped.
+
+          \param type The property type.
+        */
+        void setPropertyType(const int& type);
+
+        /*!
           \brief It gets the grouping type.
 
           \return The grouping type.
@@ -157,6 +171,7 @@ namespace te
       private:
 
         std::string m_propertyName;      //!< The property name whose values will be used to make the grouping.
+        int m_propertyType;              //!< The property type whose values will be used to make the grouping.
         GroupingType m_type;             //!< The grouping type.
         size_t m_precision;              //!< The precision of the values.
         size_t m_numSlices;              //!< The number of slices used in the Equal Steps and Quantil groupings.

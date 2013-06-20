@@ -395,7 +395,7 @@ void te::map::DrawGeometries(te::da::DataSetType* type, te::da::DataSourceTransa
       continue;
 
 // get the set of symbolizers defined on current rule
-    const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
+    const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
     std::size_t nSymbolizers = symbolizers.size();
 
 // build task message; e.g. ("Drawing the dataset Countries. Rule 1 of 3.")
@@ -551,7 +551,7 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
 // for while, consider one rule
   const te::se::Rule* rule = style->getRule(0);
 
-  const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
+  const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
   assert(!symbolizers.empty());
 
 // for while, consider one raster symbolizer

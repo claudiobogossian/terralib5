@@ -379,7 +379,7 @@ te::se::RasterSymbolizer* te::se::GetRasterSymbolizer(te::se::Style* s)
   // for while, consider one rule
   const te::se::Rule* r = s->getRule(0);
 
-  const std::vector<te::se::Symbolizer*> symbolizers = r->getSymbolizers();
+  const std::vector<te::se::Symbolizer*>& symbolizers = r->getSymbolizers();
 
   if(symbolizers.empty())
     return 0;

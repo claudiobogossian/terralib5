@@ -85,12 +85,15 @@ void te::qt::widgets::GroupingWidget::setLayer(te::map::AbstractLayerPtr layer)
 std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
 {
   std::string attr = m_ui->m_attrComboBox->currentText().toStdString();
+  int attrIdx =  m_ui->m_attrComboBox->currentIndex();
+  int attrType = m_ui->m_attrComboBox->itemData(attrIdx).toInt();
 
   int index = m_ui->m_typeComboBox->currentIndex();
-
   int type = m_ui->m_typeComboBox->itemData(index).toInt();
 
   std::auto_ptr<te::map::Grouping> group(new te::map::Grouping(attr, (te::map::GroupingType)type));
+
+  group->setPropertyType(attrType);
 
   group->setNumSlices(m_ui->m_slicesSpinBox->value());
 
@@ -163,7 +166,7 @@ void te::qt::widgets::GroupingWidget::updateUi()
 
     //symbol
     {
-      std::vector<te::se::Symbolizer*> ss = gi->getSymbolizers();
+      const std::vector<te::se::Symbolizer*>& ss = gi->getSymbolizers();
       QPixmap pix = te::qt::widgets::SymbologyPreview::build(ss, QSize(24, 24));
       QIcon icon(pix);
       QTableWidgetItem* item = new QTableWidgetItem(icon, "");
@@ -385,26 +388,16 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
     if(ds->isNull(attrName))
       continue;
 
-    switch(dataType)
-    {
-      case te::dt::INT16_TYPE:
-        vec.push_back((double)ds->getInt16(attrName));
-
-      case te::dt::INT32_TYPE:
-        vec.push_back((double)ds->getInt32(attrName));
-
-      case te::dt::INT64_TYPE:
-        vec.push_back((double)ds->getInt64(attrName));
-
-      case te::dt::FLOAT_TYPE:
-        vec.push_back((double)ds->getFloat(attrName));
-
-      case te::dt::DOUBLE_TYPE:
-        vec.push_back(ds->getDouble(attrName));
-
-      default:
-        continue;
-    }
+    if(dataType == te::dt::INT16_TYPE)
+      vec.push_back((double)ds->getInt16(attrName));
+    else if(dataType == te::dt::INT32_TYPE)
+      vec.push_back((double)ds->getInt32(attrName));
+    else if(dataType == te::dt::INT64_TYPE)
+      vec.push_back((double)ds->getInt64(attrName));
+    else if(dataType == te::dt::FLOAT_TYPE)
+      vec.push_back((double)ds->getFloat(attrName));
+    else if(dataType == te::dt::DOUBLE_TYPE)
+      vec.push_back(ds->getDouble(attrName));
   }
 }
 
