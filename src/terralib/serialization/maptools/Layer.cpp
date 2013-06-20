@@ -338,7 +338,7 @@ void WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& wr
     else
       writer.writeElement("te_map:Value", item->getValue());
 
-    std::vector<te::se::Symbolizer*> symbs = item->getSymbolizers();
+    const std::vector<te::se::Symbolizer*>& symbs = item->getSymbolizers();
 
     for(std::size_t j = 0; j < symbs.size(); ++j)
       te::serialize::Symbolizer::getInstance().write(symbs[j], writer);

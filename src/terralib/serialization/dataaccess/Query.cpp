@@ -55,7 +55,7 @@ te::da::Expression* te::serialize::ReadExpression(te::xml::Reader& reader)
   throw te::serialize::Exception("Not implemented yet!");
 }
 
-te::da::Field* te::serialize::ReadField(te::xml::Reader& reader)
+te::da::Field* te::serialize::ReadQueryField(te::xml::Reader& reader)
 {
   throw te::serialize::Exception("Not implemented yet!");
 }

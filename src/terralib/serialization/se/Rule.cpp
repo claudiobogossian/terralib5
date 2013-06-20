@@ -151,7 +151,7 @@ void te::serialize::Save(const te::se::Rule* rule, te::xml::Writer& writer)
   if(rule->getMaxScaleDenominator() != std::numeric_limits<double>::infinity())
     writer.writeElement("se:MaxScaleDenominator", rule->getMaxScaleDenominator());
 
-  const std::vector<te::se::Symbolizer*> symbs = rule->getSymbolizers();
+  const std::vector<te::se::Symbolizer*>& symbs = rule->getSymbolizers();
   for(std::size_t i = 0; i < symbs.size(); ++i)
     Symbolizer::getInstance().write(symbs[i], writer);
 
