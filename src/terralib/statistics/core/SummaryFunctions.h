@@ -45,6 +45,8 @@ namespace te
 
     TESTATEXPORT double Mode(const std::vector<double>& values);
 
+    TESTATEXPORT std::string Mode(const std::vector<std::string>& values);
+
   } // end namespace stat
 }   // end namespace te
 

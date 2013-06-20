@@ -314,7 +314,7 @@ void WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& wr
   writer.writeElement("te_map:PropertyName", g->getPropertyName());
   writer.writeElement("te_map:PropertyDataType", g->getPropertyType());
   writer.writeElement("te_map:Type", GetGroupingType(type));
-  writer.writeElement("te_map:Precision", g->getPrecision());
+  writer.writeElement("te_map:Precision", static_cast<unsigned int>(g->getPrecision()));
   
   if(type == te::map::STD_DEVIATION)
     writer.writeElement("te_map:StandardDeviation", g->getStdDeviation());
