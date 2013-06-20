@@ -61,7 +61,7 @@ namespace te
 
     TESERIALIZATIONEXPORT te::da::Expression* ReadExpression(te::xml::Reader& reader);
 
-    TESERIALIZATIONEXPORT te::da::Field* ReadField(te::xml::Reader& reader);
+    TESERIALIZATIONEXPORT te::da::Field* ReadQueryField(te::xml::Reader& reader);
 
     TESERIALIZATIONEXPORT te::da::Fields* ReadFields(te::xml::Reader& reader);
 
