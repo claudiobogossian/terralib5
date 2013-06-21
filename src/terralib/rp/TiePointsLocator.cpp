@@ -221,32 +221,36 @@ namespace te
       double raster1YRescFact = 1.0;
       double raster2XRescFact = 1.0;
       double raster2YRescFact = 1.0;
-      double ransacExpectedDirectMapRmse = m_inputParameters.m_geomTransfMaxError;
-      double ransacExpectedInverseMapRmse = m_inputParameters.m_geomTransfMaxError;
+      
+      if( m_inputParameters.m_pixelSizeXRelation > 1.0 ) 
       {
-        const double meanPixelRelation = ( m_inputParameters.m_pixelSizeXRelation
-          + m_inputParameters.m_pixelSizeYRelation ) /
-          2.0;
-          
-        if( meanPixelRelation > 1.0 ) 
-        {
-          /* The image 1 has poor resolution - bigger pixel resolution values -
-            and image 2 needs to be rescaled down */
-          
-          raster2XRescFact = 1.0 / m_inputParameters.m_pixelSizeXRelation;
-          raster2YRescFact = 1.0 / m_inputParameters.m_pixelSizeYRelation;
-          ransacExpectedDirectMapRmse *= meanPixelRelation;
-        } 
-        else if( meanPixelRelation < 1.0 ) 
-        {
-          /* The image 2 has poor resolution - bigger pixel resolution values
-            and image 1 needs to be rescaled down */
-          
-          raster1XRescFact = m_inputParameters.m_pixelSizeXRelation;
-          raster1YRescFact = m_inputParameters.m_pixelSizeYRelation;
-          ransacExpectedInverseMapRmse /= meanPixelRelation;
-        }
-      }
+        /* The image 1 has poor resolution - bigger pixel resolution values -
+          and image 2 needs to be rescaled down */
+        
+        raster2XRescFact = 1.0 / m_inputParameters.m_pixelSizeXRelation;
+      } 
+      else if( m_inputParameters.m_pixelSizeXRelation < 1.0 ) 
+      {
+        /* The image 2 has poor resolution - bigger pixel resolution values
+          and image 1 needs to be rescaled down */
+        
+        raster1XRescFact = m_inputParameters.m_pixelSizeXRelation;
+      }     
+      
+      if( m_inputParameters.m_pixelSizeYRelation > 1.0 ) 
+      {
+        /* The image 1 has poor resolution - bigger pixel resolution values -
+          and image 2 needs to be rescaled down */
+        
+        raster2YRescFact = 1.0 / m_inputParameters.m_pixelSizeYRelation;
+      } 
+      else if( m_inputParameters.m_pixelSizeYRelation < 1.0 ) 
+      {
+        /* The image 2 has poor resolution - bigger pixel resolution values
+          and image 1 needs to be rescaled down */
+        
+        raster1YRescFact = m_inputParameters.m_pixelSizeYRelation;
+      }        
       
       // Applying the global rescale factor
       
@@ -321,8 +325,8 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( filter.applyRansac( 
           m_inputParameters.m_geomTransfName, 
           transfParams,
-          ransacExpectedDirectMapRmse,
-          ransacExpectedInverseMapRmse,
+          m_inputParameters.m_geomTransfMaxError,
+          m_inputParameters.m_geomTransfMaxError,
           0,
           m_inputParameters.m_geometryFilterAssurance,
           m_inputParameters.m_enableMultiThread,
