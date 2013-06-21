@@ -319,7 +319,7 @@ void te::map::DataSetLayerRenderer::drawGrouping(DataSetLayer* layer, te::da::Da
       continue;
 
 // get the set of symbolizers defined on group item
-    const std::vector<te::se::Symbolizer*> symbolizers = item->getSymbolizers();
+    const std::vector<te::se::Symbolizer*>& symbolizers = item->getSymbolizers();
 
     std::size_t nSymbolizers = symbolizers.size();
 

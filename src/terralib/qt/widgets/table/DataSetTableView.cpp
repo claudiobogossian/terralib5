@@ -8,7 +8,9 @@
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../statistics/qt/StatisticsDialog.h"
 #include "../utils/ScopedCursor.h"
+
 
 // Qt
 #include <QtGui/QHeaderView>
@@ -184,6 +186,14 @@ class TablePopupFilter : public QObject
             act5->setToolTip(tr("Sort data using selected columns."));
             m_hMenu->addAction(act5);
 
+            m_hMenu->addSeparator();
+            
+            QAction* act6 = new QAction(m_hMenu);
+            act6->setText(tr("Statistics"));
+            act6->setToolTip(tr("Show the statistics summary of the selected colunm."));
+            m_hMenu->addAction(act6);
+
+
             // Signal / Slot connections
             connect (act, SIGNAL(triggered()), SLOT(hideColumn()));
             connect (hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
@@ -192,6 +202,8 @@ class TablePopupFilter : public QObject
             m_view->connect (act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
             m_view->connect (act5, SIGNAL(triggered()), SLOT(sortByColumns()));
             connect(act4, SIGNAL(triggered()), SLOT(showOIdsColumns()));
+
+            connect (act6, SIGNAL(triggered()), SLOT(showStatistics()));
 
             m_hMenu->popup(pos);
           }
@@ -254,6 +266,14 @@ class TablePopupFilter : public QObject
       m_showOidsColumns = !m_showOidsColumns;
 
       m_view->setOIdsColumnsVisible(m_showOidsColumns);
+    }
+
+    void showStatistics()
+    {
+      te::stat::StatisticsDialog statisticDialog;
+      std::string prop = m_dset->getPropertyName(m_columnPressed);
+      statisticDialog.setStatistics(m_dset, prop);
+      statisticDialog.exec();
     }
 
   signals:

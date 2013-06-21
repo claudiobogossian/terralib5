@@ -1674,7 +1674,7 @@ void TsGTFilter::tcApplyRansacWithTPSet1()
   te::gm::GTFilter filter;
 
   CPPUNIT_ASSERT( filter.applyRansac( "Affine", transfParams, 0.01, 
-    0.01, 0, 0, false, tiePointsWeights, tiePoints, transfPtr ) );
+    0.01, 0, 0.5, false, tiePointsWeights, tiePoints, transfPtr ) );
   
   CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
   
@@ -1715,7 +1715,7 @@ void TsGTFilter::tcApplyRansacWithTPSet2()
   te::gm::GTFilter filter;
 
   CPPUNIT_ASSERT( filter.applyRansac( "Affine", transfParams, 1, 
-    1, 0, 0, false, tiePointsWeights, tiePoints, transfPtr ) );
+    1, 0, 0.5, false, tiePointsWeights, tiePoints, transfPtr ) );
   
   CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
   CPPUNIT_ASSERT( tiePoints.size() >
@@ -1745,7 +1745,7 @@ void TsGTFilter::tcApplyRansacMultiThread()
   te::gm::GTFilter filter;
 
   CPPUNIT_ASSERT( filter.applyRansac( "Affine", transfParams, 0.01, 
-    0.01, 0, 0, true, tiePointsWeights, tiePoints, transfPtr ) );
+    0.01, 0, 0.5, true, tiePointsWeights, tiePoints, transfPtr ) );
   
   CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
   

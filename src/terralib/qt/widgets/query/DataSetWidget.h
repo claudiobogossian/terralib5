@@ -69,12 +69,15 @@ namespace te
 
           te::da::From* getFrom();
 
+          void setFrom(const te::da::From* from);
+
         public:
 
           void setDataSetNames(const boost::ptr_vector<std::string>& names);
 
-          void getDataSetNames(std::vector<std::pair<std::string, std::string> >& list); // pair dsName, dsAlias
+          void setDataSetNames(std::vector<std::pair<std::string, std::string> >& list); // pair dsName, dsAlias
 
+          void getDataSetNames(std::vector<std::pair<std::string, std::string> >& list); // pair dsName, dsAlias
 
         public slots:
 

@@ -166,7 +166,7 @@ void te::qt::widgets::GroupingWidget::updateUi()
 
     //symbol
     {
-      std::vector<te::se::Symbolizer*> ss = gi->getSymbolizers();
+      const std::vector<te::se::Symbolizer*>& ss = gi->getSymbolizers();
       QPixmap pix = te::qt::widgets::SymbologyPreview::build(ss, QSize(24, 24));
       QIcon icon(pix);
       QTableWidgetItem* item = new QTableWidgetItem(icon, "");

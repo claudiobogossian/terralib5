@@ -87,6 +87,22 @@ te::da::Fields* te::qt::widgets::FieldsWizardPage::getFields()
   return fields;
 }
 
+void te::qt::widgets::FieldsWizardPage::setFields(const te::da::Fields* fields)
+{
+  std::vector<std::string> values;
+
+  for(std::size_t i = 0; i < fields->size(); ++i)
+  {
+    te::da::Field f = fields->at(i);
+
+    te::da::PropertyName* p = dynamic_cast<te::da::PropertyName*>(f.getExpression());
+
+    values.push_back(p->getName());
+  }
+
+  m_widget->setOutputValues(values);
+}
+
 void te::qt::widgets::FieldsWizardPage::onItemChanged()
 {
   emit completeChanged();
