@@ -214,11 +214,24 @@ namespace te
                             int row, int column, const QModelIndex& parent);
 
           /*!
-            \brief It removes count rows starting with the given row under parent "parent" from the model.
+            \brief It inserts a determined number of rows given by the "count" parameter,
+                   starting with the given row under the parent "parent" from the model.
 
-            \param row The initial row.
-            \param count The number of rows to be removed.
-            \param parent The parent of the removed rows.
+            \param row    The initial row.
+            \param count  The number of rows to be inserted.
+            \param parent The parent of the rows to be inserted.
+
+            \return True, if the rows were successfully inserted; otherwise, it returns false.
+          */
+          bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex());
+
+          /*!
+            \brief It removes a determined number of rows given by the "count" parameter,
+                   starting with the given row under parent "parent" from the model.
+
+            \param row    The initial row.
+            \param count  The number of rows to be removed.
+            \param parent The parent of the rows to be removed.
 
             \return It returns true if the rows were successfully removed; otherwise, it returns false.
           */
@@ -245,9 +258,30 @@ namespace te
           */
           void add(const te::map::AbstractLayerPtr& layer);
 
+          /*!
+            \brief It inserts a layer to the model into the row of the given parent.
+
+            \param layer  The layer to be associated to the item to be inserted.
+            \param row    The row where the layer item will be inserted.
+            \param parent The parent index of the row where the layer item will be inserted.
+
+            \return True, if the layer item was successfully inserted; otherwise, it returns false.
+          */
+          bool insert(const te::map::AbstractLayerPtr& layer, int row, const QModelIndex& parent);
+
+          /*!
+            \brief It removes a layer item identified by its index.
+
+            \param index The index of the layer item to be removed from the model.
+
+            \return True, if the layer item was successfully removed; otherwise, it returns false.
+          */
+          bool remove(const QModelIndex& index);
+
         signals:
 
           void visibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);
+          void layerAdded(te::qt::widgets::AbstractLayerTreeItem* item);
 
         protected:
 
@@ -267,15 +301,12 @@ namespace te
 
         private:
 
-          std::vector<AbstractLayerTreeItem*> m_items;  //!< The list of layers of this model.
-          bool m_checkable;                             //!< Tell if the model is checkable.
+          std::vector<AbstractLayerTreeItem*> m_items;                  //!< The list of layers of this model.
+          bool m_checkable;                                             //!< It informs if the model is checkable.
       };
-
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-
 #endif // __TERRALIB_QT_WIDGETS_LAYER_EXLORER_INTERNAL_LAYERTREEMODEL_H
-

@@ -33,6 +33,7 @@
 
 //STL
 #include <numeric>
+#include <algorithm>
 
 void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss)
 {
@@ -50,6 +51,8 @@ void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te:
       ++ss.m_validCount;
     }
   }
+
+  ss.m_mode = Mode(values);
 }
 
 void te::stat::GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss)
@@ -127,6 +130,56 @@ double te::stat::Mode(const std::vector<double>& values)
   }
 
   std::map<double, int>::iterator itMode = mapMode.begin();
+  int repeat = 0;
+
+  while(itMode != mapMode.end())
+  {
+    if(repeat < itMode->second)
+    {
+      repeat = itMode->second;
+      mode = itMode->first;
+    }
+
+    ++itMode;
+  }
+
+  return mode;
+}
+
+std::string te::stat::Mode(const std::vector<std::string>& values)
+{
+  bool found;
+  std::string mode = "";
+  std::map<std::string, int> mapMode;
+
+  for(std::size_t i = 0; i < values.size(); ++i)
+  {
+    found = false;
+
+    if(!mapMode.empty())
+    {
+      std::map<std::string, int>::iterator itMode = mapMode.begin();
+
+      while(itMode != mapMode.end())
+      {
+        if(itMode->first == values[i])
+        {
+          ++itMode->second;
+          found = true;
+        }
+        
+        ++itMode;
+      }
+      if(found == false)
+      {
+        mapMode.insert( std::map<std::string, int>::value_type( values[i] , 1 ) );
+      }
+    }
+    else
+      mapMode.insert( std::map<std::string, int>::value_type( values[i] , 1 ) );
+  }
+
+  std::map<std::string, int>::iterator itMode = mapMode.begin();
   int repeat = 0;
 
   while(itMode != mapMode.end())

@@ -240,11 +240,10 @@ namespace te
       for(sit = aux.rbegin(); sit != aux.rend(); ++sit)
         legend.push_back(*sit);
 
-      std::string media = "mean = " + rmean;
+      //std::string media = "mean = " + rmean;
 
-      te::map::GroupingItem* legendItem = new te::map::GroupingItem;
-      legendItem->setLowerLimit(media);
-      legend.push_back(legendItem);
+      //te::map::GroupingItem* legendItemMean = new te::map::GroupingItem;
+      //legend.push_back(legendItemMean);
 
       val = mean;
       while(val + slice < max + slice)
@@ -260,14 +259,15 @@ namespace te
         val = v;
       }
 
-      if(legend.size() > 2)
-      {
-        if(legend[0]->getLowerLimit().find("mean") == std::string::npos)
-          legend[0]->setLowerLimit(te::common::Convert2String(min, precision));
+      //if(legend.size() > 2)
+      //{
+      //  if(legend[0]->getLowerLimit().find("mean") == std::string::npos)
+      //    legend[0]->setLowerLimit(te::common::Convert2String(min, precision));
 
-        if (legend[legend.size()-1]->getLowerLimit().find("mean") == std::string::npos)
-          legend[legend.size()-1]->setUpperLimit(te::common::Convert2String(max, precision));
-      }
+      //  if (legend[legend.size()-1]->getLowerLimit().find("mean") == std::string::npos)
+      //    legend[legend.size()-1]->setUpperLimit(te::common::Convert2String(max, precision));
+      //}
+
 
       // Set the number of elements for each slice
       if (countElements == true)

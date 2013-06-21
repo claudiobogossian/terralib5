@@ -20,6 +20,7 @@
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/DataSetLayer.h"
+#include "../../../maptools/RasterLayer.h"
 #include "../../../qt/widgets/se/VisualDockWidget.h"
 #include "../../../se/Symbolizer.h"
 #include "../events/Event.h"
@@ -60,6 +61,13 @@ void te::qt::af::SymbolizerExplorer::onApplicationTriggered(te::qt::af::evt::Eve
       if(m_layer->getType() == "DATASETLAYER")
       {
         te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(m_layer);
+
+        if(l && (l->getStyle() != 0))
+          m_explorer->setStyle(l->getStyle(), l);
+      }
+      else if(m_layer->getType() == "RASTERLAYER")
+      {
+        te::map::RasterLayer* l = dynamic_cast<te::map::RasterLayer*>(m_layer);
 
         if(l && (l->getStyle() != 0))
           m_explorer->setStyle(l->getStyle(), l);
