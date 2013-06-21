@@ -25,6 +25,10 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "../raster/Band.h"
+#include "../raster/BandProperty.h"
+#include "../raster/Grid.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterFactory.h"
 #include "../se/CoverageStyle.h"
@@ -33,6 +37,7 @@
 #include "RendererFactory.h"
 
 // Boost
+#include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
 const std::string te::map::RasterLayer::sm_type("RASTERLAYER");
@@ -62,6 +67,48 @@ te::map::RasterLayer::~RasterLayer()
   delete m_style;
 
   m_rinfo.clear();
+}
+
+const te::map::LayerSchema* te::map::RasterLayer::getSchema(const bool full) const
+{
+  te::map::LayerSchema* ls = 0;
+
+  te::rst::Raster* r = te::rst::RasterFactory::open(m_rinfo);
+
+  if(r)
+  {
+    te::rst::Grid* grid = new te::rst::Grid(*r->getGrid());
+
+    std::vector<te::rst::BandProperty*> bprops;
+
+    for(size_t t = 0; t < r->getNumberOfBands(); ++t)
+    {
+      te::rst::BandProperty* bp = new te::rst::BandProperty(*r->getBand(t)->getProperty());
+
+      bprops.push_back(bp);
+    }
+
+    te::rst::RasterProperty* rp = new te::rst::RasterProperty(grid, bprops, m_rinfo);
+
+    std::string path = "";
+
+    std::map<std::string, std::string>::const_iterator it = m_rinfo.find("URI");
+
+    if(it != m_rinfo.end())
+    {
+      path = it->second;
+    }
+
+    boost::filesystem::path rpath (path);
+
+    ls = new te::da::DataSetType(rpath.filename().string());
+
+    ls->add(rp);
+  }
+
+  delete r;
+
+  return ls;
 }
 
 te::da::DataSet* te::map::RasterLayer::getData(te::common::TraverseType travType, 
