@@ -158,6 +158,12 @@ void te::qt::widgets::StyleExplorer::initialize()
       symbItem->setText(0, tr(symbs[j]->getType().c_str()));
       symbItem->setData(0, Qt::UserRole, (int)j);
       symbItem->setIcon(0, QIcon(SymbologyPreview::build(symbs[j], iconSize())));
+
+      if(j == 0)
+      {
+        setCurrentItem(symbItem);
+        emit symbolizerClicked(symbs[j]);
+      }
     }
   }
 
