@@ -560,8 +560,7 @@ void te::qt::widgets::LayerTreeModel::add(const te::map::AbstractLayerPtr& layer
   if(!layerParent)
   {
     AbstractLayerTreeItem* layerItem = AbstractLayerTreeItemFactory::make(layer, 0);
-    m_items.push_back(layerItem);
-    insertRows(m_items.size(), 1, QModelIndex());
+    insert(layer, m_items.size(), QModelIndex());
   }
   else
   {
