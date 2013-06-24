@@ -81,12 +81,28 @@ void te::qt::widgets::LayerExplorer::set(const std::list<te::map::AbstractLayerP
   m_treeModel->set(layers);
 }
 
+QModelIndexList te::qt::widgets::LayerExplorer::getSelectedIndexes() const
+{
+  if(m_treeView == 0)
+    return QModelIndexList();
+
+  return m_treeView->getSelectedIndexes();
+}
+
 void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer)
 {
   if(m_treeView == 0)
     return;
 
   m_treeView->add(layer);
+}
+
+void te::qt::widgets::LayerExplorer::remove(const QModelIndex& index)
+{
+  if(m_treeView == 0)
+    return;
+
+  m_treeView->remove(index);
 }
 
 //void te::qt::widgets::LayerExplorer::dragEnterEvent(QDragEnterEvent* e)
