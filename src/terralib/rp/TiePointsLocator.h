@@ -590,7 +590,7 @@ namespace te
           
           \param interestPoints The found interest points (coords related to rasterData lines/cols).          
           
-          \note InterestPointT::m_feature1 will be the Moravec filter response at the given point.
+          \note InterestPointT::m_feature1 will be sum of differences between the Moravec filter response of each pixel and its neighborhoods (always a positive value).
 
           \return true if ok, false on errors.
         */             
@@ -613,9 +613,11 @@ namespace te
 
           \return true if ok, false on errors.
           
-          \note InterestPointT::m_feature1 will be the maximum value of Hessian matrix determinant,
-          InterestPointT::m_feature2 will be used filter width (pixels),
-          InterestPointT::m_feature3 will 1 if the laplacian sign is positive or zero if negative.
+          \note InterestPointT::m_feature1 will be sum of differences between the hessian matrix determinant each pixel and its neighborhoods (always a positive value).
+          
+          \note InterestPointT::m_feature2 will be used filter width (pixels).
+          
+          \note InterestPointT::m_feature3 will 1 if the laplacian sign is positive, or zero if negative.
         */             
         bool locateSurfInterestPoints( 
           const DoublesMatrix& integralRasterData,

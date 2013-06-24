@@ -2069,7 +2069,6 @@ namespace te
         unsigned int octavesBufferDataHandlerLine = 0;
         unsigned int octavesBufferDataHandlerCol = 0;
         double* octavesBufferDataHandlerLinePtr = 0;
-        const double fillValue = (-1.0) * DBL_MAX;
         for( octavesBufferDataHandlerLine = 0; octavesBufferDataHandlerLine < 
           octavesBufferDataHandlerLines ; ++octavesBufferDataHandlerLine )
         {
@@ -2079,7 +2078,7 @@ namespace te
           for( octavesBufferDataHandlerCol = 0; octavesBufferDataHandlerCol < 
             buffersCols ; ++octavesBufferDataHandlerCol )
           {
-            octavesBufferDataHandlerLinePtr[ octavesBufferDataHandlerCol ] = fillValue;
+            octavesBufferDataHandlerLinePtr[ octavesBufferDataHandlerCol ] = 0.0;
           }
         }
         
@@ -2226,6 +2225,33 @@ namespace te
           unsigned int prevResponseBufferColIdx = 0;
           unsigned int nextResponseBufferColIdx = 0;
           
+          double neighborMaximaDif_0_1 = 0.0;
+          double neighborMaximaDif_0_2 = 0.0;
+          double neighborMaximaDif_0_3 = 0.0;
+          double neighborMaximaDif_0_4 = 0.0;
+          double neighborMaximaDif_0_5 = 0.0;
+          double neighborMaximaDif_0_6 = 0.0;
+          double neighborMaximaDif_0_7 = 0.0;
+          double neighborMaximaDif_0_8 = 0.0;
+          double neighborMaximaDif_1_1 = 0.0;
+          double neighborMaximaDif_1_2 = 0.0;
+          double neighborMaximaDif_1_3 = 0.0;
+          double neighborMaximaDif_1_4 = 0.0;
+          double neighborMaximaDif_1_5 = 0.0;
+          double neighborMaximaDif_1_6 = 0.0;
+          double neighborMaximaDif_1_7 = 0.0;
+          double neighborMaximaDif_1_8 = 0.0;
+          double neighborMaximaDif_1_9 = 0.0;
+          double neighborMaximaDif_2_1 = 0.0;
+          double neighborMaximaDif_2_2 = 0.0;
+          double neighborMaximaDif_2_3 = 0.0;
+          double neighborMaximaDif_2_4 = 0.0;
+          double neighborMaximaDif_2_5 = 0.0;
+          double neighborMaximaDif_2_6 = 0.0;
+          double neighborMaximaDif_2_7 = 0.0;
+          double neighborMaximaDif_2_8 = 0.0;
+          double neighborMaximaDif_2_9 = 0.0;          
+          
           // Processing each raster line from the current block
                    
           for( unsigned int rasterLine = rasterLinesStart; rasterLine < rasterLinesEndBound ;
@@ -2337,99 +2363,162 @@ namespace te
                       scaleIdx ][ maxGausFilterRadius ][ windCenterCol ];
                     lastScaleIdx = scaleIdx - 1;
                     nextScaleIdx = scaleIdx + 1;
+                    
+                    neighborMaximaDif_0_1 = windowCenterPixelValue - currOctaveBuffersHandler[
+                      scaleIdx ][ prevResponseBufferLineIdx ][ prevResponseBufferColIdx ];
+                    neighborMaximaDif_0_2 = windowCenterPixelValue - currOctaveBuffersHandler[
+                      scaleIdx ][ prevResponseBufferLineIdx ][ windCenterCol ];
+                    neighborMaximaDif_0_3 = windowCenterPixelValue - currOctaveBuffersHandler[
+                      scaleIdx ][ prevResponseBufferLineIdx ][ nextResponseBufferColIdx ];
+                    neighborMaximaDif_0_4 = windowCenterPixelValue - currOctaveBuffersHandler[
+                      scaleIdx ][ maxGausFilterRadius ][ prevResponseBufferColIdx ];                     
+                    neighborMaximaDif_0_5 = windowCenterPixelValue - currOctaveBuffersHandler[
+                      scaleIdx ][ maxGausFilterRadius ][ nextResponseBufferColIdx ];
+                    neighborMaximaDif_0_6 = windowCenterPixelValue - currOctaveBuffersHandler[
+                      scaleIdx ][ nextResponseBufferLineIdx ][ prevResponseBufferColIdx];
+                    neighborMaximaDif_0_7 = windowCenterPixelValue - currOctaveBuffersHandler[
+                      scaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ];
+                    neighborMaximaDif_0_8 = windowCenterPixelValue - currOctaveBuffersHandler[
+                      scaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ];
                       
                     if( 
                         ( windowCenterPixelValue > 0.0 )
                         // verifying the current scale (center not included)
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          scaleIdx ][ prevResponseBufferLineIdx ][ prevResponseBufferColIdx ] )
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          scaleIdx ][ prevResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          scaleIdx ][ prevResponseBufferLineIdx ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          scaleIdx ][ maxGausFilterRadius ][ prevResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          scaleIdx ][ maxGausFilterRadius ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          scaleIdx ][ nextResponseBufferLineIdx ][ prevResponseBufferColIdx] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          scaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          scaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ] ) 
-                        // verifying the top scale
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          lastScaleIdx ][ prevResponseBufferLineIdx ][ prevResponseBufferColIdx ] )
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          lastScaleIdx ][ prevResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          lastScaleIdx ][ prevResponseBufferLineIdx ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          lastScaleIdx ][ maxGausFilterRadius ][ prevResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          lastScaleIdx ][ maxGausFilterRadius ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          lastScaleIdx ][ maxGausFilterRadius ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          lastScaleIdx ][ nextResponseBufferLineIdx ][ prevResponseBufferColIdx] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          lastScaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          lastScaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ] )                          
-                        // verifying the next scale
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          nextScaleIdx ][ prevResponseBufferLineIdx ][ prevResponseBufferColIdx ] )
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          nextScaleIdx ][ prevResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          nextScaleIdx ][ prevResponseBufferLineIdx ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          nextScaleIdx ][ maxGausFilterRadius ][ prevResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          nextScaleIdx ][ maxGausFilterRadius ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          nextScaleIdx ][ maxGausFilterRadius ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          nextScaleIdx ][ nextResponseBufferLineIdx ][ prevResponseBufferColIdx] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          nextScaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
-                          nextScaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ] )
-                        && ( 
-                              maskRasterBufferPtr 
-                              ? 
-                              ( maskRasterBufferPtr[ 0 ][ windCenterCol ] != 0 ) 
-                              :
-                              true
-                            )
+                        && ( neighborMaximaDif_0_1 > 0.0 )
+                        && ( neighborMaximaDif_0_2 > 0.0 )
+                        && ( neighborMaximaDif_0_3 > 0.0 )
+                        && ( neighborMaximaDif_0_4 > 0.0 )
+                        && ( neighborMaximaDif_0_5 > 0.0 )
+                        && ( neighborMaximaDif_0_6 > 0.0 )
+                        && ( neighborMaximaDif_0_7 > 0.0 )
+                        && ( neighborMaximaDif_0_8 > 0.0 )
                       )
                     {
-                      auxInterestPoint.m_feature1 = windowCenterPixelValue;
-                      auxInterestPoint.m_feature2 = (double)getSurfFilterSize(
-                        octaveIdx, scaleIdx );
-                      auxInterestPoint.m_feature3 = (double)
-                        laplacianSignBufferHandlers[ octaveIdx ][ scaleIdx ][ 
-                        maxGausFilterRadius ][ windCenterCol ] ;
-                        
-                      auxInterestPoint.m_x = windCenterCol;
-                      auxInterestPoint.m_y = rasterLine - ( 2 * maxGausFilterRadius) ;
-                      assert( auxInterestPoint.m_x < 
-                        paramsPtr->m_integralRasterDataPtr->getColumnsNumber() );
-                      assert( auxInterestPoint.m_y < 
-                        paramsPtr->m_integralRasterDataPtr->getLinesNumber() );                          
-                        
-                      assert( ( ( octaveIdx * paramsPtr->m_scalesNumber ) + 
-                        scaleIdx ) < blockMaximas.size() );
-                      InterestPointsSetT& currScalePointsSet = blockMaximas[
-                        ( octaveIdx * paramsPtr->m_scalesNumber ) + scaleIdx ];
-                        
-                      currScalePointsSet.insert( auxInterestPoint);
+                      neighborMaximaDif_1_1 = windowCenterPixelValue - currOctaveBuffersHandler[
+                            lastScaleIdx ][ prevResponseBufferLineIdx ][ prevResponseBufferColIdx ];
+                      neighborMaximaDif_1_2 = windowCenterPixelValue - currOctaveBuffersHandler[
+                            lastScaleIdx ][ prevResponseBufferLineIdx ][ windCenterCol ];
+                      neighborMaximaDif_1_3 = windowCenterPixelValue - currOctaveBuffersHandler[
+                            lastScaleIdx ][ prevResponseBufferLineIdx ][ nextResponseBufferColIdx ];
+                      neighborMaximaDif_1_4 = windowCenterPixelValue - currOctaveBuffersHandler[
+                            lastScaleIdx ][ maxGausFilterRadius ][ prevResponseBufferColIdx ];
+                      neighborMaximaDif_1_5 = windowCenterPixelValue - currOctaveBuffersHandler[
+                            lastScaleIdx ][ maxGausFilterRadius ][ windCenterCol ];
+                      neighborMaximaDif_1_6 = windowCenterPixelValue - currOctaveBuffersHandler[
+                            lastScaleIdx ][ maxGausFilterRadius ][ nextResponseBufferColIdx ];
+                      neighborMaximaDif_1_7 = windowCenterPixelValue - currOctaveBuffersHandler[
+                            lastScaleIdx ][ nextResponseBufferLineIdx ][ prevResponseBufferColIdx];
+                      neighborMaximaDif_1_8 = windowCenterPixelValue - currOctaveBuffersHandler[
+                            lastScaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ];
+                      neighborMaximaDif_1_9 = windowCenterPixelValue - currOctaveBuffersHandler[
+                            lastScaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ];
                       
-                      if( currScalePointsSet.size() > 
-                        paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                      if(
+                          // verifying the top scale
+                          ( neighborMaximaDif_1_1 > 0.0 )
+                          && ( neighborMaximaDif_1_2 > 0.0 )
+                          && ( neighborMaximaDif_1_3 > 0.0 )
+                          && ( neighborMaximaDif_1_4 > 0.0 )
+                          && ( neighborMaximaDif_1_5 > 0.0 )
+                          && ( neighborMaximaDif_1_6 > 0.0 )
+                          && ( neighborMaximaDif_1_7 > 0.0 )
+                          && ( neighborMaximaDif_1_8 > 0.0 )
+                          && ( neighborMaximaDif_1_9 > 0.0 )
+                        )
                       {
-                        currScalePointsSet.erase( currScalePointsSet.begin() );
-                      }                        
+                         neighborMaximaDif_2_1 = windowCenterPixelValue - currOctaveBuffersHandler[
+                           nextScaleIdx ][ prevResponseBufferLineIdx ][ prevResponseBufferColIdx ];
+                         neighborMaximaDif_2_2 = windowCenterPixelValue - currOctaveBuffersHandler[
+                           nextScaleIdx ][ prevResponseBufferLineIdx ][ windCenterCol ];
+                         neighborMaximaDif_2_3 = windowCenterPixelValue - currOctaveBuffersHandler[
+                           nextScaleIdx ][ prevResponseBufferLineIdx ][ nextResponseBufferColIdx ];
+                         neighborMaximaDif_2_4 = windowCenterPixelValue - currOctaveBuffersHandler[
+                           nextScaleIdx ][ maxGausFilterRadius ][ prevResponseBufferColIdx ];
+                         neighborMaximaDif_2_5 = windowCenterPixelValue - currOctaveBuffersHandler[
+                           nextScaleIdx ][ maxGausFilterRadius ][ windCenterCol ];
+                         neighborMaximaDif_2_6 = windowCenterPixelValue - currOctaveBuffersHandler[
+                           nextScaleIdx ][ maxGausFilterRadius ][ nextResponseBufferColIdx ];
+                         neighborMaximaDif_2_7 = windowCenterPixelValue - currOctaveBuffersHandler[
+                           nextScaleIdx ][ nextResponseBufferLineIdx ][ prevResponseBufferColIdx];
+                         neighborMaximaDif_2_8 = windowCenterPixelValue - currOctaveBuffersHandler[
+                           nextScaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ];
+                         neighborMaximaDif_2_9 = windowCenterPixelValue - currOctaveBuffersHandler[
+                           nextScaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ];
+                           
+                        if(
+                            // verifying the next scale
+                            ( neighborMaximaDif_2_1 > 0.0 )
+                            && ( neighborMaximaDif_2_2 > 0.0 )
+                            && ( neighborMaximaDif_2_3 > 0.0 )
+                            && ( neighborMaximaDif_2_4 > 0.0 )
+                            && ( neighborMaximaDif_2_5 > 0.0 )
+                            && ( neighborMaximaDif_2_6 > 0.0 )
+                            && ( neighborMaximaDif_2_7 > 0.0 )
+                            && ( neighborMaximaDif_2_8 > 0.0 )
+                            && ( neighborMaximaDif_2_9 > 0.0 )
+                            && ( 
+                                  maskRasterBufferPtr 
+                                  ? 
+                                  ( maskRasterBufferPtr[ 0 ][ windCenterCol ] != 0 ) 
+                                  :
+                                  true
+                                )
+                          )
+                        {
+                          auxInterestPoint.m_feature1 =
+                            neighborMaximaDif_0_1
+                            + neighborMaximaDif_0_2
+                            + neighborMaximaDif_0_3
+                            + neighborMaximaDif_0_4
+                            + neighborMaximaDif_0_5
+                            + neighborMaximaDif_0_6
+                            + neighborMaximaDif_0_7
+                            + neighborMaximaDif_0_8
+                            + neighborMaximaDif_1_1
+                            + neighborMaximaDif_1_2
+                            + neighborMaximaDif_1_3
+                            + neighborMaximaDif_1_4
+                            + neighborMaximaDif_1_5
+                            + neighborMaximaDif_1_6
+                            + neighborMaximaDif_1_7
+                            + neighborMaximaDif_1_8
+                            + neighborMaximaDif_1_9
+                            + neighborMaximaDif_2_1
+                            + neighborMaximaDif_2_2
+                            + neighborMaximaDif_2_3
+                            + neighborMaximaDif_2_4
+                            + neighborMaximaDif_2_5
+                            + neighborMaximaDif_2_6
+                            + neighborMaximaDif_2_7
+                            + neighborMaximaDif_2_8
+                            + neighborMaximaDif_2_9;                            
+                          auxInterestPoint.m_feature2 = (double)getSurfFilterSize(
+                            octaveIdx, scaleIdx );
+                          auxInterestPoint.m_feature3 = (double)
+                            laplacianSignBufferHandlers[ octaveIdx ][ scaleIdx ][ 
+                            maxGausFilterRadius ][ windCenterCol ] ;
+                            
+                          auxInterestPoint.m_x = windCenterCol;
+                          auxInterestPoint.m_y = rasterLine - ( 2 * maxGausFilterRadius) ;
+                          assert( auxInterestPoint.m_x < 
+                            paramsPtr->m_integralRasterDataPtr->getColumnsNumber() );
+                          assert( auxInterestPoint.m_y < 
+                            paramsPtr->m_integralRasterDataPtr->getLinesNumber() );                          
+                            
+                          assert( ( ( octaveIdx * paramsPtr->m_scalesNumber ) + 
+                            scaleIdx ) < blockMaximas.size() );
+                          InterestPointsSetT& currScalePointsSet = blockMaximas[
+                            ( octaveIdx * paramsPtr->m_scalesNumber ) + scaleIdx ];
+                            
+                          currScalePointsSet.insert( auxInterestPoint);
+                          
+                          if( currScalePointsSet.size() > 
+                            paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                          {
+                            currScalePointsSet.erase( currScalePointsSet.begin() );
+                          }                        
+                        }
+                      }
                     }
                   }
                 }
