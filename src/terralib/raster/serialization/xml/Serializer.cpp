@@ -24,14 +24,14 @@
 */
 
 // TerraLib
-#include "../../../geometry/core/Envelope.h"
+#include "../../../geometry/Envelope.h"
 #include "../../../geometry/serialization/xml/Serializer.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/Writer.h"
-#include "../../core/Band.h"
-#include "../../core/BandProperty.h"
-#include "../../core/Grid.h"
-#include "../../core/Raster.h"
+#include "../../Band.h"
+#include "../../BandProperty.h"
+#include "../../Grid.h"
+#include "../../Raster.h"
 #include "Serializer.h"
 
 // STL
