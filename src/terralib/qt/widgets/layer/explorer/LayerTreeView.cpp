@@ -254,6 +254,11 @@ std::list<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::LayerTreeVie
   return layers;
 }
 
+QModelIndexList te::qt::widgets::LayerTreeView::getSelectedIndexes() const
+{
+  return selectedIndexes();
+}
+
 void te::qt::widgets::LayerTreeView::add(const te::map::AbstractLayerPtr& layer)
 {
   LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());
@@ -267,6 +272,21 @@ void te::qt::widgets::LayerTreeView::add(const te::map::AbstractLayerPtr& layer)
   }
 
   model->add(layer);
+}
+
+void te::qt::widgets::LayerTreeView::remove(const QModelIndex& index)
+{
+  LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());
+
+  if(model == 0)
+  {
+    QMessageBox::warning(this,
+                         tr("TerraLib"),
+                         tr("Can not remove a layer from an empty model!"));
+    return;
+  }
+
+  model->remove(index);
 }
 
 void te::qt::widgets::LayerTreeView::add(QAction* action,

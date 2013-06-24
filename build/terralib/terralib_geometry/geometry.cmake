@@ -1,5 +1,5 @@
 
-find_package(Boost ${_Boost_VERSION} COMPONENTS thread system REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS thread date_time system REQUIRED)
 if(Boost_FOUND)
   list (APPEND TE_DEP_LIBS ${Boost_LIBRARIES})
   list (APPEND TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
@@ -17,14 +17,27 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEGEOMDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 endif()
 
-list (APPEND TE_DEP_LIBS  
-    terralib_common
-		terralib_datatype
-		terralib_srs
-    )
+list (APPEND TE_DEP_LIBS  terralib_common
+                          terralib_datatype
+                          terralib_srs
+                          terralib_xml)
 
-file(GLOB SRCS ${SRCDIR}/*.cpp)
-file(GLOB HDRS ${SRCDIR}/*.h)
- 
- #exporting module information
-exportModuleInformation("geometry" "${SRCDIR}" "geometry")
+# Files to process.
+# -------------------------------------------------- 
+set (
+  _DIRS 
+  .
+  serialization/xml
+)
+
+# Files in build tree
+appPrefix (${SRCDIR} "${_DIRS}" GM_INC_DIRS)
+
+# Files in build tree
+appPrefix ("common" "${_DIRS}" GM_INC_INST_DIRS)
+
+# Get files by structured by folders. 
+getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
+
+#exporting module information
+exportModuleInformation("geometry" "${GM_INC_DIRS}" "${GM_INC_INST_DIRS}")

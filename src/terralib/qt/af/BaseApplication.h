@@ -83,6 +83,8 @@ namespace te
 
           void onAddQueryLayerTriggered();
 
+          void onRemoveLayerTriggered();
+
           void onPluginsManagerTriggered();
 
           void onPluginsBuilderTriggered();
