@@ -116,15 +116,6 @@ namespace te
           */
           void selectionChanged(te::da::ObjectIdSet* oids, const bool& add);
 
-          /*!
-            \brief Removes the \a oids from the list of selected in the Layer.
-
-            \param oids Set of objects ids to be removed.
-
-            \note This WILL NOT TAKE the ownership of \a oids.
-          */
-          void removeSelectedOIds(te::da::ObjectIdSet* oids);
-
         signals:
 
           /*!

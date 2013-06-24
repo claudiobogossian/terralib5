@@ -42,6 +42,8 @@ namespace Ui { class ChartDisplayWidgetForm; }
 
 namespace te
 {
+
+  namespace da    { class ObjectIdSet; }
   namespace qt
   {
     namespace widgets
@@ -75,6 +77,13 @@ namespace te
           void setDisplay(te::qt::widgets::ChartDisplay* newDisplay);
 
           int getType();
+
+          /*!
+            \brief Highlights the objects identified by \a oids
+
+            \param oids The identifiers of plotitems to be highlighted.
+          */
+          void highlightOIds(const te::da::ObjectIdSet* oids);
 
         protected slots:
 

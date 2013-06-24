@@ -29,6 +29,7 @@
 #include "ChartStyle.h"
 #include "ChartProperties.h"
 #include "../../../dataaccess.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../datatype/Property.h"
 #include "ui_ChartDisplayWidgetForm.h"
 
@@ -57,7 +58,6 @@ te::qt::widgets::ChartDisplayWidget::ChartDisplayWidget(QwtPlotSeriesItem* chart
 te::qt::widgets::ChartDisplayWidget::~ChartDisplayWidget()
 {
   delete m_chart;
-  delete m_display;
 }
 
 QwtPlotSeriesItem* te::qt::widgets::ChartDisplayWidget::getChart()
@@ -86,6 +86,12 @@ void te::qt::widgets::ChartDisplayWidget::setDisplay(te::qt::widgets::ChartDispl
 int te::qt::widgets::ChartDisplayWidget::getType()
 {
   return m_type;
+}
+
+
+void te::qt::widgets::ChartDisplayWidget::highlightOIds(const te::da::ObjectIdSet* oids)
+{
+  m_display->highlightOIds(oids);
 }
 
 void te::qt::widgets::ChartDisplayWidget::onSettingsToolButtonnTriggered()

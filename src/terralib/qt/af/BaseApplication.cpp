@@ -646,7 +646,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
     int res = dlg.exec();
-    if (res = QDialog::Accepted)
+    if (res == QDialog::Accepted)
     {
       ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
       doc->setWindowTitle("Histogram");
@@ -680,7 +680,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     te::qt::widgets::ScatterDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));
     int res = dlg.exec();
-    if (res = QDialog::Accepted)
+    if (res == QDialog::Accepted)
     {
       ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
       doc->setWindowTitle("Scatter");

@@ -267,7 +267,6 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      propType == te::dt::NUMERIC_TYPE)
    {
 
-     std::map<double, unsigned int>* histogramValues = new std::map<double,  unsigned int>;
      std::map<double, std::vector<te::da::ObjectId*> > valuesIdsByinterval;
      std::vector<te::da::ObjectId*> valuesOIds;
 
@@ -294,7 +293,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
        if(minValue>dataset->getDouble(propId))
           minValue = dataset->getDouble(propId);
        if(maxValue<dataset->getDouble(propId))
-         maxValue = dataset->getDouble(propId);
+          maxValue = dataset->getDouble(propId);
 
        double interval = maxValue - minValue;
 
@@ -307,7 +306,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      for (double i = minValue; i <(maxValue+newHistogram->getInterval()); i+=newHistogram->getInterval())
      {
        intervals.push_back(i);
-       valuesIdsByinterval.insert(make_pair(i, valuesOIds));
+       valuesIdsByinterval.insert(std::make_pair(i, valuesOIds));
      }
 
      values.resize(intervals.size(), 0);
@@ -341,12 +340,10 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      //With both the intervals and values ready, the map can be populated
      for (unsigned int i= 0; i<intervals.size(); ++i)
      {
-       std::pair<double,  unsigned int> new_pair(intervals[i], values[i]);
-       histogramValues->insert(new_pair);
+       te::dt::Double* data = new te::dt::Double(intervals[i]);
+       newHistogram->insert(std::make_pair(data, values[i]), valuesIdsByinterval.at(intervals[i]));
      }
 
-     newHistogram->setValues(histogramValues);
-     newHistogram->setValuesOIDs(valuesIdsByinterval);
      newHistogram->setMinValue(minValue);
      dataset->moveBeforeFirst();
 
@@ -368,7 +365,14 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
   if(rpos != std::string::npos)
   {
     const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(dataset->getRaster(rpos), te::rst::SUMMARY_R_HISTOGRAM);
-    newHistogram->setValues(rs->at(propId).m_histogramR);
+    std::map<double, unsigned int>* values = rs->at(propId).m_histogramR;
+
+      for(std::map<double, unsigned int>::iterator it = values->begin(); it != values->end(); ++it)
+      {
+        te::dt::Double* data = new te::dt::Double(it->first);
+        newHistogram->insert(std::make_pair(data, it->second));
+      }
+
   }
   else
   {
@@ -387,7 +391,6 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
       std::set <std::string> intervals;
       std::set <std::string>::iterator intervalsIt;
-      std::map<std::string,  unsigned int>* histogramValues = new std::map<std::string,  unsigned int>;
       std::map<std::string, std::vector<te::da::ObjectId*> > valuesIdsByinterval;
       std::vector<te::da::ObjectId*> valuesOIds;
 
@@ -440,12 +443,10 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       int i;
       for (i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end();  ++intervalsIt,++i)
       {
-        std::pair<std::string, unsigned int> new_pair(*intervalsIt, values[i]);
-        histogramValues->insert(new_pair);
+        te::dt::String* data = new te::dt::String(*intervalsIt);
+        newHistogram->insert(std::make_pair(data, values[i]), valuesIdsByinterval.at(*intervalsIt));
       }
 
-      newHistogram->setStringValues(histogramValues);
-      newHistogram->setStringOIDs(valuesIdsByinterval); 
       dataset->moveBeforeFirst();
     }
   }

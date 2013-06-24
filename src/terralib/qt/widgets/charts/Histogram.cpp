@@ -26,6 +26,7 @@
 //terralib
 #include "Histogram.h"
 #include "../../../datatype.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
 
 te::qt::widgets::Histogram::Histogram()
 {
@@ -34,10 +35,12 @@ te::qt::widgets::Histogram::Histogram()
 
 te::qt::widgets::Histogram::~Histogram()
 {
-  if(m_histogramType ==  te::dt::DATETIME_TYPE || m_histogramType == te::dt::STRING_TYPE)
-    delete m_StringValues;
-  else
-    delete m_values;
+  HistogramValues::iterator it = m_values.begin();
+  while(it != m_values.end())
+  {
+    delete it->first;
+    ++it;
+  }
 }
 
 int& te::qt::widgets::Histogram::getType()
@@ -50,44 +53,24 @@ void te::qt::widgets::Histogram::setType(int new_type)
  m_histogramType = new_type;
 }
 
-std::map<double,  unsigned int>* te::qt::widgets::Histogram::getValues()
-{
-  return m_values;
+std::map<double, unsigned int> te::qt::widgets::Histogram::getValues()
+{ 
+  std::map<double, unsigned int> res;
+
+  //Casting every interval into a double value
+  for(HistogramValues::iterator it = m_values.begin(); it != m_values.end(); ++it)
+    res.insert(std::make_pair(static_cast<te::dt::Double*>(it->first)->getValue(), it->second));
+
+  return res;
 }
 
-std::map<double, std::vector<te::da::ObjectId*> > te::qt::widgets::Histogram::getValuesOIDs()
-{
-  return m_valuesOIDs;
-}
-
-std::map<std::string,  unsigned int>* te::qt::widgets::Histogram::getStringValues()
-{
-  return m_StringValues;
-}
-
-void te::qt::widgets::Histogram::setValues(std::map<double,  unsigned int>* new_values)
-{
-  m_values = new_values;
-}
-
-std::map<std::string, std::vector<te::da::ObjectId*> > te::qt::widgets::Histogram::getStringOIDs()
-{
-  return m_stringOIDs;
-}
-
-void te::qt::widgets::Histogram::setStringOIDs( std::map<std::string, std::vector<te::da::ObjectId*> > new_ids)
-{
-  m_stringOIDs = new_ids;
-}
-
-void te::qt::widgets::Histogram::setStringValues(std::map<std::string,  unsigned int>* new_values)
-{
-  m_StringValues = new_values;
-}
-
-void te::qt::widgets::Histogram::setValuesOIDs( std::map<double, std::vector<te::da::ObjectId*> > new_ids)
-{
-  m_valuesOIDs = new_ids;
+std::map<std::string, unsigned int> te::qt::widgets::Histogram::getStringValues()
+{ 
+  std::map<std::string, unsigned int> res;
+  //Casting every interval into a string value
+  for(HistogramValues::iterator it = m_values.begin(); it != m_values.end(); ++it) 
+    res.insert(std::make_pair(it->first->toString(), it->second));
+  return res;
 }
 
 double& te::qt::widgets::Histogram::getMinValue()
@@ -120,8 +103,34 @@ void te::qt::widgets::Histogram::setStringInterval( std::set <std::string> new_I
   m_StringIntervals = new_Interval;
 }
 
-void te::qt::widgets::Histogram::add(std::pair<double, int> new_value)
+void te::qt::widgets::Histogram::insert(std::pair<te::dt::AbstractData*, unsigned int> new_value, std::vector<te::da::ObjectId*> valuesOIds)
 {
-  m_values->insert(new_value);
+  m_values.insert(new_value);
+  adjustOids(new_value.first, valuesOIds);
 }
 
+void te::qt::widgets::Histogram::insert(std::pair<te::dt::AbstractData*, unsigned int> new_value)
+{
+  m_values.insert(new_value);
+}
+
+const std::string& te::qt::widgets::Histogram::find(te::dt::AbstractData* interval)
+{
+  te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator it= m_valuesOids.get<0>().find(interval);
+  //te::qt::widgets::IntervalToObjectIdSet::iterator it = m_valuesOids.find(data);
+  return (*it).oid;
+}
+
+const te::dt::AbstractData* te::qt::widgets::Histogram::find(const te::da::ObjectId* oid)
+{
+  te::qt::widgets::IntervalToObjectIdSet::nth_index<1>::type::iterator it= m_valuesOids.get<1>().find(oid->getValueAsString());
+  return (*it).interval;
+}
+
+void te::qt::widgets::Histogram::adjustOids(te::dt::AbstractData* interval, std::vector<te::da::ObjectId*> valuesOIds)
+{
+  for(size_t i = 0; i < valuesOIds.size(); ++i)
+  {
+    m_valuesOids.insert(te::qt::widgets::IntervalToObjectId(interval, valuesOIds.at(i)->getValueAsString()));
+  }
+}
