@@ -35,6 +35,7 @@
 
 // Qt
 #include <QtGui/QDockWidget>
+#include <QModelIndex>
 
 namespace te
 {
@@ -68,9 +69,13 @@ namespace te
 
           void set(const std::list<te::map::AbstractLayerPtr>& layers);
 
+          QModelIndexList getSelectedIndexes() const;
+
         public slots:
 
           void add(const te::map::AbstractLayerPtr& layer);
+
+          void remove(const QModelIndex& index);
 
         //protected:
 

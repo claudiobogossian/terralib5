@@ -29,7 +29,7 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/SQLDialect.h"
-#include "../serialization/dataaccess/DataSourceCapabilities.h"
+#include "../dataaccess/serialization/xml/Serializer.h"
 #include "DataSourceFactory.h"
 #include "Globals.h"
 #include "Module.h"
@@ -69,7 +69,7 @@ void te::mysql::Module::startup()
   te::mysql::Globals::sm_capabilities = new te::da::DataSourceCapabilities();
   te::mysql::Globals::sm_queryDialect = new te::da::SQLDialect();
 
-  te::serialize::Read(capabilitiesFile.string(), *te::mysql::Globals::sm_capabilities, *te::mysql::Globals::sm_queryDialect);
+  te::serialize::xml::Read(capabilitiesFile.string(), *te::mysql::Globals::sm_capabilities, *te::mysql::Globals::sm_queryDialect);
 
   TE_LOG_TRACE(TR_MYSQL("TerraLib MySQL driver startup!"));
 

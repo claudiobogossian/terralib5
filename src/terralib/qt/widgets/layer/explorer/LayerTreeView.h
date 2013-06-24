@@ -78,6 +78,8 @@ namespace te
 
           std::list<AbstractLayerTreeItem*> getSelectedItems() const;
 
+          QModelIndexList getSelectedIndexes() const;
+
         signals:
 
           void activated(te::qt::widgets::AbstractLayerTreeItem* item);
@@ -95,6 +97,8 @@ namespace te
         public slots:
 
           void add(const te::map::AbstractLayerPtr& layer);
+
+          void remove(const QModelIndex& indexes);
 
         public:
 

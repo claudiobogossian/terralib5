@@ -25,11 +25,11 @@
 
 // TerraLib
 #include "../../common/UserApplicationSettings.h"
+#include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
 #include "../../serialization/maptools/Layer.h"
-#include "../../serialization/dataaccess/DataSourceInfo.h"
 #include "../../xml/Reader.h"
 #include "../../xml/ReaderFactory.h"
 #include "../../xml/Writer.h"
@@ -245,7 +245,7 @@ void te::qt::af::SaveDataSourcesFile()
   if(fileName.empty())
     return;
 
-  te::serialize::Save(fileName);
+  te::serialize::xml::Save(fileName);
 }
 
 void te::qt::af::UpdateApplicationPlugins()

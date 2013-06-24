@@ -63,8 +63,6 @@ void te::qt::widgets::VisualDockWidget::setStyle(te::se::Style* style, te::map::
   m_styleController->setStyle(style);
 
   m_currentLayer = layer;
-
-  setTabStatus(false);
 }
 
 void te::qt::widgets::VisualDockWidget::setTabStatus(bool status)
