@@ -33,9 +33,9 @@
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"
 #include "../../common/Logger.h"
+#include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
-#include "../../serialization/dataaccess/DataSourceInfo.h"
 #include "../../srs/Config.h"
 #include "../widgets/help/AssistantHelpManagerImpl.h"
 #include "../widgets/help/HelpManager.h"
@@ -415,7 +415,7 @@ void  te::qt::af::ApplicationController::initialize()
     {
       SplashScreenManager::getInstance().showMessage(tr("Loading user registered data sources..."));
 
-      te::serialize::ReadDataSourceInfo(m_appDatasourcesFile);
+      te::serialize::xml::ReadDataSourceInfo(m_appDatasourcesFile);
 
       SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
     }

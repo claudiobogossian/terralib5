@@ -24,14 +24,7 @@
 */
 
 // TerraLib
-#include "../../common/Translator.h"
-#include "../../common/STLUtils.h"
-#include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSet.h"
-#include "../../dataaccess/dataset/DataSetType.h"
-#include "../../datatype/Enums.h"
-#include "../../datatype/Property.h"
-#include "../../maptools/AbstractLayer.h"
 #include "../core/Config.h"
 #include "../core/Exception.h"
 #include "../core/NumericStatisticalSummary.h"

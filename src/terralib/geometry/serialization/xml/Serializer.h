@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,23 @@
  */
 
 /*!
-  \file terralib/serialization/datatype/Property.h
- 
-  \brief Support for Property serialization.
+  \file terralib/geometry/serialization/xml/Serializer.h
+
+  \brief Auxiliary classes and functions to read geometry information from a XML document.
 */
 
-#ifndef __TERRALIB_SERIALIZATION_DATATYPE_INTERNAL_PROPERTY_H
-#define __TERRALIB_SERIALIZATION_DATATYPE_INTERNAL_PROPERTY_H
+#ifndef __TERRALIB_GEOMETRY_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
+#define __TERRALIB_GEOMETRY_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../Config.h"
+
+// STL
+#include <memory>
 
 namespace te
 {
-  namespace dt { class Property; }
+  namespace gm { class Envelope; }
 
   namespace xml
   {
@@ -41,12 +44,15 @@ namespace te
 
   namespace serialize
   {
-    TESERIALIZATIONEXPORT te::dt::Property* ReadProperty(te::xml::Reader& reader);
+    namespace xml
+    {
+      TEGEOMEXPORT std::auto_ptr<te::gm::Envelope> ReadExtent(te::xml::Reader& reader);
 
-    TESERIALIZATIONEXPORT void Save(const te::dt::Property* p, te::xml::Writer& writer);
+      TEGEOMEXPORT void SaveExtent(const te::gm::Envelope& e, te::xml::Writer& writer);
 
-  } // end namespace serialize
-}   // end namespace te
+    } // end namespace xml
+  }   // end namespace serialize
+}     // end namespace te
 
-#endif  // __TERRALIB_SERIALIZATION_DATATYPE_INTERNAL_PROPERTY_H
+#endif  // __TERRALIB_GEOMETRY_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
 

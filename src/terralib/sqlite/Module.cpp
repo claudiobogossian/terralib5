@@ -29,6 +29,7 @@
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/SQLDialect.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../dataaccess/serialization/xml/Serializer.h"
 //#include "../serialization/dataaccess/SQLDialect.h"
 //#include "rlite/RasterFactory.h"
 //#include "terralib/RasterFactory.h"
@@ -37,8 +38,6 @@
 #include "Globals.h"
 #include "Module.h"
 #include "Utils.h"
-
-#include "../serialization/dataaccess/DataSourceCapabilities.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -98,8 +97,8 @@ void te::sqlite::Module::startup()
   te::sqlite::Globals::sm_spatialiteDialect = new te::da::SQLDialect();
   te::sqlite::Globals::sm_sqliteDialect = new te::da::SQLDialect();
 
-  te::serialize::Read(spatialiteCapabilitiesFile.string(), *te::sqlite::Globals::sm_spatialiteCapabilities, *te::sqlite::Globals::sm_spatialiteDialect);
-  te::serialize::Read(sqliteCapabilitiesFile.string(), *te::sqlite::Globals::sm_sqliteCapabilities, *te::sqlite::Globals::sm_sqliteDialect);
+  te::serialize::xml::Read(spatialiteCapabilitiesFile.string(), *te::sqlite::Globals::sm_spatialiteCapabilities, *te::sqlite::Globals::sm_spatialiteDialect);
+  te::serialize::xml::Read(sqliteCapabilitiesFile.string(), *te::sqlite::Globals::sm_sqliteCapabilities, *te::sqlite::Globals::sm_sqliteDialect);
 
   TE_LOG_TRACE(TR_SQLITE("TerraLib SQLite driver startup!"));
 
