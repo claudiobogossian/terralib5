@@ -239,7 +239,7 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
 
       for( tpIdx = 0 ; tpIdx < inputTPNmb ; ++tpIdx )
       {
-        if( tiePointsWeights[ tpIdx ] <= 0.0 ) return false;
+        if( tiePointsWeights[ tpIdx ] < 0.0 ) return false;
         
         tiePointsWeightsSum += tiePointsWeights[ tpIdx ];
       }

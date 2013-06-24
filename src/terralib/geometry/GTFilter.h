@@ -73,7 +73,7 @@ namespace te
           \param assurance              The error-free selection assurance - valid range (0-1) - Use Lower values for good tie-points sets - Higher values may increase the number of iterations. Use 0-zero to let this number be automatically found.
           \param enableMultiThread      Enable multi-threaded processing (good for multi-processor or multi-core systems).
           \param outTransf              The generated output transformation (with the base mininum required tie-points set).
-          \param tiePointsWeights       Optional tie-points weights (non-zero, positive values) or an empty vector if no weights must be used.
+          \param tiePointsWeights       Optional tie-points weights (only positive values) or an empty vector if no weights must be used.
           \param outTiePoints           The filtered output tie-points (non-outliers) in agreenment with the generated transformation.
 
           \return true if OK, false on errors.
