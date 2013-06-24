@@ -206,7 +206,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   saveImagesAndTiePoints( *inputRaster1Pointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategyHalfRotated90Image" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)906, algoOutputParams.m_tiePoints.size() );    
+  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() > 900 );    
 }
 
 void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
@@ -256,7 +256,7 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategySameImageDifBoxes" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)909, algoOutputParams.m_tiePoints.size() );    
+  CPPUNIT_ASSERT( algoOutputParams.m_tiePoints.size() > 900 );    
 }
 
 void TsTiePointsLocator::MoravecStrategyMultipleThreads()

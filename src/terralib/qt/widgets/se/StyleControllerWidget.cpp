@@ -42,8 +42,8 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
   m_ui->setupUi(this);
 
   //add explorer
-  m_explorer = new te::qt::widgets::StyleExplorer(m_ui->m_explorerTab);
-  QGridLayout* le = new QGridLayout(m_ui->m_explorerTab);
+  m_explorer = new te::qt::widgets::StyleExplorer(m_ui->m_explorerFrame);
+  QGridLayout* le = new QGridLayout(m_ui->m_explorerFrame);
   le->addWidget(m_explorer);
 
   connect(m_explorer, SIGNAL(symbolizerClicked(te::se::Symbolizer*)), this, SLOT(onSymbolizerClicked(te::se::Symbolizer*)));
@@ -67,7 +67,7 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
   connect(m_ui->m_upSymbToolButton, SIGNAL(clicked()), this, SLOT(onUpSymbolizerClicked()));
   connect(m_ui->m_downSymbToolButton, SIGNAL(clicked()), this, SLOT(onDownSymbolizerClicked()));
 
-  m_ui->m_tabWidget->setCurrentWidget(m_ui->m_explorerTab);
+  m_ui->m_tabWidget->setCurrentWidget(m_ui->m_previewTab);
 
   updateUi();
 }

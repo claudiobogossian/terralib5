@@ -398,6 +398,17 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
       vec.push_back((double)ds->getFloat(attrName));
     else if(dataType == te::dt::DOUBLE_TYPE)
       vec.push_back(ds->getDouble(attrName));
+    else if(dataType == te::dt::NUMERIC_TYPE)
+    {
+      QString strNum = ds->getNumeric(attrName).c_str();
+
+      bool ok = false;
+
+      double value = strNum.toDouble(&ok);
+
+      if(ok)
+        vec.push_back(value);
+    }
   }
 }
 
@@ -472,6 +483,7 @@ void te::qt::widgets::GroupingWidget::listAttributes()
         case te::dt::INT64_TYPE:
         case te::dt::FLOAT_TYPE:
         case te::dt::DOUBLE_TYPE:
+        case te::dt::NUMERIC_TYPE:
           m_ui->m_attrComboBox->addItem(p->getName().c_str(), p->getType());
 
         default:

@@ -33,6 +33,7 @@
 
 //STL
 #include <numeric>
+#include <algorithm>
 
 void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss)
 {
