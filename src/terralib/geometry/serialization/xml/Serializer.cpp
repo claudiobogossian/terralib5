@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,20 @@
  */
 
 /*!
-  \file Envelope.cpp
-   
+  \file terralib/geometry/serialization/xml/Serializer.cpp
+
   \brief Auxiliary classes and functions to read envelope information from a XML document.
 */
 
 // TerraLib
-#include "../../xml/Reader.h"
-#include "../../xml/ReaderFactory.h"
-#include "../../xml/Writer.h"
-#include "../../geometry/Envelope.h"
-#include "../Exception.h"
-#include "Envelope.h"
+#include "../../../xml/Reader.h"
+#include "../../../xml/ReaderFactory.h"
+#include "../../../xml/Writer.h"
+#include "../../core/Envelope.h"
+#include "../../Exception.h"
+#include "Serializer.h"
 
-te::gm::Envelope* te::serialize::ReadExtent(te::xml::Reader& reader)
+std::auto_ptr<te::gm::Envelope> te::serialize::xml::ReadExtent(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Extent");
@@ -46,18 +46,16 @@ te::gm::Envelope* te::serialize::ReadExtent(te::xml::Reader& reader)
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
   reader.next();
 
-  return new te::gm::Envelope(llx, lly, urx, ury);
+  return std::auto_ptr<te::gm::Envelope>(new te::gm::Envelope(llx, lly, urx, ury));
 }
 
-void te::serialize::SaveExtent(const te::gm::Envelope* e, te::xml::Writer& writer)
+void te::serialize::xml::SaveExtent(const te::gm::Envelope& e, te::xml::Writer& writer)
 {
-  assert(e);
-
   writer.writeStartElement("te_map:Extent");
-  writer.writeAttribute("llx", e->m_llx);
-  writer.writeAttribute("lly", e->m_lly);
-  writer.writeAttribute("urx", e->m_urx);
-  writer.writeAttribute("ury", e->m_ury);
+  writer.writeAttribute("llx", e.m_llx);
+  writer.writeAttribute("lly", e.m_lly);
+  writer.writeAttribute("urx", e.m_urx);
+  writer.writeAttribute("ury", e.m_ury);
   writer.writeEndElement("te_map:Extent");
 }
 
