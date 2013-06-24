@@ -27,7 +27,7 @@
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
 #include "../../../xml/Writer.h"
-#include "../../core/Envelope.h"
+#include "../../Envelope.h"
 #include "../../Exception.h"
 #include "Serializer.h"
 
