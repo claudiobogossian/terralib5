@@ -589,6 +589,8 @@ namespace te
           \param enableMultiThread Enable/disable multi-thread.
           
           \param interestPoints The found interest points (coords related to rasterData lines/cols).          
+          
+          \note InterestPointT::m_feature1 will be the Moravec filter response at the given point.
 
           \return true if ok, false on errors.
         */             
