@@ -416,6 +416,14 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
   QModelIndexList selectedIndexes = m_explorer->getExplorer()->getSelectedIndexes();
   QModelIndex idx;
 
+  if(selectedIndexes.count() > 1)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Not implemented for removing more than one layer!"));
+
+    return;
+  }
+
   foreach(idx, selectedIndexes)
   {
     te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(idx.internalPointer());
