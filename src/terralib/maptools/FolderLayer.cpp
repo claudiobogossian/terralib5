@@ -117,6 +117,8 @@ void te::map::FolderLayer::updateVisibility()
 
   if(m_visibility != prevVisibility)
     m_visibilityChanged = true;
+
+  updateVisibilityOfAncestors();
 }
 
 const te::map::LayerSchema* te::map::FolderLayer::getSchema(const bool /*full*/) const

@@ -37,6 +37,7 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explore
   
   connect(explorer->getTreeView(), SIGNAL(visibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)), SLOT(onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)));
   connect(explorer->getTreeModel(), SIGNAL(visibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)), SLOT(onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)));
+  connect(explorer->getTreeView(), SIGNAL(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)), SLOT(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)));
 }
 
 te::qt::af::LayerExplorer::~LayerExplorer()
@@ -109,4 +110,10 @@ void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::qt::widgets::Abstra
   te::map::AbstractLayer* layer = item->getLayer().get();
   te::qt::af::evt::LayerVisibilityChanged layerVisibilityChangedEvent(layer, layer->getVisibility());
   ApplicationController::getInstance().broadcast(&layerVisibilityChangedEvent);
+}
+
+void te::qt::af::LayerExplorer::layersChanged(const std::vector<te::map::AbstractLayerPtr>& layers)
+{
+  te::qt::af::evt::LayersChanged evt(layers);
+  ApplicationController::getInstance().broadcast(&evt);
 }
