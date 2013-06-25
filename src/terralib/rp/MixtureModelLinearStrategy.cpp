@@ -154,6 +154,7 @@ bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRas
         inputRaster.getValue(c, r, value, inputRasterBands[b]);
         matrixR(b, 0) = value / Qmax[b];
       }
+      matrixR(nBands, 0) = 0.0;
 
 // calculate the product A' * R
       productAtR = boost::numeric::ublas::prod(transposeA, matrixR);
@@ -164,7 +165,6 @@ bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRas
 // write output fractions
       for (unsigned b = 0; b < nComponents; b++)
         outputRaster.setValue(c, r, matrixX(b + 1, 0), b);
-
 
 // compute error matrix
       if (nComponents < outputRaster.getNumberOfBands())
