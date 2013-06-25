@@ -82,11 +82,11 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer,
   std::auto_ptr<te::rst::Raster> raster(rlayer->getRaster());
 
 // get the associated layer style
-  te::se::CoverageStyle* style = rlayer->getStyle();
+  te::se::Style* style = rlayer->getStyle();
   if(style == 0)
   {
 // try create an appropriate style
-    style = dynamic_cast<te::se::CoverageStyle*>(te::se::CreateCoverageStyle(raster->getNumberOfBands()));
+    style = te::se::CreateCoverageStyle(raster->getNumberOfBands());
 
     if(style == 0)
       throw Exception((boost::format(TR_MAP("Could not create a default coverage style to the layer %1%.")) % layer->getTitle()).str());
@@ -99,5 +99,5 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer,
   if(cs == 0)
     throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
 
-  DrawRaster(raster.get(), canvas, ibbox, rlayer->getSRID(), bbox, srid, style);
+  DrawRaster(raster.get(), canvas, ibbox, rlayer->getSRID(), bbox, srid, dynamic_cast<te::se::CoverageStyle*>(style));
 }

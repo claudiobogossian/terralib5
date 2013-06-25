@@ -51,6 +51,8 @@ namespace te
 
   namespace gm { class Geometry; }
 
+  namespace se { class Style; }
+
   namespace map
   {
 // Forward declaration
@@ -242,6 +244,24 @@ namespace te
           \brief It clears the selected group of this Layer.
         */
         virtual void clearSelected();
+
+        /*!
+          \brief It returns the Style associated to the layer.
+
+          \return The Style associated to the layer.
+
+          \note The caller will NOT take the ownership of the given pointer.
+        */
+        virtual te::se::Style* getStyle() const;
+
+        /*!
+          \brief It sets the Style associated to the layer.
+
+          \param style The Style associated to the layer. 
+
+          \note The layer will take the ownership of the given pointer.
+        */
+        virtual void setStyle(te::se::Style* style);
 
         /*!
           \brief It returns the Grouping associated to the Layer.
@@ -473,7 +493,8 @@ namespace te
         Visibility m_visibility;          //!< It indicates the layer visibility.
         bool m_visibilityChanged;         //!< It indicates if the layer visibility has changed.
         te::da::ObjectIdSet* m_selected;  //!< The selected group of the layer.
-        te::map::Grouping* m_grouping;    //!< The grouping information
+        te::se::Style* m_style;           //!< The style to be applied to the geographic objects in the layer.
+        te::map::Grouping* m_grouping;    //!< The grouping information.
     };
 
     typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;
