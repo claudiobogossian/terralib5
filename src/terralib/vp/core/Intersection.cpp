@@ -119,6 +119,9 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
   if(idata.size() <= 1)
     throw te::common::Exception(TR_VP("At least two layers are necessary for an intersection!"));
 
+  if(outputSRID == 0)
+    outputSRID = idata.begin()->first->getSRID();
+
   size_t countAux = 0;
   LayerInputData aux;
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
@@ -149,7 +152,7 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
       firstMember.ds = aux.first->getData();
       firstMember.props = GetPropertiesByPos(firstMember.dt, firstPropsPos);
 
-      resultPair = PairwiseIntersection(newLayerName, firstMember, secondMember);
+      resultPair = PairwiseIntersection(newLayerName, firstMember, secondMember, outputSRID);
     }
     else if(countAux > 1)
     {
@@ -167,7 +170,7 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
       auxMember.ds = resultPair.second;
       auxMember.props = auxProps;
 
-      resultPair = PairwiseIntersection(newLayerName, auxMember, secondMember);
+      resultPair = PairwiseIntersection(newLayerName, auxMember, secondMember, outputSRID);
     }
 
     ++countAux;
@@ -194,14 +197,14 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(std::string newName, 
                                                                                IntersectionMember firstMember, 
-                                                                               IntersectionMember secondMember)
+                                                                               IntersectionMember secondMember,
+                                                                               std::size_t outputSRID)
 {
 
   //Creating the RTree with the secound layer geometries
   te::sam::rtree::Index<size_t, 8>* rtree = CreateRTree(secondMember.dt, secondMember.ds);
 
   firstMember.ds->moveBeforeFirst();
-
 
   te::gm::GeometryProperty* fiGeomProp = te::da::GetFirstGeomProperty(firstMember.dt);
   size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp);
@@ -216,6 +219,9 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
   {
     te::gm::Geometry* currGeom = firstMember.ds->getGeometry(fiGeomPropPos);
 
+    if(currGeom->getSRID() != outputSRID)
+      currGeom->transform(outputSRID);
+
     std::vector<size_t> report;
     rtree->search(*currGeom->getMBR(), report);
 
@@ -223,6 +229,9 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
     {
       secondMember.ds->move(report[i]);
       te::gm::Geometry* secGeom = secondMember.ds->getGeometry(secGeomPropPos);
+
+      if(secGeom->getSRID() != outputSRID)
+        secGeom->transform(outputSRID);
 
       if(!currGeom->intersects(secGeom))
         continue;
