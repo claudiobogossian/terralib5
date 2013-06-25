@@ -119,8 +119,6 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
   if(idata.size() <= 1)
     throw te::common::Exception(TR_VP("At least two layers are necessary for an intersection!"));
 
-  te::map::AbstractLayerPtr outputLayer;
-
   size_t countAux = 0;
   LayerInputData aux;
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
@@ -181,14 +179,17 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 
   te::da::Create(t, resultPair.first, resultPair.second, options);
 
-  /*te::qt::widgets::DataSet2Layer converter(dataSource->getId());
+  te::qt::widgets::DataSet2Layer converter(dataSource->getId());
 
   te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
   te::da::DataSetTypePtr dstPtr(loader->getDataSetType(resultPair.first->getName()));
 
-  te::map::DataSetLayerPtr newLayer = converter(dstPtr);*/
+  delete t;
+  delete loader;
 
-  return outputLayer;
+  te::map::DataSetLayerPtr newLayer = converter(dstPtr);
+
+  return newLayer;
 }
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(std::string newName, 
