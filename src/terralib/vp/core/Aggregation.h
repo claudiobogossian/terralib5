@@ -60,7 +60,6 @@ namespace te
     void Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                      const std::vector<te::dt::Property*>& groupingProperties,
                      const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                     const te::vp::MemoryUse memoryUse,
                      const std::string& outputLayerName,
                      const te::da::DataSourceInfoPtr& dsInfo);
 
