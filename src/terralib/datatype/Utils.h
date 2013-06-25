@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,6 +31,7 @@
 
 // STL
 #include <vector>
+#include <string>
 
 namespace te
 {
@@ -62,7 +63,7 @@ namespace te
       
       \return DataType integer
     */
-    TEDATATYPEEXPORT int Convert2Terralib(const std::string dataType);
+    TEDATATYPEEXPORT int Convert2Terralib(const std::string& dataType);
 
   } // end namespace dt
 }   // end namespace te

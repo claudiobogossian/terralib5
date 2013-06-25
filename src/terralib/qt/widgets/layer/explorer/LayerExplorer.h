@@ -35,6 +35,7 @@
 
 // Qt
 #include <QtGui/QDockWidget>
+#include <QModelIndex>
 
 namespace te
 {
@@ -42,6 +43,7 @@ namespace te
   {
     namespace widgets
     {
+      class AbstractLayerTreeItem;
       class LayerTreeModel;
       class LayerTreeView;
 
@@ -68,9 +70,13 @@ namespace te
 
           void set(const std::list<te::map::AbstractLayerPtr>& layers);
 
+          std::list<te::qt::widgets::AbstractLayerTreeItem*> getSelectedItems() const;
+
         public slots:
 
           void add(const te::map::AbstractLayerPtr& layer);
+
+          void remove(AbstractLayerTreeItem* item);
 
         //protected:
 

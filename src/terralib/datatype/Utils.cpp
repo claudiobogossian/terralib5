@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -38,7 +38,7 @@ void te::dt::GetPropertiesPosition(const std::vector<Property*>& properties,
     poslist.push_back(cp->getPropertyPosition(properties[i]));
 }
 
-int te::dt::Convert2Terralib(const std::string dataType)
+int te::dt::Convert2Terralib(const std::string& dataType)
 {
   if(dataType == "VOID_TYPE")
     return te::dt::VOID_TYPE;

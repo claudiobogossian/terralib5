@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,37 +18,45 @@
  */
 
 /*!
-  \file terralib/serialization/raster/BandProperty.h
- 
-  \brief Support for BandProperty serialization.
+  \file terralib/datatype/serialization/xml/Serializer.h
+
+  \brief Support for Property serialization.
 */
 
-#ifndef __TERRALIB_SERIALIZATION_RASTER_INTERNAL_BANDPROPERTY_H
-#define __TERRALIB_SERIALIZATION_RASTER_INTERNAL_BANDPROPERTY_H
+#ifndef __TERRALIB_DATATYPE_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
+#define __TERRALIB_DATATYPE_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../../common/Singleton.h"
+#include "../../Config.h"
+
+// STL
+#include <memory>
 
 namespace te
 {
-  namespace rst { class BandProperty; }
-
   namespace xml
   {
     class Reader;
     class Writer;
   }
 
+  namespace dt
+  {
+    class Property;
+  }
+
   namespace serialize
   {
-    TESERIALIZATIONEXPORT std::vector<te::rst::BandProperty*> ReadBandPropertyVector(te::xml::Reader& reader);
+    namespace xml
+    {
+      TEDATATYPEEXPORT std::auto_ptr<te::dt::Property> ReadProperty(te::xml::Reader& reader);
 
-    TESERIALIZATIONEXPORT te::rst::BandProperty* ReadBandProperty(te::xml::Reader& reader);
+      TEDATATYPEEXPORT void Save(const te::dt::Property& p, te::xml::Writer& writer);
 
-    TESERIALIZATIONEXPORT void Save(const te::rst::BandProperty* bp, te::xml::Writer& writer);
+    } // end namespace xml
+  }   // end namespace serialize
+}     // end namespace te
 
-  } // end namespace serialize
-}   // end namespace te
-
-#endif  // __TERRALIB_SERIALIZATION_RASTER_INTERNAL_BANDPROPERTY_H
+#endif  // __TERRALIB_DATATYPE_SERIALIZATION_XML_INTERNAL_SERIALIZER_H
 

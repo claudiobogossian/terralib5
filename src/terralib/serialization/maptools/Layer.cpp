@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../common/Translator.h"
 #include "../../geometry/Envelope.h"
+#include "../../geometry/serialization/xml/Serializer.h"
 #include "../../se/CoverageStyle.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
@@ -37,7 +38,6 @@
 #include "../../maptools/QueryLayer.h"
 #include "../../maptools/RasterLayer.h"
 #include "../../se/RasterSymbolizer.h"
-#include "../geometry/Envelope.h"
 #include "../se/Style.h"
 #include "../se/Symbolizer.h"
 #include "../Exception.h"
@@ -444,7 +444,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Extent");
-  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::ReadExtent(reader));
+  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::xml::ReadExtent(reader));
 
   /* RendererId Element */
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -540,7 +540,7 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Extent");
-  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::ReadExtent(reader));
+  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::xml::ReadExtent(reader));
 
   /* RendererId Element */
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -696,7 +696,7 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Extent");
-  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::ReadExtent(reader));
+  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::xml::ReadExtent(reader));
 
   /* RendererId Element */
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -756,7 +756,7 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& w
   writer.writeElement("te_map:DataSetName", layer->getDataSetName());
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
-  te::serialize::SaveExtent(&layer->getExtent(), writer);
+  te::serialize::xml::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("te_map:RendererId", layer->getRendererType());
 
   if(layer->getStyle())
@@ -785,7 +785,7 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
   writer.writeElement("te_map:Query", "");
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
-  te::serialize::SaveExtent(&layer->getExtent(), writer);
+  te::serialize::xml::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("te_map:RendererId", layer->getRendererType());
 
   if(layer->getStyle())
@@ -837,7 +837,7 @@ void RasterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wr
   writer.writeEndElement("te_map:ConnectionInfo");
 
   writer.writeElement("te_map:SRID", layer->getSRID());
-  te::serialize::SaveExtent(&layer->getExtent(), writer);
+  te::serialize::xml::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("te_map:RendererId", layer->getRendererType());
 
   if(layer->getStyle())

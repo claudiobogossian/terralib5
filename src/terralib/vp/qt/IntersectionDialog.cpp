@@ -147,19 +147,18 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     return;
   }
 
-  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
-
   try
   {
     size_t srid = 0;
     std::map<std::string, std::string> op;
-    te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
-    //te::vp::Intersection(newLayerName, selected);
+    m_layer = te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
   }
   catch(const std::exception& e)
   {
     QMessageBox::warning(this, TR_VP("Intersection Operation"), e.what());
   }
+
+  accept();
 }
 
 void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
@@ -181,18 +180,17 @@ void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
 
 void te::vp::IntersectionDialog::onTargetFileToolButtonPressed()
 {
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Open Feature File"), QString(""), tr("Common Formats (*.shp *.SHP *.kml *.KML *.geojson *.GEOJSON *.gml *.GML);; Shapefile (*.shp *.SHP);; GML (*.gml *.GML);; Web Feature Service - WFS (*.xml *.XML *.wfs *.WFS);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
+  QString directoryName = QFileDialog::getExistingDirectory(this, tr("Open Feature File"), QString(""));
   
-  if(fileName.isEmpty())
+  if(directoryName.isEmpty())
     return;
 
-  m_ui->m_repositoryLineEdit->setText(fileName);
+  QString fullName = directoryName + m_ui->m_newLayerNameLineEdit->text() + ".shp";
 
-  std::vector<te::da::DataSourceInfoPtr> datasources;
-  te::da::DataSourceInfoManager::getInstance().getByType("OGR", datasources);
-
-  m_outputDatasource = datasources[0];
+  m_ui->m_repositoryLineEdit->setText(fullName);
 }
 
-
-
+te::map::AbstractLayerPtr te::vp::IntersectionDialog::getLayer()
+{
+  return m_layer;
+}
