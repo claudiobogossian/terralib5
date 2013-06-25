@@ -192,9 +192,16 @@ te::da::DataSet* te::map::QueryLayer::getData(const te::dt::Property& /*p*/,
   return 0; // TODO
 }
 
-te::da::DataSet* te::map::QueryLayer::getData(const te::da::ObjectIdSet* oids,
-                                              te::common::TraverseType travType,
-                                              te::common::AccessPolicy rwRole) const
+te::da::DataSet* te::map::QueryLayer::getData(te::da::Expression* /*restriction*/,
+                                              te::common::TraverseType /*travType*/,
+                                              te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0; // TODO
+}
+
+te::da::DataSet* te::map::QueryLayer::getData(const te::da::ObjectIdSet* /*oids*/,
+                                              te::common::TraverseType /*travType*/,
+                                              te::common::AccessPolicy /*rwRole*/) const
 {
   return 0; // TODO
 }
