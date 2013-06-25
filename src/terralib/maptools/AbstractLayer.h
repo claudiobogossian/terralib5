@@ -46,6 +46,7 @@ namespace te
   {
     class DataSet;
     class DataSetType;
+    class Expression;
     class ObjectIdSet;
   }
 
@@ -435,6 +436,28 @@ namespace te
                                          te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
 
         /*!
+          \brief It gets the dataset identified by the layer name using the given restriction.
+
+          \param restriction The restriction expression that will be used.
+          \param travType    The traverse type associated to the returned dataset. 
+          \param rwRole      The read and write permission associated to the returned dataset. 
+
+          \return The caller of this method will take the ownership of the returned DataSet.
+
+          \exception Exception It can throws an exception if:
+                      <ul>
+                      <li>something goes wrong during data retrieval</li>
+                      <li>if the data source driver doesn't support the traversal type</li>
+                      <li>if the data source driver doesn't support the access policy</li>
+                      </ul>
+
+          \note Not thread-safe!
+        */
+        virtual te::da::DataSet* getData(te::da::Expression* restriction,
+                                         te::common::TraverseType travType = te::common::FORWARDONLY,
+                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+
+        /*!
           \brief It gets the dataset from the given set of objects identification.
 
           \param oids     The set of object ids.
@@ -455,6 +478,7 @@ namespace te
         virtual te::da::DataSet* getData(const te::da::ObjectIdSet* oids,
                                          te::common::TraverseType travType = te::common::FORWARDONLY,
                                          te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+
         /*!
           \brief It returns the layer type.
 

@@ -96,7 +96,6 @@
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
 #include <QtGui/QToolButton>
-#include <QModelIndex>
 
 // STL
 #include <list>
@@ -1009,14 +1008,23 @@ void te::qt::af::BaseApplication::makeDialog()
 
 // 1. Layer Explorer
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
+  te::qt::widgets::LayerTreeView* treeView = lexplorer->getTreeView();
 
-  lexplorer->getTreeView()->add(m_projectAddLayerDataset, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_layerNewLayerGroup, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
-  lexplorer->getTreeView()->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerEdit, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerRename, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerExport, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerNewLayerGroup, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
+  treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerChartsMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerRaise, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerToTop, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerToBottom, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+
+  treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
+  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 
