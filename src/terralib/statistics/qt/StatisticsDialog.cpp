@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../dataaccess/dataset/DataSet.h"
+#include "../../datatype/Enums.h"
 #include "../core/Config.h"
 #include "../core/Exception.h"
 #include "../core/NumericStatisticalSummary.h"
@@ -69,7 +70,6 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
 
   if(propType == te::dt::STRING_TYPE)
   {
-
     std::vector<std::string> statResult;
     statResult = getStringData(propType);
 

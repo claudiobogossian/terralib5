@@ -26,7 +26,6 @@
 // TerraLib
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
-#include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
