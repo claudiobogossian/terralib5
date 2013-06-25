@@ -592,13 +592,33 @@ bool te::qt::widgets::LayerTreeModel::insert(const te::map::AbstractLayerPtr& la
   return insertRows(row, 1, parent);
 }
 
-bool te::qt::widgets::LayerTreeModel::remove(const QModelIndex& index)
+bool te::qt::widgets::LayerTreeModel::remove(AbstractLayerTreeItem* item)
 {
-  if(!index.isValid())
-    return false;
+  int itemRow;              // The item row
+  QModelIndex parentIndex;  // The parent index of the item
 
-  QModelIndex parentIndex = index.parent();
-  return removeRows(index.row(), 1, parentIndex);
+  AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(item->parent());
+  if(!parentItem)
+  {
+    // The item is a top level item; get its row
+    for(std::size_t i = 0; i < m_items.size(); ++i)
+    {
+      if(m_items[i] == item)
+      {
+        itemRow = i;
+        break;
+      }
+    }
+  }
+  else
+  {
+    itemRow = parentItem->children().indexOf(item);
+
+    QModelIndex itemIndex = createIndex(itemRow, 0, item);
+    parentIndex = parent(itemIndex);
+  }
+
+  return removeRows(itemRow, 1, parentIndex);
 }
 
 void te::qt::widgets::LayerTreeModel::emitDataChangedForDescendants(const QModelIndex& parent)

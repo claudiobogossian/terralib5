@@ -413,23 +413,14 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
 void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
-  QModelIndexList selectedIndexes = m_explorer->getExplorer()->getSelectedIndexes();
-  QModelIndex idx;
+  std::list<te::qt::widgets::AbstractLayerTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractLayerTreeItem*>::iterator it;
 
-  if(selectedIndexes.count() > 1)
+  for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
   {
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                         tr("Not implemented for removing more than one layer!"));
-
-    return;
-  }
-
-  foreach(idx, selectedIndexes)
-  {
-    te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(idx.internalPointer());
+    te::qt::widgets::AbstractLayerTreeItem* item = *it;
     m_project->remove(item->getLayer());
-
-    m_explorer->getExplorer()->remove(idx);
+    m_explorer->getExplorer()->remove(item);
   }
 }
 

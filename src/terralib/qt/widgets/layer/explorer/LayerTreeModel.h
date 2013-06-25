@@ -270,13 +270,13 @@ namespace te
           bool insert(const te::map::AbstractLayerPtr& layer, int row, const QModelIndex& parent);
 
           /*!
-            \brief It removes a layer item identified by its index.
+            \brief It removes a item from the model.
 
-            \param index The index of the layer item to be removed from the model.
+            \param item The item to be removed from the model.
 
-            \return True, if the layer item was successfully removed; otherwise, it returns false.
+            \return True, if the item was successfully removed; otherwise, it returns false.
           */
-          bool remove(const QModelIndex& index);
+          bool remove(AbstractLayerTreeItem* item);
 
         signals:
 
