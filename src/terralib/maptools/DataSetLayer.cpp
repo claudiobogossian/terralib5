@@ -30,7 +30,6 @@
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/utils/Utils.h"
-#include "../se/Style.h"
 #include "DataSetLayer.h"
 #include "Exception.h"
 #include "RendererFactory.h"
@@ -45,28 +44,24 @@
 const std::string te::map::DataSetLayer::sm_type("DATASETLAYER");
 
 te::map::DataSetLayer::DataSetLayer(AbstractLayer* parent)
-  : AbstractLayer(parent),
-    m_style(0)
+  : AbstractLayer(parent)
 {
 }
 
 te::map::DataSetLayer::DataSetLayer(const std::string& id, AbstractLayer* parent)
-  : AbstractLayer(id, parent),
-    m_style(0)
+  : AbstractLayer(id, parent)
 {
 }
 
 te::map::DataSetLayer::DataSetLayer(const std::string& id,
                                     const std::string& title,
                                     AbstractLayer* parent)
-  : AbstractLayer(id, title, parent),
-    m_style(0)
+  : AbstractLayer(id, title, parent)
 {
 }
 
 te::map::DataSetLayer::~DataSetLayer()
 {
-  delete m_style;
 }
 
 const te::map::LayerSchema* te::map::DataSetLayer::getSchema(const bool full) const
@@ -275,16 +270,3 @@ void te::map::DataSetLayer::setRendererType(const std::string& t)
 {
   m_rendererType = t;
 }
-
-te::se::Style* te::map::DataSetLayer::getStyle() const
-{
-  return m_style;
-}
-
-void te::map::DataSetLayer::setStyle(te::se::Style* style)
-{
-  delete m_style;
-
-  m_style = style;
-}
-

@@ -92,11 +92,13 @@ te::qt::widgets::DataExchangerWizard::DataExchangerWizard(QWidget* parent, Qt::W
   setPage(PAGE_TARGET_DATASOURCE, m_targetSelectorPage.get());
 
   m_datasetOptionsPage.reset(new DataSetOptionsWizardPage(this));
+  m_datasetOptionsPage->showSimpleMode(true); // USED TO HIDE ADVANCED OPTIONS
   //m_datasetOptionsPage->setFinalPage(true);
   m_datasetOptionsPage->setCommitPage(true);
   //m_datasetOptionsPage->setTitle(tr("Transfer Options"));
   //m_datasetOptionsPage->setSubTitle(tr("You can provide more information on how the datasets will be transferred and mapped to the target data source"));
   setPage(PAGE_DATASET_OPTIONS, m_datasetOptionsPage.get());
+
 
   m_summaryPage.reset(new DataExchangeSummaryWizardPage(this));
   setPage(PAGE_SUMMARY, m_summaryPage.get());
