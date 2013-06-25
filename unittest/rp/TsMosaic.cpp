@@ -407,5 +407,14 @@ void TsMosaic::SequenceMosaicTest()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  CPPUNIT_ASSERT( algoOutputParams.m_sequencesInfo.size() == 2 );
+  CPPUNIT_ASSERT( algoOutputParams.m_sequencesInfo[ 0 ].m_rasterFeederIndexes.size() == 1 );
+  CPPUNIT_ASSERT( algoOutputParams.m_sequencesInfo[ 0 ].m_rasterFeederIndexes[ 0 ] == 0 );
+  CPPUNIT_ASSERT( algoOutputParams.m_sequencesInfo[ 1 ].m_rasterFeederIndexes.size() == 2 );
+  CPPUNIT_ASSERT( algoOutputParams.m_sequencesInfo[ 1 ].m_rasterFeederIndexes[ 0 ] == 1 );
+  CPPUNIT_ASSERT( algoOutputParams.m_sequencesInfo[ 1 ].m_rasterFeederIndexes[ 1 ] == 2 );
+  CPPUNIT_ASSERT( algoOutputParams.m_sequencesInfo[ 0 ].m_tiePoints.size() == 1 );
+  CPPUNIT_ASSERT( algoOutputParams.m_sequencesInfo[ 1 ].m_tiePoints.size() == 2 );
 }
 
