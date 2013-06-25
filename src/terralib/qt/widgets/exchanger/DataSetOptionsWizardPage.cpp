@@ -135,6 +135,12 @@ const std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>& te::qt::w
   return m_datasets;
 }
 
+void te::qt::widgets::DataSetOptionsWizardPage::showSimpleMode(const bool& mode)
+{
+  m_ui->m_dataSetWidget->setVisible(!mode);
+  m_ui->m_constraintWidget->setVisible(!mode);
+}
+
 void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
 {
   QListWidgetItem* item = m_ui->m_selectedDatasetListWidget->currentItem();
