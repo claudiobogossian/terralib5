@@ -33,6 +33,9 @@
 #include "../dataaccess/datasource/DataSource.h"
 #include "../geometry/GTParameters.h"
 
+#include <vector>
+#include <string>
+
 namespace te
 {
   namespace rp
@@ -105,6 +108,27 @@ namespace te
         };
         
         /*!
+          \class MosaicSequenceInfo
+          \brief Mosaic sequence info.
+        */        
+        class TERPEXPORT MosaicSequenceInfo
+        {
+          public:            
+            
+            std::string m_dataSetName; //!< The generated data set name for this mosaic sequence.
+            
+            std::vector< unsigned int > m_rasterFeederIndexes; //!< The indexes (inside the input rasters feeder) of the rasters written to this mosaic sequence.
+            
+            std::vector< std::vector< te::gm::GTParameters::TiePoint > > m_tiePoints; //!< The generated tie-pionts (te::gm::GTParameters::TiePoint::first are mosaic coods, te::gm::GTParameters::TiePoint::second are the used input raster line/column indexes).
+            
+            void clear(); //!< Clear the internal allocated resources.
+            
+            MosaicSequenceInfo();
+            
+            ~MosaicSequenceInfo();
+        };          
+        
+        /*!
           \class OutputParameters
           \brief Mosaic output parameters
          */        
@@ -112,9 +136,9 @@ namespace te
         {
           public:
             
-            te::da::DataSource* m_outputDSPtr; //!< The output data source where the mosaic rasters will be created.
+            std::vector< MosaicSequenceInfo > m_sequencesInfo; //! The mosaic sequences info.
             
-            std::vector< std::vector< te::gm::GTParameters::TiePoint > > m_tiePoints; //!< The found tie-points between each pair of rasters (te::gm::GTParameters::TiePoint::first are raster with index N line/column indexes, te::gm::GTParameters::TiePoint::second are raster with index N+1 line/column indexes, empty vectors will be inserted when no tie-points where found).
+            te::da::DataSource* m_outputDSPtr; //!< The output data source where the mosaic rasters will be created.
             
             OutputParameters();
             
