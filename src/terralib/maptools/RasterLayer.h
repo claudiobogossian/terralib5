@@ -36,8 +36,6 @@
 namespace te
 {
 // Forward declaration
-  namespace se { class CoverageStyle; }
-
   namespace rst { class Raster; }
 
   namespace map
@@ -139,20 +137,6 @@ namespace te
         /*!
           \brief
 
-          \return
-        */
-        te::se::CoverageStyle* getStyle() const;
-
-        /*!
-          \brief
-
-          \param style
-        */
-        void setStyle(te::se::CoverageStyle* style);
-
-        /*!
-          \brief
-
           \return Raster Ptr
 
           \note The caller of this method WILL TAKE the ownership of the raster.
@@ -175,10 +159,9 @@ namespace te
 
       private:
 
-        std::string m_rendererType;                 //!< A pointer to the internal renderer used to paint this layer.
-        std::map<std::string, std::string> m_rinfo; //!< A raster connection info.
-        te::se::CoverageStyle* m_style;             //!< The style to be applied to the geographic objects in the layer.
-        static const std::string sm_type;           //!< A static data member used in the implementation of getType method.
+        std::string m_rendererType;                  //!< A pointer to the internal renderer used to paint this layer.
+        std::map<std::string, std::string> m_rinfo;  //!< A raster connection info.
+        static const std::string sm_type;            //!< A static data member used in the implementation of getType method.
     };
 
     typedef boost::intrusive_ptr<RasterLayer> RasterLayerPtr;

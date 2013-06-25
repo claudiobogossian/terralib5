@@ -32,8 +32,6 @@
 namespace te
 {
 // Forward declaration
-  namespace se { class Style; }
-
   namespace da { class DataSetType; }
 
   namespace map
@@ -162,26 +160,11 @@ namespace te
         */
         void setRendererType(const std::string& t);
 
-        /*!
-          \brief
-
-          \return
-        */
-        te::se::Style* getStyle() const;
-
-        /*!
-          \brief
-
-          \param style
-        */
-        void setStyle(te::se::Style* style);
-
       private:
 
-        std::string m_datasetName;    //!< The dataset name where we will retrieve the layer objects.
-        std::string m_datasourceId;   //!< The DataSource associated to this layer.
-        std::string m_rendererType;   //!< A pointer to the internal renderer used to paint this layer.
-        te::se::Style* m_style;       //!< The style to be applied to the geographic objects in the layer.
+        std::string m_datasetName;         //!< The dataset name where we will retrieve the layer objects.
+        std::string m_datasourceId;        //!< The DataSource associated to this layer.
+        std::string m_rendererType;        //!< A pointer to the internal renderer used to paint this layer.
 
         static const std::string sm_type;  //!< A static data member used in the implementation of getType method.
     };
@@ -192,4 +175,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_MAPTOOLS_INTERNAL_DATASETLAYER_H
-

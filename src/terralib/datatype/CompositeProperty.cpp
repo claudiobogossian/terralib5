@@ -88,6 +88,20 @@ void te::dt::CompositeProperty::add(const std::vector<Property*>& ps)
   }
 }
 
+void te::dt::CompositeProperty::add(const boost::ptr_vector<te::dt::Property>& ps)
+{
+  std::size_t size = ps.size();
+
+  for(std::size_t i = 0; i < size; ++i)
+  {
+    te::dt::Property* p = ps[i].clone();
+
+    m_properties.push_back(p);
+
+    p->setParent(this);
+  }
+}
+
 void te::dt::CompositeProperty::remove(Property* p)
 {
   std::size_t size = m_properties.size();

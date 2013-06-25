@@ -69,6 +69,8 @@ namespace te
 
           const std::map<te::da::DataSetTypePtr, te::da::DataSetTypeConverter*>& getDatasets() const;
 
+          void showSimpleMode(const bool& mode);
+
         public slots:
 
           void applyChanges();

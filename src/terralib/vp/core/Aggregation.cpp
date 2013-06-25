@@ -25,7 +25,6 @@
 
 //Terralib
 #include "../../common/Translator.h"
-#include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -50,7 +49,6 @@
 #include "Aggregation.h"
 #include "AggregationDialog.h"
 #include "Config.h"
-#include "Enums.h"
 #include "Exception.h"
 
 // STL
@@ -65,7 +63,6 @@
 void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                          const std::vector<te::dt::Property*>& groupingProperties,
                          const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                         const te::vp::MemoryUse memoryUse,
                          const std::string& outputLayerName,
                          const te::da::DataSourceInfoPtr& dsInfo)
 {

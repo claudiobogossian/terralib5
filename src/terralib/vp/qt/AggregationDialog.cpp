@@ -26,7 +26,6 @@
 // TerraLib
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
-#include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
@@ -39,7 +38,6 @@
 #include "../core/Exception.h"
 #include "Aggregation.h"
 #include "AggregationDialog.h"
-#include "LayerTreeModel.h"
 #include "ui_AggregationDialogForm.h"
 #include "VectorProcessingConfig.h"
 #include "Utils.h"
@@ -52,6 +50,9 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QTreeWidget>
 
+// Boost
+#include <boost/algorithm/string.hpp>
+
 te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::AggregationDialogForm),
@@ -60,6 +61,8 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
 {
 // add controls
   m_ui->setupUi(this);
+
+  m_ui->m_outputStatisticsGroupBox->setVisible(false);
 
 // add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-aggregation-hint").pixmap(112,48));
@@ -70,6 +73,7 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
 
   connect(m_ui->m_layersComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLayerComboBoxChanged(int)));
   connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
+  connect(m_ui->m_calcStatCheckBox, SIGNAL(toggled(bool)), this, SLOT(onCalculateStatistics(bool)));
   connect(m_ui->m_outputListWidget, SIGNAL(itemClicked(QListWidgetItem *)), this, SLOT(onOutputListWidgetClicked(QListWidgetItem *)));
   connect(m_ui->m_selectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectAllComboBoxChanged(int)));
   connect(m_ui->m_rejectAllComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRejectAllComboBoxChanged(int)));
@@ -98,22 +102,6 @@ void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
   }
 }
 
-int te::vp::AggregationDialog::getMemoryUse()
-{
-  if(m_ui->m_advancedOptionsGroupBox->isChecked())
-  {
-    if(m_ui->m_wholeMemRadioButton->isChecked())
-      return WHOLE_MEM;
-    else if(m_ui->m_partiallyMemRadioButton->isChecked())
-      return PARTIALLY_MEM;
-    else
-      return LOW_MEM;
-  }
-  else
-    m_ui->m_wholeMemRadioButton->setChecked(true);
-    return WHOLE_MEM;
-}
-
 std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::AggregationDialog::getStatisticalSummary()
 {
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > outputStatisticalSummary;
@@ -131,9 +119,9 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
   {
     std::vector<std::string> tokens;
 
-    te::common::Tokenize(itemList[i]->text().toStdString(), tokens, ":");
+    boost::split(tokens, itemList[i]->text().toStdString(), boost::is_any_of(":"));
     
-    if(tokens.empty())
+    if(tokens[0] == "")
     {
       propertyName = "";
       currentToken = getSelectedPropertyByName(propertyName);
@@ -405,6 +393,12 @@ void te::vp::AggregationDialog::onLayerComboBoxChanged(int index)
   }
 }
 
+void te::vp::AggregationDialog::onCalculateStatistics(bool visible)
+{
+  m_ui->m_outputListWidget->reset();
+  m_ui->m_outputStatisticsGroupBox->setVisible(visible);
+}
+
 void te::vp::AggregationDialog::onFilterLineEditTextChanged(const QString& text)
 {
   std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
@@ -526,8 +520,6 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > outputStatisticalSummary = getStatisticalSummary();
       
-  te::vp::MemoryUse memoryUse = (te::vp::MemoryUse)getMemoryUse();
-      
   if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, "Aggregation", "Set a name for the new Layer.");
@@ -546,7 +538,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
   try
   {
-    te::vp::Aggregation(m_selectedLayer, selProperties, outputStatisticalSummary, memoryUse, outputLayerName, m_outputDatasource);
+    te::vp::Aggregation(m_selectedLayer, selProperties, outputStatisticalSummary, outputLayerName, m_outputDatasource);
   }
   catch(const std::exception& e)
   {
