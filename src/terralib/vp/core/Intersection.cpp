@@ -25,11 +25,13 @@
 
 // Terralib
 #include "../../common/Translator.h"
+#include "../../common/Exception.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../dataaccess/utils/Utils.h"
@@ -42,6 +44,10 @@
 #include "Config.h"
 #include "Exception.h"
 #include "Intersection.h"
+
+// Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::da::DataSetType* te::vp::CreateDataSetType(std::string newName, 
                                                te::da::DataSetType* firstDt,
@@ -116,6 +122,67 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
                                                size_t outputSRID,
                                                const std::map<std::string, std::string>& options)
 {
+  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+  resultPair = Intersection(newLayerName, idata, outputSRID);
+
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsinfo->getId(), dsinfo->getType(), dsinfo->getConnInfo());
+
+  te::da::DataSourceTransactor* t = dataSource->getTransactor();
+
+  te::da::Create(t, resultPair.first, resultPair.second, options);
+
+  te::qt::widgets::DataSet2Layer converter(dataSource->getId());
+
+  te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
+  te::da::DataSetTypePtr dstPtr(loader->getDataSetType(resultPair.first->getName()));
+
+  delete t;
+  delete loader;
+
+  te::map::DataSetLayerPtr newLayer = converter(dstPtr);
+
+  return newLayer;
+}
+
+te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
+                                               const std::vector<LayerInputData>& idata,
+                                               std::string outputArchive,
+                                               size_t outputSRID,
+                                               const std::map<std::string, std::string>& options)
+{
+  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+  resultPair = Intersection(newLayerName, idata, outputSRID);
+
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+
+  std::map<std::string, std::string> conn;
+  conn["connection_string"] = outputArchive;
+
+  te::da::DataSource* dataSource = te::da::DataSource::create("OGR", conn);
+
+  te::da::DataSourceTransactor* t = dataSource->getTransactor();
+
+  te::da::Create(t, resultPair.first, resultPair.second, options);
+
+  te::qt::widgets::DataSet2Layer converter(dataSource->getId());
+
+  te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
+  te::da::DataSetTypePtr dstPtr(loader->getDataSetType(resultPair.first->getName()));
+
+  delete t;
+  delete loader;
+
+  te::map::DataSetLayerPtr newLayer = converter(dstPtr);
+
+  return newLayer;
+}
+
+std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::Intersection(const std::string& newLayerName,
+  const std::vector<LayerInputData>& idata,
+  size_t outputSRID)
+{
   if(idata.size() <= 1)
     throw te::common::Exception(TR_VP("At least two layers are necessary for an intersection!"));
 
@@ -176,23 +243,10 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
     ++countAux;
   }
 
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsinfo->getId(), dsinfo->getType(), dsinfo->getConnInfo());
+  if(resultPair.second->size() < 1)
+    throw te::common::Exception(TR_VP("The Layers do not intersect!"));
 
-  te::da::DataSourceTransactor* t = dataSource->getTransactor();
-
-  te::da::Create(t, resultPair.first, resultPair.second, options);
-
-  te::qt::widgets::DataSet2Layer converter(dataSource->getId());
-
-  te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
-  te::da::DataSetTypePtr dstPtr(loader->getDataSetType(resultPair.first->getName()));
-
-  delete t;
-  delete loader;
-
-  te::map::DataSetLayerPtr newLayer = converter(dstPtr);
-
-  return newLayer;
+  return resultPair;
 }
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(std::string newName, 

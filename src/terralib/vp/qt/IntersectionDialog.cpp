@@ -28,6 +28,7 @@
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../datatype/Property.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../core/Exception.h"
@@ -61,7 +62,6 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
-  
 }
 
 te::vp::IntersectionDialog::~IntersectionDialog()
@@ -151,11 +151,16 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   {
     size_t srid = 0;
     std::map<std::string, std::string> op;
-    m_layer = te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
+
+    if(m_outputDatasource.get())
+      m_layer = te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
+    else if(!m_outputArchive.empty())
+      m_layer = te::vp::Intersection(newLayerName, layers, m_outputArchive, srid, op);
   }
   catch(const std::exception& e)
   {
     QMessageBox::warning(this, TR_VP("Intersection Operation"), e.what());
+    return;
   }
 
   accept();
@@ -163,6 +168,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
 void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
 {
+  m_outputDatasource.reset();
+  m_outputArchive = "";
+
   te::qt::widgets::DataSourceSelectorDialog dlg(this);
   dlg.exec();
 
@@ -180,14 +188,19 @@ void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
 
 void te::vp::IntersectionDialog::onTargetFileToolButtonPressed()
 {
+  m_outputDatasource.reset();
+  m_outputArchive = "";
+
   QString directoryName = QFileDialog::getExistingDirectory(this, tr("Open Feature File"), QString(""));
-  
+
   if(directoryName.isEmpty())
     return;
 
-  QString fullName = directoryName + m_ui->m_newLayerNameLineEdit->text() + ".shp";
+  QString fullName = directoryName + "\\" + m_ui->m_newLayerNameLineEdit->text() + ".shp";
 
   m_ui->m_repositoryLineEdit->setText(fullName);
+
+  m_outputArchive = std::string(fullName.toStdString());
 }
 
 te::map::AbstractLayerPtr te::vp::IntersectionDialog::getLayer()
