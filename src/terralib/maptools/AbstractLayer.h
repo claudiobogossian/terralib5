@@ -46,10 +46,13 @@ namespace te
   {
     class DataSet;
     class DataSetType;
+    class Expression;
     class ObjectIdSet;
   }
 
   namespace gm { class Geometry; }
+
+  namespace se { class Style; }
 
   namespace map
   {
@@ -244,6 +247,24 @@ namespace te
         virtual void clearSelected();
 
         /*!
+          \brief It returns the Style associated to the layer.
+
+          \return The Style associated to the layer.
+
+          \note The caller will NOT take the ownership of the given pointer.
+        */
+        virtual te::se::Style* getStyle() const;
+
+        /*!
+          \brief It sets the Style associated to the layer.
+
+          \param style The Style associated to the layer. 
+
+          \note The layer will take the ownership of the given pointer.
+        */
+        virtual void setStyle(te::se::Style* style);
+
+        /*!
           \brief It returns the Grouping associated to the Layer.
 
           \return The Grouping associated to the Layer.
@@ -415,6 +436,28 @@ namespace te
                                          te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
 
         /*!
+          \brief It gets the dataset identified by the layer name using the given restriction.
+
+          \param restriction The restriction expression that will be used.
+          \param travType    The traverse type associated to the returned dataset. 
+          \param rwRole      The read and write permission associated to the returned dataset. 
+
+          \return The caller of this method will take the ownership of the returned DataSet.
+
+          \exception Exception It can throws an exception if:
+                      <ul>
+                      <li>something goes wrong during data retrieval</li>
+                      <li>if the data source driver doesn't support the traversal type</li>
+                      <li>if the data source driver doesn't support the access policy</li>
+                      </ul>
+
+          \note Not thread-safe!
+        */
+        virtual te::da::DataSet* getData(te::da::Expression* restriction,
+                                         te::common::TraverseType travType = te::common::FORWARDONLY,
+                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+
+        /*!
           \brief It gets the dataset from the given set of objects identification.
 
           \param oids     The set of object ids.
@@ -435,6 +478,7 @@ namespace te
         virtual te::da::DataSet* getData(const te::da::ObjectIdSet* oids,
                                          te::common::TraverseType travType = te::common::FORWARDONLY,
                                          te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+
         /*!
           \brief It returns the layer type.
 
@@ -473,7 +517,8 @@ namespace te
         Visibility m_visibility;          //!< It indicates the layer visibility.
         bool m_visibilityChanged;         //!< It indicates if the layer visibility has changed.
         te::da::ObjectIdSet* m_selected;  //!< The selected group of the layer.
-        te::map::Grouping* m_grouping;    //!< The grouping information
+        te::se::Style* m_style;           //!< The style to be applied to the geographic objects in the layer.
+        te::map::Grouping* m_grouping;    //!< The grouping information.
     };
 
     typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;

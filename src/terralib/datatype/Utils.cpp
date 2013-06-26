@@ -38,7 +38,7 @@ void te::dt::GetPropertiesPosition(const std::vector<Property*>& properties,
     poslist.push_back(cp->getPropertyPosition(properties[i]));
 }
 
-int te::dt::Convert2Terralib(const std::string dataType)
+int te::dt::Convert2Terralib(const std::string& dataType)
 {
   if(dataType == "VOID_TYPE")
     return te::dt::VOID_TYPE;

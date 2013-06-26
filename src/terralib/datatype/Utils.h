@@ -31,6 +31,7 @@
 
 // STL
 #include <vector>
+#include <string>
 
 namespace te
 {
@@ -62,7 +63,7 @@ namespace te
       
       \return DataType integer
     */
-    TEDATATYPEEXPORT int Convert2Terralib(const std::string dataType);
+    TEDATATYPEEXPORT int Convert2Terralib(const std::string& dataType);
 
   } // end namespace dt
 }   // end namespace te

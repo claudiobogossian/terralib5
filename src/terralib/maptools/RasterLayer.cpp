@@ -31,7 +31,6 @@
 #include "../raster/Grid.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterFactory.h"
-#include "../se/CoverageStyle.h"
 #include "Exception.h"
 #include "RasterLayer.h"
 #include "RendererFactory.h"
@@ -43,29 +42,24 @@
 const std::string te::map::RasterLayer::sm_type("RASTERLAYER");
 
 te::map::RasterLayer::RasterLayer(AbstractLayer* parent)
-  : AbstractLayer(parent),
-    m_style(0)
+  : AbstractLayer(parent)
 {
 }
 
 te::map::RasterLayer::RasterLayer(const std::string& id, AbstractLayer* parent)
-  : AbstractLayer(id, parent),
-    m_style(0)
+  : AbstractLayer(id, parent)
 {
 }
 
 te::map::RasterLayer::RasterLayer(const std::string& id,
                                   const std::string& title,
                                   AbstractLayer* parent)
-  : AbstractLayer(id, title, parent),
-    m_style(0)
+  : AbstractLayer(id, title, parent)
 {
 }
 
 te::map::RasterLayer::~RasterLayer()
 {
-  delete m_style;
-
   m_rinfo.clear();
 }
 
@@ -148,18 +142,6 @@ const std::string& te::map::RasterLayer::getRendererType() const
 void te::map::RasterLayer::setRendererType(const std::string& t)
 {
   m_rendererType = t;
-}
-
-te::se::CoverageStyle* te::map::RasterLayer::getStyle() const
-{
-  return m_style;
-}
-
-void te::map::RasterLayer::setStyle(te::se::CoverageStyle* style)
-{
-  delete m_style;
-
-  m_style = style;
 }
 
 te::rst::Raster* te::map::RasterLayer::getRaster() const
