@@ -124,6 +124,11 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Envelope& e,
 
   std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &e, r, travType, rwRole));
 
+  // TODO: Need review: behaviour of te::mem::DataSet + te::rst::Raster.
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+  if(rpos != std::string::npos)
+    return dataset.release();
+
   return DataSet2Memory(dataset.get());
 }
 
@@ -166,6 +171,11 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Geometry& g,
 
   std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &g, r, travType, rwRole));
 
+  // TODO: Need review: behaviour of te::mem::DataSet + te::rst::Raster.
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+  if(rpos != std::string::npos)
+    return dataset.release();
+
   return DataSet2Memory(dataset.get());
 }
 
@@ -184,6 +194,11 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
   assert(t.get());
 
   std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &p, &g, r, travType, rwRole));
+
+  // TODO: Need review: behaviour of te::mem::DataSet + te::rst::Raster.
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+  if(rpos != std::string::npos)
+    return dataset.release();
 
   return DataSet2Memory(dataset.get());
 }

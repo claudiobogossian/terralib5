@@ -36,6 +36,7 @@
 #include "../fe/Filter.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
+#include "../raster/Raster.h"
 #include "../raster/RasterProperty.h"
 #include "../se/FeatureTypeStyle.h"
 #include "../se/CoverageStyle.h"
@@ -91,6 +92,8 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
 
   te::gm::Envelope ibbox = reprojectedBBOX.intersection(layer->getExtent());
 
+  assert(ibbox.isValid());
+
   // Gets the layer schema
   std::auto_ptr<const LayerSchema> schema(layer->getSchema(true));
   assert(schema.get());
@@ -143,7 +146,21 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     if(cs == 0)
       throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
 
-    // TODO!
+    // Retrieves the data
+    std::auto_ptr<te::da::DataSet> dataset(layer->getData(ibbox, te::gm::INTERSECTS));
+
+    if(dataset.get() == 0)
+      throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+
+    std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+
+    // Retrieves the raster
+    std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
+    if(dataset.get() == 0)
+      throw Exception((boost::format(TR_MAP("Could not retrieve the raster from the layer %1%.")) % layer->getTitle()).str());
+
+    // Let's draw!
+    DrawRaster(raster.get(), canvas, ibbox, layer->getSRID(), bbox, srid, cs);
   }
   else
   {
@@ -259,17 +276,8 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       DrawGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, &task);
 
       // Prepares to draw the other symbolizer
-      dataset->moveBeforeFirst();
+      dataset->moveFirst();
 
     } // end for each <Symbolizer>
   }   // end for each <Rule>
-}
-
-void te::map::AbstractLayerRenderer::drawRaster(AbstractLayer* layer,
-                                                te::se::CoverageStyle* style,
-                                                Canvas* canvas,
-                                                const te::gm::Envelope& bbox,
-                                                const te::gm::Envelope& visibleArea,
-                                                int srid)
-{
 }

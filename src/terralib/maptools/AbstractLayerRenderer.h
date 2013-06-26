@@ -85,28 +85,6 @@ namespace te
                                  Canvas* canvas,
                                  const te::gm::Envelope& bbox,
                                  int srid);
-
-        /*!
-          \brief It draws the abstract layer in the given canvas using the SRS informed.
-
-          The informed bounding box (bbox) is used to constraint the layer objects to be drawn.
-          Here, we assume that the given bbox was pre-processed. i.e. the bbox was clipped and contains the same projection of abstract layer.
-
-          \param layer       The abstract layer that will be drawn.
-          \param style      The style that will be used.
-          \param canvas      The canvas were the layer objects will be drawn.
-          \param bbox        The interest area to render the map.
-          \param visibleArea The original area requested to render the map.
-          \param srid        The SRS to be used to draw the data set layer objects.
-
-          \note This method consider that the given layer contains raster data.
-        */
-        void drawRaster(AbstractLayer* layer,
-                        te::se::CoverageStyle* style,
-                        Canvas* canvas,
-                        const te::gm::Envelope& bbox,
-                        const te::gm::Envelope& visibleArea,
-                        int srid);
     };
 
   } // end namespace map
