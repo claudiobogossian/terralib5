@@ -32,6 +32,9 @@
 // STL
 #include <vector>
 
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
+
 namespace te
 {
   namespace dt
@@ -121,6 +124,8 @@ namespace te
           \note The CompositeProperty takes the ownership of the properties.
         */
         void add(const std::vector<Property*>& ps);
+
+        void add(const boost::ptr_vector<te::dt::Property>& ps);
 
         /*!
           \brief It removes the property from the composite.

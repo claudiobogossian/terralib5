@@ -46,7 +46,6 @@
 #include "../geometry/GeometryProperty.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
-#include "../se/Style.h"
 #include "Exception.h"
 #include "QueryLayer.h"
 #include "RendererFactory.h"
@@ -62,15 +61,13 @@ const std::string te::map::QueryLayer::sm_type("QUERYLAYER");
 
 te::map::QueryLayer::QueryLayer(AbstractLayer* parent)
   : AbstractLayer(parent),
-    m_query(0),
-    m_style(0)
+    m_query(0)
 {
 }
 
 te::map::QueryLayer::QueryLayer(const std::string& id, AbstractLayer* parent)
   : AbstractLayer(id, parent),
-    m_query(0),
-    m_style(0)
+    m_query(0)
 {
 }
 
@@ -78,15 +75,13 @@ te::map::QueryLayer::QueryLayer(const std::string& id,
                                 const std::string& title,
                                 AbstractLayer* parent)
   : AbstractLayer(id, title, parent),
-    m_query(0),
-    m_style(0)
+    m_query(0)
 {
 }
 
 te::map::QueryLayer::~QueryLayer()
 {
   delete m_query;
-  delete m_style;
 }
 
 const te::map::LayerSchema* te::map::QueryLayer::getSchema(const bool /*full*/) const
@@ -197,9 +192,16 @@ te::da::DataSet* te::map::QueryLayer::getData(const te::dt::Property& /*p*/,
   return 0; // TODO
 }
 
-te::da::DataSet* te::map::QueryLayer::getData(const te::da::ObjectIdSet* oids,
-                                              te::common::TraverseType travType,
-                                              te::common::AccessPolicy rwRole) const
+te::da::DataSet* te::map::QueryLayer::getData(te::da::Expression* /*restriction*/,
+                                              te::common::TraverseType /*travType*/,
+                                              te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0; // TODO
+}
+
+te::da::DataSet* te::map::QueryLayer::getData(const te::da::ObjectIdSet* /*oids*/,
+                                              te::common::TraverseType /*travType*/,
+                                              te::common::AccessPolicy /*rwRole*/) const
 {
   return 0; // TODO
 }
@@ -259,24 +261,12 @@ void te::map::QueryLayer::setRendererType(const std::string& t)
   m_rendererType = t;
 }
 
-te::se::Style* te::map::QueryLayer::getStyle() const
-{
-  return m_style;
-}
-
-void te::map::QueryLayer::setStyle(te::se::Style* style)
-{
-  delete m_style;
-
-  m_style = style;
-}
-
 void te::map::QueryLayer::computeExtent()
 {
   if(m_mbr.isValid())
     return;
 
-  // Get the associate data source
+  // Get the associated data source
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
     
   // Get a transactor

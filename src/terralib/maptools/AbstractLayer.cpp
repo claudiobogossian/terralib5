@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../dataaccess/dataset/ObjectIdSet.h"
+#include "../se/Style.h"
 #include "../srs/Config.h"
 #include "AbstractLayer.h"
 #include "Grouping.h"
@@ -35,6 +36,7 @@ te::map::AbstractLayer::AbstractLayer(AbstractLayer* parent)
     m_visibility(NOT_VISIBLE),
     m_visibilityChanged(false),
     m_selected(0),
+    m_style(0),
     m_grouping(0)
 {
 }
@@ -46,6 +48,7 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id, AbstractLayer* pare
     m_visibility(NOT_VISIBLE),
     m_visibilityChanged(false),
     m_selected(0),
+    m_style(0),
     m_grouping(0)
 {
 }
@@ -60,6 +63,7 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id,
     m_visibility(NOT_VISIBLE),
     m_visibilityChanged(false),
     m_selected(0),
+    m_style(0),
     m_grouping(0)
 {
 }
@@ -67,6 +71,7 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id,
 te::map::AbstractLayer::~AbstractLayer()
 {
   delete m_selected;
+  delete m_style;
   delete m_grouping;
 }
 
@@ -255,6 +260,17 @@ void te::map::AbstractLayer::deselect(const te::da::ObjectIdSet* oids)
   m_selected->difference(oids);
 }
 
+te::se::Style* te::map::AbstractLayer::getStyle() const
+{
+  return m_style;
+}
+
+void te::map::AbstractLayer::setStyle(te::se::Style* style)
+{
+  delete m_style;
+  m_style = style;
+}
+
 te::map::Grouping* te::map::AbstractLayer::getGrouping() const
 {
   return m_grouping;
@@ -262,5 +278,6 @@ te::map::Grouping* te::map::AbstractLayer::getGrouping() const
 
 void te::map::AbstractLayer::setGrouping(te::map::Grouping* grouping)
 {
+  delete m_grouping;
   m_grouping = grouping;
 }
