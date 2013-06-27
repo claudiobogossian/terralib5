@@ -69,7 +69,9 @@ void te::ogr::CatalogLoader::getDataSets(boost::ptr_vector<std::string>& dataset
 te::da::DataSetType* te::ogr::CatalogLoader::getDataSetType(const std::string& datasetName, const bool full)
 {
   OGRDataSource* ogrDS = m_t->getOGRDataSource();
-  OGRLayer* layer = ogrDS->GetLayerByName(datasetName.c_str());
+
+  std::string sql = "SELECT FID, * FROM " + datasetName;
+  OGRLayer* layer = ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
  
   te::da::DataSetType* dt = Convert2TerraLib(layer->GetLayerDefn());
   if(dt->hasGeom())
@@ -89,14 +91,15 @@ te::da::DataSetType* te::ogr::CatalogLoader::getDataSetType(const std::string& d
   if(full)
   {
     const char* colIdName = layer->GetFIDColumn();
-    if(colIdName && colIdName[0] != '\0')
+
+    if(colIdName == 0 || colIdName[0] == '\0')
+      colIdName = "FID";
+
+    int pos = layer->GetLayerDefn()->GetFieldIndex(colIdName);
+    if(pos >= 0)
     {
-      int pos = layer->GetLayerDefn()->GetFieldIndex(colIdName);
-      if(pos > 0)
-      {
-        te::da::PrimaryKey* pk = new te::da::PrimaryKey(colIdName, dt);
-        pk->add(dt->getProperty(pos));
-      }
+      te::da::PrimaryKey* pk = new te::da::PrimaryKey(colIdName, dt);
+      pk->add(dt->getProperty(pos));
     }
   }
 
@@ -106,7 +109,9 @@ te::da::DataSetType* te::ogr::CatalogLoader::getDataSetType(const std::string& d
 void te::ogr::CatalogLoader::getProperties(te::da::DataSetType* dt)
 {
   OGRDataSource* ogrDS = m_t->getOGRDataSource();
-  OGRLayer* layer = ogrDS->GetLayerByName(dt->getName().c_str());
+
+  std::string sql = "SELECT FID, * FROM " + dt->getName();
+  OGRLayer* layer = ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
   
   Convert2TerraLib(layer->GetLayerDefn(),dt);
 }
@@ -119,20 +124,22 @@ te::dt::Property* te::ogr::CatalogLoader::getProperty(const std::string& /*datas
 void te::ogr::CatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
 {
   OGRDataSource* ogrDS = m_t->getOGRDataSource();
-  OGRLayer* layer = ogrDS->GetLayerByName(dt->getName().c_str());
+
+  std::string sql = "SELECT FID, * FROM " + dt->getName();
+  OGRLayer* layer = ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
+
   const char* colIdName = layer->GetFIDColumn();
-  if(colIdName && colIdName[0] != '\0')
+
+  if(colIdName == 0 || colIdName[0] == '\0')
+    colIdName = "FID";
+
+  int pos = layer->GetLayerDefn()->GetFieldIndex(colIdName);
+  if(pos >= 0)
   {
-    int pos = layer->GetLayerDefn()->GetFieldIndex(colIdName);
-    if(pos > 0)
-    {
-      te::da::PrimaryKey* pk = new te::da::PrimaryKey(colIdName, dt);
-      pk->add(dt->getProperty(pos));
-      return;
-    }
+    te::da::PrimaryKey* pk = new te::da::PrimaryKey(colIdName, dt);
+    pk->add(dt->getProperty(pos));
+    return;
   }
-  // No primary key found
-  dt->setPrimaryKey(0);
 }
 
 void te::ogr::CatalogLoader::getUniqueKeys(te::da::DataSetType* /*dt*/)
@@ -169,7 +176,9 @@ te::gm::Envelope* te::ogr::CatalogLoader::getExtent(const te::dt::Property* sp)
   assert(sp->getParent());
 
   OGRDataSource* ogrDS = m_t->getOGRDataSource();
-  OGRLayer* layer = ogrDS->GetLayerByName(sp->getParent()->getName().c_str());
+
+  std::string sql = "SELECT FID, * FROM " + sp->getParent()->getName();
+  OGRLayer* layer = ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
 
   OGREnvelope* envOGR = new OGREnvelope();
 

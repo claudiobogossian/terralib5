@@ -29,7 +29,12 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/query/And.h"
+#include "../dataaccess/query/EqualTo.h"
+#include "../dataaccess/query/GreaterThanOrEqualTo.h"
+#include "../dataaccess/query/LessThanOrEqualTo.h"
+#include "../dataaccess/query/LiteralDouble.h"
 #include "../dataaccess/query/LiteralEnvelope.h"
+#include "../dataaccess/query/LiteralString.h"
 #include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/ST_Intersects.h"
 #include "../dataaccess/utils/Utils.h"
@@ -47,6 +52,8 @@
 #include "AbstractLayerRenderer.h"
 #include "CanvasConfigurer.h"
 #include "Exception.h"
+#include "Grouping.h"
+#include "GroupingItem.h"
 #include "QueryEncoder.h"
 #include "Utils.h"
 
@@ -102,6 +109,13 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
   {
     // For while, first geometry property. TODO: need a visitor to get which spatial properties the layer style references
     te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(schema.get());
+
+    /** For while if the AbstractLayer has a grouping, do not consider the style. Need review! **/
+    if(layer->getGrouping())
+    {
+      drawLayerGrouping(layer, geometryProperty->getName(), canvas, ibbox, srid);
+      return;
+    }
 
     // Gets the layer style
     te::se::Style* style = layer->getStyle();
@@ -224,11 +238,11 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
         /* 1) Creating the final restriction. i.e. Filter expression + extent spatial restriction */
 
         // The extent spatial restriction
-        te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, srid);
+        te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, layer->getSRID());
         te::da::PropertyName* geometryPropertyName = new te::da::PropertyName(geomPropertyName);
         te::da::ST_Intersects* intersects = new te::da::ST_Intersects(geometryPropertyName, lenv);
 
-        // Combining the expressions (Filter expression + extent restriction)
+        // Combining the expressions (Filter expression + extent spatial restriction)
         te::da::And* restriction = new te::da::And(exp, intersects);
 
         /* 2) Calling the layer query method to get the correct restricted data. */
@@ -250,7 +264,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
     const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
     std::size_t nSymbolizers = symbolizers.size();
 
-    // Build task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
+    // Builds task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
     std::string message = TR_MAP("Drawing the layer");
     message += " " + layer->getTitle() + ". ";
     message += TR_MAP("Rule");
@@ -280,4 +294,138 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
 
     } // end for each <Symbolizer>
   }   // end for each <Rule>
+}
+
+void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
+                                                       const std::string& geomPropertyName,
+                                                       Canvas* canvas,
+                                                       const te::gm::Envelope& bbox,
+                                                       int srid)
+{
+  assert(!geomPropertyName.empty());
+
+   // Creates a canvas configurer
+  te::map::CanvasConfigurer cc(canvas);
+
+  // The layer grouping
+  Grouping* grouping = layer->getGrouping();
+
+  // The referenced property name
+  std::string propertyName = grouping->getPropertyName();
+  assert(!propertyName.empty());
+
+  // The referenced property type
+  int propertyType = grouping->getPropertyType();
+
+  // The grouping type
+  GroupingType type = grouping->getType();
+
+  // The grouping items
+  const std::vector<GroupingItem*>& items = grouping->getGroupingItems();
+  
+  std::size_t nGroupItems = items.size();
+
+  // Builds the task message; e.g. ("Drawing the grouping of layer Countries.")
+  std::string message = TR_MAP("Drawing the grouping of layer");
+  message += " " + layer->getTitle() + ".";
+
+  // Creates the draw task
+  te::common::TaskProgress task(message, te::common::TaskProgress::DRAW, nGroupItems);
+
+  for(std::size_t i = 0; i < nGroupItems; ++i) // for each GroupingItem
+  {
+    // The current group item
+    GroupingItem* item = items[i];
+    assert(item);
+
+    /* 1) Creating te::da::Where object with the group item restriction expression + extent spatial restriction */
+
+    te::da::PropertyName* groupingPropertyName = new te::da::PropertyName(propertyName);
+
+    // Grouping item restriction
+    te::da::Expression* exp = 0;
+
+    if(type == UNIQUE_VALUE)
+    {
+      te::da::LiteralString* value = new te::da::LiteralString(item->getValue());
+      exp = new te::da::EqualTo(groupingPropertyName, value);
+    }
+    else
+    {
+      te::da::Expression* lowerValue = 0;
+      te::da::Expression* upperrValue = 0; 
+
+      switch(propertyType)
+      {
+        case te::dt::STRING_TYPE:
+          lowerValue = new te::da::LiteralString(item->getLowerLimit());
+          upperrValue = new te::da::LiteralString(item->getUpperLimit());
+        break;
+
+        default:
+          lowerValue = new te::da::LiteralDouble(boost::lexical_cast<double>(item->getLowerLimit()));
+          upperrValue = new te::da::LiteralDouble(boost::lexical_cast<double>(item->getUpperLimit()));
+      }
+
+      te::da::GreaterThanOrEqualTo* gte = new te::da::GreaterThanOrEqualTo(groupingPropertyName, lowerValue);
+      te::da::LessThanOrEqualTo* lte = new te::da::LessThanOrEqualTo(groupingPropertyName->clone(), upperrValue);
+
+      exp = new te::da::And(gte, lte);
+    }
+
+    // The extent spatial restriction
+    te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, layer->getSRID());
+    te::da::PropertyName* geometryPropertyName = new te::da::PropertyName(geomPropertyName);
+    te::da::ST_Intersects* intersects = new te::da::ST_Intersects(geometryPropertyName, lenv);
+
+    // Combining the expressions (group item restriction expression + extent spatial restriction)
+    te::da::And* restriction = new te::da::And(exp, intersects);
+
+    /* 2) Calling the layer query method to get the correct restricted data. */
+
+    std::auto_ptr<te::da::DataSet> dataset(0);
+    try
+    {
+      dataset.reset(layer->getData(restriction));
+    }
+    catch(std::exception& /*e*/)
+    {
+      continue; // TODO: deal the exceptions!
+    }
+
+    if(dataset.get() == 0)
+      throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+
+    if(dataset->moveNext() == false)
+      continue;
+
+    // Gets the set of symbolizers defined on group item
+    const std::vector<te::se::Symbolizer*>& symbolizers = item->getSymbolizers();
+    std::size_t nSymbolizers = symbolizers.size();
+
+    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
+    {
+      // The current symbolizer
+      te::se::Symbolizer* symb = symbolizers[j];
+
+      // Let's config the canvas based on the current symbolizer
+      cc.config(symb);
+
+      // For while, first geometry property. TODO: get which geometry property the symbolizer references
+      std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+
+      // Let's draw! for each data set geometry...
+      DrawGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0);
+
+      // Prepares to draw the other symbolizer
+      dataset->moveFirst();
+
+    } // end for each <Symbolizer>
+
+    if(!task.isActive())
+      return;
+
+    task.pulse();
+
+  } // end for each GroupItem
 }

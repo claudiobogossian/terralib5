@@ -103,7 +103,7 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::TraverseType /*travType*/,
                                                            te::common::AccessPolicy /*rwRole*/)
 {
-  std::string sql = "SELECT * FROM " + name;
+  std::string sql = "SELECT FID, * FROM " + name;
   OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -119,7 +119,7 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::TraverseType /*travType*/, 
                                                            te::common::AccessPolicy /*rwRole*/)
 {
-  std::string sql = "SELECT * FROM " + name;
+  std::string sql = "SELECT FID, * FROM " + name;
   OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -137,7 +137,7 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::TraverseType /*travType*/, 
                                                            te::common::AccessPolicy /*rwRole*/)
 { 
-  std::string sql = "SELECT * FROM " + name;
+  std::string sql = "SELECT FID, * FROM " + name;
   OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)

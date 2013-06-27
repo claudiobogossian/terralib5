@@ -75,7 +75,8 @@ void te::ogr::DataSetPersistence::add(const std::string& datasetName,
   if(limit == 0)
     limit = std::string::npos;
 
-  OGRLayer* layer = m_t->getOGRDataSource()->GetLayerByName(datasetName.c_str());
+  std::string sql = "SELECT FID, * FROM " + datasetName;
+  OGRLayer* layer = m_t->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
     throw(te::common::Exception(TR_OGR("DataSet not found.")));
