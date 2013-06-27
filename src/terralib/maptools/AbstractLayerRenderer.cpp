@@ -238,7 +238,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
         /* 1) Creating the final restriction. i.e. Filter expression + extent spatial restriction */
 
         // The extent spatial restriction
-        te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, srid);
+        te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, layer->getSRID());
         te::da::PropertyName* geometryPropertyName = new te::da::PropertyName(geomPropertyName);
         te::da::ST_Intersects* intersects = new te::da::ST_Intersects(geometryPropertyName, lenv);
 
@@ -374,7 +374,7 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
     }
 
     // The extent spatial restriction
-    te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, srid);
+    te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(bbox, layer->getSRID());
     te::da::PropertyName* geometryPropertyName = new te::da::PropertyName(geomPropertyName);
     te::da::ST_Intersects* intersects = new te::da::ST_Intersects(geometryPropertyName, lenv);
 
