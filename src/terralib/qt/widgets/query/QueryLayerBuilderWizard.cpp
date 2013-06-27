@@ -37,6 +37,7 @@
 #include "../../../dataaccess/query/QueryCapabilities.h"
 #include "../../../dataaccess/query/Select.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/QueryLayer.h"
 #include "../datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../datasource/selector/DataSourceSelectorWidget.h"
@@ -188,6 +189,11 @@ te::map::AbstractLayerPtr te::qt::widgets::QueryLayerBuilderWizard::getQueryLaye
   layer->setRendererType("QUERY_LAYER_RENDERER");
   layer->setQuery(s);
   layer->computeExtent();
+
+  // SRID
+  std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema(true));
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
+  layer->setSRID(gp->getSRID());
 
   return layer;
 }
