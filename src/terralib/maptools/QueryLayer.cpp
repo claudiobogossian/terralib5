@@ -27,6 +27,7 @@
 #include "../common/StringUtils.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
@@ -212,11 +213,24 @@ te::da::DataSet* te::map::QueryLayer::getData(te::da::Expression* restriction,
   return getData(select.get(), travType, rwRole);
 }
 
-te::da::DataSet* te::map::QueryLayer::getData(const te::da::ObjectIdSet* /*oids*/,
-                                              te::common::TraverseType /*travType*/,
-                                              te::common::AccessPolicy /*rwRole*/) const
+te::da::DataSet* te::map::QueryLayer::getData(const te::da::ObjectIdSet* oids,
+                                              te::common::TraverseType travType,
+                                              te::common::AccessPolicy rwRole) const
 {
-  return 0; // TODO
+  // The final select
+  std::auto_ptr<te::da::Select> select(static_cast<te::da::Select*>(m_query->clone()));
+
+  // Original Where
+  te::da::Where* wh = select->getWhere();
+
+  // Original restriction expression
+  te::da::Expression* exp = wh->getExp()->clone();
+
+  // The final restriction: original restriction expression + the oids restriction
+  te::da::And* andop = new te::da::And(exp, oids->getExpression());
+  wh->setExp(andop);
+
+  return getData(select.get(), travType, rwRole);
 }
 
 bool te::map::QueryLayer::isValid() const
