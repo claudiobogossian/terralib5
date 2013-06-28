@@ -35,6 +35,9 @@
 #include "../dataaccess/dataset/Sequence.h"
 #include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
+#include "../dataaccess/query/Query.h"
+#include "../dataaccess/query/Select.h"
+#include "../dataaccess/query/SQLDialect.h"
 #include "../datatype/ArrayProperty.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
@@ -45,6 +48,7 @@
 #include "DataSetPersistence.h"
 #include "DataSetTypePersistence.h"
 #include "Globals.h"
+#include "SQLVisitor.h"
 #include "Utils.h"
 
 // OGR
@@ -152,11 +156,20 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
   return new DataSet(this, layer, true);
 }
 
-te::da::DataSet* te::ogr::DataSourceTransactor::query(const te::da::Select& /*q*/, 
+te::da::DataSet* te::ogr::DataSourceTransactor::query(const te::da::Select& q, 
                                                       te::common::TraverseType /*travType*/,
                                                       te::common::AccessPolicy /*rwRole*/)
 {
-  throw(te::common::Exception(TR_OGR("Not implemented yet!")));
+  std::string sql;
+
+  SQLVisitor visitor(*m_ds->getDialect(), sql);
+  q.accept(visitor);
+
+  OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, "SQLITE");
+  if(layer == 0)
+    throw(te::common::Exception(TR_OGR("Could not retrieve the DataSet from data source.")));
+
+  return new DataSet(this, layer, true);
 }
 
 te::da::DataSet* te::ogr::DataSourceTransactor::query(const std::string& query, 

@@ -31,6 +31,7 @@
 
 // STL
 #include <vector>
+#include <string>
 
 namespace te
 {

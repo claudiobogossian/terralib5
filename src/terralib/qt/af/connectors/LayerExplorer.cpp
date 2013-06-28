@@ -37,7 +37,7 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explore
   
   connect(explorer->getTreeView(), SIGNAL(visibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)), SLOT(onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)));
   connect(explorer->getTreeModel(), SIGNAL(visibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)), SLOT(onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)));
-  connect(explorer->getTreeView(), SIGNAL(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)), SLOT(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)));
+//  connect(explorer->getTreeView(), SIGNAL(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)), SLOT(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)));
 }
 
 te::qt::af::LayerExplorer::~LayerExplorer()
