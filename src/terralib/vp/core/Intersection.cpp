@@ -25,11 +25,13 @@
 
 // Terralib
 #include "../../common/Translator.h"
+#include "../../common/Exception.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../dataaccess/utils/Utils.h"
@@ -42,6 +44,10 @@
 #include "Config.h"
 #include "Exception.h"
 #include "Intersection.h"
+
+// Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::da::DataSetType* te::vp::CreateDataSetType(std::string newName, 
                                                te::da::DataSetType* firstDt,
@@ -116,10 +122,72 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
                                                size_t outputSRID,
                                                const std::map<std::string, std::string>& options)
 {
+  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+  resultPair = Intersection(newLayerName, idata, outputSRID);
+
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsinfo->getId(), dsinfo->getType(), dsinfo->getConnInfo());
+
+  te::da::DataSourceTransactor* t = dataSource->getTransactor();
+
+  te::da::Create(t, resultPair.first, resultPair.second, options);
+
+  te::qt::widgets::DataSet2Layer converter(dataSource->getId());
+
+  te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
+  te::da::DataSetTypePtr dstPtr(loader->getDataSetType(resultPair.first->getName()));
+
+  delete t;
+  delete loader;
+
+  te::map::DataSetLayerPtr newLayer = converter(dstPtr);
+
+  return newLayer;
+}
+
+te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
+                                               const std::vector<LayerInputData>& idata,
+                                               std::string outputArchive,
+                                               size_t outputSRID,
+                                               const std::map<std::string, std::string>& options)
+{
+  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+  resultPair = Intersection(newLayerName, idata, outputSRID);
+
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+
+  std::map<std::string, std::string> conn;
+  conn["connection_string"] = outputArchive;
+
+  te::da::DataSource* dataSource = te::da::DataSource::create("OGR", conn);
+
+  te::da::DataSourceTransactor* t = dataSource->getTransactor();
+
+  te::da::Create(t, resultPair.first, resultPair.second, options);
+
+  te::qt::widgets::DataSet2Layer converter(dataSource->getId());
+
+  te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
+  te::da::DataSetTypePtr dstPtr(loader->getDataSetType(resultPair.first->getName()));
+
+  delete t;
+  delete loader;
+
+  te::map::DataSetLayerPtr newLayer = converter(dstPtr);
+
+  return newLayer;
+}
+
+std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::Intersection(const std::string& newLayerName,
+  const std::vector<LayerInputData>& idata,
+  size_t outputSRID)
+{
   if(idata.size() <= 1)
     throw te::common::Exception(TR_VP("At least two layers are necessary for an intersection!"));
 
-  te::map::AbstractLayerPtr outputLayer;
+  if(outputSRID == 0)
+    outputSRID = idata.begin()->first->getSRID();
 
   size_t countAux = 0;
   LayerInputData aux;
@@ -151,7 +219,7 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
       firstMember.ds = aux.first->getData();
       firstMember.props = GetPropertiesByPos(firstMember.dt, firstPropsPos);
 
-      resultPair = PairwiseIntersection(newLayerName, firstMember, secondMember);
+      resultPair = PairwiseIntersection(newLayerName, firstMember, secondMember, outputSRID);
     }
     else if(countAux > 1)
     {
@@ -169,38 +237,28 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
       auxMember.ds = resultPair.second;
       auxMember.props = auxProps;
 
-      resultPair = PairwiseIntersection(newLayerName, auxMember, secondMember);
+      resultPair = PairwiseIntersection(newLayerName, auxMember, secondMember, outputSRID);
     }
 
     ++countAux;
   }
 
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsinfo->getId(), dsinfo->getType(), dsinfo->getConnInfo());
+  if(resultPair.second->size() < 1)
+    throw te::common::Exception(TR_VP("The Layers do not intersect!"));
 
-  te::da::DataSourceTransactor* t = dataSource->getTransactor();
-
-  te::da::Create(t, resultPair.first, resultPair.second, options);
-
-  /*te::qt::widgets::DataSet2Layer converter(dataSource->getId());
-
-  te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
-  te::da::DataSetTypePtr dstPtr(loader->getDataSetType(resultPair.first->getName()));
-
-  te::map::DataSetLayerPtr newLayer = converter(dstPtr);*/
-
-  return outputLayer;
+  return resultPair;
 }
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(std::string newName, 
                                                                                IntersectionMember firstMember, 
-                                                                               IntersectionMember secondMember)
+                                                                               IntersectionMember secondMember,
+                                                                               std::size_t outputSRID)
 {
 
   //Creating the RTree with the secound layer geometries
   te::sam::rtree::Index<size_t, 8>* rtree = CreateRTree(secondMember.dt, secondMember.ds);
 
   firstMember.ds->moveBeforeFirst();
-
 
   te::gm::GeometryProperty* fiGeomProp = te::da::GetFirstGeomProperty(firstMember.dt);
   size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp);
@@ -215,6 +273,9 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
   {
     te::gm::Geometry* currGeom = firstMember.ds->getGeometry(fiGeomPropPos);
 
+    if(currGeom->getSRID() != outputSRID)
+      currGeom->transform(outputSRID);
+
     std::vector<size_t> report;
     rtree->search(*currGeom->getMBR(), report);
 
@@ -222,6 +283,9 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
     {
       secondMember.ds->move(report[i]);
       te::gm::Geometry* secGeom = secondMember.ds->getGeometry(secGeomPropPos);
+
+      if(secGeom->getSRID() != outputSRID)
+        secGeom->transform(outputSRID);
 
       if(!currGeom->intersects(secGeom))
         continue;

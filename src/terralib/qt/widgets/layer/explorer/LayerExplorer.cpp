@@ -81,12 +81,12 @@ void te::qt::widgets::LayerExplorer::set(const std::list<te::map::AbstractLayerP
   m_treeModel->set(layers);
 }
 
-QModelIndexList te::qt::widgets::LayerExplorer::getSelectedIndexes() const
+std::list<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::LayerExplorer::getSelectedItems() const
 {
   if(m_treeView == 0)
-    return QModelIndexList();
+    return std::list<te::qt::widgets::AbstractLayerTreeItem*>();
 
-  return m_treeView->getSelectedIndexes();
+  return m_treeView->getSelectedItems();
 }
 
 void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer)
@@ -97,12 +97,12 @@ void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer)
   m_treeView->add(layer);
 }
 
-void te::qt::widgets::LayerExplorer::remove(const QModelIndex& index)
+void te::qt::widgets::LayerExplorer::remove(AbstractLayerTreeItem* item)
 {
   if(m_treeView == 0)
     return;
 
-  m_treeView->remove(index);
+  m_treeModel->remove(item);
 }
 
 //void te::qt::widgets::LayerExplorer::dragEnterEvent(QDragEnterEvent* e)

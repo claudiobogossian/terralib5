@@ -68,6 +68,8 @@ namespace te
         */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
+        te::map::AbstractLayerPtr getLayer();
+
       protected slots:
 
         void onFilterLineEditTextChanged(const QString& text);
@@ -84,7 +86,9 @@ namespace te
 
         std::auto_ptr<Ui::IntersectionDialogForm> m_ui;
         te::da::DataSourceInfoPtr m_outputDatasource;   //!< DataSource information.
+        std::string m_outputArchive;                    //!< Archive information.
         std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of layers.
+        te::map::AbstractLayerPtr m_layer;              //!< Generated Layer.
         LayerTreeModel* m_model;                        //!< Layer Tree Model.
     };
   }   // end namespace vp

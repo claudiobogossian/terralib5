@@ -27,6 +27,7 @@
 #include "../common/StringUtils.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
@@ -46,7 +47,6 @@
 #include "../geometry/GeometryProperty.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
-#include "../se/Style.h"
 #include "Exception.h"
 #include "QueryLayer.h"
 #include "RendererFactory.h"
@@ -62,15 +62,13 @@ const std::string te::map::QueryLayer::sm_type("QUERYLAYER");
 
 te::map::QueryLayer::QueryLayer(AbstractLayer* parent)
   : AbstractLayer(parent),
-    m_query(0),
-    m_style(0)
+    m_query(0)
 {
 }
 
 te::map::QueryLayer::QueryLayer(const std::string& id, AbstractLayer* parent)
   : AbstractLayer(id, parent),
-    m_query(0),
-    m_style(0)
+    m_query(0)
 {
 }
 
@@ -78,15 +76,13 @@ te::map::QueryLayer::QueryLayer(const std::string& id,
                                 const std::string& title,
                                 AbstractLayer* parent)
   : AbstractLayer(id, title, parent),
-    m_query(0),
-    m_style(0)
+    m_query(0)
 {
 }
 
 te::map::QueryLayer::~QueryLayer()
 {
   delete m_query;
-  delete m_style;
 }
 
 const te::map::LayerSchema* te::map::QueryLayer::getSchema(const bool /*full*/) const
@@ -197,11 +193,44 @@ te::da::DataSet* te::map::QueryLayer::getData(const te::dt::Property& /*p*/,
   return 0; // TODO
 }
 
+te::da::DataSet* te::map::QueryLayer::getData(te::da::Expression* restriction,
+                                              te::common::TraverseType travType,
+                                              te::common::AccessPolicy rwRole) const
+{
+  // The final select
+  std::auto_ptr<te::da::Select> select(static_cast<te::da::Select*>(m_query->clone()));
+
+  // Original Where
+  te::da::Where* wh = select->getWhere();
+
+  // Original restriction expression
+  te::da::Expression* exp = wh->getExp()->clone();
+
+  // The final restriction: original restriction expression + the given restriction expression
+  te::da::And* andop = new te::da::And(exp, restriction);
+  wh->setExp(andop);
+
+  return getData(select.get(), travType, rwRole);
+}
+
 te::da::DataSet* te::map::QueryLayer::getData(const te::da::ObjectIdSet* oids,
                                               te::common::TraverseType travType,
                                               te::common::AccessPolicy rwRole) const
 {
-  return 0; // TODO
+  // The final select
+  std::auto_ptr<te::da::Select> select(static_cast<te::da::Select*>(m_query->clone()));
+
+  // Original Where
+  te::da::Where* wh = select->getWhere();
+
+  // Original restriction expression
+  te::da::Expression* exp = wh->getExp()->clone();
+
+  // The final restriction: original restriction expression + the oids restriction
+  te::da::And* andop = new te::da::And(exp, oids->getExpression());
+  wh->setExp(andop);
+
+  return getData(select.get(), travType, rwRole);
 }
 
 bool te::map::QueryLayer::isValid() const
@@ -259,24 +288,12 @@ void te::map::QueryLayer::setRendererType(const std::string& t)
   m_rendererType = t;
 }
 
-te::se::Style* te::map::QueryLayer::getStyle() const
-{
-  return m_style;
-}
-
-void te::map::QueryLayer::setStyle(te::se::Style* style)
-{
-  delete m_style;
-
-  m_style = style;
-}
-
 void te::map::QueryLayer::computeExtent()
 {
   if(m_mbr.isValid())
     return;
 
-  // Get the associate data source
+  // Get the associated data source
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
     
   // Get a transactor
@@ -287,6 +304,7 @@ void te::map::QueryLayer::computeExtent()
   std::auto_ptr<te::da::DataSet> dataset(t->query(m_query));
   assert(dataset.get());
 
+  // MBR
   m_mbr = *dataset->getExtent(te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE));
 }
 
@@ -302,7 +320,7 @@ te::da::DataSet* te::map::QueryLayer::getData(te::da::Select* query,
   std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
   assert(t.get());
 
-  std::auto_ptr<te::da::DataSet> dset(t->query(m_query, travType, rwRole));
+  std::auto_ptr<te::da::DataSet> dset(t->query(query, travType, rwRole));
   assert(dset.get());
 
   // Convert to memory

@@ -125,7 +125,8 @@ class te::qt::widgets::LayerTreeView::Impl
           QString alayerType = it->get<2>();
           te::qt::widgets::LayerTreeView::ContextMenuType menuType = it->get<3>();
 
-          if(menuType == te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED &&
+          if((menuType == te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED ||
+              menuType == te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES) &&
              ((alayerType == layerType) || alayerType.isEmpty()))
           {
             menu.addAction(action);
@@ -157,7 +158,8 @@ class te::qt::widgets::LayerTreeView::Impl
           QString alayerType = it->get<2>();
           te::qt::widgets::LayerTreeView::ContextMenuType menuType = it->get<3>();
 
-          if(menuType != te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED)
+          if(menuType != te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED &&
+             menuType != te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES)
             continue;
 
           std::string layerType = alayerType.toStdString();
@@ -254,11 +256,6 @@ std::list<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::LayerTreeVie
   return layers;
 }
 
-QModelIndexList te::qt::widgets::LayerTreeView::getSelectedIndexes() const
-{
-  return selectedIndexes();
-}
-
 void te::qt::widgets::LayerTreeView::add(const te::map::AbstractLayerPtr& layer)
 {
   LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());
@@ -272,21 +269,6 @@ void te::qt::widgets::LayerTreeView::add(const te::map::AbstractLayerPtr& layer)
   }
 
   model->add(layer);
-}
-
-void te::qt::widgets::LayerTreeView::remove(const QModelIndex& index)
-{
-  LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());
-
-  if(model == 0)
-  {
-    QMessageBox::warning(this,
-                         tr("TerraLib"),
-                         tr("Can not remove a layer from an empty model!"));
-    return;
-  }
-
-  model->remove(index);
 }
 
 void te::qt::widgets::LayerTreeView::add(QAction* action,

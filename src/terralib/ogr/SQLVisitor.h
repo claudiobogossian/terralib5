@@ -33,6 +33,12 @@
 
 namespace te
 {
+  namespace gm
+  {
+    // Forward declaration
+    class Envelope;
+  }
+
   namespace ogr
   {
     class TEOGREXPORT SQLVisitor : public te::da::SQLVisitor
@@ -45,6 +51,14 @@ namespace te
         ~SQLVisitor() {}
 
         void visit(const te::da::LiteralEnvelope& visited);
+
+        void visit(const te::da::Select& visited);
+
+        te::gm::Envelope* getMBR();
+
+      protected:
+
+        te::gm::Envelope* m_bbox;
     };
   }
 }

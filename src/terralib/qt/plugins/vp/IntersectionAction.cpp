@@ -26,6 +26,7 @@
 // Terralib
 #include "../../../vp/qt/IntersectionDialog.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/events/LayerEvents.h"
 #include "../../af/Project.h"
 #include "IntersectionAction.h"
 
@@ -33,6 +34,7 @@
 #include <QtCore/QObject>
 
 // STL
+#include <cassert>
 #include <memory>
 
 te::qt::plugins::vp::IntersectionAction::IntersectionAction(QMenu* menu)
@@ -57,5 +59,22 @@ void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
     dlg.setLayers(prj->getLayers());
   }
 
-  dlg.exec();
+  std::size_t r = dlg.exec();
+
+  if(QDialog::Rejected)
+    return;
+
+  te::map::AbstractLayerPtr layer = dlg.getLayer();
+
+  if(!layer)
+    return;
+
+  if(prj)
+  {
+    prj->add(layer);
+
+    te::qt::af::evt::LayerAdded evt(layer.get());
+
+    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  }
 }

@@ -24,15 +24,11 @@
 */
 
 // TerraLib
-#include "../../common/StringUtils.h"
 #include "../../common/Translator.h"
 #include "Config.h"
 #include "Enums.h"
 #include "Exception.h"
 #include "Utils.h"
-
-// Qt
-#include <QtGui/QTreeView>
 
 std::string te::stat::GetStatSummaryShortName(const int& e)
 {

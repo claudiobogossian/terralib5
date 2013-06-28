@@ -57,6 +57,26 @@
 // STL
 #include <cassert>
 
+
+std::string RemoveSpatialSql(const std::string& sql)
+{
+  std::string newQuery;
+
+  size_t pos = sql.find("AND Intersection");
+
+  if(pos != std::string::npos)
+  {
+    size_t pos2 = sql.find("))", pos);
+
+    newQuery = sql.substr(0, pos);
+    newQuery += sql.substr(pos2+2);
+  }
+  else
+    newQuery = sql;
+
+  return newQuery;
+}
+
 te::ogr::DataSourceTransactor::DataSourceTransactor(DataSource* ds, OGRDataSource* ogrDS)
   : m_ds(ds),
     m_ogrDS(ogrDS),
@@ -107,7 +127,7 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::TraverseType /*travType*/,
                                                            te::common::AccessPolicy /*rwRole*/)
 {
-  std::string sql = "SELECT * FROM " + name;
+  std::string sql = "SELECT FID, * FROM " + name;
   OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -123,7 +143,7 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::TraverseType /*travType*/, 
                                                            te::common::AccessPolicy /*rwRole*/)
 {
-  std::string sql = "SELECT * FROM " + name;
+  std::string sql = "SELECT FID, * FROM " + name;
   OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -141,7 +161,7 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::TraverseType /*travType*/, 
                                                            te::common::AccessPolicy /*rwRole*/)
 { 
-  std::string sql = "SELECT * FROM " + name;
+  std::string sql = "SELECT FID, * FROM " + name;
   OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -165,9 +185,16 @@ te::da::DataSet* te::ogr::DataSourceTransactor::query(const te::da::Select& q,
   SQLVisitor visitor(*m_ds->getDialect(), sql);
   q.accept(visitor);
 
-  OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, "SQLITE");
+  sql = RemoveSpatialSql(sql);
+
+  OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
   if(layer == 0)
     throw(te::common::Exception(TR_OGR("Could not retrieve the DataSet from data source.")));
+
+  te::gm::Envelope* e = visitor.getMBR();
+
+  if(e != 0)
+    layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
 
   return new DataSet(this, layer, true);
 }

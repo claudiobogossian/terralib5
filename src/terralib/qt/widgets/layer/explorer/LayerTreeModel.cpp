@@ -372,9 +372,9 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
         {
           // Drop item is a top level item
           if(dropIndex.row() == -1)
-            insertingRow = m_items.size();   // The item was dropped after the last top item
+            insertingRow = m_items.size();       // The item was dropped after the last top item
           else        
-            insertingRow = dropIndex.row();  // The item was dropped exactly on a top level item
+            insertingRow = dropIndex.row() + i;  // The item was dropped exactly on a top level item
 
           insertingItemParentIndex = QModelIndex();
         }
@@ -382,9 +382,9 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
         {
           // Drop item is not a top level item
           if(dropIndex.row() == -1)
-            row = 0;
+            insertingRow = 0;
           else
-            insertingRow = dropIndex.row();  // The item will be inserted in the position of the dropped item.
+            insertingRow = dropIndex.row() + i;  // The item will be inserted in the position of the dropped item.
 
           insertingItemParentIndex = dropParentIndex;
         }
@@ -592,13 +592,33 @@ bool te::qt::widgets::LayerTreeModel::insert(const te::map::AbstractLayerPtr& la
   return insertRows(row, 1, parent);
 }
 
-bool te::qt::widgets::LayerTreeModel::remove(const QModelIndex& index)
+bool te::qt::widgets::LayerTreeModel::remove(AbstractLayerTreeItem* item)
 {
-  if(!index.isValid())
-    return false;
+  int itemRow;              // The item row
+  QModelIndex parentIndex;  // The parent index of the item
 
-  QModelIndex parentIndex = index.parent();
-  return removeRows(index.row(), 1, parentIndex);
+  AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(item->parent());
+  if(!parentItem)
+  {
+    // The item is a top level item; get its row
+    for(std::size_t i = 0; i < m_items.size(); ++i)
+    {
+      if(m_items[i] == item)
+      {
+        itemRow = i;
+        break;
+      }
+    }
+  }
+  else
+  {
+    itemRow = parentItem->children().indexOf(item);
+
+    QModelIndex itemIndex = createIndex(itemRow, 0, item);
+    parentIndex = parent(itemIndex);
+  }
+
+  return removeRows(itemRow, 1, parentIndex);
 }
 
 void te::qt::widgets::LayerTreeModel::emitDataChangedForDescendants(const QModelIndex& parent)

@@ -25,10 +25,10 @@
 
 // TerraLib
 #include "../../common/Translator.h"
-#include "../../common/StringUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../datatype/Property.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../core/Exception.h"
@@ -62,7 +62,6 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
-  
 }
 
 te::vp::IntersectionDialog::~IntersectionDialog()
@@ -148,23 +147,30 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     return;
   }
 
-  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
-
   try
   {
     size_t srid = 0;
     std::map<std::string, std::string> op;
-    te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
-    //te::vp::Intersection(newLayerName, selected);
+
+    if(m_outputDatasource.get())
+      m_layer = te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
+    else if(!m_outputArchive.empty())
+      m_layer = te::vp::Intersection(newLayerName, layers, m_outputArchive, srid, op);
   }
   catch(const std::exception& e)
   {
     QMessageBox::warning(this, TR_VP("Intersection Operation"), e.what());
+    return;
   }
+
+  accept();
 }
 
 void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
 {
+  m_outputDatasource.reset();
+  m_outputArchive = "";
+
   te::qt::widgets::DataSourceSelectorDialog dlg(this);
   dlg.exec();
 
@@ -182,18 +188,22 @@ void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
 
 void te::vp::IntersectionDialog::onTargetFileToolButtonPressed()
 {
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Open Feature File"), QString(""), tr("Common Formats (*.shp *.SHP *.kml *.KML *.geojson *.GEOJSON *.gml *.GML);; Shapefile (*.shp *.SHP);; GML (*.gml *.GML);; Web Feature Service - WFS (*.xml *.XML *.wfs *.WFS);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
-  
-  if(fileName.isEmpty())
+  m_outputDatasource.reset();
+  m_outputArchive = "";
+
+  QString directoryName = QFileDialog::getExistingDirectory(this, tr("Open Feature File"), QString(""));
+
+  if(directoryName.isEmpty())
     return;
 
-  m_ui->m_repositoryLineEdit->setText(fileName);
+  QString fullName = directoryName + "\\" + m_ui->m_newLayerNameLineEdit->text() + ".shp";
 
-  std::vector<te::da::DataSourceInfoPtr> datasources;
-  te::da::DataSourceInfoManager::getInstance().getByType("OGR", datasources);
+  m_ui->m_repositoryLineEdit->setText(fullName);
 
-  m_outputDatasource = datasources[0];
+  m_outputArchive = std::string(fullName.toStdString());
 }
 
-
-
+te::map::AbstractLayerPtr te::vp::IntersectionDialog::getLayer()
+{
+  return m_layer;
+}

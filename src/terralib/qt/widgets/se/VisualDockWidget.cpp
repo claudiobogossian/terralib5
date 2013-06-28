@@ -60,9 +60,9 @@ te::qt::widgets::VisualDockWidget::~VisualDockWidget()
 
 void te::qt::widgets::VisualDockWidget::setStyle(te::se::Style* style, te::map::AbstractLayer* layer)
 {
-  m_styleController->setStyle(style);
-
   m_currentLayer = layer;
+
+  m_styleController->setStyle(style);
 }
 
 void te::qt::widgets::VisualDockWidget::setTabStatus(bool status)

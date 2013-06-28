@@ -96,7 +96,6 @@
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
 #include <QtGui/QToolButton>
-#include <QModelIndex>
 
 // STL
 #include <list>
@@ -427,23 +426,14 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
 void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
-  QModelIndexList selectedIndexes = m_explorer->getExplorer()->getSelectedIndexes();
-  QModelIndex idx;
+  std::list<te::qt::widgets::AbstractLayerTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractLayerTreeItem*>::iterator it;
 
-  if(selectedIndexes.count() > 1)
+  for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
   {
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                         tr("Not implemented for removing more than one layer!"));
-
-    return;
-  }
-
-  foreach(idx, selectedIndexes)
-  {
-    te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>(idx.internalPointer());
+    te::qt::widgets::AbstractLayerTreeItem* item = *it;
     m_project->remove(item->getLayer());
-
-    m_explorer->getExplorer()->remove(idx);
+    m_explorer->getExplorer()->remove(item);
   }
 }
 
@@ -1037,14 +1027,23 @@ void te::qt::af::BaseApplication::makeDialog()
 
 // 1. Layer Explorer
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
+  te::qt::widgets::LayerTreeView* treeView = lexplorer->getTreeView();
 
-  lexplorer->getTreeView()->add(m_projectAddLayerDataset, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_layerNewLayerGroup, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  lexplorer->getTreeView()->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
-  lexplorer->getTreeView()->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerEdit, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerRename, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerExport, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerNewLayerGroup, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
+  treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerChartsMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerRaise, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerToTop, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerToBottom, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+
+  treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
+  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 

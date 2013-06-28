@@ -24,11 +24,13 @@
 */
 
 // TerraLib
-#include "../../common/StringUtils.h"
 #include "Utils.h"
 
 // Qt
 #include <QtGui/QTreeView>
+
+// Boost
+#include <boost/algorithm/string.hpp>
 
 std::list<te::map::AbstractLayerPtr> te::vp::GetFilteredLayers(std::string text, std::list<te::map::AbstractLayerPtr> layers)
 {
@@ -38,7 +40,7 @@ std::list<te::map::AbstractLayerPtr> te::vp::GetFilteredLayers(std::string text,
   {
     std::string layName = (*it)->getTitle().substr(0, text.size());
     
-    if(te::common::Convert2UCase(layName) == te::common::Convert2UCase(text))
+    if(boost::to_upper_copy(layName) == boost::to_upper_copy(text))
       filteredList.push_back(*it);
   }
 

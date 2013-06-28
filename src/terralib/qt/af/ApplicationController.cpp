@@ -44,11 +44,10 @@
 #include "events/ApplicationEvents.h"
 #include "ApplicationController.h"
 #include "ApplicationPlugins.h"
-#include "ApplicationController.h"
 #include "Exception.h"
+#include "Project.h"
 #include "SplashScreenManager.h"
 #include "UserPlugins.h"
-#include "Project.h"
 #include "Utils.h"
 
 // Qt

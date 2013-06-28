@@ -66,12 +66,23 @@ namespace te
     te::map::AbstractLayerPtr Intersection(const std::string& newLayerName,
                                            const std::vector<LayerInputData>& idata,
                                            const te::da::DataSourceInfoPtr& dsinfo,
-                                           size_t outputSRID,
-                                           const std::map<std::string, std::string>& options);
-      
+                                           size_t outputSRID = 0,
+                                           const std::map<std::string, std::string>& options = std::map<std::string, std::string>());
+
+    te::map::AbstractLayerPtr Intersection(const std::string& newLayerName,
+                                           const std::vector<LayerInputData>& idata,
+                                           std::string outputArchive,
+                                           size_t outputSRID = 0,
+                                           const std::map<std::string, std::string>& options = std::map<std::string, std::string>());
+
+    std::pair<te::da::DataSetType*, te::da::DataSet*> Intersection(const std::string& newLayerName,
+                                                                   const std::vector<LayerInputData>& idata,
+                                                                   size_t outputSRID = 0);
+
     std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::string newName, 
                                                                            IntersectionMember firstMember, 
-                                                                           IntersectionMember secondMember);
+                                                                           IntersectionMember secondMember,
+                                                                           std::size_t outputSRID = 0);
 
   }
 }

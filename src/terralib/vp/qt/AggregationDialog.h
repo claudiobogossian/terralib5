@@ -74,13 +74,6 @@ namespace te
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
         /*!
-          \brief Get the type of memory use based on a enum.
-
-          \return MemoryUse enum.
-        */
-        int getMemoryUse();
-
-        /*!
           \brief Get the Grouping Functions Type based on selected QListWidgetItem.
 
           \return Map with Properties and Grouping Functions Type.
@@ -123,6 +116,8 @@ namespace te
         void onLayerComboBoxChanged(int index);
 
         void onFilterLineEditTextChanged(const QString& text);
+
+        void onCalculateStatistics(bool visible);
 
         void onSelectAllComboBoxChanged(int index);
 
