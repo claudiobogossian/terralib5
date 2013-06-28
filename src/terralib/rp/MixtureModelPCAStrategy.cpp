@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/MatrixUtils.h"
+#include "../common/progress/TaskProgress.h"
 #include "../raster/Grid.h"
 #include "../raster/Utils.h"
 #include "Functions.h"
@@ -237,6 +238,7 @@ bool te::rp::MixtureModelPCAStrategy::execute(const te::rst::Raster& inputRaster
   boost::numeric::ublas::matrix<double> rasterRowsIn(nBands, inputRaster.getNumberOfColumns());
   boost::numeric::ublas::matrix<double> rasterRowsOut(nComponents, inputRaster.getNumberOfColumns());
 
+  te::common::TaskProgress task(TR_RP("PCA Mixture Model"), te::common::TaskProgress::UNDEFINED, inputRaster.getNumberOfRows());
   double value;
   for (unsigned int rowout = 0; rowout < inputRaster.getNumberOfRows(); rowout++)
   {
@@ -320,6 +322,7 @@ bool te::rp::MixtureModelPCAStrategy::execute(const te::rst::Raster& inputRaster
         for (j = 0; j < inputRaster.getNumberOfColumns(); j++)
           outputRaster.setValue(j, rowout, rasterRowsIn(i, j), i + nComponents); // ???
     }
+    task.pulse();
   }
 
   return true;

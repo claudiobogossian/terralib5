@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/MatrixUtils.h"
+#include "../common/progress/TaskProgress.h"
 #include "../raster/Grid.h"
 #include "../raster/PositionIterator.h"
 #include "../raster/RasterIterator.h"
@@ -219,6 +220,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
   boost::numeric::ublas::matrix<double> product_Xk_minusMUj(S, S);
   boost::numeric::ublas::matrix<double> sum_product_Xk_minusMUj(S, S);
 
+  te::common::TaskProgress task(TR_RP("Expectation Maximization algorithm - estimating clusters"), te::common::TaskProgress::UNDEFINED, m_parameters.m_maxIterations);
   for (unsigned int i = 0; i < m_parameters.m_maxIterations; i++)
   {
 // computing PCj_Xk
@@ -341,6 +343,8 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
     if (distance_MUj < m_parameters.m_epsilon)
       break;
     previous_MUj = MUj;
+
+    task.pulse();
   }
 
 // classifying image
@@ -359,6 +363,9 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
   boost::numeric::ublas::matrix<double> X_minus_MUj(S, 1);
   boost::numeric::ublas::matrix<double> X_minus_MUj_T(1, S);
 
+  task.setTotalSteps(inputRaster.getNumberOfColumns() * inputRaster.getNumberOfRows());
+  task.setMessage(TR_RP("Expectation Maximization algorithm - classifying image"));
+  task.setCurrentStep(0);
   while (it != itend)
   {
     for (unsigned int l = 0; l < S; l++)
@@ -428,6 +435,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
     outputRaster.setValue(it.getCol(), it.getRow(), cluster, outputRasterBand);
 
     ++it;
+    task.pulse();
   }
 
   return true;
