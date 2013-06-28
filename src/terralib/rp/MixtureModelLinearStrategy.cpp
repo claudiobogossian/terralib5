@@ -87,8 +87,6 @@ bool te::rp::MixtureModelLinearStrategy::initialize(te::rp::StrategyParameters c
 
   m_parameters = *(paramsPtr);
 
-  // TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_acceptanceThreshold > 0 && m_parameters.m_acceptanceThreshold <= 100, "Invalid acceptance threshold [0, 100].")
-
   m_isInitialized = true;
 
   return true;
@@ -145,8 +143,7 @@ bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRas
   boost::numeric::ublas::matrix<double> productAX = boost::numeric::ublas::matrix<double>(matrixA.size1(), matrixX.size2());
   boost::numeric::ublas::matrix<double> matrixE = boost::numeric::ublas::matrix<double>(matrixR.size1(), matrixR.size2());
 
-  te::common::TaskProgress task(TR_RP("Linear Mixture Model"));
-  task.setTotalSteps(inputRaster.getNumberOfRows());
+  te::common::TaskProgress task(TR_RP("Linear Mixture Model"), te::common::TaskProgress::UNDEFINED, inputRaster.getNumberOfRows());
   double value;
   for (unsigned r = 0; r < inputRaster.getNumberOfRows(); r++)
   {
