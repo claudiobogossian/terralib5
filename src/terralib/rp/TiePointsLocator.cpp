@@ -46,6 +46,8 @@
 #include <cmath>
 #include <boost/concept_check.hpp>
 
+#include <cstring>
+
 namespace te
 {
   namespace rp
@@ -402,7 +404,7 @@ namespace te
       
       // Generating raster 1 features
       
-      DoublesMatrix raster1Features;
+      FloatsMatrix raster1Features;
       InterestPointsSetT raster1InterestPoints;
       {
         // loading raster data
@@ -480,14 +482,13 @@ namespace te
           
         // Generting features (one feature per line)
         
-        raster1Features.reset( DoublesMatrix::RAMMemPol );
+        raster1Features.reset( FloatsMatrix::RAMMemPol );
         InterestPointsSetT auxInterestPoints;
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
           raster1InterestPoints,
           m_inputParameters.m_moravecCorrelationWindowWidth,
           *(raster1Data[ 0 ]),
-          true,
           raster1Features,
           auxInterestPoints ),
           "Error generating raster 1 features" );
@@ -505,7 +506,7 @@ namespace te
       
       // Generating raster 2 features
       
-      DoublesMatrix raster2Features;
+      FloatsMatrix raster2Features;
       InterestPointsSetT raster2InterestPoints;
       {
         // Loading image data
@@ -585,14 +586,13 @@ namespace te
           
         // Generting features (one feature per line)
 
-        raster2Features.reset( DoublesMatrix::RAMMemPol );
+        raster2Features.reset( FloatsMatrix::RAMMemPol );
         InterestPointsSetT auxInterestPoints;        
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
           raster2InterestPoints,
           m_inputParameters.m_moravecCorrelationWindowWidth,
           *(raster2Data[ 0 ]),
-          true,
           raster2Features,
           auxInterestPoints ),
           "Error generating raster 2 features" );
@@ -2855,16 +2855,14 @@ namespace te
       const InterestPointsSetT& interestPoints,
       const unsigned int correlationWindowWidth,
       const DoublesMatrix& rasterData,
-      const bool normalize,
-      DoublesMatrix& features,
+      FloatsMatrix& features,
       InterestPointsSetT& validInteresPoints )
     {
-      // Locating the the valid interest points
-      
       validInteresPoints.clear();
       
       /* The radius of a feature window rotated by 90 degrees. 
-      * over the input image */
+        * over the input image */
+      
       const unsigned int rotated90CorralationWindowRadius = (unsigned int)
         (
           std::ceil( 
@@ -2878,61 +2876,71 @@ namespace te
               )
             ) / 2.0
           )
-        );
-        
-      const unsigned int rasterDataCols = rasterData.getColumnsNumber();
-      const unsigned int rasterDataLines = rasterData.getLinesNumber();
-      const unsigned int firstValidInterestPointX = 
-        rotated90CorralationWindowRadius + 1;
-      const unsigned int lastValidInterestPointX = rasterDataCols
-        - rotated90CorralationWindowRadius - 2; 
-      const unsigned int firstValidInterestPointY = 
-        rotated90CorralationWindowRadius + 1;
-      const unsigned int lastValidInterestPointY = rasterDataLines
-        - rotated90CorralationWindowRadius - 2;        
+        );      
       
-      {
-        InterestPointsSetT::const_iterator iPointsIt = interestPoints.begin();
-        const InterestPointsSetT::const_iterator iPointsItEnd = interestPoints.end();        
+      // Locating the the valid interest points
         
-        while( iPointsIt != iPointsItEnd )
-        {
-          if( ( iPointsIt->m_x >= firstValidInterestPointX ) &&
-            ( iPointsIt->m_x <= lastValidInterestPointX ) &&
-            ( iPointsIt->m_y >= firstValidInterestPointY ) &&
-            ( iPointsIt->m_y <= lastValidInterestPointY ) )
-          {
-            validInteresPoints.insert( *iPointsIt );
-          }
+      {
+        /* The radius of a feature window rotated by 90 degrees. 
+        * over the input image */
           
-          ++iPointsIt;
+        const unsigned int rasterDataCols = rasterData.getColumnsNumber();
+        const unsigned int rasterDataLines = rasterData.getLinesNumber();
+        const unsigned int firstValidInterestPointX = 
+          rotated90CorralationWindowRadius + 1;
+        const unsigned int lastValidInterestPointX = rasterDataCols
+          - rotated90CorralationWindowRadius - 2; 
+        const unsigned int firstValidInterestPointY = 
+          rotated90CorralationWindowRadius + 1;
+        const unsigned int lastValidInterestPointY = rasterDataLines
+          - rotated90CorralationWindowRadius - 2;        
+        
+        {
+          InterestPointsSetT::const_iterator iPointsIt = interestPoints.begin();
+          const InterestPointsSetT::const_iterator iPointsItEnd = interestPoints.end();        
+          
+          while( iPointsIt != iPointsItEnd )
+          {
+            if( ( iPointsIt->m_x >= firstValidInterestPointX ) &&
+              ( iPointsIt->m_x <= lastValidInterestPointX ) &&
+              ( iPointsIt->m_y >= firstValidInterestPointY ) &&
+              ( iPointsIt->m_y <= lastValidInterestPointY ) )
+            {
+              validInteresPoints.insert( *iPointsIt );
+            }
+            
+            ++iPointsIt;
+          }
         }
       }
       
       // Allocating the features matrix
       
-      TERP_TRUE_OR_RETURN_FALSE( features.reset( 
-        validInteresPoints.size(), correlationWindowWidth * correlationWindowWidth ),
-        "Cannot allocate features matrix" );      
+      const unsigned int featureElemsNmb = correlationWindowWidth * 
+        correlationWindowWidth;
+      const unsigned int featureSizeBytes = sizeof( double ) *
+        featureElemsNmb;
       
-      /* variables related to the current window over the hole image */
-      unsigned int curr_window_x_start = 0;
-      unsigned int curr_window_y_start = 0;
-      unsigned int curr_window_x_center = 0;
-      unsigned int curr_window_y_center = 0;
+      TERP_TRUE_OR_RETURN_FALSE( features.reset( 
+        validInteresPoints.size(), featureElemsNmb ),
+        "Cannot allocate features matrix" );      
+        
+      // Allocating the auxiliary features buffer
+      
+      boost::scoped_array< double > auxFeatureBufferHandler( 
+        new double[ featureElemsNmb ] );
+      double* auxFeatureBufferPtr = auxFeatureBufferHandler.get();
+
+      // Creating features
+
+      unsigned int curr_window_x_start = 0; //related to the current window over the hole image
+      unsigned int curr_window_y_start = 0; //related to the current window over the hole image
+      unsigned int curr_window_x_center = 0; //related to the current window over the hole image
+      unsigned int curr_window_y_center = 0; //related to the current window over the hole image
       unsigned int curr_window_x_end = 0; // this coord is also counted in
       unsigned int curr_window_y_end = 0; // this coord is also counted in
-      
-      /*used on the rotation calcule */
-
-      const unsigned int wind_radius = correlationWindowWidth / 2;
-      // output window radius
+      const unsigned int wind_radius = correlationWindowWidth / 2; //output window radius
       const double wind_radius_double = (double)wind_radius;
-
-//      const unsigned int img_features_matrix_cols = 
-//        features.getColumnsNumber();
-//      const unsigned int img_features_matrix_lines = 
-//        features.getLinesNumber();        
       unsigned int curr_x = 0;
       unsigned int curr_y = 0;
       double curr_x_minus_radius = 0;
@@ -2943,30 +2951,16 @@ namespace te
       double int_norm = 0;
       double rotated_curr_x = 0;/* rotaded coord - window ref */
       double rotated_curr_y = 0;/* rotaded coord - window ref */
-      
-      /* the found rotation parameters */
       double rot_cos = 0;
       double rot_sin = 0;
-      
-      /* the coords rotated but in the hole image reference */
-      unsigned int rotated_curr_x_img = 0;
-      unsigned int rotated_curr_y_img = 0;
-      
-      /* current window mean and standart deviation */
-      double curr_wind_mean = 0.0;
-      double curr_wind_stddev = 0.0;
-      double curr_wind_stddev_aux = 0.0;
-      
-      // used on intensity vector calcule
-//      double imgMatrixValue1 = 0;
-//      double imgMatrixValue2 = 0;
-      
-//      double* featuresLinePtr = 0;
-      const unsigned int img_features_matrix_cols = 
-        features.getColumnsNumber();
-//      const unsigned int img_features_matrix_lines = 
-//        features.getLinesNumber();
-//      unsigned int features_matrix_col = 0;
+      unsigned int rotated_curr_x_img = 0; //coords rotated but in the hole image reference
+      unsigned int rotated_curr_y_img = 0; //coords rotated but in the hole image reference
+      double featureElementsNormalizeFactor = 0.0;
+      unsigned int featureElementIdx = 0;
+      float* featurePtr = 0;
+      double featureElementValue = 0.0;
+      double featureElementMaxValue = 0.0;
+      double featureElementMinValue = 0.0;
       
       InterestPointsSetT::const_iterator viPointsIt = validInteresPoints.begin();
       const InterestPointsSetT::const_iterator viPointsItEnd = validInteresPoints.end();      
@@ -2977,11 +2971,13 @@ namespace te
         /* Calculating the current window position */
       
         curr_window_x_center = viPointsIt->m_x;
+        assert( curr_window_x_center >= rotated90CorralationWindowRadius );
+        assert( curr_window_x_center < ( rasterData.getColumnsNumber() - 1 -
+          rotated90CorralationWindowRadius ) );
         curr_window_y_center = viPointsIt->m_y;
-        assert( curr_window_x_center >= firstValidInterestPointX );
-        assert( curr_window_x_center <= lastValidInterestPointX );
-        assert( curr_window_y_center >= firstValidInterestPointY );
-        assert( curr_window_y_center <= lastValidInterestPointY );
+        assert( curr_window_y_center >= rotated90CorralationWindowRadius );
+        assert( curr_window_y_center < ( rasterData.getLinesNumber() - 1 -
+          rotated90CorralationWindowRadius ) );
         
         curr_window_x_start = curr_window_x_center - wind_radius;
         curr_window_y_start = curr_window_y_center - wind_radius;
@@ -3047,6 +3043,11 @@ namespace te
           | v | == |-sin  cos| x |Y|
         */
           
+        memset( auxFeatureBufferPtr, 0, featureSizeBytes );
+        featureElementIdx = 0;
+        featureElementMaxValue = -1.0 * DBL_MAX;
+        featureElementMinValue =  DBL_MAX;
+        
         for( curr_y = 0 ; curr_y < correlationWindowWidth ; ++curr_y ) 
         {
           for( curr_x = 0 ; curr_x < correlationWindowWidth ; ++curr_x ) 
@@ -3079,66 +3080,40 @@ namespace te
             rotated_curr_x_img = curr_window_x_start +
               (unsigned int)ROUND( rotated_curr_x );
             rotated_curr_y_img = curr_window_y_start +
-              (unsigned int)ROUND( rotated_curr_y );                        
+              (unsigned int)ROUND( rotated_curr_y );  
+              
+            featureElementValue = rasterData( rotated_curr_y_img, 
+              rotated_curr_x_img );
             
-            features( validInteresPointsIndex, ( curr_y * 
-              correlationWindowWidth ) + curr_x ) = rasterData( 
-              rotated_curr_y_img, rotated_curr_x_img );
+            auxFeatureBufferPtr[ featureElementIdx++ ] = featureElementValue;
+            
+            if( featureElementMaxValue < featureElementValue )
+              featureElementMaxValue = featureElementValue;
+            
+            if( featureElementMinValue > featureElementValue )
+              featureElementMinValue = featureElementValue;
+            
           }
         }
         
-        /* Normalizing the generated window by subtracting its mean
-          and dividing by its standard deviation */      
+        // feature normaliztion
         
-        if( normalize )
+        featureElementsNormalizeFactor = featureElementMaxValue - 
+          featureElementMinValue;
+        if( featureElementsNormalizeFactor != 0.0 )
+          featureElementsNormalizeFactor = 1.0 / featureElementsNormalizeFactor;
+        
+        featurePtr = features[ validInteresPointsIndex ];
+        
+        for( featureElementIdx = 0 ; featureElementIdx < featureElemsNmb ;
+          ++featureElementIdx )
         {
-          curr_wind_mean = 0.0;
-          
-          for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
-            ++curr_x ) 
-          {
-            
-            curr_wind_mean += features( validInteresPointsIndex,
-              curr_x );
-          }
-          
-          curr_wind_mean /= ( (double)img_features_matrix_cols  );
-          
-          curr_wind_stddev = 0.0;  
-          
-          for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
-            ++curr_x ) 
-          {
-            curr_wind_stddev_aux = features( validInteresPointsIndex,
-              curr_x ) - curr_wind_mean;
-              
-            curr_wind_stddev += ( curr_wind_stddev_aux *
-              curr_wind_stddev_aux );
-          }      
-          
-          curr_wind_stddev /= ( (double)img_features_matrix_cols  );
-          curr_wind_stddev = std::sqrt( curr_wind_stddev );
-          
-          if( curr_wind_stddev == 0.0 ) {
-            for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
-              ++curr_x ) {
-              
-              double& curr_value = features( validInteresPointsIndex,
-                curr_x );
-              
-              curr_value -= curr_wind_mean;
-            } 
-          } else {
-            for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
-              ++curr_x ) {
-              
-              double& curr_value = features( validInteresPointsIndex, curr_x );
-              
-              curr_value -= curr_wind_mean;
-              curr_value /= curr_wind_stddev;
-            }
-          }
-        }        
+          featurePtr[ featureElementIdx ] = (float)(
+            ( auxFeatureBufferPtr[ featureElementIdx ] - featureElementMinValue )
+            * featureElementsNormalizeFactor );
+          assert( featurePtr[ featureElementIdx ] >= 0.0 );
+          assert( featurePtr[ featureElementIdx ] <= 1.0 );
+        }
         
         ++validInteresPointsIndex;
         ++viPointsIt;
@@ -3527,8 +3502,8 @@ namespace te
     }
     
     bool TiePointsLocator::executeMatchingByCorrelation( 
-      const DoublesMatrix& featuresSet1,
-      const DoublesMatrix& featuresSet2,
+      const FloatsMatrix& featuresSet1,
+      const FloatsMatrix& featuresSet2,
       const InterestPointsSetT& interestPointsSet1,
       const InterestPointsSetT& interestPointsSet2,
       const unsigned int maxPt1ToPt2Distance,
@@ -3560,8 +3535,6 @@ namespace te
         ++it1;
       }
       
-      te::sam::rtree::Index< unsigned int > interestPointsSet2RTree;
-
       InterestPointsSetT::const_iterator it2 = interestPointsSet2.begin();
       boost::scoped_array< InterestPointT > internalInterestPointsSet2( 
         new InterestPointT[ interestPointsSet2Size ] );
@@ -3569,23 +3542,19 @@ namespace te
       {
         internalInterestPointsSet2[ idx2 ] = *it2;
         
-        if( maxPt1ToPt2Distance )
-          interestPointsSet2RTree.insert( te::gm::Envelope( it2->m_x, it2->m_y,
-            it2->m_x, it2->m_y ), idx2 );
-        
         ++it2;
       }        
       
       // Creating the correlation matrix
       
-      DoublesMatrix corrMatrix;
+      FloatsMatrix corrMatrix;
       TERP_TRUE_OR_RETURN_FALSE( corrMatrix.reset( interestPointsSet1Size,
-       interestPointsSet2Size, DoublesMatrix::RAMMemPol ),
+       interestPointsSet2Size, FloatsMatrix::RAMMemPol ),
         "Error crearting the correlation matrix" );
         
       unsigned int col = 0;
       unsigned int line = 0;
-      double* linePtr = 0;
+      float* linePtr = 0;
       
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
       {
@@ -3610,14 +3579,13 @@ namespace te
       params.m_corrMatrixPtr = &corrMatrix;
       params.m_syncMutexPtr = &syncMutex;
       params.m_maxPt1ToPt2Distance = maxPt1ToPt2Distance;
-      params.m_interestPointsSet2RTreePtr = &interestPointsSet2RTree;
       
       if( enableMultiThread )
       {
         TERP_TRUE_OR_RETURN_FALSE( featuresSet1.getMemPolicy() ==
-          DoublesMatrix::RAMMemPol, "Invalid memory policy" )
+          FloatsMatrix::RAMMemPol, "Invalid memory policy" )
         TERP_TRUE_OR_RETURN_FALSE( featuresSet2.getMemPolicy() ==
-          DoublesMatrix::RAMMemPol, "Invalid memory policy" )    
+          FloatsMatrix::RAMMemPol, "Invalid memory policy" )    
           
         const unsigned int procsNumber = te::common::GetPhysProcNumber();
         
@@ -3640,7 +3608,7 @@ namespace te
       
       // finding the correlation matrix maximas for each line and column
       
-      std::vector< double > eachLineMaxABSValues( interestPointsSet1Size,
+      std::vector< float > eachLineMaxABSValues( interestPointsSet1Size,
         0.0 );
       std::vector< unsigned int > eachLineMaxABSIndexes( interestPointsSet1Size,
         interestPointsSet2Size );
@@ -3648,9 +3616,7 @@ namespace te
         0.0 );
       std::vector< unsigned int > eachColMaxABSIndexes( interestPointsSet2Size,
         interestPointsSet1Size );
-      double maxCorrelationABSValue = DBL_MAX * (-1.0);
-      double minCorrelationABSValue = DBL_MAX;
-      double absValue = 0;
+      float absValue = 0;
         
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
       {
@@ -3674,19 +3640,12 @@ namespace te
               eachColMaxABSIndexes[ col ] = line;
             }
           }
-          
-          if( absValue > maxCorrelationABSValue ) maxCorrelationABSValue = absValue;
-          if( absValue < minCorrelationABSValue ) minCorrelationABSValue = absValue;
         }
       }
       
       // Finding tiepoints
       
-      const double correlationABSValueRange = ( maxCorrelationABSValue != 
-        minCorrelationABSValue ) ? ( maxCorrelationABSValue -
-        minCorrelationABSValue ) : 1.0;
       MatchedInterestPointsT auxMatchedPoints;
-      double correlationAbs = 0;
         
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
       {
@@ -3695,12 +3654,9 @@ namespace te
         if( ( col < interestPointsSet2Size ) &&
           ( eachColMaxABSIndexes[ col ] == line ) )
         {
-          correlationAbs = std::abs( corrMatrix( line, col ) );
-          
           auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
           auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ];
-          auxMatchedPoints.m_feature = 
-            ( correlationAbs - minCorrelationABSValue ) / correlationABSValueRange;
+          auxMatchedPoints.m_feature = std::abs( corrMatrix( line, col ) );
           
           matchedPoints.insert( auxMatchedPoints );
         }
@@ -3713,49 +3669,60 @@ namespace te
       ExecuteMatchingByCorrelationThreadEntryParams* paramsPtr)
     {
       assert( paramsPtr->m_featuresSet1Ptr->getMemPolicy() == 
-        DoublesMatrix::RAMMemPol );
+        FloatsMatrix::RAMMemPol );
       assert( paramsPtr->m_featuresSet2Ptr->getMemPolicy() == 
-        DoublesMatrix::RAMMemPol );
+        FloatsMatrix::RAMMemPol );
       assert( paramsPtr->m_corrMatrixPtr->getMemPolicy() == 
-        DoublesMatrix::RAMMemPol );       
+        FloatsMatrix::RAMMemPol );
         
+      // globals
+        
+      const unsigned int featureElementsNmb = paramsPtr->m_featuresSet1Ptr->getColumnsNumber();
       unsigned int feat2Idx = 0;
-      double const* feat1Ptr = 0;
-      double const* feat2Ptr = 0;
-      double* corrMatrixLinePtr = 0;
+      float const* feat1Ptr = 0;
+      float const* feat2Ptr = 0;
+      float* corrMatrixLinePtr = 0;
       unsigned int featCol = 0;
-      double sumAA = 0;
-      double sumBB = 0;
-      double cc_norm = 0;
-      double ccorrelation = 0;
-      te::gm::Envelope auxEnvelope;
+      float sumAA = 0;
+      float sumBB = 0;
+      float cc_norm = 0;
+      float ccorrelation = 0;
+      te::gm::Envelope auxEnvelope;        
+        
+      // Indexing tree building
       
-      // finding the number of features
-      
-      paramsPtr->m_syncMutexPtr->lock();
-      
-      const unsigned int featureSize = paramsPtr->m_featuresSet1Ptr->getColumnsNumber();
       const unsigned int featuresSet1Size = 
         paramsPtr->m_featuresSet1Ptr->getLinesNumber();
       const unsigned int featuresSet2Size = 
-        paramsPtr->m_featuresSet2Ptr->getLinesNumber();
-      
-      paramsPtr->m_syncMutexPtr->unlock();
-      
-      // initializing the features 2 indexes vector
+        paramsPtr->m_featuresSet2Ptr->getLinesNumber();   
+        
+      te::sam::rtree::Index< unsigned int > interestPointsSet2RTree;
       
       std::vector< unsigned int > selectedFeaturesSet2Indexes;
-      unsigned int selectedFeaturesSet2IndexesSize = 0;
-      
-      if( paramsPtr->m_maxPt1ToPt2Distance == 0 )
+      unsigned int selectedFeaturesSet2IndexesSize = 0;      
+        
+      if( paramsPtr->m_maxPt1ToPt2Distance )
+      {
+        for( unsigned int feat2Idx = 0 ; feat2Idx < featuresSet2Size ; ++feat2Idx )
+        {
+          interestPointsSet2RTree.insert( 
+            te::gm::Envelope( 
+              paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_x, 
+              paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_y,
+              paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_x, 
+              paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_y ), 
+            feat2Idx );
+        }         
+      }
+      else
       {
         selectedFeaturesSet2Indexes.resize( featuresSet2Size );
         selectedFeaturesSet2IndexesSize = featuresSet2Size;
         for( unsigned int feat2Idx = 0 ; feat2Idx < featuresSet2Size ; ++feat2Idx )
-          {
-            selectedFeaturesSet2Indexes[ feat2Idx ] = feat2Idx;
-          }
-      }      
+        {
+          selectedFeaturesSet2Indexes[ feat2Idx ] = feat2Idx;
+        }
+      }
       
       // Analysing each feature
       
@@ -3766,6 +3733,8 @@ namespace te
         if( feat1Idx == (*paramsPtr->m_nextFeatureIdx1ToProcessPtr) )
         {
           ++(*paramsPtr->m_nextFeatureIdx1ToProcessPtr);
+          
+          paramsPtr->m_syncMutexPtr->unlock();
           
           if( paramsPtr->m_maxPt1ToPt2Distance )
           {
@@ -3779,7 +3748,7 @@ namespace te
             auxEnvelope.m_ury += (double)paramsPtr->m_maxPt1ToPt2Distance;;
             
             selectedFeaturesSet2Indexes.clear();
-            paramsPtr->m_interestPointsSet2RTreePtr->search( auxEnvelope,
+            interestPointsSet2RTree.search( auxEnvelope,
               selectedFeaturesSet2Indexes );
               
             selectedFeaturesSet2IndexesSize = selectedFeaturesSet2Indexes.size();
@@ -3787,9 +3756,7 @@ namespace te
           
           corrMatrixLinePtr = paramsPtr->m_corrMatrixPtr->operator[]( feat1Idx );
           
-          feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
-          
-          paramsPtr->m_syncMutexPtr->unlock();
+          feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );          
           
           for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
             selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )
@@ -3798,9 +3765,9 @@ namespace te
             
             feat2Ptr = paramsPtr->m_featuresSet2Ptr->operator[]( feat2Idx );
             
-            sumAA = 0;
-            sumBB = 0;   
-            for( featCol = 0 ; featCol < featureSize ; ++featCol )
+            sumAA = 0.0;
+            sumBB = 0.0;   
+            for( featCol = 0 ; featCol < featureElementsNmb ; ++featCol )
             {
               sumAA += feat1Ptr[ featCol ] * feat1Ptr[ featCol ];
               sumBB += feat2Ptr[ featCol ] * feat2Ptr[ featCol ];
@@ -3814,8 +3781,8 @@ namespace te
             }
             else
             {
-              ccorrelation = 0;
-              for( featCol = 0 ; featCol < featureSize ; ++featCol )
+              ccorrelation = 0.0;
+              for( featCol = 0 ; featCol < featureElementsNmb ; ++featCol )
               {
                 ccorrelation += ( feat1Ptr[ featCol ] * feat2Ptr[ featCol ] ) / 
                   cc_norm;
@@ -3865,19 +3832,12 @@ namespace te
         ++it1;
       }
       
-      te::sam::rtree::Index< unsigned int > interestPointsSet2RTree;
-
       InterestPointsSetT::const_iterator it2 = interestPointsSet2.begin();
       boost::scoped_array< InterestPointT > internalInterestPointsSet2( 
         new InterestPointT[ interestPointsSet2Size ] );
       for( unsigned int idx2 = 0 ; idx2 < interestPointsSet2Size ; ++idx2 )
       {
         internalInterestPointsSet2[ idx2 ] = *it2;
-        
-        if( maxPt1ToPt2PixelDistance )
-          interestPointsSet2RTree.insert( te::gm::Envelope( it2->m_x, it2->m_y,
-            it2->m_x, it2->m_y ), idx2 );
-        
         ++it2;
       }        
       
@@ -3913,8 +3873,7 @@ namespace te
       params.m_nextFeatureIdx1ToProcessPtr = &nextFeatureIdx1ToProcess;
       params.m_distMatrixPtr = &distMatrix;
       params.m_syncMutexPtr = &syncMutex;
-      params.m_maxPt1ToPt2PixelDistance = maxPt1ToPt2PixelDistance;
-      params.m_interestPointsSet2RTreePtr = &interestPointsSet2RTree;
+      params.m_maxPt1ToPt2Distance = maxPt1ToPt2PixelDistance;
       
       if( enableMultiThread )
       {
@@ -4016,10 +3975,13 @@ namespace te
       assert( paramsPtr->m_featuresSet2Ptr->getMemPolicy() == 
         FloatsMatrix::RAMMemPol );
       assert( paramsPtr->m_distMatrixPtr->getMemPolicy() == 
-        Matrix< float >::RAMMemPol );
+        FloatsMatrix::RAMMemPol );
       assert( paramsPtr->m_featuresSet1Ptr->getColumnsNumber() ==
         paramsPtr->m_featuresSet2Ptr->getColumnsNumber() );
         
+      // Glogals
+      
+      const unsigned int featureElementsNmb = paramsPtr->m_featuresSet1Ptr->getColumnsNumber();
       unsigned int feat2Idx = 0;
       float const* feat1Ptr = 0;
       float const* feat2Ptr = 0;
@@ -4029,32 +3991,40 @@ namespace te
       float diff = 0;
       float euclideanDist = 0;
       
-      // finding the number of features
+      // initializing the features 2 indexing
       
-      paramsPtr->m_syncMutexPtr->lock();
-      
-      const unsigned int featureSize = paramsPtr->m_featuresSet1Ptr->getColumnsNumber();
       const unsigned int featuresSet1Size = 
         paramsPtr->m_featuresSet1Ptr->getLinesNumber();
       const unsigned int featuresSet2Size = 
-        paramsPtr->m_featuresSet2Ptr->getLinesNumber();
-      
-      paramsPtr->m_syncMutexPtr->unlock();
-      
-      // initializing the features 2 indexes vector
+        paramsPtr->m_featuresSet2Ptr->getLinesNumber();   
+        
+      te::sam::rtree::Index< unsigned int > interestPointsSet2RTree;
       
       std::vector< unsigned int > selectedFeaturesSet2Indexes;
-      unsigned int selectedFeaturesSet2IndexesSize = 0;
-      
-      if( paramsPtr->m_maxPt1ToPt2PixelDistance == 0 )
+      unsigned int selectedFeaturesSet2IndexesSize = 0;      
+        
+      if( paramsPtr->m_maxPt1ToPt2Distance )
+      {
+        for( unsigned int feat2Idx = 0 ; feat2Idx < featuresSet2Size ; ++feat2Idx )
+        {
+          interestPointsSet2RTree.insert( 
+            te::gm::Envelope( 
+              paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_x, 
+              paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_y,
+              paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_x, 
+              paramsPtr->m_interestPointsSet2Ptr[ feat2Idx ].m_y ), 
+            feat2Idx );
+        }         
+      }
+      else
       {
         selectedFeaturesSet2Indexes.resize( featuresSet2Size );
         selectedFeaturesSet2IndexesSize = featuresSet2Size;
         for( unsigned int feat2Idx = 0 ; feat2Idx < featuresSet2Size ; ++feat2Idx )
-          {
-            selectedFeaturesSet2Indexes[ feat2Idx ] = feat2Idx;
-          }
-      }      
+        {
+          selectedFeaturesSet2Indexes[ feat2Idx ] = feat2Idx;
+        }
+      }     
       
       // Analysing each feature
       
@@ -4066,19 +4036,21 @@ namespace te
         {
           ++(*paramsPtr->m_nextFeatureIdx1ToProcessPtr);
           
-          if( paramsPtr->m_maxPt1ToPt2PixelDistance )
+          paramsPtr->m_syncMutexPtr->unlock();
+          
+          if( paramsPtr->m_maxPt1ToPt2Distance )
           {
             auxEnvelope.m_llx = auxEnvelope.m_urx = 
               paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_x;
-            auxEnvelope.m_llx -= (double)paramsPtr->m_maxPt1ToPt2PixelDistance;
-            auxEnvelope.m_urx += (double)paramsPtr->m_maxPt1ToPt2PixelDistance;
+            auxEnvelope.m_llx -= (double)paramsPtr->m_maxPt1ToPt2Distance;
+            auxEnvelope.m_urx += (double)paramsPtr->m_maxPt1ToPt2Distance;
             auxEnvelope.m_lly = auxEnvelope.m_ury = 
               paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_y;
-            auxEnvelope.m_lly -= (double)paramsPtr->m_maxPt1ToPt2PixelDistance;;
-            auxEnvelope.m_ury += (double)paramsPtr->m_maxPt1ToPt2PixelDistance;;
+            auxEnvelope.m_lly -= (double)paramsPtr->m_maxPt1ToPt2Distance;;
+            auxEnvelope.m_ury += (double)paramsPtr->m_maxPt1ToPt2Distance;;
             
             selectedFeaturesSet2Indexes.clear();
-            paramsPtr->m_interestPointsSet2RTreePtr->search( auxEnvelope,
+            interestPointsSet2RTree.search( auxEnvelope,
               selectedFeaturesSet2Indexes );
               
             selectedFeaturesSet2IndexesSize = selectedFeaturesSet2Indexes.size();
@@ -4087,8 +4059,6 @@ namespace te
           corrMatrixLinePtr = paramsPtr->m_distMatrixPtr->operator[]( feat1Idx );
           
           feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
-          
-          paramsPtr->m_syncMutexPtr->unlock();
           
           for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
             selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )
@@ -4099,7 +4069,7 @@ namespace te
             
             euclideanDist = 0.0;
 
-            for( featCol = 0 ; featCol < featureSize ; ++featCol )
+            for( featCol = 0 ; featCol < featureElementsNmb ; ++featCol )
             {
               diff = feat1Ptr[ featCol ] - feat2Ptr[ featCol ];
               euclideanDist += ( diff * diff );              

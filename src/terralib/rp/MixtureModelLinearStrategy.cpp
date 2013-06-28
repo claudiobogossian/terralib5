@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/MatrixUtils.h"
+#include "../common/progress/TaskProgress.h"
 #include "../raster/Grid.h"
 #include "../raster/Utils.h"
 #include "Functions.h"
@@ -144,8 +145,11 @@ bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRas
   boost::numeric::ublas::matrix<double> productAX = boost::numeric::ublas::matrix<double>(matrixA.size1(), matrixX.size2());
   boost::numeric::ublas::matrix<double> matrixE = boost::numeric::ublas::matrix<double>(matrixR.size1(), matrixR.size2());
 
+  te::common::TaskProgress task(TR_RP("Linear Mixture Model"));
+  task.setTotalSteps(inputRaster.getNumberOfRows());
   double value;
   for (unsigned r = 0; r < inputRaster.getNumberOfRows(); r++)
+  {
     for (unsigned c = 0; c < inputRaster.getNumberOfColumns(); c++)
     {
 // read input values
@@ -155,13 +159,10 @@ bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRas
         matrixR(b, 0) = value / Qmax[b];
       }
       matrixR(nBands, 0) = 0.0;
-
 // calculate the product A' * R
       productAtR = boost::numeric::ublas::prod(transposeA, matrixR);
-
 // compute matrix X
       matrixX = boost::numeric::ublas::prod(invertAtA, productAtR);
-
 // write output fractions
       for (unsigned b = 0; b < nComponents; b++)
         outputRaster.setValue(c, r, matrixX(b + 1, 0), b);
@@ -177,6 +178,8 @@ bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRas
           outputRaster.setValue(c, r, matrixE(e, 0), b);
       }
     }
+    task.pulse();
+  }
 
   return true;
 }

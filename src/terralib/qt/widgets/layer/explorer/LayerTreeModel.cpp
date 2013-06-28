@@ -372,9 +372,9 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
         {
           // Drop item is a top level item
           if(dropIndex.row() == -1)
-            insertingRow = m_items.size();   // The item was dropped after the last top item
+            insertingRow = m_items.size();       // The item was dropped after the last top item
           else        
-            insertingRow = dropIndex.row();  // The item was dropped exactly on a top level item
+            insertingRow = dropIndex.row() + i;  // The item was dropped exactly on a top level item
 
           insertingItemParentIndex = QModelIndex();
         }
@@ -382,9 +382,9 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
         {
           // Drop item is not a top level item
           if(dropIndex.row() == -1)
-            row = 0;
+            insertingRow = 0;
           else
-            insertingRow = dropIndex.row();  // The item will be inserted in the position of the dropped item.
+            insertingRow = dropIndex.row() + i;  // The item will be inserted in the position of the dropped item.
 
           insertingItemParentIndex = dropParentIndex;
         }
