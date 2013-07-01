@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_gm="http://www.terralib.org/schemas/geometry"
+<xsd:schema xmlns:te_da="http://www.terralib.org/schemas/dataaccess"
+            xmlns:te_gm="http://www.terralib.org/schemas/geometry"
             xmlns:te_map="http://www.terralib.org/schemas/maptools"
             xmlns:se="http://www.opengis.net/se"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -13,8 +14,10 @@
     <xsd:documentation>Layer Schema</xsd:documentation>
   </xsd:annotation>
 
+  <xsd:import namespace="http://www.terralib.org/schemas/dataaccess" schemaLocation="../dataaccess/dataaccess.xsd" />
   <xsd:import namespace="http://www.terralib.org/schemas/geometry" schemaLocation="../geometry/geometry.xsd" />
   <xsd:import namespace="http://www.opengis.net/se" schemaLocation="../../ogc/se/1.1.0/FeatureStyle.xsd" />
+  
 
   <xsd:element name="LayerList" type="te_map:LayerListType" />
 
@@ -61,7 +64,7 @@
     <xsd:complexContent>
       <xsd:extension base="te_map:AbstractLayerType">
         <xsd:sequence>
-          <xsd:element name="Query" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+          <xsd:element ref="te_da:Select" minOccurs="1" maxOccurs="1"/>
           <xsd:element name="DataSourceId" type="xsd:string" minOccurs="1" maxOccurs="1" />
           <xsd:element name="SRID" type="xsd:integer" minOccurs="1" maxOccurs="1" />
           <xsd:element name="Extent" type="te_gm:EnvelopeType" minOccurs="1" maxOccurs="1" />
@@ -126,7 +129,7 @@
   <xsd:complexType name="GroupingType">
     <xsd:sequence>
       <xsd:element name="PropertyName" type="xsd:string" minOccurs="1" maxOccurs="1" />
-	  <xsd:element name="PropertyDataType" type="xsd:interger" minOccurs="1" maxOccurs="1" />
+	  <xsd:element name="PropertyDataType" type="xsd:integer" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Type" type="te_map:GroupingMethodType" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Precision" type="xsd:integer" minOccurs="1" maxOccurs="1" />
       <xsd:element name="StandardDeviation" type="xsd:double" minOccurs="0" maxOccurs="1" />

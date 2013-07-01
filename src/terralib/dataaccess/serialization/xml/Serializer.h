@@ -97,8 +97,6 @@ namespace te
 
       TEDATAACCESSEXPORT te::da::Expression* ReadExpression(te::xml::Reader& reader);
 
-      TEDATAACCESSEXPORT te::da::Field* ReadQueryField(te::xml::Reader& reader);
-
       TEDATAACCESSEXPORT te::da::Fields* ReadFields(te::xml::Reader& reader);
 
       TEDATAACCESSEXPORT te::da::From* ReadFrom(te::xml::Reader& reader);
