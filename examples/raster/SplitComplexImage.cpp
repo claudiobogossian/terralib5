@@ -2,7 +2,6 @@
 
 // TerraLib
 #include <terralib/common.h>
-#include <terralib/dataaccess.h>
 #include <terralib/raster.h>
 #include <terralib/geometry.h>
 #include <terralib/raster/RasterFactory.h>
