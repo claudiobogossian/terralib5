@@ -53,8 +53,10 @@ void CopyingData()
 // create and save dataset in the datasource destination
   te::da::DataSetType* newDataSet = static_cast<te::da::DataSetType*>(dtOrigin->clone());
   newDataSet->setName("public.new_tab_munic_2001_gribis1");
-  newDataSet->getDefaultGeomProperty()->setSRID(4326);
-  newDataSet->getDefaultGeomProperty()->setGeometryType(te::gm::GeometryType);
+  //newDataSet->getDefaultGeomProperty()->setSRID(4326);
+  GetFirstGeomProperty(newDataSet)->setSRID(4326);
+  //newDataSet->getDefaultGeomProperty()->setGeometryType(te::gm::GeometryType);
+  GetFirstGeomProperty(newDataSet)->setGeometryType(te::gm::GeometryType);
 
   std::cout << std::endl << "starting copy..." << std::endl;
   tDestination->begin();
