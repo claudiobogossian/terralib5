@@ -1,265 +1,167 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_map="http://www.terralib.org/schemas/maptools"
+<xsd:schema xmlns:te_da="http://www.terralib.org/schemas/dataaccess"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://www.terralib.org/schemas/dataaccess"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
-			
-  <xsd:annotation>
-    <xsd:appinfo>Data Access - Select Schema</xsd:appinfo>
-    <xsd:documentation>A simple schema for the Select part of data access module</xsd:documentation>
-  </xsd:annotation>
 
-  <xsd:import namespace="http://www.terralib.org/schemas/datatype" schemaLocation="../datatype/datatype.xsd" />
-  
   <xsd:element name="Select" type="te_da:SelectType" />
 
   <xsd:complexType name="SelectType">
-    <xsd:annotation>
-      <xsd:documentation>Query</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
+    <xsd:sequence>
       <xsd:element name="Fields" type="te_da:FieldsType" minOccurs="1" maxOccurs="unbounded" />
-	  <xsd:element name="From" type="te_da:FromType" minOccurs="0" maxOccurs="unbounded" />
-	  <xsd:element name="Where" type="te_da:WhereType" minOccurs="0" maxOccurs="unbounded" />
-	  <xsd:element name="GroupBy" type="te_da:GroupByType" minOccurs="0" maxOccurs="unbounded" />
-	  <xsd:element name="Having" type="te_da:HavingType" minOccurs="0" maxOccurs="unbounded" />
-	  <xsd:element name="OrderBy" type="te_da:OrderByType" minOccurs="0" maxOccurs="unbounded" />
-	  <xsd:element name="Distinct" type="te_da:DistinctType" minOccurs="0" maxOccurs="unbounded" />
-	  <xsd:element name="Limit" type="xsd:integer" minOccurs="0" maxOccurs="unbounded" />
-	  <xsd:element name="Offset" type="xsd:interger" minOccurs="0" maxOccurs="unbounded" />      
+      <xsd:element name="From" type="te_da:FromType" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="Where" type="te_da:WhereType" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="GroupBy" type="te_da:GroupByType" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="Having" type="te_da:HavingType" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="OrderBy" type="te_da:OrderByType" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="Distinct" type="te_da:DistinctType" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="Limit" type="xsd:integer" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="Offset" type="xsd:integer" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="Expression" type="te_da:ExpressionType" abstract="true" />
+
+  <xsd:complexType name="ExpressionType" abstract="true" />
+
+  <xsd:element name="PropertyName" type="te_da:PropertyNameType" substitutionGroup="te_da:Expression" />
+
+  <xsd:complexType name="PropertyNameType" mixed="true">
+    <xsd:complexContent>
+      <xsd:extension base="te_da:ExpressionType" />
     </xsd:complexContent>
   </xsd:complexType>
-  
-  <!-- INIT Fields -->
-  
-  <xsd:complexType name="FieldsType">
-    <xsd:annotation>
-      <xsd:documentation>Fields</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="FieldList" type="te_da:FieldList" minOccurs="1" maxOccurs="1" />	  
-    </xsd:complexContent>
-  </xsd:complexType>
-  
-  <xsd:simpleType name="FieldList">
-	<xsd:list itemType="te_da:FieldType"/>
-  </xsd:simpleType>
-  
-  <xsd:complexType name="FieldType">
-    <xsd:annotation>
-      <xsd:documentation>Field</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="Expression" type="te_da:ExpressionType" minOccurs="1" maxOccurs="1" />
-	  <xsd:element name="Alias" type="xsd:string" minOccurs="1" maxOccurs="1" />
-    </xsd:complexContent>
-  </xsd:complexType>
-  
-  <!-- END Fields -->
-  
-  <!-- INIT Expression -->
-  
-  <xsd:complexType name="ExpressionType">
-    <xsd:annotation>
-      <xsd:documentation>Expression</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="Expression" type="te_da:ExpressionType" minOccurs="1" maxOccurs="1" />
-	  <xsd:element name="Alias" type="xsd:string" minOccurs="1" maxOccurs="1" />
-    </xsd:complexContent>
-  </xsd:complexType>
-  
-  <xsd:simpleType name="ExpressionList">
-	<xsd:list itemType="te_da:ExpressionType"/>
-  </xsd:simpleType>
-  
-  <xsd:complexType name="PropertyNameType">
+
+  <xsd:element name="Function" type="te_da:QueryFunctionType" substitutionGroup="te_da:Expression" />
+
+  <xsd:complexType name="QueryFunctionType">
     <xsd:complexContent>
       <xsd:extension base="te_da:ExpressionType">
-        <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1" />        
+        <xsd:sequence>
+          <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element ref="te_da:Expression" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  
-  <!-- INIT DUVIDA: Não existe te_dt:AbstractData ?? -->
-  
-  <xsd:complexType name="FunctionType">
-    <xsd:complexContent>
-      <xsd:extension base="te_da:ExpressionType">
-        <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1" />
-		<xsd:element name="Args" type="te_da:ExpressionList" minOccurs="1" maxOccurs="1" />		
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-  
+
+  <xsd:element name="Literal" type="te_da:LiteralType" substitutionGroup="te_da:Expression" />
+
   <xsd:complexType name="LiteralType">
     <xsd:complexContent>
-      <xsd:extension base="te_da:ExpressionType">
-        <xsd:element name="Value" type="te_dt:AbstractData" minOccurs="1" maxOccurs="1" />        
-      </xsd:extension>
+    <xsd:extension base="te_da:ExpressionType">
+      <xsd:sequence>
+        <xsd:element name="Value" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      </xsd:sequence>
+      <xsd:attribute name="type" type="xsd:integer" use="required" />
+    </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  
-  <!-- END DUVIDA: Não existe te_dt:AbstractData ?? -->
-  
-  <!-- END Expression -->
-  
+
+  <!-- INIT Fields -->
+
+  <xsd:complexType name="FieldsType">
+    <xsd:sequence>
+      <xsd:element name="Field" type="te_da:FieldType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="FieldType">
+    <xsd:sequence>
+      <xsd:element ref="te_da:Expression" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Alias" type="xsd:string" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- END Fields -->
+
   <!-- INIT From -->
-  
+
   <xsd:complexType name="FromType">
-    <xsd:annotation>
-      <xsd:documentation>From</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="From" type="te_da:FromItemList" minOccurs="1" maxOccurs="1" />	  
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="FromItem" type="te_da:FromItemType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
   </xsd:complexType>
-    
-  <xsd:simpleType name="FromItemList">
-	<xsd:list itemType="te_da:FromItemType"/>
-  </xsd:simpleType>
-  
+
   <xsd:complexType name="FromItemType">
-    <xsd:annotation>
-      <xsd:documentation>FromItem</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="Alias" type="xsd:string" minOccurs="1" maxOccurs="1" />	  
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="Value" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Alias" type="xsd:string" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
   </xsd:complexType>
-  
+
   <!-- END From -->
-  
+
   <!-- INIT Where -->
-  
+
   <xsd:complexType name="WhereType">
-    <xsd:annotation>
-      <xsd:documentation>Where</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="Exopression" type="te_da:ExpressionType" minOccurs="1" maxOccurs="1" />	  
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element ref="te_da:Expression" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
   </xsd:complexType>
-  
+
   <!-- END Where -->
-  
+
   <!-- INIT GroupBy -->
-  
+
   <xsd:complexType name="GroupByType">
-    <xsd:annotation>
-      <xsd:documentation>GroupBy</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="GroupBy" type="te_da:GroupByItemList" minOccurs="1" maxOccurs="1" />	  
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="GroupByItem" type="te_da:GroupByItemType" minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
   </xsd:complexType>
-  
-  <xsd:simpleType name="GroupByItemList">
-	<xsd:list itemType="te_da:GroupByItemType"/>
-  </xsd:simpleType>
-  
+
   <xsd:complexType name="GroupByItemType">
-    <xsd:annotation>
-      <xsd:documentation>GroupByItem</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="Field" type="te_da:ExpressionType" minOccurs="1" maxOccurs="1" />	  
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element ref="te_da:Expression" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
   </xsd:complexType>
-  
+
   <!-- END GroupBy -->
-  
+
   <!-- INIT Having -->
-  
+
   <xsd:complexType name="HavingType">
-    <xsd:annotation>
-      <xsd:documentation>Having</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="Expression" type="te_da:ExpressionType" minOccurs="1" maxOccurs="1" />	  
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element ref="te_da:Expression" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
   </xsd:complexType>
-  
+
   <!-- END Having -->
-  
+
   <!-- INIT OrderBy -->
-  
+
   <xsd:complexType name="OrderByType">
-    <xsd:annotation>
-      <xsd:documentation>OrderBy</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="OrderBy" type="te_da:OrderByItemList" minOccurs="1" maxOccurs="1" />	  
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="OrderByItem" type="te_da:OrderByItemType" minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
   </xsd:complexType>
-  
-  <xsd:simpleType name="OrderByItemList">
-	<xsd:list itemType="te_da:OrderByItemType"/>
-  </xsd:simpleType>
-  
+
   <xsd:complexType name="OrderByItemType">
-    <xsd:annotation>
-      <xsd:documentation>OrderByItem</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="Field" type="te_da:ExpressionType" minOccurs="1" maxOccurs="1" />	  
-	  <xsd:element name="SortOrder" type="te_da:SortOrderType" minOccurs="1" maxOccurs="1" />	
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element ref="te_da:Expression" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="SortOrder" type="te_da:SortOrderType" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
   </xsd:complexType>
-  
+
   <xsd:simpleType name="SortOrderType">
-    <xsd:annotation>
-      <xsd:documentation>Sort Order</xsd:documentation>
-    </xsd:annotation>
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="DESC" />
       <xsd:enumeration value="ASC" />
     </xsd:restriction>
   </xsd:simpleType>
-  
+
   <!-- END OrderBy -->
-  
+
   <!-- INIT Distinct -->
-  
-  <xsd:complexType name="OrderByType">
-    <xsd:annotation>
-      <xsd:documentation>OrderBy</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="OrderBy" type="te_da:OrderByItemList" minOccurs="1" maxOccurs="1" />	  
-    </xsd:complexContent>
+
+  <xsd:complexType name="DistinctType">
+    <xsd:sequence>
+      <xsd:element ref="te_da:Expression" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
   </xsd:complexType>
-  
-  <xsd:simpleType name="OrderByItemList">
-	<xsd:list itemType="te_da:OrderByItemType"/>
-  </xsd:simpleType>
-  
-  <xsd:complexType name="OrderByItemType">
-    <xsd:annotation>
-      <xsd:documentation>OrderByItem</xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>	
-      <xsd:element name="Field" type="te_da:ExpressionType" minOccurs="1" maxOccurs="1" />	  
-	  <xsd:element name="SortOrder" type="te_da:SortOrderType" minOccurs="1" maxOccurs="1" />	
-    </xsd:complexContent>
-  </xsd:complexType>
-  
-  <xsd:simpleType name="SortOrderType">
-    <xsd:annotation>
-      <xsd:documentation>Sort Order</xsd:documentation>
-    </xsd:annotation>
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="DESC" />
-      <xsd:enumeration value="ASC" />
-    </xsd:restriction>
-  </xsd:simpleType>
-  
+
   <!-- END Distinct -->
-  
-  
-  
-  
 
 </xsd:schema>

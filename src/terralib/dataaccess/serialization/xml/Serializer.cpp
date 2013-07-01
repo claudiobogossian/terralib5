@@ -24,7 +24,10 @@
 */
 
 // TerraLib
+#include "../../../datatype/AbstractData.h"
+#include "../../../datatype/Enums.h"
 #include "../../../datatype/serialization/xml/Serializer.h"
+#include "../../../datatype/StringProperty.h"
 #include "../../../datatype/Utils.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../xml/Reader.h"
@@ -35,7 +38,9 @@
 #include "../../datasource/DataSourceCatalog.h"
 #include "../../datasource/DataSourceInfo.h"
 #include "../../datasource/DataSourceInfoManager.h"
+#include "../../query/BinaryFunction.h"
 #include "../../query/BinaryOpEncoder.h"
+#include "../../query/DataSetName.h"
 #include "../../query/Distinct.h"
 #include "../../query/Expression.h"
 #include "../../query/Field.h"
@@ -45,6 +50,11 @@
 #include "../../query/GroupByItem.h"
 #include "../../query/Having.h"
 #include "../../query/Literal.h"
+#include "../../query/LiteralDouble.h"
+#include "../../query/LiteralInt16.h"
+#include "../../query/LiteralInt32.h"
+#include "../../query/LiteralInt64.h"
+#include "../../query/LiteralString.h"
 #include "../../query/OrderByItem.h"
 #include "../../query/PropertyName.h"
 #include "../../query/Select.h"
@@ -65,6 +75,7 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
 
 void te::serialize::xml::ReadDataSourceInfo(const std::string& datasourcesFileName)
 {
@@ -1328,24 +1339,166 @@ te::da::Expression* te::serialize::xml::ReadExpression(te::xml::Reader& reader)
   throw te::da::Exception("Not implemented yet!");
 }
 
-te::da::Field* te::serialize::xml::ReadQueryField(te::xml::Reader& reader)
-{
-  throw te::da::Exception("Not implemented yet!");
-}
-
 te::da::Fields* te::serialize::xml::ReadFields(te::xml::Reader& reader)
 {
-  throw te::da::Exception("Not implemented yet!");
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Fields");
+
+  reader.next();
+
+  te::da::Fields* fields = new te::da::Fields;
+
+  while(reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    assert(reader.getElementLocalName() == "Field");
+    reader.next();
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+
+    if(reader.getElementLocalName() == "PropertyName")
+    {
+      te::da::Field* f = new te::da::Field(ReadPropertyName(reader));
+      fields->push_back(f);
+    }
+    else if(reader.getElementLocalName() == "Function")
+    {
+      te::da::Field* f = new te::da::Field(ReadFunction(reader));
+      fields->push_back(f);
+    }
+    else if(reader.getElementLocalName() == "Literal")
+    {
+      te::da::Field* f = new te::da::Field(ReadLiteral(reader));
+      fields->push_back(f);
+    }
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // Field
+
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // Fields
+
+  reader.next();
+
+  return fields;
 }
 
 te::da::From* te::serialize::xml::ReadFrom(te::xml::Reader& reader)
 {
-  throw te::da::Exception("Not implemented yet!");
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "From");
+
+  reader.next();
+
+  te::da::From* from = new te::da::From;
+
+  while(reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    assert(reader.getElementLocalName() == "FromItem");
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "Value");
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    std::string name = reader.getElementValue();
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "Alias");
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    std::string alias = reader.getElementValue();
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+    te::da::FromItem* fi = new te::da::DataSetName(name, alias);
+
+    from->push_back(fi);
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // FromItem
+
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // From
+
+  reader.next();
+
+  return from;
 }
 
 te::da::Function* te::serialize::xml::ReadFunction(te::xml::Reader& reader)
 {
-  throw te::da::Exception("Not implemented yet!");
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Function");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Name");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::string name = reader.getElementValue();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  reader.next();
+
+  te::da::Expression* exp1 = 0;
+  te::da::Expression* exp2 = 0;
+
+  std::size_t countAux = 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  while(reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    te::da::Expression* exp = 0;
+
+    if(reader.getElementLocalName() == "PropertyName")
+    {
+      exp = ReadPropertyName(reader);
+    }
+    else if(reader.getElementLocalName() == "Literal")
+    {
+      exp = ReadLiteral(reader);
+    }
+
+    if(countAux == 0)
+      exp1 = exp;
+    else
+      exp2 = exp;
+
+    ++countAux;
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // Function
+
+  te::da::BinaryFunction* func = new te::da::BinaryFunction(name, exp1, exp2);
+
+  return func;
 }
 
 te::da::GroupBy* te::serialize::xml::ReadGroupBy(te::xml::Reader& reader)
@@ -1360,7 +1513,68 @@ te::da::Having* te::serialize::xml::ReadHaving(te::xml::Reader& reader)
 
 te::da::Literal* te::serialize::xml::ReadLiteral(te::xml::Reader& reader)
 {
-  throw te::da::Exception("Not implemented yet!");
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Literal");
+
+  std::size_t litType = reader.getAttrAsInt32("type");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Value");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::string value = reader.getElementValue();
+
+  reader.next();
+  
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // Value
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // Literal
+
+  reader.next();
+
+  te::da::Literal* lit = 0;
+
+  // TODO: Others data type
+  switch(litType)
+  {
+    case te::dt::STRING_TYPE:
+    {
+      lit = new te::da::LiteralString(value);
+      break;
+    }
+    case te::dt::INT16_TYPE:
+    {
+      lit = new te::da::LiteralInt16(boost::lexical_cast<int16_t>(value));
+      break;
+    }
+    case te::dt::INT32_TYPE:
+    {
+      lit = new te::da::LiteralInt32(boost::lexical_cast<int32_t>(value));
+      break;
+    }
+    case te::dt::INT64_TYPE:
+    {
+      lit = new te::da::LiteralInt64(boost::lexical_cast<int64_t>(value));
+      break;
+    }
+    case te::dt::DOUBLE_TYPE:
+    {
+      lit = new te::da::LiteralDouble(boost::lexical_cast<double>(value));
+      break;
+    }
+    default:
+      throw te::da::Exception(TR_DATAACCESS("Data Type Undefined!"));
+
+  }
+
+  return lit;
 }
 
 te::da::OrderBy* te::serialize::xml::ReadOrderBy(te::xml::Reader& reader)
@@ -1370,17 +1584,128 @@ te::da::OrderBy* te::serialize::xml::ReadOrderBy(te::xml::Reader& reader)
 
 te::da::PropertyName* te::serialize::xml::ReadPropertyName(te::xml::Reader& reader)
 {
-  throw te::da::Exception("Not implemented yet!");
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PropertyName");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::string name = reader.getElementValue();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // PropertyName
+
+  return new te::da::PropertyName(name);
 }
 
 te::da::Select* te::serialize::xml::ReadSelect(te::xml::Reader& reader)
 {
-  throw te::da::Exception("Not implemented yet!");
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Select");
+
+  te::da::Select* select = new te::da::Select();
+
+  reader.next();
+
+  if(reader.getElementLocalName() == "Fields" && reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    te::da::Fields* fields = ReadFields(reader);
+    select->setFields(fields);
+  }
+
+  if(reader.getElementLocalName() == "From" && reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    te::da::From* from = ReadFrom(reader);
+    select->setFrom(from);
+  }
+
+  if(reader.getElementLocalName() == "Where" && reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    te::da::Where* wh = ReadWhere(reader);
+    select->setWhere(wh);
+  }
+
+  if(reader.getElementLocalName() == "GroupBy" && reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    te::da::GroupBy* gBy = ReadGroupBy(reader);
+    select->setGroupBy(gBy);
+  }
+
+  if(reader.getElementLocalName() == "Having" && reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    te::da::Having* having = ReadHaving(reader);
+    select->setHaving(having);
+  }
+
+  if(reader.getElementLocalName() == "OrderBy" && reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    te::da::OrderBy* oBy = ReadOrderBy(reader);
+    select->setOrderBy(oBy);
+  }
+
+  if(reader.getElementLocalName() == "Distinct" && reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    te::da::Distinct* distinct = ReadDistinct(reader);
+    select->setDistinct(distinct);
+  }
+
+  if(reader.getElementLocalName() == "Limit" && reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    select->setLimit(boost::lexical_cast<std::size_t>(reader.getElementValue()));
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // Limit
+    reader.next();
+  }
+
+  if(reader.getElementLocalName() == "Offset" && reader.getNodeType() == te::xml::START_ELEMENT)
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    select->setOffset(boost::lexical_cast<std::size_t>(reader.getElementValue()));
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // Offset
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // Select
+
+  reader.next();
+
+  return select;
 }
 
 te::da::Where* te::serialize::xml::ReadWhere(te::xml::Reader& reader)
 {
-  throw te::da::Exception("Not implemented yet!");
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Where");
+
+  reader.next();
+
+  te::da::Where* wh = 0;
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  if(reader.getElementLocalName() == "PropertyName")
+  {
+    wh = new te::da::Where(ReadPropertyName(reader));
+  }
+  else if(reader.getElementLocalName() == "Function")
+  {
+    wh = new te::da::Where(ReadFunction(reader));
+  }
+  else if(reader.getElementLocalName() == "Literal")
+  {
+    wh = new te::da::Where(ReadLiteral(reader));
+  }
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // Where
+
+  return wh;
 }
 
 void te::serialize::xml::Save(const te::da::Distinct* distinct, te::xml::Writer& writer)
@@ -1401,21 +1726,22 @@ void te::serialize::xml::Save(const te::da::Distinct* distinct, te::xml::Writer&
 void te::serialize::xml::Save(const te::da::Expression* expression, te::xml::Writer& writer)
 {
   assert(expression);
+
   std::auto_ptr<te::da::Expression> exp(expression->clone());
 
   // Check Expression Type
-  std::auto_ptr<te::da::PropertyName> pName(dynamic_cast<te::da::PropertyName*>(exp.get()));
-  std::auto_ptr<te::da::Function> func(dynamic_cast<te::da::Function*>(exp.get()));
-  std::auto_ptr<te::da::Literal> lit(dynamic_cast<te::da::Literal*>(exp.get()));
+  te::da::PropertyName* pName = dynamic_cast<te::da::PropertyName*>(exp.get());
+  te::da::Function* func = dynamic_cast<te::da::Function*>(exp.get());
+  te::da::Literal* lit = dynamic_cast<te::da::Literal*>(exp.get());
 
-  if(pName.get())
-    Save(pName.get(), writer);
-  else if(func.get())
-    Save(func.get(), writer);
-  else if(lit.get())
-    Save(lit.get(), writer);
+  if(pName)
+    Save(pName, writer);
+  else if(func)
+    Save(func, writer);
+  else if(lit)
+    Save(lit, writer);
   else
-    throw te::da::Exception("Error: Expression Type Indefined!");
+    throw te::da::Exception(TR_DATAACCESS("Error: Expression Type Undefined!"));
 }
 
 void te::serialize::xml::Save(const te::da::Field* field, te::xml::Writer& writer)
@@ -1425,11 +1751,14 @@ void te::serialize::xml::Save(const te::da::Field* field, te::xml::Writer& write
 
   Save(field->getExpression(), writer);
 
-  writer.writeStartElement("te_da:Alias");
+  if(field->getAlias())
+  {
+    writer.writeStartElement("te_da:Alias");
 
-  writer.writeValue(*field->getAlias());
+    writer.writeValue(*field->getAlias());
 
-  writer.writeEndElement("te_da:Alias");
+    writer.writeEndElement("te_da:Alias");
+  }
 
   writer.writeEndElement("te_da:Field");
 
@@ -1468,7 +1797,21 @@ void te::serialize::xml::Save(const te::da::FromItem* fromItem, te::xml::Writer&
 {
   writer.writeStartElement("te_da:FromItem");
 
+  const te::da::DataSetName* dsName = dynamic_cast<const te::da::DataSetName*>(fromItem);
+
+  assert(dsName);
+
+  writer.writeStartElement("te_da:Value");
+
+  writer.writeValue(dsName->getName());
+
+  writer.writeEndElement("te_da:Value");
+
+  writer.writeStartElement("te_da:Alias");
+
   writer.writeValue(fromItem->getAlias());
+
+  writer.writeEndElement("te_da:Alias");
 
   writer.writeEndElement("te_da:FromItem");
 }
@@ -1476,12 +1819,16 @@ void te::serialize::xml::Save(const te::da::FromItem* fromItem, te::xml::Writer&
 void te::serialize::xml::Save(const te::da::Function* func, te::xml::Writer& writer)
 {
   assert(func);
-  writer.writeStartElement("te_da:Expression");
-  writer.writeAttribute("Type", "Function");
+  writer.writeStartElement("te_da:Function");
 
-  
+  writer.writeElement("te_da:Name", func->getName());
 
-  writer.writeEndElement("te_da:Expression");
+  for(std::size_t i = 0; i < func->getNumArgs(); i++)
+  {
+    Save(func->getArg(i), writer);
+  }
+
+  writer.writeEndElement("te_da:Function");
 }
 
 void te::serialize::xml::Save(const te::da::GroupByItem* groupByItem, te::xml::Writer& writer)
@@ -1521,12 +1868,15 @@ void te::serialize::xml::Save(const te::da::Having* having, te::xml::Writer& wri
 void te::serialize::xml::Save(const te::da::Literal* lit, te::xml::Writer& writer)
 {
   assert(lit);
-  writer.writeStartElement("te_da:Expression");
-  writer.writeAttribute("Type", "Literal");
+  writer.writeStartElement("te_da:Literal");
 
-  //writer.writeValue(lit->getValue());
+  te::dt::AbstractData* d = lit->getValue();
 
-  writer.writeEndElement("te_da:Expression");
+  writer.writeAttribute("type", d->getTypeCode());
+
+  writer.writeElement("te_da:Value", d->toString());
+
+  writer.writeEndElement("te_da:Literal");
 }
 
 void te::serialize::xml::Save(const te::da::OrderByItem* orderByItem, te::xml::Writer& writer)
@@ -1561,12 +1911,8 @@ void te::serialize::xml::Save(const te::da::OrderBy* orderBy, te::xml::Writer& w
 void te::serialize::xml::Save(const te::da::PropertyName* propertyName, te::xml::Writer& writer)
 {
   assert(propertyName);
-  writer.writeStartElement("te_da:Expression");
-  writer.writeAttribute("Type", "PropertyName");
 
-  writer.writeValue(propertyName->getName());
-
-  writer.writeEndElement("te_da:Expression");
+  writer.writeElement("te_da:PropertyName", propertyName->getName());
 }
 
 void te::serialize::xml::Save(const te::da::Select* select, te::xml::Writer& writer)
@@ -1621,7 +1967,7 @@ void te::serialize::xml::Save(const te::da::Select* select, te::xml::Writer& wri
 
 void te::serialize::xml::Save(const te::da::Where* wh, te::xml::Writer& writer)
 {
-  writer.writeStartElement("te_da:OrdeWhererBy");
+  writer.writeStartElement("te_da:Where");
 
   Save(wh->getExp(), writer);
 

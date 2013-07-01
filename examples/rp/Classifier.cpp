@@ -8,6 +8,7 @@
 #include <terralib/rp/ClassifierDummyStrategy.h>
 #include <terralib/rp/ClassifierEMStrategy.h>
 #include <terralib/rp/ClassifierISOSegStrategy.h>
+#include <terralib/rp/ClassifierKMeansStrategy.h>
 #include <terralib/rp/ClassifierMAPStrategy.h>
 #include <terralib/rp/ClassifierSAMStrategy.h>
 #include <terralib/rp/Segmenter.h>
@@ -526,6 +527,69 @@ void SAMClassifier()
   }
 }
 
+void KMeansClassifier()
+{
+  try
+  {
+    std::cout << "Classification example using KMeans algorithm." << std::endl << std::endl;
+
+// first open the input image
+    std::map<std::string, std::string> rinfo;
+    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+
+    te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
+
+// create output raster info
+    std::map<std::string, std::string> orinfo;
+    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_classified_kmeans.tif";
+
+// define classification parameters
+
+// input parameters
+    te::rp::Classifier::InputParameters algoInputParameters;
+    algoInputParameters.m_inputRasterPtr = rin;
+    algoInputParameters.m_inputRasterBands.push_back(0);
+    algoInputParameters.m_inputRasterBands.push_back(1);
+    algoInputParameters.m_inputRasterBands.push_back(2);
+
+// link specific parameters with chosen implementation
+    te::rp::ClassifierKMeansStrategy::Parameters classifierparameters;
+    classifierparameters.m_K = 4;
+    classifierparameters.m_maxIterations = 100;
+    classifierparameters.m_maxInputPoints = 1000;
+    classifierparameters.m_epsilon = 15.0;
+
+    algoInputParameters.m_strategyName = "kmeans";
+    algoInputParameters.setClassifierStrategyParams(classifierparameters);
+
+// output parameters
+    te::rp::Classifier::OutputParameters algoOutputParameters;
+    algoOutputParameters.m_rInfo = orinfo;
+    algoOutputParameters.m_rType = "GDAL";
+
+// execute the algorithm
+    te::rp::Classifier classifierinstance;
+
+    if(!classifierinstance.initialize(algoInputParameters))
+      throw;
+    if(!classifierinstance.execute(algoOutputParameters))
+      throw;
+
+// clean up
+    delete rin;
+
+    std::cout << "Done!" << std::endl << std::endl;
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "An exception has occuried in KMeansClassifier(): " << e.what() << std::endl;
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "An unexpected exception has occuried in KMeansClassifier()!" << std::endl;
+  }
+}
+
 void Classifier()
 {
   SAMClassifier();
@@ -533,4 +597,5 @@ void Classifier()
   ISOSegClassifier();
   MAPClassifier();
   EMClassifier();
+  KMeansClassifier();
 }
