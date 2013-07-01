@@ -1429,6 +1429,8 @@ te::da::From* te::serialize::xml::ReadFrom(te::xml::Reader& reader)
 
     te::da::FromItem* fi = new te::da::DataSetName(name, alias);
 
+    from->push_back(fi);
+
     reader.next();
 
     assert(reader.getNodeType() == te::xml::END_ELEMENT); // FromItem
