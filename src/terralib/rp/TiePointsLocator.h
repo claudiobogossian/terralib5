@@ -408,9 +408,9 @@ namespace te
         {
           public :
             
-            DoublesMatrix const* m_featuresSet1Ptr;
+            FloatsMatrix const* m_featuresSet1Ptr;
             
-            DoublesMatrix const* m_featuresSet2Ptr;
+            FloatsMatrix const* m_featuresSet2Ptr;
             
             InterestPointT const* m_interestPointsSet1Ptr;
 
@@ -418,13 +418,11 @@ namespace te
             
             unsigned int* m_nextFeatureIdx1ToProcessPtr;
             
-            DoublesMatrix* m_corrMatrixPtr;
+            FloatsMatrix* m_corrMatrixPtr;
             
             boost::mutex* m_syncMutexPtr;
             
             unsigned int m_maxPt1ToPt2Distance; //!< Zero (disabled) or the maximum distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
-            
-            te::sam::rtree::Index< unsigned int > const* m_interestPointsSet2RTreePtr; //!> A pointer to a RTree indexing interest point set points to their respective indexes.
             
             ExecuteMatchingByCorrelationThreadEntryParams() {};
             
@@ -452,9 +450,7 @@ namespace te
             
             boost::mutex* m_syncMutexPtr;
             
-            unsigned int m_maxPt1ToPt2PixelDistance; //!< Zero (disabled) or the maximum pixel distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
-            
-            te::sam::rtree::Index< unsigned int > const* m_interestPointsSet2RTreePtr; //!> A pointer to a RTree indexing interest point set points to their respective indexes.
+            unsigned int m_maxPt1ToPt2Distance; //!< Zero (disabled) or the maximum distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
             
             ExecuteMatchingByEuclideanDistThreadEntryParams() {};
             
@@ -752,7 +748,7 @@ namespace te
           DoublesMatrix& outputData );           
           
         /*!
-          \brief Generate a correlation features matrix for the given interes points.
+          \brief Generate correlation features ( normalized - unit vector ) matrix for the given interes points.
           
           \param interestPoints The interest points (coords related to rasterData lines/cols).
           
@@ -760,13 +756,9 @@ namespace te
           
           \param rasterData The loaded raster data.
           
-          \param normalize Normalize features values by subtracting its mean and dividing by its standard deviation.
-          
           \param features The generated features matrix (one feature per line, one feature per interes point).
           
           \param validInteresPoints The valid interest pionts related to each feature inside the features matrix (some interest points may be invalid and are removed).
-          
-          \note Interest points outside the valid raster area will have all features with zero values.
 
           \return true if ok, false on errors.
         */             
@@ -774,8 +766,7 @@ namespace te
           const InterestPointsSetT& interestPoints,
           const unsigned int correlationWindowWidth,
           const DoublesMatrix& rasterData,
-          const bool normalize,
-          DoublesMatrix& features,
+          FloatsMatrix& features,
           InterestPointsSetT& validInteresPoints );
           
         /*!
@@ -833,8 +824,8 @@ namespace te
           \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the absolute value of the correlation between then.
         */          
         static bool executeMatchingByCorrelation( 
-          const DoublesMatrix& featuresSet1,
-          const DoublesMatrix& featuresSet2,
+          const FloatsMatrix& featuresSet1,
+          const FloatsMatrix& featuresSet2,
           const InterestPointsSetT& interestPointsSet1,
           const InterestPointsSetT& interestPointsSet2,
           const unsigned int maxPt1ToPt2PixelDistance,

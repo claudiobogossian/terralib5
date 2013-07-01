@@ -125,41 +125,48 @@ const te::map::LayerSchema* te::map::FolderLayer::getSchema(const bool /*full*/)
 }
 
 te::da::DataSet* te::map::FolderLayer::getData(te::common::TraverseType /*travType*/, 
-                                                te::common::AccessPolicy /*rwRole*/) const
+                                               te::common::AccessPolicy /*rwRole*/) const
 {
   return 0;
 }
 
 te::da::DataSet* te::map::FolderLayer::getData(const te::gm::Envelope& /*e*/,
-                                                te::gm::SpatialRelation /*r*/,
-                                                te::common::TraverseType /*travType*/,
-                                                te::common::AccessPolicy /*rwRole*/) const
+                                               te::gm::SpatialRelation /*r*/,
+                                               te::common::TraverseType /*travType*/,
+                                               te::common::AccessPolicy /*rwRole*/) const
 {
   return 0;
 }
 
 te::da::DataSet* te::map::FolderLayer::getData(const te::dt::Property& /*p*/,
-                                                const te::gm::Envelope& /*e*/,
-                                                te::gm::SpatialRelation /*r*/,
-                                                te::common::TraverseType /*travType*/,
-                                                te::common::AccessPolicy /*rwRole*/) const
+                                               const te::gm::Envelope& /*e*/,
+                                               te::gm::SpatialRelation /*r*/,
+                                               te::common::TraverseType /*travType*/,
+                                               te::common::AccessPolicy /*rwRole*/) const
 {
   return 0;
 }
 
 te::da::DataSet* te::map::FolderLayer::getData(const te::gm::Geometry& /*g*/,
-                                                te::gm::SpatialRelation /*r*/,
-                                                te::common::TraverseType /*travType*/, 
-                                                te::common::AccessPolicy /*rwRole*/) const
+                                               te::gm::SpatialRelation /*r*/,
+                                               te::common::TraverseType /*travType*/, 
+                                               te::common::AccessPolicy /*rwRole*/) const
 {
   return 0;
 }
 
 te::da::DataSet* te::map::FolderLayer::getData(const te::dt::Property& /*p*/,
-                                                const te::gm::Geometry& /*g*/,
-                                                te::gm::SpatialRelation /*r*/,
-                                                te::common::TraverseType /*travType*/,
-                                                te::common::AccessPolicy /*rwRole*/) const
+                                               const te::gm::Geometry& /*g*/,
+                                               te::gm::SpatialRelation /*r*/,
+                                               te::common::TraverseType /*travType*/,
+                                               te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::FolderLayer::getData(te::da::Expression* /*restriction*/,
+                                               te::common::TraverseType /*travType*/,
+                                               te::common::AccessPolicy /*rwRole*/) const
 {
   return 0;
 }

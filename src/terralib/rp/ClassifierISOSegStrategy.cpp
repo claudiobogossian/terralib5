@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/MatrixUtils.h"
+#include "../common/progress/TaskProgress.h"
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Point.h"
@@ -362,6 +363,7 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
   unsigned int pattern;
 
 // classify output image
+  te::common::TaskProgress task(TR_RP("ISOSeg algorithm - classifying image"), te::common::TaskProgress::UNDEFINED, m_regions.size());
   for (rit = m_regions.begin(); rit != m_regions.end(); ++rit)
   {
     te::gm::Polygon* polygon = inputPolygons[rit->second->m_id];
@@ -392,6 +394,7 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
 
       ++it;
     }
+    task.pulse();
   }
 
   return true;

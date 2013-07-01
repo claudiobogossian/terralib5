@@ -117,6 +117,8 @@ namespace te
     {
       return new InputParameters( *this );
     }
+    
+    // ----------------------------------------------------------------------
 
     SequenceMosaic::OutputParameters::OutputParameters()
     {
@@ -137,7 +139,7 @@ namespace te
     void SequenceMosaic::OutputParameters::reset() throw( te::rp::Exception )
     {
       m_outputDSPtr = 0;
-      m_tiePoints.clear();
+      m_sequencesInfo.clear();
     }
 
     const SequenceMosaic::OutputParameters& SequenceMosaic::OutputParameters::operator=(
@@ -146,7 +148,7 @@ namespace te
       reset();
 
       m_outputDSPtr = params.m_outputDSPtr;
-      m_tiePoints = params.m_tiePoints;
+      m_sequencesInfo = params.m_sequencesInfo;
 
       return *this;
     }
@@ -155,6 +157,25 @@ namespace te
     {
       return new OutputParameters( *this );
     }
+    
+    // ----------------------------------------------------------------------
+    
+    SequenceMosaic::MosaicSequenceInfo::MosaicSequenceInfo()
+    {
+    }    
+    
+    SequenceMosaic::MosaicSequenceInfo::~MosaicSequenceInfo()
+    {
+    }    
+    
+    void SequenceMosaic::MosaicSequenceInfo::clear()
+    {
+      m_dataSetName.clear();
+      m_rasterFeederIndexes.clear();
+      m_tiePoints.clear();
+    }      
+    
+    // ----------------------------------------------------------------------
 
     SequenceMosaic::SequenceMosaic()
     {
@@ -179,7 +200,7 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputDSPtr->isValid(),
         "Invalid data source" );
         
-      outParamsPtr->m_tiePoints.clear();
+      outParamsPtr->m_sequencesInfo.clear();
         
       // progress
       
@@ -214,13 +235,13 @@ namespace te
       std::vector< double > mosaicTargetMeans;
       std::vector< double > mosaicTargetVariances;
       te::gm::Polygon mosaicValidDataPol(  0, te::gm::PolygonType, 0 ); // the polygon delimiting the valid data inside the mosaic (mosaic world coods)
-      unsigned int mosaicSequenceCounter = 0;
       std::vector< double > mosaicBandsRangeMin;
       std::vector< double > mosaicBandsRangeMax;        
       unsigned int lastInputRasterBBoxLLXIndexed = 0;
       unsigned int lastInputRasterBBoxLLYIndexed = 0;
       unsigned int lastInputRasterBBoxURXIndexed = 0;
-      unsigned int lastInputRasterBBoxURYIndexed = 0;      
+      unsigned int lastInputRasterBBoxURYIndexed = 0;     
+      MosaicSequenceInfo currentMosaicSquenceInfo;
       
       m_inputParameters.m_feederRasterPtr->reset();
       while( m_inputParameters.m_feederRasterPtr->getCurrentObj() )
@@ -396,6 +417,13 @@ namespace te
             }
           }
           
+          // Updating the mosaic sequence info
+          
+          currentMosaicSquenceInfo.m_rasterFeederIndexes.push_back(
+            inputRasterIdx );
+          currentMosaicSquenceInfo.m_tiePoints.push_back( 
+            std::vector< te::gm::GTParameters::TiePoint >() );
+          
           // Move to the next raster
           
           cachedInputRasterPtr.reset();
@@ -506,10 +534,6 @@ namespace te
               locatorOutParams ), "Tie points locator exec error" );
           }
           
-          // Exposing the found tie-points
-          
-          outParamsPtr->m_tiePoints.push_back( locatorOutParams.m_tiePoints );          
-      
           // The matching was accomplished successfully ?
         
           if(
@@ -544,17 +568,34 @@ namespace te
               ) 
              )
           {
+            // Saving the mosaic sequence info
+            
+            currentMosaicSquenceInfo.m_dataSetName = m_inputParameters.m_outDataSetsNamePrefix + 
+              boost::lexical_cast< std::string >( outParamsPtr->m_sequencesInfo.size() ) +
+              m_inputParameters.m_outDataSetsNameSufix;            
+              
+            outParamsPtr->m_sequencesInfo.push_back( currentMosaicSquenceInfo );
+            
+            // Create the output data set
+            
             assert( mosaicRasterHandler.get() );
             TERP_TRUE_OR_RETURN_FALSE( createRasterDataSet( 
-              m_inputParameters.m_outDataSetsNamePrefix + 
-              boost::lexical_cast< std::string >( mosaicSequenceCounter++ ) +
-              m_inputParameters.m_outDataSetsNameSufix,
+              currentMosaicSquenceInfo.m_dataSetName,
               *( mosaicRasterHandler.get() ), outParamsPtr->m_outputDSPtr ),
               "Data set creation error" );
             mosaicRasterHandler.reset();
+            
+            currentMosaicSquenceInfo.clear();
           }
           else
           {
+            // Updating the mosaic sequence info
+            
+            currentMosaicSquenceInfo.m_tiePoints.push_back( 
+              locatorOutParams.m_tiePoints );            
+            currentMosaicSquenceInfo.m_rasterFeederIndexes.push_back( 
+              inputRasterIdx );
+            
             // Expanding the mosaic to fit the extent requirement allowing the 
             // merge of the current raster.
             // Fiding the new geometric transformation between then.
@@ -910,12 +951,20 @@ namespace te
       
       if( mosaicRasterHandler.get() )
       {
+        // Saving the mosaic sequence info
+        
+        currentMosaicSquenceInfo.m_dataSetName = m_inputParameters.m_outDataSetsNamePrefix + 
+          boost::lexical_cast< std::string >(  outParamsPtr->m_sequencesInfo.size() ) +
+          m_inputParameters.m_outDataSetsNameSufix;            
+          
+        outParamsPtr->m_sequencesInfo.push_back( currentMosaicSquenceInfo );        
+        
         TERP_TRUE_OR_RETURN_FALSE( createRasterDataSet( 
-          m_inputParameters.m_outDataSetsNamePrefix + 
-          boost::lexical_cast< std::string >( mosaicSequenceCounter++ ) +
-          m_inputParameters.m_outDataSetsNameSufix,
+          currentMosaicSquenceInfo.m_dataSetName,
           *( mosaicRasterHandler.get() ), outParamsPtr->m_outputDSPtr ),
           "Data set creation error" );
+          
+        currentMosaicSquenceInfo.clear();
       }
       
       return true;

@@ -125,7 +125,8 @@ class te::qt::widgets::LayerTreeView::Impl
           QString alayerType = it->get<2>();
           te::qt::widgets::LayerTreeView::ContextMenuType menuType = it->get<3>();
 
-          if(menuType == te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED &&
+          if((menuType == te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED ||
+              menuType == te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES) &&
              ((alayerType == layerType) || alayerType.isEmpty()))
           {
             menu.addAction(action);
@@ -157,7 +158,8 @@ class te::qt::widgets::LayerTreeView::Impl
           QString alayerType = it->get<2>();
           te::qt::widgets::LayerTreeView::ContextMenuType menuType = it->get<3>();
 
-          if(menuType != te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED)
+          if(menuType != te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED &&
+             menuType != te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES)
             continue;
 
           std::string layerType = alayerType.toStdString();

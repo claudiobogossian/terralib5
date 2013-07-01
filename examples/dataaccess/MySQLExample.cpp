@@ -110,7 +110,7 @@ void createSpatialTables()
 
   polDt->add(polProp1);
   polDt->add(polProp2);
-  polDt->setDefaultGeomProperty(polProp2);
+  //polDt->setDefaultGeomProperty(polProp2);
 
   t->getDataSetTypePersistence()->create(polDt);
 
@@ -123,7 +123,7 @@ void createSpatialTables()
 
   pointDt->add(pointProp1);
   pointDt->add(pointProp2);
-  pointDt->setDefaultGeomProperty(pointProp2);
+  //pointDt->setDefaultGeomProperty(pointProp2);
 
   t->getDataSetTypePersistence()->create(pointDt);
 
@@ -136,7 +136,7 @@ void createSpatialTables()
 
   lineDt->add(lineProp1);
   lineDt->add(lineProp2);
-  lineDt->setDefaultGeomProperty(lineProp2);
+  //lineDt->setDefaultGeomProperty(lineProp2);
 
   t->getDataSetTypePersistence()->create(lineDt);
 }
