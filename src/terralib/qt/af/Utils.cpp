@@ -158,6 +158,7 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   QDir schemaLocation(TE_SCHEMA_LOCATION);
 
   writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
+  writer.writeAttribute("xmlns:te_da", "http://www.terralib.org/schemas/dataaccess");
   writer.writeAttribute("xmlns:te_map", "http://www.terralib.org/schemas/maptools");
   writer.writeAttribute("xmlns:te_qt_af", "http://www.terralib.org/schemas/common/af");
 
