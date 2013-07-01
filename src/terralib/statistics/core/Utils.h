@@ -27,12 +27,14 @@
 #define __TERRALIB_STATISTICAL_CORE_INTERNAL_UTILS_H
 
 // Terralib
+#include "../../maptools/DataSetLayer.h"
 #include "Config.h"
 #include "Enums.h"
 
 // STL
 #include <list>
 #include <string>
+#include <vector>
 
 namespace te
 {
@@ -55,6 +57,13 @@ namespace te
       \return The full name of enum.
     */
     TESTATEXPORT std::string GetStatSummaryFullName(const int& e);
+
+
+    TESTATEXPORT int GetPropertyIndex(te::da::DataSet* dataSet, const std::string propName);
+
+    TESTATEXPORT std::vector<std::string> GetStringData(te::da::DataSet* dataSet, const std::string propName);
+
+    TESTATEXPORT std::vector<double> GetNumericData(te::da::DataSet* dataSet, const std::string propName);
 
   } // end namespace vp
 }   // end namespace te

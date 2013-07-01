@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../datatype/Enums.h"
+#include "../../datatype/Property.h"
 #include "../core/Config.h"
 #include "../core/Exception.h"
 #include "../core/NumericStatisticalSummary.h"
@@ -63,7 +64,7 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
 {
   m_dset = dataSet;
   m_prop = prop;
-  int index = getPropertyIndex();
+  int index = te::stat::GetPropertyIndex(m_dset, m_prop);
   int propType = m_dset->getPropertyDataType(index);
 
   m_ui->m_datasourceTypeTitleLabel->setText("Statistics: " + QString(prop.c_str()));
@@ -71,7 +72,7 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
   if(propType == te::dt::STRING_TYPE)
   {
     std::vector<std::string> statResult;
-    statResult = getStringData(propType);
+    statResult = te::stat::GetStringData(m_dset, m_prop);
 
     te::stat::StringStatisticalSummary ss;
 
@@ -110,7 +111,7 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
   else
   {
     std::vector<double> statResult;
-    statResult = getNumericData(propType);
+    statResult = te::stat::GetNumericData(m_dset, m_prop);
 
     te::stat::NumericStatisticalSummary ss;
     
@@ -206,66 +207,6 @@ void te::stat::StatisticsDialog::setStatistics(te::da::DataSet* dataSet, const s
     else
       QMessageBox::information(this, "Warning", "The input vector of values is empty.");
   }
-}
-
-std::size_t te::stat::StatisticsDialog::getPropertyIndex()
-{
-  std::size_t index = 0;
-
-  for(std::size_t i = 0; i < m_dset->getNumProperties(); ++i)
-  {
-    if(m_prop == m_dset->getPropertyName(i))
-    {
-      index = i;
-      return index;
-    }
-  }
-  return -1;
-}
-
-std::vector<std::string> te::stat::StatisticsDialog::getStringData(const int propType)
-{
-  std::vector<std::string> result;
-  std::string value="";
-  bool flag;
-
-  m_dset->moveFirst();
-
-  do
-  {
-    flag = false;
-    value = m_dset->getString(m_prop);
-
-    if(result.empty())
-      result.push_back(value);
-    else
-    {
-      for(int i = 0; i < result.size(); ++i)
-      {
-        if(value == result[i])
-          flag = true;
-      }
-
-      if(flag == false)
-        result.push_back(value);
-    }
-
-  }while(m_dset->moveNext());
-
-  return result;
-}
-
-std::vector<double> te::stat::StatisticsDialog::getNumericData(const int propType)
-{
-  std::vector<double> result;
-  m_dset->moveFirst();
-
-  do
-  {
-    result.push_back(m_dset->getDouble(m_prop));
-  }while(m_dset->moveNext());
-
-  return result;
 }
 
 void te::stat::StatisticsDialog::onHelpPushButtonClicked()

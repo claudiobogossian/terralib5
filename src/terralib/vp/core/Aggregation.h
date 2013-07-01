@@ -63,6 +63,17 @@ namespace te
                      const std::string& outputLayerName,
                      const te::da::DataSourceInfoPtr& dsInfo);
 
+    void AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
+                            const std::vector<te::dt::Property*>& groupingProperties,
+                            const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                            te::mem::DataSet* outputDataSet);
+
+    void AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
+                            const std::vector<te::dt::Property*>& groupingProperties,
+                            const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                            te::mem::DataSet* outputDataSet);
+
+
     /*!
       \brief It returns the output DataSetType.
 
@@ -114,8 +125,9 @@ namespace te
 
       \output The result of statistics.
     */
-    std::map<std::string, std::string> CalculateStringGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary, 
-                                                                        const std::vector<te::mem::DataSetItem*>& items);
+    std::map<std::string, std::string> CalculateStringGroupingFunctions(  const te::map::AbstractLayerPtr& inputLayer,
+                                                                          const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary, 
+                                                                          const std::vector<te::mem::DataSetItem*>& items);
 
     /*!
       \brief It returns the result of statistics for double properties.
@@ -125,8 +137,9 @@ namespace te
 
       \output The result of statistics.
     */
-    std::map<std::string, double> CalculateDoubleGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                                                                   const std::vector<te::mem::DataSetItem*>& items);
+    std::map<std::string, double> CalculateDoubleGroupingFunctions( const te::map::AbstractLayerPtr& inputLayer,
+                                                                    const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                                                                    const std::vector<te::mem::DataSetItem*>& items);
     
     /*!
       \brief It verify if the property exists.
