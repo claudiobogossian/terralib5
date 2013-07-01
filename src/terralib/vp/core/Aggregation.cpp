@@ -29,6 +29,7 @@
 #include "../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/dataset/DataSetTypePersistence.h"
+#include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
@@ -66,23 +67,81 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                          const std::string& outputLayerName,
                          const te::da::DataSourceInfoPtr& dsInfo)
 {
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(inputLayer.get());
+  
+  te::da::DataSetType* outputDataSetType = GetDataSetType(outputLayerName, groupingProperties, statisticalSummary);
+  te::mem::DataSet* outputDataSet = new te::mem::DataSet(outputDataSetType);
+
+  if(dsLayer != 0)
+  {
+    te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+    const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
+
+    if(dsCapabilities.supportsPreparedQueryAPI())
+    {
+      AggregationQuery(inputLayer, groupingProperties, statisticalSummary, outputDataSet);
+    }
+    else
+    {
+      AggregationMemory(inputLayer, groupingProperties, statisticalSummary, outputDataSet);
+    }
+  }
+  else
+  {
+    AggregationMemory(inputLayer, groupingProperties, statisticalSummary, outputDataSet);
+  }
+
+  Persistence(outputDataSetType, outputDataSet, dsInfo);
+ }
+
+void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
+                                const std::vector<te::dt::Property*>& groupingProperties,
+                                const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                                te::mem::DataSet* outputDataSet)
+{
+
+  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator itStatSummary = statisticalSummary.begin();
+
+  while(itStatSummary != statisticalSummary.end())
+  {
+    int propType = itStatSummary->first->getType();
+
+    if(propType == te::dt::STRING_TYPE)
+    {
+      std::map<std::string, te::stat::StringStatisticalSummary> ssMap;
+      //std::map<std::string, te::stat::StringStatisticalSummary> = te::stat::GetStringStatisticalSummaryQuery(inputLayer, itStatSummary->first, ssMap, groupingProperties);
+
+
+    }
+    else
+    {
+      std::map<std::string, te::stat::NumericStatisticalSummary> ssMap;
+      te::stat::GetNumericStatisticalSummaryQuery(inputLayer, itStatSummary->first, ssMap, groupingProperties);
+
+
+    }
+    ++itStatSummary;
+  }
+}
+
+void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
+                                const std::vector<te::dt::Property*>& groupingProperties,
+                                const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                                te::mem::DataSet* outputDataSet)
+{
   std::auto_ptr<te::mem::DataSet> inputDataSet((te::mem::DataSet*)inputLayer->getData());
   std::auto_ptr<te::mem::DataSetItem> dataSetItem(new te::mem::DataSetItem(inputDataSet.get()));
 
   std::map<std::string, std::vector<te::mem::DataSetItem*> > groupValues = GetGroups(inputDataSet.get(), groupingProperties);
   std::map<std::string, std::vector<te::mem::DataSetItem*> >::const_iterator itGroupValues = groupValues.begin();
 
-  te::da::DataSetType* outputDataSetType = GetDataSetType(outputLayerName, groupingProperties, statisticalSummary);
-  te::mem::DataSet* outputDataSet = new te::mem::DataSet(outputDataSetType);
-
-
   while(itGroupValues != groupValues.end())
   {
     std::string value = itGroupValues->first.c_str();
     int aggregationCount = itGroupValues->second.size();
 
-    std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(statisticalSummary, itGroupValues->second);
-    std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(statisticalSummary, itGroupValues->second);
+    std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(inputLayer, statisticalSummary, itGroupValues->second);
+    std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(inputLayer, statisticalSummary, itGroupValues->second);
 
     te::gm::Geometry* geometry = GetUnionGeometry(itGroupValues->second);
 
@@ -91,7 +150,6 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
     outputDataSetItem->setString(0, value);
     outputDataSetItem->setInt32(1, aggregationCount);
 
-    
     if(!functionResultStringMap.empty())
     {
       std::map<std::string, std::string>::iterator itFuncResultString = functionResultStringMap.begin();
@@ -124,10 +182,7 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
 
     ++itGroupValues;
   }
-
-  Persistence(outputDataSetType, outputDataSet, dsInfo); 
-
- }
+}
 
 te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, 
                                             const std::vector<te::dt::Property*>& properties, 
@@ -301,7 +356,8 @@ te::gm::Geometry* te::vp::GetUnionGeometry(const std::vector<te::mem::DataSetIte
   return resultGeometry;
 }
 
-std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary, 
+std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(const te::map::AbstractLayerPtr& inputLayer,
+                                                                            const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary, 
                                                                             const std::vector<te::mem::DataSetItem*>& items)
 {
   std::map<std::string, std::string> result;
@@ -323,7 +379,7 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
           values.push_back(items[i]->getString(index));
       }
 
-      te::stat::StringStatisticalSummary ss;
+      te::stat::StringStatisticalSummary ss; 
       te::stat::GetStringStatisticalSummary(values, ss);
 
       result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MIN_VALUE", ss.m_minVal ) );
@@ -337,7 +393,8 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
   return result;
 }
 
-std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const te::map::AbstractLayerPtr& inputLayer,
+                                                                        const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                                                         const std::vector<te::mem::DataSetItem*>& items)
 {
   std::map<std::string, double> result;
