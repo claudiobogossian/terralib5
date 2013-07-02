@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_LEGENDITEM_H
 
 // TerraLib
-#include "AbstractLayerTreeItem.h"
+#include "AbstractTreeItem.h"
 
 namespace te
 {
@@ -38,7 +38,7 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT LegendItem : public AbstractLayerTreeItem
+      class TEQTWIDGETSEXPORT LegendItem : public AbstractTreeItem
       {
         Q_OBJECT
 
@@ -70,7 +70,7 @@ namespace te
 
           bool getCheckable();
 
-          //AbstractLayerTreeItem* clone(QObject* parent = 0);
+          //AbstractTreeItem* clone(QObject* parent = 0);
 
         private:
 

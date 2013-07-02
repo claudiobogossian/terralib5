@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/AbstractLayerTreeItem.h
+  \file terralib/qt/widgets/layer/explorer/AbstractTreeItem.h
 
   \brief The class that represents an item in a LayerTreeModel.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTLAYERTREEITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTLAYERTREEITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTTREEITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTTREEITEM_H
 
 // TerraLib
 #include "../../../../maptools/AbstractLayer.h"
@@ -48,19 +48,19 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT AbstractLayerTreeItem : public QObject
+      class TEQTWIDGETSEXPORT AbstractTreeItem : public QObject
       {
         Q_OBJECT
 
         public:
 
-          AbstractLayerTreeItem(QObject* parent = 0);
+          AbstractTreeItem(QObject* parent = 0);
 
-          virtual ~AbstractLayerTreeItem();
+          virtual ~AbstractTreeItem();
 
-          std::vector<te::qt::widgets::AbstractLayerTreeItem*> getDescendants();
+          std::vector<te::qt::widgets::AbstractTreeItem*> getDescendants();
 
-          std::vector<te::qt::widgets::AbstractLayerTreeItem*> getAncestors();
+          std::vector<te::qt::widgets::AbstractTreeItem*> getAncestors();
 
           // Return the number of columns for the children of the item
           virtual int columnCount() const = 0;
@@ -88,4 +88,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTLAYERTREEITEM_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTTREEITEM_H

@@ -47,7 +47,7 @@ namespace te
     namespace widgets 
     { 
       class LayerExplorer; 
-      class AbstractLayerTreeItem;
+      class AbstractTreeItem;
     }
 
     namespace af
@@ -107,7 +107,7 @@ namespace te
           */
           void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
-          void onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);
+          void onLayerVisibilityChanged(te::qt::widgets::AbstractTreeItem* item);
 
           void layersChanged(const std::vector<te::map::AbstractLayerPtr>& layers);
 

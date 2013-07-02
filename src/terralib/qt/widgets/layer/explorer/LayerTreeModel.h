@@ -42,7 +42,7 @@ namespace te
   {
     namespace widgets
     {
-      class AbstractLayerTreeItem;
+      class AbstractTreeItem;
 
       class TEQTWIDGETSEXPORT LayerTreeModel : public QAbstractItemModel
       {
@@ -276,12 +276,12 @@ namespace te
 
             \return True, if the item was successfully removed; otherwise, it returns false.
           */
-          bool remove(AbstractLayerTreeItem* item);
+          bool remove(AbstractTreeItem* item);
 
         signals:
 
-          void visibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);
-          void layerAdded(te::qt::widgets::AbstractLayerTreeItem* item);
+          void visibilityChanged(te::qt::widgets::AbstractTreeItem* item);
+          void layerAdded(te::qt::widgets::AbstractTreeItem* item);
 
         protected:
 
@@ -301,7 +301,7 @@ namespace te
 
         private:
 
-          std::vector<AbstractLayerTreeItem*> m_items;                  //!< The list of layers of this model.
+          std::vector<AbstractTreeItem*> m_items;                  //!< The list of layers of this model.
           bool m_checkable;                                             //!< It informs if the model is checkable.
       };
 
