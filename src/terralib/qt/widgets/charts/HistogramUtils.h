@@ -27,15 +27,14 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMUTILS_H
 
 //TerraLib
+#include "../Config.h"
 #include "../../datatype/SimpleData.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
-#include "../Config.h"
 
 //STL
 #include <map>
 #include <set>
 #include <string>
-#include <vector>
 
 // Boost
 #include <boost/multi_index_container.hpp>

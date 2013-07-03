@@ -288,7 +288,7 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QPointF point)
 
   for(size_t i = 0; i < values->size(); ++i)
   {
-    if(values->sample(i).interval.minValue() < point.rx() && values->sample(i).interval.maxValue() > point.rx())
+    if(values->sample(i).interval.minValue() < point.rx() && values->sample(i).interval.maxValue() > point.rx() &&  values->sample(i).value > point.ry())
       highlightedSamples.push_back(values->sample(i));
   }
 
