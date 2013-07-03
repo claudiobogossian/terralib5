@@ -90,8 +90,6 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
   if (!add)
     m_layer->clearSelected();
 
-  m_layer->select(oids);
-
   std::vector<std::size_t> objIdIdx;
   te::da::GetOIDPropertyPos(m_layer->getSchema(true), objIdIdx);
 
@@ -100,7 +98,7 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
   for(it=objIdIdx.begin(); it!=objIdIdx.end(); ++it)
     oids->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
 
-
+  m_layer->select(oids);
   te::qt::af::evt::LayerSelectionChanged e(m_layer);
   ApplicationController::getInstance().broadcast(&e);
 }

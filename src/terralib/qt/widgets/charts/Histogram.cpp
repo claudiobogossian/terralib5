@@ -43,12 +43,12 @@ te::qt::widgets::Histogram::~Histogram()
     ++it;
   }
 
-  //te::qt::widgets::IntervalToObjectIdSet::iterator it2= m_valuesOids.begin();
-  //while(it2 != m_valuesOids.end())
-  //{
-  //  delete it2->oid;
-  //  ++it2;
-  //}
+  te::qt::widgets::IntervalToObjectIdSet::iterator it2= m_valuesOids.begin();
+  while(it2 != m_valuesOids.end())
+  {
+    delete it2->oid;
+    ++it2;
+  }
 }
 
 int& te::qt::widgets::Histogram::getType()
@@ -125,8 +125,9 @@ void te::qt::widgets::Histogram::insert(std::pair<te::dt::AbstractData*, unsigne
 te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* interval)
 {
   te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator it0, it1;
+  IntervalToObjectId aux(interval, 0);
 
-  tie(it0, it1) = m_valuesOids.get<0>().equal_range(interval->toString());
+  tie(it0, it1) = m_valuesOids.equal_range(aux);
 
   te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
 

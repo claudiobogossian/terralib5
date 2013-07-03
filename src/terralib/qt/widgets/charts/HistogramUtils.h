@@ -42,6 +42,7 @@
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/identity.hpp>
 #include <boost/multi_index/member.hpp>
+#include <boost/multi_index/mem_fun.hpp>
 
 namespace te
 {
@@ -78,28 +79,16 @@ namespace te
 
             IntervalToObjectId(te::dt::AbstractData* p_interval, te::da::ObjectId* p_oid) : interval(p_interval), oid(p_oid){}
 
-            bool operator<(const IntervalToObjectId& v)const 
+            bool operator<(const IntervalToObjectId& v) const 
             { 
               CompareHistogramInterval comp = CompareHistogramInterval();
               return comp(interval, v.interval);
             }
 
-          };
-
-          //A name extractor for the intervals of an IntervalToObjectId struct
-          struct interval_key_extractor
-          {
-            typedef std::string result_type;
-
-             const  result_type operator()( const IntervalToObjectId e) const  {return e.interval->toString();}
-          };
-
-          //A name extractor for the objectIds of an IntervalToObjectId struct
-          struct oid_key_extractor
-          {
-            typedef std::string result_type;
-
-             const  result_type operator()( const IntervalToObjectId e) const  {return e.oid->getValueAsString();}
+            std::string getObjIdAsString() const
+            {
+              return oid->getValueAsString();
+            }
           };
 
           // define a multiply indexed set with indices by
@@ -108,10 +97,12 @@ namespace te
             boost::multi_index::indexed_by<
 
               // sort by less<string> on Interval
-              boost::multi_index::ordered_non_unique<interval_key_extractor>,
+              boost::multi_index::ordered_non_unique<
+                  boost::multi_index::identity<IntervalToObjectId> >,
 
               // sort by less<string> on objectID
-              boost::multi_index::ordered_unique<oid_key_extractor>
+              boost::multi_index::ordered_unique<
+                  boost::multi_index::const_mem_fun<IntervalToObjectId, std::string, &IntervalToObjectId::getObjIdAsString> >
             > 
           > IntervalToObjectIdSet;
 
