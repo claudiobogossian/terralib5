@@ -52,8 +52,8 @@ namespace te
         static const std::string sm_Or;
 
 // relational operators
-        static const std::string sm_EqualTo;        
-        static const std::string sm_NotEqualTo;        
+        static const std::string sm_EqualTo;
+        static const std::string sm_NotEqualTo;
         static const std::string sm_GreaterThan;
         static const std::string sm_GreaterThanOrEqualTo;
         static const std::string sm_LessThan;
@@ -88,6 +88,14 @@ namespace te
 
 // aggregate
         static const std::string sm_Sum;
+
+//statistical funcations
+        static const std::string sm_Avg;
+        static const std::string sm_Count;
+        static const std::string sm_Max;
+        static const std::string sm_Min;
+        static const std::string sm_StdDev;
+        static const std::string sm_Variance;
 
 // others
         static const std::string sm_IsNull;
