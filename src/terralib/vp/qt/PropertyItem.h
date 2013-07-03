@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../maptools/AbstractLayer.h"
-#include "../../qt/widgets/layer/explorer/AbstractLayerTreeItem.h"
+#include "../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../core/Config.h"
 
 namespace te
@@ -37,13 +37,13 @@ namespace te
 
   namespace vp
   {
-    class TEVPEXPORT PropertyItem : public te::qt::widgets::AbstractLayerTreeItem
+    class TEVPEXPORT PropertyItem : public te::qt::widgets::AbstractTreeItem
     {
       Q_OBJECT
 
       public:
 
-        PropertyItem(te::dt::Property* p, te::qt::widgets::AbstractLayerTreeItem* parent);
+        PropertyItem(te::dt::Property* p, te::qt::widgets::AbstractTreeItem* parent);
 
         ~PropertyItem();
 

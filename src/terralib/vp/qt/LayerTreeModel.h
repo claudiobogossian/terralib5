@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../maptools/AbstractLayer.h"
-#include "../../qt/widgets/layer/explorer/AbstractLayerTreeItem.h"
+#include "../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../core/Config.h"
 
 // STL
@@ -178,7 +178,7 @@ namespace te
 
       private:
 
-        std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;
+        std::vector<te::qt::widgets::AbstractTreeItem*> m_items;
         bool m_singleSelection;  //!< If is single selection or multiselection
     };
   }   // end namespace vp

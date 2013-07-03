@@ -27,7 +27,7 @@
 #include "../../../../maptools/FolderLayer.h"
 #include "../../../../common/Translator.h"
 #include "../../Exception.h"
-#include "AbstractLayerTreeItemFactory.h"
+#include "AbstractTreeItemFactory.h"
 #include "FolderLayerItem.h"
 
 // Qt
@@ -35,7 +35,7 @@
 #include <QtGui/QWidget>
 
 te::qt::widgets::FolderLayerItem::FolderLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent)
-  : AbstractLayerTreeItem(parent)
+  : AbstractTreeItem(parent)
 {
   m_layer = boost::dynamic_pointer_cast<te::map::FolderLayer>(l);
 }
@@ -99,7 +99,7 @@ void te::qt::widgets::FolderLayerItem::fetchMore()
 
   for(te::map::AbstractLayer::const_iterator it = m_layer->begin(); it != m_layer->end(); ++it)
   {
-    /*AbstractLayerTreeItem* litem = */AbstractLayerTreeItemFactory::make(boost::dynamic_pointer_cast<te::map::AbstractLayer>(*it), this);
+    /*AbstractTreeItem* litem = */AbstractTreeItemFactory::make(boost::dynamic_pointer_cast<te::map::AbstractLayer>(*it), this);
   }
 }
 

@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../../maptools/FolderLayer.h"
-#include "AbstractLayerTreeItem.h"
+#include "AbstractTreeItem.h"
 
 namespace te
 {
@@ -36,7 +36,7 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT FolderLayerItem : public AbstractLayerTreeItem
+      class TEQTWIDGETSEXPORT FolderLayerItem : public AbstractTreeItem
       {
         Q_OBJECT
 

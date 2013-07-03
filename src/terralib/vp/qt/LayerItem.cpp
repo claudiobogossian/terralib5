@@ -36,7 +36,7 @@
 #include <QtGui/QWidget>
 
 te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
-  : te::qt::widgets::AbstractLayerTreeItem(parent),
+  : te::qt::widgets::AbstractTreeItem(parent),
     m_layer(layer),
     m_propertyGroup(0),
     m_legendGroup(0),
@@ -52,7 +52,7 @@ te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
 
       if(layerChild->isValid())
       {
-        te::qt::widgets::AbstractLayerTreeItem* litem =  new LayerItem(layerChild, this);
+        te::qt::widgets::AbstractTreeItem* litem =  new LayerItem(layerChild, this);
         m_items.push_back(litem);
       }
     }
@@ -163,7 +163,7 @@ bool te::vp::LayerItem::setData(int column, const QVariant& value, int role)
       else if(checkState == Qt::Unchecked)
         m_selected = false;
 
-      std::vector<te::qt::widgets::AbstractLayerTreeItem*> items = m_propertyGroup->getItems();
+      std::vector<te::qt::widgets::AbstractTreeItem*> items = m_propertyGroup->getItems();
 
       for(size_t i = 0; i < items.size(); ++i)
       {
@@ -201,7 +201,7 @@ bool te::vp::LayerItem::isSelected()
 
 std::vector<te::dt::Property*> te::vp::LayerItem::getSelected()
 {
-  std::vector<te::qt::widgets::AbstractLayerTreeItem*> propItems = m_propertyGroup->getItems();
+  std::vector<te::qt::widgets::AbstractTreeItem*> propItems = m_propertyGroup->getItems();
   
   std::vector<te::dt::Property*> selected;
 
