@@ -45,8 +45,12 @@
 #include <qwt_picker_machine.h>
 #include <qwt_text.h>
 #include <qwt_symbol.h>
+
 //Qt
 #include <QtGui/QPen>
+
+//STL
+#include <memory>
 
 te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title) : 
   QwtPlot(parent)

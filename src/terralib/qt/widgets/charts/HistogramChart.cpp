@@ -41,6 +41,9 @@
 #include <qwt_column_symbol.h>
 #include <qwt_plot.h>
 
+//STL
+#include <limits>
+
 te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
   QwtPlotHistogram(),
   m_histogram(histogram)
