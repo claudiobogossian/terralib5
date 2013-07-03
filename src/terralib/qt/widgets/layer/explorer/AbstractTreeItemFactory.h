@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/AbstractLayerTreeItemFactory.h
+  \file terralib/qt/widgets/layer/explorer/AbstractTreeItemFactory.h
 
   \brief A class for building layer items. 
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTLAYERTREEITEMFACTORY_H
-#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTLAYERTREEITEMFACTORY_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTTREEITEMFACTORY_H
+#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTTREEITEMFACTORY_H
 
 // TerraLib
 #include "../../../../common/Static.h"
@@ -47,15 +47,15 @@ namespace te
   {
     namespace widgets
     {
-      class AbstractLayerTreeItem;
+      class AbstractTreeItem;
 
-      class TEQTWIDGETSEXPORT AbstractLayerTreeItemFactory : public te::common::Static
+      class TEQTWIDGETSEXPORT AbstractTreeItemFactory : public te::common::Static
       {
         public:
 
-          typedef boost::function<AbstractLayerTreeItem* (const te::map::AbstractLayerPtr&, QObject*)> FactoryFnctType;
+          typedef boost::function<AbstractTreeItem* (const te::map::AbstractLayerPtr&, QObject*)> FactoryFnctType;
 
-          static AbstractLayerTreeItem* make(const te::map::AbstractLayerPtr& layer, QObject* parent);
+          static AbstractTreeItem* make(const te::map::AbstractLayerPtr& layer, QObject* parent);
 
           static void initialize();
 
@@ -66,7 +66,7 @@ namespace te
           static std::map<std::string, FactoryFnctType> sm_factories;
       };
 
-      inline AbstractLayerTreeItem* AbstractLayerTreeItemFactory::make(const te::map::AbstractLayerPtr& layer, QObject* parent)
+      inline AbstractTreeItem* AbstractTreeItemFactory::make(const te::map::AbstractLayerPtr& layer, QObject* parent)
       {
         return sm_factories[layer->getType()](layer, parent);
       }
@@ -75,5 +75,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTLAYERTREEITEMFACTORY_H
-
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTTREEITEMFACTORY_H

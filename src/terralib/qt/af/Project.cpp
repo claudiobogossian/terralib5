@@ -106,3 +106,9 @@ void te::qt::af::Project::projectChanged(const bool& changed)
 {
   m_changed = changed;
 }
+
+void te::qt::af::Project::clear()
+{
+  m_layers.clear();
+  projectChanged(true);
+}

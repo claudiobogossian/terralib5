@@ -27,6 +27,14 @@
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
+
+#include "../dataaccess/query/BinaryOpEncoder.h"
+#include "../dataaccess/query/FunctionEncoder.h"
+#include "../dataaccess/query/SQLDialect.h"
+#include "../dataaccess/query/SQLFunctionEncoder.h"
+#include "../dataaccess/query/TemplateEncoder.h"
+#include "../dataaccess/query/UnaryOpEncoder.h"
+
 #include "DataSource.h"
 #include "DataSourceFactory.h"
 #include "Globals.h"
@@ -58,6 +66,8 @@ void te::ogr::Module::startup()
 // it initializes the OGR Factory support
   te::ogr::DataSourceFactory::initialize();
 
+  #include "OGRDialect.h"
+
   TE_LOG_TRACE(TR_OGR("TerraLib OGR driver startup!"));
 
   m_initialized = true;
@@ -70,6 +80,8 @@ void te::ogr::Module::shutdown()
 
 // it finalizes the OGR factory support.
   te::ogr::DataSourceFactory::finalize();
+
+  DataSource::setDialect(0);
 
 // free OGR registered drivers
   te::da::DataSourceManager::getInstance().detachAll(OGR_DRIVER_IDENTIFIER);

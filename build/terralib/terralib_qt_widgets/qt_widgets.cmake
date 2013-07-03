@@ -187,7 +187,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/layer/explorer/AbstractLayerTreeItem.h
+  ${SRCDIR}/widgets/layer/explorer/AbstractTreeItem.h
   ${SRCDIR}/widgets/layer/explorer/DataSetLayerItem.h
   ${SRCDIR}/widgets/layer/explorer/FolderLayerItem.h
   ${SRCDIR}/widgets/layer/explorer/LayerExplorer.h

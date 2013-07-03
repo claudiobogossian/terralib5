@@ -14,6 +14,6 @@
   <xsd:include schemaLocation="capabilities.xsd" />
   <xsd:include schemaLocation="dataset.xsd" />
   <xsd:include schemaLocation="datasource.xsd" />
-  <xsd:include schemaLocation="query_dialect.xsd" />
+  <xsd:include schemaLocation="select.xsd" />
 
 </xsd:schema>

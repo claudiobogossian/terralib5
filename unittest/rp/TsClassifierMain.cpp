@@ -89,7 +89,7 @@ int main(int /*argc*/, char** /*argv*/)
     // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test.
     CPPUNIT_NS::OFileStream file2(TE_OUTPUT_REPORT_DIR "/" TS_TEST_NAME ".xml");
     CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-    xml.setStyleSheet( "report.xsl" ); 
+    xml.setStyleSheet( "report.xsl" );
     xml.write();
     file2.close();
 

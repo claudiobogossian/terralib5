@@ -79,6 +79,8 @@ namespace te
 
           void projectChanged(const bool& changed);
 
+          void clear();
+
         private:
 
           std::string m_title;                            //!< Project title.

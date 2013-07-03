@@ -122,6 +122,8 @@ te::common::TreeItemPtr te::common::TreeItem::remove(std::size_t i)
 
   m_children.erase(it);
 
+  childItem.get()->m_parent = 0;
+
   return childItem;
 }
 

@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../maptools/AbstractLayer.h"
-#include "../../qt/widgets/layer/explorer/AbstractLayerTreeItem.h"
+#include "../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../core/Config.h"
 
 namespace te
@@ -37,13 +37,13 @@ namespace te
 
   namespace vp
   {
-    class TEVPEXPORT PropertyGroupItem : public te::qt::widgets::AbstractLayerTreeItem
+    class TEVPEXPORT PropertyGroupItem : public te::qt::widgets::AbstractTreeItem
     {
       Q_OBJECT
 
       public:
 
-        PropertyGroupItem(std::vector<te::dt::Property*> properties, te::qt::widgets::AbstractLayerTreeItem* parent);
+        PropertyGroupItem(std::vector<te::dt::Property*> properties, te::qt::widgets::AbstractTreeItem* parent);
 
         ~PropertyGroupItem();
 
@@ -65,11 +65,11 @@ namespace te
 
         te::map::AbstractLayerPtr getLayer() const;
 
-        std::vector<te::qt::widgets::AbstractLayerTreeItem*> getItems() const;
+        std::vector<te::qt::widgets::AbstractTreeItem*> getItems() const;
 
       private:
 
-        std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;
+        std::vector<te::qt::widgets::AbstractTreeItem*> m_items;
     }; 
   }   // end namespace vp
 }     // end namespace te

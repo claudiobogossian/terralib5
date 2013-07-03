@@ -27,17 +27,12 @@
 #define __TERRALIB_QT_AF_EVENTS_INTERNAL_LAYEREVENTS_H
 
 #include "../../../maptools/Enums.h"
+#include "../../../maptools/AbstractLayer.h"
 #include "Event.h"
 #include "Enums.h"
 
 namespace te
 {
-  // Forward declarations
-  namespace map
-  {
-    class AbstractLayer;
-  }
-
   namespace qt
   {
     namespace af
@@ -136,6 +131,27 @@ namespace te
           }
 
           te::map::AbstractLayer* m_layer; //!< Layer that has changed its selection.
+        };
+
+        /*!
+          \struct LayersChanged
+          
+          \brief This event signals that the layout of layers has changed.
+        */
+        struct LayersChanged : public Event
+        {
+          /*!
+            \brief Constructor.
+
+            \param layers The layers.
+          */
+          LayersChanged(const std::vector<te::map::AbstractLayerPtr>& layers) :
+          Event(LAYERS_CHANGED),
+            m_layers(layers)
+          {
+          }
+
+          std::vector<te::map::AbstractLayerPtr> m_layers; //!< Vector of layers.
         };
       }
     }

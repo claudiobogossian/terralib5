@@ -44,7 +44,7 @@
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
 #include "../widgets/layer/explorer/LayerTreeView.h"
-#include "../widgets/layer/explorer/AbstractLayerTreeItem.h"
+#include "../widgets/layer/explorer/AbstractTreeItem.h"
 #include "../widgets/layer/info/LayerPropertiesInfoWidget.h"
 #include "../widgets/layer/selector/AbstractLayerSelector.h"
 #include "../widgets/plugin/builder/PluginBuilderWizard.h"
@@ -104,6 +104,8 @@
 
 // Boost
 #include <boost/format.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::map::AbstractLayerPtr FindLayerInProject(te::map::AbstractLayer* layer, te::qt::af::Project* proj)
 {
@@ -297,6 +299,18 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
     }
     break;
 
+    case te::qt::af::evt::LAYERS_CHANGED:
+      {
+        te::qt::af::evt::LayersChanged* e = static_cast<te::qt::af::evt::LayersChanged*>(evt);
+        m_project->clear();
+
+        std::vector<te::map::AbstractLayerPtr>::iterator it;
+
+        for(it=e->m_layers.begin(); it!=e->m_layers.end(); ++it)
+          m_project->add(*it);
+      }
+    break;
+
     default:
       break;
   }
@@ -412,12 +426,12 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
 void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
-  std::list<te::qt::widgets::AbstractLayerTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
-  std::list<te::qt::widgets::AbstractLayerTreeItem*>::iterator it;
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractTreeItem*>::iterator it;
 
   for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
   {
-    te::qt::widgets::AbstractLayerTreeItem* item = *it;
+    te::qt::widgets::AbstractTreeItem* item = *it;
     m_project->remove(item->getLayer());
     m_explorer->getExplorer()->remove(item);
   }
@@ -578,15 +592,20 @@ void te::qt::af::BaseApplication::onLayerNewLayerGroupTriggered()
     return;
   }
 
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+
   te::map::AbstractLayerPtr folder(new te::map::FolderLayer);
   folder->setTitle(text.toStdString());
+  folder->setId(id);
 
   m_explorer->getExplorer()->add(folder);
 }
 
 void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 {
-  std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
   if(layers.empty())
   {
@@ -608,7 +627,7 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 
 void te::qt::af::BaseApplication::onLayerShowTableTriggered()
 {
-  std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
   if(layers.empty())
   {
@@ -616,7 +635,7 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
     return;
   }
 
-  te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+  te::map::AbstractLayerPtr lay = (*layers.begin())->getLayer();
 
   te::qt::af::DataSetTableDockWidget* doc = GetLayerDock(lay.get(), m_tableDocks);
 
@@ -644,7 +663,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
 {
   try
   {
-    std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+    std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
     if(layers.empty())
     {
@@ -678,7 +697,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
 {
   try
   {
-    std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+    std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
     if(layers.empty())
     {
@@ -712,7 +731,7 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
 {
   try
   {
-    std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+    std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
     if(layers.empty())
     {

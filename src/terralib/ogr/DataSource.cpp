@@ -48,6 +48,8 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
+te::da::SQLDialect* te::ogr::DataSource::sm_myDialect(0);
+
 te::ogr::DataSource::DataSource()
   : m_catalog(0),
     m_ogrDS(0),
@@ -84,7 +86,12 @@ const te::da::DataSourceCapabilities& te::ogr::DataSource::getCapabilities() con
 
 const te::da::SQLDialect* te::ogr::DataSource::getDialect() const
 {
-  return 0; // Throw an exception? OGR Library not supports sql dialect
+  return sm_myDialect; // Throw an exception? OGR Library not supports sql dialect
+}
+
+void te::ogr::DataSource::setDialect(te::da::SQLDialect* myDialect)
+{
+  sm_myDialect = myDialect;
 }
 
 void te::ogr::DataSource::open()

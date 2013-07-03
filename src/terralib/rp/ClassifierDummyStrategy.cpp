@@ -30,6 +30,8 @@
 #include "../geometry/Polygon.h"
 #include "../raster/Grid.h"
 #include "ClassifierDummyStrategy.h"
+#include "Functions.h"
+#include "Macros.h"
 
 // STL
 #include <iostream>
@@ -70,6 +72,7 @@ te::common::AbstractParameters* te::rp::ClassifierDummyStrategy::Parameters::clo
 
 te::rp::ClassifierDummyStrategy::ClassifierDummyStrategy()
 {
+  m_isInitialized = false;
 }
 
 te::rp::ClassifierDummyStrategy::~ClassifierDummyStrategy()
@@ -78,13 +81,27 @@ te::rp::ClassifierDummyStrategy::~ClassifierDummyStrategy()
 
 bool te::rp::ClassifierDummyStrategy::initialize(te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)
 {
-  return true;
-}
+  m_isInitialized = false;
+
+  te::rp::ClassifierDummyStrategy::Parameters const* paramsPtr = dynamic_cast<te::rp::ClassifierDummyStrategy::Parameters const*>(strategyParams);
+
+  if(!paramsPtr)
+    return false;
+
+  m_parameters = *(paramsPtr);
+
+  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_dummyParameter > 1, TR_RP("The value of dummy must be at least 2."))
+
+  m_isInitialized = true;
+
+  return true;}
 
 bool te::rp::ClassifierDummyStrategy::execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
                                               const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                                               const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception)
 {
+  TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, TR_RP("Instance not initialized"))
+
   unsigned int c;
   unsigned int r;
   unsigned int pattern;
