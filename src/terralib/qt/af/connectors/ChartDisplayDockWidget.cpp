@@ -26,6 +26,9 @@
 #include "ChartDisplayDockWidget.h"
 
 // TerraLib
+#include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../widgets/charts/ChartDisplayWidget.h"
 #include "events/LayerEvents.h"
@@ -41,7 +44,7 @@ QDockWidget(parent, Qt::Dialog),
 
   setAttribute(Qt::WA_DeleteOnClose, true);
 
-  //connect (m_displayWidget, SIGNAL(selectOIds(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
+  connect (m_displayWidget, SIGNAL(selected(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
 }
 
 te::qt::af::ChartDisplayDockWidget::~ChartDisplayDockWidget()
@@ -88,6 +91,15 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
     m_layer->clearSelected();
 
   m_layer->select(oids);
+
+  std::vector<std::size_t> objIdIdx;
+  te::da::GetOIDPropertyPos(m_layer->getSchema(true), objIdIdx);
+
+  std::vector<size_t>::iterator it;
+
+  for(it=objIdIdx.begin(); it!=objIdIdx.end(); ++it)
+    oids->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
+
 
   te::qt::af::evt::LayerSelectionChanged e(m_layer);
   ApplicationController::getInstance().broadcast(&e);

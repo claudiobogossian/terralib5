@@ -152,7 +152,7 @@ void te::qt::widgets::ChartDisplay::onPointPicked(const QPointF &pos)
       }
      else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
       {
-        static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( pos);
+        emit selected(static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( pos), false);
         break;
       }
   }

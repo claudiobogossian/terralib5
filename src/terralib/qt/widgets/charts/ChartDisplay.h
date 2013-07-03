@@ -93,6 +93,13 @@ namespace te
 
           void onPointPicked(const QPointF &pos);
 
+        signals:
+
+          /*!
+            \brief Emmit when objects were selected.
+          */
+          void selected(te::da::ObjectIdSet*, const bool&);
+
          private:
 
           te::qt::widgets::ChartStyle*  m_chartStyle;  //!< The display's style.

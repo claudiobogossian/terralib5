@@ -652,7 +652,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       return;
     }
     te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
-    const te::map::LayerSchema* schema = (lay->getSchema());
+    const te::map::LayerSchema* schema = (lay->getSchema(true));
     te::da::DataSet* dataset = (lay->getData());
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
@@ -686,7 +686,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
       return;
     }
     te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
-    const te::map::LayerSchema* schema = (lay->getSchema());
+    const te::map::LayerSchema* schema = (lay->getSchema(true));
     te::da::DataSet* dataset = (lay->getData());
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::ScatterDialog dlg(dataset, dataType, this);

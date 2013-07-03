@@ -137,7 +137,7 @@ namespace te
 
             \param point The point to be highlighted.
           */
-          void highlight(QPointF point);
+          te::da::ObjectIdSet* highlight(QPointF point);
 
         private:
 

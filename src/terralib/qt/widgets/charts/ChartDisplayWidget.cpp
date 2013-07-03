@@ -53,6 +53,7 @@ te::qt::widgets::ChartDisplayWidget::ChartDisplayWidget(QwtPlotSeriesItem* chart
 
 // connect signal and slots
   connect(m_ui->m_settingsToolButton, SIGNAL(clicked()), this, SLOT(onSettingsToolButtonnTriggered()));
+  connect (m_display, SIGNAL(selected(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
 }
 
 te::qt::widgets::ChartDisplayWidget::~ChartDisplayWidget()
@@ -98,4 +99,9 @@ void te::qt::widgets::ChartDisplayWidget::onSettingsToolButtonnTriggered()
 {
     te::qt::widgets::ChartProperties dlg(this, this->parentWidget());
     dlg.exec();
+}
+
+void te::qt::widgets::ChartDisplayWidget::selectionChanged(te::da::ObjectIdSet* oids, const bool& add)
+{
+  emit selected(oids, add);
 }

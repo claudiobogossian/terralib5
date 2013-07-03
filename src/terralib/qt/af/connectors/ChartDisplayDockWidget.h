@@ -101,12 +101,12 @@ namespace te
         protected slots:
 
           /*!
-            \brief Used for capture events sent by the application framework.
+            \brief Used to capture events sent by the application framework.
           */
           void onApplicationTriggered(te::qt::af::evt::Event* evt);
 
           /*!
-            \brief Used for selection changed on table view.
+            \brief Used to handle a selection change.
 
             \param oids The selected object ids.
 

@@ -39,7 +39,7 @@
 namespace te
 {
 
-  namespace da  { class ObjectId; }
+  namespace da  { class ObjectId; class ObjectIdSet;}
   namespace dt  { class AbstractData; }
 
   namespace qt
@@ -149,8 +149,10 @@ namespace te
            /*!            
             \brief It adds a new value to the map containing the histogram values. 
 
-            \param new_value The value that will be added.
-            \param valuesOIds A vector containing all the ObjectIds contained by the interval
+            \param new_value    The value that will be added.
+            \param valuesOIds   A vector containing all the ObjectIds contained by the interval
+
+            \note It will take the ownwership of the given pointers
           */
 
           void insert (std::pair<te::dt::AbstractData*, unsigned int> new_value, std::vector<te::da::ObjectId*> valuesOIds);
@@ -163,7 +165,7 @@ namespace te
 
           void insert(std::pair<te::dt::AbstractData*, unsigned int> new_value);
 
-          const std::string& find(te::dt::AbstractData* interval);
+          te::da::ObjectIdSet* find(te::dt::AbstractData* interval);
 
           const te::dt::AbstractData* find(const te::da::ObjectId* oid);
 
@@ -171,14 +173,12 @@ namespace te
 
         private:
 
-          int m_histogramType;                                  //!< Histogram's type
-          HistogramValues   m_values;           //!< Histogram's values;
-          double m_minValue;                                    //!< Histogram's minimum numeric value
-          double m_interval;                                    //!< Histogram's numeric interval
-          std::set <std::string> m_StringIntervals;             //!< Histogram unique strings set, represents string intervals
-
-          te::qt::widgets::IntervalToObjectIdSet m_valuesOids;                              //!< The intervals and ObjecIds ordered in a boost multi index container
-
+          int                                    m_histogramType;    //!< Histogram's type
+          HistogramValues                        m_values;           //!< Histogram's values;
+          double                                 m_minValue;         //!< Histogram's minimum numeric value
+          double                                 m_interval;         //!< Histogram's numeric interval
+          std::set <std::string>                 m_StringIntervals;  //!< Histogram unique strings set, represents string intervals
+          IntervalToObjectIdSet                  m_valuesOids;       //!< The intervals and ObjecIds ordered in a boost multi index container
       };
     } // end namespace widgets
   }   // end namespace qt

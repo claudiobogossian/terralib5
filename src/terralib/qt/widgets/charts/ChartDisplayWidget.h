@@ -89,6 +89,15 @@ namespace te
 
           void onSettingsToolButtonnTriggered();
 
+          /*!
+            \brief Emmit when objects were selected.
+          */
+          void selectionChanged(te::da::ObjectIdSet* oids, const bool& add);
+
+        signals:
+
+          void selected(te::da::ObjectIdSet*, const bool&);
+
         private:
 
           std::auto_ptr<Ui::ChartDisplayWidgetForm>  m_ui;       //!< The widget form.

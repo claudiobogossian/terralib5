@@ -28,6 +28,7 @@
 
 //TerraLib
 #include "../../datatype/SimpleData.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
 #include "../Config.h"
 
 //STL
@@ -49,6 +50,7 @@ namespace te
     namespace widgets
     {
 
+         //The struct used to sort the elements of the HistogramValues map
           struct CompareHistogramInterval
           {
               bool operator()(te::dt::AbstractData* v1, te::dt::AbstractData* v2)
@@ -68,13 +70,13 @@ namespace te
 
           typedef std::map<te::dt::AbstractData*, unsigned int, CompareHistogramInterval>   HistogramValues;  //!< Histogram's values
 
-          // The struct used to store the interval and it'd object id
+          // The struct used to store the interval and it's object id
           struct IntervalToObjectId
           {
             te::dt::AbstractData*  interval;
-            std::string            oid;
+            te::da::ObjectId*      oid;
 
-            IntervalToObjectId(te::dt::AbstractData* interval, std::string oid) :interval(interval),oid(oid){}
+            IntervalToObjectId(te::dt::AbstractData* p_interval, te::da::ObjectId* p_oid) : interval(p_interval), oid(p_oid){}
 
             bool operator<(const IntervalToObjectId& v)const 
             { 
@@ -84,16 +86,32 @@ namespace te
 
           };
 
-           // define a multiply indexed set with indices by interval and it's objectId
+          //A name extractor for the intervals of an IntervalToObjectId struct
+          struct interval_key_extractor
+          {
+            typedef std::string result_type;
+
+             const  result_type operator()( const IntervalToObjectId e) const  {return e.interval->toString();}
+          };
+
+          //A name extractor for the objectIds of an IntervalToObjectId struct
+          struct oid_key_extractor
+          {
+            typedef std::string result_type;
+
+             const  result_type operator()( const IntervalToObjectId e) const  {return e.oid->getValueAsString();}
+          };
+
+          // define a multiply indexed set with indices by
           typedef boost::multi_index::multi_index_container<
             IntervalToObjectId,
             boost::multi_index::indexed_by<
 
-              // sort by operator<
-              boost::multi_index::ordered_non_unique<boost::multi_index::member<IntervalToObjectId, te::dt::AbstractData*, &IntervalToObjectId::interval> >,
+              // sort by less<string> on Interval
+              boost::multi_index::ordered_non_unique<interval_key_extractor>,
 
               // sort by less<string> on objectID
-              boost::multi_index::ordered_unique<boost::multi_index::member<IntervalToObjectId,std::string,&IntervalToObjectId::oid> >
+              boost::multi_index::ordered_unique<oid_key_extractor>
             > 
           > IntervalToObjectIdSet;
 

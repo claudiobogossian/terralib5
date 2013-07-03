@@ -27,6 +27,7 @@
 #include "Histogram.h"
 #include "../../../datatype.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 
 te::qt::widgets::Histogram::Histogram()
 {
@@ -41,6 +42,13 @@ te::qt::widgets::Histogram::~Histogram()
     delete it->first;
     ++it;
   }
+
+  //te::qt::widgets::IntervalToObjectIdSet::iterator it2= m_valuesOids.begin();
+  //while(it2 != m_valuesOids.end())
+  //{
+  //  delete it2->oid;
+  //  ++it2;
+  //}
 }
 
 int& te::qt::widgets::Histogram::getType()
@@ -114,23 +122,40 @@ void te::qt::widgets::Histogram::insert(std::pair<te::dt::AbstractData*, unsigne
   m_values.insert(new_value);
 }
 
-const std::string& te::qt::widgets::Histogram::find(te::dt::AbstractData* interval)
+te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* interval)
 {
-  te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator it= m_valuesOids.get<0>().find(interval);
-  //te::qt::widgets::IntervalToObjectIdSet::iterator it = m_valuesOids.find(data);
-  return (*it).oid;
+  te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator it0, it1;
+
+  tie(it0, it1) = m_valuesOids.get<0>().equal_range(interval->toString());
+
+  te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
+
+  while(it0 != it1) 
+  {
+    te::da::ObjectId* oid = new te::da::ObjectId(); 
+
+    for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
+    {
+      oid->addValue((it)->clone());
+    }
+
+    oids->add(oid);
+    ++it0;
+  }
+  return oids;
 }
 
 const te::dt::AbstractData* te::qt::widgets::Histogram::find(const te::da::ObjectId* oid)
 {
   te::qt::widgets::IntervalToObjectIdSet::nth_index<1>::type::iterator it= m_valuesOids.get<1>().find(oid->getValueAsString());
-  return (*it).interval;
+  te::dt::AbstractData* interval = it->interval;
+  return interval;
 }
 
 void te::qt::widgets::Histogram::adjustOids(te::dt::AbstractData* interval, std::vector<te::da::ObjectId*> valuesOIds)
 {
   for(size_t i = 0; i < valuesOIds.size(); ++i)
   {
-    m_valuesOids.insert(te::qt::widgets::IntervalToObjectId(interval, valuesOIds.at(i)->getValueAsString()));
+    m_valuesOids.insert(te::qt::widgets::IntervalToObjectId(interval, valuesOIds.at(i)));
   }
 }
