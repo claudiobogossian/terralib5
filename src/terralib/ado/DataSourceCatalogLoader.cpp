@@ -197,11 +197,13 @@ void te::ado::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
   std::map<int, bool> hasDefaultMap;
   std::map<int, std::string> defaultValueMap;
 
+  _ConnectionPtr conn = 0;
+
   try
   {
     HRESULT hr = S_OK;
 
-    _ConnectionPtr conn = m_t->getADOConnection();
+    conn = m_t->getADOConnection();
 
     _RecordsetPtr rs = NULL;
 
@@ -312,8 +314,18 @@ void te::ado::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
       case ::adUnsignedTinyInt:
       case ADOX::adLongVarBinary:
       case ADOX::adBinary:
-        p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+      {
+        if(te::ado::IsGeomProperty(conn, dsName, colName))
+        {
+          p = new te::gm::GeometryProperty(colName, te::ado::GetSRID(conn, dsName, colName), te::ado::GetType(conn, dsName, colName));
+        }
+        else
+        {
+          p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+        }
+
         break;
+      }
 
       case ADOX::adDate:
       case ADOX::adDBDate:
