@@ -50,6 +50,7 @@
 #include "../srs/Config.h"
 #include "AbstractLayer.h"
 #include "AbstractLayerRenderer.h"
+#include "Canvas.h"
 #include "CanvasConfigurer.h"
 #include "Exception.h"
 #include "Grouping.h"
@@ -63,7 +64,9 @@
 
 // STL
 #include <cassert>
+#include <cstdlib>
 #include <memory>
+#include <utility>
 
 te::map::AbstractLayerRenderer::AbstractLayerRenderer()
 {
@@ -113,7 +116,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     /** For while if the AbstractLayer has a grouping, do not consider the style. Need review! **/
     if(layer->getGrouping())
     {
-      drawLayerGrouping(layer, geometryProperty->getName(), canvas, ibbox, srid);
+      drawLayerGroupingMem(layer, geometryProperty->getName(), canvas, ibbox, srid);
       return;
     }
 
@@ -200,7 +203,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
   for(std::size_t i = 0; i < nRules; ++i) // for each <Rule>
   {
     // The current rule
-    const te::se::Rule* rule = style->getRule(i);
+    te::se::Rule* rule = style->getRule(i);
     assert(rule);
 
     // TODO: Should be verified the MinScaleDenominator and MaxScaleDenominator. Where will we put the current scale information? Method parameter?
@@ -261,8 +264,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       continue;
 
     // Gets the set of symbolizers defined on current rule
-    const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
-    std::size_t nSymbolizers = symbolizers.size();
+    const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
 
     // Builds task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
     std::string message = TR_MAP("Drawing the layer");
@@ -273,18 +275,32 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
 
     // Creates a draw task
     te::common::TaskProgress task(message, te::common::TaskProgress::DRAW);
-    //task.setTotalSteps(nSymbolizers * dataset->size()); // Removed! The te::da::DataSet size() method would be too costly to compute.
+    //task.setTotalSteps(symbolizers.size() * dataset->size()); // Removed! The te::da::DataSet size() method would be too costly to compute.
 
-    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
+    // For while, first geometry property. TODO: get which geometry property the symbolizer references
+    std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+
+    if(symbolizers.empty())
+    {
+      // The current rule do not have a symbolizer. Try creates a default based on first geometry of dataset.
+      std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
+      assert(g.get());
+
+      te::se::Symbolizer* symbolizer = te::se::CreateSymbolizer(g->getGeomTypeId());
+      assert(symbolizer);
+
+      rule->push_back(symbolizer);
+
+      dataset->moveFirst();
+    }
+
+    for(std::size_t j = 0; j < symbolizers.size(); ++j) // for each <Symbolizer>
     {
       // The current symbolizer
       te::se::Symbolizer* symb = symbolizers[j];
 
       // Let's config the canvas based on the current symbolizer
       cc.config(symb);
-
-      // For while, first geometry property. TODO: get which geometry property the symbolizer references
-      std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
 
       // Let's draw! for each data set geometry...
       DrawGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, &task);
@@ -304,7 +320,7 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
 {
   assert(!geomPropertyName.empty());
 
-   // Creates a canvas configurer
+  // Creates a canvas configurer
   te::map::CanvasConfigurer cc(canvas);
 
   // The layer grouping
@@ -428,4 +444,153 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
     task.pulse();
 
   } // end for each GroupItem
+}
+
+void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
+                                                          const std::string& geomPropertyName,
+                                                          Canvas* canvas,
+                                                          const te::gm::Envelope& bbox,
+                                                          int srid)
+{
+  assert(!geomPropertyName.empty());
+
+  // Creates a canvas configurer
+  te::map::CanvasConfigurer cc(canvas);
+
+  // The layer grouping
+  Grouping* grouping = layer->getGrouping();
+
+  // The referenced property name
+  std::string propertyName = grouping->getPropertyName();
+  assert(!propertyName.empty());
+
+  // The referenced property type
+  int propertyType = grouping->getPropertyType();
+
+  // The grouping type
+  GroupingType type = grouping->getType();
+
+  // The grouping precision
+  const std::size_t& precision = grouping->getPrecision();
+  
+  // The grouping items
+  const std::vector<GroupingItem*>& items = grouping->getGroupingItems();
+
+  std::size_t nGroupItems = items.size();
+
+  // case UNIQUE_VALUE: for each GroupingItem, builds a map [item value] -> [symbolizers]
+  std::map<std::string, std::vector<te::se::Symbolizer*> > uniqueGroupsMap;
+
+  // case (NOT) UNIQUE_VALUE: for each GroupingItem, builds a map [item upper limit] -> [symbolizers]
+  std::map<double, std::vector<te::se::Symbolizer*> > othersGroupsMap;
+
+  for(std::size_t i = 0; i < nGroupItems; ++i)
+  {
+    // The current group item
+    GroupingItem* item = items[i];
+    assert(item);
+
+    if(type == UNIQUE_VALUE)
+    {
+      uniqueGroupsMap[item->getValue()] = item->getSymbolizers();
+    }
+    else
+    {
+      double uppperLimit = atof(item->getUpperLimit().c_str());
+      othersGroupsMap[uppperLimit] = item->getSymbolizers();
+    }
+  }
+
+  // Builds the task message; e.g. ("Drawing the grouping of layer Countries.")
+  std::string message = TR_MAP("Drawing the grouping of layer");
+  message += " " + layer->getTitle() + ".";
+
+  // Creates the draw task
+  te::common::TaskProgress task(message, te::common::TaskProgress::DRAW);
+
+  std::auto_ptr<te::da::DataSet> dataset(0);
+  try
+  {
+    dataset.reset(layer->getData(bbox, te::gm::INTERSECTS));
+  }
+  catch(std::exception& /*e*/)
+  {
+    return; // TODO: deal the exceptions!
+  }
+
+  if(dataset.get() == 0)
+    throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
+
+  if(dataset->moveNext() == false)
+    return;
+
+  std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+
+  // Verifies if is necessary convert the data set geometries to the given srid
+  bool needRemap = false;
+  if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
+    needRemap = true;
+
+  do
+  {
+    std::vector<te::se::Symbolizer*> symbolizers;
+
+    // Finds the current data set item on group map
+    std::string value = dataset->getAsString(propertyName, precision);
+
+    if(type == UNIQUE_VALUE)
+    {
+      std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(value);
+      assert(it != uniqueGroupsMap.end());
+      symbolizers = it->second;
+    }
+    else
+    {
+      double dvalue = atof(value.c_str());
+      std::map<double, std::vector<te::se::Symbolizer*> >::const_iterator it;
+      for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
+      {
+        if(dvalue < it->first)
+          break;
+      }
+      assert(it != othersGroupsMap.end());
+      symbolizers = it->second;
+    }
+
+    te::gm::Geometry* geom = 0;
+    try
+    {
+      geom = dataset->getGeometry(gpos);
+      if(geom == 0)
+        continue;
+    }
+    catch(std::exception& /*e*/)
+    {
+      continue;
+    }
+
+    // Gets the set of symbolizers defined on group item
+    std::size_t nSymbolizers = symbolizers.size();
+
+    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
+    {
+      // The current symbolizer
+      te::se::Symbolizer* symb = symbolizers[j];
+
+      // Let's config the canvas based on the current symbolizer
+      cc.config(symb);
+
+      // If necessary, geometry remap
+      if(needRemap)
+      {
+        geom->setSRID(layer->getSRID());
+        geom->transform(srid);
+      }
+
+      canvas->draw(geom);
+    }
+
+    delete geom;
+
+  }while(dataset->moveNext());
 }

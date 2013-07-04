@@ -24,11 +24,13 @@
 */
 
 //Terralib
+#include "Enums.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "HistogramChart.h"
 #include "Histogram.h"
 #include "HistogramStyle.h"
 #include "StringScaleDraw.h"
-#include "../../../datatype.h"
 #include "../../../qt/widgets/se/Utils.h"
 
 //QT
@@ -39,10 +41,19 @@
 #include <qwt_column_symbol.h>
 #include <qwt_plot.h>
 
+//STL
+#include <limits>
+
 te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
   QwtPlotHistogram(),
   m_histogram(histogram)
 {
+
+  m_selection = new QwtPlotHistogram();
+  m_selection->setStyle(QwtPlotHistogram::Columns);
+  m_selection->setBrush(QBrush(Qt::green));
+  m_selection->attach(plot());
+
   //Vector that will be populated by the histogram's data
   QVector<QwtIntervalSample> samples;
 
@@ -50,21 +61,26 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
     histogram->getType() == te::dt::FLOAT_TYPE || histogram->getType() == te::dt::DOUBLE_TYPE || 
     histogram->getType() == te::dt::NUMERIC_TYPE)
   {
+    std::map<double, unsigned int> values;
+    values = histogram->getValues();
+
     std::map<double,  unsigned int>::const_iterator it;
+    it = values.begin();
+
     std::map<int,  unsigned int> vmap;
 
     int i = 0;
-    it = histogram->getValues()->begin();
+
     double ini = histogram->getMinValue();
 
     double vx = ini + histogram->getInterval();
 
-    while(vx <= histogram->getValues()->rbegin()->first)
+    while(vx <= values.rbegin()->first)
     {
       vmap[i] = 0;
       if(fabs(vx) < 0.000000000001)
         vx = 0.;
-      while(it != histogram->getValues()->end())
+      while(it != values.end())
       {
         if(it->first >= ini && it->first < vx)
           vmap[i] += it->second;
@@ -87,13 +103,17 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
 
   else if (histogram->getType() == te::dt::DATETIME_TYPE || histogram->getType() == te::dt::STRING_TYPE)
   {
+    std::map<std::string, unsigned int> values;
+    values = histogram->getStringValues();
+
     std::map<std::string,  unsigned int>::iterator it;
-    it  = histogram->getStringValues()->begin();
+    it  = values.begin();
+
     m_histogramScaleDraw = new StringScaleDraw(histogram->getStringInterval());
-    QVector<QwtIntervalSample> samples(histogram->getStringValues()->size());
+    QVector<QwtIntervalSample> samples(values.size());
     double LabelInterval = 0.0;
 
-    while (it != histogram->getStringValues()->end())
+    while (it != values.end())
     {
       QwtInterval qwtInterval(LabelInterval, LabelInterval+5);
       qwtInterval.setBorderFlags(QwtInterval::ExcludeMaximum);
@@ -101,17 +121,18 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
       LabelInterval++;
        it++;
     }
-    
+
     setData(new QwtIntervalSeriesData(samples));
   }
   else
   {
-
+    std::map<double,  unsigned int> values;
     std::map<double,  unsigned int>::const_iterator it;
-    it = histogram->getValues()->begin();
+    values = histogram->getValues();
+    it = values.begin();
     double interval = 0.0;
   
-    while (it != histogram->getValues()->end())
+    while (it != values.end())
     {
       QwtInterval qwtInterval(interval, interval+1);
       samples.push_back(QwtIntervalSample(it->second, qwtInterval));
@@ -127,8 +148,14 @@ te::qt::widgets::HistogramChart::~HistogramChart()
 {  
   delete m_histogram;
   delete m_histogramStyle;
+  delete m_selection;
   if(m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
     delete m_histogramScaleDraw;
+}
+
+int  te::qt::widgets::HistogramChart::rtti() const
+{
+  return te::qt::widgets::HISTOGRAM_CHART;
 }
 
 te::qt::widgets::StringScaleDraw* te::qt::widgets::HistogramChart::getScaleDraw()
@@ -181,4 +208,100 @@ void te::qt::widgets::HistogramChart::setHistogramStyle(te::qt::widgets::Histogr
 
   setPen(barPen);
   setBrush(barBrush);
+}
+
+void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
+{
+  //Removing the previous selection, if there was any.
+  m_selection->detach();
+
+  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator itObjSet; 
+  QwtSeriesData<QwtIntervalSample>* values = data();
+
+  //Acquiring all selected intervals:
+
+  if((m_histogram->getType() >= te::dt::INT16_TYPE && m_histogram->getType() <= te::dt::UINT64_TYPE) || 
+    m_histogram->getType() == te::dt::FLOAT_TYPE || m_histogram->getType() == te::dt::DOUBLE_TYPE || 
+    m_histogram->getType() == te::dt::NUMERIC_TYPE)
+  {
+
+    std::vector<double> highlightedIntervals;
+
+    for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
+    {
+      double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
+      highlightedIntervals.push_back(interval);
+    }
+
+    QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
+
+    //Acquiring all selected samples:
+    for(size_t i = 0; i < values->size(); ++i)
+    {
+      for (size_t j = 0; j < highlightedIntervals.size();++j)
+      {
+        //Comparing with the minimum value. Our histogram is created based on the exclude maximum policy.
+        if(values->sample(i).interval.minValue() == highlightedIntervals.at(j))
+          highlightedSamples.push_back(values->sample(i));
+      }
+    }
+    m_selection->setData(new QwtIntervalSeriesData(highlightedSamples));
+  }
+
+  else if (m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
+  {
+
+      std::vector<std::string> highlightedIntervals;
+
+    for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
+    {
+      std::string interval = m_histogram->find((*itObjSet))->toString();
+      highlightedIntervals.push_back(interval);
+    }
+
+    QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
+
+    //Acquiring all selected samples:
+    for(size_t i = 0; i < values->size(); ++i)
+    {
+      for (size_t j = 0; j < highlightedIntervals.size();++j)
+      {
+        //Comparing label by label.
+        if(m_histogramScaleDraw->label(i).text().toStdString() == highlightedIntervals.at(j))
+          highlightedSamples.push_back(values->sample(i));
+      }
+    }
+    m_selection->setData(new QwtIntervalSeriesData(highlightedSamples));
+  }
+
+  m_selection->attach(plot());
+  plot()->replot();
+}
+ 
+te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QPointF point)
+{
+  //Removing the previous selection, if there was any.
+  m_selection->detach();
+
+  QwtSeriesData<QwtIntervalSample>* values = data();
+  QVector<QwtIntervalSample> highlightedSamples;
+
+  for(size_t i = 0; i < values->size(); ++i)
+  {
+    if(values->sample(i).interval.minValue() < point.rx() && values->sample(i).interval.maxValue() > point.rx() &&  values->sample(i).value > point.ry())
+      highlightedSamples.push_back(values->sample(i));
+  }
+
+  std::auto_ptr<te::dt::Double> data;
+
+  if(highlightedSamples.size() > 0)
+    data.reset(new te::dt::Double(highlightedSamples.at(0).interval.minValue()));
+  else
+    data.reset(new te::dt::Double(std::numeric_limits<double>::max()));
+
+  m_selection->setData(new QwtIntervalSeriesData(highlightedSamples));
+  m_selection->attach(plot());
+  plot()->replot();
+
+  return m_histogram->find(data.get());
 }

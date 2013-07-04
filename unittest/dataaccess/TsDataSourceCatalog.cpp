@@ -286,18 +286,6 @@ void TsDataSourceCatalog::tcSequencesOwnedByDataSetTypes()
 //#endif  // TE_COMPILE_ALL
 }
 
-void TsDataSourceCatalog::tcMixed()
-{
-//#ifdef TE_COMPILE_ALL
-//#endif  // TE_COMPILE_ALL
-}
-
-void TsDataSourceCatalog::tcClone()
-{
-//#ifdef TE_COMPILE_ALL
-//#endif  // TE_COMPILE_ALL
-}
-
 void TsDataSourceCatalog::tcPerformance()
 {
 //#ifdef TE_COMPILE_ALL

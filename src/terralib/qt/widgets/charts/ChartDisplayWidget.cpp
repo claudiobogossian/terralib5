@@ -29,6 +29,7 @@
 #include "ChartStyle.h"
 #include "ChartProperties.h"
 #include "../../../dataaccess.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../datatype/Property.h"
 #include "ui_ChartDisplayWidgetForm.h"
 
@@ -52,12 +53,12 @@ te::qt::widgets::ChartDisplayWidget::ChartDisplayWidget(QwtPlotSeriesItem* chart
 
 // connect signal and slots
   connect(m_ui->m_settingsToolButton, SIGNAL(clicked()), this, SLOT(onSettingsToolButtonnTriggered()));
+  connect (m_display, SIGNAL(selected(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
 }
 
 te::qt::widgets::ChartDisplayWidget::~ChartDisplayWidget()
 {
   delete m_chart;
-  delete m_display;
 }
 
 QwtPlotSeriesItem* te::qt::widgets::ChartDisplayWidget::getChart()
@@ -88,8 +89,19 @@ int te::qt::widgets::ChartDisplayWidget::getType()
   return m_type;
 }
 
+
+void te::qt::widgets::ChartDisplayWidget::highlightOIds(const te::da::ObjectIdSet* oids)
+{
+  m_display->highlightOIds(oids);
+}
+
 void te::qt::widgets::ChartDisplayWidget::onSettingsToolButtonnTriggered()
 {
     te::qt::widgets::ChartProperties dlg(this, this->parentWidget());
     dlg.exec();
+}
+
+void te::qt::widgets::ChartDisplayWidget::selectionChanged(te::da::ObjectIdSet* oids, const bool& add)
+{
+  emit selected(oids, add);
 }

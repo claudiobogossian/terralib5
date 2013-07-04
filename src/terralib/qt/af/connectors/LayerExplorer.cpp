@@ -96,9 +96,12 @@ void te::qt::af::LayerExplorer::onSelectionChanged(const QItemSelection& selecte
 
   if(item != 0)
   {
-    te::map::AbstractLayerPtr abs_lay = item->getLayer();
-    te::qt::af::evt::LayerSelected ls_ev(abs_lay.get());
-    ApplicationController::getInstance().broadcast(&ls_ev);
+    te::map::AbstractLayerPtr itemLayer = item->getLayer();
+    if(itemLayer)
+    {
+      te::qt::af::evt::LayerSelected ls_ev(itemLayer.get());
+      ApplicationController::getInstance().broadcast(&ls_ev);
+    }
   }
 }
 

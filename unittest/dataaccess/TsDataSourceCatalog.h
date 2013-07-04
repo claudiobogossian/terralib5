@@ -65,9 +65,6 @@ class TsDataSourceCatalog : public CPPUNIT_NS::TestFixture
   //CPPUNIT_TEST( tcDataSetTypesAndSequences );
   //CPPUNIT_TEST( tcDataSetTypesWithForeignKeys );
   //CPPUNIT_TEST( tcSequencesOwnedByDataSetTypes );
-  //CPPUNIT_TEST( tcMixed );
-  //CPPUNIT_TEST( tcClone );
-  //CPPUNIT_TEST( tcPerformance );
 
   CPPUNIT_TEST_SUITE_END();    
   
@@ -88,36 +85,40 @@ class TsDataSourceCatalog : public CPPUNIT_NS::TestFixture
 
     void tcGetDataSource();
     void tcSetDataSource();
-//    void tcClone();
+    void tcClear();
     void tcGetNumberOfDataSets();
-    void tcAddOneDataSetType();
-    void tcAddVecDataSetType();
+    void tcDataSetExists();
+    void tcAddDataSetType(); // tcAddOneDataSetType();
     void tcRemove();
-    void tcDetach();
     void tcRename();
-    void tcSetNewIdDataSetType();
     void tcGetDataSetTypeByIdx();
     void tcGetDataSetTypeByName();
-    void tcGetDataSetTypeById();
-    void tcGetDataSetTypePos();
 
     void tcGetNumberOfSequences();
     void tcAddSequence();
-    void tcAddSequences();
+    //void tcAddSequences();
     void tcRemoveSequence();
-    void tcChangesSequenceId();
+    //void tcChangesSequenceId();
     void tcDetachSequence();
     void tcGetSequenceByIdx();
     void tcGetSequenceByName();
     void tcGetSequenceById();
-    void tcGetSequencePos();
+    //void tcGetSequencePos();
 
     void tcAddRefFk();
     void tcRemoveRefFk();
     void tcgetRefFk();
-    void tcDropDependentSequences();
+    void tcDropDependentSequencesOnProp();
 
     //Protected Methods
+    void tcCheckSequenceDependency();
+    void tcIndexSequenceDependency();
+    void tcDropDependentSequencesOnDataSetType();
+    void tcDropDependentSequenceEntry();
+    void tcCheckFKsDependency();
+    void tcIndexFKs();
+    void tcDropDependentFKs();
+    // End of proptected methods
     // ...
 
 
@@ -149,12 +150,6 @@ class TsDataSourceCatalog : public CPPUNIT_NS::TestFixture
 
     /*! \brief Test Case: adding sequences owned by DataSetTypes. */
     void tcSequencesOwnedByDataSetTypes();
-
-    /*! \brief Test Case: adding and removing sequences (owned or not) and dataset types (associated to foreign keys or not). */
-    void tcMixed();
-
-    /*! \brief Test Case: cloning a catalog. */
-    void tcClone();
 
     /*!
       \brief Test Case: performance monitor.

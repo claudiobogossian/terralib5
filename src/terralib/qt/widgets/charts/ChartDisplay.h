@@ -36,11 +36,13 @@
 #include <string>
 
 class QwtPlotGrid;
+class QwtPlotPicker;
 
 namespace te
 {
-  namespace se { class Stroke; class Fill; class Font; }
   namespace color { class RGBAColor; }
+  namespace da    { class ObjectIdSet; }
+  namespace se    { class Stroke; class Fill; class Font; }
 
   namespace qt
   {
@@ -57,6 +59,9 @@ namespace te
       */
       class TEQTWIDGETSEXPORT ChartDisplay : public QwtPlot
       {
+
+        Q_OBJECT
+
         public:
 
           /*!
@@ -75,12 +80,31 @@ namespace te
 
           void setStyle(te::qt::widgets::ChartStyle* newStyle);
 
+          /*!
+            \brief Highlights the objects identified by \a oids
+
+            \param oids The identifiers of plotitems to be highlighted.
+          */
+          void highlightOIds(const te::da::ObjectIdSet* oids);
+
           void adjustDisplay();
+
+        protected slots:
+
+          void onPointPicked(const QPointF &pos);
+
+        signals:
+
+          /*!
+            \brief Emmit when objects were selected.
+          */
+          void selected(te::da::ObjectIdSet*, const bool&);
 
          private:
 
           te::qt::widgets::ChartStyle*  m_chartStyle;  //!< The display's style.
           QwtPlotGrid*                  m_grid;        //!< The display's grid
+          QwtPlotPicker*                m_picker;       //!< The display's picker.
       };
     } // end namespace widgets
   }   // end namespace qt

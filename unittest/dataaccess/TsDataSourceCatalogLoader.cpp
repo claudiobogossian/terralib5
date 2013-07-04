@@ -582,7 +582,7 @@ void TsDataSourceCatalogLoader::tcAllGets()
         CPPUNIT_ASSERT(geomt);
         te::gm::Envelope* bbox;
         CPPUNIT_ASSERT_NO_THROW(bbox = cl->getExtent(geomt));
-        CPPUNIT_ASSERT(bbox->isValid() == true);
+        if (bbox) CPPUNIT_ASSERT(bbox->isValid() == true);
         delete bbox;
       }
     }
@@ -690,8 +690,9 @@ void TsDataSourceCatalogLoader::tcGetExtent()
         te::dt::Property* geomt = dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
         CPPUNIT_ASSERT(geomt);
         te::gm::Envelope* bbox;
-        CPPUNIT_ASSERT_NO_THROW(bbox = cl->getExtent(geomt));
-        CPPUNIT_ASSERT(bbox->isValid() == true);
+        CPPUNIT_ASSERT_NO_THROW(bbox = cl->getExtent(geomt)); //It return a null box when dataset is empty
+        if (bbox)
+        {CPPUNIT_ASSERT(bbox->isValid() == true);}
         delete bbox;
       }
     }
