@@ -1073,14 +1073,14 @@ bool te::pgis::CatalogLoader::constraintExists(const std::string& name, char con
   
   SplitTableName(name, m_t->getPGDataSource()->getCurrentSchema(), sname, cname);
 
-  std::string sql("SELECT c.oid, n.nspname, c.conname, c.contype "
-                  "FROM pg_constraint c, pg_namespace n "
-                  "WHERE c.connamespace = n.oid "
-                  "AND c.conname = '");
-              sql += cname;
-              sql += "' AND n.nspname = '";
-              sql += sname;
-              sql += "'";
+  std::string sql("SELECT c.oid, c.conrelid, c.conname, c.connamespace "
+                  "FROM pg_constraint c , pg_namespace n "
+                  "WHERE c.connamespace  = n.oid "
+                  "AND  c.conname = '");
+                  sql += cname;
+                  sql += "' AND n.nspname = '" ;
+                  sql += sname;
+                  sql += "'" ;
 
   if(conType != '\0')
   {
