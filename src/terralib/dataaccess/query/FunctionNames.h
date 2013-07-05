@@ -84,7 +84,7 @@ namespace te
 
 // string functions
         static const std::string sm_Substring;
-        static const std::string sm_Like;        
+        static const std::string sm_Like;
 
 // aggregate
         static const std::string sm_Sum;
