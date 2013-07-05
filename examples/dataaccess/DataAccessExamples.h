@@ -171,6 +171,9 @@ void GDALExample();
 /*! \brief Quering a dataset. */
 void QueryExample();
 
+/*! \brief Quering a dataset. */
+void QueryExample_2();
+
 /*! \brief This example shows how to copy a given dataset from one data source to another one. */
 void CopyingData();
 

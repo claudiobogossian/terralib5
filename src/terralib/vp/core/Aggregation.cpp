@@ -34,6 +34,7 @@
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../dataaccess/query_h.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Property.h"
 #include "../../datatype/SimpleProperty.h"
@@ -79,7 +80,7 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
 
     if(dsCapabilities.supportsPreparedQueryAPI())
     {
-      AggregationQuery(inputLayer, groupingProperties, statisticalSummary, outputDataSet);
+      AggregationQuery(dsLayer, groupingProperties, statisticalSummary, outputDataSet);
     }
     else
     {
@@ -101,6 +102,13 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
 {
 
   std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator itStatSummary = statisticalSummary.begin();
+  
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(inputLayer.get());
+  
+  te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+
+  te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema();
+  te::da::Fields* fields = new te::da::Fields;
 
   while(itStatSummary != statisticalSummary.end())
   {
@@ -108,20 +116,93 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
 
     if(propType == te::dt::STRING_TYPE)
     {
-      std::map<std::string, te::stat::StringStatisticalSummary> ssMap;
-      //std::map<std::string, te::stat::StringStatisticalSummary> = te::stat::GetStringStatisticalSummaryQuery(inputLayer, itStatSummary->first, ssMap, groupingProperties);
+      te::da::PropertyName* p_name = new te::da::PropertyName(itStatSummary->first->getName());
 
+      te::da::Expression* e_min = new te::da::Min(p_name);
+      te::da::Field* f_min = new te::da::Field(*e_min, p_name->getName() + "_MIN");
 
+      te::da::Expression* e_max = new te::da::Max(p_name);
+      te::da::Field* f_max = new te::da::Field(*e_max,  p_name->getName() + "_MAX");
+
+      te::da::Expression* e_count = new te::da::Count(p_name);
+      te::da::Field* f_count = new te::da::Field(*e_count,  p_name->getName() + "_COUNT");
+
+      fields->push_back(f_min);
+      fields->push_back(f_max);
+      fields->push_back(f_count);
     }
     else
     {
-      std::map<std::string, te::stat::NumericStatisticalSummary> ssMap;
-      te::stat::GetNumericStatisticalSummaryQuery(inputLayer, itStatSummary->first, ssMap, groupingProperties);
+      te::da::PropertyName* p_name = new te::da::PropertyName(itStatSummary->first->getName());
 
+      te::da::Expression* e_min = new te::da::Min(p_name);
+      te::da::Field* f_min = new te::da::Field(*e_min, p_name->getName() + "_MIN");
+
+      te::da::Expression* e_max = new te::da::Max(p_name);
+      te::da::Field* f_max = new te::da::Field(*e_max, p_name->getName() + "_MAX");
+
+      te::da::Expression* e_count = new te::da::Count(p_name);
+      te::da::Field* f_count = new te::da::Field(*e_count, p_name->getName() + "_COUNT");
+
+      te::da::Expression* e_sum = new te::da::Sum(p_name);
+      te::da::Field* f_sum = new te::da::Field(*e_sum, p_name->getName() + "_SUM");
+
+      te::da::Expression* e_mean = new te::da::Avg(p_name);
+      te::da::Field* f_mean = new te::da::Field(*e_mean, p_name->getName() + "_MEAN");
+
+      te::da::Expression* e_stddev = new te::da::StdDev(p_name);
+      te::da::Field* f_stddev = new te::da::Field(*e_stddev, p_name->getName() + "_STD_DEV");
+
+      te::da::Expression* e_variance = new te::da::Variance(p_name);
+      te::da::Field* f_variance = new te::da::Field(*e_variance, p_name->getName() + "_VARIANCE");
+
+      te::da::Expression* e_amplitude = new te::da::Sub(*e_max, *e_min);
+      te::da::Field* f_amplitude = new te::da::Field(*e_amplitude, p_name->getName() + "_AMPLITUDE");
+
+      fields->push_back(f_min);
+      fields->push_back(f_max);
+      fields->push_back(f_count);
+      fields->push_back(f_sum);
+      fields->push_back(f_mean);
+      fields->push_back(f_stddev);
+      fields->push_back(f_variance);
+      fields->push_back(f_amplitude);
 
     }
     ++itStatSummary;
   }
+
+  te::da::FromItem* fromItem = new te::da::DataSetName(dsType->getName());
+  te::da::From* from = new te::da::From;
+  from->push_back(fromItem);
+      
+  te::da::Select select(fields, from);
+
+  if(!groupingProperties.empty())
+  {
+    te::da::GroupBy* groupBy = new te::da::GroupBy();
+
+    for(std::size_t i = 0; i < groupingProperties.size(); ++i)
+    {
+      te::da::GroupByItem* e_groupBy = new te::da::GroupByItem(groupingProperties[i]->getName());
+      groupBy->push_back(e_groupBy);
+    }
+    select.setGroupBy(groupBy);
+  }
+
+  std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
+  te::da::DataSet* dsQuery = dsTransactor->query(select);
+  dsQuery->moveFirst();
+
+  while(dsQuery->moveNext())
+  {
+    std::string min = dsQuery->getAsString(0);
+    std::cout << "Min: " << min <<std::endl;
+  }
+
+  delete dsLayer;
+  delete dsType;
+  delete dsQuery;
 }
 
 void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
@@ -469,4 +550,3 @@ void te::vp::Persistence( te::da::DataSetType* dataSetType,
   pair.second->moveFirst();
   te::da::Create(t.get(), pair.first, pair.second, options);
 }
-

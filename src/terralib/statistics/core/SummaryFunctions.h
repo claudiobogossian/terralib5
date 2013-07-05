@@ -55,13 +55,11 @@ namespace te
 //dataaccess
     TESTATEXPORT void GetStringStatisticalSummaryQuery( const te::map::AbstractLayerPtr& layer, 
                                                         const te::dt::Property* prop,
-                                                        std::map<std::string, te::stat::StringStatisticalSummary>& ssMap,
-                                                        const std::vector<te::dt::Property*>& restriction = std::vector<te::dt::Property*>());
+                                                        te::stat::StringStatisticalSummary& ss);
 
     TESTATEXPORT void GetNumericStatisticalSummaryQuery(const te::map::AbstractLayerPtr& layer,
                                                         const te::dt::Property* prop,
-                                                        std::map<std::string, te::stat::NumericStatisticalSummary>& ssMap,
-                                                        const std::vector<te::dt::Property*>& restriction = std::vector<te::dt::Property*>());
+                                                        te::stat::NumericStatisticalSummary& ss);
 
   } // end namespace stat
 }   // end namespace te
