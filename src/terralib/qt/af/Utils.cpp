@@ -45,6 +45,7 @@
 #include <memory>
 
 // Boost
+#include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/property_tree/ptree.hpp>
 
@@ -57,24 +58,30 @@
 
 te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
 {
+  boost::filesystem::path furi(uri);
+  
+  if (!boost::filesystem::exists(furi) || boost::filesystem::is_regular_file(furi))   
+    throw Exception((boost::format(TR_QT_AF("Could not read project file: %1%.")) % uri).str());
+  
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
-
+  
   xmlReader->read(uri);
-
+  
   if(!xmlReader->next())
     throw Exception((boost::format(TR_QT_AF("Could not read project information in the file: %1%.")) % uri).str());
-
+  
   if(xmlReader->getNodeType() != te::xml::START_ELEMENT)
     throw Exception((boost::format(TR_QT_AF("Error reading the document %1%, the start element wasn't found.")) % uri).str());
-
+  
   if(xmlReader->getElementLocalName() != "Project")
     throw Exception((boost::format(TR_QT_AF("The first tag in the document %1% is not 'Project'.")) % uri).str());
-
+  
   Project* proj = ReadProject(*xmlReader);
-
+  
   proj->setFileName(uri);
-
+  
   return proj;
+
 }
 
 te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
