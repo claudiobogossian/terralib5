@@ -30,6 +30,7 @@
 #include "../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../datatype/Property.h"
 #include "../datatype/ByteArray.h"
+#include "../geometry/Envelope.h"
 #include "DataSetPersistence.h"
 #include "DataSourceTransactor.h"
 #include "Exception.h"
@@ -171,9 +172,17 @@ void te::ado::DataSetPersistence::add(const std::string& datasetName, te::da::Da
           //case te::dt::ARRAY_TYPE:
           case te::dt::GEOMETRY_TYPE:
           {
+            te::gm::Geometry* geometry = d->getGeometry(pname);
+            const te::gm::Envelope* env = geometry->getMBR();
+            
+            recset->GetFields()->GetItem("lower_x")->Value = (_variant_t)env->m_llx;
+            recset->GetFields()->GetItem("lower_y")->Value = (_variant_t)env->m_lly;
+            recset->GetFields()->GetItem("upper_x")->Value = (_variant_t)env->m_urx;
+            recset->GetFields()->GetItem("upper_y")->Value = (_variant_t)env->m_ury;
+
             _variant_t var;
             Convert2Ado(d->getGeometry(pname), var);
-            
+
             recset->Fields->GetItem(pname.c_str())->AppendChunk (var);
             
             break;

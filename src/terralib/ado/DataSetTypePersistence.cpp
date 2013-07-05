@@ -108,7 +108,19 @@ void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
   te::gm::GeometryProperty* geomProp = 0;
 
   if(dt->hasGeom())
+  {
+    te::dt::SimpleProperty* lowerX = new te::dt::SimpleProperty("lower_x", te::dt::DOUBLE_TYPE);
+    te::dt::SimpleProperty* lowerY = new te::dt::SimpleProperty("lower_y", te::dt::DOUBLE_TYPE);
+    te::dt::SimpleProperty* upperX = new te::dt::SimpleProperty("upper_x", te::dt::DOUBLE_TYPE);
+    te::dt::SimpleProperty* upperY = new te::dt::SimpleProperty("upper_y", te::dt::DOUBLE_TYPE);
+
+    add(dt, lowerX);
+    add(dt, lowerY);
+    add(dt, upperX);
+    add(dt, upperY);
+
     geomProp = te::da::GetFirstGeomProperty(dt);
+  }
 
   if(geomProp)
     te::ado::InsertInGeometryColumns(adoConn, dt);
