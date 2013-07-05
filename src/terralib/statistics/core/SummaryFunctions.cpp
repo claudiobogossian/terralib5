@@ -209,9 +209,8 @@ std::string te::stat::Mode(const std::vector<std::string>& values)
 }
 
 void te::stat::GetStringStatisticalSummaryQuery(const te::map::AbstractLayerPtr& layer,
-                                                                    const te::dt::Property* prop,
-                                                                    std::map<std::string, te::stat::StringStatisticalSummary>& ssMap,
-                                                                    const std::vector<te::dt::Property*>& restriction)
+                                                const te::dt::Property* prop,
+                                                te::stat::StringStatisticalSummary& ss)
 {
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
   
@@ -221,9 +220,8 @@ void te::stat::GetStringStatisticalSummaryQuery(const te::map::AbstractLayerPtr&
     std::string propName = prop->getName();
 
     std::vector<std::string> stringVector = te::stat::GetStringData(dsLayer.get(), propName);
-    std::map<std::string, te::stat::StringStatisticalSummary>::iterator itSsMap = ssMap.begin();
 
-    te::stat::GetStringStatisticalSummary(stringVector, itSsMap->second);
+    te::stat::GetStringStatisticalSummary(stringVector, ss);
   }
   else
   {
@@ -237,9 +235,8 @@ void te::stat::GetStringStatisticalSummaryQuery(const te::map::AbstractLayerPtr&
       std::string propName = prop->getName();
 
       std::vector<std::string> stringVector = te::stat::GetStringData(ds.get(), propName);
-      std::map<std::string, te::stat::StringStatisticalSummary>::iterator itSsMap = ssMap.begin();
 
-      te::stat::GetStringStatisticalSummary(stringVector, itSsMap->second);
+      te::stat::GetStringStatisticalSummary(stringVector, ss);
     }
     else
     {
@@ -251,8 +248,7 @@ void te::stat::GetStringStatisticalSummaryQuery(const te::map::AbstractLayerPtr&
 
 void te::stat::GetNumericStatisticalSummaryQuery( const te::map::AbstractLayerPtr& layer,
                                                   const te::dt::Property* prop,
-                                                  std::map<std::string, te::stat::NumericStatisticalSummary>& ssMap,
-                                                  const std::vector<te::dt::Property*>& restriction)
+                                                  te::stat::NumericStatisticalSummary& ss)
 {
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
   
@@ -263,9 +259,8 @@ void te::stat::GetNumericStatisticalSummaryQuery( const te::map::AbstractLayerPt
     std::string propName = prop->getName();
 
     std::vector<double> numericVector = te::stat::GetNumericData(ds.get(), propName);
-    std::map<std::string, te::stat::NumericStatisticalSummary>::iterator itSsMap = ssMap.begin();
 
-    te::stat::GetNumericStatisticalSummary(numericVector, itSsMap->second);
+    te::stat::GetNumericStatisticalSummary(numericVector, ss);
   }
   else
   {
@@ -280,44 +275,69 @@ void te::stat::GetNumericStatisticalSummaryQuery( const te::map::AbstractLayerPt
       std::string propName = prop->getName();
 
       std::vector<double> numericVector = te::stat::GetNumericData(ds.get(), propName);
-      std::map<std::string, te::stat::NumericStatisticalSummary>::iterator itSsMap = ssMap.begin();
 
-      te::stat::GetNumericStatisticalSummary(numericVector, itSsMap->second);
+      te::stat::GetNumericStatisticalSummary(numericVector, ss);
     }
     else
     {
       te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema();
+      te::da::PropertyName* p_name = new te::da::PropertyName(prop->getName());
 
-      te::da::Expression* e_sum = new te::da::Sum(new te::da::PropertyName(prop->getName()));
+      te::da::Expression* e_min = new te::da::Min(p_name);
+      te::da::Field* f_min = new te::da::Field(*e_min, "MIN");
+
+      te::da::Expression* e_max = new te::da::Max(p_name);
+      te::da::Field* f_max = new te::da::Field(*e_max, "MAX");
+
+      te::da::Expression* e_count = new te::da::Count(p_name);
+      te::da::Field* f_count = new te::da::Field(*e_count, "COUNT");
+
+      te::da::Expression* e_sum = new te::da::Sum(p_name);
       te::da::Field* f_sum = new te::da::Field(*e_sum, "SUM");
 
-      te::da::Fields fields;
-      fields.push_back(f_sum);
+      te::da::Expression* e_mean = new te::da::Avg(p_name);
+      te::da::Field* f_mean = new te::da::Field(*e_mean, "MEAN");
+
+      te::da::Expression* e_stddev = new te::da::StdDev(p_name);
+      te::da::Field* f_stddev = new te::da::Field(*e_stddev, "STD_DEV");
+
+      te::da::Expression* e_variance = new te::da::Variance(p_name);
+      te::da::Field* f_variance = new te::da::Field(*e_variance, "VARIANCE");
+
+      te::da::Expression* e_amplitude = new te::da::Sub(*e_max, *e_min);
+      te::da::Field* f_amplitude = new te::da::Field(*e_amplitude, "AMPLITUDE");
+
+      te::da::Fields* fields = new te::da::Fields;
+
+      fields->push_back(f_min);
+      fields->push_back(f_max);
+      fields->push_back(f_count);
+      fields->push_back(f_sum);
+      fields->push_back(f_mean);
+      fields->push_back(f_stddev);
+      fields->push_back(f_variance);
+      fields->push_back(f_amplitude);
 
       te::da::FromItem* fromItem = new te::da::DataSetName(dsType->getName());
-      te::da::From from;
-      from.push_back(fromItem);
+      te::da::From* from = new te::da::From;
+      from->push_back(fromItem);
       
       te::da::Select select(fields, from);
-
-      if(!restriction.empty())
-      {
-        te::da::GroupBy* groupBy = new te::da::GroupBy();
-
-        for(std::size_t i = 0; i < restriction.size(); ++i)
-        {
-          te::da::GroupByItem* e_groupBy = new te::da::GroupByItem(restriction[i]->getName());
-          groupBy->push_back(e_groupBy);
-        }
-
-        select.setGroupBy(groupBy);
-      }
 
       std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
       te::da::DataSet* dsQuery = dsTransactor->query(select);
       dsQuery->moveFirst();
+
+      ss.m_minVal = boost::lexical_cast<double>(dsQuery->getAsString(0));
+      ss.m_maxVal = boost::lexical_cast<double>(dsQuery->getAsString(1));
+      ss.m_count = boost::lexical_cast<int>(dsQuery->getAsString(2));
+      ss.m_sum = boost::lexical_cast<double>(dsQuery->getAsString(3));
+      ss.m_mean = boost::lexical_cast<double>(dsQuery->getAsString(4));
+      ss.m_stdDeviation = boost::lexical_cast<double>(dsQuery->getAsString(5));
+      ss.m_variance = boost::lexical_cast<double>(dsQuery->getAsString(6));
+      ss.m_amplitude = boost::lexical_cast<double>(dsQuery->getAsString(7));
+
       delete dsQuery;
-//      ss.m_sum = boost::lexical_cast<double>(dsQuery->getAsString(0));
     }
   }
 }

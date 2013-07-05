@@ -24,6 +24,9 @@
 */
 
 // TerraLib
+
+#include "Enums.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../se/Mark.h"
 #include "../../../se/Graphic.h"
 #include "ScatterChart.h"
@@ -33,7 +36,6 @@
 #include "Utils.h"
 
 //QWT
-#include <qwt_plot_curve.h>
 #include <qwt_symbol.h>
 
 te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
@@ -89,6 +91,11 @@ te::qt::widgets::ScatterChart::~ScatterChart()
   delete m_scatterStyle;
 }
 
+int  te::qt::widgets::ScatterChart::rtti() const
+{
+  return te::qt::widgets::SCATTER_CHART;
+}
+
 te::qt::widgets::Scatter* te::qt::widgets::ScatterChart::getScatter()
 {
  return m_scatter;
@@ -108,4 +115,10 @@ void te::qt::widgets::ScatterChart::setScatterStyle(te::qt::widgets::ScatterStyl
 {
   m_scatterStyle = newSymbol;
   setSymbol(m_scatterStyle->getSymbol());
+}
+
+void te::qt::widgets::ScatterChart::highlight(const te::da::ObjectIdSet* oids)
+{
+  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator itObjSet; 
+  std::map<double, double> highlightedPoints;
 }

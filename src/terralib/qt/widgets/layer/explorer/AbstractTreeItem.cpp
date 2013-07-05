@@ -18,34 +18,34 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/AbstractLayerTreeItem.cpp
+  \file terralib/qt/widgets/layer/explorer/AbstractTreeItem.cpp
 
   \brief The class that represents an item in a LayerTreeModel.
 */
 
 // TerraLib
-#include "AbstractLayerTreeItem.h"
+#include "AbstractTreeItem.h"
 
-te::qt::widgets::AbstractLayerTreeItem::AbstractLayerTreeItem(QObject* parent)
+te::qt::widgets::AbstractTreeItem::AbstractTreeItem(QObject* parent)
   : QObject(parent)
 {
 }
 
-te::qt::widgets::AbstractLayerTreeItem::~AbstractLayerTreeItem()
+te::qt::widgets::AbstractTreeItem::~AbstractTreeItem()
 {
 }
 
-std::vector<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::AbstractLayerTreeItem::getDescendants()
+std::vector<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::AbstractTreeItem::getDescendants()
 {
-  std::vector<AbstractLayerTreeItem*> descendantItems;
-  std::vector<AbstractLayerTreeItem*> childrenItems;
+  std::vector<AbstractTreeItem*> descendantItems;
+  std::vector<AbstractTreeItem*> childrenItems;
 
   if(hasChildren())
   {
     int numChildren = children().count();
     for(int i = 0; i < numChildren; ++i)
     {
-      AbstractLayerTreeItem* childItem = static_cast<AbstractLayerTreeItem*>(children().at(i));
+      AbstractTreeItem* childItem = static_cast<AbstractTreeItem*>(children().at(i));
       descendantItems.push_back(childItem);
       childrenItems = childItem->getDescendants();
     }
@@ -57,15 +57,15 @@ std::vector<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::AbstractLa
   return descendantItems;
 }
 
-std::vector<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::AbstractLayerTreeItem::getAncestors()
+std::vector<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::AbstractTreeItem::getAncestors()
 {
-  std::vector<AbstractLayerTreeItem*> ancestorLayers;
+  std::vector<AbstractTreeItem*> ancestorLayers;
 
-  AbstractLayerTreeItem* itemParent = static_cast<AbstractLayerTreeItem*>(parent());
+  AbstractTreeItem* itemParent = static_cast<AbstractTreeItem*>(parent());
   while(itemParent)
   {
     ancestorLayers.push_back(itemParent);
-    itemParent = static_cast<AbstractLayerTreeItem*>(itemParent->parent());
+    itemParent = static_cast<AbstractTreeItem*>(itemParent->parent());
   }
 
   return ancestorLayers;

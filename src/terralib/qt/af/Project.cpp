@@ -83,7 +83,8 @@ void te::qt::af::Project::add(const te::map::AbstractLayerPtr& layer)
 
 void te::qt::af::Project::remove(const te::map::AbstractLayerPtr& layer)
 {
-  std::remove(m_layers.begin(), m_layers.end(), layer);
+  std::list<te::map::AbstractLayerPtr>::iterator newEnd = std::remove(m_layers.begin(), m_layers.end(), layer);
+  m_layers.erase(newEnd, m_layers.end());
   m_changed = true;
 }
 

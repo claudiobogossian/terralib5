@@ -34,8 +34,8 @@
 // Qt
 #include <QtGui/QWidget>
 
-te::vp::LegendGroupItem::LegendGroupItem(std::vector<te::se::Rule*> rules, AbstractLayerTreeItem* parent)
-  : AbstractLayerTreeItem(parent)
+te::vp::LegendGroupItem::LegendGroupItem(std::vector<te::se::Rule*> rules, AbstractTreeItem* parent)
+  : AbstractTreeItem(parent)
 {
   if(rules.empty())
     return;
@@ -106,7 +106,7 @@ te::map::AbstractLayerPtr te::vp::LegendGroupItem::getLayer() const
   return 0;
 }
 
-std::vector<te::qt::widgets::AbstractLayerTreeItem*> te::vp::LegendGroupItem::getItems() const
+std::vector<te::qt::widgets::AbstractTreeItem*> te::vp::LegendGroupItem::getItems() const
 {
   return m_items;
 }

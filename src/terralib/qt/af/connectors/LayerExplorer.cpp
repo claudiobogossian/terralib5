@@ -18,7 +18,7 @@
  */
 
 // TerraLib
-#include "../../widgets/layer/explorer/AbstractLayerTreeItem.h"
+#include "../../widgets/layer/explorer/AbstractTreeItem.h"
 #include "../../widgets/layer/explorer/LayerExplorer.h"
 #include "../../widgets/layer/explorer/LayerTreeModel.h"
 #include "../../widgets/layer/explorer/LayerTreeView.h"
@@ -35,8 +35,8 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explore
 {
   assert(explorer);
   
-  connect(explorer->getTreeView(), SIGNAL(visibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)), SLOT(onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)));
-  connect(explorer->getTreeModel(), SIGNAL(visibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)), SLOT(onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem*)));
+  connect(explorer->getTreeView(), SIGNAL(visibilityChanged(te::qt::widgets::AbstractTreeItem*)), SLOT(onLayerVisibilityChanged(te::qt::widgets::AbstractTreeItem*)));
+  connect(explorer->getTreeModel(), SIGNAL(visibilityChanged(te::qt::widgets::AbstractTreeItem*)), SLOT(onLayerVisibilityChanged(te::qt::widgets::AbstractTreeItem*)));
 //  connect(explorer->getTreeView(), SIGNAL(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)), SLOT(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)));
 }
 
@@ -92,17 +92,20 @@ void te::qt::af::LayerExplorer::onSelectionChanged(const QItemSelection& selecte
   if(lst.isEmpty())
     return;
 
-  te::qt::widgets::AbstractLayerTreeItem* item = static_cast<te::qt::widgets::AbstractLayerTreeItem*>((*lst.begin()).internalPointer());
+  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>((*lst.begin()).internalPointer());
 
   if(item != 0)
   {
-    te::map::AbstractLayerPtr abs_lay = item->getLayer();
-    te::qt::af::evt::LayerSelected ls_ev(abs_lay.get());
-    ApplicationController::getInstance().broadcast(&ls_ev);
+    te::map::AbstractLayerPtr itemLayer = item->getLayer();
+    if(itemLayer)
+    {
+      te::qt::af::evt::LayerSelected ls_ev(itemLayer.get());
+      ApplicationController::getInstance().broadcast(&ls_ev);
+    }
   }
 }
 
-void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item)
+void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::qt::widgets::AbstractTreeItem* item)
 {
   te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
   ApplicationController::getInstance().broadcast(&projectUnsavedEvent);

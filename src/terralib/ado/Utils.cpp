@@ -43,6 +43,173 @@ inline void TESTHR( HRESULT hr )
   if( FAILED(hr) ) _com_issue_error( hr );
 }
 
+void te::ado::AddAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop)
+{
+  int pType = prop->getType();
+
+  try
+  {
+    switch(pType)
+    {
+    case te::dt::CHAR_TYPE:
+    case te::dt::UCHAR_TYPE:
+    case te::dt::INT16_TYPE:
+    case te::dt::INT32_TYPE:
+    case te::dt::INT64_TYPE:
+    case te::dt::FLOAT_TYPE:
+    case te::dt::DOUBLE_TYPE:
+    case te::dt::BOOLEAN_TYPE:
+    case te::dt::BYTE_ARRAY_TYPE:
+      table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+      break;
+
+    case te::dt::STRING_TYPE:
+      {
+        te::dt::StringProperty* p = (te::dt::StringProperty*)prop;
+        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), p->size());
+        break;
+      }
+
+      //case te::dt::NUMERIC_TYPE:
+      //case te::dt::DATETIME_TYPE:
+
+    case te::dt::GEOMETRY_TYPE:
+      table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+      break;
+
+    case te::dt::ARRAY_TYPE:
+      table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+      break;
+
+    default:
+      throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+      break;
+    }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+}
+
+void te::ado::Blob2Variant(const char* blob, int size, _variant_t & var)
+{
+  try
+  {
+    char *pByte;
+
+    SAFEARRAY FAR* psa;
+    SAFEARRAYBOUND rgsabound[1];
+    rgsabound[0].lLbound = 0;
+    rgsabound[0].cElements = size;
+
+    psa = SafeArrayCreate(VT_I1, 1, rgsabound);
+
+    if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
+      memcpy(pByte, blob, size);
+    SafeArrayUnaccessData(psa);
+
+    var.vt = VT_ARRAY | VT_UI1;
+    var.parray = psa;
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+}
+
+void te::ado::Variant2Blob(const _variant_t var, int size, char* & blob)
+{
+  try
+  {
+    char *cdata = 0;
+    if(var.vt == (VT_ARRAY | VT_UI1))
+    {
+      SafeArrayAccessData(var.parray,(void **)&cdata);
+      blob = new char[size];
+      memcpy(blob, cdata, size);
+      SafeArrayUnaccessData(var.parray);
+    }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+}
+
+ADOX::DataTypeEnum te::ado::Convert2Ado(int terralib)
+{
+  switch(terralib)
+  {
+  case te::dt::CHAR_TYPE:
+  case te::dt::UCHAR_TYPE:
+    return ADOX::adWChar;
+    break;
+
+  case te::dt::INT16_TYPE:
+    return ADOX::adInteger;
+    break;
+
+  case te::dt::INT32_TYPE:
+    return ADOX::adInteger;
+    break;
+
+  case te::dt::INT64_TYPE:
+    return ADOX::adInteger;
+    break;
+
+    //case te::dt::NUMERIC_TYPE:
+    //case te::dt::DATETIME_TYPE:
+
+  case te::dt::FLOAT_TYPE:
+  case te::dt::DOUBLE_TYPE:
+    return ADOX::adDouble;
+    break;
+
+  case te::dt::STRING_TYPE:
+    return ADOX::adLongVarWChar;
+    break;
+
+  case te::dt::BOOLEAN_TYPE:
+    return ADOX::adBoolean;
+    break;
+
+  case te::dt::BYTE_ARRAY_TYPE:
+    return ADOX::adLongVarBinary;
+    break;
+
+  case te::dt::GEOMETRY_TYPE:
+  case te::dt::ARRAY_TYPE:
+    return ADOX::adLongVarBinary;
+    break;
+
+  default:
+    throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+    break;
+  }
+}
+
+void te::ado::Convert2Ado(const te::gm::Geometry* geo, _variant_t & var)
+{
+  long size = geo->getWkbSize();
+
+  char* wkb = new char[size];
+
+  geo->getWkb(wkb, te::common::NDR);
+
+  unsigned int newWkbSize = size+4;
+
+  char* newWkb = new char[newWkbSize];
+
+  memcpy(newWkb, wkb, size);
+
+  unsigned int srid = geo->getSRID();
+
+  memcpy(newWkb+size, &srid, 4);
+
+  te::ado::Blob2Variant(newWkb, newWkbSize, var);
+}
+
 int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
 {
   switch(adoType)
@@ -126,144 +293,6 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
       return te::dt::UNKNOWN_TYPE;
     break;
   }
-}
-
-ADOX::DataTypeEnum te::ado::Convert2Ado(int terralib)
-{
-  switch(terralib)
-  {
-    case te::dt::CHAR_TYPE:
-    case te::dt::UCHAR_TYPE:
-      return ADOX::adWChar;
-      break;
-
-    case te::dt::INT16_TYPE:
-      return ADOX::adInteger;
-      break;
-
-    case te::dt::INT32_TYPE:
-      return ADOX::adInteger;
-      break;
-
-    case te::dt::INT64_TYPE:
-      return ADOX::adInteger;
-      break;
-
-    //case te::dt::NUMERIC_TYPE:
-    //case te::dt::DATETIME_TYPE:
-
-    case te::dt::FLOAT_TYPE:
-    case te::dt::DOUBLE_TYPE:
-      return ADOX::adDouble;
-      break;
-
-    case te::dt::STRING_TYPE:
-      return ADOX::adLongVarWChar;
-      break;
-
-    case te::dt::BOOLEAN_TYPE:
-      return ADOX::adBoolean;
-      break;
-
-    case te::dt::BYTE_ARRAY_TYPE:
-      return ADOX::adLongVarBinary;
-      break;
-
-    case te::dt::GEOMETRY_TYPE:
-    case te::dt::ARRAY_TYPE:
-      return ADOX::adLongVarBinary;
-      break;
-
-    default:
-      throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-    break;
-  }
-}
-
-void te::ado::addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop)
-{
-  int pType = prop->getType();
-
-  try
-  {
-    switch(pType)
-    {
-      case te::dt::CHAR_TYPE:
-      case te::dt::UCHAR_TYPE:
-      case te::dt::INT16_TYPE:
-      case te::dt::INT32_TYPE:
-      case te::dt::INT64_TYPE:
-      case te::dt::FLOAT_TYPE:
-      case te::dt::DOUBLE_TYPE:
-      case te::dt::BOOLEAN_TYPE:
-      case te::dt::BYTE_ARRAY_TYPE:
-        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
-        break;
-
-      case te::dt::STRING_TYPE:
-      {
-        te::dt::StringProperty* p = (te::dt::StringProperty*)prop;
-        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), p->size());
-        break;
-      }
-
-      //case te::dt::NUMERIC_TYPE:
-      //case te::dt::DATETIME_TYPE:
-        
-      case te::dt::GEOMETRY_TYPE:
-        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
-        break;
-          
-      case te::dt::ARRAY_TYPE:
-        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
-        break;
-
-      default:
-        throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-      break;
-    }
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-}
-
-te::dt::Property* te::ado::getPropertyFromADO(ADOX::_ColumnPtr column)
-{
-  te::dt::Property* resProp;
-
-  _bstr_t cName = column->GetName();
-  ADOX::DataTypeEnum cType = column->GetType();
-  int size = column->GetDefinedSize();
-
-  if(cType == ADOX::adDate)
-  {
-    //ADOX::Properties** porps;
-    //column->get_Properties(porps);
-  }
-
-  switch(cType)
-  {
-    case ADOX::adVarWChar:
-        resProp = new te::dt::StringProperty(std::string(cName), te::dt::VAR_STRING, size);
-      break;
-
-    case ADOX::adInteger:
-    case ADOX::adDouble:
-      resProp = new te::dt::SimpleProperty(std::string(cName), te::dt::INT64_TYPE);
-      break;
-
-    case ADOX::adLongVarBinary:
-      resProp = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), te::dt::BYTE_ARRAY_TYPE));
-      break;
-          
-    default:
-      throw te::ado::Exception(TR_ADO("The informed column could not be mapped to TerraLib Data Set Type!"));
-  }
-
-  return resProp;
-
 }
 
 te::dt::Property* te::ado::Convert2Terralib(ADOX::_ColumnPtr column)
@@ -377,163 +406,156 @@ te::da::Constraint* te::ado::Convert2Terralib(ADOX::_KeyPtr key)
 
 }
 
-bool te::ado::isZProperty(te::gm::GeomType type)
-{
-  if( (type >= 1000 && type < 2000) || (type >= 3000 && type < 4000) )
-    return true;
-  return false;
-}
-
 const std::string& te::ado::GetGeometryName(te::gm::GeomType t)
 {
   switch(t)
   {
-    case te::gm::GeometryType:
-      return Globals::sm_geometryTypeName;
-      break;
+  case te::gm::GeometryType:
+    return Globals::sm_geometryTypeName;
+    break;
 
-    case te::gm::PointType:
-      return Globals::sm_pointTypeName;
-      break;
+  case te::gm::PointType:
+    return Globals::sm_pointTypeName;
+    break;
 
-    case te::gm::LineStringType:
-      return Globals::sm_lineStringTypeName;
-      break;
+  case te::gm::LineStringType:
+    return Globals::sm_lineStringTypeName;
+    break;
 
-    case te::gm::PolygonType:
-      return Globals::sm_polygonTypeName;
-      break;
+  case te::gm::PolygonType:
+    return Globals::sm_polygonTypeName;
+    break;
 
-    case te::gm::MultiPointType:
-      return Globals::sm_multiPointTypeName;
-      break;
+  case te::gm::MultiPointType:
+    return Globals::sm_multiPointTypeName;
+    break;
 
-    case te::gm::MultiLineStringType:
-      return Globals::sm_multiLineStringTypeName;
-      break;
+  case te::gm::MultiLineStringType:
+    return Globals::sm_multiLineStringTypeName;
+    break;
 
-    case te::gm::MultiPolygonType:
-      return Globals::sm_multiPolygonTypeName;
-      break;
+  case te::gm::MultiPolygonType:
+    return Globals::sm_multiPolygonTypeName;
+    break;
 
-    case te::gm::CurvePolygonType:
-      return Globals::sm_curvePolygonTypeName;
-      break;
+  case te::gm::CurvePolygonType:
+    return Globals::sm_curvePolygonTypeName;
+    break;
 
-    case te::gm::PolyhedralSurfaceType:
-      return Globals::sm_polyhedralSurfaceTypeName;
-      break;
+  case te::gm::PolyhedralSurfaceType:
+    return Globals::sm_polyhedralSurfaceTypeName;
+    break;
 
-    case te::gm::GeometryZType:
-      return Globals::sm_geometryZTypeName;
-      break;
+  case te::gm::GeometryZType:
+    return Globals::sm_geometryZTypeName;
+    break;
 
-    case te::gm::PointZType:
-      return Globals::sm_pointZTypeName;
-      break;
+  case te::gm::PointZType:
+    return Globals::sm_pointZTypeName;
+    break;
 
-    case te::gm::LineStringZType:
-      return Globals::sm_lineStringZTypeName;
-      break;
+  case te::gm::LineStringZType:
+    return Globals::sm_lineStringZTypeName;
+    break;
 
-    case te::gm::PolygonZType:
-      return Globals::sm_polygonZTypeName;
-      break;
+  case te::gm::PolygonZType:
+    return Globals::sm_polygonZTypeName;
+    break;
 
-    case te::gm::MultiPointZType:
-      return Globals::sm_multiPointZTypeName;
-      break;
+  case te::gm::MultiPointZType:
+    return Globals::sm_multiPointZTypeName;
+    break;
 
-    case te::gm::MultiLineStringZType:
-      return Globals::sm_multiLineStringZTypeName;
-      break;
+  case te::gm::MultiLineStringZType:
+    return Globals::sm_multiLineStringZTypeName;
+    break;
 
-    case te::gm::MultiPolygonZType:
-      return Globals::sm_multiPolygonZTypeName;
-      break;
+  case te::gm::MultiPolygonZType:
+    return Globals::sm_multiPolygonZTypeName;
+    break;
 
-    case te::gm::CurvePolygonZType:
-      return Globals::sm_curvePolygonZTypeName;
-      break;
+  case te::gm::CurvePolygonZType:
+    return Globals::sm_curvePolygonZTypeName;
+    break;
 
-    case te::gm::PolyhedralSurfaceZType:
-      return Globals::sm_polyhedralSurfaceZTypeName;
-      break;
+  case te::gm::PolyhedralSurfaceZType:
+    return Globals::sm_polyhedralSurfaceZTypeName;
+    break;
 
-    case te::gm::GeometryMType:
-      return Globals::sm_geometryMTypeName;
-      break;
+  case te::gm::GeometryMType:
+    return Globals::sm_geometryMTypeName;
+    break;
 
-    case te::gm::PointMType:
-      return Globals::sm_pointMTypeName;
-      break;
+  case te::gm::PointMType:
+    return Globals::sm_pointMTypeName;
+    break;
 
-    case te::gm::LineStringMType:
-      return Globals::sm_lineStringMTypeName;
-      break;
+  case te::gm::LineStringMType:
+    return Globals::sm_lineStringMTypeName;
+    break;
 
-    case te::gm::PolygonMType:
-      return Globals::sm_polygonMTypeName;
-      break;
+  case te::gm::PolygonMType:
+    return Globals::sm_polygonMTypeName;
+    break;
 
-    case te::gm::MultiPointMType:
-      return Globals::sm_multiPointMTypeName;
-      break;
+  case te::gm::MultiPointMType:
+    return Globals::sm_multiPointMTypeName;
+    break;
 
-    case te::gm::MultiLineStringMType:
-      return Globals::sm_multiLineStringMTypeName;
-      break;
+  case te::gm::MultiLineStringMType:
+    return Globals::sm_multiLineStringMTypeName;
+    break;
 
-    case te::gm::MultiPolygonMType:
-      return Globals::sm_multiPolygonMTypeName;
-      break;
+  case te::gm::MultiPolygonMType:
+    return Globals::sm_multiPolygonMTypeName;
+    break;
 
-    case te::gm::CurvePolygonMType:
-      return Globals::sm_curvePolygonMTypeName;
-      break;
+  case te::gm::CurvePolygonMType:
+    return Globals::sm_curvePolygonMTypeName;
+    break;
 
-    case te::gm::PolyhedralSurfaceMType:
-      return Globals::sm_polyhedralSurfaceMTypeName;
-      break;
+  case te::gm::PolyhedralSurfaceMType:
+    return Globals::sm_polyhedralSurfaceMTypeName;
+    break;
 
-    case te::gm::GeometryZMType:
-      return Globals::sm_geometryZMTypeName;
-      break;
+  case te::gm::GeometryZMType:
+    return Globals::sm_geometryZMTypeName;
+    break;
 
-    case te::gm::PointZMType:
-      return Globals::sm_pointZMTypeName;
-      break;
+  case te::gm::PointZMType:
+    return Globals::sm_pointZMTypeName;
+    break;
 
-    case te::gm::LineStringZMType:
-      return Globals::sm_lineStringZMTypeName;
-      break;
+  case te::gm::LineStringZMType:
+    return Globals::sm_lineStringZMTypeName;
+    break;
 
-    case te::gm::PolygonZMType:
-      return Globals::sm_polygonZMTypeName;
-      break;
+  case te::gm::PolygonZMType:
+    return Globals::sm_polygonZMTypeName;
+    break;
 
-    case te::gm::MultiPointZMType:
-      return Globals::sm_multiPointZMTypeName;
-      break;
+  case te::gm::MultiPointZMType:
+    return Globals::sm_multiPointZMTypeName;
+    break;
 
-    case te::gm::MultiLineStringZMType:
-      return Globals::sm_multiLineStringZMTypeName;
-      break;
+  case te::gm::MultiLineStringZMType:
+    return Globals::sm_multiLineStringZMTypeName;
+    break;
 
-    case te::gm::MultiPolygonZMType:
-      return Globals::sm_multiPolygonZMTypeName;
-      break;
+  case te::gm::MultiPolygonZMType:
+    return Globals::sm_multiPolygonZMTypeName;
+    break;
 
-    case te::gm::CurvePolygonZMType:
-      return Globals::sm_curvePolygonZMTypeName;
-      break;
+  case te::gm::CurvePolygonZMType:
+    return Globals::sm_curvePolygonZMTypeName;
+    break;
 
-    case te::gm::PolyhedralSurfaceZMType:
-      return Globals::sm_polyhedralSurfaceZMTypeName;
-      break;
+  case te::gm::PolyhedralSurfaceZMType:
+    return Globals::sm_polyhedralSurfaceZMTypeName;
+    break;
 
-    default:
-      return Globals::sm_geometryTypeName;
+  default:
+    return Globals::sm_geometryTypeName;
   }
 }
 
@@ -687,7 +709,92 @@ const te::gm::GeomType te::ado::GetGeometryType(std::string t)
   
 }
 
-bool te::ado::isGeomProperty(_ConnectionPtr adoConn, std::string tableName, std::string columnName)
+int te::ado::GetSRID(_ConnectionPtr adoConn, std::string tableName, std::string geomPropName)
+{
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+
+  std::string sel = "SELECT * FROM geometry_columns where f_table_name = '";
+  sel += tableName + "' and f_geometry_column = '" + geomPropName + "'";
+
+  _variant_t variantSel;
+  variantSel.SetString(sel.c_str());
+
+  try
+  {
+    TESTHR(recset->Open(variantSel, _variant_t((IDispatch *)adoConn), 
+      adOpenStatic, adLockReadOnly, adCmdText));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  return (int32_t)recset->GetFields()->GetItem("srid")->GetValue();
+}
+
+te::gm::GeomType te::ado::GetType(_ConnectionPtr adoConn, std::string tableName, std::string geomPropName)
+{
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset))); 
+
+  std::string sel = "SELECT * FROM geometry_columns where f_table_name = '";
+  sel += tableName + "' and f_geometry_column = '" + geomPropName + "'";
+
+  _variant_t variantSel;
+  variantSel.SetString(sel.c_str());
+
+  try
+  {
+    TESTHR(recset->Open(variantSel, _variant_t((IDispatch *)adoConn), 
+      adOpenStatic, adLockReadOnly, adCmdText));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  std::string type = (LPCSTR)(_bstr_t)recset->GetFields()->GetItem("type")->GetValue();
+
+  return GetGeometryType(type);
+}
+
+void te::ado::InsertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt)
+{
+  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt);
+
+  int coord_dimension = 2;
+
+  if(te::ado::IsZProperty(geomProp->getGeometryType()))
+    coord_dimension = 3;
+
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+
+  try
+  {
+    TESTHR(recset->Open(_bstr_t("geometry_columns"),
+      _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+
+    TESTHR(recset->AddNew());
+
+    recset->GetFields()->GetItem("f_table_catalog")->Value = (_bstr_t)std::string("''").c_str();
+    recset->GetFields()->GetItem("f_table_schema")->Value = (_bstr_t)std::string("public").c_str();
+    recset->GetFields()->GetItem("f_table_name")->Value = (_bstr_t)dt->getName().c_str();
+    recset->GetFields()->GetItem("f_geometry_column")->Value = (_bstr_t)geomProp->getName().c_str();
+    recset->GetFields()->GetItem("coord_dimension")->Value = (_variant_t)coord_dimension;
+    recset->GetFields()->GetItem("srid")->Value = (_variant_t)geomProp->getSRID();
+    recset->GetFields()->GetItem("type")->Value = (_bstr_t)te::ado::GetGeometryName(geomProp->getGeometryType()).c_str();
+
+    recset->Update();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+}
+
+bool te::ado::IsGeomProperty(_ConnectionPtr adoConn, std::string tableName, std::string columnName)
 {
   ADOX::_CatalogPtr pCatalog;
 
@@ -726,237 +833,9 @@ bool te::ado::isGeomProperty(_ConnectionPtr adoConn, std::string tableName, std:
   return false;
 }
 
-void te::ado::Blob2Variant(const char* blob, int size, _variant_t & var)
+bool te::ado::IsZProperty(te::gm::GeomType type)
 {
-  try
-  {
-    char *pByte;
-
-    SAFEARRAY FAR* psa;
-    SAFEARRAYBOUND rgsabound[1];
-    rgsabound[0].lLbound = 0;
-    rgsabound[0].cElements = size;
-
-    psa = SafeArrayCreate(VT_I1, 1, rgsabound);
-
-    if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
-      memcpy(pByte, blob, size);
-    SafeArrayUnaccessData(psa);
-
-    var.vt = VT_ARRAY | VT_UI1;
-    var.parray = psa;
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-}
-
-void te::ado::Variant2Blob(const _variant_t var, int size, char* & blob)
-{
-  try
-  {
-    char *cdata = 0;
-    if(var.vt == (VT_ARRAY | VT_UI1))
-    {
-      SafeArrayAccessData(var.parray,(void **)&cdata);
-      blob = new char[size];
-      memcpy(blob, cdata, size);
-      SafeArrayUnaccessData(var.parray);
-    }
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-}
-
-void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recset, te::dt::Property* prop, te::mem::DataSetItem* item)
-{
-  try
-  {
-
-    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt);
-
-    if(geomProp && (geomProp->getName() == prop->getName()))
-    {
-      _variant_t var;
-      Convert2Ado(item->getGeometry(dt->getPropertyPosition(prop->getName())), var);
-      
-      recset->Fields->GetItem(prop->getName().c_str())->AppendChunk (var);
-    }
-    else
-    {
-      int pType = prop->getType();
-
-      switch(pType)
-      {
-        case te::dt::CHAR_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_bstr_t)item->getChar(dt->getPropertyPosition(prop->getName()));
-        break;
-
-        //case te::dt::UCHAR_TYPE:
-
-        case te::dt::INT16_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getInt16(dt->getPropertyPosition(prop->getName()));
-        break;
-
-        case te::dt::INT32_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getInt32(dt->getPropertyPosition(prop->getName()));
-          break;
-
-        case te::dt::INT64_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getInt64(dt->getPropertyPosition(prop->getName()));
-        break;
-
-        //case te::dt::NUMERIC_TYPE:
-        //case te::dt::DATETIME_TYPE:
-        case te::dt::FLOAT_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getFloat(dt->getPropertyPosition(prop->getName()));
-        break;
-
-        case te::dt::DOUBLE_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getDouble(dt->getPropertyPosition(prop->getName()));
-        break;
-
-        case te::dt::STRING_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_bstr_t)item->getString(dt->getPropertyPosition(prop->getName())).c_str();
-        break;
-
-        case te::dt::BOOLEAN_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getBool(dt->getPropertyPosition(prop->getName()));
-        break;
-
-        case te::dt::BYTE_ARRAY_TYPE:
-        {
-          char * data = ((te::dt::ByteArray*)prop)->getData();
-
-          _variant_t var;
-          te::ado::Blob2Variant(data, ((te::dt::ByteArray*)prop)->bytesUsed(), var);
-
-          recset->Fields->GetItem(prop->getName().c_str())->AppendChunk (var);
-        }
-        break;
-
-        //case te::dt::ARRAY_TYPE:
-     
-        default:
-          throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-        break;
-      }
-    }
-
-    recset->Update();
-
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-}
-
-void te::ado::insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt)
-{
-  te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt);
-
-  int coord_dimension = 2;
-
-  if(te::ado::isZProperty(geomProp->getGeometryType()))
-    coord_dimension = 3;
-
-  _RecordsetPtr recset;
-  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
-  
-  try
-  {
-    TESTHR(recset->Open(_bstr_t("geometry_columns"),
-    _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
-      
-    TESTHR(recset->AddNew());
-
-    recset->GetFields()->GetItem("f_table_catalog")->Value = (_bstr_t)std::string("''").c_str();
-    recset->GetFields()->GetItem("f_table_schema")->Value = (_bstr_t)std::string("public").c_str();
-    recset->GetFields()->GetItem("f_table_name")->Value = (_bstr_t)dt->getName().c_str();
-    recset->GetFields()->GetItem("f_geometry_column")->Value = (_bstr_t)geomProp->getName().c_str();
-    recset->GetFields()->GetItem("coord_dimension")->Value = (_variant_t)coord_dimension;
-    recset->GetFields()->GetItem("srid")->Value = (_variant_t)geomProp->getSRID();
-    recset->GetFields()->GetItem("type")->Value = (_bstr_t)te::ado::GetGeometryName(geomProp->getGeometryType()).c_str();
-
-    recset->Update();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-}
-
-void te::ado::Convert2Ado(const te::gm::Geometry* geo, _variant_t & var)
-{
-  long size = geo->getWkbSize();
-
-  char* wkb = new char[size];
-
-  geo->getWkb(wkb, te::common::NDR);
-
-  unsigned int newWkbSize = size+4;
-
-  char* newWkb = new char[newWkbSize];
-
-  memcpy(newWkb, wkb, size);
-
-  unsigned int srid = geo->getSRID();
-
-  memcpy(newWkb+size, &srid, 4);
-
-  te::ado::Blob2Variant(newWkb, newWkbSize, var);
-}
-
-int te::ado::getSRID(_ConnectionPtr adoConn, te::gm::GeometryProperty* geomp)
-{
-  _RecordsetPtr recset;
-  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
-
-  std::string sel = "SELECT * FROM geometry_columns where f_table_name = '";
-    sel += geomp->getParent()->getName() + "' and f_geometry_column = 'spatial_data'";
-    
-   _variant_t variantSel;
-   variantSel.SetString(sel.c_str());
-     
-  try
-  {
-    TESTHR(recset->Open(variantSel, _variant_t((IDispatch *)adoConn), 
-      adOpenStatic, adLockReadOnly, adCmdText));
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  return (int32_t)recset->GetFields()->GetItem("srid")->GetValue();
-}
-
-te::gm::GeomType te::ado::getType(_ConnectionPtr adoConn, te::gm::GeometryProperty* geomp)
-{
-  _RecordsetPtr recset;
-  TESTHR(recset.CreateInstance(__uuidof(Recordset))); 
-
-  std::string sel = "SELECT * FROM geometry_columns where f_table_name = '";
-  sel += geomp->getParent()->getName() + "' and f_geometry_column = 'spatial_data' or f_geometry_column = 'geom'";
-
-  _variant_t variantSel;
-  variantSel.SetString(sel.c_str());
-
-  try
-  {
-    TESTHR(recset->Open(variantSel, _variant_t((IDispatch *)adoConn), 
-      adOpenStatic, adLockReadOnly, adCmdText));
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  std::string type = (LPCSTR)(_bstr_t)recset->GetFields()->GetItem("type")->GetValue();
-
-  return GetGeometryType(type);
+  if( (type >= 1000 && type < 2000) || (type >= 3000 && type < 4000) )
+    return true;
+  return false;
 }

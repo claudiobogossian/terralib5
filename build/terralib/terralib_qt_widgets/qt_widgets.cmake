@@ -129,6 +129,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/charts/ChartDisplay.h
   ${SRCDIR}/widgets/charts/ChartDisplayWidget.h
   ${SRCDIR}/widgets/charts/ChartStyleFrame.h
   ${SRCDIR}/widgets/charts/ChartStyleWidget.h
@@ -186,7 +187,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/layer/explorer/AbstractLayerTreeItem.h
+  ${SRCDIR}/widgets/layer/explorer/AbstractTreeItem.h
   ${SRCDIR}/widgets/layer/explorer/DataSetLayerItem.h
   ${SRCDIR}/widgets/layer/explorer/FolderLayerItem.h
   ${SRCDIR}/widgets/layer/explorer/LayerExplorer.h

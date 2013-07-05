@@ -36,7 +36,7 @@
 #include <QtGui/QWidget>
 
 te::qt::widgets::RasterLayerItem::RasterLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent)
-  : AbstractLayerTreeItem(parent)
+  : AbstractTreeItem(parent)
 {
   m_layer = boost::dynamic_pointer_cast<te::map::RasterLayer>(l);
 }

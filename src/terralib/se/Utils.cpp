@@ -283,11 +283,11 @@ te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType, c
 te::se::Style* te::se::CreateFeatureTypeStyle(const te::gm::GeomType& geomType)
 {
   te::se::Symbolizer* symbolizer = CreateSymbolizer(geomType);
-  if(symbolizer == 0)
-    return 0;
 
   te::se::Rule* rule = new te::se::Rule;
-  rule->push_back(symbolizer);
+
+  if(symbolizer != 0)
+    rule->push_back(symbolizer);
 
   te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
   style->push_back(rule);

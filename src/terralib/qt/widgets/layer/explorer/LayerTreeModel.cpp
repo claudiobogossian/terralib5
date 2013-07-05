@@ -28,8 +28,8 @@
 #include "../../../../common/Translator.h"
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../Exception.h"
-#include "AbstractLayerTreeItem.h"
-#include "AbstractLayerTreeItemFactory.h"
+#include "AbstractTreeItem.h"
+#include "AbstractTreeItemFactory.h"
 #include "FolderLayerItem.h"
 #include "LayerTreeModel.h"
 
@@ -67,7 +67,7 @@ void te::qt::widgets::LayerTreeModel::set(const std::list<te::map::AbstractLayer
 
   for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
   {
-    AbstractLayerTreeItem* litem = AbstractLayerTreeItemFactory::make(*it, 0);
+    AbstractTreeItem* litem = AbstractTreeItemFactory::make(*it, 0);
 
     if(litem)
       m_items.push_back(litem);
@@ -81,7 +81,7 @@ bool te::qt::widgets::LayerTreeModel::canFetchMore(const QModelIndex& parent) co
   if(!parent.isValid())
     return !m_items.empty();
 
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
   return item->canFetchMore();
 }
@@ -91,7 +91,7 @@ void te::qt::widgets::LayerTreeModel::fetchMore(const QModelIndex& parent)
   if(!parent.isValid())
     return;
 
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
   if(item == 0)
     throw Exception(TR_QT_WIDGETS("Invalid data associated to the layer model!"));
@@ -109,7 +109,7 @@ int te::qt::widgets::LayerTreeModel::rowCount(const QModelIndex& parent) const
   if(!parent.isValid()) // if parent index isnot valid we assume we are asking for root items
     return static_cast<int>(m_items.size());
 
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
   if(item == 0)
     throw Exception(TR_QT_WIDGETS("Error: NULL layer item!"));
@@ -128,12 +128,12 @@ QModelIndex te::qt::widgets::LayerTreeModel::index(int row, int column, const QM
       return QModelIndex();
 
 // row and column is about a top-level item?
-    AbstractLayerTreeItem* item = m_items[row];
+    AbstractTreeItem* item = m_items[row];
 
     return createIndex(row, column, item);
   }
 
-  AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+  AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
   if(parentItem == 0)
     throw Exception(TR_QT_WIDGETS("Invalid data associated to the layer model!"));
@@ -141,10 +141,10 @@ QModelIndex te::qt::widgets::LayerTreeModel::index(int row, int column, const QM
   if(row >= parentItem->children().count())
     return QModelIndex();
 
-  AbstractLayerTreeItem* item = dynamic_cast<AbstractLayerTreeItem*>(parentItem->children().at(row));
+  AbstractTreeItem* item = dynamic_cast<AbstractTreeItem*>(parentItem->children().at(row));
 
   if(item == 0)
-    throw Exception(TR_QT_WIDGETS("The layer item is not an AbstractLayerTreeItem!"));
+    throw Exception(TR_QT_WIDGETS("The layer item is not an AbstractTreeItem!"));
 
   return createIndex(row, column, item);
 }
@@ -154,17 +154,17 @@ QModelIndex te::qt::widgets::LayerTreeModel::parent(const QModelIndex& index) co
   if(!index.isValid())
     return QModelIndex();
 
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(index.internalPointer());
 
   if(item == 0 || item->parent() == 0)
     return QModelIndex();
 
-  AbstractLayerTreeItem* parentItem = dynamic_cast<AbstractLayerTreeItem*>(item->parent());
+  AbstractTreeItem* parentItem = dynamic_cast<AbstractTreeItem*>(item->parent());
 
   if(parentItem == 0)
-    throw Exception(TR_QT_WIDGETS("The layer item is not an AbstractLayerTreeItem!"));
+    throw Exception(TR_QT_WIDGETS("The layer item is not an AbstractTreeItem!"));
 
-  AbstractLayerTreeItem* grandParentItem = dynamic_cast<AbstractLayerTreeItem*>(parentItem->parent());
+  AbstractTreeItem* grandParentItem = dynamic_cast<AbstractTreeItem*>(parentItem->parent());
 
   if(grandParentItem == 0)
   {
@@ -197,7 +197,7 @@ Qt::ItemFlags te::qt::widgets::LayerTreeModel::flags(const QModelIndex& index) c
   if(!index.isValid())
     return QAbstractItemModel::flags(index) | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(index.internalPointer());
 
   if(item == 0)
     throw Exception(TR_QT_WIDGETS("Invalid data associated to the layer model!"));
@@ -213,7 +213,7 @@ QVariant te::qt::widgets::LayerTreeModel::data(const QModelIndex& index, int rol
   if(role == Qt::CheckStateRole && !m_checkable)
     return QVariant();
 
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(index.internalPointer());
 
   if(item == 0)
     return QVariant();
@@ -229,7 +229,7 @@ bool te::qt::widgets::LayerTreeModel::setData(const QModelIndex& index, const QV
   if(role == Qt::CheckStateRole && !m_checkable)
     return false;
 
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(index.internalPointer());
 
   if(item == 0)
     return false;
@@ -254,7 +254,7 @@ bool te::qt::widgets::LayerTreeModel::hasChildren(const QModelIndex& parent) con
   if(!parent.isValid())
     return !m_items.empty();
 
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
   if(item == 0)
     throw Exception(TR_QT_WIDGETS("Invalid data associated to the layer model!"));
@@ -282,12 +282,12 @@ QMimeData* te::qt::widgets::LayerTreeModel::mimeData(const QModelIndexList& inde
     return 0;
 
   int nItems = indexes.count();
-  std::vector<AbstractLayerTreeItem*>* draggedItems = new std::vector<AbstractLayerTreeItem*>;
+  std::vector<AbstractTreeItem*>* draggedItems = new std::vector<AbstractTreeItem*>;
 
   for(int i = 0; i < indexes.count(); ++i)
   {
-    //AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(indexes.at(i).internalPointer());
-    draggedItems->push_back(static_cast<AbstractLayerTreeItem*>(indexes.at(i).internalPointer()));
+    //AbstractTreeItem* item = static_cast<AbstractTreeItem*>(indexes.at(i).internalPointer());
+    draggedItems->push_back(static_cast<AbstractTreeItem*>(indexes.at(i).internalPointer()));
   }
 
   QString s;
@@ -332,14 +332,14 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
 
   // Get the layer items that were dragged
   bool ret = false;
-  std::vector<AbstractLayerTreeItem*>* draggedItems = reinterpret_cast<std::vector<AbstractLayerTreeItem*>*>(dataValue);
+  std::vector<AbstractTreeItem*>* draggedItems = reinterpret_cast<std::vector<AbstractTreeItem*>*>(dataValue);
 
   // Set the row and the parent of the item to be inserted
   int insertingRow;
   QModelIndex insertingItemParentIndex;
 
   QModelIndex dropIndex = parent; 
-  AbstractLayerTreeItem* dropItem = static_cast<AbstractLayerTreeItem*>(dropIndex.internalPointer());
+  AbstractTreeItem* dropItem = static_cast<AbstractTreeItem*>(dropIndex.internalPointer());
 
   te::map::AbstractLayer* dropItemLayer = 0;
   if(dropItem)
@@ -353,7 +353,7 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
   {
     for(std::size_t i = 0; i < draggedItems->size(); ++i)
     {
-      AbstractLayerTreeItem* draggedItem = draggedItems->operator[](i);
+      AbstractTreeItem* draggedItem = draggedItems->operator[](i);
       insertingRow = dropItemLayer->getChildrenCount();
       insertingItemParentIndex = dropIndex;
       ret = insert(draggedItem->getLayer().get(), insertingRow, insertingItemParentIndex);
@@ -363,7 +363,7 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
   {
     for(std::size_t i = 0; i < draggedItems->size(); ++i)
     {
-      AbstractLayerTreeItem* draggedItem = draggedItems->operator[](i);
+      AbstractTreeItem* draggedItem = draggedItems->operator[](i);
       QModelIndex dropParentIndex = dropIndex.parent();
 
       if(row < 0)
@@ -419,8 +419,8 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
 
 bool te::qt::widgets::LayerTreeModel::insertRows(int row, int count, const QModelIndex& parent)
 {
-  AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
-  std::vector<AbstractLayerTreeItem*> insertingItems;
+  AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(parent.internalPointer());
+  std::vector<AbstractTreeItem*> insertingItems;
 
   beginInsertRows(parent, row, row + count - 1);
   if(!parentItem)
@@ -433,7 +433,7 @@ bool te::qt::widgets::LayerTreeModel::insertRows(int row, int count, const QMode
     for(int i = row; i < row + count; ++i)
     {
       te::map::AbstractLayer* refLayer = static_cast<te::map::AbstractLayer*>(parentItem->getLayer().get()->getChild(row).get());
-      AbstractLayerTreeItem* insertingItem = AbstractLayerTreeItemFactory::make(refLayer, 0);
+      AbstractTreeItem* insertingItem = AbstractTreeItemFactory::make(refLayer, 0);
 
       // Insert the item into the row-th position
       // Get the children of the tree item and disconnect them from the tree item
@@ -463,7 +463,7 @@ bool te::qt::widgets::LayerTreeModel::insertRows(int row, int count, const QMode
     emitDataChangedForAncestors(parent);
 
     // Emit the signal of visibility changed for the ancestors of the new item who had their visibility changed
-    std::vector<AbstractLayerTreeItem*> ancestorItems = insertingItems[i]->getAncestors();
+    std::vector<AbstractTreeItem*> ancestorItems = insertingItems[i]->getAncestors();
     for(std::size_t i = 0; i < ancestorItems.size(); ++i)
     {
       te::map::AbstractLayer* ancestorLayer = ancestorItems[i]->getLayer().get();
@@ -490,10 +490,10 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
   {
     // Delete the item that is in the row-th position of the given parent
     QModelIndex removingIndex = parent.child(row, 0);
-    AbstractLayerTreeItem* removingItem = static_cast<AbstractLayerTreeItem*>(removingIndex.internalPointer());
+    AbstractTreeItem* removingItem = static_cast<AbstractTreeItem*>(removingIndex.internalPointer());
 
     // Get the item associated to the parent
-    AbstractLayerTreeItem* removingItemParent = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+    AbstractTreeItem* removingItemParent = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
     // First, remove the associated layer associated to the item
     te::map::AbstractLayer* removingItemParentLayer = static_cast<te::map::AbstractLayer*>(removingItemParent->getLayer().get());
@@ -524,7 +524,7 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
     // Adjust the visibility of the ancestors of the parent of the removed layer
     removingItemParentLayer->updateVisibilityOfAncestors();
 
-    std::vector<AbstractLayerTreeItem*> ancestorItems = removingItemParent->getAncestors();
+    std::vector<AbstractTreeItem*> ancestorItems = removingItemParent->getAncestors();
     for(std::size_t i = 0; i < ancestorItems.size(); ++i)
     {
       te::map::AbstractLayer* ancestorLayer = ancestorItems[i]->getLayer().get();
@@ -559,7 +559,7 @@ void te::qt::widgets::LayerTreeModel::add(const te::map::AbstractLayerPtr& layer
 
   if(!layerParent)
   {
-    AbstractLayerTreeItem* layerItem = AbstractLayerTreeItemFactory::make(layer, 0);
+    AbstractTreeItem* layerItem = AbstractTreeItemFactory::make(layer, 0);
     insert(layer, m_items.size(), QModelIndex());
   }
   else
@@ -576,11 +576,11 @@ void te::qt::widgets::LayerTreeModel::add(const te::map::AbstractLayerPtr& layer
 
 bool te::qt::widgets::LayerTreeModel::insert(const te::map::AbstractLayerPtr& layer, int row, const QModelIndex& parent)
 {
-  AbstractLayerTreeItem* itemParent = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+  AbstractTreeItem* itemParent = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
   if(!itemParent)
   {
-    AbstractLayerTreeItem* newItem = AbstractLayerTreeItemFactory::make(layer, 0);
+    AbstractTreeItem* newItem = AbstractTreeItemFactory::make(layer, 0);
     m_items.insert(m_items.begin() + row, newItem);
   }
   else
@@ -592,12 +592,12 @@ bool te::qt::widgets::LayerTreeModel::insert(const te::map::AbstractLayerPtr& la
   return insertRows(row, 1, parent);
 }
 
-bool te::qt::widgets::LayerTreeModel::remove(AbstractLayerTreeItem* item)
+bool te::qt::widgets::LayerTreeModel::remove(AbstractTreeItem* item)
 {
   int itemRow;              // The item row
   QModelIndex parentIndex;  // The parent index of the item
 
-  AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(item->parent());
+  AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(item->parent());
   if(!parentItem)
   {
     // The item is a top level item; get its row
