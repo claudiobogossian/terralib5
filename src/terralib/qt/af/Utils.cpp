@@ -60,7 +60,7 @@ te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
 {
   boost::filesystem::path furi(uri);
   
-  if (!boost::filesystem::exists(furi) || boost::filesystem::is_regular_file(furi))   
+  if (!boost::filesystem::exists(furi) || !boost::filesystem::is_regular_file(furi))   
     throw Exception((boost::format(TR_QT_AF("Could not read project file: %1%.")) % uri).str());
   
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
