@@ -271,7 +271,16 @@ te::da::DataSetPersistence* te::ado::DataSourceTransactor::getDataSetPersistence
 
 void te::ado::DataSourceTransactor::cancel()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  try
+  {
+    m_conn->Cancel();
+    m_conn->RollbackTrans();
+    m_isInTransaction = false;
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 boost::int64_t te::ado::DataSourceTransactor::getLastInsertId()
