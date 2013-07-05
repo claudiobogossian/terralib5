@@ -105,6 +105,28 @@ namespace te
                                Canvas* canvas,
                                const te::gm::Envelope& bbox,
                                int srid);
+
+        /*!
+          \brief It draws the grouping of the abstract layer in the given canvas using the SRS informed.
+
+          The informed bounding box (bbox) is used to constraint the layer objects to be drawn.
+          Here, we assume that the given bbox was pre-processed. i.e. the bbox was clipped and contains the same projection of abstract layer.
+
+          \param layer             The abstract layer that will be drawn.
+          \param geomPropertyName  The geometry property name that will be drawn.
+          \param canvas            The canvas were the layer objects will be drawn.
+          \param bbox              The interest area to render the map.
+          \param srid              The SRS to be used to draw the layer objects.
+
+          \note This method consider that the given layer contains vetorial data.
+
+          \note This method retrieves the layer data using only spatial extent restriction and performs the grouping in memory.
+        */
+        void drawLayerGroupingMem(AbstractLayer* layer,
+                                  const std::string& geomPropertyName,
+                                  Canvas* canvas,
+                                  const te::gm::Envelope& bbox,
+                                  int srid);
     };
 
   } // end namespace map

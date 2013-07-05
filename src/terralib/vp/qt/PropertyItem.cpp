@@ -33,8 +33,8 @@
 // Qt
 #include <QtGui/QWidget>
 
-te::vp::PropertyItem::PropertyItem(te::dt::Property* p, AbstractLayerTreeItem* parent)
-  : AbstractLayerTreeItem(parent),
+te::vp::PropertyItem::PropertyItem(te::dt::Property* p, AbstractTreeItem* parent)
+  : AbstractTreeItem(parent),
     m_property(p),
     m_selected(false)
 {

@@ -29,7 +29,7 @@
 #include "../../common/Translator.h"
 #include "../../maptools/ExternalGraphicRendererManager.h"
 #include "../../maptools/MarkRendererManager.h"
-#include "layer/explorer/AbstractLayerTreeItemFactory.h"
+#include "layer/explorer/AbstractTreeItemFactory.h"
 #include "property/DateTimePropertyWidgetFactory.h"
 #include "property/GeometryPropertyWidgetFactory.h"
 #include "property/NumericPropertyWidgetFactory.h"
@@ -99,7 +99,7 @@ void te::qt::widgets::Module::initialize()
   te::qt::widgets::StringPropertyWidgetFactory::initialize();
 
 // It initializes the layer item factory
-  AbstractLayerTreeItemFactory::initialize();
+  AbstractTreeItemFactory::initialize();
 
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets initialized!"));
 }
@@ -107,7 +107,7 @@ void te::qt::widgets::Module::initialize()
 void te::qt::widgets::Module::finalize()
 {
 // It finalizes the layer item factory
-  AbstractLayerTreeItemFactory::initialize();
+  AbstractTreeItemFactory::initialize();
 
 // It finalizes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::finalize();

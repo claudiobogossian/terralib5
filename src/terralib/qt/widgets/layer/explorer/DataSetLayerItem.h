@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../../maptools/DataSetLayer.h"
-#include "AbstractLayerTreeItem.h"
+#include "AbstractTreeItem.h"
 
 namespace te
 {
@@ -36,7 +36,7 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT DataSetLayerItem : public AbstractLayerTreeItem
+      class TEQTWIDGETSEXPORT DataSetLayerItem : public AbstractTreeItem
       {
         Q_OBJECT
 

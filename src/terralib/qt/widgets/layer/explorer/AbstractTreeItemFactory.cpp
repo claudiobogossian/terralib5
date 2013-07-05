@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/AbstractLayerTreeItemFactory.cpp
+  \file terralib/qt/widgets/layer/explorer/AbstractTreeItemFactory.cpp
 
   \brief A class for building layer items.
 */
@@ -29,7 +29,7 @@
 #include "../../../../maptools/FolderLayer.h"
 #include "../../../../maptools/QueryLayer.h"
 #include "../../../../maptools/RasterLayer.h"
-#include "AbstractLayerTreeItemFactory.h"
+#include "AbstractTreeItemFactory.h"
 #include "DataSetLayerItem.h"
 #include "FolderLayerItem.h"
 #include "QueryLayerItem.h"
@@ -39,10 +39,10 @@
 #include <boost/functional/factory.hpp>
 #include <boost/bind.hpp>
 
-std::map<std::string, te::qt::widgets::AbstractLayerTreeItemFactory::FactoryFnctType> te::qt::widgets::AbstractLayerTreeItemFactory::sm_factories;
+std::map<std::string, te::qt::widgets::AbstractTreeItemFactory::FactoryFnctType> te::qt::widgets::AbstractTreeItemFactory::sm_factories;
 
 
-void te::qt::widgets::AbstractLayerTreeItemFactory::initialize()
+void te::qt::widgets::AbstractTreeItemFactory::initialize()
 {
   if(!sm_factories.empty())
     return;
@@ -53,7 +53,7 @@ void te::qt::widgets::AbstractLayerTreeItemFactory::initialize()
   sm_factories["RASTERLAYER"] =  boost::bind(boost::factory<RasterLayerItem*>(),_1, _2);
 }
 
-void te::qt::widgets::AbstractLayerTreeItemFactory::finalize()
+void te::qt::widgets::AbstractTreeItemFactory::finalize()
 {
   sm_factories.clear();
 }

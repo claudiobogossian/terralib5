@@ -35,6 +35,9 @@
 #include "../dataaccess/dataset/Sequence.h"
 #include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
+#include "../dataaccess/query/Query.h"
+#include "../dataaccess/query/Select.h"
+#include "../dataaccess/query/SQLDialect.h"
 #include "../datatype/ArrayProperty.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
@@ -45,6 +48,7 @@
 #include "DataSetPersistence.h"
 #include "DataSetTypePersistence.h"
 #include "Globals.h"
+#include "SQLVisitor.h"
 #include "Utils.h"
 
 // OGR
@@ -52,6 +56,26 @@
 
 // STL
 #include <cassert>
+
+
+std::string RemoveSpatialSql(const std::string& sql)
+{
+  std::string newQuery;
+
+  size_t pos = sql.find("AND Intersection");
+
+  if(pos != std::string::npos)
+  {
+    size_t pos2 = sql.find("))", pos);
+
+    newQuery = sql.substr(0, pos);
+    newQuery += sql.substr(pos2+2);
+  }
+  else
+    newQuery = sql;
+
+  return newQuery;
+}
 
 te::ogr::DataSourceTransactor::DataSourceTransactor(DataSource* ds, OGRDataSource* ogrDS)
   : m_ds(ds),
@@ -152,11 +176,27 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
   return new DataSet(this, layer, true);
 }
 
-te::da::DataSet* te::ogr::DataSourceTransactor::query(const te::da::Select& /*q*/, 
+te::da::DataSet* te::ogr::DataSourceTransactor::query(const te::da::Select& q, 
                                                       te::common::TraverseType /*travType*/,
                                                       te::common::AccessPolicy /*rwRole*/)
 {
-  throw(te::common::Exception(TR_OGR("Not implemented yet!")));
+  std::string sql;
+
+  SQLVisitor visitor(*m_ds->getDialect(), sql);
+  q.accept(visitor);
+
+  sql = RemoveSpatialSql(sql);
+
+  OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
+  if(layer == 0)
+    throw(te::common::Exception(TR_OGR("Could not retrieve the DataSet from data source.")));
+
+  te::gm::Envelope* e = visitor.getMBR();
+
+  if(e != 0)
+    layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
+
+  return new DataSet(this, layer, true);
 }
 
 te::da::DataSet* te::ogr::DataSourceTransactor::query(const std::string& query, 

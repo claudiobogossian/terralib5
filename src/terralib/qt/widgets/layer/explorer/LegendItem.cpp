@@ -37,7 +37,7 @@
 #include <QtGui/QWidget>
 
 te::qt::widgets::LegendItem::LegendItem(const te::se::Rule* rule, QObject* parent)
-  : AbstractLayerTreeItem(parent),
+  : AbstractTreeItem(parent),
     m_rule(rule),
     m_isCheckable(false),
     m_isChecked(false)
@@ -143,7 +143,7 @@ te::map::AbstractLayerPtr te::qt::widgets::LegendItem::getLayer() const
   return te::map::AbstractLayerPtr(0);
 }
 
-//te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::LegendItem::clone(QObject* parent)
+//te::qt::widgets::AbstractTreeItem* te::qt::widgets::LegendItem::clone(QObject* parent)
 //{
 //  return new LegendItem(m_rule, parent);
 //}

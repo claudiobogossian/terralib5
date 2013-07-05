@@ -34,8 +34,8 @@
 // Qt
 #include <QtGui/QWidget>
 
-te::vp::PropertyGroupItem::PropertyGroupItem(std::vector<te::dt::Property*> properties, AbstractLayerTreeItem* parent)
-  : AbstractLayerTreeItem(parent)
+te::vp::PropertyGroupItem::PropertyGroupItem(std::vector<te::dt::Property*> properties, AbstractTreeItem* parent)
+  : AbstractTreeItem(parent)
 {
   if(properties.empty())
     return;
@@ -47,7 +47,7 @@ te::vp::PropertyGroupItem::PropertyGroupItem(std::vector<te::dt::Property*> prop
     if(prop->getType() == te::dt::GEOMETRY_TYPE)
       continue;
 
-    te::qt::widgets::AbstractLayerTreeItem* item = new PropertyItem(prop, this);
+    te::qt::widgets::AbstractTreeItem* item = new PropertyItem(prop, this);
 
     m_items.push_back(item);
   }
@@ -152,7 +152,7 @@ te::map::AbstractLayerPtr te::vp::PropertyGroupItem::getLayer() const
   return 0;
 }
 
-std::vector<te::qt::widgets::AbstractLayerTreeItem*> te::vp::PropertyGroupItem::getItems() const
+std::vector<te::qt::widgets::AbstractTreeItem*> te::vp::PropertyGroupItem::getItems() const
 {
   return m_items;
 }

@@ -1,4 +1,4 @@
-option (BUILD_QT_PLUGIN_DATASOURCE_ADO "Build ADO datasource datasource plugin for Qt." OFF)
+option (BUILD_QT_PLUGIN_DATASOURCE_ADO "Build ADO datasource datasource plugin for Qt." ON)
 option (BUILD_QT_PLUGIN_DATASOURCE_GDAL "Build GDAL datasource datasource plugin for Qt." ON)
 option (BUILD_QT_PLUGIN_DATASOURCE_GEOFILE "Build GeoFile datasource plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_DATASOURCE_MYSQL "Build PostGIS datasource plugin for Qt." OFF)

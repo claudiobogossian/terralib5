@@ -101,12 +101,12 @@ namespace te
         protected slots:
 
           /*!
-            \brief Used for capture events sent by the application framework.
+            \brief Used to capture events sent by the application framework.
           */
           void onApplicationTriggered(te::qt::af::evt::Event* evt);
 
           /*!
-            \brief Used for selection changed on table view.
+            \brief Used to handle a selection change.
 
             \param oids The selected object ids.
 
@@ -115,15 +115,6 @@ namespace te
             \note This function WILL TAKE the ownership of \a oids. It gives the ownership to the layer.
           */
           void selectionChanged(te::da::ObjectIdSet* oids, const bool& add);
-
-          /*!
-            \brief Removes the \a oids from the list of selected in the Layer.
-
-            \param oids Set of objects ids to be removed.
-
-            \note This WILL NOT TAKE the ownership of \a oids.
-          */
-          void removeSelectedOIds(te::da::ObjectIdSet* oids);
 
         signals:
 

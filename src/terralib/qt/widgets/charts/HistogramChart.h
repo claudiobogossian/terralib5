@@ -34,6 +34,8 @@
 
 namespace te
 {
+
+  namespace da    { class ObjectIdSet; }
   namespace qt
   {
     namespace widgets
@@ -64,6 +66,9 @@ namespace te
           /*! \brief Destructor. */
           ~HistogramChart();  
 
+          /*! \brief Returns the chart's type. */
+          virtual int rtti() const;
+
           /*!
             \brief It returns the chart's scale draw.  
 
@@ -90,19 +95,56 @@ namespace te
           */
           void attach(QwtPlot* plot);
 
+          /*!
+            \brief It returns the chart's histogram.  
+
+            \return The chart's histogram.  
+          */
           te::qt::widgets::Histogram* getHistogram();
 
+          /*!            
+            \brief It sets the chart's histogram.   
+
+            \param newHistogram The chart's  new histogram.
+            \note It will take the ownership of the pointer "newHistogram".
+          */
           void setHistogram(te::qt::widgets::Histogram* newHistogram);
 
+          /*!
+            \brief It returns the chart's style.  
+
+            \return The chart's style.  
+          */
           te::qt::widgets::HistogramStyle* getHistogramStyle();
 
+          /*!            
+            \brief It sets the chart's sstyle.   
+
+            \param newStyle The chart's  new style.
+            \note It will take the ownership of the pointer "newStyle".
+          */
           void setHistogramStyle(te::qt::widgets::HistogramStyle* newStyle);
+
+          /*!
+            \brief Highlights the objects identified by \a oids
+
+            \param oids The identifiers of plotitems to be highlighted.
+          */
+          void highlight(const te::da::ObjectIdSet* oids);
+
+          /*!
+            \brief Highlights the intervals identified by \a point
+
+            \param point The point to be highlighted.
+          */
+          te::da::ObjectIdSet* highlight(QPointF point);
 
         private:
 
             Histogram*                        m_histogram;           //!< The histogram that will be shown on this chart.
             StringScaleDraw*                  m_histogramScaleDraw;  //!< Scale draw that defines how a label will be displayed on this chart.
             te::qt::widgets::HistogramStyle*  m_histogramStyle;      //!< The histogram's style as displayed by this widget.
+            QwtPlotHistogram*                 m_selection;            //!< The PlotItems to be highlighted when a selection occurs;
 
       };
     } // end namespace widgets

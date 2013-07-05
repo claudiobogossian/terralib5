@@ -76,6 +76,8 @@ namespace te
 
         const te::da::SQLDialect* getDialect() const;
 
+        static void setDialect(te::da::SQLDialect* myDialect);
+
         void open();
         
         void close();
@@ -109,6 +111,8 @@ namespace te
         OGRDataSource* m_ogrDS;                                     //!< A pointer to OGR Data Source.
         bool m_isValid;                                             //!< True if this is a valid datasource.
         te::da::DataSourceCapabilities m_capabilities;              //!< OGR capabilities.
+
+        static te::da::SQLDialect* sm_myDialect;                //!< OGR SQL dialect.
     };
 
   } // end namespace ogr

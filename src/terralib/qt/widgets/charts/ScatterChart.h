@@ -37,6 +37,8 @@
 
 namespace te
 {
+
+  namespace da    { class ObjectIdSet; }
   namespace qt
   {
     namespace widgets
@@ -74,6 +76,9 @@ namespace te
           /*! \brief Destructor. */
           ~ScatterChart();
 
+          /*! \brief Returns the chart's type. */
+          virtual int rtti() const;
+
           te::qt::widgets::Scatter* getScatter();
 
           void setScatter(te::qt::widgets::Scatter* newScatter);
@@ -81,6 +86,14 @@ namespace te
           ScatterStyle* getScatterStyle();
 
           void setScatterStyle(ScatterStyle* newStyle);
+
+          /*!
+            \brief Highlights the objects identified by \a oids
+
+            \param oids The identifiers of plotitems to be highlighted.
+            \param items The plotitems to be highlighted.
+          */
+          void highlight(const te::da::ObjectIdSet* oids);
 
         private:
 

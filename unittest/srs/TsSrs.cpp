@@ -60,9 +60,9 @@ void TsSrs::tcSRSManager()
   resultPair = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromName(resultString);
   CPPUNIT_ASSERT(resultPair.second == TE_SRS_WGS84_UTM_ZONE_25S);
   
-  te::srs::SpatialReferenceSystem* resultSRS = 0;
+  te::srs::SpatialReferenceSystemPtr resultSRS; // = 0;
   CPPUNIT_ASSERT_NO_THROW (resultSRS = te::srs::SpatialReferenceSystemManager::getInstance().getSpatialReferenceSystem(TE_SRS_SAD69));
-  CPPUNIT_ASSERT(resultSRS);
+  CPPUNIT_ASSERT(resultSRS.get());
   
   // --- Test the iterator access
   size_t aux1=0;

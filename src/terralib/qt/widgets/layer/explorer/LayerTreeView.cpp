@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "AbstractLayerTreeItem.h"
+#include "AbstractTreeItem.h"
 #include "LayerTreeModel.h"
 #include "LayerTreeView.h"
 
@@ -91,7 +91,7 @@ class te::qt::widgets::LayerTreeView::Impl
     {
       QMenu menu(m_ltv);
 
-      std::list<AbstractLayerTreeItem*> selectedLayers = m_ltv->getSelectedItems();
+      std::list<AbstractTreeItem*> selectedLayers = m_ltv->getSelectedItems();
 
       if(selectedLayers.empty())
       {
@@ -139,7 +139,7 @@ class te::qt::widgets::LayerTreeView::Impl
         std::map<std::string, std::vector<QAction*> > actionsByLayerType;
 
         // determine the layer types
-        for(std::list<AbstractLayerTreeItem*>::const_iterator it = selectedLayers.begin();
+        for(std::list<AbstractTreeItem*>::const_iterator it = selectedLayers.begin();
             it != selectedLayers.end();
             ++it)
         {
@@ -237,9 +237,9 @@ te::qt::widgets::LayerTreeView::~LayerTreeView()
   delete m_pImpl;
 }
 
-std::list<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::LayerTreeView::getSelectedItems() const
+std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerTreeView::getSelectedItems() const
 {
-  std::list<AbstractLayerTreeItem*> layers;
+  std::list<AbstractTreeItem*> layers;
 
   QModelIndexList indexes = selectedIndexes();
 
@@ -247,7 +247,7 @@ std::list<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::LayerTreeVie
 
   foreach(idx, indexes)
   {
-    AbstractLayerTreeItem* layer = static_cast<AbstractLayerTreeItem*>(idx.internalPointer());
+    AbstractTreeItem* layer = static_cast<AbstractTreeItem*>(idx.internalPointer());
 
     if(layer != 0)
       layers.push_back(layer);
@@ -284,16 +284,16 @@ void te::qt::widgets::LayerTreeView::remove(QAction* action)
   m_pImpl->remove(action);
 }
 
-void te::qt::widgets::LayerTreeView::itemActivated(const QModelIndex & index)
+void te::qt::widgets::LayerTreeView::itemActivated(const QModelIndex& index)
 {
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(index.internalPointer());
 
   emit activated(item);
 }
 
 void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex& index)
 {
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(index.internalPointer());
 
   emit clicked(item);
 
@@ -313,7 +313,7 @@ void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex& index)
     emit visibilityChanged(item);
 
     // For their descendants
-    std::vector<AbstractLayerTreeItem*> descendantItems = item->getDescendants();
+    std::vector<AbstractTreeItem*> descendantItems = item->getDescendants();
     for(std::size_t i = 0; i < descendantItems.size(); ++i)
     {
       te::map::AbstractLayer* descendantLayer = descendantItems[i]->getLayer().get();
@@ -322,7 +322,7 @@ void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex& index)
     }
 
     // For their ancestors
-    std::vector<AbstractLayerTreeItem*> ancestorItems = item->getAncestors();
+    std::vector<AbstractTreeItem*> ancestorItems = item->getAncestors();
     for(std::size_t i = 0; i < ancestorItems.size(); ++i)
     {
       te::map::AbstractLayer* ancestorLayer = ancestorItems[i]->getLayer().get();
@@ -332,26 +332,28 @@ void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex& index)
   }
 }
 
-void te::qt::widgets::LayerTreeView::itemDoubleClicked(const QModelIndex & index)
+void te::qt::widgets::LayerTreeView::itemDoubleClicked(const QModelIndex& index)
 {
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(index.internalPointer());
 
   emit doubleClicked(item);
 }
 
-void te::qt::widgets::LayerTreeView::itemEntered(const QModelIndex & index)
+void te::qt::widgets::LayerTreeView::itemEntered(const QModelIndex& index)
 {
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(index.internalPointer());
 
   emit entered(item);
 }
 
-void te::qt::widgets::LayerTreeView::itemPressed(const QModelIndex & index)
+void te::qt::widgets::LayerTreeView::itemPressed(const QModelIndex& index)
 {
-  AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(index.internalPointer());
+  AbstractTreeItem* item = static_cast<AbstractTreeItem*>(index.internalPointer());
 
   te::map::AbstractLayer* layer = static_cast<te::map::AbstractLayer*>(item->getLayer().get());
-  layer->setVisibilityAsChanged(false);
+
+  if(layer)
+    layer->setVisibilityAsChanged(false);
 
   emit pressed(item);
 }
