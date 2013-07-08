@@ -56,6 +56,8 @@ int main(int /*argc*/, char** /*argv*/)
     
     QueryExample(); //??? tem codigo comentado - cai...
 
+    //QueryExample_2();
+
     CopyingData();
 
     GDALExample();

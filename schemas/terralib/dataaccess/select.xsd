@@ -49,14 +49,11 @@
 
   <xsd:element name="Literal" type="te_da:LiteralType" substitutionGroup="te_da:Expression" />
 
-  <xsd:complexType name="LiteralType">
+  <xsd:complexType name="LiteralType" mixed="true">
     <xsd:complexContent>
-    <xsd:extension base="te_da:ExpressionType">
-      <xsd:sequence>
-        <xsd:element name="Value" type="xsd:string" minOccurs="1" maxOccurs="1" />
-      </xsd:sequence>
-      <xsd:attribute name="type" type="xsd:integer" use="required" />
-    </xsd:extension>
+      <xsd:extension base="te_da:ExpressionType">
+        <xsd:attribute name="type" type="xsd:integer" use="required" />
+      </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
 
