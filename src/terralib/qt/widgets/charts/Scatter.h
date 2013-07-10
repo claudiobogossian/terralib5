@@ -28,16 +28,13 @@
 
 //TerraLib
 #include "../Config.h"
-
-//STL
-#include <vector>
-#include <string>
+#include "ScatterUtils.h"
 
 namespace te
 {
   // Forward declarations
-  namespace dt { class AbstractData; } 
- 
+  namespace da  { class ObjectIdSet;}
+
   namespace qt
   {
     namespace widgets
@@ -60,6 +57,9 @@ namespace te
             \brief Constructor
           */
           Scatter();
+
+          /*! \brief Destructor. */
+          ~Scatter();
 
           /*!            
             \brief Calculates the minimum and maximum values for both the X and Y axis
@@ -107,7 +107,7 @@ namespace te
           */
           double getY(unsigned int idx);
 
-          /*!            
+          /*!
             \brief It returns a pointer to the first value of the scatter Y axis. 
 
             \return A pointer to the first value of the scatter Y axis.
@@ -116,23 +116,7 @@ namespace te
           */
           double* getY();
 
-          /*!            
-            \brief It returns a reference to the internal string vector related to the X axis. 
-
-            \return A reference to the internal string vector related to the X axis. 
-
-          */
-          std::vector<std::string>& getXString();
-
-          /*!            
-          \brief It returns a reference to the internal string vector related to the Y axis. 
-
-          \return A reference to the internal string vector related to the Y axis. 
- 
-          */
-          std::vector<std::string>& getYString();
-
-          /*!            
+          /*!
             \brief It returns the minimum value of the X axis. 
 
             \return The minimum value of the X axis. 
@@ -141,7 +125,7 @@ namespace te
           */
           double getMinX();
 
-          /*!            
+          /*!
             \brief It returns the maximum value of the X axis. 
 
             \return The maximum value of the X axis. 
@@ -150,7 +134,7 @@ namespace te
           */
           double getMaxX();
 
-          /*!            
+          /*!
             \brief It returns the minimum value of the Y axis. 
 
             \return The minimum value of the Y axis. 
@@ -159,7 +143,7 @@ namespace te
           */
           double getMinY();
 
-          /*!            
+          /*!
             \brief It returns the maximum value of the Y axis. 
 
             \return The maximum value of the Y axis. 
@@ -168,53 +152,76 @@ namespace te
           */
           double getMaxY();
 
-          /*!            
+          /*!
             \brief It sets the minimum value of the X axis.  
           */
           void setMinX(double& new_minX);
 
-          /*!            
+          /*!
             \brief It sets the maximum value of the X axis. 
           */
           void setMaxX(double& new_maxX);
 
-          /*!            
+          /*!
             \brief It sets the minimum value of the Y axis. 
           */
           void setMinY(double& new_minY);
 
-          /*!            
+          /*!
             \brief It sets the maximum value of the Y axis. 
           */
           void setMaxY(double& maxY);
 
-          /*!            
+          /*!
             \brief It adds a new value to the vector containing the X axis values. 
 
-            \param new_XValue  The new value to be added to the vector.
+            \param xValue  The new value to be added to the vector.
               
           */
           void addX(double& xValue);
 
-          /*!            
+          /*!
             \brief It adds a new value to the vector containing the Y axis values. 
 
-            \param new_YValue  The new value to be added to the vector.
-              
+            \param yValue  The new value to be added to the vector.
           */
           void addY(double& yValue);
 
-          /*! \brief Destructor. */
-          ~Scatter();
-        
+          /*!
+            \brief It adds the x and Y axis values to the scatter's vectors and the associeted objectId to the scatter's multi_index container.
+
+            \param xValue  The new x axis value to be added to the vector.
+            \param yValue  The new y axis value to be added to the vector.
+            \param oid The ObjectId that will be added to the container
+
+            \note it will take ownership of the given ObjectId pointer
+          */
+          void addData(double& xValue, double& yValue, te::da::ObjectId* oid);
+
+          /*!
+            \brief It returns a pointer to an ObjectIdSet that contains all of the scatter's selected  points.
+
+            \param xValue  The x axis value to be searched.
+            \param yValue  The x axis value to be searched.
+
+            \note The caller will take ownership of the returned pointer
+          */
+          te::da::ObjectIdSet* find(double& xValue, double& yValue);
+
+          /*!
+            \brief It returns a pair representing the point that contais the secected ObjectId.
+
+            \param oid  The ObjectId to be searched.
+
+          */
+          const std::pair<double, double> find(const te::da::ObjectId* oid);
+
         private:
 
-          std::vector<double> m_xValues;      //!< Double values for axis X
-          std::vector<double> m_yValues;      //!< Double values for axis Y
-          
-          std::vector<std::string> m_xString;  //!< String values for axis X
-          std::vector<std::string> m_yString;  //!< String values for axis Y
-          
+          PointToObjectIdSet m_valuesOids;  //!< The intervals and ObjecIds ordered in a boost multi index container
+          std::vector<double> m_xValues;    //!< Double values for axis X
+          std::vector<double> m_yValues;    //!< Double values for axis Y
+
           double m_minX; //!< The minimum value of the x Axis.
           double m_maxX; //!< The maximum value of the x Axis.
           double m_minY; //!< The minimum value of the y Axis.
