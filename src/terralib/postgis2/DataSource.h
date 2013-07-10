@@ -407,6 +407,52 @@ namespace te
         */
         std::auto_ptr<te::da::DataSet> getConstraints(unsigned int dtid, char conType = '\0') throw(te::da::Exception);
 
+       /*!
+          \brief It returns the list of properties for the given table or view.
+
+          \param dtid The dataset to load its information.
+
+          \return A recordset with the following fields:
+                  <ul>
+                  <li>0 (int2): attribute number in the table (a.attnum), remember that attribute number is 1 based</li>
+                  <li>1 (name): attribute name (a.attname)</li>
+                  <li>2 (Oid): attribute type oid (t.oid)</li>
+                  <li>3 (bool): 't' if attribute is NOT NULL, otherwise, its value is 'f' (a.attnotnull)</li>
+                  <li>4 (text): type modifier information, like precision and scale (format_type(a.atttypid, a.atttypmod))</li>
+                  <li>5 (bool): 't' if attribute is has a default value, otherwise, its value is 'f' (a.atthasdef)</li>
+                  <li>6 (text): attribute default value if field number 5 is true (pg_get_expr(d.adbin, d.adrelid))</li>
+                  <li>7 (int4): Number of dimensions, if the column is an array type; otherwise 0 (a.attndims)</li>
+                  </ul>
+
+          \pre The informed dataset type must have a valid id.
+
+          \exception Exception It throws an exception if it was not possible to get the information needed.
+
+          \note The client of this method will take the ownership of the returned dataset.
+          \note PostGIS driver extended method.
+        */
+        te::da::DataSet* getProperties(unsigned int dtid);
+
+        /*!
+          \brief It loads information about a given geometry column.
+
+          \param datasetName The name of the dataset containing the geometric property.
+          \param gp          The geometric columns to load its information.
+
+          \exception It throws an exception if it can not load the information.
+        */
+        void getGeometryInfo(const std::string& datasetName, te::gm::GeometryProperty* gp);
+
+        /*!
+          \brief It loads information about a given raster column.
+
+          \param datasetName The name of the dataset containing the geometric property.
+          \param rp          The raster column to load its information.
+
+          \exception It throws an exception if it can not load the information.
+        */
+        void getRasterInfo(const std::string& datasetName, te::rst::RasterProperty* rp);
+
         /*!
           \brief It sets the SQL dialect used by the PostGIS driver.
 
