@@ -280,9 +280,6 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
  
 te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QPointF point)
 {
-  //Removing the previous selection, if there was any.
-  m_selection->detach();
-
   QwtSeriesData<QwtIntervalSample>* values = data();
   QVector<QwtIntervalSample> highlightedSamples;
 
@@ -298,10 +295,6 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QPointF point)
     data.reset(new te::dt::Double(highlightedSamples.at(0).interval.minValue()));
   else
     data.reset(new te::dt::Double(std::numeric_limits<double>::max()));
-
-  m_selection->setData(new QwtIntervalSeriesData(highlightedSamples));
-  m_selection->attach(plot());
-  plot()->replot();
 
   return m_histogram->find(data.get());
 }

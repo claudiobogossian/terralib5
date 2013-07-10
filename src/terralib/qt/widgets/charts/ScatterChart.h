@@ -79,21 +79,49 @@ namespace te
           /*! \brief Returns the chart's type. */
           virtual int rtti() const;
 
+          /*!
+            \brief It returns the chart's scatter.  
+
+            \return The chart's scatter.  
+          */
           te::qt::widgets::Scatter* getScatter();
 
+          /*!            
+            \brief It sets the chart's scatter.   
+
+            \param newHistogram The chart's  new scatter.
+            \note It will take the ownership of the pointer "newScatter".
+          */
           void setScatter(te::qt::widgets::Scatter* newScatter);
 
+          /*!
+            \brief It returns the chart's style.  
+
+            \return The chart's style.  
+          */
           ScatterStyle* getScatterStyle();
 
+          /*!            
+            \brief It sets the chart's sstyle.   
+
+            \param newStyle The chart's  new style.
+            \note It will take the ownership of the pointer "newStyle".
+          */
           void setScatterStyle(ScatterStyle* newStyle);
 
           /*!
             \brief Highlights the objects identified by \a oids
 
             \param oids The identifiers of plotitems to be highlighted.
-            \param items The plotitems to be highlighted.
           */
           void highlight(const te::da::ObjectIdSet* oids);
+
+          /*!
+            \brief Highlights the intervals identified by \a point
+
+            \param point The point to be highlighted.
+          */
+          te::da::ObjectIdSet* highlight(QPointF point);
 
         private:
 
@@ -102,6 +130,7 @@ namespace te
         private:
           Scatter*       m_scatter;       //!< The scatter that will be shown on this chart.
           ScatterStyle*  m_scatterStyle;  //!< The symbol that defines the look of a scatter's point.
+          QwtPlotCurve*  m_selection;     //!< The PlotItems to be highlighted when a selection occurs;
       };
     } // end namespace widgets
   }   // end namespace qt

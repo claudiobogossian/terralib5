@@ -37,6 +37,10 @@
 
 //QWT
 #include <qwt_symbol.h>
+#include <qwt_plot.h>
+
+//STL
+#include <limits>
 
 te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   QwtPlotCurve(),
@@ -45,6 +49,11 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   //Set style
   setStyle(QwtPlotCurve::NoCurve);
   setPaintAttribute(QwtPlotCurve::FilterPoints );
+
+  m_selection = new QwtPlotCurve();
+  m_selection->setStyle(QwtPlotCurve::NoCurve);
+  m_selection->setPaintAttribute(QwtPlotCurve::FilterPoints);
+  m_selection->attach(plot());
 
   //Set Values
   setData();
@@ -58,6 +67,11 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, ScatterStyle* style, 
   //Set style
   setStyle(QwtPlotCurve::NoCurve);
   setPaintAttribute(QwtPlotCurve::FilterPoints);
+
+  m_selection = new QwtPlotCurve();
+  m_selection->setStyle(QwtPlotCurve::NoCurve);
+  m_selection->setPaintAttribute(QwtPlotCurve::FilterPoints);
+  m_selection->attach(plot());
 
   //Set Values
   setData();
@@ -119,6 +133,47 @@ void te::qt::widgets::ScatterChart::setScatterStyle(te::qt::widgets::ScatterStyl
 
 void te::qt::widgets::ScatterChart::highlight(const te::da::ObjectIdSet* oids)
 {
+  //Removing the previous selection, if there was any.
+  m_selection->detach();
+
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator itObjSet; 
-  std::map<double, double> highlightedPoints;
+  QVector<QPointF> highlightedPoints;
+
+    for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
+    {
+      std::pair<double, double> point = m_scatter->find((*itObjSet));
+      highlightedPoints.push_back(QPointF(point.first, point.second));
+    }
+
+  m_selection->setSamples(highlightedPoints);
+  m_selection->setSymbol(new QwtSymbol( symbol()->style(), QBrush( Qt::green ), QPen( Qt::green, 0 ), symbol()->size()));
+  m_selection->attach(plot());
+  plot()->replot();
+}
+
+te::da::ObjectIdSet* te::qt::widgets::ScatterChart::highlight(QPointF point)
+{
+  const QwtScaleMap xMap = plot()->canvasMap( xAxis() );
+  const QwtScaleMap yMap = plot()->canvasMap( yAxis() );
+
+  const double cx = xMap.transform( point.rx());
+  const double cy = yMap.transform( point.ry() );
+
+  QPoint mappedPoint = QPoint(cx, cy);
+
+  double dist;
+  int index = closestPoint( mappedPoint, &dist );
+
+  if(dist < 10)
+  {
+    double x = sample(index).x();
+    double y = sample(index).y();
+    return m_scatter->find(x, y);
+  }
+  else
+  {
+    double x = std::numeric_limits<double>::max();
+    double y = std::numeric_limits<double>::max();
+    return m_scatter->find(x, y);
+  }
 }
