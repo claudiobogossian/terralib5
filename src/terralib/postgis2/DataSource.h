@@ -454,6 +454,22 @@ namespace te
         void getRasterInfo(const std::string& datasetName, te::rst::RasterProperty* rp);
 
         /*!
+          \brief It retrieves a property from a given table or view.
+
+          \param dtid The table id.
+          \param pid  The property id.
+
+          \return The property having the given id in the informed table. The caller will take the ownership of the returned property.
+
+          \exception It throws an exception if it can not load the information.
+
+          \note The property will not have specific grometric information.
+
+          \note PostGIS driver extended method.
+        */
+        te::dt::Property* getProperty(unsigned int dtid, unsigned int pid);
+
+        /*!
           \brief It sets the SQL dialect used by the PostGIS driver.
 
           \param myDialect The PostGIS SQL dialect to be used when translating a query.
