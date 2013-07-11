@@ -143,8 +143,6 @@ namespace te
 
         std::map<std::string, te::da::DataSetType*> m_rasters;
 
-        //static const te::da::SQLDialect* sm_dialect;              //!< The Query dialect of the MySQL driver (note: the data source doesn't have the ownership of this pointer).
-        static te::da::DataSourceCapabilities sm_capabilities;    //!< MySQL capabilities.
     };
 
   } // end namespace mysql
