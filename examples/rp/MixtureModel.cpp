@@ -77,9 +77,7 @@ void MixtureModel()
       if (!executeok)
         std::cout << "Problems in linear mixture model." << std::endl;
 
-      // te::rst::Raster* rout = te::rst::RasterFactory::open(orinfo);
       std::cout << mmOutputParameters.m_outputRasterPtr->toString() << std::endl;
-      // delete rout;
     }
 
     // clean up
