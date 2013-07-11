@@ -29,10 +29,12 @@
 #include "../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/dataset/DataSetTypePersistence.h"
+#include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../dataaccess/query_h.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Property.h"
 #include "../../datatype/SimpleProperty.h"
@@ -66,23 +68,161 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                          const std::string& outputLayerName,
                          const te::da::DataSourceInfoPtr& dsInfo)
 {
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(inputLayer.get());
+  
+  te::da::DataSetType* outputDataSetType = GetDataSetType(outputLayerName, groupingProperties, statisticalSummary);
+  te::mem::DataSet* outputDataSet = new te::mem::DataSet(outputDataSetType);
+
+  if(dsLayer != 0)
+  {
+    te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+    const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
+
+    if(dsCapabilities.supportsPreparedQueryAPI())
+    {
+      AggregationQuery(dsLayer, groupingProperties, statisticalSummary, outputDataSet);
+    }
+    else
+    {
+      AggregationMemory(inputLayer, groupingProperties, statisticalSummary, outputDataSet);
+    }
+  }
+  else
+  {
+    AggregationMemory(inputLayer, groupingProperties, statisticalSummary, outputDataSet);
+  }
+
+  Persistence(outputDataSetType, outputDataSet, dsInfo);
+ }
+
+void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
+                                const std::vector<te::dt::Property*>& groupingProperties,
+                                const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                                te::mem::DataSet* outputDataSet)
+{
+
+  std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >::const_iterator itStatSummary = statisticalSummary.begin();
+  
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(inputLayer.get());
+  
+  te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+
+  te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema();
+  te::da::Fields* fields = new te::da::Fields;
+
+  while(itStatSummary != statisticalSummary.end())
+  {
+    int propType = itStatSummary->first->getType();
+
+    if(propType == te::dt::STRING_TYPE)
+    {
+      te::da::PropertyName* p_name = new te::da::PropertyName(itStatSummary->first->getName());
+
+      te::da::Expression* e_min = new te::da::Min(p_name);
+      te::da::Field* f_min = new te::da::Field(*e_min, p_name->getName() + "_MIN");
+
+      te::da::Expression* e_max = new te::da::Max(p_name);
+      te::da::Field* f_max = new te::da::Field(*e_max,  p_name->getName() + "_MAX");
+
+      te::da::Expression* e_count = new te::da::Count(p_name);
+      te::da::Field* f_count = new te::da::Field(*e_count,  p_name->getName() + "_COUNT");
+
+      fields->push_back(f_min);
+      fields->push_back(f_max);
+      fields->push_back(f_count);
+    }
+    else
+    {
+      te::da::PropertyName* p_name = new te::da::PropertyName(itStatSummary->first->getName());
+
+      te::da::Expression* e_min = new te::da::Min(p_name);
+      te::da::Field* f_min = new te::da::Field(*e_min, p_name->getName() + "_MIN");
+
+      te::da::Expression* e_max = new te::da::Max(p_name);
+      te::da::Field* f_max = new te::da::Field(*e_max, p_name->getName() + "_MAX");
+
+      te::da::Expression* e_count = new te::da::Count(p_name);
+      te::da::Field* f_count = new te::da::Field(*e_count, p_name->getName() + "_COUNT");
+
+      te::da::Expression* e_sum = new te::da::Sum(p_name);
+      te::da::Field* f_sum = new te::da::Field(*e_sum, p_name->getName() + "_SUM");
+
+      te::da::Expression* e_mean = new te::da::Avg(p_name);
+      te::da::Field* f_mean = new te::da::Field(*e_mean, p_name->getName() + "_MEAN");
+
+      te::da::Expression* e_stddev = new te::da::StdDev(p_name);
+      te::da::Field* f_stddev = new te::da::Field(*e_stddev, p_name->getName() + "_STD_DEV");
+
+      te::da::Expression* e_variance = new te::da::Variance(p_name);
+      te::da::Field* f_variance = new te::da::Field(*e_variance, p_name->getName() + "_VARIANCE");
+
+      te::da::Expression* e_amplitude = new te::da::Sub(*e_max, *e_min);
+      te::da::Field* f_amplitude = new te::da::Field(*e_amplitude, p_name->getName() + "_AMPLITUDE");
+
+      fields->push_back(f_min);
+      fields->push_back(f_max);
+      fields->push_back(f_count);
+      fields->push_back(f_sum);
+      fields->push_back(f_mean);
+      fields->push_back(f_stddev);
+      fields->push_back(f_variance);
+      fields->push_back(f_amplitude);
+
+    }
+    ++itStatSummary;
+  }
+
+  te::da::FromItem* fromItem = new te::da::DataSetName(dsType->getName());
+  te::da::From* from = new te::da::From;
+  from->push_back(fromItem);
+      
+  te::da::Select select(fields, from);
+
+  if(!groupingProperties.empty())
+  {
+    te::da::GroupBy* groupBy = new te::da::GroupBy();
+
+    for(std::size_t i = 0; i < groupingProperties.size(); ++i)
+    {
+      te::da::GroupByItem* e_groupBy = new te::da::GroupByItem(groupingProperties[i]->getName());
+      groupBy->push_back(e_groupBy);
+    }
+    select.setGroupBy(groupBy);
+  }
+
+  std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
+  te::da::DataSet* dsQuery = dsTransactor->query(select);
+  dsQuery->moveFirst();
+
+  while(dsQuery->moveNext())
+  {
+    std::string min = dsQuery->getAsString(0);
+    std::cout << "Min: " << min <<std::endl;
+  }
+
+  delete dsLayer;
+  delete dsType;
+  delete dsQuery;
+}
+
+void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
+                                const std::vector<te::dt::Property*>& groupingProperties,
+                                const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                                te::mem::DataSet* outputDataSet)
+{
   std::auto_ptr<te::mem::DataSet> inputDataSet((te::mem::DataSet*)inputLayer->getData());
   std::auto_ptr<te::mem::DataSetItem> dataSetItem(new te::mem::DataSetItem(inputDataSet.get()));
 
   std::map<std::string, std::vector<te::mem::DataSetItem*> > groupValues = GetGroups(inputDataSet.get(), groupingProperties);
   std::map<std::string, std::vector<te::mem::DataSetItem*> >::const_iterator itGroupValues = groupValues.begin();
 
-  te::da::DataSetType* outputDataSetType = GetDataSetType(outputLayerName, groupingProperties, statisticalSummary);
-  te::mem::DataSet* outputDataSet = new te::mem::DataSet(outputDataSetType);
-
-
   while(itGroupValues != groupValues.end())
   {
     std::string value = itGroupValues->first.c_str();
     int aggregationCount = itGroupValues->second.size();
 
-    std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(statisticalSummary, itGroupValues->second);
-    std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(statisticalSummary, itGroupValues->second);
+    std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(inputLayer, statisticalSummary, itGroupValues->second);
+    std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(inputLayer, statisticalSummary, itGroupValues->second);
 
     te::gm::Geometry* geometry = GetUnionGeometry(itGroupValues->second);
 
@@ -91,7 +231,6 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
     outputDataSetItem->setString(0, value);
     outputDataSetItem->setInt32(1, aggregationCount);
 
-    
     if(!functionResultStringMap.empty())
     {
       std::map<std::string, std::string>::iterator itFuncResultString = functionResultStringMap.begin();
@@ -124,10 +263,7 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
 
     ++itGroupValues;
   }
-
-  Persistence(outputDataSetType, outputDataSet, dsInfo); 
-
- }
+}
 
 te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, 
                                             const std::vector<te::dt::Property*>& properties, 
@@ -301,7 +437,8 @@ te::gm::Geometry* te::vp::GetUnionGeometry(const std::vector<te::mem::DataSetIte
   return resultGeometry;
 }
 
-std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary, 
+std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(const te::map::AbstractLayerPtr& inputLayer,
+                                                                            const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary, 
                                                                             const std::vector<te::mem::DataSetItem*>& items)
 {
   std::map<std::string, std::string> result;
@@ -323,7 +460,7 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
           values.push_back(items[i]->getString(index));
       }
 
-      te::stat::StringStatisticalSummary ss;
+      te::stat::StringStatisticalSummary ss; 
       te::stat::GetStringStatisticalSummary(values, ss);
 
       result.insert( std::map<std::string, std::string>::value_type( propertyName + "_MIN_VALUE", ss.m_minVal ) );
@@ -337,7 +474,8 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
   return result;
 }
 
-std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const te::map::AbstractLayerPtr& inputLayer,
+                                                                        const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                                                         const std::vector<te::mem::DataSetItem*>& items)
 {
   std::map<std::string, double> result;
@@ -412,4 +550,3 @@ void te::vp::Persistence( te::da::DataSetType* dataSetType,
   pair.second->moveFirst();
   te::da::Create(t.get(), pair.first, pair.second, options);
 }
-

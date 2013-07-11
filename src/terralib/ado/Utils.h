@@ -69,25 +69,42 @@ namespace te
       \param table Table target
       \param prop Property to be added
     */
-    void addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
-     
-    /*!
-      \brief It returns the geometry OGC names.
-
-      \param t The TerraLib geometry type.
-
-      \return The geometry OGC names.
-    */
-    const std::string& GetGeometryName(te::gm::GeomType t);
+    void AddAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
 
     /*!
-      \brief It returns the geometry type concerning the OGC name
+      \brief Convert a blob to a variant
 
-      \param t The OGC type name
-
-      \return The Terralib geometry type
+      \param blob Blob
+      \param size Blob size
+      \param var Result variant
     */
-    const te::gm::GeomType GetGeometryType(std::string t);
+    void Blob2Variant(const char* blob, int size, _variant_t & var);
+    
+    /*!
+      \brief Convert a variant to a blob
+
+      \param var Variant
+      \param size Variant size
+      \param blob Result variant
+    */
+    void Variant2Blob(const _variant_t var, int size, char* & blob);
+
+    /*!
+      \brief Bind TerraLib Type to ADO Type.
+
+      \param terralib TerraLib Type.
+
+      \return ADO Type
+    */
+    ADOX::DataTypeEnum Convert2Ado(int terralib);
+
+    /*!
+      \brief Bind TerraLib geometry to ADO variant.
+
+      \param geo TerraLib Geometry.
+      \param var Ado variant
+    */
+    void Convert2Ado(const te::gm::Geometry* geo, _variant_t & var);
 
     /*!
       \brief Bind ADO Type to TerraLib Type.
@@ -126,49 +143,52 @@ namespace te
     std::vector<te::dt::Property*> Convert2Terralib(ADOX::ColumnsPtr columns);
 
     /*!
-      \brief Bind TerraLib Type to ADO Type.
+      \brief It returns the geometry OGC names.
 
-      \param terralib TerraLib Type.
+      \param t The TerraLib geometry type.
 
-      \return ADO Type
+      \return The geometry OGC names.
     */
-    ADOX::DataTypeEnum Convert2Ado(int terralib);
+    const std::string& GetGeometryName(te::gm::GeomType t);
 
     /*!
-      \brief Bind TerraLib geometry to ADO variant.
+      \brief It returns the geometry type concerning the OGC name
 
-      \param geo TerraLib Geometry.
-      \param var Ado variant
+      \param t The OGC type name
+
+      \return The Terralib geometry type
     */
-    void Convert2Ado(const te::gm::Geometry* geo, _variant_t & var);
-    
+    const te::gm::GeomType GetGeometryType(std::string t);
+
     /*!
-      \brief Create TerraLib property from ado property (column)
+      \brief Read the geometry_columns table end return a SRID
 
-      \param column ADO column pointer
+      \param adoConn Ado connection.
+      \param tableName The table name.
+      \param geomPropName The geometry property name.
 
-      \return TerraLib Property
+      \return SRID of the geometry
     */
-    te::dt::Property* getPropertyFromADO(ADOX::_ColumnPtr column);
-    
+    int GetSRID(_ConnectionPtr adoConn, std::string tableName, std::string geomPropName);
+
     /*!
-      \brief Get the default geometry property from table "geometry_columns"
-      created on Access database
+      \brief Read the geometry_columns table end return a geometry type
 
-      \param dt Data Set Type
+      \param adoConn Ado connection.
+      \param tableName The table name.
+      \param geomPropName The geometry property name.
 
-      \return TerraLib geometry property
+      \return The geometry type
     */
-    te::gm::GeometryProperty* getDefaultGeomProperty(te::da::DataSetType* dt, _ConnectionPtr adoConn);
-    
+    te::gm::GeomType GetType(_ConnectionPtr adoConn, std::string tableName, std::string geomPropName);
+
     /*!
-      \brief Verifies whether Z property
+      \brief Insert DataSetType with geometry in the geometryColumns table
 
-      \param type geometry type
-
-      \return if is Z property
+      \param adoConn ADO connection
+      \param dt DataSetType to be inserted
     */
-    bool isZProperty(te::gm::GeomType type);
+    void InsertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt);
 
     /*!
       \brief Verifies whether is in the geometry_columns table
@@ -179,73 +199,17 @@ namespace te
 
       \return if is in geometry_columns table
     */
-    bool isGeomProperty(_ConnectionPtr adoConn, std::string tableName, std::string columnName);
+    bool IsGeomProperty(_ConnectionPtr adoConn, std::string tableName, std::string columnName);
 
     /*!
-      \brief Get the  geometry type in OGC standard
+      \brief Verifies whether Z property
 
       \param type geometry type
 
-      \return OGC standard type name
+      \return if is Z property
     */
-    std::string getOGCType(te::gm::GeomType type);
+    bool IsZProperty(te::gm::GeomType type);
 
-    /*!
-      \brief Convert a blob to a variant
-
-      \param blob Blob
-      \param size Blob size
-      \param var Result variant
-    */
-    void Blob2Variant(const char* blob, int size, _variant_t & var);
-    
-    /*!
-      \brief Convert a variant to a blob
-
-      \param var Variant
-      \param size Variant size
-      \param blob Result variant
-    */
-    void Variant2Blob(const _variant_t var, int size, char* & blob);
-
-    /*!
-      \brief Update a ADO column based on informations from DataSetType
-
-      \param dt DataSetType
-      \param recset The ADO record to be updated
-      \param prop The property that will be updated
-      \param item The TerraLib item referenced
-    */
-    void updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recset, te::dt::Property* prop, te::mem::DataSetItem* item);
-
-    /*!
-      \brief Insert DataSetType with geometry in the geometryColumns table
-
-      \param adoConn ADO connection
-      \param dt DataSetType to be inserted
-    */
-    void insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt);
-
-    /*!
-      \brief Read the geometry_columns table end return a SRID
-
-      \param adoConn Ado connection
-      \param geomp The geometry property
-
-      \return SRID of the geometry
-    */
-    int getSRID(_ConnectionPtr adoConn, te::gm::GeometryProperty* geomp);
-
-    /*!
-      \brief Read the geometry_columns table end return a geometry type
-
-      \param adoConn Ado connection
-      \param geomp The geometry property
-
-      \return The geometry type
-    */
-    te::gm::GeomType getType(_ConnectionPtr adoConn, te::gm::GeometryProperty* geomp);
-    
   } // end namespace ado
 }   // end namespace te
 

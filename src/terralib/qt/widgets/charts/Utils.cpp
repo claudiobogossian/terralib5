@@ -46,7 +46,7 @@
 
 #include <memory>
 
-double te::qt::widgets::getDouble(const std::string& value, std::vector<std::string>& sVector)
+double getDouble(const std::string& value, std::vector<std::string>& sVector)
 {
   //verify if it exists 
   for(std::size_t i=0;i<sVector.size();++i)
@@ -59,7 +59,7 @@ double te::qt::widgets::getDouble(const std::string& value, std::vector<std::str
   return (double)sVector.size()-1;
 }
 
-double te::qt::widgets::getDouble(te::dt::DateTime* dateTime)
+double getDouble(te::dt::DateTime* dateTime)
 {
   if(dateTime->getTypeCode() == te::dt::TIME_INSTANT)
   {
@@ -82,19 +82,28 @@ double te::qt::widgets::getDouble(te::dt::DateTime* dateTime)
   return 0.;
 }
 
-void te::qt::widgets::getObjectIds (te::da::DataSet* dataset, std::vector<std::size_t> pkeys, std::vector<te::da::ObjectId*>& valuesOIDs)
+void getObjectIds (te::da::DataSet* dataset, std::vector<std::size_t> pkeys, std::vector<te::da::ObjectId*>& valuesOIDs)
 {
-  te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
-
-  // Mounting oidset
   std::vector<size_t>::iterator it;
+  std::vector<std::string> propNames;
 
   for(it=pkeys.begin(); it!=pkeys.end(); ++it)
-    oids->addProperty(dataset->getPropertyName(*it), *it, dataset->getPropertyDataType(*it));
+    propNames.push_back(dataset->getPropertyName(*it));
 
-  te::da::ObjectId* oid = te::da::GenerateOID(dataset, oids->getPropertyNames());
+  te::da::ObjectId* oid = te::da::GenerateOID(dataset, propNames); 
   valuesOIDs.push_back(oid);
-  //oids->add(te::da::GenerateOID(dataset, oids->getPropertyNames()));
+}
+
+te::da::ObjectId* getObjectIds (te::da::DataSet* dataset, std::vector<std::size_t> pkeys)
+{
+  std::vector<size_t>::iterator it;
+  std::vector<std::string> propNames;
+
+  for(it=pkeys.begin(); it!=pkeys.end(); ++it)
+    propNames.push_back(dataset->getPropertyName(*it));
+
+  te::da::ObjectId* oid = te::da::GenerateOID(dataset, propNames); 
+  return oid;
 }
 
 te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propX, int propY)
@@ -116,7 +125,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
      unsigned int nLin = raster->getNumberOfRows();
 
     te::common::TaskProgress task;
-    task.setTotalSteps(nCol * nLin);
+    //task.setTotalSteps(nCol * nLin);
     task.setMessage("Scatter creation");
 
       for (unsigned int c=0; c < nCol; ++c)
@@ -135,17 +144,6 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
               newScatter->addX(val1);
               newScatter->addY(val2);
 
-              //calculate range
-              if(val1<newScatter->getMinX())
-                newScatter->setMinX(val1);
-              if(val1>newScatter->getMaxX())
-                newScatter->setMaxX(val1);
-
-              if(val2<newScatter->getMinY())
-                newScatter->setMinY(val2);
-              if(val2>newScatter->getMaxY())
-                newScatter->setMaxY(val2);
-
               task.pulse();
         }
       }
@@ -156,7 +154,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
     int yType = dataset->getPropertyDataType(propY);
 
     te::common::TaskProgress task;
-    task.setTotalSteps(dataset->getNumProperties());
+    //task.setTotalSteps(dataset->getNumProperties());
     task.setMessage("Scatter creation");
 
     while(dataset->moveNext())
@@ -170,17 +168,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
       double x_doubleValue = 0.;
       double y_doubleValue = 0.;
 
-      //====== treat the X value
-      if(xType == te::dt::STRING_TYPE)
-      {
-        std::string sValue;
-        if(dataset->isNull(propX))
-          sValue = " null value";
-        else
-          sValue = dataset->getString(propX);
-        x_doubleValue = getDouble(sValue, newScatter->getXString());  
-      }
-      else if((xType >= te::dt::INT16_TYPE && xType <= te::dt::UINT64_TYPE) || 
+      if((xType >= te::dt::INT16_TYPE && xType <= te::dt::UINT64_TYPE) || 
         xType == te::dt::FLOAT_TYPE || xType == te::dt::DOUBLE_TYPE || 
         xType == te::dt::NUMERIC_TYPE)
       {
@@ -200,16 +188,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
       }
 
       //======treat the Y value
-      if(yType == te::dt::STRING_TYPE)
-      {
-        std::string sValue;
-        if(dataset->isNull(propY) == false)
-          sValue = dataset->getString(propY);
-        else
-          sValue = " null value";
-        y_doubleValue = getDouble(sValue, newScatter->getYString());   
-      }
-      else if((yType >= te::dt::INT16_TYPE && yType <= te::dt::UINT64_TYPE) || 
+      if((yType >= te::dt::INT16_TYPE && yType <= te::dt::UINT64_TYPE) || 
         yType == te::dt::FLOAT_TYPE || yType == te::dt::DOUBLE_TYPE || 
         yType == te::dt::NUMERIC_TYPE)
       {
@@ -228,23 +207,11 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
       }
 
       //insert values into the vectors
-
-      newScatter->addX(x_doubleValue);
-      newScatter->addY(y_doubleValue);
-
-      //calculate range
-      if(x_doubleValue<newScatter->getMinX())
-        newScatter->setMinX(x_doubleValue);
-      if(x_doubleValue>newScatter->getMaxX())
-        newScatter->setMaxX(x_doubleValue);
-
-      if(y_doubleValue<newScatter->getMinY())
-        newScatter->setMinY(y_doubleValue);
-      if(y_doubleValue>newScatter->getMaxY())
-        newScatter->setMaxY(y_doubleValue);
+      newScatter->addData(x_doubleValue, y_doubleValue, getObjectIds(dataset, objIdIdx));
       task.pulse();
     } //end of the data set
   }
+  newScatter->calculateMinMaxValues();
   return newScatter;
 }
 
@@ -267,8 +234,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      propType == te::dt::NUMERIC_TYPE)
    {
 
-     std::map<double, unsigned int>* histogramValues = new std::map<double,  unsigned int>;
-     std::map<double, std::vector<te::da::ObjectId*> > valuesIdsByinterval;
+     std::map<double, std::vector<te::da::ObjectId*> > intervalToOIds;
      std::vector<te::da::ObjectId*> valuesOIds;
 
      double minValue, maxValue;
@@ -278,7 +244,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      std::vector<double> intervals;
 
     te::common::TaskProgress task;
-    task.setTotalSteps((dataset->getNumProperties()) * 2);
+    //task.setTotalSteps((dataset->getNumProperties()) * 2);
     task.setMessage("Histogram creation");
 
      //Calculating the minimum and maximum values of the given property and adjusting the Histogram's interval.
@@ -294,7 +260,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
        if(minValue>dataset->getDouble(propId))
           minValue = dataset->getDouble(propId);
        if(maxValue<dataset->getDouble(propId))
-         maxValue = dataset->getDouble(propId);
+          maxValue = dataset->getDouble(propId);
 
        double interval = maxValue - minValue;
 
@@ -307,7 +273,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      for (double i = minValue; i <(maxValue+newHistogram->getInterval()); i+=newHistogram->getInterval())
      {
        intervals.push_back(i);
-       valuesIdsByinterval.insert(make_pair(i, valuesOIds));
+       intervalToOIds.insert(std::make_pair(i, valuesOIds));
      }
 
      values.resize(intervals.size(), 0);
@@ -330,7 +296,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
          if((currentValue >= intervals[i]) && (currentValue <= intervals[i+1]))
          {
             values[i] =  values[i]+1;
-            te::qt::widgets::getObjectIds(dataset, objIdIdx, valuesIdsByinterval.at(intervals[i]));
+            getObjectIds(dataset, objIdIdx, intervalToOIds.at(intervals[i]));
             break;
          }
 
@@ -341,12 +307,10 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      //With both the intervals and values ready, the map can be populated
      for (unsigned int i= 0; i<intervals.size(); ++i)
      {
-       std::pair<double,  unsigned int> new_pair(intervals[i], values[i]);
-       histogramValues->insert(new_pair);
+       te::dt::Double* data = new te::dt::Double(intervals[i]);
+       newHistogram->insert(std::make_pair(data, values[i]), intervalToOIds.at(intervals[i]));
      }
 
-     newHistogram->setValues(histogramValues);
-     newHistogram->setValuesOIDs(valuesIdsByinterval);
      newHistogram->setMinValue(minValue);
      dataset->moveBeforeFirst();
 
@@ -362,13 +326,20 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
 
   te::common::TaskProgress task;
-  task.setTotalSteps((dataset->getNumProperties()) * 2);
+  //task.setTotalSteps((dataset->getNumProperties()) * 2);
   task.setMessage("Histogram creation");
 
   if(rpos != std::string::npos)
   {
     const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(dataset->getRaster(rpos), te::rst::SUMMARY_R_HISTOGRAM);
-    newHistogram->setValues(rs->at(propId).m_histogramR);
+    std::map<double, unsigned int>* values = rs->at(propId).m_histogramR;
+
+      for(std::map<double, unsigned int>::iterator it = values->begin(); it != values->end(); ++it)
+      {
+        te::dt::Double* data = new te::dt::Double(it->first);
+        newHistogram->insert(std::make_pair(data, it->second));
+      }
+
   }
   else
   {
@@ -387,7 +358,6 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
       std::set <std::string> intervals;
       std::set <std::string>::iterator intervalsIt;
-      std::map<std::string,  unsigned int>* histogramValues = new std::map<std::string,  unsigned int>;
       std::map<std::string, std::vector<te::da::ObjectId*> > valuesIdsByinterval;
       std::vector<te::da::ObjectId*> valuesOIds;
 
@@ -429,7 +399,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
           if(currentValue == *intervalsIt)
           {
             values[i] =  values[i]+1;
-            te::qt::widgets::getObjectIds(dataset, objIdIdx, valuesIdsByinterval.at(*intervalsIt));
+            getObjectIds(dataset, objIdIdx, valuesIdsByinterval.at(*intervalsIt));
             break;
           }
         }
@@ -440,12 +410,10 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       int i;
       for (i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end();  ++intervalsIt,++i)
       {
-        std::pair<std::string, unsigned int> new_pair(*intervalsIt, values[i]);
-        histogramValues->insert(new_pair);
+        te::dt::String* data = new te::dt::String(*intervalsIt);
+        newHistogram->insert(std::make_pair(data, values[i]), valuesIdsByinterval.at(*intervalsIt));
       }
 
-      newHistogram->setStringValues(histogramValues);
-      newHistogram->setStringOIDs(valuesIdsByinterval); 
       dataset->moveBeforeFirst();
     }
   }

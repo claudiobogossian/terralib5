@@ -27,18 +27,23 @@
 #define __TERRALIB_STATISTICAL_CORE_INTERNAL_SUMMARYFUNCTIONS_H
 
 //Terralib
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../datatype/Property.h"
+#include "../../maptools/AbstractLayer.h"
 #include "Config.h"
 #include "Enums.h"
 #include "NumericStatisticalSummary.h"
 #include "StringStatisticalSummary.h"
 
 // STL
+#include <map>
 #include <vector>
 
 namespace te
 {
   namespace stat
   {
+//memory
     TESTATEXPORT void GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss);
 
     TESTATEXPORT void GetNumericStatisticalSummary(std::vector<double>& values, te::stat::NumericStatisticalSummary& ss);
@@ -46,6 +51,15 @@ namespace te
     TESTATEXPORT double Mode(const std::vector<double>& values);
 
     TESTATEXPORT std::string Mode(const std::vector<std::string>& values);
+
+//dataaccess
+    TESTATEXPORT void GetStringStatisticalSummaryQuery( const te::map::AbstractLayerPtr& layer, 
+                                                        const te::dt::Property* prop,
+                                                        te::stat::StringStatisticalSummary& ss);
+
+    TESTATEXPORT void GetNumericStatisticalSummaryQuery(const te::map::AbstractLayerPtr& layer,
+                                                        const te::dt::Property* prop,
+                                                        te::stat::NumericStatisticalSummary& ss);
 
   } // end namespace stat
 }   // end namespace te

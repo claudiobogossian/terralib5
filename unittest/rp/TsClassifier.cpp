@@ -32,6 +32,7 @@
 #include <terralib/rp/Classifier.h>
 #include <terralib/rp/ClassifierEMStrategy.h>
 #include <terralib/rp/ClassifierISOSegStrategy.h>
+#include <terralib/rp/ClassifierKMeansStrategy.h>
 #include <terralib/rp/ClassifierMAPStrategy.h>
 #include <terralib/rp/ClassifierSAMStrategy.h>
 #include <terralib/rp/Segmenter.h>
@@ -274,7 +275,6 @@ void TsClassifier::EM()
   delete rin;
 }
 
-
 void TsClassifier::SAM()
 {
 // first open the input image
@@ -348,4 +348,48 @@ void TsClassifier::SAM()
   delete rin;
 }
 
+void TsClassifier::KMeans()
+{
+// first open the input image
+  std::map<std::string, std::string> rinfo;
+  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
+  te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
+
+// create output raster info
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = TE_DATA_DIR"/data/rasters/terralib_unittest_rp_Classifier_KMeans_Test.tif";
+
+// define classification parameters
+
+// input parameters
+  te::rp::Classifier::InputParameters algoInputParameters;
+  algoInputParameters.m_inputRasterPtr = rin;
+  algoInputParameters.m_inputRasterBands.push_back(0);
+  algoInputParameters.m_inputRasterBands.push_back(1);
+  algoInputParameters.m_inputRasterBands.push_back(2);
+
+// link specific parameters with chosen implementation
+  te::rp::ClassifierKMeansStrategy::Parameters classifierparameters;
+  classifierparameters.m_K = 4;
+  classifierparameters.m_maxIterations = 100;
+  classifierparameters.m_maxInputPoints = 1000;
+  classifierparameters.m_epsilon = 15.0;
+
+  algoInputParameters.m_strategyName = "kmeans";
+  algoInputParameters.setClassifierStrategyParams(classifierparameters);
+
+// output parameters
+  te::rp::Classifier::OutputParameters algoOutputParameters;
+  algoOutputParameters.m_rInfo = orinfo;
+  algoOutputParameters.m_rType = "GDAL";
+
+// execute the algorithm
+  te::rp::Classifier algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize(algoInputParameters) );
+  CPPUNIT_ASSERT( algorithmInstance.execute(algoOutputParameters) );
+
+// clean up
+  delete rin;
+}

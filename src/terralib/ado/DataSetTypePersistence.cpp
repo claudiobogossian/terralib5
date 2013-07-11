@@ -106,29 +106,24 @@ void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
     add(dt, dt->getPrimaryKey());
   
   te::gm::GeometryProperty* geomProp = 0;
-  geomProp = te::da::GetFirstGeomProperty(dt);
+
+  if(dt->hasGeom())
+  {
+    te::dt::SimpleProperty* lowerX = new te::dt::SimpleProperty("lower_x", te::dt::DOUBLE_TYPE);
+    te::dt::SimpleProperty* lowerY = new te::dt::SimpleProperty("lower_y", te::dt::DOUBLE_TYPE);
+    te::dt::SimpleProperty* upperX = new te::dt::SimpleProperty("upper_x", te::dt::DOUBLE_TYPE);
+    te::dt::SimpleProperty* upperY = new te::dt::SimpleProperty("upper_y", te::dt::DOUBLE_TYPE);
+
+    add(dt, lowerX);
+    add(dt, lowerY);
+    add(dt, upperX);
+    add(dt, upperY);
+
+    geomProp = te::da::GetFirstGeomProperty(dt);
+  }
+
   if(geomProp)
-    te::ado::insertInGeometryColumns(adoConn, dt);
-
-    /* METODO NA UTILS (insertInGeometryColumns)
-    _RecordsetPtr recset;
-    TESTHR(recset.CreateInstance(__uuidof(Recordset)));
-  
-    TESTHR(recset->Open(_bstr_t("geometry_columns"),
-    _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
-      
-    TESTHR(recset->AddNew());
-
-    recset->GetFields()->GetItem("f_table_catalog")->Value = (_bstr_t)std::string("''").c_str();
-    recset->GetFields()->GetItem("f_table_schema")->Value = (_bstr_t)std::string("public").c_str();
-    recset->GetFields()->GetItem("f_table_name")->Value = (_bstr_t)dt->getName().c_str();
-    recset->GetFields()->GetItem("f_geometry_column")->Value = (_bstr_t)geomProp->getName().c_str();
-    recset->GetFields()->GetItem("coord_dimension")->Value = (_variant_t)coord_dimension;
-    recset->GetFields()->GetItem("srid")->Value = (_variant_t)geomProp->getSRID();
-    recset->GetFields()->GetItem("type")->Value = (_bstr_t)te::ado::GetGeometryName(geomProp->getGeometryType()).c_str();
-
-    recset->Update();*/
-  
+    te::ado::InsertInGeometryColumns(adoConn, dt);
 
 }
 
@@ -204,7 +199,7 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::dt::Prope
     throw Exception(TR_ADO(e.Description()));
   }
 
-  te::ado::addAdoPropertyFromTerralib(pTable, p);
+  te::ado::AddAdoPropertyFromTerralib(pTable, p);
 
 }
 

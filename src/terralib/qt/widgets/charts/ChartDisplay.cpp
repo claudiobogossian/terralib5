@@ -26,18 +26,31 @@
 // TerraLib
 #include "ChartDisplay.h"
 #include "ChartStyle.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "Enums.h"
+#include "HistogramChart.h"
 #include "Utils.h"
 #include "../../../color/RGBAColor.h"
 #include "../../../se.h"
+#include "ScatterChart.h"
 
 //Qwt
+#include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
-#include <qwt_text.h>
+#include <qwt_plot_histogram.h>
 #include <qwt_plot_panner.h>
+#include <qwt_plot_picker.h>
 #include <qwt_plot_magnifier.h>
 #include <qwt_plot_zoomer.h>
+#include <qwt_picker_machine.h>
+#include <qwt_text.h>
+#include <qwt_symbol.h>
+
 //Qt
 #include <QtGui/QPen>
+
+//STL
+#include <memory>
 
 te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title) : 
   QwtPlot(parent)
@@ -54,14 +67,13 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title) :
   setAutoFillBackground( true );
   setAutoReplot( true );
 
-  // panning with the left mouse button
-  ( void ) new QwtPlotPanner( this->canvas() );
-
-  // zoom in/out with a bounding rectangle
-//  ( void ) new QwtPlotZoomer( this->canvas() );
-
   // zoom in/out with the wheel
   ( void ) new QwtPlotMagnifier( this->canvas() );
+
+  m_picker = new QwtPlotPicker(this->canvas());
+  m_picker->setStateMachine(new QwtPickerClickPointMachine );
+
+  connect(m_picker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
 }
 
 te::qt::widgets::ChartDisplay::~ChartDisplay()
@@ -81,6 +93,25 @@ void te::qt::widgets::ChartDisplay::setStyle(te::qt::widgets::ChartStyle* newSty
   adjustDisplay();
 }
 
+void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oids)
+{
+  const QwtPlotItemList& itmList = itemList();
+  for ( QwtPlotItemIterator it = itmList.begin();
+    it != itmList.end(); ++it )
+  {
+    int type = ( *it )->rtti();
+    switch (type)
+    {
+      case(te::qt::widgets::HISTOGRAM_CHART):
+        static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight(oids);
+        break;
+      case(te::qt::widgets::SCATTER_CHART):
+        static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight(oids);
+        break;
+    }
+  }
+}
+
 void  te::qt::widgets::ChartDisplay::adjustDisplay()
 {
   if(m_chartStyle)
@@ -95,5 +126,24 @@ void  te::qt::widgets::ChartDisplay::adjustDisplay()
       m_grid->detach();
 
     canvas()->setPalette(m_chartStyle->getColor());
+  }
+}
+
+void te::qt::widgets::ChartDisplay::onPointPicked(const QPointF &pos)
+{
+  const QwtPlotItemList& itmList = itemList();
+  for ( QwtPlotItemIterator it = itmList.begin();
+      it != itmList.end(); ++it )
+  {
+    if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
+      {
+        emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( pos), false);
+        break;
+      }
+     else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
+      {
+        emit selected(static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( pos), false);
+        break;
+      }
   }
 }

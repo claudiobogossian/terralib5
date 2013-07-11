@@ -49,7 +49,7 @@ namespace te
   {
     namespace widgets
     {
-      class AbstractLayerTreeItem;
+      class AbstractTreeItem;
 
       /*!
         \class LayerTreeView
@@ -76,21 +76,21 @@ namespace te
 
           ~LayerTreeView();
 
-          std::list<AbstractLayerTreeItem*> getSelectedItems() const;
+          std::list<AbstractTreeItem*> getSelectedItems() const;
 
         signals:
 
-          void activated(te::qt::widgets::AbstractLayerTreeItem* item);
+          void activated(te::qt::widgets::AbstractTreeItem* item);
 
-          void clicked(te::qt::widgets::AbstractLayerTreeItem* item);
+          void clicked(te::qt::widgets::AbstractTreeItem* item);
 
-          void doubleClicked(te::qt::widgets::AbstractLayerTreeItem* item);
+          void doubleClicked(te::qt::widgets::AbstractTreeItem* item);
 
-          void entered(te::qt::widgets::AbstractLayerTreeItem* item);
+          void entered(te::qt::widgets::AbstractTreeItem* item);
 
-          void pressed(te::qt::widgets::AbstractLayerTreeItem* item);
+          void pressed(te::qt::widgets::AbstractTreeItem* item);
 
-          void visibilityChanged(te::qt::widgets::AbstractLayerTreeItem* item);
+          void visibilityChanged(te::qt::widgets::AbstractTreeItem* item);
 
         public slots:
 

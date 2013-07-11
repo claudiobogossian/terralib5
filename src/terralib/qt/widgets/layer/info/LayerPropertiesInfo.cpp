@@ -17,10 +17,12 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   QtProperty* title_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Title"));
   layerInfo_prop->addSubProperty(title_prop);
   title_prop->setPropertyName("title");
+  title_prop->setEnabled(false);
 
   QtProperty* srid_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->addProperty(tr("SRID"));
   layerInfo_prop->addSubProperty(srid_prop);
   srid_prop->setPropertyName("srid");
+  srid_prop->setEnabled(false);
 
   /// Bounding Box
   QtProperty* bbox_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Bounding box"));
@@ -50,6 +52,7 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
 
   layerInfo_prop->addSubProperty(vis_prop);
   vis_prop->setPropertyName("visibility");
+  vis_prop->setEnabled(false);
 
   //setting values
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(id_prop, m_layer->getId().c_str());

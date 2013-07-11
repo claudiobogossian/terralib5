@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/Translator.h"
+#include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/serialization/xml/Serializer.h"
 #include "../../se/CoverageStyle.h"
@@ -509,15 +510,10 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   /* Query Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Query");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string query = reader.getElementValue();
-  reader.next();
-  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "Select");
+  te::da::Select* query = te::serialize::xml::ReadSelect(reader);
 
   /* DataSourceId Element */
-  reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "DataSourceId");
   reader.next();
@@ -579,7 +575,7 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   layer->setSRID(srid);
   layer->setExtent(*mbr.get());
   layer->setVisibility(GetVisibility(visible));
-  //layer->setQuery(query); Uba
+  layer->setQuery(query);
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
   layer->setStyle(style.release());
@@ -782,7 +778,7 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
 
   WriteAbstractLayer(layer, writer);
 
-  writer.writeElement("te_map:Query", "");
+  te::serialize::xml::Save(layer->getQuery(), writer);
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);
@@ -800,9 +796,26 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
   writer.writeEndElement("te_map:QueryLayer");
 }
 
-void FolderLayerWriter(const te::map::AbstractLayer* /*alayer*/, te::xml::Writer& /*writer*/)
+void FolderLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
 {
-  throw te::serialize::Exception("Not implemented yet!");
+  const te::map::FolderLayer* folderLayer = static_cast<const te::map::FolderLayer*>(alayer);
+
+  writer.writeStartElement("te_map:FolderLayer");
+
+  writer.writeAttribute("id", folderLayer->getId());
+  writer.writeElement("te_map:Title", folderLayer->getTitle());
+  writer.writeElement("te_map:Visible", GetVisibility(folderLayer->getVisibility()));
+
+  writer.writeStartElement("te_map:LayerList");
+ 
+  size_t count = folderLayer->getChildrenCount();
+
+  for(size_t i=0; i<count; i++)
+    te::serialize::Layer::getInstance().write((const te::map::AbstractLayer*) folderLayer->getChild(i).get(), writer);
+
+  writer.writeEndElement("te_map:LayerList");
+
+  writer.writeEndElement("te_map:FolderLayer");
 }
 
 void RasterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)

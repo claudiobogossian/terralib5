@@ -280,7 +280,7 @@ QVariant te::qt::widgets::DataSetTableModel::headerData(int section, Qt::Orienta
       break;
 
       case Qt::ToolTipRole:
-       return columnType(m_dataset->getPropertyDataType(section));
+       return m_dataset->getPropertyName(section).c_str() + QString(" : ") + columnType(m_dataset->getPropertyDataType(section));
       break;
 
       default:

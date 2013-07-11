@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/Translator.h"
+#include "../../dataaccess/dataset/DataSet.h"
 #include "Config.h"
 #include "Enums.h"
 #include "Exception.h"
@@ -130,4 +131,64 @@ std::string te::stat::GetStatSummaryFullName(const int& e)
     default:
       return ("");
   }
+}
+
+int te::stat::GetPropertyIndex(te::da::DataSet* dataSet, const std::string propName)
+{
+  int index = 0;
+
+  for(std::size_t i = 0; i < dataSet->getNumProperties(); ++i)
+  {
+    if(propName == dataSet->getPropertyName(i))
+    {
+      index = i;
+      return index;
+    }
+  }
+  return -1;
+}
+
+std::vector<std::string> te::stat::GetStringData(te::da::DataSet* dataSet, const std::string propName)
+{
+  std::vector<std::string> result;
+  std::string value="";
+  bool flag;
+
+  dataSet->moveFirst();
+
+  do
+  {
+    flag = false;
+    value = dataSet->getString(propName);
+
+    if(result.empty())
+      result.push_back(value);
+    else
+    {
+      for(std::size_t i = 0; i < result.size(); ++i)
+      {
+        if(value == result[i])
+          flag = true;
+      }
+
+      if(flag == false)
+        result.push_back(value);
+    }
+
+  }while(dataSet->moveNext());
+
+  return result;
+}
+
+std::vector<double> te::stat::GetNumericData(te::da::DataSet* dataSet, const std::string propName)
+{
+  std::vector<double> result;
+  dataSet->moveFirst();
+
+  do
+  {
+    result.push_back(dataSet->getDouble(propName));
+  }while(dataSet->moveNext());
+
+  return result;
 }

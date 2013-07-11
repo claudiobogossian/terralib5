@@ -26,9 +26,13 @@
 #include "ChartDisplayDockWidget.h"
 
 // TerraLib
+#include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../widgets/charts/ChartDisplayWidget.h"
 #include "events/LayerEvents.h"
+#include "../ApplicationController.h"
 
 te::qt::af::ChartDisplayDockWidget::ChartDisplayDockWidget(te::qt::widgets::ChartDisplayWidget* displayWidget, QWidget* parent) :
 QDockWidget(parent, Qt::Dialog),
@@ -40,13 +44,12 @@ QDockWidget(parent, Qt::Dialog),
 
   setAttribute(Qt::WA_DeleteOnClose, true);
 
-  connect (m_displayWidget, SIGNAL(selectOIds(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
-  connect (m_displayWidget, SIGNAL(deselectOIds(te::da::ObjectIdSet*)), SLOT(removeSelectedOIds(te::da::ObjectIdSet*)));
+  connect (m_displayWidget, SIGNAL(selected(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
 }
 
 te::qt::af::ChartDisplayDockWidget::~ChartDisplayDockWidget()
 {
-  //delete m_displayWidget;
+  delete m_displayWidget;
   emit closed(this);
 }
 
@@ -75,7 +78,7 @@ void te::qt::af::ChartDisplayDockWidget::onApplicationTriggered(te::qt::af::evt:
 
         if(ev->m_layer->getId() == m_layer->getId())
         {
-          //m_displayWidget->highlightOIds(ev->m_layer->getSelected());
+          m_displayWidget->highlightOIds(ev->m_layer->getSelected());
         }
       }
     break;
@@ -87,11 +90,15 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
   if (!add)
     m_layer->clearSelected();
 
-  m_layer->select(oids);
-}
+  std::vector<std::size_t> objIdIdx;
+  te::da::GetOIDPropertyPos(m_layer->getSchema(true), objIdIdx);
 
-void te::qt::af::ChartDisplayDockWidget::removeSelectedOIds(te::da::ObjectIdSet* oids)
-{
-  if(m_layer->getSelected() != 0)
-    m_layer->deselect(oids);
+  std::vector<size_t>::iterator it;
+
+  for(it=objIdIdx.begin(); it!=objIdIdx.end(); ++it)
+    oids->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
+
+  m_layer->select(oids);
+  te::qt::af::evt::LayerSelectionChanged e(m_layer);
+  ApplicationController::getInstance().broadcast(&e);
 }

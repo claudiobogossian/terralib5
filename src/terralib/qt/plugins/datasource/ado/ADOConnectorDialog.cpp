@@ -30,7 +30,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../widgets/Exception.h"
-#include "Ui_ADOConnectorDialogForm.h"
+#include "ui_ADOConnectorDialogForm.h",
 #include "ADOConnectorDialog.h"
 
 // Boost

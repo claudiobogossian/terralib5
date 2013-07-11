@@ -27,7 +27,7 @@
 #define __TERRALIB_VP_QT_INTERNAL_LAYERITEM_H
 
 // TerraLib
-#include "../../qt/widgets/layer/explorer/AbstractLayerTreeItem.h"
+#include "../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "../core/Config.h"
 
 namespace te
@@ -37,7 +37,7 @@ namespace te
     class PropertyGroupItem;
     class LegendGroupItem;
 
-    class TEVPEXPORT LayerItem : public te::qt::widgets::AbstractLayerTreeItem
+    class TEVPEXPORT LayerItem : public te::qt::widgets::AbstractTreeItem
     {
       Q_OBJECT
 
@@ -88,7 +88,7 @@ namespace te
 
       private:
 
-        std::vector<te::qt::widgets::AbstractLayerTreeItem*> m_items;        
+        std::vector<te::qt::widgets::AbstractTreeItem*> m_items;        
         te::map::AbstractLayerPtr m_layer;  //!< Terralib Layer of the LayerItem.
         te::vp::PropertyGroupItem* m_propertyGroup;
         te::vp::LegendGroupItem* m_legendGroup;

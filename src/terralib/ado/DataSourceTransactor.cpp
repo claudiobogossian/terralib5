@@ -31,6 +31,7 @@
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/SQLDialect.h"
 #include "../dataaccess/query/SQLVisitor.h"
+#include "../geometry/Envelope.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
 #include "DataSet.h"
@@ -45,6 +46,9 @@
 // ADO
 #import "msado15.dll" \
     no_namespace rename("EOF", "EndOfFile")
+
+// BOOST
+#include <boost/lexical_cast.hpp>
 
 #include <oledb.h>
 #include <stdio.h>
@@ -149,8 +153,36 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::TraverseType travType, 
                                                            te::common::AccessPolicy rwRole)
 {
-  // Temporary
-  return getDataSet(name);
+  te::da::DataSourceCatalogLoader* loader = getCatalogLoader();
+  te::da::DataSetType* dt = loader->getDataSetType(name);
+
+  if(dt == 0)
+    throw Exception(TR_ADO("Dataset not found!"));
+
+  std::string lowerX = "lower_x";
+  std::string upperX = "upper_x";
+  std::string lowerY = "lower_y";
+  std::string upperY = "upper_y";
+
+  std::string query = "SELECT * FROM " + dt->getName() + " WHERE ";
+              query += "NOT("+ lowerX +" > " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
+              query += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
+              query += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
+              query += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
+
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+
+  try
+  {
+    recset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenStatic, adLockReadOnly, adCmdText);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  return new DataSet(dt, recset, this);
 }
 
 te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& name,
@@ -239,7 +271,16 @@ te::da::DataSetPersistence* te::ado::DataSourceTransactor::getDataSetPersistence
 
 void te::ado::DataSourceTransactor::cancel()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  try
+  {
+    m_conn->Cancel();
+    m_conn->RollbackTrans();
+    m_isInTransaction = false;
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 boost::int64_t te::ado::DataSourceTransactor::getLastInsertId()

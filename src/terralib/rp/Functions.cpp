@@ -19,6 +19,7 @@
 
 /*!
   \file terralib/rp/Functions.cpp
+
   \brief Raster Processing functions.
 */
 
@@ -274,7 +275,6 @@ namespace te
         return false;
       }
     }
-
 
     void getDataTypeRange( const int dataType, double& min, double& max )
     {
@@ -561,4 +561,3 @@ namespace te
 
   } // end namespace rp
 }   // end namespace te
-

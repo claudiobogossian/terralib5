@@ -46,6 +46,7 @@ namespace te
           LAYER_SELECTED,
           LAYER_VISIBILITY_CHANGED,
           LAYER_SELECTION_CHANGED,
+          LAYERS_CHANGED,
           TOOL_CHANGED,
           COORDINATE_TRACKED,
           POINT_GEOMETRIES,

@@ -2,7 +2,6 @@
 
 // TerraLib
 #include <terralib/gdal/Utils.h>
-#include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
 #include <terralib/raster.h>
 

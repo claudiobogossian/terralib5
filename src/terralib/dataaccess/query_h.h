@@ -29,9 +29,11 @@
 // TerraLib
 #include "query/Add.h"
 #include "query/And.h"
+#include "query/Avg.h"
 #include "query/BinaryFunction.h"
 #include "query/BinaryOp.h"
 #include "query/BinaryOpEncoder.h"
+#include "query/Count.h"
 #include "query/DataSetName.h"
 #include "query/Distinct.h"
 #include "query/Div.h"
@@ -74,6 +76,8 @@
 #include "query/LiteralInt32.h"
 #include "query/LiteralInt64.h"
 #include "query/LiteralString.h"
+#include "query/Max.h"
+#include "query/Min.h"
 #include "query/Mul.h"
 #include "query/Not.h"
 #include "query/NotEqualTo.h"
@@ -100,6 +104,7 @@
 #include "query/ST_Touches.h"
 #include "query/ST_Transform.h"
 #include "query/ST_Within.h"
+#include "query/StdDev.h"
 #include "query/Sub.h"
 #include "query/SubSelect.h"
 #include "query/Substring.h"
@@ -108,6 +113,7 @@
 #include "query/UnaryFunction.h"
 #include "query/UnaryOp.h"
 #include "query/UnaryOpEncoder.h"
+#include "query/Variance.h"
 #include "query/Where.h"
 
 #endif  // __TERRALIB_DATAACCESS_INTERNAL_QUERY_H_H
