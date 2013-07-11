@@ -47,6 +47,9 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
+te::da::SQLDialect* te::ogr::DataSource::sm_myDialect(0);
+
+
 std::string RemoveSpatialSql(const std::string& sql)
 {
   std::string newQuery;
@@ -139,6 +142,11 @@ const te::da::SQLDialect* te::ogr::DataSource::getDialect() const throw()
   return sm_myDialect;
 }
 
+void te::ogr::DataSource::setDialect(te::da::SQLDialect* dialect)
+{
+  sm_myDialect = dialect;
+}
+
 void te::ogr::DataSource::begin() throw(Exception)
 {
   OGRLayer* result = m_ogrDS->ExecuteSQL("START TRANSACTION", 0, 0);
@@ -183,7 +191,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::DataSource::getDataSet(const std::string
   if(layer == 0)
     throw(Exception(TR_OGR("The informed data set could not be found in the data source.")));
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(0, layer, true));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(m_ogrDS, layer, true));
 }
 
 std::auto_ptr<te::da::DataSet> te::ogr::DataSource::getDataSet(const std::string& name,
@@ -200,7 +208,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::DataSource::getDataSet(const std::string
 
   layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
   
-  return std::auto_ptr<te::da::DataSet>(new DataSet(0, layer, true));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(m_ogrDS, layer, true));
 }
 
 std::auto_ptr<te::da::DataSet> te::ogr::DataSource::getDataSet(const std::string& name,
@@ -221,7 +229,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::DataSource::getDataSet(const std::string
   
   OGRGeometryFactory::destroyGeometry(ogrg);
   
-  return std::auto_ptr<te::da::DataSet>(new DataSet(0, layer, true));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(m_ogrDS, layer, true));
 }
 
 std::auto_ptr<te::da::DataSet> te::ogr::DataSource::query(const te::da::Select& q, te::common::TraverseType /*travType*/) throw(Exception)
@@ -243,7 +251,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::DataSource::query(const te::da::Select& 
   if(e.get() != 0)
     layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(0, layer, true));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(m_ogrDS, layer, true));
 }
 
 std::auto_ptr<te::da::DataSet> te::ogr::DataSource::query(const std::string& query, te::common::TraverseType /*travType*/) throw(Exception)
@@ -253,7 +261,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::DataSource::query(const std::string& que
   if(layer == 0)
     throw(Exception(TR_OGR("Could not retrieve the DataSet from data source.")));
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(0, layer, true));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(m_ogrDS, layer, true));
 }
 
 void te::ogr::DataSource::execute(const te::da::Query& command) throw(Exception)
@@ -322,7 +330,7 @@ std::auto_ptr<te::da::DataSetType> te::ogr::DataSource::getDataSetType(const std
  
   try
   {
-    te::da::DataSetType* dt = Convert2TerraLib(layer->GetLayerDefn());
+    dt = Convert2TerraLib(layer->GetLayerDefn());
 
     if(dt->hasGeom())
     {
@@ -350,7 +358,6 @@ std::auto_ptr<te::da::DataSetType> te::ogr::DataSource::getDataSetType(const std
     {
       te::da::PrimaryKey* pk = new te::da::PrimaryKey(colIdName, dt);
       pk->add(dt->getProperty(pos));
-      dt->add(pk);
     }
   }
   catch(Exception& e)

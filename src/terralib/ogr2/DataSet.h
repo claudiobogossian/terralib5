@@ -27,7 +27,7 @@
 #define __TERRALIB_OGR_INTERNAL_DATASET_H
 
 // TerraLib
-#include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess2/dataset/DataSet.h"
 #include "Config.h"
 
 // STL
@@ -36,6 +36,7 @@
 // Forward declarations
 class OGRLayer;
 class OGRFeature;
+class OGRDataSource;
 
 namespace te
 {
@@ -47,9 +48,6 @@ namespace te
 
   namespace ogr
   {
-// Forward declarations
-    class DataSourceTransactor;
-
     /*!
       \class DataSet
 
@@ -67,7 +65,7 @@ namespace te
         //@{
 
         /*! \brief Constructor. */
-        DataSet(DataSourceTransactor* trans, OGRLayer* layer, bool isOwner = false);
+        DataSet(OGRDataSource* dsrc, OGRLayer* layer, bool isOwner = false);
 
         /*! \brief Destructor. */
         ~DataSet();
@@ -77,8 +75,6 @@ namespace te
         te::common::TraverseType getTraverseType() const { return te::common::FORWARDONLY; }
 
         te::common::AccessPolicy getAccessPolicy() const { return te::common::RAccess; }
-
-        te::da::DataSourceTransactor* getTransactor() const;
 
         te::gm::Envelope* getExtent(std::size_t i);
 
@@ -152,10 +148,9 @@ namespace te
 
       private:
 
-        DataSourceTransactor* m_trans;        //!< The OGR transactor associated to this dataset.
-
         mutable te::da::DataSetType* m_dt;    //!< DataSetType.
 
+        OGRDataSource* m_ogrDs;               //<! Pointer to OGR data source. 
         OGRLayer* m_layer;                    //<! A pointer to OGR Layer.
         OGRFeature* m_currentFeature;         //<! A pointer to current OGR Feature of layer.
         int m_i;                              //<! The current dataset index.

@@ -301,9 +301,12 @@ ENDMACRO(exportModuleInformation)
 # param[input] fileName
 MACRO(generateRunningBatch templateFileName fileName)
   if(WIN32)
-    get_filename_component (TE_QT_DIR ${QT_QMAKE_EXECUTABLE} PATH)
-
-    set (TE_QT_DIR ${TE_QT_DIR} CACHE PATH "Location of installed Qt binaries.")
+  
+    if(TE_QT_DIR)
+      get_filename_component (TE_QT_DIR ${QT_QMAKE_EXECUTABLE} PATH)
+      set (TE_QT_DIR ${TE_QT_DIR} CACHE PATH "Location of installed Qt binaries.")
+    endif()
+    
     set (TE_BIN_DIR "${TE_BIN_DIR}" CACHE PATH "Location of the terralib binaries.")
     
     configure_file (${templateFileName} ${CMAKE_CURRENT_BINARY_DIR}/${fileName})
