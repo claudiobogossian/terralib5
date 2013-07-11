@@ -258,6 +258,23 @@ namespace te
             m_inputParameters.m_maxSegThreads : te::common::GetPhysProcNumber() );
         }
         
+        // Guessing memory limits
+        
+        const unsigned int totalRasterPixels = 
+          m_inputParameters.m_inputRasterPtr->getNumberOfRows() * 
+          m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
+        const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+        const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+        const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() ) / 
+          2.0;
+        const double freeVMem = MIN( totalPhysMem, 
+          ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );
+        const double pixelRequiredRam = ((double)stratMemUsageFactor) *
+          (double)(m_inputParameters.m_inputRasterBands.size() * sizeof( double ) );
+        const double maxSimultaneousMemoryPixels = MIN( 
+          ((double)totalRasterPixels), 
+          freeVMem / pixelRequiredRam );         
+        
         // Calc the maximum block width & height
         
         unsigned int maxNonExpandedBlockWidth = 0;
@@ -267,16 +284,29 @@ namespace te
         unsigned int blocksHOverlapSize = 0;
         unsigned int blocksVOverlapSize = 0;
         
-        if( m_inputParameters.m_enableBlockProcessing )
+        if( m_inputParameters.m_enableBlockProcessing 
+            &&
+            (
+              ( maxSegThreads > 0 )
+              ||
+              ( maxSimultaneousMemoryPixels < ((double)totalRasterPixels ) )
+              ||
+              ( 
+                ( m_inputParameters.m_maxBlockSize > 0 )
+                &&
+                (
+                  ( m_inputParameters.m_maxBlockSize * m_inputParameters.m_maxBlockSize )
+                  < 
+                  totalRasterPixels 
+                )
+              )
+            )
+          )
         {
-          const unsigned int totalRasterPixels = 
-            m_inputParameters.m_inputRasterPtr->getNumberOfRows() * 
-            m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
-            
-          unsigned int maxBlockPixels = 0;
-          
           // Calculating max bock pixels using the avaliable resources or
           // the user given parameters
+          
+          unsigned int maxBlockPixels = 0;
           
           if( m_inputParameters.m_maxBlockSize )
           {
@@ -285,33 +315,10 @@ namespace te
           }
           else
           {
-            // Guessing memory limits
-            
-            const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
-            
-            const double usedVMem = (double)te::common::GetUsedVirtualMemory();
-            
-            const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() ) / 
-              2.0;
-            
-            const double freeVMem = MIN( totalPhysMem, 
-              ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );
-                      
-            const double pixelRequiredRam = ((double)stratMemUsageFactor) *
-              (double)(m_inputParameters.m_inputRasterBands.size() * sizeof( double ) );
-              
-            const double maxSimultaneousMemoryPixels = MIN( 
-              ((double)totalRasterPixels), 
-              ( 0.20 * freeVMem ) / pixelRequiredRam );
-            
-            // What about threaded environment ?
             maxBlockPixels = static_cast<unsigned int>(
               ( maxSimultaneousMemoryPixels / 
               ( static_cast<double>( maxSegThreads ? maxSegThreads : 1 ) ) ) );
           }
-          
-          // The image must be divided into 4 sub-images, at least
-          maxBlockPixels = MIN( maxBlockPixels, totalRasterPixels / 4 ); 
 
           // updating maxBlockPixels considering the blocks overlap size
           
