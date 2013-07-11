@@ -27,16 +27,16 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_DATASOURCE_H_H
 
 // TerraLib
-#include "datasource/AbstractConnectionPool.h"
-#include "datasource/BatchExecutor.h"
+//#include "datasource/AbstractConnectionPool.h"
+//#include "datasource/BatchExecutor.h"
 #include "datasource/DataSource.h"
 #include "datasource/DataSourceCapabilities.h"
-#include "datasource/DataSourceCatalog.h"
-#include "datasource/DataSourceCatalogLoader.h"
-#include "datasource/DataSourceFactory.h"
+//#include "datasource/DataSourceCatalog.h"
+//#include "datasource/DataSourceCatalogLoader.h"
+//#include "datasource/DataSourceFactory.h"
 #include "datasource/DataSourceManager.h"
-#include "datasource/DataSourceTransactor.h"
-#include "datasource/PreparedQuery.h"
+//#include "datasource/DataSourceTransactor.h"
+//#include "datasource/PreparedQuery.h"
 
 #endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASOURCE_H_H
 
