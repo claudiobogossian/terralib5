@@ -94,7 +94,8 @@ bool te::rp::ClassifierDummyStrategy::initialize(te::rp::StrategyParameters cons
 
   m_isInitialized = true;
 
-  return true;}
+  return true;
+}
 
 bool te::rp::ClassifierDummyStrategy::execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
                                               const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,

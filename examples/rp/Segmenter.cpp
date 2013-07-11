@@ -83,7 +83,7 @@ void Segmenter()
 
     dst->add(id_prop);
     dst->add(obj_prop);
-    dst->setDefaultGeomProperty(obj_prop);
+//    dst->setDefaultGeomProperty(obj_prop);
 
     //define a primary key
     te::da::PrimaryKey* pkey = new te::da::PrimaryKey("primary key", dst);
@@ -189,7 +189,7 @@ void Segmenter()
 
     dst->add(id_prop);
     dst->add(obj_prop);
-    dst->setDefaultGeomProperty(obj_prop);
+//    dst->setDefaultGeomProperty(obj_prop);
 
     //define a primary key
     te::da::PrimaryKey* pkey = new te::da::PrimaryKey("primary key", dst);

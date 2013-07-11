@@ -939,7 +939,7 @@ namespace te
     {
       m_currentpixelindex++;
 
-      if (m_currentpixelindex >= m_pixelsinpointset.size())
+      if (m_currentpixelindex >= (int) m_pixelsinpointset.size())
         setEnd();
     }
 
