@@ -849,6 +849,8 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
 
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // QueryCapabilities
 
+  capabilities.setQueryCapabilities(qc);
+
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
   assert(xmlReader->getElementLocalName() == "DataSetTypeCapabilities");

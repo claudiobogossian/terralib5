@@ -137,21 +137,7 @@ void te::qt::widgets::ChartDisplay::onPointPicked(const QPointF &pos)
   {
     if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
       {
-        std::auto_ptr<QwtPlotCurve> c (static_cast<QwtPlotCurve *>( *it ));
-        double dist = 10e10;
-        int index = -1;
-        double d;
-            int idx = c->closestPoint( pos.toPoint(), &d );
-          if ( d < dist )
-          {
-              index = idx;
-              dist = d;
-          }
-          if ( c.get() && dist < 10 ) // 10 pixels tolerance
-          {
-              QwtSymbol *symbol = const_cast<QwtSymbol *>( c.get()->symbol() );
-              symbol->setBrush( symbol->brush().color().dark( 180 ) );
-          }
+        emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( pos), false);
         break;
       }
      else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )

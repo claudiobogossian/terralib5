@@ -47,10 +47,6 @@
 // Boost
 #include <boost/filesystem.hpp>
 
-// static's initialization
-//const te::da::SQLDialect* te::mysql::DataSource::sm_dialect(0);
-te::da::DataSourceCapabilities te::mysql::DataSource::sm_capabilities;
-
 // members implementations
 te::mysql::DataSource::DataSource()
   : m_pool(0),
@@ -150,7 +146,7 @@ const te::da::DataSourceCapabilities& te::mysql::DataSource::getCapabilities() c
   //capabilities["SELECT_QUERY"] = "TRUE";
   //capabilities["SELECT_INTO_QUERY"] = "TRUE";
 
-  return sm_capabilities;
+  return *Globals::sm_capabilities;
 }
 
 const te::da::SQLDialect* te::mysql::DataSource::getDialect() const

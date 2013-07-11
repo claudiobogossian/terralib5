@@ -251,7 +251,8 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
   else if (m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
   {
 
-      std::vector<std::string> highlightedIntervals;
+    //A vector that will contain the selected strings
+    std::vector<std::string> highlightedIntervals;
 
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
@@ -259,6 +260,7 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
       highlightedIntervals.push_back(interval);
     }
 
+    //A vector containing that will be populated with the samples that match the selected strings
     QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
 
     //Acquiring all selected samples:
@@ -280,28 +282,29 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
  
 te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QPointF point)
 {
-  //Removing the previous selection, if there was any.
-  m_selection->detach();
-
   QwtSeriesData<QwtIntervalSample>* values = data();
-  QVector<QwtIntervalSample> highlightedSamples;
 
-  for(size_t i = 0; i < values->size(); ++i)
+  if (m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
   {
-    if(values->sample(i).interval.minValue() < point.rx() && values->sample(i).interval.maxValue() > point.rx() &&  values->sample(i).value > point.ry())
-      highlightedSamples.push_back(values->sample(i));
+    std::auto_ptr<te::dt::String> data(new te::dt::String(""));
+    for(size_t i = 0; i < values->size(); ++i)
+    {
+      if(values->sample(i).interval.minValue() < point.rx() && values->sample(i).interval.maxValue() > point.rx() &&  values->sample(i).value > point.ry())
+        data.reset(new te::dt::String(m_histogramScaleDraw->label(i).text().toStdString()));
+    }
+
+    return m_histogram->find(data.get());
   }
-
-  std::auto_ptr<te::dt::Double> data;
-
-  if(highlightedSamples.size() > 0)
-    data.reset(new te::dt::Double(highlightedSamples.at(0).interval.minValue()));
   else
-    data.reset(new te::dt::Double(std::numeric_limits<double>::max()));
+  {
+    std::auto_ptr<te::dt::Double> data(new te::dt::Double(std::numeric_limits<double>::max()));
 
-  m_selection->setData(new QwtIntervalSeriesData(highlightedSamples));
-  m_selection->attach(plot());
-  plot()->replot();
+    for(size_t i = 0; i < values->size(); ++i)
+    {
+      if(values->sample(i).interval.minValue() < point.rx() && values->sample(i).interval.maxValue() > point.rx() &&  values->sample(i).value > point.ry())
+        data.reset(new te::dt::Double(values->sample(i).interval.minValue()));
+    }
 
-  return m_histogram->find(data.get());
+    return m_histogram->find(data.get());
+  }
 }

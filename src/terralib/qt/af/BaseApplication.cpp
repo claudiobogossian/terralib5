@@ -438,8 +438,11 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
   for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
   {
     te::qt::widgets::AbstractTreeItem* item = *it;
-    m_project->remove(item->getLayer());
-    m_explorer->getExplorer()->remove(item);
+    if(item->getLayer() != 0)
+    {
+      m_project->remove(item->getLayer());
+      m_explorer->getExplorer()->remove(item);
+    }
   }
 }
 

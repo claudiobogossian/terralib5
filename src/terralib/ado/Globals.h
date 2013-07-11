@@ -35,6 +35,13 @@
 
 namespace te
 {
+  // Forward declaration
+  namespace da
+  { 
+    class DataSourceCapabilities;
+    class SQLDialect;
+  }
+
   namespace ado
   {
     /*!
@@ -47,6 +54,9 @@ namespace te
       public:
 
         static const std::string sm_driverIdentifier;  //!< The ADO driver identifier.
+
+        static te::da::SQLDialect* sm_queryDialect;                //!< The query dialect supported by ADO driver.
+        static te::da::DataSourceCapabilities* sm_capabilities;    //!< The query dialect supported by ADO driver.
 
         static const std::string sm_geometryTypeName;
         static const std::string sm_pointTypeName;

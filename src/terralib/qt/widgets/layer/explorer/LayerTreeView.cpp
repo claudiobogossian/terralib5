@@ -114,7 +114,11 @@ class te::qt::widgets::LayerTreeView::Impl
       else if(selectedLayers.size() == 1)
       {
         // If just one layer is selected we show their actions
-        QString layerType(QString::fromStdString(selectedLayers.front()->getLayer()->getType()));
+        te::map::AbstractLayerPtr layer = selectedLayers.front()->getLayer();
+        if(layer == 0)
+          return;
+
+        QString layerType(QString::fromStdString(layer->getType()));
 
         for(std::list<tuple_type>::const_iterator it = m_menus.begin();
             it != m_menus.end();
@@ -144,6 +148,8 @@ class te::qt::widgets::LayerTreeView::Impl
             ++it)
         {
           te::map::AbstractLayerPtr layer = (*it)->getLayer();
+          if(layer.get() == 0)
+            continue;
 
           actionsByLayerType[layer->getType()] = std::vector<QAction*>();
         }
@@ -186,6 +192,9 @@ class te::qt::widgets::LayerTreeView::Impl
         {
           setVec.push_back(it->second);
         }
+
+        if(setVec.empty())
+          return;
 
         std::vector<QAction*> commonActions = setVec[0];
         for(std::size_t i = 1; i < setVec.size(); ++i)

@@ -721,6 +721,30 @@ namespace te
         "Invalid pointer" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_runningThreadsCounterPtr,
         "Invalid pointer" );
+        
+      // Creating the segmentation strategy instance
+      
+      boost::shared_ptr< SegmenterStrategy > strategyPtr(
+        SegmenterStrategyFactory::make( 
+        paramsPtr->m_inputParametersPtr->m_strategyName ) );
+      TERP_TRUE_OR_THROW( strategyPtr.get(), 
+        "Unable to create an segmentation strategy" );   
+      if( ! strategyPtr->initialize( 
+        paramsPtr->m_inputParametersPtr->getSegStrategyParams() ) )
+      {
+        paramsPtr->m_generalMutexPtr->lock();
+        
+        *(paramsPtr->m_runningThreadsCounterPtr) = 
+          *(paramsPtr->m_runningThreadsCounterPtr) - 1;
+        *(paramsPtr->m_abortSegmentationFlagPtr) = true;
+        
+//                std::cout << std::endl<< "Thread exit (error)"
+//                  << std::endl;                
+        
+        paramsPtr->m_generalMutexPtr->unlock();
+
+        return;
+      }        
 
       // Looking for a non processed segments block
       
@@ -944,30 +968,7 @@ namespace te
                 currentInRasterBands = paramsPtr->m_inputParametersPtr->m_inputRasterBands;
                 currentOutRasterBand = 0;
               }              
-              
-              // Creating the segmentation strategy instance
-              
-              boost::shared_ptr< SegmenterStrategy > strategyPtr(
-                SegmenterStrategyFactory::make( 
-                paramsPtr->m_inputParametersPtr->m_strategyName ) );
-              TERP_TRUE_OR_THROW( strategyPtr.get(), 
-                "Unable to create an segmentation strategy" );   
-              if( ! strategyPtr->initialize( 
-                paramsPtr->m_inputParametersPtr->getSegStrategyParams() ) )
-              {
-                paramsPtr->m_generalMutexPtr->lock();
-                
-                *(paramsPtr->m_runningThreadsCounterPtr) = 
-                  *(paramsPtr->m_runningThreadsCounterPtr) - 1;
-                *(paramsPtr->m_abortSegmentationFlagPtr) = true;
-                
-//                std::cout << std::endl<< "Thread exit (error)"
-//                  << std::endl;                
-                
-                paramsPtr->m_generalMutexPtr->unlock();
 
-                return;
-              }
               
               // Executing the strategy
               
@@ -990,8 +991,6 @@ namespace te
                 
                 return;
               }
-              
-              strategyPtr.reset();
               
               // flushing data if needed
               

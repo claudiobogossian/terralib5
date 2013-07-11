@@ -51,12 +51,6 @@ namespace te
     class Scatter;
     class Histogram;
 
-    double getDouble(const std::string& value, std::vector<std::string>& sVector);
-    
-    double getDouble(te::dt::DateTime* dateTime);
-
-    void getObjectIds (te::da::DataSet* dataset, std::vector<std::size_t> pkeys, std::vector<te::da::ObjectId*>& valuesOIDs);
-
     /*!
         \brief Scatter Creator
 
@@ -79,7 +73,7 @@ namespace te
         \note It will traverse the data set, using the moveNext() method
         \note It will not take the ownership of the DataSet pointer. 
 
-        \return a new Scatter
+        \return a new Histogram
     */
     TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId, int slices);
 
@@ -92,6 +86,8 @@ namespace te
         \note This version is used to create a histogram based on a set of labels (Strings), therefore there is no user-defined number of intervals, each label is an interval
         \note It will traverse the data set, using the moveNext() method
         \note It will not take the ownership of the DataSet pointer. 
+
+        \return a new Histogram
     */
     TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, te::da::DataSetType* dataType, int propId);
 
