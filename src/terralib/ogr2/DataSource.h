@@ -72,6 +72,8 @@ namespace te
 
         const te::da::SQLDialect* getDialect() const throw();
 
+        static void setDialect(te::da::SQLDialect* dialect);
+
         void begin() throw(Exception);
 
         void commit() throw(Exception);

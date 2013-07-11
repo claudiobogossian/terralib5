@@ -46,8 +46,6 @@ inline void TESTHR(HRESULT hr)
     _com_issue_error(hr);
 }
 
-te::da::SQLDialect* te::ado::DataSource::sm_myDialect(0);
-
 te::ado::DataSource::DataSource()
   : m_conn(0),
     m_connInUse(false),
@@ -101,12 +99,12 @@ std::string te::ado::DataSource::getConnectionStr()
 
 const te::da::DataSourceCapabilities& te::ado::DataSource::getCapabilities() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return *Globals::sm_capabilities;
 }
 
 const te::da::SQLDialect* te::ado::DataSource::getDialect() const
 {
-  return sm_myDialect;
+  return Globals::sm_queryDialect;
 }
 
 void te::ado::DataSource::open()

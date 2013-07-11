@@ -129,7 +129,6 @@ namespace te
         bool m_connInUse;                                     //!< Flag indicating if the data source connection is being used
         te::da::DataSourceCatalog* m_catalog;                 //!< The data source catalog.
 
-        static te::da::SQLDialect* sm_myDialect;                //!< ADO SQL dialect.
     };
   } // end namespace ado
 }   // end namespace te

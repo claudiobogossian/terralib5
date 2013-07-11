@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/Exception.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/DateTimeProperty.h"
@@ -35,8 +34,8 @@
 #include "../geometry/WKBReader.h"
 #include "../srs/Config.h"
 #include "DataSource.h"
-#include "DataSourceTransactor.h"
 #include "DataSet.h"
+#include "Exception.h"
 #include "Utils.h"
 
 // OGR
@@ -46,9 +45,9 @@
 #include <cassert>
 #include <memory>
 
-te::ogr::DataSet::DataSet(DataSourceTransactor* trans, OGRLayer* layer, bool isOwner)
-  : m_trans(trans),
-    m_dt(0),
+te::ogr::DataSet::DataSet(OGRDataSource* dsrc, OGRLayer* layer, bool isOwner)
+  : m_dt(0),
+    m_ogrDs(dsrc),
     m_layer(layer),
     m_currentFeature(0),
     m_i(-1),
@@ -82,12 +81,7 @@ te::ogr::DataSet::~DataSet()
   delete m_dt;
 
   if(m_isOwner)
-    m_trans->getOGRDataSource()->ReleaseResultSet(m_layer);
-}
-
-te::da::DataSourceTransactor* te::ogr::DataSet::getTransactor() const
-{
-  return m_trans;
+    m_ogrDs->ReleaseResultSet(m_layer);
 }
 
 te::gm::Envelope* te::ogr::DataSet::getExtent(std::size_t /*i*/)
