@@ -28,7 +28,7 @@
 #include "../common/Translator.h"
 #include "../common/UnitOfMeasure.h"
 #include "../common/UnitsOfMeasureManager.h"
-#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess2/dataset/DataSetType.h"
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"

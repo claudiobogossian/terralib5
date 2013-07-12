@@ -126,6 +126,17 @@ namespace te
         Skeleton::OutputParameters* >( &outputParams );
       TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
       
+      te::rp::Matrix< double > magnitudes;
+      magnitudes.reset( te::rp::Matrix< double >::AutoMemPol ); 
+      TERP_TRUE_OR_RETURN_FALSE( buildEdgeMap( magnitudes ),
+        "Edge map build error" );      
+        
+      te::rp::Matrix< double > gradVecField;
+      gradVecField.reset( te::rp::Matrix< double >::AutoMemPol ); 
+      TERP_TRUE_OR_RETURN_FALSE( buildGradientVectorField( magnitudes, gradVecField ),
+        "Edge map build error" );   
+        
+      magnitudes.reset();
 
       return true;
     }
@@ -178,7 +189,76 @@ namespace te
       return m_isInitialized;
     }
 
+    bool Skeleton::buildEdgeMap( te::rp::Matrix< double >& magnitudes ) const
+    {
+      const unsigned int nRows = m_inputParameters.m_inputRasterPtr->getNumberOfRows();
+      const unsigned int nCols = m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
+      const unsigned int lastRowIdx = nRows - 1;
+      const unsigned int lastColIdx = nCols - 1;
+      
+      if( ! magnitudes.reset( nRows,nCols ) )
+        return false;
+      
+      unsigned int row = 0;
+      unsigned int col = 0;
+      
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        magnitudes[ row ][ 0 ] = 0;
+        magnitudes[ row ][ lastColIdx ] = 0;
+      }
+      
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        magnitudes[ row ][ col ] = 0;
+        magnitudes[ lastRowIdx ][ col ] = 0;
+      }     
+      
+      double diffX = 0;
+      double diffY = 0;
+      
+      for( row = 1 ; row < lastRowIdx ; ++row )
+        for( col = 1 ; col < lastColIdx ; ++col )
+        {
+          diffX = magnitudes[ col + 1 ][ row ] - magnitudes[ col - 1 ][ row ];
+          diffY = magnitudes[ col ][ row - 1 ] - magnitudes[ col ][ row + 1 ];
+          magnitudes[ row ][ col ] = std::sqrt( ( diffX * diffX ) + ( diffY *
+            diffY ) );
+        }
+    }
+    
+    bool Skeleton::buildGradientVectorField( const te::rp::Matrix< double >& magnitudes,
+      te::rp::Matrix< double >& gradVecField ) const
+    {
+      const unsigned int nRows = magnitudes.getLinesNumber();
+      const unsigned int nCols = magnitudes.getColumnsNumber();
+      const unsigned int lastRowIdx = nRows - 1;
+      const unsigned int lastColIdx = nCols - 1;
+      
+      if( ! gradVecField.reset( nRows,nCols ) )
+        return false;
+      
+      unsigned int row = 0;
+      unsigned int col = 0;
+      
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        gradVecField[ row ][ 0 ] = 0;
+        gradVecField[ row ][ lastColIdx ] = 0;
+      }
+      
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        gradVecField[ row ][ col ] = 0;
+        gradVecField[ lastRowIdx ][ col ] = 0;
+      }     
+      
+      for( row = 1 ; row < lastRowIdx ; ++row )
+        for( col = 1 ; col < lastColIdx ; ++col )
+        {
 
+        }
+    }    
 
   } // end namespace rp
 }   // end namespace te

@@ -28,7 +28,7 @@
 #include "../common/Globals.h"
 #include "../common/StringUtils.h"
 #include "../common/Translator.h"
-#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess2/dataset/DataSetType.h"
 #include "../datatype/Array.h"
 #include "../datatype/ByteArray.h"
 #include "../datatype/DateTime.h"
