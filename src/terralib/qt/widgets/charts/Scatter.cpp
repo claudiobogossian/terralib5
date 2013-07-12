@@ -25,19 +25,16 @@
 
 //Terralib
 #include "Scatter.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 
 //STL
 #include <limits>
 
 te::qt::widgets::Scatter::Scatter(const std::vector<double>& axisX, const std::vector<double>& axisY)
   : m_xValues(axisX),
-    m_yValues(axisY),
-    m_minX(std::numeric_limits<double>::max()),
-    m_maxX(-std::numeric_limits<double>::max()),
-    m_minY(std::numeric_limits<double>::max()),
-    m_maxY(-std::numeric_limits<double>::max())
+    m_yValues(axisY)
 {
-  
+  calculateMinMaxValues();
 }
 
 te::qt::widgets::Scatter::Scatter()
@@ -46,6 +43,11 @@ te::qt::widgets::Scatter::Scatter()
   m_minY(std::numeric_limits<double>::max()),
   m_maxY(-std::numeric_limits<double>::max())
 {
+}
+
+te::qt::widgets::Scatter::~Scatter()
+{
+  
 }
 
 void te::qt::widgets::Scatter::calculateMinMaxValues()
@@ -101,16 +103,6 @@ double* te::qt::widgets::Scatter::getY()
   return &m_yValues[0];
 }
 
-std::vector<std::string>& te::qt::widgets::Scatter::getXString()
-{
-  return m_xString;
-}
-
-std::vector<std::string>& te::qt::widgets::Scatter::getYString()
-{
-  return m_yString;
-}
-
 double te::qt::widgets::Scatter::getMinX()
 {
   return m_minX;
@@ -161,8 +153,43 @@ void te::qt::widgets::Scatter::addY(double& yValue)
   m_yValues.push_back(yValue);
 }
 
-te::qt::widgets::Scatter::~Scatter()
+void te::qt::widgets::Scatter::addData(double& xValue, double& yValue, te::da::ObjectId* oid)
 {
-  
+  m_xValues.push_back(xValue);
+  m_yValues.push_back(yValue);
+  m_valuesOids.insert(te::qt::widgets::PointToObjectId(xValue, yValue, oid));
 }
 
+te::da::ObjectIdSet* te::qt::widgets::Scatter::find(double& xValue, double& yValue)
+{
+  te::qt::widgets::PointToObjectIdSet::nth_index<0>::type::iterator it0, it1;
+  PointToObjectId aux(xValue, yValue, 0);
+
+  tie(it0, it1) = m_valuesOids.equal_range(aux);
+
+  te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
+
+  while(it0 != it1) 
+  {
+    if(it0->y == yValue)
+    {
+      te::da::ObjectId* oid = new te::da::ObjectId(); 
+
+    for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
+    {
+      oid->addValue((it)->clone());
+    }
+
+      oids->add(oid);
+    }
+
+    ++it0;
+  }
+  return oids;
+}
+
+const std::pair<double, double> te::qt::widgets::Scatter::find(const te::da::ObjectId* oid)
+{
+  te::qt::widgets::PointToObjectIdSet::nth_index<1>::type::iterator it= m_valuesOids.get<1>().find(oid->getValueAsString());
+  return std::make_pair(it->x, it->y);
+}

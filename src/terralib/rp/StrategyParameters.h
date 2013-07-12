@@ -35,7 +35,8 @@ namespace te
   {
     /*!
       \class StrategyParameters
-      \brief  Strategy Parameters
+
+      \brief Raster strategy parameters base class.
     */
 
     class TERPEXPORT StrategyParameters : public te::common::AbstractParameters

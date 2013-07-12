@@ -1091,9 +1091,9 @@ namespace te
           \note Not thread-safe!
         */
         virtual void add(const std::string& datasetName,
-                          DataSet* d,
-                          const std::map<std::string, std::string>& options,
-                          std::size_t limit = 0) throw(Exception) = 0;
+                         DataSet* d,
+                         const std::map<std::string, std::string>& options,
+                         std::size_t limit = 0) throw(Exception) = 0;
 
         /*!
           \brief It removes all the informed items from the dataset.

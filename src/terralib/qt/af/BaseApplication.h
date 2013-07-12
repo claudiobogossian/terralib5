@@ -108,6 +108,8 @@ namespace te
           void onLayerNewLayerGroupTriggered();
 
           void onLayerPropertiesTriggered();
+        
+          void onLayerSRSTriggered();
 
           void onLayerShowTableTriggered();
 
@@ -212,6 +214,7 @@ namespace te
           QAction* m_layerExport;
           QAction* m_layerNewLayerGroup;
           QAction* m_layerProperties;
+          QAction* m_layerSRS;
           QAction* m_layerShowTable;
           QAction* m_layerRaise;
           QAction* m_layerLower;

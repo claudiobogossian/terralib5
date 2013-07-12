@@ -224,7 +224,13 @@ namespace te
             boost::condition_variable* m_blockProcessedSignalPtr;
             
             /*! Pointer to the running threads counter - default 0) */
-            unsigned int volatile* m_runningThreadsCounterPtr;            
+            unsigned int volatile* m_runningThreadsCounterPtr;        
+            
+            /*! Pointer to a vector of input raster bands gain values */
+            std::vector< double > const * m_inputRasterGainsPtr;
+            
+            /*! Pointer to a vector of input raster bands offset values */
+            std::vector< double > const * m_inputRasterOffsetsPtr;
             
             SegmenterThreadEntryParams();
             

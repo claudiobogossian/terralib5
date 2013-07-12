@@ -43,9 +43,11 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <limits>
-#include <cmath>
 #include <map>
+
+#include <climits>
+#include <cmath>
+#include <cfloat>
 
 namespace te
 {
@@ -183,6 +185,8 @@ namespace te
       m_segmentsIdsManagerPtr = 0;
       m_blockProcessedSignalPtr = 0;
       m_runningThreadsCounterPtr = 0;
+      m_inputRasterGainsPtr = 0;
+      m_inputRasterOffsetsPtr = 0;
     }
     
     Segmenter::SegmenterThreadEntryParams::~SegmenterThreadEntryParams()
@@ -230,6 +234,50 @@ namespace te
             "Output raster creation error" );
         }
         
+        // Finding the input raster normalization parameters
+        
+        std::vector< double > inputRasterGains( 
+          m_inputParameters.m_inputRasterBands.size(), 0.0 );
+        std::vector< double > inputRasterOffsets( 
+          m_inputParameters.m_inputRasterBands.size(), 0.0 );
+          
+        {
+          const unsigned int nRows = 
+            m_inputParameters.m_inputRasterPtr->getNumberOfRows();
+          const unsigned int nCols = 
+            m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
+          unsigned int row = 0;
+          unsigned int col = 0;
+          double bandMin = DBL_MAX;
+          double bandMax = -1.0 * DBL_MAX;
+          double value = 0;
+          
+          for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx <
+            m_inputParameters.m_inputRasterBands.size() ; ++inputRasterBandsIdx )
+          {
+            const te::rst::Band& band = 
+              *(m_inputParameters.m_inputRasterPtr->getBand( 
+              m_inputParameters.m_inputRasterBands[ inputRasterBandsIdx ] ) );
+            bandMin = DBL_MAX;
+            bandMax = -1.0 * DBL_MAX;
+            
+            for( row = 0 ; row < nRows ; ++row )
+              for( col = 0 ; col < nCols ; ++col )
+              {
+                band.getValue( col, row, value );
+                
+                if( bandMin > value ) bandMin = value;
+                if( bandMax < value ) bandMax = value;
+              }
+              
+            if( bandMax != bandMin )
+            {
+              inputRasterGains[ inputRasterBandsIdx ] = 1.0 / ( bandMax - bandMin );
+              inputRasterOffsets[ inputRasterBandsIdx ] = -1.0 * bandMin;
+            }
+          }
+        }
+        
         // instantiating the segmentation strategy
         
         boost::shared_ptr< SegmenterStrategy > strategyPtr(
@@ -258,6 +306,23 @@ namespace te
             m_inputParameters.m_maxSegThreads : te::common::GetPhysProcNumber() );
         }
         
+        // Guessing memory limits
+        
+        const unsigned int totalRasterPixels = 
+          m_inputParameters.m_inputRasterPtr->getNumberOfRows() * 
+          m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
+        const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+        const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+        const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() ) / 
+          2.0;
+        const double freeVMem = MIN( totalPhysMem, 
+          ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );
+        const double pixelRequiredRam = ((double)stratMemUsageFactor) *
+          (double)(m_inputParameters.m_inputRasterBands.size() * sizeof( double ) );
+        const double maxSimultaneousMemoryPixels = MIN( 
+          ((double)totalRasterPixels), 
+          freeVMem / pixelRequiredRam );         
+        
         // Calc the maximum block width & height
         
         unsigned int maxNonExpandedBlockWidth = 0;
@@ -267,16 +332,29 @@ namespace te
         unsigned int blocksHOverlapSize = 0;
         unsigned int blocksVOverlapSize = 0;
         
-        if( m_inputParameters.m_enableBlockProcessing )
+        if( m_inputParameters.m_enableBlockProcessing 
+            &&
+            (
+              ( maxSegThreads > 0 )
+              ||
+              ( maxSimultaneousMemoryPixels < ((double)totalRasterPixels ) )
+              ||
+              ( 
+                ( m_inputParameters.m_maxBlockSize > 0 )
+                &&
+                (
+                  ( m_inputParameters.m_maxBlockSize * m_inputParameters.m_maxBlockSize )
+                  < 
+                  totalRasterPixels 
+                )
+              )
+            )
+          )
         {
-          const unsigned int totalRasterPixels = 
-            m_inputParameters.m_inputRasterPtr->getNumberOfRows() * 
-            m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
-            
-          unsigned int maxBlockPixels = 0;
-          
           // Calculating max bock pixels using the avaliable resources or
           // the user given parameters
+          
+          unsigned int maxBlockPixels = 0;
           
           if( m_inputParameters.m_maxBlockSize )
           {
@@ -285,33 +363,10 @@ namespace te
           }
           else
           {
-            // Guessing memory limits
-            
-            const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
-            
-            const double usedVMem = (double)te::common::GetUsedVirtualMemory();
-            
-            const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() ) / 
-              2.0;
-            
-            const double freeVMem = MIN( totalPhysMem, 
-              ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );
-                      
-            const double pixelRequiredRam = ((double)stratMemUsageFactor) *
-              (double)(m_inputParameters.m_inputRasterBands.size() * sizeof( double ) );
-              
-            const double maxSimultaneousMemoryPixels = MIN( 
-              ((double)totalRasterPixels), 
-              ( 0.20 * freeVMem ) / pixelRequiredRam );
-            
-            // What about threaded environment ?
             maxBlockPixels = static_cast<unsigned int>(
               ( maxSimultaneousMemoryPixels / 
               ( static_cast<double>( maxSegThreads ? maxSegThreads : 1 ) ) ) );
           }
-          
-          // The image must be divided into 4 sub-images, at least
-          maxBlockPixels = MIN( maxBlockPixels, totalRasterPixels / 4 ); 
 
           // updating maxBlockPixels considering the blocks overlap size
           
@@ -545,6 +600,8 @@ namespace te
         segmenterThreadEntryParams.m_blockProcessedSignalPtr = &blockProcessedSignal;
         segmenterThreadEntryParams.m_runningThreadsCounterPtr = 
           &runningThreadsCounter;
+        segmenterThreadEntryParams.m_inputRasterGainsPtr = &inputRasterGains;
+        segmenterThreadEntryParams.m_inputRasterOffsetsPtr = &inputRasterOffsets;
         
         if( maxSegThreads )
         { // threaded segmentation mode
@@ -721,6 +778,34 @@ namespace te
         "Invalid pointer" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_runningThreadsCounterPtr,
         "Invalid pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_inputRasterGainsPtr,
+        "Invalid pointer" );     
+      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_inputRasterOffsetsPtr,
+        "Invalid pointer" );         
+        
+      // Creating the segmentation strategy instance
+      
+      boost::shared_ptr< SegmenterStrategy > strategyPtr(
+        SegmenterStrategyFactory::make( 
+        paramsPtr->m_inputParametersPtr->m_strategyName ) );
+      TERP_TRUE_OR_THROW( strategyPtr.get(), 
+        "Unable to create an segmentation strategy" );   
+      if( ! strategyPtr->initialize( 
+        paramsPtr->m_inputParametersPtr->getSegStrategyParams() ) )
+      {
+        paramsPtr->m_generalMutexPtr->lock();
+        
+        *(paramsPtr->m_runningThreadsCounterPtr) = 
+          *(paramsPtr->m_runningThreadsCounterPtr) - 1;
+        *(paramsPtr->m_abortSegmentationFlagPtr) = true;
+        
+//                std::cout << std::endl<< "Thread exit (error)"
+//                  << std::endl;                
+        
+        paramsPtr->m_generalMutexPtr->unlock();
+
+        return;
+      }        
 
       // Looking for a non processed segments block
       
@@ -944,36 +1029,15 @@ namespace te
                 currentInRasterBands = paramsPtr->m_inputParametersPtr->m_inputRasterBands;
                 currentOutRasterBand = 0;
               }              
-              
-              // Creating the segmentation strategy instance
-              
-              boost::shared_ptr< SegmenterStrategy > strategyPtr(
-                SegmenterStrategyFactory::make( 
-                paramsPtr->m_inputParametersPtr->m_strategyName ) );
-              TERP_TRUE_OR_THROW( strategyPtr.get(), 
-                "Unable to create an segmentation strategy" );   
-              if( ! strategyPtr->initialize( 
-                paramsPtr->m_inputParametersPtr->getSegStrategyParams() ) )
-              {
-                paramsPtr->m_generalMutexPtr->lock();
-                
-                *(paramsPtr->m_runningThreadsCounterPtr) = 
-                  *(paramsPtr->m_runningThreadsCounterPtr) - 1;
-                *(paramsPtr->m_abortSegmentationFlagPtr) = true;
-                
-//                std::cout << std::endl<< "Thread exit (error)"
-//                  << std::endl;                
-                
-                paramsPtr->m_generalMutexPtr->unlock();
 
-                return;
-              }
               
               // Executing the strategy
               
               if( ! strategyPtr->execute( 
                 *paramsPtr->m_segmentsIdsManagerPtr,
                 *currentInRasterPtr, currentInRasterBands, 
+                *paramsPtr->m_inputRasterGainsPtr,
+                *paramsPtr->m_inputRasterOffsetsPtr,
                 *currentOutRasterPtr, currentOutRasterBand,
                 !(paramsPtr->m_inputParametersPtr->m_enableBlockProcessing) ) )
               {
@@ -990,8 +1054,6 @@ namespace te
                 
                 return;
               }
-              
-              strategyPtr.reset();
               
               // flushing data if needed
               

@@ -108,6 +108,8 @@ namespace te
           SegmenterIdsManager& segmenterIdsManager,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
+          const std::vector< double >& inputRasterGains,
+          const std::vector< double >& inputRasterOffsets,                       
           te::rst::Raster& outputRaster,
           const unsigned int outputRasterBand,
           const bool enableProgressInterface ) throw( te::rp::Exception );
@@ -122,10 +124,10 @@ namespace te
       protected :
         
         /*!
-          \brief Internal segments ids container.
+          \brief Internal segments ids matrix type definition.
          */          
         typedef Matrix< SegmenterSegmentsBlock::SegmentIdDataType >
-          SegmentsIdsContainerT;
+          SegmentsIdsMatrixT;
           
         /*!
           \class SegmentFeatures
@@ -229,6 +231,40 @@ namespace te
             
             const Segment& operator=( const Segment& other ) { return other; };
         };
+        
+        /*!
+          \brief Segments pool.
+         */        
+        class SegmentsPool : public std::list< Segment* >
+        {
+          public :
+            
+            ~SegmentsPool();
+            
+            //overload
+            void clear();
+        };         
+        
+        /*!
+          \brief Internal segments indexer.
+          \note All segment objects will be given back to the segments pool at this instance destruction time.
+         */        
+        class SegmentsIndexer : public std::map< 
+          SegmenterSegmentsBlock::SegmentIdDataType, Segment* >
+        {
+          public :
+            
+            SegmentsIndexer( SegmentsPool& segmentsPool );
+            
+            ~SegmentsIndexer();
+            
+            //overload
+            void clear();
+            
+          protected :
+            
+            SegmentsPool& m_segmentsPool;
+        };          
         
         /*!
           \class MeanBasedSegment
@@ -348,25 +384,7 @@ namespace te
             };                        
         };                   
         
-        /*!
-          \brief Internal segments container.
-          \note All segment objects will be deleted at this instance destruction time.
-         */        
-        class TERPEXPORT SegmentsContainer : public std::map< 
-          SegmenterSegmentsBlock::SegmentIdDataType, Segment* >
-        {
-          public :
-            
-            SegmentsContainer() {};
-            
-            ~SegmentsContainer();
-            
-            /*!
-              \brief Delete all segment objects and clears the map.
-              */              
-            void deleteSegments();
-        };        
-        
+
         /*!
           \class Merger
           \brief Segments merger
@@ -456,14 +474,14 @@ namespace te
               \brief Default constructor.
               \param bandsWeights A reference to an external valid structure where each bands weight are stored.
               \param segmentsIds //!< A reference to an external valid structure where all segments IDs are stored.
-              \param segments //!< A reference to an external valid structure where each all segments stored.
+              \param segments //!< A reference to an external valid segments indexer structure.
               \param colorWeight //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
               \param compactnessWeight //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             */
             BaatzMerger( const double& colorWeight, const double& compactnessWeight,
               const std::vector< double >& bandsWeights,
-              const SegmentsIdsContainerT& segmentsIds,
-              const SegmenterRegionGrowingStrategy::SegmentsContainer& segments );
+              const SegmentsIdsMatrixT& segmentsIds,
+              const SegmenterRegionGrowingStrategy::SegmentsIndexer& segments );
             
             ~BaatzMerger();
             
@@ -501,9 +519,9 @@ namespace te
             
             std::vector< double > m_bandsWeights; //!< A vector where each bands weight are stored.
             
-            const SegmentsIdsContainerT& m_segmentsIds; //!< A reference to an external valid structure where each all segments IDs are stored.
+            const SegmentsIdsMatrixT& m_segmentsIds; //!< A reference to an external valid structure where each all segments IDs are stored.
             
-            const SegmenterRegionGrowingStrategy::SegmentsContainer& m_segments; //!< A reference to an external valid structure where each all segments stored.
+            const SegmenterRegionGrowingStrategy::SegmentsIndexer& m_segments; //!< A reference to an external valid structure where each all segments are indexed.
         };          
                 
         
@@ -518,6 +536,12 @@ namespace te
         */        
         SegmenterRegionGrowingStrategy::Parameters m_parameters;
         
+        /*! \brief A pool of segments that can be reused on each strategy execution. */
+        SegmentsPool m_segmentsPool;
+        
+        /*! \brief A internal segments IDs matrix that can be reused  on each strategy execution. */
+        SegmentsIdsMatrixT m_segmentsIdsMatrix;
+        
         /*!
           \brief Initialize the segment objects container and the segment 
           IDs container.
@@ -526,14 +550,15 @@ namespace te
           \param inputRaster The input raster.
           \param inputRasterBands Input raster bands to use.
           \param segmentsIds The output segment ids container.
-          \param segments The output segments container.
+          \param segments The output segments indexer.
           \return true if OK, false on errors.
         */        
         bool initializeSegments( SegmenterIdsManager& segmenterIdsManager,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
-          SegmentsIdsContainerT& segmentsIds,
-          SegmentsContainer& segments );
+          const std::vector< double >& inputRasterGains,
+          const std::vector< double >& inputRasterOffsets,                                 
+          SegmentsIndexer& segments );
           
         /*!
           \brief Merge closest segments.
@@ -541,19 +566,17 @@ namespace te
           when deciding when to merge two segments.
           \param segmenterIdsManager A segments ids manager to acquire
           unique segments ids.
-          \param segmentsIds The output segment ids container.
           \param merger The merger instance to use.
           \param enablelocalMutualBestFitting If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually.
-          \param segments The output segments container.
+          \param segsIndexer Segmenters indexer.
           \return The number of merged segments.
         */           
         unsigned int mergeSegments( 
           const double similarityThreshold,
           SegmenterIdsManager& segmenterIdsManager,
-          SegmentsIdsContainerT& segmentsIds,
           Merger& merger,
           const bool enablelocalMutualBestFitting,
-          SegmentsContainer& segments );
+          SegmentsIndexer& segsIndexer );
           
         /*!
           \brief Merge only small segments to their closest segment.
@@ -562,17 +585,15 @@ namespace te
           when deciding when to merge two segments.
           \param segmenterIdsManager A segments ids manager to acquire
           unique segments ids.
-          \param segmentsIds The output segment ids container.
           \param merger The merger instance to use.
-          \param segments The output segments container.
+          \param segsIndexer Segmenters indexer.
           \return The number of merged segments.
         */           
         unsigned int mergeSmallSegments( 
           const unsigned int minSegmentSize,
           SegmenterIdsManager& segmenterIdsManager,
-          SegmentsIdsContainerT& segmentsIds,
           Merger& merger,
-          SegmentsContainer& segments );          
+          SegmentsIndexer& segsIndexer );          
           
         /*!
           \brief Export the segments IDs to a tif file.
@@ -580,7 +601,7 @@ namespace te
           \param normto8bits If true, a 8 bits file will be generated.
           \param fileName The output tif file name.
         */           
-        void exportSegs2Tif( const SegmentsIdsContainerT& segmentsIds,
+        void exportSegs2Tif( const SegmentsIdsMatrixT& segmentsIds,
           bool normto8bits, const std::string& fileName );
           
         /*!
@@ -596,7 +617,7 @@ namespace te
           \param edgeLength2 The touching edge length for the region 2.
           \return Returns the count of points from region 1 (with ID1) touching the region 2 (with ID2).
         */            
-        static void getTouchingEdgeLength( const SegmentsIdsContainerT& segsIds,
+        static void getTouchingEdgeLength( const SegmentsIdsMatrixT& segsIds,
           const unsigned int& xStart, const unsigned int& yStart,
           const unsigned int& xBound, const unsigned int& yBound,
           const SegmenterSegmentsBlock::SegmentIdDataType& id1,

@@ -69,6 +69,8 @@ namespace te
           acquiring/releaseing unique segment IDs.
           \param inputRaster Input raster.
           \param inputRasterBands Input raster bands.
+          \param inputRasterGains Normalization gain values to be appliet over the respective input raster bands.
+          \param inputRasterOffsets Normalization offset values to be appliet over the respective input raster bands.
           \param outputRaster Output raster.
           \param outputRasterBand Output raster band.
           \param enableProgressInterface Enable the internal strategy to update
@@ -79,6 +81,8 @@ namespace te
           SegmenterIdsManager& segmenterIdsManager,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
+          const std::vector< double >& inputRasterGains,
+          const std::vector< double >& inputRasterOffsets,
           te::rst::Raster& outputRaster,
           const unsigned int outputRasterBand,
           const bool enableProgressInterface ) throw( te::rp::Exception ) = 0;          

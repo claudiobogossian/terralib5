@@ -674,24 +674,26 @@ te::gm::Envelope* te::ado::DataSourceCatalogLoader::getExtent(const te::dt::Prop
   bool first = true;
   while(ds->moveNext())
   {
-    te::gm::Geometry* geo = ds->getGeometry(te::da::GetFirstGeomProperty(dt)->getName());
-    std::string aaaaaa = geo->asText();
-    geo->computeMBR(true);
+    double lowerX = ds->getDouble("lower_x");
+    double lowerY = ds->getDouble("lower_y");
+    double upperX = ds->getDouble("upper_x");
+    double upperY = ds->getDouble("upper_y");
     
     if(first)
     {
-      env->m_llx = geo->getMBR()->getLowerLeftX();
-      env->m_lly = geo->getMBR()->getLowerLeftY();
-      env->m_urx = geo->getMBR()->getUpperRightX();
-      env->m_ury = geo->getMBR()->getUpperRightY();
+      env->m_llx = lowerX;
+      env->m_lly = lowerY;
+      env->m_urx = upperX;
+      env->m_ury = upperY;
+
       first = false;
       continue;
     }
 
-    if(geo->getMBR()->getLowerLeftX() < env->m_llx) env->m_llx = geo->getMBR()->getLowerLeftX();
-    if(geo->getMBR()->getLowerLeftY() < env->m_lly) env->m_lly = geo->getMBR()->getLowerLeftY();
-    if(geo->getMBR()->getUpperRightX() > env->m_urx) env->m_urx = geo->getMBR()->getUpperRightX();
-    if(geo->getMBR()->getUpperRightY() > env->m_ury) env->m_ury = geo->getMBR()->getUpperRightY();
+    if(lowerX < env->m_llx) env->m_llx = lowerX;
+    if(lowerY < env->m_lly) env->m_lly = lowerY;
+    if(upperX > env->m_urx) env->m_urx = upperX;
+    if(upperY > env->m_ury) env->m_ury = upperY;
   }
 
   return env;
