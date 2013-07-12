@@ -28,6 +28,8 @@
 #include "Algorithm.h"
 #include "../raster/Raster.h"
 
+#include "Matrix.h"
+
 #include <memory>
 #include <vector>
 #include <map>
@@ -51,6 +53,9 @@ namespace te
       
       \note Reference: Blum, H. "A transformation for Extracting New Descriptors of Shape" In Models
       for the Perception of Speech and Visual Form, Wathen-Dunn, W. (ed.) MIT Press, Cambridge, Mass.
+        
+      \note Reference Segmentation-Free Approach for Skeletonization of Gray-Scale Images via 
+      Anisotropic Vector Diffusion - Zeyun Yu and Chandrajit Bajaj.
       
       \ingroup RPAlgorithms
      */
@@ -136,6 +141,11 @@ namespace te
         Skeleton::InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
+        
+        bool buildEdgeMap( te::rp::Matrix< double >& magnitudes ) const;
+        
+        bool buildGradientVectorField( const te::rp::Matrix< double >& magnitudes,
+          te::rp::Matrix< double >& gradVecField ) const;
         
 
     };
