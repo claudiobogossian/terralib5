@@ -11,22 +11,29 @@ if(GDAL_FOUND)
   set (TE_USE_GDAL TRUE PARENT_SCOPE)
 endif(GDAL_FOUND)
 
+find_path ( 
+  GDAL_DATADIR NAME compdcs.csv 
+  PATH ${TE_DEPENDENCIES_DIR} 
+  PATH_SUFFIXES gdal/data 
+  DOC "Path to where the gdal data directory is located."
+  )
+
 #Definitions for windows compiling
 if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEGDALDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 endif(WIN32)
 
 list (APPEND TE_DEP_LIBS 
-    terralib_common
-		terralib_dataaccess
-		terralib_datatype
-		terralib_geometry
-		terralib_memory
-		terralib_ogr
-		terralib_plugin
-		terralib_raster
-		terralib_srs
-    )
+  terralib_common
+  terralib_dataaccess
+  terralib_datatype
+  terralib_geometry
+  terralib_memory
+  terralib_ogr
+  terralib_plugin
+  terralib_raster
+  terralib_srs
+)
     
 # Select the source files
 file(GLOB SRCS ${SRCDIR}/*.cpp)

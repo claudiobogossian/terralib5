@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/Translator.h"
-#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess2/dataset/DataSetType.h"
 #include "../datatype/DateTimeProperty.h"
 #include "../datatype/ByteArray.h"
 #include "../datatype/TimeInstant.h"

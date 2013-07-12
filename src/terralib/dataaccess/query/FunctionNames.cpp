@@ -51,6 +51,7 @@ const std::string te::da::FunctionNames::sm_Intersects("st_intersects");
 const std::string te::da::FunctionNames::sm_Contains("st_contains");
 const std::string te::da::FunctionNames::sm_ST_Intersects("st_intersects");
 const std::string te::da::FunctionNames::sm_ST_Relate("st_relate");
+const std::string te::da::FunctionNames::sm_ST_Union("st_union");
 const std::string te::da::FunctionNames::sm_ST_Transform("st_transform");
 const std::string te::da::FunctionNames::sm_Substring("substring");
 const std::string te::da::FunctionNames::sm_Like("like");

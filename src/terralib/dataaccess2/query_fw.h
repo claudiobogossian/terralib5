@@ -34,9 +34,11 @@ namespace te
     //class AbstractFunction;
     class Add;
     class And;
+    class Avg;
     class BinaryFunction;
     class BinaryOp;
     class BinaryOpEncoder;
+    class Count;
     class DataSetName;
     class Div;
     class EqualTo;
@@ -75,6 +77,8 @@ namespace te
     class LiteralInt32;
     class LiteralInt64;
     class LiteralString;
+    class Max;
+    class Min;
     class Mul;
     class Not;
     class NotEqualTo;
@@ -100,6 +104,7 @@ namespace te
     class ST_Touches;
     class ST_Transform;
     class ST_Within;
+    class StdDev;
     class Sub;
     class SubSelect;
     class Substring;
@@ -108,6 +113,7 @@ namespace te
     class UnaryFunction;
     class UnaryOp;
     class UnaryOpEncoder;
+    class Variance;
     class Where;
   }    // end namespace da
 }      // end namespace te
