@@ -51,16 +51,16 @@ namespace te
         virtual ~ClassifierStrategy();
 
         /*!
-          \brief Initialize the segmentation strategy.
+          \brief Initialize the classification strategy.
 
-          \param strategyParams A pointer to the user given specific segmentation strategy parameters ou NULL if no parameters are present.
+          \param strategyParams A pointer to the user given specific classification strategy parameters ou NULL if no parameters are present.
 
           \return true if OK, false on errors.
         */
         virtual bool initialize(StrategyParameters const* const strategyParams) throw(te::rp::Exception) = 0;
 
         /*!
-          \brief Executes the segmentation strategy.
+          \brief Executes the classification strategy.
 
           \param inputRaster                Input raster.
           \param inputRasterBands           Input raster bands.

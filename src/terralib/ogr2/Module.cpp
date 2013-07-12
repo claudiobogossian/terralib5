@@ -26,14 +26,14 @@
 // TerraLib
 #include "../common/Logger.h"
 #include "../common/Translator.h"
-#include "../dataaccess/datasource/DataSourceManager.h"
+#include "../dataaccess2/datasource/DataSourceManager.h"
 
-#include "../dataaccess/query/BinaryOpEncoder.h"
-#include "../dataaccess/query/FunctionEncoder.h"
-#include "../dataaccess/query/SQLDialect.h"
-#include "../dataaccess/query/SQLFunctionEncoder.h"
-#include "../dataaccess/query/TemplateEncoder.h"
-#include "../dataaccess/query/UnaryOpEncoder.h"
+#include "../dataaccess2/query/BinaryOpEncoder.h"
+#include "../dataaccess2/query/FunctionEncoder.h"
+#include "../dataaccess2/query/SQLDialect.h"
+#include "../dataaccess2/query/SQLFunctionEncoder.h"
+#include "../dataaccess2/query/TemplateEncoder.h"
+#include "../dataaccess2/query/UnaryOpEncoder.h"
 
 #include "DataSource.h"
 //#include "DataSourceFactory.h"
@@ -84,7 +84,7 @@ void te::ogr::Module::shutdown()
   DataSource::setDialect(0);
 
 // free OGR registered drivers
-  te::da::DataSourceManager::getInstance().detachAll(OGR_DRIVER_IDENTIFIER);
+ // te::da::DataSourceManager::getInstance().detachAll(OGR_DRIVER_IDENTIFIER);
  
   TE_LOG_TRACE(TR_OGR("TerraLib OGR driver shutdown!"));
 

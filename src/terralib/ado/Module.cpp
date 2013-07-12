@@ -17,15 +17,19 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-//! TerraLib
+// TerraLib
 #include "../common/Logger.h"
 #include "../common/Translator.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
-#include "DataSource.h"
+#include "../dataaccess/query/SQLDialect.h"
+#include "../dataaccess/serialization/xml/Serializer.h"
 #include "DataSourceFactory.h"
 #include "Globals.h"
 #include "Module.h"
 
+// Boost
+#include <boost/filesystem.hpp>
 
 const std::string te::ado::Module::sm_unknownTypeName("UNKNOWN");
 const std::string te::ado::Module::sm_int2TypeName("INT2");
@@ -79,6 +83,16 @@ void te::ado::Module::startup()
 
 // it initializes the OGR Factory support
   DataSourceFactory::initialize();
+
+  // retrieve the Capabilities
+  boost::filesystem::path driverpath(m_pluginInfo.m_folder);
+
+  boost::filesystem::path capabilitiesFile = driverpath / "ado-capabilities.xml";
+
+  te::ado::Globals::sm_capabilities = new te::da::DataSourceCapabilities();
+  te::ado::Globals::sm_queryDialect = new te::da::SQLDialect();
+
+  te::serialize::xml::Read(capabilitiesFile.string(), *te::ado::Globals::sm_capabilities, *te::ado::Globals::sm_queryDialect);
 
   TE_LOG_TRACE(TR_ADO("TerraLib ADO driver startup!"));
 

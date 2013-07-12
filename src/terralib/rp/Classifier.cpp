@@ -178,7 +178,7 @@ bool te::rp::Classifier::execute(AlgorithmOutputParameters& outputParams) throw(
   TERP_TRUE_OR_RETURN_FALSE(outputParamsPtr->m_outputRasterPtr.get(),
     "Output raster creation error");
 
-// instantiating the segmentation strategy
+// instantiating the classification strategy
   boost::shared_ptr<te::rp::ClassifierStrategy> strategyPtr(ClassifierStrategyFactory::make(m_inputParameters.m_strategyName));
   TERP_TRUE_OR_RETURN_FALSE(strategyPtr.get(), "Unable to create the classifier strategy");
   TERP_TRUE_OR_RETURN_FALSE(strategyPtr->initialize(m_inputParameters.getClassifierStrategyParams()),

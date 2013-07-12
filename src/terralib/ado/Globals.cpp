@@ -28,6 +28,9 @@
 
 const std::string te::ado::Globals::sm_driverIdentifier(ADO_DRIVER_IDENTIFIER);
 
+te::da::SQLDialect* te::ado::Globals::sm_queryDialect(0);
+te::da::DataSourceCapabilities* te::ado::Globals::sm_capabilities(0);
+
 const std::string te::ado::Globals::sm_geometryTypeName("GEOMETRY");
 const std::string te::ado::Globals::sm_pointTypeName("POINT");
 const std::string te::ado::Globals::sm_lineStringTypeName("LINESTRING");
