@@ -62,7 +62,6 @@ namespace te
 
             unsigned int m_K;                    //!< The number of clusters (means) to detect in image.
             unsigned int m_maxIterations;        //!< The maximum of iterations to perform if convergence is not achieved.
-            unsigned int m_maxInputPoints;       //!< The maximum number of points used to estimate the clusters (default = 1000).
             double m_epsilon;                    //!< The stop criteria. When the clusters change in a value smaller then epsilon, the convergence is achieved.
 
             Parameters();

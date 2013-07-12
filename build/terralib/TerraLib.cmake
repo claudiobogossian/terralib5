@@ -37,6 +37,7 @@ include  (${CMAKE_SOURCE_DIR}/buildTree.cmake)
 # =========================
 
 option (BUILD_ANNOTATIONTEXT "Build Annotation Text module?" ON)
+option (BUILD_CLASSIFICATION "Build Classification module?" ON)
 option (BUILD_COLOR "Build Color module?" ON)
 option (BUILD_COMMON "Build Common Runtime module?" ON)
 option (BUILD_DATAACCESS "Build Data Access module?" ON)
@@ -89,6 +90,10 @@ endif()
 
 IF(BUILD_ANNOTATIONTEXT)
 	add_subdirectory(terralib/terralib_annotationtext)
+endif()
+
+IF(BUILD_CLASSIFICATION)
+	add_subdirectory(terralib/terralib_classification)
 endif()
 
 IF(BUILD_COLOR)

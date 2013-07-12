@@ -21,6 +21,7 @@ if(WIN32)
 endif()
 
 set(DEP_LIBS
+    terralib_classification
     terralib_common
     terralib_dataaccess
     terralib_datatype

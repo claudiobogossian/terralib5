@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../classification/core/KMeans.h"
 #include "../common/progress/TaskProgress.h"
 #include "../geometry/Envelope.h"
 #include "../raster/Grid.h"
@@ -57,7 +58,6 @@ const te::rp::ClassifierKMeansStrategy::Parameters& te::rp::ClassifierKMeansStra
 
   m_K = rhs.m_K;
   m_maxIterations = rhs.m_maxIterations;
-  m_maxInputPoints = rhs.m_maxInputPoints;
   m_epsilon = rhs.m_epsilon;
 
   return *this;
@@ -67,7 +67,6 @@ void te::rp::ClassifierKMeansStrategy::Parameters::reset() throw(te::rp::Excepti
 {
   m_K = 0;
   m_maxIterations = 0;
-  m_maxInputPoints = 0;
   m_epsilon = 0.0;
 }
 
@@ -98,9 +97,6 @@ bool te::rp::ClassifierKMeansStrategy::initialize(te::rp::StrategyParameters con
 
   TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_K > 1, TR_RP("The value of K (number of clusters) must be at least 2."))
   TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_maxIterations > 0, TR_RP("The number of iterations must be at least 1."))
-  if (m_parameters.m_maxInputPoints == 0)
-    m_parameters.m_maxInputPoints = 1000;
-  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_maxInputPoints >= m_parameters.m_K, TR_RP("The maximum number of points must be at least higher than K."))
   TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_epsilon > 0, TR_RP("The stop criteria must be higher than 0."))
 
   m_isInitialized = true;
@@ -114,70 +110,38 @@ bool te::rp::ClassifierKMeansStrategy::execute(const te::rst::Raster& inputRaste
 {
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, TR_RP("Instance not initialized"))
 
-// create a vector of points with random positions inside raster to obtain input data
-  std::vector<te::gm::Point*> randomPoints = te::rp::GetRandomPointsInRaster(inputRaster, m_parameters.m_maxInputPoints);
+// defining classification parameters
+  te::cl::KMeans<te::rst::RasterIterator<double> >::Parameters classifierParameters;
+  classifierParameters.m_K = m_parameters.m_K;
+  classifierParameters.m_maxIterations = m_parameters.m_maxIterations;
+  classifierParameters.m_epsilon = m_parameters.m_epsilon;
+  std::vector<unsigned int> classification;
 
-// create clusters
-  std::vector<std::vector<double> > kmeans;
-  std::vector<double> cluster;
-  double value;
+// define raster iterators
+  te::rst::RasterIterator<double> rit = te::rst::RasterIterator<double>::begin((te::rst::Raster*)(&inputRaster), inputRasterBands);
+  te::rst::RasterIterator<double> ritend = te::rst::RasterIterator<double>::end((te::rst::Raster*)(&inputRaster), inputRasterBands);
 
-  te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(inputRaster.getBand(0), randomPoints);
-  te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(inputRaster.getBand(0), randomPoints);
-  unsigned int k = 0;
-  while (pit!= pitend && k < m_parameters.m_K)
-  {
-    cluster.clear();
-    for (unsigned int b = 0; b < inputRaster.getNumberOfBands(); b++)
-    {
-      inputRaster.getValue(pit.getCol(), pit.getRow(), value, inputRasterBands[b]);
-      cluster.push_back(value);
-    }
-    kmeans.push_back(cluster);
+// execute the algorithm
+  te::cl::KMeans<te::rst::RasterIterator<double> > classifier;
 
-    ++k;
-    ++pit;
-  }
-
-// estimate clusters
-  te::common::TaskProgress task(TR_RP("KMeans algorithm - estimating clusters"), te::common::TaskProgress::UNDEFINED, m_parameters.m_maxIterations);
-  for (unsigned int i = 0; i < m_parameters.m_maxIterations; i++)
-  {
-    task.pulse();
-  }
-  // ...
+  if(!classifier.initialize(classifierParameters))
+    throw;
+  if(!classifier.train(rit, ritend, inputRasterBands, std::vector<unsigned int>(), true))
+    throw;
+  if(!classifier.classify(rit, ritend, inputRasterBands, classification, true))
+    throw;
 
 // classifying image
-  te::rst::RasterIterator<double> it = te::rst::RasterIterator<double>::begin((te::rst::Raster*)(&inputRaster), inputRasterBands);
-  te::rst::RasterIterator<double> itend = te::rst::RasterIterator<double>::end((te::rst::Raster*)(&inputRaster), inputRasterBands);
-  unsigned int clusterNumber;
-  std::vector<double> values;
-  double minDistance;
-  double distance;
-
+  te::common::TaskProgress task;
   task.setTotalSteps(inputRaster.getNumberOfColumns() * inputRaster.getNumberOfRows());
   task.setMessage(TR_RP("KMeans algorithm - classifying image"));
   task.setCurrentStep(0);
-  while (it != itend)
+  unsigned int i = 0;
+  while (rit != ritend)
   {
-    clusterNumber = 0;
-    minDistance = std::numeric_limits<double>::max();
-    values.clear();
-    for (unsigned int b = 0; b < inputRasterBands.size(); b++)
-      values.push_back((*it)[b]);
-
-    for (unsigned int k = 0; k < kmeans.size(); k++)
-    {
-      distance = te::rp::GetEuclideanDistance(kmeans[k], values);
-      if (distance < minDistance)
-      {
-        minDistance = distance;
-        clusterNumber = k + 1;
-      }
-    }
-
-    outputRaster.setValue(it.getCol(), it.getRow(), clusterNumber, outputRasterBand);
-    ++it;
+    outputRaster.setValue(rit.getCol(), rit.getRow(), classification[i], outputRasterBand);
+    ++i;
+    ++rit;
     task.pulse();
   }
 
