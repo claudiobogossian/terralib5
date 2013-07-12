@@ -28,14 +28,15 @@
 
 // TerraLib
 #include "../../common/AbstractParameters.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../geometry/Coord2D.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/Point.h"
 #include "../../geometry/Polygon.h"
 #include "../../raster/Grid.h"
+#include "../../rp/Utils.h"
 #include "Config.h"
 #include "Exception.h"
-
 
 // STL
 #include <iostream>
@@ -131,7 +132,7 @@ template <class T> te::cl::KMeans<T>::Parameters::~Parameters()
 {
 }
 
-template <class T> typename const te::cl::KMeans<T>::Parameters& te::cl::KMeans<T>::Parameters::operator=(typename const te::cl::KMeans<T>::Parameters& rhs)
+template <class T> const typename te::cl::KMeans<T>::Parameters& te::cl::KMeans<T>::Parameters::operator=(const typename te::cl::KMeans<T>::Parameters& rhs)
 {
   reset();
 
@@ -167,7 +168,7 @@ template <class T> te::cl::KMeans<T>::~KMeans()
 {
 }
 
-template <class T> bool te::cl::KMeans<T>::initialize(typename const te::cl::KMeans<T>::Parameters& params) throw(te::cl::Exception)
+template <class T> bool te::cl::KMeans<T>::initialize(const typename te::cl::KMeans<T>::Parameters& params) throw(te::cl::Exception)
 {
   m_isInitialized = false;
 
