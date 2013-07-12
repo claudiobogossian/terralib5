@@ -27,7 +27,7 @@
 #define __TERRALIB_POSTGIS_INTERNAL_EXCEPTION_H
 
 // TerraLib
-#include "../dataaccess/Exception.h"
+#include "../dataaccess2/Exception.h"
 #include "Config.h"
 
 namespace te

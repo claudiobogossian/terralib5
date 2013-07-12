@@ -30,7 +30,7 @@
 #include "../common/ByteSwapUtils.h"
 #include "../common/Globals.h"
 #include "../common/StringUtils.h"
-#include "../dataaccess/Enums.h"
+#include "../dataaccess2/Enums.h"
 #include "../datatype/ArrayProperty.h"
 #include "../datatype/Date.h"
 #include "../datatype/DateTimeProperty.h"

@@ -2,12 +2,12 @@
 
 #include "../common/StringUtils.h"
 #include "../geometry/Envelope.h"
-#include "../dataaccess/query/From.h"
-#include "../dataaccess/query/GroupBy.h"
-#include "../dataaccess/query/Having.h"
-#include "../dataaccess/query/LiteralEnvelope.h"
-#include "../dataaccess/query/Select.h"
-#include "../dataaccess/query/Where.h"
+#include "../dataaccess2/query/From.h"
+#include "../dataaccess2/query/GroupBy.h"
+#include "../dataaccess2/query/Having.h"
+#include "../dataaccess2/query/LiteralEnvelope.h"
+#include "../dataaccess2/query/Select.h"
+#include "../dataaccess2/query/Where.h"
 
 
 te::ogr::SQLVisitor::SQLVisitor(const te::da::SQLDialect& dialect, std::string& sql) :
