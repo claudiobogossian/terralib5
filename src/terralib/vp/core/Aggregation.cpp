@@ -200,9 +200,13 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
       te::da::Expression* e_count = new te::da::Count(p_name);
       te::da::Field* f_count = new te::da::Field(*e_count,  p_name->getName() + "_COUNT");
 
+      te::da::Expression* e_validcount = new te::da::Count(p_name);
+      te::da::Field* f_validcount = new te::da::Field(*e_validcount,  p_name->getName() + "_VALID_COUNT");
+
       fields->push_back(f_min);
       fields->push_back(f_max);
       fields->push_back(f_count);
+      fields->push_back(f_validcount);
     }
     else
     {
@@ -216,6 +220,9 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
 
       te::da::Expression* e_count = new te::da::Count(p_name);
       te::da::Field* f_count = new te::da::Field(*e_count, p_name->getName() + "_COUNT");
+
+      te::da::Expression* e_validcount = new te::da::Count(p_name);
+      te::da::Field* f_validcount = new te::da::Field(*e_validcount, p_name->getName() + "_VALID_COUNT");
 
       te::da::Expression* e_sum = new te::da::Sum(p_name);
       te::da::Field* f_sum = new te::da::Field(*e_sum, p_name->getName() + "_SUM");
@@ -235,6 +242,7 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
       fields->push_back(f_min);
       fields->push_back(f_max);
       fields->push_back(f_count);
+      fields->push_back(f_validcount);
       fields->push_back(f_sum);
       fields->push_back(f_mean);
       fields->push_back(f_stddev);
@@ -365,8 +373,17 @@ void te::vp::SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupi
             
             if(index != -1)
             {
-              int value = dsQuery->getInt64(i);
-              outputDataSetItem->setInt64(index, value);
+              int type = outputDataSetItem->getPropertyDataType(index);
+              if(type == te::dt::DOUBLE_TYPE)
+              {
+                double value = boost::lexical_cast<double>(dsQuery->getAsString(i));
+                outputDataSetItem->setDouble(index, value);
+              }
+              if(type == te::dt::STRING_TYPE)
+              {
+                std::string value = dsQuery->getAsString(i);
+                outputDataSetItem->setString(index, value);
+              }
             }
           }
         }
