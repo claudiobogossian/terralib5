@@ -56,11 +56,13 @@ namespace te
     
     bool SegmenterDummyStrategy::execute( 
       SegmenterIdsManager& segmenterIdsManager,
-      const te::rst::Raster& inputRaster,
+      const te::rst::Raster&,
       const std::vector< unsigned int >& inputRasterBands,
+      const std::vector< double >&,
+      const std::vector< double >&,                                         
       te::rst::Raster& outputRaster,
       const unsigned int outputRasterBand,
-      const bool enableProgressInterface )
+      const bool )
       throw( te::rp::Exception )
     {
       SegmenterSegmentsBlock::SegmentIdDataType segmentId = 
@@ -74,7 +76,7 @@ namespace te
       {
         for( col = 0 ; col < nCols ; ++col )
         {
-          outputRaster.setValue( col, line, segmentId, 0 );
+          outputRaster.setValue( col, line, segmentId, outputRasterBand );
         }
       }      
       

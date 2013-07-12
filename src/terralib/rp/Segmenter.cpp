@@ -43,9 +43,11 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <limits>
-#include <cmath>
 #include <map>
+
+#include <climits>
+#include <cmath>
+#include <cfloat>
 
 namespace te
 {
@@ -183,6 +185,8 @@ namespace te
       m_segmentsIdsManagerPtr = 0;
       m_blockProcessedSignalPtr = 0;
       m_runningThreadsCounterPtr = 0;
+      m_inputRasterGainsPtr = 0;
+      m_inputRasterOffsetsPtr = 0;
     }
     
     Segmenter::SegmenterThreadEntryParams::~SegmenterThreadEntryParams()
@@ -228,6 +232,50 @@ namespace te
               0 ) );
           TERP_TRUE_OR_RETURN_FALSE( outputParamsPtr->m_outputRasterPtr.get(),
             "Output raster creation error" );
+        }
+        
+        // Finding the input raster normalization parameters
+        
+        std::vector< double > inputRasterGains( 
+          m_inputParameters.m_inputRasterBands.size(), 0.0 );
+        std::vector< double > inputRasterOffsets( 
+          m_inputParameters.m_inputRasterBands.size(), 0.0 );
+          
+        {
+          const unsigned int nRows = 
+            m_inputParameters.m_inputRasterPtr->getNumberOfRows();
+          const unsigned int nCols = 
+            m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
+          unsigned int row = 0;
+          unsigned int col = 0;
+          double bandMin = DBL_MAX;
+          double bandMax = -1.0 * DBL_MAX;
+          double value = 0;
+          
+          for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx <
+            m_inputParameters.m_inputRasterBands.size() ; ++inputRasterBandsIdx )
+          {
+            const te::rst::Band& band = 
+              *(m_inputParameters.m_inputRasterPtr->getBand( 
+              m_inputParameters.m_inputRasterBands[ inputRasterBandsIdx ] ) );
+            bandMin = DBL_MAX;
+            bandMax = -1.0 * DBL_MAX;
+            
+            for( row = 0 ; row < nRows ; ++row )
+              for( col = 0 ; col < nCols ; ++col )
+              {
+                band.getValue( col, row, value );
+                
+                if( bandMin > value ) bandMin = value;
+                if( bandMax < value ) bandMax = value;
+              }
+              
+            if( bandMax != bandMin )
+            {
+              inputRasterGains[ inputRasterBandsIdx ] = 1.0 / ( bandMax - bandMin );
+              inputRasterOffsets[ inputRasterBandsIdx ] = -1.0 * bandMin;
+            }
+          }
         }
         
         // instantiating the segmentation strategy
@@ -552,6 +600,8 @@ namespace te
         segmenterThreadEntryParams.m_blockProcessedSignalPtr = &blockProcessedSignal;
         segmenterThreadEntryParams.m_runningThreadsCounterPtr = 
           &runningThreadsCounter;
+        segmenterThreadEntryParams.m_inputRasterGainsPtr = &inputRasterGains;
+        segmenterThreadEntryParams.m_inputRasterOffsetsPtr = &inputRasterOffsets;
         
         if( maxSegThreads )
         { // threaded segmentation mode
@@ -728,6 +778,10 @@ namespace te
         "Invalid pointer" );
       TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_runningThreadsCounterPtr,
         "Invalid pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_inputRasterGainsPtr,
+        "Invalid pointer" );     
+      TERP_DEBUG_TRUE_OR_THROW( paramsPtr->m_inputRasterOffsetsPtr,
+        "Invalid pointer" );         
         
       // Creating the segmentation strategy instance
       
@@ -982,6 +1036,8 @@ namespace te
               if( ! strategyPtr->execute( 
                 *paramsPtr->m_segmentsIdsManagerPtr,
                 *currentInRasterPtr, currentInRasterBands, 
+                *paramsPtr->m_inputRasterGainsPtr,
+                *paramsPtr->m_inputRasterOffsetsPtr,
                 *currentOutRasterPtr, currentOutRasterBand,
                 !(paramsPtr->m_inputParametersPtr->m_enableBlockProcessing) ) )
               {
