@@ -29,7 +29,7 @@
 #include "Config.h"
 
 // TerraLib
-#include "../dataaccess/query/SQLVisitor.h"
+#include "../dataaccess2/query/SQLVisitor.h"
 
 namespace te
 {

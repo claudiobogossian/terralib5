@@ -135,8 +135,8 @@ namespace te
      
     SegmenterRegionGrowingStrategy::SegmentsIndexer::SegmentsIndexer( 
       SegmentsPool& segmentsPool )
-      : m_segmentsPool( segmentsPool ),
-        std::map< SegmenterSegmentsBlock::SegmentIdDataType, Segment* >()
+      : std::map< SegmenterSegmentsBlock::SegmentIdDataType, Segment* >(),
+        m_segmentsPool( segmentsPool )
     {
     }      
      
@@ -837,6 +837,8 @@ namespace te
       SegmenterIdsManager& segmenterIdsManager,
       const te::rst::Raster& inputRaster,
       const std::vector< unsigned int >& inputRasterBands,
+      const std::vector< double >& inputRasterGains,
+      const std::vector< double >& inputRasterOffsets,                                                   
       te::rst::Raster& outputRaster,
       const unsigned int outputRasterBand,
       const bool enableProgressInterface )
@@ -855,7 +857,8 @@ namespace te
         
       SegmentsIndexer segmentsIndexer( m_segmentsPool );
       TERP_TRUE_OR_RETURN_FALSE( initializeSegments( segmenterIdsManager,
-        inputRaster, inputRasterBands, segmentsIndexer ), 
+        inputRaster, inputRasterBands, inputRasterGains,
+        inputRasterOffsets, segmentsIndexer ), 
         "Segments initalization error" );
         
       // Creating the merger instance
@@ -951,7 +954,7 @@ namespace te
           
           for( col = 0 ; col < nCols ; ++col )
           {
-            outputRaster.setValue( col, line, segmentsIdsLinePtr[ col ], 0 );
+            outputRaster.setValue( col, line, segmentsIdsLinePtr[ col ], outputRasterBand );
           }
         }
       }
@@ -1015,7 +1018,9 @@ namespace te
     bool SegmenterRegionGrowingStrategy::initializeSegments( 
       SegmenterIdsManager& segmenterIdsManager,
       const te::rst::Raster& inputRaster,
-      const std::vector< unsigned int >& inputRasterBands,                                                            
+      const std::vector< unsigned int >& inputRasterBands,   
+      const std::vector< double >& inputRasterGains,
+      const std::vector< double >& inputRasterOffsets,                                                              
       SegmentsIndexer& segsIndexer )
     {
       segsIndexer.clear();
@@ -1035,53 +1040,16 @@ namespace te
           "Error allocating segments Ids matrix" );
       }
         
-      // fiding the image normalizing scale and offsets
+      // fiding band dummy values
       
-      std::vector< double > bandsPixelScales;
-      std::vector< double > bandsPixelOffsets;
       std::vector< double > bandDummyValues;
       
       {
-        unsigned int line = 0;
-        unsigned int col = 0; 
-        unsigned int inputRasterBandsIdx = 0;
-        double value = 0;
-        double bandMinValue = DBL_MAX;
-        double bandMaxValue = -1.0 * DBL_MAX;
-
-        for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
+        for( unsigned int inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
           inputRasterBandsSize ; ++inputRasterBandsIdx )
         {
-          const te::rst::Band& band = *( inputRaster.getBand( 
-            inputRasterBands[ inputRasterBandsIdx ] ) );
-          const double& bandNoDataValue = band.getProperty()->m_noDataValue;
-            
-          for( line = 0 ; line < nLines ; ++line )
-          {
-            for( col = 0 ; col < nCols ; ++col )
-            {
-              band.getValue( col, line, value );            
-              
-              if( value != bandNoDataValue )
-              {
-                if( bandMinValue > value ) bandMinValue = value;
-                if( bandMaxValue < value ) bandMaxValue = value;
-              }
-            }
-          }
-          
-          bandDummyValues.push_back( bandNoDataValue );
-          
-          if( bandMaxValue == bandMinValue )
-          {
-            bandsPixelScales.push_back( 0.0 );
-            bandsPixelOffsets.push_back( 0.0 );
-          }
-          else
-          {
-            bandsPixelScales.push_back( 1.0 / ( bandMaxValue - bandMinValue ) );
-            bandsPixelOffsets.push_back( (-1.0) * bandMinValue );
-          }
+          bandDummyValues.push_back( inputRaster.getBand( 
+            inputRasterBands[ inputRasterBandsIdx ] )->getProperty()->m_noDataValue );
         }
       }
         
@@ -1130,8 +1098,9 @@ namespace te
             }
             else
             {
-              value = ( value + bandsPixelOffsets[ inputRasterBandsIdx ] ) * 
-                bandsPixelScales[ inputRasterBandsIdx ];
+              value += inputRasterOffsets[ inputRasterBandsIdx ];
+              value *= inputRasterGains[ inputRasterBandsIdx ];
+              
               rasterValues[ inputRasterBandsIdx ] = value;
               rasterSquareValues[ inputRasterBandsIdx ] = value * value;
             }

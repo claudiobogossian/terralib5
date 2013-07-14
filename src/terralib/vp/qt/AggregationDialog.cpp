@@ -145,13 +145,13 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
     }
     else
     {
-        vectorStatisticalSummary.push_back(enumStatisticalSummary);
+      vectorStatisticalSummary.push_back(enumStatisticalSummary);
+    }
 
-      if(i == itemList.size() - 1)
-      {
+    if(i == itemList.size() - 1 && propertyName != "")
+    {
         auxProperty = currentToken;
         outputStatisticalSummary[auxProperty] = vectorStatisticalSummary;
-      }
     }
 
     aux = propertyName;

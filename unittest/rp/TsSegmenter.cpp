@@ -68,7 +68,7 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = true;
   algoInputParams.m_enableBlockMerging = false;
-  algoInputParams.m_maxBlockSize = 0;
+  algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "Dummy";
   algoInputParams.setSegStrategyParams( strategyParameters );
   
@@ -115,7 +115,7 @@ void TsSegmenter::BlockProcessingWithMerging()
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = true;
   algoInputParams.m_enableBlockMerging = true;
-  algoInputParams.m_maxBlockSize = 0;
+  algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "Dummy";
   algoInputParams.setSegStrategyParams( strategyParameters );
   
@@ -162,7 +162,7 @@ void TsSegmenter::ThreadedProcessing()
   algoInputParams.m_maxSegThreads = 4;
   algoInputParams.m_enableBlockProcessing = true;
   algoInputParams.m_enableBlockMerging = true;
-  algoInputParams.m_maxBlockSize = 0;
+  algoInputParams.m_maxBlockSize = 100;
   algoInputParams.m_strategyName = "Dummy";
   algoInputParams.setSegStrategyParams( strategyParameters );
   

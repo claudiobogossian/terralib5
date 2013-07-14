@@ -103,6 +103,7 @@
 #include "query/ST_Relate.h"
 #include "query/ST_Touches.h"
 #include "query/ST_Transform.h"
+#include "query/ST_Union.h"
 #include "query/ST_Within.h"
 #include "query/StdDev.h"
 #include "query/Sub.h"

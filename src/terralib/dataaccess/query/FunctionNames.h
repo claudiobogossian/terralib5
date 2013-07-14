@@ -78,6 +78,7 @@ namespace te
         static const std::string sm_Contains;
         static const std::string sm_ST_Intersects;
         static const std::string sm_ST_Relate;
+        static const std::string sm_ST_Union;
 
 // srs operators
         static const std::string sm_ST_Transform;

@@ -11,6 +11,7 @@ if(WIN32)
 endif()
 
 list (APPEND TE_DEP_LIBS
+    terralib_classification
     terralib_common
     terralib_dataaccess
     terralib_datatype

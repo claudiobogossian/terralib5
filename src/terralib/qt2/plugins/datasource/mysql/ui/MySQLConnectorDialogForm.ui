@@ -1,0 +1,1125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MySQLConnectorDialogForm</class>
+ <widget class="QDialog" name="MySQLConnectorDialogForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>564</width>
+    <height>474</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MySQL Connector</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_40">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0">
+      <widget class="QFrame" name="frame_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QWidget { background: white }</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QLabel" name="m_datasourceTypeTitleLabel">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>MySQL</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="m_advancedConnectionOptionsGroupBox">
+         <property name="minimumSize">
+          <size>
+           <width>271</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>271</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Advanced Connection Options</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_39">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QScrollArea" name="scrollArea_2">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>252</width>
+               <height>1017</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_38">
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="gridLayout_37">
+                <item row="0" column="0">
+                 <widget class="QGroupBox" name="groupBox_6">
+                  <property name="title">
+                   <string>Tables</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_10">
+                   <item row="0" column="0">
+                    <layout class="QGridLayout" name="gridLayout_9">
+                     <item row="0" column="0">
+                      <layout class="QGridLayout" name="gridLayout_5">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="m_spatialTableEngineLabel">
+                         <property name="text">
+                          <string>Default Engine for Spatial Tables</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QComboBox" name="m_spatialTableEngineComboBox"/>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="1" column="0">
+                      <layout class="QGridLayout" name="gridLayout_8">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="m_tablesToHideLabel">
+                         <property name="text">
+                          <string>Tables to be hidden</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QLineEdit" name="m_tablesToHideLineEdit"/>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="2" column="0">
+                      <layout class="QGridLayout" name="gridLayout_7">
+                       <item row="0" column="0">
+                        <widget class="QCheckBox" name="m_createOGCMetadataCheckBox">
+                         <property name="text">
+                          <string>Create OGC metadata tables</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QCheckBox" name="m_createRasterMetadataCheckBox">
+                         <property name="text">
+                          <string>Create raster metadata tables</string>
+                         </property>
+                         <property name="checked">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="QCheckBox" name="m_hideMetadataTablesCheckBox">
+                         <property name="text">
+                          <string>Hide spatial metadata tables</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="0">
+                        <widget class="QCheckBox" name="m_hideRasterTablesCheckBox">
+                         <property name="text">
+                          <string>Hide raster tables</string>
+                         </property>
+                         <property name="checked">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QGroupBox" name="m_connectionPoolingGroupBox">
+                  <property name="title">
+                   <string>Connection Pooling</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_15">
+                   <item row="0" column="0">
+                    <layout class="QGridLayout" name="gridLayout_14">
+                     <item row="0" column="0">
+                      <layout class="QGridLayout" name="gridLayout_11">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="m_maxPoolSizeLabel">
+                         <property name="text">
+                          <string>Max</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QSpinBox" name="m_maxPoolSizeSpinBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>50</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>50</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="minimum">
+                          <number>1</number>
+                         </property>
+                         <property name="maximum">
+                          <number>1024</number>
+                         </property>
+                         <property name="value">
+                          <number>1</number>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="0" column="1">
+                      <layout class="QGridLayout" name="gridLayout_12">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="m_minPoolSizeLabel">
+                         <property name="text">
+                          <string>Min</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QSpinBox" name="m_minPoolSizeSpinBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>50</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>50</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="minimum">
+                          <number>1</number>
+                         </property>
+                         <property name="maximum">
+                          <number>1024</number>
+                         </property>
+                         <property name="value">
+                          <number>1</number>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="0" column="2">
+                      <layout class="QGridLayout" name="gridLayout_13">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="m_tablesToHideLabel_4">
+                         <property name="text">
+                          <string>Max Idle Time</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QSpinBox" name="m_maxIdleTimeSpinBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>60</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>60</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="minimum">
+                          <number>60</number>
+                         </property>
+                         <property name="maximum">
+                          <number>3600</number>
+                         </property>
+                         <property name="value">
+                          <number>60</number>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="0" column="3">
+                      <spacer name="horizontalSpacer_5">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QGroupBox" name="m_connectionPoolingGroupBox_2">
+                  <property name="title">
+                   <string>Timeout</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_16">
+                   <item row="0" column="0">
+                    <layout class="QGridLayout" name="gridLayout_17">
+                     <item row="0" column="0">
+                      <layout class="QGridLayout" name="gridLayout_18">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="sizeLabel_1">
+                         <property name="text">
+                          <string>Max</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QSpinBox" name="m_connectTimeoutSpinBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>50</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>50</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="minimum">
+                          <number>5</number>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="0" column="1">
+                      <layout class="QGridLayout" name="gridLayout_19">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="sizeLabel">
+                         <property name="text">
+                          <string>Min</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QSpinBox" name="m_readTimeoutSpinBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>50</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>50</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="0" column="2">
+                      <layout class="QGridLayout" name="gridLayout_20">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="sizeLabel_2">
+                         <property name="text">
+                          <string>Max Idle Time</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QSpinBox" name="m_writeTimeoutSpinBox">
+                         <property name="minimumSize">
+                          <size>
+                           <width>60</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>60</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="0" column="3">
+                      <spacer name="horizontalSpacer_6">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QGroupBox" name="groupBox_7">
+                  <property name="title">
+                   <string>SSL(Encrypted Protocol)</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_31">
+                   <item row="0" column="0">
+                    <layout class="QGridLayout" name="gridLayout_30">
+                     <item row="3" column="0">
+                      <layout class="QGridLayout" name="gridLayout_28">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="m_maxPoolSizeLabel_7">
+                         <property name="text">
+                          <string>Trusted SSL CA directory</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <layout class="QGridLayout" name="gridLayout_24">
+                         <item row="0" column="0">
+                          <widget class="QLineEdit" name="m_sslCAPathLineEdit"/>
+                         </item>
+                         <item row="0" column="1">
+                          <widget class="QToolButton" name="m_sslCAPathToolButton">
+                           <property name="text">
+                            <string>...</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="1" column="0">
+                      <layout class="QGridLayout" name="gridLayout_26">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="m_maxPoolSizeLabel_4">
+                         <property name="text">
+                          <string>Certificate File</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <layout class="QGridLayout" name="gridLayout_22">
+                         <item row="0" column="0">
+                          <widget class="QLineEdit" name="m_sslCertLineEdit"/>
+                         </item>
+                         <item row="0" column="1">
+                          <widget class="QToolButton" name="m_sslCertToolButton">
+                           <property name="text">
+                            <string>...</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="4" column="0">
+                      <layout class="QGridLayout" name="gridLayout_29">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="m_maxPoolSizeLabel_6">
+                         <property name="text">
+                          <string>List of ciphers</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QLineEdit" name="m_sslChiperLineEdit"/>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="2" column="0">
+                      <layout class="QGridLayout" name="gridLayout_27">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="m_maxPoolSizeLabel_5">
+                         <property name="text">
+                          <string>Certificate Authority File</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <layout class="QGridLayout" name="gridLayout_23">
+                         <item row="0" column="0">
+                          <widget class="QLineEdit" name="m_sslCALineEdit"/>
+                         </item>
+                         <item row="0" column="1">
+                          <widget class="QToolButton" name="m_sslCAToolButton">
+                           <property name="text">
+                            <string>...</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="0" column="0">
+                      <layout class="QGridLayout" name="gridLayout_25">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="m_maxPoolSizeLabel_2">
+                         <property name="text">
+                          <string>Key File</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <layout class="QGridLayout" name="gridLayout_21">
+                         <item row="0" column="0">
+                          <widget class="QLineEdit" name="m_sslKeyLineEdit"/>
+                         </item>
+                         <item row="0" column="1">
+                          <widget class="QToolButton" name="m_sslKeyToolButton">
+                           <property name="text">
+                            <string>...</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <layout class="QGridLayout" name="gridLayout_33">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="m_maxPoolSizeLabel_8">
+                    <property name="text">
+                     <string>Socket file</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <layout class="QGridLayout" name="gridLayout_32">
+                    <item row="0" column="0">
+                     <widget class="QLineEdit" name="m_socketLineEdit"/>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QToolButton" name="m_socketToolButton">
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item row="5" column="0">
+                 <layout class="QGridLayout" name="gridLayout_34">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="m_maxPoolSizeLabel_9">
+                    <property name="text">
+                     <string>Named pipe</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLineEdit" name="m_pipeLineEdit"/>
+                  </item>
+                 </layout>
+                </item>
+                <item row="6" column="0">
+                 <widget class="QGroupBox" name="groupBox_8">
+                  <property name="title">
+                   <string>Others</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_36">
+                   <item row="0" column="0">
+                    <layout class="QGridLayout" name="gridLayout_35">
+                     <item row="0" column="0">
+                      <widget class="QCheckBox" name="m_clientCompressCheckBox">
+                       <property name="text">
+                        <string>Use compression protocol</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QCheckBox" name="m_clientLocalFilesCheckBox">
+                       <property name="text">
+                        <string>Enable local files</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QCheckBox" name="m_clientMultiStatementsCheckBox">
+                       <property name="text">
+                        <string>Multi-statements queries</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QCheckBox" name="m_clientMultiResultsCheckBox">
+                       <property name="text">
+                        <string>Multi-results queries</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="0">
+                      <widget class="QCheckBox" name="m_reconnectCheckBox">
+                       <property name="text">
+                        <string>Reconnect</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <widget class="QCheckBox" name="m_ignoreSpaceCheckBox">
+                       <property name="text">
+                        <string>Ignore spaces</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="6" column="0">
+                      <widget class="QCheckBox" name="m_reportDataTruncationCheckBox">
+                       <property name="text">
+                        <string>Report data truncation</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="7" column="0">
+                      <widget class="QCheckBox" name="m_noSchemaCheckBox">
+                       <property name="text">
+                        <string>No schema</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="8" column="0">
+                      <widget class="QCheckBox" name="m_clientInterativeCheckBox">
+                       <property name="text">
+                        <string>Client interactive</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="m_advancedConnectionOptionsCheckBox">
+           <property name="text">
+            <string>Advanced Connection Options</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QGroupBox" name="m_basicOptionsGroupBox">
+           <property name="title">
+            <string>Connection Information</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_44">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_43">
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="gridLayout_41">
+                <item row="0" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_3">
+                  <item>
+                   <widget class="QLabel" name="m_hostNameLabel">
+                    <property name="text">
+                     <string>Host Name/IP</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="m_hostNameLineEdit">
+                    <property name="minimumSize">
+                     <size>
+                      <width>110</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="1" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_6">
+                  <item>
+                   <widget class="QLabel" name="m_userNameLabel">
+                    <property name="text">
+                     <string>User</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="m_userNameLineEdit">
+                    <property name="minimumSize">
+                     <size>
+                      <width>110</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="2" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                  <item>
+                   <widget class="QLabel" name="m_schemaLabel">
+                    <property name="text">
+                     <string>Database/Schema Name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="m_schemaNameComboBox">
+                    <property name="minimumSize">
+                     <size>
+                      <width>110</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="editable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="1">
+               <layout class="QGridLayout" name="gridLayout_42">
+                <item row="0" column="0">
+                 <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1">
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_4">
+                    <item>
+                     <widget class="QLabel" name="m_portLabel">
+                      <property name="text">
+                       <string>Port</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="m_portLineEdit">
+                      <property name="maximumSize">
+                       <size>
+                        <width>80</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="inputMask">
+                       <string>999999999; </string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_4">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item row="1" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_9">
+                  <item>
+                   <widget class="QLabel" name="m_passwordLabel">
+                    <property name="text">
+                     <string>Password</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="m_passwordLineEdit">
+                    <property name="minimumSize">
+                     <size>
+                      <width>110</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="echoMode">
+                     <enum>QLineEdit::Password</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="2" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_8">
+                  <item>
+                   <widget class="QLabel" name="m_charsetLabel">
+                    <property name="text">
+                     <string>Charset</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="m_charsetComboBox">
+                    <property name="minimumSize">
+                     <size>
+                      <width>110</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="editable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QGroupBox" name="groupBox_5">
+           <property name="title">
+            <string>Base Information</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_2">
+              <item row="0" column="0">
+               <layout class="QVBoxLayout" name="verticalLayout">
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>Title</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="m_datasourceTitleLineEdit">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
+               <layout class="QVBoxLayout" name="verticalLayout_2">
+                <item>
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>Description</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QTextEdit" name="m_datasourceDescriptionTextEdit">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>60</height>
+                   </size>
+                  </property>
+                  <property name="toolTip">
+                   <string>A more detailed description about the data source</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item row="3" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,0">
+       <item>
+        <widget class="QPushButton" name="m_helpPushButton">
+         <property name="text">
+          <string>&amp;Help</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="m_testPushButton">
+           <property name="text">
+            <string>&amp;Test</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_openPushButton">
+           <property name="text">
+            <string>&amp;Open</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="m_closePushButton">
+           <property name="text">
+            <string>&amp;Close</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item row="2" column="0">
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+  <zorder></zorder>
+ </widget>
+ <tabstops>
+  <tabstop>m_datasourceTitleLineEdit</tabstop>
+  <tabstop>m_datasourceDescriptionTextEdit</tabstop>
+  <tabstop>m_hostNameLineEdit</tabstop>
+  <tabstop>m_portLineEdit</tabstop>
+  <tabstop>m_userNameLineEdit</tabstop>
+  <tabstop>m_passwordLineEdit</tabstop>
+  <tabstop>m_schemaNameComboBox</tabstop>
+  <tabstop>m_charsetComboBox</tabstop>
+  <tabstop>m_advancedConnectionOptionsCheckBox</tabstop>
+  <tabstop>m_spatialTableEngineComboBox</tabstop>
+  <tabstop>m_tablesToHideLineEdit</tabstop>
+  <tabstop>m_createOGCMetadataCheckBox</tabstop>
+  <tabstop>m_createRasterMetadataCheckBox</tabstop>
+  <tabstop>m_hideMetadataTablesCheckBox</tabstop>
+  <tabstop>m_hideRasterTablesCheckBox</tabstop>
+  <tabstop>m_maxPoolSizeSpinBox</tabstop>
+  <tabstop>m_minPoolSizeSpinBox</tabstop>
+  <tabstop>m_maxIdleTimeSpinBox</tabstop>
+  <tabstop>m_connectTimeoutSpinBox</tabstop>
+  <tabstop>m_readTimeoutSpinBox</tabstop>
+  <tabstop>m_writeTimeoutSpinBox</tabstop>
+  <tabstop>m_sslKeyToolButton</tabstop>
+  <tabstop>m_sslCertToolButton</tabstop>
+  <tabstop>m_sslCAToolButton</tabstop>
+  <tabstop>m_sslCAPathToolButton</tabstop>
+  <tabstop>m_sslChiperLineEdit</tabstop>
+  <tabstop>m_socketToolButton</tabstop>
+  <tabstop>m_pipeLineEdit</tabstop>
+  <tabstop>m_clientCompressCheckBox</tabstop>
+  <tabstop>m_clientLocalFilesCheckBox</tabstop>
+  <tabstop>m_clientMultiStatementsCheckBox</tabstop>
+  <tabstop>m_clientMultiResultsCheckBox</tabstop>
+  <tabstop>m_reconnectCheckBox</tabstop>
+  <tabstop>m_ignoreSpaceCheckBox</tabstop>
+  <tabstop>m_reportDataTruncationCheckBox</tabstop>
+  <tabstop>m_noSchemaCheckBox</tabstop>
+  <tabstop>m_clientInterativeCheckBox</tabstop>
+  <tabstop>m_openPushButton</tabstop>
+  <tabstop>m_testPushButton</tabstop>
+  <tabstop>m_closePushButton</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
+  <tabstop>scrollArea_2</tabstop>
+  <tabstop>m_sslCAPathLineEdit</tabstop>
+  <tabstop>m_sslCALineEdit</tabstop>
+  <tabstop>m_sslKeyLineEdit</tabstop>
+  <tabstop>m_sslCertLineEdit</tabstop>
+  <tabstop>m_socketLineEdit</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_closePushButton</sender>
+   <signal>pressed()</signal>
+   <receiver>MySQLConnectorDialogForm</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>433</x>
+     <y>473</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>155</x>
+     <y>1527</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

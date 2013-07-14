@@ -63,17 +63,6 @@ namespace te
                      const std::string& outputLayerName,
                      const te::da::DataSourceInfoPtr& dsInfo);
 
-    void AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
-                            const std::vector<te::dt::Property*>& groupingProperties,
-                            const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                            te::mem::DataSet* outputDataSet);
-
-    void AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
-                            const std::vector<te::dt::Property*>& groupingProperties,
-                            const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                            te::mem::DataSet* outputDataSet);
-
-
     /*!
       \brief It returns the output DataSetType.
 
@@ -86,6 +75,21 @@ namespace te
     te::da::DataSetType* GetDataSetType(const std::string& outputLayerName, 
                                         const std::vector<te::dt::Property*>& properties, 
                                         const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary);
+
+
+    void AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
+                            const std::vector<te::dt::Property*>& groupingProperties,
+                            const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                            te::mem::DataSet* outputDataSet);
+
+    void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProperties,
+                                te::da::DataSet* dsQuery,
+                                te::mem::DataSet* outputDataSet);
+
+    void AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
+                            const std::vector<te::dt::Property*>& groupingProperties,
+                            const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                            te::mem::DataSet* outputDataSet);
 
     /*!
       \brief It returns a map with a key group and items related to it.

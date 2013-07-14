@@ -555,8 +555,7 @@ void KMeansClassifier()
 // link specific parameters with chosen implementation
     te::rp::ClassifierKMeansStrategy::Parameters classifierparameters;
     classifierparameters.m_K = 4;
-    classifierparameters.m_maxIterations = 100;
-    classifierparameters.m_maxInputPoints = 1000;
+    classifierparameters.m_maxIterations = 10;
     classifierparameters.m_epsilon = 15.0;
 
     algoInputParameters.m_strategyName = "kmeans";

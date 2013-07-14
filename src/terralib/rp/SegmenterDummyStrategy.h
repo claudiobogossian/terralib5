@@ -59,6 +59,8 @@ namespace te
           SegmenterIdsManager& segmenterIdsManager,
           const te::rst::Raster& inputRaster,
           const std::vector< unsigned int >& inputRasterBands,
+          const std::vector< double >& inputRasterGains,
+          const std::vector< double >& inputRasterOffsets,          
           te::rst::Raster& outputRaster,
           const unsigned int outputRasterBand,
           const bool enableProgressInterface ) throw( te::rp::Exception );
