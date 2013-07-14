@@ -18,55 +18,20 @@
  */
 
 /*!
-  \file terralib/dataaccess/core/datasource/DataSource.cpp
+  \file terralib/dataaccess/datasource/DataSource.cpp
 
   \brief An abstract class for data providers like a DBMS, Web Services or a regular file.
 */
 
 // TerraLib
-#include "../../common/Translator.h"
-#include "../Exception.h"
 #include "DataSource.h"
-//#include "DataSourceFactory.h"
 
 
-std::auto_ptr<te::da::DataSource>
-te::da::DataSource::create(const std::string& dsType,
-                           const std::map<std::string, std::string>& dsInfo) throw(Exception)
+te::da::DataSource::DataSource()
 {
-  //std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
-
-  //ds->create(dsInfo);
-
-  //return ds;
-  throw;
 }
 
-void
-te::da::DataSource::drop(const std::string& dsType,
-                         const std::map<std::string, std::string>& dsInfo) throw(Exception)
+te::da::DataSource::~DataSource()
 {
-  //std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
-
-  //ds->drop(dsInfo);
 }
 
-bool
-te::da::DataSource::exists(const std::string& dsType,
-                           const std::map<std::string, std::string>& dsInfo) throw(Exception)
-{
-/*  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
-
-  return ds->exists(dsInfo);*/
-  throw;
-}
-
-std::vector<std::string>
-te::da::DataSource::getDataSourceNames(const std::string& dsType,
-                                       const std::map<std::string, std::string>& info) throw(Exception)
-{
-  //std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
-
-  //return ds->getDataSourceNames(info);
-  throw;
-}

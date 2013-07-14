@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../common/Enums.h"
+#include "../dataset/DataSetType.h"
 #include "../../geometry/Enums.h"
 #include "../Config.h"
 #include "../Exception.h"
@@ -111,10 +112,10 @@ namespace te
       public:
 
         /*! \brief Default constructor that can be called by subclasses. */
-        DataSource() { }
+        DataSource();
 
         /*! \brief Virtual destructor. */
-        virtual ~DataSource() { }
+        virtual ~DataSource();
 
         /** @name Basic Methods of a Data Source
           *  Basic Methods for operating a data source.
@@ -493,7 +494,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<DataSetType> getDataSetType(const std::string& name) throw(Exception) = 0;
+          virtual const te::da::DataSetTypePtr& getDataSetType(const std::string& name) throw(Exception) = 0;
 
         /*!
           \brief It gets the number of properties of the given dataset.
@@ -1188,7 +1189,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info) throw(Exception);
+        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(Exception) = 0;
 
         //@}
 
@@ -1227,15 +1228,6 @@ namespace te
           \note Thread-safe!
         */
         virtual bool exists(const std::map<std::string, std::string>& dsInfo) throw(Exception) = 0;
-
-        /*!
-          \brief Retrieve the list of repository names for data sources.
-
-          \param dsInfo The data source information.
-
-          \return The list of repository names for data sources.
-        */
-        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(Exception) = 0;
 
         //@}
     };
