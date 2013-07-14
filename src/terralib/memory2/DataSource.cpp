@@ -87,17 +87,33 @@ class te::mem::DataSource::Impl
       return datasets;
     }
 
-    te::da::DataSetType* getDataSetType(const std::string& name)
+    const te::da::DataSetTypePtr& getDataSetType(const std::string& name)
     {
       boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
       std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_schemas.find(name);
 
       if(it == m_schemas.end())
-        return 0;
+      {
+        te::da::DataSetTypePtr dt(new te::da::DataSetType(name));
+        m_schemas[name] = dt;
+        return m_schemas[name];
+      }
 
-      return static_cast<te::da::DataSetType*>(it->second->clone());
+      return it->second;
     }
+
+    //te::da::DataSetType* getDataSetType(const std::string& name)
+    //{
+    //  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
+
+    //  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_schemas.find(name);
+
+    //  if(it == m_schemas.end())
+    //    return 0;
+
+    //  return static_cast<te::da::DataSetType*>(it->second->clone());
+    //}
 
     std::size_t getNumberOfProperties(const std::string& datasetName)
     {
@@ -166,7 +182,7 @@ class te::mem::DataSource::Impl
 
     std::map<std::string, std::string> m_connInfo;                  //!< DataSource information.
     std::map<std::string, DataSetPtr> m_datasets;                   //!< The set of datasets stored in memory.
-    std::map<std::string, te::da::DataSetTypePtr> m_schemas;  //!< The set of dataset schemas.
+    std::map<std::string, te::da::DataSetTypePtr> m_schemas;        //!< The set of dataset schemas.
     mutable boost::recursive_mutex m_mtx;                           //!< The internal mutex.
     std::size_t m_ndatasets;                                        //!< The number of datasets kept in the data source.
     std::size_t m_maxdatasets;                                      //!< The maximum number of datasets to be handled by the data source.
@@ -363,9 +379,10 @@ std::vector<std::string> te::mem::DataSource::getDataSetNames() throw(te::da::Ex
   return m_pImpl->getDataSets();
 }
 
-std::auto_ptr<te::da::DataSetType> te::mem::DataSource::getDataSetType(const std::string& name) throw(te::da::Exception)
+const te::da::DataSetTypePtr& te::mem::DataSource::getDataSetType(const std::string& name) throw(te::da::Exception)
 {
-  return std::auto_ptr<te::da::DataSetType>(m_pImpl->getDataSetType(name));
+  //return std::auto_ptr<te::da::DataSetType>(m_pImpl->getDataSetType(name));
+  return m_pImpl->getDataSetType(name);
 }
 
 std::size_t te::mem::DataSource::getNumberOfProperties(const std::string& datasetName) throw(te::da::Exception)

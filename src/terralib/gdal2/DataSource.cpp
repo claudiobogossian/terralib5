@@ -218,13 +218,15 @@ std::vector<std::string> te::gdal::DataSource::getDataSetNames() throw(Exception
   return dsnames;
 }
 
-std::auto_ptr<te::da::DataSetType> te::gdal::DataSource::getDataSetType(const std::string& name) throw(Exception)
+const te::da::DataSetTypePtr& te::gdal::DataSource::getDataSetType(const std::string& name) throw(Exception)
 {
   std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_dstypes.find(name);
   if (it != m_dstypes.end())
-    return std::auto_ptr<te::da::DataSetType>();
+    //return std::auto_ptr<te::da::DataSetType>();
+    return te::da::DataSetTypePtr();
 
-  return std::auto_ptr<te::da::DataSetType>(static_cast<te::da::DataSetType*>(it->second->clone())); 
+  //return std::auto_ptr<te::da::DataSetType>(static_cast<te::da::DataSetType*>(it->second->clone()));
+  return te::da::DataSetTypePtr(static_cast<te::da::DataSetType*>(it->second->clone()));
 }
 
 std::size_t te::gdal::DataSource::getNumberOfProperties(const std::string& datasetName) throw(Exception)

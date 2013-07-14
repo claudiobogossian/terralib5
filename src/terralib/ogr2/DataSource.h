@@ -118,7 +118,7 @@ namespace te
 
         std::vector<std::string> getDataSetNames() throw(Exception);
 
-        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name) throw(Exception);
+        const te::da::DataSetTypePtr& getDataSetType(const std::string& name) throw(Exception);
 
         std::size_t getNumberOfProperties(const std::string& datasetName) throw(Exception);
 
@@ -231,6 +231,8 @@ namespace te
                             const std::map<std::string, std::string>& options,
                             std::size_t limit = 0) throw(Exception);
 
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(Exception);
+
       protected:
                             
         void create(const std::map<std::string, std::string>& dsInfo) throw(Exception);
@@ -239,8 +241,6 @@ namespace te
 
         bool exists(const std::map<std::string, std::string>& dsInfo) throw(Exception);
 
-        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(Exception);
-        
         std::map<std::string, std::string> m_connectionInfo;        //!< Connection information.
         OGRDataSource* m_ogrDS;                                     //!< A pointer to OGR Data Source.
         bool m_isValid;                                             //!< True if this is a valid datasource.

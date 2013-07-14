@@ -112,7 +112,7 @@ namespace te
 
         std::vector<std::string> getDataSetNames() throw(te::da::Exception);
 
-        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name) throw(te::da::Exception);
+        const te::da::DataSetTypePtr& getDataSetType(const std::string& name) throw(te::da::Exception);
 
         std::size_t getNumberOfProperties(const std::string& datasetName) throw(te::da::Exception);
 
