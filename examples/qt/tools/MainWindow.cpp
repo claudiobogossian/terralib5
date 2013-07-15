@@ -247,7 +247,8 @@ void MainWindow::addDataSetLayer(const QString& path, const std::string& driver)
     // Gets the layer extent
     te::gm::Envelope* e = 0;
     if(driver == "OGR")
-      e = cl->getExtent(dt->getDefaultGeomProperty());
+      e = cl->getExtent(dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+      //e = cl->getExtent(dt->getDefaultGeomProperty());
     else
     {
       std::auto_ptr<te::rst::Raster> raster(te::map::GetRaster(layer));
