@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -31,11 +31,15 @@
 #include "../dataaccess2/datasource/DataSourceCapabilities.h"
 #include "Config.h"
 
+
 namespace te
 {
+  namespace gm  { class GeometryProperty; }
+  namespace rst { class RasterProperty; }
+
   namespace pgis
   {
-// Forward declaration
+    // Forward declaration
     class ConnectionPool;
     struct VersionInfo;
 
@@ -177,7 +181,7 @@ namespace te
 
         std::vector<std::string> getDataSetNames() throw(te::da::Exception);
 
-        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name) throw(te::da::Exception);
+        const te::da::DataSetTypePtr& getDataSetType(const std::string& name) throw(te::da::Exception);
 
         std::size_t getNumberOfProperties(const std::string& datasetName) throw(te::da::Exception);
 
@@ -209,7 +213,16 @@ namespace te
         std::vector<std::string> getCheckConstraintNames(const std::string& datasetName) throw(te::da::Exception);
 
         std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName,
-                                                                        const std::string& name) throw(te::da::Exception);
+                                                                  const std::string& name) throw(te::da::Exception);
+
+        bool checkConstraintExists(const std::string& datasetName,
+                                   const std::string& name) throw(te::da::Exception);
+
+        void addCheckConstraint(const std::string& datasetName,
+                                const te::da::CheckConstraint* cc) throw(te::da::Exception);
+
+        void dropCheckConstraint(const std::string& datasetName,
+                                  const std::string& name) throw(te::da::Exception);
 
         std::vector<std::string> getSequenceNames() throw(te::da::Exception);
 
@@ -234,9 +247,6 @@ namespace te
 
         bool foreignkeyExists(const std::string& datasetName,
                               const std::string& name) throw(te::da::Exception);
-
-        bool checkConstraintExists(const std::string& datasetName,
-                                    const std::string& name) throw(te::da::Exception);
 
         bool indexExists(const std::string& datasetName,
                           const std::string& name) throw(te::da::Exception);
@@ -289,12 +299,6 @@ namespace te
 
         void dropForeignKey(const std::string& datasetName,
                             const std::string& fkName) throw(te::da::Exception);
-
-        void addCheckConstraint(const std::string& datasetName,
-                                const te::da::CheckConstraint* cc) throw(te::da::Exception);
-
-        void dropCheckConstraint(const std::string& datasetName,
-                                  const std::string& name) throw(te::da::Exception);
 
         void createSequence(const te::da::Sequence* sequence) throw(te::da::Exception);
 
@@ -491,8 +495,15 @@ namespace te
         */
         static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
 
-        static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info);
-       
+        /*!
+          \brief It retrieves the data sources available.
+
+          \param info The connection info.
+
+          \return It returns the names of the data sources available.
+        */
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(te::da::Exception);
+
         static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
 
       protected:
@@ -502,8 +513,6 @@ namespace te
         void drop(const std::map<std::string, std::string>& dsInfo) throw(te::da::Exception);
 
         bool exists(const std::map<std::string, std::string>& dsInfo) throw(te::da::Exception);
-
-        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(te::da::Exception);
 
         std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
 
