@@ -109,7 +109,13 @@ int main(int /*argc*/, char** /*argv*/)
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
 
-    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, rendaIdx, 10);
+    // get a catalogloader and load the dataSetType information in order to find out the pk, uk etc...
+    std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+    cl.reset(transactor->getCatalogLoader());
+    cl.get();
+    te::da::DataSetType *dt =  cl->getDataSetType("mapa_distritos_sp", true);
+
+    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dt, rendaIdx, 10);
     te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
 
     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();

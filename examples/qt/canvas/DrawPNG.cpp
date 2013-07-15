@@ -33,7 +33,7 @@ void DrawPNG()
 
     te::da::DataSetTypePtr dt(dsOGR->getCatalog()->getDataSetType("munic_2001"));
 
-    te::gm::GeometryProperty* gcol = dt->getDefaultGeomProperty(); 
+    te::gm::GeometryProperty* gcol = te::da::GetFirstGeomProperty(dt.get()); // dt->getDefaultGeomProperty(); 
     const te::gm::Envelope* extent = cl->getExtent(gcol);
     if(extent == 0)
       throw("Extent not loaded!");
@@ -63,12 +63,12 @@ void DrawPNG()
     {
       canvas.setPointColor(te::color::RGBAColor(255, 0, 0, 255));
     }
-
-    int geomCol = dt->getDefaultGeomPropertyPos();
+    std::string geomName = (te::da::GetFirstGeomProperty(dt.get()))->getName();
+    //int geomCol = dt->getDefaultGeomPropertyPos();
     te::da::DataSet* dataset = t->getDataSet("munic_2001");
     while(dataset->moveNext())
     {
-      te::gm::Geometry* g = dataset->getGeometry(geomCol);
+      te::gm::Geometry* g = dataset->getGeometry(geomName); //geomCol);
       canvas.draw(g);
       delete g;
     }

@@ -286,7 +286,7 @@ te::map::DataSetLayer* CreateDataSetLayer(const std::string& path)
   assert(dt->hasGeom());
 
   // Box
-  std::auto_ptr<te::gm::Envelope> extent(catalogLoader->getExtent(dt->getDefaultGeomProperty()));
+  std::auto_ptr<te::gm::Envelope> extent(catalogLoader->getExtent(te::da::GetFirstGeomProperty(dt.get())));
 
   // Creates a DataSetLayer
   te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(0), dataSetName);
@@ -334,8 +334,8 @@ void DrawStyledLayers()
   {
     // Gets supported marks
     std::vector<std::string> marks;
-    te::map::AbstractMarkFactory::SupportedMarks(marks);
-
+    //te::map::MarkRendererManager::getAllSupportedMarks(marks); // AbstractMarkFactory::SupportedMarks(marks);
+    te::map::MarkRendererManager::getInstance().getAllSupportedMarks(marks);
     // Creates a layer of polygons
     te::map::DataSetLayer* polygons = CreateDataSetLayer("./data/shp/style/polygons.shp");
 
