@@ -948,6 +948,21 @@ void te::qt::af::BaseApplication::onLayerSelectionChanged(const te::map::Abstrac
   ApplicationController::getInstance().broadcast(&e);
 }
 
+void te::qt::af::BaseApplication::onLayerExplorerVisibilityChanged(bool visible)
+{
+  m_viewLayerExplorer->setChecked(visible);
+}
+
+void te::qt::af::BaseApplication::onDisplayVisibilityChanged(bool visible)
+{
+  m_viewMapDisplay->setChecked(visible);
+}
+
+void te::qt::af::BaseApplication::onStyleExplorerVisibilityChanged(bool visible)
+{
+  m_viewStyleExplorer->setChecked(visible);
+}
+
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
   try
@@ -1087,6 +1102,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
   connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), lexplorer, SLOT(setVisible(bool)));
   m_viewLayerExplorer->setChecked(true);
+  connect(lexplorer, SIGNAL(visibilityChanged(bool)), this, SLOT(onLayerExplorerVisibilityChanged(bool)));
 
   m_explorer = new te::qt::af::LayerExplorer(lexplorer, this);
 
@@ -1102,6 +1118,7 @@ void te::qt::af::BaseApplication::makeDialog()
   visualDock->connect(m_viewStyleExplorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewStyleExplorer->setChecked(false);
   visualDock->setVisible(false);
+  connect(visualDock, SIGNAL(visibilityChanged(bool)), this, SLOT(onStyleExplorerVisibilityChanged(bool)));
 
   m_symbolizerExplorer = new te::qt::af::SymbolizerExplorer(visualDock, this);
 
@@ -1128,6 +1145,7 @@ void te::qt::af::BaseApplication::makeDialog()
   QMainWindow::setCentralWidget(doc);
   doc->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewMapDisplay->setChecked(true);
+  connect(doc, SIGNAL(visibilityChanged(bool)), this, SLOT(onDisplayVisibilityChanged(bool)));
 
 /*  doc = new QDockWidget(tr("Data Table"), this);
   doc->setWidget(view);
