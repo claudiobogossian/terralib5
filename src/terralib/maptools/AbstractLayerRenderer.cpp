@@ -464,9 +464,6 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   std::string propertyName = grouping->getPropertyName();
   assert(!propertyName.empty());
 
-  // The referenced property type
-  int propertyType = grouping->getPropertyType();
-
   // The grouping type
   GroupingType type = grouping->getType();
 

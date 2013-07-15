@@ -940,6 +940,7 @@ te::color::RGBAColor** te::qt::widgets::Canvas::getImage(const int x, const int 
     int width = img.width();
     int height = img.height();
 
+    colors = new te::color::RGBAColor*[height];
     for(int i = 0; i < height; ++i)
     {
       colors[i] = new te::color::RGBAColor[width];
@@ -959,6 +960,7 @@ te::color::RGBAColor** te::qt::widgets::Canvas::getImage(const int x, const int 
   {
     img = img.copy(x, y, w, h);
 
+    colors = new te::color::RGBAColor*[h];
     for(int i = 0; i < h; ++i)
     {
       colors[i] = new te::color::RGBAColor[h];
@@ -1292,7 +1294,7 @@ void te::qt::widgets::Canvas::draw(const te::at::Text* txt)
       const te::gm::Point* pt = static_cast<const te::gm::Point*>(element->getLocation());
       std::string text = element->getValue();
       size_t p = text.find("\n");
-      double hline;
+      double hline = 0;
       te::gm::Point* pclone = 0;
       if(p != std::string::npos)
       {

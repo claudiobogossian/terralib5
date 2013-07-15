@@ -1075,7 +1075,7 @@ te::dt::Property* te::qt::widgets::UpdateProperty::buildUpdatedInt64Property()
 
 te::dt::Property* te::qt::widgets::UpdateProperty::buildUpdatedNumericProperty()
 {
-  bool ok;
+  bool ok = false;
 
   // Check the default value
   if(dataTypeComboBox->currentText() == "NUMERIC")
@@ -1148,7 +1148,7 @@ te::dt::Property* te::qt::widgets::UpdateProperty::buildUpdatedStringProperty()
   // Get the string type and the string size
   te::dt::StringType stringType;
   size_t stringSize = 0;
-  bool ok;
+  bool ok = false;
 
   if(dataTypeComboBox->currentText() == "STRING")
   {
