@@ -104,7 +104,7 @@ namespace te
 
           te::qt::widgets::ChartStyle*  m_chartStyle;  //!< The display's style.
           QwtPlotGrid*                  m_grid;        //!< The display's grid
-          QwtPlotPicker*                m_picker;       //!< The display's picker.
+          QwtPlotPicker*                m_picker;      //!< The display's picker.
       };
     } // end namespace widgets
   }   // end namespace qt

@@ -90,6 +90,4 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
   m_displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay, this->parentWidget());
 
   this->accept();
-
-
 }
