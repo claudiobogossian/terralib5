@@ -212,8 +212,8 @@ namespace te
 
         std::vector<std::string> getCheckConstraintNames(const std::string& datasetName) throw(te::da::Exception);
 
-        std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName,
-                                                                  const std::string& name) throw(te::da::Exception);
+        te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName,
+                                                    const std::string& name) throw(te::da::Exception);
 
         bool checkConstraintExists(const std::string& datasetName,
                                    const std::string& name) throw(te::da::Exception);
@@ -360,84 +360,6 @@ namespace te
         const std::string* getCurrentSchema();
 
         /*!
-          \brief It looks for the table oid in the PostgreSQL system tables.
-
-          \param tableName  Table name. If it doesn't have the schema prefix name, it will look the table in the default schema.
- 
-          \exception Exception It throws an exception if it was not possible to set the oid information.
-
-          \note PostGIS driver extended method.
-        */
-        unsigned int getTableId(const std::string& tableName) throw(te::da::Exception);
-
-        /*!
-          \brief It looks for a table with the given oid in the PostgreSQL system tables.
-
-          \param id The table oid.
-
-          \return The table name.
- 
-          \exception Exception It throws an exception if it was not possible to retrieve the information.
-
-          \note PostGIS driver extended method.
-        */
-        std::string getTableName(unsigned int id);
-
-        /*!
-          \brief It returns the list of constraints (primary key, unique key, foreign key and check constraints) of the given table or view.
-
-          \param dtid    The dataset type we are looking information for.
-          \param conType The type of constraint to be retrieved. If this value is '\0' (the default) all types are retrieved.
-
-          \return A recordset with the following fields:
-                  <ul>
-                  <li>0 (Oid): constraint oid (c.oid)</li>
-                  <li>1 (name): constraint schema name (n.nspname)</li>
-                  <li>2 (name): constraint name (c.conname)</li>
-                  <li>3 (char): constraint type (c.contype), one of the following values: 'c', 'f', 'p', 'u'</li>
-                  <li>4 (Oid): the referenced table (c.confrelid)</li>
-                  <li>5 (char): OnUpdate action (c.confupdtype)</li>
-                  <li>6 (char): OnDeletion action (c.confdeltype)</li>
-                  <li>7 (char): ??? (c.confmatchtype)</li>
-                  <li>8 (int2[]): array of attribute numbers (c.conkey), the list of keys in a foreign key, primary key or unique key</li>
-                  <li>9 (int2[]): array of attribute numbers in the referenced table (c.confkey)</li>
-                  <li>10 (text): constraint expression (pg_get_constraintdef(c.oid))</li>
-                  </ul>
-
-          \exception Exception It throws an exception if it can not get the information.
-
-          \note The client of this method will take the ownership of the returned DataSet.
-          \note PostGIS driver extended method.
-        */
-        std::auto_ptr<te::da::DataSet> getConstraints(unsigned int dtid, char conType = '\0') throw(te::da::Exception);
-
-       /*!
-          \brief It returns the list of properties for the given table or view.
-
-          \param dtid The dataset to load its information.
-
-          \return A recordset with the following fields:
-                  <ul>
-                  <li>0 (int2): attribute number in the table (a.attnum), remember that attribute number is 1 based</li>
-                  <li>1 (name): attribute name (a.attname)</li>
-                  <li>2 (Oid): attribute type oid (t.oid)</li>
-                  <li>3 (bool): 't' if attribute is NOT NULL, otherwise, its value is 'f' (a.attnotnull)</li>
-                  <li>4 (text): type modifier information, like precision and scale (format_type(a.atttypid, a.atttypmod))</li>
-                  <li>5 (bool): 't' if attribute is has a default value, otherwise, its value is 'f' (a.atthasdef)</li>
-                  <li>6 (text): attribute default value if field number 5 is true (pg_get_expr(d.adbin, d.adrelid))</li>
-                  <li>7 (int4): Number of dimensions, if the column is an array type; otherwise 0 (a.attndims)</li>
-                  </ul>
-
-          \pre The informed dataset type must have a valid id.
-
-          \exception Exception It throws an exception if it was not possible to get the information needed.
-
-          \note The client of this method will take the ownership of the returned dataset.
-          \note PostGIS driver extended method.
-        */
-        te::da::DataSet* getProperties(unsigned int dtid);
-
-        /*!
           \brief It loads information about a given geometry column.
 
           \param datasetName The name of the dataset containing the geometric property.
@@ -504,17 +426,144 @@ namespace te
         */
         std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(te::da::Exception);
 
-        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
 
       protected:
+
+        /*!
+          \brief It looks for the table oid in the PostgreSQL system tables.
+
+          \param tableName  Table name. If it doesn't have the schema prefix name, it will look the table in the default schema.
+ 
+          \exception Exception It throws an exception if it was not possible to set the oid information.
+
+          \note PostGIS driver extended method.
+        */
+        unsigned int getTableId(const std::string& tableName) throw(te::da::Exception);
+
+        /*!
+          \brief It looks for a table with the given oid in the PostgreSQL system tables.
+
+          \param id The table oid.
+
+          \return The table name.
+ 
+          \exception Exception It throws an exception if it was not possible to retrieve the information.
+
+          \note PostGIS driver extended method.
+        */
+        std::string getTableName(unsigned int id);
+
+        /*!
+          \brief It returns the list of constraints (primary key, unique key, foreign key and check constraints) of the given table or view.
+
+          \param dtid    The dataset type we are looking information for.
+          \param conType The type of constraint to be retrieved. If this value is '\0' (the default) all types are retrieved.
+
+          \return A recordset with the following fields:
+                  <ul>
+                  <li>0 (Oid): constraint oid (c.oid)</li>
+                  <li>1 (name): constraint schema name (n.nspname)</li>
+                  <li>2 (name): constraint name (c.conname)</li>
+                  <li>3 (char): constraint type (c.contype), one of the following values: 'c', 'f', 'p', 'u'</li>
+                  <li>4 (Oid): the referenced table (c.confrelid)</li>
+                  <li>5 (char): OnUpdate action (c.confupdtype)</li>
+                  <li>6 (char): OnDeletion action (c.confdeltype)</li>
+                  <li>7 (char): ??? (c.confmatchtype)</li>
+                  <li>8 (int2[]): array of attribute numbers (c.conkey), the list of keys in a foreign key, primary key or unique key</li>
+                  <li>9 (int2[]): array of attribute numbers in the referenced table (c.confkey)</li>
+                  <li>10 (text): constraint expression (pg_get_constraintdef(c.oid))</li>
+                  </ul>
+
+          \exception Exception It throws an exception if it can not get the information.
+
+          \note The client of this method will take the ownership of the returned DataSet.
+          \note PostGIS driver extended method.
+        */
+        //std::auto_ptr<te::da::DataSet> getConstraints(unsigned int dtid, char conType = '\0') throw(te::da::Exception);
+
+       /*!
+          \brief It returns the list of properties for the given table or view.
+
+          \param dtid The dataset to load its information.
+
+          \return A recordset with the following fields:
+                  <ul>
+                  <li>0 (int2): attribute number in the table (a.attnum), remember that attribute number is 1 based</li>
+                  <li>1 (name): attribute name (a.attname)</li>
+                  <li>2 (Oid): attribute type oid (t.oid)</li>
+                  <li>3 (bool): 't' if attribute is NOT NULL, otherwise, its value is 'f' (a.attnotnull)</li>
+                  <li>4 (text): type modifier information, like precision and scale (format_type(a.atttypid, a.atttypmod))</li>
+                  <li>5 (bool): 't' if attribute is has a default value, otherwise, its value is 'f' (a.atthasdef)</li>
+                  <li>6 (text): attribute default value if field number 5 is true (pg_get_expr(d.adbin, d.adrelid))</li>
+                  <li>7 (int4): Number of dimensions, if the column is an array type; otherwise 0 (a.attndims)</li>
+                  </ul>
+
+          \pre The informed dataset type must have a valid id.
+
+          \exception Exception It throws an exception if it was not possible to get the information needed.
+
+          \note The client of this method will take the ownership of the returned dataset.
+          \note PostGIS driver extended method.
+        */
+        te::da::DataSet* getProperties(unsigned int dtid);
+
+        /*!
+          \brief It returns the list of constraints (primary key, unique key, foreign key and check constraints) of the given table or view.
+
+          \param dtid    The dataset type we are looking information for.
+
+          \return A recordset with the following fields:
+                  <ul>
+                  <li>0 (Oid): constraint oid (c.oid)</li>
+                  <li>1 (name): constraint schema name (n.nspname)</li>
+                  <li>2 (name): constraint name (c.conname)</li>
+                  <li>3 (char): constraint type (c.contype), one of the following values: 'c', 'f', 'p', 'u'</li>
+                  <li>4 (Oid): the referenced table (c.confrelid)</li>
+                  <li>5 (char): OnUpdate action (c.confupdtype)</li>
+                  <li>6 (char): OnDeletion action (c.confdeltype)</li>
+                  <li>7 (char): ??? (c.confmatchtype)</li>
+                  <li>8 (int2[]): array of attribute numbers (c.conkey), the list of keys in a foreign key, primary key or unique key</li>
+                  <li>9 (int2[]): array of attribute numbers in the referenced table (c.confkey)</li>
+                  <li>10 (text): constraint expression (pg_get_constraintdef(c.oid))</li>
+                  </ul>
+
+          \exception Exception It throws an exception if it can not get the information.
+
+          \note The client of this method will take the ownership of the returned DataSet.
+          \note PostGIS driver extended method.
+        */
+        std::auto_ptr<te::da::DataSet> getConstraints(unsigned int dtid);
+
+        /*!
+          \brief It returns the list of the check constraints associated to a table or a view.
+
+          \param dataset The record set containing information about all the constraints of a table or view.
+                         Only information about the check constraints will be extract from the record set.
+
+          \return The list of check constraints available in a table or a view.
+        */
+        std::vector<te::da::CheckConstraint*> getCheckConstraints(std::auto_ptr<te::da::DataSet> dataset);
+
+        /*!
+          \brief It returns the primary key associated to a table or a view.
+
+          \param dataset The record set containing information about all the constraints of a table or view.
+                         Only information about the primary key will be extract from the record set.
+
+          \return The primary key of a table or a view.
+        */
+        te::da::PrimaryKey* getPrimaryKey(te::da::DataSet* dataset);
+
+        std::vector<te::da::ForeignKey*> getForeignKeys(te::da::DataSet* dataset);
+
+        std::vector<te::da::UniqueKey*> getUniqueKeys(te::da::DataSet* dataset);
 
         void create(const std::map<std::string, std::string>& dsInfo) throw(te::da::Exception);
 
         void drop(const std::map<std::string, std::string>& dsInfo) throw(te::da::Exception);
 
         bool exists(const std::map<std::string, std::string>& dsInfo) throw(te::da::Exception);
-
-        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
 
       private:
 

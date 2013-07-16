@@ -323,7 +323,7 @@ std::vector<std::string> te::gdal::DataSource::getCheckConstraintNames(const std
   throw(Exception(TR_GDAL("GDAL driver doesn't support constraints.")));
 }
 
-std::auto_ptr<te::da::CheckConstraint> te::gdal::DataSource::getCheckConstraint(const std::string& datasetName,
+te::da::CheckConstraint* te::gdal::DataSource::getCheckConstraint(const std::string& datasetName,
                                                   const std::string& name) throw(Exception)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support constraints.")));

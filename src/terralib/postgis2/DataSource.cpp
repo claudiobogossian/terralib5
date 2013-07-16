@@ -130,6 +130,7 @@ class te::pgis::DataSource::Impl
     std::string* m_currentSchema;                     //!< The default schema used when no one is provided.
     bool m_timeIsInteger;                             //!< It indicates if the postgis stores, internally, time and timestamp as an integer. 
     bool m_isInTransaction;                           //!< It indicates if there is a transaction in progress.
+    std::vector<std::string> m_datasetNames;          //!< The list of dataset names of the data source.
 
     static te::da::DataSourceCapabilities sm_capabilities;  //!< PostGIS capabilities.
     static te::da::SQLDialect* sm_dialect;                  //!< PostGIS SQL dialect.
@@ -193,6 +194,9 @@ void te::pgis::DataSource::open() throw(te::da::Exception)
 
   // Find PostgreSQL current schema of the connection
   getDatabaseInfo(*m_pImpl->m_currentSchema);
+
+  // Get the dataset names of the data source
+  getDataSetNames();
 }
 
 void te::pgis::DataSource::close() throw(te::da::Exception)
@@ -404,7 +408,8 @@ bool te::pgis::DataSource::isPropertyNameValid(const std::string& /*propertyName
 
 std::vector<std::string> te::pgis::DataSource::getDataSetNames() throw(te::da::Exception)
 {
-  std::vector<std::string> datasetNames;
+  if(!m_pImpl->m_datasetNames.empty())
+    return m_pImpl->m_datasetNames;
 
   std::string sql("SELECT pg_class.oid, pg_namespace.nspname, pg_class.relname, pg_class.relkind "
                   "FROM pg_class, pg_namespace "
@@ -419,10 +424,10 @@ std::vector<std::string> te::pgis::DataSource::getDataSetNames() throw(te::da::E
   while(datasetInfo->moveNext())
   {
     std::string datasetName = std::string(datasetInfo->getString(1) + "." + datasetInfo->getString(2));
-    datasetNames.push_back(datasetName);
+    m_pImpl->m_datasetNames.push_back(datasetName);
   }
 
-  return datasetNames;
+  return m_pImpl->m_datasetNames;
 }
 
 const te::da::DataSetTypePtr& te::pgis::DataSource::getDataSetType(const std::string& name) throw(te::da::Exception)
@@ -445,14 +450,10 @@ const te::da::DataSetTypePtr& te::pgis::DataSource::getDataSetType(const std::st
   dt->add(properties);
 
   // Get the check constraints of the dataset and add them to its schema
-  std::vector<std::string> ccNames = getCheckConstraintNames(name);
+  std::auto_ptr<te::da::DataSet> constraintsDataset = getConstraints(dtid);
 
-  std::vector<te::da::CheckConstraint*> ccVec(ccNames.size());
-  for(std::size_t i = 0; i < ccNames.size(); ++i)
-  {
-    ccVec[i] = getCheckConstraint(name, ccNames[i]).release();
-    dt->add(ccVec[i]);
-  }
+  std::vector<te::da::CheckConstraint*> ccs = getCheckConstraints(constraintsDataset);
+  dt->add(ccs);
 
   // Get the indexes of the dataset and add them to its schema
   std::vector<std::string> indexNames = getIndexNames(name);
@@ -594,7 +595,8 @@ std::auto_ptr<te::da::PrimaryKey> te::pgis::DataSource::getPrimaryKey(const std:
 {
   unsigned int dtid = getTableId(datasetName);
 
-  std::auto_ptr<te::da::DataSet> pkInfo(getConstraints(dtid, 'p'));
+  //std::auto_ptr<te::da::DataSet> pkInfo(getConstraints(dtid, 'p'));
+  std::auto_ptr<te::da::DataSet> pkInfo(getConstraints(dtid));   //rever o codigo
 
   unsigned int id = pkInfo->getInt32(0);
 
@@ -645,7 +647,8 @@ std::vector<std::string> te::pgis::DataSource::getUniqueKeyNames(const std::stri
 
   unsigned int dtid = getTableId(datasetName);
 
-  std::auto_ptr<te::da::DataSet> ukInfo(getConstraints(dtid, 'u'));
+  //std::auto_ptr<te::da::DataSet> ukInfo(getConstraints(dtid, 'u'));
+  std::auto_ptr<te::da::DataSet> ukInfo(getConstraints(dtid));   // rever o codigo
 
   while(ukInfo->moveNext())
   {
@@ -662,7 +665,8 @@ boost::ptr_vector<te::da::UniqueKey> te::pgis::DataSource::getUniqueKeys(const s
 
   unsigned int dtid = getTableId(datasetName);
 
-  std::auto_ptr<te::da::DataSet> ukInfo(getConstraints(dtid, 'u'));
+  //std::auto_ptr<te::da::DataSet> ukInfo(getConstraints(dtid, 'u'));
+  std::auto_ptr<te::da::DataSet> ukInfo(getConstraints(dtid));  //rever
 
   while(ukInfo->moveNext())
   {
@@ -726,7 +730,8 @@ std::auto_ptr<te::da::UniqueKey> te::pgis::DataSource::getUniqueKey(const std::s
 
   unsigned int dtid = getTableId(datasetName);
 
-  std::auto_ptr<te::da::DataSet> ukInfo(getConstraints(dtid, 'u'));
+  //std::auto_ptr<te::da::DataSet> ukInfo(getConstraints(dtid, 'u'));
+  std::auto_ptr<te::da::DataSet> ukInfo(getConstraints(dtid));   //rever
 
   while(ukInfo->moveNext())
   {
@@ -787,7 +792,8 @@ std::vector<std::string> te::pgis::DataSource::getForeignKeyNames(const std::str
 
   unsigned int dtid = getTableId(datasetName);
 
-  std::auto_ptr<te::da::DataSet> fkInfo(getConstraints(dtid, 'f'));
+  //std::auto_ptr<te::da::DataSet> fkInfo(getConstraints(dtid, 'f'));
+  std::auto_ptr<te::da::DataSet> fkInfo(getConstraints(dtid));  //reveer
 
   while(fkInfo->moveNext())
   {
@@ -813,7 +819,8 @@ std::auto_ptr<te::da::ForeignKey> te::pgis::DataSource::getForeignKey(const std:
 
   unsigned int dtid = getTableId(datasetName);
 
-  std::auto_ptr<te::da::DataSet> fkInfo(getConstraints(dtid, 'f'));
+  //std::auto_ptr<te::da::DataSet> fkInfo(getConstraints(dtid, 'f'));
+  std::auto_ptr<te::da::DataSet> fkInfo(getConstraints(dtid));   //rever
 
   unsigned int id = fkInfo->getInt32(0);
   unsigned int refDatasetId = fkInfo->getInt32(4);
@@ -952,76 +959,45 @@ std::vector<std::string> te::pgis::DataSource::getCheckConstraintNames(const std
 
   std::vector<std::string> ccNames;
 
-  if(m_pImpl->m_catalog->datasetExists(datasetName))
-  {
-    // The dataset exists in the catalog
-    const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-    std::size_t numCC = dt->getNumberOfCheckConstraints();
+  std::size_t numCC = dt->getNumberOfCheckConstraints();
 
-    for(std::size_t i = 0; i < numCC; ++i)
-      ccNames.push_back(dt->getCheckConstraint(i)->getName());
-  }
-  else
-  {
-    // The dataset doesn't exist in the catalog
-    unsigned int dtid = getTableId(datasetName);
-
-    std::auto_ptr<te::da::DataSet> ccInfo = getConstraints(dtid, 'c');
-    while(ccInfo->moveNext())
-    {
-      std::string ccName  = ccInfo->getString(2);
-      ccNames.push_back(ccName);
-    }
-  }
+  for(std::size_t i = 0; i < numCC; ++i)
+    ccNames.push_back(dt->getCheckConstraint(i)->getName());
 
   return ccNames;
 }
 
-std::auto_ptr<te::da::CheckConstraint> te::pgis::DataSource::getCheckConstraint(const std::string& datasetName,
-                                                                                const std::string& name) throw(te::da::Exception)
+te::da::CheckConstraint* te::pgis::DataSource::getCheckConstraint(const std::string& datasetName,
+                                                                  const std::string& name) throw(te::da::Exception)
 {
-  if(!datasetExists(datasetName))
-    throw Exception((boost::format(TR_PGIS("The dataset %1% doesn't exist!")) % datasetName).str());
-
   if(!checkConstraintExists(datasetName, name))
     throw Exception((boost::format(TR_PGIS("The dataset %1% has no check constraint with this name (%2%)!")) % datasetName % name).str());
 
-  
   te::da::CheckConstraint* cc;
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::size_t numCC = dt->getNumberOfCheckConstraints();
 
-  unsigned int dtid = getTableId(datasetName);
-
-  std::auto_ptr<te::da::DataSet> ccInfo = getConstraints(dtid, 'c');
-  while(ccInfo->moveNext())
+  for(std::size_t i = 0; i < numCC; ++i)
   {
-    std::string ccName  = ccInfo->getString(2);
-    if(ccName == name)
-    {
-      unsigned int id = ccInfo->getInt32(0);
-      cc = new te::da::CheckConstraint(ccName);
-      cc->setId(id);
-      cc->setExpression(ccInfo->getString(10));
-    }
+    cc = dt->getCheckConstraint(i);
+    if(cc->getName() == name)
+      break;
   }
 
-  return std::auto_ptr<te::da::CheckConstraint>(cc);
+  return cc;
 }
 
 bool te::pgis::DataSource::checkConstraintExists(const std::string& datasetName,
                                                  const std::string& name) throw(te::da::Exception)
 {
+  bool ccExists = false;
+
   std::vector<std::string> ccNames = getCheckConstraintNames(datasetName);
 
-  bool ccExists = false;
-  for(std::size_t i = 0; i < ccNames.size(); ++i)
-  {
-    if(ccNames[i] == name)
-    {
-      ccExists = true;
-      break;
-    }
-  }
+  if(std::find(ccNames.begin(), ccNames.end(), name) != ccNames.end())
+    ccExists = true;
 
   return ccExists;
 }
@@ -1029,31 +1005,24 @@ bool te::pgis::DataSource::checkConstraintExists(const std::string& datasetName,
 void te::pgis::DataSource::addCheckConstraint(const std::string& datasetName,
                                               const te::da::CheckConstraint* cc) throw(te::da::Exception)
 {
-  // This method must be removed from the class
-  if(!datasetExists(datasetName))
-    throw Exception((boost::format(TR_PGIS("The dataset %1% doesn't exist!")) % datasetName).str());
-
-  if(getCheckConstraint(datasetName, cc->getName()).get() != 0)
+  if(checkConstraintExists(datasetName, cc->getName()) != 0)
     throw Exception((boost::format(TR_PGIS("The dataset %1% already has a check constraint with this name: %2%!")) % datasetName % cc->getName()).str());
 
-  te::da::DataSetType* datasetType = getDataSetType(datasetName).get();
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  te::da::CheckConstraint* newCC = new te::da::CheckConstraint(cc->getName(), datasetType);
+  te::da::CheckConstraint* newCC = new te::da::CheckConstraint(cc->getName(), dt.get());
   newCC->setExpression(cc->getExpression());
 }
 
 void te::pgis::DataSource::dropCheckConstraint(const std::string& datasetName,
                                                const std::string& name) throw(te::da::Exception)
 {
-  if(!datasetExists(datasetName))
-    throw Exception((boost::format(TR_PGIS("The dataset %1% doesn't exist!")) % datasetName).str());
+  if(!checkConstraintExists(datasetName, name))
+    throw Exception((boost::format(TR_PGIS("The dataset %1% has no check constraint with this name: %2%!")) % datasetName % name).str());
 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  // Check if there is a check constraint with this name
   te::da::CheckConstraint* cc = dt->getCheckConstraint(name);
-  if(!cc)
-    throw Exception((boost::format(TR_PGIS("The dataset %1% has no check constraint with this name: %2%!")) % datasetName % name).str());
 
   // Remove the check constraint from the dataset schema
   dt->remove(cc);
@@ -1095,15 +1064,8 @@ bool te::pgis::DataSource::datasetExists(const std::string& name) throw(te::da::
 {
   bool datasetExists = false;
 
-  std::vector<std::string> datasetNames = getDataSetNames();
-  for(std::size_t i = 0; i < datasetNames.size(); ++i)
-  {
-    if(datasetNames[i] == name)
-    {
-      datasetExists = true;
-      break;
-    }
-  }
+  if(std::find(m_pImpl->m_datasetNames.begin(), m_pImpl->m_datasetNames.end(), name) != m_pImpl->m_datasetNames.end())
+    datasetExists = true;
 
   return datasetExists;
 }
@@ -1597,84 +1559,6 @@ void te::pgis::DataSource::update(const std::string& /*datasetName*/,
   throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
-unsigned int te::pgis::DataSource::getTableId(const std::string& tableName) throw(te::da::Exception)
-{
- std::string tname, sname;
-  
-  SplitTableName(tableName, m_pImpl->m_currentSchema, sname, tname);
-
-  std::string sql("SELECT pg_class.oid "
-                  "FROM pg_class, pg_namespace "
-                  "WHERE pg_class.relnamespace = pg_namespace.oid " 
-                  "AND lower(pg_class.relname) = '");
-
-  sql += te::common::Convert2LCase(tname);
-  sql += "' AND lower(pg_namespace.nspname) = '";
-  sql += te::common::Convert2LCase(sname);
-  sql += "'";
-
-  std::auto_ptr<te::da::DataSet> result(query(sql));
-
-  if(result->moveNext() == false)
-    throw Exception(TR_PGIS("Could not find the table oid!"));
-
-  unsigned int tableid = result->getInt32(0);
-
-  return tableid;
-}
-
-std::string te::pgis::DataSource::getTableName(unsigned int id)
-{
-  std::string sql("SELECT pg_namespace.nspname, pg_class.relname "
-                  "FROM pg_class, pg_namespace "
-                  "WHERE pg_class.relnamespace = pg_namespace.oid " 
-                  "AND pg_class.oid = ");
-
-  sql += te::common::Convert2String(id);
-
-  std::auto_ptr<te::da::DataSet> result(query(sql));
-
-  if(result->moveNext() == false)
-    throw Exception(TR_PGIS("Could not find the table name!"));
-
-  std::string tname  = result->getString(0);
-              tname += ".";
-              tname += result->getString(1);
-
-  return tname;
-}
-
-std::auto_ptr<te::da::DataSet> te::pgis::DataSource::getConstraints(unsigned int dtid, char conType)
-{
-  std::string sql("SELECT c.oid, n.nspname, c.conname, c.contype, c.confrelid, c.confupdtype, c.confdeltype, c.confmatchtype, c.conkey, c.confkey, pg_get_constraintdef(c.oid) "
-                  "FROM pg_constraint c, pg_namespace n "
-                  "WHERE c.connamespace = n.oid "
-                  "AND c.conrelid = ");
-              sql += te::common::Convert2String(dtid);
-
-  if(conType != '\0')
-  {
-    sql += " AND c.contype = '";
-    sql += conType;
-    sql += "'";
-  }
-
-  return query(sql);
-}
-
-te::da::DataSet* te::pgis::DataSource::getProperties(unsigned int dtid)
-{
-  std::string sql("SELECT a.attnum, a.attname, t.oid, a.attnotnull, format_type(a.atttypid, a.atttypmod), a.atthasdef, pg_get_expr(d.adbin, d.adrelid), a.attndims "
-                  "FROM pg_attribute AS a INNER JOIN pg_type AS t ON (a.atttypid = t.oid) LEFT JOIN pg_attrdef AS d ON (a.attrelid = d.adrelid AND a.attnum = d.adnum) "
-                  "WHERE a.attrelid = ");
-              sql += te::common::Convert2String(dtid);
-              sql += " AND a.attisdropped = false"
-                     " AND a.attnum > 0"
-                     " ORDER BY a.attnum";
-
-  return query(sql).release();
-}
-
 void te::pgis::DataSource::getGeometryInfo(const std::string& datasetName, te::gm::GeometryProperty* gp)
 {
   std::string sql = "SELECT g.coord_dimension, g.srid, g.type "
@@ -1803,6 +1687,53 @@ void te::pgis::DataSource::getRasterInfo(const std::string& datasetName, te::rst
   }
 }
 
+std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map<std::string, std::string>& info) throw(te::da::Exception)
+{
+  // Get an auxiliary connection
+  std::auto_ptr<DataSource> ds(new DataSource());
+
+  ds->setConnectionInfo(m_pImpl->m_connInfo);
+
+  ds->open();
+
+  std::string sql("SELECT datname FROM pg_database");
+
+  std::auto_ptr<te::da::DataSet> dataset(query(sql));
+
+  std::vector<std::string> dataSourceNames;
+
+  while(dataset->moveNext())
+    dataSourceNames.push_back(dataset->getString(0));
+
+  ds->close();
+
+  return dataSourceNames;
+}
+
+std::vector<std::string> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+{
+  std::vector<std::string> encodings;
+
+  // Let's have an auxiliary connection
+  std::auto_ptr<DataSource> ds(new DataSource());
+
+  ds->setConnectionInfo(info);
+
+  ds->open();
+
+  // Try to check
+  std::string sql("SELECT DISTINCT pg_catalog.pg_encoding_to_char(conforencoding) FROM pg_catalog.pg_conversion ORDER BY pg_catalog.pg_encoding_to_char(conforencoding)");
+
+  std::auto_ptr<te::da::DataSet> encs(query(sql));
+
+  while(encs->moveNext())
+    encodings.push_back(encs->getString(0));
+
+  ds->close();
+
+  return encodings;
+}
+
 te::dt::Property* te::pgis::DataSource::getProperty(unsigned int dtid, unsigned int pid)
 {
   std::string sql("SELECT a.attnum, a.attname, t.oid, a.attnotnull, format_type(a.atttypid, a.atttypmod), a.atthasdef, pg_get_expr(d.adbin, d.adrelid), a.attndims "
@@ -1852,6 +1783,132 @@ void te::pgis::DataSource::setCapabilities(const te::da::DataSourceCapabilities&
   DataSource::Impl::sm_capabilities = capabilities;
 }
 
+unsigned int te::pgis::DataSource::getTableId(const std::string& tableName) throw(te::da::Exception)
+{
+ std::string tname, sname;
+  
+  SplitTableName(tableName, m_pImpl->m_currentSchema, sname, tname);
+
+  std::string sql("SELECT pg_class.oid "
+                  "FROM pg_class, pg_namespace "
+                  "WHERE pg_class.relnamespace = pg_namespace.oid " 
+                  "AND lower(pg_class.relname) = '");
+
+  sql += te::common::Convert2LCase(tname);
+  sql += "' AND lower(pg_namespace.nspname) = '";
+  sql += te::common::Convert2LCase(sname);
+  sql += "'";
+
+  std::auto_ptr<te::da::DataSet> result(query(sql));
+
+  if(result->moveNext() == false)
+    throw Exception(TR_PGIS("Could not find the table oid!"));
+
+  unsigned int tableid = result->getInt32(0);
+
+  return tableid;
+}
+
+std::string te::pgis::DataSource::getTableName(unsigned int id)
+{
+  std::string sql("SELECT pg_namespace.nspname, pg_class.relname "
+                  "FROM pg_class, pg_namespace "
+                  "WHERE pg_class.relnamespace = pg_namespace.oid " 
+                  "AND pg_class.oid = ");
+
+  sql += te::common::Convert2String(id);
+
+  std::auto_ptr<te::da::DataSet> result(query(sql));
+
+  if(result->moveNext() == false)
+    throw Exception(TR_PGIS("Could not find the table name!"));
+
+  std::string tname  = result->getString(0);
+              tname += ".";
+              tname += result->getString(1);
+
+  return tname;
+}
+
+//std::auto_ptr<te::da::DataSet> te::pgis::DataSource::getConstraints(unsigned int dtid, char conType)
+//{
+//  std::string sql("SELECT c.oid, n.nspname, c.conname, c.contype, c.confrelid, c.confupdtype, c.confdeltype, c.confmatchtype, c.conkey, c.confkey, pg_get_constraintdef(c.oid) "
+//                  "FROM pg_constraint c, pg_namespace n "
+//                  "WHERE c.connamespace = n.oid "
+//                  "AND c.conrelid = ");
+//              sql += te::common::Convert2String(dtid);
+//
+//  if(conType != '\0')
+//  {
+//    sql += " AND c.contype = '";
+//    sql += conType;
+//    sql += "'";
+//  }
+//
+//  return query(sql);
+//}
+
+te::da::DataSet* te::pgis::DataSource::getProperties(unsigned int dtid)
+{
+  std::string sql("SELECT a.attnum, a.attname, t.oid, a.attnotnull, format_type(a.atttypid, a.atttypmod), a.atthasdef, pg_get_expr(d.adbin, d.adrelid), a.attndims "
+                  "FROM pg_attribute AS a INNER JOIN pg_type AS t ON (a.atttypid = t.oid) LEFT JOIN pg_attrdef AS d ON (a.attrelid = d.adrelid AND a.attnum = d.adnum) "
+                  "WHERE a.attrelid = ");
+              sql += te::common::Convert2String(dtid);
+              sql += " AND a.attisdropped = false"
+                     " AND a.attnum > 0"
+                     " ORDER BY a.attnum";
+
+  return query(sql).release();
+}
+
+std::auto_ptr<te::da::DataSet> te::pgis::DataSource::getConstraints(unsigned int dtid)
+{
+  std::string sql("SELECT c.oid, n.nspname, c.conname, c.contype, c.confrelid, c.confupdtype, c.confdeltype, c.confmatchtype, c.conkey, c.confkey, pg_get_constraintdef(c.oid) "
+                  "FROM pg_constraint c, pg_namespace n "
+                  "WHERE c.connamespace = n.oid "
+                  "AND c.conrelid = ");
+              sql += te::common::Convert2String(dtid);
+
+  return query(sql);
+}
+
+std::vector<te::da::CheckConstraint*> te::pgis::DataSource::getCheckConstraints(std::auto_ptr<te::da::DataSet> dataset)
+{
+  std::vector<te::da::CheckConstraint*> ccs;
+
+  te::da::DataSet* dsp = dataset.get();
+  while(dsp->moveNext())
+  {
+    char cType = dsp->getChar(3);
+    if(cType == 'c')
+    {
+      std::string ccName  = dsp->getString(2);
+      unsigned int id = dsp->getInt32(0);
+      te::da::CheckConstraint* cc = new te::da::CheckConstraint(ccName);
+      cc->setId(id);
+      cc->setExpression(dsp->getString(10));
+      ccs.push_back(cc);
+    }
+  }
+
+  return ccs;
+}
+
+te::da::PrimaryKey* te::pgis::DataSource::getPrimaryKey(te::da::DataSet* dataset)
+{
+  return 0;
+}
+
+std::vector<te::da::ForeignKey*> te::pgis::DataSource::getForeignKeys(te::da::DataSet* dataset)
+{
+  return std::vector<te::da::ForeignKey*>(0);
+}
+
+std::vector<te::da::UniqueKey*> te::pgis::DataSource::getUniqueKeys(te::da::DataSet* dataset)
+{
+  return std::vector<te::da::UniqueKey*>(0);
+}
+
 void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsInfo) throw(te::da::Exception)
 {
   m_pImpl->m_connInfo = dsInfo;
@@ -1868,27 +1925,4 @@ void te::pgis::DataSource::drop(const std::map<std::string, std::string>& /*dsIn
 bool te::pgis::DataSource::exists(const std::map<std::string, std::string>& /*dsInfo*/) throw(te::da::Exception)
 {
   return false;
-}
-
-std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map<std::string, std::string>& info) throw(te::da::Exception)
-{
-  // Get an auxiliary connection
-  std::auto_ptr<DataSource> ds(new DataSource());
-
-  ds->setConnectionInfo(m_pImpl->m_connInfo);
-
-  ds->open();
-
-  std::string sql("SELECT datname FROM pg_database");
-
-  std::auto_ptr<te::da::DataSet> dataset(query(sql));
-
-  std::vector<std::string> dataSourceNames;
-
-  while(dataset->moveNext())
-    dataSourceNames.push_back(dataset->getString(0));
-
-  ds->close();
-
-  return dataSourceNames;
 }
