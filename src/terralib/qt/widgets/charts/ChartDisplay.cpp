@@ -95,20 +95,17 @@ void te::qt::widgets::ChartDisplay::setStyle(te::qt::widgets::ChartStyle* newSty
 
 void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oids)
 {
-  const QwtPlotItemList& itmList = itemList();
-  for ( QwtPlotItemIterator it = itmList.begin();
-    it != itmList.end(); ++it )
+  const QwtPlotItemList& itmList = itemList(); 
+
+  int type = itmList.first()->rtti();
+  switch (type)
   {
-    int type = ( *it )->rtti();
-    switch (type)
-    {
-      case(te::qt::widgets::HISTOGRAM_CHART):
-        static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight(oids);
-        break;
-      case(te::qt::widgets::SCATTER_CHART):
-        static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight(oids);
-        break;
-    }
+    case(te::qt::widgets::HISTOGRAM_CHART):
+      static_cast<te::qt::widgets::HistogramChart*>(itmList.first())->highlight(oids);
+      break;
+    case(te::qt::widgets::SCATTER_CHART):
+      static_cast<te::qt::widgets::ScatterChart*>(itmList.first())->highlight(oids);
+      break;
   }
 }
 

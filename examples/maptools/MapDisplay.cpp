@@ -58,7 +58,8 @@ void MapDisplay()
         continue;
 
       // To MapDisplay extent
-      te::gm::Envelope* e = cl->getExtent(dt->getDefaultGeomProperty());
+      te::gm::Envelope* e = cl->getExtent(dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE)); //getDefaultGeomProperty());
+
       env.Union(*e);
       delete e;
       
@@ -67,7 +68,7 @@ void MapDisplay()
       layer->setDataSourceId(dataSource->getId());
       layer->setDataSetName(datasets[i]);
       layer->setVisibility(te::map::VISIBLE);
-      layer->setStyle(styles[dt->getDefaultGeomProperty()->getGeometryType()]);
+      layer->setStyle(styles[te::da::GetFirstGeomProperty(dt)->getGeometryType()]);
       layer->setRendererType("DATASET_LAYER_RENDERER");
 
       layerList.push_back(layer);

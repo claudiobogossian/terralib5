@@ -741,7 +741,7 @@ te::dt::Property* te::qt::widgets::AddProperty::buildInt64Property()
 
 te::dt::Property* te::qt::widgets::AddProperty::buildNumericProperty()
 {
-  bool ok;
+  bool ok = false;
 
   // Check the default value
   if(dataTypeComboBox->currentText() == "NUMERIC")
@@ -806,7 +806,7 @@ te::dt::Property* te::qt::widgets::AddProperty::buildNumericProperty()
 
 te::dt::Property* te::qt::widgets::AddProperty::buildRasterProperty()
 {
-  bool ok;
+  bool ok = false;
 
   // Get the srid
   int srid = 0;
@@ -878,63 +878,49 @@ te::dt::Property* te::qt::widgets::AddProperty::buildRasterProperty()
   double lly = 0.0;
   double urx = 0.0;
   double ury = 0.0;
-
-  te::gm::Envelope* envelope;
-
-  if(rasterLLXLineEdit->text().isEmpty() == true &&
-      rasterLLYLineEdit->text().isEmpty() == true &&
-      rasterURXLineEdit->text().isEmpty() == true &&
-      rasterURYLineEdit->text().isEmpty() == true)
+  
+  if(rasterLLXLineEdit->text().isEmpty() == false)
   {
-    envelope = 0;
+    llx = rasterLLXLineEdit->text().toDouble(&ok);
+    if(ok == false)
+    {
+      QMessageBox::warning(this, tr("Invalid Value"), 
+                           tr("The LLX coordinate must be a double value!"));
+      return 0;
+    }
   }
-  else
+  
+  if(rasterLLYLineEdit->text().isEmpty() == false)
   {
-    if(rasterLLXLineEdit->text().isEmpty() == false)
+    lly = rasterLLYLineEdit->text().toDouble(&ok);
+    if(ok == false)
     {
-      llx = rasterLLXLineEdit->text().toDouble(&ok);
-      if(ok == false)
-      {
-        QMessageBox::warning(this, tr("Invalid Value"), 
-          tr("The LLX coordinate must be a double value!"));
-        return 0;
-      }
+      QMessageBox::warning(this, tr("Invalid Value"), 
+                           tr("The LLY coordinate must be a double value!"));
+      return 0;
     }
-
-    if(rasterLLYLineEdit->text().isEmpty() == false)
+  }
+  
+  if(rasterURXLineEdit->text().isEmpty() == false)
+  {
+    urx = rasterURXLineEdit->text().toDouble(&ok);
+    if(ok == false)
     {
-      lly = rasterLLYLineEdit->text().toDouble(&ok);
-      if(ok == false)
-      {
-        QMessageBox::warning(this, tr("Invalid Value"), 
-          tr("The LLY coordinate must be a double value!"));
-        return 0;
-      }
+      QMessageBox::warning(this, tr("Invalid Value"), 
+                           tr("The URX coordinate must be a double value!"));
+      return 0;
     }
-
-    if(rasterURXLineEdit->text().isEmpty() == false)
+  }
+  
+  if(rasterURYLineEdit->text().isEmpty() == false)
+  {
+    ury = rasterURYLineEdit->text().toDouble(&ok);
+    if(ok == false)
     {
-      urx = rasterURXLineEdit->text().toDouble(&ok);
-      if(ok == false)
-      {
-        QMessageBox::warning(this, tr("Invalid Value"), 
-          tr("The URX coordinate must be a double value!"));
-        return 0;
-      }
+      QMessageBox::warning(this, tr("Invalid Value"), 
+                           tr("The URY coordinate must be a double value!"));
+      return 0;
     }
-
-    if(rasterURYLineEdit->text().isEmpty() == false)
-    {
-      ury = rasterURYLineEdit->text().toDouble(&ok);
-      if(ok == false)
-      {
-        QMessageBox::warning(this, tr("Invalid Value"), 
-          tr("The URY coordinate must be a double value!"));
-        return 0;
-      }
-    }
-
-    envelope = new te::gm::Envelope(llx, lly, urx, ury);
   }
 
   // Get the number of bands
