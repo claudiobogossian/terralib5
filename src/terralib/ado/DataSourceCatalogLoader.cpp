@@ -665,36 +665,27 @@ te::gm::Envelope* te::ado::DataSourceCatalogLoader::getExtent(const te::dt::Prop
 
   std::string tableName = sp->getParent()->getName();
 
-  te::da::DataSetType* dt = getDataSetType(tableName);
+  std::string sql = "SELECT MIN(lower_x), MIN(lower_y), MAX(upper_x), MAX(upper_y) from " + tableName;
 
-  te::da::DataSet* ds = m_t->getDataSet(dt->getName());
+  te::da::DataSet* resultBox = m_t->query(sql);
 
   te::gm::Envelope* env = new te::gm::Envelope();
 
-  bool first = true;
-  while(ds->moveNext())
+  if(resultBox)
   {
-    double lowerX = ds->getDouble("lower_x");
-    double lowerY = ds->getDouble("lower_y");
-    double upperX = ds->getDouble("upper_x");
-    double upperY = ds->getDouble("upper_y");
-    
-    if(first)
-    {
-      env->m_llx = lowerX;
-      env->m_lly = lowerY;
-      env->m_urx = upperX;
-      env->m_ury = upperY;
-
-      first = false;
-      continue;
-    }
-
-    if(lowerX < env->m_llx) env->m_llx = lowerX;
-    if(lowerY < env->m_lly) env->m_lly = lowerY;
-    if(upperX > env->m_urx) env->m_urx = upperX;
-    if(upperY > env->m_ury) env->m_ury = upperY;
+    resultBox->moveFirst();
+    env->m_llx = resultBox->getDouble(0);
+    env->m_lly = resultBox->getDouble(1);
+    env->m_urx = resultBox->getDouble(2);
+    env->m_ury = resultBox->getDouble(3);
   }
+  else
+  {
+    delete resultBox;
+    throw Exception(TR_ADO("Error when calculating the envelope!"));
+  }
+
+  delete resultBox;
 
   return env;
 }
