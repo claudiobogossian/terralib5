@@ -455,7 +455,7 @@ std::vector<std::string> te::mem::DataSource::getCheckConstraintNames(const std:
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-std::auto_ptr<te::da::CheckConstraint> te::mem::DataSource::getCheckConstraint(const std::string& /*datasetName*/,
+te::da::CheckConstraint* te::mem::DataSource::getCheckConstraint(const std::string& /*datasetName*/,
                                                                                          const std::string& /*name*/) throw(te::da::Exception)
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));

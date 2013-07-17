@@ -654,10 +654,13 @@ namespace te
 
           \return The check constraint with the given name.
 
+          \post The caller will not take the ownership of the returned check constraint, 
+                because it belongs to the DataSetType.
+
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<CheckConstraint> getCheckConstraint(const std::string& datasetName,
-                                                                  const std::string& name) throw(Exception) = 0;
+        virtual te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName,
+                                                            const std::string& name) throw(Exception) = 0;
 
         /*!
           \brief It searches for the list of sequence names available in the data source.

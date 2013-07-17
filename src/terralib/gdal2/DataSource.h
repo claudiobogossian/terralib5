@@ -200,7 +200,7 @@ namespace te
       
       std::vector<std::string> getCheckConstraintNames(const std::string& datasetName) throw(Exception);
       
-      std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName,
+      te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName,
                                                         const std::string& name) throw(Exception);
       
       std::vector<std::string> getSequenceNames() throw(Exception);
