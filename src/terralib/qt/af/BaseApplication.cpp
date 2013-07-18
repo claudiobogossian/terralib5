@@ -715,6 +715,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
       doc->setLayer(lay.get());
       ApplicationController::getInstance().addListener(doc);
+      addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
       doc->show();
     }
   }
@@ -749,6 +750,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
       doc->setWindowIcon(QIcon::fromTheme("chart-scatter"));
       ApplicationController::getInstance().addListener(doc);
       doc->setLayer(lay.get());
+      addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
       doc->show();
     }
   }
@@ -1114,7 +1116,7 @@ void te::qt::af::BaseApplication::makeDialog()
 // 3. Symbolizer Explorer
 
   te::qt::widgets::VisualDockWidget* visualDock = new te::qt::widgets::VisualDockWidget(tr("Styler Explorer"), this);
-  QMainWindow::addDockWidget(Qt::RightDockWidgetArea, visualDock);
+  QMainWindow::addDockWidget(Qt::RightDockWidgetArea, visualDock, Qt::Horizontal);
   visualDock->connect(m_viewStyleExplorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewStyleExplorer->setChecked(false);
   visualDock->setVisible(false);
