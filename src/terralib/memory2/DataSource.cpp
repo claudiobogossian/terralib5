@@ -433,8 +433,7 @@ std::vector<std::string> te::mem::DataSource::getForeignKeyNames(const std::stri
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-std::auto_ptr<te::da::ForeignKey> te::mem::DataSource::getForeignKey(const std::string& /*datasetName*/,
-                                                                               const std::string& /*name*/)
+te::da::ForeignKey* te::mem::DataSource::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
@@ -670,8 +669,7 @@ void te::mem::DataSource::renameProperty(const std::string& /*datasetName*/,
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::addPrimaryKey(const std::string& /*datasetName*/,
-                                            const te::da::PrimaryKey* /*pk*/)
+void te::mem::DataSource::addPrimaryKey(const std::string& /*datasetName*/, te::da::PrimaryKey* /*pk*/)
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));
 
@@ -701,8 +699,7 @@ void te::mem::DataSource::addPrimaryKey(const std::string& /*datasetName*/,
   //dt->setPrimaryKey(pk);
 }
 
-void te::mem::DataSource::dropPrimaryKey(const std::string& /*datasetName*/,
-                                             const std::string& /*primaryKeyName*/)
+void te::mem::DataSource::dropPrimaryKey(const std::string& /*datasetName*/)
 {
   //DataSource* ds = m_t->getMemDataSource();
 
@@ -842,8 +839,7 @@ void te::mem::DataSource::dropIndex(const std::string& /*datasetName*/,
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::addForeignKey(const std::string& /*datasetName*/,
-                                            const te::da::ForeignKey* /*fk*/)
+void te::mem::DataSource::addForeignKey(const std::string& /*datasetName*/, te::da::ForeignKey* /*fk*/)
 {
   //DataSource* ds = m_t->getMemDataSource();
 
@@ -912,8 +908,7 @@ void te::mem::DataSource::dropForeignKey(const std::string& /*datasetName*/,
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::addCheckConstraint(const std::string& /*datasetName*/,
-                                                 const te::da::CheckConstraint* /*cc*/)
+void te::mem::DataSource::addCheckConstraint(const std::string& /*datasetName*/, te::da::CheckConstraint* /*cc*/)
 {
   //DataSource* ds = m_t->getMemDataSource();
 

@@ -541,8 +541,8 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos) = 0;
-		
-		/*!
+
+        /*!
           \brief It retrieves the primary key of the dataset.
 
           \param datasetName  The dataset name.
@@ -553,8 +553,99 @@ namespace te
                 because it belongs to the DataSetType.
 
           \note Not thread-safe!
-        */		
+        */
         virtual PrimaryKey* getPrimaryKey(const std::string& datasetName) = 0;
+
+        /*!
+          \brief It checks if a primary key with the given name exists in the data source.
+
+          \param datasetName  The dataset name.
+          \param name         The primary key name.
+
+          \return True, if the primary key exists in the data source; otherwise, it returns false.
+
+          \note Not thread-safe!
+        */
+        virtual bool primaryKeyExists(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It adds a primary key constraint to the dataset schema.
+
+          \param datasetName  The name of the dataset to be added the primary key.
+          \param pk           The primary key constraint.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void addPrimaryKey(const std::string& datasetName, PrimaryKey* pk) = 0;
+
+        /*!
+          \brief It removes the primary key constraint from the dataset schema.
+
+          \param datasetName    The name of the dataset to be removed the primary key.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void dropPrimaryKey(const std::string& datasetName) = 0;
+
+        /*!
+          \brief It searches for the foreign key names of the given dataset.
+
+          \param datasetName The dataset name.
+
+          \return The foreign key names of the given dataset.
+
+          \note Not thread-safe!
+        */
+        virtual std::vector<std::string> getForeignKeyNames(const std::string& datasetName) = 0;
+
+        /*!
+          \brief It checks if a foreign key with the given name exists in the data source.
+
+          \param datasetName  The dataset name.
+          \param name         The foreign key name.
+
+          \return True, if the foreign key exists in the data source; otherwise, it returns false.
+        */
+        virtual bool foreignKeyExists(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It retrieves the foreign key with the given name.
+
+          \param name The foreign key name.
+
+          \return The foreign key with the given name.
+
+          \note Not thread-safe!
+        */
+        virtual ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It adds a foreign key constraint to a dataset.
+
+          \param datasetName  The dataset where the foreign key constraint will be added.
+          \param fk           The foreign key constraint.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void addForeignKey(const std::string& datasetName, ForeignKey* fk) = 0;
+
+        /*!
+          \brief It removes the foreign key constraint from the dataset schema.
+
+          \param datasetName  The dataset where the foreign key will be removed.
+          \param fkName       The foreign key to be removed.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void dropForeignKey(const std::string& datasetName, const std::string& fkName) = 0;
 
         /*!
           \brief It searches in the data source for the unique key names associated to the given dataset.
@@ -589,29 +680,6 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<UniqueKey> getUniqueKey(const std::string& datasetName,
-                                                        const std::string& name) = 0;
-
-        /*!
-          \brief It searches for the foreign key names of the given dataset.
-
-          \param datasetName The dataset name.
-
-          \return The foreign key names of the given dataset.
-
-          \note Not thread-safe!
-        */
-        virtual std::vector<std::string> getForeignKeyNames(const std::string& datasetName) = 0;
-
-        /*!
-          \brief It retrieves the foreign key with the given name.
-
-          \param name The foreign key name.
-
-          \return The foreign key with the given name.
-
-          \note Not thread-safe!
-        */
-        virtual std::auto_ptr<ForeignKey> getForeignKey(const std::string& datasetName,
                                                         const std::string& name) = 0;
 
         /*!
@@ -746,19 +814,6 @@ namespace te
         virtual bool datasetExists(const std::string& name) = 0;
 
         /*!
-          \brief It checks if a primary key with the given name exists in the data source.
-
-          \param datasetName  The dataset name.
-          \param name         The primary key name.
-
-          \return True, if the primary key exists in the data source; otherwise, it returns false.
-
-          \note Not thread-safe!
-        */
-        virtual bool primaryKeyExists(const std::string& datasetName,
-                                      const std::string& name) = 0;
-
-        /*!
           \brief It checks if a unique key with the given name exists in the data source.
 
           \param datasetName  The dataset name.
@@ -769,17 +824,6 @@ namespace te
           \note Not thread-safe!
         */
         virtual bool uniqueKeyExists(const std::string& datasetName, const std::string& name) = 0;
-
-        /*!
-          \brief It checks if a foreign key with the given name exists in the data source.
-
-          \param datasetName  The dataset name.
-          \param name         The foreign key name.
-
-          \return True, if the foreign key exists in the data source; otherwise, it returns false.
-        */
-        virtual bool foreignKeyExists(const std::string& datasetName,
-                                      const std::string& name) = 0;
 
         /*!
           \brief It checks if a check-constraint with the given name exists in the data source.
@@ -926,35 +970,9 @@ namespace te
                                     const std::string& propertyName,
                                     const std::string& newPropertyName) = 0;
 
-        /*!
-          \brief It adds a primary key constraint to the dataset schema.
-
-          \param datasetName  The name of the dataset to be added the primary key.
-          \param pk           The primary key constraint.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void addPrimaryKey(const std::string& datasetName,
-                                    const PrimaryKey* pk) = 0;
-        
-        /*!
-          \brief It removes the primary key constraint from the dataset schema.
-
-          \param datasetName    The name of the dataset to be removed the primary key.
-          \param primaryKeyName The primary key constraint name.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropPrimaryKey(const std::string& datasetName,
-                                    const std::string& primaryKeyName) = 0;
 
         /*!
           \brief It adds a unique key constraint to the DataSetType.
-
 
           \param datasetName  The name of the dataset to be added the unique key.
           \param uk           The unique key constraint.
@@ -1004,34 +1022,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void dropIndex(const std::string& datasetName,
-                                const std::string& idxName) = 0;
-
-        /*!
-          \brief It adds a foreign key constraint to a dataset.
-
-          \param datasetName  The dataset where the foreign key constraint will be added.
-          \param fk           The foreign key constraint.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void addForeignKey(const std::string& datasetName,
-                                    const ForeignKey* fk) = 0;
-
-        /*!
-          \brief It removes the foreign key constraint from the dataset schema.
-
-          \param datasetName  The dataset where the foreign key will be removed.
-          \param fkName       The foreign key to be removed.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropForeignKey(const std::string& datasetName,
-                                    const std::string& fkName) = 0;
+        virtual void dropIndex(const std::string& datasetName, const std::string& idxName) = 0;
 
         /*!
           \brief It adds a check constraint to the dataset.
@@ -1043,8 +1034,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void addCheckConstraint(const std::string& datasetName,
-                                        const CheckConstraint* cc) = 0;
+        virtual void addCheckConstraint(const std::string& datasetName, CheckConstraint* cc) = 0;
    
         /*!
           \brief It removes the check constraint from the dataset.
@@ -1053,8 +1043,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void dropCheckConstraint(const std::string& datasetName,
-                                          const std::string& name) = 0;
+        virtual void dropCheckConstraint(const std::string& datasetName, const std::string& name) = 0;
    
         /*!
           \brief It creates a new sequence in the data source.
