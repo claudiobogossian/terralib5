@@ -52,6 +52,7 @@
 #include "AggregationDialog.h"
 #include "Config.h"
 #include "Exception.h"
+#include "Utils.h"
 
 // STL
 #include <map>
@@ -336,9 +337,9 @@ void te::vp::SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupi
           if(dsPropType == te::dt::STRING_TYPE)
           {
             std::string propName = dsQuery->getPropertyName(i);
-            int index = GetPropertyIndex(outputDataSetItem, propName);
+            std::size_t index = te::da::GetPropertyPos(outputDataSetItem->getParent(), propName);
             
-            if(index != -1)
+            if(index < outputDataSetItem->getNumProperties())
             {
               std::string value = dsQuery->getAsString(i);
               outputDataSetItem->setString(index, value);
@@ -347,9 +348,9 @@ void te::vp::SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupi
           if(dsPropType == te::dt::NUMERIC_TYPE)
           {
             std::string propName = dsQuery->getPropertyName(i);
-            int index = GetPropertyIndex(outputDataSetItem, propName);
+            std::size_t index = te::da::GetPropertyPos(outputDataSetItem->getParent(), propName);
             
-            if(index != -1)
+            if(index < outputDataSetItem->getNumProperties())
             {
               double value = boost::lexical_cast<double>(dsQuery->getNumeric(i));
               outputDataSetItem->setDouble(index, value);
@@ -358,9 +359,9 @@ void te::vp::SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupi
           if(dsPropType == te::dt::DOUBLE_TYPE)
           {
             std::string propName = dsQuery->getPropertyName(i);
-            int index = GetPropertyIndex(outputDataSetItem, propName);
+            std::size_t index = te::da::GetPropertyPos(outputDataSetItem->getParent(), propName);
             
-            if(index != -1)
+            if(index < outputDataSetItem->getNumProperties())
             {
               double value = dsQuery->getDouble(i);
               outputDataSetItem->setDouble(index, value);
@@ -369,9 +370,9 @@ void te::vp::SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupi
           if(dsPropType == te::dt::INT64_TYPE)
           {
             std::string propName = dsQuery->getPropertyName(i);
-            int index = GetPropertyIndex(outputDataSetItem, propName);
+            std::size_t index = te::da::GetPropertyPos(outputDataSetItem->getParent(), propName);
             
-            if(index != -1)
+            if(index < outputDataSetItem->getNumProperties())
             {
               int type = outputDataSetItem->getPropertyDataType(index);
               if(type == te::dt::DOUBLE_TYPE)
@@ -409,6 +410,17 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
   std::auto_ptr<te::mem::DataSet> inputDataSet((te::mem::DataSet*)inputLayer->getData());
   std::auto_ptr<te::mem::DataSetItem> dataSetItem(new te::mem::DataSetItem(inputDataSet.get()));
 
+  te::da::DataSetType* dsType = (te::da::DataSetType*)inputLayer->getSchema();
+  std::size_t geomIdx;
+  std::string geomName = "";
+
+  if(dsType->hasGeom())
+  {
+    std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType));
+    geomName = geom->getName();
+    geomIdx = boost::lexical_cast<std::size_t>(dsType->getPropertyPosition(geomName));
+  }
+
   std::map<std::string, std::vector<te::mem::DataSetItem*> > groupValues = GetGroups(inputDataSet.get(), groupingProperties);
   std::map<std::string, std::vector<te::mem::DataSetItem*> >::const_iterator itGroupValues = groupValues.begin();
 
@@ -420,7 +432,7 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
     std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(inputLayer, statisticalSummary, itGroupValues->second);
     std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(inputLayer, statisticalSummary, itGroupValues->second);
 
-    te::gm::Geometry* geometry = GetUnionGeometry(itGroupValues->second);
+    te::gm::Geometry* geometry = GetUnionGeometry(itGroupValues->second, geomIdx);
 
     te::mem::DataSetItem* outputDataSetItem = new te::mem::DataSetItem(outputDataSet);
 
@@ -433,7 +445,7 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
       
       while(itFuncResultString != functionResultStringMap.end())
       {
-        if(PropertyExists(itFuncResultString->first.c_str(), outputDataSet))
+        if(te::da::GetPropertyPos(outputDataSet, itFuncResultString->first.c_str()) < outputDataSet->getNumProperties())
           outputDataSetItem->setString(itFuncResultString->first.c_str(), itFuncResultString->second.c_str());
 
         ++itFuncResultString;
@@ -446,7 +458,7 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
       
       while(itFuncResultDouble != functionResultDoubleMap.end())
       {
-        if(PropertyExists(itFuncResultDouble->first.c_str(), outputDataSet))
+        if(te::da::GetPropertyPos(outputDataSet, itFuncResultDouble->first.c_str()) < outputDataSet->getNumProperties())
           outputDataSetItem->setDouble(itFuncResultDouble->first.c_str(), itFuncResultDouble->second);
 
         ++itFuncResultDouble;
@@ -484,7 +496,7 @@ std::map<std::string, std::vector<te::mem::DataSetItem*> > te::vp::GetGroups( te
     {
       propertyName += "_" + groupingProperties[i]->getName();
 
-      propertyIndex = GetPropertyIndex(dataSetItem, groupingProperties[i]->getName());
+      propertyIndex = te::da::GetPropertyPos(dataSetItem->getParent(), groupingProperties[i]->getName());
       value += "_" + inputDataSet->getAsString(propertyIndex);
     }
 
@@ -510,72 +522,6 @@ std::map<std::string, std::vector<te::mem::DataSetItem*> > te::vp::GetGroups( te
   return groupValues;
 }
 
-std::size_t te::vp::GetPropertyIndex(const te::mem::DataSetItem* item, const std::string propertyName)
-{
-  std::size_t index = 0;
-
-  for(std::size_t i = 0; i < item->getNumProperties(); ++i)
-  {
-    std::string strPropName = boost::to_upper_copy(propertyName);
-    std::string dataSetPropName = boost::to_upper_copy(item->getPropertyName(i));
-
-    if(strPropName == dataSetPropName)
-    {
-      index = i;
-      return index;
-    }
-  }
-  return -1;
-}
-
-te::gm::Geometry* te::vp::GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items)
-{
-  te::gm::Geometry* resultGeometry = 0; 
-  te::gm::Geometry* seedGeometry;
-  std::vector<te::gm::Geometry*> geomVector;
-
-  for(std::size_t i = 0; i < items.size(); ++i)
-  {
-    std::size_t count = items[i]->getNumProperties();
-
-    for(std::size_t j = 0; j < count; ++j)
-    {
-      std::size_t type = items[i]->getPropertyDataType(j);
-      
-      if(type == te::dt::GEOMETRY_TYPE)
-      {
-        geomVector.push_back(items[i]->getGeometry(j));
-      }
-    }
-  }
-
-  int size = geomVector.size();
-
-  if(size > 1)
-  {
-    seedGeometry = geomVector[0];
-
-    for(std::size_t i = 1; i < geomVector.size(); ++i)
-    {
-      if(geomVector[i]->isValid())
-      {
-        resultGeometry = seedGeometry->Union(geomVector[i]);
-        seedGeometry = resultGeometry;
-      }
-      /*else
-      {
-        //Gerar log do processamento e ao final avisar o usuário.
-      }*/
-    }
-  }
-  else
-  {
-    resultGeometry = geomVector[0];
-  }
-
-  return resultGeometry;
-}
-
 std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(const te::map::AbstractLayerPtr& inputLayer,
                                                                             const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary, 
                                                                             const std::vector<te::mem::DataSetItem*>& items)
@@ -593,10 +539,9 @@ std::map<std::string, std::string> te::vp::CalculateStringGroupingFunctions(cons
 
       for(std::size_t i = 0; i < items.size(); ++i)
       {
-        std::size_t index = GetPropertyIndex(items[i], propertyName);
+        std::size_t index = te::da::GetPropertyPos(items[i]->getParent(), propertyName);
 
-        if(index != -1)
-          values.push_back(items[i]->getString(index));
+        values.push_back(items[i]->getString(index));
       }
 
       te::stat::StringStatisticalSummary ss; 
@@ -630,10 +575,9 @@ std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const te
 
       for(std::size_t i = 0; i < items.size(); ++i)
       {
-        std::size_t index = GetPropertyIndex(items[i], propertyName);
+        std::size_t index = te::da::GetPropertyPos(items[i]->getParent(), propertyName);
 
-        if(index != -1)
-          values.push_back(items[i]->getDouble(index));
+        values.push_back(items[i]->getDouble(index));
       }
 
       te::stat::NumericStatisticalSummary ss;
@@ -659,20 +603,6 @@ std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const te
   }
 
   return result;
-}
-
-bool te::vp::PropertyExists(const std::string& propertyName, const te::mem::DataSet* dataSet)
-{
-  std::string currentPropName;
-
-  for(size_t i = 0; i < dataSet->getNumProperties(); ++i)
-  {
-    currentPropName = dataSet->getPropertyName(i);
-
-    if(currentPropName == propertyName)
-      return true;
-  }
-  return false;
 }
 
 #pragma endregion

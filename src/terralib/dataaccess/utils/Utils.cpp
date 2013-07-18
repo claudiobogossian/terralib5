@@ -50,6 +50,9 @@
 #include <cassert>
 #include <memory>
 
+// BOOST
+#include <boost/algorithm/string.hpp>
+
 void te::da::LoadFull(te::da::DataSetType* dataset, const std::string& datasourceId)
 {
   assert(dataset);
@@ -488,11 +491,13 @@ std::size_t te::da::GetPropertyPos(const DataSet* dataset, const std::string& na
 
   const std::size_t np = dataset->getNumProperties();
 
+  std::string strname = boost::to_upper_copy(name);
+
   for(std::size_t i = 0; i != np; ++i)
   {
-    std::string pname = dataset->getPropertyName(i);
+    std::string pname = boost::to_upper_copy(dataset->getPropertyName(i));
 
-    if(pname == name)
+    if(pname == strname)
       return i;
   }
 

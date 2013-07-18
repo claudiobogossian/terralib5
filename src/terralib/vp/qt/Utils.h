@@ -27,7 +27,9 @@
 #define __TERRALIB_VP_QT_INTERNAL_UTILS_H
 
 // Terralib
-#include"../../maptools/AbstractLayer.h"
+#include "../../geometry/Geometry.h"
+#include "../../maptools/AbstractLayer.h"
+#include "../../memory/DataSetItem.h"
 
 namespace te
 {
@@ -42,6 +44,15 @@ namespace te
       \return A list of layer filtered by the name.
     */
     std::list<te::map::AbstractLayerPtr> GetFilteredLayers(std::string text, std::list<te::map::AbstractLayerPtr> layers);
+
+    /*!
+      \brief It returns the union of a geometry vector.
+
+      \param items  Vector of itens that represents a group.
+
+      \return Union of the geometry.
+    */
+    te::gm::Geometry* GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx);
 
   } // end namespace vp
 }   // end namespace te

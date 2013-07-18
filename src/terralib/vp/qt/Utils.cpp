@@ -24,10 +24,17 @@
 */
 
 // TerraLib
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../geometry/Geometry.h"
+#include "../../geometry/GeometryCollection.h"
+#include "../../geometry/GeometryProperty.h"
 #include "Utils.h"
 
 // Qt
 #include <QtGui/QTreeView>
+
+//STL
+#include <vector>
 
 // Boost
 #include <boost/algorithm/string.hpp>
@@ -45,4 +52,39 @@ std::list<te::map::AbstractLayerPtr> te::vp::GetFilteredLayers(std::string text,
   }
 
   return filteredList;
+}
+
+te::gm::Geometry* te::vp::GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx)
+{
+  te::gm::Geometry* resultGeometry = 0; 
+
+  te::gm::Geometry* seedGeometry = items[0]->getGeometry(geomIdx);
+  
+  if(items.size() < 2)
+  {
+      resultGeometry = seedGeometry;
+  }
+  if(items.size() == 2)
+  {
+    te::gm::Geometry* teGeom = items[1]->getGeometry(geomIdx);
+
+    if(items[1]->getGeometry(geomIdx)->isValid())
+      resultGeometry = seedGeometry->Union(teGeom);
+    else
+      resultGeometry = seedGeometry;
+  }
+  if(items.size() > 2)
+  {
+    te::gm::GeometryCollection* teGeomColl = new te::gm::GeometryCollection(0, te::gm::GeometryCollectionType, seedGeometry->getSRID());
+
+    for(std::size_t i = 1; i < items.size(); ++i)
+    {
+      if(items[i]->getGeometry(geomIdx)->isValid())
+        teGeomColl->add(items[i]->getGeometry(geomIdx));
+    }
+
+    resultGeometry = seedGeometry->Union(teGeomColl);
+  }
+
+  return resultGeometry;
 }
