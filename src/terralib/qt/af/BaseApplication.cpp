@@ -808,6 +808,22 @@ void te::qt::af::BaseApplication::onDrawTriggered()
   m_display->draw(m_project->getLayers());
 }
 
+void te::qt::af::BaseApplication::onSetBoxOnMapDisplayTriggered()
+{
+  try
+  {
+    te::qt::widgets::MapDisplay* display = m_display->getDisplay();
+    std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+    te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+    te::gm::Envelope env = lay->getExtent();
+    display->setExtent(env, true);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
 {
   if(!checked)
@@ -1079,6 +1095,7 @@ void te::qt::af::BaseApplication::makeDialog()
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
   te::qt::widgets::LayerTreeView* treeView = lexplorer->getTreeView();
 
+  treeView->add(m_setBoxOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerEdit, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerRename, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerExport, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
@@ -1270,6 +1287,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerToBottom, "layer-to-bottom", "Layer.To Bottom", tr("To &Bottom"), tr(""), true, false, false, m_menubar);
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, true, m_menubar);
+  initAction(m_setBoxOnMapDisplay, "set-box-on-map-display", "Set.Box.On.Map.Display", tr("Set Box on &Map Display"), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
@@ -1392,6 +1410,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->setObjectName("Layer");
   m_layerMenu->setTitle(tr("&Layer"));
 
+  m_layerMenu->addAction(m_setBoxOnMapDisplay);
   m_layerMenu->addAction(m_layerEdit);
   m_layerMenu->addAction(m_layerRename);
   m_layerMenu->addAction(m_layerExport);
@@ -1595,6 +1614,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerGrouping, SIGNAL(triggered()), SLOT(onLayerGroupingTriggered()));
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
+  connect(m_setBoxOnMapDisplay, SIGNAL(triggered()), SLOT(onSetBoxOnMapDisplayTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
   connect(m_mapZoomArea, SIGNAL(toggled(bool)), SLOT(onZoomAreaToggled(bool)));

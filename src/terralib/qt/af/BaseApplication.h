@@ -122,6 +122,8 @@ namespace te
           void onMapSRIDTriggered();
 
           void onDrawTriggered();
+          
+          void onSetBoxOnMapDisplayTriggered();
 
           void onZoomInToggled(bool checked);
 
@@ -253,6 +255,7 @@ namespace te
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
           QAction* m_mapStopDraw;
+          QAction* m_setBoxOnMapDisplay;
           QSize m_mapCursorSize;
 
           QWidget* m_centralwidget;
