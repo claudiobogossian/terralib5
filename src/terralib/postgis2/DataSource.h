@@ -193,14 +193,21 @@ namespace te
 
         te::da::PrimaryKey* getPrimaryKey(const std::string& datasetName);
 
-        bool primaryKeyExists(const std::string& datasetName,
-                              const std::string& name);
+        bool primaryKeyExists(const std::string& datasetName, const std::string& name);
 
-        void addPrimaryKey(const std::string& datasetName,
-                           const te::da::PrimaryKey* pk);
+        void addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk);
 
-        void dropPrimaryKey(const std::string& datasetName,
-                            const std::string& primaryKeyName);
+        void dropPrimaryKey(const std::string& datasetName);
+
+        std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
+
+        bool foreignKeyExists(const std::string& datasetName, const std::string& name);
+
+        te::da::ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name);
+
+        void addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk);
+
+        void dropForeignKey(const std::string& datasetName, const std::string& fkName);
 
         std::vector<std::string> getUniqueKeyNames(const std::string& datasetName);
 
@@ -208,11 +215,6 @@ namespace te
 
         std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName,
                                                             const std::string& name);
-
-        std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
-
-        std::auto_ptr<te::da::ForeignKey> getForeignKey(const std::string& datasetName,
-                                                              const std::string& name);
 
         std::vector<std::string> getIndexNames(const std::string& datasetName);
 
@@ -227,11 +229,9 @@ namespace te
         bool checkConstraintExists(const std::string& datasetName,
                                    const std::string& name);
 
-        void addCheckConstraint(const std::string& datasetName,
-                                const te::da::CheckConstraint* cc);
+        void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc);
 
-        void dropCheckConstraint(const std::string& datasetName,
-                                  const std::string& name);
+        void dropCheckConstraint(const std::string& datasetName, const std::string& name);
 
         std::vector<std::string> getSequenceNames();
 
@@ -250,9 +250,6 @@ namespace te
         bool datasetExists(const std::string& name);
 
         bool uniqueKeyExists(const std::string& datasetName, const std::string& name);
-
-        bool foreignKeyExists(const std::string& datasetName,
-                              const std::string& name);
 
         bool indexExists(const std::string& datasetName,
                           const std::string& name);
@@ -284,21 +281,13 @@ namespace te
         void addUniqueKey(const std::string& datasetName,
                           const te::da::UniqueKey* uk);
 
-        void dropUniqueKey(const std::string& datasetName,
-                            const std::string& uniqueKeyName);
+        void dropUniqueKey(const std::string& datasetName, const std::string& uniqueKeyName);
 
-        void addIndex(const std::string& datasetName,
-                      const te::da::Index* idx,
+        void addIndex(const std::string& datasetName, const te::da::Index* idx,
                       const std::map<std::string, std::string>& options); 
 
         void dropIndex(const std::string& datasetName,
                         const std::string& idxName);
-
-        void addForeignKey(const std::string& datasetName,
-                           const te::da::ForeignKey* fk);
-
-        void dropForeignKey(const std::string& datasetName,
-                            const std::string& fkName);
 
         void createSequence(const te::da::Sequence* sequence);
 
@@ -546,32 +535,6 @@ namespace te
           \return True, if the constraints of the dataset were correctly added to its schema.
         */
         bool getConstraints(te::da::DataSetTypePtr& dt);
-
-        /*!
-          \brief It returns the list of the check constraints associated to a table or a view.
-
-          \param dataset The record set containing information about all the constraints of a table or view.
-                         Only information about the check constraints will be extract from the record set.
-
-          \return The list of check constraints available in a table or a view.
-        */
-        std::vector<te::da::CheckConstraint*> getCheckConstraints(std::auto_ptr<te::da::DataSet> dataset);
-
-        /*!
-          \brief It returns the primary key associated to a table or a view.
-
-          \param datasetName The dataset name.
-          \param dtid        The dataset id.
-          \param dataset     The record set containing information about all the constraints of a table or view.
-                             Only information about the primary key will be extract from the record set.
-
-          \return The primary key of a table or a view.
-        */
-        te::da::PrimaryKey* getPrimaryKey(const std::string& datasetName, unsigned int dtid, std::auto_ptr<te::da::DataSet> dataset);
-
-        std::vector<te::da::ForeignKey*> getForeignKeys(std::auto_ptr<te::da::DataSet> dataset);
-
-        std::vector<te::da::UniqueKey*> getUniqueKeys(std::auto_ptr<te::da::DataSet> dataset);
 
         void create(const std::map<std::string, std::string>& dsInfo);
 

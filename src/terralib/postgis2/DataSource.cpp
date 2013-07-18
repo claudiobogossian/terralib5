@@ -597,8 +597,7 @@ te::da::PrimaryKey* te::pgis::DataSource::getPrimaryKey(const std::string& datas
   return dt->getPrimaryKey();
 }
 
-bool te::pgis::DataSource::primaryKeyExists(const std::string& datasetName,
-                                            const std::string& name)
+bool te::pgis::DataSource::primaryKeyExists(const std::string& datasetName, const std::string& name)
 {
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
@@ -608,63 +607,78 @@ bool te::pgis::DataSource::primaryKeyExists(const std::string& datasetName,
   return false;
 }
 
-void te::pgis::DataSource::addPrimaryKey(const std::string& /*datasetName*/,
-                                         const te::da::PrimaryKey* /*pk*/)
+void te::pgis::DataSource::addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_PGIS("The dataset %1% not exists!")) % dt->getName()).str());
-
-  //if(ds->getDataSet(dt->getName())->getType()->getPrimaryKey())
-  //  throw Exception((boost::format(TR_PGIS("The dataset %1% already has a Primary Key!")) % dt->getName()).str());
-
-  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
-
-  //te::da::PrimaryKey* newPk = new te::da::PrimaryKey(pk->getName(), dsDt);
-
-  //for(std::size_t i = 0; i < pk->getProperties().size(); ++i)
-  //{
-  //   const te::dt::Property* p = pk->getProperties()[i];
-
-  //   te::dt::Property* dsP = dsDt->getProperty(p->getName());
-
-  //   newPk->add(dsP);
-  //}
-
-  //dt->setPrimaryKey(pk);
+  dt->add(pk);
 }
 
-void te::pgis::DataSource::dropPrimaryKey(const std::string& /*datasetName*/,
-                                          const std::string& /*primaryKeyName*/)
+void te::pgis::DataSource::dropPrimaryKey(const std::string& datasetName)
 {
-  //DataSource* ds = m_t->getMemDataSource();
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  //te::da::DataSetType* dt = pk->getDataSetType();
+  te::da::PrimaryKey* pk = dt->getPrimaryKey();
 
-  //DataSource::LockWrite l(ds);
+  dt->remove(pk);
+}
 
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_PGIS("The dataset %1% not exists!")) % dt->getName()).str());
+std::vector<std::string> te::pgis::DataSource::getForeignKeyNames(const std::string& datasetName)
+{
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
+  std::vector<std::string> fkNames;
 
-  //if(!dsDt->getPrimaryKey())
-  //  throw Exception((boost::format(TR_PGIS("The dataset %1% has not a Primary Key!")) % dsDt->getName()).str());
+  std::size_t numFK = dt->getNumberOfForeignKeys();
 
-  //if(dsDt->getPrimaryKey()->getName() != pk->getName())
-  //  throw Exception((boost::format(TR_PGIS("The dataset %1% has not a Primary Key named %2%!")) % dsDt->getName() % pk->getName()).str());
-  //  
-  //if(dsDt != dt)
-  //  dsDt->setPrimaryKey(0);
+  for(std::size_t i = 0; i < numFK; ++i)
+    fkNames.push_back(dt->getForeignKey(i)->getName());
 
-  //if(ds->getCatalog()->getDataSetType(dsDt->getName()))
-  //  ds->getCatalog()->getDataSetType(dsDt->getName())->setPrimaryKey(0);
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  return fkNames;
+}
+
+bool te::pgis::DataSource::foreignKeyExists(const std::string& datasetName, const std::string& name)
+{
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  std::vector<std::string> fkNames = getForeignKeyNames(datasetName);
+
+  if(std::find(fkNames.begin(), fkNames.end(), name) != fkNames.end())
+    return true;
+
+  return false;
+}
+
+te::da::ForeignKey* te::pgis::DataSource::getForeignKey(const std::string& datasetName, const std::string& name)
+{
+  if(!foreignKeyExists(datasetName, name))
+    throw Exception((boost::format(TR_PGIS("The dataset %1% has no foreign key with this name (%2%)!")) % datasetName % name).str());
+
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  return dt->getForeignKey(name);
+}
+
+void te::pgis::DataSource::addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk)
+{
+  std::string fkName = fk->getName();
+  if(foreignKeyExists(datasetName, fkName))
+    throw Exception((boost::format(TR_PGIS("The dataset already \"%1%\" has a foreign key with this name \"%2%\"!")) % datasetName % fkName).str());
+
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  dt->add(fk);
+}
+
+void te::pgis::DataSource::dropForeignKey(const std::string& datasetName, const std::string& fkName)
+{
+  if(!foreignKeyExists(datasetName, fkName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no foreign key with this name \"%2%\"!")) % datasetName % fkName).str());
+
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  te::da::ForeignKey* fk = dt->getForeignKey(fkName);
+  dt->remove(fk);
 }
 
 std::vector<std::string> te::pgis::DataSource::getUniqueKeyNames(const std::string& datasetName)
@@ -808,93 +822,6 @@ std::auto_ptr<te::da::UniqueKey> te::pgis::DataSource::getUniqueKey(const std::s
   return uk;
 }
 
-std::vector<std::string> te::pgis::DataSource::getForeignKeyNames(const std::string& datasetName)
-{
-  // Check if there is a dataset with this name
-  if(!datasetExists(datasetName))
-    throw Exception((boost::format(TR_PGIS("The dataset %1% doesn't exist!")) % datasetName).str());
-
-  std::vector<std::string> fkNames;
-
-  unsigned int dtid = getTableId(datasetName);
-
-  //std::auto_ptr<te::da::DataSet> fkInfo(getConstraints(dtid, 'f'));
-  std::auto_ptr<te::da::DataSet> fkInfo(getConstraints(dtid));  //reveer
-
-  while(fkInfo->moveNext())
-  {
-    std::string fkName  = fkInfo->getString(1);
-    fkName += ".";
-    fkName += fkInfo->getString(2);
-    fkNames.push_back(fkName);
-  }
-
-  return fkNames;
-}
-
-std::auto_ptr<te::da::ForeignKey> te::pgis::DataSource::getForeignKey(const std::string& datasetName,
-                                                                      const std::string& name)
-{
-  // Check if there is a dataset with this name
-  if(!datasetExists(datasetName))
-    throw Exception((boost::format(TR_PGIS("The dataset %1% doesn't exist!")) % datasetName).str());
-
-  // Check if there is an unique key with this name
-  if(!foreignKeyExists(datasetName, name))
-    throw Exception((boost::format(TR_PGIS("The foreign key %1% doesn't exist!")) % name).str());
-
-  unsigned int dtid = getTableId(datasetName);
-
-  //std::auto_ptr<te::da::DataSet> fkInfo(getConstraints(dtid, 'f'));
-  std::auto_ptr<te::da::DataSet> fkInfo(getConstraints(dtid));   //rever
-
-  unsigned int id = fkInfo->getInt32(0);
-  unsigned int refDatasetId = fkInfo->getInt32(4);
-  char onUpdate = fkInfo->getChar(5);
-  char onDeletion = fkInfo->getChar(6);
-
-  std::auto_ptr<te::dt::Array> fkCols(fkInfo->getArray(8));
-  std::auto_ptr<te::dt::Array> fkRefCols(fkInfo->getArray(9));
-
-  assert(fkCols->getDimension() == 1);
-  assert(fkCols->getDimension() == fkRefCols->getDimension());
-  assert(fkCols->getDimensionSize(0) == fkRefCols->getDimensionSize(0));
-
-  std::string refName = getTableName(refDatasetId);
-
-  const te::da::DataSetTypePtr& refDatasetType = m_pImpl->m_catalog->getDataSetType(refName);
-
-  if(refDatasetType.get() == 0)
-    return std::auto_ptr<te::da::ForeignKey>(0);
-
-  std::string fkName  = fkInfo->getString(1);
-  fkName += ".";
-  fkName += fkInfo->getString(2);
-
-  te::da::ForeignKey* fk = new te::da::ForeignKey(fkName, id);
-  fk->setOnUpdateAction(GetAction(onUpdate));
-  fk->setOnDeleteAction(GetAction(onDeletion));
-  fk->setReferencedDataSetType(refDatasetType.get());
-  
-  std::size_t size = fkCols->getDimensionSize(0);
-
-  std::vector<std::size_t> pos;
-  pos.push_back(0);
-
-  for(std::size_t i = 0; i < size; ++i)
-  {
-    pos[0] = i;
-
-    te::dt::AbstractData* fkRefCol = fkRefCols->getData(pos);
-    fk->addRefProperty(refDatasetType->getPropertyById(static_cast<te::dt::Int16*>(fkRefCol)->getValue()));
-
-    te::dt::AbstractData* fkCol = fkCols->getData(pos);
-    fk->add(getProperty(dtid, static_cast<te::dt::Int16*>(fkCol)->getValue()));
-  }
-
-  return std::auto_ptr<te::da::ForeignKey>(fk);
-}
-
 std::vector<std::string> te::pgis::DataSource::getIndexNames(const std::string& datasetName)
 {
   // Check if there is a dataset with this name
@@ -979,13 +906,9 @@ std::auto_ptr<te::da::Index> te::pgis::DataSource::getIndex(const std::string& d
 
 std::vector<std::string> te::pgis::DataSource::getCheckConstraintNames(const std::string& datasetName)
 {
-  // Check if there is a dataset with this name
-  if(!datasetExists(datasetName))
-    throw Exception((boost::format(TR_PGIS("The dataset %1% doesn't exist in the data source!")) % datasetName).str());
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
   std::vector<std::string> ccNames;
-
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
   std::size_t numCC = dt->getNumberOfCheckConstraints();
 
@@ -995,8 +918,7 @@ std::vector<std::string> te::pgis::DataSource::getCheckConstraintNames(const std
   return ccNames;
 }
 
-te::da::CheckConstraint* te::pgis::DataSource::getCheckConstraint(const std::string& datasetName,
-                                                                  const std::string& name)
+te::da::CheckConstraint* te::pgis::DataSource::getCheckConstraint(const std::string& datasetName, const std::string& name)
 {
   if(!checkConstraintExists(datasetName, name))
     throw Exception((boost::format(TR_PGIS("The dataset %1% has no check constraint with this name (%2%)!")) % datasetName % name).str());
@@ -1028,20 +950,17 @@ bool te::pgis::DataSource::checkConstraintExists(const std::string& datasetName,
   return ccExists;
 }
 
-void te::pgis::DataSource::addCheckConstraint(const std::string& datasetName,
-                                              const te::da::CheckConstraint* cc)
+void te::pgis::DataSource::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
 {
   if(checkConstraintExists(datasetName, cc->getName()) != 0)
     throw Exception((boost::format(TR_PGIS("The dataset %1% already has a check constraint with this name: %2%!")) % datasetName % cc->getName()).str());
 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  te::da::CheckConstraint* newCC = new te::da::CheckConstraint(cc->getName(), dt.get());
-  newCC->setExpression(cc->getExpression());
+  dt->add(cc);
 }
 
-void te::pgis::DataSource::dropCheckConstraint(const std::string& datasetName,
-                                               const std::string& name)
+void te::pgis::DataSource::dropCheckConstraint(const std::string& datasetName, const std::string& name)
 {
   if(!checkConstraintExists(datasetName, name))
     throw Exception((boost::format(TR_PGIS("The dataset %1% has no check constraint with this name: %2%!")) % datasetName % name).str());
@@ -1098,12 +1017,6 @@ bool te::pgis::DataSource::datasetExists(const std::string& name)
 
 bool te::pgis::DataSource::uniqueKeyExists(const std::string& /*datasetName*/,
                                               const std::string& /*name*/)
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-bool te::pgis::DataSource::foreignKeyExists(const std::string& /*datasetName*/,
-                                               const std::string& /*name*/)
 {
   throw Exception(TR_PGIS("Not implemented yet!"));
 }
@@ -1371,76 +1284,6 @@ void te::pgis::DataSource::dropIndex(const std::string& /*datasetName*/,
 
   //if(ds->getCatalog()->getDataSetType(dsDt->getName()))
   //  ds->getCatalog()->getDataSetType(dsDt->getName())->remove(index);
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-void te::pgis::DataSource::addForeignKey(const std::string& /*datasetName*/,
-                                            const te::da::ForeignKey* /*fk*/)
-{
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_PGIS("The dataset %1% not exists!")) % dt->getName()).str());
-
-  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
-
-  //te::da::ForeignKey* newFk = new te::da::ForeignKey(fk->getName()); 
-
-  //for(std::size_t i = 0; i < fk->getProperties().size(); ++i)
-  //{
-  //   const te::dt::Property* p = fk->getProperties()[i];
-
-  //   te::dt::Property* dsP = dsDt->getProperty(p->getName());
-
-  //   newFk->add(dsP);
-  //}
-
-  //for(std::size_t i = 0; i < fk->getReferencedProperties().size(); ++i)
-  //{
-  //   const te::dt::Property* p = fk->getProperties()[i];
-
-  //   te::da::DataSetType* currDt = static_cast<te::da::DataSetType*>(p->getParent());
-
-  //   if(!ds->datasetExists(currDt->getName()))
-  //     throw Exception((boost::format(TR_PGIS("The dataset %1% referenced not exists!")) % currDt->getName()).str());
-
-  //   te::da::DataSetType* currRefDt = ds->getDataSet(currDt->getName())->getType();
-
-  //   te::dt::Property* refP = currRefDt->getProperty(fk->getReferencedProperties()[i]->getName());
-
-  //   newFk->addRefProperty(refP);
-  //}
-
-  //dsDt->add(newFk);
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-void te::pgis::DataSource::dropForeignKey(const std::string& /*datasetName*/,
-                                             const std::string& /*fkName*/)
-{
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //te::da::DataSetType* dt = fk->getDataSetType();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_PGIS("The dataset %1% not exists!")) % dt->getName()).str());
-  //
-  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
-
-  //te::da::ForeignKey* dsFk = dsDt->getForeignKey(fk->getName());
-  //
-  //if(!dsFk)
-  //  throw Exception((boost::format(TR_PGIS("The Foreign Key %1% not exists!")) % fk->getName()).str());
-  //  
-  //if(dsDt != dt)
-  //  dsDt->remove(dsFk);
-
-  //if(ds->getCatalog()->getDataSetType(dsDt->getName()))
-  //  ds->getCatalog()->getDataSetType(dsDt->getName())->remove(dsFk);
   throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
@@ -1836,17 +1679,20 @@ bool te::pgis::DataSource::getConstraints(te::da::DataSetTypePtr& dt)
   std::auto_ptr<te::da::DataSet> cInfo = query(sql);
 
   te::da::PrimaryKey* pk = 0;                      // the dataset primary key
+  te::da::ForeignKey* fk = 0;                      // the dataset foreign key
   std::vector<te::da::CheckConstraint*> ccs;       // the check constraints
 
   while(cInfo->moveNext())
   {
     char cType = cInfo->getChar(3);
+
+    // begin of the dataset primary key
     if(cType == 'p')
     {
-      unsigned int id = cInfo->getInt32(0);
+      unsigned int pkId = cInfo->getInt32(0);
       std::string pkName  = cInfo->getString(2);
 
-      pk = new te::da::PrimaryKey(pkName, 0, id);
+      pk = new te::da::PrimaryKey(pkName, 0, pkId);
 
       std::auto_ptr<te::dt::Array> pkCols(cInfo->getArray(8));
       std::size_t size = pkCols->getDimensionSize(0);
@@ -1877,7 +1723,54 @@ bool te::pgis::DataSource::getConstraints(te::da::DataSetTypePtr& dt)
           break;
         }
       }
-    }
+    }  // end of the dataset primary key
+    else if (cType == 'f')
+    {
+      // begin of foreign key constraint
+      unsigned int fkId = cInfo->getInt32(0);
+      unsigned int refDatasetId = cInfo->getInt32(4);
+      char onUpdate = cInfo->getChar(5);
+      char onDeletion = cInfo->getChar(6);
+
+      std::auto_ptr<te::dt::Array> fkCols(cInfo->getArray(8));
+      std::auto_ptr<te::dt::Array> fkRefCols(cInfo->getArray(9));
+
+      assert(fkCols->getDimension() == 1);
+      assert(fkCols->getDimension() == fkRefCols->getDimension());
+      assert(fkCols->getDimensionSize(0) == fkRefCols->getDimensionSize(0));
+
+      std::string refName = getTableName(refDatasetId);
+
+      const te::da::DataSetTypePtr& refDatasetType = m_pImpl->m_catalog->getDataSetType(refName);
+
+      if(refDatasetType.get() == 0)
+        return false;
+
+      std::string fkName  = cInfo->getString(1);
+      fkName += ".";
+      fkName += cInfo->getString(2);
+
+      fk = new te::da::ForeignKey(fkName, fkId);
+      fk->setOnUpdateAction(GetAction(onUpdate));
+      fk->setOnDeleteAction(GetAction(onDeletion));
+      fk->setReferencedDataSetType(refDatasetType.get());
+  
+      std::size_t size = fkCols->getDimensionSize(0);
+
+      std::vector<std::size_t> pos;
+      pos.push_back(0);
+
+      for(std::size_t i = 0; i < size; ++i)
+      {
+        pos[0] = i;
+
+        te::dt::AbstractData* fkRefCol = fkRefCols->getData(pos);
+        fk->addRefProperty(refDatasetType->getPropertyById(static_cast<te::dt::Int16*>(fkRefCol)->getValue()));
+
+        te::dt::AbstractData* fkCol = fkCols->getData(pos);
+        fk->add(getProperty(dtid, static_cast<te::dt::Int16*>(fkCol)->getValue()));
+      }
+    }  // end of foreign key constraint
     else if(cType == 'c')
     {
       std::string ccName  = cInfo->getString(2);
@@ -1889,8 +1782,10 @@ bool te::pgis::DataSource::getConstraints(te::da::DataSetTypePtr& dt)
     }
   }
 
+  // Load the constraints of the dataset to its schema
   dt->add(pk);
   dt->add(ccs);
+  dt->add(fk);
 
   return true;
 }
@@ -1905,92 +1800,6 @@ std::auto_ptr<te::da::DataSet> te::pgis::DataSource::getConstraints(unsigned int
               sql += te::common::Convert2String(dtid);
 
   return query(sql);
-}
-
-std::vector<te::da::CheckConstraint*> te::pgis::DataSource::getCheckConstraints(std::auto_ptr<te::da::DataSet> dataset)
-{
-  std::vector<te::da::CheckConstraint*> ccs;
-
-  te::da::DataSet* dsp = dataset.get();
-  while(dsp->moveNext())
-  {
-    char cType = dsp->getChar(3);
-    if(cType == 'c')
-    {
-      std::string ccName  = dsp->getString(2);
-      unsigned int id = dsp->getInt32(0);
-      te::da::CheckConstraint* cc = new te::da::CheckConstraint(ccName);
-      cc->setId(id);
-      cc->setExpression(dsp->getString(10));
-      ccs.push_back(cc);
-    }
-  }
-
-  return ccs;
-}
-
-te::da::PrimaryKey* te::pgis::DataSource::getPrimaryKey(const std::string& datasetName, unsigned int dtid, std::auto_ptr<te::da::DataSet> dataset)
-{
-  te::da::PrimaryKey* pk = 0;
-
-  te::da::DataSet* dsp = dataset.get();
-  dsp->moveBeforeFirst();
-  while(dsp->moveNext())
-  {
-    char cType = dsp->getChar(3);
-    if(cType == 'p')
-    {
-      unsigned int id = dsp->getInt32(0);
-      std::string pkName  = dsp->getString(2);
-
-      pk = new te::da::PrimaryKey(pkName, 0, id);
-
-      std::auto_ptr<te::dt::Array> pkCols(dsp->getArray(8));
-      std::size_t size = pkCols->getDimensionSize(0);
-
-      std::vector<std::size_t> pos;
-      pos.push_back(0);
-      for(std::size_t i = 0; i < size; ++i)
-      {
-        pos[0] = i;
-
-        te::dt::AbstractData* pkCol = pkCols->getData(pos);
-
-        //te::dt::Property* p = dt->getPropertyById(static_cast<te::dt::Int16*>(pkCol)->getValue());
-        unsigned int dtid = static_cast<unsigned int>(dsp->getInt32(10));
-        te::dt::Property* p = getProperty(dtid, static_cast<te::dt::Int16*>(pkCol)->getValue());
-
-        if(p == 0) // property not found in the dataset type list
-          return 0;
-
-        pk->add(p);
-      }
-
-      // Try to link the pk to an index
-      std::vector<std::string> indexNames = getIndexNames(datasetName);
-
-      for(std::size_t i = 0; i < indexNames.size(); ++i)
-      {
-        if(pk->getName() == indexNames[i])
-        {
-          pk->setAssociatedIndex(getIndex(datasetName, indexNames[i]).release());
-          break;
-        }
-      }
-    }
-  }
-
-  return pk;
-}
-
-std::vector<te::da::ForeignKey*> te::pgis::DataSource::getForeignKeys(std::auto_ptr<te::da::DataSet> dataset)
-{
-  return std::vector<te::da::ForeignKey*>(0);
-}
-
-std::vector<te::da::UniqueKey*> te::pgis::DataSource::getUniqueKeys(std::auto_ptr<te::da::DataSet> dataset)
-{
-  return std::vector<te::da::UniqueKey*>(0);
 }
 
 void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsInfo)
