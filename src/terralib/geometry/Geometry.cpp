@@ -49,6 +49,7 @@
 #include <geos/geom/Geometry.h>
 #include <geos/geom/IntersectionMatrix.h>
 #include <geos/operation/buffer/OffsetCurveBuilder.h>
+#include <geos/operation/union/CascadedPolygonUnion.h>
 #include <geos/util/GEOSException.h>
 #endif
 
@@ -470,11 +471,12 @@ te::gm::Geometry* te::gm::Geometry::intersection(const Geometry* const rhs) cons
 te::gm::Geometry* te::gm::Geometry::Union(const Geometry* const rhs) const throw(std::exception)
 {
 #if TE_USE_GEOS
+
   std::auto_ptr<geos::geom::Geometry> thisGeom(GEOSWriter::write(this));
 
   std::auto_ptr<geos::geom::Geometry> rhsGeom(GEOSWriter::write(rhs));
 
-  std::auto_ptr<geos::geom::Geometry> unionGeom(thisGeom->Union(rhsGeom.get()));
+  std::auto_ptr<geos::geom::Geometry> unionGeom(thisGeom-> Union(rhsGeom.get()));
 
   unionGeom->setSRID(m_srid);
 

@@ -46,16 +46,15 @@ namespace te
   namespace vp
   {
      /*!
-      \brief It groups the values defined by a range of iterators using the standard deviation algorithm.
+      \brief It receives the required parameters to the aggregation process.
 
       \param inputLayer             The input layer witch is used in aggregation operation.
       \param groupingProperties     Selected properties based on selected layer.
-      \param statisticalSummary  Map of selected functions based on layer properties.
-      \param memoryUse              The memory use while processing.
+      \param statisticalSummary     Map of selected functions based on layer properties.
       \param outputLayerName        The name of output layer.
       \param dsInfo                 Information of datasource persistence.
 
-      \output                     The aggregation result.
+      \return                       The aggregation result.
     */
     void Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                      const std::vector<te::dt::Property*>& groupingProperties,
@@ -70,22 +69,47 @@ namespace te
       \param properties             Selected properties based on selected layer.
       \param statisticalSummary     Map of selected functions based on layer properties.
 
-      \output The output DataSetType.
+      \return The output DataSetType.
     */
     te::da::DataSetType* GetDataSetType(const std::string& outputLayerName, 
                                         const std::vector<te::dt::Property*>& properties, 
                                         const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary);
 
+     /*!
+      \brief This function is called when it is able to process the aggregation through a database using query.
 
+      \param inputLayer             The input layer witch is used in aggregation operation.
+      \param groupingProperties     Selected properties based on selected layer.
+      \param statisticalSummary     Map of selected functions based on layer properties.
+      \param outputDataSet          The result of the aggregation using query.
+
+    */
     void AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
                             const std::vector<te::dt::Property*>& groupingProperties,
                             const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                             te::mem::DataSet* outputDataSet);
 
+     /*!
+      \brief It takes the result of query and set in a new dataset, already prepared to receive these data.
+
+      \param groupingProperties     Selected properties based on selected layer.
+      \param dsQuery                The result of query.
+      \param outputDataSet          The output of the aggregation using query.
+
+    */
     void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProperties,
                                 te::da::DataSet* dsQuery,
                                 te::mem::DataSet* outputDataSet);
 
+     /*!
+      \brief This function is called when it is not able to process the aggregation through a database using query, then the aggregation is processed in memory.
+
+      \param inputLayer             The input layer witch is used in aggregation operation.
+      \param groupingProperties     Selected properties based on selected layer.
+      \param statisticalSummary     Map of selected functions based on layer properties.
+      \param outputDataSet          The result of the aggregation using memory.
+
+    */
     void AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
                             const std::vector<te::dt::Property*>& groupingProperties,
                             const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
@@ -97,37 +121,18 @@ namespace te
       \param inputDataSet         The input DataSet.
       \param groupingProperties   Selected properties based on selected layer.
 
-      \output The aggregation groups.
+      \return The aggregation groups.
     */
     std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::mem::DataSet* inputDataSet,
                                                                           const std::vector<te::dt::Property*>& groupingProperties);
-    
-    /*!
-      \brief It returns the index of a property.
-
-      \param item           The DataSetItem.
-      \param propertyName   The property name.
-
-      \output The property index.
-    */
-    std::size_t GetPropertyIndex(const te::mem::DataSetItem* item, const std::string propertyName);
-
-    /*!
-      \brief It returns the union of a geometry vector.
-
-      \param items  Vector of itens that represents a group.
-
-      \output Union of the geometry.
-    */
-    te::gm::Geometry* GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items);
 
     /*!
       \brief It returns the result of statistics for string properties.
 
-      \param statisticalSummary  A map of Property as Key and related functions.
+      \param statisticalSummary     A map of Property as Key and related functions.
       \param items                  Itens that represents a group.
 
-      \output The result of statistics.
+      \return The result of statistics.
     */
     std::map<std::string, std::string> CalculateStringGroupingFunctions(  const te::map::AbstractLayerPtr& inputLayer,
                                                                           const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary, 
@@ -139,21 +144,11 @@ namespace te
       \param statisticalSummary  A map of Property as Key and related functions.
       \param items                  Itens that represents a group.
 
-      \output The result of statistics.
+      \return The result of statistics.
     */
     std::map<std::string, double> CalculateDoubleGroupingFunctions( const te::map::AbstractLayerPtr& inputLayer,
                                                                     const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                                                     const std::vector<te::mem::DataSetItem*>& items);
-    
-    /*!
-      \brief It verify if the property exists.
-
-      \param propertyName   The property name.
-      \param dataSet        The output DataSet.
-
-      \output A bool value.
-    */
-    bool PropertyExists(const std::string& propertyName, const te::mem::DataSet* dataSet);
 
     /*!
       \brief It persists the aggregation result.
@@ -163,7 +158,7 @@ namespace te
       \param dsInfo       Information of datasource persistence.
       \param options      A list of optional modifiers. It is driver specific.
 
-      \output The aggregation result persistence.
+      \return The aggregation result persistence.
     */
     void Persistence( te::da::DataSetType* dataSetType,
                       te::mem::DataSet* dataSet,
