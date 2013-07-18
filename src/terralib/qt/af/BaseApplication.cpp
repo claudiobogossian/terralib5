@@ -814,6 +814,13 @@ void te::qt::af::BaseApplication::onSetBoxOnMapDisplayTriggered()
   {
     te::qt::widgets::MapDisplay* display = m_display->getDisplay();
     std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+    if(layers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+      return;
+    }
+
     te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
     te::gm::Envelope env = lay->getExtent();
     display->setExtent(env, true);
