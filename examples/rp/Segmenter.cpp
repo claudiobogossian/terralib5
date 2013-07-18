@@ -155,6 +155,7 @@ void Segmenter()
     segparameters.m_segmentsSimilarityThreshold = 0.3;
     segparameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
     segparameters.m_bandsWeights.resize( 3, 0.333333);
+	segparameters.m_bandsWeights[2] = 1 - segparameters.m_bandsWeights[0] - segparameters.m_bandsWeights[1];
     segparameters.m_colorWeight = 0.5;
     segparameters.m_compactnessWeight = 0.5;
 

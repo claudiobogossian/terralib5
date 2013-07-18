@@ -530,7 +530,7 @@ std::vector<std::string> te::ogr::DataSource::getCheckConstraintNames(const std:
   throw Exception(TR_OGR("Not implemented for OGR!"));
 }
 
-std::auto_ptr<te::da::CheckConstraint> te::ogr::DataSource::getCheckConstraint(const std::string& datasetName, const std::string& name) throw(Exception)
+te::da::CheckConstraint* te::ogr::DataSource::getCheckConstraint(const std::string& datasetName, const std::string& name) throw(Exception)
 {
   throw Exception(TR_OGR("Not implemented for OGR!"));
 }

@@ -153,6 +153,12 @@ namespace te
 
           void onLayerSelectionChanged(const te::map::AbstractLayerPtr& layer);
 
+          void onLayerExplorerVisibilityChanged(bool visible);
+
+          void onDisplayVisibilityChanged(bool visible);
+
+          void onStyleExplorerVisibilityChanged(bool visible);
+
         protected:
 
           virtual void openProject(const QString& projectFileName);
