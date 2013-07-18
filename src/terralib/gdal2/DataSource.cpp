@@ -339,9 +339,7 @@ std::auto_ptr<te::da::Sequence> te::gdal::DataSource::getSequence(const std::str
   throw(Exception(TR_GDAL("GDAL driver doesn't support sequences.")));
 }
 
-
-std::auto_ptr<te::da::ForeignKey> te::gdal::DataSource::getForeignKey(const std::string& /*datasetName*/,
-                                        const std::string& /*name*/)
+te::da::ForeignKey* te::gdal::DataSource::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support foreigns keys.")));
 }

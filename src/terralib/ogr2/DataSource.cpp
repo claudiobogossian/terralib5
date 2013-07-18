@@ -510,7 +510,7 @@ std::vector<std::string> te::ogr::DataSource::getForeignKeyNames(const std::stri
   throw Exception(TR_OGR("Not implemented for OGR!"));
 }
 
-std::auto_ptr<te::da::ForeignKey> te::ogr::DataSource::getForeignKey(const std::string& datasetName, const std::string& name)
+te::da::ForeignKey* te::ogr::DataSource::getForeignKey(const std::string& datasetName, const std::string& name)
 {
   throw Exception(TR_OGR("Not implemented for OGR!"));
 }
@@ -697,11 +697,11 @@ void te::ogr::DataSource::renameProperty(const std::string& datasetName,
 {
 }
 
-void te::ogr::DataSource::addPrimaryKey(const std::string& datasetName, const te::da::PrimaryKey* pk)
+void te::ogr::DataSource::addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk)
 {
 }
 
-void te::ogr::DataSource::dropPrimaryKey(const std::string& datasetName, const std::string& primaryKeyName)
+void te::ogr::DataSource::dropPrimaryKey(const std::string& datasetName)
 {
 }
 

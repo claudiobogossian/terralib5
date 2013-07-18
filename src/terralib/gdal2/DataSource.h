@@ -189,9 +189,7 @@ namespace te
       
       std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
       
-      
-      std::auto_ptr<te::da::ForeignKey> getForeignKey(const std::string& datasetName,
-                                              const std::string& name);
+      te::da::ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name);
       
       std::vector<std::string> getIndexNames(const std::string& datasetName);
       
@@ -257,17 +255,13 @@ namespace te
                           const std::string& propertyName,
                           const std::string& newPropertyName);
       
-      void addPrimaryKey(const std::string& datasetName,
-                         const te::da::PrimaryKey* pk) {}
+      void addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk) {}
       
-      void dropPrimaryKey(const std::string& datasetName,
-                          const std::string& primaryKeyName) {}
+      void dropPrimaryKey(const std::string& datasetName) {}
       
-      void addUniqueKey(const std::string& datasetName,
-                        const te::da::UniqueKey* uk) {}
+      void addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk) {}
       
-      void dropUniqueKey(const std::string& datasetName,
-                         const std::string& uniqueKeyName) {}
+      void dropUniqueKey(const std::string& datasetName, const std::string& uniqueKeyName) {}
       
       void addIndex(const std::string& datasetName,
                     const te::da::Index* idx,
@@ -282,11 +276,9 @@ namespace te
       void dropForeignKey(const std::string& datasetName,
                           const std::string& fkName) {}
       
-      void addCheckConstraint(const std::string& datasetName,
-                              const te::da::CheckConstraint* cc) {}
+      void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc) {}
       
-      void dropCheckConstraint(const std::string& datasetName,
-                               const std::string& name) {}
+      void dropCheckConstraint(const std::string& datasetName, const std::string& name) {}
       
       void createSequence(const te::da::Sequence* sequence) {}
       
