@@ -54,192 +54,192 @@ namespace te
         /*! \brief Virtual destructor. */
         ~DataSource();
 
-        std::string getType() const throw();
+        std::string getType() const;
 
-        const std::map<std::string, std::string>& getConnectionInfo() const throw();
+        const std::map<std::string, std::string>& getConnectionInfo() const;
 
-        void setConnectionInfo(const std::map<std::string, std::string>& connInfo) throw();
+        void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        void open() throw(Exception);
+        void open();
         
-        void close() throw(Exception);
+        void close();
 
-        bool isOpened() const throw();
+        bool isOpened() const;
 
-        bool isValid() const throw();
+        bool isValid() const;
 
-        const te::da::DataSourceCapabilities& getCapabilities() const throw();
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
-        const te::da::SQLDialect* getDialect() const throw();
+        const te::da::SQLDialect* getDialect() const;
 
         static void setDialect(te::da::SQLDialect* dialect);
 
-        void begin() throw(Exception);
+        void begin();
 
-        void commit() throw(Exception);
+        void commit();
 
-        void rollBack() throw(Exception);
+        void rollBack();
 
-        bool isInTransaction() const throw();
+        bool isInTransaction() const;
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                           const std::string& propertyName,
                                           const te::gm::Envelope* e,
                                           te::gm::SpatialRelation r,
-                                          te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception);
+                                          te::common::TraverseType travType = te::common::FORWARDONLY);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                           const std::string& propertyName,
                                           const te::gm::Geometry* g,
                                           te::gm::SpatialRelation r,
-                                          te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception);
+                                          te::common::TraverseType travType = te::common::FORWARDONLY);
 
-        std::auto_ptr<te::da::DataSet> query(const te::da::Select& q, te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception);
+        std::auto_ptr<te::da::DataSet> query(const te::da::Select& q, te::common::TraverseType travType = te::common::FORWARDONLY);
 
         std::auto_ptr<te::da::DataSet> query(const std::string& query, 
-                                      te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception);
+                                      te::common::TraverseType travType = te::common::FORWARDONLY);
 
-        void execute(const te::da::Query& command) throw(Exception);
+        void execute(const te::da::Query& command);
 
-        void execute(const std::string& command) throw(Exception);
+        void execute(const std::string& command);
 
-        void cancel() throw(Exception);
+        void cancel();
 
-        boost::int64_t getLastGeneratedId() throw(Exception);
+        boost::int64_t getLastGeneratedId();
 
-        std::string escape(const std::string& value) throw(Exception);
+        std::string escape(const std::string& value);
 
-        bool isDataSetNameValid(const std::string& datasetName) throw(Exception);
+        bool isDataSetNameValid(const std::string& datasetName);
 
-        bool isPropertyNameValid(const std::string& propertyName) throw(Exception);
+        bool isPropertyNameValid(const std::string& propertyName);
 
-        std::vector<std::string> getDataSetNames() throw(Exception);
+        std::vector<std::string> getDataSetNames();
 
-        const te::da::DataSetTypePtr& getDataSetType(const std::string& name) throw(Exception);
+        const te::da::DataSetTypePtr& getDataSetType(const std::string& name);
 
-        std::size_t getNumberOfProperties(const std::string& datasetName) throw(Exception);
+        std::size_t getNumberOfProperties(const std::string& datasetName);
 
-        boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName) throw(Exception);
+        boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
-        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& propertyName) throw(Exception);
+        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& propertyName);
 
-        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos) throw(Exception);
+        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
 
-        std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName) throw(Exception);
+        te::da::PrimaryKey* getPrimaryKey(const std::string& datasetName);
 
-        std::vector<std::string> getUniqueKeyNames(const std::string& datasetName) throw(Exception);
+        std::vector<std::string> getUniqueKeyNames(const std::string& datasetName);
 
-        boost::ptr_vector<te::da::UniqueKey> getUniqueKeys(const std::string& datasetName) throw(Exception);
+        boost::ptr_vector<te::da::UniqueKey> getUniqueKeys(const std::string& datasetName);
 
-        std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName, const std::string& name) throw(Exception);
+        std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName, const std::string& name);
 
-        std::vector<std::string> getForeignKeyNames(const std::string& datasetName) throw(Exception);
+        std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
 
-        std::auto_ptr<te::da::ForeignKey> getForeignKey(const std::string& datasetName, const std::string& name) throw(Exception);
+        te::da::ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name);
 
-        std::vector<std::string> getIndexNames(const std::string& datasetName) throw(Exception);
+        std::vector<std::string> getIndexNames(const std::string& datasetName);
 
-        std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName, const std::string& name) throw(Exception);
+        std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName, const std::string& name);
 
-        std::vector<std::string> getCheckConstraintNames(const std::string& datasetName) throw(Exception);
+        std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
 
-        std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName, const std::string& name) throw(Exception);
+        te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName, const std::string& name);
 
-        std::vector<std::string> getSequenceNames() throw(Exception);
+        std::vector<std::string> getSequenceNames();
 
-        std::auto_ptr<te::da::Sequence> getSequence(const std::string& name) throw(Exception);
+        std::auto_ptr<te::da::Sequence> getSequence(const std::string& name);
 
-        std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, const std::string& propertyName) throw(Exception);
+        std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, const std::string& propertyName);
 
-        std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, std::size_t propertyPos) throw(Exception);
+        std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, std::size_t propertyPos);
 
-        std::size_t getNumberOfItems(const std::string& datasetName) throw(Exception);
+        std::size_t getNumberOfItems(const std::string& datasetName);
 
-        bool hasDataSets() throw(Exception);
+        bool hasDataSets();
 
-        bool datasetExists(const std::string& name) throw(Exception);
+        bool datasetExists(const std::string& name);
 
-        bool primarykeyExists(const std::string& datasetName, const std::string& name) throw(Exception);
+        bool primarykeyExists(const std::string& datasetName, const std::string& name);
 
-        bool uniquekeyExists(const std::string& datasetName, const std::string& name) throw(Exception);
+        bool uniquekeyExists(const std::string& datasetName, const std::string& name);
 
-        bool foreignkeyExists(const std::string& datasetName, const std::string& name) throw(Exception);
+        bool foreignkeyExists(const std::string& datasetName, const std::string& name);
 
-        bool checkConstraintExists(const std::string& datasetName, const std::string& name) throw(Exception);
+        bool checkConstraintExists(const std::string& datasetName, const std::string& name);
 
-        bool indexExists(const std::string& datasetName, const std::string& name) throw(Exception);
+        bool indexExists(const std::string& datasetName, const std::string& name);
 
-        bool sequenceExists(const std::string& name) throw(Exception);
+        bool sequenceExists(const std::string& name);
 
-        void createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options) throw(Exception);
+        void createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options);
 
         void cloneDataSet(const std::string& name,
                           const std::string& cloneName,
-                          const std::map<std::string, std::string>& options) throw(Exception);
+                          const std::map<std::string, std::string>& options);
 
-        void dropDataSet(const std::string& name) throw(Exception);
+        void dropDataSet(const std::string& name);
 
-        void renameDataSet(const std::string& name, const std::string& newName) throw(Exception);
+        void renameDataSet(const std::string& name, const std::string& newName);
 
-        void addProperty(const std::string& datasetName, const te::dt::Property* p) throw(Exception);
+        void addProperty(const std::string& datasetName, const te::dt::Property* p);
 
-        void dropProperty(const std::string& datasetName, const std::string& propertyName) throw(Exception);
+        void dropProperty(const std::string& datasetName, const std::string& propertyName);
 
         void renameProperty(const std::string& datasetName,
                             const std::string& propertyName,
-                            const std::string& newPropertyName) throw(Exception);
+                            const std::string& newPropertyName);
 
-        void addPrimaryKey(const std::string& datasetName, const te::da::PrimaryKey* pk) throw(Exception);
+        void addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk);
 
-        void dropPrimaryKey(const std::string& datasetName, const std::string& primaryKeyName) throw(Exception);
+        void dropPrimaryKey(const std::string& datasetName);
 
-        void addUniqueKey(const std::string& datasetName, const te::da::UniqueKey* uk) throw(Exception);
+        void addUniqueKey(const std::string& datasetName, const te::da::UniqueKey* uk);
 
-        void dropUniqueKey(const std::string& datasetName, const std::string& uniqueKeyName) throw(Exception);
+        void dropUniqueKey(const std::string& datasetName, const std::string& uniqueKeyName);
 
         void addIndex(const std::string& datasetName, const te::da::Index* idx,
-                      const std::map<std::string, std::string>& options) throw(Exception); 
+                      const std::map<std::string, std::string>& options); 
 
-        void dropIndex(const std::string& datasetName, const std::string& idxName) throw(Exception);
+        void dropIndex(const std::string& datasetName, const std::string& idxName);
 
-        void addForeignKey(const std::string& datasetName, const te::da::ForeignKey* fk) throw(Exception);
+        void addForeignKey(const std::string& datasetName, const te::da::ForeignKey* fk);
 
-        void dropForeignKey(const std::string& datasetName, const std::string& fkName) throw(Exception);
+        void dropForeignKey(const std::string& datasetName, const std::string& fkName);
 
-        void addCheckConstraint(const std::string& datasetName, const te::da::CheckConstraint* cc) throw(Exception);
+        void addCheckConstraint(const std::string& datasetName, const te::da::CheckConstraint* cc);
 
-        void dropCheckConstraint(const std::string& datasetName, const std::string& name) throw(Exception);
+        void dropCheckConstraint(const std::string& datasetName, const std::string& name);
 
-        void createSequence(const te::da::Sequence* sequence) throw(Exception);
+        void createSequence(const te::da::Sequence* sequence);
 
-        void dropSequence(const std::string& name) throw(Exception);
+        void dropSequence(const std::string& name);
 
         void add(const std::string& datasetName, te::da::DataSet* d,
                 const std::map<std::string, std::string>& options,
-                std::size_t limit = 0) throw(Exception);
+                std::size_t limit = 0);
 
 
-        void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids = 0) throw(Exception);
+        void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids = 0);
 
         void update(const std::string& datasetName,
                             te::da::DataSet* dataset,
                             const std::vector<std::size_t>& properties,
                             const te::da::ObjectIdSet* oids,
                             const std::map<std::string, std::string>& options,
-                            std::size_t limit = 0) throw(Exception);
+                            std::size_t limit = 0);
 
-        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(Exception);
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info);
 
       protected:
                             
-        void create(const std::map<std::string, std::string>& dsInfo) throw(Exception);
+        void create(const std::map<std::string, std::string>& dsInfo);
 
-        void drop(const std::map<std::string, std::string>& dsInfo) throw(Exception);
+        void drop(const std::map<std::string, std::string>& dsInfo);
 
-        bool exists(const std::map<std::string, std::string>& dsInfo) throw(Exception);
+        bool exists(const std::map<std::string, std::string>& dsInfo);
 
         std::map<std::string, std::string> m_connectionInfo;        //!< Connection information.
         OGRDataSource* m_ogrDS;                                     //!< A pointer to OGR Data Source.

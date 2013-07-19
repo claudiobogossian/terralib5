@@ -175,8 +175,9 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 // strategy specific parameters (m_minSegmentSize: size of the smallest segment to be created;
 // m_segmentsSimilarityThreshold: similarity between neighboring segments to merge them or not)
   te::rp::SegmenterRegionGrowingStrategy::Parameters segparameters;
-  segparameters.m_minSegmentSize = 500;
-  segparameters.m_segmentsSimilarityThreshold = 50;
+  segparameters.m_minSegmentSize = 50;
+  segparameters.m_segmentsSimilarityThreshold = 0.15;
+  segparameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
 
   algoInputParameters.m_strategyName = "RegionGrowing";
   algoInputParameters.setSegStrategyParams(segparameters);
@@ -442,7 +443,7 @@ void SAMClassifier()
 {
   try
   {
-    std::cout << "Classification example using MAP algorithm." << std::endl << std::endl;
+    std::cout << "Classification example using SAM algorithm." << std::endl << std::endl;
 
 // first open the input image
     std::map<std::string, std::string> rinfo;

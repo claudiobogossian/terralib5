@@ -38,6 +38,7 @@ te::qt::widgets::ScatterStyle::ScatterStyle ()
   m_mark = new te::se::Mark();
   m_mark->setFill(new te::se::Fill());
   m_mark->setStroke(new te::se::Stroke());
+  m_graphic->add(m_mark);
 }
 
 te::qt::widgets::ScatterStyle::~ScatterStyle()

@@ -773,7 +773,7 @@ te::dt::Array* te::pgis::DataSet::getArray(std::size_t i) const
 
             arr->insert(new te::dt::Int16(val), pos);
 
-            value += sizeof(boost::int16_t);
+            value += sizeof(uint32_t);
           }
         }
 

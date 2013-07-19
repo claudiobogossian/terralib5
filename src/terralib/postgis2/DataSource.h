@@ -20,7 +20,7 @@
 /*!
   \file terralib/postgis/DataSource.h
 
-  \brief Implementation of the data source for the PostGIS driver.  
+  \brief Implementation of the data source for the PostGIS driver.
 */
 
 #ifndef __TERRALIB_POSTGIS_INTERNAL_DATASOURCE_H
@@ -63,15 +63,15 @@ namespace te
 
         ~DataSource();
 
-        std::string getType() const throw();
+        std::string getType() const;
 
-        const std::map<std::string, std::string>& getConnectionInfo() const throw();
+        const std::map<std::string, std::string>& getConnectionInfo() const;
 
-        void setConnectionInfo(const std::map<std::string, std::string>& connInfo) throw();
+        void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        bool isTimeAnInteger() throw();
+        bool isTimeAnInteger();
 
-        void setTimeAsInteger(bool timeIsInteger) throw();
+        void setTimeAsInteger(bool timeIsInteger);
 
         /*!
           \brief It opens the connection(s) to the PostgreSQL database server.
@@ -91,54 +91,54 @@ namespace te
           \note This method doesn't load the data source catalog.
           \note Not thread safe!
         */
-        void open() throw(te::da::Exception);
+        void open();
 
-        void close() throw(te::da::Exception);
+        void close();
 
-        bool isOpened() const throw();
+        bool isOpened() const;
 
-        bool isValid() const throw();
+        bool isValid() const;
 
-        const te::da::DataSourceCapabilities& getCapabilities() const throw();
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
-        const te::da::SQLDialect* getDialect() const throw();
+        const te::da::SQLDialect* getDialect() const;
 
-        void begin() throw(te::da::Exception);
+        void begin();
 
-        void commit() throw(te::da::Exception);
+        void commit();
 
-        void rollBack() throw(te::da::Exception);
+        void rollBack();
 
-        bool isInTransaction() const throw();
+        bool isInTransaction() const;
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY) throw(te::da::Exception);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY) throw(te::da::Exception);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY) throw(te::da::Exception);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
 
         std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY) throw(te::da::Exception);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY);
 
         std::auto_ptr<te::da::DataSet> query(const std::string& query, 
-                                             te::common::TraverseType travType = te::common::FORWARDONLY) throw(te::da::Exception);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY);
 
-        void execute(const te::da::Query& command) throw(te::da::Exception);
+        void execute(const te::da::Query& command);
 
-        void execute(const std::string& command) throw(te::da::Exception);
+        void execute(const std::string& command);
 
-        void cancel() throw(te::da::Exception);
+        void cancel();
 
-        boost::int64_t getLastGeneratedId() throw(te::da::Exception);
+        boost::int64_t getLastGeneratedId();
 
         /*!
           \brief It will check in the database catalog the number that identifies the PostGIS Geometry type.
@@ -173,151 +173,140 @@ namespace te
         */
         void getDatabaseInfo(std::string& currentSchema);
 
-        std::string escape(const std::string& value) throw(te::da::Exception);
+        std::string escape(const std::string& value);
 
-        bool isDataSetNameValid(const std::string& datasetName) throw(te::da::Exception);
+        bool isDataSetNameValid(const std::string& datasetName);
 
-        bool isPropertyNameValid(const std::string& propertyName) throw(te::da::Exception);
+        bool isPropertyNameValid(const std::string& propertyName);
 
-        std::vector<std::string> getDataSetNames() throw(te::da::Exception);
+        std::vector<std::string> getDataSetNames();
 
-        const te::da::DataSetTypePtr& getDataSetType(const std::string& name) throw(te::da::Exception);
+        const te::da::DataSetTypePtr& getDataSetType(const std::string& name);
 
-        std::size_t getNumberOfProperties(const std::string& datasetName) throw(te::da::Exception);
+        std::size_t getNumberOfProperties(const std::string& datasetName);
 
-        boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName) throw(te::da::Exception);
+        boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
-        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& propertyName) throw(te::da::Exception);
+        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& propertyName);
 
-        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos) throw(te::da::Exception);
+        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
 
-        std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName) throw(te::da::Exception);
+        te::da::PrimaryKey* getPrimaryKey(const std::string& datasetName);
 
-        std::vector<std::string> getUniqueKeyNames(const std::string& datasetName) throw(te::da::Exception);
+        bool primaryKeyExists(const std::string& datasetName, const std::string& name);
 
-        boost::ptr_vector<te::da::UniqueKey> getUniqueKeys(const std::string& datasetName) throw(te::da::Exception);
+        void addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk);
+
+        void dropPrimaryKey(const std::string& datasetName);
+
+        std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
+
+        bool foreignKeyExists(const std::string& datasetName, const std::string& name);
+
+        te::da::ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name);
+
+        void addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk);
+
+        void dropForeignKey(const std::string& datasetName, const std::string& fkName);
+
+        std::vector<std::string> getUniqueKeyNames(const std::string& datasetName);
+
+        boost::ptr_vector<te::da::UniqueKey> getUniqueKeys(const std::string& datasetName);
 
         std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName,
-                                                            const std::string& name) throw(te::da::Exception);
+                                                            const std::string& name);
 
-        std::vector<std::string> getForeignKeyNames(const std::string& datasetName) throw(te::da::Exception);
-
-        std::auto_ptr<te::da::ForeignKey> getForeignKey(const std::string& datasetName,
-                                                              const std::string& name) throw(te::da::Exception);
-
-        std::vector<std::string> getIndexNames(const std::string& datasetName) throw(te::da::Exception);
+        std::vector<std::string> getIndexNames(const std::string& datasetName);
 
         std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName,
-                                                    const std::string& name) throw(te::da::Exception);
+                                                    const std::string& name);
 
-        std::vector<std::string> getCheckConstraintNames(const std::string& datasetName) throw(te::da::Exception);
+        std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
 
-        std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName,
-                                                                  const std::string& name) throw(te::da::Exception);
+        te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName,
+                                                    const std::string& name);
 
         bool checkConstraintExists(const std::string& datasetName,
-                                   const std::string& name) throw(te::da::Exception);
+                                   const std::string& name);
 
-        void addCheckConstraint(const std::string& datasetName,
-                                const te::da::CheckConstraint* cc) throw(te::da::Exception);
+        void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc);
 
-        void dropCheckConstraint(const std::string& datasetName,
-                                  const std::string& name) throw(te::da::Exception);
+        void dropCheckConstraint(const std::string& datasetName, const std::string& name);
 
-        std::vector<std::string> getSequenceNames() throw(te::da::Exception);
+        std::vector<std::string> getSequenceNames();
 
-        std::auto_ptr<te::da::Sequence> getSequence(const std::string& name) throw(te::da::Exception);
+        std::auto_ptr<te::da::Sequence> getSequence(const std::string& name);
 
         std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                          const std::string& propertyName) throw(te::da::Exception);
+                                                          const std::string& propertyName);
 
         std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                  std::size_t propertyPos) throw(te::da::Exception);
+                                                  std::size_t propertyPos);
 
-        std::size_t getNumberOfItems(const std::string& datasetName) throw(te::da::Exception);
+        std::size_t getNumberOfItems(const std::string& datasetName);
 
-        bool hasDataSets() throw(te::da::Exception);
+        bool hasDataSets();
 
-        bool datasetExists(const std::string& name) throw(te::da::Exception);
+        bool datasetExists(const std::string& name);
 
-        bool primarykeyExists(const std::string& datasetName,
-                              const std::string& name) throw(te::da::Exception);
-
-        bool uniquekeyExists(const std::string& datasetName, const std::string& name) throw(te::da::Exception);
-
-        bool foreignkeyExists(const std::string& datasetName,
-                              const std::string& name) throw(te::da::Exception);
+        bool uniqueKeyExists(const std::string& datasetName, const std::string& name);
 
         bool indexExists(const std::string& datasetName,
-                          const std::string& name) throw(te::da::Exception);
+                          const std::string& name);
 
-        bool sequenceExists(const std::string& name) throw(te::da::Exception);
+        bool sequenceExists(const std::string& name);
 
         void createDataSet(te::da::DataSetType* dt,
-                                    const std::map<std::string, std::string>& options) throw(te::da::Exception);
+                                    const std::map<std::string, std::string>& options);
 
         void cloneDataSet(const std::string& name,
                           const std::string& cloneName,
-                          const std::map<std::string, std::string>& options) throw(te::da::Exception);
+                          const std::map<std::string, std::string>& options);
 
-        void dropDataSet(const std::string& name) throw(te::da::Exception);
+        void dropDataSet(const std::string& name);
 
         void renameDataSet(const std::string& name,
-                            const std::string& newName) throw(te::da::Exception);
+                            const std::string& newName);
 
         void addProperty(const std::string& datasetName,
-                          const te::dt::Property* p) throw(te::da::Exception);
+                          const te::dt::Property* p);
 
         void dropProperty(const std::string& datasetName,
-                          const std::string& propertyName) throw(te::da::Exception);
+                          const std::string& propertyName);
 
         void renameProperty(const std::string& datasetName,
                             const std::string& propertyName,
-                            const std::string& newPropertyName) throw(te::da::Exception);
-
-        void addPrimaryKey(const std::string& datasetName,
-                            const te::da::PrimaryKey* pk) throw(te::da::Exception);
-
-        void dropPrimaryKey(const std::string& datasetName,
-                            const std::string& primaryKeyName) throw(te::da::Exception);
+                            const std::string& newPropertyName);
 
         void addUniqueKey(const std::string& datasetName,
-                          const te::da::UniqueKey* uk) throw(te::da::Exception);
+                          const te::da::UniqueKey* uk);
 
-        void dropUniqueKey(const std::string& datasetName,
-                            const std::string& uniqueKeyName) throw(te::da::Exception);
+        void dropUniqueKey(const std::string& datasetName, const std::string& uniqueKeyName);
 
-        void addIndex(const std::string& datasetName,
-                      const te::da::Index* idx,
-                      const std::map<std::string, std::string>& options) throw(te::da::Exception); 
+        void addIndex(const std::string& datasetName, const te::da::Index* idx,
+                      const std::map<std::string, std::string>& options); 
 
         void dropIndex(const std::string& datasetName,
-                        const std::string& idxName) throw(te::da::Exception);
+                        const std::string& idxName);
 
-        void addForeignKey(const std::string& datasetName,
-                           const te::da::ForeignKey* fk) throw(te::da::Exception);
+        void createSequence(const te::da::Sequence* sequence);
 
-        void dropForeignKey(const std::string& datasetName,
-                            const std::string& fkName) throw(te::da::Exception);
-
-        void createSequence(const te::da::Sequence* sequence) throw(te::da::Exception);
-
-        void dropSequence(const std::string& name) throw(te::da::Exception);
+        void dropSequence(const std::string& name);
 
         void add(const std::string& datasetName,
                   te::da::DataSet* d,
                   const std::map<std::string, std::string>& options,
-                  std::size_t limit) throw(te::da::Exception);
+                  std::size_t limit);
 
         void remove(const std::string& datasetName,
-                    const te::da::ObjectIdSet* oids) throw(te::da::Exception);
+                    const te::da::ObjectIdSet* oids);
 
         void update(const std::string& datasetName,
                     te::da::DataSet* dataset,
                     const std::vector<std::size_t>& properties,
                     const te::da::ObjectIdSet* oids,
                     const std::map<std::string, std::string>& options,
-                    std::size_t limit) throw(te::da::Exception);
+                    std::size_t limit);
 
         void optimize(const std::map<std::string, std::string>& opInfo);
 
@@ -358,84 +347,6 @@ namespace te
           \note PostGIS driver extended method.
         */
         const std::string* getCurrentSchema();
-
-        /*!
-          \brief It looks for the table oid in the PostgreSQL system tables.
-
-          \param tableName  Table name. If it doesn't have the schema prefix name, it will look the table in the default schema.
- 
-          \exception Exception It throws an exception if it was not possible to set the oid information.
-
-          \note PostGIS driver extended method.
-        */
-        unsigned int getTableId(const std::string& tableName) throw(te::da::Exception);
-
-        /*!
-          \brief It looks for a table with the given oid in the PostgreSQL system tables.
-
-          \param id The table oid.
-
-          \return The table name.
- 
-          \exception Exception It throws an exception if it was not possible to retrieve the information.
-
-          \note PostGIS driver extended method.
-        */
-        std::string getTableName(unsigned int id);
-
-        /*!
-          \brief It returns the list of constraints (primary key, unique key, foreign key and check constraints) of the given table or view.
-
-          \param dtid    The dataset type we are looking information for.
-          \param conType The type of constraint to be retrieved. If this value is '\0' (the default) all types are retrieved.
-
-          \return A recordset with the following fields:
-                  <ul>
-                  <li>0 (Oid): constraint oid (c.oid)</li>
-                  <li>1 (name): constraint schema name (n.nspname)</li>
-                  <li>2 (name): constraint name (c.conname)</li>
-                  <li>3 (char): constraint type (c.contype), one of the following values: 'c', 'f', 'p', 'u'</li>
-                  <li>4 (Oid): the referenced table (c.confrelid)</li>
-                  <li>5 (char): OnUpdate action (c.confupdtype)</li>
-                  <li>6 (char): OnDeletion action (c.confdeltype)</li>
-                  <li>7 (char): ??? (c.confmatchtype)</li>
-                  <li>8 (int2[]): array of attribute numbers (c.conkey), the list of keys in a foreign key, primary key or unique key</li>
-                  <li>9 (int2[]): array of attribute numbers in the referenced table (c.confkey)</li>
-                  <li>10 (text): constraint expression (pg_get_constraintdef(c.oid))</li>
-                  </ul>
-
-          \exception Exception It throws an exception if it can not get the information.
-
-          \note The client of this method will take the ownership of the returned DataSet.
-          \note PostGIS driver extended method.
-        */
-        std::auto_ptr<te::da::DataSet> getConstraints(unsigned int dtid, char conType = '\0') throw(te::da::Exception);
-
-       /*!
-          \brief It returns the list of properties for the given table or view.
-
-          \param dtid The dataset to load its information.
-
-          \return A recordset with the following fields:
-                  <ul>
-                  <li>0 (int2): attribute number in the table (a.attnum), remember that attribute number is 1 based</li>
-                  <li>1 (name): attribute name (a.attname)</li>
-                  <li>2 (Oid): attribute type oid (t.oid)</li>
-                  <li>3 (bool): 't' if attribute is NOT NULL, otherwise, its value is 'f' (a.attnotnull)</li>
-                  <li>4 (text): type modifier information, like precision and scale (format_type(a.atttypid, a.atttypmod))</li>
-                  <li>5 (bool): 't' if attribute is has a default value, otherwise, its value is 'f' (a.atthasdef)</li>
-                  <li>6 (text): attribute default value if field number 5 is true (pg_get_expr(d.adbin, d.adrelid))</li>
-                  <li>7 (int4): Number of dimensions, if the column is an array type; otherwise 0 (a.attndims)</li>
-                  </ul>
-
-          \pre The informed dataset type must have a valid id.
-
-          \exception Exception It throws an exception if it was not possible to get the information needed.
-
-          \note The client of this method will take the ownership of the returned dataset.
-          \note PostGIS driver extended method.
-        */
-        te::da::DataSet* getProperties(unsigned int dtid);
 
         /*!
           \brief It loads information about a given geometry column.
@@ -502,19 +413,134 @@ namespace te
 
           \return It returns the names of the data sources available.
         */
-        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(te::da::Exception);
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info);
 
-        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
 
       protected:
 
-        void create(const std::map<std::string, std::string>& dsInfo) throw(te::da::Exception);
+        /*!
+          \brief It looks for the table oid in the PostgreSQL system tables.
 
-        void drop(const std::map<std::string, std::string>& dsInfo) throw(te::da::Exception);
+          \param tableName  Table name. If it doesn't have the schema prefix name, it will look the table in the default schema.
+ 
+          \exception Exception It throws an exception if it was not possible to set the oid information.
 
-        bool exists(const std::map<std::string, std::string>& dsInfo) throw(te::da::Exception);
+          \note PostGIS driver extended method.
+        */
+        unsigned int getTableId(const std::string& tableName);
 
-        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
+        /*!
+          \brief It looks for a table with the given oid in the PostgreSQL system tables.
+
+          \param id The table oid.
+
+          \return The table name.
+ 
+          \exception Exception It throws an exception if it was not possible to retrieve the information.
+
+          \note PostGIS driver extended method.
+        */
+        std::string getTableName(unsigned int id);
+
+        /*!
+          \brief It returns the list of constraints (primary key, unique key, foreign key and check constraints) of the given table or view.
+
+          \param dtid    The dataset type we are looking information for.
+          \param conType The type of constraint to be retrieved. If this value is '\0' (the default) all types are retrieved.
+
+          \return A recordset with the following fields:
+                  <ul>
+                  <li>0 (Oid): constraint oid (c.oid)</li>
+                  <li>1 (name): constraint schema name (n.nspname)</li>
+                  <li>2 (name): constraint name (c.conname)</li>
+                  <li>3 (char): constraint type (c.contype), one of the following values: 'c', 'f', 'p', 'u'</li>
+                  <li>4 (Oid): the referenced table (c.confrelid)</li>
+                  <li>5 (char): OnUpdate action (c.confupdtype)</li>
+                  <li>6 (char): OnDeletion action (c.confdeltype)</li>
+                  <li>7 (char): ??? (c.confmatchtype)</li>
+                  <li>8 (int2[]): array of attribute numbers (c.conkey), the list of keys in a foreign key, primary key or unique key</li>
+                  <li>9 (int2[]): array of attribute numbers in the referenced table (c.confkey)</li>
+                  <li>10 (text): constraint expression (pg_get_constraintdef(c.oid))</li>
+                  </ul>
+
+          \exception Exception It throws an exception if it can not get the information.
+
+          \note The client of this method will take the ownership of the returned DataSet.
+          \note PostGIS driver extended method.
+        */
+        //std::auto_ptr<te::da::DataSet> getConstraints(unsigned int dtid, char conType = '\0');
+
+       /*!
+          \brief It returns the list of properties for the given table or view.
+
+          \param dtid The dataset to load its information.
+
+          \return A recordset with the following fields:
+                  <ul>
+                  <li>0 (int2): attribute number in the table (a.attnum), remember that attribute number is 1 based</li>
+                  <li>1 (name): attribute name (a.attname)</li>
+                  <li>2 (Oid): attribute type oid (t.oid)</li>
+                  <li>3 (bool): 't' if attribute is NOT NULL, otherwise, its value is 'f' (a.attnotnull)</li>
+                  <li>4 (text): type modifier information, like precision and scale (format_type(a.atttypid, a.atttypmod))</li>
+                  <li>5 (bool): 't' if attribute is has a default value, otherwise, its value is 'f' (a.atthasdef)</li>
+                  <li>6 (text): attribute default value if field number 5 is true (pg_get_expr(d.adbin, d.adrelid))</li>
+                  <li>7 (int4): Number of dimensions, if the column is an array type; otherwise 0 (a.attndims)</li>
+                  </ul>
+
+          \pre The informed dataset type must have a valid id.
+
+          \exception Exception It throws an exception if it was not possible to get the information needed.
+
+          \note The client of this method will take the ownership of the returned dataset.
+          \note PostGIS driver extended method.
+        */
+        te::da::DataSet* getProperties(unsigned int dtid);
+
+        /*!
+          \brief It returns the list of constraints (primary key, unique key, foreign key and check constraints) of the given table or view.
+
+          \param dtid    The dataset type we are looking information for.
+
+          \return A recordset with the following fields:
+                  <ul>
+                  <li>0 (Oid): constraint oid (c.oid)</li>
+                  <li>1 (name): constraint schema name (n.nspname)</li>
+                  <li>2 (name): constraint name (c.conname)</li>
+                  <li>3 (char): constraint type (c.contype), one of the following values: 'c', 'f', 'p', 'u'</li>
+                  <li>4 (Oid): the referenced table (c.confrelid)</li>
+                  <li>5 (char): OnUpdate action (c.confupdtype)</li>
+                  <li>6 (char): OnDeletion action (c.confdeltype)</li>
+                  <li>7 (char): ??? (c.confmatchtype)</li>
+                  <li>8 (int2[]): array of attribute numbers (c.conkey), the list of keys in a foreign key, primary key or unique key</li>
+                  <li>9 (int2[]): array of attribute numbers in the referenced table (c.confkey)</li>
+                  <li>10 (text): constraint expression (pg_get_constraintdef(c.oid))</li>
+                  </ul>
+
+          \exception Exception It throws an exception if it can not get the information.
+
+          \note The client of this method will take the ownership of the returned DataSet.
+          \note PostGIS driver extended method.
+        */
+        std::auto_ptr<te::da::DataSet> getConstraints(unsigned int dtid);
+
+        /*!
+          \brief It gets all the constraints(primary key, foreign and unique keys, check constraints) of a dataset 
+                 and adds them to its schema.
+
+          \param dt The dataset schema.
+
+          \exception Exception It throws an exception if the constraints could not be loaded.
+
+          \return True, if the constraints of the dataset were correctly added to its schema.
+        */
+        bool getConstraints(te::da::DataSetTypePtr& dt);
+
+        void create(const std::map<std::string, std::string>& dsInfo);
+
+        void drop(const std::map<std::string, std::string>& dsInfo);
+
+        bool exists(const std::map<std::string, std::string>& dsInfo);
 
       private:
 

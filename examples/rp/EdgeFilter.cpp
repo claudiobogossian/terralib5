@@ -41,7 +41,7 @@ void EdgeFilter()
     te::rp::EdgeFilter::OutputParameters algoOutputParams;
     
     algoOutputParams.m_rInfo["URI"] =  
-      TE_DATA_EXAMPLE_DIR "/EdgeFilterExample.tif";  
+      TE_DATA_EXAMPLE_DIR "/data/rasters/EdgeFilterExample.tif";  
     algoOutputParams.m_rType = "GDAL";
     
     // Executing the algorithm

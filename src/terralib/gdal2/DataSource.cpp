@@ -52,27 +52,27 @@ te::gdal::DataSource::~DataSource()
 {
 }
 
-std::string te::gdal::DataSource::getType() const throw()
+std::string te::gdal::DataSource::getType() const
 {
   return TE_GDAL_DRIVER_IDENTIFIER;
 }
 
-const std::map<std::string, std::string>& te::gdal::DataSource::getConnectionInfo() const throw()
+const std::map<std::string, std::string>& te::gdal::DataSource::getConnectionInfo() const
 {
   return m_connectionInfo;
 }
 
-void te::gdal::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo) throw()
+void te::gdal::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
 {
   m_connectionInfo = connInfo;
 }
 
-bool te::gdal::DataSource::isOpened() const throw()
+bool te::gdal::DataSource::isOpened() const
 {
   return m_isOpened;
 }
 
-bool te::gdal::DataSource::isValid() const throw()
+bool te::gdal::DataSource::isValid() const
 {
   if(m_connectionInfo.empty())
     return false;
@@ -108,13 +108,13 @@ bool te::gdal::DataSource::isValid() const throw()
   return isValid;
 }
 
-const te::da::DataSourceCapabilities& te::gdal::DataSource::getCapabilities() const  throw()
+const te::da::DataSourceCapabilities& te::gdal::DataSource::getCapabilities() const 
 {
   return sm_capabilities;
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::DataSource::getDataSet(const std::string& name, 
-                                                te::common::TraverseType /*travType*/)  throw(Exception)
+                                                te::common::TraverseType /*travType*/) 
 {
   std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_dstypes.find(name);
   if (it != m_dstypes.end())
@@ -143,7 +143,7 @@ std::auto_ptr<te::da::DataSet> te::gdal::DataSource::getDataSet(const std::strin
                                                 const std::string& propertyName,
                                                 const te::gm::Envelope* /*e*/,
                                                 te::gm::SpatialRelation /*r*/,
-                                                te::common::TraverseType travType) throw(Exception)
+                                                te::common::TraverseType travType)
 {
   return getDataSet(name, travType);
 }
@@ -152,59 +152,59 @@ std::auto_ptr<te::da::DataSet>  te::gdal::DataSource::getDataSet(const std::stri
                                                 const std::string& propertyName,
                                                 const te::gm::Geometry* /*g*/,
                                                 te::gm::SpatialRelation /*r*/,
-                                                te::common::TraverseType travType) throw(Exception)
+                                                te::common::TraverseType travType)
 {
   return getDataSet(name, travType);
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::DataSource::query(const te::da::Select& /*q*/,
-                                           te::common::TraverseType /*travType*/) throw(Exception)
+                                           te::common::TraverseType /*travType*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support queries.")));
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::DataSource::query(const std::string& /*query*/, 
-                                           te::common::TraverseType /*travType*/) throw(Exception)
+                                           te::common::TraverseType /*travType*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support queries.")));
 }
 
-void te::gdal::DataSource::execute(const te::da::Query& /*command*/) throw(Exception)
+void te::gdal::DataSource::execute(const te::da::Query& /*command*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support queries.")));
 }
 
-void te::gdal::DataSource::execute(const std::string& /*command*/) throw(Exception)
+void te::gdal::DataSource::execute(const std::string& /*command*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support queries.")));
 }
 
-void te::gdal::DataSource::cancel() throw(Exception) 
+void te::gdal::DataSource::cancel() 
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support queries.")));
 }
 
-boost::int64_t te::gdal::DataSource::getLastGeneratedId() throw(Exception) 
+boost::int64_t te::gdal::DataSource::getLastGeneratedId() 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support id generation.")));
 }
 
-std::string te::gdal::DataSource::escape(const std::string& value) throw(Exception) 
+std::string te::gdal::DataSource::escape(const std::string& value) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support string escaping.")));
 }
 
-bool te::gdal::DataSource::isDataSetNameValid(const std::string& datasetName) throw(Exception)
+bool te::gdal::DataSource::isDataSetNameValid(const std::string& datasetName)
 {
   throw(Exception(TR_GDAL("Not implemented yet.")));
 }
 
-bool te::gdal::DataSource::isPropertyNameValid(const std::string& propertyName) throw(Exception)
+bool te::gdal::DataSource::isPropertyNameValid(const std::string& propertyName)
 {
   throw(Exception(TR_GDAL("Not implemented yet.")));
 }
 
-std::vector<std::string> te::gdal::DataSource::getDataSetNames() throw(Exception)
+std::vector<std::string> te::gdal::DataSource::getDataSetNames()
 {
   std::vector<std::string> dsnames;
   
@@ -218,7 +218,7 @@ std::vector<std::string> te::gdal::DataSource::getDataSetNames() throw(Exception
   return dsnames;
 }
 
-const te::da::DataSetTypePtr& te::gdal::DataSource::getDataSetType(const std::string& name) throw(Exception)
+const te::da::DataSetTypePtr& te::gdal::DataSource::getDataSetType(const std::string& name)
 {
   std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_dstypes.find(name);
   if (it != m_dstypes.end())
@@ -229,7 +229,7 @@ const te::da::DataSetTypePtr& te::gdal::DataSource::getDataSetType(const std::st
   return te::da::DataSetTypePtr(static_cast<te::da::DataSetType*>(it->second->clone()));
 }
 
-std::size_t te::gdal::DataSource::getNumberOfProperties(const std::string& datasetName) throw(Exception)
+std::size_t te::gdal::DataSource::getNumberOfProperties(const std::string& datasetName)
 {
   std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_dstypes.find(datasetName);
   if (it != m_dstypes.end())
@@ -238,7 +238,7 @@ std::size_t te::gdal::DataSource::getNumberOfProperties(const std::string& datas
   return it->second->size(); 
 }
 
-boost::ptr_vector<te::dt::Property> te::gdal::DataSource::getProperties(const std::string& datasetName) throw(Exception)
+boost::ptr_vector<te::dt::Property> te::gdal::DataSource::getProperties(const std::string& datasetName)
 {
   boost::ptr_vector<te::dt::Property> properties;
   
@@ -258,7 +258,7 @@ boost::ptr_vector<te::dt::Property> te::gdal::DataSource::getProperties(const st
   return properties;
 }
 
-std::auto_ptr<te::dt::Property> te::gdal::DataSource::getProperty(const std::string& datasetName, const std::string& propertyName) throw(Exception)
+std::auto_ptr<te::dt::Property> te::gdal::DataSource::getProperty(const std::string& datasetName, const std::string& propertyName)
 {
   boost::ptr_vector<te::dt::Property> properties = getProperties(datasetName);
   
@@ -272,7 +272,7 @@ std::auto_ptr<te::dt::Property> te::gdal::DataSource::getProperty(const std::str
   return std::auto_ptr<te::dt::Property>();
 }
 
-std::auto_ptr<te::dt::Property> te::gdal::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos) throw(Exception)
+std::auto_ptr<te::dt::Property> te::gdal::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
   boost::ptr_vector<te::dt::Property> properties = getProperties(datasetName);
   if (!properties.empty())
@@ -281,17 +281,17 @@ std::auto_ptr<te::dt::Property> te::gdal::DataSource::getProperty(const std::str
   return std::auto_ptr<te::dt::Property>();
 }
 
-std::auto_ptr<te::da::PrimaryKey> te::gdal::DataSource::getPrimaryKey(const std::string& /*datasetName*/) throw(Exception)
+te::da::PrimaryKey* te::gdal::DataSource::getPrimaryKey(const std::string& /*datasetName*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support primary keys.")));
 }
 
-std::vector<std::string> te::gdal::DataSource::getUniqueKeyNames(const std::string& datasetName) throw(Exception)
+std::vector<std::string> te::gdal::DataSource::getUniqueKeyNames(const std::string& datasetName)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
 }
 
-boost::ptr_vector<te::da::UniqueKey> te::gdal::DataSource::getUniqueKeys(const std::string& /*datasetName*/) throw(Exception)
+boost::ptr_vector<te::da::UniqueKey> te::gdal::DataSource::getUniqueKeys(const std::string& /*datasetName*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
 }
@@ -302,73 +302,71 @@ std::auto_ptr<te::da::UniqueKey> te::gdal::DataSource::getUniqueKey(const std::s
   throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
 }
 
-std::vector<std::string> te::gdal::DataSource::getForeignKeyNames(const std::string& /*datasetName*/) throw(Exception)
+std::vector<std::string> te::gdal::DataSource::getForeignKeyNames(const std::string& /*datasetName*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support foreign keys.")));
 }
 
-std::vector<std::string> te::gdal::DataSource::getIndexNames(const std::string& /*datasetName*/) throw(Exception)
+std::vector<std::string> te::gdal::DataSource::getIndexNames(const std::string& /*datasetName*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
 }
 
 std::auto_ptr<te::da::Index> te::gdal::DataSource::getIndex(const std::string& datasetName,
-                              const std::string& name) throw(Exception)
+                              const std::string& name)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support indexes.")));
 }
 
-std::vector<std::string> te::gdal::DataSource::getCheckConstraintNames(const std::string& datasetName) throw(Exception)
+std::vector<std::string> te::gdal::DataSource::getCheckConstraintNames(const std::string& datasetName)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support constraints.")));
 }
 
-std::auto_ptr<te::da::CheckConstraint> te::gdal::DataSource::getCheckConstraint(const std::string& datasetName,
-                                                  const std::string& name) throw(Exception)
+te::da::CheckConstraint* te::gdal::DataSource::getCheckConstraint(const std::string& datasetName,
+                                                  const std::string& name)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support constraints.")));
 }
 
-std::vector<std::string> te::gdal::DataSource::getSequenceNames() throw(Exception)
+std::vector<std::string> te::gdal::DataSource::getSequenceNames()
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support sequences.")));
 }
 
-std::auto_ptr<te::da::Sequence> te::gdal::DataSource::getSequence(const std::string& name) throw(Exception)
+std::auto_ptr<te::da::Sequence> te::gdal::DataSource::getSequence(const std::string& name)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support sequences.")));
 }
 
-
-std::auto_ptr<te::da::ForeignKey> te::gdal::DataSource::getForeignKey(const std::string& /*datasetName*/,
-                                        const std::string& /*name*/) throw(Exception)
+te::da::ForeignKey* te::gdal::DataSource::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support foreigns keys.")));
 }
 
 std::auto_ptr<te::gm::Envelope> te::gdal::DataSource::getExtent(const std::string& datasetName,
-                                          const std::string& propertyName) throw(Exception)
+                                          const std::string& propertyName)
 {
   return std::auto_ptr<te::gm::Envelope>();
 }
 
 std::auto_ptr<te::gm::Envelope> te::gdal::DataSource::getExtent(const std::string& datasetName,
-                                          std::size_t propertyPos) throw(Exception)
+                                          std::size_t propertyPos)
 {
   return std::auto_ptr<te::gm::Envelope>();
 }
  
-std::size_t te::gdal::DataSource::getNumberOfItems(const std::string& datasetName) throw(Exception)
+std::size_t te::gdal::DataSource::getNumberOfItems(const std::string& datasetName)
 {
   return 0; // TODO: review
 }
 
-bool te::gdal::DataSource::hasDataSets() throw(Exception)
+bool te::gdal::DataSource::hasDataSets()
 {
   return !m_dstypes.empty();
 }
 
-bool te::gdal::DataSource::datasetExists(const std::string& name) throw(Exception)
+bool te::gdal::DataSource::datasetExists(const std::string& name)
 {
   std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_dstypes.find(name);
   return (it != m_dstypes.end());
@@ -381,72 +379,72 @@ void te::gdal::DataSource::createDataSet(te::da::DataSetType* dt,
 }
 
 bool te::gdal::DataSource::primarykeyExists(const std::string& /*datasetName*/,
-                      const std::string& /*name*/) throw(Exception) 
+                      const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support primary keys.")));
 }
 
-bool te::gdal::DataSource::uniquekeyExists(const std::string& /*datasetName*/, const std::string& /*name*/) throw(Exception) 
+bool te::gdal::DataSource::uniquekeyExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
 }
 
 bool te::gdal::DataSource::foreignkeyExists(const std::string& /*datasetName*/,
-                      const std::string& /*name*/) throw(Exception) 
+                      const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support foreigns keys."))); 
 }
 
 bool te::gdal::DataSource::checkConstraintExists(const std::string& /*datasetName*/,
-                           const std::string& /*name*/) throw(Exception) 
+                           const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support check constraints."))); 
 }
 
 bool te::gdal::DataSource::indexExists(const std::string& /*datasetName*/,
-                 const std::string& /*name*/) throw(Exception) 
+                 const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support check indexes."))); 
 }
 
-bool te::gdal::DataSource::sequenceExists(const std::string& /*name*/) throw(Exception) 
+bool te::gdal::DataSource::sequenceExists(const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support check sequences."))); 
 }
 
 void te::gdal::DataSource::cloneDataSet(const std::string& name,
                   const std::string& cloneName,
-                  const std::map<std::string, std::string>& options) throw(Exception)
+                  const std::map<std::string, std::string>& options)
 {
   throw(Exception(TR_GDAL("To be implemented.")));
 }
 
-void te::gdal::DataSource::dropDataSet(const std::string& name) throw(Exception)
+void te::gdal::DataSource::dropDataSet(const std::string& name)
 {
   throw(Exception(TR_GDAL("To be implemented.")));
 }
 
 void te::gdal::DataSource::renameDataSet(const std::string& name,
-                   const std::string& newName) throw(Exception)
+                   const std::string& newName)
 {
   throw(Exception(TR_GDAL("To be implemented.")));
 }
 
 void te::gdal::DataSource::addProperty(const std::string& datasetName,
-                 const te::dt::Property* p) throw(Exception)
+                 const te::dt::Property* p)
 {
     throw Exception(TR_GDAL("Not implemented yet!"));
 }
 
 void te::gdal::DataSource::dropProperty(const std::string& datasetName,
-                  const std::string& propertyName) throw(Exception)
+                  const std::string& propertyName)
 {
   throw(Exception(TR_GDAL("To be implemented.")));
 }
 
 void te::gdal::DataSource::renameProperty(const std::string& datasetName,
                     const std::string& propertyName,
-                    const std::string& newPropertyName) throw(Exception)
+                    const std::string& newPropertyName)
 {
   throw(Exception(TR_GDAL("To be implemented.")));
 }
@@ -454,13 +452,13 @@ void te::gdal::DataSource::renameProperty(const std::string& datasetName,
 void te::gdal::DataSource::add(const std::string& datasetName,
          te::da::DataSet* d,
          const std::map<std::string, std::string>& options,
-         std::size_t limit) throw(Exception)
+         std::size_t limit)
 {
   throw(Exception(TR_GDAL("To be implemented.")));
 }
 
 void te::gdal::DataSource::remove(const std::string& datasetName,
-            const te::da::ObjectIdSet* oids) throw(Exception)
+            const te::da::ObjectIdSet* oids)
 {
   throw(Exception(TR_GDAL("To be implemented.")));
 }
@@ -470,7 +468,7 @@ void te::gdal::DataSource::update(const std::string& datasetName,
        const std::vector<std::size_t>& properties,
        const te::da::ObjectIdSet* oids,
        const std::map<std::string, std::string>& options,
-       std::size_t limit) throw(Exception)
+       std::size_t limit)
 {
   throw Exception(TR_GDAL("Not implemented yet!"));
 }
@@ -480,7 +478,7 @@ void te::gdal::DataSource::optimize(const std::map<std::string, std::string>& /*
   throw Exception(TR_GDAL("Not implemented yet!"));
 }
 
-void te::gdal::DataSource::open() throw(Exception)
+void te::gdal::DataSource::open()
 {
   if(m_isOpened)
     return;
@@ -510,7 +508,7 @@ void te::gdal::DataSource::open() throw(Exception)
   m_isOpened = true;
 }
 
-void te::gdal::DataSource::close() throw(Exception)
+void te::gdal::DataSource::close()
 {
   m_dstypes.clear();
 
@@ -523,7 +521,7 @@ void te::gdal::DataSource::setCapabilities(const te::da::DataSourceCapabilities&
   sm_capabilities = capabilities;
 }
 
-void te::gdal::DataSource::create(const std::map<std::string, std::string>& dsInfo) throw(Exception)
+void te::gdal::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
   setConnectionInfo(dsInfo);
   
@@ -545,7 +543,7 @@ void te::gdal::DataSource::create(const std::map<std::string, std::string>& dsIn
   close();
 }
  
-void te::gdal::DataSource::drop(const std::map<std::string, std::string>& dsInfo) throw(Exception)
+void te::gdal::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
   std::map<std::string, std::string>::const_iterator it = dsInfo.find("URI");
 
@@ -562,7 +560,7 @@ void te::gdal::DataSource::drop(const std::map<std::string, std::string>& dsInfo
   }
 }
 
-std::vector<std::string> te::gdal::DataSource::getDataSourceNames(const std::map<std::string, std::string>& info) throw(Exception)
+std::vector<std::string> te::gdal::DataSource::getDataSourceNames(const std::map<std::string, std::string>& info)
 {
   return std::vector<std::string>();
 }

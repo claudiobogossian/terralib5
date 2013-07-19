@@ -80,7 +80,7 @@ void Mosaic()
     
     // The output raster info
     algoOutputParams.m_rInfo["URI"] =  
-      TE_DATA_EXAMPLE_DIR "/GeoReferencedImagesMosaicExample.tif";  
+      TE_DATA_EXAMPLE_DIR "/data/rasters/GeoReferencedImagesMosaicExample.tif";  
     algoOutputParams.m_rType = "GDAL";
     
     // Executing the algorithm

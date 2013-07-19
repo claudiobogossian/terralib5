@@ -27,10 +27,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsUnitsOfMeasureManager );
 
 void TsUnitsOfMeasureManager::setUp()
 {
-  uomA = new te::common::UnitOfMeasure(9030, "NAUTICAL MILE", "", te::common::MeasureType::Length, 9001, 1852, 0, 0, 1, "");
-  uomB = new te::common::UnitOfMeasure(9101, "RADIAN", "", te::common::MeasureType::Angle, 9101, 1, 0, 0, 1, "");
-  uomC = new te::common::UnitOfMeasure(9102, "DEGREE", "", te::common::MeasureType::Angle, 9101, 3.14159265358979, 0, 0, 180, "");
-  uomD = new te::common::UnitOfMeasure(9201, "UNITY", "", te::common::MeasureType::Scale, 9201, 1, 0, 0, 1, "");
+  uomA = new te::common::UnitOfMeasure(9030, "NAUTICAL MILE", "", te::common::Length, 9001, 1852, 0, 0, 1, "");
+  uomB = new te::common::UnitOfMeasure(9101, "RADIAN", "", te::common::Angle, 9101, 1, 0, 0, 1, "");
+  uomC = new te::common::UnitOfMeasure(9102, "DEGREE", "", te::common::Angle, 9101, 3.14159265358979, 0, 0, 180, "");
+  uomD = new te::common::UnitOfMeasure(9201, "UNITY", "", te::common::Scale, 9201, 1, 0, 0, 1, "");
 
   std::string altNameA = "AltNameA";
   std::string altNameB = "AltNameB";

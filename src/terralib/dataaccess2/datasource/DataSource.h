@@ -131,7 +131,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual std::string getType() const throw() = 0;
+        virtual std::string getType() const = 0;
 
         /*!
           \brief It returns the set of parameters used to set up the access channel to the underlying repository.
@@ -148,14 +148,14 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual const std::map<std::string, std::string>& getConnectionInfo() const throw() = 0;
+        virtual const std::map<std::string, std::string>& getConnectionInfo() const = 0;
 
         /*!
           \brief It sets the connection information to be used when connecting to the data source.
 
           \param connInfo Key-value-pairs (kvp) with the connection information.
         */
-        virtual void setConnectionInfo(const std::map<std::string, std::string>& connInfo) throw() = 0;
+        virtual void setConnectionInfo(const std::map<std::string, std::string>& connInfo) = 0;
 
         /*!
           \brief It opens the data source and makes it ready for use.
@@ -169,7 +169,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void open() throw(Exception) = 0;
+        virtual void open() = 0;
 
         /*!
           \brief It closes the data source and clears all the resources used by its internal communication channel.
@@ -181,7 +181,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void close() throw(Exception) = 0;
+        virtual void close() = 0;
 
         /*!
           \brief It returns true if the data source is opened, otherwise it returns false.
@@ -195,7 +195,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual bool isOpened() const throw() = 0;
+        virtual bool isOpened() const = 0;
 
         /*!
           \brief It checks if the data source is valid (available for use).
@@ -208,7 +208,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual bool isValid() const throw() = 0;
+        virtual bool isValid() const = 0;
 
         /*!
           \brief It returns the known capabilities of the data source.
@@ -221,7 +221,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual const DataSourceCapabilities& getCapabilities() const throw() = 0;
+        virtual const DataSourceCapabilities& getCapabilities() const = 0;
 
         /*!
           \brief It returns the data source SQL dialect, if one exists.
@@ -230,7 +230,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual const SQLDialect* getDialect() const throw() = 0;
+        virtual const SQLDialect* getDialect() const = 0;
 
         //@}
 
@@ -244,7 +244,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void begin() throw(Exception) = 0;
+        virtual void begin() = 0;
 
         /*!
           \brief It commits the transaction.
@@ -253,7 +253,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void commit() throw(Exception) = 0;
+        virtual void commit() = 0;
 
         /*!
           \brief It aborts the transaction. Any changes will be rolled-back.
@@ -262,7 +262,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void rollBack() throw(Exception) = 0;
+        virtual void rollBack() = 0;
 
         /*!
           \brief It returns true if a transaction is in progress, otherwise, false.
@@ -271,7 +271,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual bool isInTransaction() const throw() = 0;
+        virtual bool isInTransaction() const = 0;
 
         //@}
 
@@ -291,7 +291,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception) = 0;
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the specified property.
@@ -312,7 +312,7 @@ namespace te
                                                   const std::string& propertyName,
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception) = 0;
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the given geometric property.
@@ -333,7 +333,7 @@ namespace te
                                                   const std::string& propertyName,
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception) = 0;
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
 
         /*!
           \brief It executes a query that may return some data using a generic query.
@@ -350,7 +350,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const Select& q,
-                                              te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception) = 0;
+                                              te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
 
         /*!
           \brief It executes a query that may return some data using the data source native language.
@@ -365,7 +365,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const std::string& query, 
-                                              te::common::TraverseType travType = te::common::FORWARDONLY) throw(Exception) = 0;
+                                              te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
         //@}
 
         /** @name Command Execution Methods
@@ -380,7 +380,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void execute(const Query& command) throw(Exception) = 0;
+        virtual void execute(const Query& command) = 0;
 
         /*!
           \brief It executes the specifed command in the data source native language.
@@ -389,7 +389,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void execute(const std::string& command) throw(Exception) = 0;
+        virtual void execute(const std::string& command) = 0;
 
         //@}
 
@@ -403,7 +403,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual void cancel() throw(Exception) = 0;
+        virtual void cancel() = 0;
 
         //@}
 
@@ -421,7 +421,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual boost::int64_t getLastGeneratedId() throw(Exception) = 0;
+        virtual boost::int64_t getLastGeneratedId() = 0;
 
         /*!
           \brief It escapes a string for using in commands and queries.
@@ -432,7 +432,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::string escape(const std::string& value) throw(Exception) = 0;
+        virtual std::string escape(const std::string& value) = 0;
 
         /*!
           \brief It returns true if the given string is a valid dataset name.
@@ -443,7 +443,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual bool isDataSetNameValid(const std::string& datasetName) throw(Exception) = 0;
+        virtual bool isDataSetNameValid(const std::string& datasetName) = 0;
 
         /*!
           \brief It returns true if the given string is a valid property name.
@@ -454,7 +454,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual bool isPropertyNameValid(const std::string& propertyName) throw(Exception) = 0;
+        virtual bool isPropertyNameValid(const std::string& propertyName) = 0;
 
         //@}
 
@@ -473,7 +473,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::vector<std::string> getDataSetNames() throw(Exception) = 0;
+        virtual std::vector<std::string> getDataSetNames() = 0;
 
         /*!
           \brief It searches for the information about a given dataset in the data source.
@@ -494,7 +494,7 @@ namespace te
 
           \note Not thread-safe!
         */
-          virtual const te::da::DataSetTypePtr& getDataSetType(const std::string& name) throw(Exception) = 0;
+          virtual const te::da::DataSetTypePtr& getDataSetType(const std::string& name) = 0;
 
         /*!
           \brief It gets the number of properties of the given dataset.
@@ -505,7 +505,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::size_t getNumberOfProperties(const std::string& datasetName) throw(Exception) = 0;
+        virtual std::size_t getNumberOfProperties(const std::string& datasetName) = 0;
 
         /*!
           \brief It retrieves the properties of the dataset.
@@ -516,7 +516,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName) throw(Exception) = 0;
+        virtual boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName) = 0;
 
         /*!
           \brief It retrieves a property from a dataset.
@@ -528,7 +528,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& propertyName) throw(Exception) = 0;
+        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& propertyName) = 0;
 
         /*!
           \brief It retrieves a property from a dataset.
@@ -540,18 +540,112 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos) throw(Exception) = 0;
+        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos) = 0;
 
         /*!
           \brief It retrieves the primary key of the dataset.
 
-          \param datasetName The dataset name.
+          \param datasetName  The dataset name.
 
           \return The primary key of the dataset.
 
+          \post The caller will not take the ownership of the returned primary key, 
+                because it belongs to the DataSetType.
+
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<PrimaryKey> getPrimaryKey(const std::string& datasetName) throw(Exception) = 0;
+        virtual PrimaryKey* getPrimaryKey(const std::string& datasetName) = 0;
+
+        /*!
+          \brief It checks if a primary key with the given name exists in the data source.
+
+          \param datasetName  The dataset name.
+          \param name         The primary key name.
+
+          \return True, if the primary key exists in the data source; otherwise, it returns false.
+
+          \note Not thread-safe!
+        */
+        virtual bool primaryKeyExists(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It adds a primary key constraint to the dataset schema.
+
+          \param datasetName  The name of the dataset to be added the primary key.
+          \param pk           The primary key constraint.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void addPrimaryKey(const std::string& datasetName, PrimaryKey* pk) = 0;
+
+        /*!
+          \brief It removes the primary key constraint from the dataset schema.
+
+          \param datasetName    The name of the dataset to be removed the primary key.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void dropPrimaryKey(const std::string& datasetName) = 0;
+
+        /*!
+          \brief It searches for the foreign key names of the given dataset.
+
+          \param datasetName The dataset name.
+
+          \return The foreign key names of the given dataset.
+
+          \note Not thread-safe!
+        */
+        virtual std::vector<std::string> getForeignKeyNames(const std::string& datasetName) = 0;
+
+        /*!
+          \brief It checks if a foreign key with the given name exists in the data source.
+
+          \param datasetName  The dataset name.
+          \param name         The foreign key name.
+
+          \return True, if the foreign key exists in the data source; otherwise, it returns false.
+        */
+        virtual bool foreignKeyExists(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It retrieves the foreign key with the given name.
+
+          \param name The foreign key name.
+
+          \return The foreign key with the given name.
+
+          \note Not thread-safe!
+        */
+        virtual ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It adds a foreign key constraint to a dataset.
+
+          \param datasetName  The dataset where the foreign key constraint will be added.
+          \param fk           The foreign key constraint.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void addForeignKey(const std::string& datasetName, ForeignKey* fk) = 0;
+
+        /*!
+          \brief It removes the foreign key constraint from the dataset schema.
+
+          \param datasetName  The dataset where the foreign key will be removed.
+          \param fkName       The foreign key to be removed.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void dropForeignKey(const std::string& datasetName, const std::string& fkName) = 0;
 
         /*!
           \brief It searches in the data source for the unique key names associated to the given dataset.
@@ -562,7 +656,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::vector<std::string> getUniqueKeyNames(const std::string& datasetName) throw(Exception) = 0;
+        virtual std::vector<std::string> getUniqueKeyNames(const std::string& datasetName) = 0;
 
         /*!
           \brief It searches in the data source for the unique keys associated to the given dataset.
@@ -573,7 +667,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual boost::ptr_vector<UniqueKey> getUniqueKeys(const std::string& datasetName) throw(Exception) = 0;
+        virtual boost::ptr_vector<UniqueKey> getUniqueKeys(const std::string& datasetName) = 0;
 
         /*!
           \brief It gets the unique key with the given name.
@@ -586,30 +680,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<UniqueKey> getUniqueKey(const std::string& datasetName,
-                                                        const std::string& name) throw(Exception) = 0;
-
-        /*!
-          \brief It searches for the foreign key names of the given dataset.
-
-          \param datasetName The dataset name.
-
-          \return The foreign key names of the given dataset.
-
-          \note Not thread-safe!
-        */
-        virtual std::vector<std::string> getForeignKeyNames(const std::string& datasetName) throw(Exception) = 0;
-
-        /*!
-          \brief It retrieves the foreign key with the given name.
-
-          \param name The foreign key name.
-
-          \return The foreign key with the given name.
-
-          \note Not thread-safe!
-        */
-        virtual std::auto_ptr<ForeignKey> getForeignKey(const std::string& datasetName,
-                                                        const std::string& name) throw(Exception) = 0;
+                                                        const std::string& name) = 0;
 
         /*!
           \brief It searches in the data source the index names associated to the given dataset.
@@ -620,7 +691,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::vector<std::string> getIndexNames(const std::string& datasetName) throw(Exception) = 0;
+        virtual std::vector<std::string> getIndexNames(const std::string& datasetName) = 0;
 
         /*!
           \brief It gets the index with the given name.
@@ -633,7 +704,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<Index> getIndex(const std::string& datasetName,
-                                              const std::string& name) throw(Exception) = 0;
+                                              const std::string& name) = 0;
 
         /*!
           \brief It searches in the data source for check constraints associated to the given dataset.
@@ -644,7 +715,7 @@ namespace te
 
           \note Not thread-safe!
           */
-        virtual std::vector<std::string> getCheckConstraintNames(const std::string& datasetName) throw(Exception) = 0;
+        virtual std::vector<std::string> getCheckConstraintNames(const std::string& datasetName) = 0;
 
         /*!
           \brief It gets the check constraint with the given name.
@@ -654,10 +725,13 @@ namespace te
 
           \return The check constraint with the given name.
 
+          \post The caller will not take the ownership of the returned check constraint, 
+                because it belongs to the DataSetType.
+
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<CheckConstraint> getCheckConstraint(const std::string& datasetName,
-                                                                  const std::string& name) throw(Exception) = 0;
+        virtual te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName,
+                                                            const std::string& name) = 0;
 
         /*!
           \brief It searches for the list of sequence names available in the data source.
@@ -669,7 +743,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::vector<std::string> getSequenceNames() throw(Exception) = 0;
+        virtual std::vector<std::string> getSequenceNames() = 0;
 
         /*!
           \brief It gets the sequence with the given name
@@ -680,7 +754,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<Sequence> getSequence(const std::string& name) throw(Exception) = 0;
+        virtual std::auto_ptr<Sequence> getSequence(const std::string& name) = 0;
 
         /*!
           \brief It retrieves the bounding rectangle for the given dataset and spatial property.
@@ -693,7 +767,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                          const std::string& propertyName) throw(Exception) = 0;
+                                                          const std::string& propertyName) = 0;
 
         /*!
           \brief It retrieves the bounding rectangle for the given dataset and spatial property position.
@@ -706,7 +780,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                          std::size_t propertyPos) throw(Exception) = 0;
+                                                          std::size_t propertyPos) = 0;
 
         /*!
           \brief It retrieves the number of items of the given dataset.
@@ -717,7 +791,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::size_t getNumberOfItems(const std::string& datasetName) throw(Exception) = 0;
+        virtual std::size_t getNumberOfItems(const std::string& datasetName) = 0;
 
         /*!
           \brief It returns true if the data source has any dataset.
@@ -726,7 +800,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual bool hasDataSets() throw(Exception) = 0;
+        virtual bool hasDataSets() = 0;
 
         /*!
           \brief It checks if a dataset with the given name exists in the data source.
@@ -737,20 +811,7 @@ namespace te
 
           \note Not thread-safe!
           */
-        virtual bool datasetExists(const std::string& name) throw(Exception) = 0;
-
-        /*!
-          \brief It checks if a primary key with the given name exists in the data source.
-
-          \param datasetName  The dataset name.
-          \param name         The primary key name.
-
-          \return True, if the primary key exists in the data source; otherwise, it returns false.
-
-          \note Not thread-safe!
-        */
-        virtual bool primarykeyExists(const std::string& datasetName,
-                                      const std::string& name) throw(Exception) = 0;
+        virtual bool datasetExists(const std::string& name) = 0;
 
         /*!
           \brief It checks if a unique key with the given name exists in the data source.
@@ -762,18 +823,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual bool uniquekeyExists(const std::string& datasetName, const std::string& name) throw(Exception) = 0;
-
-        /*!
-          \brief It checks if a foreign key with the given name exists in the data source.
-
-          \param datasetName  The dataset name.
-          \param name         The foreign key name.
-
-          \return True, if the foreign key exists in the data source; otherwise, it returns false.
-        */
-        virtual bool foreignkeyExists(const std::string& datasetName,
-                                      const std::string& name) throw(Exception) = 0;
+        virtual bool uniqueKeyExists(const std::string& datasetName, const std::string& name) = 0;
 
         /*!
           \brief It checks if a check-constraint with the given name exists in the data source.
@@ -786,7 +836,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual bool checkConstraintExists(const std::string& datasetName,
-                                            const std::string& name) throw(Exception) = 0;
+                                            const std::string& name) = 0;
 
         /*!
           \brief It checks if an index with the given name exists in the data source.
@@ -799,7 +849,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual bool indexExists(const std::string& datasetName,
-                                  const std::string& name) throw(Exception) = 0;
+                                  const std::string& name) = 0;
 
         /*!
           \brief It checks if a sequence with the given name exists in the data source.
@@ -810,7 +860,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual bool sequenceExists(const std::string& name) throw(Exception) = 0;
+        virtual bool sequenceExists(const std::string& name) = 0;
 
         //@}
 
@@ -841,7 +891,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual void createDataSet(DataSetType* dt,
-                                    const std::map<std::string, std::string>& options) throw(Exception) = 0;
+                                    const std::map<std::string, std::string>& options) = 0;
 
         /*!
           \brief It clones the dataset in the data source.
@@ -854,7 +904,7 @@ namespace te
         */
         virtual void cloneDataSet(const std::string& name,
                                   const std::string& cloneName,
-                                  const std::map<std::string, std::string>& options) throw(Exception) = 0;
+                                  const std::map<std::string, std::string>& options) = 0;
 
         /*!
           \brief It drops the dataset schema from the data source.
@@ -866,7 +916,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void dropDataSet(const std::string& name) throw(Exception) = 0;
+        virtual void dropDataSet(const std::string& name) = 0;
 
         /*!
           \brief It renames a dataset.
@@ -879,7 +929,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual void renameDataSet(const std::string& name,
-                                    const std::string& newName) throw(Exception) = 0;
+                                    const std::string& newName) = 0;
 
         /*!
           \brief It adds a new property to the dataset definition.
@@ -890,7 +940,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual void addProperty(const std::string& datasetName,
-                                  const te::dt::Property* p) throw(Exception) = 0;
+                                  const te::dt::Property* p) = 0;
 
         /*!
           \brief It removes a property from a dataset schema.
@@ -903,7 +953,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual void dropProperty(const std::string& datasetName,
-                                  const std::string& propertyName) throw(Exception) = 0;
+                                  const std::string& propertyName) = 0;
 
         /*!
           \brief It renames a property from a dataset.
@@ -918,37 +968,11 @@ namespace te
         */
         virtual void renameProperty(const std::string& datasetName,
                                     const std::string& propertyName,
-                                    const std::string& newPropertyName) throw(Exception) = 0;
+                                    const std::string& newPropertyName) = 0;
 
-        /*!
-          \brief It adds a primary key constraint to the dataset schema.
-
-          \param datasetName  The name of the dataset to be added the primary key.
-          \param pk           The primary key constraint.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void addPrimaryKey(const std::string& datasetName,
-                                    const PrimaryKey* pk) throw(Exception) = 0;
-        
-        /*!
-          \brief It removes the primary key constraint from the dataset schema.
-
-          \param datasetName    The name of the dataset to be removed the primary key.
-          \param primaryKeyName The primary key constraint name.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropPrimaryKey(const std::string& datasetName,
-                                    const std::string& primaryKeyName) throw(Exception) = 0;
 
         /*!
           \brief It adds a unique key constraint to the DataSetType.
-
 
           \param datasetName  The name of the dataset to be added the unique key.
           \param uk           The unique key constraint.
@@ -958,7 +982,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual void addUniqueKey(const std::string& datasetName,
-                                  const UniqueKey* uk) throw(Exception) = 0;
+                                  const UniqueKey* uk) = 0;
 
         /*!
           \brief It removes the unique key constraint from the dataset schema.
@@ -971,7 +995,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual void dropUniqueKey(const std::string& datasetName,
-                                    const std::string& uniqueKeyName) throw(Exception) = 0;
+                                    const std::string& uniqueKeyName) = 0;
 
         /*!
           \brief It adds an index to the dataset.
@@ -986,7 +1010,7 @@ namespace te
         */
         virtual void addIndex(const std::string& datasetName,
                               const Index* idx,
-                              const std::map<std::string, std::string>& options) throw(Exception) = 0; 
+                              const std::map<std::string, std::string>& options) = 0; 
 
         /*!
           \brief It removes the index from the dataset schema.
@@ -998,34 +1022,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void dropIndex(const std::string& datasetName,
-                                const std::string& idxName) throw(Exception) = 0;
-
-        /*!
-          \brief It adds a foreign key constraint to a dataset.
-
-          \param datasetName  The dataset where the foreign key constraint will be added.
-          \param fk           The foreign key constraint.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void addForeignKey(const std::string& datasetName,
-                                    const ForeignKey* fk) throw(Exception) = 0;
-
-        /*!
-          \brief It removes the foreign key constraint from the dataset schema.
-
-          \param datasetName  The dataset where the foreign key will be removed.
-          \param fkName       The foreign key to be removed.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropForeignKey(const std::string& datasetName,
-                                    const std::string& fkName) throw(Exception) = 0;
+        virtual void dropIndex(const std::string& datasetName, const std::string& idxName) = 0;
 
         /*!
           \brief It adds a check constraint to the dataset.
@@ -1037,8 +1034,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void addCheckConstraint(const std::string& datasetName,
-                                        const CheckConstraint* cc) throw(Exception) = 0;
+        virtual void addCheckConstraint(const std::string& datasetName, CheckConstraint* cc) = 0;
    
         /*!
           \brief It removes the check constraint from the dataset.
@@ -1047,8 +1043,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void dropCheckConstraint(const std::string& datasetName,
-                                          const std::string& name) throw(Exception) = 0;
+        virtual void dropCheckConstraint(const std::string& datasetName, const std::string& name) = 0;
    
         /*!
           \brief It creates a new sequence in the data source.
@@ -1057,7 +1052,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void createSequence(const Sequence* sequence) throw(Exception) = 0;
+        virtual void createSequence(const Sequence* sequence) = 0;
    
         /*!
           \brief It removes the sequence from the data source.
@@ -1068,7 +1063,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void dropSequence(const std::string& name) throw(Exception) = 0;
+        virtual void dropSequence(const std::string& name) = 0;
 
         //@}
 
@@ -1094,7 +1089,7 @@ namespace te
         virtual void add(const std::string& datasetName,
                          DataSet* d,
                          const std::map<std::string, std::string>& options,
-                         std::size_t limit = 0) throw(Exception) = 0;
+                         std::size_t limit = 0) = 0;
 
         /*!
           \brief It removes all the informed items from the dataset.
@@ -1109,7 +1104,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual void remove(const std::string& datasetName,
-                            const ObjectIdSet* oids = 0) throw(Exception) = 0;
+                            const ObjectIdSet* oids = 0) = 0;
 
 
 
@@ -1134,7 +1129,7 @@ namespace te
                             const std::vector<std::size_t>& properties,
                             const ObjectIdSet* oids,
                             const std::map<std::string, std::string>& options,
-                            std::size_t limit = 0) throw(Exception) = 0;
+                            std::size_t limit = 0) = 0;
 
         //@}
 
@@ -1153,7 +1148,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        static std::auto_ptr<DataSource> create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo) throw(Exception);
+        static std::auto_ptr<DataSource> create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
 
         /*!
           \brief Drop a repository of a data source.
@@ -1165,7 +1160,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        static void drop(const std::string& dsType, const std::map<std::string, std::string>& dsInfo) throw(Exception);
+        static void drop(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
 
         /*!
           \brief It checks if the informed data source exists.
@@ -1177,7 +1172,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        static bool exists(const std::string& dsType, const std::map<std::string, std::string>& dsInfo) throw(Exception);
+        static bool exists(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
 
         /*!
           \brief  Retrieve the list of repository names for data sources.
@@ -1189,7 +1184,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) throw(Exception) = 0;
+        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) = 0;
 
         //@}
 
@@ -1207,7 +1202,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void create(const std::map<std::string, std::string>& dsInfo) throw(Exception) = 0;
+        virtual void create(const std::map<std::string, std::string>& dsInfo) = 0;
 
         /*!
           \brief Drop the repository of a data source.
@@ -1216,7 +1211,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void drop(const std::map<std::string, std::string>& dsInfo) throw(Exception) = 0;
+        virtual void drop(const std::map<std::string, std::string>& dsInfo) = 0;
 
         /*!
           \brief Check the existence f a repository of a data source.
@@ -1227,7 +1222,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual bool exists(const std::map<std::string, std::string>& dsInfo) throw(Exception) = 0;
+        virtual bool exists(const std::map<std::string, std::string>& dsInfo) = 0;
 
         //@}
     };

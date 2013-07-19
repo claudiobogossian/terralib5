@@ -129,6 +129,7 @@ void te::qt::widgets::ScatterChart::setScatterStyle(te::qt::widgets::ScatterStyl
 {
   m_scatterStyle = newSymbol;
   setSymbol(m_scatterStyle->getSymbol());
+  m_selection->setSymbol(new QwtSymbol( symbol()->style(), symbol()->brush().color().darker (180 ), symbol()->pen().color().darker( 180), symbol()->size()));
 }
 
 void te::qt::widgets::ScatterChart::highlight(const te::da::ObjectIdSet* oids)
@@ -146,7 +147,6 @@ void te::qt::widgets::ScatterChart::highlight(const te::da::ObjectIdSet* oids)
     }
 
   m_selection->setSamples(highlightedPoints);
-  m_selection->setSymbol(new QwtSymbol( symbol()->style(), QBrush( Qt::green ), QPen( Qt::green, 0 ), symbol()->size()));
   m_selection->attach(plot());
   plot()->replot();
 }

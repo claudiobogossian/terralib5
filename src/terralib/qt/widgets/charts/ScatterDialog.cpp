@@ -82,11 +82,8 @@ void te::qt::widgets::ScatterDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
 {
-  //te::qt::widgets::ProgressViewerDialog* ptest =  new te::qt::widgets::ProgressViewerDialog(this);
-  //int idViewer = te::common::ProgressManager::getInstance().addViewer(ptest);
   te::qt::widgets::ScatterChart* chart = new te::qt::widgets::ScatterChart(m_scatterDataWidget->getScatter());
-  //te::common::ProgressManager::getInstance().removeViewer(idViewer);
-  //delete ptest;
+
   chart->setScatterStyle(new te::qt::widgets::ScatterStyle());
   if(chart->getScatter()->sizeX() > 100 || chart->getScatter()->sizeY() > 100)
     chart->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::lightGray, 2 ), QSize( 1, 1 )));

@@ -149,14 +149,10 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
   if(layer->getVisibility() != te::map::VISIBLE)
     return;
 
-  bool needRemap = false;
   te::gm::Envelope reprojectedEnvelope(e);
 
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_display->getSRID()))
-  {
-    needRemap = true;
     reprojectedEnvelope.transform(m_display->getSRID(), layer->getSRID());
-  }
 
   // Clear previous selection?
   if(!m_keepPreviousSelection)

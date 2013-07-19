@@ -49,11 +49,6 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
   m_histogram(histogram)
 {
 
-  m_selection = new QwtPlotHistogram();
-  m_selection->setStyle(QwtPlotHistogram::Columns);
-  m_selection->setBrush(QBrush(Qt::green));
-  m_selection->attach(plot());
-
   //Vector that will be populated by the histogram's data
   QVector<QwtIntervalSample> samples;
 
@@ -142,6 +137,12 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
 
     setData(new QwtIntervalSeriesData(samples));
   }
+
+  m_selection = new QwtPlotHistogram();
+  m_selection->setStyle(QwtPlotHistogram::Columns);
+  m_selection->setBrush(brush().color().darker( 180 ));
+  m_selection->attach(plot());
+
 }
 
 te::qt::widgets::HistogramChart::~HistogramChart()
@@ -208,6 +209,7 @@ void te::qt::widgets::HistogramChart::setHistogramStyle(te::qt::widgets::Histogr
 
   setPen(barPen);
   setBrush(barBrush);
+  m_selection->setBrush(brush().color().darker( 180 ));
 }
 
 void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)

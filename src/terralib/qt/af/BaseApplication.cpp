@@ -715,6 +715,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
       doc->setLayer(lay.get());
       ApplicationController::getInstance().addListener(doc);
+      addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
       doc->show();
     }
   }
@@ -749,6 +750,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
       doc->setWindowIcon(QIcon::fromTheme("chart-scatter"));
       ApplicationController::getInstance().addListener(doc);
       doc->setLayer(lay.get());
+      addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
       doc->show();
     }
   }
@@ -806,6 +808,29 @@ void te::qt::af::BaseApplication::onDrawTriggered()
     return;
 
   m_display->draw(m_project->getLayers());
+}
+
+void te::qt::af::BaseApplication::onSetBoxOnMapDisplayTriggered()
+{
+  try
+  {
+    te::qt::widgets::MapDisplay* display = m_display->getDisplay();
+    std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+    if(layers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+      return;
+    }
+
+    te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+    te::gm::Envelope env = lay->getExtent();
+    display->setExtent(env, true);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
 }
 
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
@@ -948,6 +973,21 @@ void te::qt::af::BaseApplication::onLayerSelectionChanged(const te::map::Abstrac
   ApplicationController::getInstance().broadcast(&e);
 }
 
+void te::qt::af::BaseApplication::onLayerExplorerVisibilityChanged(bool visible)
+{
+  m_viewLayerExplorer->setChecked(visible);
+}
+
+void te::qt::af::BaseApplication::onDisplayVisibilityChanged(bool visible)
+{
+  m_viewMapDisplay->setChecked(visible);
+}
+
+void te::qt::af::BaseApplication::onStyleExplorerVisibilityChanged(bool visible)
+{
+  m_viewStyleExplorer->setChecked(visible);
+}
+
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
   try
@@ -1064,6 +1104,7 @@ void te::qt::af::BaseApplication::makeDialog()
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
   te::qt::widgets::LayerTreeView* treeView = lexplorer->getTreeView();
 
+  treeView->add(m_setBoxOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerEdit, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerRename, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerExport, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
@@ -1087,6 +1128,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
   connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), lexplorer, SLOT(setVisible(bool)));
   m_viewLayerExplorer->setChecked(true);
+  connect(lexplorer, SIGNAL(visibilityChanged(bool)), this, SLOT(onLayerExplorerVisibilityChanged(bool)));
 
   m_explorer = new te::qt::af::LayerExplorer(lexplorer, this);
 
@@ -1102,6 +1144,7 @@ void te::qt::af::BaseApplication::makeDialog()
   visualDock->connect(m_viewStyleExplorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewStyleExplorer->setChecked(false);
   visualDock->setVisible(false);
+  connect(visualDock, SIGNAL(visibilityChanged(bool)), this, SLOT(onStyleExplorerVisibilityChanged(bool)));
 
   m_symbolizerExplorer = new te::qt::af::SymbolizerExplorer(visualDock, this);
 
@@ -1128,6 +1171,7 @@ void te::qt::af::BaseApplication::makeDialog()
   QMainWindow::setCentralWidget(doc);
   doc->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewMapDisplay->setChecked(true);
+  connect(doc, SIGNAL(visibilityChanged(bool)), this, SLOT(onDisplayVisibilityChanged(bool)));
 
 /*  doc = new QDockWidget(tr("Data Table"), this);
   doc->setWidget(view);
@@ -1252,6 +1296,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerToBottom, "layer-to-bottom", "Layer.To Bottom", tr("To &Bottom"), tr(""), true, false, false, m_menubar);
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, true, m_menubar);
+  initAction(m_setBoxOnMapDisplay, "set-box-on-map-display", "Set.Box.On.Map.Display", tr("Set Box on &Map Display"), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
@@ -1374,6 +1419,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->setObjectName("Layer");
   m_layerMenu->setTitle(tr("&Layer"));
 
+  m_layerMenu->addAction(m_setBoxOnMapDisplay);
   m_layerMenu->addAction(m_layerEdit);
   m_layerMenu->addAction(m_layerRename);
   m_layerMenu->addAction(m_layerExport);
@@ -1577,6 +1623,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerGrouping, SIGNAL(triggered()), SLOT(onLayerGroupingTriggered()));
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
+  connect(m_setBoxOnMapDisplay, SIGNAL(triggered()), SLOT(onSetBoxOnMapDisplayTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
   connect(m_mapZoomArea, SIGNAL(toggled(bool)), SLOT(onZoomAreaToggled(bool)));
