@@ -73,7 +73,9 @@ namespace te
             
             te::rst::Raster const* m_inputRasterPtr; //!< Input raster.
             
-            std::vector< unsigned int > m_inputRasterBands; //!< Bands to process from the input raster.
+            unsigned int m_inputRasterBand; //!< Bands to process from the input raster.
+            
+            double m_finiteDifferencesThreshold; //!< A threshold for the finite differences iterative diffusion - valid range [0,1].
             
             InputParameters();
             
@@ -142,10 +144,72 @@ namespace te
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
         
-        bool buildEdgeMap( te::rp::Matrix< double >& magnitudes ) const;
+        /*!
+          \brief Create an Edge Strenght Map from the input image.
+          \param edgeIntensity The created edge intesity map;
+          \param edgeX The vector decomposed X component;
+          \param edgeY The vector decomposed Y component;
+          \return true if OK, false on errors.
+         */          
+        bool getEdgeStrengthMap( 
+          te::rp::Matrix< double >& edgeIntensity,
+          te::rp::Matrix< double >& edgeX, 
+          te::rp::Matrix< double >& edgeY ) const;
         
-        bool buildGradientVectorField( const te::rp::Matrix< double >& magnitudes,
-          te::rp::Matrix< double >& gradVecField ) const;
+        /*!
+          \brief Create the initial vector field from the edge intensity map.
+          \param edgeIntensity The created edge intesity map;
+          \param edgeX The vector decomposed X component;
+          \param edgeY The vector decomposed Y component;
+          \param vecFieldX The vector decomposed X component;
+          \param vecFieldY The vector decomposed Y component;
+          \return true if OK, false on errors.
+         */           
+        bool getInitialVectorField( 
+          const te::rp::Matrix< double >& edgeIntensity,
+          const te::rp::Matrix< double >& edgeX, 
+          const te::rp::Matrix< double >& edgeY,
+          te::rp::Matrix< double >& vecFieldX, 
+          te::rp::Matrix< double >& vecFieldY ) const;
+          
+        /*!
+          \brief Create the diffused vector field.
+          \param inputVecFieldMagnitudes The input vector field intesity map;
+          \param inputVecFieldX The vector decomposed X component;
+          \param inputVecFieldY The vector decomposed Y component;
+          \param diffusedVecFieldMagnitudes The created diffused vector field intesity map;
+          \param diffurseVecFieldX The vector decomposed X component;
+          \param diffusedVecFieldY The vector decomposed Y component;          
+          \return true if OK, false on errors.
+         */            
+        bool getDiffusedVectorField( 
+          const te::rp::Matrix< double >& inputVecFieldX, 
+          const te::rp::Matrix< double >& inputVecFieldY,
+          te::rp::Matrix< double >& diffurseVecFieldX, 
+          te::rp::Matrix< double >& diffusedVecFieldY) const;  
+          
+        /*!
+          \brief Create a tiff file from a matrix.
+          \param matrix The matrix.
+          \param normalize Enable/disable pixel normalization;
+          \param tifFileName Tif file name.
+        */             
+        void createTifFromMatrix( 
+          const te::rp::Matrix< double >& matrix,
+          const bool normalize,
+          const std::string& tifFileName ) const;  
+          
+        /*!
+          \brief Create the skeleton stregth map.
+          \param diffusedVecFieldX The vector decomposed X component;
+          \param diffusedVecFieldY The vector decomposed Y component;
+          \param strenghMap The skeleton stregth map.  
+          \return true if OK, false on errors.
+         */            
+        bool getSkeletonStrengthMap( 
+          const te::rp::Matrix< double >& diffusedVecFieldX, 
+          const te::rp::Matrix< double >& diffusedVecFieldY,
+          te::rp::Matrix< double >& strenghMap ) const;
         
 
     };
