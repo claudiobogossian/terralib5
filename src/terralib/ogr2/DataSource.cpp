@@ -495,12 +495,7 @@ std::vector<std::string> te::ogr::DataSource::getUniqueKeyNames(const std::strin
   throw Exception(TR_OGR("Not implemented for OGR!"));
 }
 
-boost::ptr_vector<te::da::UniqueKey> te::ogr::DataSource::getUniqueKeys(const std::string& datasetName)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-std::auto_ptr<te::da::UniqueKey> te::ogr::DataSource::getUniqueKey(const std::string& datasetName, const std::string& name)
+te::da::UniqueKey* te::ogr::DataSource::getUniqueKey(const std::string& datasetName, const std::string& name)
 {
   throw Exception(TR_OGR("Not implemented for OGR!"));
 }
@@ -520,7 +515,7 @@ std::vector<std::string> te::ogr::DataSource::getIndexNames(const std::string& d
   throw Exception(TR_OGR("Not implemented for OGR!"));
 }
 
-std::auto_ptr<te::da::Index> te::ogr::DataSource::getIndex(const std::string& datasetName, const std::string& name)
+te::da::Index* te::ogr::DataSource::getIndex(const std::string& datasetName, const std::string& name)
 {
   throw Exception(TR_OGR("Not implemented for OGR!"));
 }
@@ -705,7 +700,7 @@ void te::ogr::DataSource::dropPrimaryKey(const std::string& datasetName)
 {
 }
 
-void te::ogr::DataSource::addUniqueKey(const std::string& datasetName, const te::da::UniqueKey* uk)
+void te::ogr::DataSource::addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk)
 {
 }
 
@@ -713,8 +708,8 @@ void te::ogr::DataSource::dropUniqueKey(const std::string& datasetName, const st
 {
 }
 
-void te::ogr::DataSource::addIndex(const std::string& datasetName, const te::da::Index* idx,
-              const std::map<std::string, std::string>& options)
+void te::ogr::DataSource::addIndex(const std::string& datasetName, te::da::Index* idx,
+                                   const std::map<std::string, std::string>& options)
 {
 }              
 

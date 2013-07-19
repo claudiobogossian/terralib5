@@ -417,12 +417,7 @@ std::vector<std::string> te::mem::DataSource::getUniqueKeyNames(const std::strin
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-boost::ptr_vector<te::da::UniqueKey> te::mem::DataSource::getUniqueKeys(const std::string& /*datasetName*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-std::auto_ptr<te::da::UniqueKey> te::mem::DataSource::getUniqueKey(const std::string& /*datasetName*/,
+te::da::UniqueKey* te::mem::DataSource::getUniqueKey(const std::string& /*datasetName*/,
                                                                              const std::string& /*name*/)
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));
@@ -443,8 +438,7 @@ std::vector<std::string> te::mem::DataSource::getIndexNames(const std::string& /
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-std::auto_ptr<te::da::Index> te::mem::DataSource::getIndex(const std::string& /*datasetName*/,
-                                                                     const std::string& /*name*/)
+te::da::Index* te::mem::DataSource::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
@@ -726,8 +720,7 @@ void te::mem::DataSource::dropPrimaryKey(const std::string& /*datasetName*/)
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::addUniqueKey(const std::string& /*datasetName*/,
-                                           const te::da::UniqueKey* /*uk*/)
+void te::mem::DataSource::addUniqueKey(const std::string& /*datasetName*/, te::da::UniqueKey* /*uk*/)
 {
   //DataSource* ds = m_t->getMemDataSource();
 
@@ -781,9 +774,8 @@ void te::mem::DataSource::dropUniqueKey(const std::string& /*datasetName*/,
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::addIndex(const std::string& /*datasetName*/,
-                                       const te::da::Index* /*idx*/,
-                                       const std::map<std::string, std::string>& /*options*/) 
+void te::mem::DataSource::addIndex(const std::string& /*datasetName*/, te::da::Index* /*idx*/,
+                                   const std::map<std::string, std::string>& /*options*/) 
 {
   //DataSource* ds = m_t->getMemDataSource();
 

@@ -291,13 +291,7 @@ std::vector<std::string> te::gdal::DataSource::getUniqueKeyNames(const std::stri
   throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
 }
 
-boost::ptr_vector<te::da::UniqueKey> te::gdal::DataSource::getUniqueKeys(const std::string& /*datasetName*/)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
-}
-
-std::auto_ptr<te::da::UniqueKey> te::gdal::DataSource::getUniqueKey(const std::string& /*datasetName*/,
-                                                                    const std::string& /*name*/) throw (Exception)
+te::da::UniqueKey* te::gdal::DataSource::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
 }
@@ -312,8 +306,7 @@ std::vector<std::string> te::gdal::DataSource::getIndexNames(const std::string& 
   throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
 }
 
-std::auto_ptr<te::da::Index> te::gdal::DataSource::getIndex(const std::string& datasetName,
-                              const std::string& name)
+te::da::Index* te::gdal::DataSource::getIndex(const std::string& datasetName, const std::string& name)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support indexes.")));
 }
@@ -378,31 +371,28 @@ void te::gdal::DataSource::createDataSet(te::da::DataSetType* dt,
   throw(Exception(TR_GDAL("To be implemented.")));
 }
 
-bool te::gdal::DataSource::primarykeyExists(const std::string& /*datasetName*/,
+bool te::gdal::DataSource::primaryKeyExists(const std::string& /*datasetName*/,
                       const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support primary keys.")));
 }
 
-bool te::gdal::DataSource::uniquekeyExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
+bool te::gdal::DataSource::uniqueKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
 }
 
-bool te::gdal::DataSource::foreignkeyExists(const std::string& /*datasetName*/,
-                      const std::string& /*name*/) 
+bool te::gdal::DataSource::foreignKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support foreigns keys."))); 
 }
 
-bool te::gdal::DataSource::checkConstraintExists(const std::string& /*datasetName*/,
-                           const std::string& /*name*/) 
+bool te::gdal::DataSource::checkConstraintExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support check constraints."))); 
 }
 
-bool te::gdal::DataSource::indexExists(const std::string& /*datasetName*/,
-                 const std::string& /*name*/) 
+bool te::gdal::DataSource::indexExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
 { 
   throw(Exception(TR_GDAL("GDAL driver doesn't support check indexes."))); 
 }

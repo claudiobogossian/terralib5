@@ -132,9 +132,7 @@ namespace te
 
         std::vector<std::string> getUniqueKeyNames(const std::string& datasetName);
 
-        boost::ptr_vector<te::da::UniqueKey> getUniqueKeys(const std::string& datasetName);
-
-        std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName, const std::string& name);
+        te::da::UniqueKey* getUniqueKey(const std::string& datasetName, const std::string& name);
 
         std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
 
@@ -142,7 +140,7 @@ namespace te
 
         std::vector<std::string> getIndexNames(const std::string& datasetName);
 
-        std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName, const std::string& name);
+        te::da::Index* getIndex(const std::string& datasetName, const std::string& name);
 
         std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
 
@@ -196,11 +194,11 @@ namespace te
 
         void dropPrimaryKey(const std::string& datasetName);
 
-        void addUniqueKey(const std::string& datasetName, const te::da::UniqueKey* uk);
+        void addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk);
 
         void dropUniqueKey(const std::string& datasetName, const std::string& uniqueKeyName);
 
-        void addIndex(const std::string& datasetName, const te::da::Index* idx,
+        void addIndex(const std::string& datasetName, te::da::Index* idx,
                       const std::map<std::string, std::string>& options); 
 
         void dropIndex(const std::string& datasetName, const std::string& idxName);

@@ -184,8 +184,7 @@ namespace te
       
       boost::ptr_vector<te::da::UniqueKey> getUniqueKeys(const std::string& datasetName);
       
-      std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName,
-                                            const std::string& name);
+      te::da::UniqueKey* getUniqueKey(const std::string& datasetName, const std::string& name);
       
       std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
       
@@ -193,8 +192,7 @@ namespace te
       
       std::vector<std::string> getIndexNames(const std::string& datasetName);
       
-      std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName,
-                                    const std::string& name);
+      te::da::Index* getIndex(const std::string& datasetName, const std::string& name);
       
       std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
       
@@ -217,19 +215,17 @@ namespace te
       
       bool datasetExists(const std::string& name)throw(Exception);
       
-      bool primarykeyExists(const std::string& /*datasetName*/,
+      bool primaryKeyExists(const std::string& /*datasetName*/,
                             const std::string& /*name*/);
       
-      bool uniquekeyExists(const std::string& /*datasetName*/, const std::string& /*name*/);
+      bool uniqueKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/);
       
-      bool foreignkeyExists(const std::string& /*datasetName*/,
-                            const std::string& /*name*/);
+      bool foreignKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/);
       
       bool checkConstraintExists(const std::string& /*datasetName*/,
                                  const std::string& /*name*/);
       
-      bool indexExists(const std::string& /*datasetName*/,
-                       const std::string& /*name*/);
+      bool indexExists(const std::string& /*datasetName*/, const std::string& /*name*/);
       
       bool sequenceExists(const std::string& /*name*/);
       
@@ -263,18 +259,14 @@ namespace te
       
       void dropUniqueKey(const std::string& datasetName, const std::string& uniqueKeyName) {}
       
-      void addIndex(const std::string& datasetName,
-                    const te::da::Index* idx,
+      void addIndex(const std::string& datasetName, te::da::Index* idx,
                     const std::map<std::string, std::string>& options) {}
       
-      void dropIndex(const std::string& datasetName,
-                     const std::string& idxName) {}
+      void dropIndex(const std::string& datasetName, const std::string& idxName) {}
       
-      void addForeignKey(const std::string& datasetName,
-                         const te::da::ForeignKey* fk) {}
+      void addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk) {}
       
-      void dropForeignKey(const std::string& datasetName,
-                          const std::string& fkName) {}
+      void dropForeignKey(const std::string& datasetName, const std::string& fkName) {}
       
       void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc) {}
       

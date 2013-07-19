@@ -550,7 +550,7 @@ namespace te
           \return The primary key of the dataset.
 
           \post The caller will not take the ownership of the returned primary key, 
-                because it belongs to the DataSetType.
+                because it belongs to the dataset schema.
 
           \note Not thread-safe!
         */
@@ -617,7 +617,10 @@ namespace te
 
           \param name The foreign key name.
 
-          \return The foreign key with the given name.
+          \note The caller of this method will not have the ownership of the returned foreign key,
+                because it belongs to the dataset schema.
+
+          \return The foreign key with the given name in the dataset.
 
           \note Not thread-safe!
         */
@@ -659,31 +662,54 @@ namespace te
         virtual std::vector<std::string> getUniqueKeyNames(const std::string& datasetName) = 0;
 
         /*!
-          \brief It searches in the data source for the unique keys associated to the given dataset.
-
-          \param datasetName  The dataset name.
-
-          \return The unique keys of the dataset.
-
-          \note Not thread-safe!
-        */
-        virtual boost::ptr_vector<UniqueKey> getUniqueKeys(const std::string& datasetName) = 0;
-
-        /*!
-          \brief It gets the unique key with the given name.
+          \brief It checks if a unique key with the given name exists in the dataset.
 
           \param datasetName  The dataset name.
           \param name         The unique key name.
 
-          \return The unique key with the given name.
+          \return True, if the unique key exists in the data source; otherwise, it returns false.
 
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<UniqueKey> getUniqueKey(const std::string& datasetName,
-                                                        const std::string& name) = 0;
+        virtual bool uniqueKeyExists(const std::string& datasetName, const std::string& name) = 0;
 
         /*!
-          \brief It searches in the data source the index names associated to the given dataset.
+          \brief It gets the unique key in the dataset with the given name.
+
+          \param datasetName  The dataset name.
+          \param name         The unique key name.
+
+          \note The caller of this method will not have the ownership of the returned unique key,
+                because it belongs to the dataset schema.
+
+          \return The unique key with the given name in the dataset.
+
+          \note Not thread-safe!
+        */
+        virtual te::da::UniqueKey* getUniqueKey(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It adds a unique key constraint to the dataset.
+
+          \param datasetName  The name of the dataset where the unique key will be added.
+          \param uk           The unique key constraint.
+
+          \note Not thread-safe!
+        */
+        virtual void addUniqueKey(const std::string& datasetName, UniqueKey* uk) = 0;
+
+        /*!
+          \brief It removes the unique key constraint from the dataset.
+
+          \param datasetName  The name of the dataset to be removed the unique key.
+          \param name         The unique key constraint name.
+
+          \note Not thread-safe!
+        */
+        virtual void dropUniqueKey(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It searches in the data source for the index names associated to the given dataset.
 
           \param datasetName  The dataset name.
 
@@ -694,17 +720,57 @@ namespace te
         virtual std::vector<std::string> getIndexNames(const std::string& datasetName) = 0;
 
         /*!
-          \brief It gets the index with the given name.
+          \brief It checks if an index with the given name exists in the dataset.
 
           \param datasetName  The dataset name.
           \param name         The index name.
+
+          \return True, if the index exists in the data source; otherwise, it returns false.
+
+          \note Not thread-safe!
+        */
+        virtual bool indexExists(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It gets the index with the given name. in the dataset.
+
+          \param datasetName  The dataset name.
+          \param name         The index name.
+
+          \note The caller of this method will not take the ownership of the returned index,
+                because it belongs to the dataset schema.
 
           \return The index with the given name.
 
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<Index> getIndex(const std::string& datasetName,
-                                              const std::string& name) = 0;
+        virtual Index* getIndex(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It adds an index to the dataset.
+
+          \param datasetName  The dataset where the index will be added.
+          \param idx          The index to be added.
+          \param options      A list of optional modifiers (driver specific).
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void addIndex(const std::string& datasetName, Index* idx,
+                              const std::map<std::string, std::string>& options) = 0; 
+
+        /*!
+          \brief It removes the index from the dataset schema.
+
+          \param datasetName  The dataset where the index will be added.
+          \param idxName      The index to be removed.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void dropIndex(const std::string& datasetName, const std::string& idxName) = 0;
 
         /*!
           \brief It searches in the data source for check constraints associated to the given dataset.
@@ -814,18 +880,6 @@ namespace te
         virtual bool datasetExists(const std::string& name) = 0;
 
         /*!
-          \brief It checks if a unique key with the given name exists in the data source.
-
-          \param datasetName  The dataset name.
-          \param name         The unique key name.
-
-          \return True, if the unique key exists in the data source; otherwise, it returns false.
-
-          \note Not thread-safe!
-        */
-        virtual bool uniqueKeyExists(const std::string& datasetName, const std::string& name) = 0;
-
-        /*!
           \brief It checks if a check-constraint with the given name exists in the data source.
 
           \param datasetName  The dataset name.
@@ -837,19 +891,6 @@ namespace te
         */
         virtual bool checkConstraintExists(const std::string& datasetName,
                                             const std::string& name) = 0;
-
-        /*!
-          \brief It checks if an index with the given name exists in the data source.
-
-          \param datasetName  The dataset name.
-          \param name         The index name.
-
-          \return True, if the index exists in the data source; otherwise, it returns false.
-
-          \note Not thread-safe!
-        */
-        virtual bool indexExists(const std::string& datasetName,
-                                  const std::string& name) = 0;
 
         /*!
           \brief It checks if a sequence with the given name exists in the data source.
@@ -969,60 +1010,6 @@ namespace te
         virtual void renameProperty(const std::string& datasetName,
                                     const std::string& propertyName,
                                     const std::string& newPropertyName) = 0;
-
-
-        /*!
-          \brief It adds a unique key constraint to the DataSetType.
-
-          \param datasetName  The name of the dataset to be added the unique key.
-          \param uk           The unique key constraint.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void addUniqueKey(const std::string& datasetName,
-                                  const UniqueKey* uk) = 0;
-
-        /*!
-          \brief It removes the unique key constraint from the dataset schema.
-
-          \param datasetName    The name of the dataset to be removed the unique key.
-          \param primaryKeyName The unique key constraint name.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropUniqueKey(const std::string& datasetName,
-                                    const std::string& uniqueKeyName) = 0;
-
-        /*!
-          \brief It adds an index to the dataset.
-
-          \param datasetName  The dataset where the index will be added.
-          \param idx          The index to be added.
-          \param options      A list of optional modifiers (driver specific).
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void addIndex(const std::string& datasetName,
-                              const Index* idx,
-                              const std::map<std::string, std::string>& options) = 0; 
-
-        /*!
-          \brief It removes the index from the dataset schema.
-
-          \param datasetName  The dataset where the index will be added.
-          \param idxName      The index to be removed.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropIndex(const std::string& datasetName, const std::string& idxName) = 0;
 
         /*!
           \brief It adds a check constraint to the dataset.
