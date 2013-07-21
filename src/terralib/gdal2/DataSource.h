@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
  
  This file is part of the TerraLib - a Framework for building GIS enabled applications.
  
@@ -109,7 +109,7 @@ namespace te
        
        \param connInfo Key-value-pairs (kvp) with the connection information.
        */
-     void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
+      void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
       
       void open();
       
@@ -170,39 +170,82 @@ namespace te
       
       const te::da::DataSetTypePtr& getDataSetType(const std::string& name);
       
+      std::vector<std::string> getPropertyNames(const std::string& datasetName);
+
       std::size_t getNumberOfProperties(const std::string& datasetName);
-      
+
+      bool propertyExists(const std::string& datasetName, const std::string& name);
+
       boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
-      
-      std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& propertyName);
-      
-      std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
-      
+
+      te::dt::Property* getProperty(const std::string& datasetName, const std::string& name);
+
+      te::dt::Property* getProperty(const std::string& datasetName, std::size_t propertyPos);
+
+      void addProperty(const std::string& datasetName, te::dt::Property* p);
+
+      void dropProperty(const std::string& datasetName, const std::string& propertyName);
+
+      void renameProperty(const std::string& datasetName, const std::string& propertyName, const std::string& newPropertyName);
+
       te::da::PrimaryKey* getPrimaryKey(const std::string& datasetName);
-      
-      std::vector<std::string> getUniqueKeyNames(const std::string& datasetName);
-      
-      boost::ptr_vector<te::da::UniqueKey> getUniqueKeys(const std::string& datasetName);
-      
-      te::da::UniqueKey* getUniqueKey(const std::string& datasetName, const std::string& name);
-      
+
+      bool primaryKeyExists(const std::string& datasetName, const std::string& name);
+
+      void addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk);
+
+      void dropPrimaryKey(const std::string& datasetName);
+
       std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
-      
+
+      bool foreignKeyExists(const std::string& datasetName, const std::string& name);
+
       te::da::ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name);
-      
-      std::vector<std::string> getIndexNames(const std::string& datasetName);
-      
-      te::da::Index* getIndex(const std::string& datasetName, const std::string& name);
-      
+
+      void addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk);
+
+      void dropForeignKey(const std::string& datasetName, const std::string& fkName);
+
+      std::vector<std::string> getUniqueKeyNames(const std::string& datasetName);
+
+      bool uniqueKeyExists(const std::string& datasetName, const std::string& name);
+
+      te::da::UniqueKey* getUniqueKey(const std::string& datasetName, const std::string& name);
+
+      void addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk);
+
+      void dropUniqueKey(const std::string& datasetName, const std::string& name);
+
       std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
-      
-      te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName,
-                                                        const std::string& name);
-      
+
+      bool checkConstraintExists(const std::string& datasetName, const std::string& name);
+
+      te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName, const std::string& name);
+
+      void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc);
+
+      void dropCheckConstraint(const std::string& datasetName, const std::string& name);
+
+      std::vector<std::string> getIndexNames(const std::string& datasetName);
+
+      bool indexExists(const std::string& datasetName, const std::string& name);
+
+      te::da::Index* getIndex(const std::string& datasetName, const std::string& name);
+
+      void addIndex(const std::string& datasetName, te::da::Index* idx, const std::map<std::string, std::string>& options); 
+
+      void dropIndex(const std::string& datasetName, const std::string& idxName);
+
       std::vector<std::string> getSequenceNames();
-      
-      std::auto_ptr<te::da::Sequence> getSequence(const std::string& name);
-      
+
+      bool sequenceExists(const std::string& name);
+
+      te::da::Sequence* getSequence(const std::string& name);
+
+      void createSequence(const te::da::Sequence* sequence);
+
+      void dropSequence(const std::string& name);
+
       std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
                                                 const std::string& propertyName);
       
@@ -213,21 +256,7 @@ namespace te
       
       bool hasDataSets();
       
-      bool datasetExists(const std::string& name)throw(Exception);
-      
-      bool primaryKeyExists(const std::string& /*datasetName*/,
-                            const std::string& /*name*/);
-      
-      bool uniqueKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/);
-      
-      bool foreignKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/);
-      
-      bool checkConstraintExists(const std::string& /*datasetName*/,
-                                 const std::string& /*name*/);
-      
-      bool indexExists(const std::string& /*datasetName*/, const std::string& /*name*/);
-      
-      bool sequenceExists(const std::string& /*name*/);
+      bool dataSetExists(const std::string& name)throw(Exception);
       
       void createDataSet(te::da::DataSetType* dt,
                          const std::map<std::string, std::string>& options);
@@ -241,41 +270,6 @@ namespace te
       void renameDataSet(const std::string& name,
                          const std::string& newName)throw(Exception);
       
-      void addProperty(const std::string& datasetName,
-                       const te::dt::Property* p);
-      
-      void dropProperty(const std::string& datasetName,
-                        const std::string& propertyName);
-      
-      void renameProperty(const std::string& datasetName,
-                          const std::string& propertyName,
-                          const std::string& newPropertyName);
-      
-      void addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk) {}
-      
-      void dropPrimaryKey(const std::string& datasetName) {}
-      
-      void addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk) {}
-      
-      void dropUniqueKey(const std::string& datasetName, const std::string& uniqueKeyName) {}
-      
-      void addIndex(const std::string& datasetName, te::da::Index* idx,
-                    const std::map<std::string, std::string>& options) {}
-      
-      void dropIndex(const std::string& datasetName, const std::string& idxName) {}
-      
-      void addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk) {}
-      
-      void dropForeignKey(const std::string& datasetName, const std::string& fkName) {}
-      
-      void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc) {}
-      
-      void dropCheckConstraint(const std::string& datasetName, const std::string& name) {}
-      
-      void createSequence(const te::da::Sequence* sequence) {}
-      
-      void dropSequence(const std::string& name){}
-      
       void add(const std::string& datasetName,
                te::da::DataSet* d,
                const std::map<std::string, std::string>& options,
@@ -285,11 +279,11 @@ namespace te
                   const te::da::ObjectIdSet* oids = 0);
       
       void update(const std::string& datasetName,
-             te::da::DataSet* dataset,
-             const std::vector<std::size_t>& properties,
-             const te::da::ObjectIdSet* oids,
-             const std::map<std::string, std::string>& options,
-             std::size_t limit = 0);
+                  te::da::DataSet* dataset,
+                  const std::vector<std::size_t>& properties,
+                  const te::da::ObjectIdSet* oids,
+                  const std::map<std::string, std::string>& options,
+                  std::size_t limit = 0);
       
       void optimize(const std::map<std::string, std::string>& opInfo);
       

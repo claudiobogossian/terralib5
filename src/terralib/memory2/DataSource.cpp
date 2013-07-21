@@ -179,7 +179,6 @@ class te::mem::DataSource::Impl
       return (p == 0) ? 0 : p->clone();
     }
 
-
     std::map<std::string, std::string> m_connInfo;                  //!< DataSource information.
     std::map<std::string, DataSetPtr> m_datasets;                   //!< The set of datasets stored in memory.
     std::map<std::string, te::da::DataSetTypePtr> m_schemas;        //!< The set of dataset schemas.
@@ -385,9 +384,19 @@ const te::da::DataSetTypePtr& te::mem::DataSource::getDataSetType(const std::str
   return m_pImpl->getDataSetType(name);
 }
 
+std::vector<std::string> te::mem::DataSource::getPropertyNames(const std::string& datasetName)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
 std::size_t te::mem::DataSource::getNumberOfProperties(const std::string& datasetName)
 {
   return m_pImpl->getNumberOfProperties(datasetName);
+}
+
+bool te::mem::DataSource::propertyExists(const std::string& datasetName, const std::string& name)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
 boost::ptr_vector<te::dt::Property> te::mem::DataSource::getProperties(const std::string& datasetName)
@@ -395,198 +404,17 @@ boost::ptr_vector<te::dt::Property> te::mem::DataSource::getProperties(const std
   return m_pImpl->getProperties(datasetName);
 }
 
-std::auto_ptr<te::dt::Property>te::mem::DataSource:: getProperty(const std::string& datasetName,
-                                                                     const std::string& propertyName)
+te::dt::Property* te::mem::DataSource:: getProperty(const std::string& datasetName, const std::string& name)
 {
-  return std::auto_ptr<te::dt::Property>(m_pImpl->getProperty(datasetName, propertyName));
+  return m_pImpl->getProperty(datasetName, name);
 }
 
-std::auto_ptr<te::dt::Property> te::mem::DataSource::getProperty(const std::string& datasetName,
-                                                                     std::size_t propertyPos)
+te::dt::Property* te::mem::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
-  return std::auto_ptr<te::dt::Property>(m_pImpl->getProperty(datasetName, propertyPos));
+  return m_pImpl->getProperty(datasetName, propertyPos);
 }
 
-te::da::PrimaryKey* te::mem::DataSource::getPrimaryKey(const std::string& /*datasetName*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-std::vector<std::string> te::mem::DataSource::getUniqueKeyNames(const std::string& /*datasetName*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-te::da::UniqueKey* te::mem::DataSource::getUniqueKey(const std::string& /*datasetName*/,
-                                                                             const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-std::vector<std::string> te::mem::DataSource::getForeignKeyNames(const std::string& /*datasetName*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-te::da::ForeignKey* te::mem::DataSource::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-std::vector<std::string> te::mem::DataSource::getIndexNames(const std::string& /*datasetName*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-te::da::Index* te::mem::DataSource::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-std::vector<std::string> te::mem::DataSource::getCheckConstraintNames(const std::string& /*datasetName*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-te::da::CheckConstraint* te::mem::DataSource::getCheckConstraint(const std::string& /*datasetName*/,
-                                                                                         const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-std::vector<std::string> te::mem::DataSource::getSequenceNames()
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-std::auto_ptr<te::da::Sequence> te::mem::DataSource::getSequence(const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-std::auto_ptr<te::gm::Envelope> te::mem::DataSource::getExtent(const std::string& /*datasetName*/,
-                                                                   const std::string& /*propertyName*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-std::auto_ptr<te::gm::Envelope> te::mem::DataSource::getExtent(const std::string& /*datasetName*/,
-                                                                   std::size_t /*propertyPos*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-std::size_t te::mem::DataSource::getNumberOfItems(const std::string& /*datasetName*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-bool te::mem::DataSource::hasDataSets()
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-bool te::mem::DataSource::datasetExists(const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-bool te::mem::DataSource::primaryKeyExists(const std::string& /*datasetName*/,
-                                               const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-bool te::mem::DataSource::uniqueKeyExists(const std::string& /*datasetName*/,
-                                              const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-bool te::mem::DataSource::foreignKeyExists(const std::string& /*datasetName*/,
-                                               const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-bool te::mem::DataSource::checkConstraintExists(const std::string& /*datasetName*/,
-                                                    const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-bool te::mem::DataSource::indexExists(const std::string& /*datasetName*/,
-                                          const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-bool te::mem::DataSource::sequenceExists(const std::string& /*name*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-void te::mem::DataSource::createDataSet(te::da::DataSetType* dt,
-                                            const std::map<std::string, std::string>& /*options*/)
-{
-  boost::lock_guard<boost::recursive_mutex> lock(m_pImpl->m_mtx);
-
-  if(m_pImpl->m_schemas.find(dt->getName()) != m_pImpl->m_schemas.end())
-    throw Exception((boost::format(TR_MEMORY("A dataset with the same name (%1%) already exists!")) % dt->getName()).str());
-
-  DataSetPtr dataset(new DataSet(dt));
-
-  m_pImpl->m_datasets[dt->getName()] = dataset;
-}
-
-void te::mem::DataSource::cloneDataSet(const std::string& /*name*/,
-                                           const std::string& /*cloneName*/,
-                                           const std::map<std::string, std::string>& /*options*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-void te::mem::DataSource::dropDataSet(const std::string& /*name*/)
-{
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(!ds->datasetExists(datasetName))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% doesn't exist!")) % datasetName).str());
-
-  //ds->remove(datasetName);
-
-  //if(ds->getCatalog() && ds->getCatalog()->datasetExists(datasetName))
-  //{
-  //  te::da::DataSetTypePtr dt = ds->getCatalog()->getDataSetType(datasetName);
-
-  //  ds->getCatalog()->remove(dt.get());
-  //}
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-void te::mem::DataSource::renameDataSet(const std::string& /*name*/,
-                                            const std::string& /*newName*/)
-{
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
-
-  //std::string oldName = dt->getName();
-
-  //if(dt->getCatalog())
-  //  ds->getCatalog()->rename(dt, newName);
-
-  //ds->rename(oldName, newName);
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-void te::mem::DataSource::addProperty(const std::string& /*datasetName*/,
-                                          const te::dt::Property* /*p*/)
+void te::mem::DataSource::addProperty(const std::string& /*datasetName*/, te::dt::Property* /*p*/)
 {
 //  DataSource* ds = m_t->getMemDataSource();
 //
@@ -642,8 +470,8 @@ void te::mem::DataSource::dropProperty(const std::string& /*datasetName*/,
 }
 
 void te::mem::DataSource::renameProperty(const std::string& /*datasetName*/,
-                                             const std::string& /*propertyName*/,
-                                             const std::string& /*newPropertyName*/)
+                                         const std::string& /*name*/,
+                                         const std::string& /*newName*/)
 {
   //DataSource* ds = m_t->getMemDataSource();
 
@@ -660,6 +488,16 @@ void te::mem::DataSource::renameProperty(const std::string& /*datasetName*/,
 
   //p->setName(newName);
 
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+te::da::PrimaryKey* te::mem::DataSource::getPrimaryKey(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+bool te::mem::DataSource::primaryKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
@@ -720,114 +558,18 @@ void te::mem::DataSource::dropPrimaryKey(const std::string& /*datasetName*/)
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::addUniqueKey(const std::string& /*datasetName*/, te::da::UniqueKey* /*uk*/)
+std::vector<std::string> te::mem::DataSource::getForeignKeyNames(const std::string& /*datasetName*/)
 {
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
-
-  //if(ds->getDataSet(dt->getName())->getType()->getUniqueKey(uk->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% already has a Unique Key with this name (%2%)!")) % dt->getName() % uk->getName()).str());
-
-  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
-
-  //te::da::UniqueKey* newUk = new te::da::UniqueKey(uk->getName(), dsDt);
-
-  //for(std::size_t i = 0; i < uk->getProperties().size(); ++i)
-  //{
-  //   const te::dt::Property* p = uk->getProperties()[i];
-
-  //   te::dt::Property* dsP = dsDt->getProperty(p->getName());
-
-  //   newUk->add(dsP);
-  //}
-
-  //dt->add(uk);
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::dropUniqueKey(const std::string& /*datasetName*/,
-                                            const std::string& /*uniqueKeyName*/)
+bool te::mem::DataSource::foreignKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //te::da::DataSetType* dt = uk->getDataSetType();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
-  //
-  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
-
-  //if(!dsDt->getUniqueKey(uk->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The Unique Key %1% not exists!")) % uk->getName()).str());
-  //  
-  //if(dsDt != dt)
-  //  dsDt->remove(dsDt->getUniqueKey(uk->getName()));
-
-  //if(ds->getCatalog()->getDataSetType(dsDt->getName()))
-  //  ds->getCatalog()->getDataSetType(dsDt->getName())->remove(dsDt->getUniqueKey(uk->getName()));
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::addIndex(const std::string& /*datasetName*/, te::da::Index* /*idx*/,
-                                   const std::map<std::string, std::string>& /*options*/) 
+te::da::ForeignKey* te::mem::DataSource::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
-
-  //if(ds->getDataSet(dt->getName())->getType()->getIndex(index->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% already has a Index with this name (%2%)!")) % dt->getName() % index->getName()).str());
-
-  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
-
-  //te::da::Index* newIndex = new te::da::Index(index->getName(), index->getIndexType(), dsDt);
-
-  //for(std::size_t i = 0; i < index->getProperties().size(); ++i)
-  //{
-  //   const te::dt::Property* p = index->getProperties()[i];
-
-  //   te::dt::Property* dsP = dsDt->getProperty(p->getName());
-
-  //   newIndex->add(dsP);
-  //}
-
-  //dt->add(index);
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-void te::mem::DataSource::dropIndex(const std::string& /*datasetName*/,
-                                        const std::string& /*idxName*/)
-{
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //te::da::DataSetType* dt = index->getDataSetType();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
-  //
-  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
-
-  //if(!dsDt->getIndex(index->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The Index %1% not exists!")) % index->getName()).str());
-
-  //dsDt->remove(dsDt->getIndex(index->getName()));
-
-  //if(dsDt != dt)
-  //  dt->remove(index);
-
-  //if(ds->getCatalog()->getDataSetType(dsDt->getName()))
-  //  ds->getCatalog()->getDataSetType(dsDt->getName())->remove(index);
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
@@ -900,6 +642,90 @@ void te::mem::DataSource::dropForeignKey(const std::string& /*datasetName*/,
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
+std::vector<std::string> te::mem::DataSource::getUniqueKeyNames(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+bool te::mem::DataSource::uniqueKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+te::da::UniqueKey* te::mem::DataSource::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+void te::mem::DataSource::addUniqueKey(const std::string& /*datasetName*/, te::da::UniqueKey* /*uk*/)
+{
+  //DataSource* ds = m_t->getMemDataSource();
+
+  //DataSource::LockWrite l(ds);
+
+  //if(!ds->datasetExists(dt->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
+
+  //if(ds->getDataSet(dt->getName())->getType()->getUniqueKey(uk->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% already has a Unique Key with this name (%2%)!")) % dt->getName() % uk->getName()).str());
+
+  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
+
+  //te::da::UniqueKey* newUk = new te::da::UniqueKey(uk->getName(), dsDt);
+
+  //for(std::size_t i = 0; i < uk->getProperties().size(); ++i)
+  //{
+  //   const te::dt::Property* p = uk->getProperties()[i];
+
+  //   te::dt::Property* dsP = dsDt->getProperty(p->getName());
+
+  //   newUk->add(dsP);
+  //}
+
+  //dt->add(uk);
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+void te::mem::DataSource::dropUniqueKey(const std::string& /*datasetName*/,
+                                            const std::string& /*uniqueKeyName*/)
+{
+  //DataSource* ds = m_t->getMemDataSource();
+
+  //te::da::DataSetType* dt = uk->getDataSetType();
+
+  //DataSource::LockWrite l(ds);
+
+  //if(!ds->datasetExists(dt->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
+  //
+  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
+
+  //if(!dsDt->getUniqueKey(uk->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The Unique Key %1% not exists!")) % uk->getName()).str());
+  //  
+  //if(dsDt != dt)
+  //  dsDt->remove(dsDt->getUniqueKey(uk->getName()));
+
+  //if(ds->getCatalog()->getDataSetType(dsDt->getName()))
+  //  ds->getCatalog()->getDataSetType(dsDt->getName())->remove(dsDt->getUniqueKey(uk->getName()));
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+std::vector<std::string> te::mem::DataSource::getCheckConstraintNames(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+bool te::mem::DataSource::checkConstraintExists(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+te::da::CheckConstraint* te::mem::DataSource::getCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
 void te::mem::DataSource::addCheckConstraint(const std::string& /*datasetName*/, te::da::CheckConstraint* /*cc*/)
 {
   //DataSource* ds = m_t->getMemDataSource();
@@ -920,8 +746,7 @@ void te::mem::DataSource::addCheckConstraint(const std::string& /*datasetName*/,
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::dropCheckConstraint(const std::string& /*datasetName*/,
-                                                  const std::string& /*name*/)
+void te::mem::DataSource::dropCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   //DataSource* ds = m_t->getMemDataSource();
 
@@ -942,6 +767,93 @@ void te::mem::DataSource::dropCheckConstraint(const std::string& /*datasetName*/
 
   //if(ds->getCatalog()->getDataSetType(dsDt->getName()))
   //  ds->getCatalog()->getDataSetType(dsDt->getName())->remove(dsDt->getCheckConstraint(cc->getName()));
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+std::vector<std::string> te::mem::DataSource::getIndexNames(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+bool te::mem::DataSource::indexExists(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+te::da::Index* te::mem::DataSource::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+void te::mem::DataSource::addIndex(const std::string& /*datasetName*/, te::da::Index* /*idx*/,
+                                   const std::map<std::string, std::string>& /*options*/) 
+{
+  //DataSource* ds = m_t->getMemDataSource();
+
+  //DataSource::LockWrite l(ds);
+
+  //if(!ds->datasetExists(dt->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
+
+  //if(ds->getDataSet(dt->getName())->getType()->getIndex(index->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% already has a Index with this name (%2%)!")) % dt->getName() % index->getName()).str());
+
+  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
+
+  //te::da::Index* newIndex = new te::da::Index(index->getName(), index->getIndexType(), dsDt);
+
+  //for(std::size_t i = 0; i < index->getProperties().size(); ++i)
+  //{
+  //   const te::dt::Property* p = index->getProperties()[i];
+
+  //   te::dt::Property* dsP = dsDt->getProperty(p->getName());
+
+  //   newIndex->add(dsP);
+  //}
+
+  //dt->add(index);
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+void te::mem::DataSource::dropIndex(const std::string& /*datasetName*/,
+                                        const std::string& /*idxName*/)
+{
+  //DataSource* ds = m_t->getMemDataSource();
+
+  //te::da::DataSetType* dt = index->getDataSetType();
+
+  //DataSource::LockWrite l(ds);
+
+  //if(!ds->datasetExists(dt->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
+  //
+  //te::da::DataSetType* dsDt = ds->getDataSet(dt->getName())->getType();
+
+  //if(!dsDt->getIndex(index->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The Index %1% not exists!")) % index->getName()).str());
+
+  //dsDt->remove(dsDt->getIndex(index->getName()));
+
+  //if(dsDt != dt)
+  //  dt->remove(index);
+
+  //if(ds->getCatalog()->getDataSetType(dsDt->getName()))
+  //  ds->getCatalog()->getDataSetType(dsDt->getName())->remove(index);
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+std::vector<std::string> te::mem::DataSource::getSequenceNames()
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+bool te::mem::DataSource::sequenceExists(const std::string& /*name*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+te::da::Sequence* te::mem::DataSource::getSequence(const std::string& /*name*/)
+{
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
@@ -977,10 +889,94 @@ void te::mem::DataSource::dropSequence(const std::string& /*name*/)
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
+std::auto_ptr<te::gm::Envelope> te::mem::DataSource::getExtent(const std::string& /*datasetName*/, const std::string& /*propertyName*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+std::auto_ptr<te::gm::Envelope> te::mem::DataSource::getExtent(const std::string& /*datasetName*/, std::size_t /*propertyPos*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+std::size_t te::mem::DataSource::getNumberOfItems(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+bool te::mem::DataSource::hasDataSets()
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+bool te::mem::DataSource::dataSetExists(const std::string& /*name*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+void te::mem::DataSource::createDataSet(te::da::DataSetType* dt,
+                                        const std::map<std::string, std::string>& /*options*/)
+{
+  boost::lock_guard<boost::recursive_mutex> lock(m_pImpl->m_mtx);
+
+  if(m_pImpl->m_schemas.find(dt->getName()) != m_pImpl->m_schemas.end())
+    throw Exception((boost::format(TR_MEMORY("A dataset with the same name (%1%) already exists!")) % dt->getName()).str());
+
+  DataSetPtr dataset(new DataSet(dt));
+
+  m_pImpl->m_datasets[dt->getName()] = dataset;
+}
+
+void te::mem::DataSource::cloneDataSet(const std::string& /*name*/,
+                                       const std::string& /*cloneName*/,
+                                       const std::map<std::string, std::string>& /*options*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+void te::mem::DataSource::dropDataSet(const std::string& /*name*/)
+{
+  //DataSource* ds = m_t->getMemDataSource();
+
+  //DataSource::LockWrite l(ds);
+
+  //if(!ds->datasetExists(datasetName))
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% doesn't exist!")) % datasetName).str());
+
+  //ds->remove(datasetName);
+
+  //if(ds->getCatalog() && ds->getCatalog()->datasetExists(datasetName))
+  //{
+  //  te::da::DataSetTypePtr dt = ds->getCatalog()->getDataSetType(datasetName);
+
+  //  ds->getCatalog()->remove(dt.get());
+  //}
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+void te::mem::DataSource::renameDataSet(const std::string& /*name*/,
+                                        const std::string& /*newName*/)
+{
+  //DataSource* ds = m_t->getMemDataSource();
+
+  //DataSource::LockWrite l(ds);
+
+  //if(!ds->datasetExists(dt->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
+
+  //std::string oldName = dt->getName();
+
+  //if(dt->getCatalog())
+  //  ds->getCatalog()->rename(dt, newName);
+
+  //ds->rename(oldName, newName);
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
 void te::mem::DataSource::add(const std::string& /*datasetName*/,
-                                  te::da::DataSet* /*d*/,
-                                  const std::map<std::string, std::string>& /*options*/,
-                                  std::size_t /*limit*/)
+                              te::da::DataSet* /*d*/,
+                              const std::map<std::string, std::string>& /*options*/,
+                              std::size_t /*limit*/)
 {
   //DataSource* ds = m_t->getMemDataSource();
 
@@ -995,8 +991,7 @@ void te::mem::DataSource::add(const std::string& /*datasetName*/,
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::remove(const std::string& /*datasetName*/,
-                                     const te::da::ObjectIdSet* /*oids*/)
+void te::mem::DataSource::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
 {
   //DataSource* ds = m_t->getMemDataSource();
 
@@ -1012,11 +1007,11 @@ void te::mem::DataSource::remove(const std::string& /*datasetName*/,
 }
 
 void te::mem::DataSource::update(const std::string& /*datasetName*/,
-                                     te::da::DataSet* /*dataset*/,
-                                     const std::vector<std::size_t>& /*properties*/,
-                                     const te::da::ObjectIdSet* /*oids*/,
-                                     const std::map<std::string, std::string>& /*options*/,
-                                     std::size_t /*limit*/)
+                                 te::da::DataSet* /*dataset*/,
+                                 const std::vector<std::size_t>& /*properties*/,
+                                 const te::da::ObjectIdSet* /*oids*/,
+                                 const std::map<std::string, std::string>& /*options*/,
+                                 std::size_t /*limit*/)
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
