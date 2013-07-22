@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/classification/core/Exception.h
+  \file terralib/classification/Exception.h
 
   \brief An exception class for the Classification module.
 */
 
-#ifndef __TERRALIB_CLASSIFICATION_CORE_INTERNAL_EXCEPTION_H
-#define __TERRALIB_CLASSIFICATION_CORE_INTERNAL_EXCEPTION_H
+#ifndef __TERRALIB_CLASSIFICATION_INTERNAL_EXCEPTION_H
+#define __TERRALIB_CLASSIFICATION_INTERNAL_EXCEPTION_H
 
 // TerraLib
 #include "../common/Exception.h"
@@ -39,4 +39,4 @@ namespace te
   }   // end namespace cl
 }     // end namespace te
 
-#endif  // __TERRALIB_CLASSIFICATION_CORE_INTERNAL_EXCEPTION_H
+#endif  // __TERRALIB_CLASSIFICATION_INTERNAL_EXCEPTION_H

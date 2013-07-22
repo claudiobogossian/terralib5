@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.cpp
+  \file terralib/classification/Module.cpp
 
   \brief This singleton defines the TerraLib Classification module entry.
 */
@@ -31,7 +31,6 @@
 #include "Module.h"
 
 const te::cl::Module& sm_module = te::cl::Module::getInstance();
-
 
 te::cl::Module::Module()
 {

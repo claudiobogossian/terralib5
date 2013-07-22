@@ -334,7 +334,7 @@ namespace te
     };
 // implementation of abstract position iterator
     template<class T> te::rst::AbstractPositionIterator<T>::AbstractPositionIterator()
-      : m_rasternd(0)
+      : m_raster(0)
     {
     }
 

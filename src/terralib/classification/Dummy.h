@@ -27,12 +27,12 @@
 #define __TERRALIB_CLASSIFICATION_INTERNAL_DUMMY_H
 
 // TerraLib
-#include "../../common/AbstractParameters.h"
-#include "../../geometry/Coord2D.h"
-#include "../../geometry/Envelope.h"
-#include "../../geometry/Point.h"
-#include "../../geometry/Polygon.h"
-#include "../../raster/Grid.h"
+#include "../common/AbstractParameters.h"
+#include "../geometry/Coord2D.h"
+#include "../geometry/Envelope.h"
+#include "../geometry/Point.h"
+#include "../geometry/Polygon.h"
+#include "../raster/Grid.h"
 #include "Config.h"
 #include "Exception.h"
 

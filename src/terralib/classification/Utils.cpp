@@ -18,7 +18,7 @@
 */
 
 /*!
-  \file terralib\classification\core\Utils.cpp
+  \file terralib/classification/Utils.cpp
 
   \brief Utility functions for Classification.
 */
@@ -30,6 +30,9 @@
 #include "Enums.h"
 #include "Exception.h"
 #include "Utils.h"
+
+// STL
+#include <math.h>
 
 double te::cl::GetEuclideanDistance(std::vector<double> v1, std::vector<double> v2)
 {

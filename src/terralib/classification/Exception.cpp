@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/classification/core/Exception.cpp
+  \file terralib/classification/Exception.cpp
 
   \brief An exception class for the Classification module.
 */

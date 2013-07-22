@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/classification/core/Config.h
+  \file terralib/classification/Config.h
 
   \brief Configuration flags for the Terrralib Classification module.
  */
 
-#ifndef __TERRALIB_CLASSIFICATION_CORE_INTERNAL_CONFIG_H
-#define __TERRALIB_CLASSIFICATION_CORE_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_CLASSIFICATION_INTERNAL_CONFIG_H
+#define __TERRALIB_CLASSIFICATION_INTERNAL_CONFIG_H
 
 // TerraLib
 #include "../Config.h"
@@ -100,5 +100,5 @@
 
 //@}
 
-#endif  // __TERRALIB_CLASSIFICATION_CORE_INTERNAL_CONFIG_H
+#endif  // __TERRALIB_CLASSIFICATION_INTERNAL_CONFIG_H
 

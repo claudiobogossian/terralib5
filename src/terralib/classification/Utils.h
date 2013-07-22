@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/classification/core/Utils.h
+  \file terralib/classification/Utils.h
 
   \brief Utility functions for Classification.
 */
 
-#ifndef __TERRALIB_CLASSIFICATION_CORE_INTERNAL_UTILS_H
-#define __TERRALIB_CLASSIFICATION_CORE_INTERNAL_UTILS_H
+#ifndef __TERRALIB_CLASSIFICATION_INTERNAL_UTILS_H
+#define __TERRALIB_CLASSIFICATION_INTERNAL_UTILS_H
 
 // TerraLib
 #include "../maptools/DataSetLayer.h"
@@ -53,4 +53,4 @@ namespace te
   }  // end namespace cl
 }    // end namespace te
 
-#endif  // __TERRALIB_CLASSIFICATION_CORE_INTERNAL_UTILS_H
+#endif  // __TERRALIB_CLASSIFICATION_INTERNAL_UTILS_H

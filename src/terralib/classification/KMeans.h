@@ -20,7 +20,7 @@
 /*!
   \file terralib/classification/KMeans.h
 
-  \brief KMeans classifier (just for testing purposes).
+  \brief KMeans strategy for classification.
 */
 
 #ifndef __TERRALIB_CLASSIFICATION_INTERNAL_KMEANS_H
@@ -36,7 +36,9 @@
 
 // STL
 #include <iostream>
+#include <math.h>
 #include <stdlib.h>
+#include <map>
 #include <vector>
 
 namespace te

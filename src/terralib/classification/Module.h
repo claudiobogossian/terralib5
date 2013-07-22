@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file Module.h
-   
+  \file terralib/classification/Module.h
+
   \brief This singleton defines the TerraLib Classification module entry.
 */
 
-#ifndef __TERRALIB_CLASSIFICATION_CORE_INTERNAL_MODULE_H
-#define __TERRALIB_CLASSIFICATION_CORE_INTERNAL_MODULE_H
+#ifndef __TERRALIB_CLASSIFICATION_INTERNAL_MODULE_H
+#define __TERRALIB_CLASSIFICATION_INTERNAL_MODULE_H
 
 // TerraLib
 #include "../common/Singleton.h"
@@ -73,5 +73,5 @@ namespace te
   }   // end namespace cl
 }     // end namespace te
 
-#endif  // __TERRALIB_CLASSIFICATION_CORE_INTERNAL_MODULE_H
+#endif  // __TERRALIB_CLASSIFICATION_INTERNAL_MODULE_H
 

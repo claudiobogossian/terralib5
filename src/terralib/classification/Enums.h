@@ -18,14 +18,14 @@
 */
 
 /*!
-  \file terralib/classification/core/Enums.h
+  \file terralib/classification/Enums.h
 
   \brief Enumerations related to the Classification module.
 */
 
 
-#ifndef __TERRALIB_CLASSIFICATION_CORE_INTERNAL_ENUMS_H
-#define __TERRALIB_CLASSIFICATION_CORE_INTERNAL_ENUMS_H
+#ifndef __TERRALIB_CLASSIFICATION_INTERNAL_ENUMS_H
+#define __TERRALIB_CLASSIFICATION_INTERNAL_ENUMS_H
 
 namespace te
 {
@@ -56,4 +56,4 @@ namespace te
   }
 }
 
-#endif // __TERRALIB_CLASSIFICATION_CORE_INTERNAL_ENUMS_H
+#endif // __TERRALIB_CLASSIFICATION_INTERNAL_ENUMS_H
