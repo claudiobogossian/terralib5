@@ -27,7 +27,7 @@
 #define __TERRALIB_CLASSIFICATION_CORE_INTERNAL_CONFIG_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 #define TE_CL_MODULE_NAME "te.classification"
 

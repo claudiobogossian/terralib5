@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -15,28 +15,35 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
- */
-
-/*!
-  \file terralib/classification/core/Exception.h
-
-  \brief An exception class for the Classification module.
 */
 
-#ifndef __TERRALIB_CLASSIFICATION_CORE_INTERNAL_EXCEPTION_H
-#define __TERRALIB_CLASSIFICATION_CORE_INTERNAL_EXCEPTION_H
+/*!
+  \file terralib\classification\core\Utils.cpp
+
+  \brief Utility functions for Classification.
+*/
 
 // TerraLib
-#include "../../common/Exception.h"
+#include "../common/Translator.h"
+#include "../dataaccess/dataset/DataSet.h"
 #include "Config.h"
+#include "Enums.h"
+#include "Exception.h"
+#include "Utils.h"
 
-namespace te
+double te::cl::GetEuclideanDistance(std::vector<double> v1, std::vector<double> v2)
 {
-  namespace cl
+  assert(v1.size() == v2.size());
+
+  double distance = 0.0;
+  double v1minusv2;
+  for (unsigned int i = 0; i < v1.size(); i++)
   {
-    TE_DECLARE_EXCEPTION_CLASS(TECLEXPORT, Exception, te::common::Exception)
+    v1minusv2 = v1[i] - v2[i];
+    distance += v1minusv2 * v1minusv2;
+  }
+  if (distance < 0)
+    distance = 0.0;
 
-  }   // end namespace cl
-}     // end namespace te
-
-#endif  // __TERRALIB_CLASSIFICATION_CORE_INTERNAL_EXCEPTION_H
+  return sqrt(distance);
+}

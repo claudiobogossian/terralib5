@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -15,19 +15,28 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
-*/
+ */
 
 /*!
-  \file terralib\classification\core\Utils.cpp
+  \file terralib/classification/core/Exception.h
 
-  \brief Utility functions for Classification.
+  \brief An exception class for the Classification module.
 */
 
-// TerraLib
-#include "../../common/Translator.h"
-#include "../../dataaccess/dataset/DataSet.h"
-#include "Config.h"
-#include "Enums.h"
-#include "Exception.h"
-#include "Utils.h"
+#ifndef __TERRALIB_CLASSIFICATION_CORE_INTERNAL_EXCEPTION_H
+#define __TERRALIB_CLASSIFICATION_CORE_INTERNAL_EXCEPTION_H
 
+// TerraLib
+#include "../common/Exception.h"
+#include "Config.h"
+
+namespace te
+{
+  namespace cl
+  {
+    TE_DECLARE_EXCEPTION_CLASS(TECLEXPORT, Exception, te::common::Exception)
+
+  }   // end namespace cl
+}     // end namespace te
+
+#endif  // __TERRALIB_CLASSIFICATION_CORE_INTERNAL_EXCEPTION_H

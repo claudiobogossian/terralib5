@@ -77,16 +77,6 @@ namespace te
     */
     TERPEXPORT std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints = 1000);
 
-    /*!
-      \brief Computes euclidean distance between two double vectors.
-
-      \param v1    The first vector.
-      \param v2    The second vector.
-
-      \return The euclidean distance between v1 and v2.
-    */
-    TERPEXPORT double GetEuclideanDistance(std::vector<double> v1, std::vector<double> v2);
-
   } // end namespace rp
 }   // end namespace te
 

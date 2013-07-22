@@ -584,12 +584,12 @@ void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<do
   {
     te::gm::Polygon* polygon = static_cast<te::gm::Polygon*> (g[i]);
 
-    te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(band, polygon);
-    te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(band, polygon);
+    te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(band->getRaster(), polygon);
+    te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(band->getRaster(), polygon);
 
     while (it != itend)
     {
-      setValue(it.getCol(), it.getRow(), vp[i]);
+      setValue(it.getColumn(), it.getRow(), vp[i]);
 
       ++it;
     }

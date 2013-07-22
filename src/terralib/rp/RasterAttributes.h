@@ -84,16 +84,17 @@ namespace te
         /*!
           \brief Returns the pixel values for the band, inside the polygon.
 
-          \param band        The input band.
+          \param raster      The input raster.
+          \param band        The position of the input band.
           \param polygon     The input polygon.
 
           \return The pixel values for the band, inside the polygon.
 
           \warning Band and polygon must fit.
         */
-        std::vector<std::complex<double> > getValuesFromBand(const te::rst::Band& band, const te::gm::Polygon& polygon);
+        std::vector<std::complex<double> > getValuesFromBand(const te::rst::Raster& raster, unsigned int band, const te::gm::Polygon& polygon);
 
-        /*!
+          /*!
           \brief Returns the pixel values for all the bands in raster, inside the polygon.
 
           \param raster      The input band.
