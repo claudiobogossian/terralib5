@@ -255,7 +255,7 @@ namespace te
 
         te::da::Sequence* getSequence(const std::string& name);
 
-        void createSequence(const te::da::Sequence* sequence);
+        void addSequence(te::da::Sequence* sequence);
 
         void dropSequence(const std::string& name);
 
@@ -483,6 +483,18 @@ namespace te
           \return The dataset indexes.
         */
         void getIndexes(te::da::DataSetTypePtr& dt);
+
+        /*!
+          \brief It gets information about all the sequences in the datasource.
+
+          \exception It throws an exception if the sequences cannot be loaded.
+
+          \return The list of sequences in the data source,
+
+          \note Not thread-safe!
+          \note PostGIS driver extended method.
+        */
+        std::vector<te::da::Sequence*> getSequences();
 
         void create(const std::map<std::string, std::string>& dsInfo);
 

@@ -31,6 +31,7 @@
 #include "../dataaccess2/dataset/ForeignKey.h"
 #include "../dataaccess2/dataset/Index.h"
 #include "../dataaccess2/dataset/PrimaryKey.h"
+#include "../dataaccess2/dataset/Sequence.h"
 #include "../dataaccess2/dataset/UniqueKey.h"
 #include "../dataaccess2/datasource/DataSourceCatalog.h"
 #include "../dataaccess2/query/Select.h"
@@ -820,46 +821,6 @@ std::vector<std::string> te::pgis::DataSource::getIndexNames(const std::string& 
   return idxNames;
 }
 
-//std::vector<std::string> te::pgis::DataSource::getIndexNames(const std::string& datasetName)
-//{
-//  std::vector<std::string> idxNames;
-//
-//  if(m_pImpl->m_catalog->datasetExists(datasetName))
-//  {
-//    const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
-//
-//    std::size_t numIdxs = dt->getNumberOfIndexes();
-//
-//    for(std::size_t i = 0; i < numIdxs; ++i)
-//      idxNames.push_back(dt->getIndex(i)->getName());
-//
-//    return idxNames;
-//  }
-//
-//  unsigned int dtid = getTableId(datasetName);
-//
-//  std::string sql("SELECT idx_table.oid, s.nspname, idx_table.relname, pg_index.indkey, pg_am.amname, pg_index.indisunique, pg_index.indisprimary " 
-//                  "FROM pg_index, pg_class idx_table, pg_am, pg_namespace s "
-//                  "WHERE s.oid = idx_table.relnamespace "
-//                  "AND pg_index.indexrelid = idx_table.oid "
-//                  "AND idx_table.relam = pg_am.oid "
-//                  "AND pg_index.indrelid = ");
-//  sql += te::common::Convert2String(dtid);
-//
-//  std::auto_ptr<te::da::DataSet> idxInfo = query(sql);
-//
-//  while(idxInfo->moveNext())
-//  {
-//    unsigned int idxId = idxInfo->getInt32(0);
-//    std::string idxName = idxInfo->getString(1) + ".";
-//    idxName += idxInfo->getString(2);
-//
-//    idxNames.push_back(idxName);
-//  }
-//
-//  return idxNames;
-//}
-
 bool te::pgis::DataSource::indexExists(const std::string& datasetName, const std::string& name)
 {
   std::vector<std::string> idxNames = getIndexNames(datasetName);
@@ -905,12 +866,50 @@ void te::pgis::DataSource::dropIndex(const std::string& datasetName, const std::
 
 std::vector<std::string> te::pgis::DataSource::getSequenceNames()
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  std::vector<std::string> seqNames;
+
+  std::vector<te::da::Sequence*> seqs = getSequences();
+
+  for(std::size_t i = 0; i < seqs.size(); ++i)
+    seqNames.push_back(seqs[i]->getName());
+ 
+  return seqNames;
 }
 
-te::da::Sequence* te::pgis::DataSource::getSequence(const std::string& /*name*/)
+bool te::pgis::DataSource::sequenceExists(const std::string& name)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  std::vector<std::string> seqNames = getSequenceNames();
+
+  if(std::find(seqNames.begin(), seqNames.end(), name) != seqNames.end())
+    return true;
+
+  return false;
+}
+
+te::da::Sequence* te::pgis::DataSource::getSequence(const std::string& name)
+{
+  std::vector<te::da::Sequence*> seqs = getSequences();
+
+  return m_pImpl->m_catalog->getSequence(name);
+}
+
+void te::pgis::DataSource::addSequence(te::da::Sequence* sequence)
+{
+  std::string seqName = sequence->getName();
+
+  if(getSequence(sequence->getName()))
+    throw Exception((boost::format(TR_PGIS("The datasource already has a sequence with this name (\"%1%\")!")) % seqName).str());
+
+  m_pImpl->m_catalog->add(sequence);
+}
+
+void te::pgis::DataSource::dropSequence(const std::string& name)
+{
+  te::da::Sequence* seq = getSequence(name);
+  if(!seq)
+    throw Exception((boost::format(TR_PGIS("The datasource has no sequence with this name: (\"%1%\")!")) % name).str());
+
+  m_pImpl->m_catalog->remove(seq);
 }
 
 std::auto_ptr<te::gm::Envelope> te::pgis::DataSource::getExtent(const std::string& /*datasetName*/,
@@ -943,11 +942,6 @@ bool te::pgis::DataSource::dataSetExists(const std::string& name)
     datasetExists = true;
 
   return datasetExists;
-}
-
-bool te::pgis::DataSource::sequenceExists(const std::string& /*name*/)
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
 void te::pgis::DataSource::createDataSet(te::da::DataSetType* dt,
@@ -999,38 +993,6 @@ void te::pgis::DataSource::renameDataSet(const std::string& /*name*/,
   //  ds->getCatalog()->rename(dt, newName);
 
   //ds->rename(oldName, newName);
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-void te::pgis::DataSource::createSequence(const te::da::Sequence* /*sequence*/)
-{
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(ds->getCatalog()->getSequence(sequence->getName()))
-  //  throw Exception((boost::format(TR_PGIS("The datasource already has a Sequence with this name (\"%1%\")!")) % sequence->getName()).str());
-  //   
-  //te::da::Sequence* newSeq = new te::da::Sequence(*sequence);
-  //newSeq->setCatalog(ds->getCatalog());
-
-  ////getting the datasettype by the name of the sequence datasettype property involved
-  //const te::da::DataSetTypePtr& dsDt = ds->getCatalog()->getDataSetType(static_cast<te::da::DataSetType*>(sequence->getOwner()->getParent())->getName());
-
-  //newSeq->setOwner(dsDt->getProperty(sequence->getOwner()->getName()));
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-void te::pgis::DataSource::dropSequence(const std::string& /*name*/)
-{
-  //DataSource* ds = m_t->getMemDataSource();
-
-  //DataSource::LockWrite l(ds);
-
-  //if(ds->getCatalog()->getSequence(sequence->getName()))
-  //  throw Exception((boost::format(TR_PGIS("The datasource has no Sequence with this name (\"%1%\")!")) % sequence->getName()).str());
-
-  //ds->getCatalog()->remove(ds->getCatalog()->getSequence(sequence->getName()));
   throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
@@ -1601,6 +1563,74 @@ void te::pgis::DataSource::getIndexes(te::da::DataSetTypePtr& dt)
         uk->setAssociatedIndex(idx);
     }
   }
+}
+
+std::vector<te::da::Sequence*> te::pgis::DataSource::getSequences()
+{
+  std::vector<te::da::Sequence*> seqs;
+
+  // Check if the datasource sequences are already in the catalog
+  std::size_t numSequences = m_pImpl->m_catalog->getNumberOfSequences();
+  if(numSequences)
+  {
+    // The sequences are already in the catalog
+    for(std::size_t i = 0; i < numSequences; ++i)
+      seqs.push_back(m_pImpl->m_catalog->getSequence(i));
+  }
+  else
+  {
+    // Query the data source for the sequences
+    std::vector<std::string> seqNames;
+
+    std::string sql("SELECT c.oid, n.nspname, c.relname, c.relkind "
+                    "FROM pg_class c, pg_namespace n "
+                    "WHERE c.relname !~ '^pg_' "
+                    "AND c.relkind = 'S' "
+                    "AND c.relnamespace = n.oid "
+                    "AND n.nspname NOT IN ('information_schema', 'pg_toast', 'pg_temp_1', 'pg_catalog')");
+
+    std::auto_ptr<te::da::DataSet> seqNamesInfo = query(sql);
+
+    while(seqNamesInfo->moveNext())
+    {
+      std::string seqName(seqNamesInfo->getString(1) + "." + seqNamesInfo->getString(2));
+      seqNames.push_back(seqName);
+    }
+
+    // Load the sequences in the catalog
+    for(std::size_t i = 0; i < seqNames.size(); ++i)
+    {
+      std::string seqName = seqNames[i];
+
+      std::string sql("SELECT * FROM ");
+      sql += seqName;
+
+      std::auto_ptr<te::da::DataSet> result(query(sql));
+
+      if(result->moveNext() == false)
+        throw Exception((boost::format(TR_PGIS("There is no information about the sequence \"%1%\"!")) % seqName).str());
+
+      unsigned int seqId = getDataSetId(seqName);
+
+      te::da::Sequence* seq = new te::da::Sequence(seqName, 0, 0, 0, seqId);
+
+      // Check if the sequence is cycled
+      if(result->getBool(8))
+        seq->setAsCycle();
+      else
+        seq->setAsNoCycle();
+
+      seq->setCachedValues(result->getInt64(6)); // "cache_value"
+      seq->setIncrement(result->getInt64(3));    // "increment_by";
+      seq->setMaxValue(result->getInt64(4));     // "max_value";
+      seq->setMinValue(result->getInt64(5));     // "min_value";
+
+      seqs.push_back(seq);
+      m_pImpl->m_catalog->add(seq);
+    }
+  }
+
+  return seqs;
 }
 
 void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsInfo)

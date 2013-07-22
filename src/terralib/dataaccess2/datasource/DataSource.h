@@ -934,11 +934,11 @@ namespace te
         /*!
           \brief It creates a new sequence in the data source.
 
+          \note The catalog will take the ownership of the given sequence.
           \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
           \note Not thread-safe!
         */
-        virtual void createSequence(const Sequence* sequence) = 0;
+        virtual void addSequence(Sequence* sequence) = 0;
    
         /*!
           \brief It removes the sequence from the data source.

@@ -193,7 +193,7 @@ namespace te
 
         te::da::Sequence* getSequence(const std::string& name);
 
-        void createSequence(const te::da::Sequence* sequence);
+        void addSequence(te::da::Sequence* sequence);
 
         void dropSequence(const std::string& name);
 

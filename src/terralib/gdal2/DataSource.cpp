@@ -477,7 +477,7 @@ te::da::Sequence* te::gdal::DataSource::getSequence(const std::string& name)
   throw(Exception(TR_GDAL("GDAL driver doesn't support sequences.")));
 }
 
-void te::gdal::DataSource::createSequence(const te::da::Sequence* sequence)
+void te::gdal::DataSource::addSequence(te::da::Sequence* sequence)
 {
   throw(Exception(TR_GDAL("GDAL driver doesn't support sequences.")));
 }

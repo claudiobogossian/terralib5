@@ -857,7 +857,7 @@ te::da::Sequence* te::mem::DataSource::getSequence(const std::string& /*name*/)
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::createSequence(const te::da::Sequence* /*sequence*/)
+void te::mem::DataSource::addSequence(te::da::Sequence* /*sequence*/)
 {
   //DataSource* ds = m_t->getMemDataSource();
 

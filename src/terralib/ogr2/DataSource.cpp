@@ -647,7 +647,7 @@ te::da::Sequence* te::ogr::DataSource::getSequence(const std::string& name)
   throw Exception(TR_OGR("Not implemented for OGR!"));
 }
 
-void te::ogr::DataSource::createSequence(const te::da::Sequence* sequence)
+void te::ogr::DataSource::addSequence(te::da::Sequence* sequence)
 {
 }
 
