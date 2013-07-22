@@ -688,6 +688,8 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
 
   doc->show();
   doc->raise();
+
+  m_viewDataTable->setChecked(true);
 }
 
 void te::qt::af::BaseApplication::onLayerHistogramTriggered()
@@ -957,6 +959,9 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::af::DataSetTableDock
   if(it != m_tableDocks.end())
     m_tableDocks.erase(it);
 
+  if(m_tableDocks.empty())
+    m_viewDataTable->setChecked(false);
+
   ApplicationController::getInstance().removeListener(wid);
 }
 
@@ -981,6 +986,22 @@ void te::qt::af::BaseApplication::onLayerExplorerVisibilityChanged(bool visible)
 void te::qt::af::BaseApplication::onDisplayVisibilityChanged(bool visible)
 {
   m_viewMapDisplay->setChecked(visible);
+}
+
+void te::qt::af::BaseApplication::onDisplayDataTableChanged(bool visible)
+{
+  if(m_tableDocks.empty())
+    return;
+
+  for(std::size_t i = 0; i < m_tableDocks.size(); ++i)
+  {
+    if(visible)
+      m_tableDocks[i]->show();
+    else
+      m_tableDocks[i]->hide();
+  }
+
+  m_viewDataTable->setChecked(visible);
 }
 
 void te::qt::af::BaseApplication::onStyleExplorerVisibilityChanged(bool visible)
@@ -1173,6 +1194,9 @@ void te::qt::af::BaseApplication::makeDialog()
   m_viewMapDisplay->setChecked(true);
   connect(doc, SIGNAL(visibilityChanged(bool)), this, SLOT(onDisplayVisibilityChanged(bool)));
 
+  // View Data Table
+  connect(m_viewDataTable, SIGNAL(toggled(bool)), this, SLOT(onDisplayDataTableChanged(bool)));
+
 /*  doc = new QDockWidget(tr("Data Table"), this);
   doc->setWidget(view);
   QMainWindow::addDockWidget(Qt::BottomDockWidgetArea, doc);
@@ -1239,7 +1263,7 @@ void te::qt::af::BaseApplication::initActions()
 // Menu -View- actions
   initAction(m_viewLayerExplorer, "view-layer-explorer", "View.Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true, m_menubar);
   initAction(m_viewMapDisplay, "view-map-display", "View.Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true, m_menubar);
-  initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, false, m_menubar);
+  initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, true, m_menubar);
   initAction(m_viewStyleExplorer, "grid-visible", "View.Style Explorer", tr("&Styler Explorer"), tr("Show or hide the style explorer"), true, true, true, m_menubar);
   initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, true, true, m_menubar);
   initAction(m_viewRefresh, "view-refresh", "View.Refresh", tr("&Refresh"), tr(""), true, false, false, m_menubar);

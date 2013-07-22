@@ -159,6 +159,8 @@ namespace te
 
           void onDisplayVisibilityChanged(bool visible);
 
+          void onDisplayDataTableChanged(bool visible);
+
           void onStyleExplorerVisibilityChanged(bool visible);
 
         protected:
