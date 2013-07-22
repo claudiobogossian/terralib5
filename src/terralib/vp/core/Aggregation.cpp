@@ -71,30 +71,30 @@ void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
                          const te::da::DataSourceInfoPtr& dsInfo)
 {
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(inputLayer.get());
-  
-  te::da::DataSetType* outputDataSetType = GetDataSetType(outputLayerName, groupingProperties, statisticalSummary);
-  te::mem::DataSet* outputDataSet = new te::mem::DataSet(outputDataSetType);
+
+  std::auto_ptr<te::da::DataSetType> outputDataSetType(GetDataSetType(outputLayerName, groupingProperties, statisticalSummary));
+  std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
 
   if(dsLayer != 0)
   {
     te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
     const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
 
-    if(dsCapabilities.supportsPreparedQueryAPI())
+    if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
     {
-      AggregationQuery(dsLayer, groupingProperties, statisticalSummary, outputDataSet);
+      AggregationQuery(dsLayer, groupingProperties, statisticalSummary, outputDataSet.get());
     }
     else
     {
-      AggregationMemory(inputLayer, groupingProperties, statisticalSummary, outputDataSet);
+      AggregationMemory(inputLayer, groupingProperties, statisticalSummary, outputDataSet.get());
     }
   }
   else
   {
-    AggregationMemory(inputLayer, groupingProperties, statisticalSummary, outputDataSet);
+    AggregationMemory(inputLayer, groupingProperties, statisticalSummary, outputDataSet.get());
   }
 
-  Persistence(outputDataSetType, outputDataSet, dsInfo);
+  Persistence(outputDataSetType.get(), outputDataSet.get(), dsInfo);
  }
 
 te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, 

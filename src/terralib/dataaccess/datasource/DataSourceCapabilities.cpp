@@ -32,7 +32,8 @@ te::da::DataSourceCapabilities::DataSourceCapabilities()
     m_supportDataSetPesistenceAPI(false),
     m_supportDataSetTypePesistenceAPI(false),
     m_supportPreparedQueryAPI(false),
-    m_supportBatchExecutorAPI(false)
+    m_supportBatchExecutorAPI(false),
+    m_supportSpatialOperators(false)
 {
 }
 
@@ -88,6 +89,16 @@ bool te::da::DataSourceCapabilities::supportsPreparedQueryAPI() const
 void te::da::DataSourceCapabilities::setSupportPreparedQueryAPI(const bool& support)
 {
   m_supportPreparedQueryAPI = support;
+}
+
+bool te::da::DataSourceCapabilities::supportsSpatialOperators() const
+{
+  return m_supportSpatialOperators;
+}
+
+void te::da::DataSourceCapabilities::setSupportSpatialOperators(const bool& support)
+{
+  m_supportSpatialOperators = support;
 }
 
 bool te::da::DataSourceCapabilities::supportsBatchExecutorAPI() const
@@ -157,4 +168,5 @@ void te::da::DataSourceCapabilities::setSupportAll()
   m_supportDataSetTypePesistenceAPI = true;
   m_supportPreparedQueryAPI = true;
   m_supportBatchExecutorAPI = true;
+  m_supportSpatialOperators = true;
 }
