@@ -27,7 +27,7 @@
 #define __TERRALIB_CLASSIFICATION_CORE_INTERNAL_UTILS_H
 
 // TerraLib
-#include "../../maptools/DataSetLayer.h"
+#include "../maptools/DataSetLayer.h"
 #include "Config.h"
 #include "Enums.h"
 
@@ -40,7 +40,15 @@ namespace te
 {
   namespace cl
   {
-//    TECLEXPORT methods...
+    /*!
+      \brief Computes euclidean distance between two double vectors.
+
+      \param v1    The first vector.
+      \param v2    The second vector.
+
+      \return The euclidean distance between v1 and v2.
+    */
+    TECLEXPORT double GetEuclideanDistance(std::vector<double> v1, std::vector<double> v2);
 
   }  // end namespace cl
 }    // end namespace te

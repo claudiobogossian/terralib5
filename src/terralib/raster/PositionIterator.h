@@ -63,7 +63,7 @@ namespace te
 
           \param b The band to iterate.
         */
-        AbstractPositionIterator(const te::rst::Band* b);
+        AbstractPositionIterator(const te::rst::Raster* r);
 
         /*!
           \brief Copy constructor.
@@ -75,14 +75,23 @@ namespace te
         /*! \brief Destructor. */
         ~AbstractPositionIterator();
 
-        /*! \brief Returns the value in current position (column, row) from iterator. */
-        virtual const T operator*() const = 0;
+        /*! \brief Returns a vector of the values in current position (column, row) from iterator. */
+        virtual const std::vector<T> operator*() const = 0;
+
+        /*!
+          \brief Returns the value in current position (column, row, band) from iterator.
+
+          \param i The band index.
+
+          \return The pixel value in current position.
+        */
+        virtual T operator[](const unsigned int i) const = 0;
 
         /*! \brief Returns the current row in iterator. */
         virtual unsigned int getRow() const = 0;
 
         /*! \brief Returns the current column in iterator. */
-        virtual unsigned int getCol() const = 0;
+        virtual unsigned int getColumn() const = 0;
 
         /*! \brief Advances to the next position. */
         virtual void operator++() = 0;
@@ -117,7 +126,7 @@ namespace te
 
       protected:
 
-        const te::rst::Band* m_band;             //!< The band from where to get the values.
+        const te::rst::Raster* m_raster;              //!< The band from where to get the values.
 
     };
 
@@ -139,7 +148,7 @@ namespace te
           \param b The band to iterate.
           \param p The polygon from where the iteration will navigate.
         */
-        PolygonIterator(const te::rst::Band* b, const te::gm::Polygon* p);
+        PolygonIterator(const te::rst::Raster* r, const te::gm::Polygon* p);
 
         /*!
           \brief Copy constructor.
@@ -161,11 +170,13 @@ namespace te
 
         void setNextLine(bool updatecurrline = true);
 
-        const T operator*() const;
+        const std::vector<T> operator*() const;
+
+        T operator[](const unsigned int i) const;
 
         unsigned int getRow() const;
 
-        unsigned int getCol() const;
+        unsigned int getColumn() const;
 
         void operator++();
 
@@ -176,10 +187,10 @@ namespace te
         void setEnd();
 
         /*! \brief Returns an iterator referring to the first value of the band.*/
-        static PolygonIterator begin(const te::rst::Band* b, const te::gm::Polygon* p);
+        static PolygonIterator begin(const te::rst::Raster* r, const te::gm::Polygon* p);
 
         /*! \brief Returns an iterator referring to after the end of the iterator. */
-        static PolygonIterator end(const te::rst::Band* b, const te::gm::Polygon* p);
+        static PolygonIterator end(const te::rst::Raster* r, const te::gm::Polygon* p);
 
         bool operator!=(const PolygonIterator<T>& rhs) const;
 
@@ -219,7 +230,7 @@ namespace te
           \param b The band to iterate.
           \param l The line from where the iteration will navigate.
         */
-        LineIterator(const te::rst::Band* b, const te::gm::Line* l);
+        LineIterator(const te::rst::Raster* r, const te::gm::Line* l);
 
         /*!
           \brief Copy constructor.
@@ -230,11 +241,13 @@ namespace te
 
         ~LineIterator();
 
-        const T operator*() const;
+        const std::vector<T> operator*() const;
+
+        T operator[](const unsigned int i) const;
 
         unsigned int getRow() const;
 
-        unsigned int getCol() const;
+        unsigned int getColumn() const;
 
         void operator++();
 
@@ -245,10 +258,10 @@ namespace te
         void setEnd();
 
         /*! \brief Returns an iterator referring to the first value of the band.*/
-        static LineIterator begin(const te::rst::Band* b, const te::gm::Line* l);
+        static LineIterator begin(const te::rst::Raster* r, const te::gm::Line* l);
 
         /*! \brief Returns an iterator referring to after the end of the iterator. */
-        static LineIterator end(const te::rst::Band* b, const te::gm::Line* l);
+        static LineIterator end(const te::rst::Raster* r, const te::gm::Line* l);
 
         bool operator!=(const LineIterator<T>& rhs) const;
 
@@ -278,7 +291,7 @@ namespace te
           \param b The band to iterate.
           \param p The vector of points where the iteration will navigate.
         */
-        PointSetIterator(const te::rst::Band* b, const std::vector<te::gm::Point*> p);
+        PointSetIterator(const te::rst::Raster* r, const std::vector<te::gm::Point*> p);
 
         /*!
           \brief Copy constructor.
@@ -289,11 +302,13 @@ namespace te
 
         ~PointSetIterator();
 
-        const T operator*() const;
+        const std::vector<T> operator*() const;
+
+        T operator[](const unsigned int i) const;
 
         unsigned int getRow() const;
 
-        unsigned int getCol() const;
+        unsigned int getColumn() const;
 
         void operator++();
 
@@ -304,10 +319,10 @@ namespace te
         void setEnd();
 
         /*! \brief Returns an iterator referring to the first value of the band.*/
-        static PointSetIterator begin(const te::rst::Band* b, const std::vector<te::gm::Point*> p);
+        static PointSetIterator begin(const te::rst::Raster* r, const std::vector<te::gm::Point*> p);
 
         /*! \brief Returns an iterator referring to after the end of the iterator. */
-        static PointSetIterator end(const te::rst::Band* b, const std::vector<te::gm::Point*> p);
+        static PointSetIterator end(const te::rst::Raster* r, const std::vector<te::gm::Point*> p);
 
         bool operator!=(const PointSetIterator<T>& rhs) const;
 
@@ -319,17 +334,17 @@ namespace te
     };
 // implementation of abstract position iterator
     template<class T> te::rst::AbstractPositionIterator<T>::AbstractPositionIterator()
-      : m_band(0)
+      : m_rasternd(0)
     {
     }
 
-    template<class T> te::rst::AbstractPositionIterator<T>::AbstractPositionIterator(const te::rst::Band* b)
-      : m_band(b)
+    template<class T> te::rst::AbstractPositionIterator<T>::AbstractPositionIterator(const te::rst::Raster* r)
+      : m_raster(r)
     {
     }
 
     template<class T> te::rst::AbstractPositionIterator<T>::AbstractPositionIterator(const AbstractPositionIterator& rhs)
-      : m_band(rhs.m_band)
+      : m_raster(rhs.m_raster)
     {
     }
 
@@ -340,14 +355,14 @@ namespace te
     template<class T> te::rst::AbstractPositionIterator<T>& te::rst::AbstractPositionIterator<T>::operator=(const AbstractPositionIterator& rhs)
     {
       if (this != &rhs)
-        m_band = rhs.m_band;
+        m_raster = rhs.m_raster;
 
       return *this;
     }
 
     template<class T> bool te::rst::AbstractPositionIterator<T>::operator!=(const te::rst::AbstractPositionIterator<T>& rhs) const
     {
-      return (m_band != rhs.m_band);
+      return (m_raster != rhs.m_raster);
     }
 
 // implementation of iteration strategy bounded by a polygon
@@ -369,13 +384,13 @@ namespace te
     {
     }
 
-    template<class T> te::rst::PolygonIterator<T>::PolygonIterator(const te::rst::Band* b, const te::gm::Polygon* p)
-      : AbstractPositionIterator<T>(b),
+    template<class T> te::rst::PolygonIterator<T>::PolygonIterator(const te::rst::Raster* r, const te::gm::Polygon* p)
+      : AbstractPositionIterator<T>(r),
         m_polygon(p),
         m_intersections(0),
         m_column(0),
-        m_maxcolumns(b->getRaster()->getNumberOfColumns()),
-        m_maxrows(b->getRaster()->getNumberOfRows()),
+        m_maxcolumns(r->getNumberOfColumns()),
+        m_maxrows(r->getNumberOfRows()),
         m_actualintersection(-1),
         m_nintersections(0)
     {
@@ -383,8 +398,8 @@ namespace te
       te::gm::Coord2D ur = m_polygon->getMBR()->getUpperRight();
 
 // defining starting/ending rows
-      m_startingrow = (int) b->getRaster()->getGrid()->geoToGrid(ll.x, ur.y).y;
-      m_endingrow = (int) b->getRaster()->getGrid()->geoToGrid(ll.x, ll.y).y;
+      m_startingrow = (int) r->getGrid()->geoToGrid(ll.x, ur.y).y;
+      m_endingrow = (int) r->getGrid()->geoToGrid(ll.x, ll.y).y;
 
       int tmp;
       if (m_startingrow > m_endingrow)
@@ -531,7 +546,7 @@ namespace te
       {
         if (updatecurrline)
         {
-          double nexty = this->m_band->getRaster()->getGrid()->gridToGeo(0, m_row).y;
+          double nexty = this->m_raster->getGrid()->gridToGeo(0, m_row).y;
 
           m_currline->setX(0, m_polygon->getMBR()->getLowerLeft().x);
           m_currline->setX(1, m_polygon->getMBR()->getUpperRight().x);
@@ -593,9 +608,9 @@ namespace te
 
       te::gm::LineString* lineinter = m_intersections[m_actualintersection];
 
-      m_startingcolumn = (int) this->m_band->getRaster()->getGrid()->geoToGrid(lineinter->getStartPoint()->getX(), lineinter->getStartPoint()->getY()).x;
+      m_startingcolumn = (int) this->m_raster->getGrid()->geoToGrid(lineinter->getStartPoint()->getX(), lineinter->getStartPoint()->getY()).x;
 
-      m_endingcolumn = (int) this->m_band->getRaster()->getGrid()->geoToGrid(lineinter->getEndPoint()->getX(), lineinter->getEndPoint()->getY()).x;
+      m_endingcolumn = (int) this->m_raster->getGrid()->geoToGrid(lineinter->getEndPoint()->getX(), lineinter->getEndPoint()->getY()).x;
 
       int tmp;
       if (m_startingcolumn > m_endingcolumn)
@@ -613,11 +628,25 @@ namespace te
       m_endingcolumn = m_endingcolumn >= m_maxcolumns? m_maxcolumns - 1: m_endingcolumn;
     }
 
-    template<class T> const T te::rst::PolygonIterator<T>::operator*() const
+    template<class T> const std::vector<T> te::rst::PolygonIterator<T>::operator*() const
+    {
+      std::vector<T> values(this->m_raster->getNumberOfBands());
+      double value;
+
+      for (unsigned int b = 0; b < this->m_raster->getNumberOfBands(); b++)
+      {
+        this->m_raster->getValue(getColumn(), getRow(), value, b);
+        values.push_back((T) value);
+      }
+
+      return values;
+    }
+
+    template<class T> T te::rst::PolygonIterator<T>::operator[](const unsigned int i) const
     {
       double value;
 
-      this->m_band->getValue(m_column, m_row, value);
+      this->m_raster->getValue(m_column, m_row, value, i);
 
       return (T) value;
     }
@@ -627,7 +656,7 @@ namespace te
       return m_row;
     }
 
-    template<class T> unsigned int te::rst::PolygonIterator<T>::getCol() const
+    template<class T> unsigned int te::rst::PolygonIterator<T>::getColumn() const
     {
       return m_column;
     }
@@ -699,14 +728,14 @@ namespace te
       this->m_row = -1;
     }
 
-    template<class T> te::rst::PolygonIterator<T> te::rst::PolygonIterator<T>::begin(const te::rst::Band* b, const te::gm::Polygon* p)
+    template<class T> te::rst::PolygonIterator<T> te::rst::PolygonIterator<T>::begin(const te::rst::Raster* r, const te::gm::Polygon* p)
     {
-      return te::rst::PolygonIterator<T>(b, p);
+      return te::rst::PolygonIterator<T>(r, p);
     }
 
-    template<class T> te::rst::PolygonIterator<T> te::rst::PolygonIterator<T>::end(const te::rst::Band* b, const te::gm::Polygon* p)
+    template<class T> te::rst::PolygonIterator<T> te::rst::PolygonIterator<T>::end(const te::rst::Raster* r, const te::gm::Polygon* p)
     {
-      te::rst::PolygonIterator<T> it(b, p);
+      te::rst::PolygonIterator<T> it(r, p);
 
       it.setEnd();
 
@@ -727,16 +756,16 @@ namespace te
     {
     }
 
-    template<class T> te::rst::LineIterator<T>::LineIterator(const te::rst::Band* b, const te::gm::Line* l)
-      : AbstractPositionIterator<T>(b),
+    template<class T> te::rst::LineIterator<T>::LineIterator(const te::rst::Raster* r, const te::gm::Line* l)
+      : AbstractPositionIterator<T>(r),
         m_line(l),
         m_currentpixelindex(0),
         m_pixelsinline(0)
     {
-      int srid = this->m_band->getRaster()->getSRID();
+      int srid = this->m_raster->getSRID();
 
 // make intersection between line and band's envelope
-      te::gm::Geometry* bandEnvelope = te::gm::GetGeomFromEnvelope(this->m_band->getRaster()->getExtent(), srid);
+      te::gm::Geometry* bandEnvelope = te::gm::GetGeomFromEnvelope(this->m_raster->getExtent(), srid);
       te::gm::Geometry* inter = bandEnvelope->intersection(m_line);
 
       if (inter->isEmpty())
@@ -753,24 +782,24 @@ namespace te
       double startingcolumn;
       double startingrow;
       te::gm::Point* startpoint = inrasterline->getStartPoint();
-      this->m_band->getRaster()->getGrid()->geoToGrid(startpoint->getX(), startpoint->getY(),
-                                                      startingcolumn, startingrow);
+      this->m_raster->getGrid()->geoToGrid(startpoint->getX(), startpoint->getY(),
+                                           startingcolumn, startingrow);
 
       double endingcolumn;
       double endingrow;
       te::gm::Point* endpoint = inrasterline->getEndPoint();
-      this->m_band->getRaster()->getGrid()->geoToGrid(endpoint->getX(), endpoint->getY(),
-                                                      endingcolumn, endingrow);
+      this->m_raster->getGrid()->geoToGrid(endpoint->getX(), endpoint->getY(),
+                                           endingcolumn, endingrow);
 
 // creating one envelope per pixel, and intersects with line
-      const double resXdiv2 = this->m_band->getRaster()->getResolutionX() / 2;
-      const double resYdiv2 = this->m_band->getRaster()->getResolutionY() / 2;
+      const double resXdiv2 = this->m_raster->getResolutionX() / 2;
+      const double resYdiv2 = this->m_raster->getResolutionY() / 2;
       double x1, x2, y1, y2, geoX, geoY;
       for(int r = (int)startingrow; r <= (int)endingrow; r++)
         for(int c = (int)startingcolumn; c <= (int)endingcolumn; c++)
         {
 // define envelope of pixel
-          this->m_band->getRaster()->getGrid()->gridToGeo(c, r, geoX, geoY);
+          this->m_raster->getGrid()->gridToGeo(c, r, geoX, geoY);
           x1 = geoX - resXdiv2; y1 = geoY - resYdiv2;
           x2 = geoX + resXdiv2; y2 = geoY + resYdiv2;
 
@@ -794,21 +823,34 @@ namespace te
       m_pixelsinline.clear();
     }
 
-    template<class T> const T te::rst::LineIterator<T>::operator*() const
+    template<class T> const std::vector<T> te::rst::LineIterator<T>::operator*() const
+    {
+      std::vector<T> values(this->m_raster->getNumberOfBands());
+      double value;
+
+      for (unsigned int b = 0; b < this->m_raster->getNumberOfBands(); b++)
+      {
+        this->m_raster->getValue(getColumn(), getRow(), value, b);
+        values.push_back((T) value);
+      }
+
+      return values;
+    }
+
+    template<class T> T te::rst::LineIterator<T>::operator[](const unsigned int i) const
     {
       double value;
 
-      this->m_band->getValue(getCol(), getRow(), value);
+      this->m_raster->getValue(getColumn(), getRow(), value, i);
 
       return (T) value;
     }
-
     template<class T> unsigned int te::rst::LineIterator<T>::getRow() const
     {
       return (unsigned int)(m_pixelsinline[m_currentpixelindex]->getY());
     }
 
-    template<class T> unsigned int te::rst::LineIterator<T>::getCol() const
+    template<class T> unsigned int te::rst::LineIterator<T>::getColumn() const
     {
       return (unsigned int)(m_pixelsinline[m_currentpixelindex]->getX());
     }
@@ -848,14 +890,14 @@ namespace te
       this->m_currentpixelindex = -1;
     }
 
-    template<class T> te::rst::LineIterator<T> te::rst::LineIterator<T>::begin(const te::rst::Band* b, const te::gm::Line* l)
+    template<class T> te::rst::LineIterator<T> te::rst::LineIterator<T>::begin(const te::rst::Raster* r, const te::gm::Line* l)
     {
-      return te::rst::LineIterator<T>(b, l);
+      return te::rst::LineIterator<T>(r, l);
     }
 
-    template<class T> te::rst::LineIterator<T> te::rst::LineIterator<T>::end(const te::rst::Band* b, const te::gm::Line* l)
+    template<class T> te::rst::LineIterator<T> te::rst::LineIterator<T>::end(const te::rst::Raster* r, const te::gm::Line* l)
     {
-      te::rst::LineIterator<T> it(b, l);
+      te::rst::LineIterator<T> it(r, l);
 
       it.setEnd();
 
@@ -875,24 +917,24 @@ namespace te
     {
     }
 
-    template<class T> te::rst::PointSetIterator<T>::PointSetIterator(const te::rst::Band* b, const std::vector<te::gm::Point*> p)
-      : AbstractPositionIterator<T>(b),
+    template<class T> te::rst::PointSetIterator<T>::PointSetIterator(const te::rst::Raster* r, const std::vector<te::gm::Point*> p)
+      : AbstractPositionIterator<T>(r),
         m_pixelsinpointset(p),
         m_currentpixelindex(0)
     {
-      int srid = this->m_band->getRaster()->getSRID();
+      int srid = this->m_raster->getSRID();
 
-      te::gm::Envelope* bandbox = this->m_band->getRaster()->getExtent();
-      te::gm::Geometry* bandboxgeometry = GetGeomFromEnvelope(bandbox, srid);
+      const te::gm::Envelope* rasterbox = r->getExtent();
+      te::gm::Geometry* rasterboxgeometry = GetGeomFromEnvelope(rasterbox, srid);
 
 // remove points that are not inside the band's envelope
       std::vector<te::gm::Point*> inside_points;
       double column;
       double row;
       for (unsigned int i = 0; i < m_pixelsinpointset.size(); i++)
-        if (te::gm::SatisfySpatialRelation(m_pixelsinpointset[i], bandboxgeometry, te::gm::INTERSECTS))
+        if (te::gm::SatisfySpatialRelation(m_pixelsinpointset[i], rasterboxgeometry, te::gm::INTERSECTS))
         {
-          this->m_band->getRaster()->getGrid()->geoToGrid(m_pixelsinpointset[i]->getX(), m_pixelsinpointset[i]->getY(), column, row);
+          this->m_raster->getGrid()->geoToGrid(m_pixelsinpointset[i]->getX(), m_pixelsinpointset[i]->getY(), column, row);
 
           inside_points.push_back(new te::gm::Point(column, row));
         }
@@ -916,11 +958,25 @@ namespace te
       m_pixelsinpointset.clear();
     }
 
-    template<class T> const T te::rst::PointSetIterator<T>::operator*() const
+    template<class T> const std::vector<T> te::rst::PointSetIterator<T>::operator*() const
+    {
+      std::vector<T> values(this->m_raster->getNumberOfBands());
+      double value;
+
+      for (unsigned int b = 0; b < this->m_raster->getNumberOfBands(); b++)
+      {
+        this->m_raster->getValue(getColumn(), getRow(), value, b);
+        values.push_back((T) value);
+      }
+
+      return values;
+    }
+
+    template<class T> T te::rst::PointSetIterator<T>::operator[](const unsigned int i) const
     {
       double value;
 
-      this->m_band->getValue(getCol(), getRow(), value);
+      this->m_raster->getValue(getColumn(), getRow(), value, i);
 
       return (T) value;
     }
@@ -930,7 +986,7 @@ namespace te
       return (unsigned int)(m_pixelsinpointset[m_currentpixelindex]->getY());
     }
 
-    template<class T> unsigned int te::rst::PointSetIterator<T>::getCol() const
+    template<class T> unsigned int te::rst::PointSetIterator<T>::getColumn() const
     {
       return (unsigned int)(m_pixelsinpointset[m_currentpixelindex]->getX());
     }
@@ -969,14 +1025,14 @@ namespace te
       this->m_currentpixelindex = -1;
     }
 
-    template<class T> te::rst::PointSetIterator<T> te::rst::PointSetIterator<T>::begin(const te::rst::Band* b, const std::vector<te::gm::Point*> p)
+    template<class T> te::rst::PointSetIterator<T> te::rst::PointSetIterator<T>::begin(const te::rst::Raster* r, const std::vector<te::gm::Point*> p)
     {
-      return te::rst::PointSetIterator<T>(b, p);
+      return te::rst::PointSetIterator<T>(r, p);
     }
 
-    template<class T> te::rst::PointSetIterator<T> te::rst::PointSetIterator<T>::end(const te::rst::Band* b, const std::vector<te::gm::Point*> p)
+    template<class T> te::rst::PointSetIterator<T> te::rst::PointSetIterator<T>::end(const te::rst::Raster* r, const std::vector<te::gm::Point*> p)
     {
-      te::rst::PointSetIterator<T> it(b, p);
+      te::rst::PointSetIterator<T> it(r, p);
 
       it.setEnd();
 

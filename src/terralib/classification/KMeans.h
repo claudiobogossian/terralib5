@@ -27,20 +27,17 @@
 #define __TERRALIB_CLASSIFICATION_INTERNAL_KMEANS_H
 
 // TerraLib
-#include "../../common/AbstractParameters.h"
-#include "../../common/progress/TaskProgress.h"
-#include "../../geometry/Coord2D.h"
-#include "../../geometry/Envelope.h"
-#include "../../geometry/Point.h"
-#include "../../geometry/Polygon.h"
-#include "../../raster/Grid.h"
-#include "../../rp/Utils.h"
+#include "../common/AbstractParameters.h"
+#include "../common/progress/TaskProgress.h"
+#include "../raster/Grid.h"
 #include "Config.h"
 #include "Exception.h"
+#include "Utils.h"
 
 // STL
 #include <iostream>
 #include <stdlib.h>
+#include <vector>
 
 namespace te
 {
@@ -59,7 +56,7 @@ namespace te
                   using the convergence threshold.
              4.2. Check if maximum number of iterations has achieved.
     */
-    template<class T>
+    template<class TTRAIN, class TCLASSIFY>
     class KMeans
     {
       public:
@@ -75,7 +72,6 @@ namespace te
 
             unsigned int m_K;                    //!< The number of clusters (means) to detect in image.
             unsigned int m_maxIterations;        //!< The maximum of iterations to perform if convergence is not achieved.
-            unsigned int m_maxInputPoints;       //!< The maximum number of points used to estimate the clusters (default = 1000).
             double m_epsilon;                    //!< The stop criteria. When the clusters change in a value smaller then epsilon, the convergence is achieved.
 
             Parameters();
@@ -100,12 +96,12 @@ namespace te
 
         bool initialize(const Parameters& params) throw(te::cl::Exception);
 
-        bool train(T& itBegin, T& itEnd,
+        bool train(TTRAIN& itBegin, TTRAIN& itEnd,
                    const std::vector<unsigned int>& attributesIndices,
                    const std::vector<unsigned int>& labels,
                    const bool enableProgressInterface) throw(te::cl::Exception);
 
-        bool classify(T& itBegin, T& itEnd,
+        bool classify(TCLASSIFY& itBegin, TCLASSIFY& itEnd,
                       const std::vector<unsigned int>& attributesIndices,
                       std::vector<unsigned int>& classification,
                       const bool enableProgressInterface) throw(te::cl::Exception);
@@ -123,52 +119,58 @@ namespace te
 };  // end namespace te
 
 // class of Parameters
-template <class T> te::cl::KMeans<T>::Parameters::Parameters()
+template <class TTRAIN, class TCLASSIFY>
+te::cl::KMeans<TTRAIN, TCLASSIFY>::Parameters::Parameters()
 {
   reset();
 }
 
-template <class T> te::cl::KMeans<T>::Parameters::~Parameters()
+template <class TTRAIN, class TCLASSIFY>
+te::cl::KMeans<TTRAIN, TCLASSIFY>::Parameters::~Parameters()
 {
 }
 
-template <class T> const typename te::cl::KMeans<T>::Parameters& te::cl::KMeans<T>::Parameters::operator=(const typename te::cl::KMeans<T>::Parameters& rhs)
+template <class TTRAIN, class TCLASSIFY>
+const typename te::cl::KMeans<TTRAIN, TCLASSIFY>::Parameters& te::cl::KMeans<TTRAIN, TCLASSIFY>::Parameters::operator=(const typename te::cl::KMeans<TTRAIN, TCLASSIFY>::Parameters& rhs)
 {
   reset();
 
   m_K = rhs.m_K;
   m_maxIterations = rhs.m_maxIterations;
-  m_maxInputPoints = rhs.m_maxInputPoints;
   m_epsilon = rhs.m_epsilon;
 
   return *this;
 }
 
-template <class T> void te::cl::KMeans<T>::Parameters::reset() throw(te::cl::Exception)
+template <class TTRAIN, class TCLASSIFY>
+void te::cl::KMeans<TTRAIN, TCLASSIFY>::Parameters::reset() throw(te::cl::Exception)
 {
   m_K = 0;
   m_maxIterations = 0;
-  m_maxInputPoints = 0;
   m_epsilon = 0.0;
 }
 
-template <class T> te::common::AbstractParameters* te::cl::KMeans<T>::Parameters::clone() const
+template <class TTRAIN, class TCLASSIFY>
+te::common::AbstractParameters* te::cl::KMeans<TTRAIN, TCLASSIFY>::Parameters::clone() const
 {
-  return new te::cl::KMeans<T>::Parameters(*this);
+  return new te::cl::KMeans<TTRAIN, TCLASSIFY>::Parameters(*this);
 }
 
 // class KMeans Strategy
-template <class T> te::cl::KMeans<T>::KMeans()
+template <class TTRAIN, class TCLASSIFY>
+te::cl::KMeans<TTRAIN, TCLASSIFY>::KMeans()
 {
   m_isInitialized = false;
   m_KMeans.clear();
 }
 
-template <class T> te::cl::KMeans<T>::~KMeans()
+template <class TTRAIN, class TCLASSIFY>
+te::cl::KMeans<TTRAIN, TCLASSIFY>::~KMeans()
 {
 }
 
-template <class T> bool te::cl::KMeans<T>::initialize(const typename te::cl::KMeans<T>::Parameters& params) throw(te::cl::Exception)
+template <class TTRAIN, class TCLASSIFY>
+bool te::cl::KMeans<TTRAIN, TCLASSIFY>::initialize(const typename te::cl::KMeans<TTRAIN, TCLASSIFY>::Parameters& params) throw(te::cl::Exception)
 {
   m_isInitialized = false;
 
@@ -182,8 +184,6 @@ template <class T> bool te::cl::KMeans<T>::initialize(const typename te::cl::KMe
   }
   if (m_parameters.m_maxIterations < 1)
     m_parameters.m_maxIterations = 10;
-  if (m_parameters.m_maxInputPoints < m_parameters.m_K)
-    m_parameters.m_maxInputPoints = 1000;
   if (m_parameters.m_epsilon < 0)
     m_parameters.m_epsilon = 0.0000000001;
 
@@ -192,10 +192,11 @@ template <class T> bool te::cl::KMeans<T>::initialize(const typename te::cl::KMe
   return true;
 }
 
-template<class T> bool te::cl::KMeans<T>::train(T& itBegin, T& itEnd,
-                                                const std::vector<unsigned int>& attributesIndices,
-                                                const std::vector<unsigned int>& labels,
-                                                const bool enableProgressInterface) throw(te::cl::Exception)
+template<class TTRAIN, class TCLASSIFY>
+bool te::cl::KMeans<TTRAIN, TCLASSIFY>::train(TTRAIN& itBegin, TTRAIN& itEnd,
+                                              const std::vector<unsigned int>& attributesIndices,
+                                              const std::vector<unsigned int>& labels,
+                                              const bool enableProgressInterface) throw(te::cl::Exception)
 {
   std::vector<double> maxValues;
   std::vector<double> minValues;
@@ -208,7 +209,7 @@ template<class T> bool te::cl::KMeans<T>::train(T& itBegin, T& itEnd,
 
 // find maximum and minimum values for each attribute
   std::vector<unsigned int> tmpClassification;
-  T it = itBegin;
+  TTRAIN it = itBegin;
   while(it != itEnd)
   {
     tmpClassification.push_back(0);
@@ -297,12 +298,13 @@ template<class T> bool te::cl::KMeans<T>::train(T& itBegin, T& itEnd,
   return true;
 }
 
-template<class T> bool te::cl::KMeans<T>::classify(T& itBegin, T& itEnd,
-                                                   const std::vector<unsigned int>& attributesIndices,
-                                                   std::vector<unsigned int>& classification,
-                                                   const bool enableProgressInterface) throw(te::cl::Exception)
+template<class TTRAIN, class TCLASSIFY>
+bool te::cl::KMeans<TTRAIN, TCLASSIFY>::classify(TCLASSIFY& itBegin, TCLASSIFY& itEnd,
+                                                 const std::vector<unsigned int>& attributesIndices,
+                                                 std::vector<unsigned int>& classification,
+                                                 const bool enableProgressInterface) throw(te::cl::Exception)
 {
-  T it = itBegin;
+  TCLASSIFY it = itBegin;
   std::vector<double> values;
   while(it != itEnd)
   {
@@ -317,7 +319,8 @@ template<class T> bool te::cl::KMeans<T>::classify(T& itBegin, T& itEnd,
   return true;
 }
 
-template<class T> unsigned int te::cl::KMeans<T>::getClassification(std::vector<double> values)
+template<class TTRAIN, class TCLASSIFY>
+unsigned int te::cl::KMeans<TTRAIN, TCLASSIFY>::getClassification(std::vector<double> values)
 {
   double minDistance = std::numeric_limits<double>::max();
   double distance;
@@ -325,7 +328,7 @@ template<class T> unsigned int te::cl::KMeans<T>::getClassification(std::vector<
 
   for (unsigned int k = 1; k <= m_parameters.m_K; k++)
   {
-    distance = te::rp::GetEuclideanDistance(m_KMeans[k], values);
+    distance = GetEuclideanDistance(m_KMeans[k], values);
     if (distance < minDistance)
     {
       minDistance = distance;

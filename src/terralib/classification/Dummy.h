@@ -36,7 +36,6 @@
 #include "Config.h"
 #include "Exception.h"
 
-
 // STL
 #include <iostream>
 #include <stdlib.h>
@@ -50,7 +49,7 @@ namespace te
 
       \brief Dummy classifier (just for testing purposes).
     */
-    template<class T>
+    template<class TTRAIN, class TCLASSIFY>
     class Dummy
     {
       public:
@@ -88,12 +87,12 @@ namespace te
 
         bool initialize(const Parameters& params) throw(te::cl::Exception);
 
-        bool train(T& itBegin, T& itEnd,
+        bool train(TTRAIN& itBegin, TTRAIN& itEnd,
                    const std::vector<unsigned int>& attributesIndices,
                    const std::vector<unsigned int>& labels,
                    const bool enableProgressInterface) throw(te::cl::Exception);
 
-        bool classify(T& itBegin, T& itEnd,
+        bool classify(TCLASSIFY& itBegin, TCLASSIFY& itEnd,
                       const std::vector<unsigned int>& attributesIndices,
                       std::vector<unsigned int>& classification,
                       const bool enableProgressInterface) throw(te::cl::Exception);
@@ -107,16 +106,19 @@ namespace te
 };  // end namespace te
 
 // class of Parameters
-template <class T> te::cl::Dummy<T>::Parameters::Parameters()
+template <class TTRAIN, class TCLASSIFY>
+te::cl::Dummy<TTRAIN, TCLASSIFY>::Parameters::Parameters()
 {
   reset();
 }
 
-template <class T> te::cl::Dummy<T>::Parameters::~Parameters()
+template <class TTRAIN, class TCLASSIFY>
+te::cl::Dummy<TTRAIN, TCLASSIFY>::Parameters::~Parameters()
 {
 }
 
-template <class T> typename const te::cl::Dummy<T>::Parameters& te::cl::Dummy<T>::Parameters::operator=(typename const te::cl::Dummy<T>::Parameters& rhs)
+template <class TTRAIN, class TCLASSIFY>
+typename const te::cl::Dummy<TTRAIN, TCLASSIFY>::Parameters& te::cl::Dummy<TTRAIN, TCLASSIFY>::Parameters::operator=(typename const te::cl::Dummy<TTRAIN, TCLASSIFY>::Parameters& rhs)
 {
   reset();
 
@@ -125,27 +127,32 @@ template <class T> typename const te::cl::Dummy<T>::Parameters& te::cl::Dummy<T>
   return *this;
 }
 
-template <class T> void te::cl::Dummy<T>::Parameters::reset() throw(te::cl::Exception)
+template <class TTRAIN, class TCLASSIFY>
+void te::cl::Dummy<TTRAIN, TCLASSIFY>::Parameters::reset() throw(te::cl::Exception)
 {
   m_dummyParameter = 0;
 }
 
-template <class T> te::common::AbstractParameters* te::cl::Dummy<T>::Parameters::clone() const
+template <class TTRAIN, class TCLASSIFY>
+te::common::AbstractParameters* te::cl::Dummy<TTRAIN, TCLASSIFY>::Parameters::clone() const
 {
-  return new te::cl::Dummy<T>::Parameters(*this);
+  return new te::cl::Dummy<TTRAIN, TCLASSIFY>::Parameters(*this);
 }
 
 // class Dummy Strategy
-template <class T> te::cl::Dummy<T>::Dummy()
+template <class TTRAIN, class TCLASSIFY>
+te::cl::Dummy<TTRAIN, TCLASSIFY>::Dummy()
 {
   m_isInitialized = false;
 }
 
-template <class T> te::cl::Dummy<T>::~Dummy()
+template <class TTRAIN, class TCLASSIFY>
+te::cl::Dummy<TTRAIN, TCLASSIFY>::~Dummy()
 {
 }
 
-template <class T> bool te::cl::Dummy<T>::initialize(typename const te::cl::Dummy<T>::Parameters& params) throw(te::cl::Exception)
+template <class TTRAIN, class TCLASSIFY>
+bool te::cl::Dummy<TTRAIN, TCLASSIFY>::initialize(typename const te::cl::Dummy<TTRAIN, TCLASSIFY>::Parameters& params) throw(te::cl::Exception)
 {
   m_isInitialized = false;
 
@@ -162,20 +169,22 @@ template <class T> bool te::cl::Dummy<T>::initialize(typename const te::cl::Dumm
   return true;
 }
 
-template<class T> bool te::cl::Dummy<T>::train(T& itBegin, T& itEnd,
-                                               const std::vector<unsigned int>& attributesIndices,
-                                               const std::vector<unsigned int>& labels,
-                                               const bool enableProgressInterface) throw(te::cl::Exception)
+template<class TTRAIN, class TCLASSIFY>
+bool te::cl::Dummy<TTRAIN, TCLASSIFY>::train(TTRAIN& itBegin, TTRAIN& itEnd,
+                                             const std::vector<unsigned int>& attributesIndices,
+                                             const std::vector<unsigned int>& labels,
+                                             const bool enableProgressInterface) throw(te::cl::Exception)
 {
   return true;
 }
 
-template<class T> bool te::cl::Dummy<T>::classify(T& itBegin, T& itEnd,
-                                                  const std::vector<unsigned int>& attributesIndices,
-                                                  std::vector<unsigned int>& classification,
-                                                  const bool enableProgressInterface) throw(te::cl::Exception)
+template<class TTRAIN, class TCLASSIFY>
+bool te::cl::Dummy<TTRAIN, TCLASSIFY>::classify(TCLASSIFY& itBegin, TCLASSIFY& itEnd,
+                                                const std::vector<unsigned int>& attributesIndices,
+                                                std::vector<unsigned int>& classification,
+                                                const bool enableProgressInterface) throw(te::cl::Exception)
 {
-  T it = itBegin;
+  TCLASSIFY it = itBegin;
   while(it != itEnd)
   {
     classification.push_back(rand() % m_parameters.m_dummyParameter + 1);

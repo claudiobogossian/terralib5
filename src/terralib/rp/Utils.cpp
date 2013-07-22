@@ -230,20 +230,3 @@ std::vector<te::gm::Point*> te::rp::GetRandomPointsInRaster(const te::rst::Raste
 
   return randomPoints;
 }
-
-double te::rp::GetEuclideanDistance(std::vector<double> v1, std::vector<double> v2)
-{
-  assert(v1.size() == v2.size());
-
-  double distance = 0.0;
-  double v1minusv2;
-  for (unsigned int i = 0; i < v1.size(); i++)
-  {
-    v1minusv2 = v1[i] - v2[i];
-    distance += v1minusv2 * v1minusv2;
-  }
-  if (distance < 0)
-    distance = 0.0;
-
-  return sqrt(distance);
-}

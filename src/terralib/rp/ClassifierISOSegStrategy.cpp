@@ -385,12 +385,12 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
     pattern = rit->second->m_myCluster->m_id;
 
 // iterate over polygon to classify output image
-    te::rst::PolygonIterator<unsigned> it = te::rst::PolygonIterator<unsigned>::begin(inputRaster.getBand(inputRasterBands[0]), polygon);
-    te::rst::PolygonIterator<unsigned> itend = te::rst::PolygonIterator<unsigned>::end(inputRaster.getBand(inputRasterBands[0]), polygon);
+    te::rst::PolygonIterator<unsigned> it = te::rst::PolygonIterator<unsigned>::begin(&inputRaster, polygon);
+    te::rst::PolygonIterator<unsigned> itend = te::rst::PolygonIterator<unsigned>::end(&inputRaster, polygon);
 
     while (it != itend)
     {
-      outputRaster.setValue(it.getCol(), it.getRow(), colormap[pattern], outputRasterBand);
+      outputRaster.setValue(it.getColumn(), it.getRow(), colormap[pattern], outputRasterBand);
 
       ++it;
     }

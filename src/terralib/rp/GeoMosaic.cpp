@@ -669,10 +669,10 @@ namespace te
                 "Invalid pointer" );
 
               te::rst::PolygonIterator< double > itB = te::rst::PolygonIterator< double >::begin( 
-                outputRasterPtr->getBand( 0 ),
+                outputRasterPtr,
                 (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) );
               const te::rst::PolygonIterator< double > itE = te::rst::PolygonIterator< double >::end( 
-                outputRasterPtr->getBand( 0 ),
+                outputRasterPtr,
                 (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) );
                 
               std::vector< double > blendedValues( outputRasterPtr->getNumberOfBands() );
@@ -685,7 +685,7 @@ namespace te
               while( itB != itE )
               {
                 outputRow = itB.getRow();
-                outputCol = itB.getCol();
+                outputCol = itB.getColumn();
 
                 blenderInstance.getBlendedValues( outputRow, outputCol, blendedValues );
                 
@@ -794,9 +794,9 @@ namespace te
               std::complex< double > pixelCValue = 0;
               double pixelValue = 0;
 
-              te::rst::PolygonIterator< double > itB = te::rst::PolygonIterator< double >::begin( &outputBand,
+              te::rst::PolygonIterator< double > itB = te::rst::PolygonIterator< double >::begin( &outputRaster,
                 nonOverlappednResultElementPtr );
-              const te::rst::PolygonIterator< double > itE = te::rst::PolygonIterator< double >::end( &outputBand,
+              const te::rst::PolygonIterator< double > itE = te::rst::PolygonIterator< double >::end( &outputRaster,
                 nonOverlappednResultElementPtr );
 
               if( mustReproject )
@@ -804,7 +804,7 @@ namespace te
                 while( itB != itE )
                 {
                   outputRow = itB.getRow();
-                  outputCol = itB.getCol();
+                  outputCol = itB.getColumn();
 
                   outputGrid.gridToGeo( (double)outputCol, (double)outputRow, outputX, outputY );
 
@@ -837,7 +837,7 @@ namespace te
                 while( itB != itE )
                 {
                   outputRow = itB.getRow();
-                  outputCol = itB.getCol();
+                  outputCol = itB.getColumn();
 
                   outputGrid.gridToGeo( (double)outputCol, (double)outputRow, outputX, outputY );
                   inputGrid.geoToGrid( outputX, outputY, inputCol, inputRow );
