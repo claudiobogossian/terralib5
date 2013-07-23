@@ -76,7 +76,7 @@ namespace te
         unsigned int getRow() const;
 
         /*! \brief Returns the current column in iterator. */
-        unsigned int getCol() const;
+        unsigned int getColumn() const;
 
         /*!
           \brief Returns the value in current position (column, row, band) from iterator.
@@ -175,9 +175,9 @@ namespace te
       return m_it[0].getRow();
     }
 
-    template<class T> unsigned int te::rst::RasterIterator<T>::getCol() const
+    template<class T> unsigned int te::rst::RasterIterator<T>::getColumn() const
     {
-      return m_it[0].getCol();
+      return m_it[0].getColumn();
     }
 
     template<class T> T te::rst::RasterIterator<T>::operator[](const unsigned int i) const

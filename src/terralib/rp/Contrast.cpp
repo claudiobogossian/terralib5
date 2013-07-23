@@ -400,7 +400,7 @@ namespace te
         while (ibandit != ibanditend)
         {
           value = *ibandit;
-          oband->setValue(ibandit.getCol(), ibandit.getRow(), lut[value]);
+          oband->setValue(ibandit.getColumn(), ibandit.getRow(), lut[value]);
           ++ibandit;
         }
       }
