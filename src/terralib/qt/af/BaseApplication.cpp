@@ -826,7 +826,17 @@ void te::qt::af::BaseApplication::onSetBoxOnMapDisplayTriggered()
     }
 
     te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
-    te::gm::Envelope env = lay->getExtent();
+    te::gm::Envelope env;
+
+    if(display->getSRID() == lay->getSRID() || display->getSRID() == TE_UNKNOWN_SRS || lay->getSRID() == TE_UNKNOWN_SRS)
+    {
+      env = lay->getExtent();
+    }
+    else
+    {
+      env = lay->getExtent();
+      env.transform(lay->getSRID(), display->getSRID());
+    }
     display->setExtent(env, true);
   }
   catch(const std::exception& e)
