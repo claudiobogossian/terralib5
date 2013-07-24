@@ -30,12 +30,15 @@
 #include "../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/dataset/DataSetTypePersistence.h"
+#include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../dataaccess/query_h.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Property.h"
+#include "../../maptools/AbstractLayer.h"
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 #include "../../geometry/Geometry.h"
@@ -123,7 +126,15 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
                                                const std::map<std::string, std::string>& options)
 {
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
-  resultPair = Intersection(newLayerName, idata, outputSRID);
+
+  if(SupportsSpatialOperators(idata))
+  {
+    resultPair = IntersectionQuery(newLayerName, idata, outputSRID);
+  }
+  else
+  {
+    resultPair = Intersection(newLayerName, idata, outputSRID);
+  }
 
   te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsinfo->getId(), dsinfo->getType(), dsinfo->getConnInfo());
 
@@ -151,6 +162,7 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
                                                const std::map<std::string, std::string>& options)
 {
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+
   resultPair = Intersection(newLayerName, idata, outputSRID);
 
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
@@ -249,6 +261,34 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::Intersection(const std
   return resultPair;
 }
 
+std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(const std::string& newLayerName,
+                                                                            const std::vector<LayerInputData>& idata,
+                                                                            size_t outputSRID)
+{
+  if(idata.size() <= 1)
+    throw te::common::Exception(TR_VP("At least two layers are necessary for an intersection!"));
+
+  if(outputSRID == 0)
+    outputSRID = idata.begin()->first->getSRID();
+
+  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+
+  te::da::Fields* fields = new te::da::Fields;
+
+  for(std::size_t layerPos = 0; layerPos < idata.size(); ++layerPos)
+  {
+    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
+    te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema();
+    
+    if(dsType->hasGeom())
+    {
+      std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType));
+    }
+  }
+
+  return resultPair;
+}
+
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(std::string newName, 
                                                                                IntersectionMember firstMember, 
                                                                                IntersectionMember secondMember,
@@ -273,7 +313,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
   {
     te::gm::Geometry* currGeom = firstMember.ds->getGeometry(fiGeomPropPos);
 
-    if(currGeom->getSRID() != outputSRID)
+    if(currGeom->getSRID() != outputSRID && outputSRID != 0)
       currGeom->transform(outputSRID);
 
     std::vector<size_t> report;
@@ -284,7 +324,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
       secondMember.ds->move(report[i]);
       te::gm::Geometry* secGeom = secondMember.ds->getGeometry(secGeomPropPos);
 
-      if(secGeom->getSRID() != outputSRID)
+      if(secGeom->getSRID() != outputSRID && outputSRID != 0)
         secGeom->transform(outputSRID);
 
       if(!currGeom->intersects(secGeom))
@@ -334,4 +374,34 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
   resultPair.first = outputDt;
   resultPair.second = outputDs;
   return resultPair;
+}
+
+bool te::vp::SupportsSpatialOperators(const std::vector<LayerInputData>& idata)
+{
+  bool supportsSpatialOp = false;
+
+  for(std::size_t i = 0; i < idata.size(); ++i)
+  {
+    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(idata[i].first.get());
+    
+    if(dsLayer != 0)
+    {
+      te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+      const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
+
+      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
+      {
+        supportsSpatialOp = true;
+      }
+      else
+      {
+        return false;
+      }
+    }
+    else
+    {
+      return false;
+    }
+  }
+  return supportsSpatialOp;
 }
