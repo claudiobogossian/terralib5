@@ -24,6 +24,14 @@
 */
 
 // TerraLib
+#include "../dataset/ObjectIdSet.h"
+#include "../query/DataSetName.h"
+#include "../query/Field.h"
+#include "../query/Fields.h"
+#include "../query/From.h"
+#include "../query/FromItem.h"
+#include "../query/Select.h"
+#include "../query/Where.h"
 #include "DataSource.h"
 
 
@@ -35,3 +43,43 @@ te::da::DataSource::~DataSource()
 {
 }
 
+te::da::Connection* te::da::DataSource::getConnection()
+{
+  return 0;
+}
+
+void te::da::DataSource::closeConnection(te::da::Connection* /*conn*/)
+{
+}
+
+std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name,
+                                                const te::da::ObjectIdSet* oids,
+                                                te::common::TraverseType travType)
+{
+  assert(!name.empty());
+  assert(oids);
+  assert(oids->size() > 0);
+
+  // ObjectIds restriction
+  Expression* exp = oids->getExpression();
+  assert(exp);
+
+  // Where clause
+  Where* filter = new Where(exp);
+  
+  // All fields (?)
+  te::da::Fields* all = new te::da::Fields;
+  all->push_back(new te::da::Field("*"));
+  
+  // From the data set
+  FromItem* fromItem = new DataSetName(name);
+  From* from = new From;
+  from->push_back(fromItem);
+
+  // The final Select
+  std::auto_ptr<Select> select(new Select(all, from, filter));
+
+  std::auto_ptr<te::da::DataSet> result = query(select.get(), travType);
+
+  return result;
+}

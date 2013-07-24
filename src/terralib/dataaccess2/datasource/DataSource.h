@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../common/Enums.h"
+#include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
 #include "../../geometry/Enums.h"
 #include "../Config.h"
@@ -61,6 +62,7 @@ namespace te
   namespace da
   {
     class CheckConstraint;
+    class Connection;
     class DataSet;
     class DataSetType;
     class DataSource;
@@ -156,6 +158,33 @@ namespace te
           \param connInfo Key-value-pairs (kvp) with the connection information.
         */
         virtual void setConnectionInfo(const std::map<std::string, std::string>& connInfo) = 0;
+
+        /*!
+          \brief It returns an object that can execute transactions in the context of a data source.
+
+          Use this method to get an object that allows to retrieve dataset, to insert data,
+          or to modify dataset types. You don't need to cache this kind of object because
+          each driver in TerraLib already keeps a pooling. So, as soon as you have finished using it,
+          release the connection to the pool.
+
+          \return A pointer to an object that can execute transactions in the context of a data source.
+
+          \exception Exception It throws an exception, if it is not possible to get a connection,
+                               for example, if there is not an available connection.
+
+          \note Thread-safe!
+        */
+        virtual Connection* getConnection();
+
+        /*!
+          \brief It releases the connection given returning it to the connections pool. Use this method
+                 when you have finished to use the connection to make operations on a dataset.
+
+          \param conn The connection to be released.
+
+          \note Thread-safe!
+        */
+        virtual void closeConnection(te::da::Connection* conn);
 
         /*!
           \brief It opens the data source and makes it ready for use.
@@ -335,6 +364,26 @@ namespace te
                                                   te::gm::SpatialRelation r,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
 
+        /*
+         \brief It gets the dataset identified by the given name using the set of objects identification.
+
+         \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
+         \param oids     A pointer to a set of objects identification. Do not pass null. Do not pass set empty.
+         \param travType The traverse type associated to the returned dataset.
+         
+         \return The caller of this method will take the ownership of the returned DataSet.
+         
+         \exception Exception It can throws an exception if:
+                    <ul>
+                    <li>something goes wrong during data retrieval</li>
+                    <li>if the data source driver doesn't support the traversal type</li>
+                    <li>if the data source driver doesn't support the access policy</li>
+                    </ul>
+        */
+        virtual std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
+                                                          const ObjectIdSet* oids, 
+                                                          te::common::TraverseType travType = te::common::FORWARDONLY);
+
         /*!
           \brief It executes a query that may return some data using a generic query.
 
@@ -350,7 +399,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const Select& q,
-                                              te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+                                             te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
 
         /*!
           \brief It executes a query that may return some data using the data source native language.
@@ -365,7 +414,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const std::string& query, 
-                                              te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+                                             te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
         //@}
 
         /** @name Command Execution Methods
