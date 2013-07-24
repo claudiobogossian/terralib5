@@ -24,9 +24,9 @@
 */
 
 //terralib
-#include "Histogram.h"
 #include "../../../datatype.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "Histogram.h"
 
 te::qt::widgets::Histogram::Histogram()
 {

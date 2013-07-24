@@ -51,20 +51,62 @@ namespace te
 
         public:
 
+          /*!
+            \brief Constructor
+          */
           HistogramStyle(); 
 
+          /*!
+            \brief Constructor
+
+            \param fill The histogram bar's fill
+            \param stroke The histogram bar's stroke
+          */
           HistogramStyle (te::se::Fill* fill, te::se::Stroke* stroke);
 
+          /*! 
+            \brief Destructor.
+          */
           ~HistogramStyle();
 
+          /*!
+            \brief Returns a pointer to a clone of this HistogramStyle.
+
+            \return A HistogramStyle type clone of this HistogramStyle.
+            \note The caller will take ownership of the returned pointer. 
+          */
           HistogramStyle* clone();
 
+          /*!
+            \brief Returns a pointer to the histogram bar's fill
+
+            \return A Fill type pointer to the histogram bar's fill.
+            \note The caller will not take ownership of the returned pointer. 
+          */
           te::se::Fill* getFill();
 
+          /*!
+            \brief It sets the  histogram bar's fill
+
+            \param newFill The new fill.
+            \note It will take ownership of the given pointer
+          */
           void setFill(te::se::Fill* newFill);
 
+          /*!
+            \brief Returns a pointer to the histogram bar's stroke
+
+            \return A Fill type pointer to the  histogram bar's stroke.
+            \note The caller will not take ownership of the returned pointer. 
+          */
           te::se::Stroke* getStroke();
 
+          /*!            
+            \brief It sets the  histogram bar's stroke
+
+            \param newFill The new stroke.
+            \note It will take ownership of the given pointer
+          */
           void setStroke(te::se::Stroke* newStroke);
 
         private:

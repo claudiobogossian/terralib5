@@ -51,10 +51,10 @@ namespace te
     class ChartDisplayWidget;
     class HistogramDataWidget;
 
-    /*!
-        \class Histogram Creator
+      /*!
+        \class HistogramDialog
 
-        \brief A wdiget used to customize a Histogram parameters.
+        \brief A Dialog used to customize a Histogram parameters and generate it's ChartDisplayWidget.
       */
       class TEQTWIDGETSEXPORT HistogramDialog : public QDialog
       {
@@ -63,10 +63,27 @@ namespace te
 
         public:
 
+          /*!
+            \brief Constructor
+
+            \param dataSet The dataset that will be used to generate a histogram.
+            \param dataType The dataset that will be used to generate a histogram.
+            \param parent this widget's parent
+            \param f Window flags used to configure this dialog
+          */
           HistogramDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
+          /*!
+            \brief Destructor
+          */
           ~HistogramDialog();
 
+          /*!
+            \brief Returns a pointer to the generated ChartDisplayWidget
+
+            \return A ChartDisplayWidget type pointer to the generated chart.
+            \note The caller will take ownership of the returned pointer. 
+          */
           te::qt::widgets::ChartDisplayWidget* getDisplayWidget();
 
         protected slots:

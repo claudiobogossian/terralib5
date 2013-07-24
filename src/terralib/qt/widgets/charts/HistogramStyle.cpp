@@ -25,8 +25,8 @@
 
 //Terralib
 #include "../../../se/Fill.h"
-#include "HistogramStyle.h"
 #include "../../../se/Stroke.h"
+#include "HistogramStyle.h"
 
 te::qt::widgets::HistogramStyle::HistogramStyle()
 {

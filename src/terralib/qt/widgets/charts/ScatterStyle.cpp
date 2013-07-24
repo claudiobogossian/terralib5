@@ -24,9 +24,9 @@
 */
 
 //TerraLib
+#include "../../../se/Fill.h"
 #include "../../../se/Graphic.h"
 #include "../../../se/Mark.h"
-#include "../../../se/Fill.h"
 #include "../../../se/Stroke.h"
 #include"MarkSymbol.h"
 #include "ScatterStyle.h"

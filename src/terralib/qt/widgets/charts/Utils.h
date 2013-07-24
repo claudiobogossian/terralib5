@@ -55,9 +55,14 @@ namespace te
         \brief Scatter Creator
 
         \param dataset The dataset that will be used to populate the scatter's data
+        \param dataType The dataType that will be used to recover the objectIds associated with the given dataset.
+        \param propX The id of the property that contains the data of the x axis.
+        \param propY The id of the property that contains the data of the y axis.
 
         \note It will traverse the data set, using the moveNext() method
-        \note It will not take the ownership of the DataSet pointer. 
+        \note It will not take the ownership of the "dataset" pointer.
+        \note It will not take the ownership of the "dataType" pointer.
+        \note The caller will take the ownership of the returned scatter pointer.
 
         \return a new Scatter
     */
@@ -67,11 +72,14 @@ namespace te
         \brief Histogram Creator
 
         \param dataset The dataset that will be used to populate the histogram's data
+        \param dataType The dataType that will be used to recover the objectIds associated with the given dataset.
         \param propId The id of the property that contains the data
         \param slices The desired number of intervals
 
         \note It will traverse the data set, using the moveNext() method
-        \note It will not take the ownership of the DataSet pointer. 
+        \note It will not take the ownership of the "dataset" pointer.
+        \note It will not take the ownership of the "dataType" pointer.
+        \note The caller will take the ownership of the returned histogram pointer.
 
         \return a new Histogram
     */
@@ -81,11 +89,14 @@ namespace te
         \brief Histogram Creator
 
         \param dataset The dataset that will be used to populate the histogram's data
+        \param dataType The dataType that will be used to recover the objectIds associated with the given dataset.
         \param propId The id of the property that contains the data
 
-        \note This version is used to create a histogram based on a set of labels (Strings), therefore there is no user-defined number of intervals, each label is an interval
+        \note This version is used to create a histogram based on a set of labels (Strings), therefore there is no user-defined number of intervals, each unique label is an interval
         \note It will traverse the data set, using the moveNext() method
-        \note It will not take the ownership of the DataSet pointer. 
+        \note It will not take the ownership of the "dataset" pointer.
+        \note It will not take the ownership of the "dataType" pointer. 
+        \note The caller will take the ownership of the returned histogram pointer.
 
         \return a new Histogram
     */
@@ -96,7 +107,7 @@ namespace te
 
         This function returns a default QwtText.
 
-        \param text A text.
+        \param title A text.
         
         \return A QwtText
 
@@ -110,12 +121,16 @@ namespace te
 
         This function translates TerraLib text styles into a QwtText.
 
-        \param text A text...
+        \param text A text
+        \param color The text's color
+        \param font The text's font
+        \param backFill The text's background fill
+        \param backStroke The text's background stroke
         
         \return A QwtText
 
         \note The caller will take the ownership of the returned pointer.
-        \note It will not take the ownership of the symbol pointer.
+        \note It will not take the ownership of given "font", "backFill" and "backStroke"" pointers.
       */
       TEQTWIDGETSEXPORT QwtText* Terralib2Qwt(const std::string& text,  te::color::RGBAColor* color, 
                    te::se::Font*  font, te::se::Fill* backFill, 

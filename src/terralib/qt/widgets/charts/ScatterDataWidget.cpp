@@ -24,12 +24,13 @@
 */
 
 //Terralib
-#include "ui_ScatterDataWidgetForm.h"
-#include "../../../qt/widgets/charts/Utils.h"
+
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
+#include "../../../qt/widgets/charts/Utils.h"
 #include "../../../raster.h"
 #include "ScatterDataWidget.h"
+#include "ui_ScatterDataWidgetForm.h"
 
 te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),

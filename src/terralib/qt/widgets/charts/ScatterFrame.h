@@ -57,12 +57,32 @@ namespace te
 
         public:
 
+          /*!
+            \brief Constructor
+
+            \param parent this widget's parent
+          */
           ScatterFrame(QWidget* parent = 0);
 
+          /*! 
+            \brief Destructor.
+          */
           ~ScatterFrame();
 
+          /*!
+            \brief Returns a pointer to the chart being configured
+
+            \return A QwtPlotSeriesItem type pointer to the chart being configured
+            \note The caller will take ownership of the returned pointer. 
+          */
           QwtPlotSeriesItem* getChart();
 
+          /*!
+            \brief It sets the chart being configured
+
+            \param newChart The new QwtPlotSeriesItem.
+            \note It will not take ownership of the given pointer 
+          */
           void setChart(QwtPlotSeriesItem* newChart);
 
         private:

@@ -48,18 +48,54 @@ namespace te
       {
         public:
 
+
+          /*!
+            \brief Constructor
+          */
         ScatterStyle (); 
 
+          /*!
+            \brief Constructor
+
+            \param graphic The scatter's point graphic.
+          */
         ScatterStyle (te::se::Graphic* graphic); 
 
+          /*! 
+            \brief Destructor.
+          */
         ~ScatterStyle();
 
+        /*!
+          \brief Returns a pointer to a clone of this ScatterStyle.
+
+          \return A ScatterStyle type clone of this ScatterStyle.
+          \note The caller will take ownership of the returned pointer. 
+        */
         ScatterStyle* clone();
 
+        /*!
+          \brief Returns a pointer to the scatter's graphic
+
+          \return A graphic type pointer to the scatter's point style.
+          \note The caller will not take ownership of the returned pointer. 
+        */
         te::se::Graphic* getGraphic();
 
+        /*!
+          \brief It sets the  histogram bar's fill
+
+          \param newFill The new fill.
+          \note It will take ownership of the given pointer
+        */
         void setGraphic(te::se::Graphic* newGraphic);
 
+        /*!
+          \brief Returns a pointer to a QwtSymbol representing the current scatter's point style
+
+          \return A QwtSymbol type pointer based on the current point's style.
+          \note The caller will take ownership of the returned pointer. 
+        */
         QwtSymbol* getSymbol();
 
         private:
