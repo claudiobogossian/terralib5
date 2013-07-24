@@ -1,4 +1,4 @@
-/*  Copyright (C) 0-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,45 +18,20 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/ChartWidget.cpp
+  \file terralib/ado/Exception.cpp
 
-  \brief A base widget to be used on the chart settings.
+  \brief An exception class for ADO.
 */
 
-//Terralib
-#include "ChartDisplay.h"
-#include "ChartWidget.h"
+// TerraLib
+#include "Exception.h"
 
-te::qt::widgets::ChartWidget::ChartWidget(QWidget* parent)
-  : QWidget(parent)
+namespace te
 {
+  namespace ado
+  {
+    TE_DEFINE_EXCEPTION_CLASS(Exception, te::da::Exception, "te::ado::Exception")
 
-}
+  } // end namespace ado
+}   // end namespace te
 
-te::qt::widgets::ChartWidget::~ChartWidget()
-{
-
-}
-
-
-QwtPlotSeriesItem* te::qt::widgets::ChartWidget::getChart()
-{
-  return m_chart;
-}
-
-
-te::qt::widgets::ChartDisplay* te::qt::widgets::ChartWidget::getDisplay()
-{
-  return m_display;
-}
-
-void te::qt::widgets::ChartWidget::setChart(QwtPlotSeriesItem* newChart)
-{
-  m_chart = newChart;
-}
-
-
-void te::qt::widgets::ChartWidget::setDisplay(te::qt::widgets::ChartDisplay* newDisplay)
-{
-  m_display = newDisplay;
-}

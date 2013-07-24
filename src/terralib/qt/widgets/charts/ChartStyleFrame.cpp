@@ -23,10 +23,10 @@
   \brief A frame used to adjust a Chart's visual style.
 */
 
-#include "ui_ChartStyleFrameWidgetForm.h"
 #include "ChartDisplay.h"
 #include "ChartStyleFrame.h"
 #include "ChartStyleWidget.h"
+#include "ui_ChartStyleFrameWidgetForm.h"
 
 te::qt::widgets::ChartStyleFrame::ChartStyleFrame(QWidget* parent)
   : ChartWidget(parent),

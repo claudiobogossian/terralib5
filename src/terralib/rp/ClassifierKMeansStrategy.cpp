@@ -149,7 +149,7 @@ bool te::rp::ClassifierKMeansStrategy::execute(const te::rst::Raster& inputRaste
   unsigned int i = 0;
   while (rit != ritend)
   {
-    outputRaster.setValue(rit.getCol(), rit.getRow(), classification[i], outputRasterBand);
+    outputRaster.setValue(rit.getColumn(), rit.getRow(), classification[i], outputRasterBand);
     ++i;
     ++rit;
     task.pulse();

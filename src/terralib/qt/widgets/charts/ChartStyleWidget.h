@@ -60,15 +60,39 @@ namespace te
 
         public:
 
+          /*!
+            \brief Constructor
+
+            It constructs a ChartStyleWidget.
+
+            \param parent this widget's parent
+            \param f Window flags used to configure this widget
+            \param title The title to be configured, defaults to an empty title.
+            \param PropertyX The label of the x axis to be configured, defaults to an empty label.
+            \param PropertyY The label of the y axis to be configured, defaults to an empty label.
+          */
           ChartStyleWidget(QWidget* parent = 0, Qt::WindowFlags f = 0, QString title = "", QString PropertyX = "", QString PropertyY = "");
 
+          /*!
+            \brief Destructor
+          */
           ~ChartStyleWidget();
 
+          /*!
+            \brief Returns a pointer to the ChartStyle being configured
+
+            \return A ChartStyle type pointer to the style being configured
+            \note The caller will take ownership of the returned pointer. 
+          */
           te::qt::widgets::ChartStyle* getStyle();
 
-          void setStyle(te::qt::widgets::ChartStyle* newStyle);
+          /*!
+            \brief It sets the ChartStyle being configured
 
-          te::qt::widgets::ChartStyle* adjustStyle();
+            \param newStyle The new ChartStyle.
+            \note It will not take ownership of the given pointer 
+          */
+          void setStyle(te::qt::widgets::ChartStyle* newStyle);
 
         protected slots:
 

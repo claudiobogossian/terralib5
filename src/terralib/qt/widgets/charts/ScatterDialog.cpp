@@ -25,23 +25,22 @@
 
 //Terralib
 
-#include "ChartDisplay.h"
-#include "ChartStyle.h"
-#include "ChartDisplayWidget.h"
+#include "../../../common/progress/ProgressManager.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
+#include "../../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../../se/Graphic.h"
+#include "ChartDisplay.h"
+#include "ChartDisplayWidget.h"
+#include "ChartStyle.h"
 #include "Scatter.h"
 #include "ScatterChart.h"
-#include "ScatterDialog.h"
 #include "ScatterDataWidget.h"
+#include "ScatterDialog.h"
 #include "ScatterStyle.h"
 #include "Symbol.h"
 #include "ui_ScatterDialogForm.h"
 #include "ui_ScatterDataWidgetForm.h"
-
-#include "../../../common/progress/ProgressManager.h"
-#include "../../../qt/widgets/progress/ProgressViewerDialog.h"
 
 //QT
 #include <QtGui/QDockWidget>

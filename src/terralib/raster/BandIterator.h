@@ -82,7 +82,7 @@ namespace te
         unsigned int getRow() const;
 
         /*! \brief Returns the current column in iterator. */
-        unsigned int getCol() const;
+        unsigned int getColumn() const;
 
         /*! \brief Advances to the next position. */
         virtual void operator++();
@@ -383,7 +383,7 @@ namespace te
       return m_blky * m_blkh + (m_i - (m_i % m_blkw)) / m_blkw;
     }
 
-    template<class T> unsigned int te::rst::AbstractBandIterator<T>::getCol() const
+    template<class T> unsigned int te::rst::AbstractBandIterator<T>::getColumn() const
     {
       return m_blkx * m_blkw + m_i % m_blkw;
     }

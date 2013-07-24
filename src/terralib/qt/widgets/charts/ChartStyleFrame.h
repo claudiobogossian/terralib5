@@ -54,19 +54,41 @@ namespace te
 
         public:
 
+          /*!
+            \brief Constructor
+
+            It constructs a chart display with the given title.
+
+            \param parent this widget's parent
+          */
           ChartStyleFrame(QWidget* parent = 0);
 
+          /*! 
+            \brief Destructor.
+          */
           ~ChartStyleFrame();
 
-        te::qt::widgets::ChartDisplay* getDisplay();
+          /*!
+            \brief Returns a pointer to the ChartDisplay being configured
 
-        void setDisplay(te::qt::widgets::ChartDisplay* newDisplay);
+            \return A ChartDisplay type pointer to the display being configured
+            \note The caller will take ownership of the returned pointer. 
+          */
+          te::qt::widgets::ChartDisplay* getDisplay();
+
+          /*!
+            \brief It sets the ChartDisplay being configured
+
+            \param newDisplay The new ChartDisplay.
+            \note It will not take ownership of the given pointer 
+          */
+          void setDisplay(te::qt::widgets::ChartDisplay* newDisplay);
 
         private:
 
           std::auto_ptr<Ui::ChartStyleFrameWidgetForm> m_ui;  //!< The Widget form.
           te::qt::widgets::ChartDisplay*  m_display;          //!< The display that will be configured by this widget.
-          te::qt::widgets::ChartStyleWidget* m_styleWidget;
+          te::qt::widgets::ChartStyleWidget* m_styleWidget;   //!< The widget used to configure the display's style
       };
 
     }   // end namespace widgets

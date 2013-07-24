@@ -67,7 +67,7 @@ double getDouble(te::dt::DateTime* dateTime)
 {
   if(dateTime->getTypeCode() == te::dt::TIME_INSTANT)
   {
-    te::dt::TimeInstant* ti = (te::dt::TimeInstant*)dateTime;
+    std::auto_ptr<te::dt::TimeInstant> ti ((te::dt::TimeInstant*)dateTime);
     boost::gregorian::date basedate(1400, 01, 01);
     boost::gregorian::date_duration days = ti->getDate().getDate() - basedate;
     long long int seconds = ti->getTime().getTimeDuration().total_seconds();
@@ -77,7 +77,7 @@ double getDouble(te::dt::DateTime* dateTime)
   }
   else if(dateTime->getTypeCode() == te::dt::DATE)
   {
-    te::dt::Date* d = (te::dt::Date*)dateTime;
+    std::auto_ptr<te::dt::Date> d ((te::dt::Date*)dateTime);
     boost::gregorian::date basedate(1400, 01, 01);
     boost::gregorian::date_duration days = d->getDate() - basedate;
     double v = days.days();
@@ -133,6 +133,7 @@ void getObjectIds (te::da::DataSet* dataset, std::vector<std::size_t> pkeys, std
   for(it=pkeys.begin(); it!=pkeys.end(); ++it)
     propNames.push_back(dataset->getPropertyName(*it));
 
+  //The caller will take ownership of the generated pointers.
   te::da::ObjectId* oid = te::da::GenerateOID(dataset, propNames); 
   valuesOIDs.push_back(oid);
 }
@@ -145,6 +146,7 @@ te::da::ObjectId* getObjectIds (te::da::DataSet* dataset, std::vector<std::size_
   for(it=pkeys.begin(); it!=pkeys.end(); ++it)
     propNames.push_back(dataset->getPropertyName(*it));
 
+  //The caller will take ownership of the generated pointer.
   te::da::ObjectId* oid = te::da::GenerateOID(dataset, propNames); 
   return oid;
 }

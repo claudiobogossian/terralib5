@@ -24,9 +24,9 @@
 */
 
 //Terralib
-#include "ChartStyle.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Stroke.h"
+#include "ChartStyle.h"
 
 //QT
 #include "qcolor.h"

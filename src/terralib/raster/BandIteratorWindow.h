@@ -78,7 +78,7 @@ namespace te
         unsigned int getRow() const;
 
         /*! \brief Returns the current column in iterator. */
-        unsigned int getCol() const;
+        unsigned int getColumn() const;
 
         /*! \brief Returns the value in current position (column, row) from iterator. */
         T getValue() const;
@@ -288,7 +288,7 @@ namespace te
       return m_blky * m_blkh + (m_i - (m_i % m_blkw)) / m_blkw;
     }
 
-    template<class T> unsigned int te::rst::BandIteratorWindow<T>::getCol() const
+    template<class T> unsigned int te::rst::BandIteratorWindow<T>::getColumn() const
     {
       return m_blkx * m_blkw + m_i % m_blkw;
     }
@@ -428,7 +428,7 @@ namespace te
 
     template<class T> T* te::rst::BandIteratorWindow<T>::getBlock(int c, int r) const
     {
-      int bx = (getCol() + c) / m_blkw;
+      int bx = (getColumn() + c) / m_blkw;
 
       int by = (getRow() + r) / m_blkh;
 
@@ -439,7 +439,7 @@ namespace te
 
     template<class T> int te::rst::BandIteratorWindow<T>::getRelativeIndex(int c, int r) const
     {
-      int cc = (getCol() + c) % m_blkw;
+      int cc = (getColumn() + c) % m_blkw;
 
       int cr = (getRow() + r) % m_blkh;
 

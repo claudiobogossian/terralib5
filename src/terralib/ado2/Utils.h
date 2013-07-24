@@ -1,4 +1,4 @@
-/*  Copyright (C) 0-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,45 +18,35 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/ChartWidget.cpp
-
-  \brief A base widget to be used on the chart settings.
+  \file terralib/ado2/Utils.h
+   
+  \brief Utility functions for ADO.  
 */
 
-//Terralib
-#include "ChartDisplay.h"
-#include "ChartWidget.h"
+#ifndef __TERRALIB_ADO_INTERNAL_UTILS_H
+#define __TERRALIB_ADO_INTERNAL_UTILS_H
 
-te::qt::widgets::ChartWidget::ChartWidget(QWidget* parent)
-  : QWidget(parent)
+// TerraLib
+#include "../common/StringUtils.h"
+#include "Config.h"
+
+// STL
+#include <cstdlib>
+#include <cstring>
+#include <vector>
+
+// ADO
+#import "msado15.dll" \
+  no_namespace rename("EOF", "EndOfFile")
+
+namespace te
 {
+  namespace ado
+  {
 
-}
+    std::string MakeConnectionStr(const std::map<std::string, std::string>& dsInfo);
 
-te::qt::widgets::ChartWidget::~ChartWidget()
-{
+  } // end namespace ado
+}   // end namespace te
 
-}
-
-
-QwtPlotSeriesItem* te::qt::widgets::ChartWidget::getChart()
-{
-  return m_chart;
-}
-
-
-te::qt::widgets::ChartDisplay* te::qt::widgets::ChartWidget::getDisplay()
-{
-  return m_display;
-}
-
-void te::qt::widgets::ChartWidget::setChart(QwtPlotSeriesItem* newChart)
-{
-  m_chart = newChart;
-}
-
-
-void te::qt::widgets::ChartWidget::setDisplay(te::qt::widgets::ChartDisplay* newDisplay)
-{
-  m_display = newDisplay;
-}
+#endif  // __TERRALIB_ADO_INTERNAL_UTILS_H

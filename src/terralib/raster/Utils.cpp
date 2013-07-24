@@ -257,7 +257,7 @@ void te::rst::Copy(const te::rst::Band& bin, te::rst::Band& bout)
 
     while(rit != ritend)
     {
-      bout.setValue(rit.getCol(), rit.getRow(), *rit);
+      bout.setValue(rit.getColumn(), rit.getRow(), *rit);
 
       ++rit;
     }
