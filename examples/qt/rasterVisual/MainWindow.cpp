@@ -343,14 +343,14 @@ void MainWindow::onPanTriggered()
 void MainWindow::onZoomInTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::ZoomClick(m_display, 2.0, te::qt::widgets::Zoom::In);
+  m_tool = new te::qt::widgets::ZoomClick(m_display, Qt::BlankCursor, 2.0, te::qt::widgets::Zoom::In);
   m_display->installEventFilter(m_tool);
 }
 
 void MainWindow::onZoomOutTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::ZoomClick(m_display, 2.0, te::qt::widgets::Zoom::Out);
+  m_tool = new te::qt::widgets::ZoomClick(m_display, Qt::BlankCursor, 2.0, te::qt::widgets::Zoom::Out);
   m_display->installEventFilter(m_tool);
 }
 

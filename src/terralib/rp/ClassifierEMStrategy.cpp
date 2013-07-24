@@ -425,7 +425,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
       }
 
 // save cluster information in output raster
-    outputRaster.setValue(it.getCol(), it.getRow(), cluster, outputRasterBand);
+    outputRaster.setValue(it.getColumn(), it.getRow(), cluster, outputRasterBand);
 
     ++it;
     task.pulse();

@@ -106,8 +106,8 @@ void ExemplifyBandIteratorMask()
   std::vector<std::complex<double> > pixels;
   while (it != itend)
   {
-    inraster->getValues(it.getCol(), it.getRow(), pixels);
-    outraster->setValues(it.getCol(), it.getRow(), pixels);
+    inraster->getValues(it.getColumn(), it.getRow(), pixels);
+    outraster->setValues(it.getColumn(), it.getRow(), pixels);
 
     ++it;
   }
@@ -194,7 +194,7 @@ void ExemplifyBandIteratorWindow()
   while (it != itend)
   {
     unsigned R = it.getRow();
-    unsigned C = it.getCol();
+    unsigned C = it.getColumn();
 
     std::set<unsigned char> values;
 
