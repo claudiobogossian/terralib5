@@ -69,6 +69,10 @@ namespace te
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
+        te::da::Connection* getConnection();
+
+        void closeConnection(te::da::Connection* conn);
+
         bool isTimeAnInteger();
 
         void setTimeAsInteger(bool timeIsInteger);
@@ -351,22 +355,6 @@ namespace te
         void getRasterInfo(const std::string& datasetName, te::rst::RasterProperty* rp);
 
         /*!
-          \brief It retrieves a property from a given table or view.
-
-          \param dtid The table id.
-          \param pid  The property id.
-
-          \return The property having the given id in the informed table. The caller will take the ownership of the returned property.
-
-          \exception It throws an exception if it can not load the information.
-
-          \note The property will not have specific grometric information.
-
-          \note PostGIS driver extended method.
-        */
-        te::dt::Property* getProperty(unsigned int dtid, unsigned int pid);
-
-        /*!
           \brief It sets the SQL dialect used by the PostGIS driver.
 
           \param myDialect The PostGIS SQL dialect to be used when translating a query.
@@ -449,6 +437,33 @@ namespace te
           \note PostGIS driver extended method.
         */
         void getProperties(te::da::DataSetTypePtr& dt);
+
+        /*!
+          \brief It sets the property id from the PostgreSQL system.
+
+          \param p  The property whose oid will be set from PostgreSQL system tables.
+         
+          \exception Exception It throws an exception if it was not possible to set the oid information.
+
+          \note PostGIS driver extended method.
+        */
+        void getPropertyId(te::dt::Property* p);
+
+        /*!
+          \brief It retrieves a property from the given id and the dataset id.
+
+          \param dtid The dataset id.
+          \param pid  The property id.
+
+          \return The property having the given id in the informed dataset id. The caller will take the ownership of the returned property.
+
+          \exception It throws an exception, if it can not load the information.
+
+          \note The property will not have specific grometric information.
+
+          \note PostGIS driver extended method.
+        */
+        te::dt::Property* getProperty(unsigned int dtid, unsigned int pid);
 
         /*!
           \brief It gets all the constraints(primary, foreign and unique keys, check constraints) of a dataset 
