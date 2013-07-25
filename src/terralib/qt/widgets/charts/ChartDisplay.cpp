@@ -97,15 +97,19 @@ void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oid
 {
   const QwtPlotItemList& itmList = itemList(); 
 
-  int type = itmList.first()->rtti();
-  switch (type)
+  for ( QwtPlotItemIterator it = itmList.begin();
+      it != itmList.end(); ++it )
   {
-    case(te::qt::widgets::HISTOGRAM_CHART):
-      static_cast<te::qt::widgets::HistogramChart*>(itmList.first())->highlight(oids);
-      break;
-    case(te::qt::widgets::SCATTER_CHART):
-      static_cast<te::qt::widgets::ScatterChart*>(itmList.first())->highlight(oids);
-      break;
+    if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
+      {
+        static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( oids);
+        break;
+      }
+     else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
+      {
+        static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( oids);
+        break;
+      }
   }
 }
 
