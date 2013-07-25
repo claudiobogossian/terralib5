@@ -648,6 +648,43 @@ void te::pgis::DataSource::dropProperty(const std::string& datasetName, const st
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
   te::dt::Property* p = dt->getProperty(name);
+
+  std::string sql;
+
+  if(p->getType() == te::dt::GEOMETRY_TYPE)
+  {
+    sql  =  "SELECT DropGeometryColumn('";
+
+    // Split schema-name.table-name, if needed
+    std::size_t pos = dt->getName().find(".");
+
+    if(pos == std::string::npos)
+    {
+      sql += *(getCurrentSchema());
+      sql += "', '";
+      sql += te::common::Convert2LCase(dt->getName());      
+    }
+    else
+    {
+      sql += te::common::Convert2LCase(dt->getName().substr(0, pos));    
+      sql += "', '";
+      sql += te::common::Convert2LCase(dt->getName().substr(pos + 1));
+    }
+
+    sql += "', '";
+    sql += te::common::Convert2LCase(p->getName()) + "'";
+    sql += ")";    
+  }
+  else
+  {
+    sql  = " ALTER TABLE ";
+    sql += p->getParent()->getName();
+    sql += " DROP COLUMN ";
+    sql += p->getName();
+  }
+
+  execute(sql);
+
   dt->remove(p);
 }
 
@@ -656,12 +693,53 @@ void te::pgis::DataSource::renameProperty(const std::string& datasetName, const 
   if(!propertyExists(datasetName, name))
     throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % name).str());
 
-  if(!isPropertyNameValid(newName))
-    throw Exception((boost::format(TR_PGIS("The name of the new property \"%1%\" is not valid!")) % datasetName).str());
+  if(propertyExists(datasetName, newName))
+    throw Exception((boost::format(TR_PGIS("There dataset \"%1%\" already has a property with this name \"%2%\"!")) % datasetName % newName).str());
+  else
+  {
+    if(!isPropertyNameValid(newName))
+      throw Exception((boost::format(TR_PGIS("The name of the new property \"%1%\" is not valid!")) % newName).str());
+  }
 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
   te::dt::Property* p = dt->getProperty(name);
+
+  std::string sql("ALTER TABLE ");
+  sql += datasetName;
+  sql += " RENAME COLUMN ";
+  sql += name + " TO ";
+  sql += newName;
+
+  execute(sql);
+
+  if(p->getType() == te::dt::GEOMETRY_TYPE)
+  {
+    sql = "UPDATE geometry_columns SET f_geometry_column = '" + newName + "'";
+    sql += " WHERE f_table_name = '" ;
+
+    // Split schema-name.table-name
+    std::size_t pos = datasetName.find(".");
+    
+    if(pos == std::string::npos)
+    {
+      sql += dt->getName();
+      sql += "' AND f_table_schema ='";
+      sql += *(getCurrentSchema());
+      sql += "'";
+    }
+    else
+    {
+      sql += datasetName.substr(pos + 1);
+      sql += "' AND f_table_schema ='";
+      sql += datasetName.substr(0, pos);
+      sql += "'";
+    }
+
+    sql += " AND f_geometry_column = '" + name + "'";
+
+    execute(sql);
+  }
 
   p->setName(newName);
 }
@@ -687,7 +765,51 @@ void te::pgis::DataSource::addPrimaryKey(const std::string& datasetName, te::da:
 {
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  dt->add(pk);
+  std::string pkName;
+
+  if(pk->getName().empty())
+  {
+    pkName = dt->getName() + "_pk";
+
+    boost::replace_all(pkName, ".", "_");
+
+    pk->setName(pkName);
+  }
+
+  pkName = pk->getName();
+
+  std::string sql("ALTER TABLE ");
+  sql += dt->getName();
+  sql += " ADD CONSTRAINT ";
+  sql += pkName;
+  sql += " PRIMARY KEY (";
+
+  const std::vector<te::dt::Property*>& properties = pk->getProperties();
+
+  std::size_t size = properties.size();
+
+  for(std::size_t i = 0; i < size; ++i)
+  {
+    if(i != 0)
+      sql += ", ";
+
+    sql += properties[i]->getName();
+  }
+
+  sql += ")";
+
+  execute(sql);
+
+  if(pk->getDataSetType() == 0)
+    dt->setPrimaryKey(pk);
+
+  // Look if there is an association between the primary key and an index
+  std::vector<std::string> idxNames = getIndexNames(datasetName);
+  for(std::size_t i = 0; i < idxNames.size(); ++i)
+  {
+    if(pkName == idxNames[i])
+      pk->setAssociatedIndex(getIndex(datasetName, pkName));
+  }
 }
 
 void te::pgis::DataSource::dropPrimaryKey(const std::string& datasetName)
@@ -695,7 +817,18 @@ void te::pgis::DataSource::dropPrimaryKey(const std::string& datasetName)
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
   te::da::PrimaryKey* pk = dt->getPrimaryKey();
+  std::string pkName = pk->getName();
 
+  std::string sql("ALTER TABLE ");
+  sql += datasetName;
+  sql += " DROP CONSTRAINT " + pkName;
+
+  execute(sql);
+
+  // Remove the index associated to the primary key
+  if(indexExists(datasetName, pkName))
+    dropIndex(datasetName, pkName);
+  
   dt->remove(pk);
 }
 
@@ -738,10 +871,93 @@ te::da::ForeignKey* te::pgis::DataSource::getForeignKey(const std::string& datas
 void te::pgis::DataSource::addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk)
 {
   std::string fkName = fk->getName();
+
   if(foreignKeyExists(datasetName, fkName))
     throw Exception((boost::format(TR_PGIS("The dataset already \"%1%\" has a foreign key with this name \"%2%\"!")) % datasetName % fkName).str());
 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  std::string sql("ALTER TABLE ");
+  sql += dt->getName();
+  sql += " ADD CONSTRAINT ";
+  sql += fk->getName();
+  sql += " FOREIGN KEY (";
+  
+  std::size_t size = fk->getProperties().size();
+
+  for(std::size_t i = 0; i < size; ++i)
+  {
+    if(i != 0)
+      sql += ", ";
+
+    sql += fk->getProperties()[i]->getName();
+  }
+
+  sql += ") REFERENCES " + fk->getReferencedDataSetType()->getName() + " (";
+
+  size = fk->getReferencedProperties().size();
+
+  for(size_t i = 0; i < size; ++i)
+  {
+    if(i != 0)
+      sql += ", ";
+
+    sql += fk->getReferencedProperties()[i]->getName();
+  }
+
+  sql += ") ON DELETE ";
+
+  switch(fk->getOnDeleteAction())
+  {
+    case te::da::NO_ACTION:
+      sql += " NO ACTION ";
+      break;
+
+    case te::da::RESTRICT:
+      sql += " RESTRICT "; 
+      break;
+
+    case te::da::CASCADE:
+      sql += " CASCADE "; 
+      break;
+
+    case te::da::SET_NULL: 
+      sql += "SET NULL ";
+      break;
+
+    case te::da::SET_DEFAULT:
+    default:
+      sql += "SET DEFAULT ";
+      break;
+  }
+
+  sql += " ON UPDATE ";
+
+  switch(fk->getOnUpdateAction())
+  {
+    case te::da::NO_ACTION:
+      sql += " NO ACTION ";
+    break;
+
+    case te::da::RESTRICT:
+      sql += " RESTRICT "; 
+    break;
+
+    case te::da::CASCADE:
+      sql += " CASCADE "; 
+    break;
+
+    case te::da::SET_NULL: 
+      sql += "SET NULL ";
+    break;
+
+    case te::da::SET_DEFAULT:
+    default:
+      sql += "SET DEFAULT ";
+    break;
+  }
+
+  execute(sql);
 
   dt->add(fk);
 }
@@ -754,6 +970,14 @@ void te::pgis::DataSource::dropForeignKey(const std::string& datasetName, const 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
   te::da::ForeignKey* fk = dt->getForeignKey(fkName);
+
+  std::string sql("ALTER TABLE ");
+  sql += dt->getName();
+  sql += " DROP CONSTRAINT ";
+  sql += fkName;
+
+  execute(sql);
+
   dt->remove(fk);
 }
 
@@ -796,12 +1020,43 @@ te::da::UniqueKey* te::pgis::DataSource::getUniqueKey(const std::string& dataset
 void te::pgis::DataSource::addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk)
 {
   std::string ukName = uk->getName();
+
   if(uniqueKeyExists(datasetName, ukName))
     throw Exception((boost::format(TR_PGIS("The dataset already \"%1%\" has a unique key with this name \"%2%\"!")) % datasetName % ukName).str());
 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
+  std::string sql("ALTER TABLE ");
+  sql += datasetName;
+  sql += " ADD CONSTRAINT ";
+  sql += ukName;
+  sql += " UNIQUE (";
+
+  const std::vector<te::dt::Property*>& properties = uk->getProperties();
+
+  std::size_t size = properties.size();
+
+  for(std::size_t i = 0; i < size; ++i)
+  {
+    if(i != 0)
+      sql += ", ";
+
+    sql += properties[i]->getName();
+  }
+
+  sql += ")";
+
+  execute(sql);
+
   dt->add(uk);
+
+  // Look if there is an association between the unique key and an index
+  std::vector<std::string> idxNames = getIndexNames(datasetName);
+  for(std::size_t i = 0; i < idxNames.size(); ++i)
+  {
+    if(ukName == idxNames[i])
+      uk->setAssociatedIndex(getIndex(datasetName, ukName));
+  }
 }
 
 void te::pgis::DataSource::dropUniqueKey(const std::string& datasetName, const std::string& name)
@@ -812,6 +1067,18 @@ void te::pgis::DataSource::dropUniqueKey(const std::string& datasetName, const s
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
   te::da::UniqueKey* uk = dt->getUniqueKey(name);
+
+  std::string sql("ALTER TABLE ");
+  sql += datasetName;
+  sql += " DROP CONSTRAINT ";
+  sql += name;
+
+  execute(sql);
+
+  // Remove the index associated to the unique key
+  if(indexExists(datasetName, name))
+    dropIndex(datasetName, name);
+
   dt->remove(uk);
 }
 
@@ -852,10 +1119,21 @@ te::da::CheckConstraint* te::pgis::DataSource::getCheckConstraint(const std::str
 void te::pgis::DataSource::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
 {
   std::string name = cc->getName();
+
   if(checkConstraintExists(datasetName, name) != 0)
     throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" already has a check constraint with this name: \"%2%\"!")) % datasetName % name).str());
 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  std::string sql("ALTER TABLE ");
+  sql += datasetName;
+  sql += " ADD CONSTRAINT ";
+  sql += name;
+  sql += " CHECK(";
+  sql += cc->getExpression();
+  sql += ")";
+
+  execute(sql);
 
   dt->add(cc);
 }
@@ -868,6 +1146,13 @@ void te::pgis::DataSource::dropCheckConstraint(const std::string& datasetName, c
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
   te::da::CheckConstraint* cc = dt->getCheckConstraint(name);
+
+  std::string sql("ALTER TABLE ");
+  sql += datasetName;
+  sql += " DROP CONSTRAINT ";
+  sql += name;
+
+  execute(sql);
 
   dt->remove(cc);
 }
