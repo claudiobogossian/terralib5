@@ -599,7 +599,7 @@ namespace te
           \param datasetName  The dataset name.
           \param propertyName The property name.
 
-          \return The property with the given name from the dataset.
+          \return The property with the given name from the dataset. Caller of this method DO NOT take ownership of the returned pointer.
 
           \note Not thread-safe!
         */
@@ -611,7 +611,7 @@ namespace te
           \param datasetName  The name of a dataset.
           \param propertyPos  The position of the property.
 
-          \return The property information.
+          \return The property in a give position. Caller of this method DO NOT take ownership of the returned pointer.
 
           \note Not thread-safe!
         */

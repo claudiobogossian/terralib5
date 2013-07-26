@@ -24,26 +24,27 @@
 */
 
 // Terralib
-#include "../../common/Translator.h"
-#include "../../common/Exception.h"
-#include "../../dataaccess/dataset/DataSet.h"
-#include "../../dataaccess/dataset/DataSetPersistence.h"
-#include "../../dataaccess/dataset/DataSetType.h"
-#include "../../dataaccess/dataset/DataSetTypePersistence.h"
-#include "../../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../../dataaccess/datasource/DataSourceCatalogLoader.h"
-#include "../../dataaccess/datasource/DataSourceFactory.h"
-#include "../../dataaccess/datasource/DataSourceManager.h"
-#include "../../dataaccess/datasource/DataSourceTransactor.h"
-#include "../../dataaccess/query_h.h"
-#include "../../dataaccess/utils/Utils.h"
-#include "../../datatype/Property.h"
-#include "../../maptools/AbstractLayer.h"
-#include "../../memory/DataSet.h"
-#include "../../memory/DataSetItem.h"
-#include "../../geometry/Geometry.h"
-#include "../../geometry/GeometryProperty.h"
-#include "../../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../common/Translator.h"
+#include "../common/Exception.h"
+#include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetPersistence.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/dataset/DataSetTypePersistence.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../dataaccess/datasource/DataSourceFactory.h"
+#include "../dataaccess/datasource/DataSourceManager.h"
+#include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "../dataaccess/query_h.h"
+#include "../dataaccess/utils/Utils.h"
+#include "../datatype/Property.h"
+#include "../geometry/Geometry.h"
+#include "../geometry/GeometryProperty.h"
+#include "../maptools/AbstractLayer.h"
+#include "../memory/DataSet.h"
+#include "../memory/DataSetItem.h"
+#include "../postgis/DataSet.h"
+#include "../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "Config.h"
 #include "Exception.h"
 #include "Intersection.h"
@@ -272,19 +273,79 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
     outputSRID = idata.begin()->first->getSRID();
 
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+  te::map::DataSetLayer* currentDSLayer;
+  te::map::DataSetLayer* nextDSLayer;
+  te::da::DataSourcePtr dataSource;
 
   te::da::Fields* fields = new te::da::Fields;
 
+  te::da::Select* select = new te::da::Select;
+
   for(std::size_t layerPos = 0; layerPos < idata.size(); ++layerPos)
   {
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
-    te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema();
-    
-    if(dsType->hasGeom())
+    if(layerPos == 0)
     {
-      std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType));
+      currentDSLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
+      nextDSLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos + 1].first.get());
+
+      dataSource = te::da::GetDataSource(currentDSLayer->getDataSourceId(), true);
+
+      te::da::DataSetType* currentDSType = (te::da::DataSetType*)currentDSLayer->getSchema();
+      te::da::DataSetType* nextDSType = (te::da::DataSetType*)nextDSLayer->getSchema();
+    
+      te::gm::GeometryProperty* currentGeom;
+      te::gm::GeometryProperty* nextGeom;
+
+      if(currentDSType->hasGeom() && nextDSType->hasGeom())
+      {
+        currentGeom = te::da::GetFirstGeomProperty(currentDSType);
+        nextGeom = te::da::GetFirstGeomProperty(currentDSType);
+      }
+    
+      te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(currentDSType->getName() + "." + currentGeom->getName()),
+                                                                        new te::da::PropertyName(nextDSType->getName() + "." + nextGeom->getName()));
+      te::da::Field* f_intersection = new te::da::Field(*e_intersection, "ST_Intersection");
+      fields->push_back(f_intersection);
+
+      te::da::FromItem* currentFromItem = new te::da::DataSetName(currentDSType->getName());
+      te::da::FromItem* nextFromItem = new te::da::DataSetName(nextDSType->getName());
+      te::da::Expression* e_intersects = new te::da::ST_Intersects( new te::da::PropertyName(currentDSType->getName() + "." + currentGeom->getName()),
+                                                                    new te::da::PropertyName(nextDSType->getName() + "." + nextGeom->getName()));
+      te::da::JoinConditionOn* on = new te::da::JoinConditionOn(e_intersects);
+      te::da::Join* join = new te::da::Join(*currentFromItem, *nextFromItem, te::da::INNER_JOIN, *on);
+
+      te::da::From* from = new te::da::From;
+      from->push_back(join);
+
+      select->setFields(fields);
+      select->setFrom(from);
+
+      ++layerPos;
+    }
+    else
+    {
+      std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
+      std::auto_ptr<te::pgis::DataSet> pgisDataSet((te::pgis::DataSet*)dsTransactor->query(select));
+      std::string query/* = *pgisDataSet->getSQL()*/;
+      te::gm::Envelope* env= pgisDataSet->getExtent(0);
+
+      te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
+      te::da::DataSetType* dsType = (te::da::DataSetType*)currentDSLayer->getSchema();
+
+      te::gm::GeometryProperty* geom;
+
+      if(dsType->hasGeom())
+      {
+        geom = te::da::GetFirstGeomProperty(dsType);
+      }
+
+      te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
+                                                                        new te::da::PropertyName(query));
     }
   }
+
+  std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
+  te::da::DataSet* dsQuery = dsTransactor->query(select);
 
   return resultPair;
 }

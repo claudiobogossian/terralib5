@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../maptools/AbstractLayer.h"
 #include "../../qt/widgets/layer/explorer/AbstractTreeItem.h"
-#include "../core/Config.h"
+#include "../Config.h"
 
 namespace te
 {

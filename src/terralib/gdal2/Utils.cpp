@@ -116,6 +116,7 @@ void te::gdal::GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProp
     int dt = te::gdal::GetTeDataType(rasterBand->GetRasterDataType());
 
     te::rst::BandProperty* rb = new te::rst::BandProperty(rasterIdx, dt);
+
     rb->m_colorInterp = te::gdal::GetTeColorInterpretation(rasterBand->GetColorInterpretation());
 
     // find if there is a no data value
@@ -129,7 +130,7 @@ void te::gdal::GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProp
     {
       const GDALColorTable* colorTable = rasterBand->GetColorTable();
       if (!colorTable)
-        throw Exception(TR_GDAL("invalid color table"));
+        throw Exception(TR_GDAL("Invalid color table"));
 
       rb->m_paletteInterp = te::gdal::GetTePaletteInterpretation(colorTable->GetPaletteInterpretation());
 

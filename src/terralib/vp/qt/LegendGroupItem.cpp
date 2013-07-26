@@ -28,7 +28,7 @@
 #include "../../datatype/Property.h"
 #include "../../qt/widgets/layer/explorer/LegendItem.h"
 #include "../../se/Rule.h"
-#include "../core/Exception.h"
+#include "../Exception.h"
 #include "LegendGroupItem.h"
 
 // Qt
