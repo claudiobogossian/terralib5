@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../maptools/AbstractLayer.h"
-#include "../core/Config.h"
+#include "../Config.h"
 
 // STL
 #include <memory>

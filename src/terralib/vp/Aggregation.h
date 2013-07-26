@@ -27,12 +27,12 @@
 #define __TERRALIB_VP_CORE_INTERNAL_AGGREGATION_H
 
 //Terralib
-#include "../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../datatype/Property.h"
-#include "../../geometry/Geometry.h"
-#include "../../maptools/AbstractLayer.h"
-#include "../../memory/DataSet.h"
-#include "../../memory/DataSetItem.h"
+#include "../dataaccess/datasource/DataSourceInfo.h"
+#include "../datatype/Property.h"
+#include "../geometry/Geometry.h"
+#include "../maptools/AbstractLayer.h"
+#include "../memory/DataSet.h"
+#include "../memory/DataSetItem.h"
 #include "Config.h"
 #include "Enums.h"
 #include "Exception.h"

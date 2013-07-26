@@ -27,9 +27,9 @@
 #define __TERRALIB_VP_CORE_INTERNAL_INTERSECTION_H
 
 // TerraLib
-#include "../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../maptools/AbstractLayer.h"
-#include "../../sam/rtree.h"
+#include "../dataaccess/datasource/DataSourceInfo.h"
+#include "../maptools/AbstractLayer.h"
+#include "../sam/rtree.h"
 #include "Config.h"
 
 // STL
