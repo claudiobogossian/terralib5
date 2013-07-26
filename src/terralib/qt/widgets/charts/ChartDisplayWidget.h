@@ -53,9 +53,9 @@ namespace te
     class ChartDisplay;
 
     /*!
-        \class Histogram Creator
+        \class ChartDisplayWidget
 
-        \brief A wdiget used to customize a Histogram parameters.
+        \brief A wdiget used to display a chart
       */
       class TEQTWIDGETSEXPORT ChartDisplayWidget : public QWidget
       {
@@ -64,16 +64,52 @@ namespace te
 
         public:
 
+          /*!
+            \brief Constructor
+
+            \param chart The chart that will be displayed by this widget.
+            \param display The display that will be used by this widget to display the chart
+            \param parent this widget's parent
+            \param f Window flags used to configure this widget
+          */
           ChartDisplayWidget(QwtPlotSeriesItem* chart, int type, te::qt::widgets::ChartDisplay* display, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
+
+          /*! 
+            \brief Destructor 
+          */
           ~ChartDisplayWidget();
 
+          /*! 
+            \brief Returns a pointer to the chart being displayed.
+
+            \return A QwtPlotSeriesItem type pointer to the chart being used.
+            \note The caller will not take ownership of the returned pointer.
+          */
           QwtPlotSeriesItem* getChart();
 
+          /*!
+            \brief It sets the chart that will be displayed
+.
+            \param newChart The new chart.
+            \note It will take ownership of the given pointer 
+          */
           void setChart(QwtPlotSeriesItem* newChart);
 
+          /*! 
+            \brief Returns a pointer to the display being used.
+
+            \return A ChartDisplay type pointer to the display being used.
+            \note The caller will not take ownership of the returned pointer.  
+          */
           te::qt::widgets::ChartDisplay* getDisplay();
 
+          /*!
+            \brief It sets the display that will be used
+.
+            \param newDisplay The new display.
+            \note It will take ownership of the given pointer 
+          */
           void setDisplay(te::qt::widgets::ChartDisplay* newDisplay);
 
           int getType();
@@ -87,15 +123,21 @@ namespace te
 
         protected slots:
 
-          void onSettingsToolButtonnTriggered();
+          /*!
+            \brief Called when the user clicks on the Settings tool button.
+          */
+          void onSettingsToolButtonnClicked();
 
           /*!
-            \brief Emmit when objects were selected.
+            \brief Called when objects were selected.
           */
           void selectionChanged(te::da::ObjectIdSet* oids, const bool& add);
 
         signals:
 
+          /*!
+            \brief Emmit when objects were selected.
+          */
           void selected(te::da::ObjectIdSet*, const bool&);
 
         private:

@@ -72,7 +72,8 @@ namespace te
           /*!
             \brief It returns the chart's scale draw.  
 
-            \return The chart's scale draw.  
+            \return The chart's scale draw.
+            \note The caller will not take ownership of the returned pointer.
           */
 
            StringScaleDraw* getScaleDraw();
@@ -89,16 +90,17 @@ namespace te
           /*!
             \brief It atttaches a QwtPlot to this Cahrt 
 
-            \param plot The QwtPlot that will be attached to this plot.
+            \param plot The QwtPlot that will be attached to this chart.
 
-             \note If the histogram's data contains string labels, this function will define how they are drawn
+            \note If the histogram's data contains string labels, this function will define how they are drawn
           */
           void attach(QwtPlot* plot);
 
           /*!
             \brief It returns the chart's histogram.  
 
-            \return The chart's histogram.  
+            \return The chart's histogram.
+            \note The caller will not take ownership of the returned pointer.
           */
           te::qt::widgets::Histogram* getHistogram();
 
@@ -113,12 +115,13 @@ namespace te
           /*!
             \brief It returns the chart's style.  
 
-            \return The chart's style.  
+            \return The chart's style.
+            \note The caller will not take ownership of the returned pointer.
           */
           te::qt::widgets::HistogramStyle* getHistogramStyle();
 
           /*!            
-            \brief It sets the chart's sstyle.   
+            \brief It sets the chart's style.
 
             \param newStyle The chart's  new style.
             \note It will take the ownership of the pointer "newStyle".

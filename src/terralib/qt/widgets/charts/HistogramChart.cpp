@@ -24,18 +24,19 @@
 */
 
 //Terralib
-#include "Enums.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
-#include "HistogramChart.h"
+#include "../../../qt/widgets/se/Utils.h"
+#include "Enums.h"
 #include "Histogram.h"
+#include "HistogramChart.h"
 #include "HistogramStyle.h"
 #include "StringScaleDraw.h"
-#include "../../../qt/widgets/se/Utils.h"
+
 
 //QT
-#include <qpen.h>
 #include <qbrush.h>
+#include <qpen.h>
 
 //QWT
 #include <qwt_column_symbol.h>

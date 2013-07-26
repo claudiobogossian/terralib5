@@ -147,8 +147,7 @@ class te::mem::DataSource::Impl
       return properties;
     }
 
-    te::dt::Property* getProperty(const std::string& datasetName,
-                                  const std::string& propertyName)
+    te::dt::Property* getProperty(const std::string& datasetName, const std::string& propertyName)
     {
       boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -162,8 +161,7 @@ class te::mem::DataSource::Impl
       return (p == 0) ? 0 : p->clone();
     }
 
-    te::dt::Property* getProperty(const std::string& datasetName,
-                                  std::size_t propertyPos)
+    te::dt::Property* getProperty(const std::string& datasetName, std::size_t propertyPos)
     {
       boost::ptr_vector<te::dt::Property> properties;
 

@@ -79,11 +79,16 @@ namespace te
                                                                    const std::vector<LayerInputData>& idata,
                                                                    size_t outputSRID = 0);
 
+    std::pair<te::da::DataSetType*, te::da::DataSet*> IntersectionQuery(const std::string& newLayerName,
+                                                                                const std::vector<LayerInputData>& idata,
+                                                                                size_t outputSRID);
+
     std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::string newName, 
                                                                            IntersectionMember firstMember, 
                                                                            IntersectionMember secondMember,
                                                                            std::size_t outputSRID = 0);
 
+    bool SupportsSpatialOperators(const std::vector<LayerInputData>& idata);
   }
 }
 

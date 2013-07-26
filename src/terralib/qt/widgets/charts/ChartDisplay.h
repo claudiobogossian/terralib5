@@ -67,7 +67,10 @@ namespace te
           /*!
             \brief Constructor
 
-            It constructs a default chart display.
+            It constructs a chart display with the given title.
+
+            \param parent this widget's parent
+            \param title this widget's title.
           */
           ChartDisplay(QWidget* parent=NULL, QString title = "");
 
@@ -76,8 +79,20 @@ namespace te
           */
           ~ChartDisplay();
 
+          /*!
+            \brief Returns a pointer to the display's style
+
+            \return A ChartStyle type pointer to the display's style.
+            \note The caller will not take ownership of the returned pointer. 
+          */
           te::qt::widgets::ChartStyle* getStyle();
 
+          /*!
+            \brief It sets the display's style
+
+            \param newStyle The new style.
+            \note It will take ownership of the given pointer 
+          */
           void setStyle(te::qt::widgets::ChartStyle* newStyle);
 
           /*!
@@ -87,10 +102,22 @@ namespace te
           */
           void highlightOIds(const te::da::ObjectIdSet* oids);
 
+          /*!
+            \brief Updates the general display settings according to the ChartStyle.
+                   The adjusted properties are:
+                      Title;
+                      Axis titles (x and Y);
+                      Weather to display the grid or not;
+                      Background color;
+          */
           void adjustDisplay();
 
         protected slots:
 
+          /*!
+            \brief Called when the user clicks on the canvas area. 
+                   Will highlight the data, if possible, depending on the type of chart being displayed (f.e. histogram, scatter, etc).
+          */
           void onPointPicked(const QPointF &pos);
 
         signals:
