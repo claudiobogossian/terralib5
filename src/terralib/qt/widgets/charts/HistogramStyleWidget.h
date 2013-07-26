@@ -48,7 +48,7 @@ namespace te
     class HistogramStyle;
 
     /*!
-        \class Histogram Style Widget
+        \class HistogramStyleWidget
 
         \brief A widget used to adjust a histogram's style.
       */
@@ -59,10 +59,27 @@ namespace te
 
         public:
 
+            /*!
+              \brief Constructor
+
+              \param initial  An initial HistogramStyle element that will be used. The widget form will be updated based on
+                              it's parameters. It can be NULL.
+              \param parent   this widget's parent
+              \param f Window flags used to configure this dialog
+            */
           HistogramStyleWidget(te::qt::widgets::HistogramStyle* initial = 0, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
+          /*! 
+            \brief Destructor.
+          */
           ~HistogramStyleWidget();
 
+          /*!
+            \brief Returns a pointer to the HistogramStyle being configured
+
+            \return A HistogramStyle type pointer to the style being configured
+            \note The caller will take ownership of the returned pointer.
+          */
           te::qt::widgets::HistogramStyle* getHistogramStyle();
 
         protected slots:

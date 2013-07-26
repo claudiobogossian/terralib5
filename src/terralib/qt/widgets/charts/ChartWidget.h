@@ -51,16 +51,48 @@ namespace te
       {
         public:
 
+          /*!
+            \brief Constructor
+
+            \param parent this widget's parent
+          */
           ChartWidget(QWidget* parent = 0);
 
+          /*! 
+            \brief Destructor.
+          */
           ~ChartWidget();
 
+          /*!
+            \brief Returns a pointer to the chart being configured
+
+            \return A QwtPlotSeriesItem type pointer to the chart being configured
+            \note The caller will take ownership of the returned pointer. 
+          */
           virtual QwtPlotSeriesItem* getChart();
 
+          /*!
+            \brief Returns a pointer to the display being configured
+
+            \return A ChartDisplay type pointer to the display being configured
+            \note The caller will take ownership of the returned pointer. 
+          */
           virtual te::qt::widgets::ChartDisplay* getDisplay();
 
+          /*!
+            \brief It sets the chart being configured
+
+            \param newChart The new QwtPlotSeriesItem.
+            \note It will not take ownership of the given pointer 
+          */
           virtual void setChart(QwtPlotSeriesItem* newChart);
 
+          /*!
+            \brief It sets the ChartDisplay being configured
+
+            \param newDisplay The new ChartDisplay.
+            \note It will not take ownership of the given pointer 
+          */
           virtual void setDisplay(te::qt::widgets::ChartDisplay* newDisplay);
 
         public:

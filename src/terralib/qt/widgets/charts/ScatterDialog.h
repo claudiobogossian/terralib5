@@ -52,9 +52,9 @@ namespace te
     class ScatterDataWidget;
 
     /*!
-        \class Scatter creator
+        \class ScatterDialog
 
-        \brief A wdiget used to customize a Scatter parameters.
+        \brief A dialog used to customize a Scatter parameters and generate it's ChartDisplayWidget.
       */
       class TEQTWIDGETSEXPORT ScatterDialog : public QDialog
       {
@@ -63,10 +63,27 @@ namespace te
 
         public:
 
+          /*!
+            \brief Constructor
+
+            \param dataSet The dataset that will be used to generate a scatter.
+            \param dataType The dataset that will be used to generate a scatter.
+            \param parent this widget's parent
+            \param f Window flags used to configure this dialog
+          */
           ScatterDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
+          /*!
+            \brief Destructor
+          */
           ~ScatterDialog();
 
+          /*!
+            \brief Returns a pointer to the generated ChartDisplayWidget
+
+            \return A ChartDisplayWidget type pointer to the generated chart.
+            \note The caller will take ownership of the returned pointer. 
+          */
           te::qt::widgets::ChartDisplayWidget* getDisplayWidget();
 
         protected slots:

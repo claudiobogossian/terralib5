@@ -52,7 +52,7 @@ namespace te
     class ChartDisplay;
 
     /*!
-        \class Histogram Creator
+        \class HistogramDataWidget
 
         \brief A widget used to adjust a histogram's input data.
       */
@@ -63,12 +63,35 @@ namespace te
 
         public:
 
+          /*!
+            \brief Constructor
+
+            \param dataSet The dataset that will be used to generate a histogram.
+            \param dataType The dataset that will be used to generate a histogram.
+            \param parent this widget's parent
+            \param f Window flags used to configure this widget
+          */
           HistogramDataWidget(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
+          /*!
+            \brief Destructor
+          */
           ~HistogramDataWidget();
 
+          /*!
+            \brief Returns a pointer to the widget's form
+
+            \return A HistogramDataWidgetForm type pointer to the widget's form.
+            \note The caller will not take ownership of the returned pointer.
+          */
           Ui::HistogramDataWidgetForm* getForm();
 
+          /*!
+            \brief Returns a pointer to the widget's form
+
+            \return A HistogramDataWidgetForm type pointer to the widget's form.
+            \note The caller will not take ownership of the returned pointer.
+          */
           te::qt::widgets::Histogram* getHistogram();
 
         protected slots:
@@ -77,7 +100,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::HistogramDataWidgetForm>  m_ui;        //!< The widget form.
+          std::auto_ptr<Ui::HistogramDataWidgetForm>  m_ui;        //!< The widget's form.
           std::auto_ptr<te::da::DataSet>              m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
           std::auto_ptr<te::da::DataSetType>          m_dataType;  //!< The type of the dataset that will be used to generate the histogram graphic.
        };

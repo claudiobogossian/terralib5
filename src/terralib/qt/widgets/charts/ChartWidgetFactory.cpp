@@ -24,7 +24,6 @@
 */
 
 #include "../../../common/StringUtils.h"
-#include "ChartWidget.h"
 #include "ChartWidgetFactory.h"
 
 te::qt::widgets::ChartWidget* te::qt::widgets::ChartWidgetFactory::make(const std::string& cwType)

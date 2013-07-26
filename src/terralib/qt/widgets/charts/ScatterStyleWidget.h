@@ -47,9 +47,9 @@ namespace te
     class ScatterStyle;
 
     /*!
-        \class Scatter creator
+        \class ScatterStyleWidget
 
-        \brief A wdiget used to customize a Scatter parameters.
+        \brief  A widget used to adjust a scatter's style.
       */
       class TEQTWIDGETSEXPORT ScatterStyleWidget : public QWidget
       {
@@ -58,10 +58,27 @@ namespace te
 
         public:
 
+          /*!
+            \brief Constructor
+
+            \param initial  An initial ScatterStyle element that will be used. The widget form will be updated based on
+                            it's parameters. It can be NULL.
+            \param parent   this widget's parent
+            \param f Window flags used to configure this dialog
+          */
           ScatterStyleWidget(te::qt::widgets::ScatterStyle* initial = 0, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
+          /*! 
+            \brief Destructor.
+          */
           ~ScatterStyleWidget();
 
+          /*!
+            \brief Returns a pointer to the ScatterStyle being configured
+
+            \return A ScatterStyle type pointer to the style being configured
+            \note The caller will take ownership of the returned pointer.
+          */
           te::qt::widgets::ScatterStyle* getScatterStyle();
 
         protected slots:

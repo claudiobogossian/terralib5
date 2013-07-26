@@ -24,23 +24,23 @@
 */
 
 // TerraLib
+#include "../../../color/RGBAColor.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../se.h"
 #include "ChartDisplay.h"
 #include "ChartStyle.h"
-#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "Enums.h"
 #include "HistogramChart.h"
-#include "Utils.h"
-#include "../../../color/RGBAColor.h"
-#include "../../../se.h"
 #include "ScatterChart.h"
+#include "Utils.h"
 
 //Qwt
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_histogram.h>
+#include <qwt_plot_magnifier.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_picker.h>
-#include <qwt_plot_magnifier.h>
 #include <qwt_plot_zoomer.h>
 #include <qwt_picker_machine.h>
 #include <qwt_text.h>
@@ -97,15 +97,19 @@ void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oid
 {
   const QwtPlotItemList& itmList = itemList(); 
 
-  int type = itmList.first()->rtti();
-  switch (type)
+  for ( QwtPlotItemIterator it = itmList.begin();
+      it != itmList.end(); ++it )
   {
-    case(te::qt::widgets::HISTOGRAM_CHART):
-      static_cast<te::qt::widgets::HistogramChart*>(itmList.first())->highlight(oids);
-      break;
-    case(te::qt::widgets::SCATTER_CHART):
-      static_cast<te::qt::widgets::ScatterChart*>(itmList.first())->highlight(oids);
-      break;
+    if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
+      {
+        static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( oids);
+        break;
+      }
+     else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
+      {
+        static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( oids);
+        break;
+      }
   }
 }
 

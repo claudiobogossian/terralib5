@@ -14,7 +14,7 @@ mydialect->insert(">=", new te::da::BinaryOpEncoder(">="));
 mydialect->insert("<=", new te::da::BinaryOpEncoder("<="));
 mydialect->insert("and", new te::da::BinaryOpEncoder("and"));
 mydialect->insert("or", new te::da::BinaryOpEncoder("or"));
-mydialect->insert("not", new te::da::UnaryOpEncoder("not"));  
+mydialect->insert("not", new te::da::UnaryOpEncoder("not"));
 mydialect->insert("upper", new te::da::FunctionEncoder("upper"));
 mydialect->insert("lower", new te::da::FunctionEncoder("lower"));
 mydialect->insert("substring", new te::da::TemplateEncoder("substring", "($1 from $2 for $3)"));
@@ -23,6 +23,12 @@ mydialect->insert("second", new te::da::TemplateEncoder("extract", "(second from
 mydialect->insert("year", new te::da::TemplateEncoder("extract", "(year from $1)"));
 mydialect->insert("str", new te::da::TemplateEncoder("cast", "($1 as varchar)"));
 mydialect->insert("sum", new te::da::FunctionEncoder("sum"));
+mydialect->insert("avg", new te::da::FunctionEncoder("avg"));
+mydialect->insert("count", new te::da::FunctionEncoder("count"));
+mydialect->insert("max", new te::da::FunctionEncoder("max"));
+mydialect->insert("min", new te::da::FunctionEncoder("min"));
+mydialect->insert("stddev", new te::da::FunctionEncoder("stddev_pop"));
+mydialect->insert("variance", new te::da::FunctionEncoder("var_pop"));
 
 mydialect->insert("geometrytype", new te::da::FunctionEncoder("geometrytype"));
 mydialect->insert("st_boundary", new te::da::FunctionEncoder("st_boundary"));

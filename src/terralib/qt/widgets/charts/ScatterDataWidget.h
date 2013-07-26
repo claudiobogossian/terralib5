@@ -62,12 +62,36 @@ namespace te
 
         public:
 
+
+          /*!
+            \brief Constructor
+
+            \param dataSet The dataset that will be used to generate a histogram.
+            \param dataType The dataset that will be used to generate a histogram.
+            \param parent this widget's parent
+            \param f Window flags used to configure this widget
+          */
           ScatterDataWidget(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
+          /*!
+            \brief Destructor
+          */
           ~ScatterDataWidget();
 
+          /*!
+            \brief Returns a pointer to the widget's form
+
+            \return A ScatterDataWidgetForm type pointer to the widget's form.
+            \note The caller will not take ownership of the returned pointer.
+          */
           Ui::ScatterDataWidgetForm* getForm();
 
+          /*!
+            \brief Returns a pointer to the widget's form
+
+            \return A HistogramDataWidgetForm type pointer to the widget's form.
+            \note The caller will not take ownership of the returned pointer.
+          */
           te::qt::widgets::Scatter* getScatter();
 
         protected slots:
