@@ -29,6 +29,7 @@
 // TerraLib
 #include "../dataaccess2/datasource/DataSource.h"
 #include "../dataaccess2/datasource/DataSourceCapabilities.h"
+#include "../dataaccess2/dataset/DataSetType.h"
 #include "Config.h"
 #include "Exception.h"
 
@@ -36,6 +37,11 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/cstdint.hpp>
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/mem_fun.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/random_access_index.hpp>
+#include <boost/noncopyable.hpp>
 
 // STL 
 #include <map>
@@ -59,7 +65,6 @@ namespace te
   {
     class CheckConstraint;
     class DataSet;
-    class DataSetType;
     class DataSource;
     class DataSourceCapabilities;
     class ForeignKey;
@@ -97,18 +102,6 @@ namespace te
       
       const std::map<std::string, std::string>& getConnectionInfo() const;
       
-      /*!
-       \brief It sets information to be used when connecting to the data source.
-       
-       Examples of valid connection information strings are:
-       <ul>
-       <li>"uri=foo\bar\file.ext": refers to the single file "file.ext".</li>
-       <li>"uri=foo\bar\": refers to all files located inside the directory "foo\bar".</li>
-       <li>source=host='<host>' port:'<port>' dbname='<dbname>' user='<user>' password='<password>' [schema='<schema>'] [table='<raster_table>'] [where='<sql_where>'] [mode='<working_mode>']" : refers to a PostGIS WKT Raster.</li>
-       </ul>
-       
-       \param connInfo Key-value-pairs (kvp) with the connection information.
-       */
       void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
       
       void open();
@@ -256,7 +249,7 @@ namespace te
       
       bool hasDataSets();
       
-      bool dataSetExists(const std::string& name)throw(Exception);
+      bool dataSetExists(const std::string& name);
       
       void createDataSet(te::da::DataSetType* dt,
                          const std::map<std::string, std::string>& options);
@@ -268,7 +261,7 @@ namespace te
       void dropDataSet(const std::string& name);
       
       void renameDataSet(const std::string& name,
-                         const std::string& newName)throw(Exception);
+                         const std::string& newName);
       
       void add(const std::string& datasetName,
                te::da::DataSet* d,
@@ -286,8 +279,7 @@ namespace te
                   std::size_t limit = 0);
       
       void optimize(const std::map<std::string, std::string>& opInfo);
-      
-      bool isDirectory() const { return m_isDirectory; }
+  
       
       /*!
        \brief It sets the capabilities document.
@@ -299,6 +291,8 @@ namespace te
       static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
 
       std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info);
+      
+      void getProperties(te::da::DataSetTypePtr& dt);
 
     protected:
       
@@ -307,16 +301,19 @@ namespace te
       void drop(const std::map<std::string, std::string>& dsInfo);
       
       bool exists(const std::map<std::string, std::string>& dsInfo);
-
+      
     private:
       
-      std::map<std::string, std::string> m_connectionInfo;  //!< The connection parameters.
-      std::map<std::string, te::da::DataSetTypePtr> m_dstypes;
+      std::map<std::string, std::string> m_connectionInfo;  
       
-      bool m_isOpened;                                      //!< Tells if the data source is opened.
-      bool m_isDirectory;                                   //!< Tells if the data source refers to a directory.
+      te::da::DataSourceCatalog* m_catalog; 
       
-      static te::da::DataSourceCapabilities sm_capabilities;  //!< GDAL capabilities.
+      std::vector<std::string> m_datasetNames;
+      
+      bool m_isOpened;
+      bool m_isDirectory; 
+      
+      static te::da::DataSourceCapabilities sm_capabilities; 
 
     };
   } // end namespace gdal
