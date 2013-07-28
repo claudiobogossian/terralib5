@@ -27,8 +27,12 @@
 #define __TERRALIB_MEMORY_INTERNAL_DATASOURCE_H
 
 // TerraLib
+#include "../dataaccess2/dataset/DataSet.h"
 #include "../dataaccess2/datasource/DataSource.h"
 #include "Config.h"
+
+// Boost
+#include <boost/thread.hpp>
 
 namespace te
 {
@@ -112,7 +116,7 @@ namespace te
 
         std::vector<std::string> getDataSetNames();
 
-        const te::da::DataSetTypePtr& getDataSetType(const std::string& name);
+        const te::da::DataSetTypePtr& getDataSetType(const std::string& datasetName);
 
         std::vector<std::string> getPropertyNames(const std::string& datasetName);
 
@@ -233,9 +237,17 @@ namespace te
 
       private:
 
-        class Impl;
+        std::map<std::string, std::string> m_connInfo;              //!< DataSource information.
+        std::map<std::string, te::da::DataSetPtr> m_datasets;       //!< The set of datasets stored in memory.
+        std::map<std::string, te::da::DataSetTypePtr> m_schemas;    //!< The set of dataset schemas.
+        mutable boost::recursive_mutex m_mtx;                       //!< The internal mutex.
+        std::size_t m_numDatasets;                                  //!< The number of datasets kept in the data source.
+        std::size_t m_maxDatasets;                                  //!< The maximum number of datasets to be handled by the data source.
+        bool m_isOpened;                                            //!< A flag to control the state of the data source.
+        bool m_deepCopy;                                            //!< If true, each dataset is cloned in the getDataSet method.
 
-        Impl* m_pImpl;
+        static te::da::DataSourceCapabilities sm_capabilities;      //!< The Memory data source capabilities.
+        static const te::da::SQLDialect sm_dialect;                 //!< A dummy dialect.
     };
 
   } // end namespace mem
