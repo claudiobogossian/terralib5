@@ -27,7 +27,6 @@
 #include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess2/dataset/DataSetType.h"
-#include "../dataaccess2/datasource/DataSourceCatalog.h"
 #include "../raster/Grid.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterProperty.h"
@@ -50,12 +49,10 @@ te::gdal::DataSource::DataSource():
     m_isDirectory(false)
 {
   sm_capabilities.setAccessPolicy(te::common::RWAccess);
-  m_catalog = new te::da::DataSourceCatalog();
 }
 
 te::gdal::DataSource::~DataSource()
 {
-  delete m_catalog;
 }
 
 std::string te::gdal::DataSource::getType() const
@@ -179,7 +176,7 @@ void te::gdal::DataSource::close()
 {
   m_datasetNames.clear();
   m_datasetFullNames.clear();
-  m_catalog->clear();
+  m_catalog.clear();
   m_isOpened = false;
 }
 
@@ -299,19 +296,20 @@ const te::da::DataSetTypePtr& te::gdal::DataSource::getDataSetType(const std::st
     throw Exception((boost::format(TR_GDAL("The dataset \"%1%\" doesn't exist!")) % name).str());
   
   // check if it is in the catalog
-  if (m_catalog->datasetExists(name))
-    return m_catalog->getDataSetType(name);
+  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(name);
+  if(it != m_catalog.end())
+    return it->second;
   
   // create the dataset type and insert into the catalog
   unsigned int dtid = (std::find(m_datasetNames.begin(), m_datasetNames.end(), name)-m_datasetNames.begin());
   te::da::DataSetTypePtr dt(new te::da::DataSetType(name, dtid));
   dt->setTitle(name);
-
   getProperties(dt);
   
-  m_catalog->add(dt);
+  std::pair<std::string, te::da::DataSetTypePtr> mpair = std::make_pair(name,dt);
+  m_catalog.insert(mpair);
   
-  return m_catalog->getDataSetType(name);
+  return getDataSetType(name);
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::DataSource::getDataSet(const std::string& name, 
@@ -319,18 +317,16 @@ std::auto_ptr<te::da::DataSet> te::gdal::DataSource::getDataSet(const std::strin
 {
   assert(!name.empty());
   
-  if (m_catalog->datasetExists(name))
-  {
-    const te::da::DataSetTypePtr& dt = m_catalog->getDataSetType(name);
-  
-    return std::auto_ptr<te::da::DataSet>(new DataSet(static_cast<te::da::DataSetType*>(dt->clone())));  // return a full loaded dataset type
-  }
+  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(name);
+  if(it != m_catalog.end())
+    return std::auto_ptr<te::da::DataSet>(new DataSet(static_cast<te::da::DataSetType*>(it->second->clone()))); 
   else 
   {
     unsigned int dtid = (std::find(m_datasetNames.begin(), m_datasetNames.end(), name)-m_datasetNames.begin());
     te::da::DataSetTypePtr dt(new te::da::DataSetType(name, dtid));
     dt->setTitle(name);
     getProperties(dt);
+    
     return std::auto_ptr<te::da::DataSet>(new DataSet(static_cast<te::da::DataSetType*>(dt->clone())));
   }
 }

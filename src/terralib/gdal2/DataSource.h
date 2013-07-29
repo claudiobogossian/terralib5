@@ -312,7 +312,7 @@ namespace te
       
       std::map<std::string, std::string> m_connectionInfo;  
       
-      te::da::DataSourceCatalog* m_catalog; 
+      std::map<std::string, te::da::DataSetTypePtr> m_catalog; 
       
       std::vector<std::string> m_datasetNames;
       std::vector<std::string> m_datasetFullNames;
