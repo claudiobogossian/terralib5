@@ -567,7 +567,7 @@ te::dt::Property* te::pgis::DataSource:: getProperty(const std::string& datasetN
 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  return dt->getProperty(name);
+  return dt->getProperty(name)->clone();
 }
 
 te::dt::Property* te::pgis::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
@@ -576,7 +576,7 @@ te::dt::Property* te::pgis::DataSource::getProperty(const std::string& datasetNa
 
   assert(propertyPos < dt->size());
 
-  return dt->getProperty(propertyPos);
+  return dt->getProperty(propertyPos)->clone();
 }
 
 void te::pgis::DataSource::addProperty(const std::string& datasetName, te::dt::Property* p)
@@ -750,7 +750,7 @@ te::da::PrimaryKey* te::pgis::DataSource::getPrimaryKey(const std::string& datas
 {
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  return dt->getPrimaryKey();
+  return static_cast<te::da::PrimaryKey*>(dt->getPrimaryKey()->clone());
 }
 
 bool te::pgis::DataSource::primaryKeyExists(const std::string& datasetName, const std::string& name)
@@ -867,7 +867,7 @@ te::da::ForeignKey* te::pgis::DataSource::getForeignKey(const std::string& datas
 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  return dt->getForeignKey(name);
+  return static_cast<te::da::ForeignKey*>(dt->getForeignKey(name)->clone());
 }
 
 void te::pgis::DataSource::addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk)
@@ -1016,7 +1016,7 @@ te::da::UniqueKey* te::pgis::DataSource::getUniqueKey(const std::string& dataset
 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  return dt->getUniqueKey(name);
+  return static_cast<te::da::UniqueKey*>(dt->getUniqueKey(name)->clone());
 }
 
 void te::pgis::DataSource::addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk)
@@ -1115,7 +1115,7 @@ te::da::CheckConstraint* te::pgis::DataSource::getCheckConstraint(const std::str
 
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
 
-  return dt->getCheckConstraint(name);
+  return static_cast<te::da::CheckConstraint*>(dt->getCheckConstraint(name)->clone());
 }
 
 void te::pgis::DataSource::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
@@ -1188,8 +1188,9 @@ te::da::Index* te::pgis::DataSource::getIndex(const std::string& datasetName, co
   if(!indexExists(datasetName, name))
     throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no index with this name \"%2%\"!")) % datasetName % name).str());
 
-    const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
-    return dt->getIndex(name);
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  return dt->getIndex(name)->clone();
 }
 
 void te::pgis::DataSource::addIndex(const std::string& datasetName, te::da::Index* idx,
@@ -1288,7 +1289,7 @@ te::da::Sequence* te::pgis::DataSource::getSequence(const std::string& name)
 {
   std::vector<te::da::Sequence*> seqs = getSequences();
 
-  return m_pImpl->m_catalog->getSequence(name);
+  return m_pImpl->m_catalog->getSequence(name)->clone();
 }
 
 void te::pgis::DataSource::addSequence(te::da::Sequence* sequence)

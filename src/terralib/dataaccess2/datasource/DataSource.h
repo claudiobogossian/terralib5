@@ -599,19 +599,25 @@ namespace te
           \param datasetName  The dataset name.
           \param propertyName The property name.
 
-          \return The property with the given name from the dataset. Caller of this method DO NOT take ownership of the returned pointer.
+          \return The property with the given name from the dataset.
+
+          \post The caller of this method will take the ownership of the returned property,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
         virtual te::dt::Property* getProperty(const std::string& datasetName, const std::string& name) = 0;
 
         /*!
-          \brief It retrieves a property from a dataset.
+          \brief It retrieves a property from the dataset.
 
-          \param datasetName  The name of a dataset.
-          \param propertyPos  The position of the property.
+          \param datasetName  The dataset name.
+          \param propertyPos  The property position.
 
-          \return The property in a give position. Caller of this method DO NOT take ownership of the returned pointer.
+          \return The property in the given position.
+
+          \post The caller of this method will take the ownership of the returned property,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
@@ -623,12 +629,13 @@ namespace te
           \param datasetName The dataset where the property will be added.
           \param p           The new property to be added.
 
+          \note Don't delete the given property, because the schema will take the ownership of it.
           \note Not thread-safe!
         */
         virtual void addProperty(const std::string& datasetName, te::dt::Property* p) = 0;
 
         /*!
-          \brief It removes a property from the given dataset schema.
+          \brief It removes a property from the given dataset.
 
           \param datasetName  The dataset from where the given property will be removed.
           \param name         The property to be removed from the dataset.
@@ -661,8 +668,8 @@ namespace te
 
           \return The primary key of the dataset.
 
-          \post The caller will not take the ownership of the returned primary key, 
-                because it belongs to the dataset schema.
+          \post The caller of this method will take the ownership of the returned primary key,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
@@ -686,8 +693,7 @@ namespace te
           \param datasetName  The name of the dataset to be added the primary key.
           \param pk           The primary key constraint.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
+          \note Don't delete the given primary key, because the schema will take the ownership of it.
           \note Not thread-safe!
         */
         virtual void addPrimaryKey(const std::string& datasetName, PrimaryKey* pk) = 0;
@@ -695,7 +701,7 @@ namespace te
         /*!
           \brief It removes the primary key constraint from the dataset schema.
 
-          \param datasetName    The name of the dataset to be removed the primary key.
+          \param datasetName    The dataset from where the primary key wil be removed.
 
           \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
@@ -729,10 +735,10 @@ namespace te
 
           \param name The foreign key name.
 
-          \note The caller of this method will not have the ownership of the returned foreign key,
-                because it belongs to the dataset schema.
-
           \return The foreign key with the given name in the dataset.
+
+          \post The caller of this method will take the ownership of the returned foreign key,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
@@ -744,8 +750,7 @@ namespace te
           \param datasetName  The dataset where the foreign key constraint will be added.
           \param fk           The foreign key constraint.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
+          \note Don't delete the given foreign key, because the schema will take the ownership of it.
           \note Not thread-safe!
         */
         virtual void addForeignKey(const std::string& datasetName, ForeignKey* fk) = 0;
@@ -791,8 +796,8 @@ namespace te
           \param datasetName  The dataset name.
           \param name         The unique key name.
 
-          \note The caller of this method will not have the ownership of the returned unique key,
-                because it belongs to the dataset schema.
+          \post The caller of this method will take the ownership of the returned property,
+                because it is a clone of the one in the schema.
 
           \return The unique key with the given name in the dataset.
 
@@ -803,9 +808,10 @@ namespace te
         /*!
           \brief It adds a unique key constraint to the dataset.
 
-          \param datasetName  The name of the dataset where the unique key will be added.
+          \param datasetName  The dataset where the unique key will be added.
           \param uk           The unique key constraint.
 
+          \note Don't delete the given unique key, because the schema will take the ownership of it.
           \note Not thread-safe!
         */
         virtual void addUniqueKey(const std::string& datasetName, UniqueKey* uk) = 0;
@@ -851,8 +857,8 @@ namespace te
 
           \return The check constraint with the given name.
 
-          \post The caller will not take the ownership of the returned check constraint, 
-                because it belongs to the DataSetType.
+          \post The caller of this method will take the ownership of the returned check constraint,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
@@ -864,8 +870,7 @@ namespace te
           \param datasetName  The dataset where the constraint will be added.
           \param cc           The check constraint.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
+          \note Don't delete the given check constraint, because the schema will take the ownership of it.
           \note Not thread-safe!
         */
         virtual void addCheckConstraint(const std::string& datasetName, CheckConstraint* cc) = 0;
@@ -908,10 +913,10 @@ namespace te
           \param datasetName  The dataset name.
           \param name         The index name.
 
-          \note The caller of this method will not take the ownership of the returned index,
-                because it belongs to the dataset schema.
-
           \return The index with the given name.
+
+          \post The caller of this method will take the ownership of the returned index,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
@@ -924,8 +929,7 @@ namespace te
           \param idx          The index to be added.
           \param options      A list of optional modifiers (driver specific).
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
+          \note Don't delete the given index, because the schema will take the ownership of it.
           \note Not thread-safe!
         */
         virtual void addIndex(const std::string& datasetName, Index* idx,
@@ -971,10 +975,10 @@ namespace te
 
           \param name  The sequence name.
 
-          \note The caller of this method will not have the ownership of the returned sequence,
-                because it belongs to the catalog.
-
           \return The sequence with the given name.
+
+          \post The caller of this method will take the ownership of the returned sequence,
+                because it is a clone of the one in the catalog.
 
           \note Not thread-safe!
         */
@@ -983,8 +987,7 @@ namespace te
         /*!
           \brief It creates a new sequence in the data source.
 
-          \note The catalog will take the ownership of the given sequence.
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+          \note Don't delete the given sequence, because the schema will take the ownership of it.
           \note Not thread-safe!
         */
         virtual void addSequence(Sequence* sequence) = 0;
