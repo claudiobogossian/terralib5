@@ -50,7 +50,7 @@ const te::da::SQLDialect te::mem::DataSource::sm_dialect;
 
 te::mem::DataSource::DataSource()
   : m_numDatasets(0),
-    m_maxDatasets(TE_MEMORY_MAX_DATASETS),
+    m_maxNumDatasets(TE_MEMORY_MAX_DATASETS),
     m_isOpened(false),
     m_deepCopy(false)
 {
@@ -84,7 +84,7 @@ void te::mem::DataSource::open()
   std::map<std::string, std::string>::const_iterator it = m_connInfo.find("MAX_DATASETS");
 
   if(it != m_connInfo.end())
-    m_maxDatasets = boost::lexical_cast<std::size_t>(it->second);
+    m_maxNumDatasets = boost::lexical_cast<std::size_t>(it->second);
 
   // Check operation mode
   it = m_connInfo.find("OPERATION_MODE");
@@ -106,7 +106,7 @@ void te::mem::DataSource::close()
 
   m_numDatasets = 0;
 
-  m_maxDatasets = TE_MEMORY_MAX_DATASETS;
+  m_maxNumDatasets = TE_MEMORY_MAX_DATASETS;
 
   m_isOpened = false;
 
@@ -832,10 +832,12 @@ bool te::mem::DataSource::hasDataSets()
 
 bool te::mem::DataSource::dataSetExists(const std::string& name)
 {
+  std::vector<std::string> datasetNames = getDataSetNames();
+
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
-  if(m_schemas.find(name) != m_schemas.end())
-    return true;
+  if(std::find(datasetNames.begin(), datasetNames.end(), name) != datasetNames.end())
+     return true;
 
   return false;
 }
@@ -843,14 +845,24 @@ bool te::mem::DataSource::dataSetExists(const std::string& name)
 void te::mem::DataSource::createDataSet(te::da::DataSetType* dt,
                                         const std::map<std::string, std::string>& /*options*/)
 {
+  std::string datasetName = dt->getName();
+
+  if(m_schemas.find(datasetName) != m_schemas.end())
+    throw Exception((boost::format(TR_MEMORY("A dataset with the same name (%1%) already exists!")) % datasetName).str());
+
+  if((m_numDatasets + 1) > m_maxNumDatasets)
+    throw Exception((boost::format(TR_MEMORY("The maximum number of datasets was exceeded!"))).str());
+
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
-  if(m_schemas.find(dt->getName()) != m_schemas.end())
-    throw Exception((boost::format(TR_MEMORY("A dataset with the same name (%1%) already exists!")) % dt->getName()).str());
+  te::da::DataSetTypePtr dtp(dt);
+  m_schemas[datasetName] = dtp;
 
   DataSetPtr dataset(new DataSet(dt));
 
-  m_datasets[dt->getName()] = dataset;
+  m_datasets[datasetName] = dataset;
+
+  ++m_numDatasets;
 }
 
 void te::mem::DataSource::cloneDataSet(const std::string& /*name*/,
@@ -880,23 +892,28 @@ void te::mem::DataSource::dropDataSet(const std::string& /*name*/)
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSource::renameDataSet(const std::string& /*name*/,
-                                        const std::string& /*newName*/)
+void te::mem::DataSource::renameDataSet(const std::string& name,
+                                        const std::string& newName)
 {
-  //DataSource* ds = m_t->getMemDataSource();
+  if(!dataSetExists(name))
+    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % name).str());
 
-  //DataSource::LockWrite l(ds);
+  if(!isDataSetNameValid(newName))
+    throw Exception((boost::format(TR_MEMORY("The new name \"%1%\" is not valid!")) % newName).str());
 
-  //if(!ds->datasetExists(dt->getName()))
-  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
+  const te::da::DataSetTypePtr& dt = getDataSetType(name);
 
-  //std::string oldName = dt->getName();
+  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
-  //if(dt->getCatalog())
-  //  ds->getCatalog()->rename(dt, newName);
+  dt->setName(newName);
+  dt->setCompositeName(newName);
 
-  //ds->rename(oldName, newName);
-  throw Exception(TR_MEMORY("Not implemented yet!"));
+  m_schemas.erase(m_schemas.find(name));
+  m_schemas[newName] = dt;
+
+  te::da::DataSetPtr& dataset = m_datasets[name];
+  m_datasets.erase(m_datasets.find(name));
+  m_datasets[newName] = dataset;
 }
 
 void te::mem::DataSource::add(const std::string& /*datasetName*/,

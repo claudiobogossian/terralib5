@@ -1463,21 +1463,54 @@ void te::pgis::DataSource::createDataSet(te::da::DataSetType* dt,
   for(std::size_t i = 0; i < nUKs; ++i)
     addUniqueKey(datasetName, dt->getUniqueKey(i));
 
-  // Add indexes, just if no primary key or unique key with the same name exists!
+  // Add the indexes, just if no primary key or unique key with the same name exists!
   std::size_t nIdxs = dt->getNumberOfIndexes();
   for(std::size_t i = 0; i < nIdxs; ++i)
       addIndex(datasetName, dt->getIndex(i), options);
 
-  // Add foreign keys
+  // Add the foreign keys
   std::size_t nFKs = dt->getNumberOfForeignKeys();
   for(std::size_t i = 0; i < nFKs; ++i)
     addForeignKey(datasetName, dt->getForeignKey(i));
 
-  // Add check constraints
+  // Add the the check constraints
   std::size_t nCCs = dt->getNumberOfCheckConstraints();
 
   for(std::size_t i = 0; i < nCCs; ++i)
     addCheckConstraint(datasetName, dt->getCheckConstraint(i));
+
+  // Try to link the primary key to an index
+  std::vector<std::string> indexNames = getIndexNames(datasetName);
+
+  te::da::PrimaryKey* pk = dt->getPrimaryKey();
+  if(pk)
+  {
+    for(std::size_t i = 0; i < indexNames.size(); ++i)
+    {
+      if(pk->getName() == indexNames[i])
+      {
+        pk->setAssociatedIndex(dt->getIndex(indexNames[i]));
+        break;
+      }
+    }
+  }
+
+  // Try to link the unique keys to an index
+  std::size_t numUKs = dt->getNumberOfUniqueKeys();
+
+  for(std::size_t i = 0; i < numUKs; ++i)
+  {
+    te::da::UniqueKey* uk = dt->getUniqueKey(i);
+
+    for(std::size_t j = 0; j < indexNames.size(); ++j)
+    {
+      if(uk->getName() == indexNames[j])
+      {
+        uk->setAssociatedIndex(dt->getIndex(indexNames[j]));
+        break;
+      }
+    }
+  }
   
   // Add the dataset name to the list of dataset names of the data source
   m_pImpl->m_datasetNames.push_back(datasetName);

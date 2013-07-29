@@ -242,7 +242,7 @@ namespace te
         std::map<std::string, te::da::DataSetTypePtr> m_schemas;    //!< The set of dataset schemas.
         mutable boost::recursive_mutex m_mtx;                       //!< The internal mutex.
         std::size_t m_numDatasets;                                  //!< The number of datasets kept in the data source.
-        std::size_t m_maxDatasets;                                  //!< The maximum number of datasets to be handled by the data source.
+        std::size_t m_maxNumDatasets;                               //!< The maximum number of datasets to be handled by the data source.
         bool m_isOpened;                                            //!< A flag to control the state of the data source.
         bool m_deepCopy;                                            //!< If true, each dataset is cloned in the getDataSet method.
 

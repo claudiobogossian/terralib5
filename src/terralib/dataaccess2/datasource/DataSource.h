@@ -1083,7 +1083,9 @@ namespace te
           \post In some data sources, this method may output implicit indexes, sequences or constraints.
                 The method, if necessary, will create and adjust the dataset schema.
 
-          \note If you want to create a new schema based on an already existant one
+          \post The caller of this method will take the ownership of the given schema.
+
+          \note If you want to create a new schema based on an already existing one,
                 you must create a fresh copy of the DataSetType with the clone() method.
 
           \note Not thread-safe!
