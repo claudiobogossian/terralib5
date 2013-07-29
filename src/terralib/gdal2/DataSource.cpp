@@ -74,6 +74,37 @@ void te::gdal::DataSource::setConnectionInfo(const std::map<std::string, std::st
 }
 
 
+void te::gdal::DataSource::getSubDatasets(GDALDataset* gds, const std::string& driver)
+{
+  assert(gds);
+  assert(!driver.empty());
+  
+  char** subdatasets = gds->GetMetadata("SUBDATASETS");
+  
+  for(char** i = subdatasets; *i != 0; ++i)
+  {
+    std::map<std::string, std::string> sdsmap;
+    
+    te::common::ExtractKVP(std::string(*i), sdsmap);
+    
+    if(sdsmap.begin()->first.find("_NAME") != std::string::npos)
+    {
+      std::string fullName = sdsmap.begin()->second;
+      
+      // check if subdataset is valid
+      GDALDataset* subdataset = static_cast<GDALDataset*>(GDALOpen(fullName.c_str(), GA_ReadOnly));
+      if (!subdataset)
+        continue;
+      GDALClose(subdataset);
+      
+      std::string subdsname = GetSubDataSetName(fullName, driver);
+      m_datasetNames.push_back(subdsname);
+      
+      m_datasetFullNames.push_back(fullName);
+    }
+  }
+}
+
 // open methods retrieves the names of the datasets in the data source
 void te::gdal::DataSource::open()
 {
@@ -100,31 +131,12 @@ void te::gdal::DataSource::open()
           GDALClose(gds);
           boost::filesystem::path path(it->second);
           m_datasetNames.push_back(path.leaf().string());
+          m_datasetFullNames.push_back(path.string());
           m_isOpened = true;
           return;
         }
-        
-        for(char** i = subdatasets; *i != 0; ++i)
-        {
-          std::map<std::string, std::string> sdsmap;
-          
-          te::common::ExtractKVP(std::string(*i), sdsmap);
-          
-          if(sdsmap.begin()->first.find("_NAME") != std::string::npos)
-          {
-            std::string fullName = sdsmap.begin()->second;
-            
-            GDALDataset* subdataset = static_cast<GDALDataset*>(GDALOpen(fullName.c_str(), GA_ReadOnly));
-            
-            boost::filesystem::path rpath(subdataset->GetDescription());
-            
-            std::string sdsName = te::gdal::GetSubDataSetName(fullName, te::gdal::GetDriverName(fullName));
-            
-            m_datasetNames.push_back(sdsName + rpath.filename().string());
-            
-            GDALClose(subdataset);
-          }
-        }        
+        getSubDatasets(gds,te::gdal::GetDriverName(it->second));
+        GDALClose(gds);
       }
       else 
         throw Exception((boost::format(TR_GDAL("Invalid data source connection information"))).str());
@@ -149,8 +161,14 @@ void te::gdal::DataSource::open()
       if(dataset == 0)
         continue;
       
-      m_datasetNames.push_back(foundFile.leaf().c_str());
-      
+      char** subdatasets = dataset->GetMetadata("SUBDATASETS");
+      if(subdatasets == 0)
+      {
+        m_datasetNames.push_back(foundFile.leaf().c_str());
+        m_datasetFullNames.push_back(foundFile.c_str());
+      }
+      else 
+        getSubDatasets(dataset,te::gdal::GetDriverName(foundFile.string()));
       GDALClose(dataset);
     }
   }  
@@ -160,6 +178,7 @@ void te::gdal::DataSource::open()
 void te::gdal::DataSource::close()
 {
   m_datasetNames.clear();
+  m_datasetFullNames.clear();
   m_catalog->clear();
   m_isOpened = false;
 }
@@ -205,26 +224,33 @@ bool te::gdal::DataSource::hasDataSets()
   return !m_datasetNames.empty();
 }
 
+std::string te::gdal::DataSource::getDataSetFullName(const std::string& name)
+{
+  assert(!name.empty());
+  
+  std::vector<std::string>::const_iterator it = std::find(m_datasetNames.begin(), m_datasetNames.end(),name);
+  if (it == m_datasetNames.end())
+    return "";
+  
+  unsigned int pos = it-m_datasetNames.begin();
+  if (pos < m_datasetFullNames.size())
+    return m_datasetFullNames[pos];
+  
+  return "";
+}
+
 bool te::gdal::DataSource::dataSetExists(const std::string& name)
 {
-  std::string gdalname;
-
-  if(m_isDirectory)
-  {
-    boost::filesystem::path path(GetGDALConnectionInfo(m_connectionInfo));
-    path /= name;
-    gdalname = path.string();
-  }
-  else
-    gdalname = GetGDALConnectionInfo(m_connectionInfo);
+  std::string gdName = getDataSetFullName(name);
+  if (gdName.empty())
+    return false;
   
-  GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(gdalname.c_str(), GA_ReadOnly));
-
+  GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(gdName.c_str(), GA_ReadOnly));
+  
   if(dataset == 0)
     return false;
   
   GDALClose(dataset);
-  
   return true;
 }
 
@@ -237,15 +263,9 @@ void te::gdal::DataSource::getProperties(te::da::DataSetTypePtr& dt)
 {
   assert(dt.get());
   
-  std::string gdName = GetGDALConnectionInfo(m_connectionInfo);
-  if(m_isDirectory)
-  {
-    boost::filesystem::path path(GetGDALConnectionInfo(m_connectionInfo));
-    
-    path /= dt->getName();
-    
-    gdName = path.string();
-  }
+  std::string gdName = getDataSetFullName(dt->getName());
+  if (gdName.empty())
+    throw Exception(TR_GDAL("GDAL couldn't retrieve the dataset properties."));
 
   GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(gdName.c_str(), GA_ReadOnly));
   
