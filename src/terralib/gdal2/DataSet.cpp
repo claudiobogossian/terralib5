@@ -43,17 +43,6 @@ te::gdal::DataSet::DataSet(te::da::DataSetType* dt)
     m_i(-1)
 {
   assert(m_dsType);
-
-//  if(m_dsType == 0)
-//  {
-//    std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(m_transactor->getCatalogLoader());
-//
-//    te::da::DataSetType* dt = cloader->getDataSetType(m_dsType->getName(), true);
-//
-//    assert(dt);
-//
-//    m_dsType = dt;
-//  }
 }
 
 te::gdal::DataSet::~DataSet()

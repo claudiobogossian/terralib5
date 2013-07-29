@@ -284,7 +284,7 @@ namespace te
      
      \return The Sub DataSet name from the given name.
      */
-    std::string GetSubDataSetName(const std::string name, const std::string driverName);
+    std::string GetSubDataSetName(const std::string& name, const std::string& driverName);
     
     /*!
      \brief It returns true if GDAL recognizes the given SRS id.

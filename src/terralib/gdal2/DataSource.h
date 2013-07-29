@@ -49,6 +49,8 @@
 #include <string>
 #include <vector>
 
+class GDALDataset;
+
 namespace te
 {
   namespace dt
@@ -304,11 +306,16 @@ namespace te
       
     private:
       
+      void getSubDatasets(GDALDataset* gds, const std::string& driver);
+      
+      std::string getDataSetFullName(const std::string& name);
+      
       std::map<std::string, std::string> m_connectionInfo;  
       
-      te::da::DataSourceCatalog* m_catalog; 
+      std::map<std::string, te::da::DataSetTypePtr> m_catalog; 
       
       std::vector<std::string> m_datasetNames;
+      std::vector<std::string> m_datasetFullNames;
       
       bool m_isOpened;
       bool m_isDirectory; 
