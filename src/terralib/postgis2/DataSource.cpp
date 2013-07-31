@@ -213,7 +213,7 @@ void te::pgis::DataSource::open()
   getDatabaseInfo(*m_pImpl->m_currentSchema);
 
   // Get the dataset names of the data source
-  getDataSetNames();
+  //getDataSetNames();
 }
 
 void te::pgis::DataSource::close()
@@ -1909,44 +1909,6 @@ void te::pgis::DataSource::getRasterInfo(const std::string& datasetName, te::rst
   }
 }
 
-std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map<std::string, std::string>& info)
-{
-  std::string sql("SELECT datname FROM pg_database");
-
-  std::auto_ptr<te::da::DataSet> dataset(query(sql));
-
-  std::vector<std::string> dataSourceNames;
-
-  while(dataset->moveNext())
-    dataSourceNames.push_back(dataset->getString(0));
-
-  return dataSourceNames;
-}
-
-std::vector<std::string> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& info)
-{
-  std::vector<std::string> encodings;
-
-  // Let's have an auxiliary connection
-  std::auto_ptr<DataSource> ds(new DataSource());
-
-  ds->setConnectionInfo(info);
-
-  ds->open();
-
-  // Try to check
-  std::string sql("SELECT DISTINCT pg_catalog.pg_encoding_to_char(conforencoding) FROM pg_catalog.pg_conversion ORDER BY pg_catalog.pg_encoding_to_char(conforencoding)");
-
-  std::auto_ptr<te::da::DataSet> encs(query(sql));
-
-  while(encs->moveNext())
-    encodings.push_back(encs->getString(0));
-
-  ds->close();
-
-  return encodings;
-}
-
 void te::pgis::DataSource::setDialect(te::da::SQLDialect* myDialect)
 {
   DataSource::Impl::sm_dialect = myDialect;
@@ -2389,18 +2351,275 @@ std::vector<te::da::Sequence*> te::pgis::DataSource::getSequences()
 
 void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  m_pImpl->m_connInfo = dsInfo;
+  // Get an auxiliary data source
+  std::auto_ptr<DataSource> ds(new DataSource());
 
-  open();
+  ds->setConnectionInfo(dsInfo);
 
-  close();
+  ds->open();
+
+  // Create a database based on the connection information
+  std::string sql = "CREATE DATABASE ";
+
+  std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_NEWDB_NAME");
+  std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
+
+  if(it != it_end)
+    sql += it->second;
+  else
+    throw Exception(TR_PGIS("The database could not be created due the missing parameter: PG_NEWDB_NAME!"));
+
+  it = dsInfo.find("PG_NEWDB_TEMPLATE");
+
+  if(it != it_end)
+    sql += " TEMPLATE = " + it->second;
+
+  it = dsInfo.find("PG_NEWDB_OWNER");
+
+  if(it != it_end)
+    sql += " OWNER = " + it->second;
+
+  it = dsInfo.find("PG_NEWDB_ENCODING");
+
+  if(it != it_end)
+    sql += " ENCODING = " + it->second;
+
+  it = dsInfo.find("PG_NEWDB_TABLESPACE");
+
+  if(it != it_end)
+    sql += " TABLESPACE = " + it->second;
+
+  it = dsInfo.find("PG_NEWDB_CONN_LIMIT");
+
+  if(it != it_end)
+    sql += " CONNECTION LIMIT = " + it->second;
+
+  ds->execute(sql);
+
+  ds->close();
+
+  // Copy the database connection parameters to this new data source object.
+  it = dsInfo.find("PG_NEWDB_HOST");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_HOST");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_HOST"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_HOSTADDR");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_HOST_ADDR");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_HOST_ADDR"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_PORT");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_PORT");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_PORT"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_NAME");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_DB_NAME"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_USER");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_USER");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_USER"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_PASSWORD");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_PASSWORD");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_PASSWORD"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_CONNECT_TIMEOUT");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_CONNECT_TIMEOUT");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_CONNECT_TIMEOUT"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_OPTIONS");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_OPTIONS");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_OPTIONS"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_SSL_MODE");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_SSL_MODE");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_SSL_MODE"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_KRBSRVNAME");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_KRBSRVNAME");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_KRBSRVNAME"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_GSSLIB");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_GSSLIB");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_GSSLIB"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_INITIAL_POOL_SIZE");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_INITIAL_POOL_SIZE");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_INITIAL_POOL_SIZE"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_MIN_POOL_SIZE");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_MIN_POOL_SIZE");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_MIN_POOL_SIZE"] = it->second;
+
+  it = dsInfo.find("PG_NEW_DB_MAX_POOL_SIZE");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_MAX_POOL_SIZE");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_MAX_POOL_SIZE"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_MAX_IDLE_TIME");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_MAX_IDLE_TIME");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_MAX_IDLE_TIME"] = it->second;
+
+  it = dsInfo.find("PG_NEWDB_CLIENT_ENCODING");
+
+  if(it == it_end)
+    it = dsInfo.find("PG_CLIENT_ENCODING");
+
+  if(it != it_end)
+    m_pImpl->m_connInfo["PG_CLIENT_ENCODING"] = it->second;
 }
 
-void te::pgis::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::pgis::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
+  // Get an auxiliary data source
+  std::auto_ptr<DataSource> ds(new DataSource());
+
+  ds->setConnectionInfo(dsInfo);
+
+  ds->open();
+
+  // Drop the database
+  std::string sql = "DROP DATABASE ";
+
+  std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_DB_TO_DROP");
+
+  if(it == dsInfo.end())
+    throw Exception(TR_PGIS("Could not drop the database due the missing parameter: PG_DB_TO_DROP!"));
+
+  if((it->second == "postgres") || (it->second == "template_postgis"))
+    throw Exception(TR_PGIS("The database postgres or template_postgis is not allowed to be dropped!"));
+
+  sql += it->second;
+
+  ds->execute(sql);
+
+  ds->close();
 }
 
-bool te::pgis::DataSource::exists(const std::map<std::string, std::string>& /*dsInfo*/)
+bool te::pgis::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
 {
-  return false;
+  if(dsInfo.count("PG_CHECK_DB_EXISTENCE") == 0)
+    throw Exception(TR_PGIS("Could not check the PostgreSQL database existence due the missing parameter: PG_CHECK_DB_EXISTENCE!"));
+
+  const std::string& dbName = dsInfo.find("PG_CHECK_DB_EXISTENCE")->second;
+
+  // Get an auxiliary data source
+  std::auto_ptr<DataSource> ds(new DataSource());
+
+  ds->setConnectionInfo(dsInfo);
+
+  ds->open();
+
+  std::string sql("SELECT * FROM pg_database WHERE datname = '");
+  sql += dbName;
+  sql += "'";
+
+  std::auto_ptr<te::da::DataSet> database(ds->query(sql));
+
+  ds->close();
+
+  return database->moveNext();
+}
+
+std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map<std::string, std::string>& info)
+{
+  // Get an auxiliary data source
+  std::auto_ptr<DataSource> ds(new DataSource());
+
+  ds->setConnectionInfo(info);
+
+  ds->open();
+
+  std::string sql("SELECT datname FROM pg_database");
+
+  std::auto_ptr<te::da::DataSet> dataset(ds->query(sql));
+
+  std::vector<std::string> dataSourceNames;
+
+  while(dataset->moveNext())
+    dataSourceNames.push_back(dataset->getString(0));
+
+  ds->close();
+
+  return dataSourceNames;
+}
+
+
+std::vector<std::string> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+{
+  std::vector<std::string> encodings;
+
+  // Get an auxiliary data source
+  std::auto_ptr<DataSource> ds(new DataSource());
+
+  ds->setConnectionInfo(info);
+
+  ds->open();
+
+  std::string sql("SELECT DISTINCT pg_catalog.pg_encoding_to_char(conforencoding) FROM pg_catalog.pg_conversion ORDER BY pg_catalog.pg_encoding_to_char(conforencoding)");
+
+  std::auto_ptr<te::da::DataSet> encs(query(sql));
+
+  while(encs->moveNext())
+    encodings.push_back(encs->getString(0));
+
+  ds->close();
+
+  return encodings;
 }

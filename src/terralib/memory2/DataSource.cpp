@@ -984,3 +984,7 @@ std::vector<std::string> te::mem::DataSource::getDataSourceNames(const std::map<
   return std::vector<std::string>();
 }
 
+std::vector<std::string> te::mem::DataSource::getEncodings(const std::map<std::string, std::string>& /*info*/)
+{
+  return std::vector<std::string>();
+}

@@ -1238,43 +1238,55 @@ namespace te
         static bool exists(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
 
         /*!
-          \brief  Retrieve the list of repository names for data sources.
+          \brief It returns a list of the data source names available.
+         
+          \param dsType The type name of the data source(example: PostGIS, Oracle, WFS).
+          \param dsInfo The information about the data sources.
 
-          \param dsType The data source type name (example: POSTGIS, ORACLE, SQLITE).
+          \return A list of the data source names available.
+
+          \exception Exception It throws an exception if the list of data source names could not be obtained.
+        */
+        static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info);
+
+        /*!
+          \brief It gets the encodings names of the data source.
+          
+          \param dsType The data source type name (example: PostGIS, Oracle, WFS).
           \param dsInfo The data source information.
 
-          \return The list of repository names for data sources.
+          \return The list of encoding names of the data source.
 
-          \note Not thread-safe!
+          \exception Exception It throws an exception if the encoding names could not be obtained.
         */
-        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) = 0;
+        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
 
         //@}
 
       protected:
 
-        /** @name ????
-          *  ????????.
+        /** @name Protected Data Source Methods????
+          * The protected methods of the data source
           */
         //@{
 
         /*!
           \brief Create a new repository of a data source.
 
-          \param dsInfo The information for creating a new data source.
+          \param info The information for creating a new data source.
 
           \note Not thread-safe!
         */
-        virtual void create(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual void create(const std::map<std::string, std::string>& info) = 0;
 
         /*!
           \brief Drop the repository of a data source.
 
-          \param dsInfo The information for dropping a data source.
+          \param info The information for dropping a data source.
 
           \note Not thread-safe!
         */
-        virtual void drop(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual void drop(const std::map<std::string, std::string>& info) = 0;
 
         /*!
           \brief Check the existence f a repository of a data source.
@@ -1286,6 +1298,29 @@ namespace te
           \note Thread-safe!
         */
         virtual bool exists(const std::map<std::string, std::string>& dsInfo) = 0;
+
+        /*!
+          \brief  It retrieves the list of data source names available.
+
+          \param dsType The data source type name (example: POSTGIS, ORACLE, SQLITE).
+          \param info The data source information.
+
+          \return The list of repository names for data sources.
+
+          \note Not thread-safe!
+        */
+        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) = 0;
+
+        /*!
+          \brief It gets the encodings for the data source.
+          
+          \param info The data source information.
+
+          \return The list of encoding names.
+
+          \exception Exception An exception can be thrown if the encoding names could not be obtained.
+        */
+        virtual std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info) = 0;
 
         //@}
     };
