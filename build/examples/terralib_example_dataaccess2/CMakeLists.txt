@@ -5,11 +5,11 @@ cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
 set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")  # the terralib root directory (change it if it is in another directory)
-set(SRCDIR ${ROOT}/examples/dataaccess)           # directory where the source files of the dataaccess example are located
+set(SRCDIR ${ROOT}/examples/dataaccess2)           # directory where the source files of the dataaccess example are located
 set(INCLDIR ${SRCDIR})                            # directory where the header files of the dataaccess example are located
 
 # Set the project name
-set(PROJ_NAME "terralib_example_dataaccess")
+set(PROJ_NAME "terralib_example_dataaccess2")
 project(${PROJ_NAME})         # the project name is terralib_example_dataaccess
 set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_dataaccess
 
