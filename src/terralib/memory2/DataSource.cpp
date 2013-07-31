@@ -979,12 +979,12 @@ bool te::mem::DataSource::exists(const std::map<std::string, std::string>& /*dsI
   return false;
 }
 
-std::vector<std::string> te::mem::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*info*/)
+std::vector<std::string> te::mem::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
 {
   return std::vector<std::string>();
 }
 
-std::vector<std::string> te::mem::DataSource::getEncodings(const std::map<std::string, std::string>& /*info*/)
+std::vector<std::string> te::mem::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
 {
   return std::vector<std::string>();
 }

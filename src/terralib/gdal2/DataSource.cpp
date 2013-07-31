@@ -771,7 +771,12 @@ void te::gdal::DataSource::drop(const std::map<std::string, std::string>& dsInfo
   }
 }
 
-std::vector<std::string> te::gdal::DataSource::getDataSourceNames(const std::map<std::string, std::string>& info)
+std::vector<std::string> te::gdal::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
+{
+  return std::vector<std::string>();
+}
+
+std::vector<std::string> te::gdal::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
   return std::vector<std::string>();
 }

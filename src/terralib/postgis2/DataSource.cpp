@@ -2577,12 +2577,12 @@ bool te::pgis::DataSource::exists(const std::map<std::string, std::string>& dsIn
   return database->moveNext();
 }
 
-std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map<std::string, std::string>& info)
+std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
 {
   // Get an auxiliary data source
   std::auto_ptr<DataSource> ds(new DataSource());
 
-  ds->setConnectionInfo(info);
+  ds->setConnectionInfo(dsInfo);
 
   ds->open();
 
@@ -2601,20 +2601,20 @@ std::vector<std::string> te::pgis::DataSource::getDataSourceNames(const std::map
 }
 
 
-std::vector<std::string> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+std::vector<std::string> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
   std::vector<std::string> encodings;
 
   // Get an auxiliary data source
   std::auto_ptr<DataSource> ds(new DataSource());
 
-  ds->setConnectionInfo(info);
+  ds->setConnectionInfo(dsInfo);
 
   ds->open();
 
   std::string sql("SELECT DISTINCT pg_catalog.pg_encoding_to_char(conforencoding) FROM pg_catalog.pg_conversion ORDER BY pg_catalog.pg_encoding_to_char(conforencoding)");
 
-  std::auto_ptr<te::da::DataSet> encs(query(sql));
+  std::auto_ptr<te::da::DataSet> encs(ds->query(sql));
 
   while(encs->moveNext())
     encodings.push_back(encs->getString(0));

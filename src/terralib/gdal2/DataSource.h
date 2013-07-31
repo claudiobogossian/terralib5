@@ -282,7 +282,6 @@ namespace te
       
       void optimize(const std::map<std::string, std::string>& opInfo);
   
-      
       /*!
        \brief It sets the capabilities document.
        
@@ -292,8 +291,6 @@ namespace te
        */
       static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
 
-      std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info);
-      
       void getProperties(te::da::DataSetTypePtr& dt);
 
     protected:
@@ -304,6 +301,10 @@ namespace te
       
       bool exists(const std::map<std::string, std::string>& dsInfo);
       
+      std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
+
+      std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
+
     private:
       
       void getSubDatasets(GDALDataset* gds, const std::string& driver);

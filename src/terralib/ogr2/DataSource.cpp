@@ -953,7 +953,7 @@ void te::ogr::DataSource::create(const std::map<std::string, std::string>& dsInf
   }
 }
 
-void te::ogr::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
+void te::ogr::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
 {
 }
 
@@ -962,7 +962,12 @@ bool te::ogr::DataSource::exists(const std::map<std::string, std::string>& /*dsI
   throw Exception(TR_OGR("Not implemented yet!"));
 }
 
-std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::map<std::string, std::string>& info)
+std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+  throw Exception(TR_OGR("Not implemented yet!"));
+}
+
+std::vector<std::string> te::ogr::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
 {
   throw Exception(TR_OGR("Not implemented yet!"));
 }
