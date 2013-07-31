@@ -100,3 +100,7 @@ te::da::Sequence& te::da::Sequence::operator=(const Sequence& rhs)
   return *this;
 }
 
+te::da::Sequence* te::da::Sequence::clone()
+{
+  return new Sequence(*this);
+}

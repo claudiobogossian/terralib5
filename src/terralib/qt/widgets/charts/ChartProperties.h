@@ -56,13 +56,32 @@ namespace te
 
         public:
 
+          /*!
+            \brief Constructor
+
+            \param chartWidget The widget that will be editted by this dialog.
+            \param parent The dialog's parent widget.
+          */
           ChartProperties(te::qt::widgets::ChartDisplayWidget* chartWidget, QWidget* parent = 0);
 
+          /*! 
+            \brief Destructor.
+          */
           ~ChartProperties();
 
           public slots:
 
+          /*!
+            \brief Called when the user clicks on one of the items available at the list.
+
+            \param current The currently selected item of the list, it will be used to determine which type of chart the user wishes to configure.
+          */
             void onItemClicked(QListWidgetItem * current);
+
+          /*!
+            \brief Called when the user clicks on the apply button.
+                   It will set the configurations to the ChartDisplayWidget being configured by this dialog.
+          */
             void onApplyButtonClicked();
 
         private:

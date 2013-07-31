@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../common/Enums.h"
+#include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
 #include "../../geometry/Enums.h"
 #include "../Config.h"
@@ -61,6 +62,7 @@ namespace te
   namespace da
   {
     class CheckConstraint;
+    class Connection;
     class DataSet;
     class DataSetType;
     class DataSource;
@@ -156,6 +158,33 @@ namespace te
           \param connInfo Key-value-pairs (kvp) with the connection information.
         */
         virtual void setConnectionInfo(const std::map<std::string, std::string>& connInfo) = 0;
+
+        /*!
+          \brief It returns an object that can execute transactions in the context of a data source.
+
+          Use this method to get an object that allows to retrieve dataset, to insert data,
+          or to modify dataset types. You don't need to cache this kind of object because
+          each driver in TerraLib already keeps a pooling. So, as soon as you have finished using it,
+          release the connection to the pool.
+
+          \return A pointer to an object that can execute transactions in the context of a data source.
+
+          \exception Exception It throws an exception, if it is not possible to get a connection,
+                               for example, if there is not an available connection.
+
+          \note Thread-safe!
+        */
+        virtual Connection* getConnection();
+
+        /*!
+          \brief It releases the connection given returning it to the connections pool. Use this method
+                 when you have finished to use the connection to make operations on a dataset.
+
+          \param conn The connection to be released.
+
+          \note Thread-safe!
+        */
+        virtual void closeConnection(te::da::Connection* conn);
 
         /*!
           \brief It opens the data source and makes it ready for use.
@@ -335,6 +364,26 @@ namespace te
                                                   te::gm::SpatialRelation r,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
 
+        /*
+         \brief It gets the dataset identified by the given name using the set of objects identification.
+
+         \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
+         \param oids     A pointer to a set of objects identification. Do not pass null. Do not pass set empty.
+         \param travType The traverse type associated to the returned dataset.
+         
+         \return The caller of this method will take the ownership of the returned DataSet.
+         
+         \exception Exception It can throws an exception if:
+                    <ul>
+                    <li>something goes wrong during data retrieval</li>
+                    <li>if the data source driver doesn't support the traversal type</li>
+                    <li>if the data source driver doesn't support the access policy</li>
+                    </ul>
+        */
+        virtual std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
+                                                          const ObjectIdSet* oids, 
+                                                          te::common::TraverseType travType = te::common::FORWARDONLY);
+
         /*!
           \brief It executes a query that may return some data using a generic query.
 
@@ -350,7 +399,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const Select& q,
-                                              te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+                                             te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
 
         /*!
           \brief It executes a query that may return some data using the data source native language.
@@ -365,7 +414,7 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const std::string& query, 
-                                              te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+                                             te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
         //@}
 
         /** @name Command Execution Methods
@@ -494,18 +543,44 @@ namespace te
 
           \note Not thread-safe!
         */
-          virtual const te::da::DataSetTypePtr& getDataSetType(const std::string& name) = 0;
+        virtual const te::da::DataSetTypePtr& getDataSetType(const std::string& name) = 0;
+
+        /*!
+          \brief It searches for the list of property names of the given dataset.
+
+          \param datasetName The dataset name.
+
+          \return The property names of the given dataset.
+
+          \note Each dataset in the data source must have a unique name. For example, in a DBMS the name
+                may contain the schema name before the table name separated by a dot notation (".").
+
+          \note Not thread-safe!
+        */
+        virtual std::vector<std::string> getPropertyNames(const std::string& datasetName) = 0;
 
         /*!
           \brief It gets the number of properties of the given dataset.
 
           \param datasetName The dataset name.
 
-          \return The number of properties of the dataset.
+          \return The number of properties of the given dataset.
 
           \note Not thread-safe!
         */
         virtual std::size_t getNumberOfProperties(const std::string& datasetName) = 0;
+
+        /*!
+          \brief It checks if a property with the given name exists in the dataset.
+
+          \param datasetName  The dataset name.
+          \param name         The property name.
+
+          \return True, if the property exists in the dataset; otherwise, it returns false.
+
+          \note Not thread-safe!
+        */
+        virtual bool propertyExists(const std::string& datasetName, const std::string& name) = 0;
 
         /*!
           \brief It retrieves the properties of the dataset.
@@ -519,28 +594,72 @@ namespace te
         virtual boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName) = 0;
 
         /*!
-          \brief It retrieves a property from a dataset.
+          \brief It retrieves a property with the given name from the dataset.
 
-          \param datasetName  The name of a dataset.
-          \param propertyName The name of the property.
+          \param datasetName  The dataset name.
+          \param propertyName The property name.
 
-          \return The property information.
+          \return The property with the given name from the dataset.
+
+          \post The caller of this method will take the ownership of the returned property,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& propertyName) = 0;
+        virtual te::dt::Property* getProperty(const std::string& datasetName, const std::string& name) = 0;
 
         /*!
-          \brief It retrieves a property from a dataset.
+          \brief It retrieves a property from the dataset.
 
-          \param datasetName  The name of a dataset.
-          \param propertyPos  The position of the property.
+          \param datasetName  The dataset name.
+          \param propertyPos  The property position.
 
-          \return The property information.
+          \return The property in the given position.
+
+          \post The caller of this method will take the ownership of the returned property,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos) = 0;
+        virtual te::dt::Property* getProperty(const std::string& datasetName, std::size_t propertyPos) = 0;
+
+        /*!
+          \brief It adds a new property to the dataset schema.
+
+          \param datasetName The dataset where the property will be added.
+          \param p           The new property to be added.
+
+          \note Don't delete the given property, because the schema will take the ownership of it.
+          \note Not thread-safe!
+        */
+        virtual void addProperty(const std::string& datasetName, te::dt::Property* p) = 0;
+
+        /*!
+          \brief It removes a property from the given dataset.
+
+          \param datasetName  The dataset from where the given property will be removed.
+          \param name         The property to be removed from the dataset.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void dropProperty(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It renames a property of the given dataset.
+
+          \param datasetName     The dataset containig the property to be renamed.
+          \param propertyName    The property to be renamed from the dataset.
+          \param newPropertyName The new property name.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void renameProperty(const std::string& datasetName,
+                                    const std::string& propertyName,
+                                    const std::string& newPropertyName) = 0;
 
         /*!
           \brief It retrieves the primary key of the dataset.
@@ -549,8 +668,8 @@ namespace te
 
           \return The primary key of the dataset.
 
-          \post The caller will not take the ownership of the returned primary key, 
-                because it belongs to the DataSetType.
+          \post The caller of this method will take the ownership of the returned primary key,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
@@ -574,8 +693,7 @@ namespace te
           \param datasetName  The name of the dataset to be added the primary key.
           \param pk           The primary key constraint.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
+          \note Don't delete the given primary key, because the schema will take the ownership of it.
           \note Not thread-safe!
         */
         virtual void addPrimaryKey(const std::string& datasetName, PrimaryKey* pk) = 0;
@@ -583,7 +701,7 @@ namespace te
         /*!
           \brief It removes the primary key constraint from the dataset schema.
 
-          \param datasetName    The name of the dataset to be removed the primary key.
+          \param datasetName    The dataset from where the primary key wil be removed.
 
           \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
 
@@ -617,7 +735,10 @@ namespace te
 
           \param name The foreign key name.
 
-          \return The foreign key with the given name.
+          \return The foreign key with the given name in the dataset.
+
+          \post The caller of this method will take the ownership of the returned foreign key,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
@@ -629,8 +750,7 @@ namespace te
           \param datasetName  The dataset where the foreign key constraint will be added.
           \param fk           The foreign key constraint.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
+          \note Don't delete the given foreign key, because the schema will take the ownership of it.
           \note Not thread-safe!
         */
         virtual void addForeignKey(const std::string& datasetName, ForeignKey* fk) = 0;
@@ -659,52 +779,52 @@ namespace te
         virtual std::vector<std::string> getUniqueKeyNames(const std::string& datasetName) = 0;
 
         /*!
-          \brief It searches in the data source for the unique keys associated to the given dataset.
-
-          \param datasetName  The dataset name.
-
-          \return The unique keys of the dataset.
-
-          \note Not thread-safe!
-        */
-        virtual boost::ptr_vector<UniqueKey> getUniqueKeys(const std::string& datasetName) = 0;
-
-        /*!
-          \brief It gets the unique key with the given name.
+          \brief It checks if a unique key with the given name exists in the dataset.
 
           \param datasetName  The dataset name.
           \param name         The unique key name.
 
-          \return The unique key with the given name.
+          \return True, if the unique key exists in the data source; otherwise, it returns false.
 
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<UniqueKey> getUniqueKey(const std::string& datasetName,
-                                                        const std::string& name) = 0;
+        virtual bool uniqueKeyExists(const std::string& datasetName, const std::string& name) = 0;
 
         /*!
-          \brief It searches in the data source the index names associated to the given dataset.
+          \brief It gets the unique key in the dataset with the given name.
 
           \param datasetName  The dataset name.
+          \param name         The unique key name.
 
-          \return The index names of the given dataset.
+          \post The caller of this method will take the ownership of the returned property,
+                because it is a clone of the one in the schema.
+
+          \return The unique key with the given name in the dataset.
 
           \note Not thread-safe!
         */
-        virtual std::vector<std::string> getIndexNames(const std::string& datasetName) = 0;
+        virtual te::da::UniqueKey* getUniqueKey(const std::string& datasetName, const std::string& name) = 0;
 
         /*!
-          \brief It gets the index with the given name.
+          \brief It adds a unique key constraint to the dataset.
 
-          \param datasetName  The dataset name.
-          \param name         The index name.
+          \param datasetName  The dataset where the unique key will be added.
+          \param uk           The unique key constraint.
 
-          \return The index with the given name.
+          \note Don't delete the given unique key, because the schema will take the ownership of it.
+          \note Not thread-safe!
+        */
+        virtual void addUniqueKey(const std::string& datasetName, UniqueKey* uk) = 0;
+
+        /*!
+          \brief It removes the unique key constraint from the dataset.
+
+          \param datasetName  The name of the dataset to be removed the unique key.
+          \param name         The unique key constraint name.
 
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<Index> getIndex(const std::string& datasetName,
-                                              const std::string& name) = 0;
+        virtual void dropUniqueKey(const std::string& datasetName, const std::string& name) = 0;
 
         /*!
           \brief It searches in the data source for check constraints associated to the given dataset.
@@ -718,6 +838,18 @@ namespace te
         virtual std::vector<std::string> getCheckConstraintNames(const std::string& datasetName) = 0;
 
         /*!
+          \brief It checks if a check-constraint with the given name exists in the data source.
+
+          \param datasetName  The dataset name.
+          \param name         The check-constraint name.
+
+          \return True, if the check-constraint exists in the data source; otherwise, it returns false.
+
+          \note Not thread-safe!
+        */
+        virtual bool checkConstraintExists(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
           \brief It gets the check constraint with the given name.
 
           \param datasetName  The dataset name.
@@ -725,13 +857,95 @@ namespace te
 
           \return The check constraint with the given name.
 
-          \post The caller will not take the ownership of the returned check constraint, 
-                because it belongs to the DataSetType.
+          \post The caller of this method will take the ownership of the returned check constraint,
+                because it is a clone of the one in the schema.
 
           \note Not thread-safe!
         */
-        virtual te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName,
-                                                            const std::string& name) = 0;
+        virtual te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It adds a check constraint to the dataset.
+
+          \param datasetName  The dataset where the constraint will be added.
+          \param cc           The check constraint.
+
+          \note Don't delete the given check constraint, because the schema will take the ownership of it.
+          \note Not thread-safe!
+        */
+        virtual void addCheckConstraint(const std::string& datasetName, CheckConstraint* cc) = 0;
+   
+        /*!
+          \brief It removes the check constraint from the dataset.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void dropCheckConstraint(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It searches in the data source for the index names associated to the given dataset.
+
+          \param datasetName  The dataset name.
+
+          \return The index names of the given dataset.
+
+          \note Not thread-safe!
+        */
+        virtual std::vector<std::string> getIndexNames(const std::string& datasetName) = 0;
+
+        /*!
+          \brief It checks if an index with the given name exists in the dataset.
+
+          \param datasetName  The dataset name.
+          \param name         The index name.
+
+          \return True, if the index exists in the data source; otherwise, it returns false.
+
+          \note Not thread-safe!
+        */
+        virtual bool indexExists(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It gets the index with the given name. in the dataset.
+
+          \param datasetName  The dataset name.
+          \param name         The index name.
+
+          \return The index with the given name.
+
+          \post The caller of this method will take the ownership of the returned index,
+                because it is a clone of the one in the schema.
+
+          \note Not thread-safe!
+        */
+        virtual Index* getIndex(const std::string& datasetName, const std::string& name) = 0;
+
+        /*!
+          \brief It adds an index to the dataset.
+
+          \param datasetName  The dataset where the index will be added.
+          \param idx          The index to be added.
+          \param options      A list of optional modifiers (driver specific).
+
+          \note Don't delete the given index, because the schema will take the ownership of it.
+          \note Not thread-safe!
+        */
+        virtual void addIndex(const std::string& datasetName, Index* idx,
+                              const std::map<std::string, std::string>& options) = 0; 
+
+        /*!
+          \brief It removes the index from the dataset schema.
+
+          \param datasetName  The dataset where the index will be added.
+          \param idxName      The index to be removed.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void dropIndex(const std::string& datasetName, const std::string& idxName) = 0;
 
         /*!
           \brief It searches for the list of sequence names available in the data source.
@@ -746,15 +960,48 @@ namespace te
         virtual std::vector<std::string> getSequenceNames() = 0;
 
         /*!
+          \brief It checks if a sequence with the given name exists in the data source.
+
+          \param name The sequence name.
+
+          \return True, if the sequence exists in the data source; otherwise, it returns false.
+
+          \note Not thread-safe!
+        */
+        virtual bool sequenceExists(const std::string& name) = 0;
+
+        /*!
           \brief It gets the sequence with the given name
 
           \param name  The sequence name.
 
           \return The sequence with the given name.
 
+          \post The caller of this method will take the ownership of the returned sequence,
+                because it is a clone of the one in the catalog.
+
           \note Not thread-safe!
         */
-        virtual std::auto_ptr<Sequence> getSequence(const std::string& name) = 0;
+        virtual Sequence* getSequence(const std::string& name) = 0;
+
+        /*!
+          \brief It creates a new sequence in the data source.
+
+          \note Don't delete the given sequence, because the schema will take the ownership of it.
+          \note Not thread-safe!
+        */
+        virtual void addSequence(Sequence* sequence) = 0;
+   
+        /*!
+          \brief It removes the sequence from the data source.
+
+          \param name The sequence that will be removed.
+
+          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+
+          \note Not thread-safe!
+        */
+        virtual void dropSequence(const std::string& name) = 0;
 
         /*!
           \brief It retrieves the bounding rectangle for the given dataset and spatial property.
@@ -811,56 +1058,7 @@ namespace te
 
           \note Not thread-safe!
           */
-        virtual bool datasetExists(const std::string& name) = 0;
-
-        /*!
-          \brief It checks if a unique key with the given name exists in the data source.
-
-          \param datasetName  The dataset name.
-          \param name         The unique key name.
-
-          \return True, if the unique key exists in the data source; otherwise, it returns false.
-
-          \note Not thread-safe!
-        */
-        virtual bool uniqueKeyExists(const std::string& datasetName, const std::string& name) = 0;
-
-        /*!
-          \brief It checks if a check-constraint with the given name exists in the data source.
-
-          \param datasetName  The dataset name.
-          \param name         The check-constraint name.
-
-          \return True, if the check-constraint exists in the data source; otherwise, it returns false.
-
-          \note Not thread-safe!
-        */
-        virtual bool checkConstraintExists(const std::string& datasetName,
-                                            const std::string& name) = 0;
-
-        /*!
-          \brief It checks if an index with the given name exists in the data source.
-
-          \param datasetName  The dataset name.
-          \param name         The index name.
-
-          \return True, if the index exists in the data source; otherwise, it returns false.
-
-          \note Not thread-safe!
-        */
-        virtual bool indexExists(const std::string& datasetName,
-                                  const std::string& name) = 0;
-
-        /*!
-          \brief It checks if a sequence with the given name exists in the data source.
-
-          \param name The sequence name.
-
-          \return True, if the sequence exists in the data source; otherwise, it returns false.
-
-          \note Not thread-safe!
-        */
-        virtual bool sequenceExists(const std::string& name) = 0;
+        virtual bool dataSetExists(const std::string& name) = 0;
 
         //@}
 
@@ -885,13 +1083,14 @@ namespace te
           \post In some data sources, this method may output implicit indexes, sequences or constraints.
                 The method, if necessary, will create and adjust the dataset schema.
 
-          \note If you want to create a new schema based on an already existant one
+          \post The caller of this method will take the ownership of the given schema.
+
+          \note If you want to create a new schema based on an already existing one,
                 you must create a fresh copy of the DataSetType with the clone() method.
 
           \note Not thread-safe!
         */
-        virtual void createDataSet(DataSetType* dt,
-                                    const std::map<std::string, std::string>& options) = 0;
+        virtual void createDataSet(DataSetType* dt, const std::map<std::string, std::string>& options) = 0;
 
         /*!
           \brief It clones the dataset in the data source.
@@ -930,140 +1129,6 @@ namespace te
         */
         virtual void renameDataSet(const std::string& name,
                                     const std::string& newName) = 0;
-
-        /*!
-          \brief It adds a new property to the dataset definition.
-
-          \param datasetName The dataset where the property will be added.
-          \param p           The new property to be added.
-
-          \note Not thread-safe!
-        */
-        virtual void addProperty(const std::string& datasetName,
-                                  const te::dt::Property* p) = 0;
-
-        /*!
-          \brief It removes a property from a dataset schema.
-
-          \param datasetName  The name of the dataset to which the property belongs to.
-          \param propertyName The property to be removed from the dataset schema.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropProperty(const std::string& datasetName,
-                                  const std::string& propertyName) = 0;
-
-        /*!
-          \brief It renames a property from a dataset.
-
-          \param datasetName     The name of the dataset to which the property belongs to.
-          \param propertyName    The property to be removed from the dataset schema.
-          \param newPropertyName The new property name.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void renameProperty(const std::string& datasetName,
-                                    const std::string& propertyName,
-                                    const std::string& newPropertyName) = 0;
-
-
-        /*!
-          \brief It adds a unique key constraint to the DataSetType.
-
-          \param datasetName  The name of the dataset to be added the unique key.
-          \param uk           The unique key constraint.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void addUniqueKey(const std::string& datasetName,
-                                  const UniqueKey* uk) = 0;
-
-        /*!
-          \brief It removes the unique key constraint from the dataset schema.
-
-          \param datasetName    The name of the dataset to be removed the unique key.
-          \param primaryKeyName The unique key constraint name.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropUniqueKey(const std::string& datasetName,
-                                    const std::string& uniqueKeyName) = 0;
-
-        /*!
-          \brief It adds an index to the dataset.
-
-          \param datasetName  The dataset where the index will be added.
-          \param idx          The index to be added.
-          \param options      A list of optional modifiers (driver specific).
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void addIndex(const std::string& datasetName,
-                              const Index* idx,
-                              const std::map<std::string, std::string>& options) = 0; 
-
-        /*!
-          \brief It removes the index from the dataset schema.
-
-          \param datasetName  The dataset where the index will be added.
-          \param idxName      The index to be removed.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropIndex(const std::string& datasetName, const std::string& idxName) = 0;
-
-        /*!
-          \brief It adds a check constraint to the dataset.
-
-          \param datasetName  The dataset where the constraint will be added.
-          \param cc           The check constraint.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void addCheckConstraint(const std::string& datasetName, CheckConstraint* cc) = 0;
-   
-        /*!
-          \brief It removes the check constraint from the dataset.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropCheckConstraint(const std::string& datasetName, const std::string& name) = 0;
-   
-        /*!
-          \brief It creates a new sequence in the data source.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void createSequence(const Sequence* sequence) = 0;
-   
-        /*!
-          \brief It removes the sequence from the data source.
-
-          \param name The sequence that will be removed.
-
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
-
-          \note Not thread-safe!
-        */
-        virtual void dropSequence(const std::string& name) = 0;
 
         //@}
 
@@ -1105,8 +1170,6 @@ namespace te
         */
         virtual void remove(const std::string& datasetName,
                             const ObjectIdSet* oids = 0) = 0;
-
-
 
         /*!
           \brief It updates the dataset items in the data source based on OID list.
@@ -1175,23 +1238,35 @@ namespace te
         static bool exists(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
 
         /*!
-          \brief  Retrieve the list of repository names for data sources.
+          \brief It returns a list of the data source names available.
+         
+          \param dsType The type name of the data source(example: PostGIS, Oracle, WFS).
+          \param dsInfo The information about the data sources.
 
-          \param dsType The data source type name (example: POSTGIS, ORACLE, SQLITE).
+          \return A list of the data source names available.
+
+          \exception Exception It throws an exception if the list of data source names could not be obtained.
+        */
+        static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info);
+
+        /*!
+          \brief It gets the encodings names of the data source.
+          
+          \param dsType The data source type name (example: PostGIS, Oracle, WFS).
           \param dsInfo The data source information.
 
-          \return The list of repository names for data sources.
+          \return The list of encoding names of the data source.
 
-          \note Not thread-safe!
+          \exception Exception It throws an exception if the encoding names could not be obtained.
         */
-        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info) = 0;
+        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
 
         //@}
 
       protected:
 
-        /** @name ????
-          *  ????????.
+        /** @name Protected Data Source Methods????
+          * The protected methods of the data source
           */
         //@{
 
@@ -1214,15 +1289,38 @@ namespace te
         virtual void drop(const std::map<std::string, std::string>& dsInfo) = 0;
 
         /*!
-          \brief Check the existence f a repository of a data source.
+          \brief Check the existence of a data source.
 
           \param dsInfo The data source information.
 
-          \return True if the data source exists of false otherwise.
+          \return True, if the data source exists, or false, otherwise.
 
           \note Thread-safe!
         */
         virtual bool exists(const std::map<std::string, std::string>& dsInfo) = 0;
+
+        /*!
+          \brief  It retrieves the list of data source names available.
+
+          \param dsType The data source type name (example: POSTGIS, ORACLE, SQLITE).
+          \param dsInfo The data source information.
+
+          \return The list of repository names for data sources.
+
+          \note Not thread-safe!
+        */
+        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo) = 0;
+
+        /*!
+          \brief It gets the encodings for the data source.
+          
+          \param dsInfo The data source information.
+
+          \return The list of encoding names.
+
+          \exception Exception An exception can be thrown, if the encoding names could not be obtained.
+        */
+        virtual std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
 
         //@}
     };

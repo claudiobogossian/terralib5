@@ -48,7 +48,9 @@
 #include <ogr_spatialref.h>
 
 // Boost
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+
 
 te::gm::Geometry* te::ogr::Convert2TerraLib(OGRGeometry* ogrGeom)
 {
@@ -122,11 +124,34 @@ OGREnvelope* te::ogr::Convert2OGR(const te::gm::Envelope* env)
 }
 
 int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
-{
-  if(osrs->AutoIdentifyEPSG() == OGRERR_UNSUPPORTED_SRS) 
+{  
+  if(osrs->AutoIdentifyEPSG() != OGRERR_UNSUPPORTED_SRS) 
+    return atoi(osrs->GetAuthorityCode(0));
+  
+  // geographic SIRGAS 2000 Datum
+  std::string straux(osrs->GetRoot()->GetChild(0)->GetValue());
+  
+  if (!boost::find_first(straux, "SIRGAS"))
     return TE_UNKNOWN_SRS;
   
-  return atoi(osrs->GetAuthorityCode(0));
+  if (osrs->IsGeographic())
+    return TE_SRS_SIRGAS2000;
+  
+  // UTM using SIRGAS 2000 Datum
+  if (boost::find_first(straux, "UTM "))
+  {
+    double centralm = osrs->GetProjParm(SRS_PP_CENTRAL_MERIDIAN,-1);
+    if (centralm == -1)
+      return  TE_UNKNOWN_SRS;
+    int zone = centralm/6 + 31;
+    
+    double fsnorth = osrs->GetProjParm(SRS_PP_FALSE_NORTHING,-1);
+    if (fsnorth > 0)
+      return 31960+zone;
+    else if (fsnorth == 0)
+      return 31954+zone;
+  }
+  return TE_UNKNOWN_SRS;
 }
 
 OGRSpatialReference* te::ogr::Convert2OGRProjection(int srid)

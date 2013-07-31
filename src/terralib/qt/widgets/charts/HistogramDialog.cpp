@@ -24,11 +24,11 @@
 */
 
 //Terralib
+#include "../../../dataaccess.h"
+#include "../../../datatype/Property.h"
 #include "ChartDisplay.h"
 #include "ChartDisplayWidget.h"
 #include "ChartStyle.h"
-#include "../../../dataaccess.h"
-#include "../../../datatype/Property.h"
 #include "HistogramChart.h"
 #include "HistogramDataWidget.h"
 #include "HistogramDialog.h"
@@ -37,7 +37,6 @@
 #include "ui_HistogramDataWidgetForm.h"
 
 //QT
-#include <QtGui/QDialog>
 #include <QtGui/QDockWidget>
 
 te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)

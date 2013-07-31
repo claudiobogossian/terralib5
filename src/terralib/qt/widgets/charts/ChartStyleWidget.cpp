@@ -24,11 +24,11 @@
 */
 
 //Terralib
-#include "ChartStyleWidget.h"
-#include "ChartStyle.h"
-#include "../utils/ColorPickerToolButton.h"
-#include "ui_ChartStyleWidgetForm.h"
 #include "../../../qt/widgets/se/Utils.h"
+#include "../utils/ColorPickerToolButton.h"
+#include "ChartStyle.h"
+#include "ChartStyleWidget.h"
+#include "ui_ChartStyleWidgetForm.h"
 
 te::qt::widgets::ChartStyleWidget::ChartStyleWidget(QWidget* parent, Qt::WindowFlags f, QString title, QString PropertyX, QString PropertyY)
   : QWidget(parent, f),
@@ -106,10 +106,3 @@ void te::qt::widgets::ChartStyleWidget::setStyle(te::qt::widgets::ChartStyle* ne
   m_ui->m_gridCheckBox->setChecked(m_chartStyle->getGridChecked());
 }
 
-te::qt::widgets::ChartStyle* te::qt::widgets::ChartStyleWidget::adjustStyle() 
-{
-  m_chartStyle->setTitle(m_ui->m_chartTitleLineEdit->text());
-  m_chartStyle->setColor(m_colorPicker->getColor());
-  m_chartStyle->setGridChecked(m_ui->m_gridCheckBox->isChecked());
-  return m_chartStyle;
-}

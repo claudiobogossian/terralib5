@@ -31,8 +31,8 @@
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../statistics/core/Enums.h"
-#include "../core/Config.h"
-#include "../core/Enums.h"
+#include "../Config.h"
+#include "../Enums.h"
 
 // STL
 #include <list>

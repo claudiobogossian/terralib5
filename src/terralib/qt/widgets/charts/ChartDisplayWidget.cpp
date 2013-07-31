@@ -24,17 +24,14 @@
 */
 
 //Terralib
-#include "ChartDisplay.h"
-#include "ChartDisplayWidget.h"
-#include "ChartStyle.h"
-#include "ChartProperties.h"
 #include "../../../dataaccess.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../datatype/Property.h"
+#include "ChartDisplay.h"
+#include "ChartDisplayWidget.h"
+#include "ChartProperties.h"
+#include "ChartStyle.h"
 #include "ui_ChartDisplayWidgetForm.h"
-
-//QT
-#include <QtGui/QWidget>
 
 //QWT
 #include <qwt_plot_seriesitem.h>
@@ -52,7 +49,7 @@ te::qt::widgets::ChartDisplayWidget::ChartDisplayWidget(QwtPlotSeriesItem* chart
   layout->addWidget(m_display);
 
 // connect signal and slots
-  connect(m_ui->m_settingsToolButton, SIGNAL(clicked()), this, SLOT(onSettingsToolButtonnTriggered()));
+  connect(m_ui->m_settingsToolButton, SIGNAL(clicked()), this, SLOT(onSettingsToolButtonnClicked()));
   connect (m_display, SIGNAL(selected(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
 }
 
@@ -95,7 +92,7 @@ void te::qt::widgets::ChartDisplayWidget::highlightOIds(const te::da::ObjectIdSe
   m_display->highlightOIds(oids);
 }
 
-void te::qt::widgets::ChartDisplayWidget::onSettingsToolButtonnTriggered()
+void te::qt::widgets::ChartDisplayWidget::onSettingsToolButtonnClicked()
 {
     te::qt::widgets::ChartProperties dlg(this, this->parentWidget());
     dlg.exec();

@@ -30,7 +30,6 @@
 #include "../raster/Grid.h"
 #include "../raster/PositionIterator.h"
 #include "../raster/Raster.h"
-
 #include "RasterAttributes.h"
 
 te::rp::RasterAttributes::RasterAttributes()
@@ -60,18 +59,20 @@ void te::rp::RasterAttributes::reset() throw(te::rp::Exception)
 {
 }
 
-std::vector<std::complex<double> > te::rp::RasterAttributes::getValuesFromBand(const te::rst::Band& band, const te::gm::Polygon& polygon)
+std::vector<std::complex<double> > te::rp::RasterAttributes::getValuesFromBand(const te::rst::Raster& raster, unsigned int band, const te::gm::Polygon& polygon)
 {
+  assert(band < raster.getNumberOfBands());
+
   std::vector<std::complex<double> > values;
 
 // create iterators for band and polygon
-  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&band, &polygon);
-  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(&band, &polygon);
+  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&raster, &polygon);
+  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(&raster, &polygon);
 
   while (it != itend)
   {
 // using iterator
-    values.push_back(*it);
+    values.push_back((*it)[band]);
 
     ++it;
   }
@@ -89,8 +90,8 @@ std::vector<std::vector<std::complex<double> > > te::rp::RasterAttributes::getVa
   std::complex<double> value;
 
 // create iterators for band and polygon
-  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(raster.getBand(bands[0]), &polygon);
-  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(raster.getBand(bands[0]), &polygon);
+  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&raster, &polygon);
+  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(&raster, &polygon);
 
   while (it != itend)
   {
@@ -98,7 +99,7 @@ std::vector<std::vector<std::complex<double> > > te::rp::RasterAttributes::getVa
 
     for (unsigned int i = 0; i < bands.size(); i++)
     {
-      raster.getValue(it.getCol(), it.getRow(), value, bands[i]);
+      raster.getValue(it.getColumn(), it.getRow(), value, bands[i]);
 
       values.push_back(value);
     }
@@ -134,14 +135,14 @@ std::vector<std::complex<double> > te::rp::RasterAttributes::getMeans(const te::
 
   std::complex<double> value;
 
-  te::rst::PolygonIterator<unsigned> it = te::rst::PolygonIterator<unsigned>::begin(raster.getBand(bands[0]), &polygon);
-  te::rst::PolygonIterator<unsigned> itend = te::rst::PolygonIterator<unsigned>::end(raster.getBand(bands[0]), &polygon);
+  te::rst::PolygonIterator<unsigned> it = te::rst::PolygonIterator<unsigned>::begin(&raster, &polygon);
+  te::rst::PolygonIterator<unsigned> itend = te::rst::PolygonIterator<unsigned>::end(&raster, &polygon);
 
   while (it != itend)
   {
     for (unsigned int i = 0; i < bands.size(); i++)
     {
-      raster.getValue(it.getCol(), it.getRow(), value, bands[i]);
+      raster.getValue(it.getColumn(), it.getRow(), value, bands[i]);
 
       means[i] += value;
     }

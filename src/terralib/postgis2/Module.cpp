@@ -29,7 +29,7 @@
 #include "../dataaccess2/query/TemplateEncoder.h"
 #include "../dataaccess2/query/UnaryOpEncoder.h"
 #include "DataSource.h"
-//#include "DataSourceFactory.h"
+#include "DataSourceFactory.h"
 #include "Module.h"
 
 te::pgis::Module::Module(const te::plugin::PluginInfo& pluginInfo)
@@ -49,7 +49,7 @@ void te::pgis::Module::startup()
 // it initializes the Translator support for the TerraLib PostGIS driver support
   TE_ADD_TEXT_DOMAIN(TE_PGIS_TEXT_DOMAIN, TE_PGIS_TEXT_DOMAIN_DIR, "UTF-8");
 
-  //DataSourceFactory::initialize();
+  DataSourceFactory::initialize();
 
   #include "PostGISCapabilities.h"
   #include "PostGISDialect.h"
@@ -64,11 +64,11 @@ void te::pgis::Module::shutdown()
   if(!m_initialized)
     return;
 
-// it finalizes the OGR factory support.
-  //te::pgis::DataSourceFactory::finalize();
+  // It finalizes the PostGIS factory support.
+  te::pgis::DataSourceFactory::finalize();
   DataSource::setDialect(0);
 
-// free OGR registered drivers
+  // Free the PostGIS registered drivers
   //te::da::DataSourceManager::getInstance().detachAll(PGIS_DRIVER_IDENTIFIER);
  
   TE_LOG_TRACE(TR_PGIS("TerraLib PostGIS driver shutdown!"));
@@ -77,4 +77,3 @@ void te::pgis::Module::shutdown()
 }
 
 PLUGIN_CALL_BACK_IMPL(te::pgis::Module)
-

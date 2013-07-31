@@ -89,6 +89,7 @@ set (
   widgets/propertybrowser/qt
   widgets/rp
   widgets/se
+  widgets/slider
   widgets/srs
   widgets/table
   widgets/tools
@@ -389,6 +390,14 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/se" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/slider/TimePropertiesDialog.h
+  ${SRCDIR}/widgets/slider/TimeSliderEventFilter.h
+  ${SRCDIR}/widgets/slider/TimeSliderWidget.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/slider" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/srs" MOC)
@@ -463,6 +472,7 @@ file(
   ${SRCDIR}/widgets/utils/ui/*.ui
   ${SRCDIR}/widgets/rp/ui/*.ui
   ${SRCDIR}/widgets/se/ui/*.ui
+  ${SRCDIR}/widgets/slider/ui/*.ui
   ${SRCDIR}/widgets/srs/ui/*.ui
   ${SRCDIR}/widgets/plugin/builder/ui/*.ui
   ${SRCDIR}/widgets/plugin/manager/ui/*.ui

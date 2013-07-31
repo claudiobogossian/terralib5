@@ -106,8 +106,8 @@ void ExemplifyBandIteratorMask()
   std::vector<std::complex<double> > pixels;
   while (it != itend)
   {
-    inraster->getValues(it.getCol(), it.getRow(), pixels);
-    outraster->setValues(it.getCol(), it.getRow(), pixels);
+    inraster->getValues(it.getColumn(), it.getRow(), pixels);
+    outraster->setValues(it.getColumn(), it.getRow(), pixels);
 
     ++it;
   }
@@ -194,7 +194,7 @@ void ExemplifyBandIteratorWindow()
   while (it != itend)
   {
     unsigned R = it.getRow();
-    unsigned C = it.getCol();
+    unsigned C = it.getColumn();
 
     std::set<unsigned char> values;
 
@@ -235,7 +235,6 @@ void ExemplifyPolygonIterator()
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
-  te::rst::Band* band = inraster->getBand(0);
 
   unsigned int nvalues = 0;
   double sum_pixels = 0.0;
@@ -255,12 +254,12 @@ void ExemplifyPolygonIterator()
   polygon->push_back(lr);
 
 // assuming we have a te::gm::Polygon* polygon
-  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(band, polygon);
-  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(band, polygon);
+  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(inraster, polygon);
+  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(inraster, polygon);
 
   while (it != itend)
   {
-    sum_pixels += *it;
+    sum_pixels += (*it)[0];
     nvalues++;
 
     ++it;
@@ -286,7 +285,6 @@ void ExemplifyLineIterator()
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
-  te::rst::Band* band = inraster->getBand(0);
 
 // create a line to use the iterator, corresponds to a horizontal line in the middle of the raster
   double yc = (inraster->getExtent()->getUpperRightY() + inraster->getExtent()->getLowerLeftY())/2;
@@ -297,12 +295,12 @@ void ExemplifyLineIterator()
   std::vector<double> pixels_in_line;
 
 // assuming we have a te::gm::Line* line
-  te::rst::LineIterator<double> it = te::rst::LineIterator<double>::begin(band, line);
-  te::rst::LineIterator<double> itend = te::rst::LineIterator<double>::end(band, line);
+  te::rst::LineIterator<double> it = te::rst::LineIterator<double>::begin(inraster, line);
+  te::rst::LineIterator<double> itend = te::rst::LineIterator<double>::end(inraster, line);
 
   while (it != itend)
   {
-    pixels_in_line.push_back(*it);
+    pixels_in_line.push_back((*it)[0]);
 
     ++it;
   }
@@ -326,7 +324,6 @@ void ExemplifyPointSetIterator()
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
-  te::rst::Band* band = inraster->getBand(0);
 
 // create a vector of random points inside the band's envelope
   int srid = inraster->getSRID();
@@ -345,12 +342,12 @@ void ExemplifyPointSetIterator()
   std::vector<double> pixels_in_points;
 
 // assuming we have a std::vector<te::gm::Point*> points
-  te::rst::PointSetIterator<double> it = te::rst::PointSetIterator<double>::begin(band, points);
-  te::rst::PointSetIterator<double> itend = te::rst::PointSetIterator<double>::end(band, points);
+  te::rst::PointSetIterator<double> it = te::rst::PointSetIterator<double>::begin(inraster, points);
+  te::rst::PointSetIterator<double> itend = te::rst::PointSetIterator<double>::end(inraster, points);
 
   while (it != itend)
   {
-    pixels_in_points.push_back(*it);
+    pixels_in_points.push_back((*it)[0]);
 
     ++it;
   }

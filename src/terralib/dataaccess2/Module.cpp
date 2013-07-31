@@ -27,7 +27,7 @@
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
-//#include "datasource/ConnectionPoolManager.h"
+#include "datasource/ConnectionPoolManager.h"
 #include "Config.h"
 #include "Module.h"
 
@@ -47,7 +47,7 @@ te::da::Module::Module()
   TE_ADD_TEXT_DOMAIN(TE_DATAACCESS_TEXT_DOMAIN, TE_DATAACCESS_TEXT_DOMAIN_DIR, "UTF-8");
 
 // initializes the ConnectionPoolManager singleton
-  //ConnectionPoolManager::getInstance();
+  ConnectionPoolManager::getInstance();
 }
 
 te::da::Module::~Module()
@@ -58,7 +58,7 @@ te::da::Module::~Module()
 void te::da::Module::initialize()
 {
 #if TE_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
-  //ConnectionPoolManager::getInstance().start();
+  ConnectionPoolManager::getInstance().start();
 #endif
 
   TE_LOG_TRACE(TR_DATAACCESS("TerraLib Data Access module initialized!"));
@@ -67,7 +67,7 @@ void te::da::Module::initialize()
 void te::da::Module::finalize()
 {
 #if TE_AUTOMATICALLY_INITIALIZE_CONNECTION_POOL_MANAGER
-  //ConnectionPoolManager::getInstance().stop();
+  ConnectionPoolManager::getInstance().stop();
 #endif
 
   TE_LOG_TRACE(TR_DATAACCESS("TerraLib Data Access module finalized!"));

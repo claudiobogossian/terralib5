@@ -30,8 +30,8 @@
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
-#include "../core/Config.h"
-#include "../core/Enums.h"
+#include "../Config.h"
+#include "../Enums.h"
 
 // STL
 #include <list>

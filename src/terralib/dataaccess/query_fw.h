@@ -98,6 +98,7 @@ namespace te
     class ST_DistanceBuffer;
     class ST_DWithin;
     class ST_Equals;
+    class ST_Intersection;
     class ST_Intersects;
     class ST_Overlaps;
     class ST_Relate;

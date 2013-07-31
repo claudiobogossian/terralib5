@@ -28,6 +28,10 @@
 #include "../raster/RasterIterator.h"
 #include "Utils.h"
 
+// Boost
+#include <boost/random.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+
 std::vector<std::string> te::rp::GetBandNames()
 {
   static std::vector<std::string> bandNames;
@@ -208,7 +212,7 @@ bool te::rp::NormalizeRaster(te::rst::Raster& inraster, double nmin, double nmax
     {
       value = ((*it)[b] - omins[b]) * namplitude / oamplitude[b] + nmin;
 
-      inraster.setValue(it.getCol(), it.getRow(), value, b);
+      inraster.setValue(it.getColumn(), it.getRow(), value, b);
     }
 
     ++it;
@@ -222,28 +226,16 @@ std::vector<te::gm::Point*> te::rp::GetRandomPointsInRaster(const te::rst::Raste
   std::vector<te::gm::Point*> randomPoints;
   double randX;
   double randY;
+
+  boost::random::mt19937 generator((boost::random::mt19937::result_type) time(0));
+  boost::random::uniform_int_distribution<> random_rows(0, inputRaster.getNumberOfRows() - 1);
+  boost::random::uniform_int_distribution<> random_columns(0, inputRaster.getNumberOfColumns() - 1);
+
   for (unsigned int p = 0; p < numberOfPoints; p++)
   {
-    inputRaster.getGrid()->gridToGeo(rand() % inputRaster.getNumberOfColumns(), rand() % inputRaster.getNumberOfRows(), randX, randY);
+    inputRaster.getGrid()->gridToGeo(random_columns(generator), random_rows(generator), randX, randY);
     randomPoints.push_back(new te::gm::Point(randX, randY, inputRaster.getSRID()));
   }
 
   return randomPoints;
-}
-
-double te::rp::GetEuclideanDistance(std::vector<double> v1, std::vector<double> v2)
-{
-  assert(v1.size() == v2.size());
-
-  double distance = 0.0;
-  double v1minusv2;
-  for (unsigned int i = 0; i < v1.size(); i++)
-  {
-    v1minusv2 = v1[i] - v2[i];
-    distance += v1minusv2 * v1minusv2;
-  }
-  if (distance < 0)
-    distance = 0.0;
-
-  return sqrt(distance);
 }

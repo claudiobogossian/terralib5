@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../common/Translator.h"
 #include "../../datatype/Property.h"
-#include "../core/Exception.h"
+#include "../Exception.h"
 #include "LayerItem.h"
 #include "PropertyItem.h"
 

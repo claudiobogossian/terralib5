@@ -52,6 +52,17 @@ queryCapabilities.addComparsionOperator("<");
 queryCapabilities.addComparsionOperator(">=");
 queryCapabilities.addComparsionOperator("<=");
 
+/* Functions*/
+queryCapabilities.addFunction("upper");
+queryCapabilities.addFunction("lower");
+queryCapabilities.addFunction("sum");
+queryCapabilities.addFunction("avg");
+queryCapabilities.addFunction("count");
+queryCapabilities.addFunction("max");
+queryCapabilities.addFunction("min");
+queryCapabilities.addFunction("stddev_pop");
+queryCapabilities.addFunction("var_pop");
+
 /* Spatial Operators */
 queryCapabilities.addSpatialOperator("st_boundary");
 queryCapabilities.addSpatialOperator("st_coorddim");

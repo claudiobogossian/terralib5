@@ -26,8 +26,8 @@
 //Terralib
 #include "ui_ScatterFrameWidgetForm.h"
 #include "ScatterChart.h"
-#include "ScatterFrame.h"
 #include "ScatterDataWidget.h"
+#include "ScatterFrame.h"
 #include "ScatterStyleWidget.h"
 
 //QWT

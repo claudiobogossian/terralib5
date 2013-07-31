@@ -27,6 +27,7 @@
 #define __TERRALIB_POSTGIS_INTERNAL_CONNECTION_H
 
 // TerraLib
+#include "../dataaccess2/datasource/Connection.h"
 #include "Config.h"
 
 // STL
@@ -37,7 +38,7 @@
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/noncopyable.hpp>
 
-// Forward delcarations for libpq
+// Forward declarations for libpq
 extern "C"
 {
   struct pg_conn;
@@ -51,7 +52,7 @@ namespace te
 {
   namespace pgis
   {
-// Forward declarations
+    // Forward declarations
     class ConnectionPool;
 
     /*!
@@ -64,7 +65,7 @@ namespace te
 
       \sa ConnectionPool
     */
-    class TEPGISEXPORT Connection : public boost::noncopyable
+    class TEPGISEXPORT Connection : public te::da::Connection
     {
       public:
 
@@ -138,5 +139,3 @@ namespace te
 
 
 #endif  // __TERRALIB_POSTGIS_INTERNAL_CONNECTION_H
-
-

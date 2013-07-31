@@ -136,15 +136,15 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
 // get the input data
   boost::numeric::ublas::matrix<double> Xk = boost::numeric::ublas::matrix<double>(N, S);
 
-  te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(inputRaster.getBand(0), randomPoints);
-  te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(inputRaster.getBand(0), randomPoints);
+  te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(&inputRaster, randomPoints);
+  te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(&inputRaster, randomPoints);
   unsigned int k = 0;
   double max_pixel_value = 0.0;
   while (pit != pitend)
   {
     for (unsigned int l = 0; l < S; l++)
     {
-      inputRaster.getValue(pit.getCol(), pit.getRow(), Xk(k, l), inputRasterBands[l]);
+      inputRaster.getValue(pit.getColumn(), pit.getRow(), Xk(k, l), inputRasterBands[l]);
       if (Xk(k, l) > max_pixel_value)
         max_pixel_value = Xk(k, l);
     }
@@ -341,8 +341,8 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
   }
 
 // classifying image
-  te::rst::RasterIterator<double> it = te::rst::RasterIterator<double>::begin((te::rst::Raster*)(&inputRaster), inputRasterBands);
-  te::rst::RasterIterator<double> itend = te::rst::RasterIterator<double>::end((te::rst::Raster*)(&inputRaster), inputRasterBands);
+  te::rst::RasterIterator<double> it = te::rst::RasterIterator<double>::begin((te::rst::Raster*) &inputRaster, inputRasterBands);
+  te::rst::RasterIterator<double> itend = te::rst::RasterIterator<double>::end((te::rst::Raster*) &inputRaster, inputRasterBands);
 
   boost::numeric::ublas::matrix<double> X = boost::numeric::ublas::matrix<double>(1, S);
   boost::numeric::ublas::matrix<double> PCj_X = boost::numeric::ublas::matrix<double>(M, 1);
@@ -425,7 +425,7 @@ bool te::rp::ClassifierEMStrategy::execute(const te::rst::Raster& inputRaster, c
       }
 
 // save cluster information in output raster
-    outputRaster.setValue(it.getCol(), it.getRow(), cluster, outputRasterBand);
+    outputRaster.setValue(it.getColumn(), it.getRow(), cluster, outputRasterBand);
 
     ++it;
     task.pulse();

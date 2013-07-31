@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../raster/Grid.h"
-#include "Globals.h"
+#include "Config.h"
 #include "Raster.h"
 #include "RasterFactory.h"
 #include "Utils.h"
@@ -37,7 +37,7 @@ te::gdal::RasterFactory* te::gdal::RasterFactory::sm_factory(0);
 
 const std::string& te::gdal::RasterFactory::getType() const
 {
-  return Globals::getInstance().getDriverID();
+  return TE_GDAL_DRIVER_IDENTIFIER;
 }
 
 void te::gdal::RasterFactory::getCreationalParameters(std::vector< std::pair<std::string, std::string> >& params) const
@@ -57,7 +57,7 @@ void te::gdal::RasterFactory::finalize()
 }
 
 te::gdal::RasterFactory::RasterFactory()
-  : te::rst::RasterFactory(GDAL_DRIVER_IDENTIFIER)
+  : te::rst::RasterFactory(TE_GDAL_DRIVER_IDENTIFIER)
 {
 }
 

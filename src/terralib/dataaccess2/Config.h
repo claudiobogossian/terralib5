@@ -138,4 +138,3 @@
 //@}        
 
 #endif  // __TERRALIB_DATAACCESS_INTERNAL_CONFIG_H
-

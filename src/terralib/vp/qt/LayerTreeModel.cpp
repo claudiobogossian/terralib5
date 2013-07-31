@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../common/STLUtils.h"
 #include "../../common/Translator.h"
-#include "../core/Exception.h"
+#include "../Exception.h"
 #include "LayerItem.h"
 #include "LayerTreeModel.h"
 

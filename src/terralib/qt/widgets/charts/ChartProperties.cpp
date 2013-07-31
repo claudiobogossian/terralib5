@@ -23,16 +23,16 @@
   \brief A dialog used to customize a Chart's parameters, weather it is about it's data or it's visual style
 */
 //Terralib
-#include "ui_ChartPropertiesDialogForm.h"
+
 #include "ChartDisplay.h"
 #include "ChartDisplayWidget.h"
-#include "ChartStyleFrameFactory.h"
 #include "ChartProperties.h"
+#include "ChartStyleFrameFactory.h"
 #include "ChartWidget.h"
 #include "ChartWidgetFactory.h"
 #include "HistogramFrameFactory.h"
 #include "ScatterFrameFactory.h"
-
+#include "ui_ChartPropertiesDialogForm.h"
 
 //QWT
 #include <qwt_plot_seriesitem.h>

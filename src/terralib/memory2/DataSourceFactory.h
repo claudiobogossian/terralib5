@@ -20,25 +20,50 @@
 /*!
   \file terralib/memory/DataSourceFactory.h
 
-  \brief A concrete factory for the In-Memory Data Access driver.
+  \brief This is the data source concrete factory for the In-Memory Data Access driver.
 */
 
 #ifndef __TERRALIB_MEMORY_INTERNAL_DATASOURCEFACTORY_H
 #define __TERRALIB_MEMORY_INTERNAL_DATASOURCEFACTORY_H
 
 // TerraLib
-#include "DataSource.h"
+#include "../dataaccess2/datasource/DataSourceFactory.h"
+#include "Config.h"
 
 namespace te
 {
   namespace mem
   {
-    inline te::da::DataSource* Build()
+    /*!
+      \class DataSourceFactory
+
+      \brief This is the data source concrete factory for the In-Memory Data Access driver.
+
+      \sa te::da::DataSourceFactory
+    */
+    class TEMEMORYEXPORT DataSourceFactory : public te::da::DataSourceFactory
     {
-      return new DataSource;
-    }
+      public:
+
+        const std::string& getType() const;
+
+        void getConnectionParameters(std::vector<std::string>& params) const;
+
+        ~DataSourceFactory();
+
+      protected:        
+
+        te::da::DataSource* build();
+
+        DataSourceFactory();
+
+      private:
+
+        static DataSourceFactory sm_factory; //!< The global In-Memory data source factory.
+    };
 
   } // end namespace mem
 }   // end namespace te
 
 #endif  // __TERRALIB_MEMORY_INTERNAL_DATASOURCEFACTORY_H
+

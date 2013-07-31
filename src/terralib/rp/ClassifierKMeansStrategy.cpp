@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../classification/core/KMeans.h"
+#include "../classification/KMeans.h"
 #include "../common/progress/TaskProgress.h"
 #include "../geometry/Envelope.h"
 #include "../raster/Grid.h"
@@ -58,6 +58,7 @@ const te::rp::ClassifierKMeansStrategy::Parameters& te::rp::ClassifierKMeansStra
 
   m_K = rhs.m_K;
   m_maxIterations = rhs.m_maxIterations;
+  m_maxInputPoints = rhs.m_maxInputPoints;
   m_epsilon = rhs.m_epsilon;
 
   return *this;
@@ -67,6 +68,7 @@ void te::rp::ClassifierKMeansStrategy::Parameters::reset() throw(te::rp::Excepti
 {
   m_K = 0;
   m_maxIterations = 0;
+  m_maxInputPoints = 0;
   m_epsilon = 0.0;
 }
 
@@ -99,6 +101,9 @@ bool te::rp::ClassifierKMeansStrategy::initialize(te::rp::StrategyParameters con
   TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_maxIterations > 0, TR_RP("The number of iterations must be at least 1."))
   TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_epsilon > 0, TR_RP("The stop criteria must be higher than 0."))
 
+  if (m_parameters.m_maxInputPoints < m_parameters.m_K)
+    m_parameters.m_maxInputPoints = 1000;
+
   m_isInitialized = true;
 
   return true;
@@ -111,22 +116,27 @@ bool te::rp::ClassifierKMeansStrategy::execute(const te::rst::Raster& inputRaste
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, TR_RP("Instance not initialized"))
 
 // defining classification parameters
-  te::cl::KMeans<te::rst::RasterIterator<double> >::Parameters classifierParameters;
+  te::cl::KMeans<te::rst::PointSetIterator<double>, te::rst::RasterIterator<double> >::Parameters classifierParameters;
   classifierParameters.m_K = m_parameters.m_K;
   classifierParameters.m_maxIterations = m_parameters.m_maxIterations;
   classifierParameters.m_epsilon = m_parameters.m_epsilon;
   std::vector<unsigned int> classification;
 
-// define raster iterators
-  te::rst::RasterIterator<double> rit = te::rst::RasterIterator<double>::begin((te::rst::Raster*)(&inputRaster), inputRasterBands);
-  te::rst::RasterIterator<double> ritend = te::rst::RasterIterator<double>::end((te::rst::Raster*)(&inputRaster), inputRasterBands);
+// define point set iterators for training
+  std::vector<te::gm::Point*> randomPoints = te::rp::GetRandomPointsInRaster(inputRaster, m_parameters.m_maxInputPoints);
+  te::rst::PointSetIterator<double> pit = te::rst::PointSetIterator<double>::begin(&inputRaster, randomPoints);
+  te::rst::PointSetIterator<double> pitend = te::rst::PointSetIterator<double>::end(&inputRaster, randomPoints);
+
+// define raster iterators for classification
+  te::rst::RasterIterator<double> rit = te::rst::RasterIterator<double>::begin((te::rst::Raster*) &inputRaster, inputRasterBands);
+  te::rst::RasterIterator<double> ritend = te::rst::RasterIterator<double>::end((te::rst::Raster*) &inputRaster, inputRasterBands);
 
 // execute the algorithm
-  te::cl::KMeans<te::rst::RasterIterator<double> > classifier;
+  te::cl::KMeans<te::rst::PointSetIterator<double>, te::rst::RasterIterator<double> > classifier;
 
   if(!classifier.initialize(classifierParameters))
     throw;
-  if(!classifier.train(rit, ritend, inputRasterBands, std::vector<unsigned int>(), true))
+  if(!classifier.train(pit, pitend, inputRasterBands, std::vector<unsigned int>(), true))
     throw;
   if(!classifier.classify(rit, ritend, inputRasterBands, classification, true))
     throw;
@@ -139,7 +149,7 @@ bool te::rp::ClassifierKMeansStrategy::execute(const te::rst::Raster& inputRaste
   unsigned int i = 0;
   while (rit != ritend)
   {
-    outputRaster.setValue(rit.getCol(), rit.getRow(), classification[i], outputRasterBand);
+    outputRaster.setValue(rit.getColumn(), rit.getRow(), classification[i], outputRasterBand);
     ++i;
     ++rit;
     task.pulse();

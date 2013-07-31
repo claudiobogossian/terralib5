@@ -266,6 +266,18 @@ namespace te
         */
         std::size_t getNumberOfUniqueKeys() const { return m_uniqueKeys.size(); }
 
+        /*!
+          \brief It adds the unique key constraints.
+
+          \param uks The unique key constraints to be added to the DataSetType.
+
+          \pre Don't inform NULL pointers in the list.
+
+          \post The unique key constraints will be attached to the DataSetType.
+          \post The DataSetType will take the ownership of the informed unique key constraints.
+        */
+        void add(const std::vector<UniqueKey*>& uks);
+
          /*!
           \brief It returns the i-th unique key.
 

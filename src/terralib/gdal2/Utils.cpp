@@ -116,6 +116,7 @@ void te::gdal::GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProp
     int dt = te::gdal::GetTeDataType(rasterBand->GetRasterDataType());
 
     te::rst::BandProperty* rb = new te::rst::BandProperty(rasterIdx, dt);
+
     rb->m_colorInterp = te::gdal::GetTeColorInterpretation(rasterBand->GetColorInterpretation());
 
     // find if there is a no data value
@@ -129,7 +130,7 @@ void te::gdal::GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProp
     {
       const GDALColorTable* colorTable = rasterBand->GetColorTable();
       if (!colorTable)
-        throw Exception(TR_GDAL("invalid color table"));
+        throw Exception(TR_GDAL("Invalid color table"));
 
       rb->m_paletteInterp = te::gdal::GetTePaletteInterpretation(colorTable->GetPaletteInterpretation());
 
@@ -524,6 +525,9 @@ std::string te::gdal::GetDriverName(const std::string& name)
 
   if(ext == ".NTF")
     return std::string("NITF");
+  
+  if(ext == ".NC")
+    return std::string("netCDF");
 
   if(ext == ".GRB")
     return std::string("GRIB");
@@ -549,23 +553,35 @@ std::string te::gdal::GetGDALConnectionInfo(const std::map<std::string, std::str
   throw Exception(TR_GDAL("Invalid data source connection information!."));
 }
 
-std::string te::gdal::GetSubDataSetName(const std::string name, const std::string driverName)
+std::string te::gdal::GetSubDataSetName(const std::string& name, const std::string& driverName)
 {
   std::string subDataSetName = "";
-
+  
+  std::string filename = "";
+  
+  size_t first_colon, last_colon;
+  
   if (driverName == "NITF")
   {
-    boost::filesystem::path mpath(name);
-
-    std::size_t first_colon = mpath.string().find_first_of(":");
-
-    std::string remain = mpath.string().substr(first_colon + 1);
-
-    std::size_t second_colon = first_colon + remain.find_first_of(":");
-
-    subDataSetName = mpath.string().substr(0, second_colon + 2);
+    last_colon = name.find_last_of(":");
+    
+    subDataSetName = name.substr(0,last_colon);
+    
+    filename = name.substr(last_colon+1);
   }
-
+  else if (driverName == "netCDF")
+  {
+    last_colon = name.find_last_of(":");
+    
+    subDataSetName = name.substr(last_colon+1);
+    
+    first_colon = name.find_first_of(":");    
+    filename = name.substr(first_colon+2,(last_colon-first_colon)-3);    
+  }
+  
+  boost::filesystem::path mpath(filename);
+  subDataSetName = subDataSetName + ":" +  mpath.leaf().string();
+  
   return subDataSetName;
 }
 
