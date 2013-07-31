@@ -47,6 +47,7 @@ void PrintDataSourceNames(const std::string& dsType, const std::map<std::string,
 std::auto_ptr<te::da::DataSource> CreateDataSource(const std::string& dsType, const std::map<std::string, std::string>& info);
 void DropDataSource(const std::string& dsType, const std::map<std::string, std::string>& info);
 bool CheckDataSourceExistence(const std::string& dsType, const std::map<std::string, std::string>& info);
+void PrintDataSourceEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
 
 void PrintDataSetNames(te::da::DataSource* ds);
 void PrintDataSetPropertyNames(te::da::DataSource* ds, const std::string& datasetName);
@@ -81,12 +82,12 @@ int main(int /*argc*/, char** /*argv*/)
     PrintDataSourceNames(dsType, connInfo);
 
     // Creation of a data source
-    connInfo["PG_NEWDB_NAME"] = "new_dbname";
+    connInfo["PG_NEWDB_NAME"] = "new_db";
 
     std::auto_ptr<te::da::DataSource> newds = CreateDataSource(dsType, connInfo);
 
     // Drop a data source
-    connInfo["PG_DB_TO_DROP"] = "new_dbname";
+    connInfo["PG_DB_TO_DROP"] = "new_db";
     DropDataSource(dsType, connInfo);
 
     // Check the data source existence
@@ -97,6 +98,8 @@ int main(int /*argc*/, char** /*argv*/)
       std::cout << "\nThe data source \"terralib4\" exists!\n";
     else
       std::cout << "\nThe data source \"terralib4\" doesn't exist!\n";
+
+    PrintDataSourceEncodings(dsType, connInfo);
 
     // Connection to a data source
     te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
@@ -175,6 +178,15 @@ void DropDataSource(const std::string& dsType, const std::map<std::string, std::
 bool CheckDataSourceExistence(const std::string& dsType, const std::map<std::string, std::string>& info)
 {
   return te::da::DataSource::exists(dsType, info);
+}
+
+void PrintDataSourceEncodings(const std::string& dsType, const std::map<std::string, std::string>& info)
+{
+  std::cout << "\n===== Encodings for the data source \"" << "terralib4" << "\":\n";
+
+  std::vector<std::string> encs = te::da::DataSource::getEncodings(dsType, info);
+  for(std::size_t i = 0; i < encs.size(); ++i)
+    std::cout << encs[i] << std::endl;
 }
 
 void PrintDataSetNames(te::da::DataSource* ds)
@@ -307,40 +319,3 @@ void PrintDataSetConstraints(te::da::DataSource* ds, const std::string& datasetN
 //}
 //
 
-//
-//const te::da::DataSetTypePtr& PrintSchema(te::da::DataSource* ds, const std::string& datasetName)
-//{
-//  const te::da::DataSetTypePtr& dt = ds->getDataSetType(datasetName);
-//
-//  std::cout << "\n===== Names of the dataset properties: \n";
-//  std::vector<te::dt::Property*> properties = dt->getProperties();
-//  for(std::size_t i = 0; i < properties.size(); ++i)
-//    std::cout << properties[i]->getName() << std::endl;
-//
-//  std::cout << "\n===== Names and expressions of the dataset check constraints: \n";
-//  std::size_t numCC = dt->getNumberOfCheckConstraints();
-//  for(std::size_t i = 0; i < numCC; ++i)
-//  {
-//    te::da::CheckConstraint* cc = dt->getCheckConstraint(i);
-//    std::cout << cc->getName() << ": " << cc->getExpression() << std::endl;
-//  }
-//
-//  //te::da::CheckConstraint* cc = ds->getCheckConstraint("public.testcc", "testcc_check");
-//
-//  std::cout << "\n===== Name of the dataset primary key: ";
-//  te::da::PrimaryKey* pk = ds->getPrimaryKey(datasetName);
-//  std::cout <<pk->getName() << std::endl;
-//
-//  std::cout << "\n===== Name of the properties of the primary key: \n";
-//  const std::vector<te::dt::Property*> pkProperties = pk->getProperties();
-//  std::size_t numPkProperties = pkProperties.size();
-//  for(std::size_t i = 0; i < numPkProperties; ++i)
-//    std::cout << pkProperties[i]->getName() << std::endl;
-//
-//  std::cout << "\n===== Names of the dataset indexes: \n";
-//  std::size_t numIndexes = dt->getNumberOfIndexes();
-//  for(std::size_t i = 0; i < numIndexes; ++i)
-//    std::cout << dt->getIndex(i)->getName() << std::endl;
-//
-//  return dt;
-//}
