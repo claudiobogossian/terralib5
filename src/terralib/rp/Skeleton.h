@@ -26,14 +26,19 @@
 #define __TERRALIB_RP_INTERNAL_SKELETON_H
 
 #include "Algorithm.h"
-#include "../raster/Raster.h"
-
 #include "Matrix.h"
+#include "../raster/Raster.h"
+#include "../raster/BandProperty.h"
+#include "../raster/RasterFactory.h"
+#include "../raster/Grid.h"
 
 #include <memory>
 #include <vector>
 #include <map>
 #include <string>
+
+#include <climits>
+#include <cfloat>
 
 namespace te
 {
@@ -49,13 +54,7 @@ namespace te
       For each point p in R, we find its closest neightbor in B. If p has more than one
       such neighbor, it is said to belong to the medial axis (skeleton) of R.
       
-      \note Reference: Skeletons - Gonzalez R. C, "Digital Image Processing" - Second Edition.
-      
-      \note Reference: Blum, H. "A transformation for Extracting New Descriptors of Shape" In Models
-      for the Perception of Speech and Visual Form, Wathen-Dunn, W. (ed.) MIT Press, Cambridge, Mass.
-        
-      \note Reference Segmentation-Free Approach for Skeletonization of Gray-Scale Images via 
-      Anisotropic Vector Diffusion - Zeyun Yu and Chandrajit Bajaj.
+      \note Reference: Extraction ofthe Euclidean skeleton based on a connectivity criterion, Wai-Pak Choi, Kin-Man Lam, Wan-Chi Siu.
       
       \ingroup RPAlgorithms
      */
@@ -75,7 +74,9 @@ namespace te
             
             unsigned int m_inputRasterBand; //!< Bands to process from the input raster.
             
-            double m_finiteDifferencesThreshold; //!< A threshold for the finite differences iterative diffusion - valid range [0,1].
+            te::rst::Raster const* m_inputMaskRasterPtr; //!< A pointer to an input raster (where pixels with zero velues will be ignored) or an null pointer if no input mask raster must be used.
+            
+            double m_finiteDifferencesThreshold;//!< //!< A threshold for the finite differences iterative diffusion - valid range [0,1].
             
             InputParameters();
             
@@ -145,72 +146,244 @@ namespace te
         bool m_isInitialized; //!< Tells if this instance is initialized.
         
         /*!
-          \brief Create an Edge Strenght Map from the input image.
-          \param edgeIntensity The created edge intesity map;
-          \param edgeX The vector decomposed X component;
-          \param edgeY The vector decomposed Y component;
+          \brief Create an gradient maps from the input image.
+          \param edgeXMap The created edge X vectors map.
+          \param edgeYMap The created edge Y vectors map.
+          \return true if OK, false on errors.
+         */          
+        bool loadData( te::rp::Matrix< double >& rasterData ) const;        
+        
+        /*!
+          \brief Create an gradient maps from the input image.
+          \param edgeXMap The created edge X vectors map.
+          \param edgeYMap The created edge Y vectors map.
+          \return true if OK, false on errors.
+         */          
+        bool getGradientMaps( 
+          const te::rp::Matrix< double >& rasterData,
+          te::rp::Matrix< double >& gradXMap,
+          te::rp::Matrix< double >& gradYMap ) const;
+          
+        template< typename MatrixElementT >
+        bool applyMeanSmooth( 
+          const te::rp::Matrix< MatrixElementT >& input,
+          te::rp::Matrix< MatrixElementT >& output ) const
+        {
+          const unsigned int nRows = input.getLinesNumber();
+          const unsigned int nCols = input.getColumnsNumber();
+          
+          if( ! output.reset( nRows,nCols ) )
+            return false;          
+          
+          const unsigned int lastRowIdx = nRows - 1;
+          const unsigned int lastColIdx = nCols - 1;
+          unsigned int row = 0;
+          unsigned int col = 0;          
+          unsigned int nextRow = 0;
+          unsigned int nextCol = 0;
+          unsigned int prevRow = 0;
+          unsigned int prevCol = 0;   
+          
+          for( row = 0 ; row < nRows ; ++row )
+          {
+            output[ row ][ 0 ] = 0;
+            output[ row ][ lastColIdx ] = 0;
+          }
+          
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            output[ 0 ][ col ] = 0;
+            output[ lastRowIdx ][ col ] = 0;
+          }           
+          
+          for( row = 1 ; row < lastRowIdx ; ++row )
+          {
+            prevRow = row - 1;
+            nextRow = row + 1;
+            
+            for( col = 1 ; col < lastColIdx ; ++col )
+            {
+              prevCol = col - 1;
+              nextCol = col + 1;
+              
+              output[ row ][ col ] =
+                (
+                  input[ row ][ prevCol ] 
+                  + input[ row ][ nextCol ]
+                  + input[ prevRow ][ prevCol ] 
+                  + input[ prevRow ][ col ]
+                  + input[ prevRow ][ nextCol ] 
+                  + input[ nextRow ][ prevCol ] 
+                  + input[ nextRow ][ col ]
+                  + input[ nextRow ][ nextCol ]
+                ) / 8.0;
+            }
+          }
+          
+          return true;
+        };
+        
+        template< typename MatrixElementT >
+        bool getMagnitude( 
+          const te::rp::Matrix< double >& gradXMap,
+          const te::rp::Matrix< double >& gradYMap,
+          te::rp::Matrix< MatrixElementT >& magnitude ) const
+        {
+          assert( gradXMap.getColumnsNumber() == gradYMap.getColumnsNumber() );
+          assert( gradXMap.getLinesNumber() == gradYMap.getLinesNumber() );
+          
+          const unsigned int nRows = gradXMap.getLinesNumber();
+          const unsigned int nCols = gradXMap.getColumnsNumber();
+          
+          if( ( magnitude.getColumnsNumber() != nCols ) &&
+            ( magnitude.getLinesNumber() != nRows ) )
+          {
+            if( ! magnitude.reset( nRows,nCols ) )
+              return false;          
+          }
+          
+          unsigned int row = 0;
+          unsigned int col = 0; 
+          double xValue = 0;
+          double yValue = 0;
+          
+          for( row = 1 ; row < nRows ; ++row )
+          {
+            for( col = 1 ; col < nCols ; ++col )
+            {
+              xValue = gradXMap[ row ][ col ];
+              yValue = gradYMap[ row ][ col ];
+              
+              magnitude[ row ][ col ] = std::sqrt( ( xValue * xValue ) + 
+                ( yValue * yValue ) );
+            }
+          }
+          
+          return true;
+        };        
+          
+        /*!
+          \brief Create an Edge strenght Map from the input image.
+          \param edgeBinMap The generated edges map.
           \return true if OK, false on errors.
          */          
         bool getEdgeStrengthMap( 
-          te::rp::Matrix< double >& edgeIntensity,
-          te::rp::Matrix< double >& edgeX, 
-          te::rp::Matrix< double >& edgeY ) const;
+          const te::rp::Matrix< double >& gradXMap,
+          const te::rp::Matrix< double >& gradYMap,
+          te::rp::Matrix< double >& edgeStrengthMap ) const;       
+          
+        /*!
+          \brief Create an Edge strenght Map from the input image.
+          \param edgeBinMap The generated edges map.
+          \return true if OK, false on errors.
+         */          
+        bool getEdgeBinaryMap( 
+          const te::rp::Matrix< double >& gradXMap,
+          const te::rp::Matrix< double >& gradYMap,
+          const te::rp::Matrix< double >& edgeStrengthMap,
+          te::rp::Matrix< unsigned char >& edgeBinMap ) const;            
         
-        /*!
-          \brief Create the initial vector field from the edge intensity map.
-          \param edgeIntensity The created edge intesity map;
-          \param edgeX The vector decomposed X component;
-          \param edgeY The vector decomposed Y component;
-          \param vecFieldX The vector decomposed X component;
-          \param vecFieldY The vector decomposed Y component;
-          \return true if OK, false on errors.
-         */           
-        bool getInitialVectorField( 
-          const te::rp::Matrix< double >& edgeIntensity,
-          const te::rp::Matrix< double >& edgeX, 
-          const te::rp::Matrix< double >& edgeY,
-          te::rp::Matrix< double >& vecFieldX, 
-          te::rp::Matrix< double >& vecFieldY ) const;
-          
-        /*!
-          \brief Create the diffused vector field.
-          \param inputVecFieldMagnitudes The input vector field intesity map;
-          \param inputVecFieldX The vector decomposed X component;
-          \param inputVecFieldY The vector decomposed Y component;
-          \param diffusedVecFieldMagnitudes The created diffused vector field intesity map;
-          \param diffurseVecFieldX The vector decomposed X component;
-          \param diffusedVecFieldY The vector decomposed Y component;          
-          \return true if OK, false on errors.
-         */            
-        bool getDiffusedVectorField( 
-          const te::rp::Matrix< double >& inputVecFieldX, 
-          const te::rp::Matrix< double >& inputVecFieldY,
-          te::rp::Matrix< double >& diffurseVecFieldX, 
-          te::rp::Matrix< double >& diffusedVecFieldY) const;  
-          
         /*!
           \brief Create a tiff file from a matrix.
           \param matrix The matrix.
           \param normalize Enable/disable pixel normalization;
           \param tifFileName Tif file name.
-        */             
+        */      
+        template< typename MatrixElementT >
         void createTifFromMatrix( 
-          const te::rp::Matrix< double >& matrix,
+          const te::rp::Matrix< MatrixElementT >& matrix,
           const bool normalize,
-          const std::string& tifFileName ) const;  
+          const std::string& tifFileName ) const
+        {
+          std::map<std::string, std::string> rInfo;
+          rInfo["URI"] = tifFileName + ".tif";
+          
+          std::vector<te::rst::BandProperty*> bandsProperties;
+          if( normalize )
+            bandsProperties.push_back(new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE, "" ));
+          else
+            bandsProperties.push_back(new te::rst::BandProperty( 0, te::dt::DOUBLE_TYPE, "" ));
+          bandsProperties[0]->m_colorInterp = te::rst::GrayIdxCInt;
+          bandsProperties[0]->m_noDataValue = -1.0 * DBL_MAX;
+
+          te::rst::Grid* newgrid = new te::rst::Grid( matrix.getColumnsNumber(),
+            matrix.getLinesNumber(), 0, -1 );
+
+          std::auto_ptr< te::rst::Raster > outputRasterPtr(
+            te::rst::RasterFactory::make( "GDAL", newgrid, bandsProperties, rInfo, 0, 0));
+          TERP_TRUE_OR_THROW( outputRasterPtr.get(), "Output raster creation error");
+              
+          unsigned int line = 0;
+          unsigned int col = 0;
+          const unsigned int nLines = matrix.getLinesNumber();
+          const unsigned int nCols = matrix.getColumnsNumber();
+          double value = 0;
+
+          double gain = 1.0;
+          double offset = 0.0;
+          if( normalize )
+          {
+            double rasterDataMin = DBL_MAX;
+            double rasterDataMax = -1.0 * DBL_MIN;
+            for( line = 0 ; line < nLines ; ++line )
+            {
+              for( col = 0 ; col < nCols ; ++col )
+              {
+                value = (double)matrix[ line ][ col ];
+                if( value < rasterDataMin )
+                  rasterDataMin = value;
+                if( value > rasterDataMax )
+                  rasterDataMax = value;
+              }
+            }
+              
+            if( rasterDataMax == rasterDataMin )
+            {
+              gain = 0.0;
+              offset = 0.0;
+            }
+            else
+            {
+              gain = 255.0 / ( rasterDataMax - rasterDataMin );
+              offset = -1.0 * ( rasterDataMin );
+            }
+          }
+          
+          for( line = 0 ; line < nLines ; ++line )
+          {
+            for( col = 0 ; col < nCols ; ++col )
+            {
+              value = (double)matrix[ line ][ col ];
+            
+              if( normalize )
+              {
+                value += offset;
+                value *= gain;
+                value = std::max( 0.0, value );
+                value = std::min( 255.0, value );
+              }
+              
+              outputRasterPtr->setValue( col, line, value, 0 );
+            }
+          }
+        };  
           
         /*!
-          \brief Create the skeleton stregth map.
-          \param diffusedVecFieldX The vector decomposed X component;
-          \param diffusedVecFieldY The vector decomposed Y component;
-          \param strenghMap The skeleton stregth map.  
-          \return true if OK, false on errors.
-         */            
-        bool getSkeletonStrengthMap( 
-          const te::rp::Matrix< double >& diffusedVecFieldX, 
-          const te::rp::Matrix< double >& diffusedVecFieldY,
-          te::rp::Matrix< double >& strenghMap ) const;
-        
+          \brief Create a tiff file from a vector field.
+          \param inputVecFieldX The vector decomposed X component;
+          \param inputVecFieldY The vector decomposed Y component;
+          \param tifFileName Tif file name.
+        */             
+        void createTifFromVecField( 
+          const te::rp::Matrix< double >& inputVecFieldX, 
+          const te::rp::Matrix< double >& inputVecFieldY,
+          const std::string& tifFileName ) const;   
+          
+        bool applyVecDiffusion( 
+          const te::rp::Matrix< double >& inputX, 
+          const te::rp::Matrix< double >& inputY,
+          te::rp::Matrix< double >& outputX, 
+          te::rp::Matrix< double >& outputY ) const;          
 
     };
 
