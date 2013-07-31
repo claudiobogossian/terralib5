@@ -44,7 +44,14 @@
 #include <map>
 
 void PrintDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info);
-//void PrintDataSetNames(te::da::DataSource* ds);
+std::auto_ptr<te::da::DataSource> CreateDataSource(const std::string& dsType, const std::map<std::string, std::string>& info);
+void DropDataSource(const std::string& dsType, const std::map<std::string, std::string>& info);
+bool CheckDataSourceExistence(const std::string& dsType, const std::map<std::string, std::string>& info);
+
+void PrintDataSetNames(te::da::DataSource* ds);
+void PrintDataSetPropertyNames(te::da::DataSource* ds, const std::string& datasetName);
+void PrintDataSetConstraints(te::da::DataSource* ds, const std::string& datasetName);
+
 //const te::da::DataSetTypePtr& PrintSchema(te::da::DataSource* ds, const std::string& datasetName);
 
 void LoadModules();
@@ -60,11 +67,11 @@ int main(int /*argc*/, char** /*argv*/)
 
     std::map<std::string, std::string> connInfo;
 
-    connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;
+    //connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;
     //connInfo["PG_HOST"] = "localhost" ;
     connInfo["PG_PORT"] = "5433" ;
     connInfo["PG_USER"] = "postgres";
-    //connInfo["PG_PASSWORD"] = "sitim110";
+    connInfo["PG_PASSWORD"] = "sitim110";
     connInfo["PG_DB_NAME"] = "terralib4";
     //connInfo["PG_DB_NAME"] = "Northwind";
     connInfo["PG_CONNECT_TIMEOUT"] = "4";
@@ -73,26 +80,47 @@ int main(int /*argc*/, char** /*argv*/)
 
     PrintDataSourceNames(dsType, connInfo);
 
-    // Create a data source
-//    te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
+    // Creation of a data source
+    connInfo["PG_NEWDB_NAME"] = "new_dbname";
 
-    // As we are going to use the data source, let's open it using the connection info above!
-//    ds->setConnectionInfo(connInfo);
-//    ds->open();
+    std::auto_ptr<te::da::DataSource> newds = CreateDataSource(dsType, connInfo);
 
-    //std::string datasetName = "public.br_munic_2001";
-//    std::string datasetName = "public.detalhesdopedido";
+    // Drop a data source
+    connInfo["PG_DB_TO_DROP"] = "new_dbname";
+    DropDataSource(dsType, connInfo);
 
-//    const te::da::DataSetTypePtr& dt = ds->getDataSetType(datasetName);
+    // Check the data source existence
+    connInfo["PG_CHECK_DB_EXISTENCE"] = "terralib4";
+    bool dsExists = CheckDataSourceExistence(dsType, connInfo);
 
-//    std::cout << "\n===== Names of the dataset properties: \n";
-//    std::vector<te::dt::Property*>& properties = dt->getProperties();
-//    for(std::size_t i = 0; i < properties.size(); ++i)
-//      std::cout << properties[i]->getName() << std::endl;
+    if(dsExists)
+      std::cout << "\nThe data source \"terralib4\" exists!\n";
+    else
+      std::cout << "\nThe data source \"terralib4\" doesn't exist!\n";
 
-//    ds->close();
+    // Connection to a data source
+    te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
 
-//    delete ds;
+    // Open the data source using the connection info above
+    ds->setConnectionInfo(connInfo);
+    ds->open();
+
+    PrintDataSetNames(ds);
+
+    std::string datasetName = "public.br_munic_2001";
+
+    PrintDataSetPropertyNames(ds, datasetName);
+
+    PrintDataSetConstraints(ds, datasetName);
+
+    const te::da::DataSetTypePtr& dt = ds->getDataSetType(datasetName);
+
+    te::da::PreparedQuery* pq = new te::pgis::PreparedQuery(ds,  "testepq");
+    delete pq;
+
+    ds->close();
+
+    delete ds;
 
     te::plugin::PluginManager::getInstance().unloadAll();
 
@@ -125,11 +153,68 @@ int main(int /*argc*/, char** /*argv*/)
 
 void PrintDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info)
 {
+  std::cout << "===== Data Source Names available: \n";
+
   std::vector<std::string> dataSourceNames = te::da::DataSource::getDataSourceNames(dsType, info);
-    std::cout << "===== Data Source Names available: \n";
   for(std::size_t i = 0; i < dataSourceNames.size(); ++i)
     std::cout << dataSourceNames[i] << std::endl;
 }
+
+std::auto_ptr<te::da::DataSource> CreateDataSource(const std::string& dsType, const std::map<std::string, std::string>& info)
+{
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSource::create(dsType, info);
+
+  return ds;
+}
+
+void DropDataSource(const std::string& dsType, const std::map<std::string, std::string>& info)
+{
+  te::da::DataSource::drop(dsType, info);
+}
+
+bool CheckDataSourceExistence(const std::string& dsType, const std::map<std::string, std::string>& info)
+{
+  return te::da::DataSource::exists(dsType, info);
+}
+
+void PrintDataSetNames(te::da::DataSource* ds)
+{
+  // Get the database name
+  const std::map<std::string, std::string>& connInfo = ds->getConnectionInfo();
+  std::string dbName = connInfo.find("PG_DB_NAME")->second;
+
+  std::cout << "\n===== Dataset Names in the data source \"" << dbName << "\":\n";
+
+  std::vector<std::string> datasetNames = ds->getDataSetNames();
+  for(std::size_t i = 0; i < datasetNames.size(); ++i)
+    std::cout << datasetNames[i] << std::endl;
+}
+
+void PrintDataSetPropertyNames(te::da::DataSource* ds, const std::string& datasetName)
+{
+  std::cout << "\n===== Property Names of the dataset \"" << datasetName << "\":\n";
+
+  std::vector<std::string> pNames = ds->getPropertyNames(datasetName);
+  for(std::size_t i = 0; i < pNames.size(); ++i)
+    std::cout << pNames[i] << std::endl;
+}
+
+void PrintDataSetConstraints(te::da::DataSource* ds, const std::string& datasetName)
+{
+  std::cout << "\n===== Primary Key Name of the dataset \"" << datasetName << "\": ";
+
+  te::da::PrimaryKey* pk = ds->getPrimaryKey(datasetName);
+  std::cout << pk->getName() << std::endl;
+
+  std::cout << "\n===== Property Names of the Primary Key \"" << pk->getName() << "\": ";
+
+  const std::vector<te::dt::Property*> pkProperties = pk->getProperties();
+  std::size_t numPkProperties = pkProperties.size();
+  for(std::size_t i = 0; i < numPkProperties; ++i)
+    std::cout << pkProperties[i]->getName() << std::endl;
+}
+
+
 
 
 //int main(int /*argc*/, char** /*argv*/)
@@ -221,21 +306,7 @@ void PrintDataSourceNames(const std::string& dsType, const std::map<std::string,
 //  }
 //}
 //
-//void PrintDataSourceNames(te::da::DataSource* ds, const std::map<std::string, std::string>& info)
-//{
-//  std::vector<std::string> dataSourceNames = ds->getDataSourceNames(info);
-//    std::cout << "===== Names of the data sources available: \n";
-//  for(std::size_t i = 0; i < dataSourceNames.size(); ++i)
-//    std::cout << dataSourceNames[i] << std::endl;
-//}
-//
-//void PrintDataSetNames(te::da::DataSource* ds)
-//{
-//  std::vector<std::string> datasetNames = ds->getDataSetNames();
-//    std::cout << "\n===== Names of the datasets in the data source: \n";
-//  for(std::size_t i = 0; i < datasetNames.size(); ++i)
-//    std::cout << datasetNames[i] << std::endl;
-//}
+
 //
 //const te::da::DataSetTypePtr& PrintSchema(te::da::DataSource* ds, const std::string& datasetName)
 //{
