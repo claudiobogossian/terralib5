@@ -45,9 +45,10 @@
 //STL
 #include <limits>
 
-te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
+te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::widgets::HistogramStyle* style) :
   QwtPlotHistogram(),
-  m_histogram(histogram)
+  m_histogram(histogram),
+  m_histogramStyle(style)
 {
 
   //Vector that will be populated by the histogram's data
@@ -144,6 +145,20 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
   m_selection->setBrush(brush().color().darker( 180 ));
   m_selection->attach(plot());
 
+  if(!m_histogramStyle)
+  {
+    m_histogramStyle = new te::qt::widgets::HistogramStyle();
+    QPen barPen;
+    QBrush barBrush;
+
+    te::qt::widgets::Config(barPen, m_histogramStyle->getStroke());
+    te::qt::widgets::Config(barBrush, m_histogramStyle->getFill());
+    barBrush.setStyle(Qt::SolidPattern);
+
+    setPen(barPen);
+    setBrush(barBrush);
+    m_selection->setBrush(brush().color().darker( 180 ));
+  }
 }
 
 te::qt::widgets::HistogramChart::~HistogramChart()
@@ -167,6 +182,7 @@ te::qt::widgets::StringScaleDraw* te::qt::widgets::HistogramChart::getScaleDraw(
 
 void te::qt::widgets::HistogramChart::setScaleDraw( StringScaleDraw* newScaleDraw)
 {
+  delete m_histogramScaleDraw;
   m_histogramScaleDraw = newScaleDraw;
 }
 
@@ -189,16 +205,18 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramChart::getHistogram()
 
 void te::qt::widgets::HistogramChart::setHistogram(te::qt::widgets::Histogram* newHistogram)
 {
+  delete m_histogram;
   m_histogram = newHistogram;
 }
 
 te::qt::widgets::HistogramStyle* te::qt::widgets::HistogramChart::getHistogramStyle()
 {
- return m_histogramStyle;
+ return m_histogramStyle->clone();
 }
 
 void te::qt::widgets::HistogramChart::setHistogramStyle(te::qt::widgets::HistogramStyle* newStyle)
 {
+  delete m_histogramStyle;
   m_histogramStyle = newStyle;
 
   QPen barPen;

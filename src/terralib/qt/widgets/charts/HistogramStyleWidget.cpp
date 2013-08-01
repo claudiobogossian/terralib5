@@ -55,11 +55,12 @@ te::qt::widgets::HistogramStyleWidget::HistogramStyleWidget(te::qt::widgets::His
 
 te::qt::widgets::HistogramStyleWidget::~HistogramStyleWidget()
 {
+  delete m_histogramStyle;
 }
 
 te::qt::widgets::HistogramStyle* te::qt::widgets::HistogramStyleWidget::getHistogramStyle()
 {
-  return m_histogramStyle;
+  return m_histogramStyle->clone();
 }
 
 void te::qt::widgets::HistogramStyleWidget::onFillPushButtonClicked()

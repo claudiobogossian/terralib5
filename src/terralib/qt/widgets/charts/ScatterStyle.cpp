@@ -35,10 +35,10 @@
 te::qt::widgets::ScatterStyle::ScatterStyle ()
 {
   m_graphic  = new te::se::Graphic();
-  m_mark = new te::se::Mark();
-  m_mark->setFill(new te::se::Fill());
-  m_mark->setStroke(new te::se::Stroke());
-  m_graphic->add(m_mark);
+  te::se::Mark* mark = new te::se::Mark();
+  mark->setFill(new te::se::Fill());
+  mark->setStroke(new te::se::Stroke());
+  m_graphic->add(mark);
 }
 
 te::qt::widgets::ScatterStyle::~ScatterStyle()
@@ -60,11 +60,11 @@ te::se::Graphic* te::qt::widgets::ScatterStyle::getGraphic()
 
 void te::qt::widgets::ScatterStyle::setGraphic(te::se::Graphic* newGraphic)
 {
+  delete m_graphic;
   m_graphic = newGraphic;
-  m_mark = m_graphic->getMarks()[0];
 }
 
 QwtSymbol* te::qt::widgets::ScatterStyle::getSymbol()
 {
-  return te::qt::widgets::Terralib2Qwt(m_mark); 
+  return te::qt::widgets::Terralib2Qwt(m_graphic); 
 }

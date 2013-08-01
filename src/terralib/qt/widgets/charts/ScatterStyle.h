@@ -101,7 +101,6 @@ namespace te
         private:
 
           te::se::Graphic*  m_graphic;    //!< The graphic used to edit the symbol's style
-          te::se::Mark*     m_mark;       //!< The mark used to edit the symbol's style
       }; 
     }  //end namespace widgets
   }    //end namespace qt

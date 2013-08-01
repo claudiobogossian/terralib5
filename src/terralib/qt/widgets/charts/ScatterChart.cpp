@@ -25,14 +25,15 @@
 
 // TerraLib
 
-#include "Enums.h"
+
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../se/Mark.h"
 #include "../../../se/Graphic.h"
+#include "../../../se/Utils.h"
+#include "Enums.h"
 #include "ScatterChart.h"
 #include "Scatter.h"
 #include "ScatterStyle.h"
-#include "../../../se/Utils.h"
 #include "Utils.h"
 
 //QWT
@@ -57,6 +58,17 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
 
   //Set Values
   setData();
+
+  //Adjusting the symbol
+  m_scatterStyle =  new te::qt::widgets::ScatterStyle();
+  if(m_scatter->sizeX() > 100 || m_scatter->sizeY() > 100)
+  {
+    setSymbol(new QwtSymbol( m_scatterStyle->getSymbol()->style(), m_scatterStyle->getSymbol()->brush(), m_scatterStyle->getSymbol()->pen(), QSize( 1, 1 )));
+  }
+  else
+  {
+    setSymbol(m_scatterStyle->getSymbol());
+  }
 }
 
 te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, ScatterStyle* style, size_t size) :
@@ -103,6 +115,7 @@ te::qt::widgets::ScatterChart::~ScatterChart()
 {  
   delete m_scatter;
   delete m_scatterStyle;
+  delete m_selection;
 }
 
 int  te::qt::widgets::ScatterChart::rtti() const
@@ -117,18 +130,29 @@ te::qt::widgets::Scatter* te::qt::widgets::ScatterChart::getScatter()
 
 void te::qt::widgets::ScatterChart::setScatter(te::qt::widgets::Scatter* newScatter)
 {
+  delete m_scatter;
   m_scatter = newScatter;
 }
 
 te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterChart::getScatterStyle()
 {
- return m_scatterStyle;
+ return m_scatterStyle->clone();
 }
 
 void te::qt::widgets::ScatterChart::setScatterStyle(te::qt::widgets::ScatterStyle* newSymbol)
 {
+  delete m_scatterStyle;
   m_scatterStyle = newSymbol;
-  setSymbol(m_scatterStyle->getSymbol());
+
+  if(m_scatter->sizeX() > 100 || m_scatter->sizeY() > 100)
+  {
+    setSymbol(new QwtSymbol( m_scatterStyle->getSymbol()->style(), m_scatterStyle->getSymbol()->brush(), m_scatterStyle->getSymbol()->pen(), QSize( 1, 1 )));
+  }
+  else
+  {
+    setSymbol(m_scatterStyle->getSymbol());
+  }
+
   m_selection->setSymbol(new QwtSymbol( symbol()->style(), symbol()->brush().color().darker (180 ), symbol()->pen().color().darker( 180), symbol()->size()));
 }
 

@@ -69,6 +69,7 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(QWidget* parent,  Qt::Window
   connect(m_ui->m_playToolButton, SIGNAL(clicked()), this, SLOT(onPlayToolButtonnClicked()));
   connect(m_ui->m_skipBackwardToolButton, SIGNAL(clicked()), this, SLOT(onSkipBackwardToolButtonnClicked()));
   connect(m_ui->m_skipForwardToolButton, SIGNAL(clicked()), this, SLOT(onSkipForwardToolButtonnClicked()));
+  connect(m_ui->m_TemporalHorizontalSlider, SIGNAL(valueChanged (int)), this, SLOT(onSliderValueChanged(int)));
 
   setAttribute(Qt::WA_DeleteOnClose, true);
 
@@ -141,4 +142,9 @@ void te::qt::widgets::TimeSliderWidget::play()
       m_ui->m_playToolButton->setIcon(QIcon::fromTheme("media-playback-start"));
     }
   }
+}
+
+void te::qt::widgets::TimeSliderWidget::onSliderValueChanged(int value)
+{
+  emit valueCHanged(value);
 }
