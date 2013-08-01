@@ -131,7 +131,7 @@ void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& la
     {
       const te::map::AbstractLayerPtr& layer = *it;
 
-      if(layer->getSRID() == TE_UNKNOWN_SRS)
+      if(!layer->getVisibility() || layer->getSRID() == TE_UNKNOWN_SRS)
         continue;
 
       m_display->setSRID(layer->getSRID(), false);
