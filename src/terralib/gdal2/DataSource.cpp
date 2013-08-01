@@ -387,7 +387,7 @@ std::auto_ptr<te::gm::Envelope> te::gdal::DataSource::getExtent(const std::strin
    throw(Exception(TR_GDAL("Not implemented yet.")));
 }
 
-const te::da::DataSourceCapabilities& te::gdal::DataSource::getCapabilities() const 
+const te::da::DataSourceCapabilities& te::gdal::DataSource::getCapabilities() const
 {
   return sm_capabilities;
 }
