@@ -52,10 +52,12 @@
 //STL
 #include <memory>
 
-te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title) : 
-  QwtPlot(parent)
+te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, ChartStyle* style) : 
+  QwtPlot(parent),
+  m_chartStyle(style)
 {
-  m_chartStyle = new te::qt::widgets::ChartStyle();
+  if(!m_chartStyle)
+    m_chartStyle = new te::qt::widgets::ChartStyle();
 
   m_grid = new QwtPlotGrid;
   m_grid->enableX(true);

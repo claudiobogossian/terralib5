@@ -88,7 +88,7 @@ namespace te
 
           std::auto_ptr<Ui::ChartPropertiesDialogForm>  m_ui;           // The Dialog Form.
           ChartWidget*                                  m_curComp;      // The widget being displayed
-          te::qt::widgets::ChartDisplayWidget*          m_chartWidget;  // The chart widget that will be configured by this dialog.
+          ChartDisplayWidget*                           m_chartWidget;  // The chart widget that will be configured by this dialog.
 
       };
     }   // end namespace widgets

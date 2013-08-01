@@ -108,3 +108,7 @@ void te::da::Index::replace(te::dt::Property* p, te::dt::Property* pp)
     }
 }
 
+te::da::Index* te::da::Index::clone()
+{
+  return new Index(*this);
+}

@@ -60,9 +60,10 @@ namespace te
             It constructs a histogram chart .
 
             \note It will take the ownership of the pointer "data".
+            \note it will take the ownership of the pointer "style". If style is null, the chart will be constructed with a default style.
           */
-          HistogramChart(Histogram* data);
-          
+          HistogramChart(Histogram* data, te::qt::widgets::HistogramStyle* style = 0);
+
           /*! \brief Destructor. */
           ~HistogramChart();  
 
@@ -113,10 +114,10 @@ namespace te
           void setHistogram(te::qt::widgets::Histogram* newHistogram);
 
           /*!
-            \brief It returns the chart's style.  
+            \brief Returns a clone of the pointer to the histogram's style
 
-            \return The chart's style.
-            \note The caller will not take ownership of the returned pointer.
+            \return A HistogramStyle type pointer to the histogram's style.
+            \note The caller will take ownership of the returned pointer. 
           */
           te::qt::widgets::HistogramStyle* getHistogramStyle();
 

@@ -94,8 +94,8 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ScatterDialogForm>  m_ui;                 //!< The dialog form.
-          te::qt::widgets::ScatterDataWidget*   m_scatterDataWidget;  //!< The scatter's data widget used to configure the basic parameters of the new scatter.
-          te::qt::widgets::ChartDisplayWidget*  m_displayWidget;      //!< The display's widget that will be populated by this widget.
+          ScatterDataWidget*                    m_scatterDataWidget;  //!< The scatter's data widget used to configure the basic parameters of the new scatter.
+          ChartDisplayWidget*                   m_displayWidget;      //!< The display's widget that will be populated by this widget.
       };
     } // end namespace widgets
   }   // end namespace qt

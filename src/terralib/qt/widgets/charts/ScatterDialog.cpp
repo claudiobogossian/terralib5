@@ -83,15 +83,14 @@ void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
 {
   te::qt::widgets::ScatterChart* chart = new te::qt::widgets::ScatterChart(m_scatterDataWidget->getScatter());
 
-  chart->setScatterStyle(new te::qt::widgets::ScatterStyle());
-  if(chart->getScatter()->sizeX() > 100 || chart->getScatter()->sizeY() > 100)
-    chart->setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::black ), QPen( Qt::lightGray, 2 ), QSize( 1, 1 )));
+  //Creating and adjusting the chart Display's style.
+  te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
+  chartStyle->setTitle(QString::fromStdString("Scatter"));
+  chartStyle->setAxisX(m_scatterDataWidget->getForm()->m_propertyXComboBox->currentText());
+  chartStyle->setAxisY(m_scatterDataWidget->getForm()->m_propertyYComboBox->currentText());
 
   //Adjusting the chart Display
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"));
-  chartDisplay->getStyle()->setTitle(QString::fromStdString("Scatter"));
-  chartDisplay->getStyle()->setAxisX(m_scatterDataWidget->getForm()->m_propertyXComboBox->currentText());
-  chartDisplay->getStyle()->setAxisY(m_scatterDataWidget->getForm()->m_propertyYComboBox->currentText());
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"), chartStyle);
   chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
   chartDisplay->show();

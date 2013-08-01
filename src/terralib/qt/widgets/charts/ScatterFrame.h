@@ -88,8 +88,8 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ScatterFrameWidgetForm>  m_ui;     //!< The widget form.
-          te::qt::widgets::ScatterChart*             m_chart;  //!< The chart that will be editted by this widget;
-          te::qt::widgets::ScatterStyleWidget*       m_styleWidget;  //!< The widget used to configure the histogram's style.
+          ScatterChart*                              m_chart;  //!< The chart that will be editted by this widget;
+          ScatterStyleWidget*                        m_styleWidget;  //!< The widget used to configure the histogram's style.
       };
     }   // end namespace widgets
   }     // end namespace qt

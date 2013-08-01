@@ -376,17 +376,6 @@ namespace te
         */
         static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
 
-        /*!
-          \brief It retrieves the data sources available.
-
-          \param info The connection info.
-
-          \return It returns the names of the data sources available.
-        */
-        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info);
-
-        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
-
       protected:
 
         /*!
@@ -511,11 +500,17 @@ namespace te
         */
         std::vector<te::da::Sequence*> getSequences();
 
+      protected:
+
         void create(const std::map<std::string, std::string>& dsInfo);
 
         void drop(const std::map<std::string, std::string>& dsInfo);
 
         bool exists(const std::map<std::string, std::string>& dsInfo);
+
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
+
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
 
       private:
 

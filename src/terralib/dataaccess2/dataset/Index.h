@@ -232,7 +232,16 @@ namespace te
         */
         void replace(te::dt::Property* p, te::dt::Property* pp);
 
-      private:
+        /*!
+          \brief It returns a clone of the object.
+
+          The new object will not have an associated schema.
+
+          \return A clone of the object.
+        */
+        Index* clone();
+
+  private:
 
         unsigned int m_id;                            //!< An identification number for the index.
         IndexType m_type;                             //!< The index type.

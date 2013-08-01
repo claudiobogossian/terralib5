@@ -99,7 +99,7 @@ namespace te
 
           std::string                     m_label;    //!< The chart's Label.
           QwtPlotSeriesItem*              m_chart;    //!< The chart that will be configured by this widget.
-          te::qt::widgets::ChartDisplay*  m_display;  //!< The display that will be configured by this widget.
+          ChartDisplay*                   m_display;  //!< The display that will be configured by this widget.
       };
     }   // end namespace widgets
   }     // end namespace qt

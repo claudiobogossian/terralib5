@@ -262,6 +262,15 @@ namespace te
                    remember to detach it from the catalog before calling this method.
         */
         void setCatalog(DataSourceCatalog* catalog) { m_catalog = catalog; }
+
+        /*!
+          \brief It returns a clone of the object.
+
+          The new object will not have an associated catalog.
+
+          \return A clone of the object.
+        */
+        Sequence* clone();
       
       private:
 

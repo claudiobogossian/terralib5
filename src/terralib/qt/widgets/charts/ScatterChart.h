@@ -61,15 +61,16 @@ namespace te
 
             It constructs a scatter chart with a default mark and size.
 
-            \note It will not take the ownership of the pointers.
+            \note It will take the ownership of the pointers.
+            \note it will construct a chart with a default style.
           */
           ScatterChart(Scatter* data);
           
           /*!
             \brief Constructor
 
-            \note It will take the ownership of the pointer "symbol".
-            \note It will not take the ownership of the pointer "data".
+            \note It will take the ownership of the pointer "style".
+            \note It will take the ownership of the pointer "data".
           */
           ScatterChart(Scatter* data, ScatterStyle* style, size_t size);
 
@@ -95,9 +96,10 @@ namespace te
           void setScatter(te::qt::widgets::Scatter* newScatter);
 
           /*!
-            \brief It returns the chart's style.  
+            \brief Returns a clone of the pointer to the scatter's style
 
-            \return The chart's style.  
+            \return A ScatterStyle type pointer to the scatter's style.
+            \note The caller will take ownership of the returned pointer. 
           */
           ScatterStyle* getScatterStyle();
 

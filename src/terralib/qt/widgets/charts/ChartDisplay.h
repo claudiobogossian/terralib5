@@ -67,12 +67,14 @@ namespace te
           /*!
             \brief Constructor
 
-            It constructs a chart display with the given title.
+            It constructs a ChartDisplay with the given title and style.
 
             \param parent this widget's parent
             \param title this widget's title.
+
+            \note it will take the ownership of the pointer "style". If style is null, the display will be constructed with a default style.
           */
-          ChartDisplay(QWidget* parent=NULL, QString title = "");
+          ChartDisplay(QWidget* parent=NULL, QString title = "", ChartStyle* style = 0);
 
           /*!
             \brief Destructor
@@ -129,9 +131,9 @@ namespace te
 
          private:
 
-          te::qt::widgets::ChartStyle*  m_chartStyle;  //!< The display's style.
-          QwtPlotGrid*                  m_grid;        //!< The display's grid
-          QwtPlotPicker*                m_picker;      //!< The display's picker.
+          ChartStyle*     m_chartStyle;  //!< The display's style.
+          QwtPlotGrid*    m_grid;        //!< The display's grid
+          QwtPlotPicker*  m_picker;      //!< The display's picker.
       };
     } // end namespace widgets
   }   // end namespace qt
