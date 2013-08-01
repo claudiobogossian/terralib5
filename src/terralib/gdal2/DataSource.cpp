@@ -161,8 +161,8 @@ void te::gdal::DataSource::open()
       char** subdatasets = dataset->GetMetadata("SUBDATASETS");
       if(subdatasets == 0)
       {
-        m_datasetNames.push_back(foundFile.leaf().c_str());
-        m_datasetFullNames.push_back(foundFile.c_str());
+        m_datasetNames.push_back(foundFile.leaf().string());
+        m_datasetFullNames.push_back(foundFile.string());
       }
       else 
         getSubDatasets(dataset,te::gdal::GetDriverName(foundFile.string()));
