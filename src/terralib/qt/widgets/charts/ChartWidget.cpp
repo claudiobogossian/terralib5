@@ -24,7 +24,6 @@
 */
 
 //Terralib
-#include "ChartDisplay.h"
 #include "ChartWidget.h"
 
 te::qt::widgets::ChartWidget::ChartWidget(QWidget* parent)

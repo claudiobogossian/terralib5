@@ -816,23 +816,24 @@ void te::qt::af::BaseApplication::onSetBoxOnMapDisplayTriggered()
 {
   try
   {
-    te::qt::widgets::MapDisplay* display = m_display->getDisplay();
     std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
-
     if(layers.empty())
     {
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
       return;
     }
 
+    te::qt::widgets::MapDisplay* display = m_display->getDisplay();
     te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
-    te::gm::Envelope env;
 
-    if(display->getSRID() == lay->getSRID() || display->getSRID() == TE_UNKNOWN_SRS || lay->getSRID() == TE_UNKNOWN_SRS)
+    if((display->getSRID() != lay->getSRID()) && (display->getSRID() == TE_UNKNOWN_SRS || lay->getSRID() == TE_UNKNOWN_SRS))
     {
-      env = lay->getExtent();
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), TR_QT_AF("The SRS of canvas and layer are not compatible."));
+      return;
     }
-    else
+
+    te::gm::Envelope env = lay->getExtent();
+    if(display->getSRID() != lay->getSRID())
     {
       env = lay->getExtent();
       env.transform(lay->getSRID(), display->getSRID());

@@ -88,3 +88,46 @@ te::gm::Geometry* te::vp::GetUnionGeometry(const std::vector<te::mem::DataSetIte
 
   return resultGeometry;
 }
+
+std::string te::vp::GetSimpleTableName(std::string fullName)
+{
+  std::string key (".");
+  std::size_t found = fullName.rfind(key);
+  
+  if(found >= std::string::npos)
+    return fullName;
+
+  std::string tableName = fullName.substr(found + 1);
+
+  return tableName;
+}
+
+te::gm::GeometryProperty* te::vp::SetOutputGeometryType(const te::gm::GeometryProperty* firstGeom, const te::gm::GeometryProperty* secondGeom)
+{
+  te::gm::GeometryProperty* fiGeomProp = (te::gm::GeometryProperty*)firstGeom->clone();
+
+  if( (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::PolygonType) ||
+      (firstGeom->getGeometryType() == te::gm::MultiPolygonType && secondGeom->getGeometryType() == te::gm::MultiPolygonType) ||
+      (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::MultiPolygonType) ||
+      (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::PolygonType))
+  {
+    fiGeomProp->setName("geom");
+    fiGeomProp->setGeometryType(te::gm::PolygonType);
+  }
+  else if((firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::LineStringType) ||
+          (firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::PolygonType) ||
+          (firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::MultiPolygonType) ||
+          (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::LineStringType) ||
+          (firstGeom->getGeometryType() == te::gm::MultiPolygonType && secondGeom->getGeometryType() == te::gm::LineStringType))
+  {
+    fiGeomProp->setName("geom");
+    fiGeomProp->setGeometryType(te::gm::LineStringType);
+  }
+  else
+  {
+    fiGeomProp->setName("geom");
+    fiGeomProp->setGeometryType(te::gm::PointType);
+  }
+
+  return fiGeomProp;
+}

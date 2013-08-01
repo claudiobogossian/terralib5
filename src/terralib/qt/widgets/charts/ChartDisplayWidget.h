@@ -145,7 +145,7 @@ namespace te
           std::auto_ptr<Ui::ChartDisplayWidgetForm>  m_ui;       //!< The widget form.
           QwtPlotSeriesItem*                         m_chart;    //!< The chart that will be plotted by this widget.
           int                                        m_type;     //!< The type of the chart that will be plotted by this widget.
-          te::qt::widgets::ChartDisplay*             m_display;  //!< The display that will be used to plot the chart.
+          ChartDisplay*                              m_display;  //!< The display that will be used to plot the chart.
       };
     } // end namespace widgets
   }   // end namespace qt

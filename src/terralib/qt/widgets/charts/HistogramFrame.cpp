@@ -31,9 +31,6 @@
 #include "HistogramStyle.h"
 #include "HistogramStyleWidget.h"
 
-//QWT
-#include <qwt_plot_seriesitem.h>
-
 te::qt::widgets::HistogramFrame::HistogramFrame(QWidget* parent)
   : ChartWidget(parent),
     m_ui(new Ui::HistogramFrameWidgetForm)

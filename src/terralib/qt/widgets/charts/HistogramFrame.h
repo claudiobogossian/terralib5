@@ -87,8 +87,8 @@ namespace te
         private:
 
           std::auto_ptr<Ui::HistogramFrameWidgetForm>  m_ui;           //!< The widget Form.
-          te::qt::widgets::HistogramChart*             m_chart;        //!< The chart that will be editted by this widget.
-          te::qt::widgets::HistogramStyleWidget*       m_styleWidget;  //!< The widget used to configure the histogram's style.
+          HistogramChart*                              m_chart;        //!< The chart that will be editted by this widget.
+          HistogramStyleWidget*                        m_styleWidget;  //!< The widget used to configure the histogram's style.
       };
     }   // end namespace widgets
   }     // end namespace qt

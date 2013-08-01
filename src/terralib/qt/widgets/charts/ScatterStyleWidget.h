@@ -61,7 +61,7 @@ namespace te
           /*!
             \brief Constructor
 
-            \param initial  An initial ScatterStyle element that will be used. The widget form will be updated based on
+            \param initial  An initial ScatterStyle element that will be used, it will take ownership of this pointer if it is given. The widget form will be updated based on
                             it's parameters. It can be NULL.
             \param parent   this widget's parent
             \param f Window flags used to configure this dialog
@@ -88,7 +88,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ScatterStyleWidgetForm>  m_ui;            //!< The iwdget form.
-          te::qt::widgets::ScatterStyle*             m_scatterStyle;  //!< The scatter's chart style that will be configured by this widget.
+          ScatterStyle*                              m_scatterStyle;  //!< The scatter's chart style that will be configured by this widget.
       };
     } // end namespace widgets
   }   // end namespace qt

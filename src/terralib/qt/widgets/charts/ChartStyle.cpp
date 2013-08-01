@@ -97,6 +97,7 @@ te::se::Fill* te::qt::widgets::ChartStyle::getFill()
 
 void te::qt::widgets::ChartStyle::setFill(te::se::Fill* newFill)
 {
+  delete m_fill;
   m_fill = newFill;
 }
 
@@ -107,6 +108,7 @@ te::se::Stroke* te::qt::widgets::ChartStyle::getStroke()
 
 void te::qt::widgets::ChartStyle::setStroke(te::se::Stroke* newStroke)
 {
+  delete m_stroke;
   m_stroke = newStroke;
 }
 

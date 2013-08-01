@@ -32,14 +32,14 @@
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype.h"
-#include "Histogram.h"
 #include "../../../raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
-#include "Scatter.h"
 #include "../../../se.h"
-#include "Utils.h"
 #include "../../../qt/widgets/se/Utils.h"
+#include "Histogram.h"
+#include "Scatter.h"
+#include "Utils.h"
 
 //Boost
 #include <boost/lexical_cast.hpp>
@@ -479,16 +479,15 @@ QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text,  te::color::RGBA
   return result;
 }
 
-QwtSymbol* te::qt::widgets::Terralib2Qwt(te::se::Mark* mark)
+QwtSymbol* te::qt::widgets::Terralib2Qwt(te::se::Graphic* graphic)
 {
   QwtSymbol* symbol =  new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ));
   QPen symbolPen;
   QBrush symbolBrush;
-  te::qt::widgets::Config(symbolPen, mark->getStroke());
-  te::qt::widgets::Config(symbolBrush, mark->getFill());
+  te::qt::widgets::Config(symbolPen, graphic->getMarks()[0]->getStroke());
+  te::qt::widgets::Config(symbolBrush, graphic->getMarks()[0]->getFill());
   symbolBrush.setStyle(Qt::SolidPattern);
   symbol->setPen(symbolPen);
   symbol->setBrush(symbolBrush);
-
   return symbol;
 }

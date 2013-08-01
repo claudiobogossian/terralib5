@@ -816,3 +816,8 @@ bool te::pgis::DataSet::isNull(std::size_t i) const
   return PQgetisnull(m_result, m_i, i) == 1;
 }
 
+std::string* te::pgis::DataSet::getSQL() const
+{
+  return m_sql;
+}
+

@@ -86,9 +86,9 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ChartStyleFrameWidgetForm> m_ui;  //!< The Widget form.
-          te::qt::widgets::ChartDisplay*  m_display;          //!< The display that will be configured by this widget.
-          te::qt::widgets::ChartStyleWidget* m_styleWidget;   //!< The widget used to configure the display's style
+          std::auto_ptr<Ui::ChartStyleFrameWidgetForm>  m_ui;           //!< The Widget form.
+          ChartDisplay*                                 m_display;      //!< The display that will be configured by this widget.
+          ChartStyleWidget*                             m_styleWidget;  //!< The widget used to configure the display's style
       };
 
     }   // end namespace widgets

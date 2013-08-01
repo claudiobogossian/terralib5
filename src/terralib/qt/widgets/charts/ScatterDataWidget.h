@@ -90,7 +90,7 @@ namespace te
             \brief Returns a pointer to the widget's form
 
             \return A HistogramDataWidgetForm type pointer to the widget's form.
-            \note The caller will not take ownership of the returned pointer.
+            \note The caller will take ownership of the returned pointer.
           */
           te::qt::widgets::Scatter* getScatter();
 

@@ -30,9 +30,6 @@
 #include "ScatterFrame.h"
 #include "ScatterStyleWidget.h"
 
-//QWT
-#include <qwt_plot_seriesitem.h>
-
 te::qt::widgets::ScatterFrame::ScatterFrame(QWidget* parent)
   : ChartWidget(parent),
     m_ui(new Ui::ScatterFrameWidgetForm)

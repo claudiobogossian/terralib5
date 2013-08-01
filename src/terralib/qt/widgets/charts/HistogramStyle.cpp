@@ -61,6 +61,7 @@ te::se::Fill* te::qt::widgets::HistogramStyle::getFill()
 
 void te::qt::widgets::HistogramStyle::setFill(te::se::Fill* newFill)
 {
+  delete m_fill;
   m_fill = newFill;
 }
 
@@ -71,6 +72,7 @@ te::se::Stroke* te::qt::widgets::HistogramStyle::getStroke()
 
 void te::qt::widgets::HistogramStyle::setStroke(te::se::Stroke* newStroke)
 {
+  delete m_stroke;
   m_stroke = newStroke;
 }
 

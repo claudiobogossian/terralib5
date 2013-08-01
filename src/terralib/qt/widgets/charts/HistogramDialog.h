@@ -94,8 +94,8 @@ namespace te
         private:
 
           std::auto_ptr<Ui::HistogramDialogForm>  m_ui;                   //!< The dialog form.
-          te::qt::widgets::HistogramDataWidget*   m_histogramDataWidget;  //!< The histogram's data widget used to configure the basic parameters of the new histogram.
-          te::qt::widgets::ChartDisplayWidget*    m_displayWidget;        //!< The display's widget that will be populated by this widget.
+          HistogramDataWidget*                    m_histogramDataWidget;  //!< The histogram's data widget used to configure the basic parameters of the new histogram.
+          ChartDisplayWidget*                     m_displayWidget;        //!< The display's widget that will be populated by this widget.
       };
     } // end namespace widgets
   }   // end namespace qt
