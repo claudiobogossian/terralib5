@@ -81,6 +81,11 @@ void te::qt::widgets::LayerExplorer::set(const std::list<te::map::AbstractLayerP
   m_treeModel->set(layers);
 }
 
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getAllLayers() const
+{
+  return m_treeModel->getLayers();
+}
+
 std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerExplorer::getSelectedItems() const
 {
   if(m_treeView == 0)
