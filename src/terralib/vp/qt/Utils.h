@@ -54,6 +54,10 @@ namespace te
     */
     te::gm::Geometry* GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx);
 
+    std::string GetSimpleTableName(std::string fullName);
+
+    te::gm::GeometryProperty* SetOutputGeometryType(const te::gm::GeometryProperty* firstGeom, const te::gm::GeometryProperty* secondGeom);
+
   } // end namespace vp
 }   // end namespace te
 

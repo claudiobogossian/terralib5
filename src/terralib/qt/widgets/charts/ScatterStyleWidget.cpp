@@ -51,16 +51,17 @@ te::qt::widgets::ScatterStyleWidget::ScatterStyleWidget(te::qt::widgets::Scatter
 
 te::qt::widgets::ScatterStyleWidget::~ScatterStyleWidget()
 {
+  delete m_scatterStyle;
 }
 
 te::qt::widgets::ScatterStyle* te::qt::widgets::ScatterStyleWidget::getScatterStyle()
 {
-  return m_scatterStyle;
+  return m_scatterStyle->clone();
 }
 
 void te::qt::widgets::ScatterStyleWidget::onPlotStylePushButtonClicked()
 {
-  std::auto_ptr<te::se::Graphic> graphic(te::qt::widgets::GraphicDialog::getGraphic(0, 0, "Scatter Style"));
+  std::auto_ptr<te::se::Graphic> graphic(te::qt::widgets::GraphicDialog::getGraphic(m_scatterStyle->getGraphic(), 0, "Scatter Style"));
   if(graphic.get())
     m_scatterStyle->setGraphic(graphic->clone());
 }

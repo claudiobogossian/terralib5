@@ -211,9 +211,6 @@ void te::pgis::DataSource::open()
 
   // Find PostgreSQL current schema of the connection
   getDatabaseInfo(*m_pImpl->m_currentSchema);
-
-  // Get the dataset names of the data source
-  //getDataSetNames();
 }
 
 void te::pgis::DataSource::close()
@@ -1416,7 +1413,9 @@ std::size_t te::pgis::DataSource::getNumberOfItems(const std::string& datasetNam
 
 bool te::pgis::DataSource::hasDataSets()
 {
-  if(m_pImpl->m_datasetNames.empty())
+  std::vector<std::string> datasetNames = getDataSetNames();
+
+  if(datasetNames.empty())
     return false;
 
   return true;
@@ -1424,7 +1423,9 @@ bool te::pgis::DataSource::hasDataSets()
 
 bool te::pgis::DataSource::dataSetExists(const std::string& name)
 {
-  if(std::find(m_pImpl->m_datasetNames.begin(), m_pImpl->m_datasetNames.end(), name) != m_pImpl->m_datasetNames.end())
+  std::vector<std::string> datasetNames = getDataSetNames();
+
+  if(std::find(datasetNames.begin(), datasetNames.end(), name) != datasetNames.end())
     return true;
 
   return false;

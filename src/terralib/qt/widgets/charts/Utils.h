@@ -40,7 +40,7 @@ namespace te
 {
   // Forward declarations
   namespace color { class RGBAColor; }
-  namespace se    { class Font; class Fill; class Stroke; class Mark; }
+  namespace se    { class Font; class Fill; class Stroke; class Mark; class Graphic;}
   namespace da    { class DataSet; class DataSetType; class ObjectId; }
   namespace dt    { class DateTime; }
   namespace qt
@@ -139,16 +139,17 @@ namespace te
       /*!
         \function Mark2Symbol
 
-        This function translates a terralib's Mark object into a QWTSymbol object.
+        This function translates a terralib's Graphic object into a QWTSymbol object.
 
-        \param mark The mark that will be used to generate the symbol.
+        \param graphic The graphic that will be used to generate the symbol.
         
         \return A QwtSymbol
 
         \note The caller will take the ownership of the returned pointer.
-        \note It will not take the ownership of the Mark pointer.
+        \note It will not take the ownership of the Graphic pointer.
       */
-      TEQTWIDGETSEXPORT QwtSymbol* Terralib2Qwt(te::se::Mark* mark);
+      TEQTWIDGETSEXPORT QwtSymbol* Terralib2Qwt(te::se::Graphic* graphic);
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

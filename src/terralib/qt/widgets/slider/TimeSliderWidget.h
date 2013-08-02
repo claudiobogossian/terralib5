@@ -77,7 +77,15 @@ namespace te
           void onPlayToolButtonnClicked();
           void onSkipBackwardToolButtonnClicked();
           void onSkipForwardToolButtonnClicked();
+          void onSliderValueChanged(int value);
           void play();
+
+        signals:
+
+          /*!
+            \brief Emmit when the slider's value has been changed
+          */
+          void valueCHanged(int value);
 
         private:
 

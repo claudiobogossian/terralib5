@@ -108,7 +108,7 @@ namespace te
 
           std::auto_ptr<Ui::chartStyleWidgetForm>  m_ui;            //!< The widget form.
           ColorPickerToolButton*                   m_colorPicker;   //!< The color picker used to customise the color of several chart parameters.
-          te::qt::widgets::ChartStyle*             m_chartStyle;    //!< The display's style that will be configured by this dialog.
+          ChartStyle*                              m_chartStyle;    //!< The display's style that will be configured by this dialog.
       };
     } // end namespace widgets
   }   // end namespace qt
