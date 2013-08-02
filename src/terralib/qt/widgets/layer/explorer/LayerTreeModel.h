@@ -76,6 +76,13 @@ namespace te
           void set(const std::list<te::map::AbstractLayerPtr>& layers);
 
           /*!
+            \brief Returns a list with all layers contained in model.
+
+            \return List of layers in the model.
+          */
+          std::list<te::map::AbstractLayerPtr> getLayers() const;
+
+          /*!
             \brief It fetches more data for the given parent.
 
             \param parent The object used to fetch more data.

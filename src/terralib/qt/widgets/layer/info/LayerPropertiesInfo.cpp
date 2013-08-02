@@ -27,10 +27,10 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   /// Bounding Box
   QtProperty* bbox_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Bounding box"));
 
-  QtProperty* llx_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->addProperty(tr("Lower left x"));
-  QtProperty* lly_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->addProperty(tr("Lower left y"));
-  QtProperty* urx_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->addProperty(tr("Upper right x"));
-  QtProperty* ury_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->addProperty(tr("Upper right y"));
+  QtProperty* llx_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Lower left x"));
+  QtProperty* lly_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Lower left y"));
+  QtProperty* urx_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Upper right x"));
+  QtProperty* ury_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Upper right y"));
 
   llx_prop->setEnabled(false);
   lly_prop->setEnabled(false);
@@ -58,10 +58,10 @@ te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser*
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(id_prop, m_layer->getId().c_str());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(title_prop, m_layer->getTitle().c_str());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->setValue(srid_prop, m_layer->getSRID());
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(llx_prop, m_layer->getExtent().getLowerLeftX());
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(lly_prop, m_layer->getExtent().getLowerLeftY());
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(urx_prop, m_layer->getExtent().getUpperRightX());
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(ury_prop, m_layer->getExtent().getUpperRightY());
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(llx_prop, QString::number(m_layer->getExtent().getLowerLeftX(), 'f'));
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(lly_prop, QString::number(m_layer->getExtent().getLowerLeftY(), 'f'));
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(urx_prop, QString::number(m_layer->getExtent().getUpperRightX(), 'f'));
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(ury_prop, QString::number(m_layer->getExtent().getUpperRightY(), 'f'));
   te::qt::widgets::AbstractPropertyManager::getInstance().m_enumManager->setValue(vis_prop, (int) m_layer->getVisibility());
   
   addProperty(layerInfo_prop, tr("Layer properties"), Qt::lightGray);

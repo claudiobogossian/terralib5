@@ -76,6 +76,17 @@ void te::qt::widgets::LayerTreeModel::set(const std::list<te::map::AbstractLayer
   endResetModel();
 }
 
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeModel::getLayers() const
+{
+  std::list<te::map::AbstractLayerPtr> res;
+  std::vector<AbstractTreeItem*>::const_iterator it;
+
+  for(it=m_items.begin(); it!=m_items.end(); ++it)
+    res.push_back((*it)->getLayer());
+
+  return res;
+}
+
 bool te::qt::widgets::LayerTreeModel::canFetchMore(const QModelIndex& parent) const
 {
   if(!parent.isValid())
