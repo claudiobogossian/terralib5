@@ -27,16 +27,34 @@
 #define __TERRALIB_GDAL_INTERNAL_DATASOURCEFACTORY_H
 
 // TerraLib
-#include "DataSource.h"
+#include "../dataaccess2/datasource/DataSourceFactory.h"
+#include "Config.h"
 
 namespace te
 {
   namespace gdal
   {
-    inline te::da::DataSource* Build()
+    class TEGDALEXPORT DataSourceFactory : public te::da::DataSourceFactory
     {
-      return new DataSource;
-    }
+    public:
+      
+      const std::string& getType() const;
+      
+      void getConnectionParameters(std::vector<std::string>& params) const;
+      
+      ~DataSourceFactory();
+      
+    protected:        
+      
+      te::da::DataSource* build();
+      
+      DataSourceFactory();
+      
+    private:
+      
+      static DataSourceFactory sm_factory; //!< The global In-Memory data source factory.
+      static std::string sm_factory_identifier;
+    };
   } // end namespace gdal
 }   // end namespace te
 
