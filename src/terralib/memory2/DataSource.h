@@ -36,6 +36,10 @@
 
 namespace te
 {
+  namespace da
+  {
+    class ObjectIdSet;
+  }
   namespace mem
   {
     /*!

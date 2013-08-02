@@ -328,6 +328,10 @@ std::auto_ptr<te::gm::Envelope> te::da::DataSource::getExtent(const std::string&
   return std::auto_ptr<te::gm::Envelope>(0);
 }
 
+void te::da::DataSource::optimize(const std::map<std::string, std::string>& /*opInfo*/)
+{
+}
+
 std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
 {
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));

@@ -1172,7 +1172,7 @@ namespace te
                             const ObjectIdSet* oids = 0) = 0;
 
         /*!
-          \brief It updates the dataset items in the data source based on OID list.
+          \brief It updates the dataset items in the data source based on the OID list.
 
           \param datasetName The target dataset name.
           \param dataset     The list of data items to be updated.
@@ -1194,6 +1194,23 @@ namespace te
                             const std::map<std::string, std::string>& options,
                             std::size_t limit = 0) = 0;
 
+        /*!
+          \brief For some data access drivers this method will perform some operations to optmize the data storage.
+
+          This is can be a typical maintenance command in database systems (like vacuum).
+
+          \param opInfo Any information needed by the underlying driver in order to fine tune the optimization.
+
+          \exception Exception It may throws an exception if something goes wrong.
+
+          \note Not thread-safe!
+
+          \note For some systems you must assure that no other thread are executing commands against the data source.
+
+          \note For some drivers this method doesn't have effect.
+        */
+        virtual void optimize(const std::map<std::string, std::string>& opInfo);
+
         //@}
 
         /** @name ????
@@ -1202,7 +1219,7 @@ namespace te
         //@{
 
         /*!
-          \brief Create a new repository of a data source.
+          \brief Create a new repository for a data source.
 
           \param dsType The type of data source to be created (example: POSTGIS, ORACLE, SQLITE).
           \param dsInfo The information for creating a new data source.

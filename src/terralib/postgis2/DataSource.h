@@ -294,8 +294,6 @@ namespace te
                     const std::map<std::string, std::string>& options,
                     std::size_t limit);
 
-        void optimize(const std::map<std::string, std::string>& opInfo);
-
        /*!
           \brief It returns a pointer to the internal connection pool.
 
