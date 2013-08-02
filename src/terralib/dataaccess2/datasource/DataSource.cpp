@@ -328,16 +328,6 @@ std::auto_ptr<te::gm::Envelope> te::da::DataSource::getExtent(const std::string&
   return std::auto_ptr<te::gm::Envelope>(0);
 }
 
-std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-  return std::vector<std::string>();
-}
-
-std::vector<std::string> te::da::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-  return std::vector<std::string>();
-}
-
 std::auto_ptr<te::da::DataSource> te::da::DataSource::create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
 {
   std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
@@ -388,4 +378,27 @@ std::vector<std::string> te::da::DataSource::getEncodings(const std::string& dsT
     throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
 
   return ds->getEncodings(dsInfo);
+}
+
+void te::da::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+}
+
+void te::da::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+}
+
+bool te::da::DataSource::exists(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+  return false;
+}
+
+std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+  return std::vector<std::string>();
+}
+
+std::vector<std::string> te::da::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+  return std::vector<std::string>();
 }

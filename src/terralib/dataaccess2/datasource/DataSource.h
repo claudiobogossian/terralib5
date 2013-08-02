@@ -1277,7 +1277,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void create(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual void create(const std::map<std::string, std::string>& dsInfo);
 
         /*!
           \brief Drop the repository of a data source.
@@ -1286,7 +1286,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void drop(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual void drop(const std::map<std::string, std::string>& dsInfo);
 
         /*!
           \brief Check the existence of a data source.
@@ -1297,7 +1297,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual bool exists(const std::map<std::string, std::string>& dsInfo) = 0;
+        virtual bool exists(const std::map<std::string, std::string>& dsInfo);
 
         /*!
           \brief  It retrieves the list of data source names available.
