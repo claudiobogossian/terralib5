@@ -172,8 +172,10 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   m_viewMenu->addMenu(m_viewToolBarsMenu);
   m_projectMenu = new QMenu(m_menubar);
   m_projectAddLayerMenu = new QMenu(m_projectMenu);
+  m_projectAddTempLayerMenu = new QMenu(m_projectMenu);
   m_menubar->addAction(m_projectMenu->menuAction());
   m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
+  m_projectMenu->addAction(m_projectAddTempLayerMenu->menuAction());
   m_layerMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_layerMenu->menuAction());
   m_layerChartsMenu = new QMenu(m_layerMenu);
@@ -429,6 +431,62 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
                          tr("Unknown error while trying to add a layer from a queried dataset!"));
   }
 }
+
+void te::qt::af::BaseApplication::onAddObservationsLayerTriggered()
+{
+   try
+  {
+
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to add a layer from a queried dataset!"));
+  }
+}
+
+
+void te::qt::af::BaseApplication::onAddTrajectoryLayerTriggered()
+{
+   try
+  {
+
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to add a layer from a queried dataset!"));
+  }
+}
+
+void te::qt::af::BaseApplication::onAddTimeSeriesLayerTriggered()
+{
+   try
+  {
+
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to add a layer from a queried dataset!"));
+  }
+}
+
 
 void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
@@ -1315,6 +1373,9 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectAddLayerDataset, "", "Project.Add Layer.Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
+  initAction(m_projectAddObservationsLayer, "", "Project.Add Observations Layer.Dataset", tr("&Observations Layer..."), tr("Add a new observations layer"), true, false, true, m_menubar);
+  initAction(m_projectAddTrajectoryLayer, "", "Project.Add Trajectory Layer.Dataset", tr("&Trajectory Layer..."), tr("Add a new trajectory layer"), true, false, true, m_menubar);
+  initAction(m_projectAddTimeSeriesLayer, "", "Project.Add Time Series Layer.Dataset", tr("&Time Series Layer..."), tr("Add a new time series layer"), true, false, true, m_menubar);
 
 // Menu -Layer- actions
   initAction(m_layerEdit, "layer-edit", "Layer.Edit", tr("&Edit"), tr(""), true, false, false, m_menubar);
@@ -1444,6 +1505,12 @@ void te::qt::af::BaseApplication::initMenus()
 
   m_projectAddLayerMenu->setObjectName("Project.Add Layer");
   m_projectAddLayerMenu->setTitle(tr("&Add Layer"));
+
+  m_projectAddTempLayerMenu->setObjectName("Project.Add TempLayer");
+  m_projectAddTempLayerMenu->setTitle(tr("&Add Temporal Layer"));
+  m_projectAddTempLayerMenu->addAction(m_projectAddObservationsLayer);
+  m_projectAddTempLayerMenu->addAction(m_projectAddTrajectoryLayer);
+  m_projectAddTempLayerMenu->addAction(m_projectAddTimeSeriesLayer);
 
   m_projectMenu->addAction(m_projectRemoveLayer);
   m_projectMenu->addSeparator();
@@ -1638,6 +1705,11 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
   connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
+
+  connect(m_projectAddObservationsLayer, SIGNAL(triggered()), SLOT(onAddObservationsLayerTriggered()));
+  connect(m_projectAddTrajectoryLayer, SIGNAL(triggered()), SLOT(onAddTrajectoryLayerTriggered()));
+  connect(m_projectAddTimeSeriesLayer, SIGNAL(triggered()), SLOT(onAddTimeSeriesLayerTriggered()));
+
   connect(m_projectRemoveLayer, SIGNAL(triggered()), SLOT(onRemoveLayerTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
