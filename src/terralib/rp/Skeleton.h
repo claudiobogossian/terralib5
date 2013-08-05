@@ -141,6 +141,12 @@ namespace te
 
       protected:
         
+        struct Matrix2DCoord
+        {
+          unsigned int m_row;
+          unsigned int m_col;
+        };
+        
         Skeleton::InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
@@ -263,25 +269,17 @@ namespace te
         };        
           
         /*!
-          \brief Create an Edge strenght Map from the input image.
-          \param edgeBinMap The generated edges map.
+          \brief Create an Edge strenght Map from the input data.
           \return true if OK, false on errors.
          */          
         bool getEdgeStrengthMap( 
-          const te::rp::Matrix< double >& gradXMap,
-          const te::rp::Matrix< double >& gradYMap,
+          const te::rp::Matrix< double >& inputMap,
           te::rp::Matrix< double >& edgeStrengthMap ) const;       
           
-        /*!
-          \brief Create an Edge strenght Map from the input image.
-          \param edgeBinMap The generated edges map.
-          \return true if OK, false on errors.
-         */          
-        bool getEdgeBinaryMap( 
-          const te::rp::Matrix< double >& gradXMap,
-          const te::rp::Matrix< double >& gradYMap,
+        bool getEdgeVecField( 
           const te::rp::Matrix< double >& edgeStrengthMap,
-          te::rp::Matrix< unsigned char >& edgeBinMap ) const;            
+          te::rp::Matrix< double >& edgeVecXMap,
+          te::rp::Matrix< double >& edgeVecYMap ) const;            
         
         /*!
           \brief Create a tiff file from a matrix.
@@ -377,9 +375,11 @@ namespace te
         void createTifFromVecField( 
           const te::rp::Matrix< double >& inputVecFieldX, 
           const te::rp::Matrix< double >& inputVecFieldY,
+          const te::rp::Matrix< double >& backGroundMap,
           const std::string& tifFileName ) const;   
           
         bool applyVecDiffusion( 
+          const te::rp::Matrix< double >& edgeStrengthMap,
           const te::rp::Matrix< double >& inputX, 
           const te::rp::Matrix< double >& inputY,
           te::rp::Matrix< double >& outputX, 

@@ -82,6 +82,8 @@ namespace te
         */
         void execute(const std::string& command);
 
+        bool isValid();
+
         /*!
           \brief It gets the ADO Connection object.
 
@@ -92,20 +94,8 @@ namespace te
           return m_conn;
         }
 
-        /*!
-          \brief It gets the associated connection pool.
-
-          \return The associated connection pool.
-        */
-        ConnectionPool* getPool() const
-        {
-          return m_pool;
-        }
-                
         /*! \brief Destructor. */
         ~Connection();
-
-      private:
 
         /*!
           \brief Constructor.
@@ -115,11 +105,10 @@ namespace te
           \param cecoding The character encoding used by application.
           \param inuse    A marker that tells if the connection is in use or not.
         */
-        Connection(ConnectionPool* pool, const std::string& conninfo, const std::string& cencoding, bool inuse = false);
+        Connection(const std::string& conninfo, bool inuse = false);
 
       public:
 
-        ConnectionPool* m_pool;               //!< The connection pool associated to the connection.
         _ConnectionPtr m_conn;                //!< The ADO real connection handle.
         bool m_inuse;                         //!< Tells if the connection is in use or not.
         boost::posix_time::ptime m_lastuse;   //!< It marks the last time this connection was used.

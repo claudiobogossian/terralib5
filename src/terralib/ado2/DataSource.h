@@ -31,6 +31,9 @@
 #include "../dataaccess2/datasource/DataSourceCapabilities.h"
 #include "Config.h"
 
+// ADO
+#import "msado15.dll" \
+  no_namespace rename("EOF", "EndOfFile")
 
 namespace te
 {
