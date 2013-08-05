@@ -40,13 +40,13 @@
 //#include "../datatype/Array.h"
 //#include "../datatype/Property.h"
 //#include "../datatype/SimpleData.h"
-//#include "../geometry/GeometryProperty.h"
+#include "../geometry/GeometryProperty.h"
 //#include "../raster/Grid.h"
 //#include "../raster/BandProperty.h"
 //#include "../raster/RasterProperty.h"
-//#include "../geometry/Geometry.h"
-//#include "Connection.h"
-#include "ConnectionPool.h"
+#include "../geometry/Envelope.h"
+#include "../geometry/Geometry.h"
+#include "Connection.h"
 #include "DataSource.h"
 #include "DataSet.h"
 //#include "DataTypes.h"
@@ -63,8 +63,14 @@
 // Boost
 //#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
-//#include <boost/lexical_cast.hpp>
+#include <boost/lexical_cast.hpp>
 //#include <boost/thread.hpp>
+
+inline void TESTHR(HRESULT hr)
+{
+  if(FAILED(hr))
+    _com_issue_error(hr);
+}
 
 class te::ado::DataSource::Impl
 {
@@ -73,29 +79,22 @@ public:
   Impl(te::ado::DataSource* ds)
     : m_ds(ds),
     m_catalog(0),
-    m_pool(0),
     m_conn(0),
-    m_currentSchema(0),
     m_isInTransaction(false)
   {
     m_catalog = new te::da::DataSourceCatalog;
     m_catalog->setDataSource(m_ds);
-    m_pool = new ConnectionPool(m_ds);
   }
 
   ~Impl()
   {
     delete m_catalog;
-    delete m_pool;
-    delete m_currentSchema;
   }
 
   te::ado::DataSource* m_ds;                       //!< The data source which this class implements.
   te::da::DataSourceCatalog* m_catalog;             //!< The main system catalog.
   std::map<std::string, std::string> m_connInfo;    //!< Connection information.
-  ConnectionPool* m_pool;                           //!< The connection pool.
   Connection* m_conn;                               //!< The connection to the ADO data source.
-  std::string* m_currentSchema;                     //!< The default schema used when no one is provided.
   bool m_timeIsInteger;                             //!< It indicates if the ADO stores, internally, time and timestamp as an integer. 
   bool m_isInTransaction;                           //!< It indicates if there is a transaction in progress.
   std::vector<std::string> m_datasetNames;          //!< The list of dataset names of the data source.
@@ -149,14 +148,9 @@ void te::ado::DataSource::open()
   // Assure we are in a closed state
   close();
 
-  m_pImpl->m_pool->initialize();
-  m_pImpl->m_conn = m_pImpl->m_pool->getConnection();
+  std::string connInfo = MakeConnectionStr(m_pImpl->m_connInfo);
 
-  if(m_pImpl->m_currentSchema == 0)
-    m_pImpl->m_currentSchema = new std::string;
-
-  // Find ADO current schema of the connection
-  getDatabaseInfo(*m_pImpl->m_currentSchema);
+  m_pImpl->m_conn = new te::ado::Connection(connInfo);
 
   // Get the dataset names of the data source
   getDataSetNames();
@@ -165,22 +159,17 @@ void te::ado::DataSource::open()
 void te::ado::DataSource::close()
 {
   if(m_pImpl->m_conn)
-    m_pImpl->m_pool->release(m_pImpl->m_conn);
-
-  m_pImpl->m_pool->finalize();
-
-  delete m_pImpl->m_currentSchema;
-  m_pImpl->m_currentSchema = 0;
+    delete m_pImpl->m_conn;
 }
 
 bool te::ado::DataSource::isOpened() const
 {
-  return m_pImpl->m_pool->isInitialized();
+  return m_pImpl->m_conn->m_inuse;
 }
 
 bool te::ado::DataSource::isValid() const
 {
-  return m_pImpl->m_pool->isValid();
+  return m_pImpl->m_conn->isValid();
 }
 
 const te::da::DataSourceCapabilities& te::ado::DataSource::getCapabilities() const
@@ -197,7 +186,7 @@ void te::ado::DataSource::begin()
 {
   try
   {
-    m_conn->BeginTrans();
+    m_pImpl->m_conn->getConn()->BeginTrans();
     m_pImpl->m_isInTransaction = true;
   }
   catch(_com_error& e)
@@ -210,7 +199,7 @@ void te::ado::DataSource::commit()
 {
   try
   {
-    m_conn->CommitTrans();
+    m_pImpl->m_conn->getConn()->CommitTrans();
     m_pImpl->m_isInTransaction = false;
   }
   catch(_com_error& e)
@@ -223,7 +212,7 @@ void te::ado::DataSource::rollBack()
 {
   try
   {
-    m_conn->RollbackTrans();
+    m_pImpl->m_conn->getConn()->RollbackTrans();
     m_pImpl->m_isInTransaction = false;
   }
   catch(_com_error& e)
@@ -240,20 +229,12 @@ bool te::ado::DataSource::isInTransaction() const
 std::auto_ptr<te::da::DataSet> te::ado::DataSource::getDataSet(const std::string& name, 
                                                                te::common::TraverseType travType)
 {
-  _RecordsetPtr recset;
-  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+  std::auto_ptr<std::string> sql(new std::string("SELECT * FROM "));
+  *sql += name;
 
-  try
-  {
-    TESTHR(recset->Open(_bstr_t(name.c_str()),
-      variant_t((IDispatch*)m_conn, true), adOpenKeyset, adLockOptimistic, adCmdTable));
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
+  _RecordsetPtr result = m_pImpl->m_conn->query(*sql);
 
-  return new DataSet(dt, recset, this);
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_pImpl->m_conn, sql.release()));
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::DataSource::getDataSet(const std::string& name,
@@ -262,30 +243,24 @@ std::auto_ptr<te::da::DataSet> te::ado::DataSource::getDataSet(const std::string
                                                                te::gm::SpatialRelation r,
                                                                te::common::TraverseType travType)
 {
+  if(e == 0)
+    throw Exception(TR_ADO("The envelope is missing!"));
+
   std::string lowerX = "lower_x";
   std::string upperX = "upper_x";
   std::string lowerY = "lower_y";
   std::string upperY = "upper_y";
 
-  std::string query = "SELECT * FROM " + dt->getName() + " WHERE ";
-  query += "NOT("+ lowerX +" > " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
-  query += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
-  query += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
-  query += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
+  std::auto_ptr<std::string> query(new std::string("SELECT * FROM " + name + " WHERE "));
 
-  _RecordsetPtr recset;
-  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+  *query += "NOT("+ lowerX +" > " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
+  *query += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
+  *query += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
+  *query += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
 
-  try
-  {
-    recset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenStatic, adLockReadOnly, adCmdText);
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
+  _RecordsetPtr result = m_pImpl->m_conn->query(*query);
 
-  return new DataSet(dt, recset, this);
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_pImpl->m_conn, query.release()));
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::DataSource::getDataSet(const std::string& name,
@@ -302,8 +277,8 @@ std::auto_ptr<te::da::DataSet> te::ado::DataSource::query(const te::da::Select& 
 {
   std::string sql;
 
-  SQLVisitor visitor(*(getDialect()), sql, m_pImpl->m_conn->getConn());
-  q.accept(visitor);
+  //SQLVisitor visitor(*(getDialect()), sql, m_pImpl->m_conn->getConn());
+  //q.accept(visitor);
 
   return query(sql, travType);
 }
@@ -311,7 +286,7 @@ std::auto_ptr<te::da::DataSet> te::ado::DataSource::query(const te::da::Select& 
 std::auto_ptr<te::da::DataSet> te::ado::DataSource::query(const std::string& query, 
                                                           te::common::TraverseType travType)
 {
-  _RecordsetPtr* result = m_pImpl->m_conn->query(query);
+  _RecordsetPtr result = m_pImpl->m_conn->query(query);
 
   return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_pImpl->m_conn, new std::string(query)));
 }
@@ -320,8 +295,8 @@ void te::ado::DataSource::execute(const te::da::Query& command)
 {
   std::string sql;
 
-  SQLVisitor visitor(*(getDialect()), sql, m_pImpl->m_conn->getConn());
-  command.accept(visitor);
+  //SQLVisitor visitor(*(getDialect()), sql, m_pImpl->m_conn->getConn());
+  //command.accept(visitor);
 
   execute(sql);
 }
