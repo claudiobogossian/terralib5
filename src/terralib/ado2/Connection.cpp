@@ -41,6 +41,24 @@ inline void TESTHR(HRESULT hr)
     _com_issue_error(hr);
 }
 
+_RecordsetPtr te::ado::Connection::query(const std::string& query)
+{
+  _RecordsetPtr recordset;
+
+  TESTHR(recordset.CreateInstance(__uuidof(Recordset)));
+  
+  try
+  {
+    recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenStatic, adLockReadOnly, adCmdText);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  return recordset;
+}
+
 void te::ado::Connection::execute(const std::string& command)
 {
   try
@@ -53,25 +71,31 @@ void te::ado::Connection::execute(const std::string& command)
   }
 }
 
+bool te::ado::Connection::isValid()
+{
+  return m_conn->GetState() == adStateOpen;
+}
+
 te::ado::Connection::~Connection()
 {
   if(m_conn)
     m_conn->Close();
 }
 
-te::ado::Connection::Connection(ConnectionPool* pool, const std::string& conninfo, const std::string& cencoding, bool inuse)
-  : m_pool(pool),
-    m_conn(0),
+te::ado::Connection::Connection(const std::string& conninfo, bool inuse)
+  : m_conn(0),
     m_inuse(inuse),
     m_lastuse(boost::posix_time::second_clock::local_time())
 {
   if(conninfo.empty())
     return;
 
+  _bstr_t connStr = conninfo.c_str();
+
   try
   {
     m_conn.CreateInstance(__uuidof(::Connection));
-    TESTHR(m_conn->Open(conninfo.c_str(), "", "", -1));
+    TESTHR(m_conn->Open(connStr, "", "", -1));
   }
   catch(_com_error& e)
   {

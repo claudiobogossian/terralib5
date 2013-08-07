@@ -206,14 +206,14 @@ namespace te
 
       protected:
 
-        const te::da::DataSet* m_parent;                                    //!< The parent dataset if the item is associate to one.
+        const te::da::DataSet* m_parent;                                    //!< The parent dataset, if the item is associated to one.
         boost::ptr_vector<boost::nullable<te::dt::AbstractData> > m_data;   //!< The data values of the dataset item.
 
       friend class DataSet;
     };
 
     /*!
-      \brief For use with boost conteiners.
+      \brief For use with boost containers.
     */
     inline DataSetItem* new_clone(const DataSetItem& a)
     {

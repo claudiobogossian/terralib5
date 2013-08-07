@@ -161,8 +161,8 @@ void te::gdal::DataSource::open()
       char** subdatasets = dataset->GetMetadata("SUBDATASETS");
       if(subdatasets == 0)
       {
-        m_datasetNames.push_back(foundFile.leaf().c_str());
-        m_datasetFullNames.push_back(foundFile.c_str());
+        m_datasetNames.push_back(foundFile.leaf().string());
+        m_datasetFullNames.push_back(foundFile.string());
       }
       else 
         getSubDatasets(dataset,te::gdal::GetDriverName(foundFile.string()));
@@ -387,20 +387,10 @@ std::auto_ptr<te::gm::Envelope> te::gdal::DataSource::getExtent(const std::strin
    throw(Exception(TR_GDAL("Not implemented yet.")));
 }
 
-const te::da::DataSourceCapabilities& te::gdal::DataSource::getCapabilities() const 
+const te::da::DataSourceCapabilities& te::gdal::DataSource::getCapabilities() const
 {
   return sm_capabilities;
 }
-
-void te::gdal::DataSource::begin()
-{}
-
-void te::gdal::DataSource::commit()
-{}
-
-void te::gdal::DataSource::rollBack()
-{}
-
 
 std::auto_ptr<te::da::DataSet> te::gdal::DataSource::getDataSet(const std::string& name,
                                                                 const std::string& propertyName,
@@ -418,43 +408,6 @@ std::auto_ptr<te::da::DataSet>  te::gdal::DataSource::getDataSet(const std::stri
                                                                  te::common::TraverseType travType)
 {
   return getDataSet(name, travType);
-}
-
-std::auto_ptr<te::da::DataSet> te::gdal::DataSource::query(const te::da::Select& /*q*/,
-                                                           te::common::TraverseType /*travType*/)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support queries.")));
-}
-
-std::auto_ptr<te::da::DataSet> te::gdal::DataSource::query(const std::string& /*query*/, 
-                                                           te::common::TraverseType /*travType*/)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support queries.")));
-}
-
-void te::gdal::DataSource::execute(const te::da::Query& /*command*/)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support queries.")));
-}
-
-void te::gdal::DataSource::execute(const std::string& /*command*/)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support queries.")));
-}
-
-void te::gdal::DataSource::cancel() 
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support queries.")));
-}
-
-boost::int64_t te::gdal::DataSource::getLastGeneratedId() 
-{ 
-  throw(Exception(TR_GDAL("GDAL driver doesn't support id generation.")));
-}
-
-std::string te::gdal::DataSource::escape(const std::string& value) 
-{ 
-  throw(Exception(TR_GDAL("GDAL driver doesn't support string escaping.")));
 }
 
 bool te::gdal::DataSource::isDataSetNameValid(const std::string& datasetName)
@@ -496,149 +449,6 @@ void te::gdal::DataSource::renameProperty(const std::string& datasetName,
                                           const std::string& newPropertyName)
 {
   throw(Exception(TR_GDAL("To be implemented.")));
-}
-
-te::da::PrimaryKey* te::gdal::DataSource::getPrimaryKey(const std::string& /*datasetName*/)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support primary keys.")));
-}
-
-bool te::gdal::DataSource::primaryKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
-{ 
-  throw(Exception(TR_GDAL("GDAL driver doesn't support primary keys.")));
-}
-
-void te::gdal::DataSource::addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support primary keys.")));
-}
-
-void te::gdal::DataSource::dropPrimaryKey(const std::string& datasetName)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support primary keys.")));
-}
-
-std::vector<std::string> te::gdal::DataSource::getForeignKeyNames(const std::string& /*datasetName*/)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support foreign keys.")));
-}
-
-bool te::gdal::DataSource::foreignKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
-{ 
-  throw(Exception(TR_GDAL("GDAL driver doesn't support foreigns keys."))); 
-}
-
-te::da::ForeignKey* te::gdal::DataSource::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support foreigns keys.")));
-}
-
-void te::gdal::DataSource::addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support foreigns keys.")));
-}
-
-void te::gdal::DataSource::dropForeignKey(const std::string& datasetName, const std::string& fkName)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support foreigns keys.")));
-}
-
-std::vector<std::string> te::gdal::DataSource::getUniqueKeyNames(const std::string& datasetName)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
-}
-
-bool te::gdal::DataSource::uniqueKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
-{ 
-  throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
-}
-
-te::da::UniqueKey* te::gdal::DataSource::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
-}
-
-void te::gdal::DataSource::addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
-}
-
-void te::gdal::DataSource::dropUniqueKey(const std::string& datasetName, const std::string& name)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
-}
-
-std::vector<std::string> te::gdal::DataSource::getCheckConstraintNames(const std::string& datasetName)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support constraints.")));
-}
-
-bool te::gdal::DataSource::checkConstraintExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
-{ 
-  throw(Exception(TR_GDAL("GDAL driver doesn't support check constraints."))); 
-}
-
-te::da::CheckConstraint* te::gdal::DataSource::getCheckConstraint(const std::string& datasetName, const std::string& name)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support constraints.")));
-}
-
-void te::gdal::DataSource::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
-{
-}
-
-void te::gdal::DataSource::dropCheckConstraint(const std::string& datasetName, const std::string& name)
-{
-}
-
-std::vector<std::string> te::gdal::DataSource::getIndexNames(const std::string& /*datasetName*/)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support unique keys.")));
-}
-
-bool te::gdal::DataSource::indexExists(const std::string& /*datasetName*/, const std::string& /*name*/) 
-{ 
-  throw(Exception(TR_GDAL("GDAL driver doesn't support check indexes."))); 
-}
-
-te::da::Index* te::gdal::DataSource::getIndex(const std::string& datasetName, const std::string& name)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support indexes.")));
-}
-
-void te::gdal::DataSource::addIndex(const std::string& datasetName, te::da::Index* idx, const std::map<std::string, std::string>& options)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support indexes.")));
-}
-
-void te::gdal::DataSource::dropIndex(const std::string& datasetName, const std::string& idxName)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support indexes.")));
-}
-
-std::vector<std::string> te::gdal::DataSource::getSequenceNames()
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support sequences.")));
-}
-
-bool te::gdal::DataSource::sequenceExists(const std::string& /*name*/) 
-{ 
-  throw(Exception(TR_GDAL("GDAL driver doesn't support check sequences."))); 
-}
-
-te::da::Sequence* te::gdal::DataSource::getSequence(const std::string& name)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support sequences.")));
-}
-
-void te::gdal::DataSource::addSequence(te::da::Sequence* sequence)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support sequences.")));
-}
-
-void te::gdal::DataSource::dropSequence(const std::string& name)
-{
-  throw(Exception(TR_GDAL("GDAL driver doesn't support sequences.")));
 }
 
 std::auto_ptr<te::gm::Envelope> te::gdal::DataSource::getExtent(const std::string& datasetName, const std::string& propertyName)
@@ -698,11 +508,6 @@ void te::gdal::DataSource::update(const std::string& datasetName,
   throw Exception(TR_GDAL("Not implemented yet!"));
 }
 
-void te::gdal::DataSource::optimize(const std::map<std::string, std::string>& /*opInfo*/)
-{
-  throw Exception(TR_GDAL("Not implemented yet!"));
-}
-
 void te::gdal::DataSource::setCapabilities(const te::da::DataSourceCapabilities& capabilities)
 {
   sm_capabilities = capabilities;
@@ -710,10 +515,10 @@ void te::gdal::DataSource::setCapabilities(const te::da::DataSourceCapabilities&
 
 void te::gdal::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  setConnectionInfo(dsInfo);
+  m_connectionInfo = dsInfo;
   
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
-
+  // create the needed directory
+  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("SOURCE");
   if(it != m_connectionInfo.end())
   {
     try 
@@ -726,54 +531,71 @@ void te::gdal::DataSource::create(const std::map<std::string, std::string>& dsIn
       throw Exception((boost::format(TR_GDAL("Could not create the data source due to the following error: %1%.")) % e.what()).str());
     }
   }
-
-  close();
+  else 
+  {
+    throw Exception((boost::format(TR_GDAL("Data source creation is supported only for directory data sources"))).str());
+  }
 }
 
 bool te::gdal::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
-  
-  if(it == m_connectionInfo.end())  // wrong datasource info
-    return false;
-  
-  if (!boost::filesystem::exists(it->second)) // it doesn't exist
-      return false;
-    
-  if (boost::filesystem::is_directory(it->second)) // it is a directory
-      return true;
-  
-  GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
-  
-  if (gds)
+  std::map<std::string, std::string>::const_iterator it = dsInfo.find("SOURCE"); // expects a directory
+  if(it != dsInfo.end())   
   {
-    GDALClose(gds);
-    return true;
+    if (boost::filesystem::exists(it->second) && boost::filesystem::is_directory(it->second)) 
+      return true;
+    
+    return false;
   }
   
-  return false;
+  it = dsInfo.find("URI"); // expects a file?
+  if(it != dsInfo.end())   
+  {  
+    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
+  
+    if (gds)
+    {
+      GDALClose(gds);
+      return true;
+    }
+  }
+  
+  return false; // it is an invalid file
 }
  
 void te::gdal::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
   std::map<std::string, std::string>::const_iterator it = dsInfo.find("URI");
-
-  if(it != dsInfo.end())
-  {
-    try 
-    {    
-      boost::filesystem::remove(it->second);
-    }
-    catch(const boost::filesystem::filesystem_error& e) 
-    { 
-      throw Exception((boost::format(TR_GDAL("Could not drop the data source due to the following error: %1%.")) % e.what()).str());
-    }
+  if (it == dsInfo.end())
+    it = dsInfo.find("SOURCE");
+  
+  if (it == dsInfo.end())
+    return;  // nothing to be done
+  
+  try 
+  {    
+    boost::filesystem::remove(it->second);
+  }
+  catch(const boost::filesystem::filesystem_error& e) 
+  { 
+    throw Exception((boost::format(TR_GDAL("Could not drop the data source due to the following error: %1%.")) % e.what()).str());
   }
 }
 
 std::vector<std::string> te::gdal::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
 {
-  return std::vector<std::string>();
+  assert(!dsInfo.empty());
+  
+  std::vector<std::string> dsnames;
+  
+  std::map<std::string, std::string>::const_iterator it = dsInfo.find("URI");
+  if (it == dsInfo.end())
+    it = dsInfo.find("SOURCE");
+  
+  if (it != dsInfo.end())
+    dsnames.push_back(it->second);
+  
+  return dsnames;
 }
 
 std::vector<std::string> te::gdal::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)

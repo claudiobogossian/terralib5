@@ -24,6 +24,7 @@
 */
 
 #include "GlyphMarkPropertyItem.h"
+#include "GlyphMarkRenderer.h"
 #include "BasicFillPropertyItem.h"
 #include "AbstractPropertyManager.h"
 
@@ -46,7 +47,7 @@
 
 
 te::qt::widgets::GlyphMarkPropertyItem::GlyphMarkPropertyItem(QtTreePropertyBrowser* pb, QColor c) : te::qt::widgets::AbstractPropertyItem(pb, c) ,
-  m_mark(new te::se::Mark)
+  m_mark(new te::se::Mark), m_update(false)
 {
   //build property browser basic fill
   QtProperty* glyphProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Glyph Mark"));
@@ -99,9 +100,10 @@ void te::qt::widgets::GlyphMarkPropertyItem::updateUi()
   QString qName(name->c_str());
   QString fontName;
   QChar charCode;
+
   try
   {
-    
+     te::qt::widgets::GlyphMarkRenderer::decode(qName, fontName, charCode);
   }
   catch(...)
   {
@@ -109,8 +111,16 @@ void te::qt::widgets::GlyphMarkPropertyItem::updateUi()
 
   QFont font(fontName);
 
+  int intCharCode = charCode.unicode();
+  QString strCharCode;
+  strCharCode.setNum(intCharCode);
+
+  m_update = true;
+
+  te::qt::widgets::AbstractPropertyManager::getInstance().m_strDlgManager->setValue(m_charProperty, strCharCode);
   te::qt::widgets::AbstractPropertyManager::getInstance().m_fontManager->setValue(m_fontProperty, font);
-  // TODO: select the char on character map
+  
+  m_update = false;
 
   const te::se::Fill* fill = m_mark->getFill();
   if(fill)
@@ -123,11 +133,12 @@ void te::qt::widgets::GlyphMarkPropertyItem::updateMarkName()
 
   QString valStr = te::qt::widgets::AbstractPropertyManager::getInstance().m_strDlgManager->value(m_charProperty);
 
-  QString name;
+  QString name = te::qt::widgets::GlyphMarkRenderer::encode(f.family(), valStr.toInt());
 
   m_mark->setWellKnownName(new std::string(name.toStdString()));
 
-  emit markChanged();
+  if(!m_update)
+	emit markChanged();
 }
 
 void te::qt::widgets::GlyphMarkPropertyItem::valueChanged(QtProperty* p, const QFont &value)
@@ -138,6 +149,7 @@ void te::qt::widgets::GlyphMarkPropertyItem::valueChanged(QtProperty* p, const Q
 void te::qt::widgets::GlyphMarkPropertyItem::valueChanged(QtProperty* p, const QString &value)
 {
   if( m_charProperty == p )
+
     updateMarkName();
 }
 

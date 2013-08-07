@@ -114,10 +114,52 @@ te::map::AbstractLayerPtr FindLayerInProject(te::map::AbstractLayer* layer, te::
   std::list<te::map::AbstractLayerPtr>::iterator it;
 
   for(it=layers.begin(); it!=layers.end(); ++it)
-    if(it->get()->getId() == layer->getId())
+    if(it->get() == layer)
       return *it;
 
   return 0;
+}
+
+void UpdateProject(te::qt::af::Project* proj, te::qt::widgets::LayerExplorer* explorer, const bool& checkOrder=true)
+{
+  if(proj==0 || explorer==0)
+    return;
+
+  std::list<te::map::AbstractLayerPtr> proj_layers = proj->getLayers();
+  std::list<te::map::AbstractLayerPtr> exp_layers = explorer->getAllLayers();
+  std::list<te::map::AbstractLayerPtr>::iterator proj_it = proj_layers.begin();
+  std::list<te::map::AbstractLayerPtr>::iterator exp_it = exp_layers.begin();
+
+  bool toUpdate = true;
+
+  if(checkOrder)
+    if(proj_layers.size() == exp_layers.size())
+    {
+      size_t i;
+      size_t proj_size = proj_layers.size();
+
+      for(i=0; i<proj_size; i++)
+      {
+        te::map::AbstractLayerPtr proj_layer = *(proj_it++);
+        te::map::AbstractLayerPtr exp_layer = *(exp_it++);
+      
+        if(proj_layer.get() != exp_layer.get())
+          break;
+      }
+
+      if(i == proj_size)
+        toUpdate = false;
+    }
+
+  if(!toUpdate)
+    return;
+
+  proj->clear();
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+
+  for(it=exp_layers.begin(); it!=exp_layers.end(); ++it)
+    proj->add(*it);
 }
 
 te::qt::af::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::af::DataSetTableDockWidget*>& docs)
@@ -514,6 +556,8 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
     }
   }
 
+  UpdateProject(m_project, m_explorer->getExplorer(), false);
+
   te::qt::af::Save(*m_project, m_project->getFileName());
   m_project->projectChanged(false);
 
@@ -533,6 +577,8 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   std::string fName = fileName.toStdString();
 
   m_project->setFileName(fName);
+
+  UpdateProject(m_project, m_explorer->getExplorer(), false);
 
   te::qt::af::Save(*m_project, fName);
 
@@ -806,10 +852,7 @@ void te::qt::af::BaseApplication::onMapSRIDTriggered()
 
 void te::qt::af::BaseApplication::onDrawTriggered()
 {
-  if(m_project == 0)
-    return;
-
-  m_display->draw(m_project->getLayers());
+  m_display->draw(m_explorer->getExplorer()->getAllLayers());
 }
 
 void te::qt::af::BaseApplication::onSetBoxOnMapDisplayTriggered()
@@ -1062,6 +1105,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 
 void te::qt::af::BaseApplication::checkProjectSave()
 {
+  UpdateProject(m_project, m_explorer->getExplorer());
+
   if(m_project != 0 && m_project->hasChanged())
   {
     QString msg("The current project has unsaved changes. Do you want to save?");
