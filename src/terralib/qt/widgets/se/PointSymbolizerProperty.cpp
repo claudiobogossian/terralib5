@@ -69,6 +69,8 @@ te::qt::widgets::PointSymbolizerProperty::~PointSymbolizerProperty()
 void te::qt::widgets::PointSymbolizerProperty::setSymbolizer( te::se::PointSymbolizer* symb)
 {
   m_symb = symb;
+
+  m_generalProp->setGraphic(m_symb->getGraphic());
 }
 
 te::se::Symbolizer* te::qt::widgets::PointSymbolizerProperty::getSymbolizer() const
