@@ -125,6 +125,8 @@ namespace te
           te::qt::widgets::BasicFillPropertyItem* m_basicFill;
 
           te::se::Mark* m_mark;                                 //!< Mark element that will be configured by this widget.
+
+		  bool m_update;
       };
     }
   }
