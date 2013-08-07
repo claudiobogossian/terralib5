@@ -127,6 +127,17 @@ namespace te
                     const std::map<std::string, std::string>& options,
                     std::size_t limit);
 
+        /*!
+          \brief It sets the capabilities document.
+          
+          \param capabilities The memory data source capabilities.
+
+          \note The memory data source will take the ownership of the given capabilities object.
+
+          \note Memory driver extended method.
+        */
+        static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
+
       private:
 
         std::map<std::string, std::string> m_connInfo;              //!< DataSource information.

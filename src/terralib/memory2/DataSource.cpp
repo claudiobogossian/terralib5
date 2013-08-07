@@ -483,3 +483,8 @@ void te::mem::DataSource::update(const std::string& /*datasetName*/,
                                  std::size_t /*limit*/)
 {
 }
+
+void te::mem::DataSource::setCapabilities(const te::da::DataSourceCapabilities& capabilities)
+{
+  sm_capabilities = capabilities;
+}

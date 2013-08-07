@@ -38,22 +38,22 @@ std::string te::ado::MakeConnectionStr(const std::map<std::string, std::string>&
   std::string connInfo;
 
   if(it != it_end)
-    connInfo += " provider=" + it->second;
-
+    connInfo += "provider=" + it->second;
+  
   it = dsInfo.find("DB_NAME");
 
   if(it != it_end)
-    connInfo += " Data Source=" + it->second;
+    connInfo += ";Data Source=" + it->second;
 
   it = dsInfo.find("USER_NAME");
 
   if(it != it_end)
-    connInfo += " User Id=" + it->second;
+    connInfo += ";User Id=" + it->second;
 
   it = dsInfo.find("PASSWORD");
 
   if(it != it_end)
-    connInfo += " Jet OLEDB:Database Password=" + it->second;
+    connInfo += ";Jet OLEDB:Database Password=" + it->second;
 
   return connInfo;
 }

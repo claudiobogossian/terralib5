@@ -164,7 +164,7 @@ void te::ado::DataSource::close()
 
 bool te::ado::DataSource::isOpened() const
 {
-  return m_pImpl->m_conn->m_inuse;
+  return m_pImpl->m_conn->isValid();
 }
 
 bool te::ado::DataSource::isValid() const
@@ -332,7 +332,42 @@ bool te::ado::DataSource::isPropertyNameValid(const std::string& /*propertyName*
 
 std::vector<std::string> te::ado::DataSource::getDataSetNames()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  std::vector<std::string> datasets;
+
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_pImpl->m_conn));
+
+    ADOX::TablesPtr tables = pCatalog->GetTables();
+    
+    for(long i = 0; i < tables->GetCount(); ++i)
+    {
+      ADOX::_TablePtr table = tables->GetItem(i);
+      std::string tableName = table->GetName();
+
+      std::string tabletype = table->GetType();
+
+      if(table->GetType() == _bstr_t("ACCESS TABLE") || 
+         table->GetType() == _bstr_t("LINK") || 
+         table->GetType() == _bstr_t("PASS-THROUGH") ||
+         table->GetType() == _bstr_t("SYSTEM TABLE") ||
+         table->GetType() == _bstr_t("VIEW") ||
+         tableName == "geometry_columns")
+         continue;
+
+      datasets.push_back(std::string(table->GetName()));
+    }
+  }
+  catch(_com_error &e)
+  {
+    throw Exception(TR_ADO(e.ErrorMessage()));
+  }
+
+  return datasets;
 }
 
 const te::da::DataSetTypePtr& te::ado::DataSource::getDataSetType(const std::string& name)
@@ -342,32 +377,68 @@ const te::da::DataSetTypePtr& te::ado::DataSource::getDataSetType(const std::str
 
 std::vector<std::string> te::ado::DataSource::getPropertyNames(const std::string& datasetName)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  std::vector<std::string> pNames;
+
+  std::size_t numProperties = dt->size();
+
+  for(std::size_t i = 0; i < numProperties; ++i)
+    pNames.push_back(dt->getProperty(i)->getName());
+
+  return pNames;
 }
 
 std::size_t te::ado::DataSource::getNumberOfProperties(const std::string& datasetName)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  return dt->size();
 }
 
 bool te::ado::DataSource::propertyExists(const std::string& datasetName, const std::string& name)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  std::vector<std::string> pNames = getPropertyNames(datasetName);
+
+  if(std::find(pNames.begin(), pNames.end(), name) != pNames.end())
+    return true;
+
+  return false;
 }
 
 boost::ptr_vector<te::dt::Property> te::ado::DataSource::getProperties(const std::string& datasetName)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  std::vector<te::dt::Property*>& dtProperties = dt->getProperties();
+
+  boost::ptr_vector<te::dt::Property> properties;
+
+  for(std::size_t i = 0; i < dtProperties.size(); ++i)
+    properties.push_back(dtProperties[i]);
+
+  return properties;
 }
 
 te::dt::Property* te::ado::DataSource::getProperty(const std::string& datasetName, const std::string& name)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  if(!propertyExists(datasetName, name))
+    throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % name).str());
+
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  return dt->getProperty(name)->clone();
 }
 
 te::dt::Property* te::ado::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  assert(propertyPos < dt->size());
+
+  return dt->getProperty(propertyPos)->clone();
 }
 
 void te::ado::DataSource::addProperty(const std::string& datasetName, te::dt::Property* p)
@@ -387,12 +458,19 @@ void te::ado::DataSource::renameProperty(const std::string& datasetName, const s
 
 te::da::PrimaryKey* te::ado::DataSource::getPrimaryKey(const std::string& datasetName)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  return static_cast<te::da::PrimaryKey*>(dt->getPrimaryKey()->clone());
 }
 
 bool te::ado::DataSource::primaryKeyExists(const std::string& datasetName, const std::string& name)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  if(dt->getPrimaryKey()->getName() == name)
+    return true;
+
+  return false;
 }
 
 void te::ado::DataSource::addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk)
@@ -407,17 +485,38 @@ void te::ado::DataSource::dropPrimaryKey(const std::string& datasetName)
 
 std::vector<std::string> te::ado::DataSource::getForeignKeyNames(const std::string& datasetName)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  std::vector<std::string> fkNames;
+
+  std::size_t numFK = dt->getNumberOfForeignKeys();
+
+  for(std::size_t i = 0; i < numFK; ++i)
+    fkNames.push_back(dt->getForeignKey(i)->getName());
+
+  return fkNames;
 }
 
 bool te::ado::DataSource::foreignKeyExists(const std::string& datasetName, const std::string& name)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  std::vector<std::string> fkNames = getForeignKeyNames(datasetName);
+
+  if(std::find(fkNames.begin(), fkNames.end(), name) != fkNames.end())
+    return true;
+
+  return false;
 }
 
 te::da::ForeignKey* te::ado::DataSource::getForeignKey(const std::string& datasetName, const std::string& name)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  if(!foreignKeyExists(datasetName, name))
+    throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no foreign key with this name \"%2%\"!")) % datasetName % name).str());
+
+  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+
+  return static_cast<te::da::ForeignKey*>(dt->getForeignKey(name)->clone());
 }
 
 void te::ado::DataSource::addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk)
