@@ -40,6 +40,7 @@
 // ADO
 #import "msado15.dll" \
   no_namespace rename("EOF", "EndOfFile")
+#import "msadox.dll"
 
 namespace te
 {
@@ -100,9 +101,7 @@ namespace te
         /*!
           \brief Constructor.
 
-          \param pool     The associated connection pool.
-          \param conninfo A coonection string as undertood by libpq.
-          \param cecoding The character encoding used by application.
+          \param conninfo A coonection string as undertood by ADO.
           \param inuse    A marker that tells if the connection is in use or not.
         */
         Connection(const std::string& conninfo, bool inuse = false);
