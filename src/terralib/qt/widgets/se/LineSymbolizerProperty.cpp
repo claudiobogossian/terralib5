@@ -63,6 +63,9 @@ te::qt::widgets::LineSymbolizerProperty::~LineSymbolizerProperty()
 void te::qt::widgets::LineSymbolizerProperty::setSymbolizer(te::se::LineSymbolizer* symb)
 {
   m_symb = symb;
+
+  if(m_symb->getStroke())
+	m_bs->setStroke(m_symb->getStroke());
 }
 
 te::se::Symbolizer* te::qt::widgets::LineSymbolizerProperty::getSymbolizer() const

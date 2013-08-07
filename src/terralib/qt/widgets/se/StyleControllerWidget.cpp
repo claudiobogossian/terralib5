@@ -69,6 +69,8 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
 
   m_ui->m_tabWidget->setCurrentWidget(m_ui->m_previewTab);
 
+  m_ui->m_ruleGroupBox->setVisible(false);
+
   updateUi();
 }
 

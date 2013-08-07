@@ -20,12 +20,16 @@
 // TerraLib
 #include "../common/Logger.h"
 #include "../common/Translator.h"
-#include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/datasource/DataSourceManager.h"
-#include "../dataaccess/query/SQLDialect.h"
-#include "../dataaccess/serialization/xml/Serializer.h"
-
-#include "Globals.h"
+#include "../dataaccess2/datasource/DataSourceCapabilities.h"
+#include "../dataaccess2/datasource/DataSourceManager.h"
+#include "../dataaccess2/query/BinaryOpEncoder.h"
+#include "../dataaccess2/query/FunctionEncoder.h"
+#include "../dataaccess2/query/SQLDialect.h"
+#include "../dataaccess2/query/SQLFunctionEncoder.h"
+#include "../dataaccess2/query/TemplateEncoder.h"
+#include "../dataaccess2/query/UnaryOpEncoder.h"
+#include "DataSource.h"
+#include "DataSourceFactory.h"
 #include "Module.h"
 
 // Boost
@@ -75,12 +79,37 @@ te::ado::Module::~Module()
 
 void te::ado::Module::startup()
 {
+  if(m_initialized)
+    return;
 
+// it initializes the Translator support for the TerraLib PostGIS driver support
+  TE_ADD_TEXT_DOMAIN(TE_ADO_TEXT_DOMAIN, TE_ADO_TEXT_DOMAIN_DIR, "UTF-8");
+
+  DataSourceFactory::initialize();
+
+  //#include "PostGISCapabilities.h"
+  //#include "PostGISDialect.h"
+
+  TE_LOG_TRACE(TR_ADO("TerraLib ADO driver support initialized!"));
+
+  m_initialized = true;
 }
 
 void te::ado::Module::shutdown()
 {
+  if(!m_initialized)
+    return;
 
+  // It finalizes the PostGIS factory support.
+  te::ado::DataSourceFactory::finalize();
+  //DataSource::setDialect(0);
+
+  // Free the PostGIS registered drivers
+  //te::da::DataSourceManager::getInstance().detachAll(PGIS_DRIVER_IDENTIFIER);
+ 
+  TE_LOG_TRACE(TR_ADO("TerraLib ADO driver shutdown!"));
+
+  m_initialized = false;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::ado::Module)
