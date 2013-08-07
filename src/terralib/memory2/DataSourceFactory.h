@@ -45,17 +45,17 @@ namespace te
     {
       public:
 
+        ~DataSourceFactory();
+
         const std::string& getType() const;
 
         void getConnectionParameters(std::vector<std::string>& params) const;
 
-        ~DataSourceFactory();
-
       protected:        
 
-        te::da::DataSource* build();
-
         DataSourceFactory();
+
+        te::da::DataSource* build();
 
       private:
 
@@ -66,4 +66,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_MEMORY_INTERNAL_DATASOURCEFACTORY_H
-
