@@ -380,9 +380,9 @@ namespace te
                     <li>if the data source driver doesn't support the access policy</li>
                     </ul>
         */
-        virtual std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                          const ObjectIdSet* oids, 
-                                                          te::common::TraverseType travType = te::common::FORWARDONLY);
+        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
+                                                  const ObjectIdSet* oids, 
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
 
         /*!
           \brief It executes a query that may return some data using a generic query.
@@ -1294,7 +1294,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void create(const std::map<std::string, std::string>& dsInfo);
+        virtual void create(const std::map<std::string, std::string>& dsInfo) = 0;
 
         /*!
           \brief Drop the repository of a data source.
@@ -1303,7 +1303,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual void drop(const std::map<std::string, std::string>& dsInfo);
+        virtual void drop(const std::map<std::string, std::string>& dsInfo) = 0;
 
         /*!
           \brief Check the existence of a data source.
@@ -1314,7 +1314,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual bool exists(const std::map<std::string, std::string>& dsInfo);
+        virtual bool exists(const std::map<std::string, std::string>& dsInfo) = 0;
 
         /*!
           \brief  It retrieves the list of data source names available.
@@ -1326,7 +1326,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
+        virtual std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo) = 0;
 
         /*!
           \brief It gets the encodings for the data source.
@@ -1337,7 +1337,7 @@ namespace te
 
           \exception Exception An exception can be thrown, if the encoding names could not be obtained.
         */
-        virtual std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
+        virtual std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
 
         //@}
     };

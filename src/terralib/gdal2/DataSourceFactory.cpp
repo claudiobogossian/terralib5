@@ -24,34 +24,4 @@
  */
 
 // TerraLib
-#include "DataSource.h"
 #include "DataSourceFactory.h"
-
-std::string te::gdal::DataSourceFactory::sm_factory_identifier = TE_GDAL_DRIVER_IDENTIFIER;
-
-te::gdal::DataSourceFactory te::gdal::DataSourceFactory::sm_factory;
-
-const std::string& te::gdal::DataSourceFactory::getType() const
-{
-  return sm_factory_identifier;
-}
-
-void te::gdal::DataSourceFactory::getConnectionParameters(std::vector<std::string>& params) const
-{
-  params.push_back("URI");
-  params.push_back("SOURCE");
-}
-
-te::gdal::DataSourceFactory::~DataSourceFactory()
-{
-}
-
-te::da::DataSource* te::gdal::DataSourceFactory::build()
-{
-  return new DataSource;
-}
-
-te::gdal::DataSourceFactory::DataSourceFactory()
-: te::da::DataSourceFactory(TE_GDAL_DRIVER_IDENTIFIER)
-{
-}

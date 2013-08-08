@@ -90,10 +90,12 @@ te::ado::Connection::Connection(const std::string& conninfo, bool inuse)
   if(conninfo.empty())
     return;
 
+  _bstr_t connStr = conninfo.c_str();
+
   try
   {
     m_conn.CreateInstance(__uuidof(::Connection));
-    TESTHR(m_conn->Open(conninfo.c_str(), "", "", -1));
+    TESTHR(m_conn->Open(connStr, "", "", -1));
   }
   catch(_com_error& e)
   {

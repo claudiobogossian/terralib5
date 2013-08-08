@@ -465,14 +465,14 @@ void te::mem::DataSource::remove(const std::string& datasetName, const te::da::O
   if(!dataSetExists(datasetName))
     throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
 
-  //boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
+  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
-  //std::auto_ptr<te::da::DataSet> datasetp = getDataSet(datasetName, oids);
+  std::auto_ptr<te::da::DataSet> datasetp = te::da::DataSource::getDataSet(datasetName, oids);
 
-  //te::mem::DataSet* dataset = static_cast<te::mem::DataSet*>(datasetp.get());
+  te::mem::DataSet* dataset = static_cast<te::mem::DataSet*>(datasetp.get());
 
-  //while(dataset->moveNext())
-  //  dataset->remove();
+  while(dataset->moveNext())
+    dataset->remove();
 }
 
 void te::mem::DataSource::update(const std::string& /*datasetName*/,
@@ -482,4 +482,33 @@ void te::mem::DataSource::update(const std::string& /*datasetName*/,
                                  const std::map<std::string, std::string>& /*options*/,
                                  std::size_t /*limit*/)
 {
+}
+
+void te::mem::DataSource::setCapabilities(const te::da::DataSourceCapabilities& capabilities)
+{
+  sm_capabilities = capabilities;
+}
+
+
+void te::mem::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+}
+
+void te::mem::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+}
+
+bool te::mem::DataSource::exists(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+  return false;
+}
+
+std::vector<std::string> te::mem::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+  return std::vector<std::string>();
+}
+
+std::vector<std::string> te::mem::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
+{
+  return std::vector<std::string>();
 }
