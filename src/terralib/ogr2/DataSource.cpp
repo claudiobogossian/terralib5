@@ -264,41 +264,12 @@ std::auto_ptr<te::da::DataSet> te::ogr::DataSource::query(const std::string& que
   return std::auto_ptr<te::da::DataSet>(new DataSet(m_ogrDS, layer, true));
 }
 
-void te::ogr::DataSource::execute(const te::da::Query& command)
-{
-}
-
 void te::ogr::DataSource::execute(const std::string& command)
 {
   OGRLayer* layer = m_ogrDS->ExecuteSQL(command.c_str(), 0, "");
 
   if(layer)
      m_ogrDS->ReleaseResultSet(layer);
-}
-
-void te::ogr::DataSource::cancel()
-{
-  return;
-}
-
-boost::int64_t te::ogr::DataSource::getLastGeneratedId()
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-std::string te::ogr::DataSource::escape(const std::string& value)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-bool te::ogr::DataSource::isDataSetNameValid(const std::string& datasetName)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-bool te::ogr::DataSource::isPropertyNameValid(const std::string& propertyName)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
 }
 
 std::vector<std::string> te::ogr::DataSource::getDataSetNames()
@@ -375,11 +346,6 @@ const te::da::DataSetTypePtr& te::ogr::DataSource::getDataSetType(const std::str
   return te::da::DataSetTypePtr(dt);
 }
 
-std::vector<std::string> te::ogr::DataSource::getPropertyNames(const std::string& datasetName)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
 std::size_t te::ogr::DataSource::getNumberOfProperties(const std::string& datasetName)
 {
   std::string sql = "SELECT FID, * FROM " + datasetName;
@@ -393,11 +359,6 @@ std::size_t te::ogr::DataSource::getNumberOfProperties(const std::string& datase
   m_ogrDS->ReleaseResultSet(layer);
 
   return dt->getProperties().size();
-}
-
-bool te::ogr::DataSource::propertyExists(const std::string& datasetName, const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
 }
 
 boost::ptr_vector<te::dt::Property> te::ogr::DataSource::getProperties(const std::string& datasetName)
@@ -489,15 +450,6 @@ void te::ogr::DataSource::addProperty(const std::string& datasetName, te::dt::Pr
 //  throw(te::common::Exception(TR_OGR("OGR Driver not support adding geometry type.")));
 }
 
-void te::ogr::DataSource::dropProperty(const std::string& datasetName, const std::string& propertyName)
-{
-}
-
-void te::ogr::DataSource::renameProperty(const std::string& datasetName, const std::string& propertyName,
-                                         const std::string& newPropertyName)
-{
-}
-
 te::da::PrimaryKey* te::ogr::DataSource::getPrimaryKey(const std::string& datasetName)
 {
   std::string sql = "SELECT FID, * FROM " + datasetName;
@@ -524,135 +476,6 @@ te::da::PrimaryKey* te::ogr::DataSource::getPrimaryKey(const std::string& datase
   m_ogrDS->ReleaseResultSet(layer);
 
   return res;
-}
-
-bool te::ogr::DataSource::primaryKeyExists(const std::string& datasetName, const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-void te::ogr::DataSource::addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk)
-{
-}
-
-void te::ogr::DataSource::dropPrimaryKey(const std::string& datasetName)
-{
-}
-
-std::vector<std::string> te::ogr::DataSource::getForeignKeyNames(const std::string& datasetName)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-bool te::ogr::DataSource::foreignKeyExists(const std::string& datasetName, const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-te::da::ForeignKey* te::ogr::DataSource::getForeignKey(const std::string& datasetName, const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-void te::ogr::DataSource::addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk)
-{
-}
-
-void te::ogr::DataSource::dropForeignKey(const std::string& datasetName, const std::string& fkName)
-{
-}
-
-std::vector<std::string> te::ogr::DataSource::getUniqueKeyNames(const std::string& datasetName)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-bool te::ogr::DataSource::uniqueKeyExists(const std::string& datasetName, const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-te::da::UniqueKey* te::ogr::DataSource::getUniqueKey(const std::string& datasetName, const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-void te::ogr::DataSource::addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk)
-{
-}
-
-void te::ogr::DataSource::dropUniqueKey(const std::string& datasetName, const std::string& uniqueKeyName)
-{
-}
-
-std::vector<std::string> te::ogr::DataSource::getCheckConstraintNames(const std::string& datasetName)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-bool te::ogr::DataSource::checkConstraintExists(const std::string& datasetName, const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-te::da::CheckConstraint* te::ogr::DataSource::getCheckConstraint(const std::string& datasetName, const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-void te::ogr::DataSource::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
-{
-}
-
-void te::ogr::DataSource::dropCheckConstraint(const std::string& datasetName, const std::string& name)
-{
-}
-
-std::vector<std::string> te::ogr::DataSource::getIndexNames(const std::string& datasetName)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-bool te::ogr::DataSource::indexExists(const std::string& datasetName, const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-te::da::Index* te::ogr::DataSource::getIndex(const std::string& datasetName, const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-void te::ogr::DataSource::addIndex(const std::string& datasetName, te::da::Index* idx,
-                                   const std::map<std::string, std::string>& options)
-{
-}              
-
-void te::ogr::DataSource::dropIndex(const std::string& datasetName, const std::string& idxName)
-{
-}
-
-std::vector<std::string> te::ogr::DataSource::getSequenceNames()
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-bool te::ogr::DataSource::sequenceExists(const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-te::da::Sequence* te::ogr::DataSource::getSequence(const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
-void te::ogr::DataSource::addSequence(te::da::Sequence* sequence)
-{
-}
-
-void te::ogr::DataSource::dropSequence(const std::string& name)
-{
 }
 
 std::auto_ptr<te::gm::Envelope> te::ogr::DataSource::getExtent(const std::string& /*datasetName*/, const std::string& propertyName)
@@ -690,19 +513,9 @@ std::auto_ptr<te::gm::Envelope> te::ogr::DataSource::getExtent(const std::string
   return getExtent(datasetName, propName);
 }
 
-std::size_t te::ogr::DataSource::getNumberOfItems(const std::string& datasetName)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
-}
-
 bool te::ogr::DataSource::hasDataSets()
 {
   return (m_ogrDS->GetLayerCount() > 0); 
-}
-
-bool te::ogr::DataSource::dataSetExists(const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented for OGR!"));
 }
 
 void te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options)
@@ -732,22 +545,6 @@ void te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map<
 // add the properties
   for(size_t i = 0; i < dt->size(); ++i)
     addProperty(dt->getName(), dt->getProperty(i));
-}
-
-void te::ogr::DataSource::cloneDataSet(const std::string& name,
-                  const std::string& cloneName,
-                  const std::map<std::string, std::string>& options)
-{
-  throw Exception(TR_OGR("Not implemented yet!"));
-}
-
-void te::ogr::DataSource::dropDataSet(const std::string& name)
-{
-  throw Exception(TR_OGR("Not implemented yet!"));
-}
-
-void te::ogr::DataSource::renameDataSet(const std::string& name, const std::string& newName)
-{
 }
 
 void te::ogr::DataSource::add(const std::string& datasetName, te::da::DataSet* d,
@@ -899,22 +696,6 @@ void te::ogr::DataSource::add(const std::string& datasetName, te::da::DataSet* d
   m_ogrDS->ReleaseResultSet(layer);
 }
 
-
-void te::ogr::DataSource::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids = 0*/)
-{
-  throw Exception(TR_OGR("OGR driver: not implemented yet."));
-}
-
-void te::ogr::DataSource::update(const std::string& /*datasetName*/,
-                    te::da::DataSet* /*dataset*/,
-                    const std::vector<std::size_t>& /*properties*/,
-                    const te::da::ObjectIdSet* /*oids*/,
-                    const std::map<std::string, std::string>& /*options*/,
-                    std::size_t /*limit = 0*/)
-{
-  throw Exception(TR_OGR("OGR driver does not support this method."));
-}
-
 void te::ogr::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
   std::string path = dsInfo.begin()->second;
@@ -951,23 +732,4 @@ void te::ogr::DataSource::create(const std::map<std::string, std::string>& dsInf
     //OGRDataSource::DestroyDataSource(newDS);
     setConnectionInfo(dsInfo);
   }
-}
-
-void te::ogr::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-}
-
-bool te::ogr::DataSource::exists(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-  throw Exception(TR_OGR("Not implemented yet!"));
-}
-
-std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-  throw Exception(TR_OGR("Not implemented yet!"));
-}
-
-std::vector<std::string> te::ogr::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-  throw Exception(TR_OGR("Not implemented yet!"));
 }

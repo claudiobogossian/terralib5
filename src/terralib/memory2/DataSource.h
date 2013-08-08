@@ -138,6 +138,18 @@ namespace te
         */
         static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
 
+      protected:
+
+        void create(const std::map<std::string, std::string>& dsInfo);
+
+        void drop(const std::map<std::string, std::string>& dsInfo);
+
+        bool exists(const std::map<std::string, std::string>& dsInfo);
+
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
+
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
+
       private:
 
         std::map<std::string, std::string> m_connInfo;              //!< DataSource information.
