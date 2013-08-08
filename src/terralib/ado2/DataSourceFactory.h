@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/memory/DataSourceFactory.h
+  \file terralib/ado2/DataSourceFactory.h
 
-  \brief This is the data source concrete factory for the In-Memory Data Access driver.
+  \brief This is the concrete factory for ADO data sources.
 */
 
-#ifndef __TERRALIB_MEMORY_INTERNAL_DATASOURCEFACTORY_H
-#define __TERRALIB_MEMORY_INTERNAL_DATASOURCEFACTORY_H
+#ifndef __TERRALIB_ADO_INTERNAL_DATASOURCEFACTORY_H
+#define __TERRALIB_ADO_INTERNAL_DATASOURCEFACTORY_H
 
 // TerraLib
 #include "../dataaccess2/datasource/DataSourceFactory.h"
@@ -32,37 +32,44 @@
 
 namespace te
 {
-  namespace mem
+  namespace ado
   {
     /*!
       \class DataSourceFactory
 
-      \brief This is the data source concrete factory for the In-Memory Data Access driver.
+      \brief This is the concrete factory for ADO data sources.
 
       \sa te::da::DataSourceFactory
     */
-    class TEMEMORYEXPORT DataSourceFactory : public te::da::DataSourceFactory
+    class TEADOEXPORT DataSourceFactory : public te::da::DataSourceFactory
     {
       public:
 
-        ~DataSourceFactory();
+        /*! \brief It initializes the factory: it will be registered in the abstract factory DataSourceFactory. */
+        static void initialize();
+
+        /*! \brief It finalizes the factory: it will be destroyed and will be unregistered from the abstract factory DataSourceFactory. */
+        static void finalize();
 
         const std::string& getType() const;
 
         void getConnectionParameters(std::vector<std::string>& params) const;
 
-      protected:        
+        ~DataSourceFactory();
 
-        DataSourceFactory();
+      protected:        
 
         te::da::DataSource* build();
 
+        DataSourceFactory();        
+
       private:
 
-        static DataSourceFactory sm_factory; //!< The global In-Memory data source factory.
+        static DataSourceFactory* sm_factory; //!< A pointer to the global PostGIS data source factory.
     };
 
-  } // end namespace mem
+  } // end namespace ado
 }   // end namespace te
 
-#endif  // __TERRALIB_MEMORY_INTERNAL_DATASOURCEFACTORY_H
+#endif  // __TERRALIB_ADO_INTERNAL_DATASOURCEFACTORY_H
+

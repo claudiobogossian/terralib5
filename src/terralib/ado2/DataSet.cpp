@@ -35,7 +35,7 @@
 //#include "../datatype/SimpleData.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/WKBReader.h"
-//#include "Connection.h"
+#include "Connection.h"
 //#include "ConnectionPool.h"
 //#include "CatalogLoader.h"
 #include "DataSet.h"
@@ -63,17 +63,18 @@ te::ado::DataSet::DataSet(_RecordsetPtr result,
 
 te::ado::DataSet::~DataSet()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_result->Close();
+  delete m_sql;
 }
 
 te::common::TraverseType te::ado::DataSet::getTraverseType() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return te::common::RANDOM;
 }
 
 te::common::AccessPolicy te::ado::DataSet::getAccessPolicy() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return te::common::RAccess;
 }
 
 te::gm::Envelope* te::ado::DataSet::getExtent(std::size_t i)

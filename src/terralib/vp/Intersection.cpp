@@ -35,6 +35,7 @@
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "../dataaccess/query_fw.h"
 #include "../dataaccess/query_h.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
@@ -155,6 +156,9 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
   delete loader;
 
   te::map::DataSetLayerPtr newLayer = converter(dstPtr);
+
+  delete resultPair.first;
+  delete resultPair.second;
 
   return newLayer;
 }
@@ -279,8 +283,9 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
 
   te::map::DataSetLayer* currentDSLayer;
   te::map::DataSetLayer* nextDSLayer;
-  te::da::DataSetType* currentDSType;
-  te::da::DataSetType* nextDSType;
+  
+  std::auto_ptr<te::da::DataSetType> currentDSType;
+
   std::vector<te::dt::Property*> currentProps;
   std::vector<te::dt::Property*> nextProps;
 
@@ -294,24 +299,26 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
   {
     if(layerPos == 0)
     {
+      std::auto_ptr<te::da::DataSetType> nextDSType;
+
       currentDSLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
       nextDSLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos + 1].first.get());
 
       dataSource = te::da::GetDataSource(currentDSLayer->getDataSourceId(), true);
 
-      currentDSType = (te::da::DataSetType*)currentDSLayer->getSchema();
-      nextDSType = (te::da::DataSetType*)nextDSLayer->getSchema();
+      currentDSType.reset((te::da::DataSetType*)currentDSLayer->getSchema());
+      nextDSType.reset((te::da::DataSetType*)nextDSLayer->getSchema());
 
-      currentProps = GetPropertiesByPos(currentDSType, idata[layerPos].second);
-      nextProps = GetPropertiesByPos(nextDSType, idata[layerPos + 1].second);
+      currentProps = GetPropertiesByPos(currentDSType.get(), idata[layerPos].second);
+      nextProps = GetPropertiesByPos(nextDSType.get(), idata[layerPos + 1].second);
 
       te::gm::GeometryProperty* currentGeom;
       te::gm::GeometryProperty* nextGeom;
 
       if(currentDSType->hasGeom() && nextDSType->hasGeom())
       {
-        currentGeom = te::da::GetFirstGeomProperty(currentDSType);
-        nextGeom = te::da::GetFirstGeomProperty(currentDSType);
+        currentGeom = te::da::GetFirstGeomProperty(currentDSType.get());
+        nextGeom = te::da::GetFirstGeomProperty(currentDSType.get());
       }
       
       std::string currentTableName = te::vp::GetSimpleTableName(currentDSType->getTitle());
@@ -351,24 +358,41 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
     }
     else
     {
-      //std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
-      //std::auto_ptr<te::da::DataSet> dataSet(dsTransactor->query(select));
+      std::string previousQuery;
+      std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
 
-      //te::pgis::DataSet* dsPgis = dynamic_cast<te::pgis::DataSet*>(dataSet.get());
-      //std::string query /*= *dsPgis->getSQL()*/;
+      te::da::SQLVisitor visitor(*(dataSource->getDialect()), previousQuery);
+      select->accept(visitor);
 
-      //te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
-      //te::da::DataSetType* dsType = (te::da::DataSetType*)currentDSLayer->getSchema();
+      te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
+      std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)currentDSLayer->getSchema());
 
-      //te::gm::GeometryProperty* geom;
+      te::gm::GeometryProperty* geom;
 
-      //if(dsType->hasGeom())
-      //{
-      //  geom = te::da::GetFirstGeomProperty(dsType);
-      //}
+      if(dsType->hasGeom())
+      {
+        geom = te::da::GetFirstGeomProperty(dsType.get());
+      }
 
-      //te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
-      //                                                                  new te::da::PropertyName(query));
+      te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
+                                                                        new te::da::PropertyName(previousQuery));
+      
+      te::da::Field* f_intersection = new te::da::Field(*e_intersection, "geom");
+      fields->push_back(f_intersection);
+
+      te::da::FromItem* currentFromItem = new te::da::DataSetName(dsType->getName());
+      te::da::FromItem* nextFromItem = new te::da::DataSetName(previousQuery);
+      te::da::Expression* e_intersects = new te::da::ST_Intersects( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
+                                                                    new te::da::PropertyName(previousQuery));
+      te::da::JoinConditionOn* on = new te::da::JoinConditionOn(e_intersects);
+      te::da::Join* join = new te::da::Join(*currentFromItem, *nextFromItem, te::da::INNER_JOIN, *on);
+
+      te::da::From* from = new te::da::From;
+      from->push_back(join);
+
+      select->setFields(fields);
+      select->setFrom(from);
+
     }
   }
 
@@ -376,10 +400,10 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
   te::da::DataSet* dsQuery = dsTransactor->query(select);
   dsQuery->moveFirst();
 
-  te::da::DataSetType* dsType = CreateDataSetType(newLayerName, currentDSType, currentProps, nextDSType, nextProps);
+  //te::da::DataSetType* dsType = CreateDataSetType(newLayerName, currentDSType.get(), currentProps, nextDSType.get(), nextProps);
 
-  resultPair.first = dsType;
-  resultPair.second = dsQuery;
+  //resultPair.first = dsType;
+  //resultPair.second = dsQuery;
   
   return resultPair;
 }

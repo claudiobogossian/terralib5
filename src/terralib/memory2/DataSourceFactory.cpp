@@ -30,6 +30,11 @@
 
 te::mem::DataSourceFactory te::mem::DataSourceFactory::sm_factory;
 
+
+te::mem::DataSourceFactory::~DataSourceFactory()
+{
+}
+
 const std::string& te::mem::DataSourceFactory::getType() const
 {
   return Globals::sm_driverIdentifier;
@@ -41,10 +46,6 @@ void te::mem::DataSourceFactory::getConnectionParameters(std::vector<std::string
   params.push_back("OPERATION_MODE");
 }
 
-te::mem::DataSourceFactory::~DataSourceFactory()
-{
-}
-
 te::da::DataSource* te::mem::DataSourceFactory::build()
 {
   return new DataSource;
@@ -54,5 +55,3 @@ te::mem::DataSourceFactory::DataSourceFactory()
   : te::da::DataSourceFactory(TE_MEMORY_DRIVER_IDENTIFIER)
 {
 }
-
-

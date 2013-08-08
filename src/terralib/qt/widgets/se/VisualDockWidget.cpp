@@ -86,7 +86,7 @@ QWidget* te::qt::widgets::VisualDockWidget::buildUi()
 
   //style explorer
   m_styleController = new te::qt::widgets::StyleControllerWidget(w);
-  layout->addWidget(m_styleController, 0, 0);
+  layout->addWidget(m_styleController, 1, 0);
   m_styleController->setMaximumHeight(300);
 
   connect(m_styleController, SIGNAL(symbolizerSelected(te::se::Symbolizer*)), this, SLOT(onSymbolizerSelected(te::se::Symbolizer*)));
@@ -95,7 +95,7 @@ QWidget* te::qt::widgets::VisualDockWidget::buildUi()
   //tab widget
   m_tabWidget = new QTabWidget(w);
   m_tabWidget->setTabPosition(QTabWidget::South);
-  layout->addWidget(m_tabWidget, 1, 0);
+  layout->addWidget(m_tabWidget, 0, 0);
   m_tabWidget->setMinimumWidth(360);
 
   //polygons

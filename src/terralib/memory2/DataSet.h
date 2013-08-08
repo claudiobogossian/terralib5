@@ -207,7 +207,7 @@ namespace te
 
           \param prop The property that will be updated.
 
-          \note For now, for all item the value will be changed to 0.
+          \note For now, for all items, the value will be changed to 0.
 
           \todo Update the method to perform the necessary conversions
                 when the type change

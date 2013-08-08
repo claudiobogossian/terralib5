@@ -26,6 +26,7 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess2/dataset/DataSetType.h"
+//#include "../dataaccess2/dataset/ObjectIdSet.h"
 #include "../dataaccess2/datasource/DataSourceCatalog.h"
 #include "../dataaccess2/datasource/DataSourceCapabilities.h"
 #include "../dataaccess2/query/SQLDialect.h"
@@ -376,11 +377,36 @@ void te::mem::DataSource::createDataSet(te::da::DataSetType* dt,
   ++m_numDatasets;
 }
 
-void te::mem::DataSource::cloneDataSet(const std::string& /*name*/,
-                                       const std::string& /*cloneName*/,
+void te::mem::DataSource::cloneDataSet(const std::string& name,
+                                       const std::string& cloneName,
                                        const std::map<std::string, std::string>& /*options*/)
 {
-  throw Exception(TR_MEMORY("Not implemented yet!"));
+  if(!dataSetExists(name))
+    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % name).str());
+
+  if(!isDataSetNameValid(cloneName))
+    throw Exception((boost::format(TR_MEMORY("The dataset clone name \"%1%\" is not valid!")) % cloneName).str());
+
+  if(!dataSetExists(cloneName))
+    throw Exception((boost::format(TR_MEMORY("There is already a dataset with this name: \"%1%\"!")) % cloneName).str());
+
+  // Clone the schema
+  const te::da::DataSetTypePtr& dtp = m_schemas[name];
+
+  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
+  
+  te::da::DataSetType* clonedt = static_cast<te::da::DataSetType*>(dtp->clone());
+  te::da::DataSetTypePtr clonedtp(clonedt);
+  m_schemas[cloneName] = clonedtp;
+
+  // Clone the dataset
+  te::da::DataSetPtr& datasetp = m_datasets[name];
+
+  te::da::DataSetPtr datasetClone(getDataSet(name).release());
+
+  m_datasets[cloneName] = datasetClone;
+
+  ++m_numDatasets;
 }
 
 void te::mem::DataSource::dropDataSet(const std::string& name)
@@ -419,15 +445,34 @@ void te::mem::DataSource::renameDataSet(const std::string& name, const std::stri
   m_datasets[newName] = dataset;
 }
 
-void te::mem::DataSource::add(const std::string& /*datasetName*/,
-                              te::da::DataSet* /*d*/,
+void te::mem::DataSource::add(const std::string& datasetName,
+                              te::da::DataSet* d,
                               const std::map<std::string, std::string>& /*options*/,
-                              std::size_t /*limit*/)
+                              std::size_t limit)
 {
+  if(!dataSetExists(datasetName))
+    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
+
+  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
+
+  te::da::DataSetPtr& dataset = m_datasets[datasetName];
+  te::mem::DataSet* datasetp = static_cast<te::mem::DataSet*>(m_datasets[datasetName].get());
+  datasetp->copy(*d, limit);
 }
 
-void te::mem::DataSource::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
+void te::mem::DataSource::remove(const std::string& datasetName, const te::da::ObjectIdSet* oids)
 {
+  if(!dataSetExists(datasetName))
+    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
+
+  //boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
+
+  //std::auto_ptr<te::da::DataSet> datasetp = getDataSet(datasetName, oids);
+
+  //te::mem::DataSet* dataset = static_cast<te::mem::DataSet*>(datasetp.get());
+
+  //while(dataset->moveNext())
+  //  dataset->remove();
 }
 
 void te::mem::DataSource::update(const std::string& /*datasetName*/,
@@ -437,4 +482,9 @@ void te::mem::DataSource::update(const std::string& /*datasetName*/,
                                  const std::map<std::string, std::string>& /*options*/,
                                  std::size_t /*limit*/)
 {
+}
+
+void te::mem::DataSource::setCapabilities(const te::da::DataSourceCapabilities& capabilities)
+{
+  sm_capabilities = capabilities;
 }

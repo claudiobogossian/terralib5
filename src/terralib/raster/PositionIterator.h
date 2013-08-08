@@ -636,7 +636,7 @@ namespace te
       for (unsigned int b = 0; b < this->m_raster->getNumberOfBands(); b++)
       {
         this->m_raster->getValue(getColumn(), getRow(), value, b);
-        values.push_back((T) value);
+        values[b] = ((T) value);
       }
 
       return values;
@@ -831,7 +831,7 @@ namespace te
       for (unsigned int b = 0; b < this->m_raster->getNumberOfBands(); b++)
       {
         this->m_raster->getValue(getColumn(), getRow(), value, b);
-        values.push_back((T) value);
+        values[b] = ((T) value);
       }
 
       return values;
@@ -966,7 +966,7 @@ namespace te
       for (unsigned int b = 0; b < this->m_raster->getNumberOfBands(); b++)
       {
         this->m_raster->getValue(getColumn(), getRow(), value, b);
-        values.push_back((T) value);
+        values[b] = ((T) value);
       }
 
       return values;
