@@ -50,7 +50,9 @@ void TsSkeleton::Test1()
   
   algoInputParams.m_inputRasterPtr = inputRasterPtrPointer.get();
   algoInputParams.m_inputRasterBand = 0;
+  algoInputParams.m_inputMaskRasterPtr = 0;
   algoInputParams.m_finiteDifferencesThreshold = 0.1;
+  algoInputParams.m_enableMultiThread = true;
 
   te::rp::Skeleton::OutputParameters algoOutputParams;
   
