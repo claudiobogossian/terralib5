@@ -20,38 +20,8 @@
 /*!
   \file terralib/memory/DataSourceFactory.cpp
 
-  \brief This is the data source concrete factory for the In-Memory Data Access driver.
+  \brief This is the data source factory for the memory Data Access driver.
 */
 
 // TerraLib
-#include "DataSource.h"
 #include "DataSourceFactory.h"
-#include "Globals.h"
-
-te::mem::DataSourceFactory te::mem::DataSourceFactory::sm_factory;
-
-
-te::mem::DataSourceFactory::~DataSourceFactory()
-{
-}
-
-const std::string& te::mem::DataSourceFactory::getType() const
-{
-  return Globals::sm_driverIdentifier;
-}
-
-void te::mem::DataSourceFactory::getConnectionParameters(std::vector<std::string>& params) const
-{
-  params.push_back("MAX_DATASETS");
-  params.push_back("OPERATION_MODE");
-}
-
-te::da::DataSource* te::mem::DataSourceFactory::build()
-{
-  return new DataSource;
-}
-
-te::mem::DataSourceFactory::DataSourceFactory()
-  : te::da::DataSourceFactory(TE_MEMORY_DRIVER_IDENTIFIER)
-{
-}

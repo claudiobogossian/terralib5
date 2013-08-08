@@ -142,7 +142,7 @@ int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
     double centralm = osrs->GetProjParm(SRS_PP_CENTRAL_MERIDIAN,-1);
     if (centralm == -1)
       return  TE_UNKNOWN_SRS;
-    int zone = centralm/6 + 31;
+    int zone = (int)(centralm/6 + 31);
     
     double fsnorth = osrs->GetProjParm(SRS_PP_FALSE_NORTHING,-1);
     if (fsnorth > 0)
