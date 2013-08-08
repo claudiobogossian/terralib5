@@ -26,14 +26,33 @@
 #include "Macros.h"
 
 #include "../raster/Band.h"
-
 #include "../raster/Utils.h"
+#include "../common/PlatformUtils.h"
 
 #include <boost/lexical_cast.hpp>
+#include <boost/scoped_array.hpp>
 
 #include <memory>
-#include <cmath>  
-
+#include <cmath> 
+#include <cstring>
+  
+#define APPLYDIFFUSION( neighborRow, neighborCol ) \
+  neiStrength = bufferS[ neighborRow ][ neighborCol ]; \
+  if( neiStrength >= centerStrength ) \
+  { \
+    neiX = bufferX[ neighborRow ][ neighborCol ]; \
+    neiY = bufferY[ neighborRow ][ neighborCol ]; \
+    strengthsSum = newCenterStrength + neiStrength; \
+    if( strengthsSum != 0.0 ) \
+    { \
+      newCenterX = ( ( newCenterX * newCenterStrength ) + ( neiX * neiStrength ) ) \
+        / strengthsSum; \
+      newCenterY = ( ( newCenterY * newCenterStrength ) + ( neiY * neiStrength ) ) \
+        / strengthsSum; \
+      newCenterStrength = std::sqrt( ( newCenterX * newCenterX ) + ( newCenterY * newCenterY ) ); \
+    } \
+  }
+    
 namespace te
 {
   namespace rp
@@ -61,6 +80,7 @@ namespace te
       m_inputRasterBand = 0;
       m_inputMaskRasterPtr = 0;
       m_finiteDifferencesThreshold = 0.1;
+      m_enableMultiThread = true;
     }
 
     const Skeleton::InputParameters& Skeleton::InputParameters::operator=(
@@ -72,6 +92,7 @@ namespace te
       m_inputRasterBand = params.m_inputRasterBand;
       m_inputMaskRasterPtr = params.m_inputMaskRasterPtr;
       m_finiteDifferencesThreshold = params.m_finiteDifferencesThreshold;
+      m_enableMultiThread = params.m_enableMultiThread;
 
       return *this;
     }
@@ -165,7 +186,7 @@ namespace te
       vecXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       te::rp::Matrix< double > vecYMap;
       vecYMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
-      TERP_TRUE_OR_RETURN_FALSE( getGradientMaps( edgeStrengthMap, vecXMap, vecYMap ),
+      TERP_TRUE_OR_RETURN_FALSE( getEdgeVecField( edgeStrengthMap, vecXMap, vecYMap ),
         "Vector maps build error" );      
 //      createTifFromMatrix( vecXMap, true, "vecXMap" );
 //      createTifFromMatrix( vecYMap, true, "vecYMap" );
@@ -178,9 +199,9 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( applyVecDiffusion( edgeStrengthMap, vecXMap, vecYMap, diffusedVecXMap,
         diffusedVecYMap ),
         "Vector maps build error" );      
-//      createTifFromMatrix( diffusedVecXMap, true, "diffusedVecXMap" );
-//      createTifFromMatrix( diffusedVecYMap, true, "diffusedVecYMap" );
-//      createTifFromVecField( diffusedVecXMap, diffusedVecYMap, *rasterDataPtr, "diffusedVecMap" );      
+      createTifFromMatrix( diffusedVecXMap, true, "diffusedVecXMap" );
+      createTifFromMatrix( diffusedVecYMap, true, "diffusedVecYMap" );
+      createTifFromVecField( diffusedVecXMap, diffusedVecYMap, *rasterDataPtr, "diffusedVecMap" );      
       
       return true;
     }
@@ -289,12 +310,16 @@ namespace te
       return true;
     }    
 
-    bool Skeleton::getGradientMaps( const te::rp::Matrix< double >& rasterData,
+    bool Skeleton::getGradientMaps( const te::rp::Matrix< double >& inputData,
       te::rp::Matrix< double >& gradXMap,
       te::rp::Matrix< double >& gradYMap ) const
     {
-      const unsigned int nRows = rasterData.getLinesNumber();
-      const unsigned int nCols = rasterData.getColumnsNumber();
+      const unsigned int nRows = inputData.getLinesNumber();
+      TERP_TRUE_OR_RETURN_FALSE( nRows > 2, "Invalid rows number" );
+      
+      const unsigned int nCols = inputData.getColumnsNumber();
+      TERP_TRUE_OR_RETURN_FALSE( nCols > 2, "Invalid columns number" );
+      
       const unsigned int lastRowIdx = nRows - 1;
       const unsigned int lastColIdx = nCols - 1;
       
@@ -338,17 +363,17 @@ namespace te
           prevCol = col - 1;
           nextCol = col + 1;
           
-          value1 = rasterData[ prevRow ][ prevCol ];
-          value2 = rasterData[ prevRow ][ col ];
-          value3 = rasterData[ prevRow ][ nextCol ];
-          value4 = rasterData[ row ][ prevCol ];
-          value5 = rasterData[ row ][ nextCol ];
-          value6 = rasterData[ nextRow ][ prevCol ];
-          value7 = rasterData[ nextRow ][ col ];
-          value8 = rasterData[ nextRow  ][ nextCol ];
+          value1 = inputData[ prevRow ][ prevCol ];
+          value2 = inputData[ prevRow ][ col ];
+          value3 = inputData[ prevRow ][ nextCol ];
+          value4 = inputData[ row ][ prevCol ];
+          value5 = inputData[ row ][ nextCol ];
+          value6 = inputData[ nextRow ][ prevCol ];
+          value7 = inputData[ nextRow ][ col ];
+          value8 = inputData[ nextRow  ][ nextCol ];
           
           if( 
-              ( rasterData[ row ][ col ] == DBL_MAX ) ||
+              ( inputData[ row ][ col ] == DBL_MAX ) ||
               ( value1 == DBL_MAX ) || ( value2 == DBL_MAX ) ||
               ( value3 == DBL_MAX ) || ( value4 == DBL_MAX ) ||
               ( value5 == DBL_MAX ) || ( value6 == DBL_MAX ) ||
@@ -375,7 +400,11 @@ namespace te
       te::rp::Matrix< double >& edgeStrengthMap ) const
     {
       const unsigned int nRows = inputMap.getLinesNumber();
+      TERP_TRUE_OR_RETURN_FALSE( nRows > 4, "Invalid rows number" );
+      
       const unsigned int nCols = inputMap.getColumnsNumber();
+      TERP_TRUE_OR_RETURN_FALSE( nCols > 4, "Invalid columns number" );
+      
       const unsigned int lastRowIdx = nRows - 1;
       const unsigned int lastColIdx = nCols - 1;
       
@@ -395,7 +424,7 @@ namespace te
       for( row = 0 ; row < nRows ; ++row )
       {
         edgeStrengthMap[ row ][ 0 ] = 0;
-        edgeStrengthMap[ row ][ lastColIdx ] = 0;
+        edgeStrengthMap[ row ][ lastColIdx ] = 0;        
       }
       
       for( col = 0 ; col < nCols ; ++col )
@@ -428,6 +457,8 @@ namespace te
       double strengthYDown = 0;
       double strengthXLeft = 0;
       double strengthXRight = 0;
+      double strength = 0;
+      double minStrength = DBL_MAX;
             
       for( row = 1 ; row < lastRowIdx ; ++row )
       {
@@ -462,10 +493,22 @@ namespace te
           strengthYUp = std::max( 0.0, y6 + y7 + y8 );
           strengthYDown = std::min( 0.0, y1 + y2 + y3 );
           
-          edgeStrengthMap[ row ][ col ] = ( strengthXRight - strengthXLeft ) +
+          strength = ( strengthXRight - strengthXLeft ) +
             ( strengthYUp - strengthYDown );
+          
+          edgeStrengthMap[ row ][ col ] = strength;
+            
+          if( minStrength > strength ) minStrength = strength;
         }
       }
+      
+      for( row = 2 ; row < lastRowIdx ; ++row )
+      {
+        for( col = 2 ; col < lastColIdx ; ++col )
+        {
+          edgeStrengthMap[ row ][ col ] -= minStrength;
+        }
+      }      
       
       return true;
     }
@@ -475,21 +518,30 @@ namespace te
       te::rp::Matrix< double >& edgeVecXMap,
       te::rp::Matrix< double >& edgeVecYMap ) const
     {
+      const unsigned int nRows = edgeStrengthMap.getLinesNumber();
+      TERP_TRUE_OR_RETURN_FALSE( nRows > 6, "Invalid rows number" );
+      
+      const unsigned int nCols = edgeStrengthMap.getColumnsNumber();      
+      TERP_TRUE_OR_RETURN_FALSE( nCols > 6, "Invalid columns number" );
+      
       te::rp::Matrix< double > gradXMap;
       gradXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       te::rp::Matrix< double > gradYMap;
       gradYMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       TERP_TRUE_OR_RETURN_FALSE( getGradientMaps( edgeStrengthMap, gradXMap, gradYMap ),
         "Gradient maps build error" );
+//      createTifFromMatrix( gradXMap, true, "gradXMap" );
+//      createTifFromMatrix( gradYMap, true, "gradYMap" );
+      
       te::rp::Matrix< double > gradMagMap;
       gradMagMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       TERP_TRUE_OR_RETURN_FALSE( getMagnitude( gradXMap, gradYMap, gradMagMap ),
-        "Magnitude calcule error" );
-        
-      const unsigned int nRows = edgeStrengthMap.getLinesNumber();
-      const unsigned int nCols = edgeStrengthMap.getColumnsNumber();
+        "Magnitude calcule error" );        
+//      createTifFromMatrix( gradMagMap, true, "gradMagMap" );
+
       const unsigned int lastRowIdx = nRows - 1;
       const unsigned int lastColIdx = nCols - 1;        
+      
       unsigned int row = 0;
       unsigned int col = 0;       
         
@@ -502,16 +554,18 @@ namespace te
       {
         edgeVecXMap[ row ][ 0 ] = 0;
         edgeVecXMap[ row ][ lastColIdx ] = 0;
+        
         edgeVecYMap[ row ][ 0 ] = 0;
-        edgeVecYMap[ row ][ lastColIdx ] = 0;          
+        edgeVecYMap[ row ][ lastColIdx ] = 0;
       }
       
       for( col = 0 ; col < nCols ; ++col )
       {
         edgeVecXMap[ 0 ][ col ] = 0;
         edgeVecXMap[ lastRowIdx ][ col ] = 0;
+        
         edgeVecYMap[ 0 ][ col ] = 0;
-        edgeVecYMap[ lastRowIdx ][ col ] = 0;          
+        edgeVecYMap[ lastRowIdx ][ col ] = 0;
       } 
       
       unsigned int nextRow = 0;
@@ -525,10 +579,10 @@ namespace te
       double bestNMag = 0;
       double bestNX = 0;
       double bestNY = 0;
-      double diffX = 0;
-      double diffY = 0;
-      double diffMag = 0;
-      double magsDiff = 0;
+      double newCenterX = 0;
+      double newCenterY = 0;
+      double newCenterMag = 0;
+      double magsSum = 0;
       
       for( row = 1 ; row < lastRowIdx ; ++row )
       {
@@ -612,21 +666,31 @@ namespace te
             bestNY =  gradYMap[ nextRow ][ nextCol ];
           }   
           
-          diffX = bestNX - centerX;
-          diffY = bestNY - centerY;
-          diffMag = std::sqrt( ( diffX * diffX ) + ( diffY * diffY ) );
+          magsSum = ( bestNMag + centerMag );
           
-          if( diffMag == 0.0 )
+          if( magsSum == 0.0 )
           {
             edgeVecXMap[ row ][ col ] = 0;
             edgeVecYMap[ row ][ col ] = 0;
           }
           else
           {
-            magsDiff = bestNMag - centerMag;
-          
-            edgeVecXMap[ row ][ col ] = magsDiff * diffX / diffMag;
-            edgeVecYMap[ row ][ col ] = magsDiff * diffY / diffMag;
+            newCenterX = ( ( bestNX * bestNMag ) + ( centerX * centerMag ) ) /
+              magsSum;
+            newCenterY = ( ( bestNY * bestNMag ) + ( centerY * centerMag ) ) /
+              magsSum;
+            newCenterMag = std::sqrt( ( newCenterX * newCenterX ) + ( newCenterY * newCenterY ) );
+            
+            if( newCenterMag == 0.0 )
+            {
+              edgeVecXMap[ row ][ col ] = 0;
+              edgeVecYMap[ row ][ col ] = 0;
+            }
+            else
+            {
+              edgeVecXMap[ row ][ col ] = newCenterX / newCenterMag;
+              edgeVecYMap[ row ][ col ] = newCenterY / newCenterMag;
+            }
           }
         }
       }
@@ -788,337 +852,357 @@ namespace te
       assert( inputX.getLinesNumber() == inputY.getLinesNumber() );      
       
       const unsigned int nRows = inputX.getLinesNumber();
-      const unsigned int nCols = inputX.getColumnsNumber();
-      const unsigned int lastRowIdx = nRows - 1;
-      const unsigned int lastColIdx = nCols - 1;   
-      unsigned int row = 0;
-      unsigned int col = 0;      
+      TERP_TRUE_OR_RETURN_FALSE( nRows > 8, "Invalid rows number" );
       
+      const unsigned int nCols = inputX.getColumnsNumber();
+      TERP_TRUE_OR_RETURN_FALSE( nCols > 8, "Invalid columns number" );
+      
+      const unsigned int rowSizeBytes = sizeof( double ) * nCols;
+
       if( ! outputX.reset( nRows,nCols ) )
         return false;       
       if( ! outputY.reset( nRows,nCols ) )
         return false;          
       
       std::auto_ptr< te::rp::Matrix< double > > xBuf1Ptr;
+      xBuf1Ptr.reset( new te::rp::Matrix< double >() );
+      if( ! xBuf1Ptr->reset( nRows,nCols ) )
+        return false;
+      
       std::auto_ptr< te::rp::Matrix< double > > yBuf1Ptr;
-      {
-        xBuf1Ptr.reset( new te::rp::Matrix< double >() );
-        if( ! xBuf1Ptr->reset( nRows,nCols ) )
-          return false;        
-        
-        yBuf1Ptr.reset( new te::rp::Matrix< double >() );
-        if( ! yBuf1Ptr->reset( nRows,nCols ) )
-          return false;  
-        
-        for( row = 0 ; row < nRows ; ++row )
-        {
-          (*xBuf1Ptr)[ row ][ 0 ] = 0;
-          (*xBuf1Ptr)[ row ][ lastColIdx ] = 0;
-          (*yBuf1Ptr)[ row ][ 0 ] = 0;
-          (*yBuf1Ptr)[ row ][ lastColIdx ] = 0;          
-        }
-        
-        for( col = 0 ; col < nCols ; ++col )
-        {
-          (*xBuf1Ptr)[ 0 ][ col ] = 0;
-          (*xBuf1Ptr)[ lastRowIdx ][ col ] = 0;
-          (*yBuf1Ptr)[ 0 ][ col ] = 0;
-          (*yBuf1Ptr)[ lastRowIdx ][ col ] = 0;          
-        }             
-      }
+      yBuf1Ptr.reset( new te::rp::Matrix< double >() );
+      if( ! yBuf1Ptr->reset( nRows,nCols ) )
+        return false;  
       
       std::auto_ptr< te::rp::Matrix< double > > xBuf2Ptr;
-      std::auto_ptr< te::rp::Matrix< double > > yBuf2Ptr;
-      {
-        xBuf2Ptr.reset( new te::rp::Matrix< double >() );
-        if( ! xBuf2Ptr->reset( nRows,nCols ) )
-          return false;        
-        
-        yBuf2Ptr.reset( new te::rp::Matrix< double >() );
-        if( ! yBuf2Ptr->reset( nRows,nCols ) )
-          return false; 
-        
-        for( row = 0 ; row < nRows ; ++row )
-        {
-          (*xBuf2Ptr)[ row ][ 0 ] = 0;
-          (*xBuf2Ptr)[ row ][ lastColIdx ] = 0;
-          (*yBuf2Ptr)[ row ][ 0 ] = 0;
-          (*yBuf2Ptr)[ row ][ lastColIdx ] = 0;          
-        }
-        
-        for( col = 0 ; col < nCols ; ++col )
-        {
-          (*xBuf2Ptr)[ 0 ][ col ] = 0;
-          (*xBuf2Ptr)[ lastRowIdx ][ col ] = 0;
-          (*yBuf2Ptr)[ 0 ][ col ] = 0;
-          (*yBuf2Ptr)[ lastRowIdx ][ col ] = 0;          
-        }         
-      }
+      xBuf2Ptr.reset( new te::rp::Matrix< double >() );
+      if( ! xBuf2Ptr->reset( nRows,nCols ) )
+        return false;  
       
-      double strengthOffset = 0.0;
-      double strengthGain = 1.0;      
-      {
-        double strengthValue = 0;
-        double minStrengthValue = DBL_MAX;
-        double maxStrengthValue = -1.0 * DBL_MAX;
-        
-        for( row = 0 ; row < nRows ; ++row )
-        {
-          for( col = 0 ; col < nCols ; ++col )
-          {
-            strengthValue = edgeStrengthMap[ row ][ col ];
-            
-            if( minStrengthValue > strengthValue )
-              minStrengthValue = strengthValue;
-            
-            if( maxStrengthValue < strengthValue )
-              maxStrengthValue = strengthValue;
-          }
-        }
-        
-        if( minStrengthValue == maxStrengthValue )
-        {
-          strengthOffset = 0.0;
-          strengthGain = 0.0;
-        }
-        else
-        {
-          strengthOffset = (-1.0) * minStrengthValue;
-          strengthGain = 1.0 / ( maxStrengthValue - minStrengthValue );
-        }
-      }
-      
-      te::rp::Matrix< Matrix2DCoord > highESNeighborCoordMatrix;
-      {
-        highESNeighborCoordMatrix.reset( te::rp::Matrix< Matrix2DCoord >::AutoMemPol );
-        if( ! highESNeighborCoordMatrix.reset( nRows,nCols ) )
-          return false;          
-        
-        unsigned int nextRow = 0;
-        unsigned int nextCol = 0;
-        unsigned int prevRow = 0;
-        unsigned int prevCol = 0;  
-        double nStrength = 0;
-        double bestNStrength = 0;
-        Matrix2DCoord* currCoodPtr = 0;
-        
-        for( row = 1 ; row < lastRowIdx ; ++row )
-        {
-          prevRow = row - 1;
-          nextRow = row + 1;
-          
-          for( col = 1 ; col < lastColIdx ; ++col )
-          {
-            prevCol = col - 1;
-            nextCol = col + 1;  
-            
-            currCoodPtr = ( highESNeighborCoordMatrix[ row ] ) + col;
-            currCoodPtr->m_col = col;
-            currCoodPtr->m_row = row;
-            
-            bestNStrength = edgeStrengthMap[ row ][ col ];
-            
-            nStrength = edgeStrengthMap[ prevRow ][ prevCol ];
-            if( bestNStrength <= nStrength )
-            {
-              currCoodPtr->m_row = prevRow;
-              currCoodPtr->m_col = prevCol;
-              bestNStrength = nStrength;
-            }
-   
-            nStrength = edgeStrengthMap[ prevRow ][ col ];
-            if( bestNStrength <= nStrength )
-            {
-              currCoodPtr->m_row = prevRow;
-              currCoodPtr->m_col = col;
-              bestNStrength = nStrength;
-            }   
-            
-            nStrength = edgeStrengthMap[ prevRow ][ nextCol ];
-            if( bestNStrength <= nStrength )
-            {
-              currCoodPtr->m_row = prevRow;
-              currCoodPtr->m_col = nextCol;
-              bestNStrength = nStrength;
-            }  
-            
-            nStrength = edgeStrengthMap[ row ][ prevCol ];
-            if( bestNStrength <= nStrength )
-            {
-              currCoodPtr->m_row = row;
-              currCoodPtr->m_col = prevCol;
-              bestNStrength = nStrength;
-            }
-            
-            nStrength = edgeStrengthMap[ row ][ nextCol ];
-            if( bestNStrength <= nStrength )
-            {
-              currCoodPtr->m_row = row;
-              currCoodPtr->m_col = nextCol;
-              bestNStrength = nStrength;
-            }             
-            
-            nStrength = edgeStrengthMap[ nextRow ][ prevCol ];
-            if( bestNStrength <= nStrength )
-            {
-              currCoodPtr->m_row = nextRow;
-              currCoodPtr->m_col = prevCol;
-              bestNStrength = nStrength;
-            }
-   
-            nStrength = edgeStrengthMap[ nextRow ][ col ];
-            if( bestNStrength <= nStrength )
-            {
-              currCoodPtr->m_row = nextRow;
-              currCoodPtr->m_col = col;
-              bestNStrength = nStrength;
-            }   
-            
-            nStrength = edgeStrengthMap[ nextRow ][ nextCol ];
-            if( bestNStrength <= nStrength )
-            {
-              currCoodPtr->m_row = nextRow;
-              currCoodPtr->m_col = nextCol;
-              bestNStrength = nStrength;
-            }              
-          }
-        }
-      }
-      
-      te::rp::Matrix< double > const * iBufXPtr = 0;
-      te::rp::Matrix< double > const * iBufYPtr = 0;
-      te::rp::Matrix< double > * oBufXPtr = 0;
-      te::rp::Matrix< double > * oBufYPtr = 0;
-      
+      std::auto_ptr< te::rp::Matrix< double > > yBuf2Ptr;      
+      yBuf2Ptr.reset( new te::rp::Matrix< double >() );
+      if( ! yBuf2Ptr->reset( nRows,nCols ) )
+        return false;         
+     
       double currentIterationXResidue = DBL_MAX;
-      double currentIterationYResidue = DBL_MAX;
+      double currentIterationYResidue = DBL_MAX; 
+      
+      boost::mutex mutex;
+      
+      ApplyVecDiffusionThreadParams threadParams;
+      threadParams.m_iBufStrengthPtr = &edgeStrengthMap;
+      threadParams.m_currentIterationXResiduePtr = &currentIterationXResidue;
+      threadParams.m_currentIterationYResiduePtr = &currentIterationYResidue;
+      threadParams.m_mutexPtr = &mutex;
+      
+      const unsigned int threadsNumber = m_inputParameters.m_enableMultiThread ?
+        te::common::GetPhysProcNumber() : 0;
+      const unsigned int rowsPerThread = m_inputParameters.m_enableMultiThread ?
+        std::ceil( ((double)(nRows - 8 )) / ((double)threadsNumber) ) : nRows;
+
       unsigned int iteration = 0;
             
       while( ( currentIterationXResidue > m_inputParameters.m_finiteDifferencesThreshold ) ||
         ( currentIterationYResidue > m_inputParameters.m_finiteDifferencesThreshold ) )
       {
+        currentIterationXResidue = 0;
+        currentIterationYResidue = 0;
+        
         if( iteration == 0 )
         {
-          iBufXPtr = &inputX;
-          iBufYPtr = &inputY;
-          oBufXPtr = xBuf1Ptr.get();
-          oBufYPtr = yBuf1Ptr.get();
+          threadParams.m_iBufXPtr = &inputX;
+          threadParams.m_iBufYPtr = &inputY;
+          threadParams.m_oBufXPtr = xBuf1Ptr.get();
+          threadParams.m_oBufYPtr = yBuf1Ptr.get();
         }
         else
         {
-          if( oBufXPtr == xBuf1Ptr.get() )
+          if( threadParams.m_oBufXPtr == xBuf1Ptr.get() )
           {
-            iBufXPtr = xBuf1Ptr.get();
-            iBufYPtr = yBuf1Ptr.get();
-            oBufXPtr = xBuf2Ptr.get();
-            oBufYPtr = yBuf2Ptr.get();
+            threadParams.m_iBufXPtr = xBuf1Ptr.get();
+            threadParams.m_iBufYPtr = yBuf1Ptr.get();
+            threadParams.m_oBufXPtr = xBuf2Ptr.get();
+            threadParams.m_oBufYPtr = yBuf2Ptr.get();
           }
           else
           {
-            iBufXPtr = xBuf2Ptr.get();
-            iBufYPtr = yBuf2Ptr.get();
-            oBufXPtr = xBuf1Ptr.get();
-            oBufYPtr = yBuf1Ptr.get();
+            threadParams.m_iBufXPtr = xBuf2Ptr.get();
+            threadParams.m_iBufYPtr = yBuf2Ptr.get();
+            threadParams.m_oBufXPtr = xBuf1Ptr.get();
+            threadParams.m_oBufYPtr = yBuf1Ptr.get();
           }
         }
         
-        const te::rp::Matrix< double >& iBufX = *iBufXPtr;
-        const te::rp::Matrix< double >& iBufY = *iBufYPtr;
-        te::rp::Matrix< double >& oBufX = *oBufXPtr;
-        te::rp::Matrix< double >& oBufY = *oBufYPtr;        
+        memcpy( threadParams.m_oBufXPtr->operator[]( 0 ), 
+          threadParams.m_iBufXPtr->operator[]( 0 ), rowSizeBytes );
+        memcpy( threadParams.m_oBufXPtr->operator[]( 1 ), 
+          threadParams.m_iBufXPtr->operator[]( 1 ), rowSizeBytes );
+        memcpy( threadParams.m_oBufXPtr->operator[]( 2 ), 
+          threadParams.m_iBufXPtr->operator[]( 2 ), rowSizeBytes );
+        memcpy( threadParams.m_oBufXPtr->operator[]( 3 ), 
+          threadParams.m_iBufXPtr->operator[]( 3 ), rowSizeBytes );
+          
+        memcpy( threadParams.m_oBufXPtr->operator[]( nRows - 4 ), 
+          threadParams.m_iBufXPtr->operator[]( nRows - 4 ), rowSizeBytes );
+        memcpy( threadParams.m_oBufXPtr->operator[]( nRows - 3 ), 
+          threadParams.m_iBufXPtr->operator[]( nRows - 3 ), rowSizeBytes );
+        memcpy( threadParams.m_oBufXPtr->operator[]( nRows - 2 ), 
+          threadParams.m_iBufXPtr->operator[]( nRows - 2 ), rowSizeBytes );
+        memcpy( threadParams.m_oBufXPtr->operator[]( nRows - 1 ), 
+          threadParams.m_iBufXPtr->operator[]( nRows - 1 ), rowSizeBytes );
+          
+        memcpy( threadParams.m_oBufYPtr->operator[]( 0 ), 
+          threadParams.m_iBufYPtr->operator[]( 0 ), rowSizeBytes );
+        memcpy( threadParams.m_oBufYPtr->operator[]( 1 ), 
+          threadParams.m_iBufYPtr->operator[]( 1 ), rowSizeBytes );
+        memcpy( threadParams.m_oBufYPtr->operator[]( 2 ), 
+          threadParams.m_iBufYPtr->operator[]( 2 ), rowSizeBytes );
+        memcpy( threadParams.m_oBufYPtr->operator[]( 3 ), 
+          threadParams.m_iBufYPtr->operator[]( 3 ), rowSizeBytes );
+          
+        memcpy( threadParams.m_oBufYPtr->operator[]( nRows - 4 ), 
+          threadParams.m_iBufYPtr->operator[]( nRows - 4 ), rowSizeBytes );          
+        memcpy( threadParams.m_oBufYPtr->operator[]( nRows - 3 ), 
+          threadParams.m_iBufYPtr->operator[]( nRows - 3 ), rowSizeBytes );          
+        memcpy( threadParams.m_oBufYPtr->operator[]( nRows - 2 ), 
+          threadParams.m_iBufYPtr->operator[]( nRows - 2 ), rowSizeBytes );          
+        memcpy( threadParams.m_oBufYPtr->operator[]( nRows - 1 ), 
+          threadParams.m_iBufYPtr->operator[]( nRows - 1 ), rowSizeBytes );          
         
-        double centerX = 0;
-        double centerY = 0;
-        double centerStrength = 0;
-        double newCenterX = 0;
-        double newCenterY = 0;
-        double neiX = 0;
-        double neiY = 0;
-        double bestNStrength = 0;
-        currentIterationXResidue = 0.0;
-        currentIterationYResidue = 0.0;
-        Matrix2DCoord* bestNeighborCoodPtr = 0;
-        unsigned int bestNRow = 0;
-        unsigned int bestNCol = 0;
-        
-        for( row = 1 ; row < lastRowIdx ; ++row )
+        if( threadsNumber )
         {
-          for( col = 1 ; col < lastColIdx ; ++col )
+          unsigned int startingRow = 4;
+          std::vector< ApplyVecDiffusionThreadParams > threadsParamesVec;
+          threadsParamesVec.resize( threadsNumber, threadParams );
+          boost::thread_group threads;
+          
+          for( unsigned int threadIdx = 0 ; threadIdx < threadsNumber ;
+            ++threadIdx )
           {
-            bestNeighborCoodPtr = ( highESNeighborCoordMatrix[ row ] ) + col;
-            bestNRow = bestNeighborCoodPtr->m_row;
-            bestNCol = bestNeighborCoodPtr->m_col;
-            
-            if( ( bestNCol != col ) && ( bestNRow != row ) )
-            {
-              centerStrength = edgeStrengthMap[ row ][ col ];
-              centerStrength += strengthOffset;
-              centerStrength *= strengthGain;
-              centerStrength += 1.0;
-              
-              bestNStrength = edgeStrengthMap[ bestNRow ][ bestNCol ];
-              bestNStrength += strengthOffset;
-              bestNStrength *= strengthGain;
-              bestNStrength += 1.0;
-              
-              centerX = iBufX[ row ][ col ];
-              centerY = iBufY[ row ][ col ];
-              
-              neiX = iBufX[ bestNRow ][ bestNCol ];
-              neiY = iBufY[ bestNRow ][ bestNCol ];
-              
-              newCenterX = ( ( centerX * centerStrength ) + ( neiX * bestNStrength ) ) 
-                / ( centerStrength + bestNStrength );
-              newCenterY = ( ( centerY * centerStrength ) + ( neiY * bestNStrength ) ) 
-                / ( centerStrength + bestNStrength );
-              
-              oBufX[ row ][ col ] = newCenterX;
-              oBufY[ row ][ col ] = newCenterY;
-              
-              if( centerX == 0.0 )
-              {
-                currentIterationXResidue = std::max( currentIterationXResidue,
-                  1.0 );
-              }
-              else
-              {
-                currentIterationXResidue = std::max( currentIterationXResidue,
-                  std::abs( ( centerX - newCenterX ) / centerX ) );
-              }
-              
-              if( centerY == 0.0 )
-              {
-                currentIterationYResidue = std::max( currentIterationYResidue,
-                  1.0 );
-              }
-              else
-              {
-                currentIterationYResidue = std::max( currentIterationYResidue,
-                  std::abs( ( centerY - newCenterY ) / centerY ) );              
-              }
-            }
-            else
-            {
-              oBufX[ row ][ col ] = centerX;
-              oBufY[ row ][ col ] = centerY;
-            }
+            threadsParamesVec[ threadIdx ].m_firstRowIdx = startingRow;
+            threadsParamesVec[ threadIdx ].m_lastRowIdx = std::min( nRows - 5,
+              startingRow + rowsPerThread - 1 );
+            threads.add_thread( new boost::thread( applyVecDiffusionThreadEntry, 
+              &threadsParamesVec[ threadIdx ] ) );
+            startingRow += rowsPerThread;
           }
+          
+          threads.join_all();
         }
+        else
+        {
+          threadParams.m_firstRowIdx = 4;
+          threadParams.m_lastRowIdx = nRows - 5;
+          applyVecDiffusionThreadEntry( &threadParams );
+        };
         
-        createTifFromMatrix( oBufX, true,  
-          boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
-        createTifFromMatrix( oBufY, true,  
-          boost::lexical_cast< std::string >( iteration ) + "_diffusedY");
-        createTifFromVecField( oBufX, oBufY, edgeStrengthMap,  
-          boost::lexical_cast< std::string >( iteration ) + "_diffusedVecs");
+        if( ( iteration % 10 ) == 0 )
+        {
+          createTifFromMatrix( *threadParams.m_oBufXPtr, true,  
+            boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
+          createTifFromMatrix( *threadParams.m_oBufYPtr, true,  
+            boost::lexical_cast< std::string >( iteration ) + "_diffusedY");
+          createTifFromVecField( *threadParams.m_oBufXPtr, *threadParams.m_oBufYPtr, edgeStrengthMap,  
+            boost::lexical_cast< std::string >( iteration ) + "_diffusedVecs");
+        }
 
         ++iteration;
+      }
+      
+      for( unsigned int row = 0 ; row < nRows ; ++row )
+      {
+        memcpy( outputX[ row ], threadParams.m_oBufXPtr->operator[]( row ),
+          rowSizeBytes );
+        memcpy( outputY[ row ], threadParams.m_oBufYPtr->operator[]( row ),
+          rowSizeBytes );          
       }
       
       return true;
     }
 
-    
+    void Skeleton::applyVecDiffusionThreadEntry( ApplyVecDiffusionThreadParams* paramsPtr)
+    {
+      const te::rp::Matrix< double >& iBufX = *(paramsPtr->m_iBufXPtr);
+      const te::rp::Matrix< double >& iBufY = *(paramsPtr->m_iBufYPtr);
+      const te::rp::Matrix< double >& iBufStrength = *(paramsPtr->m_iBufStrengthPtr);
+      te::rp::Matrix< double >& oBufX = *(paramsPtr->m_oBufXPtr);
+      te::rp::Matrix< double >& oBufY = *(paramsPtr->m_oBufYPtr);
+      
+      const unsigned int nCols = iBufX.getColumnsNumber();
+      const unsigned int rowSizeBytes = sizeof( double ) * nCols;
+      unsigned int row = 0;
+      unsigned int col = 0;      
+      
+      boost::scoped_array< double > bufXRow0Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufXRow1Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufXRow2Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufYRow0Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufYRow1Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufYRow2Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufSRow0Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufSRow1Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufSRow2Handler( new double[ nCols ] );            
+      double* bufferX[ 3 ];
+      double* bufferY[ 3 ];
+      double* bufferS[ 3 ];
+      bufferX[ 0 ] = bufXRow0Handler.get();
+      bufferX[ 1 ] = bufXRow1Handler.get();
+      bufferX[ 2 ] = bufXRow2Handler.get();
+      bufferY[ 0 ] = bufYRow0Handler.get();
+      bufferY[ 1 ] = bufYRow1Handler.get();
+      bufferY[ 2 ] = bufYRow2Handler.get();
+      bufferS[ 0 ] = bufSRow0Handler.get();
+      bufferS[ 1 ] = bufSRow1Handler.get();
+      bufferS[ 2 ] = bufSRow2Handler.get();            
+      paramsPtr->m_mutexPtr->lock();
+      memcpy( bufferX[ 1 ], iBufX[ paramsPtr->m_firstRowIdx - 1 ], 
+        rowSizeBytes );
+      memcpy( bufferX[ 2 ], iBufX[ paramsPtr->m_firstRowIdx ], 
+        rowSizeBytes );
+      memcpy( bufferY[ 1 ], iBufY[ paramsPtr->m_firstRowIdx - 1 ], 
+        rowSizeBytes );
+      memcpy( bufferY[ 2 ], iBufY[ paramsPtr->m_firstRowIdx ], 
+        rowSizeBytes );
+      memcpy( bufferS[ 1 ], iBufStrength[ paramsPtr->m_firstRowIdx - 1 ], 
+        rowSizeBytes );
+      memcpy( bufferS[ 2 ], iBufStrength[ paramsPtr->m_firstRowIdx ], 
+        rowSizeBytes );                        
+      paramsPtr->m_mutexPtr->unlock();
+      
+      const unsigned int rowsBound = paramsPtr->m_lastRowIdx + 2;
+      const unsigned int colsBound = nCols - 4;
+      double centerX = 0;
+      double centerY = 0;
+      double centerStrength = 0;
+      double newCenterX = 0;
+      double newCenterY = 0;
+      double newCenterStrength = 0;
+      double neiX = 0;
+      double neiY = 0;
+      double neiStrength = 0;
+      double strengthsSum = 0;
+      double* rowPtr = 0;
+      unsigned int prevRow = 0;
+      unsigned int prevCol = 0;
+      unsigned int nextCol = 0;
+      double currentIterationXResidue = 0;
+      double currentIterationYResidue = 0;
+      double outRowX[ nCols ];
+      double outRowY[ nCols ];
+      
+      for( row = ( paramsPtr->m_firstRowIdx + 1 ) ; row < rowsBound ; ++row )
+      {
+        prevRow = row - 1;
+        
+        // Rolling-up the internal buffers
+        
+        rowPtr = bufferX[ 0 ];
+        bufferX[ 0 ] = bufferX[ 1 ];
+        bufferX[ 1 ] = bufferX[ 2 ];
+        bufferX[ 2 ] = rowPtr;
+        rowPtr = bufferY[ 0 ];
+        bufferY[ 0 ] = bufferY[ 1 ];
+        bufferY[ 1 ] = bufferY[ 2 ];
+        bufferY[ 2 ] = rowPtr;         
+        rowPtr = bufferS[ 0 ];
+        bufferS[ 0 ] = bufferS[ 1 ];
+        bufferS[ 1 ] = bufferS[ 2 ];
+        bufferS[ 2 ] = rowPtr;        
+        
+        // Getting a new line
+        
+        paramsPtr->m_mutexPtr->lock();
+        
+        memcpy( bufferX[ 2 ], iBufX[ row ], rowSizeBytes );
+        memcpy( bufferY[ 2 ], iBufY[ row ], rowSizeBytes );
+        memcpy( bufferS[ 2 ], iBufStrength[ row ], rowSizeBytes );
+        
+        paramsPtr->m_mutexPtr->unlock();        
+        
+        // Diffusing the buffer center line
+        
+        for( col = 4 ; col < colsBound ; ++col )
+        {
+          prevCol = col - 1;
+          nextCol = col + 1;
+          
+          centerStrength = newCenterStrength = bufferS[ 1 ][ col ];
+          centerX = newCenterX = bufferX[ 1 ][ col ];
+          centerY = newCenterY = bufferY[ 1 ][ col ];
+          
+          APPLYDIFFUSION( 0, prevCol );
+          APPLYDIFFUSION( 0, col );
+          APPLYDIFFUSION( 0, nextCol );
+          APPLYDIFFUSION( 1, prevCol );
+          APPLYDIFFUSION( 1, nextCol );
+          APPLYDIFFUSION( 2, prevCol );
+          APPLYDIFFUSION( 2, col );
+          APPLYDIFFUSION( 2, nextCol );  
+            
+          outRowX[ col ] = newCenterX;
+          outRowY[ col ] = newCenterY;
+            
+          if( centerX == 0.0 )
+          {
+            currentIterationXResidue = std::max( currentIterationXResidue,
+              1.0 );
+          }
+          else
+          {
+            currentIterationXResidue = std::max( currentIterationXResidue,
+              std::abs( ( centerX - newCenterX ) / centerX ) );
+          }
+          
+          if( centerY == 0.0 )
+          {
+            currentIterationYResidue = std::max( currentIterationYResidue,
+              1.0 );
+          }
+          else
+          {
+            currentIterationYResidue = std::max( currentIterationYResidue,
+              std::abs( ( centerY - newCenterY ) / centerY ) );              
+          }
+        }
+        
+        // copying the result to output 
+        
+        paramsPtr->m_mutexPtr->lock();
+        
+        memcpy( oBufX[ prevRow ], outRowX, rowSizeBytes );
+        memcpy( oBufY[ prevRow ], outRowY, rowSizeBytes );
+        
+        oBufX[ prevRow ][ 0 ] = bufferX[ 1 ][ 0 ];
+        oBufX[ prevRow ][ 1 ] = bufferX[ 1 ][ 1 ];
+        oBufX[ prevRow ][ 2 ] = bufferX[ 1 ][ 2 ];
+        oBufX[ prevRow ][ 3 ] = bufferX[ 1 ][ 3 ];
+        oBufX[ prevRow ][ colsBound ] = bufferX[ 1 ][ colsBound ];
+        oBufX[ prevRow ][ colsBound + 1 ] = bufferX[ 1 ][ colsBound + 1 ];
+        oBufX[ prevRow ][ colsBound + 2 ] = bufferX[ 1 ][ colsBound + 2 ];
+        oBufX[ prevRow ][ colsBound + 3 ] = bufferX[ 1 ][ colsBound + 3 ];
+        
+        oBufY[ prevRow ][ 0 ] = bufferY[ 1 ][ 0 ];
+        oBufY[ prevRow ][ 1 ] = bufferY[ 1 ][ 1 ];
+        oBufY[ prevRow ][ 2 ] = bufferY[ 1 ][ 2 ];
+        oBufY[ prevRow ][ 3 ] = bufferY[ 1 ][ 3 ];
+        oBufY[ prevRow ][ colsBound ] = bufferY[ 1 ][ colsBound ];
+        oBufY[ prevRow ][ colsBound + 1 ] = bufferY[ 1 ][ colsBound + 1 ];
+        oBufY[ prevRow ][ colsBound + 2 ] = bufferY[ 1 ][ colsBound + 2 ];
+        oBufY[ prevRow ][ colsBound + 3 ] = bufferY[ 1 ][ colsBound + 3 ];
+        
+        (*paramsPtr->m_currentIterationXResiduePtr) = 
+          std::max( (*paramsPtr->m_currentIterationXResiduePtr), 
+          currentIterationXResidue );
+          
+        (*paramsPtr->m_currentIterationYResiduePtr) = 
+          std::max( (*paramsPtr->m_currentIterationYResiduePtr), 
+          currentIterationYResidue );          
+        
+        paramsPtr->m_mutexPtr->unlock();         
+      }      
+      
+      
+    }
 
   } // end namespace rp
 

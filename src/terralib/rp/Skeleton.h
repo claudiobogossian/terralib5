@@ -32,6 +32,8 @@
 #include "../raster/RasterFactory.h"
 #include "../raster/Grid.h"
 
+#include <boost/thread.hpp>
+
 #include <memory>
 #include <vector>
 #include <map>
@@ -77,6 +79,8 @@ namespace te
             te::rst::Raster const* m_inputMaskRasterPtr; //!< A pointer to an input raster (where pixels with zero velues will be ignored) or an null pointer if no input mask raster must be used.
             
             double m_finiteDifferencesThreshold;//!< //!< A threshold for the finite differences iterative diffusion - valid range [0,1].
+            
+            bool m_enableMultiThread; //!< Enable (true) the use of threads.
             
             InputParameters();
             
@@ -141,11 +145,51 @@ namespace te
 
       protected:
         
-        struct Matrix2DCoord
+        /*!
+          \class ApplyRansacThreadEntryThreadParams
+
+          \brief Parameters used by the GTFilter::applyRansacThreadEntry method.
+        */
+        class ApplyVecDiffusionThreadParams
         {
-          unsigned int m_row;
-          unsigned int m_col;
-        };
+          public:
+
+            te::rp::Matrix< double > const * m_iBufXPtr;
+            te::rp::Matrix< double > const * m_iBufYPtr;
+            te::rp::Matrix< double > * m_oBufXPtr;
+            te::rp::Matrix< double > * m_oBufYPtr;
+            te::rp::Matrix< double > const * m_iBufStrengthPtr;
+            boost::mutex* m_mutexPtr;
+            unsigned int m_firstRowIdx; //!< First row to process.
+            unsigned int m_lastRowIdx; //!< Last row to process.
+            double* m_currentIterationXResiduePtr; //!< A pointer the the current iteration X residue;
+            double* m_currentIterationYResiduePtr; //!< A pointer the the current iteration Y residue;
+
+            ApplyVecDiffusionThreadParams() {};
+            
+            ApplyVecDiffusionThreadParams( const ApplyVecDiffusionThreadParams& other )
+            {
+              operator=( other );
+            };
+
+            ~ApplyVecDiffusionThreadParams() {};
+            
+            ApplyVecDiffusionThreadParams& operator=( const ApplyVecDiffusionThreadParams& other )
+            {
+              m_iBufXPtr = other.m_iBufXPtr;
+              m_iBufYPtr = other.m_iBufYPtr;
+              m_oBufXPtr = other.m_oBufXPtr;
+              m_oBufYPtr = other.m_oBufYPtr;
+              m_iBufStrengthPtr = other.m_iBufStrengthPtr;
+              m_mutexPtr = other.m_mutexPtr;
+              m_firstRowIdx = other.m_firstRowIdx;
+              m_lastRowIdx = other.m_lastRowIdx;
+              m_currentIterationXResiduePtr = other.m_currentIterationXResiduePtr;
+              m_currentIterationYResiduePtr = other.m_currentIterationYResiduePtr;
+              
+              return *this;
+            };
+        };        
         
         Skeleton::InputParameters m_inputParameters; //!< Input execution parameters.
         
@@ -161,12 +205,13 @@ namespace te
         
         /*!
           \brief Create an gradient maps from the input image.
+          \param inputData The input data.
           \param edgeXMap The created edge X vectors map.
           \param edgeYMap The created edge Y vectors map.
           \return true if OK, false on errors.
          */          
         bool getGradientMaps( 
-          const te::rp::Matrix< double >& rasterData,
+          const te::rp::Matrix< double >& inputData,
           te::rp::Matrix< double >& gradXMap,
           te::rp::Matrix< double >& gradYMap ) const;
           
@@ -192,14 +237,14 @@ namespace te
           
           for( row = 0 ; row < nRows ; ++row )
           {
-            output[ row ][ 0 ] = 0;
-            output[ row ][ lastColIdx ] = 0;
+            output[ row ][ 0 ] = input[ row ][ 0 ];
+            output[ row ][ lastColIdx ] = input[ row ][ lastColIdx ];
           }
           
           for( col = 0 ; col < nCols ; ++col )
           {
-            output[ 0 ][ col ] = 0;
-            output[ lastRowIdx ][ col ] = 0;
+            output[ 0 ][ col ] = input[ 0 ][ col ];
+            output[ lastRowIdx ][ col ] = input[ lastRowIdx ][ col ];
           }           
           
           for( row = 1 ; row < lastRowIdx ; ++row )
@@ -253,9 +298,9 @@ namespace te
           double xValue = 0;
           double yValue = 0;
           
-          for( row = 1 ; row < nRows ; ++row )
+          for( row = 0 ; row < nRows ; ++row )
           {
-            for( col = 1 ; col < nCols ; ++col )
+            for( col = 0 ; col < nCols ; ++col )
             {
               xValue = gradXMap[ row ][ col ];
               yValue = gradYMap[ row ][ col ];
@@ -270,12 +315,21 @@ namespace te
           
         /*!
           \brief Create an Edge strenght Map from the input data.
+          \param inputMap The input map.
+          \param edgeStrengthMap The edge strength map (zero or positive values).
           \return true if OK, false on errors.
          */          
         bool getEdgeStrengthMap( 
           const te::rp::Matrix< double >& inputMap,
           te::rp::Matrix< double >& edgeStrengthMap ) const;       
           
+        /*!
+          \brief Generate an initial normalized edge vector field.
+          \param edgeStrengthMap The edge strength map.
+          \param edgeVecXMap The generated vector field X component.
+          \param edgeVecYMap The generated vector field Y component.
+          \return true if OK, false on errors.
+         */            
         bool getEdgeVecField( 
           const te::rp::Matrix< double >& edgeStrengthMap,
           te::rp::Matrix< double >& edgeVecXMap,
@@ -383,7 +437,14 @@ namespace te
           const te::rp::Matrix< double >& inputX, 
           const te::rp::Matrix< double >& inputY,
           te::rp::Matrix< double >& outputX, 
-          te::rp::Matrix< double >& outputY ) const;          
+          te::rp::Matrix< double >& outputY ) const;     
+          
+        /*! 
+          \brief Vector diffusion thread entry.
+
+          \param paramsPtr A pointer to the thread parameters.
+        */
+        static void applyVecDiffusionThreadEntry( ApplyVecDiffusionThreadParams* paramsPtr);          
 
     };
 
