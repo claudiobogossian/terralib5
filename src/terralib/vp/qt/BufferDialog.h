@@ -74,7 +74,19 @@ namespace te
       private:
 
       protected slots:
-        
+
+        void onFilterLineEditTextChanged(const QString& text);
+
+        void onFixedDistanceToggled();
+
+        void onAttDistanceToggled();
+
+        void onRuleInOutToggled();
+
+        void onRuleOutToggled();
+
+        void onRuleInToggled();
+
         void onHelpPushButtonClicked();
 
         void onOkPushButtonClicked();
