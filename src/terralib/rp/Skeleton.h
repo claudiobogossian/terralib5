@@ -58,6 +58,8 @@ namespace te
       
       \note Reference: Extraction ofthe Euclidean skeleton based on a connectivity criterion, Wai-Pak Choi, Kin-Man Lam, Wan-Chi Siu.
       
+      \note Reference: Normalized Gradient Vector Diffusion and Image Segmentation, Zeyun Yu, Chandrajit Bajaj.
+      
       \ingroup RPAlgorithms
      */
     class TERPEXPORT Skeleton : public Algorithm
@@ -78,7 +80,9 @@ namespace te
             
             te::rst::Raster const* m_inputMaskRasterPtr; //!< A pointer to an input raster (where pixels with zero velues will be ignored) or an null pointer if no input mask raster must be used.
             
-            double m_finiteDifferencesThreshold;//!< //!< A threshold for the finite differences iterative diffusion - valid range [0,1].
+            double m_diffusionThreshold;//!< //!< A threshold for the finite differences iterative diffusion - valid range [0,1].
+            
+            double m_diffusionRegularitation;//!< //!< A regularization parameter for the finite differences iterative diffusion - valid range [0,1].
             
             bool m_enableMultiThread; //!< Enable (true) the use of threads.
             
@@ -153,17 +157,18 @@ namespace te
         class ApplyVecDiffusionThreadParams
         {
           public:
-
-            te::rp::Matrix< double > const * m_iBufXPtr;
-            te::rp::Matrix< double > const * m_iBufYPtr;
-            te::rp::Matrix< double > * m_oBufXPtr;
-            te::rp::Matrix< double > * m_oBufYPtr;
-            te::rp::Matrix< double > const * m_iBufStrengthPtr;
+            te::rp::Matrix< double > const * m_initialXBufPtr;
+            te::rp::Matrix< double > const * m_initialYBufPtr;
+            te::rp::Matrix< double > const * m_inputBufXPtr;
+            te::rp::Matrix< double > const * m_inputBufYPtr;
+            te::rp::Matrix< double > * m_outputBufXPtr;
+            te::rp::Matrix< double > * m_outputBufYPtr;
             boost::mutex* m_mutexPtr;
             unsigned int m_firstRowIdx; //!< First row to process.
             unsigned int m_lastRowIdx; //!< Last row to process.
             double* m_currentIterationXResiduePtr; //!< A pointer the the current iteration X residue;
             double* m_currentIterationYResiduePtr; //!< A pointer the the current iteration Y residue;
+            double m_diffusionRegularitation;
 
             ApplyVecDiffusionThreadParams() {};
             
@@ -176,16 +181,18 @@ namespace te
             
             ApplyVecDiffusionThreadParams& operator=( const ApplyVecDiffusionThreadParams& other )
             {
-              m_iBufXPtr = other.m_iBufXPtr;
-              m_iBufYPtr = other.m_iBufYPtr;
-              m_oBufXPtr = other.m_oBufXPtr;
-              m_oBufYPtr = other.m_oBufYPtr;
-              m_iBufStrengthPtr = other.m_iBufStrengthPtr;
+              m_initialXBufPtr = other.m_initialXBufPtr;
+              m_initialYBufPtr = other.m_initialYBufPtr;
+              m_inputBufXPtr = other.m_inputBufXPtr;
+              m_inputBufYPtr = other.m_inputBufYPtr;
+              m_outputBufXPtr = other.m_outputBufXPtr;
+              m_outputBufYPtr = other.m_outputBufYPtr;
               m_mutexPtr = other.m_mutexPtr;
               m_firstRowIdx = other.m_firstRowIdx;
               m_lastRowIdx = other.m_lastRowIdx;
               m_currentIterationXResiduePtr = other.m_currentIterationXResiduePtr;
               m_currentIterationYResiduePtr = other.m_currentIterationYResiduePtr;
+              m_diffusionRegularitation = other.m_diffusionRegularitation;
               
               return *this;
             };
@@ -433,9 +440,9 @@ namespace te
           const std::string& tifFileName ) const;   
           
         bool applyVecDiffusion( 
-          const te::rp::Matrix< double >& edgeStrengthMap,
           const te::rp::Matrix< double >& inputX, 
           const te::rp::Matrix< double >& inputY,
+          const te::rp::Matrix< double >& backgroundData, 
           te::rp::Matrix< double >& outputX, 
           te::rp::Matrix< double >& outputY ) const;     
           

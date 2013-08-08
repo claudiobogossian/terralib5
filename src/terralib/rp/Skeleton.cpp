@@ -35,23 +35,6 @@
 #include <memory>
 #include <cmath> 
 #include <cstring>
-  
-#define APPLYDIFFUSION( neighborRow, neighborCol ) \
-  neiStrength = bufferS[ neighborRow ][ neighborCol ]; \
-  if( neiStrength >= centerStrength ) \
-  { \
-    neiX = bufferX[ neighborRow ][ neighborCol ]; \
-    neiY = bufferY[ neighborRow ][ neighborCol ]; \
-    strengthsSum = newCenterStrength + neiStrength; \
-    if( strengthsSum != 0.0 ) \
-    { \
-      newCenterX = ( ( newCenterX * newCenterStrength ) + ( neiX * neiStrength ) ) \
-        / strengthsSum; \
-      newCenterY = ( ( newCenterY * newCenterStrength ) + ( neiY * neiStrength ) ) \
-        / strengthsSum; \
-      newCenterStrength = std::sqrt( ( newCenterX * newCenterX ) + ( newCenterY * newCenterY ) ); \
-    } \
-  }
     
 namespace te
 {
@@ -79,7 +62,8 @@ namespace te
       m_inputRasterPtr = 0;
       m_inputRasterBand = 0;
       m_inputMaskRasterPtr = 0;
-      m_finiteDifferencesThreshold = 0.1;
+      m_diffusionThreshold = 0.1;
+      m_diffusionRegularitation = 0.5;
       m_enableMultiThread = true;
     }
 
@@ -91,7 +75,8 @@ namespace te
       m_inputRasterPtr = params.m_inputRasterPtr;
       m_inputRasterBand = params.m_inputRasterBand;
       m_inputMaskRasterPtr = params.m_inputMaskRasterPtr;
-      m_finiteDifferencesThreshold = params.m_finiteDifferencesThreshold;
+      m_diffusionThreshold = params.m_diffusionThreshold;
+      m_diffusionRegularitation = params.m_diffusionRegularitation;
       m_enableMultiThread = params.m_enableMultiThread;
 
       return *this;
@@ -196,8 +181,8 @@ namespace te
       diffusedVecXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       te::rp::Matrix< double > diffusedVecYMap;
       diffusedVecYMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
-      TERP_TRUE_OR_RETURN_FALSE( applyVecDiffusion( edgeStrengthMap, vecXMap, vecYMap, diffusedVecXMap,
-        diffusedVecYMap ),
+      TERP_TRUE_OR_RETURN_FALSE( applyVecDiffusion( vecXMap, vecYMap, *rasterDataPtr,
+        diffusedVecXMap, diffusedVecYMap ),
         "Vector maps build error" );      
       createTifFromMatrix( diffusedVecXMap, true, "diffusedVecXMap" );
       createTifFromMatrix( diffusedVecYMap, true, "diffusedVecYMap" );
@@ -259,9 +244,14 @@ namespace te
       }
         
       TERP_TRUE_OR_RETURN_FALSE( 
-        ( m_inputParameters.m_finiteDifferencesThreshold >= 0.0 ) &&
-        ( m_inputParameters.m_finiteDifferencesThreshold <= 1.0 ),
-        "Invalid edge treshold" );           
+        ( m_inputParameters.m_diffusionThreshold >= 0.0 ) &&
+        ( m_inputParameters.m_diffusionThreshold <= 1.0 ),
+        "Invalid diffusion threshold" );          
+        
+      TERP_TRUE_OR_RETURN_FALSE( 
+        ( m_inputParameters.m_diffusionRegularitation >= 0.0 ) &&
+        ( m_inputParameters.m_diffusionRegularitation <= 1.0 ),
+        "Invalid diffusion regularitation" );           
 
       m_isInitialized = true;
 
@@ -842,9 +832,9 @@ namespace te
     }    
 
     bool Skeleton::applyVecDiffusion( 
-       const te::rp::Matrix< double >& edgeStrengthMap,
        const te::rp::Matrix< double >& inputX, 
        const te::rp::Matrix< double >& inputY,
+       const te::rp::Matrix< double >& backgroundData, 
        te::rp::Matrix< double >& outputX, 
        te::rp::Matrix< double >& outputY ) const
     {
@@ -890,10 +880,12 @@ namespace te
       boost::mutex mutex;
       
       ApplyVecDiffusionThreadParams threadParams;
-      threadParams.m_iBufStrengthPtr = &edgeStrengthMap;
+      threadParams.m_initialXBufPtr = &inputX;
+      threadParams.m_initialYBufPtr = &inputY;
       threadParams.m_currentIterationXResiduePtr = &currentIterationXResidue;
       threadParams.m_currentIterationYResiduePtr = &currentIterationYResidue;
       threadParams.m_mutexPtr = &mutex;
+      threadParams.m_diffusionRegularitation = m_inputParameters.m_diffusionRegularitation;
       
       const unsigned int threadsNumber = m_inputParameters.m_enableMultiThread ?
         te::common::GetPhysProcNumber() : 0;
@@ -902,72 +894,72 @@ namespace te
 
       unsigned int iteration = 0;
             
-      while( ( currentIterationXResidue > m_inputParameters.m_finiteDifferencesThreshold ) ||
-        ( currentIterationYResidue > m_inputParameters.m_finiteDifferencesThreshold ) )
+      while( ( currentIterationXResidue > m_inputParameters.m_diffusionThreshold ) ||
+        ( currentIterationYResidue > m_inputParameters.m_diffusionThreshold ) )
       {
         currentIterationXResidue = 0;
         currentIterationYResidue = 0;
         
         if( iteration == 0 )
         {
-          threadParams.m_iBufXPtr = &inputX;
-          threadParams.m_iBufYPtr = &inputY;
-          threadParams.m_oBufXPtr = xBuf1Ptr.get();
-          threadParams.m_oBufYPtr = yBuf1Ptr.get();
+          threadParams.m_inputBufXPtr = &inputX;
+          threadParams.m_inputBufYPtr = &inputY;
+          threadParams.m_outputBufXPtr = xBuf1Ptr.get();
+          threadParams.m_outputBufYPtr = yBuf1Ptr.get();
         }
         else
         {
-          if( threadParams.m_oBufXPtr == xBuf1Ptr.get() )
+          if( threadParams.m_outputBufXPtr == xBuf1Ptr.get() )
           {
-            threadParams.m_iBufXPtr = xBuf1Ptr.get();
-            threadParams.m_iBufYPtr = yBuf1Ptr.get();
-            threadParams.m_oBufXPtr = xBuf2Ptr.get();
-            threadParams.m_oBufYPtr = yBuf2Ptr.get();
+            threadParams.m_inputBufXPtr = xBuf1Ptr.get();
+            threadParams.m_inputBufYPtr = yBuf1Ptr.get();
+            threadParams.m_outputBufXPtr = xBuf2Ptr.get();
+            threadParams.m_outputBufYPtr = yBuf2Ptr.get();
           }
           else
           {
-            threadParams.m_iBufXPtr = xBuf2Ptr.get();
-            threadParams.m_iBufYPtr = yBuf2Ptr.get();
-            threadParams.m_oBufXPtr = xBuf1Ptr.get();
-            threadParams.m_oBufYPtr = yBuf1Ptr.get();
+            threadParams.m_inputBufXPtr = xBuf2Ptr.get();
+            threadParams.m_inputBufYPtr = yBuf2Ptr.get();
+            threadParams.m_outputBufXPtr = xBuf1Ptr.get();
+            threadParams.m_outputBufYPtr = yBuf1Ptr.get();
           }
         }
         
-        memcpy( threadParams.m_oBufXPtr->operator[]( 0 ), 
-          threadParams.m_iBufXPtr->operator[]( 0 ), rowSizeBytes );
-        memcpy( threadParams.m_oBufXPtr->operator[]( 1 ), 
-          threadParams.m_iBufXPtr->operator[]( 1 ), rowSizeBytes );
-        memcpy( threadParams.m_oBufXPtr->operator[]( 2 ), 
-          threadParams.m_iBufXPtr->operator[]( 2 ), rowSizeBytes );
-        memcpy( threadParams.m_oBufXPtr->operator[]( 3 ), 
-          threadParams.m_iBufXPtr->operator[]( 3 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufXPtr->operator[]( 0 ), 
+          threadParams.m_inputBufXPtr->operator[]( 0 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufXPtr->operator[]( 1 ), 
+          threadParams.m_inputBufXPtr->operator[]( 1 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufXPtr->operator[]( 2 ), 
+          threadParams.m_inputBufXPtr->operator[]( 2 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufXPtr->operator[]( 3 ), 
+          threadParams.m_inputBufXPtr->operator[]( 3 ), rowSizeBytes );
           
-        memcpy( threadParams.m_oBufXPtr->operator[]( nRows - 4 ), 
-          threadParams.m_iBufXPtr->operator[]( nRows - 4 ), rowSizeBytes );
-        memcpy( threadParams.m_oBufXPtr->operator[]( nRows - 3 ), 
-          threadParams.m_iBufXPtr->operator[]( nRows - 3 ), rowSizeBytes );
-        memcpy( threadParams.m_oBufXPtr->operator[]( nRows - 2 ), 
-          threadParams.m_iBufXPtr->operator[]( nRows - 2 ), rowSizeBytes );
-        memcpy( threadParams.m_oBufXPtr->operator[]( nRows - 1 ), 
-          threadParams.m_iBufXPtr->operator[]( nRows - 1 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufXPtr->operator[]( nRows - 4 ), 
+          threadParams.m_inputBufXPtr->operator[]( nRows - 4 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufXPtr->operator[]( nRows - 3 ), 
+          threadParams.m_inputBufXPtr->operator[]( nRows - 3 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufXPtr->operator[]( nRows - 2 ), 
+          threadParams.m_inputBufXPtr->operator[]( nRows - 2 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufXPtr->operator[]( nRows - 1 ), 
+          threadParams.m_inputBufXPtr->operator[]( nRows - 1 ), rowSizeBytes );
           
-        memcpy( threadParams.m_oBufYPtr->operator[]( 0 ), 
-          threadParams.m_iBufYPtr->operator[]( 0 ), rowSizeBytes );
-        memcpy( threadParams.m_oBufYPtr->operator[]( 1 ), 
-          threadParams.m_iBufYPtr->operator[]( 1 ), rowSizeBytes );
-        memcpy( threadParams.m_oBufYPtr->operator[]( 2 ), 
-          threadParams.m_iBufYPtr->operator[]( 2 ), rowSizeBytes );
-        memcpy( threadParams.m_oBufYPtr->operator[]( 3 ), 
-          threadParams.m_iBufYPtr->operator[]( 3 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufYPtr->operator[]( 0 ), 
+          threadParams.m_inputBufYPtr->operator[]( 0 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufYPtr->operator[]( 1 ), 
+          threadParams.m_inputBufYPtr->operator[]( 1 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufYPtr->operator[]( 2 ), 
+          threadParams.m_inputBufYPtr->operator[]( 2 ), rowSizeBytes );
+        memcpy( threadParams.m_outputBufYPtr->operator[]( 3 ), 
+          threadParams.m_inputBufYPtr->operator[]( 3 ), rowSizeBytes );
           
-        memcpy( threadParams.m_oBufYPtr->operator[]( nRows - 4 ), 
-          threadParams.m_iBufYPtr->operator[]( nRows - 4 ), rowSizeBytes );          
-        memcpy( threadParams.m_oBufYPtr->operator[]( nRows - 3 ), 
-          threadParams.m_iBufYPtr->operator[]( nRows - 3 ), rowSizeBytes );          
-        memcpy( threadParams.m_oBufYPtr->operator[]( nRows - 2 ), 
-          threadParams.m_iBufYPtr->operator[]( nRows - 2 ), rowSizeBytes );          
-        memcpy( threadParams.m_oBufYPtr->operator[]( nRows - 1 ), 
-          threadParams.m_iBufYPtr->operator[]( nRows - 1 ), rowSizeBytes );          
+        memcpy( threadParams.m_outputBufYPtr->operator[]( nRows - 4 ), 
+          threadParams.m_inputBufYPtr->operator[]( nRows - 4 ), rowSizeBytes );          
+        memcpy( threadParams.m_outputBufYPtr->operator[]( nRows - 3 ), 
+          threadParams.m_inputBufYPtr->operator[]( nRows - 3 ), rowSizeBytes );          
+        memcpy( threadParams.m_outputBufYPtr->operator[]( nRows - 2 ), 
+          threadParams.m_inputBufYPtr->operator[]( nRows - 2 ), rowSizeBytes );          
+        memcpy( threadParams.m_outputBufYPtr->operator[]( nRows - 1 ), 
+          threadParams.m_inputBufYPtr->operator[]( nRows - 1 ), rowSizeBytes );          
         
         if( threadsNumber )
         {
@@ -998,11 +990,11 @@ namespace te
         
         if( ( iteration % 10 ) == 0 )
         {
-          createTifFromMatrix( *threadParams.m_oBufXPtr, true,  
+          createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
             boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
-          createTifFromMatrix( *threadParams.m_oBufYPtr, true,  
+          createTifFromMatrix( *threadParams.m_outputBufYPtr, true,  
             boost::lexical_cast< std::string >( iteration ) + "_diffusedY");
-          createTifFromVecField( *threadParams.m_oBufXPtr, *threadParams.m_oBufYPtr, edgeStrengthMap,  
+          createTifFromVecField( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, backgroundData,  
             boost::lexical_cast< std::string >( iteration ) + "_diffusedVecs");
         }
 
@@ -1011,9 +1003,9 @@ namespace te
       
       for( unsigned int row = 0 ; row < nRows ; ++row )
       {
-        memcpy( outputX[ row ], threadParams.m_oBufXPtr->operator[]( row ),
+        memcpy( outputX[ row ], threadParams.m_outputBufXPtr->operator[]( row ),
           rowSizeBytes );
-        memcpy( outputY[ row ], threadParams.m_oBufYPtr->operator[]( row ),
+        memcpy( outputY[ row ], threadParams.m_outputBufYPtr->operator[]( row ),
           rowSizeBytes );          
       }
       
@@ -1022,11 +1014,13 @@ namespace te
 
     void Skeleton::applyVecDiffusionThreadEntry( ApplyVecDiffusionThreadParams* paramsPtr)
     {
-      const te::rp::Matrix< double >& iBufX = *(paramsPtr->m_iBufXPtr);
-      const te::rp::Matrix< double >& iBufY = *(paramsPtr->m_iBufYPtr);
-      const te::rp::Matrix< double >& iBufStrength = *(paramsPtr->m_iBufStrengthPtr);
-      te::rp::Matrix< double >& oBufX = *(paramsPtr->m_oBufXPtr);
-      te::rp::Matrix< double >& oBufY = *(paramsPtr->m_oBufYPtr);
+      const te::rp::Matrix< double >& initBufX = *(paramsPtr->m_initialXBufPtr);
+      const te::rp::Matrix< double >& initBufY = *(paramsPtr->m_initialYBufPtr);
+      const te::rp::Matrix< double >& iBufX = *(paramsPtr->m_inputBufXPtr);
+      const te::rp::Matrix< double >& iBufY = *(paramsPtr->m_inputBufYPtr);
+      te::rp::Matrix< double >& oBufX = *(paramsPtr->m_outputBufXPtr);
+      te::rp::Matrix< double >& oBufY = *(paramsPtr->m_outputBufYPtr);
+      const double diffusionRegularization = paramsPtr->m_diffusionRegularitation / 4.0;
       
       const unsigned int nCols = iBufX.getColumnsNumber();
       const unsigned int rowSizeBytes = sizeof( double ) * nCols;
@@ -1039,22 +1033,40 @@ namespace te
       boost::scoped_array< double > bufYRow0Handler( new double[ nCols ] );
       boost::scoped_array< double > bufYRow1Handler( new double[ nCols ] );
       boost::scoped_array< double > bufYRow2Handler( new double[ nCols ] );
-      boost::scoped_array< double > bufSRow0Handler( new double[ nCols ] );
-      boost::scoped_array< double > bufSRow1Handler( new double[ nCols ] );
-      boost::scoped_array< double > bufSRow2Handler( new double[ nCols ] );            
+      boost::scoped_array< double > bufInitXRow0Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufInitXRow1Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufInitXRow2Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufInitYRow0Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufInitYRow1Handler( new double[ nCols ] );
+      boost::scoped_array< double > bufInitYRow2Handler( new double[ nCols ] );
+      double* bufferInitX[ 3 ];
+      double* bufferInitY[ 3 ];
       double* bufferX[ 3 ];
       double* bufferY[ 3 ];
-      double* bufferS[ 3 ];
+      bufferInitX[ 0 ] = bufInitXRow0Handler.get();
+      bufferInitX[ 1 ] = bufInitXRow1Handler.get();
+      bufferInitX[ 2 ] = bufInitXRow2Handler.get();
+      bufferInitY[ 0 ] = bufInitYRow0Handler.get();
+      bufferInitY[ 1 ] = bufInitYRow1Handler.get();
+      bufferInitY[ 2 ] = bufInitYRow2Handler.get();      
       bufferX[ 0 ] = bufXRow0Handler.get();
       bufferX[ 1 ] = bufXRow1Handler.get();
       bufferX[ 2 ] = bufXRow2Handler.get();
       bufferY[ 0 ] = bufYRow0Handler.get();
       bufferY[ 1 ] = bufYRow1Handler.get();
       bufferY[ 2 ] = bufYRow2Handler.get();
-      bufferS[ 0 ] = bufSRow0Handler.get();
-      bufferS[ 1 ] = bufSRow1Handler.get();
-      bufferS[ 2 ] = bufSRow2Handler.get();            
+      
+      // Loading the two initial rows
+        
       paramsPtr->m_mutexPtr->lock();
+      memcpy( bufferInitX[ 1 ], initBufX[ paramsPtr->m_firstRowIdx - 1 ], 
+        rowSizeBytes );
+      memcpy( bufferInitX[ 2 ], initBufX[ paramsPtr->m_firstRowIdx ], 
+        rowSizeBytes );
+      memcpy( bufferInitY[ 1 ], initBufY[ paramsPtr->m_firstRowIdx - 1 ], 
+        rowSizeBytes );
+      memcpy( bufferInitY[ 2 ], initBufY[ paramsPtr->m_firstRowIdx ], 
+        rowSizeBytes );      
       memcpy( bufferX[ 1 ], iBufX[ paramsPtr->m_firstRowIdx - 1 ], 
         rowSizeBytes );
       memcpy( bufferX[ 2 ], iBufX[ paramsPtr->m_firstRowIdx ], 
@@ -1063,24 +1075,20 @@ namespace te
         rowSizeBytes );
       memcpy( bufferY[ 2 ], iBufY[ paramsPtr->m_firstRowIdx ], 
         rowSizeBytes );
-      memcpy( bufferS[ 1 ], iBufStrength[ paramsPtr->m_firstRowIdx - 1 ], 
-        rowSizeBytes );
-      memcpy( bufferS[ 2 ], iBufStrength[ paramsPtr->m_firstRowIdx ], 
-        rowSizeBytes );                        
       paramsPtr->m_mutexPtr->unlock();
       
       const unsigned int rowsBound = paramsPtr->m_lastRowIdx + 2;
       const unsigned int colsBound = nCols - 4;
       double centerX = 0;
       double centerY = 0;
-      double centerStrength = 0;
+      double centerInitX = 0;
+      double centerInitY = 0;      
       double newCenterX = 0;
       double newCenterY = 0;
-      double newCenterStrength = 0;
       double neiX = 0;
       double neiY = 0;
-      double neiStrength = 0;
-      double strengthsSum = 0;
+      double neiMag = 0;
+   
       double* rowPtr = 0;
       unsigned int prevRow = 0;
       unsigned int prevCol = 0;
@@ -1096,6 +1104,15 @@ namespace te
         
         // Rolling-up the internal buffers
         
+        rowPtr = bufferInitX[ 0 ];
+        bufferInitX[ 0 ] = bufferInitX[ 1 ];
+        bufferInitX[ 1 ] = bufferInitX[ 2 ];
+        bufferInitX[ 2 ] = rowPtr;
+        rowPtr = bufferInitY[ 0 ];
+        bufferInitY[ 0 ] = bufferInitY[ 1 ];
+        bufferInitY[ 1 ] = bufferInitY[ 2 ];
+        bufferInitY[ 2 ] = rowPtr;         
+        
         rowPtr = bufferX[ 0 ];
         bufferX[ 0 ] = bufferX[ 1 ];
         bufferX[ 1 ] = bufferX[ 2 ];
@@ -1103,20 +1120,15 @@ namespace te
         rowPtr = bufferY[ 0 ];
         bufferY[ 0 ] = bufferY[ 1 ];
         bufferY[ 1 ] = bufferY[ 2 ];
-        bufferY[ 2 ] = rowPtr;         
-        rowPtr = bufferS[ 0 ];
-        bufferS[ 0 ] = bufferS[ 1 ];
-        bufferS[ 1 ] = bufferS[ 2 ];
-        bufferS[ 2 ] = rowPtr;        
+        bufferY[ 2 ] = rowPtr;       
         
         // Getting a new line
         
         paramsPtr->m_mutexPtr->lock();
-        
+        memcpy( bufferInitX[ 2 ], initBufX[ row ], rowSizeBytes );
+        memcpy( bufferInitY[ 2 ], initBufY[ row ], rowSizeBytes );        
         memcpy( bufferX[ 2 ], iBufX[ row ], rowSizeBytes );
-        memcpy( bufferY[ 2 ], iBufY[ row ], rowSizeBytes );
-        memcpy( bufferS[ 2 ], iBufStrength[ row ], rowSizeBytes );
-        
+        memcpy( bufferY[ 2 ], iBufY[ row ], rowSizeBytes );        
         paramsPtr->m_mutexPtr->unlock();        
         
         // Diffusing the buffer center line
@@ -1126,26 +1138,103 @@ namespace te
           prevCol = col - 1;
           nextCol = col + 1;
           
-          centerStrength = newCenterStrength = bufferS[ 1 ][ col ];
-          centerX = newCenterX = bufferX[ 1 ][ col ];
-          centerY = newCenterY = bufferY[ 1 ][ col ];
+          centerInitX = bufferInitX[ 1 ][ col ];
+          centerInitY = bufferInitY[ 1 ][ col ];
+          centerX = bufferX[ 1 ][ col ];
+          centerY = bufferY[ 1 ][ col ];
           
-          APPLYDIFFUSION( 0, prevCol );
-          APPLYDIFFUSION( 0, col );
-          APPLYDIFFUSION( 0, nextCol );
-          APPLYDIFFUSION( 1, prevCol );
-          APPLYDIFFUSION( 1, nextCol );
-          APPLYDIFFUSION( 2, prevCol );
-          APPLYDIFFUSION( 2, col );
-          APPLYDIFFUSION( 2, nextCol );  
+          newCenterX = 0;
+          newCenterY = 0;
+ 
+          neiX = bufferX[ 0 ][ prevCol ];
+          neiY = bufferY[ 0 ][ prevCol ];
+          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
+          if( neiMag != 0.0 )
+          {
+            newCenterX += ( neiX / neiMag );
+            newCenterY += ( neiY / neiMag );
+          }
+          
+          neiX = bufferX[ 0 ][ col ];
+          neiY = bufferY[ 0 ][ col ];
+          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
+          if( neiMag != 0.0 )
+          {
+            newCenterX += ( neiX / neiMag );
+            newCenterY += ( neiY / neiMag );
+          }     
+          
+          neiX = bufferX[ 0 ][ nextCol ];
+          neiY = bufferY[ 0 ][ nextCol ];
+          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
+          if( neiMag != 0.0 )
+          {
+            newCenterX += ( neiX / neiMag );
+            newCenterY += ( neiY / neiMag );
+          }           
+          
+          neiX = bufferX[ 1 ][ prevCol ];
+          neiY = bufferY[ 1 ][ prevCol ];
+          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
+          if( neiMag != 0.0 )
+          {
+            newCenterX += ( neiX / neiMag );
+            newCenterY += ( neiY / neiMag );
+          }       
+          
+          neiX = bufferX[ 1 ][ nextCol ];
+          neiY = bufferY[ 1 ][ nextCol ];
+          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
+          if( neiMag != 0.0 )
+          {
+            newCenterX += ( neiX / neiMag );
+            newCenterY += ( neiY / neiMag );
+          }          
+          
+          neiX = bufferX[ 2 ][ prevCol ];
+          neiY = bufferY[ 2 ][ prevCol ];
+          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
+          if( neiMag != 0.0 )
+          {
+            newCenterX += ( neiX / neiMag );
+            newCenterY += ( neiY / neiMag );
+          }
+          
+          neiX = bufferX[ 2 ][ col ];
+          neiY = bufferY[ 2 ][ col ];
+          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
+          if( neiMag != 0.0 )
+          {
+            newCenterX += ( neiX / neiMag );
+            newCenterY += ( neiY / neiMag );
+          }     
+          
+          neiX = bufferX[ 2 ][ nextCol ];
+          neiY = bufferY[ 2 ][ nextCol ];
+          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
+          if( neiMag != 0.0 )
+          {
+            newCenterX += ( neiX / neiMag );
+            newCenterY += ( neiY / neiMag );
+          }            
+          
+          newCenterX -= ( 4.0 * centerX );
+          newCenterY -= ( 4.0 * centerY );
+          
+          newCenterX *= diffusionRegularization;
+          newCenterY *= diffusionRegularization;
+          
+          newCenterX -= ( ( centerX - centerInitX ) * ( centerInitX * centerInitY ) );
+          newCenterY -= ( ( centerY - centerInitY ) * ( centerInitX * centerInitY ) );
             
           outRowX[ col ] = newCenterX;
           outRowY[ col ] = newCenterY;
             
           if( centerX == 0.0 )
           {
-            currentIterationXResidue = std::max( currentIterationXResidue,
-              1.0 );
+            if( newCenterX != 0.0 )
+              currentIterationXResidue = std::max( currentIterationXResidue,
+                1.0 );
           }
           else
           {
@@ -1155,8 +1244,9 @@ namespace te
           
           if( centerY == 0.0 )
           {
-            currentIterationYResidue = std::max( currentIterationYResidue,
-              1.0 );
+            if( newCenterY != 0.0 )
+              currentIterationYResidue = std::max( currentIterationYResidue,
+                1.0 );
           }
           else
           {
