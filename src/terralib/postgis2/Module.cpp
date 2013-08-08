@@ -21,6 +21,7 @@
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../dataaccess2/datasource/DataSourceCapabilities.h"
+#include "../dataaccess2/datasource/DataSourceFactory.h"
 #include "../dataaccess2/datasource/DataSourceManager.h"
 #include "../dataaccess2/query/BinaryOpEncoder.h"
 #include "../dataaccess2/query/FunctionEncoder.h"
@@ -49,7 +50,10 @@ void te::pgis::Module::startup()
 // it initializes the Translator support for the TerraLib PostGIS driver support
   TE_ADD_TEXT_DOMAIN(TE_PGIS_TEXT_DOMAIN, TE_PGIS_TEXT_DOMAIN_DIR, "UTF-8");
 
-  DataSourceFactory::initialize();
+  // Register the data source factory
+  te::da::DataSourceFactory::add("POSTGIS", te::pgis::Build);
+
+  //DataSourceFactory::initialize();
 
   #include "PostGISCapabilities.h"
   #include "PostGISDialect.h"
@@ -64,8 +68,10 @@ void te::pgis::Module::shutdown()
   if(!m_initialized)
     return;
 
-  // It finalizes the PostGIS factory support.
-  te::pgis::DataSourceFactory::finalize();
+  // Unregister the PostGIS factory support.
+  te::da::DataSourceFactory::remove("POSTGIS");
+
+  //te::pgis::DataSourceFactory::finalize();
   DataSource::setDialect(0);
 
   // Free the PostGIS registered drivers

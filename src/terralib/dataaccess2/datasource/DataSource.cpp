@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/Translator.h"
 #include "../../geometry/Envelope.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../query/DataSetName.h"
@@ -382,27 +383,4 @@ std::vector<std::string> te::da::DataSource::getEncodings(const std::string& dsT
     throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
 
   return ds->getEncodings(dsInfo);
-}
-
-void te::da::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-}
-
-void te::da::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-}
-
-bool te::da::DataSource::exists(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-  return false;
-}
-
-std::vector<std::string> te::da::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-  return std::vector<std::string>();
-}
-
-std::vector<std::string> te::da::DataSource::getEncodings(const std::map<std::string, std::string>& /*dsInfo*/)
-{
-  return std::vector<std::string>();
 }
