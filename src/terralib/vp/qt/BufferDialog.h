@@ -71,9 +71,15 @@ namespace te
         */
         void setLayers(std::list<te::map::AbstractLayerPtr> layers);
 
+        void setPossibleLevels();
+
+        void setAttributesForDistance(std::vector<te::dt::Property*> properties);
+
       private:
 
       protected slots:
+
+        void onLayerComboBoxChanged(int index);
 
         void onFilterLineEditTextChanged(const QString& text);
 
@@ -87,6 +93,10 @@ namespace te
 
         void onRuleInToggled();
 
+        void onWithoutBoundToggled();
+
+        void onWithBoundToggled();
+
         void onHelpPushButtonClicked();
 
         void onOkPushButtonClicked();
@@ -99,6 +109,7 @@ namespace te
         te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
         std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
         te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
+        std::vector<te::dt::Property*> m_properties;                                      //!< Properties related to the selected Layer
     };
   }   // end namespace vp
 }     // end namespace te
