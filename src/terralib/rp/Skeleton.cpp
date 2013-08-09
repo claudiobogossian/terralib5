@@ -36,6 +36,16 @@
 #include <cmath> 
 #include <cstring>
     
+#define ADDNEIGHBOR( neighborRow, neighborCol ) \
+  neiX = bufferX[ neighborRow ][ neighborCol ]; \
+  neiY = bufferY[ neighborRow ][ neighborCol ]; \
+  neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) ); \
+  if( neiMag != 0.0 ) \
+  { \
+    newCenterX += ( neiX / neiMag ); \
+    newCenterY += ( neiY / neiMag ); \
+  }
+  
 namespace te
 {
   namespace rp
@@ -988,7 +998,7 @@ namespace te
           applyVecDiffusionThreadEntry( &threadParams );
         };
         
-        if( ( iteration % 10 ) == 0 )
+        if( ( iteration % 50 ) == 0 )
         {
           createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
             boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
@@ -1020,7 +1030,7 @@ namespace te
       const te::rp::Matrix< double >& iBufY = *(paramsPtr->m_inputBufYPtr);
       te::rp::Matrix< double >& oBufX = *(paramsPtr->m_outputBufXPtr);
       te::rp::Matrix< double >& oBufY = *(paramsPtr->m_outputBufYPtr);
-      const double diffusionRegularization = paramsPtr->m_diffusionRegularitation / 4.0;
+      const double& diffusionRegularization = paramsPtr->m_diffusionRegularitation;
       
       const unsigned int nCols = iBufX.getColumnsNumber();
       const unsigned int rowSizeBytes = sizeof( double ) * nCols;
@@ -1095,8 +1105,12 @@ namespace te
       unsigned int nextCol = 0;
       double currentIterationXResidue = 0;
       double currentIterationYResidue = 0;
-      double outRowX[ nCols ];
-      double outRowY[ nCols ];
+      
+      boost::scoped_array< double > outRowXBuffHandler( new double[ nCols ] );
+      double* outRowXBuff = outRowXBuffHandler.get();
+      
+      boost::scoped_array< double > outRowYBuffHandler( new double[ nCols ] );
+      double* outRowYBuff = outRowXBuffHandler.get();
       
       for( row = ( paramsPtr->m_firstRowIdx + 1 ) ; row < rowsBound ; ++row )
       {
@@ -1145,90 +1159,32 @@ namespace te
           
           newCenterX = 0;
           newCenterY = 0;
- 
-          neiX = bufferX[ 0 ][ prevCol ];
-          neiY = bufferY[ 0 ][ prevCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }
           
-          neiX = bufferX[ 0 ][ col ];
-          neiY = bufferY[ 0 ][ col ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }     
+          ADDNEIGHBOR( 0, prevCol )
+          ADDNEIGHBOR( 0, col )
+          ADDNEIGHBOR( 0, nextCol )
+          ADDNEIGHBOR( 1, prevCol )
+          ADDNEIGHBOR( 1, nextCol )
+          ADDNEIGHBOR( 2, prevCol )
+          ADDNEIGHBOR( 2, col )
+          ADDNEIGHBOR( 2, nextCol )          
           
-          neiX = bufferX[ 0 ][ nextCol ];
-          neiY = bufferY[ 0 ][ nextCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }           
-          
-          neiX = bufferX[ 1 ][ prevCol ];
-          neiY = bufferY[ 1 ][ prevCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }       
-          
-          neiX = bufferX[ 1 ][ nextCol ];
-          neiY = bufferY[ 1 ][ nextCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }          
-          
-          neiX = bufferX[ 2 ][ prevCol ];
-          neiY = bufferY[ 2 ][ prevCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }
-          
-          neiX = bufferX[ 2 ][ col ];
-          neiY = bufferY[ 2 ][ col ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }     
-          
-          neiX = bufferX[ 2 ][ nextCol ];
-          neiY = bufferY[ 2 ][ nextCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }            
-          
-          newCenterX -= ( 4.0 * centerX );
-          newCenterY -= ( 4.0 * centerY );
+          newCenterX -= ( 8.0 * centerX );
+          newCenterY -= ( 8.0 * centerY );
           
           newCenterX *= diffusionRegularization;
           newCenterY *= diffusionRegularization;
           
-          newCenterX -= ( ( centerX - centerInitX ) * ( centerInitX * centerInitY ) );
-          newCenterY -= ( ( centerY - centerInitY ) * ( centerInitX * centerInitY ) );
+          newCenterX -= ( ( centerX - centerInitX ) * 
+            ( ( centerInitX * centerInitX ) + ( centerInitY * centerInitY ) ) );
+          newCenterY -= ( ( centerY - centerInitY ) * 
+            ( ( centerInitX * centerInitX ) + ( centerInitY * centerInitY ) ) );
             
-          outRowX[ col ] = newCenterX;
-          outRowY[ col ] = newCenterY;
+          newCenterX += centerX;
+          newCenterY += centerY;
+            
+          outRowXBuff[ col ] = newCenterX;
+          outRowYBuff[ col ] = newCenterY;
             
           if( centerX == 0.0 )
           {
@@ -1259,8 +1215,8 @@ namespace te
         
         paramsPtr->m_mutexPtr->lock();
         
-        memcpy( oBufX[ prevRow ], outRowX, rowSizeBytes );
-        memcpy( oBufY[ prevRow ], outRowY, rowSizeBytes );
+        memcpy( oBufX[ prevRow ], outRowXBuff, rowSizeBytes );
+        memcpy( oBufY[ prevRow ], outRowYBuff, rowSizeBytes );
         
         oBufX[ prevRow ][ 0 ] = bufferX[ 1 ][ 0 ];
         oBufX[ prevRow ][ 1 ] = bufferX[ 1 ][ 1 ];
