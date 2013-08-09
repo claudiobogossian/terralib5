@@ -156,10 +156,8 @@ void UpdateProject(te::qt::af::Project* proj, te::qt::widgets::LayerExplorer* ex
 
   proj->clear();
 
-  std::list<te::map::AbstractLayerPtr>::iterator it;
-
-  for(it=exp_layers.begin(); it!=exp_layers.end(); ++it)
-    proj->add(*it);
+  for(exp_it=exp_layers.begin(); exp_it!=exp_layers.end(); ++exp_it)
+    proj->add(*exp_it);
 }
 
 te::qt::af::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::af::DataSetTableDockWidget*>& docs)

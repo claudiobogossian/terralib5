@@ -46,7 +46,7 @@
 
   \brief The Memory plugin identifier string.
 */
-#define TE_MEMORY_MODULE_NAME "te.da.memory"
+#define TE_MEMORY_MODULE_NAME "te.memory"
 
 /*!
   \brief The maximum number of datasets to be handled by a data source.
@@ -125,4 +125,3 @@
 //@}        
 
 #endif  // __TERRALIB_MEMORY_INTERNAL_CONFIG_H
-

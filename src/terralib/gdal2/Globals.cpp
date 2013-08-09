@@ -18,10 +18,12 @@
  */
 
 /*!
-  \file terralib/memory/DataSourceFactory.cpp
-
-  \brief This is the data source factory for the memory Data Access driver.
+  \file terralib/gdal/Globals.cpp
+   
+  \brief An static class with global definitions for the TerraLib GDAL driver.
 */
 
 // TerraLib
-#include "DataSourceFactory.h"
+#include "Globals.h"
+
+const std::string te::gdal::Globals::sm_driverIdentifier(TE_GDAL_DRIVER_IDENTIFIER);

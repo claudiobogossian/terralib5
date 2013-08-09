@@ -190,7 +190,7 @@ namespace te
 
         void dropUniqueKey(const std::string& datasetName, const std::string& name);
 
-        std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
+        /*std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
 
         bool checkConstraintExists(const std::string& datasetName, const std::string& name);
 
@@ -198,7 +198,7 @@ namespace te
 
         void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc);
 
-        void dropCheckConstraint(const std::string& datasetName, const std::string& name);
+        void dropCheckConstraint(const std::string& datasetName, const std::string& name);*/
 
         std::vector<std::string> getIndexNames(const std::string& datasetName);
 
@@ -210,7 +210,7 @@ namespace te
 
         void dropIndex(const std::string& datasetName, const std::string& idxName);
 
-        std::vector<std::string> getSequenceNames();
+        /*std::vector<std::string> getSequenceNames();
 
         bool sequenceExists(const std::string& name);
 
@@ -218,7 +218,7 @@ namespace te
 
         void addSequence(te::da::Sequence* sequence);
 
-        void dropSequence(const std::string& name);
+        void dropSequence(const std::string& name);*/
 
         std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, const std::string& propertyName);
 
@@ -251,8 +251,6 @@ namespace te
                     const std::map<std::string, std::string>& options,
                     std::size_t limit);
 
-        void optimize(const std::map<std::string, std::string>& opInfo);
-
         /*!
           \brief It retrieves the data sources available.
 
@@ -269,6 +267,26 @@ namespace te
         void drop(const std::map<std::string, std::string>& dsInfo);
 
         bool exists(const std::map<std::string, std::string>& dsInfo);
+
+        /*!
+          \brief It gets all the indexes of the given dataset and adds them to the dummy schema.
+
+          \param dt The dataset schema.
+
+          \return The dataset indexes.
+        */
+        void getIndexes(te::da::DataSetTypePtr& dt);
+
+         /*!
+          \brief It loads the properties for the given dataset.
+
+          \param dt The datasettype where the list of properties will be loaded.
+
+          \exception Exception It throws an exception if it was not possible to get the information needed.
+
+          \note ADO driver extended method.
+        */
+        void getProperties(te::da::DataSetTypePtr& dt);
 
       private:
 
