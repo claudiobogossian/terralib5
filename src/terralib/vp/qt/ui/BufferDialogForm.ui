@@ -167,11 +167,26 @@
      </item>
      <item row="3" column="0" colspan="2">
       <widget class="QTabWidget" name="tabWidget">
+       <property name="minimumSize">
+        <size>
+         <width>448</width>
+         <height>135</height>
+        </size>
+       </property>
+       <property name="tabPosition">
+        <enum>QTabWidget::North</enum>
+       </property>
        <property name="tabShape">
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
         <number>0</number>
+       </property>
+       <property name="elideMode">
+        <enum>Qt::ElideNone</enum>
+       </property>
+       <property name="usesScrollButtons">
+        <bool>true</bool>
        </property>
        <property name="documentMode">
         <bool>false</bool>
@@ -394,7 +409,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="m_levelsNumComboBox_2"/>
+           <widget class="QComboBox" name="m_levelsNumComboBox"/>
           </item>
          </layout>
         </widget>
