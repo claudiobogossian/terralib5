@@ -80,9 +80,11 @@ namespace te
             
             te::rst::Raster const* m_inputMaskRasterPtr; //!< A pointer to an input raster (where pixels with zero velues will be ignored) or an null pointer if no input mask raster must be used.
             
-            double m_diffusionThreshold;//!< //!< A threshold for the finite differences iterative diffusion - valid range [0,1], higher values will cause more iterations to be performed.
+            double m_diffusionThreshold; //!< A threshold for the finite differences iterative diffusion - valid range [0,1], higher values will cause more iterations to be performed.
             
-            double m_diffusionRegularitation;//!< //!< A regularization parameter for the finite differences iterative diffusion - valid range [0,1], and should be set according to the amount of noise present in the image (more noise, increase the value of this parameter ).
+            double m_diffusionRegularitation; //!< A regularization parameter to control the variation from one iteration to the next one (higher values will allow higher state changes between each iteration but can induce the system to be unstable, valid range [0,1] ).
+            
+            unsigned int m_diffusionMaxIterations; //!< The maximum number of iterations to perform (valid range: non-zero values).
             
             bool m_enableMultiThread; //!< Enable (true) the use of threads.
             
@@ -157,8 +159,6 @@ namespace te
         class ApplyVecDiffusionThreadParams
         {
           public:
-            te::rp::Matrix< double > const * m_initialXBufPtr;
-            te::rp::Matrix< double > const * m_initialYBufPtr;
             te::rp::Matrix< double > const * m_inputBufXPtr;
             te::rp::Matrix< double > const * m_inputBufYPtr;
             te::rp::Matrix< double > * m_outputBufXPtr;
@@ -166,8 +166,7 @@ namespace te
             boost::mutex* m_mutexPtr;
             unsigned int m_firstRowIdx; //!< First row to process.
             unsigned int m_lastRowIdx; //!< Last row to process.
-            double* m_currentIterationXResiduePtr; //!< A pointer the the current iteration X residue;
-            double* m_currentIterationYResiduePtr; //!< A pointer the the current iteration Y residue;
+            double* m_currentIterationResiduePtr; //!< A pointer the the current iteration residue;
             double m_diffusionRegularitation;
 
             ApplyVecDiffusionThreadParams() {};
@@ -181,8 +180,6 @@ namespace te
             
             ApplyVecDiffusionThreadParams& operator=( const ApplyVecDiffusionThreadParams& other )
             {
-              m_initialXBufPtr = other.m_initialXBufPtr;
-              m_initialYBufPtr = other.m_initialYBufPtr;
               m_inputBufXPtr = other.m_inputBufXPtr;
               m_inputBufYPtr = other.m_inputBufYPtr;
               m_outputBufXPtr = other.m_outputBufXPtr;
@@ -190,8 +187,7 @@ namespace te
               m_mutexPtr = other.m_mutexPtr;
               m_firstRowIdx = other.m_firstRowIdx;
               m_lastRowIdx = other.m_lastRowIdx;
-              m_currentIterationXResiduePtr = other.m_currentIterationXResiduePtr;
-              m_currentIterationYResiduePtr = other.m_currentIterationYResiduePtr;
+              m_currentIterationResiduePtr = other.m_currentIterationResiduePtr;
               m_diffusionRegularitation = other.m_diffusionRegularitation;
               
               return *this;
@@ -333,12 +329,14 @@ namespace te
         /*!
           \brief Generate an initial normalized edge vector field.
           \param edgeStrengthMap The edge strength map.
+          \param createUnitVectors If true, normalized (unit) vectors will be created.
           \param edgeVecXMap The generated vector field X component.
           \param edgeVecYMap The generated vector field Y component.
           \return true if OK, false on errors.
          */            
         bool getEdgeVecField( 
           const te::rp::Matrix< double >& edgeStrengthMap,
+          const bool createUnitVectors,
           te::rp::Matrix< double >& edgeVecXMap,
           te::rp::Matrix< double >& edgeVecYMap ) const;            
         
@@ -431,12 +429,15 @@ namespace te
           \brief Create a tiff file from a vector field.
           \param inputVecFieldX The vector decomposed X component;
           \param inputVecFieldY The vector decomposed Y component;
+          \param backGroundMapPtr An optional background image (0 means no background image).
+          \param vecPixelStep The step between each vector.
           \param tifFileName Tif file name.
         */             
         void createTifFromVecField( 
           const te::rp::Matrix< double >& inputVecFieldX, 
           const te::rp::Matrix< double >& inputVecFieldY,
-          const te::rp::Matrix< double >& backGroundMap,
+          te::rp::Matrix< double > const * const backGroundMapPtr,
+          const unsigned int vecPixelStep,
           const std::string& tifFileName ) const;   
           
         bool applyVecDiffusion( 
