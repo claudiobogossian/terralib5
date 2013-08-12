@@ -56,9 +56,9 @@ namespace te
       For each point p in R, we find its closest neightbor in B. If p has more than one
       such neighbor, it is said to belong to the medial axis (skeleton) of R.
       
-      \note Reference: Extraction ofthe Euclidean skeleton based on a connectivity criterion, Wai-Pak Choi, Kin-Man Lam, Wan-Chi Siu.
-      
       \note Reference: Normalized Gradient Vector Diffusion and Image Segmentation, Zeyun Yu, Chandrajit Bajaj.
+      
+      \note Reference: Image Segmentation Using Gradient Vector Diffusion and Region Merging, Zeyun Yu, Chandrajit Bajaj.
       
       \ingroup RPAlgorithms
      */
@@ -80,9 +80,9 @@ namespace te
             
             te::rst::Raster const* m_inputMaskRasterPtr; //!< A pointer to an input raster (where pixels with zero velues will be ignored) or an null pointer if no input mask raster must be used.
             
-            double m_diffusionThreshold;//!< //!< A threshold for the finite differences iterative diffusion - valid range [0,1].
+            double m_diffusionThreshold;//!< //!< A threshold for the finite differences iterative diffusion - valid range [0,1], higher values will cause more iterations to be performed.
             
-            double m_diffusionRegularitation;//!< //!< A regularization parameter for the finite differences iterative diffusion - valid range [0,1].
+            double m_diffusionRegularitation;//!< //!< A regularization parameter for the finite differences iterative diffusion - valid range [0,1], and should be set according to the amount of noise present in the image (more noise, increase the value of this parameter ).
             
             bool m_enableMultiThread; //!< Enable (true) the use of threads.
             

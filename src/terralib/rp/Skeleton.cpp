@@ -36,6 +36,16 @@
 #include <cmath> 
 #include <cstring>
     
+#define ADDNEIGHBOR( neighborRow, neighborCol ) \
+  neiX = bufferX[ neighborRow ][ neighborCol ]; \
+  neiY = bufferY[ neighborRow ][ neighborCol ]; \
+  neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) ); \
+  if( neiMag != 0.0 ) \
+  { \
+    newCenterX += ( neiX / neiMag ); \
+    newCenterY += ( neiY / neiMag ); \
+  }
+  
 namespace te
 {
   namespace rp
@@ -173,9 +183,9 @@ namespace te
       vecYMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       TERP_TRUE_OR_RETURN_FALSE( getEdgeVecField( edgeStrengthMap, vecXMap, vecYMap ),
         "Vector maps build error" );      
-//      createTifFromMatrix( vecXMap, true, "vecXMap" );
-//      createTifFromMatrix( vecYMap, true, "vecYMap" );
-//      createTifFromVecField( vecXMap, vecYMap, *rasterDataPtr, "vecMap" );
+      createTifFromMatrix( vecXMap, true, "vecXMap" );
+      createTifFromMatrix( vecYMap, true, "vecYMap" );
+      createTifFromVecField( vecXMap, vecYMap, *rasterDataPtr, "vecMap" );
       
       te::rp::Matrix< double > diffusedVecXMap;
       diffusedVecXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
@@ -247,11 +257,6 @@ namespace te
         ( m_inputParameters.m_diffusionThreshold >= 0.0 ) &&
         ( m_inputParameters.m_diffusionThreshold <= 1.0 ),
         "Invalid diffusion threshold" );          
-        
-      TERP_TRUE_OR_RETURN_FALSE( 
-        ( m_inputParameters.m_diffusionRegularitation >= 0.0 ) &&
-        ( m_inputParameters.m_diffusionRegularitation <= 1.0 ),
-        "Invalid diffusion regularitation" );           
 
       m_isInitialized = true;
 
@@ -754,7 +759,7 @@ namespace te
         {
           bGValue = backGroundMap[ line ][ col ];
           bGValue -= minBGValue;
-          bGValue *= ( 254.0 / ( maxBGValue - minBGValue ) );
+          bGValue *= ( 200.0 / ( maxBGValue - minBGValue ) );
           
           outputRasterPtr->setValue( col, line, bGValue, 0 );
           outputRasterPtr->setValue( col, line, bGValue, 1 );
@@ -774,57 +779,41 @@ namespace te
           {
             if( y > 0 )
             {
-              outputRasterPtr->setValue( col, line - 1, 255, 0 );
               outputRasterPtr->setValue( col, line - 1, 255, 1 );
-              outputRasterPtr->setValue( col, line - 1, 255, 2 );
             }
             else if ( y < 0 )
             {
-              outputRasterPtr->setValue( col, line + 1, 255, 0 );
               outputRasterPtr->setValue( col, line + 1, 255, 1 );
-              outputRasterPtr->setValue( col, line + 1, 255, 2 );
             }
           }          
           else if( x > 0 )
           {
             if( y == 0 )
             {
-              outputRasterPtr->setValue( col + 1, line, 255, 0 );
               outputRasterPtr->setValue( col + 1, line, 255, 1 );
-              outputRasterPtr->setValue( col + 1, line, 255, 2 );
             }
             else if( y > 0 )
             {
-              outputRasterPtr->setValue( col + 1, line - 1, 255, 0 );
               outputRasterPtr->setValue( col + 1, line - 1, 255, 1 );
-              outputRasterPtr->setValue( col + 1, line - 1, 255, 2 );
             }
             else
             {
-              outputRasterPtr->setValue( col + 1, line + 1, 255, 0 );
               outputRasterPtr->setValue( col + 1, line + 1, 255, 1 );
-              outputRasterPtr->setValue( col + 1, line + 1, 255, 2 );
             }
           }
           else // x < 0
           {
             if( y == 0 )
             {
-              outputRasterPtr->setValue( col - 1, line, 255, 0 );
               outputRasterPtr->setValue( col - 1, line, 255, 1 );
-              outputRasterPtr->setValue( col - 1, line, 255, 2 );
             }
             else if( y > 0 )
             {
-              outputRasterPtr->setValue( col - 1, line - 1, 255, 0 );
               outputRasterPtr->setValue( col - 1, line - 1, 255, 1 );
-              outputRasterPtr->setValue( col - 1, line - 1, 255, 2 );
             }
             else
             {
-              outputRasterPtr->setValue( col - 1, line + 1, 255, 0 );
               outputRasterPtr->setValue( col - 1, line + 1, 255, 1 );
-              outputRasterPtr->setValue( col - 1, line + 1, 255, 2 );
             }
           }          
         }
@@ -988,15 +977,12 @@ namespace te
           applyVecDiffusionThreadEntry( &threadParams );
         };
         
-        if( ( iteration % 10 ) == 0 )
-        {
-          createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
-            boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
-          createTifFromMatrix( *threadParams.m_outputBufYPtr, true,  
-            boost::lexical_cast< std::string >( iteration ) + "_diffusedY");
-          createTifFromVecField( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, backgroundData,  
-            boost::lexical_cast< std::string >( iteration ) + "_diffusedVecs");
-        }
+//         createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
+//           boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
+//         createTifFromMatrix( *threadParams.m_outputBufYPtr, true,  
+//           boost::lexical_cast< std::string >( iteration ) + "_diffusedY");
+        createTifFromVecField( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, backgroundData,  
+          boost::lexical_cast< std::string >( iteration ) + "_diffusedVecs");
 
         ++iteration;
       }
@@ -1020,7 +1006,7 @@ namespace te
       const te::rp::Matrix< double >& iBufY = *(paramsPtr->m_inputBufYPtr);
       te::rp::Matrix< double >& oBufX = *(paramsPtr->m_outputBufXPtr);
       te::rp::Matrix< double >& oBufY = *(paramsPtr->m_outputBufYPtr);
-      const double diffusionRegularization = paramsPtr->m_diffusionRegularitation / 4.0;
+      const double& diffusionRegularization = paramsPtr->m_diffusionRegularitation;
       
       const unsigned int nCols = iBufX.getColumnsNumber();
       const unsigned int rowSizeBytes = sizeof( double ) * nCols;
@@ -1095,8 +1081,13 @@ namespace te
       unsigned int nextCol = 0;
       double currentIterationXResidue = 0;
       double currentIterationYResidue = 0;
-      double outRowX[ nCols ];
-      double outRowY[ nCols ];
+      double centerInitMult = 0;
+      
+      boost::scoped_array< double > outRowXBuffHandler( new double[ nCols ] );
+      double* outRowXBuff = outRowXBuffHandler.get();
+      
+      boost::scoped_array< double > outRowYBuffHandler( new double[ nCols ] );
+      double* outRowYBuff = outRowXBuffHandler.get();
       
       for( row = ( paramsPtr->m_firstRowIdx + 1 ) ; row < rowsBound ; ++row )
       {
@@ -1140,95 +1131,33 @@ namespace te
           
           centerInitX = bufferInitX[ 1 ][ col ];
           centerInitY = bufferInitY[ 1 ][ col ];
+          centerInitMult = ( ( centerInitX * centerInitX ) + ( centerInitY * centerInitY ) );
           centerX = bufferX[ 1 ][ col ];
           centerY = bufferY[ 1 ][ col ];
           
           newCenterX = 0;
           newCenterY = 0;
- 
-          neiX = bufferX[ 0 ][ prevCol ];
-          neiY = bufferY[ 0 ][ prevCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }
           
-          neiX = bufferX[ 0 ][ col ];
-          neiY = bufferY[ 0 ][ col ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }     
+          ADDNEIGHBOR( 0, prevCol )
+          ADDNEIGHBOR( 0, col )
+          ADDNEIGHBOR( 0, nextCol )
+          ADDNEIGHBOR( 1, prevCol )
+          ADDNEIGHBOR( 1, nextCol )
+          ADDNEIGHBOR( 2, prevCol )
+          ADDNEIGHBOR( 2, col )
+          ADDNEIGHBOR( 2, nextCol )          
           
-          neiX = bufferX[ 0 ][ nextCol ];
-          neiY = bufferY[ 0 ][ nextCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }           
-          
-          neiX = bufferX[ 1 ][ prevCol ];
-          neiY = bufferY[ 1 ][ prevCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }       
-          
-          neiX = bufferX[ 1 ][ nextCol ];
-          neiY = bufferY[ 1 ][ nextCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }          
-          
-          neiX = bufferX[ 2 ][ prevCol ];
-          neiY = bufferY[ 2 ][ prevCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }
-          
-          neiX = bufferX[ 2 ][ col ];
-          neiY = bufferY[ 2 ][ col ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }     
-          
-          neiX = bufferX[ 2 ][ nextCol ];
-          neiY = bufferY[ 2 ][ nextCol ];
-          neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) );
-          if( neiMag != 0.0 )
-          {
-            newCenterX += ( neiX / neiMag );
-            newCenterY += ( neiY / neiMag );
-          }            
-          
-          newCenterX -= ( 4.0 * centerX );
-          newCenterY -= ( 4.0 * centerY );
+          newCenterX -= ( 8.0 * centerX );
+          newCenterY -= ( 8.0 * centerY );
           
           newCenterX *= diffusionRegularization;
           newCenterY *= diffusionRegularization;
           
-          newCenterX -= ( ( centerX - centerInitX ) * ( centerInitX * centerInitY ) );
-          newCenterY -= ( ( centerY - centerInitY ) * ( centerInitX * centerInitY ) );
+          newCenterX -= ( ( centerX - centerInitX ) * centerInitMult );
+          newCenterY -= ( ( centerY - centerInitY ) * centerInitMult );
             
-          outRowX[ col ] = newCenterX;
-          outRowY[ col ] = newCenterY;
+          outRowXBuff[ col ] = newCenterX;
+          outRowYBuff[ col ] = newCenterY;
             
           if( centerX == 0.0 )
           {
@@ -1259,8 +1188,8 @@ namespace te
         
         paramsPtr->m_mutexPtr->lock();
         
-        memcpy( oBufX[ prevRow ], outRowX, rowSizeBytes );
-        memcpy( oBufY[ prevRow ], outRowY, rowSizeBytes );
+        memcpy( oBufX[ prevRow ], outRowXBuff, rowSizeBytes );
+        memcpy( oBufY[ prevRow ], outRowYBuff, rowSizeBytes );
         
         oBufX[ prevRow ][ 0 ] = bufferX[ 1 ][ 0 ];
         oBufX[ prevRow ][ 1 ] = bufferX[ 1 ][ 1 ];

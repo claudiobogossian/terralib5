@@ -38,13 +38,13 @@ class TsSkeleton : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsSkeleton );
   
-  CPPUNIT_TEST( Test1 );
+  CPPUNIT_TEST( Pattern1Test );
 
   CPPUNIT_TEST_SUITE_END();
 
 protected :
 
-  void Test1();
+  void Pattern1Test();
   
 };
 
