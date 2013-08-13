@@ -37,6 +37,8 @@
 #include <terralib/qt/widgets/charts/Histogram.h>
 #include <terralib/qt/widgets/charts/HistogramChart.h>
 #include <terralib/qt/widgets/charts/ChartDisplay.h>
+#include <terralib/qt/widgets/charts/ChartDisplayWidget.h>
+#include <terralib/qt/widgets/charts/ChartStyle.h>
 
 // Qt
 #include <QtGui/QApplication>
@@ -50,15 +52,7 @@ void LoadOGRModule()
   try
   {
     te::plugin::PluginInfo* info; 
-    ////info.m_name = "te.da.ogr";
-    ////info.m_displayName = "OGR DataSource Driver";
-    ////info.m_description = "This data source driver supports spatial data managed by OGR";
-    ////info.m_engine = "C++";
-    ////info.m_folder = TE_PLUGINS_PATH;
 
-    ////std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
-
-    ////info.m_resources.push_back(rsc);
     info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
     te::plugin::PluginManager::getInstance().add(info); 
 
@@ -68,6 +62,78 @@ void LoadOGRModule()
   {
     std::cout << std::endl << "Failed to load data source OGR driver: unknow exception!" << std::endl;
   }
+}
+
+void generateHistogram(te::da::DataSet* dataset, te::da::DataSourceTransactor* transactor)
+{
+  //Getting the Column that will be used to populate the chart
+  std::string renda = "RENDA_FAM";
+
+  int rendaIdx= te::da::GetPropertyPos(dataset, renda);
+
+  // get a catalogloader and load the dataSetType information in order to find out the pk, uk etc...
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+  cl.reset(transactor->getCatalogLoader());
+  cl.get();
+  te::da::DataSetType *dt =  cl->getDataSetType("mapa_distritos_sp", true);
+
+  //Creating the histogram and it's chart with the given dataset
+  te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dt, rendaIdx, 10);
+  te::qt::widgets::HistogramChart* chart = new te::qt::widgets::HistogramChart(histogram);
+
+  //Creating and adjusting the chart Display's style.
+  te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
+  chartStyle->setTitle(QString::fromStdString("Histogram"));
+  chartStyle->setAxisX(QString::fromStdString(renda));
+  chartStyle->setAxisY(QString::fromStdString("Frequency"));
+
+  //Creating and adjusting the chart Display
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"), chartStyle);
+  chartDisplay->adjustDisplay();
+  chart->attach(chartDisplay);
+
+  //Adjusting the chart widget, once it's closed all the other pointers will be deleted. Check the charts documentation for further notes on pointer ownership
+  te::qt::widgets::ChartDisplayWidget* displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay);
+  displayWidget->show();
+  displayWidget->setWindowTitle("Histogram");
+  displayWidget->setAttribute(Qt::WA_DeleteOnClose, true);
+}
+
+void generateScatter(te::da::DataSet* dataset, te::da::DataSourceTransactor* transactor)
+{
+    //Getting the Column that will be used to populate the chart
+  std::string renda = "RENDA_FAM";
+  std::string anosest = "ANOS_EST";
+
+  int rendaIdx= te::da::GetPropertyPos(dataset, renda);
+  int anosestIdx= te::da::GetPropertyPos(dataset, anosest);
+
+  // get a catalogloader and load the dataSetType information in order to find out the pk, uk etc...
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
+  cl.reset(transactor->getCatalogLoader());
+  cl.get();
+  te::da::DataSetType *dt =  cl->getDataSetType("mapa_distritos_sp", true);
+
+  //Creating the scatter and it's chart with the given dataset
+  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, dt, rendaIdx, anosestIdx);
+  te::qt::widgets::ScatterChart* chart = new te::qt::widgets::ScatterChart(scatter);
+
+  //Creating and adjusting the chart Display's style.
+  te::qt::widgets::ChartStyle* chartStyle = new te::qt::widgets::ChartStyle();
+  chartStyle->setTitle(QString::fromStdString("Scatter"));
+  chartStyle->setAxisX(QString::fromStdString(renda));
+  chartStyle->setAxisY(QString::fromStdString(anosest));
+
+  //Creating and adjusting the chart Display
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"), chartStyle);
+  chartDisplay->adjustDisplay();
+  chart->attach(chartDisplay);
+
+  //Adjusting the chart widget, once it's closed all the other pointers will be deleted. Check the charts documentation for further notes on pointer ownership
+  te::qt::widgets::ChartDisplayWidget* displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::SCATTER_CHART, chartDisplay);
+  displayWidget->show();
+  displayWidget->setWindowTitle("Scatter");
+  displayWidget->setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
 int main(int /*argc*/, char** /*argv*/)
@@ -96,56 +162,17 @@ int main(int /*argc*/, char** /*argv*/)
        delete ds;
        return 0;
     }
-    
-    //Getting the Columns that will be used to populate the graph
-
-    std::string renda = "RENDA_FAM";
-    std::string anosest = "ANOS_EST";
-
-    int rendaIdx= te::da::GetPropertyPos(dataset, renda);
-    int anosestIdx= te::da::GetPropertyPos(dataset, anosest);
 
     int argc = 1;
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
 
-    // get a catalogloader and load the dataSetType information in order to find out the pk, uk etc...
-    std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
-    cl.reset(transactor->getCatalogLoader());
-    cl.get();
-    te::da::DataSetType *dt =  cl->getDataSetType("mapa_distritos_sp", true);
-
-    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dt, rendaIdx, 10);
-    te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
-
-    te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
-
-    histogramChart->attach(chartDisplay);
-
-    chartDisplay->show();
-
-    chartDisplay->replot();
-
-//    te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
-
-//    te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
-
-//     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
-//     chartDisplay->show();
-
-//     scatterChart->attach(chartDisplay);
-//     chartDisplay->show();
-
-//     chartDisplay->replot();
+    generateHistogram(dataset, transactor);
+    generateScatter(dataset, transactor);
 
     int ret = app.exec();
 
-	  //delete pointers
-
-    //delete scatterChart;
-    //delete scatter;
-    delete histogramChart;
-    delete histogram;
+    //delete pointers
     delete dataset;
     delete transactor;
     delete ds;
