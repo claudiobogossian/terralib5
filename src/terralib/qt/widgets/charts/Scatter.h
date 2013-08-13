@@ -30,6 +30,8 @@
 #include "../Config.h"
 #include "ScatterUtils.h"
 
+#include <QPointF>
+
 namespace te
 {
   // Forward declarations
@@ -207,6 +209,15 @@ namespace te
             \note The caller will take ownership of the returned pointer
           */
           te::da::ObjectIdSet* find(double& xValue, double& yValue);
+
+          /*!
+            \brief It returns a pointer to an ObjectIdSet that contains all of the scatter's selected  points.
+
+            \param selectedPoints  A vector containing all the points within the selection box
+ 
+            \note The caller will take ownership of the returned pointer
+          */
+          te::da::ObjectIdSet* find(std::vector<QPointF> selectedPoints);
 
           /*!
             \brief It returns a pair representing the point that contais the secected ObjectId.
