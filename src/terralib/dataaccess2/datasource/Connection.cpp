@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/dataaccess/datasource/AbstractConnectionPool.cpp
+  \file terralib/dataaccess/datasource/Connection.cpp
 
-  \brief This class defines the basic interface for a connection pool.
+  \brief This class defines the basic interface for a connection to a data source.
 */
 
 // TerraLib
