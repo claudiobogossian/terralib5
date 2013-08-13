@@ -32,6 +32,8 @@
 #include "../raster/RasterFactory.h"
 #include "../raster/Grid.h"
 
+#include <boost/thread.hpp>
+
 #include <memory>
 #include <vector>
 #include <map>
@@ -54,7 +56,9 @@ namespace te
       For each point p in R, we find its closest neightbor in B. If p has more than one
       such neighbor, it is said to belong to the medial axis (skeleton) of R.
       
-      \note Reference: Extraction ofthe Euclidean skeleton based on a connectivity criterion, Wai-Pak Choi, Kin-Man Lam, Wan-Chi Siu.
+      \note Reference: Normalized Gradient Vector Diffusion and Image Segmentation, Zeyun Yu, Chandrajit Bajaj.
+      
+      \note Reference: Image Segmentation Using Gradient Vector Diffusion and Region Merging, Zeyun Yu, Chandrajit Bajaj.
       
       \ingroup RPAlgorithms
      */
@@ -76,7 +80,13 @@ namespace te
             
             te::rst::Raster const* m_inputMaskRasterPtr; //!< A pointer to an input raster (where pixels with zero velues will be ignored) or an null pointer if no input mask raster must be used.
             
-            double m_finiteDifferencesThreshold;//!< //!< A threshold for the finite differences iterative diffusion - valid range [0,1].
+            double m_diffusionThreshold; //!< A threshold for the finite differences iterative diffusion - valid range [0,1], higher values will cause more iterations to be performed.
+            
+            double m_diffusionRegularitation; //!< A regularization parameter to control the variation from one iteration to the next one (higher values will allow higher state changes between each iteration but can induce the system to be unstable, valid range [0,1] ).
+            
+            unsigned int m_diffusionMaxIterations; //!< The maximum number of iterations to perform (valid range: non-zero values).
+            
+            bool m_enableMultiThread; //!< Enable (true) the use of threads.
             
             InputParameters();
             
@@ -141,11 +151,48 @@ namespace te
 
       protected:
         
-        struct Matrix2DCoord
+        /*!
+          \class ApplyRansacThreadEntryThreadParams
+
+          \brief Parameters used by the GTFilter::applyRansacThreadEntry method.
+        */
+        class ApplyVecDiffusionThreadParams
         {
-          unsigned int m_row;
-          unsigned int m_col;
-        };
+          public:
+            te::rp::Matrix< double > const * m_inputBufXPtr;
+            te::rp::Matrix< double > const * m_inputBufYPtr;
+            te::rp::Matrix< double > * m_outputBufXPtr;
+            te::rp::Matrix< double > * m_outputBufYPtr;
+            boost::mutex* m_mutexPtr;
+            unsigned int m_firstRowIdx; //!< First row to process.
+            unsigned int m_lastRowIdx; //!< Last row to process.
+            double* m_currentIterationResiduePtr; //!< A pointer the the current iteration residue;
+            double m_diffusionRegularitation;
+
+            ApplyVecDiffusionThreadParams() {};
+            
+            ApplyVecDiffusionThreadParams( const ApplyVecDiffusionThreadParams& other )
+            {
+              operator=( other );
+            };
+
+            ~ApplyVecDiffusionThreadParams() {};
+            
+            ApplyVecDiffusionThreadParams& operator=( const ApplyVecDiffusionThreadParams& other )
+            {
+              m_inputBufXPtr = other.m_inputBufXPtr;
+              m_inputBufYPtr = other.m_inputBufYPtr;
+              m_outputBufXPtr = other.m_outputBufXPtr;
+              m_outputBufYPtr = other.m_outputBufYPtr;
+              m_mutexPtr = other.m_mutexPtr;
+              m_firstRowIdx = other.m_firstRowIdx;
+              m_lastRowIdx = other.m_lastRowIdx;
+              m_currentIterationResiduePtr = other.m_currentIterationResiduePtr;
+              m_diffusionRegularitation = other.m_diffusionRegularitation;
+              
+              return *this;
+            };
+        };        
         
         Skeleton::InputParameters m_inputParameters; //!< Input execution parameters.
         
@@ -161,12 +208,13 @@ namespace te
         
         /*!
           \brief Create an gradient maps from the input image.
+          \param inputData The input data.
           \param edgeXMap The created edge X vectors map.
           \param edgeYMap The created edge Y vectors map.
           \return true if OK, false on errors.
          */          
         bool getGradientMaps( 
-          const te::rp::Matrix< double >& rasterData,
+          const te::rp::Matrix< double >& inputData,
           te::rp::Matrix< double >& gradXMap,
           te::rp::Matrix< double >& gradYMap ) const;
           
@@ -192,14 +240,14 @@ namespace te
           
           for( row = 0 ; row < nRows ; ++row )
           {
-            output[ row ][ 0 ] = 0;
-            output[ row ][ lastColIdx ] = 0;
+            output[ row ][ 0 ] = input[ row ][ 0 ];
+            output[ row ][ lastColIdx ] = input[ row ][ lastColIdx ];
           }
           
           for( col = 0 ; col < nCols ; ++col )
           {
-            output[ 0 ][ col ] = 0;
-            output[ lastRowIdx ][ col ] = 0;
+            output[ 0 ][ col ] = input[ 0 ][ col ];
+            output[ lastRowIdx ][ col ] = input[ lastRowIdx ][ col ];
           }           
           
           for( row = 1 ; row < lastRowIdx ; ++row )
@@ -253,9 +301,9 @@ namespace te
           double xValue = 0;
           double yValue = 0;
           
-          for( row = 1 ; row < nRows ; ++row )
+          for( row = 0 ; row < nRows ; ++row )
           {
-            for( col = 1 ; col < nCols ; ++col )
+            for( col = 0 ; col < nCols ; ++col )
             {
               xValue = gradXMap[ row ][ col ];
               yValue = gradYMap[ row ][ col ];
@@ -270,14 +318,25 @@ namespace te
           
         /*!
           \brief Create an Edge strenght Map from the input data.
+          \param inputMap The input map.
+          \param edgeStrengthMap The edge strength map (zero or positive values).
           \return true if OK, false on errors.
          */          
         bool getEdgeStrengthMap( 
           const te::rp::Matrix< double >& inputMap,
           te::rp::Matrix< double >& edgeStrengthMap ) const;       
           
+        /*!
+          \brief Generate an initial normalized edge vector field.
+          \param edgeStrengthMap The edge strength map.
+          \param createUnitVectors If true, normalized (unit) vectors will be created.
+          \param edgeVecXMap The generated vector field X component.
+          \param edgeVecYMap The generated vector field Y component.
+          \return true if OK, false on errors.
+         */            
         bool getEdgeVecField( 
           const te::rp::Matrix< double >& edgeStrengthMap,
+          const bool createUnitVectors,
           te::rp::Matrix< double >& edgeVecXMap,
           te::rp::Matrix< double >& edgeVecYMap ) const;            
         
@@ -370,20 +429,30 @@ namespace te
           \brief Create a tiff file from a vector field.
           \param inputVecFieldX The vector decomposed X component;
           \param inputVecFieldY The vector decomposed Y component;
+          \param backGroundMapPtr An optional background image (0 means no background image).
+          \param vecPixelStep The step between each vector.
           \param tifFileName Tif file name.
         */             
         void createTifFromVecField( 
           const te::rp::Matrix< double >& inputVecFieldX, 
           const te::rp::Matrix< double >& inputVecFieldY,
-          const te::rp::Matrix< double >& backGroundMap,
+          te::rp::Matrix< double > const * const backGroundMapPtr,
+          const unsigned int vecPixelStep,
           const std::string& tifFileName ) const;   
           
         bool applyVecDiffusion( 
-          const te::rp::Matrix< double >& edgeStrengthMap,
           const te::rp::Matrix< double >& inputX, 
           const te::rp::Matrix< double >& inputY,
+          const te::rp::Matrix< double >& backgroundData, 
           te::rp::Matrix< double >& outputX, 
-          te::rp::Matrix< double >& outputY ) const;          
+          te::rp::Matrix< double >& outputY ) const;     
+          
+        /*! 
+          \brief Vector diffusion thread entry.
+
+          \param paramsPtr A pointer to the thread parameters.
+        */
+        static void applyVecDiffusionThreadEntry( ApplyVecDiffusionThreadParams* paramsPtr);          
 
     };
 

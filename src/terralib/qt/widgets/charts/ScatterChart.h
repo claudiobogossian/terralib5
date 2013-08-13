@@ -125,6 +125,13 @@ namespace te
           */
           te::da::ObjectIdSet* highlight(QPointF point);
 
+          /*!
+            \brief Highlights the intervals contained by \a rectangle
+
+            \param rect The rectangle containing the intervanls to be highlighted.
+          */
+          te::da::ObjectIdSet* highlight(QRectF rect);
+
         private:
 
           void setData();
