@@ -20,68 +20,8 @@
 /*!
   \file terralib/ado2/DataSourceFactory.cpp
 
-  \brief This is the concrete factory for ADO data sources.
+  \brief This is the factory for the ADO data sources.
 */
 
 // TerraLib
-#include "DataSource.h"
 #include "DataSourceFactory.h"
-#include "Globals.h"
-
-te::ado::DataSourceFactory* te::ado::DataSourceFactory::sm_factory(0);
-
-void te::ado::DataSourceFactory::initialize()
-{
-  finalize();
-  sm_factory = new DataSourceFactory;
-}
-
-void te::ado::DataSourceFactory::finalize()
-{
-  delete sm_factory;
-  sm_factory = 0;
-}
-
-const std::string& te::ado::DataSourceFactory::getType() const
-{
-  return Globals::sm_driverIdentifier;
-}
-
-void te::ado::DataSourceFactory::getConnectionParameters(std::vector<std::string>& params) const
-{
-  params.push_back("host");
-  params.push_back("hostaddr");
-  params.push_back("port");
-  params.push_back("dbname");
-  params.push_back("user");
-  params.push_back("password");
-  params.push_back("connect_timeout");
-  params.push_back("options");
-  params.push_back("sslmode");
-  params.push_back("krbsrvname");
-  params.push_back("gsslib");
-  params.push_back("InitialPoolSize");
-  params.push_back("MinPoolSize");
-  params.push_back("MaxPoolSize");
-  params.push_back("MaxIdleTime");
-  params.push_back("CLIENT_ENCODING");
-  params.push_back("provider");
-}
-
-te::ado::DataSourceFactory::~DataSourceFactory()
-{
-}
-
-
-te::da::DataSource* te::ado::DataSourceFactory::build()
-{
-  return new DataSource;
-}
-
-te::ado::DataSourceFactory::DataSourceFactory()
-  : te::da::DataSourceFactory(Globals::sm_driverIdentifier)
-{
-}
-
-
-
