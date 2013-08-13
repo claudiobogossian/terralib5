@@ -83,10 +83,6 @@ namespace te
 
           void onAddQueryLayerTriggered();
 
-          void onAddObservationsLayerTriggered();
-          void onAddTrajectoryLayerTriggered();
-          void onAddTimeSeriesLayerTriggered();
-
           void onRemoveLayerTriggered();
 
           void onPluginsManagerTriggered();
@@ -223,9 +219,6 @@ namespace te
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;
           QAction* m_projectAddLayerGraph;
-          QAction* m_projectAddObservationsLayer;
-          QAction* m_projectAddTrajectoryLayer;
-          QAction* m_projectAddTimeSeriesLayer;
           QAction* m_layerEdit;
           QAction* m_layerRename;
           QAction* m_layerExport;
@@ -281,7 +274,6 @@ namespace te
           QMenu* m_helpMenu;
           QMenu* m_projectMenu;
           QMenu* m_projectAddLayerMenu;
-          QMenu* m_projectAddTempLayerMenu;
           QMenu* m_layerMenu;
           QMenu *m_layerChartsMenu;
           QMenu* m_fileMenu;

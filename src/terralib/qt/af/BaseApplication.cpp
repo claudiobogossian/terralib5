@@ -114,50 +114,10 @@ te::map::AbstractLayerPtr FindLayerInProject(te::map::AbstractLayer* layer, te::
   std::list<te::map::AbstractLayerPtr>::iterator it;
 
   for(it=layers.begin(); it!=layers.end(); ++it)
-    if(it->get() == layer)
+    if(it->get()->getId() == layer->getId())
       return *it;
 
   return 0;
-}
-
-void UpdateProject(te::qt::af::Project* proj, te::qt::widgets::LayerExplorer* explorer, const bool& checkOrder=true)
-{
-  if(proj==0 || explorer==0)
-    return;
-
-  std::list<te::map::AbstractLayerPtr> proj_layers = proj->getLayers();
-  std::list<te::map::AbstractLayerPtr> exp_layers = explorer->getAllLayers();
-  std::list<te::map::AbstractLayerPtr>::iterator proj_it = proj_layers.begin();
-  std::list<te::map::AbstractLayerPtr>::iterator exp_it = exp_layers.begin();
-
-  bool toUpdate = true;
-
-  if(checkOrder)
-    if(proj_layers.size() == exp_layers.size())
-    {
-      size_t i;
-      size_t proj_size = proj_layers.size();
-
-      for(i=0; i<proj_size; i++)
-      {
-        te::map::AbstractLayerPtr proj_layer = *(proj_it++);
-        te::map::AbstractLayerPtr exp_layer = *(exp_it++);
-      
-        if(proj_layer.get() != exp_layer.get())
-          break;
-      }
-
-      if(i == proj_size)
-        toUpdate = false;
-    }
-
-  if(!toUpdate)
-    return;
-
-  proj->clear();
-
-  for(exp_it=exp_layers.begin(); exp_it!=exp_layers.end(); ++exp_it)
-    proj->add(*exp_it);
 }
 
 te::qt::af::DataSetTableDockWidget* GetLayerDock(const te::map::AbstractLayer* layer, const std::vector<te::qt::af::DataSetTableDockWidget*>& docs)
@@ -212,10 +172,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   m_viewMenu->addMenu(m_viewToolBarsMenu);
   m_projectMenu = new QMenu(m_menubar);
   m_projectAddLayerMenu = new QMenu(m_projectMenu);
-  m_projectAddTempLayerMenu = new QMenu(m_projectMenu);
   m_menubar->addAction(m_projectMenu->menuAction());
   m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
-  m_projectMenu->addAction(m_projectAddTempLayerMenu->menuAction());
   m_layerMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_layerMenu->menuAction());
   m_layerChartsMenu = new QMenu(m_layerMenu);
@@ -472,62 +430,6 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
   }
 }
 
-void te::qt::af::BaseApplication::onAddObservationsLayerTriggered()
-{
-   try
-  {
-
-  }
-  catch(const std::exception& e)
-  {
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
-  }
-  catch(...)
-  {
-    QMessageBox::warning(this,
-                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                         tr("Unknown error while trying to add a layer from a queried dataset!"));
-  }
-}
-
-
-void te::qt::af::BaseApplication::onAddTrajectoryLayerTriggered()
-{
-   try
-  {
-
-  }
-  catch(const std::exception& e)
-  {
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
-  }
-  catch(...)
-  {
-    QMessageBox::warning(this,
-                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                         tr("Unknown error while trying to add a layer from a queried dataset!"));
-  }
-}
-
-void te::qt::af::BaseApplication::onAddTimeSeriesLayerTriggered()
-{
-   try
-  {
-
-  }
-  catch(const std::exception& e)
-  {
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
-  }
-  catch(...)
-  {
-    QMessageBox::warning(this,
-                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                         tr("Unknown error while trying to add a layer from a queried dataset!"));
-  }
-}
-
-
 void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
   std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
@@ -612,8 +514,6 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
     }
   }
 
-  UpdateProject(m_project, m_explorer->getExplorer(), false);
-
   te::qt::af::Save(*m_project, m_project->getFileName());
   m_project->projectChanged(false);
 
@@ -633,8 +533,6 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   std::string fName = fileName.toStdString();
 
   m_project->setFileName(fName);
-
-  UpdateProject(m_project, m_explorer->getExplorer(), false);
 
   te::qt::af::Save(*m_project, fName);
 
@@ -908,35 +806,27 @@ void te::qt::af::BaseApplication::onMapSRIDTriggered()
 
 void te::qt::af::BaseApplication::onDrawTriggered()
 {
-  m_display->draw(m_explorer->getExplorer()->getAllLayers());
+  if(m_project == 0)
+    return;
+
+  m_display->draw(m_project->getLayers());
 }
 
 void te::qt::af::BaseApplication::onSetBoxOnMapDisplayTriggered()
 {
   try
   {
+    te::qt::widgets::MapDisplay* display = m_display->getDisplay();
     std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
     if(layers.empty())
     {
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
       return;
     }
 
-    te::qt::widgets::MapDisplay* display = m_display->getDisplay();
     te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
-
-    if((display->getSRID() != lay->getSRID()) && (display->getSRID() == TE_UNKNOWN_SRS || lay->getSRID() == TE_UNKNOWN_SRS))
-    {
-      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), TR_QT_AF("The SRS of canvas and layer are not compatible."));
-      return;
-    }
-
     te::gm::Envelope env = lay->getExtent();
-    if(display->getSRID() != lay->getSRID())
-    {
-      env = lay->getExtent();
-      env.transform(lay->getSRID(), display->getSRID());
-    }
     display->setExtent(env, true);
   }
   catch(const std::exception& e)
@@ -1161,8 +1051,6 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 
 void te::qt::af::BaseApplication::checkProjectSave()
 {
-  UpdateProject(m_project, m_explorer->getExplorer());
-
   if(m_project != 0 && m_project->hasChanged())
   {
     QString msg("The current project has unsaved changes. Do you want to save?");
@@ -1416,9 +1304,6 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectAddLayerDataset, "", "Project.Add Layer.Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
-  initAction(m_projectAddObservationsLayer, "", "Project.Add Observations Layer.Dataset", tr("&Observations Layer..."), tr("Add a new observations layer"), true, false, true, m_menubar);
-  initAction(m_projectAddTrajectoryLayer, "", "Project.Add Trajectory Layer.Dataset", tr("&Trajectory Layer..."), tr("Add a new trajectory layer"), true, false, true, m_menubar);
-  initAction(m_projectAddTimeSeriesLayer, "", "Project.Add Time Series Layer.Dataset", tr("&Time Series Layer..."), tr("Add a new time series layer"), true, false, true, m_menubar);
 
 // Menu -Layer- actions
   initAction(m_layerEdit, "layer-edit", "Layer.Edit", tr("&Edit"), tr(""), true, false, false, m_menubar);
@@ -1548,12 +1433,6 @@ void te::qt::af::BaseApplication::initMenus()
 
   m_projectAddLayerMenu->setObjectName("Project.Add Layer");
   m_projectAddLayerMenu->setTitle(tr("&Add Layer"));
-
-  m_projectAddTempLayerMenu->setObjectName("Project.Add TempLayer");
-  m_projectAddTempLayerMenu->setTitle(tr("&Add Temporal Layer"));
-  m_projectAddTempLayerMenu->addAction(m_projectAddObservationsLayer);
-  m_projectAddTempLayerMenu->addAction(m_projectAddTrajectoryLayer);
-  m_projectAddTempLayerMenu->addAction(m_projectAddTimeSeriesLayer);
 
   m_projectMenu->addAction(m_projectRemoveLayer);
   m_projectMenu->addSeparator();
@@ -1748,11 +1627,6 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
   connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
-
-  connect(m_projectAddObservationsLayer, SIGNAL(triggered()), SLOT(onAddObservationsLayerTriggered()));
-  connect(m_projectAddTrajectoryLayer, SIGNAL(triggered()), SLOT(onAddTrajectoryLayerTriggered()));
-  connect(m_projectAddTimeSeriesLayer, SIGNAL(triggered()), SLOT(onAddTimeSeriesLayerTriggered()));
-
   connect(m_projectRemoveLayer, SIGNAL(triggered()), SLOT(onRemoveLayerTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
