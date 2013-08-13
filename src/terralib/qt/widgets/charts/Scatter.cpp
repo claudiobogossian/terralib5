@@ -175,16 +175,50 @@ te::da::ObjectIdSet* te::qt::widgets::Scatter::find(double& xValue, double& yVal
     {
       te::da::ObjectId* oid = new te::da::ObjectId(); 
 
-    for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
-    {
-      oid->addValue((it)->clone());
-    }
+      for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
+      {
+        oid->addValue((it)->clone());
+      }
 
       oids->add(oid);
     }
 
     ++it0;
   }
+  return oids;
+}
+
+te::da::ObjectIdSet* te::qt::widgets::Scatter::find(std::vector<QPointF> selectedPoints)
+{
+  te::qt::widgets::PointToObjectIdSet::nth_index<0>::type::iterator it0, it1;
+  te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
+
+  //Checking all the selected points:
+  for(size_t i = 0; i < selectedPoints.size(); ++i)
+  {
+    double x = selectedPoints.at(i).x();
+    double y = selectedPoints.at(i).y();
+    PointToObjectId aux(x, y, 0);
+    tie(it0, it1) = m_valuesOids.equal_range(aux);
+
+    while(it0 != it1) 
+    {
+      if(it0->y == y)
+      {
+        te::da::ObjectId* oid = new te::da::ObjectId(); 
+
+        for(boost::ptr_vector<te::dt::AbstractData>::const_iterator it = it0->oid->getValue().begin(); it != it0->oid->getValue().end(); ++it)
+        {
+          oid->addValue((it)->clone());
+        }
+
+        oids->add(oid);
+      }
+
+      ++it0;
+    }
+  }
+
   return oids;
 }
 

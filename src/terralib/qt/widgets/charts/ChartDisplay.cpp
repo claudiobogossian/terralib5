@@ -72,6 +72,7 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   // zoom in/out with the wheel
   ( void ) new QwtPlotMagnifier( this->canvas() );
 
+  // Selection based on a point
   m_picker = new QwtPlotPicker(this->canvas());
   m_picker->setStateMachine(new QwtPickerClickPointMachine );
 
@@ -82,6 +83,25 @@ te::qt::widgets::ChartDisplay::~ChartDisplay()
 {
   delete m_chartStyle;
   delete m_grid;
+}
+
+void te::qt::widgets::ChartDisplay::setPickerStyle(int chartType)
+{
+  switch(chartType)
+  {
+    case(te::qt::widgets::SCATTER_CHART):
+      delete m_picker;
+      m_picker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
+      m_picker->setStateMachine(new QwtPickerDragRectMachine );
+      connect(m_picker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
+      break;
+    default:
+      delete m_picker;
+      m_picker = new QwtPlotPicker(this->canvas());
+      m_picker->setStateMachine(new QwtPickerClickPointMachine );
+      connect(m_picker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
+      break;
+  }
 }
 
 te::qt::widgets::ChartStyle* te::qt::widgets::ChartDisplay::getStyle()
@@ -139,14 +159,28 @@ void te::qt::widgets::ChartDisplay::onPointPicked(const QPointF &pos)
       it != itmList.end(); ++it )
   {
     if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
-      {
-        emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( pos), false);
-        break;
-      }
-     else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
-      {
-        emit selected(static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( pos), false);
-        break;
-      }
+    {
+      emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( pos), false);
+      break;
+    }
+    else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
+    {
+      emit selected(static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( pos), false);
+      break;
+    }
+  }
+}
+
+void te::qt::widgets::ChartDisplay::onRectPicked(const QRectF &rect)
+{
+  const QwtPlotItemList& itmList = itemList();
+  for ( QwtPlotItemIterator it = itmList.begin();
+      it != itmList.end(); ++it )
+  {
+  if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
+    {
+      emit selected(static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( rect), false);
+    }
+    break;
   }
 }

@@ -93,6 +93,7 @@ void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
   te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Scatter"), chartStyle);
   chartDisplay->adjustDisplay();
   chart->attach(chartDisplay);
+  chartDisplay->setPickerStyle(chart->rtti());
   chartDisplay->show();
   chartDisplay->replot();
 
