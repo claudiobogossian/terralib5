@@ -268,8 +268,13 @@ void te::qt::widgets::GraphicPropertyItem::updateUi()
 
 void te::qt::widgets::GraphicPropertyItem::onWellKnownMarkChanged()
 {
-  if(m_graphic->getMarks().empty() == false)
-    m_graphic->setMark(0, m_mp->getMark());
+  te::se::Mark* mark = m_mp->getMark();
+  if(!mark)
+    return;
+
+  m_graphic->clear();
+  m_graphic->add(mark);
+
 
   if(!m_setLocalGraphic)
     emit graphicChanged();
@@ -277,18 +282,27 @@ void te::qt::widgets::GraphicPropertyItem::onWellKnownMarkChanged()
 
 void te::qt::widgets::GraphicPropertyItem::onGlyphMarkChanged()
 {
-  if(m_graphic->getMarks().empty() == false)
-    m_graphic->setMark(0, m_gp->getMark());
-  
+  te::se::Mark* mark = m_gp->getMark();
+  if(!mark)
+    return;
+
+  m_graphic->clear();
+  m_graphic->add(mark);
+ 
+
   if(!m_setLocalGraphic)
     emit graphicChanged();
 }
 
 void te::qt::widgets::GraphicPropertyItem::onLocalImageChanged()
 {
-  if(m_li->getExternalGraphic())
-    m_graphic->add(m_li->getExternalGraphic());
-  
+  te::se::ExternalGraphic* eg = m_li->getExternalGraphic();
+  if(!eg)
+    return;
+
+  m_graphic->clear();
+  m_graphic->add(eg);
+
   if(!m_setLocalGraphic)
     emit graphicChanged();
 }
