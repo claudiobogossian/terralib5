@@ -77,7 +77,10 @@ te::qt::widgets::ChartDisplay* te::qt::widgets::ChartDisplayWidget::getDisplay()
 void te::qt::widgets::ChartDisplayWidget::setDisplay(te::qt::widgets::ChartDisplay* newDisplay)
 {
   m_display = newDisplay;
-  this->parentWidget()->setWindowTitle(m_display->getStyle()->getTitle());
+
+  if(this->parentWidget())
+    this->parentWidget()->setWindowTitle(m_display->getStyle()->getTitle());
+
   m_display->replot();
 }
 

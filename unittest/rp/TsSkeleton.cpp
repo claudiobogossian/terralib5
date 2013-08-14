@@ -33,13 +33,13 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsSkeleton );
 
-void TsSkeleton::Test1()
+void TsSkeleton::Pattern1Test()
 {
   // openning input raster
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/pattern1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRasterPtrPointer.get() );    
@@ -50,7 +50,10 @@ void TsSkeleton::Test1()
   
   algoInputParams.m_inputRasterPtr = inputRasterPtrPointer.get();
   algoInputParams.m_inputRasterBand = 0;
-  algoInputParams.m_finiteDifferencesThreshold = 0.1;
+  algoInputParams.m_inputMaskRasterPtr = 0;
+  algoInputParams.m_diffusionThreshold = 0.1;
+  algoInputParams.m_diffusionRegularitation = 0.75;
+  algoInputParams.m_enableMultiThread = true;
 
   te::rp::Skeleton::OutputParameters algoOutputParams;
   

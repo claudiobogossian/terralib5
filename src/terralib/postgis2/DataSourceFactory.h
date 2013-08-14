@@ -20,56 +20,24 @@
 /*!
   \file terralib/postgis/DataSourceFactory.h
 
-  \brief This is the concrete factory for PostGIS data sources.
+  \brief This is the factory for PostGIS data sources.
 */
 
 #ifndef __TERRALIB_POSTGIS_INTERNAL_DATASOURCEFACTORY_H
 #define __TERRALIB_POSTGIS_INTERNAL_DATASOURCEFACTORY_H
 
 // TerraLib
-#include "../dataaccess2/datasource/DataSourceFactory.h"
-#include "Config.h"
+#include "DataSource.h"
 
 namespace te
 {
   namespace pgis
   {
-    /*!
-      \class DataSourceFactory
-
-      \brief This is the concrete factory for PostGIS data sources.
-
-      \sa te::da::DataSourceFactory
-    */
-    class TEPGISEXPORT DataSourceFactory : public te::da::DataSourceFactory
+    inline te::da::DataSource* Build()
     {
-      public:
-
-        /*! \brief It initializes the factory: it will be registered in the abstract factory DataSourceFactory. */
-        static void initialize();
-
-        /*! \brief It finalizes the factory: it will be destroyed and will be unregistered from the abstract factory DataSourceFactory. */
-        static void finalize();
-
-        const std::string& getType() const;
-
-        void getConnectionParameters(std::vector<std::string>& params) const;
-
-        ~DataSourceFactory();
-
-      protected:        
-
-        te::da::DataSource* build();
-
-        DataSourceFactory();        
-
-      private:
-
-        static DataSourceFactory* sm_factory; //!< A pointer to the global PostGIS data source factory.
-    };
-
-  } // end namespace pgis
-}   // end namespace te
+      return new DataSource;
+    }
+  }   // end namespace pgis
+}     // end namespace te
 
 #endif  // __TERRALIB_POSTGIS_INTERNAL_DATASOURCEFACTORY_H
-

@@ -28,8 +28,9 @@
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
 #include "../dataaccess2/datasource/DataSourceCapabilities.h"
-//#include "../dataaccess2/datasource/DataSourceFactory.h"
+#include "../dataaccess2/datasource/DataSourceFactory.h"
 #include "Config.h"
+#include "DataSource.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
 
@@ -56,45 +57,48 @@ te::mem::Module::~Module()
 
 void te::mem::Module::initialize()
 {
-// register data source factory
-  //te::da::DataSourceFactory::add(TE_MEMORY_DRIVER_IDENTIFIER, te::mem::Build);
+  // Register the data source factory
+  te::da::DataSourceFactory::add(TE_MEMORY_DRIVER_IDENTIFIER, te::mem::Build);
 
-  //// DataSource Capabilities
-  //te::da::DataSourceCapabilities capabilities;
-  //capabilities.setAccessPolicy(te::common::RWAccess);
-  //capabilities.setSupportDataSetPesistenceAPI(true);
-  //capabilities.setSupportDataSetTypePesistenceAPI(true);
+  te::da::DataSourceCapabilities capabilities;
+  capabilities.setAccessPolicy(te::common::RWAccess);
+  capabilities.setSupportDataSetPesistenceAPI(true);
+  capabilities.setSupportDataSetTypePesistenceAPI(true);
 
-  //// DataType Capabilities
-  //te::da::DataTypeCapabilities dataTypeCapabilities;
-  //dataTypeCapabilities.setSupportAll();
-  //capabilities.setDataTypeCapabilities(dataTypeCapabilities);
+  // DataType Capabilities
+  te::da::DataTypeCapabilities dataTypeCapabilities;
+  dataTypeCapabilities.setSupportAll();
+  capabilities.setDataTypeCapabilities(dataTypeCapabilities);
 
-  //// DataSetType Capabilites
-  //te::da::DataSetTypeCapabilities dataSetTypeCapabilities;
-  //dataSetTypeCapabilities.setSupportAll();
-  //dataSetTypeCapabilities.setSupportForeingKey(false);
-  //dataSetTypeCapabilities.setSupportSequence(false);
-  //dataSetTypeCapabilities.setSupportCheckConstraints(false);
-  //dataSetTypeCapabilities.setSupportQuadTreeIndex(false);
-  //capabilities.setDataSetTypeCapabilities(dataSetTypeCapabilities);
+  // DataSetType Capabilites
+  te::da::DataSetTypeCapabilities dataSetTypeCapabilities;
+  dataSetTypeCapabilities.setSupportAll();
+  dataSetTypeCapabilities.setSupportForeingKey(false);
+  dataSetTypeCapabilities.setSupportSequence(false);
+  dataSetTypeCapabilities.setSupportCheckConstraints(false);
+  dataSetTypeCapabilities.setSupportQuadTreeIndex(false);
+  capabilities.setDataSetTypeCapabilities(dataSetTypeCapabilities);
 
-  //// DataSet Capabilities
-  //te::da::DataSetCapabilities dataSetCapabilities;
-  //dataSetCapabilities.setSupportAll();
-  //capabilities.setDataSetCapabilities(dataSetCapabilities);
+  // DataSet Capabilities
+  te::da::DataSetCapabilities dataSetCapabilities;
+  dataSetCapabilities.setSupportAll();
+  capabilities.setDataSetCapabilities(dataSetCapabilities);
 
-  //// Query Capabilities
-  //te::da::QueryCapabilities queryCapabilities;
-  //capabilities.setQueryCapabilities(queryCapabilities);
+  // Query Capabilities
+  te::da::QueryCapabilities queryCapabilities;
+  capabilities.setQueryCapabilities(queryCapabilities);
 
-  //DataSource::setCapabilities(capabilities);
+  DataSource::setCapabilities(capabilities);
+
+  TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver initialized!"));
 
   TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver initialized!"));
 }
 
 void te::mem::Module::finalize()
 {
+  // Unregister the data source factory
+  te::da::DataSourceFactory::remove(TE_MEMORY_DRIVER_IDENTIFIER);
+
   TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver finalized!"));
 }
-

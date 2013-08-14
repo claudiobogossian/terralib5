@@ -201,3 +201,19 @@ te::da::ObjectIdSet* te::qt::widgets::ScatterChart::highlight(QPointF point)
     return m_scatter->find(x, y);
   }
 }
+
+te::da::ObjectIdSet* te::qt::widgets::ScatterChart::highlight(QRectF rect)
+{
+  QwtSeriesData<QPointF>* values = data();
+  std::vector<QPointF> selected;
+
+  //Acquiring all the selected points:
+  for(size_t i = 0; i < values->size(); ++i)
+  {
+    if( rect.contains(values->sample(i)) )
+    {
+      selected.push_back(values->sample(i));
+    }
+  }
+  return m_scatter->find(selected);
+}
