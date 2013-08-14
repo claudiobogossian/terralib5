@@ -40,13 +40,24 @@
   neiX = bufferX[ neighborRow ][ neighborCol ]; \
   neiY = bufferY[ neighborRow ][ neighborCol ]; \
   neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) ); \
-  if( neiMag >= centerMag ) \
+  if( neiMag > centerMag ) \
   { \
     hasValidNeiboor = true; \
     neisMagsSum += neiMag; \
     newCenterX += ( neiX * neiMag ); \
     newCenterY += ( neiY * neiMag ); \
   }  
+  
+#define SKELSTRENGTHNEIGHBOR( neighborRow, neighborCol ) \
+  neiX = inputX[ neighborRow ][ neighborCol ]; \
+  neiY = inputY[ neighborRow ][ neighborCol ]; \
+  diffX = neiX - centerX; \
+  diffY = neiY - centerY; \
+  diffMag = std::sqrt( ( diffX * diffX ) + ( diffY * diffY ) ); \
+  if( diffMag != 0.0 ) \
+  { \
+    strength += ( ( centerX * diffX ) + ( centerY * diffX ) ) / diffMag; \
+  }
   
 namespace te
 {
@@ -76,7 +87,7 @@ namespace te
       m_inputMaskRasterPtr = 0;
       m_diffusionThreshold = 0.5;
       m_diffusionRegularitation = 0.25;
-      m_diffusionMaxIterations = 10000;
+      m_diffusionMaxIterations = 0;
       m_enableMultiThread = true;
     }
 
@@ -188,15 +199,15 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( getEdgeVecField( edgeStrengthMap, false,
         vecXMap, vecYMap ),
         "Vector maps build error" );      
-      createTifFromMatrix( vecXMap, true, "vecXMap" );
-      createTifFromMatrix( vecYMap, true, "vecYMap" );
-      createTifFromVecField( vecXMap, vecYMap, rasterDataPtr.get(), 4, "vecMap" );
+//       createTifFromMatrix( vecXMap, true, "vecXMap" );
+//       createTifFromMatrix( vecYMap, true, "vecYMap" );
+//       createTifFromVecField( vecXMap, vecYMap, rasterDataPtr.get(), 4, "vecMap" );
       
       te::rp::Matrix< double > diffusedVecXMap;
       diffusedVecXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       te::rp::Matrix< double > diffusedVecYMap;
       diffusedVecYMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
-      TERP_TRUE_OR_RETURN_FALSE( applyVecDiffusion( vecXMap, vecYMap, *rasterDataPtr,
+      TERP_TRUE_OR_RETURN_FALSE( applyVecDiffusion( vecXMap, vecYMap, 0,
         diffusedVecXMap, diffusedVecYMap ),
         "Vector maps build error" );      
       createTifFromMatrix( diffusedVecXMap, true, "diffusedVecXMap" );
@@ -206,6 +217,13 @@ namespace te
       te::rp::Matrix< double > diffusedVecXMagMap;
       getMagnitude( diffusedVecXMap, diffusedVecYMap, diffusedVecXMagMap );
       createTifFromMatrix( diffusedVecXMagMap, true, "diffusedVecXMagMap" );
+      
+      te::rp::Matrix< double > skelSMap;
+      skelSMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
+      TERP_TRUE_OR_RETURN_FALSE( createSkeletonStrengthMap( diffusedVecXMap, 
+        diffusedVecYMap, skelSMap ),
+        "Skeleton strength map build error" );  
+      createTifFromMatrix( skelSMap, true, "skelSMap" );
       
       return true;
     }
@@ -263,23 +281,14 @@ namespace te
       }
         
       TERP_TRUE_OR_RETURN_FALSE( 
-        ( m_inputParameters.m_diffusionThreshold >= 0.0 ) &&
+        ( m_inputParameters.m_diffusionThreshold > 0.0 ) &&
         ( m_inputParameters.m_diffusionThreshold <= 1.0 ),
         "Invalid diffusion threshold" );   
         
       TERP_TRUE_OR_RETURN_FALSE( 
-        ( m_inputParameters.m_diffusionRegularitation >= 0.0 ) &&
+        ( m_inputParameters.m_diffusionRegularitation > 0.0 ) &&
         ( m_inputParameters.m_diffusionRegularitation <= 1.0 ),
         "Invalid diffusion regularization" );         
-        
-      TERP_TRUE_OR_RETURN_FALSE( 
-        ( m_inputParameters.m_diffusionRegularitation > 
-        m_inputParameters.m_diffusionThreshold ),
-        "Invalid diffusion regularization" );    
-        
-      TERP_TRUE_OR_RETURN_FALSE( 
-        ( m_inputParameters.m_diffusionMaxIterations > 0 ),
-        "Invalid diffusion maximum iterations number" );          
 
       m_isInitialized = true;
 
@@ -520,9 +529,9 @@ namespace te
         }
       }
       
-      for( row = 2 ; row < lastRowIdx ; ++row )
+      for( row = 1 ; row < lastRowIdx ; ++row )
       {
-        for( col = 2 ; col < lastColIdx ; ++col )
+        for( col = 1 ; col < lastColIdx ; ++col )
         {
           edgeStrengthMap[ row ][ col ] -= minStrength;
         }
@@ -875,7 +884,7 @@ namespace te
     bool Skeleton::applyVecDiffusion( 
        const te::rp::Matrix< double >& inputX, 
        const te::rp::Matrix< double >& inputY,
-       const te::rp::Matrix< double >& backgroundData, 
+       te::rp::Matrix< double > const * const backgroundDataPtr, 
        te::rp::Matrix< double >& outputX, 
        te::rp::Matrix< double >& outputY ) const
     {
@@ -931,8 +940,17 @@ namespace te
 
       unsigned int iteration = 0;
             
-      while( ( iteration < m_inputParameters.m_diffusionMaxIterations ) &&
-        ( currentIterationResidue > m_inputParameters.m_diffusionThreshold ) )
+      while( 
+          ( 
+            m_inputParameters.m_diffusionMaxIterations 
+            ?
+            ( iteration < m_inputParameters.m_diffusionMaxIterations ) 
+            :
+            true
+          )
+          &&
+          ( currentIterationResidue > m_inputParameters.m_diffusionThreshold ) 
+        )
       {
         currentIterationResidue = 0;
         
@@ -1024,17 +1042,20 @@ namespace te
           applyVecDiffusionThreadEntry( &threadParams );
         };
 
-        if( iteration % 1 == 0 )
-        {
-          createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
-            boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
-          createTifFromMatrix( *threadParams.m_outputBufYPtr, true,  
-            boost::lexical_cast< std::string >( iteration ) + "_diffusedY");          
-          createTifFromVecField( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, 
-            &backgroundData,  4,
-            boost::lexical_cast< std::string >( iteration ) + "_diffusedVecs");
-            
-        }
+//         if( ( backgroundDataPtr != 0 ) && ( iteration % 100 == 0 ) )
+//         {
+//           createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
+//           createTifFromMatrix( *threadParams.m_outputBufYPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedY");          
+//           createTifFromVecField( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, 
+//             backgroundDataPtr,  4,
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedVecs");
+//           te::rp::Matrix< double > diffusedMag;
+//           getMagnitude( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, diffusedMag );
+//           createTifFromMatrix( diffusedMag, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedMag");            
+//         }
 
         ++iteration;
       }
@@ -1115,7 +1136,7 @@ namespace te
       double* outRowXBuff = outRowXBuffHandler.get();
       
       boost::scoped_array< double > outRowYBuffHandler( new double[ nCols ] );
-      double* outRowYBuff = outRowXBuffHandler.get();
+      double* outRowYBuff = outRowYBuffHandler.get();
       
       for( row = ( paramsPtr->m_firstRowIdx + 1 ) ; row < rowsBound ; ++row )
       {
@@ -1242,8 +1263,130 @@ namespace te
         
         paramsPtr->m_mutexPtr->unlock();         
       }      
+    }
+    
+    bool Skeleton::createSkeletonStrengthMap( 
+       const te::rp::Matrix< double >& inputX, 
+       const te::rp::Matrix< double >& inputY,
+       te::rp::Matrix< double >& skelMap ) const
+    {
+      assert( inputX.getColumnsNumber() == inputY.getColumnsNumber() );
+      assert( inputX.getLinesNumber() == inputY.getLinesNumber() );
       
+      const unsigned int nRows = inputX.getLinesNumber();
+      TERP_TRUE_OR_RETURN_FALSE( nRows > 2, "Invalid rows number" );
       
+      const unsigned int nCols = inputX.getColumnsNumber();
+      TERP_TRUE_OR_RETURN_FALSE( nCols > 2, "Invalid columns number" );      
+      
+      if( ! skelMap.reset( nRows,nCols ) )
+        return false;       
+      
+      const unsigned int lastRowIdx = nRows - 1;
+      const unsigned int lastColIdx = nCols - 1;        
+      unsigned int row = 0;
+      unsigned int col = 0;  
+      unsigned int nextRow = 0;
+      unsigned int nextCol = 0;
+      unsigned int prevRow = 0;
+      unsigned int prevCol = 0;       
+      double minStrength = DBL_MAX;   
+      double maxStrength = -1.0 * DBL_MAX;
+      double centerX = 0;
+      double centerY = 0;
+      double neiX = 0;
+      double neiY = 0;
+      double diffX = 0;
+      double diffY = 0;
+      double diffMag = 0;
+      double strength = 0;
+      double strengthX = 0;
+      double strengthY = 0;
+      
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        skelMap[ row ][ 0 ] = 0;
+        skelMap[ row ][ lastColIdx ] = 0;        
+      }
+      
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        skelMap[ 0 ][ col ] = 0;
+        skelMap[ lastRowIdx ][ col ] = 0;
+      }       
+      
+      for( row = 1 ; row < lastRowIdx ; ++row )
+      {
+        prevRow = row - 1;
+        nextRow = row + 1;
+        
+        for( col = 1 ; col < lastColIdx ; ++col )
+        {
+          prevCol = col - 1;
+          nextCol = col + 1;  
+          
+          centerX = inputX[ row ][ col ];
+          centerY = inputY[ row ][ col ];
+          
+          strength = std::sqrt( ( centerX * centerX ) + ( centerY * centerY ) );          
+          
+          if( strength == 0.0 )
+          {
+            skelMap[ row ][ col ] = DBL_MAX;
+          }
+          else
+          {
+            strengthX = 0;
+            strengthX += inputX[ prevRow ][ prevCol ];
+            strengthX -= inputX[ prevRow ][ nextCol ];
+            strengthX += inputX[ row ][ prevCol ];
+            strengthX -= inputX[ row ][ nextCol ];
+            strengthX += inputX[ nextRow ][ prevCol ];
+            strengthX -= inputX[ nextRow ][ nextCol ];
+            strengthX /= 6.0;
+            strengthX /= centerX;
+            
+            strengthY = 0;
+            strengthY -= inputY[ prevRow ][ prevCol ];
+            strengthY -= inputY[ prevRow ][ col ];
+            strengthY -= inputY[ prevRow ][ nextCol ];
+            strengthY += inputY[ nextRow ][ prevCol ];
+            strengthY += inputY[ nextRow ][ col ];
+            strengthY += inputY[ nextRow ][ nextCol ];     
+            strengthY /= 6.0;
+            strengthY /= centerY;
+            
+            strength = std::sqrt( ( strengthX * strengthX ) +  ( strengthY * strengthY ) );
+            
+  /*          SKELSTRENGTHNEIGHBOR( prevRow, prevCol )
+            SKELSTRENGTHNEIGHBOR( prevRow, col )
+            SKELSTRENGTHNEIGHBOR( prevRow, nextCol )
+            SKELSTRENGTHNEIGHBOR( row, prevCol )
+            SKELSTRENGTHNEIGHBOR( row, nextCol )
+            SKELSTRENGTHNEIGHBOR( nextRow, prevCol )
+            SKELSTRENGTHNEIGHBOR( nextRow, col )
+            SKELSTRENGTHNEIGHBOR( nextRow, nextCol )*/                    
+            
+            skelMap[ row ][ col ] = strength;
+              
+            if( minStrength > strength ) minStrength = strength;   
+            if( maxStrength < strength ) maxStrength = strength;
+          }
+        }
+      }
+
+      for( row = 1 ; row < lastRowIdx ; ++row )
+      {
+        for( col = 1 ; col < lastColIdx ; ++col )
+        {
+          if( skelMap[ row ][ col ] == DBL_MAX )
+            skelMap[ row ][ col ] = maxStrength - minStrength;
+          else
+            skelMap[ row ][ col ] -= minStrength;
+        }
+      }
+      
+      return true;
     }
 
   } // end namespace rp

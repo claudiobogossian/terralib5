@@ -26,11 +26,14 @@
 #include "GraphicPropertyItem.h"
 #include "AbstractPropertyManager.h"
 
-#include "WellKnownMarkPropertyItem.h"
 #include "GlyphMarkPropertyItem.h"
+#include "LocalImagePropertyItem.h"
+#include "WellKnownMarkPropertyItem.h"
 
-#include "../../../se.h"
 #include "../../../maptools/Utils.h"
+#include "../../../se.h"
+#include "../../../xlink/SimpleLink.h"
+
 
 // Qt
 #include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
@@ -40,7 +43,7 @@
 
 
 te::qt::widgets::GraphicPropertyItem::GraphicPropertyItem(QtTreePropertyBrowser* pb, QColor c) : te::qt::widgets::AbstractPropertyItem(pb, c),
-  m_graphic(new te::se::Graphic)
+  m_graphic(new te::se::Graphic), m_setLocalGraphic(false)
 {
   //build property browser basic stroke
   QtProperty* generalProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Graphic"));
@@ -87,9 +90,11 @@ te::qt::widgets::GraphicPropertyItem::GraphicPropertyItem(QtTreePropertyBrowser*
 
   m_mp = new te::qt::widgets::WellKnownMarkPropertyItem(pb);
   m_gp = new te::qt::widgets::GlyphMarkPropertyItem(pb);
+  m_li = new te::qt::widgets::LocalImagePropertyItem(pb);
 
   connect(m_mp, SIGNAL(markChanged()), this, SLOT(onWellKnownMarkChanged()));
   connect(m_gp, SIGNAL(markChanged()), this, SLOT(onGlyphMarkChanged()));
+  connect(m_li, SIGNAL(externalGraphicChanged()), this, SLOT(onLocalImageChanged()));
 
   // Setups initial graphic
   m_graphic->add(m_mp->getMark());
@@ -105,40 +110,51 @@ bool te::qt::widgets::GraphicPropertyItem::setGraphic(const te::se::Graphic* gra
 
   delete m_graphic;
 
+  m_setLocalGraphic = true;
+
   m_graphic = graphic->clone();
 
   // Verifying if this widget can deal with the given graphic...
   const std::vector<te::se::Mark*> marks = m_graphic->getMarks();
-  if(marks.empty())
-    return false;
-
-  te::se::Mark* mark = marks[0];
-  const std::string* name = mark->getWellKnownName();
-  if(name == 0)
-    return false;
-
-  bool isValid = false;
-
-  std::size_t found = name->find("ttf://");
-  if(found != std::string::npos)
+  if(marks.empty() == false)
   {
-    m_gp->setMark(marks[0]);
+    te::se::Mark* mark = marks[0];
+    const std::string* name = mark->getWellKnownName();
+    if(name != 0)
+    {
+      std::size_t found = name->find("ttf://");
+      if(found != std::string::npos)
+        m_gp->setMark(marks[0]);
 
-    isValid = true;
+      found = name->find("://");
+      if(found == std::string::npos)
+        m_mp->setMark(marks[0]);
+    }
   }
 
-  found = name->find("://");
-  if(found == std::string::npos)
+  const std::vector<te::se::ExternalGraphic*> extGraphics = m_graphic->getExternalGraphics();
+  if(extGraphics.empty() == false)
   {
-    m_mp->setMark(marks[0]);
+    te::se::ExternalGraphic* g = extGraphics[0];
+    const te::xl::SimpleLink* link = g->getOnlineResource();
+    if(link == 0)
+      return false;
+  
+    const std::string href = link->getHref();
+    if(href.empty())
+      return false;
 
-    isValid = true;
+    QImage img;
+    if(!img.load(href.c_str()))
+      return false;
+
+    // I know it!
+    m_li->setExternalGraphic(g);
   }
-
-  if(!isValid)
-    return false;
 
   updateUi();
+
+  m_setLocalGraphic = false;
 
   return true;
 }
@@ -150,6 +166,9 @@ te::se::Graphic* te::qt::widgets::GraphicPropertyItem::getGraphic() const
 
 void te::qt::widgets::GraphicPropertyItem::valueChanged(QtProperty *p, int value)
 {
+  if(m_setLocalGraphic)
+    return;
+
   if(p == m_opacityProperty)
   {
     double opacity = value / 100.0;
@@ -160,6 +179,9 @@ void te::qt::widgets::GraphicPropertyItem::valueChanged(QtProperty *p, int value
 
 void te::qt::widgets::GraphicPropertyItem::valueChanged(QtProperty *p, double value)
 {
+  if(m_setLocalGraphic)
+    return;
+
   QString valueStr;
   valueStr.setNum(value);
 
@@ -177,6 +199,9 @@ void te::qt::widgets::GraphicPropertyItem::valueChanged(QtProperty *p, double va
 
 void te::qt::widgets::GraphicPropertyItem::valueChanged(QtProperty* p, const QPointF &value)
 {
+  if(m_setLocalGraphic)
+    return;
+
   QString xStr, yStr;
   xStr.setNum(value.x());
   yStr.setNum(value.y());
@@ -246,13 +271,24 @@ void te::qt::widgets::GraphicPropertyItem::onWellKnownMarkChanged()
   if(m_graphic->getMarks().empty() == false)
     m_graphic->setMark(0, m_mp->getMark());
 
-  emit graphicChanged();
+  if(!m_setLocalGraphic)
+    emit graphicChanged();
 }
 
 void te::qt::widgets::GraphicPropertyItem::onGlyphMarkChanged()
 {
   if(m_graphic->getMarks().empty() == false)
     m_graphic->setMark(0, m_gp->getMark());
+  
+  if(!m_setLocalGraphic)
+    emit graphicChanged();
+}
 
-  emit graphicChanged();
+void te::qt::widgets::GraphicPropertyItem::onLocalImageChanged()
+{
+  if(m_li->getExternalGraphic())
+    m_graphic->add(m_li->getExternalGraphic());
+  
+  if(!m_setLocalGraphic)
+    emit graphicChanged();
 }

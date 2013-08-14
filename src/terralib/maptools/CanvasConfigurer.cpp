@@ -313,14 +313,25 @@ void te::map::CanvasConfigurer::config(const te::se::Graphic* graphic, te::map::
   te::color::RGBAColor** rgba = 0;
 
   // Generates the image pattern 
-  const std::vector<te::se::Mark*> marks = graphic->getMarks();
-  if(!marks.empty())
-    rgba = te::map::MarkRendererManager::getInstance().render(marks[0], height);
+  //const std::vector<te::se::Mark*> marks = graphic->getMarks();
+  //if(!marks.empty())
+  //  rgba = te::map::MarkRendererManager::getInstance().render(marks[0], height);
+  //else
+  //{
+  //  const std::vector<te::se::ExternalGraphic*> exgs = graphic->getExternalGraphics();
+  //  if(!exgs.empty())
+  //    rgba = te::map::ExternalGraphicRendererManager::getInstance().render(exgs[0], height, width);
+  //}
+
+  const std::vector<te::se::ExternalGraphic*> exgs = graphic->getExternalGraphics();
+    
+  if(!exgs.empty())
+    rgba = te::map::ExternalGraphicRendererManager::getInstance().render(exgs[0], height, width);
   else
   {
-    const std::vector<te::se::ExternalGraphic*> exgs = graphic->getExternalGraphics();
-    if(!exgs.empty())
-      rgba = te::map::ExternalGraphicRendererManager::getInstance().render(exgs[0], height, width);
+    const std::vector<te::se::Mark*> marks = graphic->getMarks();
+    if(!marks.empty())
+      rgba = te::map::MarkRendererManager::getInstance().render(marks[0], height);
   }
 
   // Let's config the canvas!

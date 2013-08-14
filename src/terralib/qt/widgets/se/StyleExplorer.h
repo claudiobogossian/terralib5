@@ -120,6 +120,8 @@ namespace te
 
           void goDownSymbolizer();
 
+          void setLegendIconSize(int size);
+
         private:
 
           /*! \brief Internal method to initialize the widget. */

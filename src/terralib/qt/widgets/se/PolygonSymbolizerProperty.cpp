@@ -27,10 +27,12 @@
 */
 
 #include "PolygonSymbolizerProperty.h"
+#include "../../../se/Fill.h"
 #include "../../../se/PolygonSymbolizer.h"
 
 #include "BasicFillPropertyItem.h"
 #include "BasicStrokePropertyItem.h"
+#include "GraphicPropertyItem.h"
 
 // Qt
 #include <QtGui/QGridLayout>
@@ -38,7 +40,7 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::PolygonSymbolizerProperty::PolygonSymbolizerProperty(QWidget* parent) : m_symb(new te::se::PolygonSymbolizer)
+te::qt::widgets::PolygonSymbolizerProperty::PolygonSymbolizerProperty(QWidget* parent) : m_symb(new te::se::PolygonSymbolizer), m_setLocalSymbol(false)
 {
   QGridLayout* layout = new QGridLayout(this);
 
@@ -54,9 +56,11 @@ te::qt::widgets::PolygonSymbolizerProperty::PolygonSymbolizerProperty(QWidget* p
 
   m_bf = new te::qt::widgets::BasicFillPropertyItem(m_propertyBrowser);
   m_bs = new te::qt::widgets::BasicStrokePropertyItem(m_propertyBrowser);
+  m_generalProp = new te::qt::widgets::GraphicPropertyItem(m_propertyBrowser);
 
   connect(m_bf, SIGNAL(fillChanged()), this, SLOT(onFillChanged()));
   connect(m_bs, SIGNAL(strokeChanged()), this, SLOT(onStrokeChanged()));
+  connect(m_generalProp, SIGNAL(graphicChanged()), this, SLOT(onPolyGraphicChanged()));
 }
 
 te::qt::widgets::PolygonSymbolizerProperty::~PolygonSymbolizerProperty()
@@ -67,11 +71,20 @@ void te::qt::widgets::PolygonSymbolizerProperty::setSymbolizer(te::se::PolygonSy
 {
   m_symb = symb;
 
+  m_setLocalSymbol = true;
+
   if(m_symb->getFill())
-    m_bf->setFill(m_symb->getFill());
+  {
+    if(m_symb->getFill()->getGraphicFill())
+      m_generalProp->setGraphic(m_symb->getFill()->getGraphicFill());
+    else
+      m_bf->setFill(m_symb->getFill());
+  }
 
   if(m_symb->getStroke())
     m_bs->setStroke(m_symb->getStroke());
+
+  m_setLocalSymbol = false;
 }
 
 te::se::Symbolizer* te::qt::widgets::PolygonSymbolizerProperty::getSymbolizer() const
@@ -91,4 +104,19 @@ void te::qt::widgets::PolygonSymbolizerProperty::onFillChanged()
   m_symb->setFill(m_bf->getFill());
 
   emit symbolizerChanged();
+}
+
+void te::qt::widgets::PolygonSymbolizerProperty::onPolyGraphicChanged()
+{
+  if(m_symb->getFill())
+  {
+    te::se::Fill* fill = m_symb->getFill()->clone();
+  
+    fill->setGraphicFill(m_generalProp->getGraphic());
+
+    m_symb->setFill(fill);
+
+    if(!m_setLocalSymbol)
+      emit symbolizerChanged();
+  }
 }
