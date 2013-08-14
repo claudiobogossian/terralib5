@@ -40,8 +40,9 @@ te::qt::widgets::StyleExplorer::StyleExplorer(QWidget* parent)
   // Setup
   setAlternatingRowColors(true);
   setSelectionMode(QAbstractItemView::SingleSelection);
-  setHeaderLabel(tr("Style Explorer"));
-  setIconSize(QSize(32, 16));
+  //setHeaderLabel(tr("Style Explorer"));
+  setHeaderHidden(true);
+  setIconSize(QSize(16, 16));
 
   // Signals & slots
   connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onItemClicked(QTreeWidgetItem*, int)));
@@ -133,12 +134,20 @@ void te::qt::widgets::StyleExplorer::goDownSymbolizer()
   }
 }
 
+void te::qt::widgets::StyleExplorer::setLegendIconSize(int size)
+{
+  setIconSize(QSize(size, size));
+
+  updateStyleTree();
+}
+
 void te::qt::widgets::StyleExplorer::initialize()
 {
   clear();
 
   QTreeWidgetItem* root = new QTreeWidgetItem(this, STYLE);
-  root->setText(0, m_style->getType().c_str());
+  //root->setText(0, m_style->getType().c_str());
+  root->setText(0, tr("Style"));
 
   std::size_t nRules = m_style->getRules().size();
 
@@ -155,7 +164,32 @@ void te::qt::widgets::StyleExplorer::initialize()
     for(std::size_t j = 0; j < symbs.size(); ++j) // for each symbolizer
     {
       QTreeWidgetItem* symbItem = new QTreeWidgetItem(ruleItem, SYMBOLIZER);
-      symbItem->setText(0, tr(symbs[j]->getType().c_str()));
+
+      QString symbTypeName = symbs[j]->getType().c_str();
+
+      if(symbs[j]->getType() == "PolygonSymbolizer")
+      {
+        symbTypeName = tr("Polygon Symbol ");
+      }
+      else if(symbs[j]->getType() == "LineSymbolizer")
+      {
+        symbTypeName = tr("Line Symbol ");
+      }
+      else if(symbs[j]->getType() == "PointSymbolizer")
+      {
+        symbTypeName = tr("Point Symbol ");
+      }
+      else if(symbs[j]->getType() == "RasterSymbolizer")
+      {
+        symbTypeName = tr("Raster Symbol ");
+      }
+
+      QString count;
+      count.setNum(j);
+
+      symbTypeName.append(count);
+
+      symbItem->setText(0, symbTypeName);
       symbItem->setData(0, Qt::UserRole, (int)j);
       symbItem->setIcon(0, QIcon(SymbologyPreview::build(symbs[j], iconSize())));
 
@@ -258,7 +292,7 @@ void te::qt::widgets::StyleExplorer::onSymbolizerChanged(te::se::Symbolizer* sym
   QTreeWidgetItem* symbolizerItem = getSelectedItem();
 
   // Updating item
-  symbolizerItem->setText(0, tr(symb->getType().c_str()));
+  //symbolizerItem->setText(0, tr(symb->getType().c_str()));
   symbolizerItem->setIcon(0, QIcon(SymbologyPreview::build(symb, iconSize())));
 
   te::se::Rule* rule = getCurrentRule();

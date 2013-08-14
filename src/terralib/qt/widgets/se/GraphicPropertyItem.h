@@ -44,6 +44,7 @@ namespace te
     {
       class WellKnownMarkPropertyItem;
       class GlyphMarkPropertyItem;
+      class LocalImagePropertyItem;
 
       /*!
         \class GraphicPropertyItem
@@ -98,6 +99,8 @@ namespace te
 
           void onGlyphMarkChanged();
 
+          void onLocalImageChanged();
+
         signals:
 
           /*! This signal is emitted when the internal graphic element is changed. */
@@ -113,6 +116,9 @@ namespace te
 
           te::qt::widgets::WellKnownMarkPropertyItem* m_mp;
           te::qt::widgets::GlyphMarkPropertyItem* m_gp;
+          te::qt::widgets::LocalImagePropertyItem* m_li;
+
+          bool m_setLocalGraphic;
 
           te::se::Graphic* m_graphic;
       };

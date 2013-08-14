@@ -365,6 +365,7 @@ set (
   ${SRCDIR}/widgets/se/LineSymbolizerProperty.h
   ${SRCDIR}/widgets/se/LineSymbolizerWidget.h
   ${SRCDIR}/widgets/se/LocalGraphicWidget.h
+  ${SRCDIR}/widgets/se/LocalImagePropertyItem.h
   ${SRCDIR}/widgets/se/LocalImageWidget.h
   ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
   ${SRCDIR}/widgets/se/PointSymbolizerProperty.h

@@ -119,6 +119,8 @@ namespace te
 
           te::qt::widgets::GraphicPropertyItem* m_generalProp;
 
+          bool m_setLocalSymbol;
+
           te::se::PointSymbolizer* m_symb;           //!< Point symbolizer element that will be configured by this widget.
       };
     }

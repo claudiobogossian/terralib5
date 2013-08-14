@@ -51,6 +51,7 @@ namespace te
     {
       class BasicFillPropertyItem;
       class BasicStrokePropertyItem;
+      class GraphicPropertyItem;
       /*!
         \class PolygonSymbolizerProperty
 
@@ -106,6 +107,8 @@ namespace te
 
           void onFillChanged();
 
+          void onPolyGraphicChanged();
+
         signals:
 
           /*! This signal is emitted when the internal polygon symbolizer element is changed. */
@@ -118,6 +121,9 @@ namespace te
 
           te::qt::widgets::BasicFillPropertyItem* m_bf;
           te::qt::widgets::BasicStrokePropertyItem* m_bs;
+          te::qt::widgets::GraphicPropertyItem* m_generalProp;
+
+          bool m_setLocalSymbol;
 
           te::se::PolygonSymbolizer* m_symb;                   //!< Polygon symbolizer element that will be configured by this widget.
       };

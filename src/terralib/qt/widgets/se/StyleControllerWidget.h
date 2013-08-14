@@ -115,6 +115,8 @@ namespace te
 
           void onRuleClicked(const te::se::Rule* rule);
 
+          void changeLegendIconSize(int size);
+
         signals:
 
           /*! This signal is emitted when a symbolizer is clicked. */

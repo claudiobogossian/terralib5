@@ -40,7 +40,7 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::PointSymbolizerProperty::PointSymbolizerProperty(QWidget* parent) : m_symb(new te::se::PointSymbolizer)
+te::qt::widgets::PointSymbolizerProperty::PointSymbolizerProperty(QWidget* parent) : m_symb(new te::se::PointSymbolizer), m_setLocalSymbol(false)
 {
   QGridLayout* layout = new QGridLayout(this);
 
@@ -70,7 +70,11 @@ void te::qt::widgets::PointSymbolizerProperty::setSymbolizer( te::se::PointSymbo
 {
   m_symb = symb;
 
+  m_setLocalSymbol = true;
+
   m_generalProp->setGraphic(m_symb->getGraphic());
+
+  m_setLocalSymbol = false;
 }
 
 te::se::Symbolizer* te::qt::widgets::PointSymbolizerProperty::getSymbolizer() const
@@ -82,5 +86,6 @@ void te::qt::widgets::PointSymbolizerProperty::onGraphicChanged()
 {
   m_symb->setGraphic(m_generalProp->getGraphic());
 
-  emit symbolizerChanged();
+  if(!m_setLocalSymbol)
+    emit symbolizerChanged();
 }
