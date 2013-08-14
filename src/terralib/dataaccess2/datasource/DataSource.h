@@ -601,12 +601,9 @@ namespace te
 
           \return The property with the given name from the dataset.
 
-          \post The caller of this method will take the ownership of the returned property,
-                because it is a clone of the one in the schema.
-
           \note Not thread-safe!
         */
-        virtual te::dt::Property* getProperty(const std::string& datasetName, const std::string& name) = 0;
+        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name) = 0;
 
         /*!
           \brief It retrieves a property from the dataset.
@@ -621,7 +618,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual te::dt::Property* getProperty(const std::string& datasetName, std::size_t propertyPos) = 0;
+        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos) = 0;
 
         /*!
           \brief It adds a new property to the dataset schema.
