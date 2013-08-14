@@ -155,6 +155,15 @@ const te::se::Displacement* te::se::Graphic::getDisplacement() const
   return m_displacement;
 }
 
+void te::se::Graphic::clear()
+{
+  te::common::FreeContents(m_externalGraphics);
+  m_externalGraphics.clear();
+
+  te::common::FreeContents(m_marks);
+  m_marks.clear();
+}
+
 te::se::Graphic* te::se::Graphic::clone() const
 {
   Graphic* graphic = new Graphic;

@@ -178,6 +178,9 @@ namespace te
 
         const Displacement* getDisplacement() const;
 
+        /*! \brief Clears the marks and the external graphics of this graphic. */
+        void clear();
+
         //@}
 
         /*! \brief It creates a new copy of this object. */
