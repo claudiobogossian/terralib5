@@ -606,22 +606,3 @@ std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const te
 }
 
 #pragma endregion
-
-#pragma region Persistence Data
-
-void te::vp::Persistence( te::da::DataSetType* dataSetType,
-                          te::mem::DataSet* dataSet,
-                          const te::da::DataSourceInfoPtr& dsInfo,
-                          const std::map<std::string, std::string> options)
-{
-  std::pair<te::da::DataSetType*, te::mem::DataSet*> pair;
-  pair.first = dataSetType;
-  pair.second = dataSet;
-
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
-  std::auto_ptr<te::da::DataSourceTransactor> t(dataSource->getTransactor());
-  pair.second->moveFirst();
-  te::da::Create(t.get(), pair.first, pair.second, options);
-}
-
-#pragma endregion
