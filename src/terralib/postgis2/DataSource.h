@@ -226,7 +226,7 @@ namespace te
 
         void renameProperty(const std::string& datasetName, const std::string& propertyName, const std::string& newPropertyName);
 
-        te::da::PrimaryKey* getPrimaryKey(const std::string& datasetName);
+        std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
 
         bool primaryKeyExists(const std::string& datasetName, const std::string& name);
 
@@ -234,21 +234,21 @@ namespace te
 
         void dropPrimaryKey(const std::string& datasetName);
 
+        std::auto_ptr<te::da::ForeignKey> getForeignKey(const std::string& datasetName, const std::string& name);
+
         std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
 
         bool foreignKeyExists(const std::string& datasetName, const std::string& name);
-
-        te::da::ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name);
 
         void addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk);
 
         void dropForeignKey(const std::string& datasetName, const std::string& fkName);
 
+        std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName, const std::string& name);
+
         std::vector<std::string> getUniqueKeyNames(const std::string& datasetName);
 
         bool uniqueKeyExists(const std::string& datasetName, const std::string& name);
-
-        te::da::UniqueKey* getUniqueKey(const std::string& datasetName, const std::string& name);
 
         void addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk);
 

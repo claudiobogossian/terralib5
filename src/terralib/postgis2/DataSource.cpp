@@ -834,12 +834,12 @@ void te::pgis::DataSource::renameProperty(const std::string& datasetName, const 
   }
 }
 
-te::da::PrimaryKey* te::pgis::DataSource::getPrimaryKey(const std::string& datasetName)
+std::auto_ptr<te::da::PrimaryKey> te::pgis::DataSource::getPrimaryKey(const std::string& datasetName)
 {
   if(!dataSetExists(datasetName))
     throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % datasetName).str());
 
-  te::da::PrimaryKey* pk;
+  te::da::PrimaryKey* pk = 0;
 
   std::auto_ptr<te::da::DataSet> pkInfo = getConstraints(datasetName, 'p');
 
@@ -867,14 +867,26 @@ te::da::PrimaryKey* te::pgis::DataSource::getPrimaryKey(const std::string& datas
     }
   }
 
-  return pk;
+  // Try to link the pk to an index
+  std::vector<std::string> idxNames = getIndexNames(datasetName);
+
+  for(std::size_t i = 0; i < idxNames.size(); ++i)
+  {
+    if(pk->getName() == idxNames[i])
+    {
+      pk->setAssociatedIndex(getIndex(datasetName, idxNames[i]));
+      break;
+    }
+  }
+
+  return std::auto_ptr<te::da::PrimaryKey>(pk);
 }
 
 bool te::pgis::DataSource::primaryKeyExists(const std::string& datasetName, const std::string& name)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::PrimaryKey> pk = getPrimaryKey(datasetName);
 
-  if(dt->getPrimaryKey()->getName() == name)
+  if(pk->getName() == name)
     return true;
 
   return false;
@@ -882,13 +894,16 @@ bool te::pgis::DataSource::primaryKeyExists(const std::string& datasetName, cons
 
 void te::pgis::DataSource::addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  // Check if there is a primary key in the dataset
+  // If true, drop it from the dataset
+  if(getPrimaryKey(datasetName).get() != 0)
+    dropPrimaryKey(datasetName);
 
   std::string pkName;
 
   if(pk->getName().empty())
   {
-    pkName = dt->getName() + "_pk";
+    pkName = datasetName + "_pk";
 
     boost::replace_all(pkName, ".", "_");
 
@@ -898,7 +913,7 @@ void te::pgis::DataSource::addPrimaryKey(const std::string& datasetName, te::da:
   pkName = pk->getName();
 
   std::string sql("ALTER TABLE ");
-  sql += dt->getName();
+  sql += datasetName;
   sql += " ADD CONSTRAINT ";
   sql += pkName;
   sql += " PRIMARY KEY (";
@@ -918,24 +933,12 @@ void te::pgis::DataSource::addPrimaryKey(const std::string& datasetName, te::da:
   sql += ")";
 
   execute(sql);
-
-  if(pk->getDataSetType() == 0)
-    dt->setPrimaryKey(pk);
-
-  // Look if there is an association between the primary key and an index
-  std::vector<std::string> idxNames = getIndexNames(datasetName);
-  for(std::size_t i = 0; i < idxNames.size(); ++i)
-  {
-    if(pkName == idxNames[i])
-      pk->setAssociatedIndex(getIndex(datasetName, pkName));
-  }
 }
 
 void te::pgis::DataSource::dropPrimaryKey(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::PrimaryKey> pk = getPrimaryKey(datasetName);
 
-  te::da::PrimaryKey* pk = dt->getPrimaryKey();
   std::string pkName = pk->getName();
 
   std::string sql("ALTER TABLE ");
@@ -947,27 +950,100 @@ void te::pgis::DataSource::dropPrimaryKey(const std::string& datasetName)
   // Remove the index associated to the primary key
   if(indexExists(datasetName, pkName))
     dropIndex(datasetName, pkName);
+}
+
+std::auto_ptr<te::da::ForeignKey> te::pgis::DataSource::getForeignKey(const std::string& datasetName, const std::string& name)
+{
+  if(!dataSetExists(datasetName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % datasetName).str());
+
+  std::string fullFKName;
+
+  if(name.find(".") == std::string::npos)
+    fullFKName = datasetName + "." + name;
+  else
+    fullFKName = name;
+
+  te::da::ForeignKey* fk = 0;
+
+  std::auto_ptr<te::da::DataSet> fkInfo = getConstraints(datasetName, 'f');
+
+  while(fkInfo->moveNext())
+  {
+    std::string fkName  = fkInfo->getString(1) + ".";
+    fkName += fkInfo->getString(2);
+
+    if(fkName != fullFKName)
+      continue;
+
+    unsigned int fkId = fkInfo->getInt32(0);
+    unsigned int refDatasetId = fkInfo->getInt32(4);
+    char onUpdate = fkInfo->getChar(5);
+    char onDeletion = fkInfo->getChar(6);
+
+    std::auto_ptr<te::dt::Array> fkCols(fkInfo->getArray(8));
+    std::auto_ptr<te::dt::Array> fkRefCols(fkInfo->getArray(9));
+
+    assert(fkCols->getDimension() == 1);
+    assert(fkCols->getDimension() == fkRefCols->getDimension());
+    assert(fkCols->getDimensionSize(0) == fkRefCols->getDimensionSize(0));
+
+    std::string refName = getDataSetName(refDatasetId);
+    const te::da::DataSetTypePtr& refdt = getDataSetType(refName);
+
+    fk = new te::da::ForeignKey(fkName, fkId);
+    fk->setOnUpdateAction(GetAction(onUpdate));
+    fk->setOnDeleteAction(GetAction(onDeletion));
+    fk->setReferencedDataSetType(refdt.get());
   
-  dt->remove(pk);
+    std::size_t size = fkCols->getDimensionSize(0);
+
+    std::vector<std::size_t> pos;
+    pos.push_back(0);
+
+    for(std::size_t i = 0; i < size; ++i)
+    {
+      pos[0] = i;
+
+      te::dt::AbstractData* fkRefCol = fkRefCols->getData(pos);
+      fk->addRefProperty(refdt->getPropertyById(static_cast<te::dt::Int16*>(fkRefCol)->getValue()));
+
+      te::dt::AbstractData* fkCol = fkCols->getData(pos);
+      fk->add(getProperty(static_cast<te::dt::Int16*>(fkCol)->getValue(), datasetName).release());
+    }
+  }
+
+  return std::auto_ptr<te::da::ForeignKey>(fk);
 }
 
 std::vector<std::string> te::pgis::DataSource::getForeignKeyNames(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  if(!dataSetExists(datasetName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % datasetName).str());
 
   std::vector<std::string> fkNames;
 
-  std::size_t numFK = dt->getNumberOfForeignKeys();
+  std::auto_ptr<te::da::DataSet> fkInfo = getConstraints(datasetName, 'f');
 
-  for(std::size_t i = 0; i < numFK; ++i)
-    fkNames.push_back(dt->getForeignKey(i)->getName());
+  while(fkInfo->moveNext())
+  {
+    std::string fkName  = fkInfo->getString(1) + ".";
+    fkName += fkInfo->getString(2);
+
+    fkNames.push_back(fkName);
+  }
 
   return fkNames;
 }
 
 bool te::pgis::DataSource::foreignKeyExists(const std::string& datasetName, const std::string& name)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::string fullFKName;
+
+  if(name.find(".") == std::string::npos)
+    fullFKName = datasetName + "." + name;
+  else
+    fullFKName = name;
 
   std::vector<std::string> fkNames = getForeignKeyNames(datasetName);
 
@@ -977,29 +1053,20 @@ bool te::pgis::DataSource::foreignKeyExists(const std::string& datasetName, cons
   return false;
 }
 
-te::da::ForeignKey* te::pgis::DataSource::getForeignKey(const std::string& datasetName, const std::string& name)
-{
-  if(!foreignKeyExists(datasetName, name))
-    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no foreign key with this name \"%2%\"!")) % datasetName % name).str());
-
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
-
-  return static_cast<te::da::ForeignKey*>(dt->getForeignKey(name)->clone());
-}
-
 void te::pgis::DataSource::addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk)
 {
   std::string fkName = fk->getName();
 
+  if(fkName.find(".") == std::string::npos)
+    fkName = datasetName + "." + fkName;
+
   if(foreignKeyExists(datasetName, fkName))
     throw Exception((boost::format(TR_PGIS("The dataset already \"%1%\" has a foreign key with this name \"%2%\"!")) % datasetName % fkName).str());
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
-
   std::string sql("ALTER TABLE ");
-  sql += dt->getName();
+  sql += datasetName;
   sql += " ADD CONSTRAINT ";
-  sql += fk->getName();
+  sql += fkName;
   sql += " FOREIGN KEY (";
   
   std::size_t size = fk->getProperties().size();
@@ -1077,46 +1144,118 @@ void te::pgis::DataSource::addForeignKey(const std::string& datasetName, te::da:
   }
 
   execute(sql);
-
-  dt->add(fk);
 }
 
-void te::pgis::DataSource::dropForeignKey(const std::string& datasetName, const std::string& fkName)
+void te::pgis::DataSource::dropForeignKey(const std::string& datasetName, const std::string& name)
 {
+  std::string fkName;
+
+  if(name.find(".") == std::string::npos)
+    fkName = datasetName + "." + name;
+  else
+    fkName = name;
+
   if(!foreignKeyExists(datasetName, fkName))
     throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no foreign key with this name \"%2%\"!")) % datasetName % fkName).str());
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
-
-  te::da::ForeignKey* fk = dt->getForeignKey(fkName);
-
   std::string sql("ALTER TABLE ");
-  sql += dt->getName();
+  sql += datasetName;
   sql += " DROP CONSTRAINT ";
   sql += fkName;
 
   execute(sql);
+}
 
-  dt->remove(fk);
+std::auto_ptr<te::da::UniqueKey> te::pgis::DataSource::getUniqueKey(const std::string& datasetName, const std::string& name)
+{
+  if(!dataSetExists(datasetName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % datasetName).str());
+
+  std::string fullUKName;
+
+  if(name.find(".") == std::string::npos)
+    fullUKName = datasetName + "." + name;
+  else
+    fullUKName = name;
+
+  te::da::UniqueKey* uk = 0;
+
+  std::auto_ptr<te::da::DataSet> ukInfo = getConstraints(datasetName, 'u');
+
+  while(ukInfo->moveNext())
+  {
+    std::string ukName  = ukInfo->getString(1) + ".";
+    ukName += ukInfo->getString(2);
+
+    if(ukName != fullUKName)
+      continue;
+
+    unsigned int ukId = ukInfo->getInt32(0);
+
+    std::auto_ptr<te::dt::Array> ukCols(ukInfo->getArray(8));
+
+    uk = new te::da::UniqueKey(ukName, 0, ukId);
+
+    std::size_t size = ukCols->getDimensionSize(0);
+
+    std::vector<std::size_t> pos;
+    pos.push_back(0);
+
+    for(std::size_t i = 0; i < size; ++i)
+    {
+      pos[0] = i;
+
+      te::dt::AbstractData* ukCol = ukCols->getData(pos);
+
+      std::auto_ptr<te::dt::Property> p = getProperty(static_cast<te::dt::Int16*>(ukCol)->getValue(), datasetName);
+
+      uk->add(p.release());
+    }
+  }
+
+  // Try to link the uk to an index
+  std::vector<std::string> idxNames = getIndexNames(datasetName);
+
+  for(std::size_t i = 0; i < idxNames.size(); ++i)
+  {
+    if(uk->getName() == idxNames[i])
+    {
+      uk->setAssociatedIndex(getIndex(datasetName, idxNames[i]));
+      break;
+    }
+  }
+
+  return std::auto_ptr<te::da::UniqueKey>(uk);
 }
 
 std::vector<std::string> te::pgis::DataSource::getUniqueKeyNames(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  if(!dataSetExists(datasetName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % datasetName).str());
 
   std::vector<std::string> ukNames;
 
-  std::size_t numUKs = dt->getNumberOfUniqueKeys();
+  std::auto_ptr<te::da::DataSet> ukInfo = getConstraints(datasetName, 'u');
 
-  for(std::size_t i = 0; i < numUKs; ++i)
-    ukNames.push_back(dt->getUniqueKey(i)->getName());
+  while(ukInfo->moveNext())
+  {
+    std::string ukName  = ukInfo->getString(1) + ".";
+    ukName += ukInfo->getString(2);
+
+    ukNames.push_back(ukName);
+  }
 
   return ukNames;
 }
 
 bool te::pgis::DataSource::uniqueKeyExists(const std::string& datasetName, const std::string& name)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::string fullUKName;
+
+  if(name.find(".") == std::string::npos)
+    fullUKName = datasetName + "." + name;
+  else
+    fullUKName = name;
 
   std::vector<std::string> ukNames = getUniqueKeyNames(datasetName);
 
@@ -1126,24 +1265,15 @@ bool te::pgis::DataSource::uniqueKeyExists(const std::string& datasetName, const
   return false;
 }
 
-te::da::UniqueKey* te::pgis::DataSource::getUniqueKey(const std::string& datasetName, const std::string& name)
-{
-  if(!uniqueKeyExists(datasetName, name))
-    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no unique key with this name \"%2%\"!")) % datasetName % name).str());
-
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
-
-  return static_cast<te::da::UniqueKey*>(dt->getUniqueKey(name)->clone());
-}
-
 void te::pgis::DataSource::addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk)
 {
   std::string ukName = uk->getName();
 
-  if(uniqueKeyExists(datasetName, ukName))
-    throw Exception((boost::format(TR_PGIS("The dataset already \"%1%\" has a unique key with this name \"%2%\"!")) % datasetName % ukName).str());
+  if(ukName.find(".") == std::string::npos)
+    ukName = datasetName + "." + ukName;
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  if(uniqueKeyExists(datasetName, ukName))
+    throw Exception((boost::format(TR_PGIS("The dataset already \"%1%\" has a unique key with the name \"%2%\"!")) % datasetName % ukName).str());
 
   std::string sql("ALTER TABLE ");
   sql += datasetName;
@@ -1166,39 +1296,30 @@ void te::pgis::DataSource::addUniqueKey(const std::string& datasetName, te::da::
   sql += ")";
 
   execute(sql);
-
-  dt->add(uk);
-
-  // Look if there is an association between the unique key and an index
-  std::vector<std::string> idxNames = getIndexNames(datasetName);
-  for(std::size_t i = 0; i < idxNames.size(); ++i)
-  {
-    if(ukName == idxNames[i])
-      uk->setAssociatedIndex(getIndex(datasetName, ukName));
-  }
 }
 
 void te::pgis::DataSource::dropUniqueKey(const std::string& datasetName, const std::string& name)
 {
-  if(!uniqueKeyExists(datasetName, name))
-    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no unique key with this name \"%2%\"!")) % datasetName % name).str());
+  std::string ukName;
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  if(name.find(".") == std::string::npos)
+    ukName = datasetName + "." + name;
+  else
+    ukName = name;
 
-  te::da::UniqueKey* uk = dt->getUniqueKey(name);
+  if(!uniqueKeyExists(datasetName, ukName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no unique key with this name \"%2%\"!")) % datasetName % ukName).str());
 
   std::string sql("ALTER TABLE ");
   sql += datasetName;
   sql += " DROP CONSTRAINT ";
-  sql += name;
+  sql += ukName;
 
   execute(sql);
 
   // Remove the index associated to the unique key
-  if(indexExists(datasetName, name))
-    dropIndex(datasetName, name);
-
-  dt->remove(uk);
+  if(indexExists(datasetName, ukName))
+    dropIndex(datasetName, ukName);
 }
 
 std::vector<std::string> te::pgis::DataSource::getCheckConstraintNames(const std::string& datasetName)
@@ -2266,7 +2387,6 @@ bool te::pgis::DataSource::getConstraints(te::da::DataSetTypePtr& dt)
     else if(cType == 'u')
     {
       // begin of unique key constraint
-
       unsigned int ukId = cInfo->getInt32(0);
       std::string ukName  = cInfo->getString(1) + ".";
       ukName  += cInfo->getString(2);

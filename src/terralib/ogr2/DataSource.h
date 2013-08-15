@@ -119,7 +119,7 @@ namespace te
 
         void addProperty(const std::string& datasetName, te::dt::Property* p);
 
-        te::da::PrimaryKey* getPrimaryKey(const std::string& datasetName);
+        std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
 
         std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, const std::string& propertyName);
 

@@ -30,6 +30,9 @@
 #include "../../common/Enums.h"
 #include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
+#include "../dataset/ForeignKey.h"
+#include "../dataset/PrimaryKey.h"
+#include "../dataset/UniqueKey.h"
 #include "../../geometry/Enums.h"
 #include "../Config.h"
 #include "../Exception.h"
@@ -67,15 +70,12 @@ namespace te
     class DataSetType;
     class DataSource;
     class DataSourceCapabilities;
-    class ForeignKey;
     class Index;
     class ObjectIdSet;
-    class PrimaryKey;
     class Query;
     class Select;
     class Sequence;
     class SQLDialect;
-    class UniqueKey;
 
     /*!
       \class DataSource
@@ -546,6 +546,17 @@ namespace te
         virtual const te::da::DataSetTypePtr& getDataSetType(const std::string& name) = 0;
 
         /*!
+          \brief It retrieves the properties of the dataset.
+
+          \param datasetName The dataset name.
+
+          \return The properties of the dataset.
+
+          \note Not thread-safe!
+        */
+        virtual boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName) = 0;
+
+        /*!
           \brief It searches for the list of property names of the given dataset.
 
           \param datasetName The dataset name.
@@ -581,17 +592,6 @@ namespace te
           \note Not thread-safe!
         */
         virtual bool propertyExists(const std::string& datasetName, const std::string& name) = 0;
-
-        /*!
-          \brief It retrieves the properties of the dataset.
-
-          \param datasetName The dataset name.
-
-          \return The properties of the dataset.
-
-          \note Not thread-safe!
-        */
-        virtual boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName) = 0;
 
         /*!
           \brief It retrieves a property with the given name from the dataset.
@@ -663,14 +663,11 @@ namespace te
 
           \param datasetName  The dataset name.
 
-          \return The primary key of the dataset.
-
-          \post The caller of this method will take the ownership of the returned primary key,
-                because it is a clone of the one in the schema.
+          \return If there is a primary key in the given dataset, it returns it.
 
           \note Not thread-safe!
         */
-        virtual PrimaryKey* getPrimaryKey(const std::string& datasetName);
+        virtual std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
 
         /*!
           \brief It checks if a primary key with the given name exists in the data source.
@@ -707,6 +704,18 @@ namespace te
         virtual void dropPrimaryKey(const std::string& datasetName);
 
         /*!
+          \brief It retrieves the foreign key in the given dataset.
+
+          \param datasetName The dataset name.
+          \param name        The foreign key name.
+
+          \return If there is a foreign key with the given name in the dataset, it returns it.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<ForeignKey> getForeignKey(const std::string& datasetName, const std::string& name);
+
+        /*!
           \brief It searches for the foreign key names of the given dataset.
 
           \param datasetName The dataset name.
@@ -726,20 +735,6 @@ namespace te
           \return True, if the foreign key exists in the data source; otherwise, it returns false.
         */
         virtual bool foreignKeyExists(const std::string& datasetName, const std::string& name);
-
-        /*!
-          \brief It retrieves the foreign key with the given name.
-
-          \param name The foreign key name.
-
-          \return The foreign key with the given name in the dataset.
-
-          \post The caller of this method will take the ownership of the returned foreign key,
-                because it is a clone of the one in the schema.
-
-          \note Not thread-safe!
-        */
-        virtual ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It adds a foreign key constraint to a dataset.
@@ -765,6 +760,18 @@ namespace te
         virtual void dropForeignKey(const std::string& datasetName, const std::string& fkName);
 
         /*!
+          \brief It gets the unique key in the dataset with the given name.
+
+          \param datasetName  The dataset name.
+          \param name         The unique key name.
+
+          \return The unique key with the given name in the dataset.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName, const std::string& name);
+
+        /*!
           \brief It searches in the data source for the unique key names associated to the given dataset.
 
           \param datasetName The dataset name.
@@ -786,21 +793,6 @@ namespace te
           \note Not thread-safe!
         */
         virtual bool uniqueKeyExists(const std::string& datasetName, const std::string& name);
-
-        /*!
-          \brief It gets the unique key in the dataset with the given name.
-
-          \param datasetName  The dataset name.
-          \param name         The unique key name.
-
-          \post The caller of this method will take the ownership of the returned property,
-                because it is a clone of the one in the schema.
-
-          \return The unique key with the given name in the dataset.
-
-          \note Not thread-safe!
-        */
-        virtual te::da::UniqueKey* getUniqueKey(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It adds a unique key constraint to the dataset.

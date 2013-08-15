@@ -183,9 +183,9 @@ void te::da::DataSource::renameProperty(const std::string& datasetName,
 {
 }
 
-te::da::PrimaryKey* te::da::DataSource::getPrimaryKey(const std::string& /*datasetName*/)
+std::auto_ptr<te::da::PrimaryKey> te::da::DataSource::getPrimaryKey(const std::string& /*datasetName*/)
 {
-  return 0;
+  return std::auto_ptr<te::da::PrimaryKey>(0);
 }
 
 bool te::da::DataSource::primaryKeyExists(const std::string& datasetName, const std::string& /*name*/)
@@ -201,6 +201,11 @@ void te::da::DataSource::dropPrimaryKey(const std::string& /*datasetName*/)
 {
 }
 
+std::auto_ptr<te::da::ForeignKey> te::da::DataSource::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  return std::auto_ptr<te::da::ForeignKey>(0);
+}
+
 std::vector<std::string> te::da::DataSource::getForeignKeyNames(const std::string& /*datasetName*/)
 {
   return std::vector<std::string>();
@@ -211,17 +216,17 @@ bool te::da::DataSource::foreignKeyExists(const std::string& /*datasetName*/, co
   return false;
 }
 
-te::da::ForeignKey* te::da::DataSource::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  return 0;
-}
-
 void te::da::DataSource::addForeignKey(const std::string& /*datasetName*/, ForeignKey* /*fk*/)
 {
 }
 
 void te::da::DataSource::dropForeignKey(const std::string& /*datasetName*/, const std::string& /*fkName*/)
 {
+}
+
+std::auto_ptr<te::da::UniqueKey> te::da::DataSource::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  return std::auto_ptr<te::da::UniqueKey>(0);
 }
 
 std::vector<std::string> te::da::DataSource::getUniqueKeyNames(const std::string& /*datasetName*/)
@@ -232,11 +237,6 @@ std::vector<std::string> te::da::DataSource::getUniqueKeyNames(const std::string
 bool te::da::DataSource::uniqueKeyExists(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
   return false;
-}
-
-te::da::UniqueKey* te::da::DataSource::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  return 0;
 }
 
 void te::da::DataSource::addUniqueKey(const std::string& /*datasetName*/, UniqueKey* /*uk*/)
