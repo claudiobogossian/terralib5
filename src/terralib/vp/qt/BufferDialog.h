@@ -75,6 +75,12 @@ namespace te
 
         void setAttributesForDistance(std::vector<te::dt::Property*> properties);
 
+        std::map<te::gm::Geometry*, double> getDistante();
+
+        int getPolygonRule();
+
+        int getBoundariesRule();
+
       private:
 
       protected slots:
@@ -97,6 +103,10 @@ namespace te
 
         void onWithBoundToggled();
 
+        void onTargetDatasourceToolButtonPressed();
+
+        void onTargetFileToolButtonPressed();
+
         void onHelpPushButtonClicked();
 
         void onOkPushButtonClicked();
@@ -107,8 +117,10 @@ namespace te
 
         std::auto_ptr<Ui::BufferDialogForm> m_ui;
         te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
+        std::string m_outputArchive;                                                      //!< Archive information.
         std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
         te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
+        te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
         std::vector<te::dt::Property*> m_properties;                                      //!< Properties related to the selected Layer
     };
   }   // end namespace vp
