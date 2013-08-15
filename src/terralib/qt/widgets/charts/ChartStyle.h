@@ -30,7 +30,8 @@
 #include "../Config.h"
 
 //QT
-#include "qcolor.h"
+#include <qcolor.h>
+#include <QFont>
 
 //STL
 #include <string.h>
@@ -41,6 +42,7 @@ namespace te
   {
     //forward declarations
     class Fill;
+    class Font;
     class Stroke;
   }
 
@@ -63,14 +65,16 @@ namespace te
             \brief Constructor
 
             \param title The style's title
+            \param titleFont The title's font
             \param axisX The x axis' label
             \param axisY The y axis' label
+            \param axisFont The axis' font. Will be used for both x and y axis.
             \param fill The title's fill
             \param stroke The title's stroke
             \param gridChecked Boolean used to decided weather to display the grid or not
             \param color The style's background ccolor
           */
-          ChartStyle(QString title, QString axisX, QString axisY, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color);
+          ChartStyle(QString title, QFont titleFont, QString axisX, QString axisY, QFont axisFont, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color);
 
           /*! 
             \brief Destructor.
@@ -90,6 +94,20 @@ namespace te
             \param newTitle The new title.
           */
           void setTitle(QString newTitle);
+
+          /*! 
+            \brief Returns a reference to the title's font.
+
+            \return A QFont that represents the title's font.
+          */
+          QFont& getTitleFont();
+
+          /*!
+            \brief It sets the title's font.
+
+            \param newTitle The new title's font..
+          */
+          void setTitleFont(QFont newTitleFont);
 
           /*! 
             \brief Returns a reference to the style's x axis label
@@ -118,6 +136,20 @@ namespace te
             \param newAxisX The new y axis label.
           */
           void setAxisY(QString newAxisY);
+
+          /*! 
+            \brief Returns a reference to the axis' font.
+
+            \return A QFont that represents the axis' font.
+          */
+          QFont& getAxisFont();
+
+          /*!
+            \brief It sets the axis' font.
+
+            \param newAxisX The new axis' font.
+          */
+          void setAxisFont(QFont newAxisFont);
 
           /*!            
             \brief Returns a pointer to the style's fill
@@ -182,8 +214,10 @@ namespace te
         private:
 
           QString          m_title;         //!< The chart's title.
+          QFont            m_titleFont;     //!< The title's font.
           QString          m_axisX;         //!< The chart X axis' label.
           QString          m_axisY;         //!< The chart Y axis' label.
+          QFont            m_axisFont;       //!< The axis' font.
           bool             m_gridChecked;   //!< The boolean used to decide if the chart will have a background grid .
           te::se::Fill*    m_fill;          //!< The chart's fill.
           te::se::Stroke*  m_stroke;        //!< The chart's stroke.
