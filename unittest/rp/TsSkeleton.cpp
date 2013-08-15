@@ -52,8 +52,8 @@ void TsSkeleton::Pattern1Test()
   algoInputParams.m_inputRasterBand = 0;
   algoInputParams.m_inputMaskRasterPtr = 0;
   algoInputParams.m_diffusionThreshold = 0.1;
-  algoInputParams.m_diffusionRegularitation = 1.0;
-  algoInputParams.m_enableMultiThread = false;
+  algoInputParams.m_diffusionRegularitation = 0.75;
+  algoInputParams.m_enableMultiThread = true;
 
   te::rp::Skeleton::OutputParameters algoOutputParams;
   

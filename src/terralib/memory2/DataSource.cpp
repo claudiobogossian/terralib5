@@ -228,7 +228,7 @@ boost::ptr_vector<te::dt::Property> te::mem::DataSource::getProperties(const std
   return properties;
 }
 
-te::dt::Property* te::mem::DataSource:: getProperty(const std::string& datasetName, const std::string& name)
+std::auto_ptr<te::dt::Property> te::mem::DataSource:: getProperty(const std::string& datasetName, const std::string& name)
 {
   if(!propertyExists(datasetName,name))
     throw Exception((boost::format(TR_MEMORY("The dataset \"%1%\" has no property with this name: \"%2%\"!")) % datasetName % name).str());
@@ -239,10 +239,10 @@ te::dt::Property* te::mem::DataSource:: getProperty(const std::string& datasetNa
 
   te::dt::Property* p = dt->getProperty(name);
 
-  return p->clone();
+  return std::auto_ptr<te::dt::Property>(p->clone());
 }
 
-te::dt::Property* te::mem::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
+std::auto_ptr<te::dt::Property> te::mem::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
   if(!dataSetExists(datasetName))
     throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
@@ -255,7 +255,7 @@ te::dt::Property* te::mem::DataSource::getProperty(const std::string& datasetNam
 
   te::dt::Property* p = dt->getProperty(propertyPos);
 
-  return p->clone();
+  return std::auto_ptr<te::dt::Property>(p->clone());
 }
 
 void te::mem::DataSource::addProperty(const std::string& datasetName, te::dt::Property* p)

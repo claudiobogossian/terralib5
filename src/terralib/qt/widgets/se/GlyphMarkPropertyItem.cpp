@@ -138,18 +138,18 @@ void te::qt::widgets::GlyphMarkPropertyItem::updateMarkName()
   m_mark->setWellKnownName(new std::string(name.toStdString()));
 
   if(!m_update)
-	emit markChanged();
+    emit markChanged();
 }
 
 void te::qt::widgets::GlyphMarkPropertyItem::valueChanged(QtProperty* p, const QFont &value)
 {
-  updateMarkName();
+  if(m_fontProperty == p )
+    updateMarkName();
 }
 
 void te::qt::widgets::GlyphMarkPropertyItem::valueChanged(QtProperty* p, const QString &value)
 {
-  if( m_charProperty == p )
-
+  if(m_charProperty == p)
     updateMarkName();
 }
 

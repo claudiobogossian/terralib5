@@ -187,17 +187,38 @@ namespace te
 
         const te::da::DataSetTypePtr& getDataSetType(const std::string& name);
 
+       /*!
+          \brief It gets the properties for the given dataset.
+
+          \param datasetName The dataset name.
+
+          \note Internally, a record set will be generated containing the following fields:
+                <ul>
+                <li>0 (int2): attribute number in the table (a.attnum), remember that attribute number is 1 based</li>
+                <li>1 (name): attribute name (a.attname)</li>
+                <li>2 (Oid): attribute type oid (t.oid)</li>
+                <li>3 (bool): 't' if attribute is NOT NULL, otherwise, its value is 'f' (a.attnotnull)</li>
+                <li>4 (text): type modifier information, like precision and scale (format_type(a.atttypid, a.atttypmod))</li>
+                <li>5 (bool): 't' if attribute is has a default value, otherwise, its value is 'f' (a.atthasdef)</li>
+                <li>6 (text): attribute default value if field number 5 is true (pg_get_expr(d.adbin, d.adrelid))</li>
+                <li>7 (int4): Number of dimensions, if the column is an array type; otherwise 0 (a.attndims)</li>
+                </ul>
+
+          \exception Exception It throws an exception if it was not possible to get the information needed.
+
+          \note PostGIS driver extended method.
+        */
+        boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
+
         std::vector<std::string> getPropertyNames(const std::string& datasetName);
 
         std::size_t getNumberOfProperties(const std::string& datasetName);
 
         bool propertyExists(const std::string& datasetName, const std::string& name);
 
-        boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
+        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
 
-        te::dt::Property* getProperty(const std::string& datasetName, const std::string& name);
-
-        te::dt::Property* getProperty(const std::string& datasetName, std::size_t propertyPos);
+        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
 
         void addProperty(const std::string& datasetName, te::dt::Property* p);
 
@@ -400,31 +421,6 @@ namespace te
         */
         std::string getDataSetName(unsigned int id);
 
-       /*!
-          \brief It loads the properties for the given dataset on its schema.
-
-          \param dt The dataset schema where the list of properties will be loaded.
-
-          \note Internally, a record set will be generated containing the following fields:
-                <ul>
-                <li>0 (int2): attribute number in the table (a.attnum), remember that attribute number is 1 based</li>
-                <li>1 (name): attribute name (a.attname)</li>
-                <li>2 (Oid): attribute type oid (t.oid)</li>
-                <li>3 (bool): 't' if attribute is NOT NULL, otherwise, its value is 'f' (a.attnotnull)</li>
-                <li>4 (text): type modifier information, like precision and scale (format_type(a.atttypid, a.atttypmod))</li>
-                <li>5 (bool): 't' if attribute is has a default value, otherwise, its value is 'f' (a.atthasdef)</li>
-                <li>6 (text): attribute default value if field number 5 is true (pg_get_expr(d.adbin, d.adrelid))</li>
-                <li>7 (int4): Number of dimensions, if the column is an array type; otherwise 0 (a.attndims)</li>
-                </ul>
-
-          \pre The informed dataset schema must have a valid id.
-
-          \exception Exception It throws an exception if it was not possible to get the information needed.
-
-          \note PostGIS driver extended method.
-        */
-        void getProperties(te::da::DataSetTypePtr& dt);
-
         /*!
           \brief It sets the property id from the PostgreSQL system.
 
@@ -437,26 +433,24 @@ namespace te
         void getPropertyId(te::dt::Property* p);
 
         /*!
-          \brief It retrieves a property from the given id and the dataset id.
+          \brief It retrieves a property with the given id from the given dataset.
 
-          \param dtid The dataset id.
-          \param pid  The property id.
+          \param pid         The property id.
+          \param datasetName The dataset name.
 
-          \return The property having the given id in the informed dataset id. The caller will take the ownership of the returned property.
-
-          \exception It throws an exception, if it can not load the information.
-
-          \note The property will not have specific grometric information.
+          \return The property with the given id from the dataset.
 
           \note PostGIS driver extended method.
         */
-        te::dt::Property* getProperty(unsigned int dtid, unsigned int pid);
+        std::auto_ptr<te::dt::Property> getProperty(unsigned int pid, const std::string& datasetName);
 
         /*!
-          \brief It gets all the constraints(primary, foreign and unique keys, check constraints) of a dataset 
-                 and adds them to its schema.
+          \brief It gets the dataset containing information about one of the constraints(primary, foreign or 
+                 unique keys, or the check constraints) of the given dataset. If the constraint type
+                 is not specified, it gets all the constraints of the given dataset.
 
-          \param dt The dataset schema.
+          \param datasetName The dataset name.
+          \param conType     The type of constraint to be retrieved. If this value is '\0' all the types are retrieved.
 
           \return A recordset with the following fields:
                   <ul>
@@ -473,7 +467,17 @@ namespace te
                   <li>10 (text): constraint expression (pg_get_constraintdef(c.oid))</li>
                   </ul>
 
-          \return True, if the constraints of the dataset were correctly loaded to its schema.
+          \return The dataset containing information about the constraints of the given dataset.
+        */
+        std::auto_ptr<te::da::DataSet> getConstraints(const std::string& datasetName, char conType = '\0');
+
+        /*!
+          \brief It gets the information about all the dataset constraints(primary, foreign and 
+                 unique keys, and the check constraints) and loads it on the given dataset schema.
+
+          \param dt The dataset schema.
+
+          \return True, if the constraints retrieving is successfull; otherwise, it returns false.
         */
         bool getConstraints(te::da::DataSetTypePtr& dt);
 

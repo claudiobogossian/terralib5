@@ -363,24 +363,24 @@ bool te::gdal::DataSource::propertyExists(const std::string& datasetName, const 
   return false;
 }
 
-te::dt::Property* te::gdal::DataSource::getProperty(const std::string& datasetName, const std::string& propertyName)
+std::auto_ptr<te::dt::Property> te::gdal::DataSource::getProperty(const std::string& datasetName, const std::string& propertyName)
 {
   if(!propertyExists(datasetName, propertyName))
     throw Exception((boost::format(TR_GDAL("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % propertyName).str());
   
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
   
-  return dt->getProperty(propertyName);
+  return std::auto_ptr<te::dt::Property>(dt->getProperty(propertyName)->clone());
 }
 
 
-te::dt::Property* te::gdal::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
+std::auto_ptr<te::dt::Property> te::gdal::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
   const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
   
   assert(propertyPos < dt->size());
   
-  return dt->getProperty(propertyPos);
+  return std::auto_ptr<te::dt::Property>(dt->getProperty(propertyPos)->clone());
 }
 
 std::auto_ptr<te::gm::Envelope> te::gdal::DataSource::getExtent(const std::string& datasetName, std::size_t propertyPos)

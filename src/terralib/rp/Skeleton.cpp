@@ -35,15 +35,28 @@
 #include <memory>
 #include <cmath> 
 #include <cstring>
-    
-#define ADDNEIGHBOR( neighborRow, neighborCol ) \
+  
+#define DIFFUSENEIGHBOR( neighborRow, neighborCol ) \
   neiX = bufferX[ neighborRow ][ neighborCol ]; \
   neiY = bufferY[ neighborRow ][ neighborCol ]; \
   neiMag = std::sqrt( ( neiX * neiX ) + ( neiY * neiY ) ); \
-  if( neiMag != 0.0 ) \
+  if( neiMag > centerMag ) \
   { \
-    newCenterX += ( neiX / neiMag ); \
-    newCenterY += ( neiY / neiMag ); \
+    hasValidNeiboor = true; \
+    neisMagsSum += neiMag; \
+    newCenterX += ( neiX * neiMag ); \
+    newCenterY += ( neiY * neiMag ); \
+  }  
+  
+#define SKELSTRENGTHNEIGHBOR( neighborRow, neighborCol ) \
+  neiX = inputX[ neighborRow ][ neighborCol ]; \
+  neiY = inputY[ neighborRow ][ neighborCol ]; \
+  diffX = neiX - centerX; \
+  diffY = neiY - centerY; \
+  diffMag = std::sqrt( ( diffX * diffX ) + ( diffY * diffY ) ); \
+  if( diffMag != 0.0 ) \
+  { \
+    strength += ( ( centerX * diffX ) + ( centerY * diffX ) ) / diffMag; \
   }
   
 namespace te
@@ -72,8 +85,9 @@ namespace te
       m_inputRasterPtr = 0;
       m_inputRasterBand = 0;
       m_inputMaskRasterPtr = 0;
-      m_diffusionThreshold = 0.1;
-      m_diffusionRegularitation = 0.5;
+      m_diffusionThreshold = 0.5;
+      m_diffusionRegularitation = 0.25;
+      m_diffusionMaxIterations = 0;
       m_enableMultiThread = true;
     }
 
@@ -87,6 +101,7 @@ namespace te
       m_inputMaskRasterPtr = params.m_inputMaskRasterPtr;
       m_diffusionThreshold = params.m_diffusionThreshold;
       m_diffusionRegularitation = params.m_diffusionRegularitation;
+      m_diffusionMaxIterations = params.m_diffusionMaxIterations;
       m_enableMultiThread = params.m_enableMultiThread;
 
       return *this;
@@ -181,22 +196,34 @@ namespace te
       vecXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       te::rp::Matrix< double > vecYMap;
       vecYMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
-      TERP_TRUE_OR_RETURN_FALSE( getEdgeVecField( edgeStrengthMap, vecXMap, vecYMap ),
+      TERP_TRUE_OR_RETURN_FALSE( getEdgeVecField( edgeStrengthMap, false,
+        vecXMap, vecYMap ),
         "Vector maps build error" );      
-      createTifFromMatrix( vecXMap, true, "vecXMap" );
-      createTifFromMatrix( vecYMap, true, "vecYMap" );
-      createTifFromVecField( vecXMap, vecYMap, *rasterDataPtr, "vecMap" );
+//       createTifFromMatrix( vecXMap, true, "vecXMap" );
+//       createTifFromMatrix( vecYMap, true, "vecYMap" );
+//       createTifFromVecField( vecXMap, vecYMap, rasterDataPtr.get(), 4, "vecMap" );
       
       te::rp::Matrix< double > diffusedVecXMap;
       diffusedVecXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       te::rp::Matrix< double > diffusedVecYMap;
       diffusedVecYMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
-      TERP_TRUE_OR_RETURN_FALSE( applyVecDiffusion( vecXMap, vecYMap, *rasterDataPtr,
+      TERP_TRUE_OR_RETURN_FALSE( applyVecDiffusion( vecXMap, vecYMap, 0,
         diffusedVecXMap, diffusedVecYMap ),
         "Vector maps build error" );      
       createTifFromMatrix( diffusedVecXMap, true, "diffusedVecXMap" );
       createTifFromMatrix( diffusedVecYMap, true, "diffusedVecYMap" );
-      createTifFromVecField( diffusedVecXMap, diffusedVecYMap, *rasterDataPtr, "diffusedVecMap" );      
+      createTifFromVecField( diffusedVecXMap, diffusedVecYMap, rasterDataPtr.get(), 
+        4, "diffusedVecMap" );      
+      te::rp::Matrix< double > diffusedVecXMagMap;
+      getMagnitude( diffusedVecXMap, diffusedVecYMap, diffusedVecXMagMap );
+      createTifFromMatrix( diffusedVecXMagMap, true, "diffusedVecXMagMap" );
+      
+      te::rp::Matrix< double > skelSMap;
+      skelSMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
+      TERP_TRUE_OR_RETURN_FALSE( createSkeletonStrengthMap( diffusedVecXMap, 
+        diffusedVecYMap, skelSMap ),
+        "Skeleton strength map build error" );  
+      createTifFromMatrix( skelSMap, true, "skelSMap" );
       
       return true;
     }
@@ -254,9 +281,14 @@ namespace te
       }
         
       TERP_TRUE_OR_RETURN_FALSE( 
-        ( m_inputParameters.m_diffusionThreshold >= 0.0 ) &&
+        ( m_inputParameters.m_diffusionThreshold > 0.0 ) &&
         ( m_inputParameters.m_diffusionThreshold <= 1.0 ),
-        "Invalid diffusion threshold" );          
+        "Invalid diffusion threshold" );   
+        
+      TERP_TRUE_OR_RETURN_FALSE( 
+        ( m_inputParameters.m_diffusionRegularitation > 0.0 ) &&
+        ( m_inputParameters.m_diffusionRegularitation <= 1.0 ),
+        "Invalid diffusion regularization" );         
 
       m_isInitialized = true;
 
@@ -497,9 +529,9 @@ namespace te
         }
       }
       
-      for( row = 2 ; row < lastRowIdx ; ++row )
+      for( row = 1 ; row < lastRowIdx ; ++row )
       {
-        for( col = 2 ; col < lastColIdx ; ++col )
+        for( col = 1 ; col < lastColIdx ; ++col )
         {
           edgeStrengthMap[ row ][ col ] -= minStrength;
         }
@@ -510,6 +542,7 @@ namespace te
     
     bool Skeleton::getEdgeVecField( 
       const te::rp::Matrix< double >& edgeStrengthMap,
+      const bool createUnitVectors,
       te::rp::Matrix< double >& edgeVecXMap,
       te::rp::Matrix< double >& edgeVecYMap ) const
     {
@@ -674,17 +707,26 @@ namespace te
               magsSum;
             newCenterY = ( ( bestNY * bestNMag ) + ( centerY * centerMag ) ) /
               magsSum;
-            newCenterMag = std::sqrt( ( newCenterX * newCenterX ) + ( newCenterY * newCenterY ) );
-            
-            if( newCenterMag == 0.0 )
+              
+            if( createUnitVectors )
             {
-              edgeVecXMap[ row ][ col ] = 0;
-              edgeVecYMap[ row ][ col ] = 0;
+              newCenterMag = std::sqrt( ( newCenterX * newCenterX ) + ( newCenterY * newCenterY ) );
+              
+              if( newCenterMag == 0.0 )
+              {
+                edgeVecXMap[ row ][ col ] = 0;
+                edgeVecYMap[ row ][ col ] = 0;
+              }
+              else
+              {
+                edgeVecXMap[ row ][ col ] = newCenterX / newCenterMag;
+                edgeVecYMap[ row ][ col ] = newCenterY / newCenterMag;
+              }
             }
             else
             {
-              edgeVecXMap[ row ][ col ] = newCenterX / newCenterMag;
-              edgeVecYMap[ row ][ col ] = newCenterY / newCenterMag;
+              edgeVecXMap[ row ][ col ] = newCenterX;
+              edgeVecYMap[ row ][ col ] = newCenterY;
             }
           }
         }
@@ -696,13 +738,16 @@ namespace te
     void Skeleton::createTifFromVecField( 
       const te::rp::Matrix< double >& inputVecFieldX, 
       const te::rp::Matrix< double >& inputVecFieldY,
-      const te::rp::Matrix< double >& backGroundMap,
+      te::rp::Matrix< double > const * const backGroundMapPtr,
+      const unsigned int vecPixelStep,
       const std::string& tifFileName ) const 
     {
       assert( inputVecFieldX.getColumnsNumber() == inputVecFieldY.getColumnsNumber() );
       assert( inputVecFieldX.getLinesNumber() == inputVecFieldY.getLinesNumber() );      
-      assert( inputVecFieldX.getColumnsNumber() == backGroundMap.getColumnsNumber() );
-      assert( inputVecFieldX.getLinesNumber() == backGroundMap.getLinesNumber() );      
+      assert( backGroundMapPtr ? inputVecFieldX.getColumnsNumber() == 
+        backGroundMapPtr->getColumnsNumber() : true );
+      assert( backGroundMapPtr ? inputVecFieldX.getLinesNumber() == 
+        backGroundMapPtr->getLinesNumber() : true );      
       
       std::map<std::string, std::string> rInfo;
       rInfo["URI"] = tifFileName + ".tif";
@@ -731,45 +776,61 @@ namespace te
       const unsigned int lastColIdx = inputVecFieldX.getColumnsNumber() - 1;
       double x = 0.0;
       double y = 0.0;
-      double minBGValue = DBL_MAX;
-      double maxBGValue = -1.0 * DBL_MAX;
-      double bGValue = 0;
       
-      for( line = 0 ; line < nLines ; ++line )
+      if( backGroundMapPtr )
       {
-        for( col = 0 ; col < nCols ; ++col )
+        double minBGValue = DBL_MAX;
+        double maxBGValue = -1.0 * DBL_MAX;
+        double bGValue = 0;        
+        
+        for( line = 0 ; line < nLines ; ++line )
         {
-          bGValue = backGroundMap[ line ][ col ];
-          
-          if( minBGValue > bGValue )
+          for( col = 0 ; col < nCols ; ++col )
           {
-            minBGValue = bGValue;
-          }
-          
-          if( maxBGValue < bGValue )
-          {
-            maxBGValue = bGValue;
+            bGValue = backGroundMapPtr->operator[]( line )[ col ];
+            
+            if( minBGValue > bGValue )
+            {
+              minBGValue = bGValue;
+            }
+            
+            if( maxBGValue < bGValue )
+            {
+              maxBGValue = bGValue;
+            }
           }
         }
+      
+        for( line = 0 ; line < nLines ; ++line )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            bGValue = backGroundMapPtr->operator[]( line )[ col ];
+            bGValue -= minBGValue;
+            bGValue *= ( 128.0 / ( maxBGValue - minBGValue ) );
+            
+            outputRasterPtr->setValue( col, line, bGValue, 0 );
+            outputRasterPtr->setValue( col, line, bGValue, 1 );
+            outputRasterPtr->setValue( col, line, bGValue, 2 );
+          }
+        }    
+      }
+      else
+      {
+        for( line = 0 ; line < nLines ; ++line )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            outputRasterPtr->setValue( col, line, 0, 0 );
+            outputRasterPtr->setValue( col, line, 0, 1 );
+            outputRasterPtr->setValue( col, line, 0, 2 );
+          }
+        }    
       }
       
-      for( line = 0 ; line < nLines ; ++line )
+      for( line = 1 ; line < lastLineIdx ; line += vecPixelStep )
       {
-        for( col = 0 ; col < nCols ; ++col )
-        {
-          bGValue = backGroundMap[ line ][ col ];
-          bGValue -= minBGValue;
-          bGValue *= ( 200.0 / ( maxBGValue - minBGValue ) );
-          
-          outputRasterPtr->setValue( col, line, bGValue, 0 );
-          outputRasterPtr->setValue( col, line, bGValue, 1 );
-          outputRasterPtr->setValue( col, line, bGValue, 2 );
-        }
-      }      
-      
-      for( line = 1 ; line < lastLineIdx ; line += 5 )
-      {
-        for( col = 1 ; col < lastColIdx ; col += 5 )
+        for( col = 1 ; col < lastColIdx ; col += vecPixelStep )
         {
           x = inputVecFieldX[ line ][ col ];
           y = inputVecFieldY[ line ][ col ];
@@ -823,7 +884,7 @@ namespace te
     bool Skeleton::applyVecDiffusion( 
        const te::rp::Matrix< double >& inputX, 
        const te::rp::Matrix< double >& inputY,
-       const te::rp::Matrix< double >& backgroundData, 
+       te::rp::Matrix< double > const * const backgroundDataPtr, 
        te::rp::Matrix< double >& outputX, 
        te::rp::Matrix< double >& outputY ) const
     {
@@ -863,16 +924,12 @@ namespace te
       if( ! yBuf2Ptr->reset( nRows,nCols ) )
         return false;         
      
-      double currentIterationXResidue = DBL_MAX;
-      double currentIterationYResidue = DBL_MAX; 
+      double currentIterationResidue = DBL_MAX;
       
       boost::mutex mutex;
       
       ApplyVecDiffusionThreadParams threadParams;
-      threadParams.m_initialXBufPtr = &inputX;
-      threadParams.m_initialYBufPtr = &inputY;
-      threadParams.m_currentIterationXResiduePtr = &currentIterationXResidue;
-      threadParams.m_currentIterationYResiduePtr = &currentIterationYResidue;
+      threadParams.m_currentIterationResiduePtr = &currentIterationResidue;
       threadParams.m_mutexPtr = &mutex;
       threadParams.m_diffusionRegularitation = m_inputParameters.m_diffusionRegularitation;
       
@@ -883,11 +940,19 @@ namespace te
 
       unsigned int iteration = 0;
             
-      while( ( currentIterationXResidue > m_inputParameters.m_diffusionThreshold ) ||
-        ( currentIterationYResidue > m_inputParameters.m_diffusionThreshold ) )
+      while( 
+          ( 
+            m_inputParameters.m_diffusionMaxIterations 
+            ?
+            ( iteration < m_inputParameters.m_diffusionMaxIterations ) 
+            :
+            true
+          )
+          &&
+          ( currentIterationResidue > m_inputParameters.m_diffusionThreshold ) 
+        )
       {
-        currentIterationXResidue = 0;
-        currentIterationYResidue = 0;
+        currentIterationResidue = 0;
         
         if( iteration == 0 )
         {
@@ -976,13 +1041,21 @@ namespace te
           threadParams.m_lastRowIdx = nRows - 5;
           applyVecDiffusionThreadEntry( &threadParams );
         };
-        
-//         createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
-//           boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
-//         createTifFromMatrix( *threadParams.m_outputBufYPtr, true,  
-//           boost::lexical_cast< std::string >( iteration ) + "_diffusedY");
-        createTifFromVecField( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, backgroundData,  
-          boost::lexical_cast< std::string >( iteration ) + "_diffusedVecs");
+
+//         if( ( backgroundDataPtr != 0 ) && ( iteration % 100 == 0 ) )
+//         {
+//           createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
+//           createTifFromMatrix( *threadParams.m_outputBufYPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedY");          
+//           createTifFromVecField( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, 
+//             backgroundDataPtr,  4,
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedVecs");
+//           te::rp::Matrix< double > diffusedMag;
+//           getMagnitude( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, diffusedMag );
+//           createTifFromMatrix( diffusedMag, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedMag");            
+//         }
 
         ++iteration;
       }
@@ -1000,13 +1073,12 @@ namespace te
 
     void Skeleton::applyVecDiffusionThreadEntry( ApplyVecDiffusionThreadParams* paramsPtr)
     {
-      const te::rp::Matrix< double >& initBufX = *(paramsPtr->m_initialXBufPtr);
-      const te::rp::Matrix< double >& initBufY = *(paramsPtr->m_initialYBufPtr);
       const te::rp::Matrix< double >& iBufX = *(paramsPtr->m_inputBufXPtr);
       const te::rp::Matrix< double >& iBufY = *(paramsPtr->m_inputBufYPtr);
       te::rp::Matrix< double >& oBufX = *(paramsPtr->m_outputBufXPtr);
       te::rp::Matrix< double >& oBufY = *(paramsPtr->m_outputBufYPtr);
       const double& diffusionRegularization = paramsPtr->m_diffusionRegularitation;
+      const double complementDiffReg = 1.0 - diffusionRegularization;
       
       const unsigned int nCols = iBufX.getColumnsNumber();
       const unsigned int rowSizeBytes = sizeof( double ) * nCols;
@@ -1019,22 +1091,8 @@ namespace te
       boost::scoped_array< double > bufYRow0Handler( new double[ nCols ] );
       boost::scoped_array< double > bufYRow1Handler( new double[ nCols ] );
       boost::scoped_array< double > bufYRow2Handler( new double[ nCols ] );
-      boost::scoped_array< double > bufInitXRow0Handler( new double[ nCols ] );
-      boost::scoped_array< double > bufInitXRow1Handler( new double[ nCols ] );
-      boost::scoped_array< double > bufInitXRow2Handler( new double[ nCols ] );
-      boost::scoped_array< double > bufInitYRow0Handler( new double[ nCols ] );
-      boost::scoped_array< double > bufInitYRow1Handler( new double[ nCols ] );
-      boost::scoped_array< double > bufInitYRow2Handler( new double[ nCols ] );
-      double* bufferInitX[ 3 ];
-      double* bufferInitY[ 3 ];
       double* bufferX[ 3 ];
       double* bufferY[ 3 ];
-      bufferInitX[ 0 ] = bufInitXRow0Handler.get();
-      bufferInitX[ 1 ] = bufInitXRow1Handler.get();
-      bufferInitX[ 2 ] = bufInitXRow2Handler.get();
-      bufferInitY[ 0 ] = bufInitYRow0Handler.get();
-      bufferInitY[ 1 ] = bufInitYRow1Handler.get();
-      bufferInitY[ 2 ] = bufInitYRow2Handler.get();      
       bufferX[ 0 ] = bufXRow0Handler.get();
       bufferX[ 1 ] = bufXRow1Handler.get();
       bufferX[ 2 ] = bufXRow2Handler.get();
@@ -1045,14 +1103,6 @@ namespace te
       // Loading the two initial rows
         
       paramsPtr->m_mutexPtr->lock();
-      memcpy( bufferInitX[ 1 ], initBufX[ paramsPtr->m_firstRowIdx - 1 ], 
-        rowSizeBytes );
-      memcpy( bufferInitX[ 2 ], initBufX[ paramsPtr->m_firstRowIdx ], 
-        rowSizeBytes );
-      memcpy( bufferInitY[ 1 ], initBufY[ paramsPtr->m_firstRowIdx - 1 ], 
-        rowSizeBytes );
-      memcpy( bufferInitY[ 2 ], initBufY[ paramsPtr->m_firstRowIdx ], 
-        rowSizeBytes );      
       memcpy( bufferX[ 1 ], iBufX[ paramsPtr->m_firstRowIdx - 1 ], 
         rowSizeBytes );
       memcpy( bufferX[ 2 ], iBufX[ paramsPtr->m_firstRowIdx ], 
@@ -1067,42 +1117,32 @@ namespace te
       const unsigned int colsBound = nCols - 4;
       double centerX = 0;
       double centerY = 0;
-      double centerInitX = 0;
-      double centerInitY = 0;      
+      double centerMag = 0;
       double newCenterX = 0;
       double newCenterY = 0;
       double neiX = 0;
       double neiY = 0;
       double neiMag = 0;
+      double neisMagsSum = 0;
+      bool hasValidNeiboor = false;
    
       double* rowPtr = 0;
       unsigned int prevRow = 0;
       unsigned int prevCol = 0;
       unsigned int nextCol = 0;
-      double currentIterationXResidue = 0;
-      double currentIterationYResidue = 0;
-      double centerInitMult = 0;
+      double currentIterationResidue = 0;
       
       boost::scoped_array< double > outRowXBuffHandler( new double[ nCols ] );
       double* outRowXBuff = outRowXBuffHandler.get();
       
       boost::scoped_array< double > outRowYBuffHandler( new double[ nCols ] );
-      double* outRowYBuff = outRowXBuffHandler.get();
+      double* outRowYBuff = outRowYBuffHandler.get();
       
       for( row = ( paramsPtr->m_firstRowIdx + 1 ) ; row < rowsBound ; ++row )
       {
         prevRow = row - 1;
         
         // Rolling-up the internal buffers
-        
-        rowPtr = bufferInitX[ 0 ];
-        bufferInitX[ 0 ] = bufferInitX[ 1 ];
-        bufferInitX[ 1 ] = bufferInitX[ 2 ];
-        bufferInitX[ 2 ] = rowPtr;
-        rowPtr = bufferInitY[ 0 ];
-        bufferInitY[ 0 ] = bufferInitY[ 1 ];
-        bufferInitY[ 1 ] = bufferInitY[ 2 ];
-        bufferInitY[ 2 ] = rowPtr;         
         
         rowPtr = bufferX[ 0 ];
         bufferX[ 0 ] = bufferX[ 1 ];
@@ -1116,8 +1156,6 @@ namespace te
         // Getting a new line
         
         paramsPtr->m_mutexPtr->lock();
-        memcpy( bufferInitX[ 2 ], initBufX[ row ], rowSizeBytes );
-        memcpy( bufferInitY[ 2 ], initBufY[ row ], rowSizeBytes );        
         memcpy( bufferX[ 2 ], iBufX[ row ], rowSizeBytes );
         memcpy( bufferY[ 2 ], iBufY[ row ], rowSizeBytes );        
         paramsPtr->m_mutexPtr->unlock();        
@@ -1129,58 +1167,68 @@ namespace te
           prevCol = col - 1;
           nextCol = col + 1;
           
-          centerInitX = bufferInitX[ 1 ][ col ];
-          centerInitY = bufferInitY[ 1 ][ col ];
-          centerInitMult = ( ( centerInitX * centerInitX ) + ( centerInitY * centerInitY ) );
           centerX = bufferX[ 1 ][ col ];
           centerY = bufferY[ 1 ][ col ];
+          centerMag = std::sqrt( ( centerX * centerX ) + ( centerY * centerY ) );
           
           newCenterX = 0;
           newCenterY = 0;
+          neisMagsSum = 0.0;
+          hasValidNeiboor = false;
+          DIFFUSENEIGHBOR( 0, prevCol )
+          DIFFUSENEIGHBOR( 0, col )
+          DIFFUSENEIGHBOR( 0, nextCol )
+          DIFFUSENEIGHBOR( 1, prevCol )
+          DIFFUSENEIGHBOR( 1, nextCol )
+          DIFFUSENEIGHBOR( 2, prevCol )
+          DIFFUSENEIGHBOR( 2, col )
+          DIFFUSENEIGHBOR( 2, nextCol )    
           
-          ADDNEIGHBOR( 0, prevCol )
-          ADDNEIGHBOR( 0, col )
-          ADDNEIGHBOR( 0, nextCol )
-          ADDNEIGHBOR( 1, prevCol )
-          ADDNEIGHBOR( 1, nextCol )
-          ADDNEIGHBOR( 2, prevCol )
-          ADDNEIGHBOR( 2, col )
-          ADDNEIGHBOR( 2, nextCol )          
-          
-          newCenterX -= ( 8.0 * centerX );
-          newCenterY -= ( 8.0 * centerY );
-          
-          newCenterX *= diffusionRegularization;
-          newCenterY *= diffusionRegularization;
-          
-          newCenterX -= ( ( centerX - centerInitX ) * centerInitMult );
-          newCenterY -= ( ( centerY - centerInitY ) * centerInitMult );
-            
-          outRowXBuff[ col ] = newCenterX;
-          outRowYBuff[ col ] = newCenterY;
-            
-          if( centerX == 0.0 )
+          if( hasValidNeiboor )
           {
-            if( newCenterX != 0.0 )
-              currentIterationXResidue = std::max( currentIterationXResidue,
-                1.0 );
+            if( neisMagsSum != 0.0 )
+            {
+              newCenterX /= neisMagsSum;
+              newCenterY /= neisMagsSum;
+            }
+            
+            newCenterX *= diffusionRegularization;
+            newCenterY *= diffusionRegularization;
+            
+            newCenterX += ( centerX * complementDiffReg );
+            newCenterY += ( centerY * complementDiffReg );
+              
+            outRowXBuff[ col ] = newCenterX;
+            outRowYBuff[ col ] = newCenterY;
+              
+            if( centerX == 0.0 )
+            {
+              if( newCenterX != 0.0 )
+                currentIterationResidue = std::max( currentIterationResidue,
+                  1.0 );
+            }
+            else
+            {
+              currentIterationResidue = std::max( currentIterationResidue,
+                std::abs( ( centerX - newCenterX ) / centerX ) );
+            }
+            
+            if( centerY == 0.0 )
+            {
+              if( newCenterY != 0.0 )
+                currentIterationResidue = std::max( currentIterationResidue,
+                  1.0 );
+            }
+            else
+            {
+              currentIterationResidue = std::max( currentIterationResidue,
+                std::abs( ( centerY - newCenterY ) / centerY ) );              
+            }
           }
           else
           {
-            currentIterationXResidue = std::max( currentIterationXResidue,
-              std::abs( ( centerX - newCenterX ) / centerX ) );
-          }
-          
-          if( centerY == 0.0 )
-          {
-            if( newCenterY != 0.0 )
-              currentIterationYResidue = std::max( currentIterationYResidue,
-                1.0 );
-          }
-          else
-          {
-            currentIterationYResidue = std::max( currentIterationYResidue,
-              std::abs( ( centerY - newCenterY ) / centerY ) );              
+            outRowXBuff[ col ] = centerX;
+            outRowYBuff[ col ] = centerY;
           }
         }
         
@@ -1209,18 +1257,136 @@ namespace te
         oBufY[ prevRow ][ colsBound + 2 ] = bufferY[ 1 ][ colsBound + 2 ];
         oBufY[ prevRow ][ colsBound + 3 ] = bufferY[ 1 ][ colsBound + 3 ];
         
-        (*paramsPtr->m_currentIterationXResiduePtr) = 
-          std::max( (*paramsPtr->m_currentIterationXResiduePtr), 
-          currentIterationXResidue );
-          
-        (*paramsPtr->m_currentIterationYResiduePtr) = 
-          std::max( (*paramsPtr->m_currentIterationYResiduePtr), 
-          currentIterationYResidue );          
+        (*paramsPtr->m_currentIterationResiduePtr) = 
+          std::max( (*paramsPtr->m_currentIterationResiduePtr), 
+          currentIterationResidue );
         
         paramsPtr->m_mutexPtr->unlock();         
       }      
+    }
+    
+    bool Skeleton::createSkeletonStrengthMap( 
+       const te::rp::Matrix< double >& inputX, 
+       const te::rp::Matrix< double >& inputY,
+       te::rp::Matrix< double >& skelMap ) const
+    {
+      assert( inputX.getColumnsNumber() == inputY.getColumnsNumber() );
+      assert( inputX.getLinesNumber() == inputY.getLinesNumber() );
       
+      const unsigned int nRows = inputX.getLinesNumber();
+      TERP_TRUE_OR_RETURN_FALSE( nRows > 2, "Invalid rows number" );
       
+      const unsigned int nCols = inputX.getColumnsNumber();
+      TERP_TRUE_OR_RETURN_FALSE( nCols > 2, "Invalid columns number" );      
+      
+      if( ! skelMap.reset( nRows,nCols ) )
+        return false;       
+      
+      const unsigned int lastRowIdx = nRows - 1;
+      const unsigned int lastColIdx = nCols - 1;        
+      unsigned int row = 0;
+      unsigned int col = 0;  
+      unsigned int nextRow = 0;
+      unsigned int nextCol = 0;
+      unsigned int prevRow = 0;
+      unsigned int prevCol = 0;       
+      double minStrength = DBL_MAX;   
+      double maxStrength = -1.0 * DBL_MAX;
+      double centerX = 0;
+      double centerY = 0;
+      double neiX = 0;
+      double neiY = 0;
+      double diffX = 0;
+      double diffY = 0;
+      double diffMag = 0;
+      double strength = 0;
+      double strengthX = 0;
+      double strengthY = 0;
+      
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        skelMap[ row ][ 0 ] = 0;
+        skelMap[ row ][ lastColIdx ] = 0;        
+      }
+      
+      for( col = 0 ; col < nCols ; ++col )
+      {
+        skelMap[ 0 ][ col ] = 0;
+        skelMap[ lastRowIdx ][ col ] = 0;
+      }       
+      
+      for( row = 1 ; row < lastRowIdx ; ++row )
+      {
+        prevRow = row - 1;
+        nextRow = row + 1;
+        
+        for( col = 1 ; col < lastColIdx ; ++col )
+        {
+          prevCol = col - 1;
+          nextCol = col + 1;  
+          
+          centerX = inputX[ row ][ col ];
+          centerY = inputY[ row ][ col ];
+          
+          strength = std::sqrt( ( centerX * centerX ) + ( centerY * centerY ) );          
+          
+          if( strength == 0.0 )
+          {
+            skelMap[ row ][ col ] = DBL_MAX;
+          }
+          else
+          {
+            strengthX = 0;
+            strengthX += inputX[ prevRow ][ prevCol ];
+            strengthX -= inputX[ prevRow ][ nextCol ];
+            strengthX += inputX[ row ][ prevCol ];
+            strengthX -= inputX[ row ][ nextCol ];
+            strengthX += inputX[ nextRow ][ prevCol ];
+            strengthX -= inputX[ nextRow ][ nextCol ];
+            strengthX /= 6.0;
+            strengthX /= centerX;
+            
+            strengthY = 0;
+            strengthY -= inputY[ prevRow ][ prevCol ];
+            strengthY -= inputY[ prevRow ][ col ];
+            strengthY -= inputY[ prevRow ][ nextCol ];
+            strengthY += inputY[ nextRow ][ prevCol ];
+            strengthY += inputY[ nextRow ][ col ];
+            strengthY += inputY[ nextRow ][ nextCol ];     
+            strengthY /= 6.0;
+            strengthY /= centerY;
+            
+            strength = std::sqrt( ( strengthX * strengthX ) +  ( strengthY * strengthY ) );
+            
+  /*          SKELSTRENGTHNEIGHBOR( prevRow, prevCol )
+            SKELSTRENGTHNEIGHBOR( prevRow, col )
+            SKELSTRENGTHNEIGHBOR( prevRow, nextCol )
+            SKELSTRENGTHNEIGHBOR( row, prevCol )
+            SKELSTRENGTHNEIGHBOR( row, nextCol )
+            SKELSTRENGTHNEIGHBOR( nextRow, prevCol )
+            SKELSTRENGTHNEIGHBOR( nextRow, col )
+            SKELSTRENGTHNEIGHBOR( nextRow, nextCol )*/                    
+            
+            skelMap[ row ][ col ] = strength;
+              
+            if( minStrength > strength ) minStrength = strength;   
+            if( maxStrength < strength ) maxStrength = strength;
+          }
+        }
+      }
+
+      for( row = 1 ; row < lastRowIdx ; ++row )
+      {
+        for( col = 1 ; col < lastColIdx ; ++col )
+        {
+          if( skelMap[ row ][ col ] == DBL_MAX )
+            skelMap[ row ][ col ] = maxStrength - minStrength;
+          else
+            skelMap[ row ][ col ] -= minStrength;
+        }
+      }
+      
+      return true;
     }
 
   } // end namespace rp
