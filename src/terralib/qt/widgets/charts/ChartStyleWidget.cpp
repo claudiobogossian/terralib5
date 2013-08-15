@@ -30,13 +30,14 @@
 #include "ChartStyleWidget.h"
 #include "ui_ChartStyleWidgetForm.h"
 
+//QT
+ #include <QFontDialog>
+
 te::qt::widgets::ChartStyleWidget::ChartStyleWidget(QWidget* parent, Qt::WindowFlags f, QString title, QString PropertyX, QString PropertyY)
   : QWidget(parent, f),
     m_ui(new Ui::chartStyleWidgetForm)
 {
   m_ui->setupUi(this);
-  m_ui->m_labelStylePushButton->setEnabled(false);
-  m_ui->m_titleStylePushButton->setEnabled(false);
   m_ui->m_chartTitleLineEdit->setText(title);
   m_ui->m_labelXlLineEdit->setText(PropertyX);
   m_ui->m_labelYlLineEdit->setText(PropertyY);
@@ -56,14 +57,33 @@ te::qt::widgets::ChartStyleWidget::ChartStyleWidget(QWidget* parent, Qt::WindowF
   connect(m_ui->m_chartTitleLineEdit, SIGNAL(editingFinished()), this, SLOT(onTitleLineEditFinish()));
   connect(m_ui->m_labelXlLineEdit, SIGNAL(editingFinished()), this, SLOT(onlabelXEditFinish()));
   connect(m_ui->m_labelYlLineEdit, SIGNAL(editingFinished()), this, SLOT(onlabelYEditFinish()));
+  connect(m_ui->m_labelStylePushButton, SIGNAL(clicked()), this, SLOT(onLabelStylePushButtonClicked()));
+  connect(m_ui->m_titleStylePushButton, SIGNAL(clicked()), this, SLOT(onTitleStylePushButtonClicked()));
   connect(m_ui->m_gridCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onGridCheckBoxToggled(int)));
   connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onColorChanged(const QColor&)));
 }
 
 te::qt::widgets::ChartStyleWidget::~ChartStyleWidget(){}
 
-void te::qt::widgets::ChartStyleWidget::onTitleStylePushButtonClicked(){}
-void te::qt::widgets::ChartStyleWidget::onLabelStylePushButtonClicked(){}
+void te::qt::widgets::ChartStyleWidget::onLabelStylePushButtonClicked()
+{
+  bool ok;
+  QFont font = QFontDialog::getFont(&ok, m_chartStyle->getAxisFont(), this);
+  if (ok)
+  {
+    m_chartStyle->setAxisFont(font);
+  }
+}
+
+void te::qt::widgets::ChartStyleWidget::onTitleStylePushButtonClicked()
+{
+  bool ok;
+  QFont font = QFontDialog::getFont(&ok, m_chartStyle->getTitleFont(), this);
+  if (ok)
+  {
+    m_chartStyle->setTitleFont(font);
+  }
+}
 
 void te::qt::widgets::ChartStyleWidget::onGridCheckBoxToggled(int state)
 {
