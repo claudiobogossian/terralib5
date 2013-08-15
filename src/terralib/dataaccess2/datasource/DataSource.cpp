@@ -247,6 +247,11 @@ void te::da::DataSource::dropUniqueKey(const std::string& /*datasetName*/, const
 {
 }
 
+std::auto_ptr<te::da::CheckConstraint> te::da::DataSource::getCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  return std::auto_ptr<te::da::CheckConstraint>(0);
+}
+
 std::vector<std::string> te::da::DataSource::getCheckConstraintNames(const std::string& /*datasetName*/)
 {
   return std::vector<std::string>();
@@ -257,17 +262,17 @@ bool te::da::DataSource::checkConstraintExists(const std::string& /*datasetName*
   return false;
 }
 
-te::da::CheckConstraint* te::da::DataSource::getCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  return 0;
-}
-
 void te::da::DataSource::addCheckConstraint(const std::string& /*datasetName*/, CheckConstraint* /*cc*/)
 {
 }
 
 void te::da::DataSource::dropCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
+}
+
+std::auto_ptr<te::da::Index> te::da::DataSource::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  return std::auto_ptr<te::da::Index>(0);
 }
 
 std::vector<std::string> te::da::DataSource::getIndexNames(const std::string& /*datasetName*/)
@@ -280,10 +285,7 @@ bool te::da::DataSource::indexExists(const std::string& /*datasetName*/, const s
   return false;
 }
 
-te::da::Index* te::da::DataSource::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  return 0;
-}
+
 
 void te::da::DataSource::addIndex(const std::string& /*datasetName*/, Index* /*idx*/,
                                   const std::map<std::string, std::string>& /*options*/)
@@ -294,6 +296,11 @@ void te::da::DataSource::dropIndex(const std::string& /*datasetName*/, const std
 {
 }
 
+std::auto_ptr<te::da::Sequence> te::da::DataSource::getSequence(const std::string& /*name*/)
+{
+  return std::auto_ptr<te::da::Sequence>(0);
+}
+
 std::vector<std::string> te::da::DataSource::getSequenceNames()
 {
   return std::vector<std::string>();
@@ -302,11 +309,6 @@ std::vector<std::string> te::da::DataSource::getSequenceNames()
 bool te::da::DataSource::sequenceExists(const std::string& /*name*/)
 {
   return false;
-}
-
-te::da::Sequence* te::da::DataSource::getSequence(const std::string& /*name*/)
-{
-  return 0;
 }
 
 void te::da::DataSource::addSequence(Sequence* /*sequence*/)

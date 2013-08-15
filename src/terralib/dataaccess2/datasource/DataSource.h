@@ -28,10 +28,13 @@
 
 // TerraLib
 #include "../../common/Enums.h"
+#include "../dataset/CheckConstraint.h"
 #include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
 #include "../dataset/ForeignKey.h"
+#include "../dataset/Index.h"
 #include "../dataset/PrimaryKey.h"
+#include "../dataset/Sequence.h"
 #include "../dataset/UniqueKey.h"
 #include "../../geometry/Enums.h"
 #include "../Config.h"
@@ -64,17 +67,14 @@ namespace te
 
   namespace da
   {
-    class CheckConstraint;
     class Connection;
     class DataSet;
     class DataSetType;
     class DataSource;
     class DataSourceCapabilities;
-    class Index;
     class ObjectIdSet;
     class Query;
     class Select;
-    class Sequence;
     class SQLDialect;
 
     /*!
@@ -543,7 +543,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual const te::da::DataSetTypePtr& getDataSetType(const std::string& name) = 0;
+        virtual te::da::DataSetTypePtr getDataSetType(const std::string& name) = 0;
 
         /*!
           \brief It retrieves the properties of the dataset.
@@ -816,6 +816,18 @@ namespace te
         virtual void dropUniqueKey(const std::string& datasetName, const std::string& name);
 
         /*!
+          \brief It gets the check constraint of the dataset with the given name.
+
+          \param datasetName  The dataset name.
+          \param name         The check constraint name.
+
+          \return The check constraint with the given name.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName, const std::string& name);
+
+        /*!
           \brief It searches in the data source for check constraints associated to the given dataset.
 
           \param datasetName  The dataset name.
@@ -839,21 +851,6 @@ namespace te
         virtual bool checkConstraintExists(const std::string& datasetName, const std::string& name);
 
         /*!
-          \brief It gets the check constraint with the given name.
-
-          \param datasetName  The dataset name.
-          \param name         The check constraint name.
-
-          \return The check constraint with the given name.
-
-          \post The caller of this method will take the ownership of the returned check constraint,
-                because it is a clone of the one in the schema.
-
-          \note Not thread-safe!
-        */
-        virtual te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName, const std::string& name);
-
-        /*!
           \brief It adds a check constraint to the dataset.
 
           \param datasetName  The dataset where the constraint will be added.
@@ -872,6 +869,18 @@ namespace te
           \note Not thread-safe!
         */
         virtual void dropCheckConstraint(const std::string& datasetName, const std::string& name);
+
+        /*!
+          \brief It gets the index with the given name. from the dataset.
+
+          \param datasetName  The dataset name.
+          \param name         The index name.
+
+          \return The index with the given name.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It searches in the data source for the index names associated to the given dataset.
@@ -895,21 +904,6 @@ namespace te
           \note Not thread-safe!
         */
         virtual bool indexExists(const std::string& datasetName, const std::string& name);
-
-        /*!
-          \brief It gets the index with the given name. in the dataset.
-
-          \param datasetName  The dataset name.
-          \param name         The index name.
-
-          \return The index with the given name.
-
-          \post The caller of this method will take the ownership of the returned index,
-                because it is a clone of the one in the schema.
-
-          \note Not thread-safe!
-        */
-        virtual Index* getIndex(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It adds an index to the dataset.
@@ -937,6 +931,17 @@ namespace te
         virtual void dropIndex(const std::string& datasetName, const std::string& idxName);
 
         /*!
+          \brief It gets the sequence with the given name
+
+          \param name  The sequence name.
+
+          \return The sequence with the given name.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<Sequence> getSequence(const std::string& name);
+
+        /*!
           \brief It searches for the list of sequence names available in the data source.
 
           \note Each sequence in the data source must have a unique name. For example, in a DBMS the name
@@ -958,20 +963,6 @@ namespace te
           \note Not thread-safe!
         */
         virtual bool sequenceExists(const std::string& name);
-
-        /*!
-          \brief It gets the sequence with the given name
-
-          \param name  The sequence name.
-
-          \return The sequence with the given name.
-
-          \post The caller of this method will take the ownership of the returned sequence,
-                because it is a clone of the one in the catalog.
-
-          \note Not thread-safe!
-        */
-        virtual Sequence* getSequence(const std::string& name);
 
         /*!
           \brief It creates a new sequence in the data source.

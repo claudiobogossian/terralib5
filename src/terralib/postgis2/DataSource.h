@@ -185,7 +185,7 @@ namespace te
 
         std::vector<std::string> getDataSetNames();
 
-        const te::da::DataSetTypePtr& getDataSetType(const std::string& name);
+        te::da::DataSetTypePtr getDataSetType(const std::string& name);
 
        /*!
           \brief It gets the properties for the given dataset.
@@ -254,31 +254,31 @@ namespace te
 
         void dropUniqueKey(const std::string& datasetName, const std::string& name);
 
+        std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName, const std::string& name);
+
         std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
 
         bool checkConstraintExists(const std::string& datasetName, const std::string& name);
-
-        te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName, const std::string& name);
 
         void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc);
 
         void dropCheckConstraint(const std::string& datasetName, const std::string& name);
 
+        std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName, const std::string& name);
+
         std::vector<std::string> getIndexNames(const std::string& datasetName);
 
         bool indexExists(const std::string& datasetName, const std::string& name);
-
-        te::da::Index* getIndex(const std::string& datasetName, const std::string& name);
 
         void addIndex(const std::string& datasetName, te::da::Index* idx, const std::map<std::string, std::string>& options); 
 
         void dropIndex(const std::string& datasetName, const std::string& idxName);
 
+        std::auto_ptr<te::da::Sequence> getSequence(const std::string& name);
+
         std::vector<std::string> getSequenceNames();
 
         bool sequenceExists(const std::string& name);
-
-        te::da::Sequence* getSequence(const std::string& name);
 
         void addSequence(te::da::Sequence* sequence);
 
