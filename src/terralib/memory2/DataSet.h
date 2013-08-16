@@ -320,33 +320,33 @@ namespace te
 
         void setString(const std::string& name, const std::string& value);
 
-        te::dt::ByteArray* getByteArray(std::size_t i) const;
+        std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const;
 
         void setByteArray(std::size_t i, const te::dt::ByteArray& value);
 
         void setByteArray(const std::string& name, const te::dt::ByteArray& value);
 
-        te::gm::Geometry* getGeometry(std::size_t i) const;
+        std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const;
 
         void setGeometry(std::size_t i, const te::gm::Geometry& value);
 
         void setGeometry(const std::string& name, const te::gm::Geometry& value);
 
-        te::rst::Raster* getRaster(std::size_t i) const;
+        std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
 
         void setRaster(std::size_t i, const te::rst::Raster& value);
 
         void setRaster(const std::string& name, const  te::rst::Raster& value);
 
-        te::dt::DateTime* getDateTime(std::size_t i) const;
+        std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const;
 
         void setDateTime(std::size_t i, const te::dt::DateTime& value);
 
         void setDateTime(const std::string& name, const te::dt::DateTime& value);
 
-        te::dt::Array* getArray(std::size_t i) const;
+        std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
-        te::dt::AbstractData* getValue(std::size_t i) const;
+        std::auto_ptr<te::dt::AbstractData> getValue(std::size_t i) const;
 
         void setValue(std::size_t i, te::dt::AbstractData* value);
 
