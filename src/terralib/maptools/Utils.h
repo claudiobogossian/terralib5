@@ -259,9 +259,9 @@ namespace te
       \param srid        The SRID to be used to draw the data set geometries.
       \param style       The style that will be used.
     */
-    void DrawGeometries(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor, Canvas* canvas,
-                        const te::gm::Envelope& bbox, int bboxSRID,
-                        int srid, te::se::FeatureTypeStyle* style);
+    TEMAPEXPORT void DrawGeometries(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor, Canvas* canvas,
+                                    const te::gm::Envelope& bbox, int bboxSRID,
+                                    int srid, te::se::FeatureTypeStyle* style);
 
     /*!
       \brief It draws the data set geometries in the given canvas using the informed SRS.
@@ -273,14 +273,14 @@ namespace te
       \param srid        The SRID to be used to draw the data set geometries.
       \param task        An optional task that can be used cancel the draw process.
     */
-    void DrawGeometries(te::da::DataSet* dataset, const std::size_t& gpos,
-                        Canvas* canvas, int fromSRID, int toSRID, te::common::TaskProgress* task = 0);
+    TEMAPEXPORT void DrawGeometries(te::da::DataSet* dataset, const std::size_t& gpos,
+                                    Canvas* canvas, int fromSRID, int toSRID, te::common::TaskProgress* task = 0);
 
-    void DrawRaster(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor, Canvas* canvas,
-                    const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
+    TEMAPEXPORT void DrawRaster(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor, Canvas* canvas,
+                                const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
 
-    void DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,
-                    const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
+    TEMAPEXPORT void DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,
+                                const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
 
   } // end namespace map
 }   // end namespace te

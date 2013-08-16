@@ -163,8 +163,13 @@ namespace te
         class ApplyVecDiffusionThreadParams
         {
           public:
+            
+            te::rp::Matrix< double > const * m_initialXBufPtr; //!< A pointer to the input buffer initial X component.
+            te::rp::Matrix< double > const * m_initialYBufPtr; //!< A pointer to the input buffer initial Y component.  
+            te::rp::Matrix< double > const * m_inputMagBufPtr; //!< A pointer to the input magnitude buffer.
             te::rp::Matrix< double > const * m_inputBufXPtr; //!< A pointer to the input buffer X component.
             te::rp::Matrix< double > const * m_inputBufYPtr; //!< A pointer to the input buffer Y component.
+            te::rp::Matrix< double > * m_outputMagBufPtr; //!< A pointer to the output magnitude buffer.
             te::rp::Matrix< double > * m_outputBufXPtr; //!< A pointer to the output buffer X component.
             te::rp::Matrix< double > * m_outputBufYPtr; //!< A pointer to the output buffer X component.
             boost::mutex* m_mutexPtr; //!< A pointer to the sync mutex.
@@ -184,8 +189,12 @@ namespace te
             
             ApplyVecDiffusionThreadParams& operator=( const ApplyVecDiffusionThreadParams& other )
             {
+              m_initialXBufPtr = other.m_initialXBufPtr;
+              m_initialYBufPtr = other.m_initialYBufPtr;
+              m_inputMagBufPtr = other.m_inputMagBufPtr;
               m_inputBufXPtr = other.m_inputBufXPtr;
               m_inputBufYPtr = other.m_inputBufYPtr;
+              m_outputMagBufPtr = other.m_outputMagBufPtr;
               m_outputBufXPtr = other.m_outputBufXPtr;
               m_outputBufYPtr = other.m_outputBufYPtr;
               m_mutexPtr = other.m_mutexPtr;
@@ -212,12 +221,14 @@ namespace te
         /*!
           \brief Create an gradient maps from the input image.
           \param inputData The input data.
+          \param unitVectors If true, unit vectors will be created.
           \param gradXMap The created gradient X vectors map.
           \param gradYMap The created gradient Y vectors map.
           \return true if OK, false on errors.
          */          
         bool getGradientMaps( 
           const te::rp::Matrix< double >& inputData,
+          const bool unitVectors,
           te::rp::Matrix< double >& gradXMap,
           te::rp::Matrix< double >& gradYMap ) const;
           
@@ -337,6 +348,7 @@ namespace te
           \param inputMap The input map.
           \param edgeStrengthMap The edge strength map (zero or positive values).
           \return true if OK, false on errors.
+          \details The edge map have the property that the values are large near image boundaries and small within homogeneous regions.
          */          
         bool getEdgeStrengthMap( 
           const te::rp::Matrix< double >& inputMap,
