@@ -68,17 +68,6 @@ namespace te
     TEDATAACCESSEXPORT void LoadProperties(te::da::DataSetType* dataset, const std::string& datasourceId);
 
     /*!
-      \brief It computes the bounding rectangle for the first spatial property of the given dataset.
-
-      \return The bounding rectangle for the first spatial property of the given dataset.
-
-      \post The caller of this method will take the ownership of the returned box.
-
-      \exception Exception It throws an exception if something goes wrong during MBR search.
-    */
-    TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(te::da::DataSet* dataset);
-
-    /*!
       \return The data extent considering the informed property. The caller will take the ownership of the returned box.
 
       \exception Exception It throws an exception if the extent can not be determined.

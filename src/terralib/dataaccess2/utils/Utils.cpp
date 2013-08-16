@@ -87,16 +87,6 @@ void te::da::LoadProperties(te::da::DataSetType* dataset, const std::string& dat
   dataset->add(properties);
 }
 
-te::gm::Envelope* te::da::GetExtent(te::da::DataSet* dataset)
-{
-  std::size_t pos = GetFirstSpatialPropertyPos(dataset);
-
-  if(pos != std::string::npos)
-    return dataset->getExtent(pos);
-
-  return new te::gm::Envelope;
-}
-
 te::gm::Envelope* te::da::GetExtent(const std::string& datasetName,
                                     const std::string& propertyName,
                                     const std::string& datasourceId)
@@ -327,7 +317,7 @@ te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vecto
   for(std::size_t i = 0; i < names.size(); ++i)
   {
     if(!dataset->isNull(i))
-      oid->addValue(dataset->getValue(names[i]));
+      oid->addValue(dataset->getValue(names[i]).release());
   }
 
   return oid;
