@@ -150,21 +150,6 @@ namespace te
                                                                     const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                                                     const std::vector<te::mem::DataSetItem*>& items);
 
-    /*!
-      \brief It persists the aggregation result.
-
-      \param dataSetType  The output DataSetType.
-      \param dataSet      The output DataSet.
-      \param dsInfo       Information of datasource persistence.
-      \param options      A list of optional modifiers. It is driver specific.
-
-      \return The aggregation result persistence.
-    */
-    void Persistence( te::da::DataSetType* dataSetType,
-                      te::mem::DataSet* dataSet,
-                      const te::da::DataSourceInfoPtr& dsInfo,
-                      const std::map<std::string, std::string> options = std::map<std::string, std::string>());
-
   } // end namespace vp
 }   // end namespace te
 

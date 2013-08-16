@@ -29,13 +29,20 @@
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
+#include "../../geometry/Geometry.h"
+#include "../../geometry/GeometryProperty.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../maptools/DataSetLayer.h"
+#include "../../memory/DataSet.h"
+#include "../../memory/DataSetItem.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../srs/Config.h"
 #include "../Config.h"
 #include "../Exception.h"
+#include "Buffer.h"
 #include "BufferDialog.h"
 #include "ui_BufferDialogForm.h"
 #include "VectorProcessingConfig.h"
@@ -48,6 +55,12 @@
 #include <QtGui/QListWidget>
 #include <QtGui/QListWidgetItem>
 #include <QtGui/QMessageBox>
+
+// STL
+#include <map>
+
+// BOOST
+#include <boost/lexical_cast.hpp>
 
 te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -74,6 +87,7 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
 
 //add controls
   m_ui->m_fixedDistanceLineEdit->setEnabled(true);
+  m_ui->m_fixedDistanceLineEdit->setValidator(new QDoubleValidator(this));
   m_ui->m_fixedDistanceComboBox->setEnabled(true);
 
   setPossibleLevels();
@@ -88,6 +102,9 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_ruleOnlyInRadioButton, SIGNAL(toggled(bool)), this, SLOT(onRuleInToggled()));
   connect(m_ui->m_withoutBoundRadioButton, SIGNAL(toggled(bool)), this, SLOT(onWithoutBoundToggled()));
   connect(m_ui->m_withBoundRadioButton, SIGNAL(toggled(bool)), this, SLOT(onWithBoundToggled()));
+
+  connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
+  connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
@@ -143,6 +160,76 @@ void te::vp::BufferDialog::setAttributesForDistance(std::vector<te::dt::Property
     m_ui->m_fromAttRadioButton->setEnabled(true);
   else
     m_ui->m_fromAttRadioButton->setEnabled(false);
+}
+
+std::map<te::gm::Geometry*, double> te::vp::BufferDialog::getDistante()
+{
+  std::map<te::gm::Geometry*, double> distance;
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+
+  te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema();
+  std::size_t geomIdx;
+  std::string geomName = "";
+
+  if(dsType->hasGeom())
+  {
+    std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType));
+    geomName = geom->getName();
+    geomIdx = boost::lexical_cast<std::size_t>(dsType->getPropertyPosition(geomName));
+  }
+
+  std::auto_ptr<te::mem::DataSet> inputDataSet((te::mem::DataSet*)dsLayer->getData());
+  inputDataSet->moveBeforeFirst();
+
+  if(m_ui->m_fixedRadioButton->isChecked())
+  {
+    while(inputDataSet->moveNext())
+    {
+      distance.insert(std::map<te::gm::Geometry*, double>::value_type( inputDataSet->getGeometry(geomIdx), m_ui->m_fixedDistanceLineEdit->text().toDouble()));
+    }
+  }
+  else if(m_ui->m_fromAttRadioButton->isChecked())
+  {
+    while(inputDataSet->moveNext())
+    {
+      if(inputDataSet->getPropertyDataType(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())) == te::dt::INT32_TYPE)
+      {
+        distance.insert(std::map<te::gm::Geometry*, double>::value_type( inputDataSet->getGeometry(geomIdx), 
+            boost::lexical_cast<double>(inputDataSet->getInt32(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())))));
+      }
+      else if(inputDataSet->getPropertyDataType(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())) == te::dt::DOUBLE_TYPE)
+      {
+        distance.insert(std::map<te::gm::Geometry*, double>::value_type( inputDataSet->getGeometry(geomIdx), 
+            inputDataSet->getDouble(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString()))));
+      }
+      else if(inputDataSet->getPropertyDataType(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())) == te::dt::NUMERIC_TYPE)
+      {
+        distance.insert(std::map<te::gm::Geometry*, double>::value_type( inputDataSet->getGeometry(geomIdx), 
+          boost::lexical_cast<double>(inputDataSet->getNumeric(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())))));
+        te::gm::Geometry* geo = inputDataSet->getGeometry(geomIdx);
+      }
+    }
+  }
+
+  return distance;
+}
+
+int te::vp::BufferDialog::getPolygonRule()
+{
+  if(m_ui->m_ruleInOutRadioButton->isChecked())
+    return te::vp::INSIDE_OUTSIDE;
+  else if(m_ui->m_ruleOnlyOutRadioButton->isChecked())
+    return te::vp::ONLY_OUTSIDE;
+  else
+    return te::vp::ONLY_INSIDE;
+}
+
+int te::vp::BufferDialog::getBoundariesRule()
+{
+  if(m_ui->m_withoutBoundRadioButton->isChecked())
+    return te::vp::DISSOLVE;
+  else
+    return te::vp::NOT_DISSOLVE;
 }
 
 void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
@@ -234,6 +321,43 @@ void te::vp::BufferDialog::onWithBoundToggled()
   m_ui->m_copyColumnsCheckBox->setEnabled(true);
 }
 
+void te::vp::BufferDialog::onTargetDatasourceToolButtonPressed()
+{
+  m_outputDatasource.reset();
+  m_outputArchive = "";
+
+  te::qt::widgets::DataSourceSelectorDialog dlg(this);
+  dlg.exec();
+
+  std::list<te::da::DataSourceInfoPtr> dsPtrList = dlg.getSelecteds();
+
+  if(dsPtrList.size() <= 0)
+    return;
+
+  std::list<te::da::DataSourceInfoPtr>::iterator it = dsPtrList.begin();
+
+  m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
+
+  m_outputDatasource = *it;
+}
+
+void te::vp::BufferDialog::onTargetFileToolButtonPressed()
+{
+  m_outputDatasource.reset();
+  m_outputArchive = "";
+
+  QString directoryName = QFileDialog::getExistingDirectory(this, tr("Open Feature File"), QString(""));
+
+  if(directoryName.isEmpty())
+    return;
+
+  QString fullName = directoryName + "\\" + m_ui->m_newLayerNameLineEdit->text() + ".shp";
+
+  m_ui->m_repositoryLineEdit->setText(fullName);
+
+  m_outputArchive = std::string(fullName.toStdString());
+}
+
 void te::vp::BufferDialog::onHelpPushButtonClicked()
 {
   QMessageBox::information(this, "Help", "Under development");
@@ -241,7 +365,65 @@ void te::vp::BufferDialog::onHelpPushButtonClicked()
 
 void te::vp::BufferDialog::onOkPushButtonClicked()
 {
-  QMessageBox::information(this, "Ok", "Under development");
+  if(m_ui->m_layersComboBox->count() == 0)
+  {
+    QMessageBox::information(this, "Buffer", "Please, you must select a layer.");
+
+    return;
+  }
+
+  std::map<te::gm::Geometry*, double> distance = getDistante();
+  int bufferPolygonRule = getPolygonRule();
+  int bufferBoundariesRule = getBoundariesRule();
+  bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
+  int levels = m_ui->m_levelsNumComboBox->currentText().toInt();
+  std::string outputLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+
+  if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Buffer", "Set a name for the new Layer.");
+
+    return;
+  }
+
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, "Buffer", "Set a repository for the new Layer.");
+
+    return;
+  }
+
+  try
+  {
+    if(m_outputDatasource.get())
+      m_outputLayer = te::vp::Buffer( m_selectedLayer, 
+                                distance, 
+                                bufferPolygonRule, 
+                                bufferBoundariesRule, 
+                                copyInputColumns, 
+                                levels,
+                                outputLayerName,
+                                m_outputDatasource);
+    else if(!m_outputArchive.empty())
+      m_outputLayer = te::vp::Buffer( m_selectedLayer, 
+                                distance, 
+                                bufferPolygonRule, 
+                                bufferBoundariesRule, 
+                                copyInputColumns, 
+                                levels,
+                                outputLayerName,
+                                m_outputArchive);
+  }
+  catch(const std::exception& e)
+  {
+    QString errMsg(tr("Error during buffer map . The reported error is: %1"));
+
+    errMsg = errMsg.arg(e.what());
+
+    QMessageBox::information(this, "Buffer", errMsg);
+  }
+
+  accept();
 }
 
 void te::vp::BufferDialog::onCancelPushButtonClicked()

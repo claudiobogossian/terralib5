@@ -183,9 +183,9 @@ void te::da::DataSource::renameProperty(const std::string& datasetName,
 {
 }
 
-te::da::PrimaryKey* te::da::DataSource::getPrimaryKey(const std::string& /*datasetName*/)
+std::auto_ptr<te::da::PrimaryKey> te::da::DataSource::getPrimaryKey(const std::string& /*datasetName*/)
 {
-  return 0;
+  return std::auto_ptr<te::da::PrimaryKey>(0);
 }
 
 bool te::da::DataSource::primaryKeyExists(const std::string& datasetName, const std::string& /*name*/)
@@ -201,6 +201,11 @@ void te::da::DataSource::dropPrimaryKey(const std::string& /*datasetName*/)
 {
 }
 
+std::auto_ptr<te::da::ForeignKey> te::da::DataSource::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  return std::auto_ptr<te::da::ForeignKey>(0);
+}
+
 std::vector<std::string> te::da::DataSource::getForeignKeyNames(const std::string& /*datasetName*/)
 {
   return std::vector<std::string>();
@@ -211,17 +216,17 @@ bool te::da::DataSource::foreignKeyExists(const std::string& /*datasetName*/, co
   return false;
 }
 
-te::da::ForeignKey* te::da::DataSource::getForeignKey(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  return 0;
-}
-
 void te::da::DataSource::addForeignKey(const std::string& /*datasetName*/, ForeignKey* /*fk*/)
 {
 }
 
 void te::da::DataSource::dropForeignKey(const std::string& /*datasetName*/, const std::string& /*fkName*/)
 {
+}
+
+std::auto_ptr<te::da::UniqueKey> te::da::DataSource::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  return std::auto_ptr<te::da::UniqueKey>(0);
 }
 
 std::vector<std::string> te::da::DataSource::getUniqueKeyNames(const std::string& /*datasetName*/)
@@ -234,17 +239,17 @@ bool te::da::DataSource::uniqueKeyExists(const std::string& /*datasetName*/, con
   return false;
 }
 
-te::da::UniqueKey* te::da::DataSource::getUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  return 0;
-}
-
 void te::da::DataSource::addUniqueKey(const std::string& /*datasetName*/, UniqueKey* /*uk*/)
 {
 }
 
 void te::da::DataSource::dropUniqueKey(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
+}
+
+std::auto_ptr<te::da::CheckConstraint> te::da::DataSource::getCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  return std::auto_ptr<te::da::CheckConstraint>(0);
 }
 
 std::vector<std::string> te::da::DataSource::getCheckConstraintNames(const std::string& /*datasetName*/)
@@ -257,17 +262,17 @@ bool te::da::DataSource::checkConstraintExists(const std::string& /*datasetName*
   return false;
 }
 
-te::da::CheckConstraint* te::da::DataSource::getCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  return 0;
-}
-
 void te::da::DataSource::addCheckConstraint(const std::string& /*datasetName*/, CheckConstraint* /*cc*/)
 {
 }
 
 void te::da::DataSource::dropCheckConstraint(const std::string& /*datasetName*/, const std::string& /*name*/)
 {
+}
+
+std::auto_ptr<te::da::Index> te::da::DataSource::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
+{
+  return std::auto_ptr<te::da::Index>(0);
 }
 
 std::vector<std::string> te::da::DataSource::getIndexNames(const std::string& /*datasetName*/)
@@ -280,10 +285,7 @@ bool te::da::DataSource::indexExists(const std::string& /*datasetName*/, const s
   return false;
 }
 
-te::da::Index* te::da::DataSource::getIndex(const std::string& /*datasetName*/, const std::string& /*name*/)
-{
-  return 0;
-}
+
 
 void te::da::DataSource::addIndex(const std::string& /*datasetName*/, Index* /*idx*/,
                                   const std::map<std::string, std::string>& /*options*/)
@@ -294,6 +296,11 @@ void te::da::DataSource::dropIndex(const std::string& /*datasetName*/, const std
 {
 }
 
+std::auto_ptr<te::da::Sequence> te::da::DataSource::getSequence(const std::string& /*name*/)
+{
+  return std::auto_ptr<te::da::Sequence>(0);
+}
+
 std::vector<std::string> te::da::DataSource::getSequenceNames()
 {
   return std::vector<std::string>();
@@ -302,11 +309,6 @@ std::vector<std::string> te::da::DataSource::getSequenceNames()
 bool te::da::DataSource::sequenceExists(const std::string& /*name*/)
 {
   return false;
-}
-
-te::da::Sequence* te::da::DataSource::getSequence(const std::string& /*name*/)
-{
-  return 0;
 }
 
 void te::da::DataSource::addSequence(Sequence* /*sequence*/)

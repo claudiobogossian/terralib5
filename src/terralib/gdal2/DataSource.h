@@ -127,7 +127,7 @@ namespace te
       
       std::vector<std::string> getDataSetNames();
       
-      const te::da::DataSetTypePtr& getDataSetType(const std::string& name);
+      te::da::DataSetTypePtr getDataSetType(const std::string& name);
       
       std::vector<std::string> getPropertyNames(const std::string& datasetName);
 
@@ -137,9 +137,9 @@ namespace te
 
       boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
-      te::dt::Property* getProperty(const std::string& datasetName, const std::string& name);
+      std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
 
-      te::dt::Property* getProperty(const std::string& datasetName, std::size_t propertyPos);
+      std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
 
       void addProperty(const std::string& datasetName, te::dt::Property* p);
 

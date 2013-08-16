@@ -44,22 +44,24 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
   //add explorer
   m_explorer = new te::qt::widgets::StyleExplorer(m_ui->m_explorerFrame);
   QGridLayout* le = new QGridLayout(m_ui->m_explorerFrame);
+  le->setContentsMargins(0,0,0,0);
   le->addWidget(m_explorer);
 
   connect(m_explorer, SIGNAL(symbolizerClicked(te::se::Symbolizer*)), this, SLOT(onSymbolizerClicked(te::se::Symbolizer*)));
   connect(m_explorer, SIGNAL(ruleClicked(const te::se::Rule*)), this, SLOT(onRuleClicked(const te::se::Rule*)));
+  connect(m_ui->m_iconSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(changeLegendIconSize(int)));
 
   //add rule preview
-  m_rulePreview = new te::qt::widgets::SymbolPreviewWidget(QSize(121,121), m_ui->m_ruleFrame);
-  QGridLayout* lr = new QGridLayout(m_ui->m_ruleFrame);
-  lr->setContentsMargins(0,0,0,0);
-  lr->addWidget(m_rulePreview);
+  //m_rulePreview = new te::qt::widgets::SymbolPreviewWidget(QSize(121,121), m_ui->m_ruleFrame);
+  //QGridLayout* lr = new QGridLayout(m_ui->m_ruleFrame);
+  //lr->setContentsMargins(0,0,0,0);
+  //lr->addWidget(m_rulePreview);
 
   //add symbolizer preview
-  m_symbPreview = new te::qt::widgets::SymbolPreviewWidget(QSize(121,121), m_ui->m_symbFrame);
-  QGridLayout* ls = new QGridLayout(m_ui->m_symbFrame);
-  ls->setContentsMargins(0,0,0,0);
-  ls->addWidget(m_symbPreview);
+  //m_symbPreview = new te::qt::widgets::SymbolPreviewWidget(QSize(121,121), m_ui->m_symbFrame);
+  //QGridLayout* ls = new QGridLayout(m_ui->m_symbFrame);
+  //ls->setContentsMargins(0,0,0,0);
+  //ls->addWidget(m_symbPreview);
 
   //connect buttons
   connect(m_ui->m_addSymbToolButton, SIGNAL(clicked()), this, SLOT(onAddSymbolizerClicked()));
@@ -67,9 +69,9 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
   connect(m_ui->m_upSymbToolButton, SIGNAL(clicked()), this, SLOT(onUpSymbolizerClicked()));
   connect(m_ui->m_downSymbToolButton, SIGNAL(clicked()), this, SLOT(onDownSymbolizerClicked()));
 
-  m_ui->m_tabWidget->setCurrentWidget(m_ui->m_previewTab);
+  //m_ui->m_tabWidget->setCurrentWidget(m_ui->m_previewTab);
 
-  m_ui->m_ruleGroupBox->setVisible(false);
+  //m_ui->m_ruleGroupBox->setVisible(false);
 
   updateUi();
 }
@@ -123,28 +125,33 @@ void te::qt::widgets::StyleControllerWidget::onDownSymbolizerClicked()
 void te::qt::widgets::StyleControllerWidget::onSymbolizerChanged(te::se::Symbolizer* s)
 {
   m_explorer->onSymbolizerChanged(s);
-  m_symbPreview->updatePreview(s);
+  //m_symbPreview->updatePreview(s);
 
-  te::se::Rule* rule = m_explorer->getCurrentRule();
+  //te::se::Rule* rule = m_explorer->getCurrentRule();
 
-  if(rule)
-    onRuleClicked(rule);
+  //if(rule)
+  //  onRuleClicked(rule);
 }
 
 void te::qt::widgets::StyleControllerWidget::onSymbolizerClicked(te::se::Symbolizer* symb)
 {
-  m_symbPreview->updatePreview(symb);
+  //m_symbPreview->updatePreview(symb);
 
-  te::se::Rule* rule = m_explorer->getCurrentRule();
+  //te::se::Rule* rule = m_explorer->getCurrentRule();
 
-  if(rule)
-    onRuleClicked(rule);
+  //if(rule)
+  //  onRuleClicked(rule);
 
   emit symbolizerSelected(symb);
 }
 
 void te::qt::widgets::StyleControllerWidget::onRuleClicked(const te::se::Rule* rule)
 {
-  if(!rule->getSymbolizers().empty())
-    m_rulePreview->updatePreview(rule->getSymbolizers());
+  //if(!rule->getSymbolizers().empty())
+  //  m_rulePreview->updatePreview(rule->getSymbolizers());
+}
+
+void te::qt::widgets::StyleControllerWidget::changeLegendIconSize(int size)
+{
+  m_explorer->setLegendIconSize(size);
 }

@@ -24,10 +24,16 @@
 */
 
 // TerraLib
+#include "../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/dataset/DataSetTypePersistence.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/GeometryCollection.h"
 #include "../../geometry/GeometryProperty.h"
+#include "../../memory/DataSet.h"
 #include "Utils.h"
 
 // Qt
@@ -130,4 +136,19 @@ te::gm::GeometryProperty* te::vp::SetOutputGeometryType(const te::gm::GeometryPr
   }
 
   return fiGeomProp;
+}
+
+void te::vp::Persistence( te::da::DataSetType* dataSetType,
+                          te::mem::DataSet* dataSet,
+                          const te::da::DataSourceInfoPtr& dsInfo,
+                          std::map<std::string, std::string> options)
+{
+  std::pair<te::da::DataSetType*, te::mem::DataSet*> pair;
+  pair.first = dataSetType;
+  pair.second = dataSet;
+
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
+  std::auto_ptr<te::da::DataSourceTransactor> t(dataSource->getTransactor());
+  pair.second->moveFirst();
+  te::da::Create(t.get(), pair.first, pair.second, options);
 }
