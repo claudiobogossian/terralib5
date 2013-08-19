@@ -29,7 +29,10 @@
 #include <terralib/dataaccess2/dataset/CheckConstraint.h>
 #include <terralib/dataaccess2/dataset/PrimaryKey.h>
 #include <terralib/dataaccess2/dataset/Index.h>
+#include <terralib/dataaccess2/datasource/DataSourceFactory.h>
 #include <terralib/datatype/SimpleProperty.h>
+#include <terralib/memory2/DataSource.h>
+#include <terralib/memory2/DataSourceFactory.h>
 #include <terralib/postgis2/DataSource.h>
 #include <terralib/postgis2/DataSourceFactory.h>
 #include <terralib/postgis2/PreparedQuery.h>
@@ -73,8 +76,8 @@ int main(int /*argc*/, char** /*argv*/)
     connInfo["PG_PORT"] = "5433" ;
     connInfo["PG_USER"] = "postgres";
     connInfo["PG_PASSWORD"] = "sitim110";
-    connInfo["PG_DB_NAME"] = "terralib4";
-    //connInfo["PG_DB_NAME"] = "Northwind";
+    //connInfo["PG_DB_NAME"] = "terralib4";
+    connInfo["PG_DB_NAME"] = "Northwind";
     connInfo["PG_CONNECT_TIMEOUT"] = "4";
 
     std::string dsType = "POSTGIS";
@@ -85,6 +88,8 @@ int main(int /*argc*/, char** /*argv*/)
     connInfo["PG_NEWDB_NAME"] = "new_db";
 
     std::auto_ptr<te::da::DataSource> newds = CreateDataSource(dsType, connInfo);
+
+    delete newds.release();
 
     // Drop a data source
     connInfo["PG_DB_TO_DROP"] = "new_db";
@@ -102,28 +107,29 @@ int main(int /*argc*/, char** /*argv*/)
     PrintDataSourceEncodings(dsType, connInfo);
 
     // Connection to a data source
-    te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
+    //te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
 
     // Open the data source using the connection info above
     ds->setConnectionInfo(connInfo);
     ds->open();
 
-    PrintDataSetNames(ds);
+    PrintDataSetNames(ds.get());
 
-    std::string datasetName = "public.br_munic_2001";
+    //std::string datasetName = "public.br_munic_2001";
+    std::string datasetName = "produtos";
 
-    PrintDataSetPropertyNames(ds, datasetName);
+    PrintDataSetPropertyNames(ds.get(), datasetName);
 
-    PrintDataSetConstraints(ds, datasetName);
+    //PrintDataSetConstraints(ds.get(), datasetName);
 
-    const te::da::DataSetTypePtr& dt = ds->getDataSetType(datasetName);
-
-    te::da::PreparedQuery* pq = new te::pgis::PreparedQuery(ds,  "testepq");
-    delete pq;
+    //te::da::DataSetTypePtr dt = ds->getDataSetType(datasetName);
 
     ds->close();
 
-    delete ds;
+    delete ds.release();
+
+    //dt.reset();
 
     te::plugin::PluginManager::getInstance().unloadAll();
 
@@ -215,7 +221,7 @@ void PrintDataSetConstraints(te::da::DataSource* ds, const std::string& datasetN
 {
   std::cout << "\n===== Primary Key Name of the dataset \"" << datasetName << "\": ";
 
-  te::da::PrimaryKey* pk = ds->getPrimaryKey(datasetName);
+  std::auto_ptr<te::da::PrimaryKey> pk = ds->getPrimaryKey(datasetName);
   std::cout << pk->getName() << std::endl;
 
   std::cout << "\n===== Property Names of the Primary Key \"" << pk->getName() << "\": ";
@@ -226,7 +232,12 @@ void PrintDataSetConstraints(te::da::DataSource* ds, const std::string& datasetN
     std::cout << pkProperties[i]->getName() << std::endl;
 }
 
+void UnloadModules()
+{
+  te::plugin::PluginManager::getInstance().unloadAll();
 
+  TerraLib::getInstance().finalize();
+}
 
 
 //int main(int /*argc*/, char** /*argv*/)
@@ -319,3 +330,24 @@ void PrintDataSetConstraints(te::da::DataSource* ds, const std::string& datasetN
 //}
 //
 
+    ////////////////////////////////// Memory operation /////////////////////////////
+    //te::da::DataSource* memds = te::da::DataSourceFactory::make("MEM");
+    //std::auto_ptr<te::da::DataSource> memds = te::da::DataSourceFactory::make("MEM");
+
+    ////te::da::DataSource* memds = new te::mem::DataSource();
+
+    //std::map<std::string, std::string> memInfo;
+
+    //memInfo["OPERATION_MODE"] = "NON_SHARED";
+    //memds->setConnectionInfo(memInfo);
+
+    //memds->open();
+
+    //std::map<std::string, std::string> options;
+
+    //memds->add(datasetName, ds->getDataSet(datasetName).get(), options);
+
+    //memds->close();
+
+    //delete memds;
+    ////////////////////////////// End of memory operation///////////////////////

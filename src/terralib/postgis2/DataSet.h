@@ -31,19 +31,20 @@
 #include "Config.h"
 
 // Forward declaration for libpq
-extern "C"
-{
-  struct pg_conn;
-  typedef struct pg_conn PGconn;
-  struct pg_result;
-  typedef struct pg_result PGresult;
-}
+//extern "C"
+//{
+//  struct pg_conn;
+//  typedef struct pg_conn PGconn;
+//  struct pg_result;
+//  typedef struct pg_result PGresult;
+//}
 
 namespace te
 {
 // Forward declarations
   namespace da
   {
+    class DataSource;
     class GeometryProperty;
   }
 
@@ -63,12 +64,12 @@ namespace te
         /*!
           \brief Constructor.
 
-          \param result     The internal PGresult.
-          \param transactor The transactor associated to this DataSet.
-          \param sql        The sql command that generated the dataset.
+          \param result       The internal PGresult.
+          \param ds           The data source.
+          \param sql          The sql command that generated the dataset.
         */
         DataSet(PGresult* result,
-                Connection* conn,
+                te::da::DataSource* ds,
                 std::string* sql);
 
         /*! \brief The destructor will clear the internal PGresult. */
@@ -77,8 +78,6 @@ namespace te
         te::common::TraverseType getTraverseType() const;
 
         te::common::AccessPolicy getAccessPolicy() const;
-
-        te::gm::Envelope* getExtent(std::size_t i);
 
         std::size_t getNumProperties() const;
 
@@ -132,15 +131,15 @@ namespace te
 
         std::string getString(std::size_t i) const;
 
-        te::dt::ByteArray* getByteArray(std::size_t i) const;
+        std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const;
 
-        te::gm::Geometry* getGeometry(std::size_t i) const;
+        std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const;
 
-        te::rst::Raster* getRaster(std::size_t i) const;
+        std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
 
-        te::dt::DateTime* getDateTime(std::size_t i) const; 
+        std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const; 
 
-        te::dt::Array* getArray(std::size_t i) const;
+        std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
         bool isNull(std::size_t i) const;
 
@@ -170,7 +169,7 @@ namespace te
         int m_i;                            //!< The index of the current row.
         int m_size;                         //!< The number of datasets in the collection.
         PGresult* m_result;                 //!< The internal buffer with the result query.
-        Connection* m_conn;                 //!< The PostGIS connection associated to this dataset.
+        te::da::DataSource* m_ds;           //!< The data source.
         std::string* m_sql;                 //!< The sql command that generated the dataset.
         std::vector<int> m_ptypes;          //!< The list of property types.
     };

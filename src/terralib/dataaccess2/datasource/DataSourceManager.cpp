@@ -24,6 +24,13 @@
 */
 
 // TerraLib
+#include "../../common/Globals.h"
+#include "../../common/STLUtils.h"
+#include "../../common/StringUtils.h"
+#include "../../common/Translator.h"
+#include "../Exception.h"
+#include "DataSource.h"
+#include "DataSourceFactory.h"
 #include "DataSourceManager.h"
 
 // STL
@@ -31,31 +38,160 @@
 #include <cassert>
 #include <memory>
 
-std::string te::da::DataSourceManager::open(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
+te::da::DataSourcePtr te::da::DataSourceManager::make(const std::string& id, const std::string& dsType)
 {
-  return "";
+// we are optimistic: do the hard job and then see if another thread or the data source already had been inserted in the manager
+  DataSourcePtr ds(DataSourceFactory::make(dsType));
+
+  if(ds.get() == 0)
+    throw Exception(TR_DATAACCESS("Could not create the required data source instance!"));
+
+  ds->setId(id);
+
+  insert(ds);
+
+  return ds;
 }
 
-void te::da::DataSourceManager::open(const std::string& id,
-                                     const std::string& dsType,
-                                     const std::map<std::string, std::string>& dsInfo)
+te::da::DataSourcePtr te::da::DataSourceManager::open(const std::string& id, const std::string& dsType, const std::map<std::string, std::string>& connInfo)
 {
+// we are optimistic: do the hard job and then see if another thread or the data source already had been inserted in the manager
+  DataSourcePtr ds(DataSourceFactory::make(dsType));
+
+  if(ds.get() == 0)
+    throw Exception(TR_DATAACCESS("Could not create the required data source instance!"));
+
+  ds->setConnectionInfo(connInfo);
+  ds->open();
+
+  ds->setId(id);
+
+  insert(ds);
+
+  return ds;
 }
 
-bool te::da::DataSourceManager::isOpened(const std::string& id)
+te::da::DataSourcePtr te::da::DataSourceManager::open(const std::string& id, const std::string& dsType, const std::string& connInfo)
 {
-  return false;
+  std::map<std::string, std::string> connInfoMap;
+
+  te::common::ExtractKVP(connInfo, connInfoMap, "&", "=", false);
+
+  return open(id, dsType, connInfoMap);
 }
 
-te::da::DataSourcePtr te::da::DataSourceManager::get(const std::string& id)
+te::da::DataSourcePtr te::da::DataSourceManager::get(const std::string& id, const std::string& dsType, const std::map<std::string, std::string>& connInfo)
 {
-  return DataSourcePtr();
+  LockRead l(this);
+
+  const_iterator it = m_dss.find(id);
+
+  if(it != m_dss.end())
+    return it->second;
+
+  //DataSourcePtr newds(DataSourceFactory::open(dsType, connInfo));
+
+  std::auto_ptr<te::da::DataSource> newds = DataSourceFactory::make(dsType);
+
+  newds->setConnectionInfo(connInfo);
+
+  newds->open();
+
+  newds->setId(id);
+
+  //insert(newds);
+  insert(DataSourcePtr(newds));
+
+  //return newds;
+  return DataSourcePtr(newds);
 }
 
-void te::da::DataSourceManager::close(const std::string& id)
+te::da::DataSourcePtr te::da::DataSourceManager::find(const std::string& id) const
 {
+  LockRead l(this);
+
+  const_iterator it = m_dss.find(id);
+
+  if(it != m_dss.end())
+    return it->second;
+  else
+    return DataSourcePtr();
 }
 
+void te::da::DataSourceManager::insert(const DataSourcePtr& ds)
+{
+  if(ds.get() == 0)
+    throw Exception(TR_DATAACCESS("Please, specifify a non-null data source to be managed!"));
+
+  LockWrite l(this);
+
+  if(m_dss.find(ds->getId()) != m_dss.end())
+    throw Exception(TR_DATAACCESS("There is already a data source with the given identification!"));
+
+  m_dss[ds->getId()] = ds;
+}
+
+void te::da::DataSourceManager::detach(const DataSourcePtr& ds)
+{
+  if(ds.get() == 0)
+    return;
+
+  detach(ds->getId());
+}
+
+te::da::DataSourcePtr te::da::DataSourceManager::detach(const std::string& id)
+{
+  LockWrite l(this);
+
+  std::map<std::string, DataSourcePtr>::iterator it = m_dss.find(id);
+
+  if(it == m_dss.end())
+    throw Exception(TR_DATAACCESS("Invalid data source to detach!"));
+
+  DataSourcePtr ds = it->second;
+
+  m_dss.erase(it);
+
+  return ds;
+}
+
+void te::da::DataSourceManager::detachAll(const std::string& dsType)
+{
+  LockWrite l(this);
+
+  std::map<std::string, DataSourcePtr>::iterator it = m_dss.begin();
+  
+  while(it != m_dss.end())
+    if(it->second->getType() == dsType)
+      m_dss.erase(it++);
+    else
+      ++it;
+  //std::map<std::string, DataSourcePtr>::iterator it = m_dss.begin();
+  //std::map<std::string, DataSourcePtr>::iterator itend = m_dss.end();
+
+  //while(it != itend)
+  //{
+  //  const std::string& ttype = it->second->getType();
+
+  //  if(it->second->getType() == dsType)
+  //  {
+  //    std::map<std::string, DataSourcePtr>::iterator itaux = it;
+  //    ++it;
+  //    m_dss.erase(itaux);
+  //  }
+  //  else
+  //  {
+  //    ++it;
+  //  }
+  //}
+}
+
+void te::da::DataSourceManager::detachAll()
+{
+  LockWrite l(this);
+
+  m_dss.clear();
+}
 
 te::da::DataSourceManager::DataSourceManager()
 {
@@ -64,3 +200,4 @@ te::da::DataSourceManager::DataSourceManager()
 te::da::DataSourceManager::~DataSourceManager()
 {
 }
+

@@ -113,11 +113,22 @@ namespace te
     {
       public:
 
-        /*! \brief Default constructor that can be called by subclasses. */
-        DataSource();
-
         /*! \brief Virtual destructor. */
         virtual ~DataSource();
+
+        /*!
+          \brief An identification value for the data source.
+
+          \return The data source identification.
+        */
+        const std::string& getId() const;
+
+        /*!
+          \brief Sets the data source identification.
+
+          \param id An identification value.
+        */
+        void setId(const std::string& id);
 
         /** @name Basic Methods of a Data Source
           *  Basic Methods for operating a data source.
@@ -1010,6 +1021,15 @@ namespace te
                                                           std::size_t propertyPos);
 
         /*!
+          \brief It computes the bounding rectangle for a spatial property of the given dataset.
+
+          \param dataset The dataset whose spatial property will be used to get its bounding box.
+
+          \return The spatial property bounding rectangle, or an invalid box if none is found.
+        */
+        virtual std::auto_ptr<te::gm::Envelope> getExtent(te::da::DataSet* dataset);
+
+        /*!
           \brief It retrieves the number of items of the given dataset.
 
           \param datasetName  The dataset name.
@@ -1262,6 +1282,9 @@ namespace te
 
       protected:
 
+        /*! \brief Default constructor that can be called by subclasses. */
+        DataSource();
+
         /** @name Protected Data Source Methods????
           * The protected methods of the data source
           */
@@ -1320,6 +1343,10 @@ namespace te
         virtual std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
 
         //@}
+
+      protected:
+
+        std::string m_id;
     };
 
     typedef boost::shared_ptr<DataSource> DataSourcePtr;

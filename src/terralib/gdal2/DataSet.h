@@ -121,25 +121,42 @@ namespace te
       std::string getString(std::size_t /*i*/) const { return ""; }
       std::string getString(const std::string& /*name*/) const { return ""; }
       
-      te::dt::ByteArray* getByteArray(std::size_t /*i*/) const { return 0; }
-      te::dt::ByteArray* getByteArray(const std::string& /*name*/) const { return 0; }
+      std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t /*i*/) const
+        { return std::auto_ptr<te::dt::ByteArray>(0); }
+
+      std::auto_ptr<te::dt::ByteArray> getByteArray(const std::string& /*name*/) const
+        { return std::auto_ptr<te::dt::ByteArray>(0); }
       
-      te::gm::Geometry* getGeometry(std::size_t /*i*/) const { return 0; }
-      te::gm::Geometry* getGeometry(const std::string& /*name*/) const { return 0; }
+      std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t /*i*/) const
+        { return std::auto_ptr<te::gm::Geometry>(0); }
+
+      std::auto_ptr<te::gm::Geometry> getGeometry(const std::string& /*name*/) const
+        { return std::auto_ptr<te::gm::Geometry>(0); }
       
-      te::rst::Raster* getRaster(std::size_t i) const;
-      te::rst::Raster* getRaster(const std::string& name) const;
+      std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
+
+      std::auto_ptr<te::rst::Raster> getRaster(const std::string& name) const;
       
-      te::dt::DateTime* getDateTime(std::size_t /*i*/) const { return 0; }
-      te::dt::DateTime* getDateTime(const std::string& /*name*/) const { return 0; }
+      std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t /*i*/) const
+        { return std::auto_ptr<te::dt::DateTime>(0); }
+
+      std::auto_ptr<te::dt::DateTime> getDateTime(const std::string& /*name*/) const
+        { return std::auto_ptr<te::dt::DateTime>(0); }
       
-      te::dt::Array* getArray(std::size_t /*i*/) const { return 0; }
-      te::dt::Array* getArray(const std::string& /*name*/) const { return 0; }
+      std::auto_ptr<te::dt::Array> getArray(std::size_t /*i*/) const
+        { return std::auto_ptr<te::dt::Array>(0); }
+
+      std::auto_ptr<te::dt::Array> getArray(const std::string& /*name*/) const
+        { return std::auto_ptr<te::dt::Array>(0); }
       
-      te::dt::AbstractData* getValue(std::size_t /*i*/) const { return 0; }
-      te::dt::AbstractData* getValue(const std::string& /*name*/) const {return 0; }
+      std::auto_ptr<te::dt::AbstractData> getValue(std::size_t /*i*/) const
+        { return std::auto_ptr<te::dt::AbstractData>(0); }
+
+      std::auto_ptr<te::dt::AbstractData> getValue(const std::string& /*name*/) const
+        {return std::auto_ptr<te::dt::AbstractData>(0); }
       
       bool isNull(std::size_t i) const { return i != 0; }
+
       bool isNull(const std::string& /*name*/) const { return true; }
       
     private:

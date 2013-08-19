@@ -288,6 +288,8 @@ namespace te
 
         std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, std::size_t propertyPos);
 
+        std::auto_ptr<te::gm::Envelope> getExtent(te::da::DataSet* dataset);
+
         std::size_t getNumberOfItems(const std::string& datasetName);
 
         bool hasDataSets();
@@ -351,7 +353,7 @@ namespace te
 
           \note PostGIS driver extended method.
         */
-        const std::string* getCurrentSchema();
+        const std::string& getCurrentSchema();
 
         /*!
           \brief It loads information about a given geometry column.
@@ -372,6 +374,15 @@ namespace te
           \exception It throws an exception if it can not load the information.
         */
         void getRasterInfo(const std::string& datasetName, te::rst::RasterProperty* rp);
+
+        /*!
+          \brief It gets the full name of the given name including the schema name.
+
+          \param name The dataset name.
+
+          \return  The dataset full name.
+        */
+        std::string getFullName(const std::string& name);
 
         /*!
           \brief It sets the SQL dialect used by the PostGIS driver.
@@ -420,6 +431,31 @@ namespace te
           \note PostGIS driver extended method.
         */
         std::string getDataSetName(unsigned int id);
+
+       /*!
+          \brief It gets the information about the given dataset.
+
+          \param datasetName The dataset name.
+
+          \return The information about the given dataset.
+
+          \note Internally, a record set will be generated containing the following fields:
+                <ul>
+                <li>0 (int2): attribute number in the table (a.attnum), remember that attribute number is 1 based</li>
+                <li>1 (name): attribute name (a.attname)</li>
+                <li>2 (Oid): attribute type oid (t.oid)</li>
+                <li>3 (bool): 't' if attribute is NOT NULL, otherwise, its value is 'f' (a.attnotnull)</li>
+                <li>4 (text): type modifier information, like precision and scale (format_type(a.atttypid, a.atttypmod))</li>
+                <li>5 (bool): 't' if attribute is has a default value, otherwise, its value is 'f' (a.atthasdef)</li>
+                <li>6 (text): attribute default value if field number 5 is true (pg_get_expr(d.adbin, d.adrelid))</li>
+                <li>7 (int4): Number of dimensions, if the column is an array type; otherwise 0 (a.attndims)</li>
+                </ul>
+
+          \exception Exception It throws an exception if it was not possible to get the information needed.
+
+          \note PostGIS driver extended method.
+        */
+        std::auto_ptr<te::da::DataSet> getPropertiesInfo(const std::string& datasetName);
 
         /*!
           \brief It sets the property id from the PostgreSQL system.
@@ -476,10 +512,8 @@ namespace te
                  unique keys, and the check constraints) and loads it on the given dataset schema.
 
           \param dt The dataset schema.
-
-          \return True, if the constraints retrieving is successfull; otherwise, it returns false.
         */
-        bool getConstraints(te::da::DataSetTypePtr& dt);
+        void getConstraints(te::da::DataSetTypePtr& dt);
 
         /*!
           \brief It gets all the indexes of the given dataset and adds them to the dummy schema.

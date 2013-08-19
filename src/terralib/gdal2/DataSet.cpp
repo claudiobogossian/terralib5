@@ -79,7 +79,7 @@ std::string te::gdal::DataSet::getDatasetNameOfProperty(std::size_t pos) const
   return "";
 }
 
-te::rst::Raster* te::gdal::DataSet::getRaster(std::size_t i) const
+std::auto_ptr<te::rst::Raster> te::gdal::DataSet::getRaster(std::size_t i) const
 {
   assert(i < getNumProperties());
   assert(getPropertyDataType(i) == te::dt::RASTER_TYPE);
@@ -88,14 +88,14 @@ te::rst::Raster* te::gdal::DataSet::getRaster(std::size_t i) const
 
   te::gdal::Raster* rs = new te::gdal::Raster(rp->getInfo().at("URI"), m_rwRole);
 
-  return rs;
+  return std::auto_ptr<te::rst::Raster>(rs);
 }
 
-te::rst::Raster* te::gdal::DataSet::getRaster(const std::string& name) const
+std::auto_ptr<te::rst::Raster> te::gdal::DataSet::getRaster(const std::string& name) const
 {
   std::size_t pos = m_dsType->getPropertyPosition(name);
 
-  return getRaster(pos);
+  return std::auto_ptr<te::rst::Raster>(getRaster(pos));
 }
 
 bool te::gdal::DataSet::moveNext()

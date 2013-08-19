@@ -38,12 +38,18 @@
 #include "DataSourceFactory.h"
 
 
-te::da::DataSource::DataSource()
+te::da::DataSource::~DataSource()
 {
 }
 
-te::da::DataSource::~DataSource()
+const std::string& te::da::DataSource::getId() const
 {
+  return m_id;
+}
+
+void te::da::DataSource::setId(const std::string& id)
+{
+  m_id = id;
 }
 
 te::da::Connection* te::da::DataSource::getConnection()
@@ -331,6 +337,11 @@ std::auto_ptr<te::gm::Envelope> te::da::DataSource::getExtent(const std::string&
   return std::auto_ptr<te::gm::Envelope>(0);
 }
 
+std::auto_ptr<te::gm::Envelope> te::da::DataSource::getExtent(te::da::DataSet* /*dataset*/)
+{
+  return std::auto_ptr<te::gm::Envelope>(0);
+}
+
 void te::da::DataSource::optimize(const std::map<std::string, std::string>& /*opInfo*/)
 {
 }
@@ -385,4 +396,8 @@ std::vector<std::string> te::da::DataSource::getEncodings(const std::string& dsT
     throw Exception(TR_DATAACCESS("Could not find the appropriate factory to create a data source instance!"));
 
   return ds->getEncodings(dsInfo);
+}
+
+te::da::DataSource::DataSource()
+{
 }
