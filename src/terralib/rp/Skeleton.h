@@ -485,9 +485,10 @@ namespace te
           
         /*!
           \brief Create a skeleton strength map.
+          \details The skeleton strength map is a scalar map defined on every pixel and indicates the likelihood of each pixel being on the skeletons.
           \param inputX The vector decomposed X component;
           \param inputY The vector decomposed Y component;
-          \param skelSMap The skeleton map (pixel with value 1).
+          \param skelSMap The skeleton map.
           \return true if ok, false on errors.
         */            
         bool createSkeletonStrengthMap( 
