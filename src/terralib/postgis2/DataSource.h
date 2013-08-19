@@ -376,6 +376,15 @@ namespace te
         void getRasterInfo(const std::string& datasetName, te::rst::RasterProperty* rp);
 
         /*!
+          \brief It gets the full name of the given name including the schema name.
+
+          \param name The dataset name.
+
+          \return  The dataset full name.
+        */
+        std::string getFullName(const std::string& name);
+
+        /*!
           \brief It sets the SQL dialect used by the PostGIS driver.
 
           \param myDialect The PostGIS SQL dialect to be used when translating a query.
