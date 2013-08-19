@@ -1261,15 +1261,12 @@ void te::pgis::DataSource::dropUniqueKey(const std::string& datasetName, const s
 
 std::auto_ptr<te::da::CheckConstraint> te::pgis::DataSource::getCheckConstraint(const std::string& datasetName, const std::string& name)
 {
-  if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % datasetName).str());
+  std::string fullDatasetName = getFullName(datasetName);
 
-  std::string fullCCName;
+  if(!dataSetExists(fullDatasetName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % fullDatasetName).str());
 
-  if(name.find(".") == std::string::npos)
-    fullCCName = m_pImpl->m_currentSchema + "." + name;
-  else
-    fullCCName = name;
+  std::string fullCCName = getFullName(name);
 
   te::da::CheckConstraint* cc = 0;
 
@@ -1295,12 +1292,14 @@ std::auto_ptr<te::da::CheckConstraint> te::pgis::DataSource::getCheckConstraint(
 
 std::vector<std::string> te::pgis::DataSource::getCheckConstraintNames(const std::string& datasetName)
 {
-  if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % datasetName).str());
+  std::string fullDatasetName = getFullName(datasetName);
+
+  if(!dataSetExists(fullDatasetName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % fullDatasetName).str());
 
   std::vector<std::string> ccNames;
 
-  std::auto_ptr<te::da::DataSet> ccInfo = getConstraints(datasetName, 'c');
+  std::auto_ptr<te::da::DataSet> ccInfo = getConstraints(fullDatasetName, 'c');
 
   while(ccInfo->moveNext())
   {
@@ -1315,14 +1314,11 @@ std::vector<std::string> te::pgis::DataSource::getCheckConstraintNames(const std
 
 bool te::pgis::DataSource::checkConstraintExists(const std::string& datasetName, const std::string& name)
 {
-  std::vector<std::string> ccNames = getCheckConstraintNames(datasetName);
+  std::string fullDatasetName = getFullName(datasetName);
 
-  std::string fullCCName;
+  std::vector<std::string> ccNames = getCheckConstraintNames(fullDatasetName);
 
-  if(name.find(".") == std::string::npos)
-    fullCCName = m_pImpl->m_currentSchema + "." + name;
-  else
-    fullCCName = name;
+  std::string fullCCName = getFullName(name);
 
   if(std::find(ccNames.begin(), ccNames.end(), fullCCName) != ccNames.end())
     return true;
@@ -1332,16 +1328,17 @@ bool te::pgis::DataSource::checkConstraintExists(const std::string& datasetName,
 
 void te::pgis::DataSource::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
 {
+  std::string fullDatasetName = getFullName(datasetName);
+
   std::string ccName = cc->getName();
 
-  if(ccName.find(".") == std::string::npos)
-    ccName = m_pImpl->m_currentSchema + "." + ccName;
+  ccName = getFullName(ccName);
 
-  if(checkConstraintExists(datasetName, ccName))
-    throw Exception((boost::format(TR_PGIS("The dataset already \"%1%\" has a unique key with the name \"%2%\"!")) % datasetName % ccName).str());
+  if(checkConstraintExists(fullDatasetName, ccName))
+    throw Exception((boost::format(TR_PGIS("The dataset already \"%1%\" has a unique key with the name \"%2%\"!")) % fullDatasetName % ccName).str());
 
   std::string sql("ALTER TABLE ");
-  sql += datasetName;
+  sql += fullDatasetName;
   sql += " ADD CONSTRAINT ";
   sql += ccName;
   sql += " CHECK(";
@@ -1353,18 +1350,15 @@ void te::pgis::DataSource::addCheckConstraint(const std::string& datasetName, te
 
 void te::pgis::DataSource::dropCheckConstraint(const std::string& datasetName, const std::string& name)
 {
-  std::string ccName;
+  std::string fullDatasetName = getFullName(datasetName);
 
-  if(name.find(".") == std::string::npos)
-    ccName = m_pImpl->m_currentSchema + "." + name;
-  else
-    ccName = name;
+  std::string ccName = getFullName(name);
 
-  if(!checkConstraintExists(datasetName, ccName))
-    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no unique key with this name \"%2%\"!")) % datasetName % ccName).str());
+  if(!checkConstraintExists(fullDatasetName, ccName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no unique key with this name \"%2%\"!")) % fullDatasetName % ccName).str());
 
   std::string sql("ALTER TABLE ");
-  sql += datasetName;
+  sql += fullDatasetName;
   sql += " DROP CONSTRAINT ";
   sql += ccName;
 
@@ -1373,19 +1367,16 @@ void te::pgis::DataSource::dropCheckConstraint(const std::string& datasetName, c
 
 std::auto_ptr<te::da::Index> te::pgis::DataSource::getIndex(const std::string& datasetName, const std::string& name)
 {
-  if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % datasetName).str());
+  std::string fullDatasetName = getFullName(datasetName);
 
-  std::string fullIdxName;
+  if(!dataSetExists(fullDatasetName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % fullDatasetName).str());
 
-  if(name.find(".") == std::string::npos)
-    fullIdxName = m_pImpl->m_currentSchema + "." + name;
-  else
-    fullIdxName = name;
+  std::string fullIdxName = getFullName(name);
 
   te::da::Index* idx = 0;
 
-  unsigned int dtid = getDataSetId(datasetName);
+  unsigned int dtid = getDataSetId(fullDatasetName);
 
   std::string sql("SELECT idx_table.oid, s.nspname, idx_table.relname, pg_index.indkey, pg_am.amname, pg_index.indisunique, pg_index.indisprimary " 
                   "FROM pg_index, pg_class idx_table, pg_am, pg_namespace s "
@@ -1425,7 +1416,7 @@ std::auto_ptr<te::da::Index> te::pgis::DataSource::getIndex(const std::string& d
       pos[0] = i;
       te::dt::AbstractData* idxCol = idxCols->getData(pos);
 
-      std::auto_ptr<te::dt::Property> p = getProperty(static_cast<te::dt::Int16*>(idxCol)->getValue(), datasetName);
+      std::auto_ptr<te::dt::Property> p = getProperty(static_cast<te::dt::Int16*>(idxCol)->getValue(), fullDatasetName);
 
       idx->add(p.release());
     }
@@ -1436,12 +1427,14 @@ std::auto_ptr<te::da::Index> te::pgis::DataSource::getIndex(const std::string& d
 
 std::vector<std::string> te::pgis::DataSource::getIndexNames(const std::string& datasetName)
 {
-  if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % datasetName).str());
+  std::string fullDatasetName = getFullName(datasetName);
+
+  if(!dataSetExists(fullDatasetName))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % fullDatasetName).str());
 
   std::vector<std::string> idxNames;
 
-  unsigned int dtid = getDataSetId(datasetName);
+  unsigned int dtid = getDataSetId(fullDatasetName);
 
   std::string sql("SELECT idx_table.oid, s.nspname, idx_table.relname, pg_index.indkey, pg_am.amname, pg_index.indisunique, pg_index.indisprimary " 
                   "FROM pg_index, pg_class idx_table, pg_am, pg_namespace s "
@@ -1468,14 +1461,9 @@ bool te::pgis::DataSource::indexExists(const std::string& datasetName, const std
 {
   std::vector<std::string> idxNames = getIndexNames(datasetName);
 
-  std::string fullIdxName;
+  std::string idxName = getFullName(name);
 
-  if(name.find(".") == std::string::npos)
-    fullIdxName = m_pImpl->m_currentSchema + "." + name;
-  else
-    fullIdxName = name;
-
-  if(std::find(idxNames.begin(), idxNames.end(), fullIdxName) != idxNames.end())
+  if(std::find(idxNames.begin(), idxNames.end(), idxName) != idxNames.end())
     return true;
 
   return false;
@@ -1484,12 +1472,7 @@ bool te::pgis::DataSource::indexExists(const std::string& datasetName, const std
 void te::pgis::DataSource::addIndex(const std::string& datasetName, te::da::Index* idx,
                                     const std::map<std::string, std::string>& options) 
 {
-  std::string idxName;
-
-  if(idxName.find(".") == std::string::npos)
-    idxName = m_pImpl->m_currentSchema + "." + idxName;
-  else
-    idxName = idx->getName();
+  std::string idxName = getFullName(idx->getName());
 
   if(indexExists(datasetName, idxName))
     throw Exception((boost::format(TR_PGIS("The dataset already \"%1%\" has a index with the name \"%2%\"!")) % datasetName % idxName).str());
@@ -1538,24 +1521,21 @@ void te::pgis::DataSource::addIndex(const std::string& datasetName, te::da::Inde
 
 void te::pgis::DataSource::dropIndex(const std::string& datasetName, const std::string& name)
 {
-  std::string fullIdxName;
-
-  if(name.find(".") == std::string::npos)
-    fullIdxName = m_pImpl->m_currentSchema + "." + name;
-  else
-    fullIdxName = name;
+  std::string idxName = getFullName(name);
 
   if(!indexExists(datasetName, name))
-    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no index with this name: \"%2%\"!")) % datasetName % fullIdxName).str());
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no index with this name: \"%2%\"!")) % datasetName % idxName).str());
 
   std::string sql("DROP INDEX ");
-  sql += fullIdxName;
+  sql += idxName;
 
   execute(sql);
 }
 
 std::auto_ptr<te::da::Sequence> te::pgis::DataSource::getSequence(const std::string& name)
 {
+  std::string fullSeqName = getFullName(name);
+
   te::da::Sequence* seq = 0;
 
   // Query the data source for the sequences
@@ -1574,7 +1554,7 @@ std::auto_ptr<te::da::Sequence> te::pgis::DataSource::getSequence(const std::str
   {
     std::string seqName(seqNamesInfo->getString(1) + "." + seqNamesInfo->getString(2));
 
-    if(seqName != name)
+    if(seqName != fullSeqName)
       continue;
 
     std::string sql("SELECT * FROM ");
@@ -1628,9 +1608,11 @@ std::vector<std::string> te::pgis::DataSource::getSequenceNames()
 
 bool te::pgis::DataSource::sequenceExists(const std::string& name)
 {
+  std::string seqName = getFullName(name);
+
   std::vector<std::string> seqNames = getSequenceNames();
 
-  if(std::find(seqNames.begin(), seqNames.end(), name) != seqNames.end())
+  if(std::find(seqNames.begin(), seqNames.end(), seqName) != seqNames.end())
     return true;
 
   return false;
@@ -1639,6 +1621,7 @@ bool te::pgis::DataSource::sequenceExists(const std::string& name)
 void te::pgis::DataSource::addSequence(te::da::Sequence* sequence)
 {
   std::string seqName = sequence->getName();
+  seqName = getFullName(seqName);
 
   if(sequenceExists(seqName))
     throw Exception((boost::format(TR_PGIS("The datasource already has a sequence with this name (\"%1%\")!")) % seqName).str());
@@ -1678,13 +1661,15 @@ void te::pgis::DataSource::addSequence(te::da::Sequence* sequence)
 
 void te::pgis::DataSource::dropSequence(const std::string& name)
 {
+  std::string seqName = getFullName(name);
+
   std::auto_ptr<te::da::Sequence> seq = getSequence(name);
 
-  if(seq.get() == 0)
-    throw Exception((boost::format(TR_PGIS("The datasource has no sequence with this name: (\"%1%\")!")) % name).str());
+  if(!sequenceExists(seqName))
+    throw Exception((boost::format(TR_PGIS("There is no sequence with this name: (\"%1%\")!")) % seqName).str());
 
   std::string sql("DROP SEQUENCE ");
-  sql += name;
+  sql += seqName;
 
   execute(sql);
 }
@@ -1842,6 +1827,7 @@ void te::pgis::DataSource::createDataSet(te::da::DataSetType* dt,
                                          const std::map<std::string, std::string>& options)
 {
   std::string datasetName = dt->getName();
+  datasetName = getFullName(datasetName);
 
   if(!dataSetExists(datasetName))
     throw Exception((boost::format(TR_PGIS("The datasource already has a dataset with this name (\"%1%\")!")) % datasetName).str());
