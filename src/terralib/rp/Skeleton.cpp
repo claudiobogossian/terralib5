@@ -37,15 +37,11 @@
 #include <cstring>
   
 #define DIFFUSENEIGHBOR( neighborRow, neighborCol ) \
-  neiX = bufferX[ neighborRow ][ neighborCol ]; \
-  neiY = bufferY[ neighborRow ][ neighborCol ]; \
-  neiMag = bufferMag[ neighborRow ][ neighborCol ]; \
-  if( neiMag > centerMag ) \
+  if( bufferMag[ neighborRow ][ neighborCol ] > centerMag ) \
   { \
-    hasValidNeiboor = true; \
-    neisMagsSum += neiMag; \
-    newCenterX += ( neiX * neiMag ); \
-    newCenterY += ( neiY * neiMag ); \
+    ++validNeigborsNumber; \
+    newCenterX += bufferX[ neighborRow ][ neighborCol ]; \
+    newCenterY += bufferY[ neighborRow ][ neighborCol ]; \
   }  
   
 #define SKELSTRENGTHNEIGHBOR( neighborRow, neighborCol ) \
@@ -56,7 +52,7 @@
   diffMag = std::sqrt( ( diffX * diffX ) + ( diffY * diffY ) ); \
   if( diffMag != 0.0 ) \
   { \
-    strength += ( ( centerX * diffX ) + ( centerY * diffX ) ) / diffMag; \
+    strength += ( ( ( diffX * neiX ) + ( diffY * neiY ) ) / diffMag ); \
   }
   
 namespace te
@@ -86,9 +82,10 @@ namespace te
       m_inputRasterBand = 0;
       m_inputMaskRasterPtr = 0;
       m_diffusionThreshold = 0.5;
-      m_diffusionRegularitation = 0.25;
+      m_diffusionRegularization = 0.5;
       m_diffusionMaxIterations = 0;
       m_enableMultiThread = true;
+      m_skeletonThreshold = 0.75;
     }
 
     const Skeleton::InputParameters& Skeleton::InputParameters::operator=(
@@ -100,9 +97,10 @@ namespace te
       m_inputRasterBand = params.m_inputRasterBand;
       m_inputMaskRasterPtr = params.m_inputMaskRasterPtr;
       m_diffusionThreshold = params.m_diffusionThreshold;
-      m_diffusionRegularitation = params.m_diffusionRegularitation;
+      m_diffusionRegularization = params.m_diffusionRegularization;
       m_diffusionMaxIterations = params.m_diffusionMaxIterations;
       m_enableMultiThread = params.m_enableMultiThread;
+      m_skeletonThreshold = params.m_skeletonThreshold;
 
       return *this;
     }
@@ -190,7 +188,7 @@ namespace te
       edgeStrengthMap.reset( te::rp::Matrix< double >::AutoMemPol );    
       TERP_TRUE_OR_RETURN_FALSE( getEdgeStrengthMap( *rasterDataPtr, 
         edgeStrengthMap ), "Edge strength map build error" ); 
-      createTifFromMatrix( edgeStrengthMap, true, "edgeStrengthMap" );
+//      createTifFromMatrix( edgeStrengthMap, true, "edgeStrengthMap" );
    
       te::rp::Matrix< double > vecXMap;
       vecXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
@@ -200,14 +198,14 @@ namespace te
 //         vecXMap, vecYMap ),
       TERP_TRUE_OR_RETURN_FALSE( getGradientMaps( edgeStrengthMap, true, vecXMap, vecYMap ),
         "Vector maps build error" );
-      {
-        createTifFromMatrix( vecXMap, true, "vecXMap" );
-        createTifFromMatrix( vecYMap, true, "vecYMap" );
-        createTifFromVecField( vecXMap, vecYMap, &edgeStrengthMap, 3, "vecMap" );
-        te::rp::Matrix< double > vecXMagMap;
-        getMagnitude( vecXMap, vecYMap, vecXMagMap );
-        createTifFromMatrix( vecXMagMap, true, "vecXMagMap" );
-      }
+//       {
+//         createTifFromMatrix( vecXMap, true, "vecXMap" );
+//         createTifFromMatrix( vecYMap, true, "vecYMap" );
+//         createTifFromVecField( vecXMap, vecYMap, &edgeStrengthMap, 3, "vecMap" );
+//         te::rp::Matrix< double > vecMagMap;
+//         getMagnitude( vecXMap, vecYMap, vecMagMap );
+//         createTifFromMatrix( vecMagMap, true, "vecMagMap" );
+//       }
       
       te::rp::Matrix< double > diffusedVecXMap;
       diffusedVecXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
@@ -216,22 +214,22 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( applyVecDiffusion( vecXMap, vecYMap, &edgeStrengthMap,
         diffusedVecXMap, diffusedVecYMap ),
         "Vector maps build error" ); 
-      {
-        createTifFromMatrix( diffusedVecXMap, true, "diffusedVecXMap" );
-        createTifFromMatrix( diffusedVecYMap, true, "diffusedVecYMap" );
-        createTifFromVecField( diffusedVecXMap, diffusedVecYMap, rasterDataPtr.get(), 
-          4, "diffusedVecMap" );      
-        te::rp::Matrix< double > diffusedVecXMagMap;
-        getMagnitude( diffusedVecXMap, diffusedVecYMap, diffusedVecXMagMap );
-        createTifFromMatrix( diffusedVecXMagMap, true, "diffusedVecXMagMap" );
-      }
+//       {
+//         createTifFromMatrix( diffusedVecXMap, true, "diffusedVecXMap" );
+//         createTifFromMatrix( diffusedVecYMap, true, "diffusedVecYMap" );
+//         createTifFromVecField( diffusedVecXMap, diffusedVecYMap, rasterDataPtr.get(), 
+//           4, "diffusedVecMap" );      
+//         te::rp::Matrix< double > diffusedVecXMagMap;
+//         getMagnitude( diffusedVecXMap, diffusedVecYMap, diffusedVecXMagMap );
+//         createTifFromMatrix( diffusedVecXMagMap, true, "diffusedVecXMagMap" );
+//       }
       
       te::rp::Matrix< double > skelSMap;
       skelSMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       TERP_TRUE_OR_RETURN_FALSE( createSkeletonStrengthMap( diffusedVecXMap, 
-        diffusedVecYMap, skelSMap ),
+        diffusedVecYMap, edgeStrengthMap, skelSMap ),
         "Skeleton strength map build error" );  
-      createTifFromMatrix( skelSMap, true, "skelSMap" );
+//      createTifFromMatrix( skelSMap, true, "skelSMap" );
       
       return true;
     }
@@ -294,10 +292,15 @@ namespace te
         "Invalid diffusion threshold" );   
         
       TERP_TRUE_OR_RETURN_FALSE( 
-        ( m_inputParameters.m_diffusionRegularitation >= 0.0 ) &&
-        ( m_inputParameters.m_diffusionRegularitation <= 1.0 ),
+        ( m_inputParameters.m_diffusionRegularization >= 0.0 ) &&
+        ( m_inputParameters.m_diffusionRegularization <= 1.0 ),
         "Invalid diffusion regularization" );         
 
+      TERP_TRUE_OR_RETURN_FALSE( 
+        ( m_inputParameters.m_skeletonThreshold >= 0.0 ) &&
+        ( m_inputParameters.m_skeletonThreshold <= 1.0 ),
+        "Invalid diffusion regularization" );          
+        
       m_isInitialized = true;
 
       return true;
@@ -509,6 +512,8 @@ namespace te
       double strength = 0;
       double diffX = 0;
       double diffY = 0;
+      double minStrength = DBL_MAX;
+      double maxStrength = -1.0 * DBL_MAX;
             
       for( row = 1 ; row < lastRowIdx ; ++row )
       {
@@ -549,207 +554,28 @@ namespace te
           strength = std::max( diffX, diffY );
           
           edgeStrengthMap[ row ][ col ] = strength;
+          
+          if( minStrength > strength ) minStrength = strength;
+          if( maxStrength < strength ) maxStrength = strength;
+        }
+      }
+      
+      const double gain = ( minStrength == maxStrength ) ? 0.0 : 
+        ( 1.0 / ( maxStrength - minStrength ) );
+        
+      for( row = 1 ; row < lastRowIdx ; ++row )
+      {
+        for( col = 1 ; col < lastColIdx ; ++col )
+        {
+          strength =  edgeStrengthMap[ row ][ col ] - minStrength;
+          strength *= gain;
+          edgeStrengthMap[ row ][ col ] = strength;
         }
       }
       
       return true;
     }
     
-    bool Skeleton::getEdgeVecField( 
-      const te::rp::Matrix< double >& edgeStrengthMap,
-      const bool createUnitVectors,
-      te::rp::Matrix< double >& edgeVecXMap,
-      te::rp::Matrix< double >& edgeVecYMap ) const
-    {
-      const unsigned int nRows = edgeStrengthMap.getLinesNumber();
-      TERP_TRUE_OR_RETURN_FALSE( nRows > 6, "Invalid rows number" );
-      
-      const unsigned int nCols = edgeStrengthMap.getColumnsNumber();      
-      TERP_TRUE_OR_RETURN_FALSE( nCols > 6, "Invalid columns number" );
-      
-      te::rp::Matrix< double > gradXMap;
-      gradXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
-      te::rp::Matrix< double > gradYMap;
-      gradYMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
-      TERP_TRUE_OR_RETURN_FALSE( getGradientMaps( edgeStrengthMap, false, gradXMap, gradYMap ),
-        "Gradient maps build error" );
-//      createTifFromMatrix( gradXMap, true, "gradXMap" );
-//      createTifFromMatrix( gradYMap, true, "gradYMap" );
-      
-      te::rp::Matrix< double > gradMagMap;
-      gradMagMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
-      TERP_TRUE_OR_RETURN_FALSE( getMagnitude( gradXMap, gradYMap, gradMagMap ),
-        "Magnitude calcule error" );        
-//      createTifFromMatrix( gradMagMap, true, "gradMagMap" );
-
-      const unsigned int lastRowIdx = nRows - 1;
-      const unsigned int lastColIdx = nCols - 1;        
-      
-      unsigned int row = 0;
-      unsigned int col = 0;       
-        
-      if( ! edgeVecXMap.reset( nRows,nCols ) )
-        return false;   
-      if( ! edgeVecYMap.reset( nRows,nCols ) )
-        return false;         
-      
-      for( row = 0 ; row < nRows ; ++row )
-      {
-        edgeVecXMap[ row ][ 0 ] = 0;
-        edgeVecXMap[ row ][ lastColIdx ] = 0;
-        
-        edgeVecYMap[ row ][ 0 ] = 0;
-        edgeVecYMap[ row ][ lastColIdx ] = 0;
-      }
-      
-      for( col = 0 ; col < nCols ; ++col )
-      {
-        edgeVecXMap[ 0 ][ col ] = 0;
-        edgeVecXMap[ lastRowIdx ][ col ] = 0;
-        
-        edgeVecYMap[ 0 ][ col ] = 0;
-        edgeVecYMap[ lastRowIdx ][ col ] = 0;
-      } 
-      
-      unsigned int nextRow = 0;
-      unsigned int nextCol = 0;
-      unsigned int prevRow = 0;
-      unsigned int prevCol = 0; 
-      double centerMag = 0;
-      double centerX = 0;
-      double centerY = 0;
-      double nGrad = 0;
-      double bestNMag = 0;
-      double bestNX = 0;
-      double bestNY = 0;
-      double newCenterX = 0;
-      double newCenterY = 0;
-      double newCenterMag = 0;
-      double magsSum = 0;
-      
-      for( row = 1 ; row < lastRowIdx ; ++row )
-      {
-        prevRow = row - 1;
-        nextRow = row + 1;
-        
-        for( col = 1 ; col < lastColIdx ; ++col )
-        {
-          prevCol = col - 1;
-          nextCol = col + 1;  
-          
-          centerMag = gradMagMap[ row ][ col ];
-          centerX = gradXMap[ row ][ col ];
-          centerY = gradYMap[ row ][ col ];
-          
-          bestNMag = centerMag;
-          bestNX = centerX;
-          bestNY = centerY;
-          
-          nGrad = gradMagMap[ prevRow ][ prevCol ];
-          if( bestNMag <= nGrad )
-          {
-            bestNMag = nGrad;
-            bestNX =  gradXMap[ prevRow ][ prevCol ];
-            bestNY =  gradYMap[ prevRow ][ prevCol ];
-          }
-          
-          nGrad = gradMagMap[ prevRow ][ col ];
-          if( bestNMag <= nGrad )
-          {
-            bestNMag = nGrad;
-            bestNX =  gradXMap[ prevRow ][ col ];
-            bestNY =  gradYMap[ prevRow ][ col ];
-          }      
-          
-          nGrad = gradMagMap[ prevRow ][ nextCol ];
-          if( bestNMag <= nGrad )
-          {
-            bestNMag = nGrad;
-            bestNX =  gradXMap[ prevRow ][ nextCol ];
-            bestNY =  gradYMap[ prevRow ][ nextCol ];
-          }     
-          
-          nGrad = gradMagMap[ row ][ prevCol ];
-          if( bestNMag <= nGrad )
-          {
-            bestNMag = nGrad;
-            bestNX =  gradXMap[ row ][ prevCol ];
-            bestNY =  gradYMap[ row ][ prevCol ];
-          }
-          
-          nGrad = gradMagMap[ row ][ nextCol ];
-          if( bestNMag <= nGrad )
-          {
-            bestNMag = nGrad;
-            bestNX =  gradXMap[ row ][ nextCol ];
-            bestNY =  gradYMap[ row ][ nextCol ];
-          }           
-          
-          nGrad = gradMagMap[ nextRow ][ prevCol ];
-          if( bestNMag <= nGrad )
-          {
-            bestNMag = nGrad;
-            bestNX =  gradXMap[ nextRow ][ prevCol ];
-            bestNY =  gradYMap[ nextRow ][ prevCol ];
-          }
-          
-          nGrad = gradMagMap[ nextRow ][ col ];
-          if( bestNMag <= nGrad )
-          {
-            bestNMag = nGrad;
-            bestNX =  gradXMap[ nextRow ][ col ];
-            bestNY =  gradYMap[ nextRow ][ col ];
-          }      
-          
-          nGrad = gradMagMap[ nextRow ][ nextCol ];
-          if( bestNMag <= nGrad )
-          {
-            bestNMag = nGrad;
-            bestNX =  gradXMap[ nextRow ][ nextCol ];
-            bestNY =  gradYMap[ nextRow ][ nextCol ];
-          }   
-          
-          magsSum = ( bestNMag + centerMag );
-          
-          if( magsSum == 0.0 )
-          {
-            edgeVecXMap[ row ][ col ] = 0;
-            edgeVecYMap[ row ][ col ] = 0;
-          }
-          else
-          {
-            newCenterX = ( ( bestNX * bestNMag ) + ( centerX * centerMag ) ) /
-              magsSum;
-            newCenterY = ( ( bestNY * bestNMag ) + ( centerY * centerMag ) ) /
-              magsSum;
-              
-            if( createUnitVectors )
-            {
-              newCenterMag = std::sqrt( ( newCenterX * newCenterX ) + ( newCenterY * newCenterY ) );
-              
-              if( newCenterMag == 0.0 )
-              {
-                edgeVecXMap[ row ][ col ] = 0;
-                edgeVecYMap[ row ][ col ] = 0;
-              }
-              else
-              {
-                edgeVecXMap[ row ][ col ] = newCenterX / newCenterMag;
-                edgeVecYMap[ row ][ col ] = newCenterY / newCenterMag;
-              }
-            }
-            else
-            {
-              edgeVecXMap[ row ][ col ] = newCenterX;
-              edgeVecYMap[ row ][ col ] = newCenterY;
-            }
-          }
-        }
-      }
-      
-      return true;
-    }    
-
     void Skeleton::createTifFromVecField( 
       const te::rp::Matrix< double >& inputVecFieldX, 
       const te::rp::Matrix< double >& inputVecFieldY,
@@ -959,7 +785,7 @@ namespace te
       threadParams.m_initialYBufPtr = &inputY;
       threadParams.m_currentIterationResiduePtr = &currentIterationResidue;
       threadParams.m_mutexPtr = &mutex;
-      threadParams.m_diffusionRegularitation = m_inputParameters.m_diffusionRegularitation;
+      threadParams.m_diffusionRegularization = m_inputParameters.m_diffusionRegularization;
       
       const unsigned int threadsNumber = m_inputParameters.m_enableMultiThread ?
         te::common::GetPhysProcNumber() : 0;
@@ -1094,18 +920,31 @@ namespace te
           applyVecDiffusionThreadEntry( &threadParams );
         };
 
-        if( ( backgroundDataPtr != 0 ) && ( ( iteration < 10 ) || ( iteration % 10 == 0 ) ) )
-        {
-          createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
-            boost::lexical_cast< std::string >( iteration ) + "_diffusedX" );        
-          createTifFromMatrix( *threadParams.m_outputBufYPtr, true,  
-            boost::lexical_cast< std::string >( iteration ) + "_diffusedY");          
-          createTifFromVecField( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, 
-            backgroundDataPtr,  3,
-            boost::lexical_cast< std::string >( iteration ) + "_diffusedVecs");
-          createTifFromMatrix( *threadParams.m_outputMagBufPtr, true,  
-            boost::lexical_cast< std::string >( iteration ) + "_diffusedMag");            
-        }
+//         if( ( backgroundDataPtr != 0 ) && ( ( iteration < 10 ) || ( iteration % 100 == 0 ) ) )
+//         {
+//           createTifFromMatrix( *threadParams.m_inputBufXPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedInX" );        
+//           createTifFromMatrix( *threadParams.m_inputBufYPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedInY");          
+//           createTifFromVecField( *threadParams.m_inputBufXPtr, *threadParams.m_inputBufYPtr, 
+//             backgroundDataPtr,  3,
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedInVecs");
+//           createTifFromMatrix( *threadParams.m_inputMagBufPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedInMag");           
+//           
+//           createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutX" );        
+//           createTifFromMatrix( *threadParams.m_outputBufYPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutY");          
+//           createTifFromVecField( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, 
+//             backgroundDataPtr,  3,
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutVecs");
+//           createTifFromMatrix( *threadParams.m_outputMagBufPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutMag");            
+//         }
+//         
+//         std::cout << std::endl << "currentIteration=" << iteration << std::endl;
+//         std::cout << std::endl << "currentIterationResidue=" << currentIterationResidue << std::endl;
 
         ++iteration;
       }
@@ -1123,15 +962,15 @@ namespace te
 
     void Skeleton::applyVecDiffusionThreadEntry( ApplyVecDiffusionThreadParams* paramsPtr)
     {
-      const te::rp::Matrix< double >& initBufX = *(paramsPtr->m_initialXBufPtr);
-      const te::rp::Matrix< double >& initBufY = *(paramsPtr->m_initialYBufPtr); 
+//       const te::rp::Matrix< double >& initBufX = *(paramsPtr->m_initialXBufPtr);
+//       const te::rp::Matrix< double >& initBufY = *(paramsPtr->m_initialYBufPtr); 
       const te::rp::Matrix< double >& iBufMag = *(paramsPtr->m_inputMagBufPtr); 
       const te::rp::Matrix< double >& iBufX = *(paramsPtr->m_inputBufXPtr);
       const te::rp::Matrix< double >& iBufY = *(paramsPtr->m_inputBufYPtr);
       te::rp::Matrix< double >& oMagBuf = *(paramsPtr->m_outputMagBufPtr); 
       te::rp::Matrix< double >& oBufX = *(paramsPtr->m_outputBufXPtr);
       te::rp::Matrix< double >& oBufY = *(paramsPtr->m_outputBufYPtr);
-      const double& diffusionRegularization = paramsPtr->m_diffusionRegularitation;
+      const double& diffusionRegularization = paramsPtr->m_diffusionRegularization;
       const double complementDiffReg = 1.0 - diffusionRegularization;
       const unsigned int nCols = iBufX.getColumnsNumber();
       const unsigned int rowSizeBytes = sizeof( double ) * nCols;
@@ -1147,26 +986,26 @@ namespace te
       boost::scoped_array< double > bufYRow0Handler( new double[ nCols ] );
       boost::scoped_array< double > bufYRow1Handler( new double[ nCols ] );
       boost::scoped_array< double > bufYRow2Handler( new double[ nCols ] );
-      boost::scoped_array< double > bufInitXRow0Handler( new double[ nCols ] );
+/*      boost::scoped_array< double > bufInitXRow0Handler( new double[ nCols ] );
       boost::scoped_array< double > bufInitXRow1Handler( new double[ nCols ] );
       boost::scoped_array< double > bufInitXRow2Handler( new double[ nCols ] );
       boost::scoped_array< double > bufInitYRow0Handler( new double[ nCols ] );
       boost::scoped_array< double > bufInitYRow1Handler( new double[ nCols ] );
       boost::scoped_array< double > bufInitYRow2Handler( new double[ nCols ] );
       double* bufferInitX[ 3 ];
-      double* bufferInitY[ 3 ];      
+      double* bufferInitY[ 3 ];  */    
       double* bufferMag[ 3 ];
       double* bufferX[ 3 ];
       double* bufferY[ 3 ];
       bufferMag[ 0 ] = bufMagRow0Handler.get();
       bufferMag[ 1 ] = bufMagRow1Handler.get();
       bufferMag[ 2 ] = bufMagRow2Handler.get();
-      bufferInitX[ 0 ] = bufInitXRow0Handler.get();
+/*      bufferInitX[ 0 ] = bufInitXRow0Handler.get();
       bufferInitX[ 1 ] = bufInitXRow1Handler.get();
       bufferInitX[ 2 ] = bufInitXRow2Handler.get();
       bufferInitY[ 0 ] = bufInitYRow0Handler.get();
       bufferInitY[ 1 ] = bufInitYRow1Handler.get();
-      bufferInitY[ 2 ] = bufInitYRow2Handler.get();      
+      bufferInitY[ 2 ] = bufInitYRow2Handler.get();  */    
       bufferX[ 0 ] = bufXRow0Handler.get();
       bufferX[ 1 ] = bufXRow1Handler.get();
       bufferX[ 2 ] = bufXRow2Handler.get();
@@ -1177,47 +1016,51 @@ namespace te
       // Loading the two initial rows
         
       paramsPtr->m_mutexPtr->lock();
+      
       memcpy( bufferMag[ 1 ], iBufMag[ paramsPtr->m_firstRowIdx - 1 ], 
         rowSizeBytes );
       memcpy( bufferMag[ 2 ], iBufMag[ paramsPtr->m_firstRowIdx ], 
         rowSizeBytes );
-      memcpy( bufferInitX[ 1 ], initBufX[ paramsPtr->m_firstRowIdx - 1 ], 
-        rowSizeBytes );
-      memcpy( bufferInitX[ 2 ], initBufX[ paramsPtr->m_firstRowIdx ], 
-        rowSizeBytes );
-      memcpy( bufferInitY[ 1 ], initBufY[ paramsPtr->m_firstRowIdx - 1 ], 
-        rowSizeBytes );
-      memcpy( bufferInitY[ 2 ], initBufY[ paramsPtr->m_firstRowIdx ], 
-        rowSizeBytes );      
+        
+//       memcpy( bufferInitX[ 1 ], initBufX[ paramsPtr->m_firstRowIdx - 1 ], 
+//         rowSizeBytes );
+//       memcpy( bufferInitX[ 2 ], initBufX[ paramsPtr->m_firstRowIdx ], 
+//         rowSizeBytes );
+//         
+//       memcpy( bufferInitY[ 1 ], initBufY[ paramsPtr->m_firstRowIdx - 1 ], 
+//         rowSizeBytes );
+//       memcpy( bufferInitY[ 2 ], initBufY[ paramsPtr->m_firstRowIdx ], 
+//         rowSizeBytes );  
+        
       memcpy( bufferX[ 1 ], iBufX[ paramsPtr->m_firstRowIdx - 1 ], 
         rowSizeBytes );
       memcpy( bufferX[ 2 ], iBufX[ paramsPtr->m_firstRowIdx ], 
         rowSizeBytes );
+        
       memcpy( bufferY[ 1 ], iBufY[ paramsPtr->m_firstRowIdx - 1 ], 
         rowSizeBytes );
       memcpy( bufferY[ 2 ], iBufY[ paramsPtr->m_firstRowIdx ], 
         rowSizeBytes );
+        
       paramsPtr->m_mutexPtr->unlock();
       
       const unsigned int rowsBound = paramsPtr->m_lastRowIdx + 2;
       const unsigned int colsBound = nCols - 4;
-      double centerInitX = 0;
-      double centerInitY = 0;      
+/*      double centerInitX = 0;
+      double centerInitY = 0;  */   
+      double centerDiffX = 0;
+      double centerDiffY = 0;
       double centerX = 0;
       double centerY = 0;
       double centerMag = 0;
       double newCenterX = 0;
       double newCenterY = 0;
-      double neiX = 0;
-      double neiY = 0;
-      double neiMag = 0;
       double* rowPtr = 0;
       unsigned int prevRow = 0;
       unsigned int prevCol = 0;
       unsigned int nextCol = 0;
       double currentIterationResidue = 0;
-      bool hasValidNeiboor = false;
-      double neisMagsSum = 0;
+      double validNeigborsNumber = 0.0;
       
       boost::scoped_array< double > outRowMagBuffHandler( new double[ nCols ] );
       double* outRowMagBuff = outRowMagBuffHandler.get();      
@@ -1234,19 +1077,26 @@ namespace te
         
         // Rolling-up the internal buffers
         
-        rowPtr = bufferInitX[ 0 ];
+/*        rowPtr = bufferInitX[ 0 ];
         bufferInitX[ 0 ] = bufferInitX[ 1 ];
         bufferInitX[ 1 ] = bufferInitX[ 2 ];
         bufferInitX[ 2 ] = rowPtr;
+        
         rowPtr = bufferInitY[ 0 ];
         bufferInitY[ 0 ] = bufferInitY[ 1 ];
         bufferInitY[ 1 ] = bufferInitY[ 2 ];
-        bufferInitY[ 2 ] = rowPtr;         
+        bufferInitY[ 2 ] = rowPtr;  */    
+        
+        rowPtr = bufferMag[ 0 ];
+        bufferMag[ 0 ] = bufferMag[ 1 ];
+        bufferMag[ 1 ] = bufferMag[ 2 ];
+        bufferMag[ 2 ] = rowPtr;        
         
         rowPtr = bufferX[ 0 ];
         bufferX[ 0 ] = bufferX[ 1 ];
         bufferX[ 1 ] = bufferX[ 2 ];
         bufferX[ 2 ] = rowPtr;
+        
         rowPtr = bufferY[ 0 ];
         bufferY[ 0 ] = bufferY[ 1 ];
         bufferY[ 1 ] = bufferY[ 2 ];
@@ -1255,8 +1105,8 @@ namespace te
         // Getting a new line
         
         paramsPtr->m_mutexPtr->lock();
-        memcpy( bufferInitX[ 2 ], initBufX[ row ], rowSizeBytes );
-        memcpy( bufferInitY[ 2 ], initBufY[ row ], rowSizeBytes );        
+/*        memcpy( bufferInitX[ 2 ], initBufX[ row ], rowSizeBytes );
+        memcpy( bufferInitY[ 2 ], initBufY[ row ], rowSizeBytes ); */       
         memcpy( bufferMag[ 2 ], iBufMag[ row ], rowSizeBytes );
         memcpy( bufferX[ 2 ], iBufX[ row ], rowSizeBytes );
         memcpy( bufferY[ 2 ], iBufY[ row ], rowSizeBytes );        
@@ -1269,14 +1119,14 @@ namespace te
           prevCol = col - 1;
           nextCol = col + 1;
           
-          centerInitX = bufferInitX[ 1 ][ col ];
-          centerInitY = bufferInitY[ 1 ][ col ];   
+//           centerInitX = bufferInitX[ 1 ][ col ];
+//           centerInitY = bufferInitY[ 1 ][ col ];   
           
           centerMag = bufferMag[ 1 ][ col ];
           centerX = bufferX[ 1 ][ col ];
           centerY = bufferY[ 1 ][ col ];
           
-          hasValidNeiboor = false;
+          validNeigborsNumber = 0.0;
           newCenterX = 0;
           newCenterY = 0;
           
@@ -1289,57 +1139,57 @@ namespace te
           DIFFUSENEIGHBOR( 2, col );
           DIFFUSENEIGHBOR( 2, nextCol );   
           
-          if( hasValidNeiboor )
+          if( validNeigborsNumber != 0.0 )
           {
-            if( neisMagsSum != 0.0 )
-            {
-              newCenterX /= neisMagsSum;
-              newCenterY /= neisMagsSum;
-            }
+            newCenterX /= validNeigborsNumber;
+            newCenterY /= validNeigborsNumber;
             
             newCenterX = ( newCenterX * diffusionRegularization ) +
               ( centerX * complementDiffReg );
             newCenterY = ( newCenterY * diffusionRegularization ) +
               ( centerY * complementDiffReg );
               
-            currentIterationResidue = 
-              std::max( 
-                currentIterationResidue
-                ,
-                std::abs( 
-                  newCenterX 
-                  / 
-                  ( 
-                    ( centerX == 0.0 )
-                    ?
-                    newCenterX
-                    :
-                    centerX
-                  )
-                ) 
-              );
+            centerDiffX = centerX - newCenterX;
+            centerDiffY = centerY - newCenterY;
               
-            currentIterationResidue = 
-              std::max( 
-                currentIterationResidue
-                ,
-                std::abs( 
-                  newCenterY
-                  / 
-                  ( 
-                    ( centerY == 0.0 )
-                    ?
-                    newCenterY
-                    :
-                    centerY
-                  )
-                ) 
-              );            
+            if( centerDiffX != 0.0 )
+            {
+              if( centerX == 0.0 )
+              {
+                currentIterationResidue = std::max( currentIterationResidue, 1.0 );
+              }
+              else
+              {
+                currentIterationResidue = 
+                  std::max( 
+                    currentIterationResidue
+                    ,
+                    std::abs( centerDiffX / centerX )
+                  );
+              }
+            }
+
+            if( centerDiffY != 0.0 )
+            {
+              if( centerY == 0.0 )
+              {
+                currentIterationResidue = std::max( currentIterationResidue, 1.0 );
+              }
+              else
+              {
+                currentIterationResidue = 
+                  std::max( 
+                    currentIterationResidue
+                    ,
+                    std::abs( centerDiffY / centerY )
+                  );
+              }
+            }
                 
             outRowXBuff[ col ] = newCenterX;
             outRowYBuff[ col ] = newCenterY;    
-            outRowMagBuff[ col ] = ( newCenterX * newCenterX ) + ( newCenterY *
-              newCenterY );
+            outRowMagBuff[ col ] = std::sqrt( ( newCenterX * newCenterX ) + ( newCenterY *
+              newCenterY ) );
           }
           else
           {
@@ -1356,6 +1206,15 @@ namespace te
         memcpy( oMagBuf[ prevRow ], outRowMagBuff, rowSizeBytes );
         memcpy( oBufX[ prevRow ], outRowXBuff, rowSizeBytes );
         memcpy( oBufY[ prevRow ], outRowYBuff, rowSizeBytes );
+        
+        oMagBuf[ prevRow ][ 0 ] = iBufMag[ 1 ][ 0 ];
+        oMagBuf[ prevRow ][ 1 ] = iBufMag[ 1 ][ 1 ];
+        oMagBuf[ prevRow ][ 2 ] = iBufMag[ 1 ][ 2 ];
+        oMagBuf[ prevRow ][ 3 ] = iBufMag[ 1 ][ 3 ];
+        oMagBuf[ prevRow ][ colsBound ] = iBufMag[ 1 ][ colsBound ];
+        oMagBuf[ prevRow ][ colsBound + 1 ] = iBufMag[ 1 ][ colsBound + 1 ];
+        oMagBuf[ prevRow ][ colsBound + 2 ] = iBufMag[ 1 ][ colsBound + 2 ];
+        oMagBuf[ prevRow ][ colsBound + 3 ] = iBufMag[ 1 ][ colsBound + 3 ];        
         
         oBufX[ prevRow ][ 0 ] = bufferX[ 1 ][ 0 ];
         oBufX[ prevRow ][ 1 ] = bufferX[ 1 ][ 1 ];
@@ -1386,6 +1245,7 @@ namespace te
     bool Skeleton::createSkeletonStrengthMap( 
        const te::rp::Matrix< double >& inputX, 
        const te::rp::Matrix< double >& inputY,
+       const te::rp::Matrix< double >& edgeStrengthMap,
        te::rp::Matrix< double >& skelMap ) const
     {
       assert( inputX.getColumnsNumber() == inputY.getColumnsNumber() );
@@ -1408,8 +1268,6 @@ namespace te
       unsigned int nextCol = 0;
       unsigned int prevRow = 0;
       unsigned int prevCol = 0;       
-      double minStrength = DBL_MAX;   
-      double maxStrength = -1.0 * DBL_MAX;
       double centerX = 0;
       double centerY = 0;
       double neiX = 0;
@@ -1418,8 +1276,8 @@ namespace te
       double diffY = 0;
       double diffMag = 0;
       double strength = 0;
-      double strengthX = 0;
-      double strengthY = 0;
+      double minStrength = DBL_MAX;
+      double maxStrength = -1.0 * DBL_MAX;
       
       for( row = 0 ; row < nRows ; ++row )
       {
@@ -1446,63 +1304,41 @@ namespace te
           centerX = inputX[ row ][ col ];
           centerY = inputY[ row ][ col ];
           
-          strength = std::sqrt( ( centerX * centerX ) + ( centerY * centerY ) );          
+          strength = 0;
           
-          if( strength == 0.0 )
-          {
-            skelMap[ row ][ col ] = DBL_MAX;
-          }
-          else
-          {
-            strengthX = 0;
-            strengthX += inputX[ prevRow ][ prevCol ];
-            strengthX -= inputX[ prevRow ][ nextCol ];
-            strengthX += inputX[ row ][ prevCol ];
-            strengthX -= inputX[ row ][ nextCol ];
-            strengthX += inputX[ nextRow ][ prevCol ];
-            strengthX -= inputX[ nextRow ][ nextCol ];
-            strengthX /= 6.0;
-            strengthX /= centerX;
-            
-            strengthY = 0;
-            strengthY -= inputY[ prevRow ][ prevCol ];
-            strengthY -= inputY[ prevRow ][ col ];
-            strengthY -= inputY[ prevRow ][ nextCol ];
-            strengthY += inputY[ nextRow ][ prevCol ];
-            strengthY += inputY[ nextRow ][ col ];
-            strengthY += inputY[ nextRow ][ nextCol ];     
-            strengthY /= 6.0;
-            strengthY /= centerY;
-            
-            strength = std::sqrt( ( strengthX * strengthX ) +  ( strengthY * strengthY ) );
-            
-  /*          SKELSTRENGTHNEIGHBOR( prevRow, prevCol )
-            SKELSTRENGTHNEIGHBOR( prevRow, col )
-            SKELSTRENGTHNEIGHBOR( prevRow, nextCol )
-            SKELSTRENGTHNEIGHBOR( row, prevCol )
-            SKELSTRENGTHNEIGHBOR( row, nextCol )
-            SKELSTRENGTHNEIGHBOR( nextRow, prevCol )
-            SKELSTRENGTHNEIGHBOR( nextRow, col )
-            SKELSTRENGTHNEIGHBOR( nextRow, nextCol )*/                    
-            
-            skelMap[ row ][ col ] = strength;
-              
-            if( minStrength > strength ) minStrength = strength;   
-            if( maxStrength < strength ) maxStrength = strength;
-          }
+          SKELSTRENGTHNEIGHBOR( prevRow, prevCol )
+          SKELSTRENGTHNEIGHBOR( prevRow, col )
+          SKELSTRENGTHNEIGHBOR( prevRow, nextCol )
+          SKELSTRENGTHNEIGHBOR( row, prevCol )
+          SKELSTRENGTHNEIGHBOR( row, nextCol )
+          SKELSTRENGTHNEIGHBOR( nextRow, prevCol )
+          SKELSTRENGTHNEIGHBOR( nextRow, col )
+          SKELSTRENGTHNEIGHBOR( nextRow, nextCol )  
+          
+          strength /= 8.0;
+          strength = std::max( 0.0, strength );
+          
+          skelMap[ row ][ col ] = strength;
+          
+          if( minStrength > strength ) minStrength = strength;
+          if( maxStrength < strength ) maxStrength = strength;
         }
       }
-
+      
+      const double gain = ( minStrength == maxStrength ) ? 0.0 : 
+        ( 1.0 / ( maxStrength - minStrength ) );
+      
       for( row = 1 ; row < lastRowIdx ; ++row )
       {
         for( col = 1 ; col < lastColIdx ; ++col )
         {
-          if( skelMap[ row ][ col ] == DBL_MAX )
-            skelMap[ row ][ col ] = maxStrength - minStrength;
-          else
-            skelMap[ row ][ col ] -= minStrength;
+          strength = skelMap[ row ][ col ];
+          strength -= minStrength;
+          strength *= gain;          
+          strength = ( strength + ( 1.0 - edgeStrengthMap[ row ][ col ] ) ) / 2.0;
+          skelMap[ row ][ col ] = strength;
         }
-      }
+      }      
       
       return true;
     }

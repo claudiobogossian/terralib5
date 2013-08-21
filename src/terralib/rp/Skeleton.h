@@ -86,11 +86,13 @@ namespace te
             
             double m_diffusionThreshold; //!< A threshold over the residue from one iteration to another, if the residue drops below this value the process is finished - valid range: (0,1] positive values, lower values will cause more iterations to be performed.
             
-            double m_diffusionRegularitation; //!< A regularization parameter to control the variation from one iteration to the next one (higher values can reduce the number of iterations but can bring the system to an unstable state, valid range: (0,1] positive values ).
+            double m_diffusionRegularization; //!< A regularization parameter to control the variation from one iteration to the next one (higher values can reduce the number of iterations but can bring the system to an unstable state, valid range: (0,1] positive values ).
             
             unsigned int m_diffusionMaxIterations; //!< The maximum number of iterations to perform (zero: no iterations limit).
             
             bool m_enableMultiThread; //!< Enable (true) the use of threads.
+            
+            double m_skeletonThreshold; //!< A threshold to select those pixels as being part of the final skeleton - valid range [0,1].
             
             InputParameters();
             
@@ -176,7 +178,7 @@ namespace te
             unsigned int m_firstRowIdx; //!< First row to process.
             unsigned int m_lastRowIdx; //!< Last row to process.
             double* m_currentIterationResiduePtr; //!< A pointer the the current iteration residue;
-            double m_diffusionRegularitation; //!< The diffusion regularization parameter.
+            double m_diffusionRegularization; //!< The diffusion regularization parameter.
 
             ApplyVecDiffusionThreadParams() {};
             
@@ -201,7 +203,7 @@ namespace te
               m_firstRowIdx = other.m_firstRowIdx;
               m_lastRowIdx = other.m_lastRowIdx;
               m_currentIterationResiduePtr = other.m_currentIterationResiduePtr;
-              m_diffusionRegularitation = other.m_diffusionRegularitation;
+              m_diffusionRegularization = other.m_diffusionRegularization;
               
               return *this;
             };
@@ -346,27 +348,13 @@ namespace te
         /*!
           \brief Create an Edge strenght Map from the input data.
           \param inputMap The input map.
-          \param edgeStrengthMap The edge strength map (zero or positive values).
+          \param edgeStrengthMap The edge strength map (values between 0 and 1).
           \return true if OK, false on errors.
           \details The edge map have the property that the values are large near image boundaries and small within homogeneous regions.
          */          
         bool getEdgeStrengthMap( 
           const te::rp::Matrix< double >& inputMap,
           te::rp::Matrix< double >& edgeStrengthMap ) const;       
-          
-        /*!
-          \brief Generate an edge vector field from the given edge strength map.
-          \param edgeStrengthMap The edge strength map.
-          \param createUnitVectors If true, normalized (unit) vectors will be created.
-          \param edgeVecXMap The generated vector field X component.
-          \param edgeVecYMap The generated vector field Y component.
-          \return true if OK, false on errors.
-         */            
-        bool getEdgeVecField( 
-          const te::rp::Matrix< double >& edgeStrengthMap,
-          const bool createUnitVectors,
-          te::rp::Matrix< double >& edgeVecXMap,
-          te::rp::Matrix< double >& edgeVecYMap ) const;            
         
         /*!
           \brief Create a tiff file from a matrix.
@@ -485,14 +473,17 @@ namespace te
           
         /*!
           \brief Create a skeleton strength map.
+          \details The skeleton strength map is a scalar map defined on every pixel and indicates the likelihood of each pixel being on the skeletons.
           \param inputX The vector decomposed X component;
           \param inputY The vector decomposed Y component;
-          \param skelSMap The skeleton map (pixel with value 1).
+          \param edgeStrengthMap The edge strength map (values between 0 and 1).
+          \param skelSMap The skeleton map (values between 0 and 1).
           \return true if ok, false on errors.
         */            
         bool createSkeletonStrengthMap( 
           const te::rp::Matrix< double >& inputX, 
           const te::rp::Matrix< double >& inputY,
+          const te::rp::Matrix< double >& edgeStrengthMap,
           te::rp::Matrix< double >& skelMap ) const;        
           
         /*! 

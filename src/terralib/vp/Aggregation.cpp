@@ -432,7 +432,7 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
     std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(inputLayer, statisticalSummary, itGroupValues->second);
     std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(inputLayer, statisticalSummary, itGroupValues->second);
 
-    te::gm::Geometry* geometry = GetUnionGeometry(itGroupValues->second, geomIdx);
+    te::gm::Geometry* geometry = GetGeometryUnion(itGroupValues->second, geomIdx);
 
     te::mem::DataSetItem* outputDataSetItem = new te::mem::DataSetItem(outputDataSet);
 
