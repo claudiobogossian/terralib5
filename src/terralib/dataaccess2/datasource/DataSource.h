@@ -28,17 +28,10 @@
 
 // TerraLib
 #include "../../common/Enums.h"
-#include "../dataset/CheckConstraint.h"
-#include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
-#include "../dataset/ForeignKey.h"
-#include "../dataset/Index.h"
-#include "../dataset/PrimaryKey.h"
-#include "../dataset/Sequence.h"
-#include "../dataset/UniqueKey.h"
+#include "../dataset/DataSet.h"
 #include "../../geometry/Enums.h"
 #include "../Config.h"
-#include "../Exception.h"
 
 // STL
 #include <map>
@@ -67,15 +60,18 @@ namespace te
 
   namespace da
   {
-    class DataSet;
-    class DataSetType;
-    class DataSource;
     class DataSourceCapabilities;
     class DataSourceTransactor;
     class ObjectIdSet;
     class Query;
     class Select;
     class SQLDialect;
+    class CheckConstraint;
+    class ForeignKey;
+    class Index;
+    class PrimaryKey;
+    class Sequence;
+    class UniqueKey;
 
     /*!
       \class DataSource
@@ -274,7 +270,11 @@ namespace te
         /*!
           \brief It gets the dataset identified by the given name.
 
-          \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
+          This method always returns an unconnected DataSet, that is, a DataSet that has no connection
+		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
+          existence of the DataSourceTransactor that creates it.        
+
+		      \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
           \param travType The traverse type associated to the returned dataset. 
 
           \return The caller of this method will take the ownership of the returned data set.
@@ -286,6 +286,10 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the specified property.
+
+		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
+		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
+          existence of the DataSourceTransactor that creates it.     
 
           \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
           \param propertyName  The name of a spatial property in order to apply the spatial filter.
@@ -308,6 +312,10 @@ namespace te
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the given geometric property.
 
+		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
+		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
+          existence of the DataSourceTransactor that creates it.     
+
           \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
           \param propertyName  The name of a spatial property in order to apply the spatial filter.
           \param g             A geometry to be used as a spatial filter when retrieving datasets.
@@ -329,6 +337,10 @@ namespace te
         /*!
          \brief It gets the dataset identified by the given name using the set of objects identification.
 
+		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
+		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
+          existence of the DataSourceTransactor that creates it.     
+
          \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
          \param oids     A pointer to a set of objects identification. Do not pass null. Do not pass set empty.
          \param travType The traverse type associated to the returned dataset.
@@ -342,7 +354,7 @@ namespace te
                     <li>if the data source driver doesn't support the access policy</li>
                     </ul>
           
-      \note Thread-safe!
+          \note Thread-safe!
         */
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const ObjectIdSet* oids, 
@@ -351,7 +363,11 @@ namespace te
         /*!
           \brief It executes a query that may return some data using a generic query.
 
-          This method is different of the method that accepts a dataset name and
+          This method always returns an unconnected DataSet, that is, a DataSet that has no connection
+		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
+          existence of the DataSourceTransactor that creates it.       
+		  
+		      This method is different of the method that accepts a dataset name and
           a spatial filter; this method allows the retrieving of only a
           subset of the attributes, since a query can include a property list.
 
@@ -368,7 +384,11 @@ namespace te
         /*!
           \brief It executes a query that may return some data using the data source native language.
 
-          \param query    A query string in the data source native language.
+		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
+		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
+          existence of the DataSourceTransactor that creates it.     
+          
+		      \param query    A query string in the data source native language.
           \param travType The traverse type associated to the returned dataset.
 
           \return The caller of this method will take the ownership of the returned data set.
@@ -408,7 +428,7 @@ namespace te
           *  Auxiliary commands.
           */
         //@{        
-    /*!
+        /*!
           \brief It escapes a string for using in commands and queries.
 
           \param value Any string.

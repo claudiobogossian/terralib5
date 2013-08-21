@@ -33,6 +33,7 @@
 #include "../../datatype/SimpleData.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/GeometryProperty.h"
+#include "../../geometry/Envelope.h"
 #include "../../raster/Raster.h"
 #include "../datasource/DataSourceCapabilities.h"
 #include "../utils/Utils.h"
@@ -64,9 +65,9 @@ te::common::AccessPolicy te::da::DataSetAdapter::getAccessPolicy() const
   return m_ds->getAccessPolicy();
 }
 
-te::gm::Envelope* te::da::DataSetAdapter::getExtent(std::size_t i)
+std::auto_ptr<te::gm::Envelope> te::da::DataSetAdapter::getExtent(std::size_t i)
 {
-  throw Exception(TR_DATAACCESS("Not Implemented Yet!"));
+  return m_ds->getExtent(i);
 }
 
 std::size_t te::da::DataSetAdapter::getNumProperties() const
@@ -92,6 +93,11 @@ std::string te::da::DataSetAdapter::getDatasetNameOfProperty(std::size_t pos) co
 bool te::da::DataSetAdapter::isEmpty() const
 {
   return m_ds->isEmpty();
+}
+
+bool te::da::DataSetAdapter::isConnected() const
+{
+  return m_ds->isConnected();  
 }
 
 std::size_t te::da::DataSetAdapter::size() const
