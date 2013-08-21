@@ -59,7 +59,7 @@ void te::da::DataSource::setId(const std::string& id)
 std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name, te::common::TraverseType travType)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->getDataSet(name, travType);
+  return t->getDataSet(name, travType, false);
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name,
@@ -69,7 +69,7 @@ std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string&
                                                               te::common::TraverseType travType)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->getDataSet(name, propertyName, e, r, travType);
+  return t->getDataSet(name, propertyName, e, r, travType, false);
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name,
@@ -79,7 +79,7 @@ std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string&
                                                               te::common::TraverseType travType)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->getDataSet(name, propertyName, g, r, travType);
+  return t->getDataSet(name, propertyName, g, r, travType, false);
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name,
@@ -87,19 +87,19 @@ std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string&
                                                               te::common::TraverseType travType)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->getDataSet(name, oids, travType);
+  return t->getDataSet(name, oids, travType, false);
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::query(const Select& q, te::common::TraverseType travType)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->query(q, travType);
+  return t->query(q, travType, false);
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::query(const std::string& query, te::common::TraverseType travType)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->query(query, travType);
+  return t->query(query, travType, false);
 }
 
 void te::da::DataSource::execute(const Query& command)

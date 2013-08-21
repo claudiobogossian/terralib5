@@ -123,11 +123,13 @@ void te::qt::widgets::Histogram::insert(std::pair<te::dt::AbstractData*, unsigne
 
 te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* interval)
 {
-  te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator it0, it1;
+  typedef te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator itIntervalToObjectIdSet;
   IntervalToObjectId aux(interval, 0);
 
-  tie(it0, it1) = m_valuesOids.equal_range(aux);
-
+  std::pair<itIntervalToObjectIdSet, itIntervalToObjectIdSet> res = m_valuesOids.equal_range(aux);
+  itIntervalToObjectIdSet it0 = res.first;
+  itIntervalToObjectIdSet it1 = res.second; 
+ 
   te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
 
   while(it0 != it1) 
