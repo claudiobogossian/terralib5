@@ -28,8 +28,14 @@
 
 // TerraLib
 #include "../../common/Enums.h"
+#include "../dataset/CheckConstraint.h"
 #include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
+#include "../dataset/ForeignKey.h"
+#include "../dataset/Index.h"
+#include "../dataset/PrimaryKey.h"
+#include "../dataset/Sequence.h"
+#include "../dataset/UniqueKey.h"
 #include "../../geometry/Enums.h"
 #include "../Config.h"
 #include "../Exception.h"
@@ -61,21 +67,15 @@ namespace te
 
   namespace da
   {
-    class CheckConstraint;
     class Connection;
     class DataSet;
     class DataSetType;
     class DataSource;
     class DataSourceCapabilities;
-    class ForeignKey;
-    class Index;
     class ObjectIdSet;
-    class PrimaryKey;
     class Query;
     class Select;
-    class Sequence;
     class SQLDialect;
-    class UniqueKey;
 
     /*!
       \class DataSource
@@ -113,11 +113,22 @@ namespace te
     {
       public:
 
-        /*! \brief Default constructor that can be called by subclasses. */
-        DataSource();
-
         /*! \brief Virtual destructor. */
         virtual ~DataSource();
+
+        /*!
+          \brief An identification value for the data source.
+
+          \return The data source identification.
+        */
+        const std::string& getId() const;
+
+        /*!
+          \brief Sets the data source identification.
+
+          \param id An identification value.
+        */
+        void setId(const std::string& id);
 
         /** @name Basic Methods of a Data Source
           *  Basic Methods for operating a data source.
@@ -543,7 +554,18 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual const te::da::DataSetTypePtr& getDataSetType(const std::string& name) = 0;
+        virtual te::da::DataSetTypePtr getDataSetType(const std::string& name) = 0;
+
+        /*!
+          \brief It retrieves the properties of the dataset.
+
+          \param datasetName The dataset name.
+
+          \return The properties of the dataset.
+
+          \note Not thread-safe!
+        */
+        virtual boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName) = 0;
 
         /*!
           \brief It searches for the list of property names of the given dataset.
@@ -581,17 +603,6 @@ namespace te
           \note Not thread-safe!
         */
         virtual bool propertyExists(const std::string& datasetName, const std::string& name) = 0;
-
-        /*!
-          \brief It retrieves the properties of the dataset.
-
-          \param datasetName The dataset name.
-
-          \return The properties of the dataset.
-
-          \note Not thread-safe!
-        */
-        virtual boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName) = 0;
 
         /*!
           \brief It retrieves a property with the given name from the dataset.
@@ -663,14 +674,11 @@ namespace te
 
           \param datasetName  The dataset name.
 
-          \return The primary key of the dataset.
-
-          \post The caller of this method will take the ownership of the returned primary key,
-                because it is a clone of the one in the schema.
+          \return If there is a primary key in the given dataset, it returns it.
 
           \note Not thread-safe!
         */
-        virtual PrimaryKey* getPrimaryKey(const std::string& datasetName);
+        virtual std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
 
         /*!
           \brief It checks if a primary key with the given name exists in the data source.
@@ -707,6 +715,18 @@ namespace te
         virtual void dropPrimaryKey(const std::string& datasetName);
 
         /*!
+          \brief It retrieves the foreign key in the given dataset.
+
+          \param datasetName The dataset name.
+          \param name        The foreign key name.
+
+          \return If there is a foreign key with the given name in the dataset, it returns it.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<ForeignKey> getForeignKey(const std::string& datasetName, const std::string& name);
+
+        /*!
           \brief It searches for the foreign key names of the given dataset.
 
           \param datasetName The dataset name.
@@ -726,20 +746,6 @@ namespace te
           \return True, if the foreign key exists in the data source; otherwise, it returns false.
         */
         virtual bool foreignKeyExists(const std::string& datasetName, const std::string& name);
-
-        /*!
-          \brief It retrieves the foreign key with the given name.
-
-          \param name The foreign key name.
-
-          \return The foreign key with the given name in the dataset.
-
-          \post The caller of this method will take the ownership of the returned foreign key,
-                because it is a clone of the one in the schema.
-
-          \note Not thread-safe!
-        */
-        virtual ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It adds a foreign key constraint to a dataset.
@@ -765,6 +771,18 @@ namespace te
         virtual void dropForeignKey(const std::string& datasetName, const std::string& fkName);
 
         /*!
+          \brief It gets the unique key in the dataset with the given name.
+
+          \param datasetName  The dataset name.
+          \param name         The unique key name.
+
+          \return The unique key with the given name in the dataset.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName, const std::string& name);
+
+        /*!
           \brief It searches in the data source for the unique key names associated to the given dataset.
 
           \param datasetName The dataset name.
@@ -788,21 +806,6 @@ namespace te
         virtual bool uniqueKeyExists(const std::string& datasetName, const std::string& name);
 
         /*!
-          \brief It gets the unique key in the dataset with the given name.
-
-          \param datasetName  The dataset name.
-          \param name         The unique key name.
-
-          \post The caller of this method will take the ownership of the returned property,
-                because it is a clone of the one in the schema.
-
-          \return The unique key with the given name in the dataset.
-
-          \note Not thread-safe!
-        */
-        virtual te::da::UniqueKey* getUniqueKey(const std::string& datasetName, const std::string& name);
-
-        /*!
           \brief It adds a unique key constraint to the dataset.
 
           \param datasetName  The dataset where the unique key will be added.
@@ -822,6 +825,18 @@ namespace te
           \note Not thread-safe!
         */
         virtual void dropUniqueKey(const std::string& datasetName, const std::string& name);
+
+        /*!
+          \brief It gets the check constraint of the dataset with the given name.
+
+          \param datasetName  The dataset name.
+          \param name         The check constraint name.
+
+          \return The check constraint with the given name.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It searches in the data source for check constraints associated to the given dataset.
@@ -847,21 +862,6 @@ namespace te
         virtual bool checkConstraintExists(const std::string& datasetName, const std::string& name);
 
         /*!
-          \brief It gets the check constraint with the given name.
-
-          \param datasetName  The dataset name.
-          \param name         The check constraint name.
-
-          \return The check constraint with the given name.
-
-          \post The caller of this method will take the ownership of the returned check constraint,
-                because it is a clone of the one in the schema.
-
-          \note Not thread-safe!
-        */
-        virtual te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName, const std::string& name);
-
-        /*!
           \brief It adds a check constraint to the dataset.
 
           \param datasetName  The dataset where the constraint will be added.
@@ -880,6 +880,18 @@ namespace te
           \note Not thread-safe!
         */
         virtual void dropCheckConstraint(const std::string& datasetName, const std::string& name);
+
+        /*!
+          \brief It gets the index with the given name. from the dataset.
+
+          \param datasetName  The dataset name.
+          \param name         The index name.
+
+          \return The index with the given name.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It searches in the data source for the index names associated to the given dataset.
@@ -903,21 +915,6 @@ namespace te
           \note Not thread-safe!
         */
         virtual bool indexExists(const std::string& datasetName, const std::string& name);
-
-        /*!
-          \brief It gets the index with the given name. in the dataset.
-
-          \param datasetName  The dataset name.
-          \param name         The index name.
-
-          \return The index with the given name.
-
-          \post The caller of this method will take the ownership of the returned index,
-                because it is a clone of the one in the schema.
-
-          \note Not thread-safe!
-        */
-        virtual Index* getIndex(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It adds an index to the dataset.
@@ -945,6 +942,17 @@ namespace te
         virtual void dropIndex(const std::string& datasetName, const std::string& idxName);
 
         /*!
+          \brief It gets the sequence with the given name
+
+          \param name  The sequence name.
+
+          \return The sequence with the given name.
+
+          \note Not thread-safe!
+        */
+        virtual std::auto_ptr<Sequence> getSequence(const std::string& name);
+
+        /*!
           \brief It searches for the list of sequence names available in the data source.
 
           \note Each sequence in the data source must have a unique name. For example, in a DBMS the name
@@ -966,20 +974,6 @@ namespace te
           \note Not thread-safe!
         */
         virtual bool sequenceExists(const std::string& name);
-
-        /*!
-          \brief It gets the sequence with the given name
-
-          \param name  The sequence name.
-
-          \return The sequence with the given name.
-
-          \post The caller of this method will take the ownership of the returned sequence,
-                because it is a clone of the one in the catalog.
-
-          \note Not thread-safe!
-        */
-        virtual Sequence* getSequence(const std::string& name);
 
         /*!
           \brief It creates a new sequence in the data source.
@@ -1025,6 +1019,15 @@ namespace te
         */
         virtual std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
                                                           std::size_t propertyPos);
+
+        /*!
+          \brief It computes the bounding rectangle for a spatial property of the given dataset.
+
+          \param dataset The dataset whose spatial property will be used to get its bounding box.
+
+          \return The spatial property bounding rectangle, or an invalid box if none is found.
+        */
+        virtual std::auto_ptr<te::gm::Envelope> getExtent(te::da::DataSet* dataset);
 
         /*!
           \brief It retrieves the number of items of the given dataset.
@@ -1279,6 +1282,9 @@ namespace te
 
       protected:
 
+        /*! \brief Default constructor that can be called by subclasses. */
+        DataSource();
+
         /** @name Protected Data Source Methods????
           * The protected methods of the data source
           */
@@ -1337,6 +1343,10 @@ namespace te
         virtual std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
 
         //@}
+
+      protected:
+
+        std::string m_id;
     };
 
     typedef boost::shared_ptr<DataSource> DataSourcePtr;

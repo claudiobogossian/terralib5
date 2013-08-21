@@ -288,7 +288,7 @@ std::vector<std::string> te::ogr::DataSource::getDataSetNames()
   return datasets;
 }
 
-const te::da::DataSetTypePtr& te::ogr::DataSource::getDataSetType(const std::string& name)
+te::da::DataSetTypePtr te::ogr::DataSource::getDataSetType(const std::string& name)
 {
   std::string sql = "SELECT FID, * FROM " + name;
 
@@ -342,7 +342,6 @@ const te::da::DataSetTypePtr& te::ogr::DataSource::getDataSetType(const std::str
 
   m_ogrDS->ReleaseResultSet(layer);
 
-  //return std::auto_ptr<te::da::DataSetType>(dt);
   return te::da::DataSetTypePtr(dt);
 }
 
@@ -450,7 +449,7 @@ void te::ogr::DataSource::addProperty(const std::string& datasetName, te::dt::Pr
 //  throw(te::common::Exception(TR_OGR("OGR Driver not support adding geometry type.")));
 }
 
-te::da::PrimaryKey* te::ogr::DataSource::getPrimaryKey(const std::string& datasetName)
+std::auto_ptr<te::da::PrimaryKey> te::ogr::DataSource::getPrimaryKey(const std::string& datasetName)
 {
   std::string sql = "SELECT FID, * FROM " + datasetName;
   OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
@@ -475,7 +474,7 @@ te::da::PrimaryKey* te::ogr::DataSource::getPrimaryKey(const std::string& datase
 
   m_ogrDS->ReleaseResultSet(layer);
 
-  return res;
+  return std::auto_ptr<te::da::PrimaryKey>(res);
 }
 
 std::auto_ptr<te::gm::Envelope> te::ogr::DataSource::getExtent(const std::string& /*datasetName*/, const std::string& propertyName)

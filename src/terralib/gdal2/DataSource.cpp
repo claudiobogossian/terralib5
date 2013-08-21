@@ -288,7 +288,7 @@ void te::gdal::DataSource::getProperties(te::da::DataSetTypePtr& dt)
   
 }
 
-const te::da::DataSetTypePtr& te::gdal::DataSource::getDataSetType(const std::string& name)
+te::da::DataSetTypePtr te::gdal::DataSource::getDataSetType(const std::string& name)
 {
   assert(!name.empty());
   
@@ -423,7 +423,7 @@ bool te::gdal::DataSource::isPropertyNameValid(const std::string& propertyName)
 
 std::vector<std::string> te::gdal::DataSource::getPropertyNames(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  te::da::DataSetTypePtr dt = getDataSetType(datasetName);
   
   std::vector<std::string> pNames;
   

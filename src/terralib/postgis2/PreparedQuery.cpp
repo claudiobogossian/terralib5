@@ -206,7 +206,7 @@ te::da::DataSet* te::pgis::PreparedQuery::query(te::common::TraverseType /*travT
 {
   execute();
 
-  DataSet* dataset = new DataSet(m_result, static_cast<te::pgis::Connection*>(m_conn), 0);
+  DataSet* dataset = new DataSet(m_result, m_ds, 0);
 
   m_result = 0;
 

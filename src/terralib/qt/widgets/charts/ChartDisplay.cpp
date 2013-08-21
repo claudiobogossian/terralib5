@@ -139,9 +139,18 @@ void  te::qt::widgets::ChartDisplay::adjustDisplay()
 {
   if(m_chartStyle)
   {
-    setTitle(m_chartStyle->getTitle());
-    setAxisTitle( QwtPlot::yLeft, m_chartStyle->getAxisY() );
-    setAxisTitle( QwtPlot::xBottom,  m_chartStyle->getAxisX() );
+
+    QwtText title( m_chartStyle->getTitle());
+    QwtText axisX(m_chartStyle->getAxisX());
+    QwtText axisY(m_chartStyle->getAxisY());
+
+    title.setFont(m_chartStyle->getTitleFont());
+    axisX.setFont(m_chartStyle->getAxisFont());
+    axisY.setFont(m_chartStyle->getAxisFont());
+
+    setTitle(title);
+    setAxisTitle( QwtPlot::yLeft, axisY);
+    setAxisTitle( QwtPlot::xBottom, axisX);
 
     if(m_chartStyle->getGridChecked())
       m_grid->attach(this);

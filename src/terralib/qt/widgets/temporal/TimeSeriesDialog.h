@@ -33,6 +33,8 @@
 // Qt
 #include <QtGui/QDialog>
 
+#include <memory>
+
 namespace Ui { class TimeSeriesDialogForm; }
 
 namespace te

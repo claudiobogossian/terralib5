@@ -158,7 +158,7 @@ std::vector<std::string> te::mem::DataSource::getDataSetNames()
   return datasetNames;
 }
 
-const te::da::DataSetTypePtr& te::mem::DataSource::getDataSetType(const std::string& datasetName)
+te::da::DataSetTypePtr te::mem::DataSource::getDataSetType(const std::string& datasetName)
 {
   if(!dataSetExists(datasetName))
     throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());

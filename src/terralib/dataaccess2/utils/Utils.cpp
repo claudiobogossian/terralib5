@@ -51,7 +51,8 @@ void te::da::LoadFull(te::da::DataSetType* dataset, const std::string& datasourc
   assert(dataset);
   assert(!datasourceId.empty());
 
-  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  //DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
 
   if(datasource.get() == 0)
     return;
@@ -72,12 +73,36 @@ void te::da::LoadFull(te::da::DataSetType* dataset, const std::string& datasourc
   //cloader->getPrimaryKey(dataset);
 }
 
+//void te::da::LoadFull(te::da::DataSetType* dataset, const std::string& datasourceId)
+//{
+//  assert(dataset);
+//  assert(!datasourceId.empty());
+//
+//  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
+//
+//  if(datasource.get() == 0)
+//    return;
+//
+//  LoadFull(dataset, datasource.get());
+//}
+
+//void te::da::LoadFull(DataSetType* dataset, DataSource* datasource)
+//{
+//  assert(dataset);
+//  assert(datasource);
+//
+//  std::auto_ptr<DataSourceTransactor> transactor(datasource->getTransactor());
+//
+//  LoadFull(dataset, transactor.get());
+//}
+
 void te::da::LoadProperties(te::da::DataSetType* dataset, const std::string& datasourceId)
 {
   assert(dataset);
   assert(!datasourceId.empty());
 
-  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  //DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
 
   if(datasource.get() == 0)
     return;
@@ -87,23 +112,14 @@ void te::da::LoadProperties(te::da::DataSetType* dataset, const std::string& dat
   dataset->add(properties);
 }
 
-te::gm::Envelope* te::da::GetExtent(te::da::DataSet* dataset)
-{
-  std::size_t pos = GetFirstSpatialPropertyPos(dataset);
-
-  if(pos != std::string::npos)
-    return dataset->getExtent(pos);
-
-  return new te::gm::Envelope;
-}
-
 te::gm::Envelope* te::da::GetExtent(const std::string& datasetName,
                                     const std::string& propertyName,
                                     const std::string& datasourceId)
 {
   assert(!datasourceId.empty());
 
-  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  //DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
 
   if(datasource.get() == 0)
     throw Exception(TR_DATAACCESS("Could not retrieve data source in order to search for a property extent!"));
@@ -117,8 +133,9 @@ void te::da::GetDataSets(std::vector<std::string>& datasets, const std::string& 
 {
   assert(!datasourceId.empty());
 
-  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  //DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
 
+  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
   if(datasource.get() == 0)
     return;
 
@@ -165,7 +182,8 @@ bool te::da::HasDataSet(const std::string& datasourceId)
 {
   assert(!datasourceId.empty());
 
-  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  //DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
 
   if(datasource.get() == 0)
     return false;
@@ -177,8 +195,9 @@ te::da::DataSet* te::da::GetDataSet(const std::string& name, const std::string& 
 {
   assert(!datasourceId.empty());
 
-  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  //DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
 
+  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
   if(datasource.get() == 0)
     return false;
 
@@ -187,11 +206,32 @@ te::da::DataSet* te::da::GetDataSet(const std::string& name, const std::string& 
   return dataset.release();
 }
 
-te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId)
+//te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId)
+//{
+//  assert(!datasourceId.empty());
+//
+//  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+//
+//  if(datasource.get() == 0)
+//  {
+//    DataSourceInfoPtr dsinfo = te::da::DataSourceInfoManager::getInstance().get(datasourceId);
+//
+//    if(dsinfo.get() == 0)
+//      throw Exception(TR_DATAACCESS("Could not find data source!"));
+//
+//    te::da::DataSourceManager::getInstance().open(datasourceId, dsinfo->getAccessDriver(), dsinfo->getConnInfo());
+//
+//    datasource = te::da::DataSourceManager::getInstance().get(datasourceId);
+//  }
+//
+//  return datasource;
+//}
+
+te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId, const bool opened)
 {
   assert(!datasourceId.empty());
 
-  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
+  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
 
   if(datasource.get() == 0)
   {
@@ -200,10 +240,13 @@ te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId)
     if(dsinfo.get() == 0)
       throw Exception(TR_DATAACCESS("Could not find data source!"));
 
-    te::da::DataSourceManager::getInstance().open(datasourceId, dsinfo->getAccessDriver(), dsinfo->getConnInfo());
+    datasource = te::da::DataSourceManager::getInstance().make(datasourceId, dsinfo->getAccessDriver());
 
-    datasource = te::da::DataSourceManager::getInstance().get(datasourceId);
+    datasource->setConnectionInfo(dsinfo->getConnInfo());
   }
+
+  if(opened && !datasource->isOpened())
+    datasource->open();
 
   return datasource;
 }
@@ -327,7 +370,7 @@ te::da::ObjectId* te::da::GenerateOID(te::da::DataSet* dataset, const std::vecto
   for(std::size_t i = 0; i < names.size(); ++i)
   {
     if(!dataset->isNull(i))
-      oid->addValue(dataset->getValue(names[i]));
+      oid->addValue(dataset->getValue(names[i]).release());
   }
 
   return oid;
