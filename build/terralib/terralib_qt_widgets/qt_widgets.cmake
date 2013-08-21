@@ -92,6 +92,7 @@ set (
   widgets/slider
   widgets/srs
   widgets/table
+  widgets/temporal
   widgets/tools
   widgets/help
   widgets/plugin/builder
@@ -411,6 +412,17 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/table" MOC)
 
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/temporal/ObservationDialog.h
+  ${SRCDIR}/widgets/temporal/TemporalPropertiesWidget.h
+  ${SRCDIR}/widgets/temporal/TimeSeriesDialog.h
+  ${SRCDIR}/widgets/temporal/TimeSeriesPropertiesWidget.h
+  ${SRCDIR}/widgets/temporal/TrajectoryDialog.h
+  ${SRCDIR}/widgets/temporal/TrajectoryPropertiesWidget.h
+		  
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/temporal" MOC)
 #set (
 #  HDRS_TO_MOC
 #  ${SRCDIR}/widgets/dataview/TabularViewer.h
@@ -476,6 +488,7 @@ file(
   ${SRCDIR}/widgets/se/ui/*.ui
   ${SRCDIR}/widgets/slider/ui/*.ui
   ${SRCDIR}/widgets/srs/ui/*.ui
+  ${SRCDIR}/widgets/temporal/ui/*.ui
   ${SRCDIR}/widgets/plugin/builder/ui/*.ui
   ${SRCDIR}/widgets/plugin/manager/ui/*.ui
   ${SRCDIR}/widgets/query/ui/*.ui

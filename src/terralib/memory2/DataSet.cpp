@@ -130,7 +130,7 @@ void te::mem::DataSet::copy(te::da::DataSet& src, const std::vector<std::size_t>
     for(std::size_t c = 0; c < nproperties; ++c)
     {
       if(!src.isNull(properties[c]))
-        item->setValue(c, src.getValue(properties[c]));
+        item->setValue(c, src.getValue(properties[c]).get());
       else
         item->setValue(c, 0);
     }
@@ -481,9 +481,9 @@ void te::mem::DataSet::setString(const std::string& name, const std::string& val
   (*m_items)[m_i].setString(name, value);
 }
 
-te::dt::ByteArray* te::mem::DataSet::getByteArray(std::size_t i) const
+std::auto_ptr<te::dt::ByteArray> te::mem::DataSet::getByteArray(std::size_t i) const
 {
-  return (*m_items)[m_i].getByteArray(i);
+  return std::auto_ptr<te::dt::ByteArray>((*m_items)[m_i].getByteArray(i));
 }
 
 void te::mem::DataSet::setByteArray(std::size_t i, const te::dt::ByteArray& value)
@@ -496,9 +496,9 @@ void te::mem::DataSet::setByteArray(const std::string& name, const te::dt::ByteA
   (*m_items)[m_i].setByteArray(name, value);
 }
 
-te::gm::Geometry* te::mem::DataSet::getGeometry(std::size_t i) const
+std::auto_ptr<te::gm::Geometry> te::mem::DataSet::getGeometry(std::size_t i) const
 {
-  return (*m_items)[m_i].getGeometry(i);
+  return std::auto_ptr<te::gm::Geometry>((*m_items)[m_i].getGeometry(i));
 }
 
 void te::mem::DataSet::setGeometry(std::size_t i, const te::gm::Geometry& value)
@@ -511,9 +511,9 @@ void te::mem::DataSet::setGeometry(const std::string& name, const te::gm::Geomet
   (*m_items)[m_i].setGeometry(name, value);
 }
 
-te::rst::Raster* te::mem::DataSet::getRaster(std::size_t i) const
+std::auto_ptr<te::rst::Raster> te::mem::DataSet::getRaster(std::size_t i) const
 {
-  return (*m_items)[m_i].getRaster(i);
+  return std::auto_ptr<te::rst::Raster>((*m_items)[m_i].getRaster(i));
 }
 
 void te::mem::DataSet::setRaster(std::size_t i, const te::rst::Raster& value)
@@ -526,9 +526,9 @@ void te::mem::DataSet::setRaster(const std::string& name, const te::rst::Raster&
   (*m_items)[m_i].setRaster(name, value);
 }
 
-te::dt::DateTime* te::mem::DataSet::getDateTime(std::size_t i) const
+std::auto_ptr<te::dt::DateTime> te::mem::DataSet::getDateTime(std::size_t i) const
 {
-  return (*m_items)[m_i].getDateTime(i);
+  return std::auto_ptr<te::dt::DateTime>((*m_items)[m_i].getDateTime(i));
 }
 
 void te::mem::DataSet::setDateTime(std::size_t i, const te::dt::DateTime& value) 
@@ -541,14 +541,14 @@ void te::mem::DataSet::setDateTime(const std::string& name, const te::dt::DateTi
   (*m_items)[m_i].setDateTime(name, value);
 }
 
-te::dt::Array* te::mem::DataSet::getArray(std::size_t i) const
+std::auto_ptr<te::dt::Array> te::mem::DataSet::getArray(std::size_t i) const
 {
-  return (*m_items)[m_i].getArray(i);
+  return std::auto_ptr<te::dt::Array>((*m_items)[m_i].getArray(i));
 }
 
-te::dt::AbstractData* te::mem::DataSet::getValue(std::size_t i) const
+std::auto_ptr<te::dt::AbstractData> te::mem::DataSet::getValue(std::size_t i) const
 {
-  return (*m_items)[m_i].getValue(i);
+  return std::auto_ptr<te::dt::AbstractData>((*m_items)[m_i].getValue(i));
 }
 
 void te::mem::DataSet::setValue(std::size_t i, te::dt::AbstractData* value)

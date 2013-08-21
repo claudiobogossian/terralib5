@@ -33,7 +33,7 @@ namespace te
   {
 
     /*!
-      \enum MemoryUse
+      \enum GroupingFunctionsType
 
       \brief Define grouping functions type.
     */
@@ -68,6 +68,30 @@ namespace te
       PARTIALLY_MEM,  //!< Partially memory use.
       LOW_MEM         //!< Low memory use.
     };
+
+    /*!
+      \enum RuleForPolygons
+
+      \brief Define possible states for memory use.
+    */
+    enum RuleForBuffer
+    {
+      INSIDE_OUTSIDE,     //!< The buffer is generated Inside and outside of the polygons.
+      ONLY_OUTSIDE,       //!< The buffer is generated only outside of the polygons.
+      ONLY_INSIDE         //!< The buffer is generated only inside of the polygons.
+    };
+
+    /*!
+      \enum BoundariesBetweenBuffers
+
+      \brief Define possible states for memory use.
+    */
+    enum BoundariesBetweenBuffers
+    {
+      DISSOLVE,           //!< The boundaries between buffers will be dissolved.
+      NOT_DISSOLVE,       //!< The boundaries between buffers will not be dissolved.
+    };
+
   }
 }
 

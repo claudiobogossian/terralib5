@@ -33,6 +33,8 @@
 // Qt
 #include <QtGui/QDialog>
 
+#include <memory>
+
 namespace Ui { class TrajectoryDialogForm; }
 
 namespace te

@@ -432,7 +432,7 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
     std::map<std::string, std::string> functionResultStringMap = CalculateStringGroupingFunctions(inputLayer, statisticalSummary, itGroupValues->second);
     std::map<std::string, double> functionResultDoubleMap = CalculateDoubleGroupingFunctions(inputLayer, statisticalSummary, itGroupValues->second);
 
-    te::gm::Geometry* geometry = GetUnionGeometry(itGroupValues->second, geomIdx);
+    te::gm::Geometry* geometry = GetGeometryUnion(itGroupValues->second, geomIdx);
 
     te::mem::DataSetItem* outputDataSetItem = new te::mem::DataSetItem(outputDataSet);
 
@@ -603,25 +603,6 @@ std::map<std::string, double> te::vp::CalculateDoubleGroupingFunctions( const te
   }
 
   return result;
-}
-
-#pragma endregion
-
-#pragma region Persistence Data
-
-void te::vp::Persistence( te::da::DataSetType* dataSetType,
-                          te::mem::DataSet* dataSet,
-                          const te::da::DataSourceInfoPtr& dsInfo,
-                          const std::map<std::string, std::string> options)
-{
-  std::pair<te::da::DataSetType*, te::mem::DataSet*> pair;
-  pair.first = dataSetType;
-  pair.second = dataSet;
-
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
-  std::auto_ptr<te::da::DataSourceTransactor> t(dataSource->getTransactor());
-  pair.second->moveFirst();
-  te::da::Create(t.get(), pair.first, pair.second, options);
 }
 
 #pragma endregion

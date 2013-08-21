@@ -162,10 +162,12 @@ void te::qt::widgets::Scatter::addData(double& xValue, double& yValue, te::da::O
 
 te::da::ObjectIdSet* te::qt::widgets::Scatter::find(double& xValue, double& yValue)
 {
-  te::qt::widgets::PointToObjectIdSet::nth_index<0>::type::iterator it0, it1;
+  typedef te::qt::widgets::PointToObjectIdSet::nth_index<0>::type::iterator itPointToObjectIdSet;
   PointToObjectId aux(xValue, yValue, 0);
 
-  tie(it0, it1) = m_valuesOids.equal_range(aux);
+  std::pair<itPointToObjectIdSet, itPointToObjectIdSet> res = m_valuesOids.equal_range(aux);
+  itPointToObjectIdSet it0 = res.first; //begin
+  itPointToObjectIdSet it1 = res.second; //end
 
   te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
 
@@ -190,7 +192,9 @@ te::da::ObjectIdSet* te::qt::widgets::Scatter::find(double& xValue, double& yVal
 
 te::da::ObjectIdSet* te::qt::widgets::Scatter::find(std::vector<QPointF> selectedPoints)
 {
-  te::qt::widgets::PointToObjectIdSet::nth_index<0>::type::iterator it0, it1;
+  typedef te::qt::widgets::PointToObjectIdSet::nth_index<0>::type::iterator itPointToObjectIdSet;
+  itPointToObjectIdSet it0, it1;
+  std::pair<itPointToObjectIdSet, itPointToObjectIdSet> res;
   te::da::ObjectIdSet* oids = new te::da::ObjectIdSet;
 
   //Checking all the selected points:
@@ -199,7 +203,9 @@ te::da::ObjectIdSet* te::qt::widgets::Scatter::find(std::vector<QPointF> selecte
     double x = selectedPoints.at(i).x();
     double y = selectedPoints.at(i).y();
     PointToObjectId aux(x, y, 0);
-    tie(it0, it1) = m_valuesOids.equal_range(aux);
+    res = m_valuesOids.equal_range(aux);
+	it0 = res.first;
+	it1 = res.second;
 
     while(it0 != it1) 
     {

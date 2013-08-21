@@ -113,7 +113,7 @@ te::dt::AbstractData* te::da::PointToXConverter(DataSet* dataset, const std::vec
   assert(dataset);
   assert(indexes.size() == 1);
 
-  te::gm::Point* pt = static_cast<te::gm::Point*>(dataset->getGeometry(indexes[0]));
+  te::gm::Point* pt = static_cast<te::gm::Point*>(dataset->getGeometry(indexes[0]).get());
 
   return new te::dt::Double(pt->getX());
 }
@@ -123,7 +123,7 @@ te::dt::AbstractData* te::da::PointToYConverter(DataSet* dataset, const std::vec
   assert(dataset);
   assert(indexes.size() == 1);
 
-  te::gm::Point* pt = static_cast<te::gm::Point*>(dataset->getGeometry(indexes[0]));
+  te::gm::Point* pt = static_cast<te::gm::Point*>(dataset->getGeometry(indexes[0]).get());
 
   return new te::dt::Double(pt->getY());
 }
@@ -133,7 +133,7 @@ te::dt::AbstractData* te::da::PointToZConverter(DataSet* dataset, const std::vec
   assert(dataset);
   assert(indexes.size() == 1);
 
-  te::gm::Point* pt = static_cast<te::gm::Point*>(dataset->getGeometry(indexes[0]));
+  te::gm::Point* pt = static_cast<te::gm::Point*>(dataset->getGeometry(indexes[0]).get());
 
   return new te::dt::Double(pt->getZ());
 }
@@ -143,7 +143,7 @@ te::dt::AbstractData* te::da::PointToMConverter(DataSet* dataset, const std::vec
   assert(dataset);
   assert(indexes.size() == 1);
 
-  te::gm::Point* pt = static_cast<te::gm::Point*>(dataset->getGeometry(indexes[0]));
+  te::gm::Point* pt = static_cast<te::gm::Point*>(dataset->getGeometry(indexes[0]).get());
 
   return new te::dt::Double(pt->getM());
 }

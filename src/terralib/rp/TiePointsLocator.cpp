@@ -269,13 +269,9 @@ namespace te
         progressPtr.reset( new te::common::TaskProgress );
         progressPtr->setTotalSteps( 1 );
         progressPtr->setMessage( "Locating tie points" );
-      }
-        
-      if( m_inputParameters.m_enableProgress )
-      {
         progressPtr->pulse();
         if( ! progressPtr->isActive() ) return false;
-      }      
+      }
       
       // executing the choosed strategy
       
@@ -290,7 +286,7 @@ namespace te
             raster1YRescFact,
             raster2XRescFact,
             raster2YRescFact,
-            *progressPtr,
+            progressPtr.get(),
             outParamsPtr,
             tiePointsWeights ),
             "Moravec execution error" );   
@@ -303,7 +299,7 @@ namespace te
             raster1YRescFact,
             raster2XRescFact,
             raster2YRescFact,
-            *progressPtr,
+            progressPtr.get(),
             outParamsPtr,
             tiePointsWeights ),
             "SURF execution error" );   
@@ -363,7 +359,7 @@ namespace te
       const double raster1YRescFact,
       const double raster2XRescFact,
       const double raster2YRescFact,
-      te::common::TaskProgress& progress,
+      te::common::TaskProgress* progressPtr,
       TiePointsLocator::OutputParameters* outParamsPtr,
       std::vector< double >& tiePointsWeights ) 
       throw( te::rp::Exception )
@@ -399,8 +395,8 @@ namespace te
       
       // Updating the progress interface steps number
       
-      if( m_inputParameters.m_enableProgress )
-        progress.setTotalSteps( progress.getTotalSteps() + 10 );
+      if( progressPtr )
+        progressPtr->setTotalSteps( progressPtr->getTotalSteps() + 10 );
       
       // Generating raster 1 features
       
@@ -427,10 +423,10 @@ namespace te
           maskRaster1Data ),
           "Error loading raster data" );        
           
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
         }
           
         // applying the noise filter
@@ -457,10 +453,10 @@ namespace te
 //        createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsSetT(), "raster1Filtered");          
         }
         
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
         }        
         
         // locating interest points
@@ -474,10 +470,10 @@ namespace te
           raster1InterestPoints ),
           "Error locating raster 1 interest points" );
           
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
         }          
           
         // Generting features (one feature per line)
@@ -497,10 +493,10 @@ namespace te
         
 //      features2Tiff( raster1Features, raster1InterestPoints, "raster1features" );        
 
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
         }
       }
       
@@ -530,10 +526,10 @@ namespace te
           maskRaster2Data ),
           "Error loading raster data" );
           
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
         }          
           
         // applying the noise filter
@@ -561,11 +557,11 @@ namespace te
 //        createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsSetT(), "raster2Filtered");  
         }
         
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
-        }        
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }       
         
         // locating interest points        
         
@@ -578,11 +574,11 @@ namespace te
           raster2InterestPoints ),
           "Error locating raster 2 interest points" );
           
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
-        }          
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }       
           
         // Generting features (one feature per line)
 
@@ -601,10 +597,10 @@ namespace te
         
 //      features2Tiff( raster2Features, raster2InterestPoints, "raster2features" );        
 
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
         }
       }
 
@@ -623,11 +619,11 @@ namespace te
         matchedPoints ),
         "Error matching features" );
       
-      if( m_inputParameters.m_enableProgress )
-      {
-        progress.pulse();
-        if( ! progress.isActive() ) return false;
-      }      
+        if( progressPtr )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }    
       
       // Clean anused data
       
@@ -714,11 +710,11 @@ namespace te
         }
       }
       
-      if( m_inputParameters.m_enableProgress )
+      if( progressPtr )
       {
-        progress.pulse();
-        if( ! progress.isActive() ) return false;
-      }       
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }          
       
       return true;
     }
@@ -728,7 +724,7 @@ namespace te
       const double raster1YRescFact,
       const double raster2XRescFact,
       const double raster2YRescFact,
-      te::common::TaskProgress& progress,
+      te::common::TaskProgress* progressPtr,
       TiePointsLocator::OutputParameters* outParamsPtr,
       std::vector< double >& tiePointsWeights ) 
       throw( te::rp::Exception )
@@ -736,8 +732,8 @@ namespace te
       outParamsPtr->m_tiePoints.clear();
       tiePointsWeights.clear();
       
-      if( m_inputParameters.m_enableProgress )
-        progress.setTotalSteps( progress.getTotalSteps() + 8 );
+      if( progressPtr )
+        progressPtr->setTotalSteps( progressPtr->getTotalSteps() + 8 );
       
       // Locating interest points and features from raster 1
       
@@ -768,10 +764,10 @@ namespace te
 //        printMatrix( *(rasterData[ 0 ]) );
 //        createTifFromMatrix( *(rasterData[ 0 ]), InterestPointsSetT(), "loadedRaster1");
 
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
         }           
         
         // Creating the integral image
@@ -783,11 +779,11 @@ namespace te
           
         rasterData.clear();
         
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
-        }           
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }            
           
 //        printMatrix( integralRaster );
 //        createTifFromMatrix( integralRaster, InterestPointsSetT(), "integralRaster1" );
@@ -802,11 +798,11 @@ namespace te
           
 //        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints1");
 
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
-        }           
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }          
 
         
         InterestPointsSetT validInterestPoints;
@@ -817,11 +813,11 @@ namespace te
           
         raster1InterestPoints = validInterestPoints;
           
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
-        }           
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }             
           
       }
       
@@ -854,11 +850,11 @@ namespace te
 //        printMatrix( *(rasterData[ 0 ]) );
 //        createTifFromMatrix( *(rasterData[ 0 ]), InterestPointsSetT(), "loadedRaster2");
 
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
-        } 
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }   
         
         // Creating the integral image
         
@@ -867,11 +863,11 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(rasterData[ 0 ]), 
           integralRaster ), "Integral image creation error" );
           
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
-        }           
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }             
           
         rasterData.clear();
           
@@ -888,10 +884,10 @@ namespace te
           
 //        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints2");
 
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
         }           
 
         InterestPointsSetT validInterestPoints;
@@ -902,11 +898,11 @@ namespace te
           
         raster2InterestPoints = validInterestPoints;
           
-        if( m_inputParameters.m_enableProgress )
+        if( progressPtr )
         {
-          progress.pulse();
-          if( ! progress.isActive() ) return false;
-        }           
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }            
       }
       
 //      printMatrix( raster1Features );
@@ -927,11 +923,11 @@ namespace te
         matchedPoints ),
         "Error matching features" );
       
-      if( m_inputParameters.m_enableProgress )
+      if( progressPtr )
       {
-        progress.pulse();
-        if( ! progress.isActive() ) return false;
-      }
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }   
       
       // Removing the repeated matched points (those present in more than one scale)
       // keeping the higher MatchedInterestPointsT::m_feature value

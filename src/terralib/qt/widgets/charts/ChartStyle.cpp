@@ -34,18 +34,22 @@
 te::qt::widgets::ChartStyle::ChartStyle()
 {
   m_title = "Chart";
+  m_titleFont = QFont("Arial", 16, QFont::Bold);
   m_axisX = "Property X";
   m_axisY = "Property Y";
+  m_axisFont = QFont("Arial", 14);
   m_fill = new te::se::Fill();
   m_stroke = new te::se::Stroke();
   m_gridChecked = false;
   m_backColor = QColor( Qt::white);
 }
 
-te::qt::widgets::ChartStyle::ChartStyle(QString title, QString axisX, QString axisY, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color)
+te::qt::widgets::ChartStyle::ChartStyle(QString title, QFont titleFont, QString axisX, QString axisY, QFont axisFont, te::se::Fill* fill, te::se::Stroke* stroke, bool gridChecked,  QColor color)
 :m_title(title),
+  m_titleFont(titleFont),
   m_axisX(axisX),
   m_axisY(axisY),
+  m_axisFont(axisFont),
   m_gridChecked(gridChecked),
   m_fill(fill),
   m_stroke(stroke),
@@ -69,6 +73,16 @@ void te::qt::widgets::ChartStyle::setTitle(QString newTitle)
   m_title = newTitle;
 }
 
+QFont& te::qt::widgets::ChartStyle::getTitleFont()
+{
+  return m_titleFont;
+}
+
+void te::qt::widgets::ChartStyle::setTitleFont(QFont newTitleFont)
+{
+  m_titleFont = newTitleFont;
+}
+
 QString& te::qt::widgets::ChartStyle::getAxisX()
 {
   return m_axisX;
@@ -88,6 +102,17 @@ void te::qt::widgets::ChartStyle::setAxisY(QString newAxisY)
 {
   m_axisY = newAxisY;
 }
+
+QFont& te::qt::widgets::ChartStyle::getAxisFont()
+{
+  return m_axisFont;
+}
+
+void te::qt::widgets::ChartStyle::setAxisFont(QFont newAxisFont)
+{
+  m_axisFont = newAxisFont;
+}
+
 
 te::se::Fill* te::qt::widgets::ChartStyle::getFill()
 {

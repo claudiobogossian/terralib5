@@ -33,6 +33,7 @@
 #include "../../datatype/SimpleData.h"
 #include "../../geometry/Geometry.h"
 #include "../../geometry/GeometryProperty.h"
+#include "../../geometry/Envelope.h"
 #include "../../raster/Raster.h"
 #include "../datasource/DataSourceCapabilities.h"
 #include "../utils/Utils.h"
@@ -64,9 +65,9 @@ te::common::AccessPolicy te::da::DataSetAdapter::getAccessPolicy() const
   return m_ds->getAccessPolicy();
 }
 
-te::gm::Envelope* te::da::DataSetAdapter::getExtent(std::size_t i)
+std::auto_ptr<te::gm::Envelope> te::da::DataSetAdapter::getExtent(std::size_t i)
 {
-  throw Exception(TR_DATAACCESS("Not Implemented Yet!"));
+  return m_ds->getExtent(i);
 }
 
 std::size_t te::da::DataSetAdapter::getNumProperties() const
@@ -92,6 +93,11 @@ std::string te::da::DataSetAdapter::getDatasetNameOfProperty(std::size_t pos) co
 bool te::da::DataSetAdapter::isEmpty() const
 {
   return m_ds->isEmpty();
+}
+
+bool te::da::DataSetAdapter::isConnected() const
+{
+  return m_ds->isConnected();  
 }
 
 std::size_t te::da::DataSetAdapter::size() const
@@ -218,29 +224,29 @@ std::string te::da::DataSetAdapter::getString(std::size_t i) const
   return data->getValue();
 }
 
-te::dt::ByteArray* te::da::DataSetAdapter::getByteArray(std::size_t i) const
+std::auto_ptr<te::dt::ByteArray> te::da::DataSetAdapter::getByteArray(std::size_t i) const
 {
-  return static_cast<te::dt::ByteArray*>(getAdaptedValue(i));
+  return std::auto_ptr<te::dt::ByteArray>(static_cast<te::dt::ByteArray*>(getAdaptedValue(i)));
 }
 
-te::gm::Geometry* te::da::DataSetAdapter::getGeometry(std::size_t i) const
+std::auto_ptr<te::gm::Geometry> te::da::DataSetAdapter::getGeometry(std::size_t i) const
 {
-  return static_cast<te::gm::Geometry*>(getAdaptedValue(i));
+  return std::auto_ptr<te::gm::Geometry>(static_cast<te::gm::Geometry*>(getAdaptedValue(i)));
 }
 
-te::rst::Raster* te::da::DataSetAdapter::getRaster(std::size_t i) const
+std::auto_ptr<te::rst::Raster> te::da::DataSetAdapter::getRaster(std::size_t i) const
 {
-  return static_cast<te::rst::Raster*>(getAdaptedValue(i));
+  return std::auto_ptr<te::rst::Raster>(static_cast<te::rst::Raster*>(getAdaptedValue(i)));
 }
 
-te::dt::DateTime* te::da::DataSetAdapter::getDateTime(std::size_t i) const
+std::auto_ptr<te::dt::DateTime> te::da::DataSetAdapter::getDateTime(std::size_t i) const
 {
-  return static_cast<te::dt::DateTime*>(getAdaptedValue(i));
+  return std::auto_ptr<te::dt::DateTime>(static_cast<te::dt::DateTime*>(getAdaptedValue(i)));
 }
 
-te::dt::Array* te::da::DataSetAdapter::getArray(std::size_t i) const
+std::auto_ptr<te::dt::Array> te::da::DataSetAdapter::getArray(std::size_t i) const
 {
-return static_cast<te::dt::Array*>(getAdaptedValue(i));
+  return std::auto_ptr<te::dt::Array>(static_cast<te::dt::Array*>(getAdaptedValue(i)));
 }
 
 bool te::da::DataSetAdapter::isNull(std::size_t i) const

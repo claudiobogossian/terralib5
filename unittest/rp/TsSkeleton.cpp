@@ -30,6 +30,7 @@
 #include <terralib/raster/Grid.h>
 #include <terralib/raster/Raster.h>
 #include <terralib/raster/RasterFactory.h>
+#include <terralib/raster/Interpolator.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsSkeleton );
 
@@ -42,8 +43,15 @@ void TsSkeleton::Pattern1Test()
   auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/pattern1.tif";
   boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
-  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );    
-    
+  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );  
+  
+  auxRasterInfo.clear();
+  auxRasterInfo["MEM_SRC_RASTER_DRIVER_TYPE"] = "MEM";  
+  auxRasterInfo["FORCE_MEM_DRIVER"] = "TRUE";
+  inputRasterPtrPointer.reset( inputRasterPtrPointer->resample( 
+    te::rst::Interpolator::NearestNeighbor, -2, auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );  
+  
   // Creating the algorithm parameters
   
   te::rp::Skeleton::InputParameters algoInputParams;
@@ -51,9 +59,11 @@ void TsSkeleton::Pattern1Test()
   algoInputParams.m_inputRasterPtr = inputRasterPtrPointer.get();
   algoInputParams.m_inputRasterBand = 0;
   algoInputParams.m_inputMaskRasterPtr = 0;
-  algoInputParams.m_diffusionThreshold = 0.1;
-  algoInputParams.m_diffusionRegularitation = 0.75;
+  algoInputParams.m_diffusionThreshold = 0.5;
+  algoInputParams.m_diffusionRegularization = 0.5;
+  algoInputParams.m_diffusionMaxIterations = 0;
   algoInputParams.m_enableMultiThread = true;
+  algoInputParams.m_skeletonThreshold = 0.75;
 
   te::rp::Skeleton::OutputParameters algoOutputParams;
   

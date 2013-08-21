@@ -35,6 +35,7 @@
 #include "Connection.h"
 #include "DataSet.h"
 #include "DataSource.h"
+#include "DataSourceTransactor.h"
 #include "Exception.h"
 #include "EWKBWriter.h"
 #include "PreparedQuery.h"
@@ -57,7 +58,7 @@ namespace te
 {
   namespace pgis
   {
-    inline void BindValue(te::da::PreparedQuery* pq, te::da::DataSet* d, std::size_t i, std::size_t propertyPos)
+    inline void BindValue(te::pgis::PreparedQuery* pq, te::da::DataSet* d, std::size_t i, std::size_t propertyPos)
     {
       const int propertyDataType = d->getPropertyDataType(propertyPos);
 
@@ -128,8 +129,8 @@ namespace te
   } // end namespace pgis
 }   // end namespace te
 
-te::pgis::PreparedQuery::PreparedQuery(te::da::DataSource* ds, const std::string& pqname)
-  : m_ds(ds),
+te::pgis::PreparedQuery::PreparedQuery(DataSourceTransactor* t, const std::string& pqname)
+  : m_t(t),
     m_conn(0),
     m_result(0),
     m_paramValues(0),
@@ -138,7 +139,8 @@ te::pgis::PreparedQuery::PreparedQuery(te::da::DataSource* ds, const std::string
     m_nparams(0),
     m_qname(pqname)
 {
-  m_conn = static_cast<te::pgis::Connection*>(m_ds->getConnection());
+  m_conn = m_t->getConnection()->getConn();
+
   m_qname = te::common::Convert2LCase(m_qname);
 }
 
@@ -147,7 +149,6 @@ te::pgis::PreparedQuery::~PreparedQuery()
   try
   {
     clear();
-    m_ds->closeConnection(m_conn);
   }
   catch(...)
   {
@@ -161,10 +162,11 @@ std::string te::pgis::PreparedQuery::getName() const
 
 void te::pgis::PreparedQuery::prepare(const te::da::Query& query, const std::vector<te::dt::Property*>& paramTypes)
 {
-  assert(m_ds && m_ds->getDialect());
+  te::pgis::DataSource* pgds = static_cast<te::pgis::DataSource*>(m_t->getDataSource().get());
+  assert(m_t && pgds && pgds->getDialect());
   std::string sql;
 
-  SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
+  SQLVisitor visitor(*(pgds->getDialect()), sql, m_t->getConnection()->getConn());
   query.accept(visitor);
 
   prepare(sql, paramTypes);
@@ -179,7 +181,7 @@ void te::pgis::PreparedQuery::execute()
 {
   PQclear(m_result);
 
-  m_result = PQexecPrepared(m_conn->getConn(), m_qname.c_str(), m_nparams, m_paramValues, m_paramLengths, m_paramFormats, 1);
+  m_result = PQexecPrepared(m_conn, m_qname.c_str(), m_nparams, m_paramValues, m_paramLengths, m_paramFormats, 1);
 
 // release param values data and set it to a null value
   for(std::size_t i = 0; i < m_nparams; ++i)
@@ -195,7 +197,7 @@ void te::pgis::PreparedQuery::execute()
   {
     boost::format errmsg(TR_PGIS("Could not execute the prepared query due to the following error: %1%."));
     
-    errmsg = errmsg % PQerrorMessage(m_conn->getConn());
+    errmsg = errmsg % PQerrorMessage(m_conn);
 
     throw Exception(errmsg.str());
   }
@@ -206,7 +208,7 @@ te::da::DataSet* te::pgis::PreparedQuery::query(te::common::TraverseType /*travT
 {
   execute();
 
-  DataSet* dataset = new DataSet(m_result, static_cast<te::pgis::Connection*>(m_conn), 0);
+  DataSet* dataset = new DataSet(m_result, m_t->getDataSource().get(), 0);
 
   m_result = 0;
 
@@ -415,6 +417,11 @@ void te::pgis::PreparedQuery::bind(int /*i*/, const te::dt::AbstractData& /*ad*/
   throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
+te::da::DataSourceTransactor* te::pgis::PreparedQuery::getTransactor() const
+{
+  return m_t;
+}
+
 void te::pgis::PreparedQuery::prepare(const std::string& query, const std::vector<int>& paramTypes)
 {
 // clear any previous prepared query
@@ -436,7 +443,7 @@ void te::pgis::PreparedQuery::prepare(const std::string& query, const std::vecto
   memset(m_paramFormats, 0, m_nparams * sizeof(int));
 
 // make prepared query
-  m_result = PQprepare(m_conn->getConn(), m_qname.c_str(), query.c_str(), m_nparams, 0);
+  m_result = PQprepare(m_conn, m_qname.c_str(), query.c_str(), m_nparams, 0);
 
 // check result
   if((PQresultStatus(m_result) != PGRES_COMMAND_OK) &&
@@ -444,7 +451,7 @@ void te::pgis::PreparedQuery::prepare(const std::string& query, const std::vecto
   {
     boost::format errmsg(TR_PGIS("Could not create the prepared query due to the following error: %1%."));
     
-    errmsg = errmsg % PQerrorMessage(m_conn->getConn());
+    errmsg = errmsg % PQerrorMessage(m_conn);
 
     throw Exception(errmsg.str());
   }
@@ -472,18 +479,13 @@ void te::pgis::PreparedQuery::bind(te::da::DataSet* d)
     BindValue(this, d, i, i);
 }
 
-te::da::DataSource* te::pgis::PreparedQuery::getDataSource() const
-{
-  return m_ds;
-}
-
 void te::pgis::PreparedQuery::clear()
 {
   if(m_nparams == 0)
     return;
 
 // release prepared statement
-  m_ds->execute("DEALLOCATE PREPARE " + m_qname);
+  m_t->execute("DEALLOCATE PREPARE " + m_qname);
 
 // release any pending result
   PQclear(m_result);
@@ -511,3 +513,5 @@ void te::pgis::PreparedQuery::clear()
 // don't forget to reset number of params!
   m_nparams = 0;
 }
+
+
