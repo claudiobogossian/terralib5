@@ -60,7 +60,7 @@ std::list<te::map::AbstractLayerPtr> te::vp::GetFilteredLayers(std::string text,
   return filteredList;
 }
 
-te::gm::Geometry* te::vp::GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx)
+te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx)
 {
   te::gm::Geometry* resultGeometry = 0; 
 
