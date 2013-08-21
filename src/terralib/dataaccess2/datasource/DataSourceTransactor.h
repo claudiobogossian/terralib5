@@ -94,7 +94,7 @@ namespace te
     /*!
           \brief It returns the parent data source of the transactor.
         */
-        virtual std::auto_ptr<DataSource> getDataSource() const = 0;
+        virtual DataSource* getDataSource() const = 0;
     
         /** @name Transaction
          *  Methods for dealing with transactions.
