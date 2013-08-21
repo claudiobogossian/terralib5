@@ -30,7 +30,7 @@
 #include "../dataaccess2/datasource/PreparedQuery.h"
 #include "Config.h"
 
-// Forward declarations for libpq
+// Forward delcarations for libpq
 extern "C"
 {
   struct pg_conn;
@@ -46,13 +46,13 @@ namespace te
   namespace da
   {
     class DataSetType;
-    class DataSource;
   }
 
   namespace pgis
   {
-    // Forward declarations
-    class Connection;
+// Forward declarations
+    class Transactor;
+
     /*!
       \class PreparedQuery
 
@@ -69,7 +69,7 @@ namespace te
     {
       public:
 
-        PreparedQuery(te::da::DataSource* ds, const std::string& pqname);
+        PreparedQuery(DataSourceTransactor* t, const std::string& pqname);
 
         ~PreparedQuery();
 
@@ -116,6 +116,8 @@ namespace te
 
         void bind(int i, const te::dt::AbstractData& ad);
 
+        te::da::DataSourceTransactor* getTransactor() const;
+
         /*!
           \note PostgeSQL driver extended method.
         */
@@ -136,8 +138,6 @@ namespace te
         */
         void bind(te::da::DataSet* d);
 
-        te::da::DataSource* getDataSource() const;
-
         /*!
           \note PostgeSQL driver extended method.
         */
@@ -145,8 +145,8 @@ namespace te
 
       private:
 
-        te::da::DataSource* m_ds;
-        te::pgis::Connection* m_conn;
+        DataSourceTransactor* m_t;
+        PGconn* m_conn;
         PGresult* m_result;
         char** m_paramValues;
         int* m_paramLengths;

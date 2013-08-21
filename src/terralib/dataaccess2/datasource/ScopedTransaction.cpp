@@ -20,27 +20,27 @@
 /*!
   \file terralib/dataaccess/datasource/ScopedTransaction.cpp
 
-  \brief An utitily class to coordinate transactions.
+  \brief An utility class to coordinate transactions.
 */
 
 // TerraLib
-#include "DataSource.h"
+#include "DataSourceTransactor.h"
 #include "ScopedTransaction.h"
 
-te::da::ScopedTransaction::ScopedTransaction(te::da::DataSource& ds)
-  : m_ds(ds),
+te::da::ScopedTransaction::ScopedTransaction(te::da::DataSourceTransactor& transactor)
+  : m_t(transactor),
     m_rollback(true)
 {
-  if(m_ds.isInTransaction())
+  if(m_t.isInTransaction())
     m_rollback = false;
 
-  m_ds.begin();
+  m_t.begin();
 }
 
 te::da::ScopedTransaction::~ScopedTransaction()
 {
   if(m_rollback)
-    m_ds.rollBack();
+    m_t.rollBack();
 }
 
 void te::da::ScopedTransaction::commit()
@@ -48,7 +48,7 @@ void te::da::ScopedTransaction::commit()
   if(!m_rollback)
     return;
 
-  m_ds.commit();
+  m_t.commit();
 
   m_rollback = false;
 }

@@ -56,7 +56,7 @@ namespace te
   namespace da
   {
     class DataSet;
-    class DataSource;
+    class DataSourceTransactor;
     class Query;
 
     /*!
@@ -262,11 +262,11 @@ namespace te
         virtual void bind(int i, const te::dt::AbstractData& ad);
 
         /*!
-          \brief It returns a pointer to the underlying data source.
+          \brief It returns a pointer to the underlying data source transactor.
 
-          \return A pointer to the underlying data source.
+          \return A pointer to the underlying data source transactor.
         */
-        virtual DataSource* getDataSource() const = 0;
+        virtual DataSourceTransactor* getTransactor() const = 0;
     };
 
   } // end namespace da
