@@ -474,6 +474,8 @@ namespace te
           
           \param raster2YRescFact The Y axis rescale factor to be aplied into raster 2.
           
+          \param progressPtr A pointer to the progress instance or a NULL pointer if it is not used.
+          
           \param raster1Data The raster 1 loaded data.
           
           \param maskRaster1Data The mask raster 1 loaded data.
@@ -489,7 +491,7 @@ namespace te
           const double raster1YRescFact,
           const double raster2XRescFact,
           const double raster2YRescFact,
-          te::common::TaskProgress& progress,
+          te::common::TaskProgress* progressPtr,
           TiePointsLocator::OutputParameters* outParamsPtr,
           std::vector< double >& tiePointsWeights )
           throw( te::rp::Exception );
@@ -504,6 +506,8 @@ namespace te
           \param raster2XRescFact The X axis rescale factor to be aplied into raster 2.
           
           \param raster2YRescFact The Y axis rescale factor to be aplied into raster 2.
+          
+          \param progressPtr A pointer to the progress instance or a NULL pointer if it is not used.
           
           \param raster1Data The raster 1 loaded data.
           
@@ -520,7 +524,7 @@ namespace te
           const double raster1YRescFact,
           const double raster2XRescFact,
           const double raster2YRescFact,
-          te::common::TaskProgress& progress,
+          te::common::TaskProgress* progressPtr,
           TiePointsLocator::OutputParameters* outParamsPtr,
           std::vector< double >& tiePointsWeights )
           throw( te::rp::Exception );        
