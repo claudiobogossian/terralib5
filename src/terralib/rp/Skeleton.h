@@ -31,6 +31,7 @@
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/Grid.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <boost/thread.hpp>
 
@@ -93,6 +94,8 @@ namespace te
             bool m_enableMultiThread; //!< Enable (true) the use of threads.
             
             double m_skeletonThreshold; //!< A threshold to select those pixels as being part of the final skeleton - valid range [0,1].
+            
+            bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
             InputParameters();
             
@@ -461,6 +464,7 @@ namespace te
           \param inputX The vector decomposed X component;
           \param inputY The vector decomposed Y component;
           \param backGroundMapPtr An optional background image (0 means no background image).
+          \param progressPtr A pointer to a progress interface or an NULL pointer.
           \param outputX The diffused X component.
           \param outputX The diffused Y component.
         */                       
@@ -468,6 +472,7 @@ namespace te
           const te::rp::Matrix< double >& inputX, 
           const te::rp::Matrix< double >& inputY,
           te::rp::Matrix< double > const * const backgroundDataPtr, 
+          te::common::TaskProgress* progressPtr,
           te::rp::Matrix< double >& outputX, 
           te::rp::Matrix< double >& outputY ) const;     
           

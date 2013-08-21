@@ -37,7 +37,7 @@
 #include <cstring>
   
 #define DIFFUSENEIGHBOR( neighborRow, neighborCol ) \
-  if( bufferMag[ neighborRow ][ neighborCol ] > centerMag ) \
+  if( bufferMag[ neighborRow ][ neighborCol ] >= centerMag ) \
   { \
     ++validNeigborsNumber; \
     newCenterX += bufferX[ neighborRow ][ neighborCol ]; \
@@ -86,6 +86,7 @@ namespace te
       m_diffusionMaxIterations = 0;
       m_enableMultiThread = true;
       m_skeletonThreshold = 0.75;
+      m_enableProgress = false;
     }
 
     const Skeleton::InputParameters& Skeleton::InputParameters::operator=(
@@ -101,6 +102,7 @@ namespace te
       m_diffusionMaxIterations = params.m_diffusionMaxIterations;
       m_enableMultiThread = params.m_enableMultiThread;
       m_skeletonThreshold = params.m_skeletonThreshold;
+      m_enableProgress = params.m_enableProgress;
 
       return *this;
     }
@@ -167,12 +169,34 @@ namespace te
         Skeleton::OutputParameters* >( &outputParams );
       TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
       
+      // progress
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        
+        progressPtr->setTotalSteps( 7 );
+        
+        progressPtr->setMessage( "Generating the skeleton" );
+      }        
+      
+      // loading raster data
+      
       std::auto_ptr< te::rp::Matrix< double > > rasterDataPtr( 
         new te::rp::Matrix< double > );      ;
       rasterDataPtr->reset( te::rp::Matrix< double >::AutoMemPol );       
       TERP_TRUE_OR_RETURN_FALSE( loadData( *rasterDataPtr ),
         "Gradient maps build error" );      
 //      createTifFromMatrix( *rasterDataPtr, true, "rasterData" );    
+
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }   
+      
+      // Applying the smooth filter
       
       {
         std::auto_ptr< te::rp::Matrix< double > > smoothedRasterDataPtr( 
@@ -183,12 +207,30 @@ namespace te
 //        createTifFromMatrix( *smoothedRasterDataPtr, true, "smoothedRasterData" );              
         rasterDataPtr.reset( smoothedRasterDataPtr.release() );        
       }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }         
+      
+      // calculating the edge strength map
         
       te::rp::Matrix< double > edgeStrengthMap;
       edgeStrengthMap.reset( te::rp::Matrix< double >::AutoMemPol );    
       TERP_TRUE_OR_RETURN_FALSE( getEdgeStrengthMap( *rasterDataPtr, 
         edgeStrengthMap ), "Edge strength map build error" ); 
 //      createTifFromMatrix( edgeStrengthMap, true, "edgeStrengthMap" );
+
+      rasterDataPtr.reset();
+
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }   
+
+      // Generating the initial vector field
    
       te::rp::Matrix< double > vecXMap;
       vecXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
@@ -206,13 +248,21 @@ namespace te
 //         getMagnitude( vecXMap, vecYMap, vecMagMap );
 //         createTifFromMatrix( vecMagMap, true, "vecMagMap" );
 //       }
+
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }   
+      
+      // Applying a vector diffusion 
       
       te::rp::Matrix< double > diffusedVecXMap;
       diffusedVecXMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
       te::rp::Matrix< double > diffusedVecYMap;
       diffusedVecYMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
-      TERP_TRUE_OR_RETURN_FALSE( applyVecDiffusion( vecXMap, vecYMap, &edgeStrengthMap,
-        diffusedVecXMap, diffusedVecYMap ),
+      TERP_TRUE_OR_RETURN_FALSE( applyVecDiffusion( vecXMap, vecYMap, 0,
+        progressPtr.get(), diffusedVecXMap, diffusedVecYMap ),
         "Vector maps build error" ); 
 //       {
 //         createTifFromMatrix( diffusedVecXMap, true, "diffusedVecXMap" );
@@ -223,6 +273,17 @@ namespace te
 //         getMagnitude( diffusedVecXMap, diffusedVecYMap, diffusedVecXMagMap );
 //         createTifFromMatrix( diffusedVecXMagMap, true, "diffusedVecXMagMap" );
 //       }
+
+      vecXMap.clear();
+      vecYMap.clear();
+
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }   
+
+      // Calculating the skeleton strength map
       
       te::rp::Matrix< double > skelSMap;
       skelSMap.reset( te::rp::Matrix< double >::AutoMemPol ); 
@@ -230,6 +291,71 @@ namespace te
         diffusedVecYMap, edgeStrengthMap, skelSMap ),
         "Skeleton strength map build error" );  
 //      createTifFromMatrix( skelSMap, true, "skelSMap" );
+
+      diffusedVecXMap.reset();
+      diffusedVecYMap.reset();
+
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }   
+
+      // creating the output raster
+      
+      {
+        std::vector< te::rst::BandProperty* > bandsProperties;
+        bandsProperties.push_back( new te::rst::BandProperty(
+          *( m_inputParameters.m_inputRasterPtr->getBand(  
+          m_inputParameters.m_inputRasterBand )->getProperty() ) ) );  
+        bandsProperties[ 0 ]->m_noDataValue = 0;
+        bandsProperties[ 0 ]->m_colorInterp = te::rst::GrayIdxCInt;
+        bandsProperties[ 0 ]->m_type = te::dt::UCHAR_TYPE;        
+        
+        outParamsPtr->m_outputRasterPtr.reset( 
+          te::rst::RasterFactory::make(
+            outParamsPtr->m_rType, 
+            new te::rst::Grid( *( m_inputParameters.m_inputRasterPtr->getGrid() ) ),
+            bandsProperties,
+            outParamsPtr->m_rInfo,
+            0,
+            0 ) );
+        TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputRasterPtr.get(),
+          "Output raster creation error" );
+          
+        te::rst::Band& outBand = *( outParamsPtr->m_outputRasterPtr->getBand( 0 ) );
+        const unsigned int nRows = outParamsPtr->m_outputRasterPtr->getNumberOfRows();
+        const unsigned int nCols = outParamsPtr->m_outputRasterPtr->getNumberOfColumns();
+        const unsigned int rowsBound = nRows - 4;
+        const unsigned int colsBound = nCols - 4;
+        unsigned int row = 0;
+        unsigned int col = 0;
+        
+        for( row = 0 ; row < nRows ; ++row )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            if(
+                ( skelSMap[ row ][ col ] > m_inputParameters.m_skeletonThreshold )
+                && ( row > 0 ) && ( row < rowsBound )
+                && ( col > 0 ) && ( col < colsBound )
+              )
+            {
+              outBand.setValue( col, row, 255 );
+            }
+            else
+            {
+              outBand.setValue( col, row, 0 );
+            }
+          }
+        }
+      }   
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }         
       
       return true;
     }
@@ -726,6 +852,7 @@ namespace te
        const te::rp::Matrix< double >& inputX, 
        const te::rp::Matrix< double >& inputY,
        te::rp::Matrix< double > const * const backgroundDataPtr, 
+       te::common::TaskProgress* progressPtr, 
        te::rp::Matrix< double >& outputX, 
        te::rp::Matrix< double >& outputY ) const
     {
@@ -806,6 +933,11 @@ namespace te
           ( currentIterationResidue > m_inputParameters.m_diffusionThreshold ) 
         )
       {
+        if( progressPtr )
+        {
+          if( ! progressPtr->isActive() ) return false;          
+        }
+        
         currentIterationResidue = 0;
         
         if( iteration == 0 )

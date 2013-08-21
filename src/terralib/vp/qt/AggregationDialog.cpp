@@ -548,6 +548,8 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
     QMessageBox::information(this, "Aggregation", errMsg);
   }
+
+  accept();
 }
 
 void te::vp::AggregationDialog::onCancelPushButtonClicked()

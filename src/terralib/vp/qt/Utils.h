@@ -57,7 +57,7 @@ namespace te
 
       \return Union of the geometry.
     */
-    te::gm::Geometry* GetUnionGeometry(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx);
+    te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx);
 
     std::string GetSimpleTableName(std::string fullName);
 

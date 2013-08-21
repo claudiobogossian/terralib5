@@ -90,6 +90,13 @@ namespace te
                                     const int& levels,
                                     const std::string& outputLayerName,
                                     const std::string& outputArchive);
+
+    void SetBuffer(te::mem::DataSet* dataSet,
+                  const std::map<te::gm::Geometry*, double>& distance,
+                  const int& bufferPolygonRule);
+
+    void SetDissolvedBoundaries(te::mem::DataSet* dataset);
+
   } // end namespace vp
 }   // end namespace te
 
