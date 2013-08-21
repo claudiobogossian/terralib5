@@ -171,7 +171,14 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 {
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
 
-  resultPair = Intersection(newLayerName, idata, outputSRID);
+  if(SupportsSpatialOperators(idata))
+  {
+    resultPair = IntersectionQuery(newLayerName, idata, outputSRID);
+  }
+  else
+  {
+    resultPair = Intersection(newLayerName, idata, outputSRID);
+  }
 
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
@@ -285,6 +292,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
   te::map::DataSetLayer* nextDSLayer;
   
   std::auto_ptr<te::da::DataSetType> currentDSType;
+  std::auto_ptr<te::da::DataSetType> nextDSType;
 
   std::vector<te::dt::Property*> currentProps;
   std::vector<te::dt::Property*> nextProps;
@@ -299,8 +307,6 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
   {
     if(layerPos == 0)
     {
-      std::auto_ptr<te::da::DataSetType> nextDSType;
-
       currentDSLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
       nextDSLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos + 1].first.get());
 
@@ -400,10 +406,10 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
   te::da::DataSet* dsQuery = dsTransactor->query(select);
   dsQuery->moveFirst();
 
-  //te::da::DataSetType* dsType = CreateDataSetType(newLayerName, currentDSType.get(), currentProps, nextDSType.get(), nextProps);
+  te::da::DataSetType* dsType = CreateDataSetType(newLayerName, currentDSType.get(), currentProps, nextDSType.get(), nextProps);
 
-  //resultPair.first = dsType;
-  //resultPair.second = dsQuery;
+  resultPair.first = dsType;
+  resultPair.second = dsQuery;
   
   return resultPair;
 }

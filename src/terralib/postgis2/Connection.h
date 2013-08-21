@@ -27,7 +27,7 @@
 #define __TERRALIB_POSTGIS_INTERNAL_CONNECTION_H
 
 // TerraLib
-#include "../dataaccess2/datasource/Connection.h"
+//#include "../dataaccess2/datasource/Connection.h"
 #include "Config.h"
 
 // STL
@@ -65,7 +65,7 @@ namespace te
 
       \sa ConnectionPool
     */
-    class TEPGISEXPORT Connection : public te::da::Connection
+    class TEPGISEXPORT Connection : public boost::noncopyable
     {
       public:
 
