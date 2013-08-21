@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORWIDGET_H
 
 // TerraLib
+#include "../../../color/RGBAColor.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/GTParameters.h"
 #include "../../../maptools/AbstractLayer.h"
@@ -45,10 +46,16 @@ namespace Ui { class TiePointLocatorWidgetForm; }
 
 namespace te
 {
+
+  namespace se { class Mark; }
+
   namespace qt
   {
     namespace widgets
     {
+      class MapDisplay;
+      class RasterNavigatorWidget;
+
         /*! \class TiePointData Tie Point data. */
         class TiePointData
         {
@@ -75,6 +82,7 @@ namespace te
             const TiePointData& operator=( const TiePointData& other );
 
             typedef std::map< unsigned int, TiePointData >  TPContainerT; //!< Tie-pints container type definition.
+
         };
 
       /*!
@@ -163,6 +171,16 @@ namespace te
 
           void onRefreshToolButtonClicked();
 
+          void onRefMapDisplayExtentChanged();
+
+          void onAdjMapDisplayExtentChanged();
+
+          void onRefPointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+
+          void onAdjPointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+
+          void onTiePointsUpdated();
+
         protected:
 
           /*! \brief Uptate the tie-points table widget. */
@@ -176,6 +194,12 @@ namespace te
 
           /*! \brief Update tie point values with  advanced options changed values. */
           void updateAdvancedOptions();
+
+          void startUpNavigators();
+
+          void drawTiePoints();
+
+          QPixmap getPixmap(te::color::RGBAColor** rgba);
 
         signals:
 
@@ -197,6 +221,17 @@ namespace te
           unsigned int m_tiePointIdCounter;                             //!< A ID counter for new tie pointes inserted into m_tiePoints;
 
           std::set<int> m_tiePointsSelected;                            //!< List of selected tie points.
+
+
+          te::qt::widgets::RasterNavigatorWidget* m_refNavigator;     //!< Reference raster navigator
+          te::qt::widgets::RasterNavigatorWidget* m_adjNavigator;     //!< Adjust raster navigator
+
+          te::color::RGBAColor** m_rgbaMarkSelected;                  //!< Represents the pattern of a selected tie point
+          te::color::RGBAColor** m_rgbaMarkUnselected;                //!< Represents the pattern of a unselected tie point
+          te::color::RGBAColor** m_rgbaMarkRef;                       //!< Represents the pattern of reference tie point
+          te::se::Mark* m_markSelected;                               //!< Represents the mark of a selected tie point
+          te::se::Mark* m_markUnselected;                             //!< Represents the mark of a unselected tie point
+          te::se::Mark* m_markRef;                                    //!< Represents the mark of a reference tie point
       }; 
 
     } // end namespace widgets

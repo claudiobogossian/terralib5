@@ -28,8 +28,10 @@
 #include "../../../raster/Raster.h"
 #include "LayerSearchWidget.h"
 #include "LayerSearchWizardPage.h"
+#include "RasterInfoWidget.h"
+#include "RasterInfoWizardPage.h"
+#include "TiePointLocatorDialog.h"
 #include "TiePointLocatorWizard.h"
-#include "TiePointLocatorWizardPage.h"
 
 // STL
 #include <cassert>
@@ -64,7 +66,7 @@ bool te::qt::widgets::TiePointLocatorWizard::validateCurrentPage()
     {
       te::map::AbstractLayerPtr l = *list.begin();
 
-      m_tiePointLocatorPage->setReferenceLayer(l);
+      m_tiePointLocatorDialog->setReferenceLayer(l);
     }
 
     return m_layerRefPage->isComplete();
@@ -77,20 +79,17 @@ bool te::qt::widgets::TiePointLocatorWizard::validateCurrentPage()
     {
       te::map::AbstractLayerPtr l = *list.begin();
 
-      m_tiePointLocatorPage->setAdjustLayer(l);
-
-      //show navigators
-      m_tiePointLocatorPage->showReferenceNavigator(true);
-      m_tiePointLocatorPage->showAdjustNavigator(true);
+      m_tiePointLocatorDialog->setAdjustLayer(l);
     }
+
+    m_tiePointLocatorDialog->showMaximized();
 
     return m_layerAdjPage->isComplete();
   }
-  else if(currentPage() ==  m_tiePointLocatorPage.get())
+  else if(currentPage() ==  m_rasterInfoPage.get())
   {
-    return m_tiePointLocatorPage->isComplete();
+    return execute();
   }
-
 
   return true;
 }
@@ -105,11 +104,12 @@ void te::qt::widgets::TiePointLocatorWizard::addPages()
 {
   m_layerRefPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
   m_layerAdjPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
-  m_tiePointLocatorPage.reset(new te::qt::widgets::TiePointLocatorWizardPage(this));
+  m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
+  m_tiePointLocatorDialog.reset(new te::qt::widgets::TiePointLocatorDialog(this));
 
   addPage(m_layerRefPage.get());
   addPage(m_layerAdjPage.get());
-  addPage(m_tiePointLocatorPage.get());
+  addPage(m_rasterInfoPage.get());
 
   //for contrast only one layer can be selected
   m_layerRefPage->setSubTitle(tr("Allows selection of layers using filters for selection. Select the layer to be used as REFERENCE."));

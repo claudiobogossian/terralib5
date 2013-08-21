@@ -18,25 +18,23 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/TiePointLocatorWizardPage.h
+  \file terralib/qt/widgets/rp/RasterNavigatorDialog.h
 
-  \brief This file defines a class for a tie point locator Wizard page.
+  \brief This file defines a class for a Raster Navigator Dialog.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORWIZARDPAGE_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORWIZARDPAGE_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORDIALOG_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORDIALOG_H
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 
 // STL
-#include <map>
 #include <memory>
 
 // Qt
 #include <QtGui/QDialog>
-#include <QtGui/QWizardPage>
 
 namespace te
 {
@@ -47,21 +45,19 @@ namespace te
       class TiePointLocatorWidget;
 
       /*!
-        \class TiePointLocatorWizardPage
+        \class RasterNavigatorDialog
 
-        \brief This class is GUI used to define a wizard page for the tiepointlocator widget.
+        \brief This class is a dialog for the RasterNavigator widget.
       */
-      class TEQTWIDGETSEXPORT TiePointLocatorWizardPage : public QWizardPage
+      class TEQTWIDGETSEXPORT TiePointLocatorDialog : public QDialog
       {
         Q_OBJECT
 
         public:
 
-          TiePointLocatorWizardPage(QWidget* parent = 0);
+          TiePointLocatorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~TiePointLocatorWizardPage();
-
-          bool isComplete() const;
+          ~TiePointLocatorDialog();
 
         public:
 
@@ -87,11 +83,11 @@ namespace te
 
         private:
 
-          std::auto_ptr<te::qt::widgets::TiePointLocatorWidget> m_tiePointWidget;
+          std::auto_ptr<te::qt::widgets::TiePointLocatorWidget> m_widget;
       };
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORWIZARDPAGE_H
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORDIALOG_H

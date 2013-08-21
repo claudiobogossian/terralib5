@@ -43,8 +43,8 @@ namespace te
     namespace widgets
     {
       class LayerSearchWizardPage;
-	  class TiePointLocatorWizardPage;
-
+      class TiePointLocatorDialog;
+      class RasterInfoWizardPage;
       /*!
         \class TiePointLocatorWizard
 
@@ -75,7 +75,8 @@ namespace te
 
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerRefPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerAdjPage;
-          std::auto_ptr<te::qt::widgets::TiePointLocatorWizardPage> m_tiePointLocatorPage;
+          std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
+          std::auto_ptr<te::qt::widgets::TiePointLocatorDialog> m_tiePointLocatorDialog;
       };
     }   // end namespace widgets
   }     // end namespace qt
