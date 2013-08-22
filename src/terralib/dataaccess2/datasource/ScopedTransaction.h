@@ -36,8 +36,8 @@ namespace te
 {
   namespace da
   {
-    // Forward declarations
-    class DataSource;
+// Forward declarations
+    class DataSourceTransactor;
 
     /*!
       \class ScopedTransaction
@@ -62,7 +62,7 @@ namespace te
 
           \param transactor The transactor that will be used to initiate a transaction.
         */
-        ScopedTransaction(te::da::DataSource& ds);
+        ScopedTransaction(te::da::DataSourceTransactor& transactor);
 
         /*! \brief Destructor. */
         ~ScopedTransaction();
@@ -76,8 +76,8 @@ namespace te
 
       private:
 
-        te::da::DataSource& m_ds;    //!< A reference to the data source.
-        bool m_rollback;             //!< A flag that indicates if the transaction may be aborted at the end.
+        te::da::DataSourceTransactor& m_t;    //!< A reference to the underlying transactor.
+        bool m_rollback;                      //!< A flag that indicates if the transaction may be aborted at the end.
     };
 
   } // end namespace da
