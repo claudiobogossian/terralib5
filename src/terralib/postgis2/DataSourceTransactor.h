@@ -30,34 +30,27 @@
 #include "../dataaccess2/datasource/DataSourceTransactor.h"
 #include "Config.h"
 #include "DataSource.h"
-//#include "../../common/Enums.h"
-//#include "../../geometry/Enums.h"
 
 // STL
 #include <memory>
-#include <map> //
-#include <string>//
-
-// Boost
-//#include <boost/cstdint.hpp>
-//#include <boost/noncopyable.hpp>
-//#include <boost/shared_ptr.hpp>
+#include <map>
+#include <string>
 
 namespace te
 {
 // Forward declarations
-  namespace dt { class Property; }//
-  namespace gm { class Envelope; class Geometry; }//
+  namespace dt { class Property; }
+  namespace gm { class Envelope; class Geometry; }
 
   namespace pgis
   {
     // Forward declarations
-    class BatchExecutor;//
-    class DataSet;//
+    class BatchExecutor;
+    class DataSet;
     class Connection;
     class ObjectIdSet;
-    class PreparedQuery;//
-    class Query;//
+    class PreparedQuery;
+    class Query;
 
     /*!
       \class DataSourceTransactor
@@ -81,7 +74,7 @@ namespace te
         /*! \brief The destructor will automatically release the connection to the pool. */
           ~DataSourceTransactor();
 
-        std::auto_ptr<te::da::DataSource> getDataSource() const;
+        te::da::DataSource* getDataSource() const;
 
         /*!
           \brief It returns the underlying connection.
@@ -101,30 +94,31 @@ namespace te
         bool isInTransaction() const;
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  bool connected = false);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  bool connected = false);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        //std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-        //                                          const ObjectIdSet* oids, 
-        //                                          te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  bool connected = false);
 
         std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
+                                             bool connected = false);
 
 
         std::auto_ptr<te::da::DataSet> query(const std::string& query, 
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
+                                             bool connected = false);
 
         void execute(const te::da::Query& command);
 

@@ -288,7 +288,7 @@ std::vector<std::string> te::ogr::DataSource::getDataSetNames()
   return datasets;
 }
 
-te::da::DataSetTypePtr te::ogr::DataSource::getDataSetType(const std::string& name)
+const te::da::DataSetTypePtr& te::ogr::DataSource::getDataSetType(const std::string& name)
 {
   std::string sql = "SELECT FID, * FROM " + name;
 

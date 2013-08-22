@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../common/Enums.h"
+#include "../../geometry/Enums.h"
 #include "../dataset/CheckConstraint.h"
 #include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
@@ -36,9 +37,7 @@
 #include "../dataset/PrimaryKey.h"
 #include "../dataset/Sequence.h"
 #include "../dataset/UniqueKey.h"
-#include "../../geometry/Enums.h"
 #include "../Config.h"
-#include "../Exception.h"
 
 // STL
 #include <map>
@@ -273,11 +272,12 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name.
+                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released. 
 
           \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
           \param travType The traverse type associated to the returned dataset. 
-
-          \return The caller of this method will take the ownership of the returned data set.
 
           \note Thread-safe!
         */
@@ -286,6 +286,9 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the specified property.
+                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
           \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
           \param propertyName  The name of a spatial property in order to apply the spatial filter.
@@ -307,14 +310,15 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the given geometric property.
+                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
           \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
           \param propertyName  The name of a spatial property in order to apply the spatial filter.
           \param g             A geometry to be used as a spatial filter when retrieving datasets.
           \param r             The spatial relation to be used during the filter.
           \param travType      The traverse type associated to the returned dataset.
-
-          \return The caller of this method will take the ownership of the returned data set.
 
           \note The geometry coordinates should be in the same coordinate system as the dataset.
 
@@ -327,14 +331,15 @@ namespace te
                                                   te::common::TraverseType travType = te::common::FORWARDONLY);
 
         /*!
-         \brief It gets the dataset identified by the given name using the set of objects identification.
+          \brief It gets the dataset identified by the given name using the identification of the objects.
+                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
          \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
-         \param oids     A pointer to a set of objects identification. Do not pass null. Do not pass set empty.
+         \param oids     A pointer to a set of objects identification. Do not pass a null pointer nor an empty set.
          \param travType The traverse type associated to the returned dataset.
-         
-         \return The caller of this method will take the ownership of the returned DataSet.
-         
+
          \exception Exception It can throws an exception if:
                     <ul>
                     <li>something goes wrong during data retrieval</li>
@@ -345,20 +350,21 @@ namespace te
       \note Thread-safe!
         */
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const ObjectIdSet* oids, 
+                                                  const te::da::ObjectIdSet* oids, 
                                                   te::common::TraverseType travType = te::common::FORWARDONLY);
 
         /*!
           \brief It executes a query that may return some data using a generic query.
+                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-          This method is different of the method that accepts a dataset name and
-          a spatial filter; this method allows the retrieving of only a
-          subset of the attributes, since a query can include a property list.
+                 This method is different of the method that accepts a dataset name and
+                 a spatial filter; this method allows the retrieving of only a
+                 subset of the attributes, since a query can include a property list.
 
           \param q        A valid query object.
           \param travType The traverse type associated to the returned dataset. 
-
-          \return The caller of this method will take the ownership of the returned data set.
 
           \note Thread-safe!
         */
@@ -367,6 +373,9 @@ namespace te
 
         /*!
           \brief It executes a query that may return some data using the data source native language.
+                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
           \param query    A query string in the data source native language.
           \param travType The traverse type associated to the returned dataset.
@@ -408,7 +417,7 @@ namespace te
           *  Auxiliary commands.
           */
         //@{        
-    /*!
+        /*!
           \brief It escapes a string for using in commands and queries.
 
           \param value Any string.
@@ -500,6 +509,18 @@ namespace te
         virtual boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
         /*!
+          \brief It retrieves a property with the given name from the dataset.
+
+          \param datasetName  The dataset name.
+          \param propertyName The property name.
+
+          \return The property with the given name from the dataset.
+
+          \note Thread-safe!
+        */
+        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
+
+        /*!
           \brief It searches for the list of property names of the given dataset.
 
           \param datasetName The dataset name.
@@ -535,18 +556,6 @@ namespace te
           \note Thread-safe!
         */
         virtual bool propertyExists(const std::string& datasetName, const std::string& name);
-
-        /*!
-          \brief It retrieves a property with the given name from the dataset.
-
-          \param datasetName  The dataset name.
-          \param propertyName The property name.
-
-          \return The property with the given name from the dataset.
-
-          \note Thread-safe!
-        */
-        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It retrieves a property from the dataset.
@@ -1090,7 +1099,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual void remove(const std::string& datasetName, const ObjectIdSet* oids = 0);
+        virtual void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids = 0);
 
         /*!
           \brief It updates the dataset items in the data source based on the OID list.
@@ -1111,7 +1120,7 @@ namespace te
         virtual void update(const std::string& datasetName,
                             DataSet* dataset,
                             const std::vector<std::size_t>& properties,
-                            const ObjectIdSet* oids,
+                            const te::da::ObjectIdSet* oids,
                             const std::map<std::string, std::string>& options,
                             std::size_t limit = 0);
     //@}

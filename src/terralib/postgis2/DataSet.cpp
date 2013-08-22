@@ -126,18 +126,21 @@ namespace te
 }   // end namespace te
 
 te::pgis::DataSet::DataSet(PGresult* result,
-                           te::da::DataSource* ds,
-                           std::string* sql)
+                           std::string* sql,
+                           const std::vector<int>& ptypes,
+                           bool timeIsInteger)
   : m_i(-1),
     m_result(result),
-    m_ds(ds),
-    m_sql(sql)
+    m_sql(sql),
+    m_ptypes(ptypes),
+    m_mbr(0),
+    m_timeIsInteger(timeIsInteger)
 {
   m_size = PQntuples(m_result);
 
- te::pgis::DataSource* pgisDS = static_cast<te::pgis::DataSource*>(ds);
+  //te::pgis::DataSource* pgisDS = static_cast<te::pgis::DataSource*>(ds);
 
-  Convert2TerraLib(m_result, pgisDS->getGeomTypeId(), pgisDS->getRasterTypeId(), m_ptypes);
+  //Convert2TerraLib(m_result, pgisDS->getGeomTypeId(), pgisDS->getRasterTypeId(), m_ptypes);
 }
 
 te::pgis::DataSet::~DataSet()
@@ -181,9 +184,36 @@ bool te::pgis::DataSet::isEmpty() const
   return (m_size == 0);
 }
 
+bool te::pgis::DataSet::isConnected() const
+{
+  return false;
+}
+
 std::size_t te::pgis::DataSet::size() const
 {
   return m_size;
+}
+
+std::auto_ptr<te::gm::Envelope> te::pgis::DataSet::getExtent(std::size_t i)
+{
+  if(!m_mbr)
+  {
+    if(m_ptypes[i] != te::dt::GEOMETRY_TYPE)
+      throw Exception(TR_PGIS("This driver only supports the getExtent method over a geometry column!"));
+
+    m_mbr = new te::gm::Envelope;
+
+    m_i = -1;
+    while(moveNext())
+    {
+      std::auto_ptr<te::gm::Geometry> geom(getGeometry(i));
+      m_mbr->Union(*(geom->getMBR()));
+    }
+  }
+
+  te::gm::Envelope* mbr = new te::gm::Envelope(*m_mbr);
+
+  return std::auto_ptr<te::gm::Envelope>(mbr);
 }
 
 bool te::pgis::DataSet::moveNext()
@@ -446,13 +476,11 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
   double dval;
   long int lval;
 
-  te::pgis::DataSource* pgisDS = static_cast<te::pgis::DataSource*>(m_ds);
-
   switch(tid)
   {
     case PG_TIME_TYPE:
       {
-        if(pgisDS->isTimeAnInteger())
+        if(m_timeIsInteger)
         {
           ival = getInt64(i);
         }
@@ -479,7 +507,7 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
 
     case PG_TIMESTAMP_TYPE:
       {
-        if(pgisDS->isTimeAnInteger())
+        if(m_timeIsInteger)
           ival = getInt64(i);
         else
         {
@@ -492,7 +520,7 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
 
     case PG_TIMESTAMPTZ_TYPE:
       {
-        if(pgisDS->isTimeAnInteger())
+        if(m_timeIsInteger)
           ival = getInt64(i);
         else
         {
@@ -509,7 +537,7 @@ std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) co
       }
     case PG_TIMETZ_TYPE:
       {
-        if(pgisDS->isTimeAnInteger())
+        if(m_timeIsInteger)
         {
           ival = getInt64(i);
           iz = 0;

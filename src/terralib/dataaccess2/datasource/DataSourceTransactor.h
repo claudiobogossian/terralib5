@@ -29,17 +29,17 @@
 // TerraLib
 #include "../../common/Enums.h"
 #include "../../geometry/Enums.h"
-#include "../Config.h"
-#include "../Exception.h"
 #include "../dataset/CheckConstraint.h"
-#include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
+#include "../dataset/DataSet.h"
 #include "../dataset/ForeignKey.h"
 #include "../dataset/Index.h"
 #include "../dataset/PrimaryKey.h"
 #include "../dataset/Sequence.h"
 #include "../dataset/UniqueKey.h"
+#include "../Config.h"
 #include "BatchExecutor.h"
+#include "PreparedQuery.h"
 
 // STL
 #include <map>
@@ -56,19 +56,15 @@
 
 namespace te
 {
-// Forward declarations
+  // Forward declarations
   namespace dt { class Property; }
   namespace gm { class Envelope; class Geometry; }
 
   namespace da
   {
-// Forward declarations
-    class BatchExecutor;
-    class DataSet;
-    class DataSetType;
+    // Forward declarations
     class DataSource;
     class ObjectIdSet;
-    class PreparedQuery;
     class Query;
     class Select;
    
@@ -98,7 +94,7 @@ namespace te
     /*!
           \brief It returns the parent data source of the transactor.
         */
-        virtual std::auto_ptr<DataSource> getDataSource() const = 0;
+        virtual DataSource* getDataSource() const = 0;
     
         /** @name Transaction
          *  Methods for dealing with transactions.
@@ -138,7 +134,7 @@ namespace te
         virtual bool isInTransaction() const = 0;
         //@}
     
-    /** @name DataSet Retrieval
+        /** @name DataSet Retrieval
           *  Methods for retrieving data from the data source.
           */
         //@{
@@ -146,24 +142,39 @@ namespace te
         /*!
           \brief It gets the dataset identified by the given name.
 
+          This method can return a connected or unconnected DataSet. A connected DataSet has 
+          a connection to the DataSource which it is from, and so, its existence depedents on
+          the existence of the DataSourceTransactor that creates it. Differently, an unconnected DataSet
+          has no connection to the DataSource which it is from and can live independelty of the
+          DataSourceTransactor that creates it.
+
           \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
           \param travType The traverse type associated to the returned dataset. 
+          \param connected A flag to indicate if the returned DataSet is connected or not.
 
           \return The caller of this method will take the ownership of the returned data set.
 
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> getDataSet(const std::string& name, 
-                                                         te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                  bool connected = false) = 0;
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the specified property.
+
+          This method can return a connected or unconnected DataSet. A connected DataSet has 
+          a connection to the DataSource which it is from, and so, its existence depedents on
+          the existence of the DataSourceTransactor that creates it. Differently, an unconnected DataSet
+          has no connection to the DataSource which it is from and can live independelty of the
+          DataSourceTransactor that creates it.
 
           \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
           \param propertyName  The name of a spatial property in order to apply the spatial filter.
           \param e             A rectangle to be used as a spatial filter when retrieving datasets.
           \param r             The spatial relation to be used during the filter.
           \param travType      The traversal type associated to the returned dataset.
+          \param connected     A flag to indicate if the returned DataSet is connected or not.
 
           \return The caller of this method will take the ownership of the returned data set.
 
@@ -175,16 +186,24 @@ namespace te
                                                   const std::string& propertyName,
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                  bool connected = false) = 0;
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the given geometric property.
+
+          This method can return a connected or unconnected DataSet. A connected DataSet has 
+          a connection to the DataSource which it is from, and so, its existence depedents on
+          the existence of the DataSourceTransactor that creates it. Differently, an unconnected DataSet
+          has no connection to the DataSource which it is from and can live independelty of the
+          DataSourceTransactor that creates it.
 
           \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
           \param propertyName  The name of a spatial property in order to apply the spatial filter.
           \param g             A geometry to be used as a spatial filter when retrieving datasets.
           \param r             The spatial relation to be used during the filter.
           \param travType      The traverse type associated to the returned dataset.
+          \param connected     A flag to indicate if the returned DataSet is connected or not.
 
           \return The caller of this method will take the ownership of the returned data set.
 
@@ -196,17 +215,23 @@ namespace te
                                                   const std::string& propertyName,
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                  bool connected = false) = 0;
 
         /*!
          \brief It gets the dataset identified by the given name using the set of objects identification.
 
-         \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
-         \param oids     A pointer to a set of objects identification. Do not pass null. Do not pass set empty.
-         \param travType The traverse type associated to the returned dataset.
-         
-         \return The caller of this method will take the ownership of the returned DataSet.
-         
+          This method can return a connected or unconnected DataSet. A connected DataSet has 
+          a connection to the DataSource which it is from, and so, its existence depedents on
+          the existence of the DataSourceTransactor that creates it. Differently, an unconnected DataSet
+          has no connection to the DataSource which it is from and can live independelty of the
+          DataSourceTransactor that creates it.
+     
+         \param name    The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
+         \param oids    A pointer to a set of objects identification. Do not pass null. Do not pass set empty.
+         \param travType  The traverse type associated to the returned dataset.
+         \param connected  A flag to indicate if the returned DataSet is connected or not.
+
          \exception Exception It can throws an exception if:
                     <ul>
                     <li>something goes wrong during data retrieval</li>
@@ -216,30 +241,46 @@ namespace te
         */
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const ObjectIdSet* oids, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                  bool connected = false);
 
         /*!
           \brief It executes a query that may return some data using a generic query.
 
+          This method can return a connected or unconnected DataSet. A connected DataSet has 
+          a connection to the DataSource which it is from, and so, its existence depedents on
+          the existence of the DataSourceTransactor that creates it. Differently, an unconnected DataSet
+          has no connection to the DataSource which it is from and can live independelty of the
+          DataSourceTransactor that creates it.
+      
           This method is different of the method that accepts a dataset name and
           a spatial filter; this method allows the retrieving of only a
           subset of the attributes, since a query can include a property list.
 
           \param q        A valid query object.
           \param travType The traverse type associated to the returned dataset. 
+          \param connected     A flag to indicate if the returned DataSet is connected or not.
 
           \return The caller of this method will take the ownership of the returned data set.
 
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+                                             te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                             bool connected = false) = 0;
 
         /*!
           \brief It executes a query that may return some data using the data source native language.
 
+          This method can return a connected or unconnected DataSet. A connected DataSet has 
+          a connection to the DataSource which it is from, and so, its existence depedents on
+          the existence of the DataSourceTransactor that creates it. Differently, an unconnected DataSet
+          has no connection to the DataSource which it is from and can live independelty of the
+          DataSourceTransactor that creates it.
+          
           \param query    A query string in the data source native language.
           \param travType The traverse type associated to the returned dataset.
+          \param connected     A flag to indicate if the returned DataSet is connected or not.
 
           \return The caller of this method will take the ownership of the returned data set.
 
@@ -248,10 +289,11 @@ namespace te
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const std::string& query, 
-                                             te::common::TraverseType travType = te::common::FORWARDONLY) = 0;
+                                             te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                             bool connected = false) = 0;
         //@}
     
-    /** @name Execution Methods
+        /** @name Execution Methods
          *  Methods for executing operations against the data source.
          */
         //@{

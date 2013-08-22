@@ -27,7 +27,6 @@
 #include "../../common/Translator.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../datatype/Property.h"
-#include "../dataset/DataSetType.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../query/DataSetName.h"
 #include "../query/Field.h"
@@ -49,7 +48,8 @@ te::da::DataSourceTransactor::~DataSourceTransactor()
 
 std::auto_ptr<te::da::DataSet> te::da::DataSourceTransactor::getDataSet(const std::string& name,
                                                                         const te::da::ObjectIdSet* oids,
-                                                                        te::common::TraverseType travType)
+                                                                        te::common::TraverseType travType, 
+                                                                        bool connected)
 {
   assert(!name.empty());
   assert(oids);
@@ -74,7 +74,7 @@ std::auto_ptr<te::da::DataSet> te::da::DataSourceTransactor::getDataSet(const st
   // The final Select
   std::auto_ptr<Select> select(new Select(all, from, filter));
 
-  std::auto_ptr<te::da::DataSet> result = query(select.get(), travType);
+  std::auto_ptr<te::da::DataSet> result = query(select.get(), travType, connected);
 
   return result;
 }

@@ -91,9 +91,15 @@ namespace te
       datasets, you can find out the dataset that gave the original
       dataset name of a specific property.
 
-      \sa DataSourceCatalogLoader, DataSetType
+      A dataset can be connected or disconnected. A connected dataset, after its creation through
+      the data source transactor, continues to depend on the connection given by its associated
+      data source. Differently, a disconnected dataset, after its creation, no more depends of the
+      connection given by the data source, and it continues to live after the connection has been
+      released to the data source.
 
-      \todo Whe can generaliza the dataset API so that a dataset may contain other datasets, in this case it will be a collection of datasets.
+      \sa DataSource DataSourceTransactor DataSetType
+
+      \todo We can generalize the dataset API so that a dataset may contain other datasets; in this case, it will be a collection of datasets.
 
       \note A geometric or raster property is represented just like any other data type.
 
@@ -161,7 +167,6 @@ namespace te
           \return The underlying dataset name of the property at position pos.
         */
         virtual std::string getDatasetNameOfProperty(std::size_t i) const = 0;
-
         //@}
 
         /** @name Collection Methods
@@ -177,6 +182,18 @@ namespace te
         virtual bool isEmpty() const = 0;
 
         /*!
+          \brief It returns true if the dataset is connected and false if it is disconnected.
+                 A dataset can be connected or disconnected. A connected dataset, after its creation through
+                 the data source transactor, continues to depend on the connection given by its associated
+                 data source. Differently, a disconnected dataset, after its creation, no more depends of the
+                 connection given by the data source, and it continues to live after the connection has been
+                 released to the data source.
+
+          \return True, if the dataset is connected and False if it is unconnected.
+        */
+        virtual bool isConnected() const = 0;
+
+        /*!
           \brief It returns the collection size, if it is known.
 
           It may return std::string::npos if the size is not known,
@@ -185,6 +202,21 @@ namespace te
           \return The size of the collection if it is known.
         */
         virtual std::size_t size() const = 0;
+
+        /*!
+          \brief It computes the bounding rectangle for a spatial property of the dataset.
+
+          \param i The position of a spatial property to get its bounding box.
+
+          \return The spatial property bounding rectangle or an invalid box if none is found.
+
+          \pre The position i must be associated to a spatial property of the dataset.
+
+          \post The caller of this method will take the ownership of the returned box.
+
+          \exception Exception It throws an exception if something goes wrong during MBR search.
+        */
+        virtual std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i) = 0;
 
         /*!
           \brief It moves the internal pointer to the next item of the collection.
@@ -615,7 +647,6 @@ namespace te
           \return True if the attribute value is NULL.
         */
         virtual bool isNull(const std::string& name) const;
-
         //@}
     };
 

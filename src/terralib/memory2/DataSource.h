@@ -63,6 +63,8 @@ namespace te
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
+        std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
+
         void open();
 
         void close();
@@ -76,23 +78,26 @@ namespace te
         const te::da::SQLDialect* getDialect() const;
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  bool isConnected = false);
 
         std::vector<std::string> getDataSetNames();
 
+        std::size_t getNumberOfDataSets();
+
         te::da::DataSetTypePtr getDataSetType(const std::string& datasetName);
-
-        std::vector<std::string> getPropertyNames(const std::string& datasetName);
-
-        std::size_t getNumberOfProperties(const std::string& datasetName);
-
-        bool propertyExists(const std::string& datasetName, const std::string& name);
 
         boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
         std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
 
         std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
+
+        std::vector<std::string> getPropertyNames(const std::string& datasetName);
+
+        std::size_t getNumberOfProperties(const std::string& datasetName);
+
+        bool propertyExists(const std::string& datasetName, const std::string& name);
 
         void addProperty(const std::string& datasetName, te::dt::Property* p);
 
@@ -125,7 +130,7 @@ namespace te
                     const std::vector<std::size_t>& properties,
                     const te::da::ObjectIdSet* oids,
                     const std::map<std::string, std::string>& options,
-                    std::size_t limit);
+                    std::size_t limit = 0);
 
         /*!
           \brief It sets the capabilities document.

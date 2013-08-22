@@ -162,7 +162,7 @@ std::string te::pgis::PreparedQuery::getName() const
 
 void te::pgis::PreparedQuery::prepare(const te::da::Query& query, const std::vector<te::dt::Property*>& paramTypes)
 {
-  te::pgis::DataSource* pgds = static_cast<te::pgis::DataSource*>(m_t->getDataSource().get());
+  te::pgis::DataSource* pgds = static_cast<te::pgis::DataSource*>(m_t->getDataSource());
   assert(m_t && pgds && pgds->getDialect());
   std::string sql;
 
@@ -208,7 +208,12 @@ te::da::DataSet* te::pgis::PreparedQuery::query(te::common::TraverseType /*travT
 {
   execute();
 
-  DataSet* dataset = new DataSet(m_result, m_t->getDataSource().get(), 0);
+  te::pgis::DataSource* ds = static_cast<te::pgis::DataSource*>(m_t->getDataSource());
+
+  std::vector<int> ptypes;
+  Convert2TerraLib(m_result, ds->getGeomTypeId(), ds->getRasterTypeId(), ptypes);
+
+  DataSet* dataset = new DataSet(m_result, 0, std::vector<int>());
 
   m_result = 0;
 
