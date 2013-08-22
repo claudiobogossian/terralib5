@@ -164,9 +164,9 @@ std::pair<int, std::string> te::qt::widgets::SRSManagerDialog::getSRS(QWidget* p
     dlg.setWindowTitle(title);
   
   if(dlg.exec() == QDialog::Accepted)
-    return std::make_pair<int, std::string>(dlg.m_selSrsId.first, dlg.m_selSrsId.second);
+    return std::pair<int, std::string>(dlg.m_selSrsId.first, dlg.m_selSrsId.second);
   
-  return std::make_pair<int, std::string>(TE_UNKNOWN_SRS, "");
+  return std::pair<int, std::string>(TE_UNKNOWN_SRS, "");
 }
 
 void te::qt::widgets::SRSManagerDialog::onSearchLineEditTextChanged(const QString& text)
