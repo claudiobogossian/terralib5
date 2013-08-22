@@ -397,22 +397,22 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   {
     if(m_outputDatasource.get())
       m_outputLayer = te::vp::Buffer( m_selectedLayer, 
-                                distance, 
-                                bufferPolygonRule, 
-                                bufferBoundariesRule, 
-                                copyInputColumns, 
-                                levels,
-                                outputLayerName,
-                                m_outputDatasource);
+                                      distance, 
+                                      bufferPolygonRule, 
+                                      bufferBoundariesRule, 
+                                      copyInputColumns, 
+                                      levels,
+                                      outputLayerName,
+                                      m_outputDatasource);
     else if(!m_outputArchive.empty())
       m_outputLayer = te::vp::Buffer( m_selectedLayer, 
-                                distance, 
-                                bufferPolygonRule, 
-                                bufferBoundariesRule, 
-                                copyInputColumns, 
-                                levels,
-                                outputLayerName,
-                                m_outputArchive);
+                                      distance, 
+                                      bufferPolygonRule, 
+                                      bufferBoundariesRule, 
+                                      copyInputColumns, 
+                                      levels,
+                                      outputLayerName,
+                                      m_outputArchive);
   }
   catch(const std::exception& e)
   {
