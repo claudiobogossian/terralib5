@@ -97,9 +97,10 @@ namespace te
       connection given by the data source, and it continues to live after the connection has been
       released to the data source.
 
-      \sa DataSource DataSourceTransactor DataSetType
+      \sa DataSource, DataSourceTransactor, DataSetType
 
-      \todo We can generalize the dataset API so that a dataset may contain other datasets; in this case, it will be a collection of datasets.
+      \todo We can generalize the dataset API so that a dataset may contain other datasets;
+            in this case, it will be a collection of datasets.
 
       \note A geometric or raster property is represented just like any other data type.
 
@@ -189,7 +190,7 @@ namespace te
                  connection given by the data source, and it continues to live after the connection has been
                  released to the data source.
 
-          \return True, if the dataset is connected and False if it is unconnected.
+          \return True, if the dataset is connected, or false if it is disconnected.
         */
         virtual bool isConnected() const = 0;
 
@@ -657,5 +658,3 @@ namespace te
 
 
 #endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASET_H
-
-

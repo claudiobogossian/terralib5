@@ -66,15 +66,18 @@ namespace te
 
   namespace da
   {
-    class DataSet;
-    class DataSetType;
-    class DataSource;
     class DataSourceCapabilities;
     class DataSourceTransactor;
     class ObjectIdSet;
     class Query;
     class Select;
     class SQLDialect;
+    class CheckConstraint;
+    class ForeignKey;
+    class Index;
+    class PrimaryKey;
+    class Sequence;
+    class UniqueKey;
 
     /*!
       \class DataSource
@@ -272,11 +275,11 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name.
-                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
                  of the data source that provided the connection for its creation. Therefore, the disconnected
-                 dataset continues to live after the connection given by the data source has been released. 
+                 dataset continues to live after the connection given by the data source has been released.
 
-          \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
+          \param name     The dataset name.
           \param travType The traverse type associated to the returned dataset. 
 
           \note Thread-safe!
@@ -286,17 +289,15 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the specified property.
-                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
                  of the data source that provided the connection for its creation. Therefore, the disconnected
                  dataset continues to live after the connection given by the data source has been released.
 
-          \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
-          \param propertyName  The name of a spatial property in order to apply the spatial filter.
-          \param e             A rectangle to be used as a spatial filter when retrieving datasets.
-          \param r             The spatial relation to be used during the filter.
+          \param name          The dataset name.
+          \param propertyName  The name of the spatial property used to apply the spatial filter.
+          \param e             A rectangle used as a spatial filter when retrieving the dataset.
+          \param r             The spatial relation used during the filtering.
           \param travType      The traversal type associated to the returned dataset.
-
-          \return The caller of this method will take the ownership of the returned data set.
 
           \note The envelope coordinates should be in the same coordinate system as the dataset.
 
@@ -310,14 +311,14 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the given geometric property.
-                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
                  of the data source that provided the connection for its creation. Therefore, the disconnected
                  dataset continues to live after the connection given by the data source has been released.
 
-          \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
-          \param propertyName  The name of a spatial property in order to apply the spatial filter.
-          \param g             A geometry to be used as a spatial filter when retrieving datasets.
-          \param r             The spatial relation to be used during the filter.
+          \param name          The dataset name.
+          \param propertyName  The name of the spatial property used to apply the spatial filter.
+          \param g             The geometry used as a spatial filter when retrieving the dataset.
+          \param r             The spatial relation used during the filtering.
           \param travType      The traverse type associated to the returned dataset.
 
           \note The geometry coordinates should be in the same coordinate system as the dataset.
@@ -332,22 +333,22 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name using the identification of the objects.
-                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
                  of the data source that provided the connection for its creation. Therefore, the disconnected
                  dataset continues to live after the connection given by the data source has been released.
 
-         \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
-         \param oids     A pointer to a set of objects identification. Do not pass a null pointer nor an empty set.
-         \param travType The traverse type associated to the returned dataset.
+          \param name     The dataset name.
+          \param oids     A pointer to the set of objects. Do not pass a null pointer nor an empty set.
+          \param travType The traverse type associated to the returned dataset.
 
-         \exception Exception It can throws an exception if:
+          \exception Exception It can throws an exception if:
                     <ul>
                     <li>something goes wrong during data retrieval</li>
                     <li>if the data source driver doesn't support the traversal type</li>
                     <li>if the data source driver doesn't support the access policy</li>
                     </ul>
           
-      \note Thread-safe!
+          \note Thread-safe!
         */
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const te::da::ObjectIdSet* oids, 
@@ -355,7 +356,7 @@ namespace te
 
         /*!
           \brief It executes a query that may return some data using a generic query.
-                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
                  of the data source that provided the connection for its creation. Therefore, the disconnected
                  dataset continues to live after the connection given by the data source has been released.
 
@@ -363,8 +364,8 @@ namespace te
                  a spatial filter; this method allows the retrieving of only a
                  subset of the attributes, since a query can include a property list.
 
-          \param q        A valid query object.
-          \param travType The traverse type associated to the returned dataset. 
+          \param q         A valid query object.
+          \param travType  The traverse type associated to the returned dataset. 
 
           \note Thread-safe!
         */
@@ -379,8 +380,6 @@ namespace te
 
           \param query    A query string in the data source native language.
           \param travType The traverse type associated to the returned dataset.
-
-          \return The caller of this method will take the ownership of the returned data set.
 
           \note Don't use this method, if you want portability for your application.
 
