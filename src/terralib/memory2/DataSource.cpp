@@ -62,6 +62,16 @@ te::mem::DataSource::~DataSource()
   close();
 }
 
+const std::map<std::string, te::da::DataSetPtr>& te::mem::DataSource::getDataSets() const
+{
+  return m_datasets;
+}
+
+const std::map<std::string, te::da::DataSetTypePtr> te::mem::DataSource::getSchemas() const
+{
+  return m_schemas;
+}
+
 std::string te::mem::DataSource::getType() const
 {
   return TE_MEMORY_DRIVER_IDENTIFIER;
@@ -139,8 +149,7 @@ const te::da::SQLDialect* te::mem::DataSource::getDialect() const
 }
 
 std::auto_ptr<te::da::DataSet> te::mem::DataSource::getDataSet(const std::string& name,
-                                                               te::common::TraverseType /*travType*/,
-                                                               bool /*connected*/)
+                                                               te::common::TraverseType /*travType*/)
 {
   if(!dataSetExists(name))
     throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % name).str());
