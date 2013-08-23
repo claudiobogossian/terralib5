@@ -40,6 +40,9 @@ te::qt::widgets::TiePointLocatorDialog::TiePointLocatorDialog(QWidget* parent, Q
   layout->addWidget(m_widget.get(), 0, 0);
   layout->setContentsMargins(0,0,0,0);
 
+  connect(m_widget.get(), SIGNAL(doneAcquiredTiePoints()), this, SLOT(onDoneAcquiredTiePoints()));
+
+  this->setWindowTitle(tr("Tie Points Locator"));
 }
 
 te::qt::widgets::TiePointLocatorDialog::~TiePointLocatorDialog()
@@ -59,6 +62,11 @@ void te::qt::widgets::TiePointLocatorDialog::setReferenceLayer(te::map::Abstract
 void te::qt::widgets::TiePointLocatorDialog::setAdjustLayer(te::map::AbstractLayerPtr layer)
 {
   m_widget->setAdjustLayer(layer);
+}
+
+void  te::qt::widgets::TiePointLocatorDialog::onDoneAcquiredTiePoints()
+{
+  this->hide();
 }
 
 

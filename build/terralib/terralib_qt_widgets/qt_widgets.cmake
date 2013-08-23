@@ -340,7 +340,6 @@ set (
   ${SRCDIR}/widgets/rp/TiePointsLocatorDialog.h
   ${SRCDIR}/widgets/rp/TiePointLocatorDialog.h
   ${SRCDIR}/widgets/rp/TiePointLocatorWidget.h
-  ${SRCDIR}/widgets/rp/TiePointLocatorWizardPage.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/rp" MOC)
 

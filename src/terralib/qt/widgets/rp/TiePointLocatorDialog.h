@@ -81,6 +81,10 @@ namespace te
           */
           void setAdjustLayer(te::map::AbstractLayerPtr layer);
 
+        public slots:
+
+          void onDoneAcquiredTiePoints();
+
         private:
 
           std::auto_ptr<te::qt::widgets::TiePointLocatorWidget> m_widget;

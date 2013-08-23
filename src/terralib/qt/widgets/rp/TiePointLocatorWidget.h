@@ -171,6 +171,8 @@ namespace te
 
           void onRefreshToolButtonClicked();
 
+          void onDoneToolButtonClicked();
+
           void onRefMapDisplayExtentChanged();
 
           void onAdjMapDisplayExtentChanged();
@@ -204,6 +206,8 @@ namespace te
         signals:
 
           void tiePointsUpdated();
+
+          void doneAcquiredTiePoints();
 
         private:
 

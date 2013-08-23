@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>652</height>
+    <height>676</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,11 +63,8 @@
                  </property>
                 </spacer>
                </item>
-               <item row="0" column="3">
-                <widget class="QToolButton" name="m_deleteSelectedToolButton">
-                 <property name="toolTip">
-                  <string>Delete Selected</string>
-                 </property>
+               <item row="0" column="0">
+                <widget class="QToolButton" name="m_refreshToolButton">
                  <property name="text">
                   <string>...</string>
                  </property>
@@ -83,8 +80,11 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QToolButton" name="m_refreshToolButton">
+               <item row="0" column="3">
+                <widget class="QToolButton" name="m_deleteSelectedToolButton">
+                 <property name="toolTip">
+                  <string>Delete Selected</string>
+                 </property>
                  <property name="text">
                   <string>...</string>
                  </property>
@@ -105,6 +105,13 @@
                  <property name="toolTip">
                   <string>Unselect All</string>
                  </property>
+                 <property name="text">
+                  <string>...</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="6">
+                <widget class="QToolButton" name="m_doneToolButton">
                  <property name="text">
                   <string>...</string>
                  </property>

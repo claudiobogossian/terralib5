@@ -99,6 +99,7 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   m_ui->m_autoAcquireTiePointsToolButton->setIcon(QIcon::fromTheme("wand"));
   m_ui->m_addToolButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_refreshToolButton->setIcon(QIcon::fromTheme("view-refresh"));
+  m_ui->m_doneToolButton->setIcon(QIcon::fromTheme("check"));
 
   //connects
   connect(m_ui->m_autoAcquireTiePointsToolButton, SIGNAL(clicked()), this, SLOT(onAutoAcquireTiePointsToolButtonClicked()));
@@ -107,6 +108,7 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   connect(m_ui->m_deleteSelectedToolButton, SIGNAL(clicked()), this, SLOT(onDeleteSelectedToolButtonClicked()));
   connect(m_ui->m_addToolButton, SIGNAL(clicked()), this, SLOT(onAddToolButtonClicked()));
   connect(m_ui->m_refreshToolButton, SIGNAL(clicked()), this, SLOT(onRefreshToolButtonClicked()));
+  connect(m_ui->m_doneToolButton, SIGNAL(clicked()), this, SLOT(onDoneToolButtonClicked()));
   connect(m_ui->m_tiePointsTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onTiePointsTableWidgetItemSelectionChanged()));
 
 // connects
@@ -488,6 +490,11 @@ void te::qt::widgets::TiePointLocatorWidget::onRefreshToolButtonClicked()
   updateAdvancedOptions();
 
   tiePointsTableUpdate();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onDoneToolButtonClicked()
+{
+  emit doneAcquiredTiePoints();
 }
 
 void te::qt::widgets::TiePointLocatorWidget::onRefMapDisplayExtentChanged()

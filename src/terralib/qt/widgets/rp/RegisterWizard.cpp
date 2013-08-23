@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/TiePointLocatorWizard.cpp
+  \file terralib/qt/widgets/rp/RegisterWizard.cpp
 
-  \brief This file defines the TiePointLocatorWizard class.
+  \brief This file defines the RegisterWizard class.
 */
 
 // TerraLib 
@@ -30,8 +30,10 @@
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
+#include "RegisterWizard.h"
 #include "TiePointLocatorDialog.h"
-#include "TiePointLocatorWizard.h"
+#include "TiePointLocatorWidget.h"
+
 
 // STL
 #include <cassert>
@@ -40,23 +42,23 @@
 #include <QtGui/QMessageBox>
 
 
-te::qt::widgets::TiePointLocatorWizard::TiePointLocatorWizard(QWidget* parent)
+te::qt::widgets::RegisterWizard::RegisterWizard(QWidget* parent)
   : QWizard(parent)
 {
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
-  this->setWindowTitle(tr("Tie Point Locator"));
+  this->setWindowTitle(tr("Register"));
   this->setFixedSize(640, 480);
 
   addPages();
 }
 
-te::qt::widgets::TiePointLocatorWizard::~TiePointLocatorWizard()
+te::qt::widgets::RegisterWizard::~RegisterWizard()
 {
 
 }
 
-bool te::qt::widgets::TiePointLocatorWizard::validateCurrentPage()
+bool te::qt::widgets::RegisterWizard::validateCurrentPage()
 {
   if(currentPage() ==  m_layerRefPage.get())
   {
@@ -88,19 +90,29 @@ bool te::qt::widgets::TiePointLocatorWizard::validateCurrentPage()
   }
   else if(currentPage() ==  m_rasterInfoPage.get())
   {
+    std::vector< te::gm::GTParameters::TiePoint > tiePoints;
+
+    m_tiePointLocatorDialog->getWidget()->getTiePoints(tiePoints);
+
+    if(tiePoints.empty())
+    {
+      QMessageBox::warning(this, tr("Register"), tr("Tie Points not aquired."));
+      return false;
+    }
+
     return execute();
   }
 
   return true;
 }
 
-void te::qt::widgets::TiePointLocatorWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
+void te::qt::widgets::RegisterWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerRefPage->getSearchWidget()->setList(layerList);
   m_layerAdjPage->getSearchWidget()->setList(layerList);
 }
 
-void te::qt::widgets::TiePointLocatorWizard::addPages()
+void te::qt::widgets::RegisterWizard::addPages()
 {
   m_layerRefPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
   m_layerAdjPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
@@ -118,7 +130,8 @@ void te::qt::widgets::TiePointLocatorWizard::addPages()
   m_layerAdjPage->getSearchWidget()->enableMultiSelection(false);
 }
 
-bool te::qt::widgets::TiePointLocatorWizard::execute()
+bool te::qt::widgets::RegisterWizard::execute()
 {
+
   return true;
 }

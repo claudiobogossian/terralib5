@@ -59,11 +59,11 @@
 #define TE_QT_PLUGIN_RP_HAVE_SEGMENTER
 
 /*!
-  \def TE_QT_PLUGIN_RP_HAVE_TIEPOINTLOCATOR
+  \def TE_QT_PLUGIN_RP_HAVE_REGISTER
 
-  \brief It defines if the RP Qt Plugin has the tie point locator operation.
+  \brief It defines if the RP Qt Plugin has the register operation.
 */
-#define TE_QT_PLUGIN_RP_HAVE_TIEPOINTLOCATOR
+#define TE_QT_PLUGIN_RP_HAVE_REGISTER
 
 
 /*!
