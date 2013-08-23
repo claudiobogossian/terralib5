@@ -27,6 +27,7 @@
 #include "../common/Logger.h"
 #include "../plugin/PluginInfo.h"
 #include "../dataaccess2/datasource/DataSourceCapabilities.h"
+#include "../dataaccess2/datasource/DataSourceFactory.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
@@ -51,6 +52,8 @@ void te::gdal::Module::startup()
 
 // it initializes the Translator support for the TerraLib GDAL driver support
   TE_ADD_TEXT_DOMAIN(TE_GDAL_TEXT_DOMAIN, TE_GDAL_TEXT_DOMAIN_DIR, "UTF-8");
+  
+  te::da::DataSourceFactory::add("GDAL", te::gdal::Build);
 
   GDALAllRegister();
 

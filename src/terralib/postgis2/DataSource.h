@@ -148,6 +148,12 @@ namespace te
         */
         ConnectionPool* getConnPool() const;
 
+        te::da::DataSetTypePtr getDataSetType(const std::string& name);
+
+        void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc);
+
+        void dropCheckConstraint(const std::string& datasetName, const std::string& name);
+
         /*!
           \brief It sets the SQL dialect used by the PostGIS driver.
 
@@ -189,7 +195,7 @@ namespace te
         ConnectionPool* m_pool;                           //!< The connection pool.
         unsigned int m_geomTypeOid;                       //!< PostGIS Geometry type OID.
         unsigned int m_rasterTypeOid;                     //!< PostGIS Raster type OID.
-        std::string m_currentSchema;                     //!< The default schema used when no one is provided.
+        std::string m_currentSchema;                      //!< The default schema used when no one is provided.
         bool m_timeIsInteger;                             //!< It indicates if the postgis stores, internally, time and timestamp as an integer. 
         bool m_isInTransaction;                           //!< It indicates if there is a transaction in progress.
 

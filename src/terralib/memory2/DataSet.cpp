@@ -214,7 +214,7 @@ te::common::AccessPolicy te::mem::DataSet::getAccessPolicy() const
   return te::common::RWAccess;
 }
 
-te::gm::Envelope* te::mem::DataSet::getExtent(std::size_t i)
+std::auto_ptr<te::gm::Envelope> te::mem::DataSet::getExtent(std::size_t i)
 {
   std::auto_ptr<te::gm::Envelope> mbr(new te::gm::Envelope);
 
@@ -227,7 +227,7 @@ te::gm::Envelope* te::mem::DataSet::getExtent(std::size_t i)
     mbr->Union(*(geom->getMBR()));
   }
 
-  return mbr.release();
+  return mbr;
 }
 
 std::size_t te::mem::DataSet::getNumProperties() const
@@ -268,6 +268,11 @@ te::mem::DataSetItem* te::mem::DataSet::getItem() const
 bool te::mem::DataSet::isEmpty() const
 {
   return m_items->empty();
+}
+
+bool te::mem::DataSet::isConnected() const
+{
+  return false;
 }
 
 std::size_t te::mem::DataSet::size() const

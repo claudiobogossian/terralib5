@@ -69,8 +69,9 @@ namespace te
           \param sql          The sql command that generated the dataset.
         */
         DataSet(PGresult* result,
-                te::da::DataSource* ds,
-                std::string* sql);
+                std::string* sql,
+                const std::vector<int>& ptypes,
+                bool timeIsInteger = true);
 
         /*! \brief The destructor will clear the internal PGresult. */
         ~DataSet();
@@ -89,7 +90,11 @@ namespace te
 
         bool isEmpty() const;
 
+        bool isConnected() const;
+
         std::size_t size() const;
+
+        std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i);
 
         bool moveNext();
 
@@ -169,9 +174,10 @@ namespace te
         int m_i;                            //!< The index of the current row.
         int m_size;                         //!< The number of datasets in the collection.
         PGresult* m_result;                 //!< The internal buffer with the result query.
-        te::da::DataSource* m_ds;           //!< The data source.
         std::string* m_sql;                 //!< The sql command that generated the dataset.
         std::vector<int> m_ptypes;          //!< The list of property types.
+        te::gm::Envelope* m_mbr;            //!< The dataset extent.
+        bool m_timeIsInteger;               //!< It indicates if the postgis stores, internally, the time and timestamp as an integer. 
     };
 
   } // end namespace pgis

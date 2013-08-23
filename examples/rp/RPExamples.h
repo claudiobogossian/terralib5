@@ -52,7 +52,4 @@ void Register();
 /* \brief Edges detection. */
 void EdgeFilter();
 
-/* \brief Skeleton detection. */
-void Skeleton();
-
 #endif

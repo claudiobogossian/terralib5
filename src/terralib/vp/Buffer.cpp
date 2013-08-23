@@ -75,7 +75,9 @@ te::map::AbstractLayerPtr te::vp::Buffer(const te::map::AbstractLayerPtr& inputL
 
   if(copyInputColumns)
   {
-
+    std::auto_ptr<te::da::DataSet> inputDataSet(inputLayer->getData());
+    inputDataSet->moveNext();
+    dataSet = new te::mem::DataSet(*inputDataSet);
   }
   else
   {
@@ -119,23 +121,30 @@ void te::vp::SetBuffer(te::mem::DataSet* dataSet,
 {
   std::map<te::gm::Geometry*, double>::const_iterator it = distance.begin();
   dataSet->moveFirst();
+  std::size_t pos = te::da::GetFirstSpatialPropertyPos(dataSet);
 
   switch(bufferPolygonRule)
   {
     case te::vp::INSIDE_OUTSIDE:
       while(it != distance.end())
       {
-        te::mem::DataSetItem* item = new te::mem::DataSetItem(dataSet);
-        std::auto_ptr<te::gm::Geometry> outGeom(it->first->buffer(it->second, 16, te::gm::CapButtType));
-        std::auto_ptr<te::gm::Geometry> inGeom(it->first->buffer(-it->second, 16, te::gm::CapButtType));
-        
-        std::auto_ptr<te::gm::Geometry> diffOutGeom(outGeom->difference(it->first));
-        std::auto_ptr<te::gm::Geometry> diffInGeom(it->first->difference(inGeom.get()));
+        if(it->first->isValid())
+        {
+          //te::mem::DataSetItem* item = new te::mem::DataSetItem(dataSet);
 
-        te::gm::Geometry* bufferGeom = diffOutGeom->Union(diffInGeom.get());
+          std::auto_ptr<te::gm::Geometry> outGeom(it->first->buffer(it->second, 16, te::gm::CapButtType));
+          std::auto_ptr<te::gm::Geometry> inGeom(it->first->buffer(it->second, 16, te::gm::CapButtType));
 
-        item->setGeometry(0, *bufferGeom);
-        dataSet->add(item);
+          std::auto_ptr<te::gm::Geometry> diffOutGeom(outGeom->difference(it->first));
+          std::auto_ptr<te::gm::Geometry> diffInGeom(it->first->difference(inGeom.get()));
+
+          te::gm::Geometry* bufferGeom = diffOutGeom->Union(diffInGeom.get());
+
+          /*item->setGeometry(pos, *bufferGeom);
+          dataSet->add(item);
+*/
+          dataSet->setValue(pos, bufferGeom);
+        }
         dataSet->moveNext();
 
         ++it;
@@ -145,12 +154,15 @@ void te::vp::SetBuffer(te::mem::DataSet* dataSet,
     case te::vp::ONLY_OUTSIDE:
       while(it != distance.end())
       {
-        te::mem::DataSetItem* item = new te::mem::DataSetItem(dataSet);
-        std::auto_ptr<te::gm::Geometry> newGeom(it->first->buffer(it->second, 16, te::gm::CapButtType));
-        te::gm::Geometry* diffGeom = newGeom->difference(it->first);
+        if(it->first->isValid())
+        {
+          te::mem::DataSetItem* item = new te::mem::DataSetItem(dataSet);
+          std::auto_ptr<te::gm::Geometry> newGeom(it->first->buffer(it->second, 16, te::gm::CapButtType));
+          te::gm::Geometry* diffGeom = newGeom->difference(it->first);
 
-        item->setGeometry(0, *diffGeom);
-        dataSet->add(item);
+          item->setGeometry(pos, *diffGeom);
+          dataSet->add(item);
+        }
         dataSet->moveNext();
 
         ++it;
@@ -160,12 +172,15 @@ void te::vp::SetBuffer(te::mem::DataSet* dataSet,
     case te::vp::ONLY_INSIDE:
       while(it != distance.end())
       {
-        te::mem::DataSetItem* item = new te::mem::DataSetItem(dataSet);
-        std::auto_ptr<te::gm::Geometry> newGeom(it->first->buffer(-it->second, 16, te::gm::CapButtType));
-        te::gm::Geometry* diffGeom = it->first->difference(newGeom.get());
+        if(it->first->isValid())
+        {
+          te::mem::DataSetItem* item = new te::mem::DataSetItem(dataSet);
+          std::auto_ptr<te::gm::Geometry> newGeom(it->first->buffer(-it->second, 16, te::gm::CapButtType));
+          te::gm::Geometry* diffGeom = it->first->difference(newGeom.get());
 
-        item->setGeometry(0, *diffGeom);
-        dataSet->add(item);
+          item->setGeometry(pos, *diffGeom);
+          dataSet->add(item);
+        }
         dataSet->moveNext();
 
         ++it;

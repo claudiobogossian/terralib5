@@ -220,8 +220,6 @@ namespace te
 
         te::common::AccessPolicy getAccessPolicy() const;
 
-        te::gm::Envelope* getExtent(std::size_t i);
-
         std::size_t getNumProperties() const;
 
         int getPropertyDataType(std::size_t pos) const;
@@ -238,7 +236,11 @@ namespace te
 
         bool isEmpty() const;
 
+        bool isConnected() const;
+
         std::size_t size() const;
+
+        std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i);
 
         bool moveNext();
 

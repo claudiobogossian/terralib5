@@ -28,9 +28,15 @@
 
 // TerraLib
 #include "../../common/Enums.h"
-#include "../dataset/DataSetType.h"
-#include "../dataset/DataSet.h"
 #include "../../geometry/Enums.h"
+#include "../dataset/CheckConstraint.h"
+#include "../dataset/DataSet.h"
+#include "../dataset/DataSetType.h"
+#include "../dataset/ForeignKey.h"
+#include "../dataset/Index.h"
+#include "../dataset/PrimaryKey.h"
+#include "../dataset/Sequence.h"
+#include "../dataset/UniqueKey.h"
 #include "../Config.h"
 
 // STL
@@ -269,15 +275,12 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name.
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-          This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.        
-
-		      \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
+          \param name     The dataset name.
           \param travType The traverse type associated to the returned dataset. 
-
-          \return The caller of this method will take the ownership of the returned data set.
 
           \note Thread-safe!
         */
@@ -286,18 +289,15 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the specified property.
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.     
-
-          \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
-          \param propertyName  The name of a spatial property in order to apply the spatial filter.
-          \param e             A rectangle to be used as a spatial filter when retrieving datasets.
-          \param r             The spatial relation to be used during the filter.
+          \param name          The dataset name.
+          \param propertyName  The name of the spatial property used to apply the spatial filter.
+          \param e             A rectangle used as a spatial filter when retrieving the dataset.
+          \param r             The spatial relation used during the filtering.
           \param travType      The traversal type associated to the returned dataset.
-
-          \return The caller of this method will take the ownership of the returned data set.
 
           \note The envelope coordinates should be in the same coordinate system as the dataset.
 
@@ -311,18 +311,15 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the given geometric property.
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.     
-
-          \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
-          \param propertyName  The name of a spatial property in order to apply the spatial filter.
-          \param g             A geometry to be used as a spatial filter when retrieving datasets.
-          \param r             The spatial relation to be used during the filter.
+          \param name          The dataset name.
+          \param propertyName  The name of the spatial property used to apply the spatial filter.
+          \param g             The geometry used as a spatial filter when retrieving the dataset.
+          \param r             The spatial relation used during the filtering.
           \param travType      The traverse type associated to the returned dataset.
-
-          \return The caller of this method will take the ownership of the returned data set.
 
           \note The geometry coordinates should be in the same coordinate system as the dataset.
 
@@ -335,19 +332,16 @@ namespace te
                                                   te::common::TraverseType travType = te::common::FORWARDONLY);
 
         /*!
-         \brief It gets the dataset identified by the given name using the set of objects identification.
+          \brief It gets the dataset identified by the given name using the identification of the objects.
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.     
+          \param name     The dataset name.
+          \param oids     A pointer to the set of objects. Do not pass a null pointer nor an empty set.
+          \param travType The traverse type associated to the returned dataset.
 
-         \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
-         \param oids     A pointer to a set of objects identification. Do not pass null. Do not pass set empty.
-         \param travType The traverse type associated to the returned dataset.
-         
-         \return The caller of this method will take the ownership of the returned DataSet.
-         
-         \exception Exception It can throws an exception if:
+          \exception Exception It can throws an exception if:
                     <ul>
                     <li>something goes wrong during data retrieval</li>
                     <li>if the data source driver doesn't support the traversal type</li>
@@ -357,24 +351,21 @@ namespace te
           \note Thread-safe!
         */
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const ObjectIdSet* oids, 
+                                                  const te::da::ObjectIdSet* oids, 
                                                   te::common::TraverseType travType = te::common::FORWARDONLY);
 
         /*!
           \brief It executes a query that may return some data using a generic query.
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-          This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.       
-		  
-		      This method is different of the method that accepts a dataset name and
-          a spatial filter; this method allows the retrieving of only a
-          subset of the attributes, since a query can include a property list.
+                 This method is different of the method that accepts a dataset name and
+                 a spatial filter; this method allows the retrieving of only a
+                 subset of the attributes, since a query can include a property list.
 
-          \param q        A valid query object.
-          \param travType The traverse type associated to the returned dataset. 
-
-          \return The caller of this method will take the ownership of the returned data set.
+          \param q         A valid query object.
+          \param travType  The traverse type associated to the returned dataset. 
 
           \note Thread-safe!
         */
@@ -383,15 +374,12 @@ namespace te
 
         /*!
           \brief It executes a query that may return some data using the data source native language.
+                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.     
-          
-		      \param query    A query string in the data source native language.
+          \param query    A query string in the data source native language.
           \param travType The traverse type associated to the returned dataset.
-
-          \return The caller of this method will take the ownership of the returned data set.
 
           \note Don't use this method, if you want portability for your application.
 
@@ -520,6 +508,18 @@ namespace te
         virtual boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
         /*!
+          \brief It retrieves a property with the given name from the dataset.
+
+          \param datasetName  The dataset name.
+          \param propertyName The property name.
+
+          \return The property with the given name from the dataset.
+
+          \note Thread-safe!
+        */
+        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
+
+        /*!
           \brief It searches for the list of property names of the given dataset.
 
           \param datasetName The dataset name.
@@ -555,18 +555,6 @@ namespace te
           \note Thread-safe!
         */
         virtual bool propertyExists(const std::string& datasetName, const std::string& name);
-
-        /*!
-          \brief It retrieves a property with the given name from the dataset.
-
-          \param datasetName  The dataset name.
-          \param propertyName The property name.
-
-          \return The property with the given name from the dataset.
-
-          \note Thread-safe!
-        */
-        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It retrieves a property from the dataset.
@@ -1110,7 +1098,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual void remove(const std::string& datasetName, const ObjectIdSet* oids = 0);
+        virtual void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids = 0);
 
         /*!
           \brief It updates the dataset items in the data source based on the OID list.
@@ -1131,7 +1119,7 @@ namespace te
         virtual void update(const std::string& datasetName,
                             DataSet* dataset,
                             const std::vector<std::size_t>& properties,
-                            const ObjectIdSet* oids,
+                            const te::da::ObjectIdSet* oids,
                             const std::map<std::string, std::string>& options,
                             std::size_t limit = 0);
     //@}

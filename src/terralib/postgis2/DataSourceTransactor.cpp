@@ -86,9 +86,9 @@ te::pgis::DataSourceTransactor::~DataSourceTransactor()
   m_ds->getConnPool()->release(m_conn);
 }
 
-std::auto_ptr<te::da::DataSource> te::pgis::DataSourceTransactor::getDataSource() const
+te::da::DataSource* te::pgis::DataSourceTransactor::getDataSource() const
 {
-  return std::auto_ptr<te::da::DataSource>(m_ds);
+  return m_ds;
 }
 
 te::pgis::Connection* te::pgis::DataSourceTransactor::getConnection() const
@@ -119,21 +119,27 @@ bool te::pgis::DataSourceTransactor::isInTransaction() const
  return m_isInTransaction;
 }
 
-std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const std::string& name, te::common::TraverseType travType)
+std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const std::string& name,
+                                                                          te::common::TraverseType travType,
+                                                                          bool /*isConnected*/)
 {
    std::auto_ptr<std::string> sql(new std::string("SELECT * FROM "));
    *sql += name;
 
   PGresult* result = m_conn->query(*sql);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_ds, sql.release()));
+  std::vector<int> ptypes;
+  Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
+
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, sql.release(), ptypes, m_ds->isTimeAnInteger()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const std::string& name,
                                                                           const std::string& propertyName,
                                                                           const te::gm::Envelope* e,
                                                                           te::gm::SpatialRelation r,
-                                                                          te::common::TraverseType travType)
+                                                                          te::common::TraverseType travType,
+                                                                          bool /*isConnected*/)
 {
   if(e == 0)
     throw Exception(TR_PGIS("The envelope is missing!"));
@@ -154,14 +160,18 @@ std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const 
 
   PGresult* result = m_conn->query(sql);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_ds, new std::string(sql)));
+  std::vector<int> ptypes;
+  Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
+
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, new std::string(sql), ptypes, m_ds->isTimeAnInteger()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const std::string& name,
                                                                           const std::string& propertyName,
                                                                           const te::gm::Geometry* g,
                                                                           te::gm::SpatialRelation r,
-                                                                          te::common::TraverseType travType)
+                                                                          te::common::TraverseType travType,
+                                                                          bool /*isConnected*/)
 {
  if(g == 0)
     throw Exception(TR_PGIS("The geometry is missing!"));
@@ -182,32 +192,34 @@ std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const 
 
   PGresult* result = m_conn->query(sql);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_ds, new std::string(sql)));
+  std::vector<int> ptypes;
+  Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
+
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, new std::string(sql), ptypes, m_ds->isTimeAnInteger()));
 }
 
-//std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const std::string& name,
-//                                                                          const ObjectIdSet* oids, 
-//                                                                          te::common::TraverseType travType)
-//{
-//  std::auto_ptr<te::da::DataSet> dataset = te::da::DataSourceTransactor::getDataSet(name, oids, travType);
-//  return te::da::DataSourceTransactor::getDataSet(name, oids, travType);
-//}
-
-std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::query(const te::da::Select& q, te::common::TraverseType travType)
+std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::query(const te::da::Select& q,
+                                                                     te::common::TraverseType travType,
+                                                                     bool isConnected)
 {
   std::string sql;
 
   SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
   q.accept(visitor);
 
-  return query(sql, travType);
+  return query(sql, travType, isConnected);
 }
 
-std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::query(const std::string& query, te::common::TraverseType travType)
+std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::query(const std::string& query,
+                                                                     te::common::TraverseType travType,
+                                                                     bool isConnected)
 {
   PGresult* result = m_conn->query(query);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_ds, new std::string(query)));
+  std::vector<int> ptypes;
+  Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
+
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, new std::string(query), ptypes, m_ds->isTimeAnInteger()));
 }
 
 void te::pgis::DataSourceTransactor::execute(const te::da::Query& command)
@@ -1104,8 +1116,6 @@ std::auto_ptr<te::da::CheckConstraint> te::pgis::DataSourceTransactor::getCheckC
 
   while(ccInfo->moveNext())
   {
-    //std::string ccName  = ccInfo->getString(1) + ".";
-    //ccName += ccInfo->getString(2);
     std::string ccName  = ccInfo->getString(2);
 
     if(ccName != name)
@@ -1134,8 +1144,7 @@ std::vector<std::string> te::pgis::DataSourceTransactor::getCheckConstraintNames
 
   while(ccInfo->moveNext())
   {
-    std::string ccName  = ccInfo->getString(1) + ".";
-    ccName += ccInfo->getString(2);
+    std::string ccName = ccInfo->getString(2);
 
     ccNames.push_back(ccName);
   }
@@ -1149,9 +1158,7 @@ bool te::pgis::DataSourceTransactor::checkConstraintExists(const std::string& da
 
   std::vector<std::string> ccNames = getCheckConstraintNames(fullDatasetName);
 
-  std::string fullCCName = getFullName(name);
-
-  if(std::find(ccNames.begin(), ccNames.end(), fullCCName) != ccNames.end())
+  if(std::find(ccNames.begin(), ccNames.end(), name) != ccNames.end())
     return true;
 
   return false;
@@ -2409,8 +2416,6 @@ void te::pgis::DataSourceTransactor::getConstraints(te::da::DataSetTypePtr& dt)
     else if(cType == 'c')
     {
       // begin of check constraint
-      //std::string ccName  = cInfo->getString(1) + ".";
-      //ccName  += cInfo->getString(2);
       std::string ccName = cInfo->getString(2);
 
       unsigned int ccId = cInfo->getInt32(0);
