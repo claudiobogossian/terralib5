@@ -120,6 +120,8 @@ namespace te
           te::qt::widgets::BasicStrokePropertyItem* m_bs;
 
           te::se::Mark* m_mark;                               //!< Mark element that will be configured by this widget.
+
+          bool m_setLocalMark;
           
           std::vector<std::string> m_supportedMarks;          //!< Names of supported marks.
           std::map<int, std::string> m_supportedMarksMap;
