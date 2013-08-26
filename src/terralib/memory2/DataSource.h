@@ -57,6 +57,20 @@ namespace te
 
         ~DataSource();
 
+        /*!
+          \brief It returns a map relating the dataset names and their contents.
+
+          \return The map relating the dataset names and their contents..
+        */
+        const std::map<std::string, te::da::DataSetPtr>& getDataSets() const;
+
+        /*!
+          \brief It returns a map relating the dataset names and their schemas.
+
+          \return The map relating the dataset names and their schemas.
+        */
+        const std::map<std::string, te::da::DataSetTypePtr> getSchemas() const;
+
         std::string getType() const;
 
         const std::map<std::string, std::string>& getConnectionInfo() const;
@@ -78,8 +92,7 @@ namespace te
         const te::da::SQLDialect* getDialect() const;
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
-                                                  bool isConnected = false);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
 
         std::vector<std::string> getDataSetNames();
 

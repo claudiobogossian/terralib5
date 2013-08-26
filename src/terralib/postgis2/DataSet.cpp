@@ -126,27 +126,20 @@ namespace te
 }   // end namespace te
 
 te::pgis::DataSet::DataSet(PGresult* result,
-                           std::string* sql,
                            const std::vector<int>& ptypes,
                            bool timeIsInteger)
   : m_i(-1),
     m_result(result),
-    m_sql(sql),
     m_ptypes(ptypes),
     m_mbr(0),
     m_timeIsInteger(timeIsInteger)
 {
   m_size = PQntuples(m_result);
-
-  //te::pgis::DataSource* pgisDS = static_cast<te::pgis::DataSource*>(ds);
-
-  //Convert2TerraLib(m_result, pgisDS->getGeomTypeId(), pgisDS->getRasterTypeId(), m_ptypes);
 }
 
 te::pgis::DataSet::~DataSet()
 {
   PQclear(m_result);
-  delete m_sql;
 }
 
 te::common::TraverseType te::pgis::DataSet::getTraverseType() const

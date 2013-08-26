@@ -36,7 +36,7 @@
 
 
 te::qt::widgets::WellKnownMarkPropertyItem::WellKnownMarkPropertyItem(QtTreePropertyBrowser* pb, QColor c) : te::qt::widgets::AbstractPropertyItem(pb, c) ,
-  m_mark(new te::se::Mark)
+  m_mark(new te::se::Mark), m_setLocalMark(false)
 {
   //build property browser basic fill
   QtProperty* markProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("WellKnown Mark"));
@@ -73,7 +73,11 @@ void te::qt::widgets::WellKnownMarkPropertyItem::setMark(const te::se::Mark* mar
 
   m_mark = mark->clone();
 
+  m_setLocalMark = true;
+
   updateUi();
+
+  m_setLocalMark = false;
 }
 
 te::se::Mark* te::qt::widgets::WellKnownMarkPropertyItem::getMark() const
@@ -112,7 +116,9 @@ void te::qt::widgets::WellKnownMarkPropertyItem::valueChanged(QtProperty* p, int
   if(p == m_typeProperty)
   {
     m_mark->setWellKnownName(new std::string(m_supportedMarksMap[value]));
-    emit markChanged();
+
+    if(!m_setLocalMark)
+      emit markChanged();
   }
 }
 
@@ -135,11 +141,15 @@ QStringList te::qt::widgets::WellKnownMarkPropertyItem::getTypeNames()
 void te::qt::widgets::WellKnownMarkPropertyItem::onStrokeChanged()
 {
   m_mark->setStroke(m_bs->getStroke());
-  emit markChanged();
+
+  if(!m_setLocalMark)
+    emit markChanged();
 }
 
 void te::qt::widgets::WellKnownMarkPropertyItem::onFillChanged()
 {
   m_mark->setFill(m_bf->getFill());
-  emit markChanged();
+
+  if(!m_setLocalMark)
+    emit markChanged();
 }

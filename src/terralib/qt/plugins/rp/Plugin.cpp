@@ -46,8 +46,8 @@
   #include "SegmenterAction.h"
 #endif
 
-#ifdef TE_QT_PLUGIN_RP_HAVE_TIEPOINTLOCATOR
-  #include "TiePointLocatorAction.h"
+#ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
+  #include "RegisterAction.h"
 #endif
 
 // QT
@@ -118,8 +118,8 @@ void te::qt::plugins::rp::Plugin::registerActions()
     m_segmenter = new te::qt::plugins::rp::SegmenterAction(m_rpMenu);
 #endif
 
-#ifdef TE_QT_PLUGIN_RP_HAVE_TIEPOINTLOCATOR
-  m_tiePoint = new te::qt::plugins::rp::TiePointLocatorAction(m_rpMenu);
+#ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
+  m_register = new te::qt::plugins::rp::RegisterAction(m_rpMenu);
 #endif
 }
 
@@ -141,8 +141,8 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
     delete m_segmenter;
 #endif
 
-#ifdef TE_QT_PLUGIN_RP_HAVE_TIEPOINTLOCATOR
-  delete m_tiePoint;
+#ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
+  delete m_register;
 #endif
 }
 

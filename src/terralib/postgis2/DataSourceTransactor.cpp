@@ -131,7 +131,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const 
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, sql.release(), ptypes, m_ds->isTimeAnInteger()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const std::string& name,
@@ -163,7 +163,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const 
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, new std::string(sql), ptypes, m_ds->isTimeAnInteger()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const std::string& name,
@@ -195,7 +195,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::getDataSet(const 
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, new std::string(sql), ptypes, m_ds->isTimeAnInteger()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::query(const te::da::Select& q,
@@ -219,7 +219,7 @@ std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::query(const std::
   std::vector<int> ptypes;
   Convert2TerraLib(result, m_ds->getGeomTypeId(), m_ds->getRasterTypeId(), ptypes);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, new std::string(query), ptypes, m_ds->isTimeAnInteger()));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, ptypes, m_ds->isTimeAnInteger()));
 }
 
 void te::pgis::DataSourceTransactor::execute(const te::da::Query& command)

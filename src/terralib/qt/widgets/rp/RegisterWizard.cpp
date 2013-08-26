@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/TiePointLocatorWizard.cpp
+  \file terralib/qt/widgets/rp/RegisterWizard.cpp
 
-  \brief This file defines the TiePointLocatorWizard class.
+  \brief This file defines the RegisterWizard class.
 */
 
 // TerraLib 
@@ -28,8 +28,12 @@
 #include "../../../raster/Raster.h"
 #include "LayerSearchWidget.h"
 #include "LayerSearchWizardPage.h"
-#include "TiePointLocatorWizard.h"
-#include "TiePointLocatorWizardPage.h"
+#include "RasterInfoWidget.h"
+#include "RasterInfoWizardPage.h"
+#include "RegisterWizard.h"
+#include "TiePointLocatorDialog.h"
+#include "TiePointLocatorWidget.h"
+
 
 // STL
 #include <cassert>
@@ -38,23 +42,23 @@
 #include <QtGui/QMessageBox>
 
 
-te::qt::widgets::TiePointLocatorWizard::TiePointLocatorWizard(QWidget* parent)
+te::qt::widgets::RegisterWizard::RegisterWizard(QWidget* parent)
   : QWizard(parent)
 {
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
-  this->setWindowTitle(tr("Tie Point Locator"));
+  this->setWindowTitle(tr("Register"));
   this->setFixedSize(640, 480);
 
   addPages();
 }
 
-te::qt::widgets::TiePointLocatorWizard::~TiePointLocatorWizard()
+te::qt::widgets::RegisterWizard::~RegisterWizard()
 {
 
 }
 
-bool te::qt::widgets::TiePointLocatorWizard::validateCurrentPage()
+bool te::qt::widgets::RegisterWizard::validateCurrentPage()
 {
   if(currentPage() ==  m_layerRefPage.get())
   {
@@ -64,7 +68,7 @@ bool te::qt::widgets::TiePointLocatorWizard::validateCurrentPage()
     {
       te::map::AbstractLayerPtr l = *list.begin();
 
-      m_tiePointLocatorPage->setReferenceLayer(l);
+      m_tiePointLocatorDialog->setReferenceLayer(l);
     }
 
     return m_layerRefPage->isComplete();
@@ -77,39 +81,47 @@ bool te::qt::widgets::TiePointLocatorWizard::validateCurrentPage()
     {
       te::map::AbstractLayerPtr l = *list.begin();
 
-      m_tiePointLocatorPage->setAdjustLayer(l);
-
-      //show navigators
-      m_tiePointLocatorPage->showReferenceNavigator(true);
-      m_tiePointLocatorPage->showAdjustNavigator(true);
+      m_tiePointLocatorDialog->setAdjustLayer(l);
     }
+
+    m_tiePointLocatorDialog->showMaximized();
 
     return m_layerAdjPage->isComplete();
   }
-  else if(currentPage() ==  m_tiePointLocatorPage.get())
+  else if(currentPage() ==  m_rasterInfoPage.get())
   {
-    return m_tiePointLocatorPage->isComplete();
-  }
+    std::vector< te::gm::GTParameters::TiePoint > tiePoints;
 
+    m_tiePointLocatorDialog->getWidget()->getTiePoints(tiePoints);
+
+    if(tiePoints.empty())
+    {
+      QMessageBox::warning(this, tr("Register"), tr("Tie Points not aquired."));
+      return false;
+    }
+
+    return execute();
+  }
 
   return true;
 }
 
-void te::qt::widgets::TiePointLocatorWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
+void te::qt::widgets::RegisterWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerRefPage->getSearchWidget()->setList(layerList);
   m_layerAdjPage->getSearchWidget()->setList(layerList);
 }
 
-void te::qt::widgets::TiePointLocatorWizard::addPages()
+void te::qt::widgets::RegisterWizard::addPages()
 {
   m_layerRefPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
   m_layerAdjPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
-  m_tiePointLocatorPage.reset(new te::qt::widgets::TiePointLocatorWizardPage(this));
+  m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
+  m_tiePointLocatorDialog.reset(new te::qt::widgets::TiePointLocatorDialog(this));
 
   addPage(m_layerRefPage.get());
   addPage(m_layerAdjPage.get());
-  addPage(m_tiePointLocatorPage.get());
+  addPage(m_rasterInfoPage.get());
 
   //for contrast only one layer can be selected
   m_layerRefPage->setSubTitle(tr("Allows selection of layers using filters for selection. Select the layer to be used as REFERENCE."));
@@ -118,7 +130,8 @@ void te::qt::widgets::TiePointLocatorWizard::addPages()
   m_layerAdjPage->getSearchWidget()->enableMultiSelection(false);
 }
 
-bool te::qt::widgets::TiePointLocatorWizard::execute()
+bool te::qt::widgets::RegisterWizard::execute()
 {
+
   return true;
 }
