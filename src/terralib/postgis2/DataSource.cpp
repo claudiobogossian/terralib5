@@ -206,7 +206,12 @@ te::da::DataSetTypePtr te::pgis::DataSource::getDataSetType(const std::string& n
   te::da::DataSetTypePtr dt = te::da::DataSource::getDataSetType(name);
 
   // Insert the dataset schema into the catalog, if it not there.
-  if(!m_catalog->datasetExists(name))
+  std::string datasetName = name;
+
+  if(datasetName.find(".") == std::string::npos)
+    datasetName = m_currentSchema + "." + name;
+
+  if(!m_catalog->datasetExists(datasetName))
     m_catalog->add(dt);
 
   return dt;
