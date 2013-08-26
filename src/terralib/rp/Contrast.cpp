@@ -333,7 +333,7 @@ namespace te
 
         double outRangeMin = 0.0;
         double outRangeMax = 0.0;
-        getDataTypeRange( outRasterBandPtr->getProperty()->getType(),
+        GetDataTypeRange( outRasterBandPtr->getProperty()->getType(),
           outRangeMin, outRangeMax );
         const double outRasterRange = outRangeMax - outRangeMin;
 
@@ -462,7 +462,7 @@ namespace te
       const unsigned int outBlkHeightPixels = outRasterBand.getProperty()->m_blkh;
       double outRangeMin = 0.0;
       double outRangeMax = 0.0;
-      getDataTypeRange( outRasterBand.getProperty()->getType(),
+      GetDataTypeRange( outRasterBand.getProperty()->getType(),
         outRangeMin, outRangeMax );
 
       if( ( inBlkWidthPixels == outBlkWidthPixels ) &&
@@ -490,7 +490,7 @@ namespace te
           {
             inRasterBand.read( blockXIndex, blockYIndex, inputBuffer );
 
-            convert2DoublesVector( inputBuffer, inputVectorDataType,
+            Convert2DoublesVector( inputBuffer, inputVectorDataType,
               blockSizePixels, inDoublesBuffer );
 
             for( blockOffset = 0 ; blockOffset < blockSizePixels ; ++blockOffset )
@@ -501,7 +501,7 @@ namespace te
                 outRangeMax, outValue ) );
             }
 
-            convertDoublesVector( outDoublesBuffer, blockSizePixels,
+            ConvertDoublesVector( outDoublesBuffer, blockSizePixels,
               outputVectorDataType, outputBuffer );
 
             outRasterBand.write( blockXIndex, blockYIndex, outputBuffer );

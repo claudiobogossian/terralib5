@@ -55,7 +55,7 @@ namespace te
 {
   namespace rp
   {
-    bool createNewRaster( const te::rst::Grid& rasterGrid,
+    bool CreateNewRaster( const te::rst::Grid& rasterGrid,
       const std::vector< te::rst::BandProperty* >& bandsProperties,
       const std::string& outDataSetName,
       te::da::DataSource& outDataSource,
@@ -124,7 +124,7 @@ namespace te
       }
     }
 
-    bool createNewMemRaster( const te::rst::Grid& rasterGrid,
+    bool CreateNewMemRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
       RasterHandler& outRasterHandler )
     {
@@ -195,7 +195,7 @@ namespace te
       }
     }
 
-    bool createNewGeotifRaster( const te::rst::Grid& rasterGrid,
+    bool CreateNewGeotifRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
       const std::string& fileName,
       RasterHandler& outRasterHandler )
@@ -276,7 +276,7 @@ namespace te
       }
     }
 
-    void getDataTypeRange( const int dataType, double& min, double& max )
+    void GetDataTypeRange( const int dataType, double& min, double& max )
     {
       switch( dataType )
       {
@@ -334,7 +334,7 @@ namespace te
       };
     }
 
-    void convert2DoublesVector( void* inputVector, const int inputVectorDataType,
+    void Convert2DoublesVector( void* inputVector, const int inputVectorDataType,
       unsigned int inputVectorSize, double* outputVector )
     {
       switch( inputVectorDataType )
@@ -446,7 +446,7 @@ namespace te
       };
     }
 
-    void convertDoublesVector( double* inputVector,
+    void ConvertDoublesVector( double* inputVector,
       unsigned int inputVectorSize, const int outputVectorDataType,
       void* outputVector )
     {
