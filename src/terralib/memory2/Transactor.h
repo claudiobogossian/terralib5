@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/memory/DataSourceTransactor.h
+  \file terralib/memory/Transactor.h
 
-  \brief An implementation of the DataSourceTransactor class for the Memory Data Access driver.
+  \brief An implementation of the Transactor class for the Memory Data Access driver.
 */
 
-#ifndef __TERRALIB_MEMORY_INTERNAL_DATASOURCETRANSACTOR_H
-#define __TERRALIB_MEMORY_INTERNAL_DATASOURCETRANSACTOR_H
+#ifndef __TERRALIB_MEMORY_INTERNAL_TRANSACTOR_H
+#define __TERRALIB_MEMORY_INTERNAL_TRANSACTOR_H
 
 // TerraLib
 #include "../dataaccess2/datasource/DataSourceTransactor.h"
@@ -42,13 +42,13 @@ namespace te
     class DataSource;
 	
     /*!
-      \class DataSourceTransactor
+      \class Transactor
 
-      \brief An implementation of the DataSourceTransactor class for the Memory Data Access driver.
+      \brief An implementation of the Transactor class for the Memory Data Access driver.
 
       \sate::da::DataSourceTransactor
     */
-    class TEMEMORYEXPORT DataSourceTransactor : public te::da::DataSourceTransactor
+    class TEMEMORYEXPORT Transactor : public te::da::DataSourceTransactor
     {
       public:
 
@@ -57,9 +57,9 @@ namespace te
 
           \param ds The Memory data source associated to this transactor.
         */
-        DataSourceTransactor(DataSource* ds);
+        Transactor(DataSource* ds);
 
-        ~DataSourceTransactor();
+        ~Transactor();
 
         te::da::DataSource* getDataSource() const;
 
@@ -246,4 +246,4 @@ namespace te
   } // end namespace mem
 }   // end namespace te
 
-#endif  // __TERRALIB_MEMORY_INTERNAL_DATASOURCETRANSACTOR_H
+#endif  // __TERRALIB_MEMORY_INTERNAL_TRANSACTOR_H
