@@ -76,7 +76,7 @@ namespace te
 
         te::common::AccessPolicy getAccessPolicy() const { return te::common::RAccess; }
 
-        te::gm::Envelope* getExtent(std::size_t i);
+        std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i);
 
         std::size_t getNumProperties() const;
 
@@ -141,6 +141,8 @@ namespace te
         std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
         bool isNull(std::size_t i) const;
+      
+        bool isConnected() const { return false; }
 
       private:
 
