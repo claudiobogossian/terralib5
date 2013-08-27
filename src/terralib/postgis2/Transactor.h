@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/postgis/DataSourceTransactor.h
+  \file terralib/postgis/Transactor.h
 
-  \brief A DataSourceTransactor can be viewed as a connection to the data source for reading/writing things into it.
+  \brief A Transactor can be viewed as a connection to the data source for reading/writing things into it.
 */
 
-#ifndef __TERRALIB_POSTGIS_INTERNAL_DATASOURCETRANSACTOR_H
-#define __TERRALIB_POSTGIS_INTERNAL_DATASOURCETRANSACTOR_H
+#ifndef __TERRALIB_POSTGIS_INTERNAL_TRANSACTOR_H
+#define __TERRALIB_POSTGIS_INTERNAL_TRANSACTOR_H
 
 // TerraLib
 #include "../dataaccess2/datasource/DataSourceTransactor.h"
@@ -53,13 +53,13 @@ namespace te
     class Query;
 
     /*!
-      \class DataSourceTransactor
+      \class Transactor
 
       \brief The transactor class for the PostGIS driver.
 
       \sa te::da::DataSourceTransactor, DataSource
     */
-    class TEPGISEXPORT DataSourceTransactor : public te::da::DataSourceTransactor
+    class TEPGISEXPORT Transactor : public te::da::DataSourceTransactor
     {
       public:
 
@@ -69,10 +69,10 @@ namespace te
           \param ds    The PostGIS data source associated to this transactor.
           \param conn  An available connection that will be released when the transactor is deleted
         */
-        DataSourceTransactor(DataSource* ds, Connection* conn);
+        Transactor(DataSource* ds, Connection* conn);
 
         /*! \brief The destructor will automatically release the connection to the pool. */
-          ~DataSourceTransactor();
+          ~Transactor();
 
         te::da::DataSource* getDataSource() const;
 
@@ -460,9 +460,9 @@ namespace te
         bool m_isInTransaction; //!< Tells if there is a transaction in progress.
     };
 
-    typedef boost::shared_ptr<DataSourceTransactor> DataSourceTransactorPtr;
+    typedef boost::shared_ptr<Transactor> TransactorPtr;
 
   } // end namespace da
 }   // end namespace te
 
-#endif  // __TERRALIB_POSTGIS_INTERNAL_DATASOURCETRANSACTOR_H
+#endif  // __TERRALIB_POSTGIS_INTERNAL_TRANSACTOR_H
