@@ -59,7 +59,7 @@ namespace te
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
-    bool createNewRaster( const te::rst::Grid& rasterGrid,
+    bool CreateNewRaster( const te::rst::Grid& rasterGrid,
       const std::vector< te::rst::BandProperty* >& bandsProperties,
       const std::string& outDataSetName,
       te::da::DataSource& outDataSource,
@@ -74,7 +74,7 @@ namespace te
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
-    bool createNewMemRaster( const te::rst::Grid& rasterGrid,
+    bool CreateNewMemRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
       RasterHandler& outRasterHandler );
 
@@ -87,7 +87,7 @@ namespace te
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
-    bool createNewGeotifRaster( const te::rst::Grid& rasterGrid,
+    bool CreateNewGeotifRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
       const std::string& fileName,
       RasterHandler& outRasterHandler );
@@ -99,7 +99,7 @@ namespace te
       \param max The maximum value.
       \note The types are listed in terralib/datatype/DataTypes.h
     */
-    void getDataTypeRange( const int dataType, double& min, double& max );
+    void GetDataTypeRange( const int dataType, double& min, double& max );
 
     /*!
       \brief Convert vector elements.
@@ -109,7 +109,7 @@ namespace te
       \param outputVector A pré-allocated output vector.
       \note The types are listed in terralib/datatype/DataTypes.h
     */
-    void convert2DoublesVector( void* inputVector, const int inputVectorDataType,
+    void Convert2DoublesVector( void* inputVector, const int inputVectorDataType,
       unsigned int inputVectorSize, double* outputVector );
 
     /*!
@@ -120,7 +120,7 @@ namespace te
       \param outputVector A pré-allocated output vector.
       \note The types are listed in terralib/datatype/DataTypes.h
     */
-    void convertDoublesVector( double* inputVector,
+    void ConvertDoublesVector( double* inputVector,
       unsigned int inputVectorSize, const int outputVectorDataType,
       void* outputVector );
 

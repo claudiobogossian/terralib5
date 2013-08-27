@@ -1126,7 +1126,7 @@ namespace te
       }
       
       te::rp::RasterHandler outRasterHandler;
-      if( ! te::rp::createNewRaster( *( sourceRaster.getGrid() ),
+      if( ! te::rp::CreateNewRaster( *( sourceRaster.getGrid() ),
         bandsProperties, dataSetName, *dataSourcePtr, outRasterHandler) )
         return false;      
       

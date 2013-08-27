@@ -101,7 +101,7 @@ namespace te
       m_geometryFilterAssurance = 0.5;
       m_moravecGaussianFilterIterations = 1;
       m_surfScalesNumber = 4;
-      m_surfOctavesNumber = 3;
+      m_surfOctavesNumber = 2;
       m_rastersRescaleFactor = 1.0;
       m_surfMaxNormEuclideanDist = 0.5;
       m_moravecMinAbsCorrelation = 0.5;
@@ -1136,8 +1136,8 @@ namespace te
         m_inputParameters.m_inRaster1Ptr->getNumberOfColumns(),
         "Invalid m_raster1TargetAreaColStart" );     
         
-      if( m_inputParameters.m_raster1TargetAreaWidth ||
-        m_inputParameters.m_raster1TargetAreaHeight )
+      if( ( m_inputParameters.m_raster1TargetAreaWidth != 0 ) ||
+        ( m_inputParameters.m_raster1TargetAreaHeight != 0 ) )
       {
         m_inputParameters.m_raster1TargetAreaWidth = std::min( 
           m_inputParameters.m_raster1TargetAreaWidth,
@@ -1212,8 +1212,8 @@ namespace te
         m_inputParameters.m_inRaster2Ptr->getNumberOfColumns(),
         "Invalid m_raster2TargetAreaColStart" );
         
-      if( m_inputParameters.m_raster2TargetAreaWidth ||
-        m_inputParameters.m_raster2TargetAreaHeight )
+      if( ( m_inputParameters.m_raster2TargetAreaWidth != 0 )||
+        ( m_inputParameters.m_raster2TargetAreaHeight != 0 ) )
       {
         m_inputParameters.m_raster2TargetAreaWidth = std::min( 
           m_inputParameters.m_raster2TargetAreaWidth,
@@ -1266,11 +1266,40 @@ namespace te
           
           if( m_inputParameters.m_maxTiePoints == 0 )
           {
-            m_inputParameters.m_maxTiePoints = 
-              ( m_inputParameters.m_raster1TargetAreaWidth *
-              m_inputParameters.m_raster1TargetAreaWidth ) /
-              ( m_inputParameters.m_moravecCorrelationWindowWidth *
+            const unsigned int maxRastersArea = 
+              std::max(
+                ( m_inputParameters.m_raster1TargetAreaWidth *
+                  m_inputParameters.m_raster1TargetAreaHeight )
+                ,
+                ( m_inputParameters.m_raster2TargetAreaWidth *
+                  m_inputParameters.m_raster2TargetAreaHeight )                       
+              );
+            const unsigned maxWindowSize = std::max( 
+               m_inputParameters.m_moravecCorrelationWindowWidth,
+               m_inputParameters.m_moravecWindowWidth );
+            m_inputParameters.m_maxTiePoints = maxRastersArea / 
+              ( 4 * maxWindowSize * maxWindowSize );
+              
+            // This is because the features and matching matrix bare eing allocated in RAM
+            const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+            const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+            const double totalVMem = (double)te::common::GetTotalVirtualMemory();
+            const double freeVMem = 0.4 * std::min( totalPhysMem, ( totalVMem - usedVMem ) );                
+            const double featSize = (double)( m_inputParameters.m_moravecCorrelationWindowWidth *
               m_inputParameters.m_moravecCorrelationWindowWidth );
+            m_inputParameters.m_maxTiePoints = 
+              std::min(
+                m_inputParameters.m_maxTiePoints,
+                (unsigned int)(
+                  std::sqrt(
+                    ( featSize * featSize )
+                    +
+                    ( freeVMem / (double)( sizeof( float ) ) )
+                  )
+                  -
+                  featSize
+                )
+              );
           }
           
           break;
@@ -1286,14 +1315,38 @@ namespace te
           
           if( m_inputParameters.m_maxTiePoints == 0 )
           {
+            const unsigned int maxRastersArea = 
+              std::max(
+                ( m_inputParameters.m_raster1TargetAreaWidth *
+                  m_inputParameters.m_raster1TargetAreaHeight )
+                ,
+                ( m_inputParameters.m_raster2TargetAreaWidth *
+                  m_inputParameters.m_raster2TargetAreaHeight )                       
+              );
+            const unsigned int maxWindowSize = getSurfFilterSize( 
+              m_inputParameters.m_surfOctavesNumber - 1, 
+              m_inputParameters.m_surfScalesNumber - 1 );
+            m_inputParameters.m_maxTiePoints = maxRastersArea /            
+              ( 4 * maxWindowSize * maxWindowSize );
+
+            // This is because the features and matching matrix bare eing allocated in RAM
+            const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+            const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+            const double totalVMem = (double)te::common::GetTotalVirtualMemory();
+            const double freeVMem = 0.4 * std::min( totalPhysMem, ( totalVMem - usedVMem ) );                
             m_inputParameters.m_maxTiePoints = 
-              getSurfFilterSize( m_inputParameters.m_surfOctavesNumber - 1, 
-                 m_inputParameters.m_surfScalesNumber - 1 );
-            m_inputParameters.m_maxTiePoints = 
-              ( m_inputParameters.m_raster1TargetAreaWidth *
-              m_inputParameters.m_raster1TargetAreaWidth ) /            
-              ( m_inputParameters.m_maxTiePoints *
-              m_inputParameters.m_maxTiePoints );
+              std::min(
+                m_inputParameters.m_maxTiePoints,
+                (unsigned int)(
+                  std::sqrt(
+                    ( 65 * 65 )
+                    +
+                    ( freeVMem / (double)( sizeof( float ) ) )
+                  )
+                  -
+                  65
+                )
+              );            
           }            
             
           break;
@@ -3131,10 +3184,11 @@ namespace te
         
         // feature normaliztion
         
-        featureElementsNormalizeFactor = featureElementMaxValue - 
-          featureElementMinValue;
-        if( featureElementsNormalizeFactor != 0.0 )
-          featureElementsNormalizeFactor = 1.0 / featureElementsNormalizeFactor;
+        if( featureElementMaxValue == featureElementMinValue )
+          featureElementsNormalizeFactor = 0.0;
+        else
+          featureElementsNormalizeFactor = 1.0 / ( featureElementMaxValue -
+            featureElementMinValue );
         
         featurePtr = features[ validInteresPointsIndex ];
         
