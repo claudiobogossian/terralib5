@@ -67,6 +67,7 @@ namespace te
   namespace da
   {
     class DataSourceCapabilities;
+    class DataSourceCatalog;
     class DataSourceTransactor;
     class ObjectIdSet;
     class Query;
@@ -135,6 +136,21 @@ namespace te
         */
         void setId(const std::string& id);
 
+        /*!
+          \brief It returns an catalog that contains the dataset schemas and their relationships with
+          other datasets of the data source.
+
+          \return A pointer to an object that can execute transactions in the context of a data source.
+
+          \exception Exception It throws an exception if it is not possible to get a transactor, for example,
+                               if there is not an available connection.
+
+          \sa DataSourceCatalog
+
+          \note Thread-safe!
+        */
+        virtual te::da::DataSourceCatalog* getCatalog() const;
+
         /** @name Basic Methods of a Data Source
           *  Basic Methods for operating a data source.
           */
@@ -178,15 +194,15 @@ namespace te
         /*!
           \brief It returns an object that can execute transactions in the context of a data source.
 
-          Use this method to get an object that allows to retrieve
-          dataset, to insert data or to modify dataset types.
-          You don't need to cache this kind of object because each driver in TerraLib
-          already keeps a pooling. So as soon as you finish using
+          Use this method to get an object that allows to retrieve a dataset, to insert or update data,
+          or to modify dataset types(schemas). You don't need to cache this kind of object because each
+          driver in TerraLib already keeps a connection pooling. So, as soon as you finish using
           the transactor, destroy it.
 
           \return A pointer to an object that can execute transactions in the context of a data source.
 
-          \exception Exception It throws an exception if it is not possible to get a Transactor, for example, if there is not an available connection.
+          \exception Exception It throws an exception if it is not possible to get a transactor, for example,
+                               if there is not an available connection.
 
           \note Thread-safe!
         */

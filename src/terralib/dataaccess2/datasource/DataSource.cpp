@@ -35,6 +35,7 @@
 #include "../query/Select.h"
 #include "../query/Where.h"
 #include "DataSource.h"
+#include "DataSourceCatalog.h"
 #include "DataSourceFactory.h"
 #include "DataSourceTransactor.h"
 
@@ -54,6 +55,11 @@ const std::string& te::da::DataSource::getId() const
 void te::da::DataSource::setId(const std::string& id)
 {
   m_id = id;
+}
+
+te::da::DataSourceCatalog* te::da::DataSource::getCatalog() const
+{
+  return 0;
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name, te::common::TraverseType travType)

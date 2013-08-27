@@ -64,6 +64,8 @@ namespace te
 
         ~DataSource();
 
+        te::da::DataSourceCatalog* getCatalog() const;
+
         std::string getType() const;
 
         const std::map<std::string, std::string>& getConnectionInfo() const;
@@ -147,12 +149,6 @@ namespace te
           \note PostGIS driver extended method.
         */
         ConnectionPool* getConnPool() const;
-
-        te::da::DataSetTypePtr getDataSetType(const std::string& name);
-
-        void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc);
-
-        void dropCheckConstraint(const std::string& datasetName, const std::string& name);
 
         /*!
           \brief It sets the SQL dialect used by the PostGIS driver.

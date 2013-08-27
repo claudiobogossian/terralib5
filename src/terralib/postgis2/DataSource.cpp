@@ -96,6 +96,11 @@ te::pgis::DataSource::~DataSource()
   delete m_pool;
 }
 
+te::da::DataSourceCatalog* te::pgis::DataSource::getCatalog() const
+{
+  return m_catalog;
+}
+
 std::string te::pgis::DataSource::getType() const
 {
   return PGIS_DRIVER_IDENTIFIER;
@@ -199,45 +204,6 @@ const std::string& te::pgis::DataSource::getCurrentSchema() const
 te::pgis::ConnectionPool* te::pgis::DataSource::getConnPool() const
 {
   return m_pool;
-}
-
-te::da::DataSetTypePtr te::pgis::DataSource::getDataSetType(const std::string& name)
-{
-  te::da::DataSetTypePtr dt = te::da::DataSource::getDataSetType(name);
-
-  // Insert the dataset schema into the catalog, if it not there.
-  std::string datasetName = name;
-
-  if(datasetName.find(".") == std::string::npos)
-    datasetName = m_currentSchema + "." + name;
-
-  if(!m_catalog->datasetExists(datasetName))
-    m_catalog->add(dt);
-
-  return dt;
-}
-
-void te::pgis::DataSource::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
-{
-  te::da::DataSource::addCheckConstraint(datasetName, cc);
-
-  if(m_catalog->datasetExists(datasetName))
-  {
-    const te::da::DataSetTypePtr& dt = m_catalog->getDataSetType(datasetName);
-    dt->add(cc);
-  }
-}
-
-void te::pgis::DataSource::dropCheckConstraint(const std::string& datasetName, const std::string& name)
-{
-  te::da::DataSource::dropCheckConstraint(datasetName, name);
-
-  if(m_catalog->datasetExists(datasetName))
-  {
-    const te::da::DataSetTypePtr& dt = m_catalog->getDataSetType(datasetName);
-    te::da::CheckConstraint* cc = dt->getCheckConstraint(name);
-    dt->remove(cc);
-  }
 }
 
 void te::pgis::DataSource::setDialect(te::da::SQLDialect* myDialect)
