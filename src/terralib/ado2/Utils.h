@@ -133,6 +133,8 @@ namespace te
     */
     int Convert2Terralib(ADOX::DataTypeEnum adoType);
 
+    int Convert2Terralib(::DataTypeEnum adoType);
+
     /*!
       \brief Bind ADO column to Terralib property
 
