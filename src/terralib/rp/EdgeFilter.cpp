@@ -378,7 +378,7 @@ namespace te
       
       double dstBandAllowedMin = 0;
       double dstBandAllowedMax = 0;
-      te::rp::getDataTypeRange( dstBand.getProperty()->getType(), dstBandAllowedMin,
+      te::rp::GetDataTypeRange( dstBand.getProperty()->getType(), dstBandAllowedMin,
         dstBandAllowedMax );
       
       unsigned int col = 0;
@@ -471,7 +471,7 @@ namespace te
       
       double dstBandAllowedMin = 0;
       double dstBandAllowedMax = 0;
-      te::rp::getDataTypeRange( dstBand.getProperty()->getType(), dstBandAllowedMin,
+      te::rp::GetDataTypeRange( dstBand.getProperty()->getType(), dstBandAllowedMin,
         dstBandAllowedMax );      
       
       unsigned int col = 0;
