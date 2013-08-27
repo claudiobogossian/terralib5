@@ -57,15 +57,36 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
-bool te::gdal::IsGDALDataSet(const std::string strAccessInfo)
+std::string te::gdal::GetSubDataSetName(const std::string& name, const std::string& driverName)
 {
-  GDALDataset* gds = (GDALDataset*) GDALOpen(strAccessInfo.c_str(), GA_ReadOnly);
-  if (gds)
+  std::string subDataSetName = "";
+  
+  std::string filename = "";
+  
+  size_t first_colon, last_colon;
+  
+  if (driverName == "NITF")
   {
-    GDALClose(gds); 
-    return true;
+    last_colon = name.find_last_of(":");
+    
+    subDataSetName = name.substr(0,last_colon);
+    
+    filename = name.substr(last_colon+1);
   }
-  return false;
+  else if (driverName == "netCDF")
+  {
+    last_colon = name.find_last_of(":");
+    
+    subDataSetName = name.substr(last_colon+1);
+    
+    first_colon = name.find_first_of(":");    
+    filename = name.substr(first_colon+2,(last_colon-first_colon)-3);    
+  }
+  
+  boost::filesystem::path mpath(filename);
+  subDataSetName = subDataSetName + ":" +  mpath.leaf().string();
+  
+  return subDataSetName;
 }
 
 te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
@@ -257,6 +278,128 @@ te::gm::Envelope* te::gdal::GetExtent(std::string strAccessInfo)
   return ext;
 }
 
+GDALDataset* te::gdal::CreateRaster(const std::string& name, te::rst::Grid* g, const std::vector<te::rst::BandProperty*>& bands, 
+                          const std::map<std::string, std::string>& optParams)
+{
+  std::string driverName = GetDriverName(name);
+  
+  GDALDriverManager* dManPtr = GetGDALDriverManager();
+  
+  GDALDriver* driverPtr = dManPtr->GetDriverByName(driverName.c_str());
+  
+  if(!driverPtr)
+    throw Exception("Could not create raster because the underlying driver was not found!");
+  
+  GDALDataType targetGDataType = te::gdal::GetGDALDataType(bands[0]->m_type);
+  
+  if (targetGDataType == GDT_Unknown)
+    throw Exception("Could not create raster because of unknown band data type!");
+  
+  char** papszOptions = 0;
+  
+  std::map<std::string, std::string>::const_iterator it = optParams.begin();
+  
+  std::map<std::string, std::string>::const_iterator it_end = optParams.end();
+  
+  while(it != it_end)
+  {
+    if(it->first == "URI" || it->first == "SOURCE")
+    {
+      ++it;
+      
+      continue;
+    }
+    
+    papszOptions = CSLSetNameValue(papszOptions, it->first.c_str(), it->second.c_str());
+    
+    ++it;
+  }
+  
+  GDALDataset* poDataset;
+  
+  if (driverName == "JPEG" || driverName == "PNG")
+  {
+    GDALDriver* tmpDriverPtr = dManPtr->GetDriverByName("MEM");
+    
+    poDataset = tmpDriverPtr->Create(name.c_str(),
+                                     g->getNumberOfColumns(),
+                                     g->getNumberOfRows(),
+                                     bands.size(),
+                                     targetGDataType,
+                                     papszOptions);
+  }
+  else
+    poDataset = driverPtr->Create(name.c_str(),
+                                  g->getNumberOfColumns(),
+                                  g->getNumberOfRows(),
+                                  bands.size(),
+                                  targetGDataType,
+                                  papszOptions);
+  
+  if(papszOptions)
+    CSLDestroy(papszOptions);
+  
+  if(poDataset == 0)
+    throw Exception("Could not create raster!");
+  
+  const double* cgt = g->getGeoreference();
+  
+  double gt[6];
+  
+  gt[0] = cgt[0]; gt[1] = cgt[1]; gt[2] = cgt[2]; gt[3] = cgt[3]; gt[4] = cgt[4]; gt[5] = cgt[5];
+  
+  poDataset->SetGeoTransform(gt);
+  
+  OGRSpatialReference oSRS;
+  
+  oSRS.importFromEPSG(g->getSRID());
+  
+  char* projWKTPtr = 0;
+  
+  if(oSRS.exportToWkt(&projWKTPtr) == OGRERR_NONE)
+  {
+    poDataset->SetProjection(projWKTPtr);
+    OGRFree(projWKTPtr);
+  }
+  
+  int nb = static_cast<int>(bands.size());
+  
+  for(int dIdx = 0; dIdx < nb; ++dIdx)
+  {
+    GDALRasterBand* rasterBand = poDataset->GetRasterBand(1 + dIdx);
+    
+    GDALColorInterp ci = te::gdal::GetGDALColorInterpretation(bands[dIdx]->m_colorInterp);
+    
+    rasterBand->SetColorInterpretation(ci);
+    
+    if (ci == GCI_PaletteIndex)
+    {
+      GDALColorTable* gCTablePtr = new GDALColorTable(GPI_RGB);
+      GDALColorEntry gCEntry;
+      
+      for (unsigned int pIdx=0 ; pIdx < bands[dIdx]->m_palette.size(); ++pIdx)
+      {
+        gCEntry.c1 = (short)bands[dIdx]->m_palette[pIdx].c1;
+        gCEntry.c2 = (short)bands[dIdx]->m_palette[pIdx].c2;
+        gCEntry.c3 = (short)bands[dIdx]->m_palette[pIdx].c3;
+        gCEntry.c4 = (short)bands[dIdx]->m_palette[pIdx].c4;
+        gCTablePtr->SetColorEntry(pIdx, &gCEntry);
+      }
+      
+      rasterBand->SetColorTable(gCTablePtr);
+      delete gCTablePtr;
+    }
+    rasterBand->SetNoDataValue(bands[dIdx]->m_noDataValue);
+    rasterBand->SetOffset(bands[dIdx]->m_valuesOffset.real());
+    rasterBand->SetScale(bands[dIdx]->m_valuesScale.real());
+    
+    // maybe there is something else here...
+  }
+  
+  return poDataset;
+
+}
+
 GDALDataset* te::gdal::CreateRaster(te::rst::Grid* g,
                                     const std::vector<te::rst::BandProperty*>& bands,
                                     const std::map<std::string, std::string>& optParams)
@@ -265,123 +408,7 @@ GDALDataset* te::gdal::CreateRaster(te::rst::Grid* g,
   assert(bands.size() > 0);
 
   std::string accessInfo = GetGDALConnectionInfo(optParams);
-
-  std::string driverName = GetDriverName(accessInfo);
-
-  GDALDriverManager* dManPtr = GetGDALDriverManager();
-
-  GDALDriver* driverPtr = dManPtr->GetDriverByName(driverName.c_str());
-
-  if(!driverPtr)
-    throw Exception("Could not create raster because the underlying driver was not found!");
-
-  GDALDataType targetGDataType = te::gdal::GetGDALDataType(bands[0]->m_type);
-
-  if (targetGDataType == GDT_Unknown)
-    throw Exception("Could not create raster because of unknown band data type!");
-
-  char** papszOptions = 0;
-
-  std::map<std::string, std::string>::const_iterator it = optParams.begin();
-
-  std::map<std::string, std::string>::const_iterator it_end = optParams.end();
-
-  while(it != it_end)
-  {
-    if(it->first == "URI" || it->first == "SOURCE")
-    {
-      ++it;
-
-      continue;
-    }
-
-    papszOptions = CSLSetNameValue(papszOptions, it->first.c_str(), it->second.c_str());
-
-    ++it;
-  }
-
-  GDALDataset* poDataset;
-
-  if (driverName == "JPEG" || driverName == "PNG")
-  {
-    GDALDriver* tmpDriverPtr = dManPtr->GetDriverByName("MEM");
-
-    poDataset = tmpDriverPtr->Create(accessInfo.c_str(),
-                                     g->getNumberOfColumns(),
-                                     g->getNumberOfRows(),
-                                     bands.size(),
-                                     targetGDataType,
-                                     papszOptions);
-  }
-  else
-    poDataset = driverPtr->Create(accessInfo.c_str(),
-                                  g->getNumberOfColumns(),
-                                  g->getNumberOfRows(),
-                                  bands.size(),
-                                  targetGDataType,
-                                  papszOptions);
-
-  if(papszOptions)
-    CSLDestroy(papszOptions);
-
-  if(poDataset == 0)
-    throw Exception("Could not create raster!");
-
-  const double* cgt = g->getGeoreference();
-
-  double gt[6];
-
-  gt[0] = cgt[0]; gt[1] = cgt[1]; gt[2] = cgt[2]; gt[3] = cgt[3]; gt[4] = cgt[4]; gt[5] = cgt[5];
-
-  poDataset->SetGeoTransform(gt);
-
-  OGRSpatialReference oSRS;
-
-  oSRS.importFromEPSG(g->getSRID());
-
-  char* projWKTPtr = 0;
-
-  if(oSRS.exportToWkt(&projWKTPtr) == OGRERR_NONE)
-  {
-    poDataset->SetProjection(projWKTPtr);
-    OGRFree(projWKTPtr);
-  }
-
-  int nb = static_cast<int>(bands.size());
-
-  for(int dIdx = 0; dIdx < nb; ++dIdx)
-  {
-    GDALRasterBand* rasterBand = poDataset->GetRasterBand(1 + dIdx);
-
-    GDALColorInterp ci = te::gdal::GetGDALColorInterpretation(bands[dIdx]->m_colorInterp);
-
-    rasterBand->SetColorInterpretation(ci);
-
-    if (ci == GCI_PaletteIndex)
-    {
-       GDALColorTable* gCTablePtr = new GDALColorTable(GPI_RGB);
-       GDALColorEntry gCEntry;
-
-       for (unsigned int pIdx=0 ; pIdx < bands[dIdx]->m_palette.size(); ++pIdx)
-       {
-          gCEntry.c1 = (short)bands[dIdx]->m_palette[pIdx].c1;
-          gCEntry.c2 = (short)bands[dIdx]->m_palette[pIdx].c2;
-          gCEntry.c3 = (short)bands[dIdx]->m_palette[pIdx].c3;
-          gCEntry.c4 = (short)bands[dIdx]->m_palette[pIdx].c4;
-          gCTablePtr->SetColorEntry(pIdx, &gCEntry);
-       }
-
-       rasterBand->SetColorTable(gCTablePtr);
-       delete gCTablePtr;
-    }
-    rasterBand->SetNoDataValue(bands[dIdx]->m_noDataValue);
-    rasterBand->SetOffset(bands[dIdx]->m_valuesOffset.real());
-    rasterBand->SetScale(bands[dIdx]->m_valuesScale.real());
-
-    // maybe there is something else here...
-  }
-
-  return poDataset;
+  return te::gdal::CreateRaster(accessInfo, g, bands, optParams);
 }
 
 GDALDataset* te::gdal::GetRasterHandle(const std::string strAccessInfo, te::common::AccessPolicy policy)
@@ -551,38 +578,6 @@ std::string te::gdal::GetGDALConnectionInfo(const std::map<std::string, std::str
     return it->second;
 
   throw Exception(TR_GDAL("Invalid data source connection information!."));
-}
-
-std::string te::gdal::GetSubDataSetName(const std::string& name, const std::string& driverName)
-{
-  std::string subDataSetName = "";
-  
-  std::string filename = "";
-  
-  size_t first_colon, last_colon;
-  
-  if (driverName == "NITF")
-  {
-    last_colon = name.find_last_of(":");
-    
-    subDataSetName = name.substr(0,last_colon);
-    
-    filename = name.substr(last_colon+1);
-  }
-  else if (driverName == "netCDF")
-  {
-    last_colon = name.find_last_of(":");
-    
-    subDataSetName = name.substr(last_colon+1);
-    
-    first_colon = name.find_first_of(":");    
-    filename = name.substr(first_colon+2,(last_colon-first_colon)-3);    
-  }
-  
-  boost::filesystem::path mpath(filename);
-  subDataSetName = subDataSetName + ":" +  mpath.leaf().string();
-  
-  return subDataSetName;
 }
 
 void te::gdal::Vectorize(GDALRasterBand* band, std::vector<te::gm::Geometry*>& geometries)

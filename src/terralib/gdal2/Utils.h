@@ -40,6 +40,8 @@
 #include <map>
 #include <string>
 
+#include <boost/filesystem.hpp>
+
 namespace te
 {
   namespace gm {class Envelope; class Geometry;}
@@ -165,14 +167,6 @@ namespace te
         default : return te::rst::UndefPalInt;
       }
     }
-    
-    /*!
-     \brief It checks if a string can be used by GDAL to access some raster data.
-     \param strAccessInfo The access string.
-     \return True if a string can be used by GDAL to access some raster data and false otherwise.
-     */
-    bool IsGDALDataSet(const std::string strAccessInfo);
-    
     /*!
      \brief Gets the grid definition from a GDAL dataset.
      \param gds A pointer to a GDAL dataset.
@@ -223,6 +217,19 @@ namespace te
      \exception Exception It throws an exception if the raster can not be created.
      */
     GDALDataset* CreateRaster(te::rst::Grid* g, const std::vector<te::rst::BandProperty*>& bands, const std::map<std::string, std::string>& optParams);
+    
+    /*!
+     \brief Creates a raster data using GDAL.
+     \param name       The name of the dataset to create. UTF-8 encoded.
+     \param g          Raster grid info.
+     \param bands      Band info.
+     \param optParams  A vector of optional parameters that are valid only for some data formats.
+     
+     \return A pointer to a GDALDataset if it succeeds or a NULL pointer otherwise. Caller is responsible for closing it.
+     
+     \exception Exception It throws an exception if the raster can not be created.
+     */
+    GDALDataset* CreateRaster(const std::string& name, te::rst::Grid* g, const std::vector<te::rst::BandProperty*>& bands, const std::map<std::string, std::string>& optParams);
     
     /*!
      \brief Gets the extent of a raster data decoded by GDAL.

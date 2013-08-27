@@ -57,34 +57,34 @@ void te::gdal::Module::startup()
 
   GDALAllRegister();
 
-  //DataSourceFactory::initialize();
 
   //RasterFactory::initialize();
 
-//  // DataType Capabilites
-//  te::da::DataTypeCapabilities dataTypeCapabilities;
-//  dataTypeCapabilities.setSupportRaster(true);
-//
-//  // DataSetType Capabilites
-//  te::da::DataSetTypeCapabilities dataSetTypeCapabilities; // All false
-//
-//  // DataSet Capabilities
-//  te::da::DataSetCapabilities dataSetCapabilities;
-//  dataSetCapabilities.setSupportEfficientDataSetSize(true);
-//
-//  // Query Capabilities
-//  te::da::QueryCapabilities queryCapabilities; // All false
-//
-//  // DataSouce Capabilities
-//  te::da::DataSourceCapabilities capabilities;
-//  capabilities.setSupportAll();
-//  capabilities.setSupportTransactions(false);
-//  capabilities.setDataTypeCapabilities(dataTypeCapabilities);
-//  capabilities.setDataSetTypeCapabilities(dataSetTypeCapabilities);
-//  capabilities.setDataSetCapabilities(dataSetCapabilities);
-//  capabilities.setQueryCapabilities(queryCapabilities);
-//
-//  te::gdal::DataSource::setCapabilities(capabilities);
+  // DataType Capabilites
+  te::da::DataTypeCapabilities dataTypeCapabilities;
+  dataTypeCapabilities.setSupportRaster(true);
+
+  // DataSetType Capabilites
+  te::da::DataSetTypeCapabilities dataSetTypeCapabilities; // All false
+
+  // DataSet Capabilities
+  te::da::DataSetCapabilities dataSetCapabilities;
+  dataSetCapabilities.setSupportEfficientDataSetSize(true);
+
+  // Query Capabilities
+  te::da::QueryCapabilities queryCapabilities; // All false
+
+  // DataSouce Capabilities
+  te::da::DataSourceCapabilities capabilities;
+  capabilities.setSupportAll();
+  capabilities.setSupportTransactions(false);
+  capabilities.setDataTypeCapabilities(dataTypeCapabilities);
+  capabilities.setDataSetTypeCapabilities(dataSetTypeCapabilities);
+  capabilities.setDataSetCapabilities(dataSetCapabilities);
+  capabilities.setQueryCapabilities(queryCapabilities);
+  capabilities.setAccessPolicy(te::common::RWAccess);
+
+  te::gdal::DataSource::setCapabilities(capabilities);
 
   TE_LOG_TRACE(TR_GDAL("TerraLib GDAL driver startup!"));
 

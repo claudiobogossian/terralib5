@@ -42,9 +42,9 @@ namespace Ui { class RasterNavigatorWidgetForm; }
 
 namespace te
 {
-  namespace gm { class Envelope; }
-
-  namespace se { class RasterSymbolizer; }
+  namespace gm  { class Envelope; }
+  namespace rst { class Raster; }
+  namespace se  { class RasterSymbolizer; }
 
   namespace qt
   {
@@ -91,7 +91,11 @@ namespace te
 
           te::gm::Envelope getCurrentExtent();
 
-           te::qt::widgets::MapDisplay* getDisplay();
+          te::qt::widgets::MapDisplay* getDisplay();
+
+          te::rst::Raster* getExtentRaster();
+
+          void drawRaster(te::rst::Raster* rst);
 
           void showAsPreview(bool asPreview);
 
@@ -137,7 +141,11 @@ namespace te
 
           void onBlueComboBoxActivated(int index);
 
+          void onPreviewClicked();
+
         signals:
+
+          void previewClicked();
 
           void mapDisplayExtentChanged();
 
