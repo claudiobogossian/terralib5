@@ -30,6 +30,7 @@
 #include "Config.h"
 #include "../dataaccess2/datasource/DataSource.h"
 #include "../dataaccess2/datasource/DataSourceCapabilities.h"
+#include "../dataaccess2/dataset/DataSetType.h"
 #include "Exception.h"
 
 // Forward declarations
@@ -107,7 +108,7 @@ namespace te
 
         std::vector<std::string> getDataSetNames();
 
-        const te::da::DataSetTypePtr& getDataSetType(const std::string& name);
+        te::da::DataSetTypePtr getDataSetType(const std::string& name);
 
         std::size_t getNumberOfProperties(const std::string& datasetName);
 
