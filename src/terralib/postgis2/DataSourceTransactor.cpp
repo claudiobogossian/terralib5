@@ -757,6 +757,14 @@ void te::pgis::DataSourceTransactor::addPrimaryKey(const std::string& datasetNam
   sql += ")";
 
   execute(sql);
+
+  // If the data source catalog contains the dataset, update it.
+  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
+  if(catalog->datasetExists(fullDatasetName))
+  {
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(fullDatasetName);
+    dt->add(pk);
+  }
 }
 
 void te::pgis::DataSourceTransactor::dropPrimaryKey(const std::string& datasetName)
@@ -772,6 +780,14 @@ void te::pgis::DataSourceTransactor::dropPrimaryKey(const std::string& datasetNa
   sql += " DROP CONSTRAINT " + pkName;
 
   execute(sql);
+
+  // If the data source catalog contains the dataset, update it.
+  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
+  if(catalog->datasetExists(fullDatasetName))
+  {
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(fullDatasetName);
+    dt->remove(pk.release());
+  }
 }
 
 std::auto_ptr<te::da::ForeignKey> te::pgis::DataSourceTransactor::getForeignKey(const std::string& datasetName, const std::string& name)
@@ -953,6 +969,14 @@ void te::pgis::DataSourceTransactor::addForeignKey(const std::string& datasetNam
   }
 
   execute(sql);
+
+  // If the data source catalog contains the dataset, update it.
+  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
+  if(catalog->datasetExists(fullDatasetName))
+  {
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(fullDatasetName);
+    dt->add(fk);
+  }
 }
 
 void te::pgis::DataSourceTransactor::dropForeignKey(const std::string& datasetName, const std::string& name)
@@ -968,6 +992,15 @@ void te::pgis::DataSourceTransactor::dropForeignKey(const std::string& datasetNa
   sql += name;
 
   execute(sql);
+
+  // If the data source catalog contains the dataset, update it.
+  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
+  if(catalog->datasetExists(fullDatasetName))
+  {
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(fullDatasetName);
+    te::da::ForeignKey* fk = dt->getForeignKey(name);
+    dt->remove(fk);
+  }
 }
 
 std::auto_ptr<te::da::UniqueKey> te::pgis::DataSourceTransactor::getUniqueKey(const std::string& datasetName, const std::string& name)
@@ -1088,6 +1121,14 @@ void te::pgis::DataSourceTransactor::addUniqueKey(const std::string& datasetName
   sql += ")";
 
   execute(sql);
+
+  // If the data source catalog contains the dataset, update it.
+  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
+  if(catalog->datasetExists(fullDatasetName))
+  {
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(fullDatasetName);
+    dt->add(uk);
+  }
 }
 
 void te::pgis::DataSourceTransactor::dropUniqueKey(const std::string& datasetName, const std::string& name)
@@ -1107,6 +1148,15 @@ void te::pgis::DataSourceTransactor::dropUniqueKey(const std::string& datasetNam
   // Remove the index associated to the unique key
   if(indexExists(fullDatasetName, name))
     dropIndex(fullDatasetName, name);
+
+  // If the data source catalog contains the dataset, update it.
+  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
+  if(catalog->datasetExists(fullDatasetName))
+  {
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(fullDatasetName);
+    te::da::UniqueKey* uk = dt->getUniqueKey(name);
+    dt->remove(uk);
+  }
 }
 
 std::auto_ptr<te::da::CheckConstraint> te::pgis::DataSourceTransactor::getCheckConstraint(const std::string& datasetName, const std::string& name)
@@ -1312,7 +1362,9 @@ std::vector<std::string> te::pgis::DataSourceTransactor::getIndexNames(const std
 
 bool te::pgis::DataSourceTransactor::indexExists(const std::string& datasetName, const std::string& name)
 {
-  std::vector<std::string> idxNames = getIndexNames(datasetName);
+  std::string fullDatasetName = getFullName(datasetName);
+
+  std::vector<std::string> idxNames = getIndexNames(fullDatasetName);
 
   if(std::find(idxNames.begin(), idxNames.end(), name) != idxNames.end())
     return true;
@@ -1323,13 +1375,15 @@ bool te::pgis::DataSourceTransactor::indexExists(const std::string& datasetName,
 void te::pgis::DataSourceTransactor::addIndex(const std::string& datasetName, te::da::Index* idx,
                                     const std::map<std::string, std::string>& options) 
 {
+  std::string fullDatasetName = getFullName(datasetName);
+
   std::string idxName = idx->getName();
 
   if(indexExists(datasetName, idxName))
-    throw Exception((boost::format(TR_PGIS("The dataset already \"%1%\" has a index with the name \"%2%\"!")) % datasetName % idxName).str());
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" already has an index with the name \"%2%\"!")) % fullDatasetName % idxName).str());
 
   // Check if the index is associated to a UK or PK
-  std::auto_ptr<te::da::PrimaryKey> pk = getPrimaryKey(datasetName);
+  std::auto_ptr<te::da::PrimaryKey> pk = getPrimaryKey(fullDatasetName);
 
   if(pk.get() && (pk->getAssociatedIndex() == idx))
     return;
@@ -1344,7 +1398,7 @@ void te::pgis::DataSourceTransactor::addIndex(const std::string& datasetName, te
   std::string sql("CREATE INDEX ");
   sql += idxName;
   sql += " ON ";
-  sql += datasetName;
+  sql += fullDatasetName;
  
   if(idx->getIndexType() == te::da::HASH_TYPE)
     sql += " USING HASH (";
@@ -1368,17 +1422,36 @@ void te::pgis::DataSourceTransactor::addIndex(const std::string& datasetName, te
   sql += ")";
 
   execute(sql);
+
+  // If the data source catalog contains the dataset, update it.
+  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
+  if(catalog->datasetExists(fullDatasetName))
+  {
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(fullDatasetName);
+    dt->add(idx);
+  }
 }
 
 void te::pgis::DataSourceTransactor::dropIndex(const std::string& datasetName, const std::string& name)
 {
-  if(!indexExists(datasetName, name))
-    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no index with this name: \"%2%\"!")) % datasetName % name).str());
+  std::string fullDatasetName = getFullName(datasetName);
+
+  if(!indexExists(fullDatasetName, name))
+    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" has no index with this name: \"%2%\"!")) % fullDatasetName % name).str());
 
   std::string sql("DROP INDEX ");
   sql += name;
 
   execute(sql);
+
+  // If the data source catalog contains the dataset, update it.
+  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
+  if(catalog->datasetExists(fullDatasetName))
+  {
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(fullDatasetName);
+    te::da::Index* idx = dt->getIndex(name);
+    dt->remove(idx);
+  }
 }
 
 std::auto_ptr<te::da::Sequence> te::pgis::DataSourceTransactor::getSequence(const std::string& name)
@@ -2454,8 +2527,7 @@ void te::pgis::DataSourceTransactor::getIndexes(te::da::DataSetTypePtr& dt)
   while(idxInfo->moveNext())
   {
     unsigned int idxId = idxInfo->getInt32(0);
-    std::string idxName = idxInfo->getString(1) + ".";
-    idxName += idxInfo->getString(2);
+    std::string idxName = idxInfo->getString(2);
 
     std::auto_ptr<te::dt::Array> idxCols(idxInfo->getArray(3));
 
@@ -2512,7 +2584,7 @@ std::vector<te::da::Sequence*> te::pgis::DataSourceTransactor::getSequences()
 
   while(seqNamesInfo->moveNext())
   {
-    std::string seqName(seqNamesInfo->getString(1) + "." + seqNamesInfo->getString(2));
+    std::string seqName(seqNamesInfo->getString(2));
     seqNames.push_back(seqName);
   }
 
