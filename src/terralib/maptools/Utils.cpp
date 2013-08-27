@@ -46,6 +46,7 @@
 #include "../memory/DataSet.h"
 #include "../raster/Grid.h"
 #include "../raster/Raster.h"
+#include "../raster/RasterFactory.h"
 #include "../raster/RasterProperty.h"
 #include "../raster/RasterSummary.h"
 #include "../raster/RasterSummaryManager.h"
@@ -666,4 +667,109 @@ void te::map::DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::
   }
 
   canvas->draw(geom.get());
+}
+
+te::rst::Raster* te::map::GetExtentRaster(te::rst::Raster* raster, int w, int h, const te::gm::Envelope& bbox, int bboxSRID,
+                         const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style)
+{
+  assert(raster);
+  assert(bbox.isValid());
+  assert(visibleArea.isValid());
+  assert(style);
+
+// build the grid canvas. i.e. a grid with canvas dimensions and requested mbr
+  te::gm::Envelope* gmbr = new te::gm::Envelope(visibleArea);
+  te::rst::Grid* gridCanvas = new te::rst::Grid(static_cast<unsigned int>(w), static_cast<unsigned int>(h), gmbr, srid);
+
+  std::vector<te::rst::BandProperty*> bprops;
+
+  for(size_t t = 0; t < raster->getNumberOfBands(); ++t)
+  {
+    te::rst::Band* band = raster->getBand(t);
+
+    te::rst::BandProperty* bp = new te::rst::BandProperty(*band->getProperty());
+
+    bprops.push_back(bp);
+  }
+
+//build output raster
+  te::rst::Raster* rasterOut = te::rst::RasterFactory::make("MEM", gridCanvas, bprops, std::map<std::string, std::string>());
+
+// create a raster transform
+  te::map::RasterTransform rasterTransform(raster, rasterOut);
+
+//check band data type
+  if(raster->getBandDataType(0) != te::dt::UCHAR_TYPE)
+  {
+    // raster min / max values
+    const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster, te::rst::SUMMARY_MIN);
+    const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster, te::rst::SUMMARY_MAX);
+    const std::complex<double>* cmin = rsMin->at(0).m_minVal;
+    const std::complex<double>* cmax = rsMax->at(0).m_maxVal;
+    double min = cmin->real();
+    double max = cmax->real();
+
+    // *** aqui temos a questão da variável global que diz se é para normalizar ou não os valores do raster ***
+    rasterTransform.setLinearTransfParameters(min, max, 0, 255);
+  }
+  else
+  {
+    rasterTransform.setLinearTransfParameters(0, 255, 0, 255);
+  }
+
+// get the raster symbolizer
+  std::size_t nRules = style->getRules().size();
+  assert(nRules >= 1);
+
+// for while, consider one rule
+  const te::se::Rule* rule = style->getRule(0);
+
+  const std::vector<te::se::Symbolizer*>& symbolizers = rule->getSymbolizers();
+  assert(!symbolizers.empty());
+
+// for while, consider one raster symbolizer
+  te::se::RasterSymbolizer* rasterSymbolizer = dynamic_cast<te::se::RasterSymbolizer*>(symbolizers[0]);
+  assert(rasterSymbolizer);
+
+// configure the raster transformation based on the raster symbolizer
+  te::map::RasterTransformConfigurer rtc(rasterSymbolizer, &rasterTransform);
+  rtc.configure();
+
+// verify if is necessary convert the raster to the given srid
+  bool needRemap = false;
+  if((bboxSRID != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (bboxSRID != srid))
+    needRemap = true;
+
+// create a SRS converter
+  std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+    
+  if(needRemap)
+  {
+    converter->setSourceSRID(srid);
+    converter->setTargetSRID(bboxSRID);
+  }
+
+// fill the result RGBA array
+  for(unsigned int r = 0; r < gridCanvas->getNumberOfRows(); ++r)
+  {
+    for(unsigned int c = 0; c < gridCanvas->getNumberOfColumns(); ++c)
+    {
+      te::gm::Coord2D inputGeo = gridCanvas->gridToGeo(c, r);
+
+      if(needRemap)
+        converter->convert(inputGeo.x, inputGeo.y, inputGeo.x, inputGeo.y);
+
+      te::gm::Coord2D outputGrid = raster->getGrid()->geoToGrid(inputGeo.x, inputGeo.y);
+
+// TODO: round or truncate?
+      int x = te::rst::Round(outputGrid.x);
+      int y = te::rst::Round(outputGrid.y);
+
+      if((x >= 0 && x < (int)(raster->getNumberOfColumns())) &&
+         (y >= 0 && y < (int)(raster->getNumberOfRows())))
+           rasterTransform.apply(x, y, c, r);
+    }
+  }
+
+  return rasterOut;
 }

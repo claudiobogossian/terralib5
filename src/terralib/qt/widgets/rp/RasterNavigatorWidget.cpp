@@ -29,6 +29,7 @@
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Point.h"
 #include "../../../maptools/DataSetLayer.h"
+#include "../../../maptools/Utils.h"
 #include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
 #include "../../../se/CoverageStyle.h"
@@ -36,6 +37,7 @@
 #include "../../../se/RasterSymbolizer.h"
 #include "../../../se/Rule.h"
 #include "../../../se/SelectedChannel.h"
+#include "../../../se/Utils.h"
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/CoordTracking.h"
 #include "../../widgets/tools/Pan.h"
@@ -93,11 +95,13 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   connect(m_ui->m_redComboBox, SIGNAL(activated(int)), this, SLOT(onRedComboBoxActivated(int)));
   connect(m_ui->m_greenComboBox, SIGNAL(activated(int)), this, SLOT(onGreenComboBoxActivated(int)));
   connect(m_ui->m_blueComboBox, SIGNAL(activated(int)), this, SLOT(onBlueComboBoxActivated(int)));
+  connect(m_ui->m_previewToolButton, SIGNAL(clicked()), this, SLOT(onPreviewClicked()));
 
   connect(coordTracking, SIGNAL(coordTracked(QPointF&)), this, SLOT(onCoordTrackedChanged(QPointF&)));
   connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
 
 //pixmap
+  m_ui->m_previewToolButton->setIcon(QIcon::fromTheme("check"));
   m_ui->m_zoomInActionToolButtontoolButton->setIcon(QIcon::fromTheme("zoom-area"));
   m_ui->m_zoomOutActionToolButtontoolButton->setIcon(QIcon::fromTheme("zoom-out"));
   m_ui->m_panActionToolButtontoolButton->setIcon(QIcon::fromTheme("pan"));
@@ -109,6 +113,8 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_ui->m_redLabel->setPixmap(QIcon::fromTheme("bullet-red").pixmap(16,16));
   m_ui->m_greenLabel->setPixmap(QIcon::fromTheme("bullet-green").pixmap(16,16));
   m_ui->m_blueLabel->setPixmap(QIcon::fromTheme("bullet-blue").pixmap(16,16));
+
+  m_ui->m_previewToolButton->setVisible(false);
 }
 
 te::qt::widgets::RasterNavigatorWidget::~RasterNavigatorWidget()
@@ -152,6 +158,48 @@ te::qt::widgets::MapDisplay* te::qt::widgets::RasterNavigatorWidget::getDisplay(
   return m_mapDisplay;
 }
 
+te::rst::Raster* te::qt::widgets::RasterNavigatorWidget::getExtentRaster()
+{
+  //get box info
+  te::gm::Envelope reprojectedBBOX(m_mapDisplay->getExtent());
+  reprojectedBBOX.transform(m_mapDisplay->getSRID(), m_layer->getSRID());
+  te::gm::Envelope ibbox = reprojectedBBOX.intersection(m_layer->getExtent());
+
+  //get raster
+  std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+  te::rst::Raster* inputRst = ds->getRaster(rpos);
+
+  //get style
+  te::se::Style* style = m_layer->getStyle();
+  te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
+
+  return te::map::GetExtentRaster(inputRst, m_mapDisplay->getWidth(), m_mapDisplay->getHeight(), reprojectedBBOX, m_mapDisplay->getSRID(), ibbox, m_layer->getSRID(), cs);
+}
+
+void te::qt::widgets::RasterNavigatorWidget::drawRaster(te::rst::Raster* rst)
+{
+  const te::gm::Envelope& env = m_mapDisplay->getExtent();
+  const te::gm::Envelope& envRst = *rst->getExtent();
+
+  QPixmap* draft = m_mapDisplay->getDraftPixmap();
+  draft->fill(Qt::transparent);
+
+  // Prepares the canvas
+  Canvas canvas(m_mapDisplay->width(), m_mapDisplay->height());
+  canvas.setDevice(draft, false);
+  canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
+
+  //style
+  std::auto_ptr<te::se::Style> style(te::se::CreateCoverageStyle(rst->getNumberOfBands()));
+  te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style.get());
+
+  // Draw raster
+  te::map::DrawRaster(rst, &canvas, env, m_mapDisplay->getSRID(), envRst, rst->getSRID(), cs);
+
+  m_mapDisplay->repaint();
+}
+
 void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
 {
   delete m_panTool;
@@ -159,6 +207,7 @@ void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
 
   m_ui->m_toolsFrame->setVisible(!asPreview);
   m_ui->m_label->setVisible(!asPreview);
+  m_ui->m_previewToolButton->setVisible(asPreview);
 
   hideExtraDisplaysTool(asPreview);
 
@@ -367,6 +416,11 @@ void te::qt::widgets::RasterNavigatorWidget::onBlueComboBoxActivated(int index)
   m_symbolizer->getChannelSelection()->getBlueChannel()->setSourceChannelName(name);
 
   m_mapDisplay->refresh();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::onPreviewClicked()
+{
+  emit previewClicked();
 }
 
 void te::qt::widgets::RasterNavigatorWidget::setCurrentTool(te::qt::widgets::AbstractTool* tool)
