@@ -42,6 +42,11 @@
  */
 
 /*!
+ \defgroup FusionAlgorithms Raster fusion algorithms.
+ \ingroup RPAlgorithms
+ */
+
+/*!
   \file terralib/rp/Config.h
 
   \brief Configuration flags for the Raster Processing module of TerraLib.
