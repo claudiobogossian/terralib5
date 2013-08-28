@@ -136,21 +136,6 @@ namespace te
         */
         void setId(const std::string& id);
 
-        /*!
-          \brief It returns an catalog that contains the dataset schemas and their relationships with
-          other datasets of the data source.
-
-          \return A pointer to an object that can execute transactions in the context of a data source.
-
-          \exception Exception It throws an exception if it is not possible to get a transactor, for example,
-                               if there is not an available connection.
-
-          \sa DataSourceCatalog
-
-          \note Thread-safe!
-        */
-        virtual te::da::DataSourceCatalog* getCatalog() const;
-
         /** @name Basic Methods of a Data Source
           *  Basic Methods for operating a data source.
           */
@@ -510,7 +495,7 @@ namespace te
 
           \note Thread-safe!
         */
-        virtual te::da::DataSetTypePtr getDataSetType(const std::string& name);
+        virtual std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
         /*!
           \brief It retrieves the properties of the dataset.

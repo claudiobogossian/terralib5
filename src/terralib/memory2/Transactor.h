@@ -46,7 +46,7 @@ namespace te
 
       \brief An implementation of the Transactor class for the Memory Data Access driver.
 
-      \sate::da::DataSourceTransactor
+      \sa te::da::DataSourceTransactor
     */
     class TEMEMORYEXPORT Transactor : public te::da::DataSourceTransactor
     {
@@ -119,7 +119,7 @@ namespace te
 
         std::size_t getNumberOfDataSets();
 
-        te::da::DataSetTypePtr getDataSetType(const std::string& name);
+        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
         boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 

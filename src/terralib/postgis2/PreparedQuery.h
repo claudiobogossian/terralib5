@@ -69,7 +69,7 @@ namespace te
     {
       public:
 
-        PreparedQuery(DataSourceTransactor* t, const std::string& pqname);
+        PreparedQuery(Transactor* t, const std::string& pqname);
 
         ~PreparedQuery();
 
@@ -145,7 +145,7 @@ namespace te
 
       private:
 
-        DataSourceTransactor* m_t;
+        Transactor* m_t;
         PGconn* m_conn;
         PGresult* m_result;
         char** m_paramValues;

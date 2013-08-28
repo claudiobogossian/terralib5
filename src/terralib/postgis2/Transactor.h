@@ -142,7 +142,7 @@ namespace te
 
         std::size_t getNumberOfDataSets();
 
-        te::da::DataSetTypePtr getDataSetType(const std::string& name);
+        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
         boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
@@ -430,7 +430,7 @@ namespace te
 
           \param dt The dataset schema.
         */
-        void getConstraints(te::da::DataSetTypePtr& dt);
+        void getConstraints(te::da::DataSetType* dt);
 
         /*!
           \brief It gets all the indexes of the given dataset and adds them to the dummy schema.
@@ -439,7 +439,7 @@ namespace te
 
           \return The dataset indexes.
         */
-        void getIndexes(te::da::DataSetTypePtr& dt);
+        void getIndexes(te::da::DataSetType* dt);
 
         /*!
           \brief It gets information about all the sequences in the datasource.

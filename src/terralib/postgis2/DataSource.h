@@ -64,8 +64,6 @@ namespace te
 
         ~DataSource();
 
-        te::da::DataSourceCatalog* getCatalog() const;
-
         std::string getType() const;
 
         const std::map<std::string, std::string>& getConnectionInfo() const;
@@ -97,7 +95,6 @@ namespace te
 
           \exception Exception It throws an exception if the data source can not be opened.
 
-          \note This method doesn't load the data source catalog.
           \note Not thread safe!
         */
         void open();
@@ -186,7 +183,6 @@ namespace te
 
       private:
 
-        te::da::DataSourceCatalog* m_catalog;             //!< The main system catalog.
         std::map<std::string, std::string> m_connInfo;    //!< Connection information.
         ConnectionPool* m_pool;                           //!< The connection pool.
         unsigned int m_geomTypeOid;                       //!< PostGIS Geometry type OID.

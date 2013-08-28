@@ -160,7 +160,7 @@ std::size_t te::mem::Transactor::getNumberOfDataSets()
   return m_ds->getNumberOfDataSets();
 }
 
-te::da::DataSetTypePtr te::mem::Transactor::getDataSetType(const std::string& name)
+std::auto_ptr<te::da::DataSetType> te::mem::Transactor::getDataSetType(const std::string& name)
 {
   return m_ds->getDataSetType(name);
 }
