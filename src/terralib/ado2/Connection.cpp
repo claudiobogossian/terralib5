@@ -49,7 +49,7 @@ _RecordsetPtr te::ado::Connection::query(const std::string& query)
   
   try
   {
-    recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenStatic, adLockReadOnly, adCmdText);
+    recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenDynamic, adLockReadOnly, adCmdText);
   }
   catch(_com_error& e)
   {
@@ -99,6 +99,7 @@ te::ado::Connection::Connection(const std::string& conninfo, bool inuse)
   }
   catch(_com_error& e)
   {
+    std::string ddddd = e.Description();
     throw Exception(TR_ADO(e.Description()));
   }
 
