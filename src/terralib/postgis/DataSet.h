@@ -157,7 +157,7 @@ namespace te
 
           \return The internal SQL used to generate the dataset.
         */
-        std::string* DataSet::getSQL() const;
+        std::string* getSQL() const;
 
         /*!
           \brief It returns the internal pg result.

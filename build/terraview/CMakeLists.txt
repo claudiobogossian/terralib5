@@ -112,9 +112,11 @@ install(
 # install tree for config files
 include (${CMAKE_CURRENT_SOURCE_DIR}/installConfig.cmake)
 set (TE_DEFAULT_PROJECT "./default_project.xml")  
+set (TE_DEFAULT_DATASOURCES_FILE "./datasources.xml") 
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.xml.in ${CMAKE_BINARY_DIR}/toInstall/config.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/user_settings.xml.in ${CMAKE_BINARY_DIR}/toInstall/user_settings.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/application_plugins.xml.in ${CMAKE_BINARY_DIR}/toInstall/application_plugins.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/project.xml.in ${CMAKE_BINARY_DIR}/toInstall/default_project.xml)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/datasources.xml.in ${CMAKE_BINARY_DIR}/toInstall/datasources.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/TerraViewConfig.h.in ${CMAKE_BINARY_DIR}/toInstall/TerraViewConfig.h)
   
