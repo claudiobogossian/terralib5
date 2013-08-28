@@ -65,6 +65,8 @@ namespace te
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
+          te::map::AbstractLayerPtr getOutputLayer();
+
         protected:
 
           void addPages();
@@ -77,6 +79,10 @@ namespace te
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerAdjPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
           std::auto_ptr<te::qt::widgets::TiePointLocatorDialog> m_tiePointLocatorDialog;
+
+          te::map::AbstractLayerPtr m_refLayer;
+          te::map::AbstractLayerPtr m_adjLayer;
+          te::map::AbstractLayerPtr m_outputLayer;
       };
     }   // end namespace widgets
   }     // end namespace qt

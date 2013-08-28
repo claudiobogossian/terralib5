@@ -25,7 +25,10 @@
 
 // TerraLib 
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
+#include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
+#include "../../../rp/Register.h"
 #include "LayerSearchWidget.h"
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
@@ -33,6 +36,7 @@
 #include "RegisterWizard.h"
 #include "TiePointLocatorDialog.h"
 #include "TiePointLocatorWidget.h"
+#include "Utils.h"
 
 
 // STL
@@ -66,9 +70,9 @@ bool te::qt::widgets::RegisterWizard::validateCurrentPage()
 
     if(list.empty() == false)
     {
-      te::map::AbstractLayerPtr l = *list.begin();
+      m_refLayer = *list.begin();
 
-      m_tiePointLocatorDialog->setReferenceLayer(l);
+      m_tiePointLocatorDialog->setReferenceLayer(m_refLayer);
     }
 
     return m_layerRefPage->isComplete();
@@ -79,9 +83,9 @@ bool te::qt::widgets::RegisterWizard::validateCurrentPage()
 
     if(list.empty() == false)
     {
-      te::map::AbstractLayerPtr l = *list.begin();
+      m_adjLayer = *list.begin();
 
-      m_tiePointLocatorDialog->setAdjustLayer(l);
+      m_tiePointLocatorDialog->setAdjustLayer(m_adjLayer);
     }
 
     m_tiePointLocatorDialog->showMaximized();
@@ -112,6 +116,11 @@ void te::qt::widgets::RegisterWizard::setList(std::list<te::map::AbstractLayerPt
   m_layerAdjPage->getSearchWidget()->setList(layerList);
 }
 
+te::map::AbstractLayerPtr te::qt::widgets::RegisterWizard::getOutputLayer()
+{
+  return m_outputLayer;
+}
+
 void te::qt::widgets::RegisterWizard::addPages()
 {
   m_layerRefPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
@@ -132,6 +141,68 @@ void te::qt::widgets::RegisterWizard::addPages()
 
 bool te::qt::widgets::RegisterWizard::execute()
 {
+  //get raster
+  std::auto_ptr<te::da::DataSet> ds(m_adjLayer->getData());
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+  te::rst::Raster* inputRst = ds->getRaster(rpos);
+
+  std::vector<unsigned int> vec;
+  for(size_t t = 0; t < inputRst->getNumberOfBands(); ++t)
+  {
+    vec.push_back((unsigned int)t);
+  }
+
+  std::vector< te::gm::GTParameters::TiePoint > tiePoints;
+  m_tiePointLocatorDialog->getWidget()->getTiePoints(tiePoints);
+
+  //input parameters
+  te::rp::Register::InputParameters algoInputParams;
+  algoInputParams.m_inputRasterPtr = inputRst;
+  algoInputParams.m_inputRasterBands = vec;
+  algoInputParams.m_tiePoints = tiePoints;
+  algoInputParams.m_outputSRID = m_refLayer->getSRID();
+  algoInputParams.m_outputResolutionX = inputRst->getGrid()->getResolutionX();
+  algoInputParams.m_outputResolutionY = inputRst->getGrid()->getResolutionY();
+
+  //output parameters
+  te::rp::Register::OutputParameters algoOutputParams;
+  algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
+  algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
+
+  try
+  {
+    te::rp::Register algorithmInstance;
+    
+    if(!algorithmInstance.initialize(algoInputParams))
+    {
+      QMessageBox::warning(this, tr("Register"), tr("Algorithm initialization error."));
+      return false;
+    }
+    
+    if(!algorithmInstance.execute(algoOutputParams))
+    {
+      QMessageBox::warning(this, tr("Register"), tr("Register Error!"));
+      return false;
+    }
+    else
+    {
+      QMessageBox::warning(this, tr("Register"), tr("Register Done!"));
+
+      //set output layer
+      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+                                                   m_rasterInfoPage->getWidget()->getInfo());
+    }
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, tr("Register"), e.what());
+    return false;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Register"), tr("An exception has occuried!"));
+    return false;
+  }
 
   return true;
 }

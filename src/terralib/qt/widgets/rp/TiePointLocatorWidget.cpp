@@ -47,6 +47,7 @@
 
 // Qt
 #include <QGridLayout>
+#include <QMessageBox>
 #include <QPixmap>
 
 #define PATTERN_SIZE 18
@@ -170,6 +171,10 @@ void te::qt::widgets::TiePointLocatorWidget::getTiePoints( std::vector< te::gm::
 {
   tiePoints.clear();
 
+   std::auto_ptr<te::da::DataSet> ds(m_refLayer->getData());
+   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+   te::rst::Raster* inputRst = ds->getRaster(rpos);
+
   te::qt::widgets::TiePointData::TPContainerT::const_iterator itB = m_tiePoints.begin();
 
   const te::qt::widgets::TiePointData::TPContainerT::const_iterator itE = m_tiePoints.end();
@@ -178,7 +183,12 @@ void te::qt::widgets::TiePointLocatorWidget::getTiePoints( std::vector< te::gm::
 
   while( itB != itE )
   {
-    tiePoints.push_back( itB->second.m_tiePoint );
+    te::gm::GTParameters::TiePoint tp;
+
+    tp.first = itB->second.m_tiePoint.second;
+    tp.second = inputRst->getGrid()->gridToGeo(itB->second.m_tiePoint.first.x, itB->second.m_tiePoint.first.y);
+
+    tiePoints.push_back(tp);
     ++itB;
   }
 }
@@ -395,29 +405,36 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
   }
 
   // Executing the algorithm
-  te::rp::TiePointsLocator algorithmInstance;
-        
-  if(algorithmInstance.initialize(inputParams))
+  try
   {
-    if(algorithmInstance.execute(outputParams))
+    te::rp::TiePointsLocator algorithmInstance;
+        
+    if(algorithmInstance.initialize(inputParams))
     {
-      const unsigned int tpsNmb = (unsigned int)outputParams.m_tiePoints.size();
-
-      if(tpsNmb)
+      if(algorithmInstance.execute(outputParams))
       {
-        TiePointData auxTpData;
-        auxTpData.m_acqType = TiePointData::AutomaticAcquisitionT;
+        const unsigned int tpsNmb = (unsigned int)outputParams.m_tiePoints.size();
 
-        for(unsigned int tpIdx = 0; tpIdx < tpsNmb; ++tpIdx)
+        if(tpsNmb)
         {
-          ++m_tiePointIdCounter;
-          auxTpData.m_tiePoint = outputParams.m_tiePoints[ tpIdx ];
-          m_tiePoints[ m_tiePointIdCounter ] = auxTpData;
-        }
+          TiePointData auxTpData;
+          auxTpData.m_acqType = TiePointData::AutomaticAcquisitionT;
 
-        tiePointsTableUpdate();
+          for(unsigned int tpIdx = 0; tpIdx < tpsNmb; ++tpIdx)
+          {
+            ++m_tiePointIdCounter;
+            auxTpData.m_tiePoint = outputParams.m_tiePoints[ tpIdx ];
+            m_tiePoints[ m_tiePointIdCounter ] = auxTpData;
+          }
+
+          tiePointsTableUpdate();
+        }
       }
     }
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Error locating tie points."));
   }
 }
 
