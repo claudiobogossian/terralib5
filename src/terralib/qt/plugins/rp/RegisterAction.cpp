@@ -56,5 +56,9 @@ void te::qt::plugins::rp::RegisterAction::onActionActivated(bool checked)
     dlg.setList(prj->getLayers());
   }
 
-  dlg.exec();
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    //add new layer
+    addNewLayer(dlg.getOutputLayer());
+  }
 }

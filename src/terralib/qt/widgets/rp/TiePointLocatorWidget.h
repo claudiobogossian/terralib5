@@ -145,6 +145,8 @@ namespace te
           */
           void setAdjustLayer(te::map::AbstractLayerPtr layer);
 
+        protected:
+
           void refCoordPicked(double x, double y);
 
           void adjCoordPicked(double x, double y);
