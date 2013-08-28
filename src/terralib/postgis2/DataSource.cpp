@@ -33,7 +33,6 @@
 #include "../dataaccess2/dataset/PrimaryKey.h"
 #include "../dataaccess2/dataset/Sequence.h"
 #include "../dataaccess2/dataset/UniqueKey.h"
-#include "../dataaccess2/datasource/DataSourceCatalog.h"
 #include "../dataaccess2/datasource/ScopedTransaction.h"
 #include "../dataaccess2/query/Select.h"
 #include "../dataaccess2/query/SQLDialect.h"
@@ -50,13 +49,12 @@
 #include "Connection.h"
 #include "ConnectionPool.h"
 #include "DataSource.h"
-#include "DataSourceTransactor.h"
 #include "DataSet.h"
-//#include "DataTypes.h"
 #include "Exception.h"
 #include "Globals.h"
 #include "PreparedQuery.h"
 #include "SQLVisitor.h"
+#include "Transactor.h"
 #include "Utils.h"
 
 // STL
@@ -79,20 +77,16 @@ te::da::SQLDialect* te::pgis::DataSource::sm_dialect(0);
 
 
 te::pgis::DataSource::DataSource()
-  : m_catalog(0),
-    m_pool(0),
+  : m_pool(0),
     m_geomTypeOid(0),
     m_rasterTypeOid(0),
     m_timeIsInteger(true)
 {
-  m_catalog = new te::da::DataSourceCatalog;
-  m_catalog->setDataSource(this);
   m_pool = new ConnectionPool(this);
 }
 
 te::pgis::DataSource::~DataSource()
 {
-  delete m_catalog;
   delete m_pool;
 }
 
@@ -115,7 +109,7 @@ std::auto_ptr<te::da::DataSourceTransactor> te::pgis::DataSource::getTransactor(
 {
   Connection* conn = m_pool->getConnection();
 
-  return std::auto_ptr<te::da::DataSourceTransactor>(new te::pgis::DataSourceTransactor(this, conn));
+  return std::auto_ptr<te::da::DataSourceTransactor>(new te::pgis::Transactor(this, conn));
 }
 
 te::pgis::Connection* te::pgis::DataSource::getConnection()
@@ -146,7 +140,7 @@ void te::pgis::DataSource::open()
   m_pool->initialize();
 
   std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
-  te::pgis::DataSourceTransactor* pgt = static_cast<te::pgis::DataSourceTransactor*>(t.get());
+  te::pgis::Transactor* pgt = static_cast<te::pgis::Transactor*>(t.get());
 
   // Find the PostGIS types
   m_geomTypeOid = pgt->getGeomTypeId();
@@ -199,45 +193,6 @@ const std::string& te::pgis::DataSource::getCurrentSchema() const
 te::pgis::ConnectionPool* te::pgis::DataSource::getConnPool() const
 {
   return m_pool;
-}
-
-te::da::DataSetTypePtr te::pgis::DataSource::getDataSetType(const std::string& name)
-{
-  te::da::DataSetTypePtr dt = te::da::DataSource::getDataSetType(name);
-
-  // Insert the dataset schema into the catalog, if it not there.
-  std::string datasetName = name;
-
-  if(datasetName.find(".") == std::string::npos)
-    datasetName = m_currentSchema + "." + name;
-
-  if(!m_catalog->datasetExists(datasetName))
-    m_catalog->add(dt);
-
-  return dt;
-}
-
-void te::pgis::DataSource::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
-{
-  te::da::DataSource::addCheckConstraint(datasetName, cc);
-
-  if(m_catalog->datasetExists(datasetName))
-  {
-    const te::da::DataSetTypePtr& dt = m_catalog->getDataSetType(datasetName);
-    dt->add(cc);
-  }
-}
-
-void te::pgis::DataSource::dropCheckConstraint(const std::string& datasetName, const std::string& name)
-{
-  te::da::DataSource::dropCheckConstraint(datasetName, name);
-
-  if(m_catalog->datasetExists(datasetName))
-  {
-    const te::da::DataSetTypePtr& dt = m_catalog->getDataSetType(datasetName);
-    te::da::CheckConstraint* cc = dt->getCheckConstraint(name);
-    dt->remove(cc);
-  }
 }
 
 void te::pgis::DataSource::setDialect(te::da::SQLDialect* myDialect)

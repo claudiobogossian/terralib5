@@ -34,6 +34,7 @@
 #include "DataSet.h"
 #include "DataSource.h"
 #include "Exception.h"
+#include "Transactor.h"
 #include "Utils.h"
 
 // GDAL
@@ -46,14 +47,16 @@
 te::da::DataSourceCapabilities te::gdal::DataSource::sm_capabilities;
 
 te::gdal::DataSource::DataSource():
-    m_isOpened(false),
-    m_isDirectory(false)
+  m_straccess(""),
+  m_isOpened(false),
+  m_transactor(0)
 {
-  sm_capabilities.setAccessPolicy(te::common::RWAccess);
 }
 
 te::gdal::DataSource::~DataSource()
 {
+  if (m_transactor)
+    delete m_transactor;
 }
 
 std::string te::gdal::DataSource::getType() const
@@ -71,38 +74,6 @@ void te::gdal::DataSource::setConnectionInfo(const std::map<std::string, std::st
   m_connectionInfo = connInfo;
 }
 
-
-void te::gdal::DataSource::getSubDatasets(GDALDataset* gds, const std::string& driver)
-{
-  assert(gds);
-  assert(!driver.empty());
-  
-  char** subdatasets = gds->GetMetadata("SUBDATASETS");
-  
-  for(char** i = subdatasets; *i != 0; ++i)
-  {
-    std::map<std::string, std::string> sdsmap;
-    
-    te::common::ExtractKVP(std::string(*i), sdsmap);
-    
-    if(sdsmap.begin()->first.find("_NAME") != std::string::npos)
-    {
-      std::string fullName = sdsmap.begin()->second;
-      
-      // check if subdataset is valid
-      GDALDataset* subdataset = static_cast<GDALDataset*>(GDALOpen(fullName.c_str(), GA_ReadOnly));
-      if (!subdataset)
-        continue;
-      GDALClose(subdataset);
-      
-      std::string subdsname = GetSubDataSetName(fullName, driver);
-      m_datasetNames.push_back(subdsname);
-      
-      m_datasetFullNames.push_back(fullName);
-    }
-  }
-}
-
 // open methods retrieves the names of the datasets in the data source
 void te::gdal::DataSource::open()
 {
@@ -112,78 +83,40 @@ void te::gdal::DataSource::open()
   if (m_connectionInfo.empty())
       throw Exception((boost::format(TR_GDAL("Empty data source connection information"))).str());
   
-  m_isDirectory = false;
-  
-  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("URI");
+  std::map<std::string, std::string>::const_iterator it = m_connectionInfo.find("SOURCE");
   if (it != m_connectionInfo.end())
-  {
-    if (boost::filesystem::is_regular_file(it->second))
-    {
-      GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
-      if (gds)
-      { 
-        char** subdatasets = gds->GetMetadata("SUBDATASETS");
-        
-        if(subdatasets == 0)
-        {
-          GDALClose(gds);
-          boost::filesystem::path path(it->second);
-          m_datasetNames.push_back(path.leaf().string());
-          m_datasetFullNames.push_back(path.string());
-          m_isOpened = true;
-          return;
-        }
-        getSubDatasets(gds,te::gdal::GetDriverName(it->second));
-        GDALClose(gds);
-      }
-      else 
-        throw Exception((boost::format(TR_GDAL("Invalid data source connection information"))).str());
-    }
-  }
+    m_straccess = it->second;
   else
   {
-    it = m_connectionInfo.find("SOURCE");
-    if(it == m_connectionInfo.end())
+    it = m_connectionInfo.find("URI");
+    if (it != m_connectionInfo.end())
+      m_straccess = it->second;
+    else
       throw Exception((boost::format(TR_GDAL("Invalid data source connection information"))).str());
-    
-    m_isDirectory = true;
-    
-    boost::filesystem::path path(it->second);
-    
-    for(boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
-    {
-      boost::filesystem::path foundFile = (*it);
-      
-      GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(foundFile.string().c_str(), GA_ReadOnly));
-      
-      if(dataset == 0)
-        continue;
-      
-      char** subdatasets = dataset->GetMetadata("SUBDATASETS");
-      if(subdatasets == 0)
-      {
-        m_datasetNames.push_back(foundFile.leaf().string());
-        m_datasetFullNames.push_back(foundFile.string());
-      }
-      else 
-        getSubDatasets(dataset,te::gdal::GetDriverName(foundFile.string()));
-      GDALClose(dataset);
-    }
-  }  
+  }
+  
+  m_transactor = new te::gdal::Transactor(m_straccess);
   m_isOpened = true;
+}
+
+std::auto_ptr<te::da::DataSourceTransactor> te::gdal::DataSource::getTransactor()
+{
+  if (!m_isOpened)
+    return std::auto_ptr<te::da::DataSourceTransactor>();
+  
+  return std::auto_ptr<te::da::DataSourceTransactor>(new te::gdal::Transactor(m_straccess));
 }
 
 void te::gdal::DataSource::close()
 {
-  m_datasetNames.clear();
-  m_datasetFullNames.clear();
-  m_catalog.clear();
-  m_isOpened = false;
+  if (m_transactor)
+    delete m_transactor;
+  m_transactor = 0;
 }
 
 bool te::gdal::DataSource::isOpened() const
 {
-  return m_isOpened;
+  return (m_isOpened && (m_transactor != 0));
 }
 
 bool te::gdal::DataSource::isValid() const
@@ -219,173 +152,130 @@ bool te::gdal::DataSource::isValid() const
 
 bool te::gdal::DataSource::hasDataSets()
 {
-  return !m_datasetNames.empty();
-}
-
-std::string te::gdal::DataSource::getDataSetFullName(const std::string& name)
-{
-  assert(!name.empty());
+  if (m_transactor)
+    return m_transactor->hasDataSets();
   
-  std::vector<std::string>::const_iterator it = std::find(m_datasetNames.begin(), m_datasetNames.end(),name);
-  if (it == m_datasetNames.end())
-    return "";
-  
-  unsigned int pos = it-m_datasetNames.begin();
-  if (pos < m_datasetFullNames.size())
-    return m_datasetFullNames[pos];
-  
-  return "";
+  return false;
 }
 
 bool te::gdal::DataSource::dataSetExists(const std::string& name)
 {
-  std::string gdName = getDataSetFullName(name);
-  if (gdName.empty())
-    return false;
+  assert(!name.empty());
   
-  GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(gdName.c_str(), GA_ReadOnly));
+  if (m_transactor)
+    return m_transactor->dataSetExists(name);
   
-  if(dataset == 0)
-    return false;
+  return false;
+}
+
+std::size_t te::gdal::DataSource::getNumberOfDataSets()
+{
+  if (m_transactor)
+    return m_transactor->getNumberOfDataSets();
   
-  GDALClose(dataset);
-  return true;
+  return 0;
 }
 
 std::vector<std::string> te::gdal::DataSource::getDataSetNames()
 {
-  return m_datasetNames;
-}
-
-void te::gdal::DataSource::getProperties(te::da::DataSetTypePtr& dt)
-{
-  assert(dt.get());
+  if (m_transactor)
+    return m_transactor->getDataSetNames();
   
-  std::string gdName = getDataSetFullName(dt->getName());
-  if (gdName.empty())
-    throw Exception(TR_GDAL("GDAL couldn't retrieve the dataset properties."));
-
-  GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(gdName.c_str(), GA_ReadOnly));
-  
-  if (!dataset)
-    throw Exception(TR_GDAL("GDAL couldn't retrieve the dataset properties."));
-  
-  te::rst::Grid* grid = GetGrid(dataset);
-  
-  std::vector<te::rst::BandProperty*> bprops;
-  
-  GetBandProperties(dataset, bprops);
-  
-  std::map<std::string, std::string> rinfo;
-  
-  rinfo["URI"] = dataset->GetDescription();
-  
-  te::rst::RasterProperty* rp = new te::rst::RasterProperty(grid, bprops, rinfo);
-  
-  dt->add(rp);
-  
-  GDALClose(dataset);
-  
+  return std::vector<std::string>();
 }
 
 te::da::DataSetTypePtr te::gdal::DataSource::getDataSetType(const std::string& name)
 {
   assert(!name.empty());
   
-  // check if dataset name exists
-  if(!dataSetExists(name))
-    throw Exception((boost::format(TR_GDAL("The dataset \"%1%\" doesn't exist!")) % name).str());
+  if (m_transactor)
+    return m_transactor->getDataSetType(name);
   
-  // check if it is in the catalog
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(name);
-  if(it != m_catalog.end())
-    return it->second;
-  
-  // create the dataset type and insert into the catalog
-  unsigned int dtid = (std::find(m_datasetNames.begin(), m_datasetNames.end(), name)-m_datasetNames.begin());
-  te::da::DataSetTypePtr dt(new te::da::DataSetType(name, dtid));
-  dt->setTitle(name);
-  getProperties(dt);
-  
-  std::pair<std::string, te::da::DataSetTypePtr> mpair = std::make_pair(name,dt);
-  m_catalog.insert(mpair);
-  
-  return getDataSetType(name);
+  te::da::DataSetType* ptr = 0;
+  return te::da::DataSetTypePtr(ptr);
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::DataSource::getDataSet(const std::string& name, 
-                                                                te::common::TraverseType /*travType*/) 
+                                                                te::common::TraverseType travType) 
 {
   assert(!name.empty());
   
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(name);
-  if(it != m_catalog.end())
-    return std::auto_ptr<te::da::DataSet>(new DataSet(static_cast<te::da::DataSetType*>(it->second->clone()))); 
-  else 
-  {
-    unsigned int dtid = (std::find(m_datasetNames.begin(), m_datasetNames.end(), name)-m_datasetNames.begin());
-    te::da::DataSetTypePtr dt(new te::da::DataSetType(name, dtid));
-    dt->setTitle(name);
-    getProperties(dt);
-    
-    return std::auto_ptr<te::da::DataSet>(new DataSet(static_cast<te::da::DataSetType*>(dt->clone())));
-  }
+  if (m_transactor)
+    return m_transactor->getDataSet(name,travType); 
+  
+  return std::auto_ptr<te::da::DataSet>();
 }
 
 std::size_t te::gdal::DataSource::getNumberOfProperties(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  assert(!datasetName.empty());
   
-  return dt->size();
+  if (m_transactor)
+    return m_transactor->getNumberOfProperties(datasetName);
+  
+  return 0;
 }
 
 boost::ptr_vector<te::dt::Property> te::gdal::DataSource::getProperties(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  assert(!datasetName.empty());
   
-  std::vector<te::dt::Property*>& dtProperties = dt->getProperties();
+  if (m_transactor)
+    return m_transactor->getProperties(datasetName);
   
-  boost::ptr_vector<te::dt::Property> properties;
-  
-  for(std::size_t i = 0; i < dtProperties.size(); ++i)
-    properties.push_back(dtProperties[i]->clone());
-  
-  return properties;
+  return boost::ptr_vector<te::dt::Property>();
 }
 
 bool te::gdal::DataSource::propertyExists(const std::string& datasetName, const std::string& name)
 {  
-  std::vector<std::string> pNames = getPropertyNames(datasetName);
+  assert(!datasetName.empty());
   
-  if(std::find(pNames.begin(), pNames.end(), name) != pNames.end())
-    return true;
+  if (m_transactor)
+    return m_transactor->propertyExists(datasetName,name);
   
   return false;
 }
 
 std::auto_ptr<te::dt::Property> te::gdal::DataSource::getProperty(const std::string& datasetName, const std::string& propertyName)
 {
-  if(!propertyExists(datasetName, propertyName))
-    throw Exception((boost::format(TR_GDAL("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % propertyName).str());
+  assert(!datasetName.empty());
   
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  if (m_transactor)
+    return m_transactor->getProperty(datasetName, propertyName);
   
-  return std::auto_ptr<te::dt::Property>(dt->getProperty(propertyName)->clone());
+  return std::auto_ptr<te::dt::Property>();
 }
 
 
 std::auto_ptr<te::dt::Property> te::gdal::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  assert(!datasetName.empty());
   
-  assert(propertyPos < dt->size());
+  if (m_transactor)
+    return m_transactor->getProperty(datasetName,propertyPos);
   
-  return std::auto_ptr<te::dt::Property>(dt->getProperty(propertyPos)->clone());
+  return std::auto_ptr<te::dt::Property>();
 }
 
 std::auto_ptr<te::gm::Envelope> te::gdal::DataSource::getExtent(const std::string& datasetName, std::size_t propertyPos)
 {
-   throw(Exception(TR_GDAL("Not implemented yet.")));
+  assert(!datasetName.empty());
+  
+  if (m_transactor)
+    return m_transactor->getExtent(datasetName,propertyPos);
+  
+  return std::auto_ptr<te::gm::Envelope>();
+}
+
+std::auto_ptr<te::gm::Envelope> te::gdal::DataSource::getExtent(const std::string& datasetName, const std::string& propertyName)
+{
+  assert(!datasetName.empty());
+  assert(!propertyName.empty());
+  
+  if (m_transactor)
+    return m_transactor->getExtent(datasetName,propertyName);
+  
+  return std::auto_ptr<te::gm::Envelope>();
 }
 
 const te::da::DataSourceCapabilities& te::gdal::DataSource::getCapabilities() const
@@ -413,100 +303,65 @@ std::auto_ptr<te::da::DataSet>  te::gdal::DataSource::getDataSet(const std::stri
 
 bool te::gdal::DataSource::isDataSetNameValid(const std::string& datasetName)
 {
-  throw(Exception(TR_GDAL("Not implemented yet.")));
+  assert(!datasetName.empty());
+  
+  if (m_transactor)
+    return m_transactor->isDataSetNameValid(datasetName);
+  
+  return false;
 }
 
 bool te::gdal::DataSource::isPropertyNameValid(const std::string& propertyName)
 {
-  throw(Exception(TR_GDAL("Not implemented yet.")));
+  assert(!propertyName.empty());
+  
+  if (m_transactor)
+    return m_transactor->isDataSetNameValid(propertyName);
+  
+  return false;
 }
 
 std::vector<std::string> te::gdal::DataSource::getPropertyNames(const std::string& datasetName)
 {
-  te::da::DataSetTypePtr dt = getDataSetType(datasetName);
+  assert(!datasetName.empty());
   
-  std::vector<std::string> pNames;
+  if (m_transactor)
+    return m_transactor->getPropertyNames(datasetName);
   
-  std::size_t numProperties = dt->size();
-  
-  for(std::size_t i = 0; i < numProperties; ++i)
-    pNames.push_back(dt->getProperty(i)->getName());
-  
-  return pNames;
-}
-
-void te::gdal::DataSource::addProperty(const std::string& datasetName, te::dt::Property* p)
-{
-    throw Exception(TR_GDAL("Not implemented yet!"));
-}
-
-void te::gdal::DataSource::dropProperty(const std::string& datasetName, const std::string& propertyName)
-{
-  throw(Exception(TR_GDAL("To be implemented.")));
-}
-
-void te::gdal::DataSource::renameProperty(const std::string& datasetName,
-                                          const std::string& propertyName,
-                                          const std::string& newPropertyName)
-{
-  throw(Exception(TR_GDAL("To be implemented.")));
-}
-
-std::auto_ptr<te::gm::Envelope> te::gdal::DataSource::getExtent(const std::string& datasetName, const std::string& propertyName)
-{
-  return std::auto_ptr<te::gm::Envelope>();
-}
-
-std::size_t te::gdal::DataSource::getNumberOfItems(const std::string& datasetName)
-{
-  return 0; // TODO: review
+  return std::vector<std::string>();
 }
 
 void te::gdal::DataSource::createDataSet(te::da::DataSetType* dt,
                                          const std::map<std::string, std::string>& options) 
-{
-  throw(Exception(TR_GDAL("To be implemented.")));
+{ 
+  if (m_transactor)
+    return m_transactor->createDataSet(dt,options);
 }
 
 void te::gdal::DataSource::cloneDataSet(const std::string& name,
                                         const std::string& cloneName,
                                         const std::map<std::string, std::string>& options)
 {
-  throw(Exception(TR_GDAL("To be implemented.")));
+  if (m_transactor)
+    return m_transactor->cloneDataSet(name, cloneName, options);
 }
 
 void te::gdal::DataSource::dropDataSet(const std::string& name)
 {
-  throw(Exception(TR_GDAL("To be implemented.")));
+  assert(!name.empty());
+  
+  if (m_transactor)
+    return m_transactor->dropDataSet(name);
 }
 
+//parei aqui!!!!
 void te::gdal::DataSource::renameDataSet(const std::string& name, const std::string& newName)
 {
-  throw(Exception(TR_GDAL("To be implemented.")));
-}
-
-void te::gdal::DataSource::add(const std::string& datasetName,
-                               te::da::DataSet* d,
-                               const std::map<std::string, std::string>& options,
-                               std::size_t limit)
-{
-  throw(Exception(TR_GDAL("To be implemented.")));
-}
-
-void te::gdal::DataSource::remove(const std::string& datasetName,
-                                  const te::da::ObjectIdSet* oids)
-{
-  throw(Exception(TR_GDAL("To be implemented.")));
-}
-
-void te::gdal::DataSource::update(const std::string& datasetName,
-                                  te::da::DataSet* dataset,
-                                  const std::vector<std::size_t>& properties,
-                                  const te::da::ObjectIdSet* oids,
-                                  const std::map<std::string, std::string>& options,
-                                  std::size_t limit)
-{
-  throw Exception(TR_GDAL("Not implemented yet!"));
+  assert(!name.empty());
+  assert(!newName.empty());
+  
+  if (m_transactor)
+    return m_transactor->renameDataSet(name,newName);
 }
 
 void te::gdal::DataSource::setCapabilities(const te::da::DataSourceCapabilities& capabilities)

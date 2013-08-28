@@ -428,7 +428,7 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual te::da::DataSetTypePtr getDataSetType(const std::string& name) = 0;
+        virtual std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name) = 0;
 
         /*!
           \brief It retrieves the properties of the dataset.

@@ -288,7 +288,7 @@ std::vector<std::string> te::ogr::DataSource::getDataSetNames()
   return datasets;
 }
 
-const te::da::DataSetTypePtr& te::ogr::DataSource::getDataSetType(const std::string& name)
+std::auto_ptr<te::da::DataSetType> te::ogr::DataSource::getDataSetType(const std::string& name)
 {
   std::string sql = "SELECT FID, * FROM " + name;
 
@@ -342,7 +342,7 @@ const te::da::DataSetTypePtr& te::ogr::DataSource::getDataSetType(const std::str
 
   m_ogrDS->ReleaseResultSet(layer);
 
-  return te::da::DataSetTypePtr(dt);
+  return std::auto_ptr<te::da::DataSetType>(dt);
 }
 
 std::size_t te::ogr::DataSource::getNumberOfProperties(const std::string& datasetName)

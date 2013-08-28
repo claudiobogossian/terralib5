@@ -73,18 +73,8 @@ namespace te
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        bool isTimeAnInteger();
+        std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
 
-        void setTimeAsInteger(bool timeIsInteger);
-
-        /*!
-          \brief It opens the connection(s) to the ADO database server.
-          
-          \exception Exception It throws an exception if the data source can not be opened.
-
-          \note This method doesn't load the data source catalog.
-          \note Not thread safe!
-        */
         void open();
 
         void close();
@@ -97,170 +87,15 @@ namespace te
 
         const te::da::SQLDialect* getDialect() const;
 
-        void begin();
-
-        void commit();
-
-        void rollBack();
-
-        bool isInTransaction() const;
-
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const std::string& propertyName,
-                                                  const te::gm::Envelope* e,
-                                                  te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const std::string& propertyName,
-                                                  const te::gm::Geometry* g,
-                                                  te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        std::auto_ptr<te::da::DataSet> query(const std::string& query, 
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        void execute(const te::da::Query& command);
-
-        void execute(const std::string& command);
-
         void cancel();
 
         boost::int64_t getLastGeneratedId();
 
-        std::string escape(const std::string& value);
+        static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info);
 
-        bool isDataSetNameValid(const std::string& datasetName);
+        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
 
-        bool isPropertyNameValid(const std::string& propertyName);
-
-        std::vector<std::string> getDataSetNames();
-
-        const te::da::DataSetTypePtr& getDataSetType(const std::string& name);
-
-        std::vector<std::string> getPropertyNames(const std::string& datasetName);
-
-        std::size_t getNumberOfProperties(const std::string& datasetName);
-
-        bool propertyExists(const std::string& datasetName, const std::string& name);
-
-        boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
-
-        te::dt::Property* getProperty(const std::string& datasetName, const std::string& name);
-
-        te::dt::Property* getProperty(const std::string& datasetName, std::size_t propertyPos);
-
-        void addProperty(const std::string& datasetName, te::dt::Property* p);
-
-        void dropProperty(const std::string& datasetName, const std::string& propertyName);
-
-        void renameProperty(const std::string& datasetName, const std::string& propertyName, const std::string& newPropertyName);
-
-        te::da::PrimaryKey* getPrimaryKey(const std::string& datasetName);
-
-        bool primaryKeyExists(const std::string& datasetName, const std::string& name);
-
-        void addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk);
-
-        void dropPrimaryKey(const std::string& datasetName);
-
-        std::vector<std::string> getForeignKeyNames(const std::string& datasetName);
-
-        bool foreignKeyExists(const std::string& datasetName, const std::string& name);
-
-        te::da::ForeignKey* getForeignKey(const std::string& datasetName, const std::string& name);
-
-        void addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk);
-
-        void dropForeignKey(const std::string& datasetName, const std::string& fkName);
-
-        std::vector<std::string> getUniqueKeyNames(const std::string& datasetName);
-
-        bool uniqueKeyExists(const std::string& datasetName, const std::string& name);
-
-        te::da::UniqueKey* getUniqueKey(const std::string& datasetName, const std::string& name);
-
-        void addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk);
-
-        void dropUniqueKey(const std::string& datasetName, const std::string& name);
-
-        /*std::vector<std::string> getCheckConstraintNames(const std::string& datasetName);
-
-        bool checkConstraintExists(const std::string& datasetName, const std::string& name);
-
-        te::da::CheckConstraint* getCheckConstraint(const std::string& datasetName, const std::string& name);
-
-        void addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc);
-
-        void dropCheckConstraint(const std::string& datasetName, const std::string& name);*/
-
-        std::vector<std::string> getIndexNames(const std::string& datasetName);
-
-        bool indexExists(const std::string& datasetName, const std::string& name);
-
-        te::da::Index* getIndex(const std::string& datasetName, const std::string& name);
-
-        void addIndex(const std::string& datasetName, te::da::Index* idx, const std::map<std::string, std::string>& options); 
-
-        void dropIndex(const std::string& datasetName, const std::string& idxName);
-
-        /*std::vector<std::string> getSequenceNames();
-
-        bool sequenceExists(const std::string& name);
-
-        te::da::Sequence* getSequence(const std::string& name);
-
-        void addSequence(te::da::Sequence* sequence);
-
-        void dropSequence(const std::string& name);*/
-
-        std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, const std::string& propertyName);
-
-        std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, std::size_t propertyPos);
-
-        std::size_t getNumberOfItems(const std::string& datasetName);
-
-        bool hasDataSets();
-
-        bool dataSetExists(const std::string& name);
-
-        void createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options);
-
-        void cloneDataSet(const std::string& name, const std::string& cloneName,
-                          const std::map<std::string, std::string>& options);
-
-        void dropDataSet(const std::string& name);
-
-        void renameDataSet(const std::string& name, const std::string& newName);
-
-        void add(const std::string& datasetName, te::da::DataSet* d,
-                 const std::map<std::string, std::string>& options, std::size_t limit);
-
-        void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids);
-
-        void update(const std::string& datasetName,
-                    te::da::DataSet* dataset,
-                    const std::vector<std::size_t>& properties,
-                    const te::da::ObjectIdSet* oids,
-                    const std::map<std::string, std::string>& options,
-                    std::size_t limit);
-
-        /*!
-          \brief It retrieves the data sources available.
-
-          \param info The connection info.
-
-          \return It returns the names of the data sources available.
-        */
-        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& info);
-
-        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
+      protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);
 
@@ -268,31 +103,24 @@ namespace te
 
         bool exists(const std::map<std::string, std::string>& dsInfo);
 
-        /*!
-          \brief It gets all the indexes of the given dataset and adds them to the dummy schema.
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
 
-          \param dt The dataset schema.
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
 
-          \return The dataset indexes.
-        */
         void getIndexes(te::da::DataSetTypePtr& dt);
 
-         /*!
-          \brief It loads the properties for the given dataset.
-
-          \param dt The datasettype where the list of properties will be loaded.
-
-          \exception Exception It throws an exception if it was not possible to get the information needed.
-
-          \note ADO driver extended method.
-        */
         void getProperties(te::da::DataSetTypePtr& dt);
 
       private:
 
-        class Impl;
+        te::da::DataSourceCatalog* m_catalog;             //!< The main system catalog.
+        std::map<std::string, std::string> m_connInfo;    //!< Connection information.
+        Connection* m_conn;                               //!< The Connection.
+        std::string m_currentSchema;                      //!< The default schema used when no one is provided.
+        bool m_isInTransaction;                           //!< It indicates if there is a transaction in progress.
 
-        Impl* m_pImpl;
+        static te::da::DataSourceCapabilities sm_capabilities;  //!< ADO capabilities.
+        static te::da::SQLDialect* sm_dialect; 
     };
 
   } // end namespace pgis

@@ -80,16 +80,14 @@ namespace te
 
         protected:
 
-          void apply();
-
-          void preview();
-
           void fillContrastTypes();
 
           void listBands();
 
 
         protected slots:
+
+          void apply();
 
           void showHistogram();
 
