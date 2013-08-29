@@ -68,7 +68,8 @@ namespace te
         */
         DataSet(_RecordsetPtr result,
                 Connection* conn,
-                std::string* sql);
+                const std::vector<int>& ptypes,
+                const std::vector<std::string>& pnames);
 
         /*! \brief The destructor will clear the internal ADO _RecordsetPtr. */
         ~DataSet();
@@ -186,6 +187,7 @@ namespace te
         Connection* m_conn;                 //!< The ADO connection associated to this dataset.
         std::string* m_sql;                 //!< The sql command that generated the dataset.
         std::vector<int> m_ptypes;          //!< The list of property types.
+        std::vector<std::string> m_pnames;  //!< The list of property names.
     };
 
   } // end namespace ado

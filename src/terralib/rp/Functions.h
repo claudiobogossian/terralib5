@@ -28,14 +28,25 @@
 
 #include "Config.h"
 
+#include "Matrix.h"
+#include "Macros.h"
 #include "../dataaccess/datasource/DataSource.h"
+#include "../raster/Raster.h"
+#include "../raster/RasterFactory.h"
+#include "../raster/Grid.h"
+#include "../raster/BandProperty.h"
+#include "../raster/RasterFactory.h"
 
 // Boost
 #include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 
 // STL
+#include <memory>
+#include <map>
 #include <vector>
+#include <string>
+#include <climits>
 
 namespace te
 {
@@ -59,7 +70,7 @@ namespace te
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
-    bool CreateNewRaster( const te::rst::Grid& rasterGrid,
+    bool TERPEXPORT CreateNewRaster( const te::rst::Grid& rasterGrid,
       const std::vector< te::rst::BandProperty* >& bandsProperties,
       const std::string& outDataSetName,
       te::da::DataSource& outDataSource,
@@ -74,7 +85,7 @@ namespace te
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
-    bool CreateNewMemRaster( const te::rst::Grid& rasterGrid,
+    bool TERPEXPORT CreateNewMemRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
       RasterHandler& outRasterHandler );
 
@@ -87,7 +98,7 @@ namespace te
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
-    bool CreateNewGeotifRaster( const te::rst::Grid& rasterGrid,
+    bool TERPEXPORT CreateNewGeotifRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
       const std::string& fileName,
       RasterHandler& outRasterHandler );
@@ -99,7 +110,7 @@ namespace te
       \param max The maximum value.
       \note The types are listed in terralib/datatype/DataTypes.h
     */
-    void GetDataTypeRange( const int dataType, double& min, double& max );
+    void TERPEXPORT GetDataTypeRange( const int dataType, double& min, double& max );
 
     /*!
       \brief Convert vector elements.
@@ -109,7 +120,7 @@ namespace te
       \param outputVector A pré-allocated output vector.
       \note The types are listed in terralib/datatype/DataTypes.h
     */
-    void Convert2DoublesVector( void* inputVector, const int inputVectorDataType,
+    void TERPEXPORT Convert2DoublesVector( void* inputVector, const int inputVectorDataType,
       unsigned int inputVectorSize, double* outputVector );
 
     /*!
@@ -120,9 +131,98 @@ namespace te
       \param outputVector A pré-allocated output vector.
       \note The types are listed in terralib/datatype/DataTypes.h
     */
-    void ConvertDoublesVector( double* inputVector,
+    void TERPEXPORT ConvertDoublesVector( double* inputVector,
       unsigned int inputVectorSize, const int outputVectorDataType,
       void* outputVector );
+      
+    /*!
+      \brief Create a tiff file from a matrix.
+      \param matrix The matrix.
+      \param normalize Enable/disable pixel normalization (8bit);
+      \param tifFileName Tif file name.
+      \param return true if OK, false on errors.
+    */      
+    template< typename MatrixElementT >
+    bool CreateRasterFileFromMatrix( const te::rp::Matrix< MatrixElementT >& matrix,
+      const bool normalize, const std::string& fileName )
+    {
+      std::map<std::string, std::string> rInfo;
+      rInfo["URI"] = fileName;
+      
+      std::vector<te::rst::BandProperty*> bandsProperties;
+      if( normalize )
+        bandsProperties.push_back(new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE, "" ));
+      else
+        bandsProperties.push_back(new te::rst::BandProperty( 0, te::dt::DOUBLE_TYPE, "" ));
+      bandsProperties[0]->m_colorInterp = te::rst::GrayIdxCInt;
+      bandsProperties[0]->m_noDataValue = -1.0 * DBL_MAX;
+
+      te::rst::Grid* newgrid = new te::rst::Grid( matrix.getColumnsNumber(),
+        matrix.getLinesNumber(), 0, -1 );
+
+      std::auto_ptr< te::rst::Raster > outputRasterPtr(
+        te::rst::RasterFactory::make( "GDAL", newgrid, bandsProperties, rInfo, 0, 0));
+      TERP_TRUE_OR_RETURN_FALSE( outputRasterPtr.get(), "Output raster creation error");
+          
+      unsigned int line = 0;
+      unsigned int col = 0;
+      const unsigned int nLines = matrix.getLinesNumber();
+      const unsigned int nCols = matrix.getColumnsNumber();
+      MatrixElementT matrixValue = 0;
+
+      MatrixElementT gain = 1.0;
+      MatrixElementT offset = 0.0;
+      if( normalize )
+      {
+        MatrixElementT matrixValueMin = std::numeric_limits< MatrixElementT >::max();
+        MatrixElementT matrixValueMax = -1.0 * matrixValueMin;
+        for( line = 0 ; line < nLines ; ++line )
+        {
+          for( col = 0 ; col < nCols ; ++col )
+          {
+            matrixValue = matrix[ line ][ col ];
+            if( matrixValue < matrixValueMin )
+              matrixValueMin = matrixValue;
+            if( matrixValue > matrixValueMax )
+              matrixValueMax = matrixValue;
+          }
+        }
+          
+        if( matrixValueMax == matrixValueMin )
+        {
+          gain = 0.0;
+          offset = 0.0;
+        }
+        else
+        {
+          gain = 255.0 / ( matrixValueMax - matrixValueMin );
+          offset = -1.0 * ( matrixValueMin );
+        }
+      }
+      
+      const MatrixElementT min0 = 0;
+      const MatrixElementT max255 = 255;
+      
+      for( line = 0 ; line < nLines ; ++line )
+      {
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          matrixValue = matrix[ line ][ col ];
+        
+          if( normalize )
+          {
+            matrixValue += offset;
+            matrixValue *= gain;
+            matrixValue = std::max( min0, matrixValue );
+            matrixValue = std::min( max255, matrixValue );
+          }
+          
+          outputRasterPtr->setValue( col, line, (double)matrixValue, 0 );
+        }
+      }
+      
+      return true;
+    };        
 
   } // end namespace rp
 }   // end namespace te

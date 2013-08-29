@@ -52,4 +52,7 @@ void Register();
 /* \brief Edges detection. */
 void EdgeFilter();
 
+/* \brief IHS Fusion example. */
+void IHSFusion();
+
 #endif
