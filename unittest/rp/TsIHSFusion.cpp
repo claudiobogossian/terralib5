@@ -54,9 +54,9 @@ void TsIHSFusion::Test001()
   te::rp::IHSFusion::InputParameters algoInputParams;
   
   algoInputParams.m_lowResRasterPtr = lowResRasterPtr.get();
-  algoInputParams.m_lowResRasterBands.push_back( 0 );
-  algoInputParams.m_lowResRasterBands.push_back( 1 );
-  algoInputParams.m_lowResRasterBands.push_back( 2 );
+  algoInputParams.m_lowResRasterRedBandIndex = 0;
+  algoInputParams.m_lowResRasterGreenBandIndex = 1;
+  algoInputParams.m_lowResRasterBlueBandIndex = 2;
   algoInputParams.m_highResRasterPtr = highResRasterPtr.get();
   algoInputParams.m_highResRasterBand = 0;
   algoInputParams.m_enableProgress = false;
