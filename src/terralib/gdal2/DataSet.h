@@ -56,7 +56,7 @@ namespace te
        \param dt     The dataset type. DataSet will take its ownership.
        \param rwRole The access policy of the dataset.
        */
-      DataSet(te::da::DataSetType* dt, const std::string& uri="");
+      DataSet(std::auto_ptr<te::da::DataSetType> dt, std::string uri="");
       
       /*! \brief Destructor. */
       ~DataSet();
@@ -169,7 +169,7 @@ namespace te
       
     private:
       
-      te::da::DataSetType* m_dsType;        //!< It describes the dataset.
+      std::auto_ptr<te::da::DataSetType> m_dsType;        //!< It describes the dataset.
       std::string m_uri;
       te::common::AccessPolicy m_rwRole;    //!< Access role.
       int m_size;                           //!< For GDAL driver this will be constant: 1.
