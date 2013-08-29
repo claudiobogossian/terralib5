@@ -41,7 +41,52 @@ inline void TESTHR(HRESULT hr)
     _com_issue_error(hr);
 }
 
-_RecordsetPtr te::ado::Connection::query(const std::string& query)
+te::ado::Connection::Connection(const std::string& conninfo, bool inuse)
+  : m_conn(0),
+    m_inuse(inuse),
+    m_lastuse(boost::posix_time::second_clock::local_time())
+{
+  if(conninfo.empty())
+    return;
+
+  ::CoInitialize(0);
+
+  _bstr_t connStr = conninfo.c_str();
+
+  try
+  {
+    m_conn.CreateInstance(__uuidof(::Connection));
+    TESTHR(m_conn->Open(connStr, "", "", -1));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  long status = m_conn->GetState();
+
+  if(status != adStateOpen)
+  {
+    boost::format errmsg(TR_ADO("It was not possible to create a connection to the given data source due to the following error: %1%."));
+
+    errmsg = errmsg % m_conn->GetErrors()->GetItem(0)->GetDescription();
+
+    m_conn->Close();
+
+    m_conn = 0;
+
+    throw Exception(errmsg.str());
+  }
+}
+
+te::ado::Connection::~Connection()
+{
+  if(m_conn)
+    m_conn->Close();
+  ::CoUninitialize();
+}
+
+_RecordsetPtr te::ado::Connection::query(const std::string& query, bool connected)
 {
   _RecordsetPtr recordset;
 
@@ -49,7 +94,10 @@ _RecordsetPtr te::ado::Connection::query(const std::string& query)
   
   try
   {
-    recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenDynamic, adLockReadOnly, adCmdText);
+    if(connected)
+      recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenDynamic, adLockReadOnly, adCmdText);
+    else
+      recordset->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenStatic, adLockReadOnly, adCmdText);
   }
   catch(_com_error& e)
   {
@@ -74,47 +122,4 @@ void te::ado::Connection::execute(const std::string& command)
 bool te::ado::Connection::isValid()
 {
   return m_conn->GetState() == adStateOpen;
-}
-
-te::ado::Connection::~Connection()
-{
-  if(m_conn)
-    m_conn->Close();
-}
-
-te::ado::Connection::Connection(const std::string& conninfo, bool inuse)
-  : m_conn(0),
-    m_inuse(inuse),
-    m_lastuse(boost::posix_time::second_clock::local_time())
-{
-  if(conninfo.empty())
-    return;
-
-  _bstr_t connStr = conninfo.c_str();
-
-  try
-  {
-    m_conn.CreateInstance(__uuidof(::Connection));
-    TESTHR(m_conn->Open(connStr, "", "", -1));
-  }
-  catch(_com_error& e)
-  {
-    std::string ddddd = e.Description();
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  long status = m_conn->GetState();
-
-  if(status != adStateOpen)
-  {
-    boost::format errmsg(TR_ADO("It was not possible to create a connection to the given data source due to the following error: %1%."));
-
-    errmsg = errmsg % m_conn->GetErrors()->GetItem(0)->GetDescription();
-
-    m_conn->Close();
-
-    m_conn = 0;
-
-    throw Exception(errmsg.str());
-  }
 }

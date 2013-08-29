@@ -65,7 +65,11 @@ namespace te
             
             te::rst::Raster const* m_lowResRasterPtr; //!< Input low-resolution multi-band raster.
             
-            std::vector< unsigned int > m_lowResRasterBands; //!< Input low-resolution multi-band raster ( R - G - B ordered ).
+            unsigned int m_lowResRasterRedBandIndex; //!< The low-resolution raster red band index (default:0).
+            
+            unsigned int m_lowResRasterGreenBandIndex; //!< The low-resolution raster green band index (default:1).
+            
+            unsigned int m_lowResRasterBlueBandIndex; //!< The low-resolution raster blue band index (default:2).
             
             te::rst::Raster const* m_highResRasterPtr; //!< Input high-resolution raster.
             
@@ -75,9 +79,9 @@ namespace te
             
             te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
             
-            double m_RGBMin; //!< The used RGB minimum value (leave zero for automatic detection based on the input images).
+            double m_RGBMin; //!< The used RGB minimum value (default:0 - leave zero for automatic detection based on the input images).
             
-            double m_RGBMax; //!< The used RGB maximum value (leave zero for automatic detection based on the input images).            
+            double m_RGBMax; //!< The used RGB maximum value (default:0 - leave zero for automatic detection based on the input images).            
             
             InputParameters();
             
@@ -153,17 +157,17 @@ namespace te
           \param rgbMax RGB maximum value.
           \return true if ok, false on errors.
          */        
-        bool getRGBRange( double& rgbMin, double& rgbMax );
+        bool getRGBRange( double& rgbMin, double& rgbMax ) const;
         
         /*!
           \brief Get statistics from the given matrix.
           \param matrix Input matrix.
           \param mean Mean value.
-          \param stdDev Standard deviation value.
+          \param variance Variance value.
           \return true if ok, false on errors.
          */        
         bool getStatistics( const te::rp::Matrix< float >& matrix, float& mean, 
-          float& stdDev );        
+          float& variance ) const;        
         
         /*!
           \brief Load resampled IHS data from the input image.
@@ -176,14 +180,28 @@ namespace te
           \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].
          */
         bool loadIHSData( const double& rgbMin, const double rgbMax, te::rp::Matrix< float >& intensityData,
-          te::rp::Matrix< float >& hueData, te::rp::Matrix< float >& saturationData );
+          te::rp::Matrix< float >& hueData, te::rp::Matrix< float >& saturationData ) const;
           
         /*!
           \brief Swap the intensity data by the high resolution image data.
           \param intensityData Intensity channel data.
           \return true if ok, false on errors.
          */
-        bool swapIntensity( te::rp::Matrix< float >& intensityData );          
+        bool swapIntensity( te::rp::Matrix< float >& intensityData );   
+        
+        /*!
+          \brief Save resampled IHS data as RGB data to the output image.
+          \param rgbMin RGB minimum value.
+          \param rgbMax RGB maximum value.
+          \param intensityData Intensity channel data.
+          \param hueData Hue channel data.
+          \param saturationData Saturation channel data.
+          \return true if ok, false on errors.
+         */
+        bool saveIHSData( const double& rgbMin, const double rgbMax, const te::rp::Matrix< float >& intensityData,
+          const te::rp::Matrix< float >& hueData, const te::rp::Matrix< float >& saturationData,
+          const std::string& rType, const std::map< std::string, std::string >& rInfo,
+          std::auto_ptr< te::rst::Raster >& outputRasterPtr ) const;        
     };
 
   } // end namespace rp

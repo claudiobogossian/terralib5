@@ -29,11 +29,15 @@
 // TerraLib
 #include "../../geometry/Enums.h"
 #include "../datasource/DataSource.h"
+#include "../query/Expression.h"
+#include "../query/Fields.h"
+#include "../query/Select.h"
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
 
 // STL
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -254,6 +258,37 @@ namespace te
     TEDATAACCESSEXPORT std::string GetSQLValueNames(const DataSet* dataset);
 
     TEDATAACCESSEXPORT std::vector<int> GetPropertyDataTypes(const te::da::DataSet* dataset);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Fields> BuildFields(const std::vector<std::string>& properties);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Expression> BuildSpatialOp(Expression* e1,
+                                                                Expression* e2,
+                                                                te::gm::SpatialRelation r);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
+                                                         const std::string& propertyName);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
+                                                         const std::vector<std::string>& properties);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
+                                                         const std::vector<std::string>& properties,
+                                                         const std::string& geometryProperty,
+                                                         const te::gm::Envelope* e,
+                                                         int srid,
+                                                         te::gm::SpatialRelation r);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
+                                                         const std::vector<std::string>& properties,
+                                                         const std::string& geometryProperty,
+                                                         te::gm::Geometry* g,
+                                                         te::gm::SpatialRelation r);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
+                                                         const std::vector<std::string>& properties,
+                                                         const ObjectIdSet* oids);
 
   } // end namespace da
 }   // end namespace te

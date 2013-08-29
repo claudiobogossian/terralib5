@@ -50,20 +50,21 @@
 
 te::ado::DataSet::DataSet(_RecordsetPtr result,
                           Connection* conn,
-                          std::string* sql)
+                          const std::vector<int>& ptypes,
+                          const std::vector<std::string>& pnames)
   : m_i(-1),
     m_result(result),
-    m_conn(conn),
-    m_sql(sql)
+    m_conn(conn)
 {
   m_size = m_result->GetRecordCount();
   m_ncols = m_result->GetFields()->GetCount();
+  m_ptypes = ptypes;
+  m_pnames = pnames;
 }
 
 te::ado::DataSet::~DataSet()
 {
   m_result->Close();
-  delete m_sql;
 }
 
 te::common::TraverseType te::ado::DataSet::getTraverseType() const
@@ -93,7 +94,7 @@ int te::ado::DataSet::getPropertyDataType(std::size_t i) const
 
 std::string te::ado::DataSet::getPropertyName(std::size_t i) const
 {
-  return (std::string)m_result->GetFields()->GetItem((long)i)->GetName();
+  return m_pnames[i];
 }
 
 std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t i) const
@@ -467,12 +468,12 @@ std::auto_ptr<te::gm::Geometry> te::ado::DataSet::getGeometry(const std::string&
 
 std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(std::size_t i) const
 {
-  return std::auto_ptr<te::rst::Raster>(0); // TODO
+  return std::auto_ptr<te::rst::Raster>(0); // TODO ?
 }
 
 std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(const std::string& name) const
 {
-  return std::auto_ptr<te::rst::Raster>(0); // TODO
+  return std::auto_ptr<te::rst::Raster>(0); // TODO ?
 }
 
 std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) const
