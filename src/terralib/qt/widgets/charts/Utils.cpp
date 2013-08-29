@@ -24,8 +24,8 @@
 */
 
 // TerraLib
+#include "../../../color/RGBAColor.h"
 #include "../../../common/progress/TaskProgress.h"
-
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
@@ -35,8 +35,12 @@
 #include "../../../raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
+#include "../../../maptools/ExternalGraphicRendererManager.h"
+#include "../../../maptools/MarkRendererManager.h"
+#include "../../../maptools/Utils.h"
 #include "../../../se.h"
 #include "../../../qt/widgets/se/Utils.h"
+#include "../../../qt/widgets/Utils.h"
 #include "Histogram.h"
 #include "Scatter.h"
 #include "Utils.h"
@@ -164,9 +168,9 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
   if(rpos != std::string::npos)
   {
-    std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));  
+    std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
 
-     unsigned int nCol = raster->getNumberOfColumns(); 
+     unsigned int nCol = raster->getNumberOfColumns();
      unsigned int nLin = raster->getNumberOfRows();
 
     te::common::TaskProgress task;
@@ -185,6 +189,9 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
               raster->getValue(c, r, val1, propX);
               raster->getValue(c, r, val2, propY);
 
+              std::cout << val1 << ", ";
+
+
               newScatter->addX(val1);
               newScatter->addY(val2);
 
@@ -198,7 +205,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
     int yType = dataset->getPropertyDataType(propY);
 
     te::common::TaskProgress task;
-    //task.setTotalSteps(dataset->getNumProperties());
+
     task.setMessage("Scatter creation");
 
     while(dataset->moveNext())
@@ -481,13 +488,43 @@ QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text,  te::color::RGBA
 
 QwtSymbol* te::qt::widgets::Terralib2Qwt(te::se::Graphic* graphic)
 {
+  //Default symbol used in case the Graphic is not completely populated.
   QwtSymbol* symbol =  new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ));
-  QPen symbolPen;
-  QBrush symbolBrush;
-  te::qt::widgets::Config(symbolPen, graphic->getMarks()[0]->getStroke());
-  te::qt::widgets::Config(symbolBrush, graphic->getMarks()[0]->getFill());
-  symbolBrush.setStyle(Qt::SolidPattern);
-  symbol->setPen(symbolPen);
-  symbol->setBrush(symbolBrush);
+
+  //Default size and width for the symbols
+  size_t height = 8, width = 8;
+
+  //Adjusting the size if the user changed it
+  if(graphic->getSize())
+  {
+    height = te::map::GetInt(graphic->getSize());
+    width = height;
+  }
+
+  /*Image that will be used to generate the symbol's pixmap,
+    it can be either from a mark or from an external graphic, whichever is valid. 
+  */
+  te::color::RGBAColor** image;
+
+  if(!graphic->getMarks().empty())
+  {
+    image = te::map::MarkRendererManager::getInstance().render(graphic->getMarks()[0], height);
+  }
+  else
+  {
+    image = te::map::ExternalGraphicRendererManager::getInstance().render(graphic->getExternalGraphics()[0], height, width);
+  }
+
+  QImage* qimg = te::qt::widgets::GetImage(image, height, width);
+  QPixmap pixmap;
+  pixmap.convertFromImage(*qimg);
+
+  //Adjusting the symbol
+  symbol->setPixmap(pixmap);
+  symbol->setSize(width, height);
+
+  delete image;
+  delete qimg;
+
   return symbol;
 }
