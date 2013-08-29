@@ -29,9 +29,15 @@
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/Band.h"
+#include "../raster/Grid.h"
+#include "../geometry/Envelope.h"
 #include "../common/progress/TaskProgress.h"
 
 #include <cmath>
+
+#ifndef M_PI
+  #define M_PI       3.14159265358979323846
+#endif
   
 namespace te
 {
@@ -57,7 +63,9 @@ namespace te
     void IHSFusion::InputParameters::reset() throw( te::rp::Exception )
     {
       m_lowResRasterPtr = 0;
-      m_lowResRasterBands.clear();
+      m_lowResRasterRedBandIndex = 0;
+      m_lowResRasterGreenBandIndex = 1;
+      m_lowResRasterBlueBandIndex = 2;
       m_highResRasterPtr = 0;
       m_highResRasterBand = 0;
       m_enableProgress = false;
@@ -72,7 +80,9 @@ namespace te
       reset();
 
       m_lowResRasterPtr = params.m_lowResRasterPtr;
-      m_lowResRasterBands = params.m_lowResRasterBands;
+      m_lowResRasterRedBandIndex = params.m_lowResRasterRedBandIndex;
+      m_lowResRasterGreenBandIndex = params.m_lowResRasterGreenBandIndex;
+      m_lowResRasterBlueBandIndex = params.m_lowResRasterBlueBandIndex;
       m_highResRasterPtr = params.m_highResRasterPtr;
       m_highResRasterBand = params.m_highResRasterBand;
       m_enableProgress = params.m_enableProgress;
@@ -152,9 +162,9 @@ namespace te
       {
         progressPtr.reset( new te::common::TaskProgress );
         
-        progressPtr->setTotalSteps( 7 );
+        progressPtr->setTotalSteps( 4 );
         
-        progressPtr->setMessage( "Generating the skeleton" );
+        progressPtr->setMessage( "Fusing images" );
       }        
       
       // Getting RGB range
@@ -188,14 +198,16 @@ namespace te
         if( ! progressPtr->isActive() ) return false;
       }          
         
-/*      CreateRasterFileFromMatrix( intensityData, true, "intensityData.tif" );
-      CreateRasterFileFromMatrix( hueData, true, "hueData.tif" );  
-      CreateRasterFileFromMatrix( saturationData, true, "saturationData.tif" ); */ 
+//       CreateRasterFileFromMatrix( intensityData, true, "intensityData.tif" );
+//       CreateRasterFileFromMatrix( hueData, true, "hueData.tif" );  
+//       CreateRasterFileFromMatrix( saturationData, true, "saturationData.tif" );
       
       // Swapping Itensity
       
       TERP_TRUE_OR_RETURN_FALSE( swapIntensity( intensityData ),
         "Intensity channel swap error" );
+        
+//       CreateRasterFileFromMatrix( intensityData, true, "swappedintensityData.tif" );
       
       if( m_inputParameters.m_enableProgress )
       {
@@ -205,9 +217,10 @@ namespace te
       
       // Saving RGB data
       
-      
-      
-      
+      TERP_TRUE_OR_RETURN_FALSE( saveIHSData( rgbMin, rgbMax, intensityData,
+        hueData, saturationData, outParamsPtr->m_rType, outParamsPtr->m_rInfo,
+        outParamsPtr->m_outputRasterPtr),
+        "RGB raster creation error" );
 
       if( m_inputParameters.m_enableProgress )
       {
@@ -244,18 +257,20 @@ namespace te
         m_inputParameters.m_lowResRasterPtr->getAccessPolicy() & te::common::RAccess, 
         "Invalid raster" );
         
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_lowResRasterBands.size()
-        == 3, "Invalid number of low-resolution raster bands" );
+      TERP_TRUE_OR_RETURN_FALSE( 
+        m_inputParameters.m_lowResRasterRedBandIndex <
+        m_inputParameters.m_lowResRasterPtr->getNumberOfBands(), 
+        "Invalid raster band" );   
         
-      for( unsigned int lowResRasterBandsIdx = 0 ; lowResRasterBandsIdx < 
-        m_inputParameters.m_lowResRasterBands.size() ;
-        ++lowResRasterBandsIdx )
-      {
-        TERP_TRUE_OR_RETURN_FALSE( 
-          m_inputParameters.m_lowResRasterBands[ lowResRasterBandsIdx ] <
-          m_inputParameters.m_lowResRasterPtr->getNumberOfBands(), 
-          "Invalid raster band" );   
-      }
+      TERP_TRUE_OR_RETURN_FALSE( 
+        m_inputParameters.m_lowResRasterGreenBandIndex <
+        m_inputParameters.m_lowResRasterPtr->getNumberOfBands(), 
+        "Invalid raster band" );  
+        
+      TERP_TRUE_OR_RETURN_FALSE( 
+        m_inputParameters.m_lowResRasterBlueBandIndex <
+        m_inputParameters.m_lowResRasterPtr->getNumberOfBands(), 
+        "Invalid raster band" );          
       
       // Checking the m_highResRasterPtr and m_highResRasterBand
 
@@ -284,7 +299,7 @@ namespace te
       return m_isInitialized;
     }
     
-    bool IHSFusion::getRGBRange( double& rgbMin, double& rgbMax )
+    bool IHSFusion::getRGBRange( double& rgbMin, double& rgbMax ) const
     {
       if( ( m_inputParameters.m_RGBMax == 0.0 ) && 
         ( m_inputParameters.m_RGBMin == 0.0 ) )
@@ -293,11 +308,11 @@ namespace te
         const unsigned int nCols = m_inputParameters.m_lowResRasterPtr->getNumberOfColumns();
         const unsigned int nRows = m_inputParameters.m_lowResRasterPtr->getNumberOfRows();
         const te::rst::Band& redBand = *( m_inputParameters.m_lowResRasterPtr->getBand(
-          m_inputParameters.m_lowResRasterBands[ 0 ] ) );
+          m_inputParameters.m_lowResRasterRedBandIndex ) );
         const te::rst::Band& greenBand = *( m_inputParameters.m_lowResRasterPtr->getBand(
-          m_inputParameters.m_lowResRasterBands[ 1 ] ) );
+          m_inputParameters.m_lowResRasterGreenBandIndex ) );
         const te::rst::Band& blueBand = *( m_inputParameters.m_lowResRasterPtr->getBand(
-          m_inputParameters.m_lowResRasterBands[ 2 ] ) );
+          m_inputParameters.m_lowResRasterBlueBandIndex ) );
         const double redNoData = redBand.getProperty()->m_noDataValue;
         const double greenNoData = greenBand.getProperty()->m_noDataValue;
         const double blueNoData = blueBand.getProperty()->m_noDataValue;
@@ -344,7 +359,7 @@ namespace te
     
     bool IHSFusion::loadIHSData( const double& rgbMin, const double rgbMax,
       te::rp::Matrix< float >& intensityData,
-      te::rp::Matrix< float >& hueData, te::rp::Matrix< float >& saturationData )
+      te::rp::Matrix< float >& hueData, te::rp::Matrix< float >& saturationData ) const
     {
       const unsigned int outNCols = m_inputParameters.m_highResRasterPtr->getNumberOfColumns();
       const unsigned int outNRows = m_inputParameters.m_highResRasterPtr->getNumberOfRows();
@@ -354,9 +369,9 @@ namespace te
       const double rowsRescaleFactor =
         ((double)m_inputParameters.m_lowResRasterPtr->getNumberOfRows()) /
         ((double)outNRows);
-      const unsigned int redBandIdx = m_inputParameters.m_lowResRasterBands[ 0 ];
-      const unsigned int greenBandIdx = m_inputParameters.m_lowResRasterBands[ 1 ];
-      const unsigned int blueBandIdx = m_inputParameters.m_lowResRasterBands[ 2 ];
+      const unsigned int redBandIdx = m_inputParameters.m_lowResRasterRedBandIndex;
+      const unsigned int greenBandIdx = m_inputParameters.m_lowResRasterGreenBandIndex;
+      const unsigned int blueBandIdx = m_inputParameters.m_lowResRasterBlueBandIndex;
       const double redNoData = m_inputParameters.m_lowResRasterPtr->getBand( 
         redBandIdx )->getProperty()->m_noDataValue;
       const double greenNoData = m_inputParameters.m_lowResRasterPtr->getBand( 
@@ -476,7 +491,7 @@ namespace te
     }
     
     bool IHSFusion::getStatistics( const te::rp::Matrix< float >& matrix, float& mean, 
-      float& stdDev )
+      float& variance ) const
     {
       const unsigned int nRows = matrix.getLinesNumber();
       const unsigned int nCols = matrix.getColumnsNumber();
@@ -502,7 +517,7 @@ namespace te
       mean /= (float)( nCols * nRows );
       
       float diff = 0.0;
-      stdDev = 0.0;
+      variance = 0.0;
       
       for( row = 0 ; row < nRows ; ++row )
       {
@@ -511,11 +526,9 @@ namespace te
         for( col = 0 ; col < nCols ; ++col )
         {
           diff = rowPtr[ col ] - mean;
-          stdDev += ( diff * diff );
+          variance += ( diff * diff );
         }
       }
-      
-      stdDev = std::sqrt( stdDev );
       
       return true;
     }
@@ -533,16 +546,180 @@ namespace te
       // intensity statistics
       
       float intensityMean = 0.0;
-      float intensityStdDev = 0.0;
-      getStatistics( intensityData, intensityMean, intensityStdDev );     
+      float intensityVariance = 0.0;
+      getStatistics( intensityData, intensityMean, intensityVariance );     
       
       // high resolution raster statistics
       
+      double rasterMean = 0;
+      double rasterVariance = 0;
       
+      unsigned int col = 0;
+      unsigned int row = 0;
+      double value = 0;
+      const te::rst::Band& band = *( m_inputParameters.m_highResRasterPtr->getBand(
+        m_inputParameters.m_highResRasterBand ) );
+      double diff = 0;
       
-/*      double gain = ( ( current_variance == 0.0 ) ? 1.0 :
-        sqrt( target_variance / current_variance ) );
-      double offset = target_mean - ( gain * current_mean );  */
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          band.getValue( col, row, value );
+          rasterMean += value;
+        }
+      }
+      
+      rasterMean /= (double)( nCols * nRows );
+
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          band.getValue( col, row, value );
+          diff = value - rasterMean;
+          rasterVariance += ( diff * diff );
+        }
+      }
+      
+      double gain = ( ( rasterVariance == 0.0 ) ? 0.0 :
+        sqrt( intensityVariance / rasterVariance ) );
+      double offset = intensityMean - ( gain * rasterMean );
+      float* intensityRow = 0;
+      
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        intensityRow = intensityData[ row ];
+        
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          band.getValue( col, row, value );
+          intensityRow[ col ] = (float)std::min( 1.0, std::max( 0.0, ( ( value * gain ) - offset ) ) );
+        }
+      }      
+      
+      return true;
+    }
+    
+    bool IHSFusion::saveIHSData( const double& rgbMin, const double rgbMax, const te::rp::Matrix< float >& intensityData,
+      const te::rp::Matrix< float >& hueData, const te::rp::Matrix< float >& saturationData,
+      const std::string& rType, const std::map< std::string, std::string >& rInfo,
+      std::auto_ptr< te::rst::Raster >& outputRasterPtr ) const
+    {
+      assert( intensityData.getColumnsNumber() == m_inputParameters.m_highResRasterPtr->getNumberOfColumns() );
+      assert( intensityData.getLinesNumber() == m_inputParameters.m_highResRasterPtr->getNumberOfRows() );
+      assert( intensityData.getColumnsNumber() == hueData.getColumnsNumber() );
+      assert( intensityData.getColumnsNumber() == saturationData.getColumnsNumber() );
+      assert( intensityData.getLinesNumber() == hueData.getLinesNumber() );
+      assert( intensityData.getLinesNumber() == saturationData.getLinesNumber() );      
+      
+      const unsigned int nRows = intensityData.getLinesNumber();
+      const unsigned int nCols = intensityData.getColumnsNumber();
+      
+      std::vector< te::rst::BandProperty* > outRasterBandsProperties;
+      outRasterBandsProperties.push_back( new te::rst::BandProperty(
+        *( m_inputParameters.m_lowResRasterPtr->getBand( 
+        m_inputParameters.m_lowResRasterRedBandIndex )->getProperty() ) ) );    
+      outRasterBandsProperties.push_back( new te::rst::BandProperty(
+        *( m_inputParameters.m_lowResRasterPtr->getBand( 
+        m_inputParameters.m_lowResRasterGreenBandIndex )->getProperty() ) ) ); 
+      outRasterBandsProperties.push_back( new te::rst::BandProperty(
+        *( m_inputParameters.m_lowResRasterPtr->getBand( 
+        m_inputParameters.m_lowResRasterBlueBandIndex )->getProperty() ) ) );         
+      
+      te::rst::Grid* gridPtr = new te::rst::Grid( nCols, nRows,
+        new te::gm::Envelope( *( m_inputParameters.m_lowResRasterPtr->getGrid()->getExtent() ) ),
+        m_inputParameters.m_lowResRasterPtr->getGrid()->getSRID() );
+
+      outputRasterPtr.reset(
+        te::rst::RasterFactory::make(
+          rType,
+          gridPtr,
+          outRasterBandsProperties,
+          rInfo,
+          0,
+          0 ) );
+      TERP_TRUE_OR_RETURN_FALSE( outputRasterPtr.get(),
+        "Output raster creation error" );  
+        
+      const double rgbNormFac = ( rgbMax == rgbMin ) ? 0.0 :
+        ( rgbMax - rgbMin ); 
+      const double pi3 = M_PI / 3.0; // 60
+      const double twoPi3 = 2.0 * M_PI / 3.0; // 120
+      const double fourPi3 = 4.0 * M_PI / 3.0; // 240        
+      unsigned int row = 0;
+      unsigned int col = 0;  
+      double hue = 0;
+      double lig = 0;
+      double sat = 0;
+      double red = 0;
+      double green = 0;
+      double blue = 0;  
+      te::rst::Band& redBand = *outputRasterPtr->getBand( 0 );
+      te::rst::Band& greenBand = *outputRasterPtr->getBand( 1 );
+      te::rst::Band& blueBand = *outputRasterPtr->getBand( 2 );
+      
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        for( col = 0 ; col < nCols ; ++col )
+        {     
+          hue = hueData[ row ][ col ];
+          lig = intensityData[ row ][ col ];
+          sat = saturationData[ row ][ col ];
+          
+          if( ( hue == 0.0 ) && ( sat == 0.0 ) )
+          { // Gray scale case
+            red = green = blue = ( lig * rgbNormFac );
+          }
+          else
+          { // color case
+            /* Hue inside RG sector */
+            if( hue < twoPi3 )
+            {
+              blue = lig * ( 1.0 - sat );
+              red = lig * ( 1.0 + ( sat * std::cos( hue ) / 
+                std::cos( pi3 - hue ) ) );
+              green = ( 3.0 * lig ) - ( red + blue );
+            }
+            else if( hue < fourPi3 )
+            { /* Hue inside GB sector */
+            
+              hue -= twoPi3;
+              
+              red = lig * ( 1.0 - sat );
+              green = lig * ( 1.0 + ( sat * std::cos( hue ) / 
+                std::cos( pi3 - hue ) ) );
+              blue = ( 3.0 * lig ) - ( red + green );
+            }
+            else
+            { /* Hue inside BR sector */
+            
+              hue -= fourPi3;
+              
+              green = lig * ( 1.0 - sat );
+              blue = lig * ( 1.0 + ( sat * std::cos( hue ) / 
+                std::cos( pi3 - hue ) ) );
+              red = ( 3.0 * lig ) - ( green + blue );
+            }
+            
+            red = ( red * rgbNormFac ) + rgbMin;
+            green = ( green * rgbNormFac ) + rgbMin;
+            blue = ( blue * rgbNormFac ) + rgbMin;
+          }
+          
+          red = MIN( red, rgbMax );
+          green = MIN( green, rgbMax );
+          blue = MIN( blue, rgbMax );
+          
+          red = MAX( red, rgbMin );
+          green = MAX( green, rgbMin );
+          blue = MAX( blue, rgbMin );           
+          
+          redBand.setValue( col, row, red );
+          greenBand.setValue( col, row, green );
+          blueBand.setValue( col, row, blue );
+        }
+      }
       
       return true;
     }
