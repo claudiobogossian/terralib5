@@ -46,8 +46,6 @@ namespace te
 {
   namespace ado
   {
-// Forward declarations
-    class ConnectionPool;
 
     /*!
       \class Connection
@@ -64,6 +62,17 @@ namespace te
       public:
 
         /*!
+          \brief Constructor.
+
+          \param conninfo A coonection string as undertood by ADO.
+          \param inuse    A marker that tells if the connection is in use or not.
+        */
+        Connection(const std::string& conninfo, bool inuse = false);
+
+        /*! \brief Destructor. */
+        ~Connection();
+
+        /*!
           \brief It queries the database.
 
           \param query A SQL Select command.
@@ -72,7 +81,7 @@ namespace te
 
           \exception Exception It throws an exception if the query execution fails.
         */
-        _RecordsetPtr query(const std::string& query);
+        _RecordsetPtr query(const std::string& query, bool connected = false);
 
         /*!
           \brief It executes the given SQL command and throws away the result.
@@ -94,17 +103,6 @@ namespace te
         {
           return m_conn;
         }
-
-        /*! \brief Destructor. */
-        ~Connection();
-
-        /*!
-          \brief Constructor.
-
-          \param conninfo A coonection string as undertood by ADO.
-          \param inuse    A marker that tells if the connection is in use or not.
-        */
-        Connection(const std::string& conninfo, bool inuse = false);
 
       public:
 

@@ -271,7 +271,7 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
     case ADOX::adLongVarWChar:
     case ADOX::adBSTR:
     case ADOX::adChar:
-      return te::dt::VAR_STRING;
+      return te::dt::STRING_TYPE;
       break;
 
     case ADOX::adBigInt:
@@ -356,7 +356,7 @@ int te::ado::Convert2Terralib(::DataTypeEnum adoType)
     case ::adLongVarWChar:
     case ::adBSTR:
     case ::adChar:
-      return te::dt::VAR_STRING;
+      return te::dt::STRING_TYPE;
       break;
 
     case ::adBigInt:
