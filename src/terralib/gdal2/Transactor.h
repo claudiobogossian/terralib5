@@ -82,7 +82,7 @@ namespace te
       
       std::size_t getNumberOfDataSets();      
       
-      te::da::DataSetTypePtr getDataSetType(const std::string& name);
+      std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
       
       boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
       
@@ -270,14 +270,11 @@ namespace te
     private:
       
       boost::filesystem::path m_path;
-      
-      std::map<std::string, std::string> m_locations;
-      std::map<std::string, te::da::DataSetTypePtr> m_catalog; 
-      
-      size_t m_lastId;
-      
-      void init(const boost::filesystem::path& path);
-      void getMetadata(const std::string& dsfullname, const std::string& dsname);  
+      std::auto_ptr<te::da::DataSetType> getMetadata(const std::string& dsfullname);  
+      void getDataSetNames(const boost::filesystem::path& path, std::vector<std::string>& dsnames);
+      bool hasDataSets(const boost::filesystem::path& path);
+      size_t getNumberOfDataSets(const boost::filesystem::path& path);
+      std::auto_ptr<te::da::DataSetType> getDataSetType(const boost::filesystem::path& path, const std::string& name);
       
     };
   } // end namespace gdal

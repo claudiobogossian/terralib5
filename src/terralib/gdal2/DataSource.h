@@ -92,87 +92,19 @@ namespace te
       
       void open();
       
-      void close();  
+      void close();
       
       bool isOpened() const;
-      
+       
       bool isValid() const;
       
-      bool hasDataSets();
-      
       const te::da::DataSourceCapabilities& getCapabilities() const;
-      
-      bool isDataSetNameValid(const std::string& datasetName);
-      
-      bool isPropertyNameValid(const std::string& propertyName);
-      
-      std::vector<std::string> getDataSetNames();
-      
-      std::size_t getNumberOfDataSets();
-      
-      te::da::DataSetTypePtr getDataSetType(const std::string& name);
-      
-      boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
-           
-      std::vector<std::string> getPropertyNames(const std::string& datasetName);
-
-      std::size_t getNumberOfProperties(const std::string& datasetName);
-
-      bool propertyExists(const std::string& datasetName, const std::string& name);
-
-      std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
-
-      std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
-      
-      std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                te::common::TraverseType travType = te::common::FORWARDONLY);
-      
-      std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                const std::string& propertyName,
-                                                const te::gm::Envelope* e,
-                                                te::gm::SpatialRelation r,
-                                                te::common::TraverseType travType = te::common::FORWARDONLY);
-      
-      std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                const std::string& propertyName,
-                                                const te::gm::Geometry* g,
-                                                te::gm::SpatialRelation r,
-                                                te::common::TraverseType travType = te::common::FORWARDONLY);
-      
-      std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                const te::da::ObjectIdSet* oids, 
-                                                te::common::TraverseType travType = te::common::FORWARDONLY);
-      
-
       
       std::size_t getNumberOfItems(const std::string& datasetName)
       { return 1; }
       
-      bool dataSetExists(const std::string& name);
-      
-      void createDataSet(te::da::DataSetType* dt,
-                         const std::map<std::string, std::string>& options);
-      
-      void cloneDataSet(const std::string& name,
-                        const std::string& cloneName,
-                        const std::map<std::string, std::string>& options) ;
-      
-      void dropDataSet(const std::string& name);
-      
-      void renameDataSet(const std::string& name,
-                         const std::string& newName);
-
-  
       static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
 
-      void getProperties(te::da::DataSetTypePtr& dt);
-      
-      std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                const std::string& propertyName);
-      
-      std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                std::size_t propertyPos);
-      
       void addProperty(const std::string& , te::dt::Property* ) {}
       
       void dropProperty(const std::string& , const std::string& ) {};
@@ -197,12 +129,6 @@ namespace te
       
       const te::da::SQLDialect* getDialect() const 
       { return 0; }
-      
-      std::auto_ptr<te::da::DataSet> query(const te::da::Select& ,te::common::TraverseType)
-      { return std::auto_ptr<te::da::DataSet>(); }
-      
-      std::auto_ptr<te::da::DataSet> query(const std::string& , te::common::TraverseType )
-      { return std::auto_ptr<te::da::DataSet>(); }
       
       void execute(const te::da::Query&)
       {}
@@ -295,11 +221,8 @@ namespace te
       void dropSequence(const std::string& )
       {}
       
-
     protected:
       
-      boost::filesystem::path m_path;
-
       void create(const std::map<std::string, std::string>& dsInfo);
       
       void drop(const std::map<std::string, std::string>& dsInfo);

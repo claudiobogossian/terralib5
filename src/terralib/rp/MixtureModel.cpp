@@ -32,7 +32,7 @@
 #include "MixtureModel.h"
 #include "MixtureModelStrategy.h"
 #include "MixtureModelStrategyFactory.h"
-#include "Utils.h"
+#include "Functions.h"
 
 te::rp::MixtureModel::InputParameters::InputParameters()
   : m_mixtureModelStrategyParamsPtr(0)

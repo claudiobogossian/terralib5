@@ -36,20 +36,16 @@
 #include <cassert>
 #include <memory>
 
-te::gdal::DataSet::DataSet(te::da::DataSetType* dt,const std::string& uri)
+te::gdal::DataSet::DataSet(std::auto_ptr<te::da::DataSetType> dt,std::string uri)
   : m_dsType(dt),
     m_uri(uri),
     m_rwRole(te::common::RAccess),
     m_size(1),
     m_i(-1)
-{
-  assert(m_dsType);
-}
+{}
 
 te::gdal::DataSet::~DataSet()
-{
-  delete m_dsType;
-}
+{}
 
 void te::gdal::DataSet::setURI(const std::string& uri)
 {
