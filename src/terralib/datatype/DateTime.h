@@ -111,9 +111,9 @@ namespace te
     };
 
     /*! \brief An auxiliary struct to compare two datetime pointers */
-    struct CompareDateTime
+    struct TEDATATYPEEXPORT CompareDateTime
     {
-      bool operator()(te::dt::DateTime* t1, te::dt::DateTime* t2)
+      bool operator()(const te::dt::DateTime* t1, const te::dt::DateTime* t2) const
       {
         return t1->operator<(*t2);
       }
