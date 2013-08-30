@@ -61,6 +61,8 @@ namespace te
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
+        std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
+
         void open();
         
         void close();
@@ -75,67 +77,19 @@ namespace te
 
         static void setDialect(te::da::SQLDialect* dialect);
 
-        void begin();
+        OGRDataSource* getOGRDataSource();
 
-        void commit();
-
-        void rollBack();
-
-        bool isInTransaction() const;
-
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const std::string& propertyName,
-                                                  const te::gm::Envelope* e,
-                                                  te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const std::string& propertyName,
-                                                  const te::gm::Geometry* g,
-                                                  te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        std::auto_ptr<te::da::DataSet> query(const std::string& query, 
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        void execute(const std::string& command);
-
-        std::vector<std::string> getDataSetNames();
-
-        te::da::DataSetTypePtr getDataSetType(const std::string& name);
-
-        std::size_t getNumberOfProperties(const std::string& datasetName);
-
-        boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
-
-        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
-
-        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
-
-        void addProperty(const std::string& datasetName, te::dt::Property* p);
-
-        std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
-
-        std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, const std::string& propertyName);
-
-        std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, std::size_t propertyPos);
-
-        bool hasDataSets();
-
-        void createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options);
-
-        void add(const std::string& datasetName, te::da::DataSet* d,
-                 const std::map<std::string, std::string>& options,
-                 std::size_t limit = 0);
       protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);
+
+        void drop(const std::map<std::string, std::string>& dsInfo);
+
+        bool exists(const std::map<std::string, std::string>& dsInfo);
+
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
+
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
 
       protected:
 
@@ -147,6 +101,8 @@ namespace te
 
         static te::da::SQLDialect* sm_myDialect;                    //!< OGR SQL dialect.
     };
+
+    DataSource* Build();
   }    // end namespace da
 }      // end namespace te
 
