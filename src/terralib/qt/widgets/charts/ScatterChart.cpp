@@ -63,12 +63,16 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   m_scatterStyle =  new te::qt::widgets::ScatterStyle();
   if(m_scatter->sizeX() > 100 || m_scatter->sizeY() > 100)
   {
-    setSymbol(new QwtSymbol( m_scatterStyle->getSymbol()->style(), m_scatterStyle->getSymbol()->brush(), m_scatterStyle->getSymbol()->pen(), QSize( 1, 1 )));
+    QwtSymbol* newSymbol =  m_scatterStyle->getSymbol(); 
+    newSymbol->setSize(QSize( 1, 1 ));
+    setSymbol(newSymbol);
   }
   else
   {
-    setSymbol(m_scatterStyle->getSymbol());
+    setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::gray ), QPen( Qt::black, 1 ), QSize( 8, 8 )));
   }
+
+  m_selection->setSymbol(new QwtSymbol( symbol()->style(), symbol()->brush().color().darker (180 ), symbol()->pen().color().darker( 180), symbol()->size()));
 }
 
 te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, ScatterStyle* style, size_t size) :
@@ -76,14 +80,15 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, ScatterStyle* style, 
   m_scatter(data),
   m_scatterStyle(style)
 {
-  //Set style
-  setStyle(QwtPlotCurve::NoCurve);
-  setPaintAttribute(QwtPlotCurve::FilterPoints);
 
   m_selection = new QwtPlotCurve();
   m_selection->setStyle(QwtPlotCurve::NoCurve);
   m_selection->setPaintAttribute(QwtPlotCurve::FilterPoints);
   m_selection->attach(plot());
+
+  //Set style
+  setStyle(QwtPlotCurve::NoCurve);
+  setPaintAttribute(QwtPlotCurve::FilterPoints);
 
   //Set Values
   setData();
@@ -144,16 +149,15 @@ void te::qt::widgets::ScatterChart::setScatterStyle(te::qt::widgets::ScatterStyl
   delete m_scatterStyle;
   m_scatterStyle = newSymbol;
 
-  if(m_scatter->sizeX() > 100 || m_scatter->sizeY() > 100)
-  {
-    setSymbol(new QwtSymbol( m_scatterStyle->getSymbol()->style(), m_scatterStyle->getSymbol()->brush(), m_scatterStyle->getSymbol()->pen(), QSize( 1, 1 )));
-  }
-  else
-  {
-    setSymbol(m_scatterStyle->getSymbol());
-  }
+  setSymbol(m_scatterStyle->getSymbol());
 
-  m_selection->setSymbol(new QwtSymbol( symbol()->style(), symbol()->brush().color().darker (180 ), symbol()->pen().color().darker( 180), symbol()->size()));
+  QwtSymbol* selSymbol = new QwtSymbol( symbol()->style(), symbol()->brush().color().darker (180 ), symbol()->pen().color().darker( 180), symbol()->size());
+  QPixmap selPixmap = symbol()->pixmap();
+  QColor selColor = selSymbol->brush().color();
+  selColor.setAlpha(100);
+  selPixmap.fill(selColor);
+  selSymbol->setPixmap(selPixmap);
+  m_selection->setSymbol(selSymbol);
 }
 
 void te::qt::widgets::ScatterChart::highlight(const te::da::ObjectIdSet* oids)

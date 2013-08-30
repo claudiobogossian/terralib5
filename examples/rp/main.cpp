@@ -24,6 +24,7 @@ int main()
     Mosaic();
     Register();
     EdgeFilter();
+    IHSFusion();
 
     te::plugin::PluginManager::getInstance().unloadAll();
 

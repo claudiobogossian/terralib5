@@ -24,6 +24,7 @@
 
 #include "Skeleton.h"
 #include "Macros.h"
+#include "Functions.h"
 
 #include "../raster/Band.h"
 #include "../raster/Utils.h"
@@ -188,7 +189,7 @@ namespace te
       rasterDataPtr->reset( te::rp::Matrix< double >::AutoMemPol );       
       TERP_TRUE_OR_RETURN_FALSE( loadData( *rasterDataPtr ),
         "Gradient maps build error" );      
-//      createTifFromMatrix( *rasterDataPtr, true, "rasterData" );    
+//      CreateRasterFileFromMatrix( *rasterDataPtr, true, "rasterData.tif" );    
 
       if( m_inputParameters.m_enableProgress )
       {
@@ -204,7 +205,7 @@ namespace te
         smoothedRasterDataPtr->reset( te::rp::Matrix< double >::AutoMemPol );       
         TERP_TRUE_OR_RETURN_FALSE( applyMeanSmooth( *rasterDataPtr, *smoothedRasterDataPtr ),
           "Raster data smoothing error" );
-//        createTifFromMatrix( *smoothedRasterDataPtr, true, "smoothedRasterData" );              
+//        CreateRasterFileFromMatrix( *smoothedRasterDataPtr, true, "smoothedRasterData.tif" );              
         rasterDataPtr.reset( smoothedRasterDataPtr.release() );        
       }
       
@@ -220,7 +221,7 @@ namespace te
       edgeStrengthMap.reset( te::rp::Matrix< double >::AutoMemPol );    
       TERP_TRUE_OR_RETURN_FALSE( getEdgeStrengthMap( *rasterDataPtr, 
         edgeStrengthMap ), "Edge strength map build error" ); 
-//      createTifFromMatrix( edgeStrengthMap, true, "edgeStrengthMap" );
+//      CreateRasterFileFromMatrix( edgeStrengthMap, true, "edgeStrengthMap.tif" );
 
       rasterDataPtr.reset();
 
@@ -241,12 +242,12 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( getGradientMaps( edgeStrengthMap, true, vecXMap, vecYMap ),
         "Vector maps build error" );
 //       {
-//         createTifFromMatrix( vecXMap, true, "vecXMap" );
-//         createTifFromMatrix( vecYMap, true, "vecYMap" );
+//         CreateRasterFileFromMatrix( vecXMap, true, "vecXMap.tif" );
+//         CreateRasterFileFromMatrix( vecYMap, true, "vecYMap.tif" );
 //         createTifFromVecField( vecXMap, vecYMap, &edgeStrengthMap, 3, "vecMap" );
 //         te::rp::Matrix< double > vecMagMap;
 //         getMagnitude( vecXMap, vecYMap, vecMagMap );
-//         createTifFromMatrix( vecMagMap, true, "vecMagMap" );
+//         CreateRasterFileFromMatrix( vecMagMap, true, "vecMagMap.tif" );
 //       }
 
       if( m_inputParameters.m_enableProgress )
@@ -265,13 +266,13 @@ namespace te
         progressPtr.get(), diffusedVecXMap, diffusedVecYMap ),
         "Vector maps build error" ); 
 //       {
-//         createTifFromMatrix( diffusedVecXMap, true, "diffusedVecXMap" );
-//         createTifFromMatrix( diffusedVecYMap, true, "diffusedVecYMap" );
+//         CreateRasterFileFromMatrix( diffusedVecXMap, true, "diffusedVecXMap.tif" );
+//         CreateRasterFileFromMatrix( diffusedVecYMap, true, "diffusedVecYMap.tif" );
 //         createTifFromVecField( diffusedVecXMap, diffusedVecYMap, rasterDataPtr.get(), 
 //           4, "diffusedVecMap" );      
 //         te::rp::Matrix< double > diffusedVecXMagMap;
 //         getMagnitude( diffusedVecXMap, diffusedVecYMap, diffusedVecXMagMap );
-//         createTifFromMatrix( diffusedVecXMagMap, true, "diffusedVecXMagMap" );
+//         CreateRasterFileFromMatrix( diffusedVecXMagMap, true, "diffusedVecXMagMap.tif" );
 //       }
 
       vecXMap.clear();
@@ -290,7 +291,7 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( createSkeletonStrengthMap( diffusedVecXMap, 
         diffusedVecYMap, edgeStrengthMap, skelSMap ),
         "Skeleton strength map build error" );  
-//      createTifFromMatrix( skelSMap, true, "skelSMap" );
+//      CreateRasterFileFromMatrix( skelSMap, true, "skelSMap.tif" );
 
       diffusedVecXMap.reset();
       diffusedVecYMap.reset();
@@ -1054,25 +1055,25 @@ namespace te
 
 //         if( ( backgroundDataPtr != 0 ) && ( ( iteration < 10 ) || ( iteration % 100 == 0 ) ) )
 //         {
-//           createTifFromMatrix( *threadParams.m_inputBufXPtr, true,  
-//             boost::lexical_cast< std::string >( iteration ) + "_diffusedInX" );        
-//           createTifFromMatrix( *threadParams.m_inputBufYPtr, true,  
-//             boost::lexical_cast< std::string >( iteration ) + "_diffusedInY");          
+//           CreateRasterFileFromMatrix( *threadParams.m_inputBufXPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedInX.tif" );        
+//           CreateRasterFileFromMatrix( *threadParams.m_inputBufYPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedInY.tif");          
 //           createTifFromVecField( *threadParams.m_inputBufXPtr, *threadParams.m_inputBufYPtr, 
 //             backgroundDataPtr,  3,
 //             boost::lexical_cast< std::string >( iteration ) + "_diffusedInVecs");
-//           createTifFromMatrix( *threadParams.m_inputMagBufPtr, true,  
-//             boost::lexical_cast< std::string >( iteration ) + "_diffusedInMag");           
+//           CreateRasterFileFromMatrix( *threadParams.m_inputMagBufPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedInMag.tif");           
 //           
-//           createTifFromMatrix( *threadParams.m_outputBufXPtr, true,  
-//             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutX" );        
-//           createTifFromMatrix( *threadParams.m_outputBufYPtr, true,  
-//             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutY");          
+//           CreateRasterFileFromMatrix( *threadParams.m_outputBufXPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutX.tif" );        
+//           CreateRasterFileFromMatrix( *threadParams.m_outputBufYPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutY.tif");          
 //           createTifFromVecField( *threadParams.m_outputBufXPtr, *threadParams.m_outputBufYPtr, 
 //             backgroundDataPtr,  3,
 //             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutVecs");
-//           createTifFromMatrix( *threadParams.m_outputMagBufPtr, true,  
-//             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutMag");            
+//           CreateRasterFileFromMatrix( *threadParams.m_outputMagBufPtr, true,  
+//             boost::lexical_cast< std::string >( iteration ) + "_diffusedOutMag.tif");            
 //         }
 //         
 //         std::cout << std::endl << "currentIteration=" << iteration << std::endl;

@@ -53,6 +53,7 @@
 #include <ogrsf_frmts.h>
 
 // Boost
+#include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -65,7 +66,18 @@ std::string te::gdal::GetSubDataSetName(const std::string& name, const std::stri
   
   size_t first_colon, last_colon;
   
-  if (driverName == "NITF")
+  if (driverName == "HDF4")
+  {
+    // HDF4_SDS:subdataset_type:file_name:subdataset_index
+    std::vector<std::string> words;
+    boost::split(words, name, boost::is_any_of(":"), boost::token_compress_on);
+
+    std::string sdname = words[0] + ":" + words[1]  + ":" + words[3];
+    if (words.size()>4)
+      sdname = sdname + ":" + words[4];
+    return sdname;
+  }
+  else if (driverName == "NITF")
   {
     last_colon = name.find_last_of(":");
     
@@ -561,6 +573,9 @@ std::string te::gdal::GetDriverName(const std::string& name)
 
   if(ext == ".PNG")
     return std::string("PNG");
+  
+  if(ext == ".HDF")
+     return std::string("HDF4");
 
   return "";
 }

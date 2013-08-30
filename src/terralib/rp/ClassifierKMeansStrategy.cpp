@@ -32,7 +32,7 @@
 #include "../raster/RasterIterator.h"
 #include "ClassifierKMeansStrategy.h"
 #include "Macros.h"
-#include "Utils.h"
+#include "Functions.h"
 
 // STL
 #include <iostream>

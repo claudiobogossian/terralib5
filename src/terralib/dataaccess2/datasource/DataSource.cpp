@@ -57,11 +57,6 @@ void te::da::DataSource::setId(const std::string& id)
   m_id = id;
 }
 
-te::da::DataSourceCatalog* te::da::DataSource::getCatalog() const
-{
-  return 0;
-}
-
 std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name, te::common::TraverseType travType)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
@@ -150,7 +145,7 @@ std::size_t te::da::DataSource::getNumberOfDataSets()
   return t->getNumberOfDataSets();
 }
 
-te::da::DataSetTypePtr te::da::DataSource::getDataSetType(const std::string& name)
+std::auto_ptr<te::da::DataSetType> te::da::DataSource::getDataSetType(const std::string& name)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
   return t->getDataSetType(name);

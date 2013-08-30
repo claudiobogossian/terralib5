@@ -85,12 +85,10 @@ te::ado::Transactor::Transactor(DataSource* ds, Connection* conn)
     m_conn(conn),
     m_isInTransaction(false)
 {
-
 }
 
 te::ado::Transactor::~Transactor()
 {
-  delete m_conn;
 }
 
 te::da::DataSource* te::ado::Transactor::getDataSource() const
@@ -149,25 +147,19 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
   std::auto_ptr<std::string> sql(new std::string("SELECT * FROM "));
   *sql += name;
 
-  _RecordsetPtr result = m_conn->query(*sql);
+  _RecordsetPtr result = m_conn->query(*sql, connected);
 
-  ::PropertiesPtr props = result->GetProperties();
-
+  FieldsPtr props = result->GetFields();
   std::vector<int> types;
+  std::vector<std::string> names;
 
   for(long i = 0; i < props->GetCount(); ++i)
   {
     types.push_back(Convert2Terralib(props->GetItem(i)->GetType()));
+    names.push_back(std::string(props->GetItem(i)->GetName()));
   }
 
-  if(connected)
-    return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, sql.release()));
-  else
-  {
-    std::auto_ptr<te::da::DataSet> d(new DataSet(result, m_conn, sql.release()));
-
-    return std::auto_ptr<te::da::DataSet>(new te::mem::DataSet(*d));
-  }
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
@@ -192,16 +184,20 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
   *query += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
   *query += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
 
-  _RecordsetPtr result = m_conn->query(*query);
+  _RecordsetPtr result = m_conn->query(*query, connected);
 
-  if(connected)
-    return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, query.release()));
-  else
+  ::PropertiesPtr props = result->GetProperties();
+
+  std::vector<int> types;
+  std::vector<std::string> names;
+
+  for(long i = 0; i < props->GetCount(); ++i)
   {
-    std::auto_ptr<te::da::DataSet> d(new DataSet(result, m_conn, query.release()));
-
-    return std::auto_ptr<te::da::DataSet>(new te::mem::DataSet(*d));
+    types.push_back(Convert2Terralib(props->GetItem(i)->GetType()));
+    names.push_back(std::string(props->GetItem(i)->GetName()));
   }
+
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
@@ -240,9 +236,20 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& que
                                       te::common::TraverseType travType,
                                       bool connected)
 {
-  _RecordsetPtr result = m_conn->query(query);
+  _RecordsetPtr result = m_conn->query(query, connected);
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, new std::string(query)));
+  ::PropertiesPtr props = result->GetProperties();
+
+  std::vector<int> types;
+  std::vector<std::string> names;
+
+  for(long i = 0; i < props->GetCount(); ++i)
+  {
+    types.push_back(Convert2Terralib(props->GetItem(i)->GetType()));
+    names.push_back(std::string(props->GetItem(i)->GetName()));
+  }
+
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
 }
 
 void te::ado::Transactor::execute(const te::da::Query& command)
@@ -305,7 +312,7 @@ std::vector<std::string> te::ado::Transactor::getDataSetNames()
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     ADOX::TablesPtr tables = pCatalog->GetTables();
     
@@ -340,35 +347,25 @@ std::size_t te::ado::Transactor::getNumberOfDataSets()
   return getDataSetNames().size();
 }
 
-te::da::DataSetTypePtr te::ado::Transactor::getDataSetType(const std::string& name)
+std::auto_ptr<te::da::DataSetType> te::ado::Transactor::getDataSetType(const std::string& name)
 {
-  if(!dataSetExists(name))
-    throw Exception((boost::format(TR_ADO("The dataset \"%1%\" doesn't exist!")) % name).str());
-  
-  // Create the dataset type
-  te::da::DataSetTypePtr dt(new te::da::DataSetType(name));
+  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(name));
+
   dt->setTitle(name);
 
-  // Get the properties of the dataset and add them to its schema
-  boost::ptr_vector<te::dt::Property> properties = getProperties(name);
-  for(std::size_t i = 0; i < properties.size(); ++i)
-  {
-    te::dt::Property* p = properties[i].clone();
-    dt->add(p);
-  }
+  getProperties(dt.get());
 
-  // Get all the constraints of the dataset and load them to its schema
-  getPrimaryKey(dt);
-  getUniqueKeys(dt);
-  getIndexes(dt);
-  getCheckConstraints(dt);
+  getPrimaryKey(dt.get());
+  getUniqueKeys(dt.get());
+  getIndexes(dt.get());
+  getCheckConstraints(dt.get());
 
   return dt;
 }
 
 boost::ptr_vector<te::dt::Property> te::ado::Transactor::getProperties(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   std::vector<te::dt::Property*>& dtProperties = dt->getProperties();
 
@@ -385,14 +382,14 @@ std::auto_ptr<te::dt::Property> te::ado::Transactor::getProperty(const std::stri
   if(!propertyExists(datasetName, name))
     throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % name).str());
 
-  const te::da::DataSetTypePtr dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   return std::auto_ptr<te::dt::Property>(dt->getProperty(name)->clone());
 }
 
 std::auto_ptr<te::dt::Property> te::ado::Transactor::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   assert(propertyPos < dt->size());
 
@@ -401,7 +398,7 @@ std::auto_ptr<te::dt::Property> te::ado::Transactor::getProperty(const std::stri
 
 std::vector<std::string> te::ado::Transactor::getPropertyNames(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   std::vector<std::string> pNames;
 
@@ -415,14 +412,14 @@ std::vector<std::string> te::ado::Transactor::getPropertyNames(const std::string
 
 std::size_t te::ado::Transactor::getNumberOfProperties(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   return dt->size();
 }
 
 bool te::ado::Transactor::propertyExists(const std::string& datasetName, const std::string& name)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   std::vector<std::string> pNames = getPropertyNames(datasetName);
 
@@ -462,7 +459,7 @@ void te::ado::Transactor::dropProperty(const std::string& datasetName, const std
   if(!propertyExists(datasetName, name))
     throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no property with this name \"%2%\"!")) % datasetName % name).str());
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   te::dt::Property* p = dt->getProperty(name);
 
@@ -518,14 +515,14 @@ void te::ado::Transactor::renameProperty(const std::string& datasetName,
 
 std::auto_ptr<te::da::PrimaryKey> te::ado::Transactor::getPrimaryKey(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   return std::auto_ptr<te::da::PrimaryKey>(static_cast<te::da::PrimaryKey*>(dt->getPrimaryKey()->clone()));
 }
 
 bool te::ado::Transactor::primaryKeyExists(const std::string& datasetName, const std::string& name)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   if(dt->getPrimaryKey()->getName() == name)
     return true;
@@ -600,14 +597,14 @@ std::auto_ptr<te::da::ForeignKey> te::ado::Transactor::getForeignKey(const std::
   if(!foreignKeyExists(datasetName, name))
     throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no foreign key with this name \"%2%\"!")) % datasetName % name).str());
 
-  const te::da::DataSetTypePtr dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   return std::auto_ptr<te::da::ForeignKey>(static_cast<te::da::ForeignKey*>(dt->getForeignKey(name)->clone()));
 }
 
 std::vector<std::string> te::ado::Transactor::getForeignKeyNames(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   std::vector<std::string> fkNames;
 
@@ -621,7 +618,7 @@ std::vector<std::string> te::ado::Transactor::getForeignKeyNames(const std::stri
 
 bool te::ado::Transactor::foreignKeyExists(const std::string& datasetName, const std::string& name)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   std::vector<std::string> fkNames = getForeignKeyNames(datasetName);
 
@@ -701,14 +698,14 @@ std::auto_ptr<te::da::UniqueKey> te::ado::Transactor::getUniqueKey(const std::st
   if(!uniqueKeyExists(datasetName, name))
     throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no unique key with this name \"%2%\"!")) % datasetName % name).str());
 
-  const te::da::DataSetTypePtr dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   return std::auto_ptr<te::da::UniqueKey>(static_cast<te::da::UniqueKey*>(dt->getUniqueKey(name)->clone()));
 }
 
 std::vector<std::string> te::ado::Transactor::getUniqueKeyNames(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   std::vector<std::string> ukNames;
 
@@ -722,7 +719,7 @@ std::vector<std::string> te::ado::Transactor::getUniqueKeyNames(const std::strin
 
 bool te::ado::Transactor::uniqueKeyExists(const std::string& datasetName, const std::string& name)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   std::vector<std::string> ukNames = getUniqueKeyNames(datasetName);
 
@@ -798,14 +795,14 @@ std::auto_ptr<te::da::CheckConstraint> te::ado::Transactor::getCheckConstraint(c
   if(!checkConstraintExists(datasetName, name))
     throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no check constraint with this name \"%2%\"!")) % datasetName % name).str());
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   return std::auto_ptr<te::da::CheckConstraint>(static_cast<te::da::CheckConstraint*>(dt->getCheckConstraint(name)->clone()));
 }
 
 std::vector<std::string> te::ado::Transactor::getCheckConstraintNames(const std::string& datasetName)
 {
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   std::vector<std::string> ccNames;
 
@@ -842,7 +839,7 @@ std::auto_ptr<te::da::Index> te::ado::Transactor::getIndex(const std::string& da
   if(!indexExists(datasetName, name))
     throw Exception((boost::format(TR_ADO("The dataset \"%1%\" has no index with this name \"%2%\"!")) % datasetName % name).str());
 
-  const te::da::DataSetTypePtr dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   return std::auto_ptr<te::da::Index>(dt->getIndex(name)->clone());
 }
@@ -851,7 +848,7 @@ std::vector<std::string> te::ado::Transactor::getIndexNames(const std::string& d
 {
   std::vector<std::string> idxNames;
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   std::size_t numIdxs = dt->getNumberOfIndexes();
 
@@ -917,7 +914,7 @@ void te::ado::Transactor::dropIndex(const std::string& datasetName, const std::s
 
   execute(sql);
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
   te::da::Index* idx = dt->getIndex(idxName);
 
@@ -1243,7 +1240,7 @@ void te::ado::Transactor::optimize(const std::map<std::string, std::string>& opI
 
 }
 
-void te::ado::Transactor::getPrimaryKey(te::da::DataSetTypePtr& dt)
+void te::ado::Transactor::getPrimaryKey(te::da::DataSetType* dt)
 {
   _ConnectionPtr adoConn = m_conn->getConn();
 
@@ -1281,13 +1278,173 @@ void te::ado::Transactor::getPrimaryKey(te::da::DataSetTypePtr& dt)
 
   ADOX::ColumnsPtr cols = pk->GetColumns();
 
-  te::da::PrimaryKey* tlPk = new te::da::PrimaryKey(std::string(pk->GetName()), dt.get());
+  te::da::PrimaryKey* tlPk = new te::da::PrimaryKey(std::string(pk->GetName()), dt);
 
   for(long i = 0; i < cols->GetCount(); i++)
     tlPk->add(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
 }
 
-void te::ado::Transactor::getUniqueKeys(te::da::DataSetTypePtr& dt)
+void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
+{
+  std::string dsName = dt->getName();
+  int numCols = 0;
+  te::dt::Property* p = 0;
+
+  ADOX::DataTypeEnum colType;
+  std::map<int, std::string> colNamesMap;
+  std::map<int, ADOX::DataTypeEnum> colTypesMap;
+  std::map<int, int> charLengthMap;
+  std::map<int, bool> isRequiredMap;
+  std::map<int, bool> hasDefaultMap;
+  std::map<int, std::string> defaultValueMap;
+
+  _ConnectionPtr conn = 0;
+
+  try
+  {
+    HRESULT hr = S_OK;
+
+    conn = m_conn->getConn();
+
+    _RecordsetPtr rs = NULL;
+
+    TESTHR(rs.CreateInstance(__uuidof(Recordset)));
+
+    // Create a safearray which takes three elements,and pass it as 
+    // the second parameter in the OpenSchema method.
+    SAFEARRAY FAR* psa = NULL;
+    SAFEARRAYBOUND rgsabound;
+    _variant_t var[3];
+
+    _variant_t  Array;
+    rgsabound.lLbound = 0;
+    rgsabound.cElements = 3;
+    psa = SafeArrayCreate(VT_VARIANT, 1, &rgsabound);
+
+    var[0].vt = VT_EMPTY;
+    var[1].vt = VT_EMPTY;
+    var[2] = dsName.c_str();
+
+    // Fill the safe array.
+    for(LONG i = 0; i < 3; ++i)
+      hr = SafeArrayPutElement(psa, &i, &var[i]);
+
+    Array.vt = VT_ARRAY | VT_VARIANT;
+    Array.parray = psa;  
+
+    rs = conn->OpenSchema(adSchemaColumns, &Array, vtMissing);
+
+    int pos;
+    while (!(rs->EndOfFile))
+    {
+      // Get the column name
+      _bstr_t columnName = rs->Fields->GetItem("COLUMN_NAME")->Value;
+      pos = rs->Fields->GetItem("ORDINAL_POSITION")->Value;
+      pos = pos - 1;
+      colNamesMap[pos] = (LPCSTR)columnName;
+
+      // Get the data type of the column
+      colType = ADOX::DataTypeEnum(int(rs->Fields->GetItem("DATA_TYPE")->Value));
+      colTypesMap[pos] = colType;
+
+      // Get the length of the column
+      _variant_t length = rs->Fields->GetItem("CHARACTER_MAXIMUM_LENGTH")->Value;
+      int charLength = 0;
+      if(length.vt != VT_NULL)
+        charLength = (int)length.dblVal;
+      charLengthMap[pos] = charLength;
+
+      // Get the columns that accept null values
+      bool nullVal = rs->Fields->GetItem("IS_NULLABLE")->Value;
+      isRequiredMap[pos] = !nullVal;
+
+      // Get the columns that has default values
+      bool hasDefault = rs->Fields->GetItem("COLUMN_HASDEFAULT")->Value;
+      isRequiredMap[pos] = !hasDefault;
+
+      // Get the default value
+      std::string defaultStr;
+      if(hasDefault)
+      {
+        _bstr_t defaultValue = rs->Fields->GetItem("COLUMN_DEFAULT")->Value;
+         defaultStr = (LPSTR)defaultValue;
+      }
+        
+      defaultValueMap[pos] = defaultStr;
+
+      rs->MoveNext();
+      ++numCols;
+    }
+  }
+  catch (_com_error& e)
+  {
+    std::cout << "Error = " << (char*) e.ErrorMessage() << std::endl;
+  }
+
+  // Create the dataset properties
+  for(int i = 0; i < numCols; ++i)
+  {
+    ADOX::DataTypeEnum colType = colTypesMap[i];
+    std::string colName = colNamesMap[i];
+
+    switch(colType)
+    {
+      case ::adBoolean:
+        p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+        break;
+
+      case ::adVarWChar:
+      case ::adWChar:
+      case ::adVarChar:
+      case ::adLongVarChar:
+      case ::adLongVarWChar:
+      case ::adBSTR:
+      case ::adChar:
+        p = new te::dt::StringProperty(colName, (te::dt::StringType)Convert2Terralib(colType), charLengthMap[i]);
+        break;
+
+      case ADOX::adTinyInt:
+      case ADOX::adSmallInt:
+      case ADOX::adInteger:
+      case ADOX::adBigInt:
+      case ADOX::adSingle:
+      case ADOX::adDouble:
+      case ::adUnsignedBigInt:
+      case ::adUnsignedInt:
+      case ::adUnsignedSmallInt:
+      case ::adUnsignedTinyInt:
+      case ADOX::adLongVarBinary:
+      case ADOX::adBinary:
+      {
+        if(te::ado::IsGeomProperty(conn, dsName, colName))
+        {
+          p = new te::gm::GeometryProperty(colName, te::ado::GetSRID(conn, dsName, colName), te::ado::GetType(conn, dsName, colName));
+        }
+        else
+        {
+          p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+        }
+
+        break;
+      }
+
+      case ADOX::adDate:
+      case ADOX::adDBDate:
+      case ADOX::adDBTime:
+      case ADOX::adDBTimeStamp:
+        //p = new te::dt::DateTimeProperty(colName, te::dt::TIME_INSTANT);
+        break;
+          
+      default:
+        p = new te::dt::SimpleProperty(colName, te::dt::UNKNOWN_TYPE);
+        break;
+    }
+
+    dt->add(p);
+  }
+}
+
+void te::ado::Transactor::getUniqueKeys(te::da::DataSetType* dt)
 {
   _ConnectionPtr adoConn = m_conn->getConn();
 
@@ -1316,7 +1473,7 @@ void te::ado::Transactor::getUniqueKeys(te::da::DataSetTypePtr& dt)
     {
       ADOX::_KeyPtr uk = keys->GetItem(i);
       
-      te::da::UniqueKey* tlUk = new te::da::UniqueKey(std::string(uk->GetName()), dt.get());
+      te::da::UniqueKey* tlUk = new te::da::UniqueKey(std::string(uk->GetName()), dt);
 
       ADOX::ColumnsPtr cols = uk->GetColumns();
 
@@ -1326,7 +1483,7 @@ void te::ado::Transactor::getUniqueKeys(te::da::DataSetTypePtr& dt)
   } 
 }
 
-void te::ado::Transactor::getIndexes(te::da::DataSetTypePtr& dt)
+void te::ado::Transactor::getIndexes(te::da::DataSetType* dt)
 {
   _ConnectionPtr adoConn = m_conn->getConn();
 
@@ -1368,7 +1525,7 @@ void te::ado::Transactor::getIndexes(te::da::DataSetTypePtr& dt)
   } 
 }
 
-void te::ado::Transactor::getCheckConstraints(te::da::DataSetTypePtr& dt)
+void te::ado::Transactor::getCheckConstraints(te::da::DataSetType* dt)
 {
   _RecordsetPtr rs = NULL;
 
@@ -1392,7 +1549,7 @@ void te::ado::Transactor::getCheckConstraints(te::da::DataSetTypePtr& dt)
       
       if(constraintName.find(str) != std::string::npos)
       {
-        te::da::CheckConstraint* cc = new te::da::CheckConstraint(constraintName, dt.get());
+        te::da::CheckConstraint* cc = new te::da::CheckConstraint(constraintName, dt);
         std::string checkClause = (LPCSTR)(bstr_t)(rs->Fields->GetItem("CHECK_CLAUSE")->GetValue());
         cc->setExpression(checkClause);
       }
