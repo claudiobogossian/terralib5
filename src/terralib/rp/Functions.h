@@ -222,7 +222,46 @@ namespace te
       }
       
       return true;
-    };        
+    }; 
+    
+    /*! \brief Returns a vector os with band's names. */
+    TERPEXPORT std::vector<std::string> GetBandNames();
+
+    /*! \brief Returns the maximun and minimum reflectance values of a given sensor/band. */
+    TERPEXPORT std::pair<double, double> GetSpectralBandInfo(std::string bandName);
+
+    /*! \brief Returns the minimum reflectance value of a given sensor/band. */
+    TERPEXPORT double GetSpectralBandMin(std::string bandName);
+
+    /*! \brief Returns the maximum reflectance value of a given sensor/band. */
+    TERPEXPORT double GetSpectralBandMax(std::string bandName);
+
+    /*! \brief Returns the maximun and minimum digital numbers of a given sensor/band. */
+    TERPEXPORT std::pair<double, double> GetDigitalNumberBandInfo(std::string bandName);
+
+    /*! \brief Returns the maximum digital number of a given sensor/band. */
+    TERPEXPORT double GetDigitalNumberBandMax(std::string bandName);
+
+    /*!
+      \brief Normalizes one raster in a given interval.
+
+      \param inputRaster     The given raster.
+      \param nmin            The new minimum value (default = 0.0).
+      \param nmax            The new maximum value (default = 255.0).
+
+      \return true if normalization occurs and false otherwise.
+    */
+    TERPEXPORT bool NormalizeRaster(te::rst::Raster& inputRaster, double nmin = 0.0, double nmax = 255.0);
+
+    /*!
+      \brief Creates a vector of random positions (points) inside the raster.
+
+      \param inputRaster     The given raster.
+      \param numberOfPoints  The number of random positions to be created (default = 1000).
+
+      \return A vector of random positions (points).
+    */
+    TERPEXPORT std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints = 1000);    
 
   } // end namespace rp
 }   // end namespace te
