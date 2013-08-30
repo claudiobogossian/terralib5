@@ -32,7 +32,7 @@
 #include "../raster/Utils.h"
 #include "ClassifierEMStrategy.h"
 #include "Macros.h"
-#include "Utils.h"
+#include "Functions.h"
 
 // STL
 #include <complex>

@@ -31,7 +31,7 @@
 #include "Functions.h"
 #include "Macros.h"
 #include "MixtureModelPCAStrategy.h"
-#include "Utils.h"
+#include "Functions.h"
 
 // Boost
 #include <boost/numeric/ublas/io.hpp>
