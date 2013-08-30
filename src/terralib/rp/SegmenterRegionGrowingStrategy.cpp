@@ -214,6 +214,7 @@ namespace te
       TERP_DEBUG_TRUE_OR_THROW( otherCastPtr, "Invalid segment feature type" );  
         
       m_sums = otherCastPtr->m_sums;
+	  m_squaresSum = otherCastPtr->m_squaresSum;
       m_stdDev = otherCastPtr->m_stdDev;
       m_edgeLength = otherCastPtr->m_edgeLength;
       m_compactness = otherCastPtr->m_compactness;
