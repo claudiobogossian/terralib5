@@ -37,6 +37,8 @@
 #include "Matrix.h"
 #include "StrategyParameters.h"
 
+#include <map>
+
 namespace te
 {
   namespace rst
