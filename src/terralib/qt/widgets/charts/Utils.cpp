@@ -174,6 +174,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
      unsigned int nLin = raster->getNumberOfRows();
 
     te::common::TaskProgress task;
+    task.setTotalSteps(nCol * nLin);
     task.setMessage("Scatter creation");
 
       for (unsigned int c=0; c < nCol; ++c)
@@ -189,9 +190,6 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
               raster->getValue(c, r, val1, propX);
               raster->getValue(c, r, val2, propY);
 
-              std::cout << val1 << ", ";
-
-
               newScatter->addX(val1);
               newScatter->addY(val2);
 
@@ -205,7 +203,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
     int yType = dataset->getPropertyDataType(propY);
 
     te::common::TaskProgress task;
-
+    task.setTotalSteps(dataset->getNumProperties());
     task.setMessage("Scatter creation");
 
     while(dataset->moveNext())
@@ -295,6 +293,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
     te::common::TaskProgress task;
     task.setMessage("Histogram creation");
+    task.setTotalSteps((dataset->getNumProperties()) * 2);
 
      //Calculating the minimum and maximum values of the given property and adjusting the Histogram's interval.
      while(dataset->moveNext())
@@ -378,6 +377,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
   te::common::TaskProgress task;
   task.setMessage("Histogram creation");
+  task.setTotalSteps(dataset->getNumProperties());
 
   if(rpos != std::string::npos)
   {

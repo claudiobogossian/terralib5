@@ -63,7 +63,9 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   m_scatterStyle =  new te::qt::widgets::ScatterStyle();
   if(m_scatter->sizeX() > 100 || m_scatter->sizeY() > 100)
   {
-    setSymbol(new QwtSymbol( m_scatterStyle->getSymbol()->style(), m_scatterStyle->getSymbol()->brush(), m_scatterStyle->getSymbol()->pen(), QSize( 1, 1 )));
+    QwtSymbol* newSymbol =  m_scatterStyle->getSymbol(); 
+    newSymbol->setSize(QSize( 1, 1 ));
+    setSymbol(newSymbol);
   }
   else
   {
@@ -147,18 +149,12 @@ void te::qt::widgets::ScatterChart::setScatterStyle(te::qt::widgets::ScatterStyl
   delete m_scatterStyle;
   m_scatterStyle = newSymbol;
 
-  if(m_scatter->sizeX() > 100 || m_scatter->sizeY() > 100)
-  {
-    setSymbol(new QwtSymbol( m_scatterStyle->getSymbol()->style(), m_scatterStyle->getSymbol()->brush(), m_scatterStyle->getSymbol()->pen(), QSize( 1, 1 )));
-  }
-  else
-  {
-    setSymbol(m_scatterStyle->getSymbol());
-  }
+  setSymbol(m_scatterStyle->getSymbol());
 
   QwtSymbol* selSymbol = new QwtSymbol( symbol()->style(), symbol()->brush().color().darker (180 ), symbol()->pen().color().darker( 180), symbol()->size());
   QPixmap selPixmap = symbol()->pixmap();
   QColor selColor = selSymbol->brush().color();
+  selColor.setAlpha(100);
   selPixmap.fill(selColor);
   selSymbol->setPixmap(selPixmap);
   m_selection->setSymbol(selSymbol);
