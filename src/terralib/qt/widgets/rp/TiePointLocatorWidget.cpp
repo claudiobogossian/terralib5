@@ -199,11 +199,11 @@ void te::qt::widgets::TiePointLocatorWidget::getTiePoints( std::vector< te::gm::
 
     tp.first = itB->second.m_tiePoint.second;
 
-    te::gm::Coord2D c;
+    te::gm::Coord2D c = inputRst->getGrid()->gridToGeo(itB->second.m_tiePoint.first.x, itB->second.m_tiePoint.first.y);
 
-    converter->convert(itB->second.m_tiePoint.first.x, itB->second.m_tiePoint.first.y, c.x, c.y);
+    converter->convert(c.x, c.y, c.x, c.y);
 
-    tp.second = inputRst->getGrid()->gridToGeo(c.x, c.y);
+    tp.second = c;
 
     tiePoints.push_back(tp);
     ++itB;
