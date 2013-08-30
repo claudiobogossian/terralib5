@@ -49,40 +49,31 @@ te::dt::DateTimePeriod* te::dt::GetTemporalExtent(const te::dt::DateTime* t1, co
   }
 
   DateTimeType timeType = initialTime->getDateTimeType();
-    
-  te::dt::DateTimePeriod* output = 0;
+   
   switch(timeType)
   {
     case DATE:
-      output = new DatePeriod(*(dynamic_cast<const Date*>(initialTime)), *(dynamic_cast<const Date*>(finalTime)));
-      return output;
+      return new DatePeriod(*(dynamic_cast<const Date*>(initialTime)), *(dynamic_cast<const Date*>(finalTime)));
     case DATE_PERIOD:
-      output = new DatePeriod(dynamic_cast<const DatePeriod*>(initialTime)->getInitialDate(), dynamic_cast<const DatePeriod*>(finalTime)->getFinalDate());
-      return output; 
+     return new DatePeriod(dynamic_cast<const DatePeriod*>(initialTime)->getInitialDate(), dynamic_cast<const DatePeriod*>(finalTime)->getFinalDate());
     case TIME_INSTANT:
-      output = new TimePeriod(*(dynamic_cast<const TimeInstant*>(initialTime)), *(dynamic_cast<const TimeInstant*>(finalTime)));
-      return output;
+      return new TimePeriod(*(dynamic_cast<const TimeInstant*>(initialTime)), *(dynamic_cast<const TimeInstant*>(finalTime)));
     case TIME_PERIOD:
-      output = new TimePeriod(dynamic_cast<const TimePeriod*>(initialTime)->getInitialTimeInstant(), 
+      return new TimePeriod(dynamic_cast<const TimePeriod*>(initialTime)->getInitialTimeInstant(), 
                               dynamic_cast<const TimePeriod*>(finalTime)->getFinalTimeInstant());
-      return output;  
     case TIME_INSTANT_TZ:
-      output = new TimePeriodTZ(*(dynamic_cast<const TimeInstantTZ*>(initialTime)), *(dynamic_cast<const TimeInstantTZ*>(finalTime)));
-      return output;
+      return new TimePeriodTZ(*(dynamic_cast<const TimeInstantTZ*>(initialTime)), *(dynamic_cast<const TimeInstantTZ*>(finalTime)));
     case TIME_PERIOD_TZ:
-      output = new TimePeriodTZ(dynamic_cast<const TimePeriodTZ*>(initialTime)->getInitialTimeInstant(), 
+      return new TimePeriodTZ(dynamic_cast<const TimePeriodTZ*>(initialTime)->getInitialTimeInstant(), 
                                 dynamic_cast<const TimePeriodTZ*>(finalTime)->getFinalTimeInstant());
-      return output;  
     case ORDINAL_INSTANT:
-      output = new OrdinalPeriod(dynamic_cast<const OrdinalInstant*>(initialTime)->getTimeInstant(), 
+      return new OrdinalPeriod(dynamic_cast<const OrdinalInstant*>(initialTime)->getTimeInstant(), 
                                  dynamic_cast<const OrdinalInstant*>(finalTime)->getTimeInstant());
-      return output;
     case ORDINAL_PERIOD:
-      output = new OrdinalPeriod(dynamic_cast<const OrdinalPeriod*>(initialTime)->getInitialTime(), 
+      return new OrdinalPeriod(dynamic_cast<const OrdinalPeriod*>(initialTime)->getInitialTime(), 
                                  dynamic_cast<const OrdinalPeriod*>(finalTime)->getFinalTime());
-      return output;
     default:
-      return output;
+      return 0;
   }
 }    
 
