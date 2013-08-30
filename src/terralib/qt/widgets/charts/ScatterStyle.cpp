@@ -25,6 +25,7 @@
 
 //TerraLib
 #include "../../../se/Fill.h"
+#include "../../../se/ParameterValue.h"
 #include "../../../se/Graphic.h"
 #include "../../../se/Mark.h"
 #include "../../../se/Stroke.h"
@@ -34,11 +35,18 @@
 
 te::qt::widgets::ScatterStyle::ScatterStyle ()
 {
-  m_graphic  = new te::se::Graphic();
+  //COnfiguring a defulat mark
   te::se::Mark* mark = new te::se::Mark();
+  std::string* markName =  new std::string("circle");
   mark->setFill(new te::se::Fill());
   mark->setStroke(new te::se::Stroke());
+  mark->setWellKnownName(markName);
+
+//Configuring a default graphic
+  m_graphic  = new te::se::Graphic();
+  te::se::ParameterValue* grSize = new te::se::ParameterValue("8");
   m_graphic->add(mark);
+  m_graphic->setSize(grSize);
 }
 
 te::qt::widgets::ScatterStyle::~ScatterStyle()

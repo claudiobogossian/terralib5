@@ -145,6 +145,10 @@ namespace te
           */
           void setAdjustLayer(te::map::AbstractLayerPtr layer);
 
+          void getOutputSRID(int& srid);
+          
+          void getOutputResolution(double& resX, double& resY);
+
         protected:
 
           void refCoordPicked(double x, double y);
@@ -184,6 +188,8 @@ namespace te
           void onAdjPointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
 
           void onTiePointsUpdated();
+
+          void onSRIDPushButtonClicked();
 
         protected:
 

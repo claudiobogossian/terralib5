@@ -155,14 +155,20 @@ bool te::qt::widgets::RegisterWizard::execute()
   std::vector< te::gm::GTParameters::TiePoint > tiePoints;
   m_tiePointLocatorDialog->getWidget()->getTiePoints(tiePoints);
 
+  int srid;
+  m_tiePointLocatorDialog->getWidget()->getOutputSRID(srid);
+
+  double resX, resY;
+  m_tiePointLocatorDialog->getWidget()->getOutputResolution(resX, resY);
+
   //input parameters
   te::rp::Register::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRst;
   algoInputParams.m_inputRasterBands = vec;
   algoInputParams.m_tiePoints = tiePoints;
-  algoInputParams.m_outputSRID = m_refLayer->getSRID();
-  algoInputParams.m_outputResolutionX = inputRst->getGrid()->getResolutionX();
-  algoInputParams.m_outputResolutionY = inputRst->getGrid()->getResolutionY();
+  algoInputParams.m_outputSRID = srid;
+  algoInputParams.m_outputResolutionX = resX;
+  algoInputParams.m_outputResolutionY = resY;
 
   //output parameters
   te::rp::Register::OutputParameters algoOutputParams;

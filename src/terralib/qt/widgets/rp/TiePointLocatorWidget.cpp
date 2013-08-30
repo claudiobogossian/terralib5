@@ -37,8 +37,10 @@
 #include "../../../se/Mark.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/Utils.h"
+#include "../../../srs/Converter.h"
 #include "../../widgets/canvas/Canvas.h"
 #include "../../widgets/canvas/MapDisplay.h"
+#include "../../widgets/srs/SRSManagerDialog.h"
 #include "../../widgets/Utils.h"
 #include "RasterNavigatorWidget.h"
 #include "TiePointLocatorWidget.h"
@@ -94,6 +96,9 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   m_ui->m_x2LineEdit->setValidator(new QDoubleValidator(this));
   m_ui->m_y2LineEdit->setValidator(new QDoubleValidator(this));
 
+  m_ui->m_resXLineEdit->setValidator(new QDoubleValidator(this));
+  m_ui->m_resYLineEdit->setValidator(new QDoubleValidator(this));
+
   m_ui->m_selectAllToolButton->setIcon(QIcon::fromTheme("table-select"));
   m_ui->m_unselectAllToolButton->setIcon(QIcon::fromTheme("table-unselect"));
   m_ui->m_deleteSelectedToolButton->setIcon(QIcon::fromTheme("table-delete-select"));
@@ -111,6 +116,8 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   connect(m_ui->m_refreshToolButton, SIGNAL(clicked()), this, SLOT(onRefreshToolButtonClicked()));
   connect(m_ui->m_doneToolButton, SIGNAL(clicked()), this, SLOT(onDoneToolButtonClicked()));
   connect(m_ui->m_tiePointsTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onTiePointsTableWidgetItemSelectionChanged()));
+  connect(m_ui->m_sridPushButton, SIGNAL(clicked()), this, SLOT(onSRIDPushButtonClicked()));
+
 
 // connects
   connect(this, SIGNAL(tiePointsUpdated()), this, SLOT(onTiePointsUpdated()));
@@ -181,12 +188,22 @@ void te::qt::widgets::TiePointLocatorWidget::getTiePoints( std::vector< te::gm::
 
   tiePoints.reserve( m_tiePoints.size() );
 
+  // create a SRS converter
+  std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+  converter->setSourceSRID(m_refLayer->getSRID());
+  converter->setTargetSRID(m_ui->m_sridLineEdit->text().toInt());
+
   while( itB != itE )
   {
     te::gm::GTParameters::TiePoint tp;
 
     tp.first = itB->second.m_tiePoint.second;
-    tp.second = inputRst->getGrid()->gridToGeo(itB->second.m_tiePoint.first.x, itB->second.m_tiePoint.first.y);
+
+    te::gm::Coord2D c = inputRst->getGrid()->gridToGeo(itB->second.m_tiePoint.first.x, itB->second.m_tiePoint.first.y);
+
+    converter->convert(c.x, c.y, c.x, c.y);
+
+    tp.second = c;
 
     tiePoints.push_back(tp);
     ++itB;
@@ -226,6 +243,19 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceLayer(te::map::Abstract
 
       for(unsigned band1Idx = 0; band1Idx < inputRst->getNumberOfBands(); ++band1Idx)
         m_ui->m_referenceBand1ComboBox->addItem(QString::number(band1Idx));
+
+      
+      QString strSRID;
+      strSRID.setNum(m_refLayer->getSRID());
+      m_ui->m_inputSRIDLineEdit->setText(strSRID);
+
+      QString strResX;
+      strResX.setNum(inputRst->getGrid()->getResolutionX());
+      m_ui->m_inputResXLineEdit->setText(strResX);
+
+      QString strResY;
+      strResY.setNum(inputRst->getGrid()->getResolutionY());
+      m_ui->m_inputResYLineEdit->setText(strResY);
     }
   }
 
@@ -252,10 +282,33 @@ void te::qt::widgets::TiePointLocatorWidget::setAdjustLayer(te::map::AbstractLay
 
       for(unsigned band2Idx = 0; band2Idx < inputRst->getNumberOfBands(); ++band2Idx)
         m_ui->m_referenceBand2ComboBox->addItem(QString::number(band2Idx));
+
+      QString strSRID;
+      strSRID.setNum(m_adjLayer->getSRID());
+      m_ui->m_sridLineEdit->setText(strSRID);
+
+      QString strResX;
+      strResX.setNum(inputRst->getGrid()->getResolutionX());
+      m_ui->m_resXLineEdit->setText(strResX);
+
+      QString strResY;
+      strResY.setNum(inputRst->getGrid()->getResolutionY());
+      m_ui->m_resYLineEdit->setText(strResY);
     }
   }
 
   delete ds;
+}
+
+void te::qt::widgets::TiePointLocatorWidget::getOutputSRID(int& srid)
+{
+  srid = m_ui->m_sridLineEdit->text().toInt();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::getOutputResolution(double& resX, double& resY)
+{
+  resX = m_ui->m_resXLineEdit->text().toDouble();
+  resY = m_ui->m_resYLineEdit->text().toDouble();
 }
 
 void te::qt::widgets::TiePointLocatorWidget::refCoordPicked(double x, double y)
@@ -374,6 +427,9 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
 
   inputParams.m_inRaster1Bands.push_back(m_ui->m_referenceBand1ComboBox->currentText().toUInt());
   inputParams.m_inRaster2Bands.push_back(m_ui->m_referenceBand2ComboBox->currentText().toUInt());
+
+  inputParams.m_pixelSizeXRelation = inputRstRef->getGrid()->getResolutionX() / m_ui->m_resXLineEdit->text().toDouble();
+  inputParams.m_pixelSizeYRelation = inputRstRef->getGrid()->getResolutionY() / m_ui->m_resYLineEdit->text().toDouble();
 
   te::rp::TiePointsLocator::OutputParameters outputParams;
 
@@ -541,6 +597,21 @@ void te::qt::widgets::TiePointLocatorWidget::onAdjPointPicked(double x, double y
 void te::qt::widgets::TiePointLocatorWidget::onTiePointsUpdated()
 {
   drawTiePoints();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onSRIDPushButtonClicked()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+  
+  if(srsDialog.exec() == QDialog::Accepted)
+  {
+    std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
+
+    QString strSRID;
+    strSRID.setNum(srid.first);
+    m_ui->m_sridLineEdit->setText(strSRID);
+  }
 }
 
 void te::qt::widgets::TiePointLocatorWidget::tiePointsTableUpdate()

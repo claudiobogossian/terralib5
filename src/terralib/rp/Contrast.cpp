@@ -24,7 +24,6 @@
 
 #include "Contrast.h"
 
-#include "RasterHandler.h"
 #include "Functions.h"
 
 #include "../raster/Raster.h"

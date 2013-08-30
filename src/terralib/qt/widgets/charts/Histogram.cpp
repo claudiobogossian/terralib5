@@ -121,6 +121,16 @@ void te::qt::widgets::Histogram::insert(std::pair<te::dt::AbstractData*, unsigne
   m_values.insert(new_value);
 }
 
+void te::qt::widgets::Histogram::insert(te::dt::AbstractData* interval, unsigned int frequency, std::vector<te::da::ObjectId*> valuesOIds)
+{
+  insert(std::make_pair(interval, frequency), valuesOIds);
+}
+
+void te::qt::widgets::Histogram::insert(te::dt::AbstractData* interval, unsigned int frequency)
+{
+  insert(std::make_pair(interval, frequency));
+}
+
 te::da::ObjectIdSet* te::qt::widgets::Histogram::find(te::dt::AbstractData* interval)
 {
   typedef te::qt::widgets::IntervalToObjectIdSet::nth_index<0>::type::iterator itIntervalToObjectIdSet;

@@ -69,6 +69,37 @@ namespace te
     };
 
     /*!
+      \enum TemporalRelation
+
+      \brief Temporal relations between date and time (Source: Allen, 1991).
+    */
+    enum TemporalRelation
+    {  
+      UNKNOWN_TEMPORAL_RELATION = 0,  /*!< */
+      BEFORE = 1,                     /*!< */
+      AFTER = 2,                      /*!< */
+      DURING = 4,                     /*!< */
+      EQUALS = 8,                     /*!< */
+      MEETS = 16,                     /*!< */
+      OVERLAPS = 32,                  /*!< */
+      STARTS = 64,                    /*!< */
+      FINISHES = 128
+    };
+
+    /*!
+      \enum BasicRelation
+
+      \brief Relations between simple attribute values. 
+    */
+    enum BasicRelation
+    {  
+      UNKNOWN_BASIC_RELATION = 0, /*!< */
+      LESS = 1,                   /*!< */
+      MORE = 2,                   /*!< */
+      EQUAL = 4                   /*!< */
+    };
+
+    /*!
       \enum StringType
 
       \brief The subtype of string property.

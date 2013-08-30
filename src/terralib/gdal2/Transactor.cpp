@@ -25,6 +25,10 @@
 #include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess2/dataset/DataSetType.h"
+#include "../dataaccess2/query/DataSetName.h"
+#include "../dataaccess2/query/Select.h"
+#include "../dataaccess2/query/From.h"
+#include "../dataaccess2/query/FromItem.h"
 #include "../geometry/Envelope.h"
 #include "../raster/Grid.h"
 #include "../raster/Raster.h"
@@ -38,24 +42,21 @@
 // GDAL
 #include <gdal_priv.h>
 
+// STL
+#include <algorithm>
+
 // Boost
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
-void te::gdal::Transactor::getMetadata(const std::string& dsfullname, const std::string& dsname)
+std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getMetadata(const std::string& dsfullname)
 {
-  assert(!dsfullname.empty());
-  assert(!dsname.empty());
-  
   GDALDataset* ds = static_cast<GDALDataset*>(GDALOpen(dsfullname.c_str(), GA_ReadOnly));
   if (!ds)
-    return;
+    return std::auto_ptr<te::da::DataSetType>();
   
-  std::pair<std::string, std::string> p1 = std::make_pair(dsname,dsfullname);
-  m_locations.insert(p1);
-  
-  te::da::DataSetTypePtr ptr(new te::da::DataSetType(dsname, m_lastId));
-  ++m_lastId;
+  te::da::DataSetType* ptr = new te::da::DataSetType("", 0);
   ptr->setTitle("raster");
   
   te::rst::Grid* grid = GetGrid(ds);
@@ -73,12 +74,35 @@ void te::gdal::Transactor::getMetadata(const std::string& dsfullname, const std:
   
   GDALClose(ds);
   
-  std::pair<std::string, te::da::DataSetTypePtr> p2 = std::make_pair(dsname,ptr);
-  m_catalog.insert(p2);
+  return std::auto_ptr<te::da::DataSetType>(ptr);
 }
 
-void te::gdal::Transactor::init(const boost::filesystem::path& path)
+te::gdal::Transactor::Transactor(const std::string& accessInfo):
+  m_path (boost::filesystem::path(accessInfo))
 {
+}
+
+te::gdal::Transactor::~Transactor()
+{
+}
+
+te::da::DataSource* te::gdal::Transactor::getDataSource() const
+{
+  return 0;
+}
+
+bool te::gdal::Transactor::isDataSetNameValid(const std::string& datasetName)
+{
+  return true;
+}
+
+bool te::gdal::Transactor::isPropertyNameValid(const std::string& propertyName)
+{
+  return true;
+}
+
+void te::gdal::Transactor::getDataSetNames(const boost::filesystem::path& path, std::vector<std::string>& dsnames)
+{  
   if (boost::filesystem::is_regular_file(path))
   {
     GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
@@ -88,8 +112,8 @@ void te::gdal::Transactor::init(const boost::filesystem::path& path)
     char** subdatasets = gds->GetMetadata("SUBDATASETS");
     if(subdatasets == 0)
     {
+      dsnames.push_back(path.leaf().string());
       GDALClose(gds);
-      getMetadata(path.string(),path.leaf().string());
       return;
     }
     
@@ -103,81 +127,144 @@ void te::gdal::Transactor::init(const boost::filesystem::path& path)
       {
         std::string fullName = sdsmap.begin()->second;
         std::string subdsname = GetSubDataSetName(fullName, te::gdal::GetDriverName(path.string()));
-        getMetadata(fullName,subdsname);
+        dsnames.push_back(subdsname);
       }
     }
     GDALClose(gds);
   }
   else 
   {
-    for (boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
-      init(*it);
+    for (boost::filesystem::directory_iterator it(path), itEnd; it !=itEnd; ++it)
+      getDataSetNames(*it,dsnames);
   }
-}
-
-te::gdal::Transactor::Transactor(const std::string& accessInfo) :
-  m_lastId(0)
-{
-  m_path = boost::filesystem::path(accessInfo);
-  init(m_path);
-}
-
-te::gdal::Transactor::~Transactor()
-{
-  m_locations.clear();
-  m_catalog.clear();
-}
-
-te::da::DataSource* te::gdal::Transactor::getDataSource() const
-{
-  return 0;
-}
-
-// TODO: review
-bool te::gdal::Transactor::isDataSetNameValid(const std::string& datasetName)
-{
-  return true;
-}
-
-// TODO: review
-bool te::gdal::Transactor::isPropertyNameValid(const std::string& propertyName)
-{
-  return true;
+  return;
 }
 
 std::vector<std::string> te::gdal::Transactor::getDataSetNames()
 {
   std::vector<std::string> dsnames;
   
-  std::map<std::string, std::string>::const_iterator it = m_locations.begin();
-  while (it!=m_locations.end())
-  {
-    dsnames.push_back(it->first);
-    ++it;
-  }
+  getDataSetNames(m_path,dsnames);
   
   return dsnames;
 }
 
+bool te::gdal::Transactor::hasDataSets(const boost::filesystem::path& path)
+{
+  if (boost::filesystem::is_regular_file(path))
+  {
+    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
+    if (!gds)
+      return false;
+    GDALClose(gds);
+    return true;
+  }
+  else 
+  {
+    for (boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
+      if (hasDataSets(*it))
+        return true;
+  }
+  return false;
+}
+  
 bool te::gdal::Transactor::hasDataSets()
 {
-  return !m_locations.empty();
+  return hasDataSets(m_path);
+}
+
+size_t te::gdal::Transactor::getNumberOfDataSets(const boost::filesystem::path& path)
+{
+  size_t nds = 0;
+  if (boost::filesystem::is_regular_file(path))
+  {
+    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
+    if (!gds)
+      return 0;
+    char** subdatasets = gds->GetMetadata("SUBDATASETS");
+    if(subdatasets == 0)
+    {
+      GDALClose(gds);
+      return 1;
+    }
+    for(char** i = subdatasets; *i != 0; ++i, ++nds);
+    
+    GDALClose(gds);
+    return nds;
+  }
+  else 
+  {
+    for (boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
+      nds+= getNumberOfDataSets(*it);
+  }
+  return nds;
 }
 
 std::size_t te::gdal::Transactor::getNumberOfDataSets()
 {
-  return m_locations.size();
+  return getNumberOfDataSets(m_path);
 }
 
-te::da::DataSetTypePtr te::gdal::Transactor::getDataSetType(const std::string& name)
+std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const std::string& name)
 {
-  assert(!name.empty());
-  
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(name);
-  if(it != m_catalog.end())
-    return it->second;
-  
-  return boost::shared_ptr<te::da::DataSetType>();
+  return getDataSetType(m_path,name);
+}
+
+std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const boost::filesystem::path& path, const std::string& name)
+{
+  if (boost::filesystem::is_regular_file(path))
+  {
+    if (path.leaf() == name)
+    {
+      std::auto_ptr<te::da::DataSetType> dsty = getMetadata(path.string());
+      dsty->setName(name);
+      dsty->setTitle(path.string());
+      return dsty;
+    }
+    else
+    {
+      GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
+      if (!gds)
+        return std::auto_ptr<te::da::DataSetType>();
+    
+      char** subdatasets = gds->GetMetadata("SUBDATASETS");
+      if(subdatasets == 0)
+      {
+        GDALClose(gds);
+        return std::auto_ptr<te::da::DataSetType>();
+      }
+    
+      for(char** i = subdatasets; *i != 0; ++i)
+      {
+        std::map<std::string, std::string> sdsmap;
+        
+        te::common::ExtractKVP(std::string(*i), sdsmap);
+        
+        if(sdsmap.begin()->first.find("_NAME") != std::string::npos)
+        {
+          std::string subdsname = GetSubDataSetName(sdsmap.begin()->second, te::gdal::GetDriverName(path.string()));
+          if (subdsname == name) 
+          {
+            GDALClose(gds);
+            std::auto_ptr<te::da::DataSetType> dsty = getMetadata(sdsmap.begin()->second);
+            dsty->setName(name);
+            dsty->setTitle(sdsmap.begin()->second);
+            return dsty;            
+          }
+        }
+      }
+    }
+  }
+  else 
+  {
+    for (boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
+    {
+      std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(*it,name);
+      if (dsty.get())
+        return dsty;
+    }
+  }
+  return std::auto_ptr<te::da::DataSetType>();
 }
 
 
@@ -185,13 +272,12 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::strin
                                                                 te::common::TraverseType travType, 
                                                                 bool /*connected*/) 
 {
-  assert(!name.empty());
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(name);
+  if (!dsty.get())
+    return std::auto_ptr<te::da::DataSet>();
   
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(name);
-  if(it != m_catalog.end())
-    return std::auto_ptr<te::da::DataSet>(new DataSet(static_cast<te::da::DataSetType*>(it->second->clone()),m_locations[name])); 
-  
-  return std::auto_ptr<te::da::DataSet>();
+  std::string uri = dsty->getTitle();
+  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,uri)); 
 }
 
 std::auto_ptr<te::da::DataSet>  te::gdal::Transactor::getDataSet(const std::string& name,
@@ -225,130 +311,160 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::strin
 
 boost::ptr_vector<te::dt::Property> te::gdal::Transactor::getProperties(const std::string& datasetName)
 {
-  assert(!datasetName.empty());
-  
   boost::ptr_vector<te::dt::Property> properties;
   
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(datasetName);
-  if(it != m_catalog.end())
-  {
-    std::vector<te::dt::Property*>& dtProperties = it->second->getProperties();
-
-    for(std::size_t i = 0; i < dtProperties.size(); ++i)
-      properties.push_back(dtProperties[i]->clone());
-  }
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(datasetName);
+  if (!dsty.get())
+    return boost::ptr_vector<te::dt::Property>();
+  
+  const std::vector<te::dt::Property*>& props = dsty->getProperties();
+  for(std::size_t i = 0; i < props.size(); ++i)
+      properties.push_back(props[i]->clone());  
   
   return properties;
 }
 
 std::auto_ptr<te::dt::Property> te::gdal::Transactor::getProperty(const std::string& datasetName, const std::string& name)
 {
-  assert(!datasetName.empty());
+  boost::ptr_vector<te::dt::Property> properties;
   
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(datasetName);
-  if(it != m_catalog.end())
-    return std::auto_ptr<te::dt::Property>((it->second->getProperty(name))->clone());
-
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(datasetName);
+  if (!dsty.get())
+    return std::auto_ptr<te::dt::Property>();
+  
+  const std::vector<te::dt::Property*>& props = dsty->getProperties();
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    if (props[i]->getName() == name)
+      return std::auto_ptr<te::dt::Property>(props[i]->clone()); 
+  }
+  
   return std::auto_ptr<te::dt::Property>();
 }
 
 std::auto_ptr<te::dt::Property> te::gdal::Transactor::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
-  assert(!datasetName.empty());
+  boost::ptr_vector<te::dt::Property> properties;
   
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(datasetName);
-  if(it != m_catalog.end())
-    return std::auto_ptr<te::dt::Property>((it->second->getProperty(propertyPos))->clone());
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(datasetName);
+  if (!dsty.get())
+    return std::auto_ptr<te::dt::Property>();
+  
+  const std::vector<te::dt::Property*>& props = dsty->getProperties();
+  if (propertyPos<props.size() && propertyPos>0)
+    return std::auto_ptr<te::dt::Property>(props[propertyPos]->clone()); 
   
   return std::auto_ptr<te::dt::Property>();
 }
 
 std::vector<std::string> te::gdal::Transactor::getPropertyNames(const std::string& datasetName)
 {
-  assert(!datasetName.empty());
-  
   std::vector<std::string> pNames;
   
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(datasetName);
-  if(it != m_catalog.end())
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(datasetName);
+  if (dsty.get())
   {
-    for(std::size_t i = 0; i < it->second->size(); ++i)
-      pNames.push_back(it->second->getProperty(i)->getName());
-  }
-  
+    const std::vector<te::dt::Property*>& props = dsty->getProperties();
+    for(std::size_t i = 0; i < props.size(); ++i)
+      pNames.push_back(props[i]->getName());
+  }  
   return pNames;
 }
 
 std::size_t te::gdal::Transactor::getNumberOfProperties(const std::string& datasetName)
 {
-  assert(!datasetName.empty());
-  
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(datasetName);
-  if(it != m_catalog.end())
-    return it->second->size();
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(datasetName);
+  if (dsty.get())
+    return dsty->getProperties().size(); 
   
   return 0;
 }
 
 bool te::gdal::Transactor::propertyExists(const std::string& datasetName, const std::string& name)
 {
-  assert(!datasetName.empty());
-
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(datasetName);
-  if(it != m_catalog.end())
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(datasetName);
+  if (dsty.get())
   {
-    for(std::size_t i = 0; i < it->second->size(); ++i)
-      if (it->second->getProperty(i)->getName() == name)
+    const std::vector<te::dt::Property*>& props = dsty->getProperties();
+    for(std::size_t i = 0; i < props.size(); ++i)
+      if(props[i]->getName()==name)
         return true;
-  }
-  
+  } 
   return false;
 }
 
 bool te::gdal::Transactor::propertyExists(const std::string& datasetName, size_t propertyPos)
 {
-  assert(!datasetName.empty());
-  assert(propertyPos >=0 );
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(datasetName);
+  if (dsty.get())
+    return (propertyPos < dsty->getProperties().size() && propertyPos>0);
   
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_catalog.find(datasetName);
-  return (it != m_catalog.end() && propertyPos < it->second->size());
+  return false;
 }
 
-std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const te::da::Select& ,
+std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const te::da::Select& q,
                                      te::common::TraverseType , 
                                      bool)
 {
-  return std::auto_ptr<te::da::DataSet>();
+  const te::da::From& from = q.from();
+  
+  if (from.empty())
+    throw Exception(TR_GDAL("Can not process the Select object."));
+  
+  te::da::DataSetName* dsname = static_cast<te::da::DataSetName*>(from[0].clone());
+  
+  if (!dsname)
+    throw Exception(TR_GDAL("Can not process the Select object."));
+  
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(dsname->getName());
+  
+  delete dsname;
+  
+  if (!dsty.get())
+    throw Exception(TR_GDAL("Can not process the Select object: dataset not found."));
+
+  std::string uri = dsty->getTitle();
+  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,uri)); 
 }
 
-std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const std::string& ,
+std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const std::string& query,
                              te::common::TraverseType, 
                              bool)
 {
-  return std::auto_ptr<te::da::DataSet>();
+  std::vector<std::string> words;
+  std::string s;
+  boost::split(words, s, boost::is_any_of(", "), boost::token_compress_on);
+  
+  std::vector<std::string>::const_iterator it = std::find(words.begin(), words.end(), "FROM");
+  if (it== words.end())
+    it =  std::find(words.begin(), words.end(), "from");
+  
+  if (it== words.end())
+    throw Exception(TR_GDAL("Can not process the query expression."));
+  
+  ++it;
+  if (it== words.end())
+    throw Exception(TR_GDAL("Can not process the query expression."));  
+  
+  std::string dsname = *it;
+  
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(dsname);
+  if (!dsty.get())
+    throw Exception(TR_GDAL("Can not process the Select object: dataset not found."));
+  
+  std::string uri = dsty->getTitle();
+  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,uri));
 }
 
 bool te::gdal::Transactor::dataSetExists(const std::string& name)
 {
-  assert(!name.empty());
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(name);
   
-  std::map<std::string, std::string>::const_iterator it = m_locations.find(name);
-  if(it == m_locations.end())
-    return false;
-  
-  GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
-  
-  if(dataset == 0)
-    return false;
-  
-  GDALClose(dataset);
-  return true;
+  return dsty.get();
 }
 
 std::auto_ptr<te::gm::Envelope> te::gdal::Transactor::getExtent(const std::string& datasetName, std::size_t propertyPos)
 {
-  assert(!datasetName.empty());
-  
   std::auto_ptr<te::dt::Property> pp = getProperty(datasetName,propertyPos);
   
   if (pp.get())
@@ -358,11 +474,9 @@ std::auto_ptr<te::gm::Envelope> te::gdal::Transactor::getExtent(const std::strin
     return std::auto_ptr<te::gm::Envelope>(new te::gm::Envelope(env->getLowerLeftX(), env->getLowerLeftY(),
                                                                 env->getUpperRightX(), env->getUpperRightY()));
   }
-  
   return std::auto_ptr<te::gm::Envelope>();
 }
 
-//TODO review
 std::auto_ptr<te::gm::Envelope> te::gdal::Transactor::getExtent(const std::string& datasetName, const std::string& propertyName)
 {
   std::auto_ptr<te::dt::Property> pp = getProperty(datasetName,propertyName);
@@ -374,7 +488,6 @@ std::auto_ptr<te::gm::Envelope> te::gdal::Transactor::getExtent(const std::strin
     return std::auto_ptr<te::gm::Envelope>(new te::gm::Envelope(env->getLowerLeftX(), env->getLowerLeftY(),
                                                                 env->getUpperRightX(), env->getUpperRightY()));
   }
-  
   return std::auto_ptr<te::gm::Envelope>();
 }
 
@@ -386,103 +499,65 @@ void te::gdal::Transactor::createDataSet(te::da::DataSetType* dt,
       
   te::rst::RasterProperty* rstp = static_cast<te::rst::RasterProperty*>(dt->getProperty(0));
   
-  boost::filesystem::path mpath(m_path);
-  mpath /= dt->getName();
+  boost::filesystem::path paux(m_path);
+  paux /= dt->getName();
   
-  GDALDataset* gds = te::gdal::CreateRaster(mpath.string(), rstp->getGrid(), rstp->getBandProperties(),options);
+  if (boost::filesystem::exists(paux))
+    throw Exception((boost::format(TR_GDAL("The datasource already has a dataset with this name (\"%1%\")!")) % dt->getName()).str());
+  
+  GDALDataset* gds = te::gdal::CreateRaster(paux.string(), rstp->getGrid(), rstp->getBandProperties(),options);
   
   if (!gds)
     throw Exception(TR_GDAL("GDAL driver couldn't persist the raster file."));
   
   GDALClose(gds);
-  
-  dt->setId(m_locations.size());
-  
-  std::pair<std::string, te::da::DataSetTypePtr> p1 = std::make_pair(dt->getName(),dt);
-  m_catalog.insert(p1);
-  
-  std::pair<std::string, std::string> p2 = std::make_pair(dt->getName(),mpath.string());
-  m_locations.insert(p2);
 }
 
 void te::gdal::Transactor::cloneDataSet(const std::string& name,
                                         const std::string& cloneName,
                                         const std::map<std::string, std::string>& options)
 {
-  assert(!name.empty());
-  assert(!cloneName.empty());
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(name); 
   
-  std::map<std::string, std::string>::const_iterator it = m_locations.find(name);
-  if(it == m_locations.end())
-    return;
+  if (!dsty.get())
+    throw Exception(TR_GDAL("Dataset does not exist."));
+
+  boost::filesystem::path mpath(dsty->getTitle());
   
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it2 = m_catalog.find(name);
-  if(it2 == m_catalog.end())
-    return;
-  
-  boost::filesystem::path mpath(it->second);
-  if (!boost::filesystem::is_regular_file(m_path))
+  if (!boost::filesystem::is_regular_file(mpath))
     throw Exception(TR_GDAL("Can not clone a dataset that it is not a raster file."));
   
-  boost::filesystem::path newpath(m_path.parent_path() /= cloneName);
+  boost::filesystem::path newpath(mpath.parent_path() /= cloneName);
   boost::filesystem::copy_file(mpath, newpath);
   
-  te::da::DataSetType* newdst = new te::da::DataSetType(cloneName,m_lastId);
-  ++m_lastId;
-  newdst->setTitle(cloneName);
-  
-  std::pair<std::string, te::da::DataSetTypePtr> p1 = std::make_pair(cloneName,te::da::DataSetTypePtr(newdst));
-  m_catalog.insert(p1);
-  
-  std::pair<std::string, std::string> p2 = std::make_pair(cloneName,newpath.string());
-  m_locations.insert(p2);  
 }
 
 void te::gdal::Transactor::dropDataSet(const std::string& name)
 {
-  assert(!name.empty());
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(name); 
   
-  std::map<std::string, std::string>::iterator it = m_locations.find(name);
-  if(it == m_locations.end())
-    return;
+  if (!dsty.get())
+    throw Exception(TR_GDAL("Dataset does not exist."));
   
-  boost::filesystem::path mpath(it->second);
-  if (!boost::filesystem::is_regular_file(m_path))
-    throw Exception(TR_GDAL("Can not clone a dataset that it is not a raster file."));
+  boost::filesystem::path mpath(dsty->getTitle());
+  if (!boost::filesystem::is_regular_file(mpath))
+    throw Exception(TR_GDAL("Can not drop a dataset that it is not a raster file."));
 
-  boost::filesystem::remove(mpath.string());
-  m_locations.erase(it,it);
-  
-  std::map<std::string, te::da::DataSetTypePtr>::iterator it2 = m_catalog.find(name);
-  m_catalog.erase(it2,it2);  
+  boost::filesystem::remove(mpath.string());  
 }
 
 void te::gdal::Transactor::renameDataSet(const std::string& name, const std::string& newName)
 {
-  std::map<std::string, std::string>::iterator it = m_locations.find(name);
-  if(it == m_locations.end())
-    return;
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(name); 
   
-  std::map<std::string, te::da::DataSetTypePtr>::iterator it2 = m_catalog.find(name);
-  if(it2 == m_catalog.end())
-    return;
+  if (!dsty.get())
+    throw Exception(TR_GDAL("Dataset does not exist."));
   
-  boost::filesystem::path mpath(it->second);
-  if (!boost::filesystem::is_regular_file(m_path))
+  boost::filesystem::path mpath(dsty->getTitle());
+  if (!boost::filesystem::is_regular_file(mpath))
     throw Exception(TR_GDAL("Can not rename a dataset that it is not a raster file."));
   
-  boost::filesystem::path newpath(m_path.parent_path() /= newName);
+  boost::filesystem::path newpath(mpath.parent_path() /= newName);
   boost::filesystem::rename(mpath, newpath);
-  
-  m_locations.erase(it,it);
-  std::pair<std::string, std::string> p1 = std::make_pair(newName,newpath.string());
-  m_locations.insert(p1);
-  
-  te::da::DataSetType* newdst = new te::da::DataSetType(newName,it2->second->getId());
-  newdst->setTitle(newName);
-  
-  m_catalog.erase(it2,it2);
-  std::pair<std::string, te::da::DataSetTypePtr> p2 = std::make_pair(newName,te::da::DataSetTypePtr(newdst));
-  m_catalog.insert(p2);
 }
 
