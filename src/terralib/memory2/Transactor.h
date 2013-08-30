@@ -18,52 +18,46 @@
  */
 
 /*!
-  \file terralib/ado2/Transactor.h
+  \file terralib/memory/Transactor.h
 
-  \brief ????
+  \brief An implementation of the Transactor class for the Memory Data Access driver.
 */
 
-#ifndef __TERRALIB_ADO_INTERNAL_DATASOURCETRANSACTOR_H
-#define __TERRALIB_ADO_INTERNAL_DATASOURCETRANSACTOR_H
+#ifndef __TERRALIB_MEMORY_INTERNAL_TRANSACTOR_H
+#define __TERRALIB_MEMORY_INTERNAL_TRANSACTOR_H
 
 // TerraLib
 #include "../dataaccess2/datasource/DataSourceTransactor.h"
 #include "Config.h"
 #include "DataSource.h"
-//#include "../../common/Enums.h"
-//#include "../../geometry/Enums.h"
 
 // STL
 #include <memory>
-#include <map> //
-#include <string>//
-
-// Boost
-//#include <boost/cstdint.hpp>
-//#include <boost/noncopyable.hpp>
-//#include <boost/shared_ptr.hpp>
 
 namespace te
 {
-// Forward declarations
-  namespace dt { class Property; }//
-  namespace gm { class Envelope; class Geometry; }//
+  namespace mem
+  { 
+// Forward declaration
+    class DataSource;
+	
+    /*!
+      \class Transactor
 
-  namespace ado
-  {
-    // Forward declarations
-    class BatchExecutor;//
-    class DataSet;//
-    class Connection;
-    class ObjectIdSet;
-    class PreparedQuery;//
-    class Query;//
+      \brief An implementation of the Transactor class for the Memory Data Access driver.
 
-    class TEADOEXPORT Transactor : public te::da::DataSourceTransactor
+      \sa te::da::DataSourceTransactor
+    */
+    class TEMEMORYEXPORT Transactor : public te::da::DataSourceTransactor
     {
       public:
 
-        Transactor(DataSource* ds, Connection* conn);
+        /*!
+          \brief Constructor.
+
+          \param ds The Memory data source associated to this transactor.
+        */
+        Transactor(DataSource* ds);
 
         ~Transactor();
 
@@ -78,38 +72,33 @@ namespace te
         bool isInTransaction() const;
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
                                                   bool connected = false);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
                                                   bool connected = false);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                  bool connected = false);
-
-        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const ObjectIdSet* oids, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
                                                   bool connected = false);
 
         std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
                                              bool connected = false);
 
         std::auto_ptr<te::da::DataSet> query(const std::string& query,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
                                              bool connected = false);
 
         void execute(const te::da::Query& command);
-        
+
         void execute(const std::string& command);
 
         std::auto_ptr<te::da::PreparedQuery> getPrepared(const std::string& qName = std::string(""));
@@ -149,8 +138,8 @@ namespace te
         void dropProperty(const std::string& datasetName, const std::string& name);
 
         void renameProperty(const std::string& datasetName,
-                            const std::string& propertyName,
-                            const std::string& newPropertyName);
+                                    const std::string& propertyName,
+                                    const std::string& newPropertyName);
 
         std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
 
@@ -197,7 +186,7 @@ namespace te
         bool indexExists(const std::string& datasetName, const std::string& name);
 
         void addIndex(const std::string& datasetName, te::da::Index* idx,
-                      const std::map<std::string, std::string>& options); 
+                              const std::map<std::string, std::string>& options); 
 
         void dropIndex(const std::string& datasetName, const std::string& idxName);
 
@@ -215,7 +204,7 @@ namespace te
                                                   const std::string& propertyName);
 
         std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                  std::size_t propertyPos);
+                                                          std::size_t propertyPos);
 
         std::size_t getNumberOfItems(const std::string& datasetName);
 
@@ -249,28 +238,12 @@ namespace te
 
         void optimize(const std::map<std::string, std::string>& opInfo);
 
-      protected:
-
-        void getPrimaryKey(te::da::DataSetType* dt);
-
-        void getProperties(te::da::DataSetType* dt);
-
-        void getUniqueKeys(te::da::DataSetType* dt);
-
-        void getIndexes(te::da::DataSetType* dt);
-
-        void getCheckConstraints(te::da::DataSetType* dt);
-
       private:
 
-        DataSource* m_ds;       //!< The PostGIS data source associated to this transactor.
-        Connection* m_conn;     //!< The connection used by this transactor.
-        bool m_isInTransaction; //!< Tells if there is a transaction in progress.
-
+        DataSource* m_ds;                      //!< The associated data source.
     };
-  } // end namespace ado
+
+  } // end namespace mem
 }   // end namespace te
 
-#endif  // __TERRALIB_ADO_INTERNAL_DATASOURCETRANSACTOR_H
-
-
+#endif  // __TERRALIB_MEMORY_INTERNAL_TRANSACTOR_H

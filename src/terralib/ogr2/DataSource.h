@@ -108,7 +108,7 @@ namespace te
 
         std::vector<std::string> getDataSetNames();
 
-        te::da::DataSetTypePtr getDataSetType(const std::string& name);
+        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
         std::size_t getNumberOfProperties(const std::string& datasetName);
 

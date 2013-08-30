@@ -35,7 +35,7 @@
 #include "../../../rp/MixtureModel.h"
 #include "../../../rp/MixtureModelLinearStrategy.h"
 #include "../../../rp/MixtureModelPCAStrategy.h"
-#include "../../../rp/Utils.h"
+#include "../../../rp/Functions.h"
 #include "../../widgets/tools/CoordTracking.h"
 #include "../../widgets/tools/Pan.h"
 #include "../../widgets/tools/ZoomWheel.h"

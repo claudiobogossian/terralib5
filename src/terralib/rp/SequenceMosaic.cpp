@@ -26,6 +26,7 @@
 
 #include "RasterHandler.h"
 #include "Macros.h"
+#include "Functions.h"
 #include "../raster/Grid.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Utils.h"

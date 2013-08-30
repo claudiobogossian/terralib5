@@ -35,11 +35,11 @@
 #include "Connection.h"
 #include "DataSet.h"
 #include "DataSource.h"
-#include "DataSourceTransactor.h"
 #include "Exception.h"
 #include "EWKBWriter.h"
 #include "PreparedQuery.h"
 #include "SQLVisitor.h"
+#include "Transactor.h"
 #include "Utils.h"
 
 // STL
@@ -129,7 +129,7 @@ namespace te
   } // end namespace pgis
 }   // end namespace te
 
-te::pgis::PreparedQuery::PreparedQuery(DataSourceTransactor* t, const std::string& pqname)
+te::pgis::PreparedQuery::PreparedQuery(Transactor* t, const std::string& pqname)
   : m_t(t),
     m_conn(0),
     m_result(0),

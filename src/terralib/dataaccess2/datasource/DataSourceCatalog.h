@@ -488,6 +488,8 @@ namespace te
         static DataSetTypePtr sm_nullds;
     };
 
+    typedef boost::shared_ptr<DataSourceCatalog> DataSourceCatalogPtr;
+
     inline unsigned int DataSourceCatalog::getId() const
     {
       return m_id;
