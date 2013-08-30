@@ -119,6 +119,7 @@ set (
   ${SRCDIR}/widgets/canvas/EyeBirdMapDisplayWidget.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
   ${SRCDIR}/widgets/canvas/MultiThreadMapDisplay.h
+  ${SRCDIR}/widgets/canvas/OverlayWidget.h
   ${SRCDIR}/widgets/canvas/ZoomInMapDisplayWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
@@ -472,7 +473,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/query" MOC)
 file(
   GLOB FORMS
   ${SRCDIR}/widgets/*.ui
-  ${SRCDIR}/widgets/canvas/*.ui
+  ${SRCDIR}/widgets/canvas/ui/*.ui
   ${SRCDIR}/widgets/charts/ui/*.ui
  # ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
