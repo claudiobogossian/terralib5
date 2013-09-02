@@ -325,7 +325,7 @@ void te::stat::GetNumericStatisticalSummaryQuery( const te::map::AbstractLayerPt
       te::da::Select select(fields, from);
 
       std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
-      te::da::DataSet* dsQuery = dsTransactor->query(select);
+      std::auto_ptr<te::da::DataSet> dsQuery = dsTransactor->query(select);
       dsQuery->moveFirst();
 
       ss.m_minVal = boost::lexical_cast<double>(dsQuery->getAsString(0));
@@ -336,8 +336,6 @@ void te::stat::GetNumericStatisticalSummaryQuery( const te::map::AbstractLayerPt
       ss.m_stdDeviation = boost::lexical_cast<double>(dsQuery->getAsString(5));
       ss.m_variance = boost::lexical_cast<double>(dsQuery->getAsString(6));
       ss.m_amplitude = boost::lexical_cast<double>(dsQuery->getAsString(7));
-
-      delete dsQuery;
     }
   }
 }
