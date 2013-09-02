@@ -105,7 +105,7 @@ void te::gdal::Transactor::getDataSetNames(const boost::filesystem::path& path, 
 {  
   if (boost::filesystem::is_regular_file(path))
   {
-    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
+    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
     if (!gds)
       return;
     
@@ -153,7 +153,7 @@ bool te::gdal::Transactor::hasDataSets(const boost::filesystem::path& path)
 {
   if (boost::filesystem::is_regular_file(path))
   {
-    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
+    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
     if (!gds)
       return false;
     GDALClose(gds);
@@ -178,7 +178,7 @@ size_t te::gdal::Transactor::getNumberOfDataSets(const boost::filesystem::path& 
   size_t nds = 0;
   if (boost::filesystem::is_regular_file(path))
   {
-    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
+    GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
     if (!gds)
       return 0;
     char** subdatasets = gds->GetMetadata("SUBDATASETS");
@@ -227,7 +227,7 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const bo
     else
     {
       // it might be one of its sub datasets 
-      GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
+      GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
       if (!gds)
         return std::auto_ptr<te::da::DataSetType>();
       
@@ -465,7 +465,7 @@ bool te::gdal::Transactor::dataSetExists(const std::string& name)
 {
   std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(name);
   
-  return dsty.get();
+  return (dsty.get() != 0);
 }
 
 std::auto_ptr<te::gm::Envelope> te::gdal::Transactor::getExtent(const std::string& datasetName, std::size_t propertyPos)
