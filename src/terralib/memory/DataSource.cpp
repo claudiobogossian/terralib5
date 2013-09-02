@@ -423,8 +423,6 @@ void te::mem::DataSource::cloneDataSet(const std::string& name,
   m_schemas[cloneName] = clonedtp;
 
   // Clone the dataset
-  te::da::DataSetPtr& datasetp = m_datasets[name];
-
   te::da::DataSetPtr datasetClone(getDataSet(name).release());
 
   m_datasets[cloneName] = datasetClone;
@@ -478,7 +476,6 @@ void te::mem::DataSource::add(const std::string& datasetName,
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
-  te::da::DataSetPtr& dataset = m_datasets[datasetName];
   te::mem::DataSet* datasetp = static_cast<te::mem::DataSet*>(m_datasets[datasetName].get());
   datasetp->copy(*d, limit);
 }

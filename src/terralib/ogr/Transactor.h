@@ -30,8 +30,12 @@
 
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 
+#include <memory.h>
+
 namespace te
 {
+  namespace da { class DataSetType;}
+  
   namespace ogr
   {
     class DataSource;
@@ -102,7 +106,7 @@ namespace te
 
         std::size_t getNumberOfDataSets();
     
-        te::da::DataSetTypePtr getDataSetType(const std::string& name);
+        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
         boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
