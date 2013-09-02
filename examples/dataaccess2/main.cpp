@@ -22,6 +22,7 @@
 
   \brief A list of examples for the TerraLib DataAccess Module.
 */
+#include "DataAccessExamples.h"
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
@@ -69,15 +70,16 @@ int main(int /*argc*/, char** /*argv*/)
 
     LoadModules();
 
+//============Juan initial example==============
     std::map<std::string, std::string> connInfo;
 
-    //connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;
+    connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;
     //connInfo["PG_HOST"] = "localhost" ;
     connInfo["PG_PORT"] = "5433" ;
     connInfo["PG_USER"] = "postgres";
-    connInfo["PG_PASSWORD"] = "sitim110";
-    //connInfo["PG_DB_NAME"] = "terralib4";
-    connInfo["PG_DB_NAME"] = "Northwind";
+//    connInfo["PG_PASSWORD"] = "postgres";
+    connInfo["PG_DB_NAME"] = "terralib4";
+    //connInfo["PG_DB_NAME"] = "Northwind";
     connInfo["PG_CONNECT_TIMEOUT"] = "4";
 
     std::string dsType = "POSTGIS";
@@ -116,20 +118,45 @@ int main(int /*argc*/, char** /*argv*/)
 
     PrintDataSetNames(ds.get());
 
-    //std::string datasetName = "public.br_munic_2001";
-    std::string datasetName = "produtos";
+    std::string datasetName = "public.br_munic_2001";
 
     PrintDataSetPropertyNames(ds.get(), datasetName);
 
-    //PrintDataSetConstraints(ds.get(), datasetName);
-
-    //te::da::DataSetTypePtr dt = ds->getDataSetType(datasetName);
-
+    PrintDataSetConstraints(ds.get(), datasetName);
     ds->close();
 
     delete ds.release();
 
-    //dt.reset();
+//===========Juan end of example ======================
+
+    PostGISExample();
+
+    //ObjectId3(); //CAI...
+
+    //////OGRExampleRead();
+
+    //////ORGExampleWrite();
+
+    //////PostGISExample();
+    //////
+    //////QueryExample(); //??? tem codigo comentado - cai...
+
+    ////////QueryExample_2();
+
+    //////CopyingData();
+
+    //////GDALExample();
+
+    //////MemoryExample();
+
+    ////////PersistenceExample();
+
+    //////DataSetAdapter();
+
+    //////MySQLExample();
+
+    //////SQLiteExample();
+
 
     te::plugin::PluginManager::getInstance().unloadAll();
 
