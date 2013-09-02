@@ -60,45 +60,43 @@
 
 std::string te::gdal::GetSubDataSetName(const std::string& name, const std::string& driverName)
 {
-  std::string subDataSetName = "";
+  std::vector<std::string> words;
+  boost::split(words, name, boost::is_any_of(":"), boost::token_compress_on);
   
-  std::string filename = "";
+  if (words.size() < 3)
+    return name;
   
-  size_t first_colon, last_colon;
+  std::string sdname; 
   
   if (driverName == "HDF4")
   {
     // HDF4_SDS:subdataset_type:file_name:subdataset_index
-    std::vector<std::string> words;
-    boost::split(words, name, boost::is_any_of(":"), boost::token_compress_on);
-
-    std::string sdname = words[0] + ":" + words[1]  + ":" + words[3];
+    sdname = words[0] + ":" + words[1]  + ":" + words[3];
     if (words.size()>4)
       sdname = sdname + ":" + words[4];
     return sdname;
   }
   else if (driverName == "NITF")
   {
-    last_colon = name.find_last_of(":");
+    // NITF_IM:image_index:file_name
     
-    subDataSetName = name.substr(0,last_colon);
-    
-    filename = name.substr(last_colon+1);
+    sdname = words[0] + ":" + words[1];
   }
   else if (driverName == "netCDF")
   {
-    last_colon = name.find_last_of(":");
-    
-    subDataSetName = name.substr(last_colon+1);
-    
-    first_colon = name.find_first_of(":");    
-    filename = name.substr(first_colon+2,(last_colon-first_colon)-3);    
+    // NETCDF:filename:variable_name
+    sdname = words[0] + ":" + words[2];
+  }
+  else 
+  {
+    // From GDAL documentation: "Currently, drivers which support subdatasets are: ADRG, ECRGTOC, GEORASTER, 
+    // GTiff, HDF4, HDF5, netCDF, NITF, NTv2, OGDI, PDF, PostGISRaster, Rasterlite, 
+    // RPFTOC, RS2, WCS, and WMS.". It seems that the default format is  FORMAT:variable:file_name
+    for (size_t i=0; i<words.size()-1;++i)
+      sdname = sdname + ":" + words[i];
   }
   
-  boost::filesystem::path mpath(filename);
-  subDataSetName = subDataSetName + ":" +  mpath.leaf().string();
-  
-  return subDataSetName;
+  return sdname;
 }
 
 te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)

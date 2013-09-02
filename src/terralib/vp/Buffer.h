@@ -91,11 +91,19 @@ namespace te
                                     const std::string& outputLayerName,
                                     const std::string& outputArchive);
 
+    te::da::DataSetType* GetDataSetType(const te::map::AbstractLayerPtr& inputLayer,
+                                        const std::string& outputLayerName,
+                                        const int& bufferBoundariesRule,
+                                        const bool& copyInputColumns);
+    
     void SetBuffer(te::mem::DataSet* dataSet,
                   const std::map<te::gm::Geometry*, double>& distance,
-                  const int& bufferPolygonRule);
+                  const int& bufferPolygonRule,
+                  const int& levels);
 
-    void SetDissolvedBoundaries(te::mem::DataSet* dataset);
+    te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
+                                            te::mem::DataSet* dataset, 
+                                            const int& levels);
 
   } // end namespace vp
 }   // end namespace te

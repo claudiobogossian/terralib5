@@ -330,6 +330,8 @@ set (
   ${SRCDIR}/widgets/rp/ContrastWizardPage.h
   ${SRCDIR}/widgets/rp/MixtureModelDialog.h
   ${SRCDIR}/widgets/rp/MixtureModelWizardPage.h
+  ${SRCDIR}/widgets/rp/RasterHistogramDialog.h
+  ${SRCDIR}/widgets/rp/RasterHistogramWidget.h
   ${SRCDIR}/widgets/rp/RasterInfoWidget.h
   ${SRCDIR}/widgets/rp/RasterInfoWizardPage.h
   ${SRCDIR}/widgets/rp/RasterNavigatorDialog.h

@@ -270,11 +270,11 @@ namespace te
     private:
       
       boost::filesystem::path m_path;
-      std::auto_ptr<te::da::DataSetType> getMetadata(const std::string& dsfullname);  
+      std::auto_ptr<te::da::DataSetType> getType(const std::string& dsfullname);  
       void getDataSetNames(const boost::filesystem::path& path, std::vector<std::string>& dsnames);
       bool hasDataSets(const boost::filesystem::path& path);
       size_t getNumberOfDataSets(const boost::filesystem::path& path);
-      std::auto_ptr<te::da::DataSetType> getDataSetType(const boost::filesystem::path& path, const std::string& name);
+      std::auto_ptr<te::da::DataSetType> getDataSetType(const boost::filesystem::path& path, const std::string& name, std::string& uri);
       
     };
   } // end namespace gdal

@@ -180,9 +180,9 @@ void te::qt::widgets::VisualDockWidget::onSymbolizerSelected(te::se::Symbolizer*
 
     te::rst::RasterProperty* prop = te::da::GetFirstRasterProperty(ds);
 
-    m_visualWidget->setRasterSymbolizer(dynamic_cast<te::se::RasterSymbolizer*>(s));
-
     m_visualWidget->setBandProperty(prop->getBandProperties());
+
+    m_visualWidget->setRasterSymbolizer(dynamic_cast<te::se::RasterSymbolizer*>(s));
 
     delete ds;
   }

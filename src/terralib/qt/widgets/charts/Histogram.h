@@ -143,7 +143,7 @@ namespace te
            /*!
             \brief It adds a new value to the map containing the histogram values. 
 
-            \param new_value    The value that will be added. The AbstractData will represent the interval and the unsigned int wil represent that intervals frequency.
+            \param new_value    The value that will be added. The AbstractData represents the interval and the unsigned int represents that interval's frequency.
             \param valuesOIds   A vector containing all the ObjectIds contained by the interval
 
             \note It will take the ownwership of the given pointers
@@ -152,11 +152,31 @@ namespace te
 
            /*!
             \brief It adds a new value to the map containing the histogram values. 
-                   The AbstractData will represent the interval and the unsigned int wil represent that intervals frequency.
+                   The AbstractData represents the interval and the unsigned int represents that interval's frequency.
 
             \param new_value The value that will be added.
           */
           void insert(std::pair<te::dt::AbstractData*, unsigned int> new_value);
+
+           /*!
+            \brief It adds a new value to the map containing the histogram values. 
+
+            \param interval    The AbstractData that represents the interval and the unsigned int wil represent that intervals frequency.
+            \param frequency   The unsigned int that represents that interval's frequency.
+            \param valuesOIds  A vector containing all the ObjectIds contained by the interval
+
+            \note It will take the ownwership of the given pointers
+          */
+          void insert (te::dt::AbstractData* interval, unsigned int frequency, std::vector<te::da::ObjectId*> valuesOIds);
+
+           /*!
+            \brief It adds a new value to the map containing the histogram values. 
+                   The AbstractData will represent the interval and the unsigned int wil represent that intervals frequency.
+
+            \param interval   The AbstractData that represents the interval and the unsigned int wil represent that intervals frequency.
+            \param frequency  The unsigned int that represents that interval's frequency.
+          */
+          void insert(te::dt::AbstractData* interval, unsigned int frequency);
 
            /*!
             \brief It returns an ObjectIdSet containing all the object Ids associeted with the given interval.
