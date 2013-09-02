@@ -24,14 +24,35 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/GTFactory.h"
+#include "../../../maptools/MarkRendererManager.h"
+#include "../../../geometry/Point.h"
 #include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
+#include "../../../se/Fill.h"
+#include "../../../se/Mark.h"
+#include "../../../se/Stroke.h"
+#include "../../../se/Utils.h"
+#include "../../../srs/Converter.h"
+#include "../../widgets/canvas/Canvas.h"
+#include "../../widgets/canvas/MapDisplay.h"
+#include "../../widgets/srs/SRSManagerDialog.h"
+#include "../../widgets/Utils.h"
+#include "RasterNavigatorWidget.h"
 #include "TiePointLocatorWidget.h"
+#include "ui_RasterNavigatorWidgetForm.h"
 #include "ui_TiePointLocatorWidgetForm.h"
+
+// Qt
+#include <QGridLayout>
+#include <QMessageBox>
+#include <QPixmap>
+
+#define PATTERN_SIZE 18
 
 /* TiePointData Class*/
 
@@ -75,14 +96,16 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   m_ui->m_x2LineEdit->setValidator(new QDoubleValidator(this));
   m_ui->m_y2LineEdit->setValidator(new QDoubleValidator(this));
 
+  m_ui->m_resXLineEdit->setValidator(new QDoubleValidator(this));
+  m_ui->m_resYLineEdit->setValidator(new QDoubleValidator(this));
+
   m_ui->m_selectAllToolButton->setIcon(QIcon::fromTheme("table-select"));
   m_ui->m_unselectAllToolButton->setIcon(QIcon::fromTheme("table-unselect"));
   m_ui->m_deleteSelectedToolButton->setIcon(QIcon::fromTheme("table-delete-select"));
   m_ui->m_autoAcquireTiePointsToolButton->setIcon(QIcon::fromTheme("wand"));
   m_ui->m_addToolButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_refreshToolButton->setIcon(QIcon::fromTheme("view-refresh"));
-  m_ui->m_showRefNavTtoolButton->setIcon(QIcon::fromTheme("view-map-display-ref"));
-  m_ui->m_showAdjNavTtoolButton->setIcon(QIcon::fromTheme("view-map-display-adj"));
+  m_ui->m_doneToolButton->setIcon(QIcon::fromTheme("check"));
 
   //connects
   connect(m_ui->m_autoAcquireTiePointsToolButton, SIGNAL(clicked()), this, SLOT(onAutoAcquireTiePointsToolButtonClicked()));
@@ -91,13 +114,59 @@ te::qt::widgets::TiePointLocatorWidget::TiePointLocatorWidget(QWidget* parent, Q
   connect(m_ui->m_deleteSelectedToolButton, SIGNAL(clicked()), this, SLOT(onDeleteSelectedToolButtonClicked()));
   connect(m_ui->m_addToolButton, SIGNAL(clicked()), this, SLOT(onAddToolButtonClicked()));
   connect(m_ui->m_refreshToolButton, SIGNAL(clicked()), this, SLOT(onRefreshToolButtonClicked()));
+  connect(m_ui->m_doneToolButton, SIGNAL(clicked()), this, SLOT(onDoneToolButtonClicked()));
   connect(m_ui->m_tiePointsTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(onTiePointsTableWidgetItemSelectionChanged()));
+  connect(m_ui->m_sridPushButton, SIGNAL(clicked()), this, SLOT(onSRIDPushButtonClicked()));
+
+
+// connects
+  connect(this, SIGNAL(tiePointsUpdated()), this, SLOT(onTiePointsUpdated()));
+
+//define mark selected
+  te::se::Stroke* strokeSel = te::se::CreateStroke("#000000", "2");
+  te::se::Fill* fillSel = te::se::CreateFill("#0000FF", "1.0");
+  m_markSelected = te::se::CreateMark("circle", strokeSel, fillSel);
+
+  m_rgbaMarkSelected = te::map::MarkRendererManager::getInstance().render(m_markSelected, PATTERN_SIZE);
+
+  QPixmap markSelPix = getPixmap(m_rgbaMarkSelected);
+  setSelectedTiePointMarkLegend(markSelPix);
+
+//define mark unselected
+  te::se::Stroke* strokeUnsel = te::se::CreateStroke("#000000", "2");
+  te::se::Fill* fillUnsel = te::se::CreateFill("#000000", "1.0");
+  m_markUnselected = te::se::CreateMark("cross", strokeUnsel, fillUnsel);
+
+  m_rgbaMarkUnselected = te::map::MarkRendererManager::getInstance().render(m_markUnselected, PATTERN_SIZE);
+
+  QPixmap markPix = getPixmap(m_rgbaMarkUnselected);
+  setTiePointMarkLegend(markPix);
+
+//define mark reference
+  te::se::Stroke* strokeRef = te::se::CreateStroke("#000000", "2");
+  te::se::Fill* fillRef = te::se::CreateFill("#FF0000", "1.0");
+  m_markRef = te::se::CreateMark("x", strokeRef, fillRef);
+
+  m_rgbaMarkRef = te::map::MarkRendererManager::getInstance().render(m_markRef, PATTERN_SIZE);
+
+  QPixmap markRefPix = getPixmap(m_rgbaMarkRef);
+  setReferenceTiePointMarkLegend(markRefPix);
 
   startAdvancedOptions();
+
+  startUpNavigators();
 }
 
 te::qt::widgets::TiePointLocatorWidget::~TiePointLocatorWidget()
 {
+  te::common::Free(m_rgbaMarkSelected, PATTERN_SIZE);
+  delete m_markSelected;
+
+  te::common::Free(m_rgbaMarkUnselected, PATTERN_SIZE);
+  delete m_markUnselected;
+
+  te::common::Free(m_rgbaMarkRef, PATTERN_SIZE);
+  delete m_markRef;
 }
 
 Ui::TiePointLocatorWidgetForm* te::qt::widgets::TiePointLocatorWidget::getForm() const
@@ -109,15 +178,34 @@ void te::qt::widgets::TiePointLocatorWidget::getTiePoints( std::vector< te::gm::
 {
   tiePoints.clear();
 
+   std::auto_ptr<te::da::DataSet> ds(m_refLayer->getData());
+   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+   te::rst::Raster* inputRst = ds->getRaster(rpos);
+
   te::qt::widgets::TiePointData::TPContainerT::const_iterator itB = m_tiePoints.begin();
 
   const te::qt::widgets::TiePointData::TPContainerT::const_iterator itE = m_tiePoints.end();
 
   tiePoints.reserve( m_tiePoints.size() );
 
+  // create a SRS converter
+  std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+  converter->setSourceSRID(m_refLayer->getSRID());
+  converter->setTargetSRID(m_ui->m_sridLineEdit->text().toInt());
+
   while( itB != itE )
   {
-    tiePoints.push_back( itB->second.m_tiePoint );
+    te::gm::GTParameters::TiePoint tp;
+
+    tp.first = itB->second.m_tiePoint.second;
+
+    te::gm::Coord2D c = inputRst->getGrid()->gridToGeo(itB->second.m_tiePoint.first.x, itB->second.m_tiePoint.first.y);
+
+    converter->convert(c.x, c.y, c.x, c.y);
+
+    tp.second = c;
+
+    tiePoints.push_back(tp);
     ++itB;
   }
 }
@@ -138,6 +226,8 @@ bool te::qt::widgets::TiePointLocatorWidget::getReferenceTiePointCoord(te::gm::C
 void te::qt::widgets::TiePointLocatorWidget::setReferenceLayer(te::map::AbstractLayerPtr layer)
 {
   m_refLayer = layer;
+
+  m_refNavigator->set(layer);
   
   //list bands
   te::da::DataSet* ds = m_refLayer->getData();
@@ -153,6 +243,19 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceLayer(te::map::Abstract
 
       for(unsigned band1Idx = 0; band1Idx < inputRst->getNumberOfBands(); ++band1Idx)
         m_ui->m_referenceBand1ComboBox->addItem(QString::number(band1Idx));
+
+      
+      QString strSRID;
+      strSRID.setNum(m_refLayer->getSRID());
+      m_ui->m_inputSRIDLineEdit->setText(strSRID);
+
+      QString strResX;
+      strResX.setNum(inputRst->getGrid()->getResolutionX());
+      m_ui->m_inputResXLineEdit->setText(strResX);
+
+      QString strResY;
+      strResY.setNum(inputRst->getGrid()->getResolutionY());
+      m_ui->m_inputResYLineEdit->setText(strResY);
     }
   }
 
@@ -162,6 +265,8 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceLayer(te::map::Abstract
 void te::qt::widgets::TiePointLocatorWidget::setAdjustLayer(te::map::AbstractLayerPtr layer)
 {
   m_adjLayer = layer;
+
+  m_adjNavigator->set(layer);
 
   //list bands
   te::da::DataSet* ds = m_adjLayer->getData();
@@ -177,10 +282,33 @@ void te::qt::widgets::TiePointLocatorWidget::setAdjustLayer(te::map::AbstractLay
 
       for(unsigned band2Idx = 0; band2Idx < inputRst->getNumberOfBands(); ++band2Idx)
         m_ui->m_referenceBand2ComboBox->addItem(QString::number(band2Idx));
+
+      QString strSRID;
+      strSRID.setNum(m_adjLayer->getSRID());
+      m_ui->m_sridLineEdit->setText(strSRID);
+
+      QString strResX;
+      strResX.setNum(inputRst->getGrid()->getResolutionX());
+      m_ui->m_resXLineEdit->setText(strResX);
+
+      QString strResY;
+      strResY.setNum(inputRst->getGrid()->getResolutionY());
+      m_ui->m_resYLineEdit->setText(strResY);
     }
   }
 
   delete ds;
+}
+
+void te::qt::widgets::TiePointLocatorWidget::getOutputSRID(int& srid)
+{
+  srid = m_ui->m_sridLineEdit->text().toInt();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::getOutputResolution(double& resX, double& resY)
+{
+  resX = m_ui->m_resXLineEdit->text().toDouble();
+  resY = m_ui->m_resYLineEdit->text().toDouble();
 }
 
 void te::qt::widgets::TiePointLocatorWidget::refCoordPicked(double x, double y)
@@ -259,7 +387,111 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceTiePointMarkLegend(QPix
 
 void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonClicked()
 {
+  // creating the algorithm parameters
+  std::auto_ptr<te::da::DataSet> dsRef(m_refLayer->getData());
+  std::size_t rpos = te::da::GetFirstPropertyPos(dsRef.get(), te::dt::RASTER_TYPE);
+  te::rst::Raster* inputRstRef = dsRef->getRaster(rpos);
 
+  std::auto_ptr<te::da::DataSet> dsAdj(m_adjLayer->getData());
+  rpos = te::da::GetFirstPropertyPos(dsAdj.get(), te::dt::RASTER_TYPE);
+  te::rst::Raster* inputRstAdj = dsAdj->getRaster(rpos);
+
+  te::rp::TiePointsLocator::InputParameters inputParams = m_inputParameters;
+
+  inputParams.m_inRaster1Ptr = inputRstRef;
+  inputParams.m_inRaster2Ptr = inputRstAdj;
+
+  te::gm::Envelope auxEnvelope1(m_refNavigator->getCurrentExtent());
+  double r1LLX = 0;
+  double r1LLY = 0;
+  double r1URX = 0;
+  double r1URY = 0;
+  inputParams.m_inRaster1Ptr->getGrid()->geoToGrid(auxEnvelope1.m_llx, auxEnvelope1.m_lly, r1LLX, r1LLY);
+  inputParams.m_inRaster1Ptr->getGrid()->geoToGrid(auxEnvelope1.m_urx, auxEnvelope1.m_ury, r1URX, r1URY);
+  inputParams.m_raster1TargetAreaColStart = (unsigned int)std::max( 0.0, r1LLX);
+  inputParams.m_raster1TargetAreaLineStart = (unsigned int)std::max( 0.0, r1URY);
+  inputParams.m_raster1TargetAreaWidth = ((unsigned int)std::min((double)inputParams.m_inRaster1Ptr->getNumberOfColumns(), r1URX)) - inputParams.m_raster1TargetAreaColStart + 1;
+  inputParams.m_raster1TargetAreaHeight = ((unsigned int)std::min((double)inputParams.m_inRaster1Ptr->getNumberOfRows(), r1LLY)) - inputParams.m_raster1TargetAreaColStart + 1;
+
+  te::gm::Envelope auxEnvelope2(m_adjNavigator->getCurrentExtent());
+  double r2LLX = 0;
+  double r2LLY = 0;
+  double r2URX = 0;
+  double r2URY = 0;
+  inputParams.m_inRaster2Ptr->getGrid()->geoToGrid(auxEnvelope2.m_llx, auxEnvelope2.m_lly, r2LLX, r2LLY);
+  inputParams.m_inRaster2Ptr->getGrid()->geoToGrid(auxEnvelope2.m_urx, auxEnvelope2.m_ury, r2URX, r2URY);
+  inputParams.m_raster2TargetAreaColStart = (unsigned int)std::max( 0.0, r2LLX);
+  inputParams.m_raster2TargetAreaLineStart = (unsigned int)std::max( 0.0, r2URY);
+  inputParams.m_raster2TargetAreaWidth = ((unsigned int)std::min((double)inputParams.m_inRaster2Ptr->getNumberOfColumns(), r2URX)) - inputParams.m_raster2TargetAreaColStart + 1;
+  inputParams.m_raster2TargetAreaHeight = ((unsigned int)std::min((double)inputParams.m_inRaster2Ptr->getNumberOfRows(), r2LLY)) - inputParams.m_raster2TargetAreaColStart + 1;
+
+  inputParams.m_inRaster1Bands.push_back(m_ui->m_referenceBand1ComboBox->currentText().toUInt());
+  inputParams.m_inRaster2Bands.push_back(m_ui->m_referenceBand2ComboBox->currentText().toUInt());
+
+  inputParams.m_pixelSizeXRelation = inputRstRef->getGrid()->getResolutionX() / m_ui->m_resXLineEdit->text().toDouble();
+  inputParams.m_pixelSizeYRelation = inputRstRef->getGrid()->getResolutionY() / m_ui->m_resYLineEdit->text().toDouble();
+
+  te::rp::TiePointsLocator::OutputParameters outputParams;
+
+  // Looking for manual inserted tie-points for an initial estimate
+  unsigned int manualTPNumber = 0;
+  te::qt::widgets::TiePointData::TPContainerT::const_iterator itB = m_tiePoints.begin();
+  const  te::qt::widgets::TiePointData::TPContainerT::const_iterator itE = m_tiePoints.end();
+  double coordDiffX = 0;
+  double coordDiffY = 0;
+
+  while(itB != itE)
+  {
+    if(itB->second.m_acqType == TiePointData::ManualAcquisitionT)
+    {
+      coordDiffX = itB->second.m_tiePoint.first.x - itB->second.m_tiePoint.second.x;
+      coordDiffY = itB->second.m_tiePoint.first.y - itB->second.m_tiePoint.second.y;
+
+      inputParams.m_maxR1ToR2Offset += std::max(inputParams.m_maxR1ToR2Offset, (unsigned int)std::ceil(std::sqrt((coordDiffX * coordDiffX) +  (coordDiffY * coordDiffY))));
+      ++manualTPNumber;
+    }
+
+    ++itB;
+  }
+
+  if(inputParams.m_maxR1ToR2Offset > 0)
+  {
+    inputParams.m_maxR1ToR2Offset /= manualTPNumber;
+    inputParams.m_maxR1ToR2Offset += ((inputParams.m_maxR1ToR2Offset * 10) / 100);
+  }
+
+  // Executing the algorithm
+  try
+  {
+    te::rp::TiePointsLocator algorithmInstance;
+        
+    if(algorithmInstance.initialize(inputParams))
+    {
+      if(algorithmInstance.execute(outputParams))
+      {
+        const unsigned int tpsNmb = (unsigned int)outputParams.m_tiePoints.size();
+
+        if(tpsNmb)
+        {
+          TiePointData auxTpData;
+          auxTpData.m_acqType = TiePointData::AutomaticAcquisitionT;
+
+          for(unsigned int tpIdx = 0; tpIdx < tpsNmb; ++tpIdx)
+          {
+            ++m_tiePointIdCounter;
+            auxTpData.m_tiePoint = outputParams.m_tiePoints[ tpIdx ];
+            m_tiePoints[ m_tiePointIdCounter ] = auxTpData;
+          }
+
+          tiePointsTableUpdate();
+        }
+      }
+    }
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Error locating tie points."));
+  }
 }
 
 void te::qt::widgets::TiePointLocatorWidget::onSelectAllToolButtonClicked()
@@ -331,6 +563,55 @@ void te::qt::widgets::TiePointLocatorWidget::onRefreshToolButtonClicked()
   updateAdvancedOptions();
 
   tiePointsTableUpdate();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onDoneToolButtonClicked()
+{
+  emit doneAcquiredTiePoints();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onRefMapDisplayExtentChanged()
+{
+  drawTiePoints();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onAdjMapDisplayExtentChanged()
+{
+  drawTiePoints();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onRefPointPicked(double x, double y, te::qt::widgets::MapDisplay* map)
+{
+  refCoordPicked(x, y);
+
+  drawTiePoints();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onAdjPointPicked(double x, double y, te::qt::widgets::MapDisplay* map)
+{
+  adjCoordPicked(x, y);
+
+  drawTiePoints();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onTiePointsUpdated()
+{
+  drawTiePoints();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::onSRIDPushButtonClicked()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+  
+  if(srsDialog.exec() == QDialog::Accepted)
+  {
+    std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
+
+    QString strSRID;
+    strSRID.setNum(srid.first);
+    m_ui->m_sridLineEdit->setText(strSRID);
+  }
 }
 
 void te::qt::widgets::TiePointLocatorWidget::tiePointsTableUpdate()
@@ -632,4 +913,170 @@ void te::qt::widgets::TiePointLocatorWidget::updateAdvancedOptions()
   m_inputParameters.m_surfOctavesNumber = m_ui->m_octavesNumberLineEdit->text().toUInt();
 
   m_inputParameters.m_surfScalesNumber = m_ui->m_scalesNumberLineEdit->text().toUInt();
+}
+
+void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
+{
+  //reference
+  QGridLayout* layoutRef = new QGridLayout(m_ui->m_refWidget);
+
+  m_refNavigator = new te::qt::widgets::RasterNavigatorWidget(m_ui->m_refWidget);
+  m_refNavigator->setWindowTitle(tr("Referece"));
+  m_refNavigator->setMinimumSize(550, 400);
+  m_refNavigator->hideGeomTool(true);
+  m_refNavigator->hideInfoTool(true);
+
+  layoutRef->addWidget(m_refNavigator);
+  layoutRef->setContentsMargins(0,0,0,0);
+
+  connect(m_refNavigator, SIGNAL(mapDisplayExtentChanged()), this, SLOT(onRefMapDisplayExtentChanged()));
+  connect(m_refNavigator, SIGNAL(pointPicked(double, double, te::qt::widgets::MapDisplay*)), 
+    this, SLOT(onRefPointPicked(double, double, te::qt::widgets::MapDisplay*)));
+
+  //adjust
+  QGridLayout* layoutAdj = new QGridLayout(m_ui->m_adjWidget);
+
+  m_adjNavigator = new te::qt::widgets::RasterNavigatorWidget(m_ui->m_adjWidget);
+  m_adjNavigator->setWindowTitle(tr("Adjust"));
+  m_adjNavigator->setMinimumSize(550, 400);
+  m_adjNavigator->hideGeomTool(true);
+  m_adjNavigator->hideInfoTool(true);
+
+  layoutAdj->addWidget(m_adjNavigator);
+  layoutAdj->setContentsMargins(0,0,0,0);
+
+  connect(m_adjNavigator, SIGNAL(mapDisplayExtentChanged()), this, SLOT(onAdjMapDisplayExtentChanged()));
+  connect(m_adjNavigator, SIGNAL(pointPicked(double, double, te::qt::widgets::MapDisplay*)), 
+    this, SLOT(onAdjPointPicked(double, double, te::qt::widgets::MapDisplay*)));
+}
+
+void te::qt::widgets::TiePointLocatorWidget::drawTiePoints()
+{
+  //get displays
+  te::qt::widgets::MapDisplay* refDisplay = m_refNavigator->getDisplay();
+  refDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+  const te::gm::Envelope& refMapExt = refDisplay->getExtent();
+  te::qt::widgets::Canvas refCanvasInstance(refDisplay->getDraftPixmap());
+  refCanvasInstance.setWindow(refMapExt.m_llx, refMapExt.m_lly, refMapExt.m_urx, refMapExt.m_ury);
+
+  te::qt::widgets::MapDisplay* adjDisplay = m_adjNavigator->getDisplay();
+  adjDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+  const te::gm::Envelope& adjMapExt = adjDisplay->getExtent();
+  te::qt::widgets::Canvas adjCanvasInstance(adjDisplay->getDraftPixmap());
+  adjCanvasInstance.setWindow(adjMapExt.m_llx, adjMapExt.m_lly, adjMapExt.m_urx, adjMapExt.m_ury);
+
+  //get rasters
+  if(!m_refLayer.get())
+    return;
+  te::da::DataSet* dsRef = m_refLayer->getData();
+  if(!dsRef)
+    return;
+  std::size_t rpos = te::da::GetFirstPropertyPos(dsRef, te::dt::RASTER_TYPE);
+  te::rst::Raster* rstRef = dsRef->getRaster(rpos);
+  if(!rstRef)
+    return;
+
+  if(!m_adjLayer.get())
+    return;
+  te::da::DataSet* dsAdj = m_adjLayer->getData();
+  if(!dsAdj)
+    return;
+  rpos = te::da::GetFirstPropertyPos(dsAdj, te::dt::RASTER_TYPE);
+  te::rst::Raster* rstAdj = dsAdj->getRaster(rpos);
+  if(!rstAdj)
+    return;
+
+  //get tie points
+  te::qt::widgets::TiePointData::TPContainerT tpc = getTiePointContainer();
+
+  te::qt::widgets::TiePointData::TPContainerT::const_iterator it = tpc.begin();
+
+  while(it != tpc.end())
+  {
+    int id = it->first;
+
+    te::qt::widgets::TiePointData tpd = it->second;
+
+    refCanvasInstance.setPointColor(te::color::RGBAColor(0,0,0, TE_TRANSPARENT)); //GAMBI
+    adjCanvasInstance.setPointColor(te::color::RGBAColor(0,0,0, TE_TRANSPARENT)); //GAMBI
+
+    //configure mark
+    if(tpd.m_selected)
+    {
+      refCanvasInstance.setPointPattern(m_rgbaMarkSelected, PATTERN_SIZE, PATTERN_SIZE);
+      adjCanvasInstance.setPointPattern(m_rgbaMarkSelected, PATTERN_SIZE, PATTERN_SIZE);
+    }
+    else
+    {
+      refCanvasInstance.setPointPattern(m_rgbaMarkUnselected, PATTERN_SIZE, PATTERN_SIZE);
+      adjCanvasInstance.setPointPattern(m_rgbaMarkUnselected, PATTERN_SIZE, PATTERN_SIZE);
+    }
+
+    //ref coord
+    te::gm::Coord2D refCoord = it->second.m_tiePoint.first;
+    te::gm::Coord2D refGeoCoord;
+    rstRef->getGrid()->gridToGeo(refCoord.x, refCoord.y, refGeoCoord.x, refGeoCoord.y );
+
+    te::gm::Point refPoint(refGeoCoord.x, refGeoCoord.y);
+    refCanvasInstance.draw(&refPoint);
+
+    //ref text
+    QMatrix matrix = refCanvasInstance.getMatrix();
+    QPointF pointCanvas = matrix.map(QPointF(refGeoCoord.x, refGeoCoord.y));
+    pointCanvas.setX(pointCanvas.x() + 8);
+    QPointF pointGeo = matrix.inverted().map(pointCanvas);
+    refPoint.setX(pointGeo.x());
+    refPoint.setY(pointGeo.y());
+    refCanvasInstance.drawText(&refPoint, QString::number(id).toStdString());
+
+    //adj coord
+    te::gm::Coord2D adjCoord = it->second.m_tiePoint.second;
+    te::gm::Coord2D adjGeoCoord;
+    rstAdj->getGrid()->gridToGeo(adjCoord.x, adjCoord.y, adjGeoCoord.x, adjGeoCoord.y );
+
+    te::gm::Point adjPoint(adjGeoCoord.x, adjGeoCoord.y);
+    adjCanvasInstance.draw(&adjPoint);
+
+    //adj text
+    matrix = adjCanvasInstance.getMatrix();
+    pointCanvas = matrix.map(QPointF(adjGeoCoord.x, adjGeoCoord.y));
+    pointCanvas.setX(pointCanvas.x() + 8);
+    pointGeo = matrix.inverted().map(pointCanvas);
+    adjPoint.setX(pointGeo.x());
+    adjPoint.setY(pointGeo.y());
+    adjCanvasInstance.drawText(&adjPoint, QString::number(id).toStdString());
+
+    ++it;
+  }
+
+  //draw ref coord if exist
+  te::gm::Coord2D refCoord;
+  if(getReferenceTiePointCoord(refCoord))
+  {
+    refCanvasInstance.setPointColor(te::color::RGBAColor(0,0,0, TE_TRANSPARENT)); //GAMBI
+    refCanvasInstance.setPointPattern(m_rgbaMarkRef, PATTERN_SIZE, PATTERN_SIZE);
+
+    te::gm::Coord2D refGeoCoord;
+    rstRef->getGrid()->gridToGeo(refCoord.x, refCoord.y, refGeoCoord.x, refGeoCoord.y );
+
+    te::gm::Point refPoint(refGeoCoord.x, refGeoCoord.y);
+    refCanvasInstance.draw(&refPoint);
+  }
+
+  refDisplay->repaint();
+  adjDisplay->repaint();
+
+  delete dsRef;
+  delete dsAdj;
+}
+
+QPixmap te::qt::widgets::TiePointLocatorWidget::getPixmap(te::color::RGBAColor** rgba)
+{
+  QImage* img = te::qt::widgets::GetImage(rgba, PATTERN_SIZE, PATTERN_SIZE);
+
+  QPixmap p = QPixmap::fromImage(*img);
+
+  delete img;
+
+  return p;
 }

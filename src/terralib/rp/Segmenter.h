@@ -53,9 +53,6 @@ namespace te
   
   namespace rp
   {
-    // Forward declarations
-    class RasterHandler;
-    
     /*!
       \class Segmenter
       \brief Raster segmentation.

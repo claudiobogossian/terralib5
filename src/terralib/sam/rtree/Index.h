@@ -313,6 +313,7 @@ namespace te
       void Index<DATATYPE, MAXNODES, MINNODES>::insert(const te::gm::Envelope& mbr, const DATATYPE& data)
       {
         insert(mbr, data, &m_root, 0);
+        m_mbr.Union(mbr);
       }
 
       template<class DATATYPE, int MAXNODES, int MINNODES> inline

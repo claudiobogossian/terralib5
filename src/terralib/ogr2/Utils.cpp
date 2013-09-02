@@ -183,7 +183,7 @@ void te::ogr::Convert2TerraLib(OGRFeatureDefn* featDef,  te::da::DataSetType* dt
   if(ogrGeomType != wkbNone) // has geometry?
   {
     te::gm::GeomType geomType = Convert2TerraLib(ogrGeomType);
-    te::gm::GeometryProperty* geomPropertyType = new te::gm::GeometryProperty("geom", TE_UNKNOWN_SRS, geomType);
+    te::gm::GeometryProperty* geomPropertyType = new te::gm::GeometryProperty("OGR_GEOMETRY", TE_UNKNOWN_SRS, geomType);
     dt->add(geomPropertyType);
   }
 }

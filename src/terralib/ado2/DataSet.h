@@ -31,6 +31,7 @@
 #include "Config.h"
 
 // STL
+#include <memory>
 #include <vector>
 
 // ADO
@@ -67,7 +68,8 @@ namespace te
         */
         DataSet(_RecordsetPtr result,
                 Connection* conn,
-                std::string* sql);
+                const std::vector<int>& ptypes,
+                const std::vector<std::string>& pnames);
 
         /*! \brief The destructor will clear the internal ADO _RecordsetPtr. */
         ~DataSet();
@@ -75,8 +77,6 @@ namespace te
         te::common::TraverseType getTraverseType() const;
 
         te::common::AccessPolicy getAccessPolicy() const;
-
-        te::gm::Envelope* getExtent(std::size_t i);
 
         std::size_t getNumProperties() const;
 
@@ -88,7 +88,11 @@ namespace te
 
         bool isEmpty() const;
 
+        bool isConnected() const;
+
         std::size_t size() const;
+
+        std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i);
 
         bool moveNext();
 
@@ -112,56 +116,67 @@ namespace te
 
         char getChar(std::size_t i) const;
 
+        char getChar(const std::string& name) const;
+
         unsigned char getUChar(std::size_t i) const;
+
+        unsigned char getUChar(const std::string& name) const;
 
         boost::int16_t getInt16(std::size_t i) const;
 
+        boost::int16_t getInt16(const std::string& name) const;
+
         boost::int32_t getInt32(std::size_t i) const;
+
+        boost::int32_t getInt32(const std::string& name) const;
 
         boost::int64_t getInt64(std::size_t i) const;
 
+        boost::int64_t getInt64(const std::string& name) const;
+
         bool getBool(std::size_t i) const;
+
+        bool getBool(const std::string& name) const;
 
         float getFloat(std::size_t i) const;
 
+        float getFloat(const std::string& name) const;
+
         double getDouble(std::size_t i) const;
+
+        double getDouble(const std::string& name) const;
 
         std::string getNumeric(std::size_t i) const;
 
+        std::string getNumeric(const std::string& name) const;
+
         std::string getString(std::size_t i) const;
 
-        te::dt::ByteArray* getByteArray(std::size_t i) const;
+        std::string getString(const std::string& name) const;
 
-        te::gm::Geometry* getGeometry(std::size_t i) const;
+        std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const;
 
-        te::rst::Raster* getRaster(std::size_t i) const;
+        std::auto_ptr<te::dt::ByteArray> getByteArray(const std::string& name) const;
 
-        te::dt::DateTime* getDateTime(std::size_t i) const; 
+        std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const;
 
-        te::dt::Array* getArray(std::size_t i) const;
+        std::auto_ptr<te::gm::Geometry> getGeometry(const std::string& name) const;
+
+        std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
+
+        std::auto_ptr<te::rst::Raster> getRaster(const std::string& name) const;
+
+        std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const;
+
+        std::auto_ptr<te::dt::DateTime> getDateTime(const std::string& name) const;
+
+        std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
+
+        std::auto_ptr<te::dt::Array> getArray(const std::string& name) const;
 
         bool isNull(std::size_t i) const;
 
-        /** @name ADO Extended Methods
-         *  Methods that exists only in the ADO DataSet implementation.
-         */
-        //@{
-
-        /*!
-          \brief It returns the internal SQL used to generate the dataset.
-
-          \return The internal SQL used to generate the dataset.
-        */
-        std::string* getSQL() const { return m_sql; }
-
-        /*!
-          \brief It returns the internal ADO _RecordsetPtr.
-
-          \return The internal ADO _RecordsetPtr.
-        */
-        _RecordsetPtr getPGResult() const { return m_result; }
-
-        //@}
+        bool isNull(const std::string& name) const;
 
       protected:
 
@@ -172,6 +187,7 @@ namespace te
         Connection* m_conn;                 //!< The ADO connection associated to this dataset.
         std::string* m_sql;                 //!< The sql command that generated the dataset.
         std::vector<int> m_ptypes;          //!< The list of property types.
+        std::vector<std::string> m_pnames;  //!< The list of property names.
     };
 
   } // end namespace ado

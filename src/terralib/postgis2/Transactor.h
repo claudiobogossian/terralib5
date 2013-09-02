@@ -18,55 +18,48 @@
  */
 
 /*!
-  \file terralib/postgis/DataSourceTransactor.h
+  \file terralib/postgis/Transactor.h
 
-  \brief A DataSourceTransactor can be viewed as a connection to the data source for reading/writing things into it.
+  \brief A Transactor can be viewed as a connection to the data source for reading/writing things into it.
 */
 
-#ifndef __TERRALIB_POSTGIS_INTERNAL_DATASOURCETRANSACTOR_H
-#define __TERRALIB_POSTGIS_INTERNAL_DATASOURCETRANSACTOR_H
+#ifndef __TERRALIB_POSTGIS_INTERNAL_TRANSACTOR_H
+#define __TERRALIB_POSTGIS_INTERNAL_TRANSACTOR_H
 
 // TerraLib
 #include "../dataaccess2/datasource/DataSourceTransactor.h"
 #include "Config.h"
 #include "DataSource.h"
-//#include "../../common/Enums.h"
-//#include "../../geometry/Enums.h"
 
 // STL
 #include <memory>
-#include <map> //
-#include <string>//
-
-// Boost
-//#include <boost/cstdint.hpp>
-//#include <boost/noncopyable.hpp>
-//#include <boost/shared_ptr.hpp>
+#include <map>
+#include <string>
 
 namespace te
 {
 // Forward declarations
-  namespace dt { class Property; }//
-  namespace gm { class Envelope; class Geometry; }//
+  namespace dt { class Property; }
+  namespace gm { class Envelope; class Geometry; }
 
   namespace pgis
   {
     // Forward declarations
-    class BatchExecutor;//
-    class DataSet;//
+    class BatchExecutor;
+    class DataSet;
     class Connection;
     class ObjectIdSet;
-    class PreparedQuery;//
-    class Query;//
+    class PreparedQuery;
+    class Query;
 
     /*!
-      \class DataSourceTransactor
+      \class Transactor
 
       \brief The transactor class for the PostGIS driver.
 
       \sa te::da::DataSourceTransactor, DataSource
     */
-    class TEPGISEXPORT DataSourceTransactor : public te::da::DataSourceTransactor
+    class TEPGISEXPORT Transactor : public te::da::DataSourceTransactor
     {
       public:
 
@@ -76,12 +69,12 @@ namespace te
           \param ds    The PostGIS data source associated to this transactor.
           \param conn  An available connection that will be released when the transactor is deleted
         */
-        DataSourceTransactor(DataSource* ds, Connection* conn);
+        Transactor(DataSource* ds, Connection* conn);
 
         /*! \brief The destructor will automatically release the connection to the pool. */
-          ~DataSourceTransactor();
+          ~Transactor();
 
-        std::auto_ptr<te::da::DataSource> getDataSource() const;
+        te::da::DataSource* getDataSource() const;
 
         /*!
           \brief It returns the underlying connection.
@@ -101,30 +94,31 @@ namespace te
         bool isInTransaction() const;
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  bool connected = false);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  bool connected = false);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
-
-        //std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-        //                                          const ObjectIdSet* oids, 
-        //                                          te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  bool connected = false);
 
         std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
+                                             bool connected = false);
 
 
         std::auto_ptr<te::da::DataSet> query(const std::string& query, 
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
+                                             bool connected = false);
 
         void execute(const te::da::Query& command);
 
@@ -148,7 +142,7 @@ namespace te
 
         std::size_t getNumberOfDataSets();
 
-        te::da::DataSetTypePtr getDataSetType(const std::string& name);
+        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
         boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
@@ -436,7 +430,7 @@ namespace te
 
           \param dt The dataset schema.
         */
-        void getConstraints(te::da::DataSetTypePtr& dt);
+        void getConstraints(te::da::DataSetType* dt);
 
         /*!
           \brief It gets all the indexes of the given dataset and adds them to the dummy schema.
@@ -445,7 +439,7 @@ namespace te
 
           \return The dataset indexes.
         */
-        void getIndexes(te::da::DataSetTypePtr& dt);
+        void getIndexes(te::da::DataSetType* dt);
 
         /*!
           \brief It gets information about all the sequences in the datasource.
@@ -466,9 +460,9 @@ namespace te
         bool m_isInTransaction; //!< Tells if there is a transaction in progress.
     };
 
-    typedef boost::shared_ptr<DataSourceTransactor> DataSourceTransactorPtr;
+    typedef boost::shared_ptr<Transactor> TransactorPtr;
 
   } // end namespace da
 }   // end namespace te
 
-#endif  // __TERRALIB_POSTGIS_INTERNAL_DATASOURCETRANSACTOR_H
+#endif  // __TERRALIB_POSTGIS_INTERNAL_TRANSACTOR_H

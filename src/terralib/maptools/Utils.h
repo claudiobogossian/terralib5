@@ -29,6 +29,7 @@
 // TerraLib
 #include "../color/RGBAColor.h"
 #include "../geometry/Envelope.h"
+#include "../raster/Raster.h"
 #include "AbstractLayer.h"
 #include "Config.h"
 
@@ -54,7 +55,6 @@ namespace te
 
   namespace rst
   {
-    class Raster;
     class RasterProperty;
   }
 
@@ -280,6 +280,9 @@ namespace te
                                 const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
 
     TEMAPEXPORT void DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,
+                                const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
+
+    TEMAPEXPORT te::rst::Raster* GetExtentRaster(te::rst::Raster* raster, int w, int h, const te::gm::Envelope& bbox, int bboxSRID,
                                 const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
 
   } // end namespace map

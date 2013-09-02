@@ -46,6 +46,7 @@ namespace te
   {
     namespace widgets
     {
+      class RasterHistogramDialog;
       class RasterNavigatorWidget;
 
       /*!
@@ -80,16 +81,14 @@ namespace te
 
         protected:
 
-          void apply();
-
-          void preview();
-
           void fillContrastTypes();
 
           void listBands();
 
 
         protected slots:
+
+          void apply();
 
           void showHistogram();
 
@@ -99,6 +98,7 @@ namespace te
 
           std::auto_ptr<Ui::ContrastWizardPageForm> m_ui;
           std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
+          std::auto_ptr<te::qt::widgets::RasterHistogramDialog> m_histogramDlg;
 
           te::map::AbstractLayerPtr m_layer;
       };

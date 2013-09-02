@@ -101,7 +101,7 @@ namespace te
       m_geometryFilterAssurance = 0.5;
       m_moravecGaussianFilterIterations = 1;
       m_surfScalesNumber = 4;
-      m_surfOctavesNumber = 3;
+      m_surfOctavesNumber = 2;
       m_rastersRescaleFactor = 1.0;
       m_surfMaxNormEuclideanDist = 0.5;
       m_moravecMinAbsCorrelation = 0.5;
@@ -404,7 +404,7 @@ namespace te
       InterestPointsSetT raster1InterestPoints;
       {
         // loading raster data
-        std::vector< boost::shared_ptr< DoublesMatrix > > raster1Data;
+        std::vector< boost::shared_ptr< FloatsMatrix > > raster1Data;
         UCharsMatrix maskRaster1Data;
         
         TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
@@ -419,6 +419,7 @@ namespace te
           raster1XRescFact,
           raster1YRescFact,
           m_inputParameters.m_interpMethod,
+          20,
           raster1Data,
           maskRaster1Data ),
           "Error loading raster data" );        
@@ -433,11 +434,11 @@ namespace te
 
         if( m_inputParameters.m_moravecGaussianFilterIterations )
         {
-          boost::shared_ptr< DoublesMatrix > tempMatrix( 
-            new DoublesMatrix );
+          boost::shared_ptr< FloatsMatrix > tempMatrix( 
+            new FloatsMatrix );
           TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
             0, 0,
-            DoublesMatrix::AutoMemPol, 
+            FloatsMatrix::AutoMemPol, 
             raster1Data[ 0 ]->getMaxTmpFileSize(),
             raster1Data[ 0 ]->getMaxMemPercentUsage() ),
             "Cannot allocate image matrix" );
@@ -507,7 +508,7 @@ namespace te
       {
         // Loading image data
       
-        std::vector< boost::shared_ptr< DoublesMatrix > > raster2Data;
+        std::vector< boost::shared_ptr< FloatsMatrix > > raster2Data;
         UCharsMatrix maskRaster2Data;
                      
         TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
@@ -522,6 +523,7 @@ namespace te
           raster2XRescFact,
           raster2YRescFact,
           m_inputParameters.m_interpMethod,
+          20,
           raster2Data,
           maskRaster2Data ),
           "Error loading raster data" );
@@ -536,13 +538,13 @@ namespace te
         
         if( m_inputParameters.m_moravecGaussianFilterIterations )
         {
-          boost::shared_ptr< DoublesMatrix > tempMatrix( 
-            new DoublesMatrix );
+          boost::shared_ptr< FloatsMatrix > tempMatrix( 
+            new FloatsMatrix );
           
-          tempMatrix.reset( new DoublesMatrix );
+          tempMatrix.reset( new FloatsMatrix );
           TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
             0, 0,
-            DoublesMatrix::AutoMemPol, 
+            FloatsMatrix::AutoMemPol, 
             raster2Data[ 0 ]->getMaxTmpFileSize(),
             raster2Data[ 0 ]->getMaxMemPercentUsage() ),
             "Cannot allocate image matrix" );          
@@ -639,11 +641,11 @@ namespace te
         MatchedInterestPointsSetT::const_iterator itB = matchedPoints.begin();
         const MatchedInterestPointsSetT::const_iterator itE = matchedPoints.end();
         
-        double minFeatureValue1 = DBL_MAX;
-        double maxFeatureValue1 = (-1.0) * DBL_MAX;
-        double minFeatureValue2 = DBL_MAX;
-        double maxFeatureValue2 = (-1.0) * DBL_MAX;
-        double tiePointWeight = 0;
+        float minFeatureValue1 = FLT_MAX;
+        float maxFeatureValue1 = (-1.0) * FLT_MAX;
+        float minFeatureValue2 = FLT_MAX;
+        float maxFeatureValue2 = (-1.0) * FLT_MAX;
+        float tiePointWeight = 0;
         
         itB = matchedPoints.begin();
         while( itB != itE )
@@ -661,8 +663,8 @@ namespace te
           ++itB;
         }        
        
-        double featureValue1Range = maxFeatureValue1 - minFeatureValue1;
-        double featureValue2Range = maxFeatureValue2 - minFeatureValue2;
+        float featureValue1Range = maxFeatureValue1 - minFeatureValue1;
+        float featureValue2Range = maxFeatureValue2 - minFeatureValue2;
         
         if( ( featureValue1Range == 0.0 ) || ( featureValue2Range == 0.0 ) )
         {
@@ -701,7 +703,7 @@ namespace te
                 )
               );            
             
-            tiePointsWeights.push_back( tiePointWeight );
+            tiePointsWeights.push_back( (double)tiePointWeight );
               
             outParamsPtr->m_tiePoints.push_back( auxTP );
             
@@ -742,7 +744,7 @@ namespace te
       {
         // Loading image data
         
-        std::vector< boost::shared_ptr< DoublesMatrix > > rasterData;
+        std::vector< boost::shared_ptr< FloatsMatrix > > rasterData;
         UCharsMatrix maskRasterData;
         
         TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
@@ -757,6 +759,7 @@ namespace te
           raster1XRescFact,
           raster1YRescFact,
           m_inputParameters.m_interpMethod,
+          20,
           rasterData,
           maskRasterData ),
           "Error loading raster data" );
@@ -772,7 +775,7 @@ namespace te
         
         // Creating the integral image
         
-        DoublesMatrix integralRaster;
+        FloatsMatrix integralRaster;
         
         TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(rasterData[ 0 ]), 
           integralRaster ), "Integral image creation error" );
@@ -828,7 +831,7 @@ namespace te
       {
         // Loading image data
         
-        std::vector< boost::shared_ptr< DoublesMatrix > > rasterData;
+        std::vector< boost::shared_ptr< FloatsMatrix > > rasterData;
         UCharsMatrix maskRasterData;
         
         TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
@@ -843,6 +846,7 @@ namespace te
           raster2XRescFact,
           raster2YRescFact,
           m_inputParameters.m_interpMethod,
+          20,
           rasterData,
           maskRasterData ),
           "Error loading raster data" );
@@ -858,7 +862,7 @@ namespace te
         
         // Creating the integral image
         
-        DoublesMatrix integralRaster;
+        FloatsMatrix integralRaster;
         
         TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(rasterData[ 0 ]), 
           integralRaster ), "Integral image creation error" );
@@ -1002,10 +1006,10 @@ namespace te
         te::gm::GTParameters::TiePoint auxTP;
         MatchedInterestPointsSetT::const_iterator itB = matchedPoints.begin();
         const MatchedInterestPointsSetT::const_iterator itE = matchedPoints.end();
-        double minFeature1P1 = DBL_MAX;
-        double maxFeature1P1 = (-1.0) * DBL_MAX;
-        double minFeature1P2 = DBL_MAX;
-        double maxFeature1P2 = (-1.0) * DBL_MAX;
+        float minFeature1P1 = FLT_MAX;
+        float maxFeature1P1 = (-1.0) * FLT_MAX;
+        float minFeature1P2 = FLT_MAX;
+        float maxFeature1P2 = (-1.0) * FLT_MAX;
         
         while( itB != itE )
         {
@@ -1022,8 +1026,8 @@ namespace te
           ++itB;
         }
         
-        double feature1P1Range = maxFeature1P1 - minFeature1P1;
-        double feature1P2Range = maxFeature1P2 - minFeature1P2;
+        float feature1P1Range = maxFeature1P1 - minFeature1P1;
+        float feature1P2Range = maxFeature1P2 - minFeature1P2;
 
         if( ( feature1P1Range == 0.0 ) || ( feature1P2Range == 0.0 ) )
         {
@@ -1044,7 +1048,7 @@ namespace te
             auxTP.second.y = ( itB->m_point2.m_y / raster2YRescFact ) + 
               (double)m_inputParameters.m_raster2TargetAreaLineStart;   
             
-            tiePointsWeights.push_back( 
+            tiePointsWeights.push_back( (double)
                 (
                   ( 2.0 * itB->m_feature )
                   +
@@ -1132,8 +1136,8 @@ namespace te
         m_inputParameters.m_inRaster1Ptr->getNumberOfColumns(),
         "Invalid m_raster1TargetAreaColStart" );     
         
-      if( m_inputParameters.m_raster1TargetAreaWidth ||
-        m_inputParameters.m_raster1TargetAreaHeight )
+      if( ( m_inputParameters.m_raster1TargetAreaWidth != 0 ) ||
+        ( m_inputParameters.m_raster1TargetAreaHeight != 0 ) )
       {
         m_inputParameters.m_raster1TargetAreaWidth = std::min( 
           m_inputParameters.m_raster1TargetAreaWidth,
@@ -1208,8 +1212,8 @@ namespace te
         m_inputParameters.m_inRaster2Ptr->getNumberOfColumns(),
         "Invalid m_raster2TargetAreaColStart" );
         
-      if( m_inputParameters.m_raster2TargetAreaWidth ||
-        m_inputParameters.m_raster2TargetAreaHeight )
+      if( ( m_inputParameters.m_raster2TargetAreaWidth != 0 )||
+        ( m_inputParameters.m_raster2TargetAreaHeight != 0 ) )
       {
         m_inputParameters.m_raster2TargetAreaWidth = std::min( 
           m_inputParameters.m_raster2TargetAreaWidth,
@@ -1262,11 +1266,40 @@ namespace te
           
           if( m_inputParameters.m_maxTiePoints == 0 )
           {
-            m_inputParameters.m_maxTiePoints = 
-              ( m_inputParameters.m_raster1TargetAreaWidth *
-              m_inputParameters.m_raster1TargetAreaWidth ) /
-              ( m_inputParameters.m_moravecCorrelationWindowWidth *
+            const unsigned int maxRastersArea = 
+              std::max(
+                ( m_inputParameters.m_raster1TargetAreaWidth *
+                  m_inputParameters.m_raster1TargetAreaHeight )
+                ,
+                ( m_inputParameters.m_raster2TargetAreaWidth *
+                  m_inputParameters.m_raster2TargetAreaHeight )                       
+              );
+            const unsigned maxWindowSize = std::max( 
+               m_inputParameters.m_moravecCorrelationWindowWidth,
+               m_inputParameters.m_moravecWindowWidth );
+            m_inputParameters.m_maxTiePoints = maxRastersArea / 
+              ( 4 * maxWindowSize * maxWindowSize );
+              
+            // This is because the features and matching matrix bare eing allocated in RAM
+            const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+            const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+            const double totalVMem = (double)te::common::GetTotalVirtualMemory();
+            const double freeVMem = 0.4 * std::min( totalPhysMem, ( totalVMem - usedVMem ) );                
+            const double featSize = (double)( m_inputParameters.m_moravecCorrelationWindowWidth *
               m_inputParameters.m_moravecCorrelationWindowWidth );
+            m_inputParameters.m_maxTiePoints = 
+              std::min(
+                m_inputParameters.m_maxTiePoints,
+                (unsigned int)(
+                  std::sqrt(
+                    ( featSize * featSize )
+                    +
+                    ( freeVMem / (double)( sizeof( float ) ) )
+                  )
+                  -
+                  featSize
+                )
+              );
           }
           
           break;
@@ -1282,14 +1315,38 @@ namespace te
           
           if( m_inputParameters.m_maxTiePoints == 0 )
           {
+            const unsigned int maxRastersArea = 
+              std::max(
+                ( m_inputParameters.m_raster1TargetAreaWidth *
+                  m_inputParameters.m_raster1TargetAreaHeight )
+                ,
+                ( m_inputParameters.m_raster2TargetAreaWidth *
+                  m_inputParameters.m_raster2TargetAreaHeight )                       
+              );
+            const unsigned int maxWindowSize = getSurfFilterSize( 
+              m_inputParameters.m_surfOctavesNumber - 1, 
+              m_inputParameters.m_surfScalesNumber - 1 );
+            m_inputParameters.m_maxTiePoints = maxRastersArea /            
+              ( 4 * maxWindowSize * maxWindowSize );
+
+            // This is because the features and matching matrix bare eing allocated in RAM
+            const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+            const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+            const double totalVMem = (double)te::common::GetTotalVirtualMemory();
+            const double freeVMem = 0.4 * std::min( totalPhysMem, ( totalVMem - usedVMem ) );                
             m_inputParameters.m_maxTiePoints = 
-              getSurfFilterSize( m_inputParameters.m_surfOctavesNumber - 1, 
-                 m_inputParameters.m_surfScalesNumber - 1 );
-            m_inputParameters.m_maxTiePoints = 
-              ( m_inputParameters.m_raster1TargetAreaWidth *
-              m_inputParameters.m_raster1TargetAreaWidth ) /            
-              ( m_inputParameters.m_maxTiePoints *
-              m_inputParameters.m_maxTiePoints );
+              std::min(
+                m_inputParameters.m_maxTiePoints,
+                (unsigned int)(
+                  std::sqrt(
+                    ( 65 * 65 )
+                    +
+                    ( freeVMem / (double)( sizeof( float ) ) )
+                  )
+                  -
+                  65
+                )
+              );            
           }            
             
           break;
@@ -1372,7 +1429,8 @@ namespace te
       const double rescaleFactorX,
       const double rescaleFactorY,
       const te::rst::Interpolator::Method rasterInterpMethod,
-      std::vector< boost::shared_ptr< DoublesMatrix > >& loadedRasterData,
+      const unsigned char maxMemPercentUsage, 
+      std::vector< boost::shared_ptr< FloatsMatrix > >& loadedRasterData,
       UCharsMatrix& loadedMaskRasterData )
     {
       // Allocating the output matrixes
@@ -1383,31 +1441,33 @@ namespace te
         ((double)rasterTargetAreaWidth) * rescaleFactorX );
     
       {
-        const unsigned int maxMemPercentUsagePerMatrix = MAX( 1u, 25 / 
-          ( 1 + ((unsigned int)rasterBands.size()) ) );
-        const unsigned long int  maxTmpFileSize = 2ul * 1024ul * 1024ul * 1024ul;
-        
-        if( maskRasterPtr ) 
-        {
-          TERP_TRUE_OR_RETURN_FALSE( loadedMaskRasterData.reset( 
-            rescaledNLines, rescaledNCols,
-            UCharsMatrix::AutoMemPol, maxTmpFileSize,
-            maxMemPercentUsagePerMatrix ),
-            "Cannot allocate image 1 mask matrix" );          
-        }
+        unsigned char maxMemPercentUsagePerMatrix = MAX( 1u, maxMemPercentUsage / 
+          ( 
+            ( maskRasterPtr ? 1 : 0 ) 
+            + 
+            ((unsigned int)rasterBands.size()) ) 
+          );
         
         loadedRasterData.resize( rasterBands.size() );
         
         for( unsigned int rasterBandsIdx = 0 ; rasterBandsIdx < rasterBands.size() ;
           ++rasterBandsIdx )
         {
-          loadedRasterData[ rasterBandsIdx ].reset( new DoublesMatrix );
+          loadedRasterData[ rasterBandsIdx ].reset( new FloatsMatrix );
           TERP_TRUE_OR_RETURN_FALSE( loadedRasterData[ rasterBandsIdx ]->reset( 
-            rescaledNLines, rescaledNCols,
-            DoublesMatrix::AutoMemPol, maxTmpFileSize,
+            rescaledNLines, rescaledNCols, FloatsMatrix::AutoMemPol, 
             maxMemPercentUsagePerMatrix ),
             "Cannot allocate image 1 matrix" );
+          maxMemPercentUsagePerMatrix *= 2;
         }
+        
+        if( maskRasterPtr ) 
+        {
+          TERP_TRUE_OR_RETURN_FALSE( loadedMaskRasterData.reset( 
+            rescaledNLines, rescaledNCols,
+            UCharsMatrix::AutoMemPol, maxMemPercentUsagePerMatrix ),
+            "Cannot allocate image 1 mask matrix" );          
+        }        
       }
       
       // loading mask data
@@ -1453,25 +1513,36 @@ namespace te
         const double rasterTargetAreaColStartDouble = (double)
           rasterTargetAreaColStart;
         te::rst::Interpolator interpInstance( rasterPtr, rasterInterpMethod );
-        double* outLinePtr = 0;
+        float* floatLinePtr = 0;
+        double* doubleLinePtr = 0;
         unsigned int outLine = 0;
         unsigned int outCol = 0;
         double inLine = 0;
         double inCol = 0;     
         std::complex< double > interpolatedValue;
         unsigned int bandIdx = 0;
+        double bandMin = 0;
+        double bandMax = 0;
+        double gain = 0;
+        
+        DoublesMatrix auxBandData;
+        TERP_TRUE_OR_RETURN_FALSE( auxBandData.reset( 
+          rescaledNLines, rescaledNCols, DoublesMatrix::AutoMemPol, 40 ),
+          "Cannot allocate auxiliar matrix" );        
         
         for( unsigned int rasterBandsIdx = 0 ; rasterBandsIdx < rasterBands.size() ;
           ++rasterBandsIdx )
         {
           bandIdx= rasterBands[ rasterBandsIdx ];
+          bandMin = DBL_MAX;
+          bandMax = -1.0 * DBL_MAX;
           
           for( outLine = 0 ; outLine < rescaledNLines ; ++outLine ) 
           {
             inLine = ( ( (double)outLine ) /  rescaleFactorY ) + 
               rasterTargetAreaLineStartDouble;
               
-            outLinePtr = loadedRasterData[ rasterBandsIdx ]->operator[]( outLine  );
+            doubleLinePtr = auxBandData[ outLine ];
             
             for( outCol = 0 ; outCol < rescaledNCols ; ++outCol ) 
             {          
@@ -1481,7 +1552,26 @@ namespace te
               interpInstance.getValue( inCol, inLine, interpolatedValue,
                 bandIdx );
               
-              outLinePtr[ outCol ] = interpolatedValue.real();
+              doubleLinePtr[ outCol ] = interpolatedValue.real();              
+              
+              if( interpolatedValue.real() > bandMax ) bandMax = interpolatedValue.real();
+              if( interpolatedValue.real() < bandMin ) bandMin = interpolatedValue.real();
+            }
+          }
+          
+          if( bandMin == bandMax )
+            gain = 0.0;
+          else
+            gain = ( 1.0 / ( bandMax - bandMin ) );
+          
+          for( outLine = 0 ; outLine < rescaledNLines ; ++outLine ) 
+          {
+            doubleLinePtr = auxBandData[ outLine ];
+            floatLinePtr = loadedRasterData[ rasterBandsIdx ]->operator[]( outLine  );
+            
+            for( outCol = 0 ; outCol < rescaledNCols ; ++outCol ) 
+            {          
+              floatLinePtr[ outCol ] = ( ( doubleLinePtr[ outCol ] - bandMin ) * gain );
             }
           }
         }
@@ -1491,7 +1581,7 @@ namespace te
     }
     
     bool TiePointsLocator::locateMoravecInterestPoints( 
-      const DoublesMatrix& rasterData,
+      const FloatsMatrix& rasterData,
       UCharsMatrix const* maskRasterDataPtr,
       const unsigned int moravecWindowWidth,
       const unsigned int maxInterestPoints,
@@ -1584,16 +1674,16 @@ namespace te
       const unsigned int lastBufferLineIdx = bufferLines - 1;
       const unsigned int bufferCols = paramsPtr->m_rasterDataPtr->getColumnsNumber();
       const unsigned int rasterBufferLineSizeBytes = sizeof( 
-        DoublesMatrix::ElementTypeT ) * bufferCols;
+        FloatsMatrix::ElementTypeT ) * bufferCols;
       const unsigned int maskRasterBufferLineSizeBytes = sizeof(
         UCharsMatrix::ElementTypeT ) * 
         bufferCols;
       
       paramsPtr->m_rastaDataAccessMutexPtr->unlock();
         
-      DoublesMatrix rasterBufferDataHandler;
+      FloatsMatrix rasterBufferDataHandler;
       if( ! rasterBufferDataHandler.reset( bufferLines, bufferCols, 
-        DoublesMatrix::RAMMemPol ) )
+        FloatsMatrix::RAMMemPol ) )
       {
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
         paramsPtr->m_returnValuePtr = false;
@@ -1601,7 +1691,7 @@ namespace te
         return;
       }
       
-      boost::scoped_array< double* > rasterBufferHandler( new double*[ bufferLines ] );
+      boost::scoped_array< float* > rasterBufferHandler( new float*[ bufferLines ] );
       for( unsigned int rasterBufferDataHandlerLine = 0 ; rasterBufferDataHandlerLine < 
         bufferLines ; ++rasterBufferDataHandlerLine )
       {
@@ -1609,20 +1699,20 @@ namespace te
           rasterBufferDataHandlerLine ];
       }
       
-      double** rasterBufferPtr = rasterBufferHandler.get();
+      float** rasterBufferPtr = rasterBufferHandler.get();
       
       // Allocating the mask raster buffer      
       
-      DoublesMatrix maskRasterBufferDataHandler;
+      UCharsMatrix maskRasterBufferDataHandler;
       
-      boost::scoped_array< double* > maskRasterBufferHandler( new double*[ bufferLines ] );
+      boost::scoped_array< unsigned char* > maskRasterBufferHandler( new unsigned char*[ bufferLines ] );
       
-      double** maskRasterBufferPtr = 0;
+      unsigned char** maskRasterBufferPtr = 0;
       
       if( paramsPtr->m_maskRasterDataPtr )
       {
         if( ! maskRasterBufferDataHandler.reset( bufferLines, bufferCols, 
-          DoublesMatrix::RAMMemPol ) )
+          UCharsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
           paramsPtr->m_returnValuePtr = false;
@@ -1642,9 +1732,9 @@ namespace te
       
       // Allocating the internal maximas values data buffer
         
-      DoublesMatrix maximasBufferDataHandler;
+      FloatsMatrix maximasBufferDataHandler;
       if( ! maximasBufferDataHandler.reset( bufferLines, bufferCols, 
-        DoublesMatrix::RAMMemPol ) )
+        FloatsMatrix::RAMMemPol ) )
       {
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
         paramsPtr->m_returnValuePtr = false;
@@ -1652,8 +1742,8 @@ namespace te
         return;
       }
       
-      boost::scoped_array< double* > maximasBufferHandler( new double*[ bufferLines ] );
-      double** maximasBufferPtr = maximasBufferHandler.get();      
+      boost::scoped_array< float* > maximasBufferHandler( new float*[ bufferLines ] );
+      float** maximasBufferPtr = maximasBufferHandler.get();      
       unsigned int bufferCol = 0;
       for( unsigned int maximasBufferDataHandlerLine = 0 ; maximasBufferDataHandlerLine < 
         bufferLines ; ++maximasBufferDataHandlerLine )
@@ -1704,14 +1794,14 @@ namespace te
           unsigned int windowStartBufOffset = 0;
           unsigned int windowStartBufXOffset = 0;
           unsigned int windowStartBufYOffset = 0;
-          double horVar = 0;
-          double verVar = 0;
-          double diagVar = 0;
-          double adiagVar = 0;
-          double diffValue = 0;
+          float horVar = 0;
+          float verVar = 0;
+          float diagVar = 0;
+          float adiagVar = 0;
+          float diffValue = 0;
           bool isLocalMaxima = false;
           InterestPointT auxInterestPoint;
-          double neighborMaximaDif = 0;
+          float neighborMaximaDif = 0;
                    
           for( unsigned int rasterLine = rasterLinesStart; rasterLine < rasterLinesEndBound ;
             ++rasterLine )
@@ -1744,7 +1834,7 @@ namespace te
               for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
                 ++windowStartBufCol )
               {
-                const double& windowCenterPixelValue = rasterBufferPtr[
+                const float& windowCenterPixelValue = rasterBufferPtr[
                   moravecWindowRadius ][ windowStartBufCol + 
                   moravecWindowRadius ];
                 horVar = 0;
@@ -1790,7 +1880,7 @@ namespace te
                 ++windowStartBufCol )
               {
                 isLocalMaxima = true;
-                const double& windowCenterPixelValue = maximasBufferPtr[
+                const float& windowCenterPixelValue = maximasBufferPtr[
                   moravecWindowRadius ][ windowStartBufCol + 
                   moravecWindowRadius ];       
                 auxInterestPoint.m_feature1  = 0.0;
@@ -1885,7 +1975,7 @@ namespace te
     }    
     
     bool TiePointsLocator::locateSurfInterestPoints( 
-      const DoublesMatrix& integralRasterData,
+      const FloatsMatrix& integralRasterData,
       UCharsMatrix const* maskRasterDataPtr,
       InterestPointsSetT& interestPoints ) const
     {
@@ -1980,9 +2070,9 @@ namespace te
       paramsPtr->m_rastaDataAccessMutexPtr->lock();
       const unsigned int rasterLines = paramsPtr->m_integralRasterDataPtr->getLinesNumber();
       const unsigned int buffersCols = paramsPtr->m_integralRasterDataPtr->getColumnsNumber();
-      const unsigned int rasterBufferLineSizeBytes = sizeof( double ) * 
+      const unsigned int rasterBufferLineSizeBytes = sizeof( float ) * 
         buffersCols;
-      const unsigned int maskRasterBufferLineSizeBytes = sizeof( double ) * 
+      const unsigned int maskRasterBufferLineSizeBytes = sizeof( UCharsMatrix::ElementTypeT ) * 
         buffersCols;
       paramsPtr->m_rastaDataAccessMutexPtr->unlock();  
       
@@ -1995,11 +2085,11 @@ namespace te
       // Allocating the internal raster data buffer
       // and the mask raster buffer
       
-      DoublesMatrix rasterBufferDataHandler;
-      boost::scoped_array< double* > rasterBufferHandler( new double*[ buffersLines ] );
+      FloatsMatrix rasterBufferDataHandler;
+      boost::scoped_array< float* > rasterBufferHandler( new float*[ buffersLines ] );
       {
         if( ! rasterBufferDataHandler.reset( buffersLines, buffersCols, 
-          DoublesMatrix::RAMMemPol ) )
+          FloatsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
           paramsPtr->m_returnValuePtr = false;
@@ -2014,20 +2104,20 @@ namespace te
             rasterBufferDataHandlerLine ];
         }
       }
-      double** rasterBufferPtr = rasterBufferHandler.get();
+      float** rasterBufferPtr = rasterBufferHandler.get();
       
       // Allocating the mask raster buffer      
       
-      DoublesMatrix maskRasterBufferDataHandler;
+      UCharsMatrix maskRasterBufferDataHandler;
       
-      boost::scoped_array< double* > maskRasterBufferHandler( new double*[ buffersLines ] );
+      boost::scoped_array< unsigned char* > maskRasterBufferHandler( new unsigned char*[ buffersLines ] );
       
-      double** maskRasterBufferPtr = 0;
+      unsigned char** maskRasterBufferPtr = 0;
       
       if( paramsPtr->m_maskRasterDataPtr )
       {
         if( ! maskRasterBufferDataHandler.reset( buffersLines, buffersCols, 
-          DoublesMatrix::RAMMemPol ) )
+          UCharsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
           paramsPtr->m_returnValuePtr = false;
@@ -2047,15 +2137,15 @@ namespace te
       
       // Allocating the internal octaves buffers
       
-      DoublesMatrix octavesBufferDataHandler;
-      std::vector< std::vector< boost::shared_array< double* > > >
+      FloatsMatrix octavesBufferDataHandler;
+      std::vector< std::vector< boost::shared_array< float* > > >
         octavesBufferHandlers;
       {
         const unsigned int octavesBufferDataHandlerLines = 
           buffersLines * paramsPtr->m_octavesNumber * paramsPtr->m_scalesNumber;
         if( ! octavesBufferDataHandler.reset( octavesBufferDataHandlerLines , 
           buffersCols, 
-          DoublesMatrix::RAMMemPol ) )
+          FloatsMatrix::RAMMemPol ) )
         {
           paramsPtr->m_rastaDataAccessMutexPtr->lock();
           paramsPtr->m_returnValuePtr = false;
@@ -2064,7 +2154,7 @@ namespace te
         }
         unsigned int octavesBufferDataHandlerLine = 0;
         unsigned int octavesBufferDataHandlerCol = 0;
-        double* octavesBufferDataHandlerLinePtr = 0;
+        float* octavesBufferDataHandlerLinePtr = 0;
         for( octavesBufferDataHandlerLine = 0; octavesBufferDataHandlerLine < 
           octavesBufferDataHandlerLines ; ++octavesBufferDataHandlerLine )
         {
@@ -2081,15 +2171,15 @@ namespace te
         octavesBufferDataHandlerLine = 0;
         for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
         {
-          octavesBufferHandlers.push_back( std::vector< boost::shared_array< double* > >() );
-          std::vector< boost::shared_array< double* > >&
+          octavesBufferHandlers.push_back( std::vector< boost::shared_array< float* > >() );
+          std::vector< boost::shared_array< float* > >&
             currOctaveBuffersHandler = octavesBufferHandlers.back();
           
           for( scaleIdx = 0 ; scaleIdx < paramsPtr->m_scalesNumber ; ++scaleIdx )
           {
-            currOctaveBuffersHandler.push_back( boost::shared_array< double* >(
-              new double*[ buffersLines ] ) );
-            boost::shared_array< double* >& currOctavesBuffer = 
+            currOctaveBuffersHandler.push_back( boost::shared_array< float* >(
+              new float*[ buffersLines ] ) );
+            boost::shared_array< float* >& currOctavesBuffer = 
               currOctaveBuffersHandler.back();
             for( unsigned int bufferLine = 0 ; bufferLine <  buffersLines ; 
               ++bufferLine )
@@ -2210,43 +2300,43 @@ namespace te
           unsigned int filterLobeRadius = 0;
           unsigned int filterCenterBufCol = 0 ;
 //          unsigned int filterCenterBufColBound = 0 ;
-          double dXX = 0;
-          double dYY = 0;
-          double dXY = 0;
+          float dXX = 0;
+          float dYY = 0;
+          float dXY = 0;
           InterestPointT auxInterestPoint;
-          double** currScaleBufferPtr = 0;
+          float** currScaleBufferPtr = 0;
           unsigned char** currLaplacianSignBufferPtr = 0;
           unsigned int lastScaleIdx = 0;
           unsigned int nextScaleIdx = 0;
           unsigned int prevResponseBufferColIdx = 0;
           unsigned int nextResponseBufferColIdx = 0;
           
-          double neighborMaximaDif_0_1 = 0.0;
-          double neighborMaximaDif_0_2 = 0.0;
-          double neighborMaximaDif_0_3 = 0.0;
-          double neighborMaximaDif_0_4 = 0.0;
-          double neighborMaximaDif_0_5 = 0.0;
-          double neighborMaximaDif_0_6 = 0.0;
-          double neighborMaximaDif_0_7 = 0.0;
-          double neighborMaximaDif_0_8 = 0.0;
-          double neighborMaximaDif_1_1 = 0.0;
-          double neighborMaximaDif_1_2 = 0.0;
-          double neighborMaximaDif_1_3 = 0.0;
-          double neighborMaximaDif_1_4 = 0.0;
-          double neighborMaximaDif_1_5 = 0.0;
-          double neighborMaximaDif_1_6 = 0.0;
-          double neighborMaximaDif_1_7 = 0.0;
-          double neighborMaximaDif_1_8 = 0.0;
-          double neighborMaximaDif_1_9 = 0.0;
-          double neighborMaximaDif_2_1 = 0.0;
-          double neighborMaximaDif_2_2 = 0.0;
-          double neighborMaximaDif_2_3 = 0.0;
-          double neighborMaximaDif_2_4 = 0.0;
-          double neighborMaximaDif_2_5 = 0.0;
-          double neighborMaximaDif_2_6 = 0.0;
-          double neighborMaximaDif_2_7 = 0.0;
-          double neighborMaximaDif_2_8 = 0.0;
-          double neighborMaximaDif_2_9 = 0.0;          
+          float neighborMaximaDif_0_1 = 0.0;
+          float neighborMaximaDif_0_2 = 0.0;
+          float neighborMaximaDif_0_3 = 0.0;
+          float neighborMaximaDif_0_4 = 0.0;
+          float neighborMaximaDif_0_5 = 0.0;
+          float neighborMaximaDif_0_6 = 0.0;
+          float neighborMaximaDif_0_7 = 0.0;
+          float neighborMaximaDif_0_8 = 0.0;
+          float neighborMaximaDif_1_1 = 0.0;
+          float neighborMaximaDif_1_2 = 0.0;
+          float neighborMaximaDif_1_3 = 0.0;
+          float neighborMaximaDif_1_4 = 0.0;
+          float neighborMaximaDif_1_5 = 0.0;
+          float neighborMaximaDif_1_6 = 0.0;
+          float neighborMaximaDif_1_7 = 0.0;
+          float neighborMaximaDif_1_8 = 0.0;
+          float neighborMaximaDif_1_9 = 0.0;
+          float neighborMaximaDif_2_1 = 0.0;
+          float neighborMaximaDif_2_2 = 0.0;
+          float neighborMaximaDif_2_3 = 0.0;
+          float neighborMaximaDif_2_4 = 0.0;
+          float neighborMaximaDif_2_5 = 0.0;
+          float neighborMaximaDif_2_6 = 0.0;
+          float neighborMaximaDif_2_7 = 0.0;
+          float neighborMaximaDif_2_8 = 0.0;
+          float neighborMaximaDif_2_9 = 0.0;          
           
           // Processing each raster line from the current block
                    
@@ -2311,15 +2401,15 @@ namespace te
                   {
                     dYY = getSurfDyyDerivative( rasterBufferPtr, filterCenterBufCol, 
                       maxGausFilterRadius, filterLobeWidth, filterLobeRadius);
-                    dYY /= (double)( filterWidth * filterWidth );
+                    dYY /= (float)( filterWidth * filterWidth );
                     
                     dXX = getSurfDxxDerivative( rasterBufferPtr, filterCenterBufCol, 
                       maxGausFilterRadius, filterLobeWidth, filterLobeRadius);
-                    dXX /= (double)( filterWidth * filterWidth );
+                    dXX /= (float)( filterWidth * filterWidth );
                     
                     dXY = getSurfDxyDerivative( rasterBufferPtr, filterCenterBufCol, 
                       maxGausFilterRadius, filterLobeWidth );
-                    dXY /= (double)( filterWidth * filterWidth );
+                    dXY /= (float)( filterWidth * filterWidth );
                       
                     currScaleBufferPtr[ lastBuffersLineIdx ][ filterCenterBufCol ] = 
                       ( dXX * dYY ) - ( 0.81 * dXY * dXY );
@@ -2345,17 +2435,17 @@ namespace te
               {
                 prevResponseBufferColIdx = windCenterCol - 1;
                 nextResponseBufferColIdx = windCenterCol + 1;
-                auxInterestPoint.m_feature1 = (-1.0) * DBL_MAX;
+                auxInterestPoint.m_feature1 = (-1.0) * FLT_MAX;
                     
                 for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
                 {         
-                  std::vector< boost::shared_array< double* > >& 
+                  std::vector< boost::shared_array< float* > >& 
                     currOctaveBuffersHandler = octavesBufferHandlers[ octaveIdx ];
                     
                   for( scaleIdx = 1 ; scaleIdx < ( paramsPtr->m_scalesNumber - 1 );
                     ++scaleIdx )
                   {   
-                    const double& windowCenterPixelValue = currOctaveBuffersHandler[
+                    const float& windowCenterPixelValue = currOctaveBuffersHandler[
                       scaleIdx ][ maxGausFilterRadius ][ windCenterCol ];
                     lastScaleIdx = scaleIdx - 1;
                     nextScaleIdx = scaleIdx + 1;
@@ -2488,9 +2578,9 @@ namespace te
                             + neighborMaximaDif_2_7
                             + neighborMaximaDif_2_8
                             + neighborMaximaDif_2_9;                            
-                          auxInterestPoint.m_feature2 = (double)getSurfFilterSize(
+                          auxInterestPoint.m_feature2 = (float)getSurfFilterSize(
                             octaveIdx, scaleIdx );
-                          auxInterestPoint.m_feature3 = (double)
+                          auxInterestPoint.m_feature3 = (float)
                             laplacianSignBufferHandlers[ octaveIdx ][ scaleIdx ][ 
                             maxGausFilterRadius ][ windCenterCol ] ;
                             
@@ -2706,8 +2796,8 @@ namespace te
       return true;
     }
     
-    bool TiePointsLocator::applyMeanFilter( const DoublesMatrix& inputData,
-      DoublesMatrix& outputData, const unsigned int iterationsNumber )
+    bool TiePointsLocator::applyMeanFilter( const FloatsMatrix& inputData,
+      FloatsMatrix& outputData, const unsigned int iterationsNumber )
     {
       if( iterationsNumber == 0 )
       {
@@ -2728,12 +2818,12 @@ namespace te
         
         // internal temp matrixes
         
-        DoublesMatrix tempMatrix;
+        FloatsMatrix tempMatrix;
         
         if( iterationsNumber > 1 )
         {
           TERP_TRUE_OR_RETURN_FALSE( tempMatrix.reset( nLines, nCols,
-            DoublesMatrix::AutoMemPol ),
+            FloatsMatrix::AutoMemPol ),
             "Cannot allocate image matrix" );
         }
         
@@ -2751,10 +2841,10 @@ namespace te
         
         /* Smoothing */
         
-        DoublesMatrix const* inputPtr = 0;
-        DoublesMatrix* outputPtr = 0;
-        DoublesMatrix const* auxPtr = 0;
-        double* outputLinePtr = 0;
+        FloatsMatrix const* inputPtr = 0;
+        FloatsMatrix* outputPtr = 0;
+        FloatsMatrix const* auxPtr = 0;
+        float* outputLinePtr = 0;
         unsigned int prevLine = 0;
         unsigned int prevCol = 0;
         unsigned int nextLine = 0;
@@ -2781,10 +2871,10 @@ namespace te
           {
             auxPtr = inputPtr;
             inputPtr = outputPtr;
-            outputPtr = (DoublesMatrix*)auxPtr;
+            outputPtr = (FloatsMatrix*)auxPtr;
           }
           
-          const DoublesMatrix& internalInputMatrix = *inputPtr;
+          const FloatsMatrix& internalInputMatrix = *inputPtr;
           
           for( currLine = 1 ; currLine < lastLineIndex ; ++currLine ) 
           {
@@ -2817,8 +2907,8 @@ namespace te
       return true;
     }    
 
-    bool TiePointsLocator::createIntegralImage( const DoublesMatrix& inputData,
-      DoublesMatrix& outputData )
+    bool TiePointsLocator::createIntegralImage( const FloatsMatrix& inputData,
+      FloatsMatrix& outputData )
     {
       TERP_TRUE_OR_RETURN_FALSE( outputData.reset( inputData.getLinesNumber(),
         inputData.getColumnsNumber() ), "Cannot allocate image matrix" );
@@ -2827,7 +2917,7 @@ namespace te
       const unsigned int nCols = inputData.getColumnsNumber();
       
       unsigned int outCol = 0;
-      double currSum = 0;
+      float currSum = 0;
       
       for( unsigned int outLine = 0 ; outLine < nLines ; ++outLine )
         for( outCol = 0; outCol < nCols ; ++outCol )
@@ -2850,7 +2940,7 @@ namespace te
     bool TiePointsLocator::generateCorrelationFeatures( 
       const InterestPointsSetT& interestPoints,
       const unsigned int correlationWindowWidth,
-      const DoublesMatrix& rasterData,
+      const FloatsMatrix& rasterData,
       FloatsMatrix& features,
       InterestPointsSetT& validInteresPoints )
     {
@@ -2914,7 +3004,7 @@ namespace te
       
       const unsigned int featureElemsNmb = correlationWindowWidth * 
         correlationWindowWidth;
-      const unsigned int featureSizeBytes = sizeof( double ) *
+      const unsigned int featureSizeBytes = sizeof( float ) *
         featureElemsNmb;
       
       TERP_TRUE_OR_RETURN_FALSE( features.reset( 
@@ -2923,9 +3013,9 @@ namespace te
         
       // Allocating the auxiliary features buffer
       
-      boost::scoped_array< double > auxFeatureBufferHandler( 
-        new double[ featureElemsNmb ] );
-      double* auxFeatureBufferPtr = auxFeatureBufferHandler.get();
+      boost::scoped_array< float > auxFeatureBufferHandler( 
+        new float[ featureElemsNmb ] );
+      float* auxFeatureBufferPtr = auxFeatureBufferHandler.get();
 
       // Creating features
 
@@ -2936,27 +3026,27 @@ namespace te
       unsigned int curr_window_x_end = 0; // this coord is also counted in
       unsigned int curr_window_y_end = 0; // this coord is also counted in
       const unsigned int wind_radius = correlationWindowWidth / 2; //output window radius
-      const double wind_radius_double = (double)wind_radius;
+      const float wind_radius_double = (float)wind_radius;
       unsigned int curr_x = 0;
       unsigned int curr_y = 0;
-      double curr_x_minus_radius = 0;
-      double curr_y_minus_radius = 0;
+      float curr_x_minus_radius = 0;
+      float curr_y_minus_radius = 0;
       unsigned int curr_offset = 0;
-      double int_x_dir = 0;
-      double int_y_dir = 0;
-      double int_norm = 0;
-      double rotated_curr_x = 0;/* rotaded coord - window ref */
-      double rotated_curr_y = 0;/* rotaded coord - window ref */
-      double rot_cos = 0;
-      double rot_sin = 0;
+      float int_x_dir = 0;
+      float int_y_dir = 0;
+      float int_norm = 0;
+      float rotated_curr_x = 0;/* rotaded coord - window ref */
+      float rotated_curr_y = 0;/* rotaded coord - window ref */
+      float rot_cos = 0;
+      float rot_sin = 0;
       unsigned int rotated_curr_x_img = 0; //coords rotated but in the hole image reference
       unsigned int rotated_curr_y_img = 0; //coords rotated but in the hole image reference
-      double featureElementsNormalizeFactor = 0.0;
+      float featureElementsNormalizeFactor = 0.0;
       unsigned int featureElementIdx = 0;
       float* featurePtr = 0;
-      double featureElementValue = 0.0;
-      double featureElementMaxValue = 0.0;
-      double featureElementMinValue = 0.0;
+      float featureElementValue = 0.0;
+      float featureElementMaxValue = 0.0;
+      float featureElementMinValue = 0.0;
       
       InterestPointsSetT::const_iterator viPointsIt = validInteresPoints.begin();
       const InterestPointsSetT::const_iterator viPointsItEnd = validInteresPoints.end();      
@@ -3011,7 +3101,7 @@ namespace te
         
         /* Calculating the rotation parameters - 
         */
-        int_norm = sqrt( ( int_x_dir * int_x_dir ) + 
+        int_norm = std::sqrt( ( int_x_dir * int_x_dir ) + 
           ( int_y_dir * int_y_dir ) );
         
         if( int_norm != 0.0 ) {
@@ -3041,8 +3131,8 @@ namespace te
           
         memset( auxFeatureBufferPtr, 0, featureSizeBytes );
         featureElementIdx = 0;
-        featureElementMaxValue = -1.0 * DBL_MAX;
-        featureElementMinValue =  DBL_MAX;
+        featureElementMaxValue = -1.0 * FLT_MAX;
+        featureElementMinValue =  FLT_MAX;
         
         for( curr_y = 0 ; curr_y < correlationWindowWidth ; ++curr_y ) 
         {
@@ -3050,9 +3140,9 @@ namespace te
           {
             /* briging the window to the coord system center */
             
-            curr_x_minus_radius = ((double)curr_x) - 
+            curr_x_minus_radius = ((float)curr_x) - 
               wind_radius_double;
-            curr_y_minus_radius = ((double)curr_y) - 
+            curr_y_minus_radius = ((float)curr_y) - 
               wind_radius_double;
             
             /* rotating the centered window */
@@ -3094,17 +3184,18 @@ namespace te
         
         // feature normaliztion
         
-        featureElementsNormalizeFactor = featureElementMaxValue - 
-          featureElementMinValue;
-        if( featureElementsNormalizeFactor != 0.0 )
-          featureElementsNormalizeFactor = 1.0 / featureElementsNormalizeFactor;
+        if( featureElementMaxValue == featureElementMinValue )
+          featureElementsNormalizeFactor = 0.0;
+        else
+          featureElementsNormalizeFactor = 1.0 / ( featureElementMaxValue -
+            featureElementMinValue );
         
         featurePtr = features[ validInteresPointsIndex ];
         
         for( featureElementIdx = 0 ; featureElementIdx < featureElemsNmb ;
           ++featureElementIdx )
         {
-          featurePtr[ featureElementIdx ] = (float)(
+          featurePtr[ featureElementIdx ] = (
             ( auxFeatureBufferPtr[ featureElementIdx ] - featureElementMinValue )
             * featureElementsNormalizeFactor );
           assert( featurePtr[ featureElementIdx ] >= 0.0 );
@@ -3120,7 +3211,7 @@ namespace te
     
     bool TiePointsLocator::generateSurfFeatures( 
       const InterestPointsSetT& interestPoints,
-      const DoublesMatrix& integralRasterData,
+      const FloatsMatrix& integralRasterData,
       InterestPointsSetT& validInterestPoints,
       FloatsMatrix& features )
     {
@@ -3138,7 +3229,7 @@ namespace te
         
           const unsigned int& currIPointCenterX = iPointsIt->m_x;
           const unsigned int& currIPointCenterY = iPointsIt->m_y;
-          const double currIPointScale = 1.2 * iPointsIt->m_feature2 / 9.0;
+          const float currIPointScale = 1.2 * iPointsIt->m_feature2 / 9.0;
           
           unsigned int featureWindowWidth = (unsigned int)( 20.0 * currIPointScale );
           featureWindowWidth += ( ( featureWindowWidth % 2 ) ? 0 : 1 );
@@ -3187,7 +3278,7 @@ namespace te
         
       // globals
       
-      double auxFeaturesBuffer[ 65 ];
+      float auxFeaturesBuffer[ 65 ];
       
       // iterating over each input innterest point
       
@@ -3200,13 +3291,13 @@ namespace te
       
         const unsigned int& currIPointCenterX = iPointsIt->m_x;
         const unsigned int& currIPointCenterY = iPointsIt->m_y;
-        const double currIPointScale = 1.2 * iPointsIt->m_feature2 / 9.0;
+        const float currIPointScale = 1.2 * iPointsIt->m_feature2 / 9.0;
         
         unsigned int featureWindowWidth = (unsigned int)( 20.0 * currIPointScale );
         featureWindowWidth += ( ( featureWindowWidth % 2 ) ? 0 : 1 );
         
         const unsigned int featureWindowRadius = featureWindowWidth / 2;
-        const double featureWindowRadiusDouble = (double)featureWindowRadius;        
+        const float featureWindowRadiusDouble = (float)featureWindowRadius;        
           
         const unsigned int featureSubWindowWidth = featureWindowWidth / 4;
           
@@ -3237,18 +3328,18 @@ namespace te
         assert( currIPointCenterY + 
           featureWindowRadius < integralRasterData.getLinesNumber() );          
         
-        const double currIPointXIntensity = getHaarXVectorIntensity( integralRasterData, currIPointCenterX,
+        const float currIPointXIntensity = getHaarXVectorIntensity( integralRasterData, currIPointCenterX,
           currIPointCenterY, featureWindowRadius );
-        const double currIPointYIntensity = getHaarYVectorIntensity( integralRasterData, currIPointCenterX,
+        const float currIPointYIntensity = getHaarYVectorIntensity( integralRasterData, currIPointCenterX,
           currIPointCenterY, featureWindowRadius );
         
         // Calculating the rotation parameters
         
-        const double currIPointRotationNorm = sqrt( ( currIPointXIntensity * currIPointXIntensity ) + 
+        const float currIPointRotationNorm = std::sqrt( ( currIPointXIntensity * currIPointXIntensity ) + 
           ( currIPointYIntensity * currIPointYIntensity ) );
         
-        double currIPointRotationSin = 0; // default: no rotation
-        double currIPointRotationCos = 1.0; // default: no rotation
+        float currIPointRotationSin = 0; // default: no rotation
+        float currIPointRotationCos = 1.0; // default: no rotation
           
         if( currIPointRotationNorm != 0.0 ) 
         {
@@ -3277,29 +3368,29 @@ namespace te
         
         unsigned int featureWindowYOffset = 0;
         unsigned int featureWindowXOffset = 0;
-        double featureElementZeroCenteredOriginalXIdx = 0;
-        double featureElementZeroCenteredOriginalYIdx = 0;          
-        double featureElementZeroCenteredRotatedXIdx = 0;
-        double featureElementZeroCenteredRotatedYIdx = 0;    
-        double featureElementRotatedXIdx = 0;
-        double featureElementRotatedYIdx = 0; 
+        float featureElementZeroCenteredOriginalXIdx = 0;
+        float featureElementZeroCenteredOriginalYIdx = 0;          
+        float featureElementZeroCenteredRotatedXIdx = 0;
+        float featureElementZeroCenteredRotatedYIdx = 0;    
+        float featureElementRotatedXIdx = 0;
+        float featureElementRotatedYIdx = 0; 
         unsigned int featureElementRasterRotatedXIdx = 0;
         unsigned int featureElementRasterRotatedYIdx = 0;    
-        double featureElementOriginalHaarXIntensity = 0;
-        double featureElementOriginalHaarYIntensity = 0;  
-        double featureElementZeroCenteredOriginalHaarXIntensity = 0;
-        double featureElementZeroCenteredOriginalHaarYIntensity = 0;   
-        double featureElementRotatedHaarXIntensity = 0;
-        double featureElementRotatedHaarYIntensity = 0;
-        double featureElementZeroCenteredRotatedHaarXIntensity = 0;
-        double featureElementZeroCenteredRotatedHaarYIntensity = 0;  
+        float featureElementOriginalHaarXIntensity = 0;
+        float featureElementOriginalHaarYIntensity = 0;  
+        float featureElementZeroCenteredOriginalHaarXIntensity = 0;
+        float featureElementZeroCenteredOriginalHaarYIntensity = 0;   
+        float featureElementRotatedHaarXIntensity = 0;
+        float featureElementRotatedHaarYIntensity = 0;
+        float featureElementZeroCenteredRotatedHaarXIntensity = 0;
+        float featureElementZeroCenteredRotatedHaarYIntensity = 0;  
         unsigned int featureSubWindowYIdx = 0;
         unsigned int featureSubWindowXIdx = 0;
         
         for( featureWindowYOffset = 0 ; featureWindowYOffset < featureWindowWidth ; 
           featureWindowYOffset += 5 )
         {
-          featureElementZeroCenteredOriginalYIdx = ((double)featureWindowYOffset)
+          featureElementZeroCenteredOriginalYIdx = ((float)featureWindowYOffset)
             - featureWindowRadiusDouble;            
             
           featureSubWindowYIdx = featureWindowYOffset / featureSubWindowWidth;
@@ -3312,7 +3403,7 @@ namespace te
             currentFeaturePtrStartIdx = ( featureSubWindowYIdx * 4 ) + 
               featureSubWindowXIdx;
             
-            featureElementZeroCenteredOriginalXIdx = ((double)featureWindowXOffset)
+            featureElementZeroCenteredOriginalXIdx = ((float)featureWindowXOffset)
               - featureWindowRadiusDouble;              
               
             /* finding the correspondent point over the original raster
@@ -3392,7 +3483,7 @@ namespace te
         
         float* currentFeaturePtr = features[ interestPointIdx ];
         
-        double featureElementsNormalizeFactor = 0.0;
+        float featureElementsNormalizeFactor = 0.0;
         
         for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
           ++currentFeaturePtrStartIdx )
@@ -3411,7 +3502,7 @@ namespace te
         for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
           ++currentFeaturePtrStartIdx )
         {
-          currentFeaturePtr[ currentFeaturePtrStartIdx ] = (float)(
+          currentFeaturePtr[ currentFeaturePtrStartIdx ] = (
             auxFeaturesBuffer[ currentFeaturePtrStartIdx ] *
             featureElementsNormalizeFactor );
           TERP_DEBUG_TRUE_OR_THROW( ( currentFeaturePtr[ currentFeaturePtrStartIdx ] <= 1.0 ),
@@ -3424,7 +3515,7 @@ namespace te
         // distinguishes bright blobs 
         // on dark backgrounds from the reverse situation.
         
-        currentFeaturePtr[ 64 ] = (float)( iPointsIt->m_feature3 * 64.0 );
+        currentFeaturePtr[ 64 ] = ( iPointsIt->m_feature3 * 64.0 );
         
         ++interestPointIdx;
         ++iPointsIt;
@@ -3608,7 +3699,7 @@ namespace te
         0.0 );
       std::vector< unsigned int > eachLineMaxABSIndexes( interestPointsSet1Size,
         interestPointsSet2Size );
-      std::vector< double > eachColMaxABSValues( interestPointsSet2Size,
+      std::vector< float > eachColMaxABSValues( interestPointsSet2Size,
         0.0 );
       std::vector< unsigned int > eachColMaxABSIndexes( interestPointsSet2Size,
         interestPointsSet1Size );

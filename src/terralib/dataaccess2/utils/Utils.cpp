@@ -38,13 +38,27 @@
 #include "../dataset/UniqueKey.h"
 #include "../datasource/DataSourceInfoManager.h"
 #include "../datasource/DataSourceManager.h"
+#include "../query/DataSetName.h"
+#include "../query/Field.h"
+#include "../query/Fields.h"
+#include "../query/LiteralEnvelope.h"
+#include "../query/LiteralGeom.h"
+#include "../query/PropertyName.h"
+#include "../query/ST_Contains.h"
+#include "../query/ST_Crosses.h"
+#include "../query/ST_Disjoint.h"
+#include "../query/ST_Equals.h"
+#include "../query/ST_Intersects.h"
+#include "../query/ST_Overlaps.h"
+#include "../query/ST_Touches.h"
+#include "../query/ST_Within.h"
+#include "../query/Where.h"
 #include "../Enums.h"
 #include "../Exception.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
-#include <memory>
 
 void te::da::LoadFull(te::da::DataSetType* dataset, const std::string& datasourceId)
 {
@@ -614,3 +628,199 @@ std::vector<int> te::da::GetPropertyDataTypes(const te::da::DataSet* dataset)
   return properties;
 }
 
+std::auto_ptr<te::da::Expression> te::da::BuildSpatialOp(Expression* e1,
+                                                         Expression* e2,
+                                                         te::gm::SpatialRelation r)
+
+{
+  std::auto_ptr<te::da::Expression> op;
+  switch(r)
+  {
+    case te::gm::INTERSECTS:
+      op.reset(new ST_Intersects(e1, e2));
+    break;
+
+    case te::gm::DISJOINT:
+      op.reset(new ST_Disjoint(e1, e2));
+    break;
+
+    case te::gm::TOUCHES:
+      op.reset(new ST_Touches(e1, e2));
+    break;
+
+    case te::gm::OVERLAPS:
+      op.reset(new ST_Overlaps(e1, e2));
+    break;
+
+    case te::gm::CROSSES:
+      op.reset(new ST_Crosses(e1, e2));
+    break;
+
+    case te::gm::WITHIN:
+      op.reset(new ST_Within(e1, e2));
+    break;
+
+    case te::gm::CONTAINS:
+      op.reset(new ST_Contains(e1, e2));
+    break;
+
+    case te::gm::EQUALS:
+      op.reset(new ST_Equals(e1, e2));
+    break;
+
+    default:
+      throw;
+  }
+
+  return op;
+}
+
+std::auto_ptr<te::da::Fields> te::da::BuildFields(const std::vector<std::string>& properties)
+{
+  std::auto_ptr<Fields> fields(new Fields);
+
+  for(std::size_t i = 0; i < properties.size(); ++i)
+    fields->push_back(new te::da::Field(properties[i]));
+
+  return fields;
+}
+
+std::auto_ptr<te::da::Select> te::da::BuildSelect(const std::string& dsname)
+{
+  return BuildSelect(dsname, "*");
+}
+
+std::auto_ptr<te::da::Select> te::da::BuildSelect(const std::string& dsname, const std::string& propertyName)
+{
+  std::vector<std::string> p;
+  p.push_back(propertyName);
+
+  return BuildSelect(dsname, p);
+}
+
+std::auto_ptr<te::da::Select> te::da::BuildSelect(const std::string& dsname, const std::vector<std::string>& properties)
+{
+  // Fields
+  std::auto_ptr<Fields> fields = BuildFields(properties);
+
+  // From
+  FromItem* fi = new DataSetName(dsname);
+  From* from = new From;
+  from->push_back(fi);
+
+  // Select
+  std::auto_ptr<Select> select(new Select(fields.release(), from));
+
+  return select;
+}
+
+std::auto_ptr<te::da::Select> te::da::BuildSelect(const std::string& dsname,
+                                                  const std::vector<std::string>& properties,
+                                                  const std::string& geometryProperty,
+                                                  const te::gm::Envelope* e,
+                                                  int srid,
+                                                  te::gm::SpatialRelation r)
+{
+  // Fields
+  std::auto_ptr<Fields> fields = BuildFields(properties);
+
+  // Adding the geometry property
+  fields->push_back(new Field(geometryProperty));
+
+  // From
+  FromItem* fi = new DataSetName(dsname);
+  From* from = new From;
+  from->push_back(fi);
+
+  PropertyName* geomPropertyName = new PropertyName(geometryProperty);
+  LiteralEnvelope* lenv = new LiteralEnvelope(*e, srid);
+
+  // The spatial restriction
+  std::auto_ptr<Expression> spatialOp = BuildSpatialOp(geomPropertyName, lenv, r);
+
+  // Where
+  te::da::Where* filter = new Where(spatialOp.release());
+
+  // Select
+  std::auto_ptr<Select> select(new Select(fields.release(), from, filter));
+
+  return select;
+}
+
+std::auto_ptr<te::da::Select> te::da::BuildSelect(const std::string& dsname,
+                                                  const std::vector<std::string>& properties,
+                                                  const std::string& geometryProperty,
+                                                  te::gm::Geometry* g,
+                                                  te::gm::SpatialRelation r)
+{
+  // Fields
+  std::auto_ptr<Fields> fields = BuildFields(properties);
+
+  // Adding the geometry property
+  fields->push_back(new Field(geometryProperty));
+
+  // From
+  FromItem* fi = new DataSetName(dsname);
+  From* from = new From;
+  from->push_back(fi);
+
+  PropertyName* geomPropertyName = new PropertyName(geometryProperty);
+  LiteralGeom* lgeom = new LiteralGeom(g);
+
+  // The spatial restriction
+  std::auto_ptr<Expression> spatialOp = BuildSpatialOp(geomPropertyName, lgeom, r);
+
+  // Where
+  te::da::Where* filter = new Where(spatialOp.release());
+
+  // Select
+  std::auto_ptr<Select> select(new Select(fields.release(), from, filter));
+
+  return select;
+}
+
+std::auto_ptr<te::da::Select> te::da::BuildSelect(const std::string& dsname,
+                                                  const std::vector<std::string>& properties,
+                                                  const ObjectIdSet* oids)
+{
+  // OIDS restriction
+  Expression* exp = oids->getExpression();
+  assert(exp);
+
+  // Where
+  Where* filter = new Where(exp);
+
+  // Fields
+  std::auto_ptr<Fields> fields = BuildFields(properties);
+
+  // Adding the oids properties case not included
+  const std::vector<std::string>& oidsProperties = oids->getPropertyNames();
+  for(std::size_t i = 0; i < oidsProperties.size(); ++i)
+  {
+    const std::string& oidPropertyName = oidsProperties[i];
+
+    bool alreadyIncluded = false;
+
+    for(std::size_t j = 0; j < properties.size(); ++j)
+    {
+      if(oidPropertyName == properties[j])
+      {
+        alreadyIncluded = true;
+        break;
+      }
+    }
+
+    if(!alreadyIncluded)
+      fields->push_back(new Field(oidPropertyName));
+  }
+
+  // From
+  FromItem* fromItem = new DataSetName(dsname);
+  From* from = new From;
+  from->push_back(fromItem);
+
+  // Select
+  std::auto_ptr<Select> select(new Select(fields.release(), from, filter));
+
+  return select;
+}

@@ -25,7 +25,6 @@
 #ifndef __TERRALIB_RP_INTERNAL_MATRIX_H
 #define __TERRALIB_RP_INTERNAL_MATRIX_H
 
-  #include "Functions.h"
   #include "Macros.h"
   
   #include "../common/PlatformUtils.h"

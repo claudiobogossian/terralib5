@@ -28,13 +28,13 @@
 
 // TerraLib
 #include "../dataaccess2/dataset/DataSet.h"
+#include "../dataaccess2/dataset/DataSetType.h"
 #include "Config.h"
 
-// Boost
-#include <boost/shared_ptr.hpp>
 
 // STL
 #include <map>
+#include <memory> 
 #include <string>
 #include <vector>
 
@@ -56,7 +56,7 @@ namespace te
        \param dt     The dataset type. DataSet will take its ownership.
        \param rwRole The access policy of the dataset.
        */
-      DataSet(te::da::DataSetType* dt);
+      DataSet(std::auto_ptr<te::da::DataSetType> dt, std::string uri="");
       
       /*! \brief Destructor. */
       ~DataSet();
@@ -65,7 +65,7 @@ namespace te
       
       te::common::AccessPolicy getAccessPolicy() const { return m_rwRole; }
       
-      te::gm::Envelope* getExtent(std::size_t i);
+      std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i);
       
       std::size_t getNumProperties() const;
       
@@ -159,13 +159,18 @@ namespace te
 
       bool isNull(const std::string& /*name*/) const { return true; }
       
+      void setURI(const std::string& uri);
+      
+      bool isConnected() const { return false; }
+      
     private:
       
       void loadTypeInfo();
       
     private:
       
-      te::da::DataSetType* m_dsType;        //!< It describes the dataset.
+      std::auto_ptr<te::da::DataSetType> m_dsType;        //!< It describes the dataset.
+      std::string m_uri;
       te::common::AccessPolicy m_rwRole;    //!< Access role.
       int m_size;                           //!< For GDAL driver this will be constant: 1.
       int m_i;                              //!< Just to indicate the internal pointer movement.

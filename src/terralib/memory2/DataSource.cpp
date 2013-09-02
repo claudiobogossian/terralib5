@@ -26,9 +26,9 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess2/dataset/DataSetType.h"
-//#include "../dataaccess2/dataset/ObjectIdSet.h"
 #include "../dataaccess2/datasource/DataSourceCatalog.h"
 #include "../dataaccess2/datasource/DataSourceCapabilities.h"
+#include "../dataaccess2/datasource/DataSourceTransactor.h"
 #include "../dataaccess2/query/SQLDialect.h"
 #include "../dataaccess2/utils/Utils.h"
 #include "../geometry/Envelope.h"
@@ -62,6 +62,16 @@ te::mem::DataSource::~DataSource()
   close();
 }
 
+const std::map<std::string, te::da::DataSetPtr>& te::mem::DataSource::getDataSets() const
+{
+  return m_datasets;
+}
+
+const std::map<std::string, te::da::DataSetTypePtr> te::mem::DataSource::getSchemas() const
+{
+  return m_schemas;
+}
+
 std::string te::mem::DataSource::getType() const
 {
   return TE_MEMORY_DRIVER_IDENTIFIER;
@@ -75,6 +85,12 @@ const std::map<std::string, std::string>& te::mem::DataSource::getConnectionInfo
 void te::mem::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
 {
   m_connInfo = connInfo;
+}
+
+std::auto_ptr<te::da::DataSourceTransactor> te::mem::DataSource::getTransactor()
+{
+  //return std::auto_ptr<te::da::DataSourceTransactor>(new te::mem::DataSourceTransactor(this));
+  return std::auto_ptr<te::da::DataSourceTransactor>(0);
 }
 
 void te::mem::DataSource::open()
@@ -158,7 +174,12 @@ std::vector<std::string> te::mem::DataSource::getDataSetNames()
   return datasetNames;
 }
 
-te::da::DataSetTypePtr te::mem::DataSource::getDataSetType(const std::string& datasetName)
+std::size_t te::mem::DataSource::getNumberOfDataSets()
+{
+  return m_numDatasets;
+}
+
+std::auto_ptr<te::da::DataSetType> te::mem::DataSource::getDataSetType(const std::string& datasetName)
 {
   if(!dataSetExists(datasetName))
     throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
@@ -167,7 +188,60 @@ te::da::DataSetTypePtr te::mem::DataSource::getDataSetType(const std::string& da
 
   std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_schemas.find(datasetName);
 
-  return it->second;
+  te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(it->second.get()->clone());
+
+  return std::auto_ptr<te::da::DataSetType>(dt);
+}
+
+boost::ptr_vector<te::dt::Property> te::mem::DataSource::getProperties(const std::string& datasetName)
+{
+  boost::ptr_vector<te::dt::Property> properties;
+
+  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
+
+  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_schemas.find(datasetName);
+
+  if(it == m_schemas.end())
+    return properties;
+
+  const te::da::DataSetTypePtr& dt = it->second;
+
+  const std::size_t np = dt->size();
+
+  for(std::size_t i = 0; i < np; ++i)
+    properties.push_back(dt->getProperty(i)->clone());
+
+  return properties;
+}
+
+std::auto_ptr<te::dt::Property> te::mem::DataSource:: getProperty(const std::string& datasetName, const std::string& name)
+{
+  if(!propertyExists(datasetName,name))
+    throw Exception((boost::format(TR_MEMORY("The dataset \"%1%\" has no property with this name: \"%2%\"!")) % datasetName % name).str());
+
+  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
+
+  std::auto_ptr<te::da::DataSetType> dt = getDataSetType(datasetName);
+
+  te::dt::Property* p = dt->getProperty(name);
+
+  return std::auto_ptr<te::dt::Property>(p->clone());
+}
+
+std::auto_ptr<te::dt::Property> te::mem::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
+{
+  if(!dataSetExists(datasetName))
+    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
+
+  assert(propertyPos < getNumberOfProperties(datasetName));
+
+  std::auto_ptr<te::da::DataSetType> dt = getDataSetType(datasetName);
+
+  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
+
+  te::dt::Property* p = dt->getProperty(propertyPos);
+
+  return std::auto_ptr<te::dt::Property>(p->clone());
 }
 
 std::vector<std::string> te::mem::DataSource::getPropertyNames(const std::string& datasetName)
@@ -207,57 +281,6 @@ bool te::mem::DataSource::propertyExists(const std::string& datasetName, const s
   return false;
 }
 
-boost::ptr_vector<te::dt::Property> te::mem::DataSource::getProperties(const std::string& datasetName)
-{
-  boost::ptr_vector<te::dt::Property> properties;
-
-  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
-
-  std::map<std::string, te::da::DataSetTypePtr>::const_iterator it = m_schemas.find(datasetName);
-
-  if(it == m_schemas.end())
-    return properties;
-
-  const te::da::DataSetTypePtr& dt = it->second;
-
-  const std::size_t np = dt->size();
-
-  for(std::size_t i = 0; i < np; ++i)
-    properties.push_back(dt->getProperty(i)->clone());
-
-  return properties;
-}
-
-std::auto_ptr<te::dt::Property> te::mem::DataSource:: getProperty(const std::string& datasetName, const std::string& name)
-{
-  if(!propertyExists(datasetName,name))
-    throw Exception((boost::format(TR_MEMORY("The dataset \"%1%\" has no property with this name: \"%2%\"!")) % datasetName % name).str());
-
-  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
-
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
-
-  te::dt::Property* p = dt->getProperty(name);
-
-  return std::auto_ptr<te::dt::Property>(p->clone());
-}
-
-std::auto_ptr<te::dt::Property> te::mem::DataSource::getProperty(const std::string& datasetName, std::size_t propertyPos)
-{
-  if(!dataSetExists(datasetName))
-    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
-
-  assert(propertyPos < getNumberOfProperties(datasetName));
-
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
-
-  boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
-
-  te::dt::Property* p = dt->getProperty(propertyPos);
-
-  return std::auto_ptr<te::dt::Property>(p->clone());
-}
-
 void te::mem::DataSource::addProperty(const std::string& datasetName, te::dt::Property* p)
 {
   std::string pName = p->getName();
@@ -265,7 +288,7 @@ void te::mem::DataSource::addProperty(const std::string& datasetName, te::dt::Pr
   if(propertyExists(datasetName, p->getName()))
     throw Exception((boost::format(TR_MEMORY("The dataset already \"%1%\" has a property with this name \"%2%\"!")) % datasetName % pName).str());
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt = getDataSetType(datasetName);
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -285,7 +308,7 @@ void te::mem::DataSource::dropProperty(const std::string& datasetName, const std
 
   std::auto_ptr<te::da::DataSet> dataset = getDataSet(datasetName);
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt = getDataSetType(datasetName);
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
@@ -309,7 +332,7 @@ void te::mem::DataSource::renameProperty(const std::string& datasetName,
   if(!isPropertyNameValid(newName))
     throw Exception((boost::format(TR_MEMORY("The new property name \"%1%\" is not valid!")) % newName).str());
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(datasetName);
+  std::auto_ptr<te::da::DataSetType> dt = getDataSetType(datasetName);
 
   // Update the property name in the dataset
   std::auto_ptr<te::da::DataSet> dataset = getDataSet(datasetName);
@@ -430,7 +453,7 @@ void te::mem::DataSource::renameDataSet(const std::string& name, const std::stri
   if(!isDataSetNameValid(newName))
     throw Exception((boost::format(TR_MEMORY("The new name \"%1%\" is not valid!")) % newName).str());
 
-  const te::da::DataSetTypePtr& dt = getDataSetType(name);
+  std::auto_ptr<te::da::DataSetType> dt = getDataSetType(name);
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 

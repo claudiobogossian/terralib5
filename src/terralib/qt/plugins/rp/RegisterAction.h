@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/plugins/rp/TiePointLocatorAction.h
+  \file terralib/qt/plugins/rp/RegisterAction.h
 
-  \brief This file defines the tie point locator action class
+  \brief This file defines the register action class
 */
 
-#ifndef __TE_QT_PLUGINS_RP_INTERNAL_TIEPOINTLOCATORACTION_H
-#define __TE_QT_PLUGINS_RP_INTERNAL_TIEPOINTLOCATORACTION_H
+#ifndef __TE_QT_PLUGINS_RP_INTERNAL_REGISTERACTION_H
+#define __TE_QT_PLUGINS_RP_INTERNAL_REGISTERACTION_H
 
 // TerraLib
 #include "Config.h"
@@ -39,20 +39,20 @@ namespace te
       namespace rp
       {
         /*!
-          \class TiePointLocatorAction
+          \class RegisterAction
 
-          \brief This class register the tie point locator action into RP Plugin.
+          \brief This class register the register action into RP Plugin.
 
         */
-        class TiePointLocatorAction : public te::qt::plugins::rp::AbstractAction
+        class RegisterAction : public te::qt::plugins::rp::AbstractAction
         {
           Q_OBJECT
 
           public:
 
-            TiePointLocatorAction(QMenu* menu);
+            RegisterAction(QMenu* menu);
 
-            virtual ~TiePointLocatorAction();
+            virtual ~RegisterAction();
 
           protected slots:
 
@@ -64,4 +64,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif //__TE_QT_PLUGINS_RP_INTERNAL_TIEPOINTLOCATORACTION_H
+#endif //__TE_QT_PLUGINS_RP_INTERNAL_REGISTERACTION_H

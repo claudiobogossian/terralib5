@@ -51,7 +51,7 @@ void te::ado::Module::startup()
   TE_ADD_TEXT_DOMAIN(TE_ADO_TEXT_DOMAIN, TE_ADO_TEXT_DOMAIN_DIR, "UTF-8");
 
   // Register the data source factory
-  te::da::DataSourceFactory::add("POSTGIS", te::ado::Build);
+  te::da::DataSourceFactory::add("ADO", te::ado::Build);
 
   //DataSourceFactory::initialize();
 

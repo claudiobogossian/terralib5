@@ -36,27 +36,32 @@
 #include <cassert>
 #include <memory>
 
-te::gdal::DataSet::DataSet(te::da::DataSetType* dt)
+te::gdal::DataSet::DataSet(std::auto_ptr<te::da::DataSetType> dt,std::string uri)
   : m_dsType(dt),
+    m_uri(uri),
     m_rwRole(te::common::RAccess),
     m_size(1),
     m_i(-1)
-{
-  assert(m_dsType);
-}
+{}
 
 te::gdal::DataSet::~DataSet()
+{}
+
+void te::gdal::DataSet::setURI(const std::string& uri)
 {
-  delete m_dsType;
+  m_uri = uri;
 }
 
-te::gm::Envelope* te::gdal::DataSet::getExtent(std::size_t i) 
+std::auto_ptr<te::gm::Envelope> te::gdal::DataSet::getExtent(std::size_t i) 
 {
   assert(getPropertyDataType(i) == te::dt::RASTER_TYPE);
-
+  
   const te::rst::RasterProperty* rp = static_cast<const te::rst::RasterProperty*>(m_dsType->getProperty(i));
+  
+  const te::gm::Envelope* env = rp->getGrid()->getExtent();
 
-  return new te::gm::Envelope(*(rp->getGrid()->getExtent()));
+  return std::auto_ptr<te::gm::Envelope>(new te::gm::Envelope(env->getLowerLeftX(), env->getLowerLeftY(),
+                                                              env->getUpperRightX(), env->getUpperRightY()));
 }
 
 std::size_t te::gdal::DataSet::getNumProperties() const
@@ -84,9 +89,7 @@ std::auto_ptr<te::rst::Raster> te::gdal::DataSet::getRaster(std::size_t i) const
   assert(i < getNumProperties());
   assert(getPropertyDataType(i) == te::dt::RASTER_TYPE);
 
-  te::rst::RasterProperty* rp = static_cast<te::rst::RasterProperty*>(m_dsType->getProperty(i));
-
-  te::gdal::Raster* rs = new te::gdal::Raster(rp->getInfo().at("URI"), m_rwRole);
+  te::gdal::Raster* rs = new te::gdal::Raster(m_uri, m_rwRole);
 
   return std::auto_ptr<te::rst::Raster>(rs);
 }

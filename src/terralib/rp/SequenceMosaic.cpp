@@ -26,6 +26,7 @@
 
 #include "RasterHandler.h"
 #include "Macros.h"
+#include "Functions.h"
 #include "../raster/Grid.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Utils.h"
@@ -1126,7 +1127,7 @@ namespace te
       }
       
       te::rp::RasterHandler outRasterHandler;
-      if( ! te::rp::createNewRaster( *( sourceRaster.getGrid() ),
+      if( ! te::rp::CreateNewRaster( *( sourceRaster.getGrid() ),
         bandsProperties, dataSetName, *dataSourcePtr, outRasterHandler) )
         return false;      
       

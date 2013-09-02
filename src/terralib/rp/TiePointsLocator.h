@@ -248,11 +248,11 @@ namespace te
 
             unsigned int m_y; //!< Point Y coord.
 
-            double m_feature1; //!< Interest point feature 1 value.
+            float m_feature1; //!< Interest point feature 1 value.
             
-            double m_feature2; //!< Interest point feature 2 value.
+            float m_feature2; //!< Interest point feature 2 value.
             
-            double m_feature3; //!< Interest point feature 3 value.
+            float m_feature3; //!< Interest point feature 3 value.
             
             InterestPointT() 
               : m_x( 0 ), m_y( 0 ), m_feature1( 0 ), m_feature2( 0 ),
@@ -300,7 +300,7 @@ namespace te
             
             InterestPointT m_point2; //!< Interest point 2
             
-            double m_feature; //!< Matched interest feature.
+            float m_feature; //!< Matched interest feature.
             
             MatchedInterestPointsT() {};
             
@@ -310,7 +310,7 @@ namespace te
             };
             
             MatchedInterestPointsT( const InterestPointT& point1, 
-              const InterestPointT& point2, const double& feature ) : 
+              const InterestPointT& point2, const float& feature ) : 
               m_point1( point1 ), m_point2( point2 ),
               m_feature( feature ) {};
             
@@ -347,7 +347,7 @@ namespace te
             
             unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
             
-            DoublesMatrix const* m_rasterDataPtr; //!< The loaded raster data.
+            FloatsMatrix const* m_rasterDataPtr; //!< The loaded raster data.
             
             UCharsMatrix const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
             
@@ -382,7 +382,7 @@ namespace te
             
             unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block for each scale.
             
-            DoublesMatrix const* m_integralRasterDataPtr; //!< The integral image raster data.
+            FloatsMatrix const* m_integralRasterDataPtr; //!< The integral image raster data.
             
             UCharsMatrix const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
             
@@ -530,7 +530,7 @@ namespace te
           throw( te::rp::Exception );        
         
         /*!
-          \brief Load rasters data.
+          \brief Load rasters data (normalized between 0 and 1).
           
           \param rasterPtr Input raster pointer.
           
@@ -554,6 +554,8 @@ namespace te
           
           \param rasterInterpMethod The interpolation used when loading the input raster.
           
+          \param maxMemPercentUsage The maximum amount (percent) of memory to use for the loaded data [0,100].
+          
           \param loadedRasterData The loaded raster data.
           
           \param loadedMaskRasterData The loaded mask raster data.
@@ -572,7 +574,8 @@ namespace te
           const double rescaleFactorX,
           const double rescaleFactorY,
           const te::rst::Interpolator::Method rasterInterpMethod,
-          std::vector< boost::shared_ptr< DoublesMatrix > >& loadedRasterData,
+          const unsigned char maxMemPercentUsage, 
+          std::vector< boost::shared_ptr< FloatsMatrix > >& loadedRasterData,
           UCharsMatrix& loadedMaskRasterData );
           
         /*!
@@ -595,7 +598,7 @@ namespace te
           \return true if ok, false on errors.
         */             
         static bool locateMoravecInterestPoints( 
-          const DoublesMatrix& rasterData,
+          const FloatsMatrix& rasterData,
           UCharsMatrix const* maskRasterDataPtr,
           const unsigned int moravecWindowWidth,
           const unsigned int maxInterestPoints,
@@ -620,7 +623,7 @@ namespace te
           \note InterestPointT::m_feature3 will 1 if the laplacian sign is positive, or zero if negative.
         */             
         bool locateSurfInterestPoints( 
-          const DoublesMatrix& integralRasterData,
+          const FloatsMatrix& integralRasterData,
           UCharsMatrix const* maskRasterDataPtr,
           InterestPointsSetT& interestPoints ) const;          
           
@@ -732,8 +735,8 @@ namespace te
           \return true if ok, false on errors.
         */             
         static bool applyMeanFilter( 
-          const DoublesMatrix& inputData,
-          DoublesMatrix& outputData,
+          const FloatsMatrix& inputData,
+          FloatsMatrix& outputData,
           const unsigned int iterationsNumber );     
           
         /*!
@@ -748,8 +751,8 @@ namespace te
           \return true if ok, false on errors.
         */             
         static bool createIntegralImage( 
-          const DoublesMatrix& inputData,
-          DoublesMatrix& outputData );           
+          const FloatsMatrix& inputData,
+          FloatsMatrix& outputData );           
           
         /*!
           \brief Generate correlation features ( normalized - unit vector ) matrix for the given interes points.
@@ -769,7 +772,7 @@ namespace te
         static bool generateCorrelationFeatures( 
           const InterestPointsSetT& interestPoints,
           const unsigned int correlationWindowWidth,
-          const DoublesMatrix& rasterData,
+          const FloatsMatrix& rasterData,
           FloatsMatrix& features,
           InterestPointsSetT& validInteresPoints );
           
@@ -788,7 +791,7 @@ namespace te
         */             
         static bool generateSurfFeatures( 
           const InterestPointsSetT& interestPoints,
-          const DoublesMatrix& integralRasterData,
+          const FloatsMatrix& integralRasterData,
           InterestPointsSetT& validInterestPoints,
           FloatsMatrix& features );          
           
@@ -937,7 +940,7 @@ namespace te
           \param lowerRightY Box lower right X.
         */          
         template< typename BufferType >
-        inline static double getIntegralBoxSum( BufferType& buffer, 
+        inline static float getIntegralBoxSum( BufferType& buffer, 
           const unsigned int& upperLeftX, const unsigned int& upperLeftY, 
           const unsigned int& lowerRightX, const unsigned int& lowerRightY )
         {
@@ -960,7 +963,7 @@ namespace te
           
           \param lobeRadius Filter lobe radius.
         */         
-        inline static double getSurfDyyDerivative( double** bufferPtr, 
+        inline static float getSurfDyyDerivative( float** bufferPtr, 
           const unsigned int& centerX,  const unsigned int& centerY, 
            const unsigned int& lobeWidth,  const unsigned int& lobeRadius )
         {
@@ -993,7 +996,7 @@ namespace te
           
           \param lobeRadius Filter lobe radius.
         */        
-        inline static double getSurfDxxDerivative( double** bufferPtr, 
+        inline static float getSurfDxxDerivative( float** bufferPtr, 
           const unsigned int& centerX,  const unsigned int& centerY, 
            const unsigned int& lobeWidth,  const unsigned int& lobeRadius )
         {
@@ -1024,7 +1027,7 @@ namespace te
           
           \param lobeWidth Filter lobe width.
         */ 
-        inline static double getSurfDxyDerivative( double** bufferPtr, 
+        inline static float getSurfDxyDerivative( float** bufferPtr, 
           const unsigned int& centerX,  const unsigned int& centerY, 
            const unsigned int& lobeWidth )
         {
@@ -1074,7 +1077,7 @@ namespace te
           \param radius Window radius.
         */         
         template< typename BufferType >
-        inline static double getHaarXVectorIntensity( BufferType& buffer, 
+        inline static float getHaarXVectorIntensity( BufferType& buffer, 
           const unsigned int& centerX,  const unsigned int& centerY, 
            const unsigned int& radius )
         {
@@ -1106,7 +1109,7 @@ namespace te
           \param radius Window radius.
         */         
         template< typename BufferType >
-        inline static double getHaarYVectorIntensity( BufferType& buffer, 
+        inline static float getHaarYVectorIntensity( BufferType& buffer, 
           const unsigned int& centerX,  const unsigned int& centerY, 
            const unsigned int& radius )
         {

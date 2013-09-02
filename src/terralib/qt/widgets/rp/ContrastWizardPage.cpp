@@ -29,6 +29,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "ContrastWizardPage.h"
+#include "RasterHistogramDialog.h"
 #include "RasterNavigatorWidget.h"
 #include "ui_ContrastWizardPageForm.h"
 
@@ -52,14 +53,17 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
 
 //build form
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
-  m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
+  m_navigator.reset(new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
   m_navigator->showAsPreview(true);
   displayLayout->addWidget(m_navigator.get());
   displayLayout->setContentsMargins(0,0,0,0);
 
+  m_histogramDlg.reset(new te::qt::widgets::RasterHistogramDialog(this));
+
 //connects
   connect(m_ui->m_histogramPushButton, SIGNAL(clicked()), this, SLOT(showHistogram()));
   connect(m_ui->m_contrastTypeComboBox, SIGNAL(activated(int)), this, SLOT(onContrastTypeComboBoxActivated(int)));
+  connect(m_navigator.get(), SIGNAL(previewClicked()), this, SLOT(apply()));
 
 //configure page
   this->setTitle(tr("Contrast"));
@@ -81,6 +85,8 @@ void te::qt::widgets::ContrastWizardPage::set(te::map::AbstractLayerPtr layer)
   list.push_back(m_layer);
 
   m_navigator->set(m_layer);
+
+  m_histogramDlg->set(m_layer);
 
   listBands();
 }
@@ -161,15 +167,8 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
 
 void te::qt::widgets::ContrastWizardPage::apply()
 {
-  //get input raster
-  te::da::DataSet* ds = m_layer->getData();
-
-  std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
-
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
-
-  //get current box
-  te::gm::Envelope extent = m_navigator->getCurrentExtent();
+  //get preview raster
+  te::rst::Raster* inputRst = m_navigator->getExtentRaster();
 
   //set contrast parameters
   te::rp::Contrast::InputParameters algoInputParams = getInputParams();
@@ -179,9 +178,9 @@ void te::qt::widgets::ContrastWizardPage::apply()
   te::rp::Contrast::OutputParameters algoOutputParams;
 
   std::map<std::string, std::string> rinfo;
-  rinfo["MEM_RASTER_NROWS"] = "100";
-  rinfo["MEM_RASTER_NCOLS"] = "100";
-  rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>((int) te::dt::UCHAR_TYPE);
+  rinfo["MEM_RASTER_NROWS"] = inputRst->getNumberOfRows();
+  rinfo["MEM_RASTER_NCOLS"] = inputRst->getNumberOfColumns();
+  rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(inputRst->getBandDataType(0));
   rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfBands());
 
   algoOutputParams.m_createdOutRasterDSType = "MEM";
@@ -190,34 +189,23 @@ void te::qt::widgets::ContrastWizardPage::apply()
   //run contrast
   te::rp::Contrast algorithmInstance;
 
-  if(algorithmInstance.initialize(algoInputParams))
+  try
   {
-    if(algorithmInstance.execute(algoOutputParams))
+    if(algorithmInstance.initialize(algoInputParams))
     {
-      QMessageBox::information(this, tr("Contrast"), tr("Contrast enhencement ended sucessfully"));
-    }
-    else
-    {
-      QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement execution error"));
+      if(algorithmInstance.execute(algoOutputParams))
+      {
+        m_navigator->drawRaster(algoOutputParams.m_outRasterPtr);
+      }
     }
   }
-  else
+  catch(...)
   {
-    QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement initialization error"));
+    QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
   }
 
   //delete input raster dataset
-  delete ds;
-}
-
-void te::qt::widgets::ContrastWizardPage::preview()
-{
-  if(m_ui->m_previewGroupBox->isChecked())
-  {
-    apply();
-
-
-  }
+  delete inputRst;
 }
 
 void te::qt::widgets::ContrastWizardPage::fillContrastTypes()
@@ -277,16 +265,7 @@ void te::qt::widgets::ContrastWizardPage::showHistogram()
 {
   assert(m_layer.get());
 
-
-  //get input raster
-  //te::da::DataSet* ds = m_layer->getData();
-
-  //if(ds)
-  //{
-
-  //}
-
-  //delete ds;
+  m_histogramDlg->show();
 }
 
 void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int index)

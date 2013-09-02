@@ -35,11 +35,11 @@
 #include "Connection.h"
 #include "DataSet.h"
 #include "DataSource.h"
-#include "DataSourceTransactor.h"
 #include "Exception.h"
 #include "EWKBWriter.h"
 #include "PreparedQuery.h"
 #include "SQLVisitor.h"
+#include "Transactor.h"
 #include "Utils.h"
 
 // STL
@@ -129,7 +129,7 @@ namespace te
   } // end namespace pgis
 }   // end namespace te
 
-te::pgis::PreparedQuery::PreparedQuery(DataSourceTransactor* t, const std::string& pqname)
+te::pgis::PreparedQuery::PreparedQuery(Transactor* t, const std::string& pqname)
   : m_t(t),
     m_conn(0),
     m_result(0),
@@ -162,7 +162,7 @@ std::string te::pgis::PreparedQuery::getName() const
 
 void te::pgis::PreparedQuery::prepare(const te::da::Query& query, const std::vector<te::dt::Property*>& paramTypes)
 {
-  te::pgis::DataSource* pgds = static_cast<te::pgis::DataSource*>(m_t->getDataSource().get());
+  te::pgis::DataSource* pgds = static_cast<te::pgis::DataSource*>(m_t->getDataSource());
   assert(m_t && pgds && pgds->getDialect());
   std::string sql;
 
@@ -208,7 +208,12 @@ te::da::DataSet* te::pgis::PreparedQuery::query(te::common::TraverseType /*travT
 {
   execute();
 
-  DataSet* dataset = new DataSet(m_result, m_t->getDataSource().get(), 0);
+  te::pgis::DataSource* ds = static_cast<te::pgis::DataSource*>(m_t->getDataSource());
+
+  std::vector<int> ptypes;
+  Convert2TerraLib(m_result, ds->getGeomTypeId(), ds->getRasterTypeId(), ptypes);
+
+  DataSet* dataset = new DataSet(m_result, std::vector<int>(), ds->isTimeAnInteger());
 
   m_result = 0;
 

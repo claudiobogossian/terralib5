@@ -57,11 +57,27 @@ namespace te
 
         ~DataSource();
 
+        /*!
+          \brief It returns a map relating the dataset names and their contents.
+
+          \return The map relating the dataset names and their contents..
+        */
+        const std::map<std::string, te::da::DataSetPtr>& getDataSets() const;
+
+        /*!
+          \brief It returns a map relating the dataset names and their schemas.
+
+          \return The map relating the dataset names and their schemas.
+        */
+        const std::map<std::string, te::da::DataSetTypePtr> getSchemas() const;
+
         std::string getType() const;
 
         const std::map<std::string, std::string>& getConnectionInfo() const;
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
+
+        std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
 
         void open();
 
@@ -80,19 +96,21 @@ namespace te
 
         std::vector<std::string> getDataSetNames();
 
-        te::da::DataSetTypePtr getDataSetType(const std::string& datasetName);
+        std::size_t getNumberOfDataSets();
 
-        std::vector<std::string> getPropertyNames(const std::string& datasetName);
-
-        std::size_t getNumberOfProperties(const std::string& datasetName);
-
-        bool propertyExists(const std::string& datasetName, const std::string& name);
+        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& datasetName);
 
         boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
         std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
 
         std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
+
+        std::vector<std::string> getPropertyNames(const std::string& datasetName);
+
+        std::size_t getNumberOfProperties(const std::string& datasetName);
+
+        bool propertyExists(const std::string& datasetName, const std::string& name);
 
         void addProperty(const std::string& datasetName, te::dt::Property* p);
 
@@ -125,7 +143,7 @@ namespace te
                     const std::vector<std::size_t>& properties,
                     const te::da::ObjectIdSet* oids,
                     const std::map<std::string, std::string>& options,
-                    std::size_t limit);
+                    std::size_t limit = 0);
 
         /*!
           \brief It sets the capabilities document.

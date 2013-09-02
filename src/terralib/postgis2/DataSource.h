@@ -95,7 +95,6 @@ namespace te
 
           \exception Exception It throws an exception if the data source can not be opened.
 
-          \note This method doesn't load the data source catalog.
           \note Not thread safe!
         */
         void open();
@@ -184,12 +183,11 @@ namespace te
 
       private:
 
-        te::da::DataSourceCatalog* m_catalog;             //!< The main system catalog.
         std::map<std::string, std::string> m_connInfo;    //!< Connection information.
         ConnectionPool* m_pool;                           //!< The connection pool.
         unsigned int m_geomTypeOid;                       //!< PostGIS Geometry type OID.
         unsigned int m_rasterTypeOid;                     //!< PostGIS Raster type OID.
-        std::string m_currentSchema;                     //!< The default schema used when no one is provided.
+        std::string m_currentSchema;                      //!< The default schema used when no one is provided.
         bool m_timeIsInteger;                             //!< It indicates if the postgis stores, internally, time and timestamp as an integer. 
         bool m_isInTransaction;                           //!< It indicates if there is a transaction in progress.
 

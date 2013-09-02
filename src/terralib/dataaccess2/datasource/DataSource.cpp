@@ -35,6 +35,7 @@
 #include "../query/Select.h"
 #include "../query/Where.h"
 #include "DataSource.h"
+#include "DataSourceCatalog.h"
 #include "DataSourceFactory.h"
 #include "DataSourceTransactor.h"
 
@@ -144,7 +145,7 @@ std::size_t te::da::DataSource::getNumberOfDataSets()
   return t->getNumberOfDataSets();
 }
 
-te::da::DataSetTypePtr te::da::DataSource::getDataSetType(const std::string& name)
+std::auto_ptr<te::da::DataSetType> te::da::DataSource::getDataSetType(const std::string& name)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
   return t->getDataSetType(name);

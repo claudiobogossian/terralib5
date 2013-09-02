@@ -33,7 +33,7 @@
 #include "../../../rp/MixtureModel.h"
 #include "../../../rp/MixtureModelLinearStrategy.h"
 #include "../../../rp/MixtureModelPCAStrategy.h"
-#include "../../../rp/Utils.h"
+#include "../../../rp/Functions.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Mark.h"
 #include "../../../se/Stroke.h"

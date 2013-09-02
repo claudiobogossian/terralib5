@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/TiePointLocatorWizard.h
+  \file terralib/qt/widgets/rp/RegisterWizard.h
 
-  \brief This file defines the TiePointLocatorWizard class.
+  \brief This file defines the RegisterWizard class.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORWIZARD_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORWIZARD_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_REGISTERWIZARD_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_REGISTERWIZARD_H
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
@@ -43,27 +43,29 @@ namespace te
     namespace widgets
     {
       class LayerSearchWizardPage;
-	  class TiePointLocatorWizardPage;
-
+      class TiePointLocatorDialog;
+      class RasterInfoWizardPage;
       /*!
-        \class TiePointLocatorWizard
+        \class RegisterWizard
 
-        \brief A Qt wizard that allows users to acquire a set of tie points over a raster image.
+        \brief A Qt wizard that allows users to register a  image.
       */
-      class TEQTWIDGETSEXPORT TiePointLocatorWizard : public QWizard
+      class TEQTWIDGETSEXPORT RegisterWizard : public QWizard
       {
 
         public:
 
-          TiePointLocatorWizard(QWidget* parent);
+          RegisterWizard(QWidget* parent);
 
-          ~TiePointLocatorWizard(); 
+          ~RegisterWizard(); 
 
         public:
 
           virtual bool validateCurrentPage();
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+
+          te::map::AbstractLayerPtr getOutputLayer();
 
         protected:
 
@@ -75,10 +77,15 @@ namespace te
 
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerRefPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerAdjPage;
-          std::auto_ptr<te::qt::widgets::TiePointLocatorWizardPage> m_tiePointLocatorPage;
+          std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
+          std::auto_ptr<te::qt::widgets::TiePointLocatorDialog> m_tiePointLocatorDialog;
+
+          te::map::AbstractLayerPtr m_refLayer;
+          te::map::AbstractLayerPtr m_adjLayer;
+          te::map::AbstractLayerPtr m_outputLayer;
       };
     }   // end namespace widgets
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTLOCATORWIZARD_H
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_REGISTERWIZARD_H

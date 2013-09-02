@@ -28,9 +28,15 @@
 
 // TerraLib
 #include "../../common/Enums.h"
-#include "../dataset/DataSetType.h"
-#include "../dataset/DataSet.h"
 #include "../../geometry/Enums.h"
+#include "../dataset/CheckConstraint.h"
+#include "../dataset/DataSet.h"
+#include "../dataset/DataSetType.h"
+#include "../dataset/ForeignKey.h"
+#include "../dataset/Index.h"
+#include "../dataset/PrimaryKey.h"
+#include "../dataset/Sequence.h"
+#include "../dataset/UniqueKey.h"
 #include "../Config.h"
 
 // STL
@@ -123,13 +129,13 @@ namespace te
         const std::string& getId() const;
 
         /*!
-          \brief Sets the data source identification.
+          \brief It sets the data source identification.
 
           \param id An identification value.
         */
         void setId(const std::string& id);
 
-        /** @name Basic Methods of a Data Source
+        /** @name Data Source Basic Methods
           *  Basic Methods for operating a data source.
           */
         //@{
@@ -172,29 +178,30 @@ namespace te
         /*!
           \brief It returns an object that can execute transactions in the context of a data source.
 
-          Use this method to get an object that allows to retrieve
-          dataset, to insert data or to modify dataset types.
-          You don't need to cache this kind of object because each driver in TerraLib
-          already keeps a pooling. So as soon as you finish using
+          Use this method to get an object that allows to retrieve a dataset, to insert or update data,
+          or to modify dataset types(schemas). You don't need to cache this kind of object because each
+          driver in TerraLib already keeps a connection pooling. So, as soon as you finish using
           the transactor, destroy it.
 
           \return A pointer to an object that can execute transactions in the context of a data source.
 
-          \exception Exception It throws an exception if it is not possible to get a Transactor, for example, if there is not an available connection.
+          \exception Exception An exception can be thrown, if it is not possible to get a transactor;
+                               for example, if there is no available connection.
 
           \note Thread-safe!
         */
         virtual std::auto_ptr<DataSourceTransactor> getTransactor() = 0;
 
     /*!
-          \brief It opens the data source and makes it ready for use.
+          \brief It opens the data source and makes it ready for using.
 
           If the subclass needs to open a connection to a database server, 
           to open a file, or to get information from a Web Service, this
           method can do this kind of job to prepare the data source to be
-          in an operational mode. It will use the connection information provided by the setConnectionInfo methods.
+          in an operational mode. It will use the connection information
+          provided by the setConnectionInfo methods.
 
-          \note This method doesn't load the data source catalog.
+          \exception Exception An exception can be thrown, if the data source cannot be opened.
 
           \note Not thread-safe!
         */
@@ -203,10 +210,9 @@ namespace te
         /*!
           \brief It closes the data source and clears all the resources used by its internal communication channel.
 
-          This method closes any connection, any opened file,
-          and releases any other resources.
+          This method closes any connection, any opened file, and releases any other resources.
 
-          \note This method doesn't clear the data source catalog.
+          \exception Exception An exception can be thrown, if the data source cannot be closed.
 
           \note Not thread-safe!
         */
@@ -215,25 +221,25 @@ namespace te
         /*!
           \brief It returns true if the data source is opened, otherwise it returns false.
 
-          This method will not check if the data source is available for use,
-          it will just answer if the data source has been already opened.
-          If you want to know if the data source is available for use,
+          This method will not check if the data source is available for using;
+          it will just answer if the data source has already been opened.
+          If you want to know if the data source is available for using,
           check the isValid() method.
 
-          \return It returns true if the data source is opened, otherwise it returns false.
+          \return It returns true if the data source is opened; otherwise, it returns false.
 
           \note Not thread-safe!
         */
         virtual bool isOpened() const = 0;
 
         /*!
-          \brief It checks if the data source is valid (available for use).
+          \brief It checks if the data source is valid (available for using).
 
-          For a DBMS, this will check the opened connections.
-          For a WFS client, this will check if the server is reachable.
-          For a file, this will check if it can be read.
+          For a DBMS, it will check the opened connections.
+          For a WFS client, it will check if the server is reachable.
+          For a file, it will check if it can be read.
 
-          \return It returns true if the data source is available, otherwise it returns false.
+          \return It returns true if the data source is available; otherwise, it returns false.
 
           \note Not thread-safe!
         */
@@ -242,7 +248,7 @@ namespace te
         /*!
           \brief It returns the known capabilities of the data source.
           
-          The returned object has all the information about what the data source can perform.
+          The returned object has all the information about the operations the data source can perform.
           Here you will find if the data source implementation supports primary keys,
           foreign keys, if it can be used in a thread environment and much more information.
 
@@ -253,7 +259,7 @@ namespace te
         virtual const DataSourceCapabilities& getCapabilities() const = 0;
 
         /*!
-          \brief It returns the data source SQL dialect, if one exists.
+          \brief It returns the data source SQL dialect, if there is one.
 
           \return The data source SQL dialect.
 
@@ -262,42 +268,48 @@ namespace te
         virtual const SQLDialect* getDialect() const = 0;
         //@}
 
-        /** @name DataSet Retrieval
+        /** @name Data Retrieval
           *  Methods for retrieving data from the data source.
           */
         //@{
 
         /*!
           \brief It gets the dataset identified by the given name.
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-          This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.        
-
-		      \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
+          \param name     The dataset name.
           \param travType The traverse type associated to the returned dataset. 
 
-          \return The caller of this method will take the ownership of the returned data set.
+          \exception Exception It can throw an exception if:
+                     <ul>
+                     <li>something goes wrong during the data retrieval</li>
+                     <li>if the data source driver doesn't support the traversal type</li>
+                     </ul>
 
-          \note Thread-safe!
+        \note Thread-safe!
         */
         virtual std::auto_ptr<DataSet> getDataSet(const std::string& name, 
                                                   te::common::TraverseType travType = te::common::FORWARDONLY);
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the specified property.
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.     
-
-          \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
-          \param propertyName  The name of a spatial property in order to apply the spatial filter.
-          \param e             A rectangle to be used as a spatial filter when retrieving datasets.
-          \param r             The spatial relation to be used during the filter.
+          \param name          The dataset name.
+          \param propertyName  The name of the spatial property used to apply the spatial filter.
+          \param e             A rectangle used as a spatial filter when retrieving the dataset.
+          \param r             The spatial relation used during the filtering.
           \param travType      The traversal type associated to the returned dataset.
 
-          \return The caller of this method will take the ownership of the returned data set.
+          \exception Exception It can throw an exception if:
+                     <ul>
+                     <li>something goes wrong during the data retrieval</li>
+                     <li>if the data source driver doesn't support the traversal type</li>
+                     </ul>
 
           \note The envelope coordinates should be in the same coordinate system as the dataset.
 
@@ -311,18 +323,15 @@ namespace te
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the given geometric property.
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.     
-
-          \param name          The name of the DataSetType. It must be the same name as the DataSetType name in the DataSource catalog.
-          \param propertyName  The name of a spatial property in order to apply the spatial filter.
-          \param g             A geometry to be used as a spatial filter when retrieving datasets.
-          \param r             The spatial relation to be used during the filter.
+          \param name          The dataset name.
+          \param propertyName  The name of the spatial property used to apply the spatial filter.
+          \param g             The geometry used as a spatial filter when retrieving the dataset.
+          \param r             The spatial relation used during the filtering.
           \param travType      The traverse type associated to the returned dataset.
-
-          \return The caller of this method will take the ownership of the returned data set.
 
           \note The geometry coordinates should be in the same coordinate system as the dataset.
 
@@ -335,46 +344,45 @@ namespace te
                                                   te::common::TraverseType travType = te::common::FORWARDONLY);
 
         /*!
-         \brief It gets the dataset identified by the given name using the set of objects identification.
+          \brief It gets the dataset identified by the given name using the identification of the objects.
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.     
+          \param name     The dataset name.
+          \param oids     A pointer to the set of objects. Do not pass a null pointer nor an empty set.
+          \param travType The traverse type associated to the returned dataset.
 
-         \param name     The name of the dataset. It must be the same name as the DataSetType name in the DataSource catalog.
-         \param oids     A pointer to a set of objects identification. Do not pass null. Do not pass set empty.
-         \param travType The traverse type associated to the returned dataset.
-         
-         \return The caller of this method will take the ownership of the returned DataSet.
-         
-         \exception Exception It can throws an exception if:
+          \exception Exception It can throw an exception if:
                     <ul>
                     <li>something goes wrong during data retrieval</li>
                     <li>if the data source driver doesn't support the traversal type</li>
-                    <li>if the data source driver doesn't support the access policy</li>
                     </ul>
           
           \note Thread-safe!
         */
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
-                                                  const ObjectIdSet* oids, 
+                                                  const te::da::ObjectIdSet* oids, 
                                                   te::common::TraverseType travType = te::common::FORWARDONLY);
 
         /*!
           \brief It executes a query that may return some data using a generic query.
+                 This method always returns a disconnected dataset, that is, a dataset that no more depends
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-          This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.       
-		  
-		      This method is different of the method that accepts a dataset name and
-          a spatial filter; this method allows the retrieving of only a
-          subset of the attributes, since a query can include a property list.
+                 This method is different of the method that accepts a dataset name and
+                 a spatial filter; this method allows the retrieving of only a
+                 subset of the attributes, since a query can include a property list.
 
-          \param q        A valid query object.
-          \param travType The traverse type associated to the returned dataset. 
+          \param q         A valid query object.
+          \param travType  The traverse type associated to the returned dataset. 
 
-          \return The caller of this method will take the ownership of the returned data set.
+          \exception Exception It can throw an exception if:
+                     <ul>
+                     <li>something goes wrong during data retrieval</li>
+                     <li>if the data source driver doesn't support the traversal type</li>
+                     </ul>
 
           \note Thread-safe!
         */
@@ -383,18 +391,20 @@ namespace te
 
         /*!
           \brief It executes a query that may return some data using the data source native language.
+                 This method always returns a disconnected dataset, that is, a dataset that is no more dependent
+                 of the data source that provided the connection for its creation. Therefore, the disconnected
+                 dataset continues to live after the connection given by the data source has been released.
 
-		      This method always returns an unconnected DataSet, that is, a DataSet that has no connection
-		      to the DataSource which it is from. The existence of an unconnected DataSet is independent of the 
-          existence of the DataSourceTransactor that creates it.     
-          
-		      \param query    A query string in the data source native language.
+          \param query    A query string in the data source native language.
           \param travType The traverse type associated to the returned dataset.
 
-          \return The caller of this method will take the ownership of the returned data set.
-
+         \exception Exception It can throw an exception if:
+                     <ul>
+                     <li>something goes wrong during data retrieval</li>
+                     <li>if the data source driver doesn't support the traversal type</li>
+                     </ul>
+                     
           \note Don't use this method, if you want portability for your application.
-
           \note Thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const std::string& query, 
@@ -410,6 +420,8 @@ namespace te
 
           \param command A query like: CREATE, DROP, ALTER, INSERT, UPDATE, DELETE.
 
+          \exception Exception An exception can be thrown if the query cannot be performed.
+
           \note Thread-safe!
         */
         virtual void execute(const Query& command);
@@ -419,13 +431,15 @@ namespace te
 
           \param command A query string in the data source native language (like: CREATE, DROP, ALTER, INSERT, UPDATE, DELETE).
 
+          \exception Exception An exception can be thrown if the query can not be performed.
+
           \note Thread-safe!
         */
         virtual void execute(const std::string& command);
         //@}
 
-        /** @name Auxiliary Commands
-          *  Auxiliary commands.
+        /** @name Auxiliary Methods for Commands and Queries
+          *  Auxiliary methods for commands and queries.
           */
         //@{        
         /*!
@@ -440,22 +454,22 @@ namespace te
         virtual std::string escape(const std::string& value);
 
         /*!
-          \brief It returns true if the given string is a valid dataset name.
+          \brief It checks if the given dataset name is valid.
 
-          \param datasetName A dataset name to check its validity.
+          \param datasetName A dataset name whose validity will be checked.
 
-          \return True if the name is valid according to the data source rules.
+          \return True, if the name is valid according to the data source rules.
 
           \note Thread-safe!
         */
         virtual bool isDataSetNameValid(const std::string& datasetName);
 
         /*!
-          \brief It returns true if the given string is a valid property name.
+          \brief It checks if the given property name is valid.
 
-          \param propertyName A property name to check its validity.
+          \param propertyName A property name whose validity will be checked.
 
-          \return True if the name is valid according to the data source rules.
+          \return True, if the name is valid according to the data source rules.
 
           \note Thread-safe!
         */
@@ -463,13 +477,15 @@ namespace te
         //@}
 
         /** @name Dataset Metadata Retrieval
-          *  Methods for retrieving metadata about datasets from the data source.
+          *  Methods for retrieving metadata about the datasets of the data source.
           */
         //@{
         /*!
-          \brief It searches for the list of datasets available in the data source.
+          \brief It gets the dataset names available in the data source.
 
-          \return A vector of strings containing the names of the datasets available in the data source.
+          \return The dataset names available in the data source.
+
+          \exception Exception An exception can be thrown, if the dataset names could not be retrieved.
 
           \note Each dataset in the data source must have a unique name. For example, in a DBMS the name
                 may contain the schema name before the table name separated by a dot notation (".").
@@ -481,6 +497,8 @@ namespace te
         /*!
           \brief It retrieves the number of data sets available in the data source.
 
+          \exception Exception An exception can be thrown, if the number of datasets could not be retrieved.
+
           \return The number of data sets available in the data source.
 
           \note Thread-safe!
@@ -488,9 +506,9 @@ namespace te
         virtual std::size_t getNumberOfDataSets();
 
         /*!
-          \brief It searches for the information about a given dataset in the data source.
+          \brief It gets information about the given dataset.
 
-          When you use this method you can get more information about a dataset:
+          This method can provide the following information about a dataset:
           <ul>
           <li>the list of properties, including: name, data type, size, if the value is required or not, if it is an autoincrement</li>
           <li>primary key</li>
@@ -502,29 +520,63 @@ namespace te
 
           \param name The name of the dataset we are looking information for.
 
+          \exception Exception An exception can be thrown, if the information about the dataset could not be retrieved.
+
           \return The dataset schema.
 
           \note Thread-safe!
         */
-        virtual te::da::DataSetTypePtr getDataSetType(const std::string& name);
+        virtual std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
         /*!
           \brief It retrieves the properties of the dataset.
 
           \param datasetName The dataset name.
 
-          \return The properties of the dataset.
+          \exception Exception An exception can be thrown, if the dataset properties could not be retrieved.
+
+          \return The dataset properties.
 
           \note Thread-safe!
         */
         virtual boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
         /*!
-          \brief It searches for the list of property names of the given dataset.
+          \brief It retrieves the property with the given name from the dataset.
+
+          \param datasetName  The dataset name.
+          \param propertyName The property name.
+
+          \exception Exception An exception can be thrown, if the dataset property could not be retrieved.
+
+          \return The property with the given name from the dataset.
+
+          \note Thread-safe!
+        */
+        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
+
+        /*!
+          \brief It retrieves the property lying in the given position from the dataset.
+
+          \param datasetName  The dataset name.
+          \param propertyPos  The property position.
+
+          \exception Exception An exception can be thrown, if the property lying in the given position could not be retrieved.
+
+          \return The property in the given position.
+
+          \note Thread-safe!
+        */
+        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
+
+        /*!
+          \brief It gets the property names of the given dataset.
 
           \param datasetName The dataset name.
 
-          \return The property names of the given dataset.
+          \exception Exception An exception can be thrown, if the property names of the dataset could not be retrieved.
+
+          \return The property names of the dataset.
 
           \note Each dataset in the data source must have a unique name. For example, in a DBMS the name
                 may contain the schema name before the table name separated by a dot notation (".").
@@ -538,7 +590,9 @@ namespace te
 
           \param datasetName The dataset name.
 
-          \return The number of properties of the given dataset.
+          \exception Exception An exception can be thrown, if the number of dataset properties could not be retrieved.
+
+          \return The number of dataset properties.
 
           \note Thread-safe!
         */
@@ -550,6 +604,8 @@ namespace te
           \param datasetName  The dataset name.
           \param name         The property name.
 
+          \exception Exception An exception can be thrown, if the existence of the dataset property could not be obtained.
+
           \return True, if the property exists in the dataset; otherwise, it returns false.
 
           \note Thread-safe!
@@ -557,40 +613,14 @@ namespace te
         virtual bool propertyExists(const std::string& datasetName, const std::string& name);
 
         /*!
-          \brief It retrieves a property with the given name from the dataset.
-
-          \param datasetName  The dataset name.
-          \param propertyName The property name.
-
-          \return The property with the given name from the dataset.
-
-          \note Thread-safe!
-        */
-        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
-
-        /*!
-          \brief It retrieves a property from the dataset.
-
-          \param datasetName  The dataset name.
-          \param propertyPos  The property position.
-
-          \return The property in the given position.
-
-          \post The caller of this method will take the ownership of the returned property,
-                because it is a clone of the one in the schema.
-
-          \note Thread-safe!
-        */
-        virtual std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
-
-        /*!
           \brief It adds a new property to the dataset schema.
 
           \param datasetName The dataset where the property will be added.
           \param p           The new property to be added.
 
+          \exception Exception An exception can be thrown, if the property could not be added to the dataset schema.
+
           \note Don't delete the given property, because the schema will take the ownership of it.
-      
           \note Thread-safe!
         */
         virtual void addProperty(const std::string& datasetName, te::dt::Property* p);
@@ -601,7 +631,7 @@ namespace te
           \param datasetName  The dataset from where the given property will be removed.
           \param name         The property to be removed from the dataset.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+          \exception Exception An exception can be thrown, if the dataset property could not be removed.
 
           \note Thread-safe!
         */
@@ -614,7 +644,7 @@ namespace te
           \param propertyName    The property to be renamed from the dataset.
           \param newPropertyName The new property name.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+          \exception Exception An exception can be thrown, if the dataset property could not be renamed.
 
           \note Thread-safe!
         */
@@ -627,19 +657,23 @@ namespace te
 
           \param datasetName  The dataset name.
 
-          \return If there is a primary key in the given dataset, it returns it.
+          \exception Exception An exception can be thrown, if the primary key could not be retrieved.
+
+          \return If a primary key exists in the dataset, it is returned; otherwise, a NULL is returned.
 
           \note Thread-safe!
         */
         virtual std::auto_ptr<te::da::PrimaryKey> getPrimaryKey(const std::string& datasetName);
 
         /*!
-          \brief It checks if a primary key with the given name exists in the data source.
+          \brief It checks if a primary key exists in the dataset.
 
           \param datasetName  The dataset name.
           \param name         The primary key name.
 
-          \return True, if the primary key exists in the data source; otherwise, it returns false.
+          \exception Exception An exception can be thrown, if the existence of the primary key could not be determined.
+
+          \return True, if a primary key exists in the dataset; otherwise, it returns false.
 
           \note Thread-safe!
         */
@@ -648,8 +682,10 @@ namespace te
         /*!
           \brief It adds a primary key constraint to the dataset schema.
 
-          \param datasetName  The name of the dataset to be added the primary key.
+          \param datasetName  The name of the dataset where the primary key will be added.
           \param pk           The primary key constraint.
+
+          \exception Exception An exception can be thrown, if the primary key could not be added to the dataset schema.
 
           \note Don't delete the given primary key, because the schema will take the ownership of it.
           \note Thread-safe!
@@ -659,32 +695,36 @@ namespace te
         /*!
           \brief It removes the primary key constraint from the dataset schema.
 
-          \param datasetName    The dataset from where the primary key wil be removed.
+          \param datasetName  The dataset from where the primary key will be removed.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+          \exception Exception An exception can be thrown, if the primary key could not be dropped from the dataset schema.
 
           \note Thread-safe!
         */
         virtual void dropPrimaryKey(const std::string& datasetName);
 
         /*!
-          \brief It retrieves the foreign key in the given dataset.
+          \brief It retrieves the foreign key from the given dataset.
 
           \param datasetName The dataset name.
           \param name        The foreign key name.
 
-          \return If there is a foreign key with the given name in the dataset, it returns it.
+          \exception Exception An exception can be thrown, if the foreign key could not be retrieved.
+
+          \return If the foreign key exists in the dataset, it is returned; otherwise, a NULL is returned.
 
           \note Thread-safe!
         */
         virtual std::auto_ptr<ForeignKey> getForeignKey(const std::string& datasetName, const std::string& name);
 
         /*!
-          \brief It searches for the foreign key names of the given dataset.
+          \brief It gets the foreign key names of the given dataset.
 
           \param datasetName The dataset name.
 
-          \return The foreign key names of the given dataset.
+          \exception Exception An exception can be thrown, if the foreign key names could not be retrieved.
+
+          \return The foreign key names of the dataset.
 
           \note Thread-safe!
         */
@@ -696,7 +736,9 @@ namespace te
           \param datasetName  The dataset name.
           \param name         The foreign key name.
 
-          \return True, if the foreign key exists in the data source; otherwise, it returns false.
+          \exception Exception An exception can be thrown, if the existence of the foreign key could not be obtained.
+
+          \return True, if the foreign key exists in the dataset; otherwise, it returns false.
         */
         virtual bool foreignKeyExists(const std::string& datasetName, const std::string& name);
 
@@ -705,6 +747,8 @@ namespace te
 
           \param datasetName  The dataset where the foreign key constraint will be added.
           \param fk           The foreign key constraint.
+
+          \exception Exception An exception can be thrown, if the foreign key could not be added to the dataset schema.
 
           \note Don't delete the given foreign key, because the schema will take the ownership of it.
           \note Thread-safe!
@@ -717,7 +761,7 @@ namespace te
           \param datasetName  The dataset where the foreign key will be removed.
           \param fkName       The foreign key to be removed.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+          \exception Exception An exception can be thrown, if the foreign key could not be removed from the dataset schema.
 
           \note Thread-safe!
         */
@@ -729,6 +773,8 @@ namespace te
           \param datasetName  The dataset name.
           \param name         The unique key name.
 
+          \exception Exception An exception can be thrown, if the unique key could not be retrieved.
+
           \return The unique key with the given name in the dataset.
 
           \note Thread-safe!
@@ -736,11 +782,13 @@ namespace te
         virtual std::auto_ptr<te::da::UniqueKey> getUniqueKey(const std::string& datasetName, const std::string& name);
 
         /*!
-          \brief It searches in the data source for the unique key names associated to the given dataset.
+          \brief It gets the unique key names of the given dataset.
 
           \param datasetName The dataset name.
 
-          \return The names of the unique keys of the dataset.
+          \exception Exception An exception can be thrown, if the unique key names could not be obtained.
+
+          \return The unique key names of the dataset.
 
           \note Thread-safe!
         */
@@ -752,7 +800,9 @@ namespace te
           \param datasetName  The dataset name.
           \param name         The unique key name.
 
-          \return True, if the unique key exists in the data source; otherwise, it returns false.
+          \exception Exception An exception can be thrown, if the existence of the unique key could not be determined.
+
+          \return True, if the unique key exists in the dataset; otherwise, it returns false.
 
           \note Thread-safe!
         */
@@ -764,6 +814,8 @@ namespace te
           \param datasetName  The dataset where the unique key will be added.
           \param uk           The unique key constraint.
 
+          \exception Exception An exception can be thrown, if the unique key could not be added to the dataset schema.
+
           \note Don't delete the given unique key, because the schema will take the ownership of it.
           \note Thread-safe!
         */
@@ -772,8 +824,10 @@ namespace te
         /*!
           \brief It removes the unique key constraint from the dataset.
 
-          \param datasetName  The name of the dataset to be removed the unique key.
+          \param datasetName  The dataset from where the unique key will be removed.
           \param name         The unique key constraint name.
+
+          \exception Exception An exception can be thrown, if the unique key could not be removed from the dataset schema.
 
           \note Thread-safe!
         */
@@ -785,6 +839,8 @@ namespace te
           \param datasetName  The dataset name.
           \param name         The check constraint name.
 
+          \exception Exception An exception can be thrown, if the check constraint could not be retrieved.
+
           \return The check constraint with the given name.
 
           \note Thread-safe!
@@ -792,11 +848,13 @@ namespace te
         virtual std::auto_ptr<te::da::CheckConstraint> getCheckConstraint(const std::string& datasetName, const std::string& name);
 
         /*!
-          \brief It searches in the data source for check constraints associated to the given dataset.
+          \brief It gets the check constraint names of the given dataset.
 
           \param datasetName  The dataset name.
 
-          \return The names of the check constraints of the dataset.
+          \exception Exception An exception can be thrown, if the check constraint names could not be retrieved.
+
+          \return The check constraint names of the dataset.
 
           \note Thread-safe!
         */
@@ -808,7 +866,9 @@ namespace te
           \param datasetName  The dataset name.
           \param name         The check-constraint name.
 
-          \return True, if the check-constraint exists in the data source; otherwise, it returns false.
+          \exception Exception An exception can be thrown, if the existence of the check constraint could not be determined.
+
+          \return True, if the check-constraint exists in the dataset; otherwise, it returns false.
 
           \note Thread-safe!
         */
@@ -818,7 +878,9 @@ namespace te
           \brief It adds a check constraint to the dataset.
 
           \param datasetName  The dataset where the constraint will be added.
-          \param cc           The check constraint.
+          \param cc           The check constraint to be added.
+
+          \exception Exception An exception can be thrown, if the check constraint could not be added to the dataset schema.
 
           \note Don't delete the given check constraint, because the schema will take the ownership of it.
           \note Thread-safe!
@@ -828,28 +890,35 @@ namespace te
         /*!
           \brief It removes the check constraint from the dataset.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+          \param datasetName The dataset from where the check constraint will be removed.
+          \param name        The check constraint to be removed.
+
+          \exception Exception An exception can be thrown, if the check constraint could not be removed from the dataset schema.
 
           \note Thread-safe!
         */
         virtual void dropCheckConstraint(const std::string& datasetName, const std::string& name);
 
         /*!
-          \brief It gets the index with the given name. from the dataset.
+          \brief It gets the index with the given name from the dataset.
 
           \param datasetName  The dataset name.
           \param name         The index name.
 
-          \return The index with the given name.
+          \exception Exception An exception can be thrown, if the index could not be retrieved.
+
+          \return The index from the given dataset.
 
           \note Thread-safe!
         */
         virtual std::auto_ptr<te::da::Index> getIndex(const std::string& datasetName, const std::string& name);
 
         /*!
-          \brief It searches in the data source for the index names associated to the given dataset.
+          \brief It gets the index names of the given dataset.
 
           \param datasetName  The dataset name.
+
+          \exception Exception An exception can be thrown, if the index names could not be retrieved.
 
           \return The index names of the given dataset.
 
@@ -863,7 +932,9 @@ namespace te
           \param datasetName  The dataset name.
           \param name         The index name.
 
-          \return True, if the index exists in the data source; otherwise, it returns false.
+          \exception Exception An exception can be thrown, if the index existence could not be determined.
+
+          \return True, if the index exists in the dataset; otherwise, it returns false.
 
           \note Thread-safe!
         */
@@ -876,6 +947,8 @@ namespace te
           \param idx          The index to be added.
           \param options      A list of optional modifiers (driver specific).
 
+          \exception Exception An exception can be thrown, if the index could not be added to the dataset schema.
+
           \note Don't delete the given index, because the schema will take the ownership of it.
           \note Thread-safe!
         */
@@ -883,21 +956,23 @@ namespace te
                               const std::map<std::string, std::string>& options); 
 
         /*!
-          \brief It removes the index from the dataset schema.
+          \brief It removes the index from the given dataset.
 
-          \param datasetName  The dataset where the index will be added.
+          \param datasetName  The dataset where the index will be removed.
           \param idxName      The index to be removed.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+          \exception Exception An exception can be thrown, if the index could not be removed from the dataset schema.
 
           \note Thread-safe!
         */
         virtual void dropIndex(const std::string& datasetName, const std::string& idxName);
 
         /*!
-          \brief It gets the sequence with the given name
+          \brief It gets the sequence with the given name in the data source.
 
           \param name  The sequence name.
+
+          \exception Exception An exception can be thrown, if the sequence could not be retrieved from the data source.
 
           \return The sequence with the given name.
 
@@ -906,10 +981,12 @@ namespace te
         virtual std::auto_ptr<Sequence> getSequence(const std::string& name);
 
         /*!
-          \brief It searches for the list of sequence names available in the data source.
+          \brief It gets the sequence names available in the data source.
 
           \note Each sequence in the data source must have a unique name. For example, in a DBMS the name
                 may contain the schema name before the sequence name separated by a dot notation (".").
+
+          \exception Exception An exception can be thrown, if the sequence names could not be retrieved.
 
           \return The sequence names of the data source.
 
@@ -922,6 +999,8 @@ namespace te
 
           \param name The sequence name.
 
+          \exception Exception An exception can be thrown, if the index existence could not be determined.
+
           \return True, if the sequence exists in the data source; otherwise, it returns false.
 
           \note Thread-safe!
@@ -929,11 +1008,12 @@ namespace te
         virtual bool sequenceExists(const std::string& name);
 
         /*!
-          \brief It creates a new sequence in the data source.
+          \brief It adds a new sequence in the data source.
 
-          \note Don't delete the given sequence, because the schema will take the ownership of it.
-          
-      \note Thread-safe!
+          \exception Exception An exception can be thrown, if the sequence could not be added to the data source.
+
+          \note Don't delete the given sequence, because the data source will take the ownership of it.
+          \note Thread-safe!
         */
         virtual void addSequence(Sequence* sequence);
    
@@ -942,19 +1022,21 @@ namespace te
 
           \param name The sequence that will be removed.
 
-          \note The client of this method must take care of the changes needed by a DataSetType or data source catalog.
+          \exception Exception An exception can be thrown, if the sequence could not be removed from the data source.
 
           \note Thread-safe!
         */
         virtual void dropSequence(const std::string& name);
 
         /*!
-          \brief It retrieves the bounding rectangle for the given dataset and spatial property.
+          \brief It retrieves the bounding rectangle of the spatial property for the given dataset.
 
           \param datasetName  The dataset name.
           \param propertyName The spatial property name.
 
-          \return The spatial property bounding rectangle, or NULL if none can be retrieved.
+          \exception Exception An exception can be thrown, if the extent of the geometry property could not be retrieved.
+
+          \return The spatial property bounding rectangle, or NULL, if none can be retrieved.
 
           \note Thread-safe!
         */
@@ -962,21 +1044,25 @@ namespace te
                                                           const std::string& propertyName);
 
         /*!
-          \brief It retrieves the bounding rectangle for the given dataset and spatial property position.
+          \brief It retrieves the bounding rectangle for the spatial property lying in the given position in the dataset.
 
           \param datasetName  The dataset name.
           \param propertyPos  The spatial property position.
 
-          \return The spatial property bounding rectangle, or NULL if none can be retrieved.
+          \exception Exception An exception can be thrown, if the extent of the geometry property lying in the given position could not be retrieved.
+
+          \return The spatial property bounding rectangle, or NULL, if none can be retrieved.
 
           \note Thread-safe!
         */
-        virtual std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                          std::size_t propertyPos);
+        virtual std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName, std::size_t propertyPos);
+
         /*!
           \brief It retrieves the number of items of the given dataset.
 
           \param datasetName  The dataset name.
+
+          \exception Exception An exception can be thrown, if the number of items of the dataset could not be retrieved.
 
           \return The number of items of the given dataset.
 
@@ -985,9 +1071,11 @@ namespace te
         virtual std::size_t getNumberOfItems(const std::string& datasetName);
 
         /*!
-          \brief It returns true if the data source has any dataset.
+          \brief It checks if the data source has any dataset.
 
-          \return True if the data source has datasets; otherwise, it returns false.
+          \exception Exception An exception can be thrown, if it is not possible to check if the data source has datasets .
+
+          \return True, if the data source has datasets; otherwise, it returns false.
 
           \note Thread-safe!
         */
@@ -997,6 +1085,8 @@ namespace te
           \brief It checks if a dataset with the given name exists in the data source.
 
           \param name The dataset name.
+
+          \exception Exception An exception can be thrown, if the existence of a dataset in the data source could not be determined.
 
           \return True, if the dataset exists in the data source; otherwise, it returns false.
 
@@ -1042,6 +1132,8 @@ namespace te
           \param cloneName  The name of the cloned dataset.
           \param options    A list of optional modifiers. It is driver specific.
 
+          \exception Exception An exception can be thrown, if the dataset schema could not be cloned.
+
           \note Thread-safe!
         */
         virtual void cloneDataSet(const std::string& name,
@@ -1049,12 +1141,11 @@ namespace te
                                   const std::map<std::string, std::string>& options);
 
         /*!
-          \brief It drops the dataset schema from the data source.
+          \brief It removes the dataset schema from the data source.
 
           \param name The dataset name whose schema will be removed from the data source.
 
-          \note The client of this method must take care of the changes needed by a data source catalog.
-                Some attention is needed: changing in sequences, foreign keys and other stuffs.
+          \exception Exception An exception can be thrown, if the dataset could not be removed from the data source.
 
           \note Thread-safe!
         */
@@ -1066,12 +1157,11 @@ namespace te
           \param name    The name of the dataset to be renamed.
           \param newName The new dataset name.
 
-          \note The client of this method must take care of the changes needed by a data source catalog.
+          \exception Exception An exception can be thrown, if the dataset could not be renamed.
 
           \note Thread-safe!
         */
-        virtual void renameDataSet(const std::string& name,
-                                   const std::string& newName);
+        virtual void renameDataSet(const std::string& name, const std::string& newName);
         //@}
 
         /** @name Dataset Persistence Methods
@@ -1085,11 +1175,13 @@ namespace te
           \param datasetName The target dataset name.
           \param d           The data items to be added to the dataset.
           \param options     A list of optional modifiers (driver specific).
-          \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
+          \param limit       The number of items to be used from the input dataset. If set to 0 (default), all items are used.
+
+          \exception Exception An exception can be thrown, if the input dataset items could not be added to the given dataset.
 
           \note The dataset reading will start in the current position.
                 So, keep in mind that it is the caller responsability
-                to inform the dataset 'd' in the right position (and a valid one) to start processing it.
+                to inform the right position(and a valid one) in the dataset 'd', to start the inserting process.
 
           \note Thread-safe!
         */
@@ -1101,19 +1193,20 @@ namespace te
         /*!
           \brief It removes all the informed items from the dataset.
 
-          It removes all data collection identified by an 
-          object identifier from the data source. If no OIDs are
-          informed all data will be removed.
+          It removes all the data items from a dataset which are identified by 
+          a set of object identifiers. If this set is not informed, all items will be removed.
 
           \param datasetName The dataset name.
-          \param oids        A list of object identifiers used to remove data from the datasource, or NULL for all.
+          \param oids        A set of object identifiers used used to remove data from the dataset, or NULL, for removing all.
+
+          \exception Exception An exception can be thrown, if the data items could not be removed.
 
           \note Thread-safe!
         */
-        virtual void remove(const std::string& datasetName, const ObjectIdSet* oids = 0);
+        virtual void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids = 0);
 
         /*!
-          \brief It updates the dataset items in the data source based on the OID list.
+          \brief It updates the contents of a dataset for the set of data items.
 
           \param datasetName The target dataset name.
           \param dataset     The list of data items to be updated.
@@ -1122,16 +1215,18 @@ namespace te
           \param options     A list of optional modifiers. It is driver specific.
           \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
 
+          \exception Exception An exception can be thrown, if the dataset could not be updated.
+
           \note The dataset reading will start in the
                 current position. So, keep in mind that it is the caller responsability
-                to inform the dataset 'd' in the right position (and a valid one) to start processing it.
+                to inform the right position(and a valid one) for the dataset 'd', to start the updating process.
 
           \note Thread-safe!
         */
         virtual void update(const std::string& datasetName,
                             DataSet* dataset,
                             const std::vector<std::size_t>& properties,
-                            const ObjectIdSet* oids,
+                            const te::da::ObjectIdSet* oids,
                             const std::map<std::string, std::string>& options,
                             std::size_t limit = 0);
     //@}
@@ -1142,62 +1237,70 @@ namespace te
         //@{
 
         /*!
-          \brief Create a new repository for a data source.
+          \brief It creates a new repository for a data source.
 
           \param dsType The type of data source to be created (example: POSTGIS, ORACLE, SQLITE).
           \param dsInfo The information for creating a new data source.
 
-          \return A data source from the new data repository.
+          \exception Exception An exception can be thrown, if the data source could not be created.
+
+          \return A data source for the new data repository.
 
           \note Thread-safe!
         */
         static std::auto_ptr<DataSource> create(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
 
         /*!
-          \brief Drop a repository of a data source.
+          \brief It removes a data source identified by its connection information and the driver type.
 
           \param dsType The data source type name (example: POSTGIS, ORACLE, SQLITE).
-          \param dsInfo The information for droping the data source.
+          \param dsInfo The connection information for removing the data source.
 
-          \note No other instance of the data source to be dropped can be opened when calling this method.
+          \exception Exception An exception can be thrown, if the data source could not be removed.
+
+          \note No other instance of the data source to be removed can be opened, when calling this method.
 
           \note Thread-safe!
         */
         static void drop(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
 
         /*!
-          \brief It checks if the informed data source exists.
+          \brief It checks if the data source exists with the connection information and the driver type.
 
           \param dsType The data source type name (example: POSTGIS, ORACLE, SQLITE).
           \param dsInfo The data source information.
 
-          \return True if the data source exists of false otherwise.
+          \exception Exception An exception can be thrown, if the data source exists in the driver.
+
+          \return True, if the data source exists; otherwise, it returns false.
 
           \note Thread-safe!
         */
         static bool exists(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
 
         /*!
-          \brief It returns a list of the data source names available.
+          \brief It returns the data source names available in the driver.
          
           \param dsType The type name of the data source(example: PostGIS, Oracle, WFS).
           \param dsInfo The information about the data sources.
 
-          \return A list of the data source names available.
+          \exception Exception An exception can be thrown, if the data source names could not be retrieved.
 
-          \exception Exception It throws an exception if the list of data source names could not be obtained.
+          \return The data source names available.
+
+          \exception Exception An exception can be thrown, if the list of data source names could not be retrieved.
         */
         static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info);
 
         /*!
-          \brief It gets the encodings names of the data source.
+          \brief It gets the encoding names of the data source.
           
           \param dsType The data source type name (example: PostGIS, Oracle, WFS).
           \param dsInfo The data source information.
 
-          \return The list of encoding names of the data source.
+          \exception Exception An exception can be thrown, if the encoding names could not be retrieved.
 
-          \exception Exception It throws an exception if the encoding names could not be obtained.
+          \return The encoding names of the data source.
         */
         static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
         //@}
@@ -1210,27 +1313,33 @@ namespace te
         //@{
 
         /*!
-          \brief Create a new repository of a data source.
+          \brief It creates a new data source.
 
           \param dsInfo The information for creating a new data source.
+
+          \exception Exception An exception can be thrown, if the data source could not be created.
 
           \note Not thread-safe!
         */
         virtual void create(const std::map<std::string, std::string>& dsInfo) = 0;
 
         /*!
-          \brief Drop the repository of a data source.
+          \brief It removes the data source with the connection information from a driver.
 
-          \param dsInfo The information for dropping a data source.
+          \param dsInfo The information for removing a data source from a driver.
+
+          \exception Exception An exception can be thrown, if the data source could not be removed.
 
           \note Not thread-safe!
         */
         virtual void drop(const std::map<std::string, std::string>& dsInfo) = 0;
 
         /*!
-          \brief Check the existence of a data source.
+          \brief Check the existence of a data source in a driver.
 
           \param dsInfo The data source information.
+
+          \exception Exception An exception can be thrown, if the existence of a data source in a driver could not be determined.
 
           \return True, if the data source exists, or false, otherwise.
 
@@ -1239,12 +1348,13 @@ namespace te
         virtual bool exists(const std::map<std::string, std::string>& dsInfo) = 0;
 
         /*!
-          \brief  It retrieves the list of data source names available.
+          \brief  It gets the data source names available in a driver.
 
-          \param dsType The data source type name (example: POSTGIS, ORACLE, SQLITE).
           \param dsInfo The data source information.
 
-          \return The list of repository names for data sources.
+          \exception Exception An exception can be thrown, if the data source names could not be retrieved.
+
+          \return The data source names available in the driver.
 
           \note Not thread-safe!
         */
@@ -1255,16 +1365,17 @@ namespace te
           
           \param dsInfo The data source information.
 
-          \return The list of encoding names.
+          \exception Exception An exception can be thrown, if the encoding names could not be retrieved.
 
-          \exception Exception An exception can be thrown, if the encoding names could not be obtained.
+          \return The encoding names for the data source.
+
         */
         virtual std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo) = 0;
         //@}
 
       protected:
 
-        std::string m_id;
+        std::string m_id;  //!< The data source identification.
     };
 
     typedef boost::shared_ptr<DataSource> DataSourcePtr;

@@ -91,15 +91,16 @@ namespace te
       datasets, you can find out the dataset that gave the original
       dataset name of a specific property.
 
-      A DataSet can be connected or unconnected. A connected DataSet has 
-		  a connection to the DataSource which it is from, and so, its existence depedents on
-		  the existence of the DataSourceTransactor that creates it. Differently, an unconnected DataSet
-		  has no connection to the DataSource which it is from and can live independelty of the
-		  DataSourceTransactor that creates it.
+      A dataset can be connected or disconnected. A connected dataset, after its creation through
+      the data source transactor, continues to depend on the connection given by its associated
+      data source. Differently, a disconnected dataset, after its creation, no more depends of the
+      connection given by the data source, and it continues to live after the connection has been
+      released to the data source.
 
-      \sa DataSource DataSourceTransactor DataSetType
+      \sa DataSource, DataSourceTransactor, DataSetType
 
-      \todo Whe can generaliza the dataset API so that a dataset may contain other datasets, in this case it will be a collection of datasets.
+      \todo We can generalize the dataset API so that a dataset may contain other datasets;
+            in this case, it will be a collection of datasets.
 
       \note A geometric or raster property is represented just like any other data type.
 
@@ -182,15 +183,14 @@ namespace te
         virtual bool isEmpty() const = 0;
 
         /*!
-          \brief It returns true if the DataSet is connected and false if it is unconnected.
+          \brief It returns true if the dataset is connected and false if it is disconnected.
+                 A dataset can be connected or disconnected. A connected dataset, after its creation through
+                 the data source transactor, continues to depend on the connection given by its associated
+                 data source. Differently, a disconnected dataset, after its creation, no more depends of the
+                 connection given by the data source, and it continues to live after the connection has been
+                 released to the data source.
 
-          A DataSet can be connected or unconnected. A connected DataSet has 
-		      a connection to the DataSource which it is from, and so, its existence depedents on
-		      the existence of the DataSourceTransactor that creates it. Differently, an unconnected DataSet
-		      has no connection to the DataSource which it is from and can live independelty of the
-		      DataSourceTransactor that creates it.
-
-          \return True if the DataSet is connected and False if it is unconnected.
+          \return True, if the dataset is connected, or false if it is disconnected.
         */
         virtual bool isConnected() const = 0;
 
@@ -658,5 +658,3 @@ namespace te
 
 
 #endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASET_H
-
-

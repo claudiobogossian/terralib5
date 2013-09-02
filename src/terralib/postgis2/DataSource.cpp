@@ -33,7 +33,6 @@
 #include "../dataaccess2/dataset/PrimaryKey.h"
 #include "../dataaccess2/dataset/Sequence.h"
 #include "../dataaccess2/dataset/UniqueKey.h"
-#include "../dataaccess2/datasource/DataSourceCatalog.h"
 #include "../dataaccess2/datasource/ScopedTransaction.h"
 #include "../dataaccess2/query/Select.h"
 #include "../dataaccess2/query/SQLDialect.h"
@@ -50,13 +49,12 @@
 #include "Connection.h"
 #include "ConnectionPool.h"
 #include "DataSource.h"
-#include "DataSourceTransactor.h"
 #include "DataSet.h"
-//#include "DataTypes.h"
 #include "Exception.h"
 #include "Globals.h"
 #include "PreparedQuery.h"
 #include "SQLVisitor.h"
+#include "Transactor.h"
 #include "Utils.h"
 
 // STL
@@ -79,20 +77,16 @@ te::da::SQLDialect* te::pgis::DataSource::sm_dialect(0);
 
 
 te::pgis::DataSource::DataSource()
-  : m_catalog(0),
-    m_pool(0),
+  : m_pool(0),
     m_geomTypeOid(0),
     m_rasterTypeOid(0),
     m_timeIsInteger(true)
 {
-  m_catalog = new te::da::DataSourceCatalog;
-  m_catalog->setDataSource(this);
   m_pool = new ConnectionPool(this);
 }
 
 te::pgis::DataSource::~DataSource()
 {
-  delete m_catalog;
   delete m_pool;
 }
 
@@ -115,7 +109,7 @@ std::auto_ptr<te::da::DataSourceTransactor> te::pgis::DataSource::getTransactor(
 {
   Connection* conn = m_pool->getConnection();
 
-  return std::auto_ptr<te::da::DataSourceTransactor>(new te::pgis::DataSourceTransactor(this, conn));
+  return std::auto_ptr<te::da::DataSourceTransactor>(new te::pgis::Transactor(this, conn));
 }
 
 te::pgis::Connection* te::pgis::DataSource::getConnection()
@@ -146,7 +140,7 @@ void te::pgis::DataSource::open()
   m_pool->initialize();
 
   std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
-  te::pgis::DataSourceTransactor* pgt = static_cast<te::pgis::DataSourceTransactor*>(t.get());
+  te::pgis::Transactor* pgt = static_cast<te::pgis::Transactor*>(t.get());
 
   // Find the PostGIS types
   m_geomTypeOid = pgt->getGeomTypeId();
@@ -200,98 +194,6 @@ te::pgis::ConnectionPool* te::pgis::DataSource::getConnPool() const
 {
   return m_pool;
 }
-
-//te::da::DataSetTypePtr te::pgis::DataSource::getDataSetType(const std::string& name)
-//{
-//  std::string datasetName = getFullName(name);
-//
-//  if(!dataSetExists(datasetName))
-//    throw Exception((boost::format(TR_PGIS("The dataset \"%1%\" doesn't exist!")) % datasetName).str());
-//
-//  //// If the dataset schema exists in the catalog, remove it from there.
-//  //if(m_pImpl->m_catalog->datasetExists(datasetName))
-//  //{
-//  //  // Remove the schema from the catalog
-//  //  te::da::DataSetType* dt = m_pImpl->m_catalog->getDataSetType(datasetName).get();
-//  //  m_pImpl->m_catalog->remove(dt);
-//  //  delete dt;
-//  //}
-//
-//  // Find the dataset id
-//  unsigned int dtid = getDataSetId(datasetName);
-//  
-//  // Create the dataset type
-//  te::da::DataSetTypePtr dt(new te::da::DataSetType(datasetName, dtid));
-//  dt->setTitle(datasetName);
-//
-//  // Get the properties of the dataset and add them to its schema
-//  boost::ptr_vector<te::dt::Property> properties = getProperties(datasetName);
-//  for(std::size_t i = 0; i < properties.size(); ++i)
-//  {
-//    te::dt::Property* p = properties[i].clone();
-//    dt->add(p);
-//  }
-//
-//  // Get all the constraints of the dataset and load them to its schema
-//  getConstraints(dt);
-//
-//  // Get the indexes of the dataset and add them to its schema
-//  getIndexes(dt);
-//
-//  // If the dataset schema is not in the Add the dataset schema to the catalog
-//  m_pImpl->m_catalog->add(dt);
-//
-//  return dt;
-//}
-
-
-
-//std::auto_ptr<te::gm::Envelope> te::pgis::DataSource::getExtent(te::da::DataSet* dataset)
-//{
-//  std::size_t pos = GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE);
-//
-//  if(pos == std::string::npos)
-//    throw Exception(TR_PGIS("This driver only supports the getExtent method over a geometry column!"));
-//
-//  te::pgis::DataSet* dset = static_cast<te::pgis::DataSet*>(dataset);
-//
-//  std::string sql("SELECT ST_Extent(");
-//              sql += PQfname(dset->getPGResult(), pos);
-//              sql += ") FROM (";
-//              sql += *(dset->getSQL());
-//              sql += ") pgis_driver_subquery";
-//
-//  te::pgis::Connection* conn = m_pImpl->m_pool->getConnection();
-//
-//  PGresult* result = PQexec(conn->getConn(), sql.c_str());
-//
-//  if(PQresultStatus(result) != PGRES_TUPLES_OK)
-//  {
-//    std::string errmsg(TR_PGIS("Could not find mbr for the given geometry property due to the following error: "));
-//                errmsg += PQerrorMessage(conn->getConn());
-//
-//    PQclear(result);
-//
-//    closeConnection(conn);
-//
-//    throw Exception(errmsg);
-//  }
-//
-//  closeConnection(conn);
-//
-//  const char* boxStr = PQgetvalue(result, 0, 0);
-//
-//  te::gm::Envelope* mbr = 0;
-//
-//  if(*boxStr != '\0')
-//    mbr = GetEnvelope(boxStr);
-//
-//  PQclear(result);
-//
-//  return std::auto_ptr<te::gm::Envelope>(mbr);
-//}
-
-
 
 void te::pgis::DataSource::setDialect(te::da::SQLDialect* myDialect)
 {

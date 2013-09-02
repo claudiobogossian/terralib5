@@ -119,6 +119,7 @@ set (
   ${SRCDIR}/widgets/canvas/EyeBirdMapDisplayWidget.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
   ${SRCDIR}/widgets/canvas/MultiThreadMapDisplay.h
+  ${SRCDIR}/widgets/canvas/OverlayWidget.h
   ${SRCDIR}/widgets/canvas/ZoomInMapDisplayWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
@@ -329,6 +330,8 @@ set (
   ${SRCDIR}/widgets/rp/ContrastWizardPage.h
   ${SRCDIR}/widgets/rp/MixtureModelDialog.h
   ${SRCDIR}/widgets/rp/MixtureModelWizardPage.h
+  ${SRCDIR}/widgets/rp/RasterHistogramDialog.h
+  ${SRCDIR}/widgets/rp/RasterHistogramWidget.h
   ${SRCDIR}/widgets/rp/RasterInfoWidget.h
   ${SRCDIR}/widgets/rp/RasterInfoWizardPage.h
   ${SRCDIR}/widgets/rp/RasterNavigatorDialog.h
@@ -338,8 +341,8 @@ set (
   ${SRCDIR}/widgets/rp/SegmenterWizardPage.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorAdvancedDialog.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorDialog.h
+  ${SRCDIR}/widgets/rp/TiePointLocatorDialog.h
   ${SRCDIR}/widgets/rp/TiePointLocatorWidget.h
-  ${SRCDIR}/widgets/rp/TiePointLocatorWizardPage.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/rp" MOC)
 
@@ -472,7 +475,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/query" MOC)
 file(
   GLOB FORMS
   ${SRCDIR}/widgets/*.ui
-  ${SRCDIR}/widgets/canvas/*.ui
+  ${SRCDIR}/widgets/canvas/ui/*.ui
   ${SRCDIR}/widgets/charts/ui/*.ui
  # ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui

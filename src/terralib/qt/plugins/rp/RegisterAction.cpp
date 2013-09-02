@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/plugins/rp/TiePointLocatorAction.cpp
+  \file terralib/qt/plugins/rp/RegisterAction.cpp
 
   \brief This file defines the tie point locator action class
 */
 
 // Terralib
-#include "../../../qt/widgets/rp/TiePointLocatorWizard.h"
+#include "../../../qt/widgets/rp/RegisterWizard.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/Project.h"
-#include "TiePointLocatorAction.h"
+#include "RegisterAction.h"
 
 // Qt
 #include <QtCore/QObject>
@@ -35,18 +35,18 @@
 // STL
 #include <memory>
 
-te::qt::plugins::rp::TiePointLocatorAction::TiePointLocatorAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
+te::qt::plugins::rp::RegisterAction::RegisterAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
 {
-  createAction(tr("Tie Point Locator...").toStdString());
+  createAction(tr("Register...").toStdString());
 }
 
-te::qt::plugins::rp::TiePointLocatorAction::~TiePointLocatorAction()
+te::qt::plugins::rp::RegisterAction::~RegisterAction()
 {
 }
 
-void te::qt::plugins::rp::TiePointLocatorAction::onActionActivated(bool checked)
+void te::qt::plugins::rp::RegisterAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::TiePointLocatorWizard dlg(0);
+  te::qt::widgets::RegisterWizard dlg(0);
 
 // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
@@ -56,5 +56,9 @@ void te::qt::plugins::rp::TiePointLocatorAction::onActionActivated(bool checked)
     dlg.setList(prj->getLayers());
   }
 
-  dlg.exec();
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    //add new layer
+    addNewLayer(dlg.getOutputLayer());
+  }
 }
