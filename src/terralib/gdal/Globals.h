@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,14 +20,14 @@
 /*!
   \file terralib/gdal/Globals.h
    
-  \brief A singleton class with global definitions.
- */
+  \brief An static class with global definitions for the TerraLib GDAL driver.
+*/
 
-#ifndef __TERRALIB_GDAL_INTERNAL_GLOBAL_H
-#define __TERRALIB_GDAL_INTERNAL_GLOBAL_H
+#ifndef __TERRALIB_GDAL_INTERNAL_GLOBALS_H
+#define __TERRALIB_GDAL_INTERNAL_GLOBALS_H
 
 // TerraLib
-#include "../common/Singleton.h"
+#include "../common/Static.h"
 #include "Config.h"
 
 // STL
@@ -40,39 +40,16 @@ namespace te
     /*!
       \class Globals
 
-      \brief A singleton class with global definitions.
-     */
-    class TEGDALEXPORT Globals : public te::common::Singleton<Globals>
+      \brief An static class with global definitions for the TerraLib GDAL driver.
+    */
+    class Globals : public te::common::Static
     {
-      friend class te::common::Singleton<Globals>;
-
       public:
 
-        /*!
-          \brief It returns the GDAL driver identifier.
-
-          \return The GDAL driver identifier.
-         */
-        const std::string& getDriverID() const 
-        {
-          return m_driverIdentifier;
-        }
-
-        /* \brief Destructor. */
-        ~Globals();
-
-      protected:
-
-        /*! \brief The singleton constructor is not callable outside the class. */
-        Globals();
-
-      private:
-
-        const std::string m_driverIdentifier;  //!< The GDAL driver identifier.
+        static const std::string sm_driverIdentifier;  //!< The GDAL driver identifier.
     };
 
   } // end namespace gdal
 }   // end namespace te
 
-#endif  // __TERRALIB_GDAL_INTERNAL_GLOBAL_H
-
+#endif  // __TERRALIB_GDAL_INTERNAL_GLOBALS_H

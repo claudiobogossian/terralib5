@@ -35,7 +35,7 @@
 
   \brief The GDAL driver identifier string.
  */
-#define GDAL_DRIVER_IDENTIFIER "GDAL"
+#define TE_GDAL_DRIVER_IDENTIFIER "GDAL"
 
 /** @name Internationalization Defines
  *  Flags for TerraLib code internationalization.
@@ -77,7 +77,7 @@
   
   \brief This is the fully qualified TerraLib Vector Geometry Model logger name.
  */
-#define TE_GDAL_LOGGER_NAME "te.gdal"
+#define TE_GDAL_LOGGER_NAME "te.da.gdal"
 
 //@}
 

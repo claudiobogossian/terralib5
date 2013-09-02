@@ -25,12 +25,11 @@
 
 // TerraLib
 #include "../common/Logger.h"
-#include "../common/Translator.h"
+#include "../plugin/PluginInfo.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/datasource/DataSourceManager.h"
-#include "DataSource.h"
+#include "../dataaccess/datasource/DataSourceFactory.h"
+#include "Config.h"
 #include "DataSourceFactory.h"
-#include "Globals.h"
 #include "Module.h"
 #include "RasterFactory.h"
 
@@ -53,12 +52,13 @@ void te::gdal::Module::startup()
 
 // it initializes the Translator support for the TerraLib GDAL driver support
   TE_ADD_TEXT_DOMAIN(TE_GDAL_TEXT_DOMAIN, TE_GDAL_TEXT_DOMAIN_DIR, "UTF-8");
+  
+  te::da::DataSourceFactory::add("GDAL", te::gdal::Build);
 
   GDALAllRegister();
 
-  DataSourceFactory::initialize();
 
-  RasterFactory::initialize();
+  //RasterFactory::initialize();
 
   // DataType Capabilites
   te::da::DataTypeCapabilities dataTypeCapabilities;
@@ -82,6 +82,7 @@ void te::gdal::Module::startup()
   capabilities.setDataSetTypeCapabilities(dataSetTypeCapabilities);
   capabilities.setDataSetCapabilities(dataSetCapabilities);
   capabilities.setQueryCapabilities(queryCapabilities);
+  capabilities.setAccessPolicy(te::common::RWAccess);
 
   te::gdal::DataSource::setCapabilities(capabilities);
 
@@ -96,12 +97,12 @@ void te::gdal::Module::shutdown()
     return;
 
 //! it finalizes the GDAL factory support.
-  te::gdal::DataSourceFactory::finalize();
+  //te::da::core::gdal::DataSourceFactory::finalize();
 
   RasterFactory::finalize();
 
 //! free GDAL registered drivers
-  te::da::DataSourceManager::getInstance().detachAll(GDAL_DRIVER_IDENTIFIER);
+//  te::da::DataSourceManager::getInstance().detachAll(GDAL_DRIVER_IDENTIFIER);
  
   TE_LOG_TRACE(TR_GDAL("TerraLib GDAL driver shutdown!"));
 

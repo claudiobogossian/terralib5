@@ -25,53 +25,43 @@
 
 // TerraLib
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../datatype/Enums.h"
 #include "../geometry/Envelope.h"
 #include "../raster/RasterProperty.h"
 #include "../raster/Grid.h"
 #include "DataSet.h"
-#include "DataSourceTransactor.h"
 #include "Raster.h"
 
 // STL
 #include <cassert>
 #include <memory>
 
-te::gdal::DataSet::DataSet(DataSourceTransactor* t, te::da::DataSetType* dt, te::common::AccessPolicy rwRole)
-  : m_transactor(t),
-    m_dsType(dt),
-    m_rwRole(rwRole),
+te::gdal::DataSet::DataSet(std::auto_ptr<te::da::DataSetType> dt,std::string uri)
+  : m_dsType(dt),
+    m_uri(uri),
+    m_rwRole(te::common::RAccess),
     m_size(1),
     m_i(-1)
-{
-  assert(m_transactor);
-  assert(m_dsType);
-
-  if(m_dsType == 0)
-  {
-    std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(m_transactor->getCatalogLoader());
-
-    te::da::DataSetType* dt = cloader->getDataSetType(m_dsType->getName(), true);
-
-    assert(dt);
-
-    m_dsType = dt;
-  }
-}
+{}
 
 te::gdal::DataSet::~DataSet()
+{}
+
+void te::gdal::DataSet::setURI(const std::string& uri)
 {
-  delete m_dsType;
+  m_uri = uri;
 }
 
-te::gm::Envelope* te::gdal::DataSet::getExtent(std::size_t i) 
+std::auto_ptr<te::gm::Envelope> te::gdal::DataSet::getExtent(std::size_t i) 
 {
   assert(getPropertyDataType(i) == te::dt::RASTER_TYPE);
-
+  
   const te::rst::RasterProperty* rp = static_cast<const te::rst::RasterProperty*>(m_dsType->getProperty(i));
+  
+  const te::gm::Envelope* env = rp->getGrid()->getExtent();
 
-  return new te::gm::Envelope(*(rp->getGrid()->getExtent()));
+  return std::auto_ptr<te::gm::Envelope>(new te::gm::Envelope(env->getLowerLeftX(), env->getLowerLeftY(),
+                                                              env->getUpperRightX(), env->getUpperRightY()));
 }
 
 std::size_t te::gdal::DataSet::getNumProperties() const
@@ -94,23 +84,21 @@ std::string te::gdal::DataSet::getDatasetNameOfProperty(std::size_t pos) const
   return "";
 }
 
-te::rst::Raster* te::gdal::DataSet::getRaster(std::size_t i) const
+std::auto_ptr<te::rst::Raster> te::gdal::DataSet::getRaster(std::size_t i) const
 {
   assert(i < getNumProperties());
   assert(getPropertyDataType(i) == te::dt::RASTER_TYPE);
 
-  te::rst::RasterProperty* rp = static_cast<te::rst::RasterProperty*>(m_dsType->getProperty(i));
+  te::gdal::Raster* rs = new te::gdal::Raster(m_uri, m_rwRole);
 
-  te::gdal::Raster* rs = new te::gdal::Raster(rp->getInfo().at("URI"), m_rwRole);
-
-  return rs;
+  return std::auto_ptr<te::rst::Raster>(rs);
 }
 
-te::rst::Raster* te::gdal::DataSet::getRaster(const std::string& name) const
+std::auto_ptr<te::rst::Raster> te::gdal::DataSet::getRaster(const std::string& name) const
 {
   std::size_t pos = m_dsType->getPropertyPosition(name);
 
-  return getRaster(pos);
+  return std::auto_ptr<te::rst::Raster>(getRaster(pos));
 }
 
 bool te::gdal::DataSet::moveNext()
