@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,29 +27,30 @@
 #define __TERRALIB_MEMORY_INTERNAL_CACHEDBAND_H
 
 // TerraLib
-#include "Config.h"
-#include "CachedBandBlocksManager.h"
 #include "../raster/Band.h"
 #include "../raster/BlockUtils.h"
+#include "Config.h"
+#include "CachedBandBlocksManager.h"
 
-#include <cstddef>
+// STL
 #include <cassert>
+#include <cstddef>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
-{  
+{
   namespace mem
   {
-// Forward declaration
-    class Raster;
-
     /*!
       \class CachedBand
 
       \brief RAM cached and tiled raster band.
-      
+
       \details A cache adaptor to an external existent raster band that must always be avaliable.
     */
-    class TEMEMORYEXPORT CachedBand : public te::rst::Band
+    class TEMEMORYEXPORT CachedBand : public te::rst::Band, public boost::noncopyable
     {
       public:
 
@@ -58,7 +59,7 @@ namespace te
 
           \param blocksManager The blocks manager where to read/write data.
           \param idx The band index.
-        */        
+        */
         CachedBand( CachedBandBlocksManager& blocksManager, std::size_t idx );
 
         ~CachedBand();
@@ -78,7 +79,7 @@ namespace te
 
         void read(int x, int y, void* buffer) const;
 
-        inline void* read(int x, int y)
+        void* read(int x, int y)
         {
           assert( m_blocksManager.isInitialized() );
           return m_blocksManager.getBlockPointer( m_idx, x, y );
@@ -86,38 +87,33 @@ namespace te
 
         void write(int x, int y, void* buffer);
 
+      private:
+
+        CachedBand();
+
       protected :
-        
-        unsigned int m_blkWidth; //!< The current band blocks width
-        
-        unsigned int m_blkHeight; //!< The current band blocks height
-        
-        unsigned int m_blkSizeBytes; //!< The blocks size (bytes);
-        
+
+        unsigned int m_blkWidth;                 //!< The current band blocks width
+        unsigned int m_blkHeight;                //!< The current band blocks height
+        unsigned int m_blkSizeBytes;             //!< The blocks size (bytes);
+
         te::rst::GetBufferValueFPtr m_getBuff;   //!< A pointer to a function that helps to extract a double or complex value from a specific buffer data type (char, int16, int32, float, ...).
         te::rst::GetBufferValueFPtr m_getBuffI;  //!< A pointer to a function that helps to extract the imaginary part value from a specific buffer data type (cint16, cint32, cfloat, cdouble).
         te::rst::SetBufferValueFPtr m_setBuff;   //!< A pointer to a function that helps to insert a double or complex value into a specific buffer data type (char, int16, int32, float, ...).
         te::rst::SetBufferValueFPtr m_setBuffI;  //!< A pointer to a function that helps to insert the imaginary part value into a specific buffer data type (cint16, cint32, cfloat, cdouble).
-        
-        // Variable used by setValue/getValue methods
+
+// Variable used by setValue/getValue methods
         mutable unsigned int m_setGetBlkX;
         mutable unsigned int m_setGetBlkY;
-        mutable unsigned int m_setGetPos;  
+        mutable unsigned int m_setGetPos;
         mutable void* m_setGetBufPtr;
-        
-        CachedBandBlocksManager& m_blocksManager; //!< The external blocks manager reference.
-        
-        static te::mem::CachedBandBlocksManager dummyBlocksManager; //!< A global static dummy blocks manager.
-      
-      private :
 
-        CachedBand();
-        
-        CachedBand(const CachedBand& );
+        CachedBandBlocksManager& m_blocksManager;           //!< The external blocks manager reference.
+
+        static CachedBandBlocksManager dummyBlocksManager;  //!< A global static dummy blocks manager.
     };
 
   } // end namespace mem
-}   // end namespace te
+}     // end namespace te
 
 #endif  // __TERRALIB_MEMORY_INTERNAL_CACHEDBAND_H
-

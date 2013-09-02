@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,13 +27,14 @@
 #define __TERRALIB_MEMORY_INTERNAL_CACHEDRASTER_H
 
 // TerraLib
-#include "Config.h"
 #include "../raster/Raster.h"
 #include "CachedBand.h"
 #include "CachedBandBlocksManager.h"
+#include "Config.h"
 
-#include <vector>
+// STL
 #include <cassert>
+#include <vector>
 
 namespace te
 {
@@ -43,7 +44,7 @@ namespace te
       \class CachedRaster
 
       \brief A RAM cache adaptor to an external existent raster that must always be avaliable.
-      
+
       \details A RAM cache adaptor to an external existent raster that must always be avaliable.
     */
     class TEMEMORYEXPORT CachedRaster: public te::rst::Raster
@@ -52,27 +53,27 @@ namespace te
 
         /*!
           \brief Constructor.
-          
+
           \param rhs The external raster where the data will be read/written.
-          
+
           \param maxMemPercentUsed The maximum free memory percentual to use valid range: [1:100].
-          
+
           \param dataPrefetchThreshold The read-ahead data prefetch threshold (0-will disable prefetch, 1-data always prefetched, higher values will do prefetch when necessary).
         */
         CachedRaster( const te::rst::Raster& rhs, const unsigned char maxMemPercentUsed, 
-          const unsigned int dataPrefetchThreshold );
-          
+                      const unsigned int dataPrefetchThreshold );
+
         /*!
           \brief Constructor.
-          
+
           \param rhs The external raster where the data will be read/written.
-          
+
           \param maxNumberOfCacheBlocks The maximum number of cache blocks.
-          
+
           \param dataPrefetchThreshold The read-ahead data prefetch threshold (0-will disable prefetch, 1-data always prefetched, higher values will do prefetch when necessary).
         */
         CachedRaster( const unsigned int maxNumberOfCacheBlocks, const te::rst::Raster& rhs, 
-          const unsigned int dataPrefetchThreshold );          
+                      const unsigned int dataPrefetchThreshold );
 
         ~CachedRaster();
 
@@ -82,7 +83,7 @@ namespace te
         {
           assert( m_blocksManager.getRaster() );
           return m_blocksManager.getRaster()->getInfo();
-        };        
+        };
 
         inline std::size_t getNumberOfBands() const
         {
@@ -121,26 +122,25 @@ namespace te
 
         te::dt::AbstractData* clone() const;
 
-      protected :
-        
-        std::vector< CachedBand* > m_bands; //!< Internal raster bands.
-        
-        CachedBandBlocksManager m_blocksManager; //!< Internal blocks manager.
-      
+      protected:
 
-        /*!
-          \note Free all allocated internal resources and go back to the initial state.
-        */
-        void free();      
-        
+        /*! \brief Free all allocated internal resources and go back to the initial state. */
+        void free();
+
       private :
-        
+
         CachedRaster();
-        
+
         CachedRaster(te::rst::Grid* grid, te::common::AccessPolicy p = te::common::RAccess);
+
+      protected :
+
+        std::vector< CachedBand* > m_bands; //!< Internal raster bands.
+
+        CachedBandBlocksManager m_blocksManager; //!< Internal blocks manager.
     };
 
   } // end namespace mem
 }   // end namespace te
 
-#endif //__TERRALIB_MEMORY_INTERNAL_RASTER_H
+#endif //__TERRALIB_MEMORY_INTERNAL_CACHEDRASTER_H

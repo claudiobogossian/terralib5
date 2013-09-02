@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -40,10 +40,9 @@ namespace te { namespace rst { class Raster; } }
 
 namespace te
 {
-
-// Forward declaration
-  namespace da
+  namespace core
   {
+// Forward declaration
     class DataSet;
   }
 
@@ -207,14 +206,14 @@ namespace te
 
       protected:
 
-        const te::da::DataSet* m_parent;                                    //!< The parent dataset if the item is associate to one.
+        const te::da::DataSet* m_parent;                                    //!< The parent dataset, if the item is associated to one.
         boost::ptr_vector<boost::nullable<te::dt::AbstractData> > m_data;   //!< The data values of the dataset item.
 
       friend class DataSet;
     };
 
     /*!
-      \brief For use with boost conteiners.
+      \brief For use with boost containers.
     */
     inline DataSetItem* new_clone(const DataSetItem& a)
     {

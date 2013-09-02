@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,16 +24,17 @@
 */
 
 // TerraLib
-#include "CachedBand.h"
 #include "../raster/BandProperty.h"
+#include "CachedBand.h"
 
+// STL
 #include <cstring>
 
 te::mem::CachedBandBlocksManager te::mem::CachedBand::dummyBlocksManager;
 
 te::mem::CachedBand::CachedBand( CachedBandBlocksManager& blocksManager,
-  std::size_t idx )
-: te::rst::Band( new te::rst::BandProperty( 
+                                     std::size_t idx )
+  : te::rst::Band( new te::rst::BandProperty( 
   *(blocksManager.getRaster()->getBand( idx )->getProperty()) ), idx ),
   m_blocksManager( blocksManager )
 {
@@ -46,20 +47,7 @@ te::mem::CachedBand::CachedBand( CachedBandBlocksManager& blocksManager,
 }
 
 te::mem::CachedBand::CachedBand()
-: te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ), m_blocksManager( dummyBlocksManager )
-{
-  m_blkWidth = 0;
-  m_blkHeight = 0;
-  m_blkSizeBytes = 0;
-  m_getBuff = 0;
-  m_getBuffI = 0;
-  m_setBuff = 0;
-  m_setBuffI = 0;
-}
-
-te::mem::CachedBand::CachedBand(const CachedBand& )
-: te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ),
-  m_blocksManager( dummyBlocksManager )
+  : te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ), m_blocksManager( dummyBlocksManager )
 {
   m_blkWidth = 0;
   m_blkHeight = 0;
@@ -129,9 +117,7 @@ void te::mem::CachedBand::write(int x, int y, void* buffer)
 {
   assert( m_blocksManager.isInitialized() );
   memcpy( m_blocksManager.getBlockPointer( m_idx, x, y ), buffer,
-    m_blkSizeBytes );
+          m_blkSizeBytes );
 }
-
-
 
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,21 @@
  */
 
 /*!
-  \file terralib/memory/ExpansibleBandBlocksManager.cpp
- 
+  \file terralib/dataaccess/memory/ExpansibleBandBlocksManager.cpp
+
   \brief RAM cached and tiled raster band blocks manager.
 */
 
-#include "ExpansibleBandBlocksManager.h"
-#include "Exception.h"
-#include "../raster/Band.h"
-#include "../raster/BandProperty.h"
+// TerraLib
 #include "../common/PlatformUtils.h"
 #include "../common/Translator.h"
+#include "../raster/Band.h"
+#include "../raster/BandProperty.h"
+#include "Exception.h"
+#include "ExpansibleBandBlocksManager.h"
 
+// STL
 #include <algorithm>
-
 #include <cassert>
 
 // ---------------------------------------------------------------------------

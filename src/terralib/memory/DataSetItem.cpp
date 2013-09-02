@@ -1,4 +1,4 @@
-/*  Copyright (C) 2010-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -35,6 +35,7 @@
 #include "../geometry/Geometry.h"
 #include "../raster/Grid.h"
 #include "../raster/RasterProperty.h"
+
 #include "DataSet.h"
 #include "DataSetItem.h"
 #include "Exception.h"
@@ -335,7 +336,7 @@ void te::mem::DataSetItem::setDateTime(const std::string& name, const te::dt::Da
   setDateTime(pos, value);
 }
 
-te::dt::Array* te::mem::DataSetItem::getArray(std::size_t i) const
+te::dt::Array* te::mem::DataSetItem::getArray(std::size_t /*i*/) const
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }

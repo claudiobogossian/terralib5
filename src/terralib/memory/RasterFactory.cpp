@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,7 +27,6 @@
 #include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "Exception.h"
-#include "Globals.h"
 #include "Raster.h"
 #include "RasterFactory.h"
 
@@ -36,13 +35,15 @@
 
 te::mem::RasterFactory te::mem::RasterFactory::sm_factory;
 
+static std::string sg_rasterFactoryId(TE_MEMORY_DRIVER_IDENTIFIER);
+
 te::mem::RasterFactory::~RasterFactory()
 {
 }
 
 const std::string& te::mem::RasterFactory::getType() const
 {
-  return Globals::sm_driverIdentifier;
+  return sg_rasterFactoryId;
 }
 
 void te::mem::RasterFactory::getCreationalParameters(std::vector< std::pair<std::string, std::string> >& params) const
@@ -107,4 +108,3 @@ std::map<std::string, std::string> te::mem::RasterFactory::getCapabilities() con
 
   return capabilities;
 }
-

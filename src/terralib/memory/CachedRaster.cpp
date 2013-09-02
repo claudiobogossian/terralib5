@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/memory/CachedRaster.cpp
+  \file terralib/dataaccess/memory/CachedRaster.cpp
 
   \brief A RAM cache adaptor to an external existent raster that must always be avaliable.
 */
 
 // TerraLib
 #include "../common/Translator.h"
-#include "Exception.h"
-#include "CachedRaster.h"
 #include "CachedBand.h"
+#include "CachedRaster.h"
+#include "Exception.h"
 
 te::mem::CachedRaster::CachedRaster()
 {
@@ -70,8 +70,8 @@ te::mem::CachedRaster::~CachedRaster()
   free();
 }
 
-void te::mem::CachedRaster::open(const std::map<std::string, std::string>& rinfo, 
-  te::common::AccessPolicy p)
+void te::mem::CachedRaster::open(const std::map<std::string, std::string>& /*rinfo*/,
+                                     te::common::AccessPolicy /*p*/)
 {
 }
 

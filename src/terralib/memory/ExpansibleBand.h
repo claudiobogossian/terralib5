@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,30 +27,31 @@
 #define __TERRALIB_MEMORY_INTERNAL_EXPANSIBLEBAND_H
 
 // TerraLib
+#include "../raster/Band.h"
+#include "../raster/BandProperty.h"
+#include "../raster/BlockUtils.h"
 #include "Config.h"
 #include "ExpansibleBandBlocksManager.h"
-#include "../raster/Band.h"
-#include "../raster/BlockUtils.h"
-#include "../raster/BandProperty.h"
 
-#include <cstddef>
+// STL
 #include <cassert>
+#include <cstddef>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {  
   namespace mem
   {
-// Forward declaration
-    class Raster;
-
     /*!
       \class ExpansibleBand
 
       \brief Expansible raster band.
-      
+
       \details A cache adaptor to an external existent raster band that must always be avaliable.
     */
-    class TEMEMORYEXPORT ExpansibleBand : public te::rst::Band
+    class TEMEMORYEXPORT ExpansibleBand : public te::rst::Band, public boost::noncopyable
     {
       public:
 
@@ -58,16 +59,16 @@ namespace te
           \brief Constructor.
 
           \param blocksManager The blocks manager where to read/write data.
-          \param parentRaster The parent raster pointer.
-          \param idx The band index.
-        */        
+          \param parentRaster  The parent raster pointer.
+          \param idx           The band index.
+        */
         ExpansibleBand( ExpansibleBandBlocksManager& blocksManager,
-          te::rst::Raster& parentRaster, 
-          const te::rst::BandProperty& bandProperty, std::size_t idx );
+                        te::rst::Raster& parentRaster, 
+                        const te::rst::BandProperty& bandProperty, std::size_t idx );
 
         ~ExpansibleBand();
 
-        inline te::rst::Raster* getRaster() const
+        te::rst::Raster* getRaster() const
         {
           return m_parentRasterPtr;
         };
@@ -82,47 +83,44 @@ namespace te
 
         void read(int x, int y, void* buffer) const;
 
-        inline void* read(int x, int y)
+        void* read(int x, int y)
         {
           return m_blocksManager.getBlockPointer( m_idx, x, y );
         };
 
         void write(int x, int y, void* buffer);
 
+      private :
+
+        ExpansibleBand();
+
       protected :
-        
-        static te::mem::ExpansibleBandBlocksManager dummyBlocksManager; //!< A global static dummy blocks manager.
-        
-        te::mem::ExpansibleBandBlocksManager& m_blocksManager; //!< The external blocks manager reference.
-        
+
+        static ExpansibleBandBlocksManager dummyBlocksManager; //!< A global static dummy blocks manager.
+
+        ExpansibleBandBlocksManager& m_blocksManager; //!< The external blocks manager reference.
+
         te::rst::Raster* m_parentRasterPtr; //!< The parent raster ponter.
-        
+
         unsigned int m_blkWidth; //!< Block width in pixels(for pixel access optimization purposes).
-        
+
         unsigned int m_blkHeight; //!< Block width in pixels (for pixel access optimization purposes).
-        
+
         unsigned int m_blkSizeBytes; //!< Blosk size bytes (for pixel access optimization purposes).
-       
+
         te::rst::GetBufferValueFPtr m_getBuff;   //!< A pointer to a function that helps to extract a double or complex value from a specific buffer data type (char, int16, int32, float, ...).
         te::rst::GetBufferValueFPtr m_getBuffI;  //!< A pointer to a function that helps to extract the imaginary part value from a specific buffer data type (cint16, cint32, cfloat, cdouble).
         te::rst::SetBufferValueFPtr m_setBuff;   //!< A pointer to a function that helps to insert a double or complex value into a specific buffer data type (char, int16, int32, float, ...).
         te::rst::SetBufferValueFPtr m_setBuffI;  //!< A pointer to a function that helps to insert the imaginary part value into a specific buffer data type (cint16, cint32, cfloat, cdouble).
-        
-        // Variable used by setValue/getValue methods
+
+// Variable used by setValue/getValue methods
         mutable unsigned int m_setGetBlkX;
         mutable unsigned int m_setGetBlkY;
-        mutable unsigned int m_setGetPos;  
+        mutable unsigned int m_setGetPos;
         mutable void* m_setGetBufPtr;
-      
-      private :
-
-        ExpansibleBand();
-        
-        ExpansibleBand(const ExpansibleBand& );
     };
 
   } // end namespace mem
 }   // end namespace te
 
 #endif  // __TERRALIB_MEMORY_INTERNAL_EXPANSIBLEBAND_H
-

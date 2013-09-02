@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/memory/Band.h
+  \file terralib/dataaccess/memory/Band.h
 
   \brief Band implementation for the In-Memory Raster.
 */
@@ -96,7 +96,6 @@ namespace te
     };
 
   } // end namespace mem
-}   // end namespace te
+}     // end namespace te
 
 #endif  // __TERRALIB_MEMORY_INTERNAL_BAND_H
-

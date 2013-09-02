@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,10 +24,11 @@
 */
 
 // TerraLib
-#include "ExpansibleBand.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Utils.h"
+#include "ExpansibleBand.h"
 
+// STL
 #include <cstring>
 
 te::mem::ExpansibleBandBlocksManager te::mem::ExpansibleBand::dummyBlocksManager;
@@ -49,16 +50,6 @@ te::mem::ExpansibleBand::ExpansibleBand( ExpansibleBandBlocksManager& blocksMana
 
 te::mem::ExpansibleBand::ExpansibleBand()
 : te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ), 
-  m_blocksManager( dummyBlocksManager )
-{
-  m_getBuff = 0;
-  m_getBuffI = 0;
-  m_setBuff = 0;
-  m_setBuffI = 0;
-}
-
-te::mem::ExpansibleBand::ExpansibleBand(const ExpansibleBand& )
-: te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ),
   m_blocksManager( dummyBlocksManager )
 {
   m_getBuff = 0;

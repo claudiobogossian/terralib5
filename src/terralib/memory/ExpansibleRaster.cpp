@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -24,14 +24,14 @@
 */
 
 // TerraLib
-
-#include "Exception.h"
-#include "ExpansibleRaster.h"
-#include "../raster/Utils.h"
-#include "../raster/BlockUtils.h"
-#include "../geometry/Envelope.h"
 #include "../common/Translator.h"
 #include "../common/PlatformUtils.h"
+#include "../geometry/Envelope.h"
+#include "../raster/Utils.h"
+#include "../raster/BlockUtils.h"
+#include "Exception.h"
+#include "ExpansibleRaster.h"
+
 
 #ifndef TLINTERNAL_EXPANSIBLERASTER_MAXDISKFILESSIZE
   #define TLINTERNAL_EXPANSIBLERASTER_MAXDISKFILESSIZE 2147483648ul
@@ -175,8 +175,8 @@ te::mem::ExpansibleRaster::~ExpansibleRaster()
   free();
 }
 
-void te::mem::ExpansibleRaster::open(const std::map<std::string, std::string>& rinfo, 
-  te::common::AccessPolicy p)
+void te::mem::ExpansibleRaster::open(const std::map<std::string, std::string>& /*rinfo*/, 
+                                         te::common::AccessPolicy /*p*/)
 {
 }
 

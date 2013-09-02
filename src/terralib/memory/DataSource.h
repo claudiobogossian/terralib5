@@ -20,50 +20,36 @@
 /*!
   \file terralib/memory/DataSource.h
 
-  \brief Implements the DataSource class for the TerraLib In-Memory driver.
+  \brief 
 */
 
 #ifndef __TERRALIB_MEMORY_INTERNAL_DATASOURCE_H
 #define __TERRALIB_MEMORY_INTERNAL_DATASOURCE_H
 
 // TerraLib
-#include "../common/ThreadingPolicies.h"
+#include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/datasource/DataSource.h"
-#include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/query/SQLDialect.h"
 #include "Config.h"
 
-// STL
-#include <map>
-#include <vector>
-
 // Boost
-#include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/thread.hpp>
 
 namespace te
 {
   namespace da
   {
-    class DataSourceCapabilities;
-    class DataSetType;
+    class ObjectIdSet;
   }
-
   namespace mem
   {
-// Forward declaration
-    class DataSet;
-
     /*!
       \class DataSource
 
-      \brief Implements the DataSource class for the TerraLib In-Memory driver.
+      \brief Implementation of a random-access dataset class for the TerraLib In-Memory Data Access driver.
 
       \sa te::da::DataSource
     */
-    class TEMEMORYEXPORT DataSource : public te::da::DataSource, public te::common::ObjectLevelLockable<DataSource,
-                                                                                                        ::boost::recursive_mutex,
-                                                                                                        ::boost::lock_guard< ::boost::recursive_mutex>,
-                                                                                                        ::boost::lock_guard< ::boost::recursive_mutex> >
+    class TEMEMORYEXPORT DataSource : public te::da::DataSource
     {
       public:
 
@@ -71,15 +57,27 @@ namespace te
 
         ~DataSource();
 
-        const std::string& getType() const;
+        /*!
+          \brief It returns a map relating the dataset names and their contents.
+
+          \return The map relating the dataset names and their contents..
+        */
+        const std::map<std::string, te::da::DataSetPtr>& getDataSets() const;
+
+        /*!
+          \brief It returns a map relating the dataset names and their schemas.
+
+          \return The map relating the dataset names and their schemas.
+        */
+        const std::map<std::string, te::da::DataSetTypePtr> getSchemas() const;
+
+        std::string getType() const;
 
         const std::map<std::string, std::string>& getConnectionInfo() const;
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        const te::da::DataSourceCapabilities& getCapabilities() const;
-
-        const te::da::SQLDialect* getDialect() const;
+        std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
 
         void open();
 
@@ -89,131 +87,70 @@ namespace te
 
         bool isValid() const;
 
-        te::da::DataSourceCatalog* getCatalog() const;
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
-        te::da::DataSourceTransactor* getTransactor();
+        const te::da::SQLDialect* getDialect() const;
 
-        void optimize(const std::map<std::string, std::string>& opInfo);
+        std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
 
-        /*!
-          \brief It adds a dataset to be managed by the data source.
+        std::vector<std::string> getDataSetNames();
 
-          \exception Exception It throws an excpetion if a dataset with the given name already exists or if the data source has reached the maximum size.
+        std::size_t getNumberOfDataSets();
 
-          \note The data source will take the ownership of the dataset and its schema.
+        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& datasetName);
 
-          \note Thread-safe.
+        boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
-          \note In-Memory driver extended method.
-        */
-        void add(te::da::DataSetType* dt, DataSet* dataset);
+        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, const std::string& name);
 
-        /*!
-          \brief It returns a dataset (a deep copy or a shared copy).
+        std::auto_ptr<te::dt::Property> getProperty(const std::string& datasetName, std::size_t propertyPos);
 
-          \return A dataset or NULL if none is found.
+        std::vector<std::string> getPropertyNames(const std::string& datasetName);
 
-          \note The caller will take the ownership of the returned dataset.
+        std::size_t getNumberOfProperties(const std::string& datasetName);
 
-          \note Thread-safe.
+        bool propertyExists(const std::string& datasetName, const std::string& name);
 
-          \note In-Memory driver extended method.
-        */
-        DataSet* getDataSet(const std::string& name);
+        void addProperty(const std::string& datasetName, te::dt::Property* p);
 
-        /*!
-          \brief It returns the internal dataset pointer.
+        void dropProperty(const std::string& datasetName, const std::string& propertyName);
 
-          \return A dataset or NULL if none is found.
+        void renameProperty(const std::string& datasetName, const std::string& name, const std::string& newName);
 
-          \note The caller will NOT take the ownership of the returned dataset.
+        std::size_t getNumberOfItems(const std::string& datasetName);
 
-          \note Thread-safe.
-
-          \note In-Memory driver extended method.
-        */
-        DataSet* getDataSetRef(const std::string& name);
-
-        /*!
-          \brief It returns a dataset type.
-
-          \return A dataset type or NULL if none is found.
-
-          \note The caller will take the ownership of the returned dataset type.
-
-          \note Thread-safe.
-
-          \note In-Memory driver extended method.
-        */
-        te::da::DataSetType* getDataSetType(const std::string& name);
-
-        /*!
-          \brief It returns the internal dataset type pointer.
-
-          \return A dataset type or NULL if none is found.
-
-          \note The caller will NOT take the ownership of the returned dataset type.
-
-          \note Thread-safe.
-
-          \note In-Memory driver extended method.
-        */
-        te::da::DataSetType* getDataSetTypeRef(const std::string& name);
-
-        /*!
-          \brief It returns the list of datasets managed by the data source.
-
-          \note The caller will take the ownership of the returned list.
-
-          \note In-Memory driver extended method.
-        */
-        void getDataSets(boost::ptr_vector<std::string>& datasets) const;
-
-        /*!
-          \brief It checks if a given dataset exists.
-
-          \return True if a dataset with the given name is stored in the data source.
-
-          \note In-Memory driver extended method.
-        */
-        bool datasetExists(const std::string& name) const;
-
-        /*!
-          \brief It removes a dataset.
-
-          \param datasetName The name of the dataset to be removed.
-
-          \exception Exception It throws an excpetion if a dataset with the given name doesn't exist.
-
-          \note In-Memory driver extended method.
-        */
-        void remove(const std::string& datasetName);
-
-        /*!
-          \brief It renames a dataset
-
-          \param oldName The name of the dataset to be renamed.
-          \param newName The dataset new name.
-
-          \exception Exception It throws an excpetion if a dataset with the old-name doesn't exist or if one with new-name already exist.
-
-          \note In-Memory driver extended method.
-        */
-        void rename(const std::string& oldName, std::string newName);
-
-        /*!
-          \brief It return true if the data source has any dataset.
-
-          \return True if the data source has datasets otherwise, false.
-        */
         bool hasDataSets();
+
+        bool dataSetExists(const std::string& name);
+
+        void createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options);
+
+        void cloneDataSet(const std::string& name, const std::string& cloneName,
+                          const std::map<std::string, std::string>& options);
+
+        void dropDataSet(const std::string& name);
+
+        void renameDataSet(const std::string& name, const std::string& newName);
+
+        void add(const std::string& datasetName, te::da::DataSet* d,
+                 const std::map<std::string, std::string>& options, std::size_t limit);
+
+        void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids);
+
+        void update(const std::string& datasetName,
+                    te::da::DataSet* dataset,
+                    const std::vector<std::size_t>& properties,
+                    const te::da::ObjectIdSet* oids,
+                    const std::map<std::string, std::string>& options,
+                    std::size_t limit = 0);
 
         /*!
           \brief It sets the capabilities document.
           
-          \param capabilities The Memory data source capabilities.
+          \param capabilities The memory data source capabilities.
 
-          \note The Memory data source will take the ownership of the given capabilities object.
+          \note The memory data source will take the ownership of the given capabilities object.
 
           \note Memory driver extended method.
         */
@@ -227,27 +164,26 @@ namespace te
 
         bool exists(const std::map<std::string, std::string>& dsInfo);
 
-        std::vector<std::string> getDataSources(const std::map<std::string, std::string>& info);
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
 
-        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
 
       private:
 
-        std::map<std::string, std::string> m_connInfo;            //!< DataSource information.
-        std::map<std::string, DataSet*> m_datasets;               //!< The set of datasets stored in memory.
-        std::map<std::string, te::da::DataSetType*> m_schemas;    //!< The set of dataset schemas.
-        te::da::DataSourceCatalog* m_catalog;                     //!< The main system catalog.
-        std::size_t m_ndatasets;                                  //!< The number of datasets kept in the data source.
-        std::size_t m_maxdatasets;                                //!< The maximum number of datasets to be handled by the data source.
-        bool m_isOpened;                                          //!< A flag to control the state of the data source.
-        bool m_deepCopy;                                          //!< If true each dataset is cloned in the getDataSet method.
+        std::map<std::string, std::string> m_connInfo;              //!< DataSource information.
+        std::map<std::string, te::da::DataSetPtr> m_datasets;       //!< The set of datasets stored in memory.
+        std::map<std::string, te::da::DataSetTypePtr> m_schemas;    //!< The set of dataset schemas.
+        mutable boost::recursive_mutex m_mtx;                       //!< The internal mutex.
+        std::size_t m_numDatasets;                                  //!< The number of datasets kept in the data source.
+        std::size_t m_maxNumDatasets;                               //!< The maximum number of datasets to be handled by the data source.
+        bool m_isOpened;                                            //!< A flag to control the state of the data source.
+        bool m_deepCopy;                                            //!< If true, each dataset is cloned in the getDataSet method.
 
-        static te::da::DataSourceCapabilities sm_capabilities; //!< The Memory data source capabilities.
-        static const te::da::SQLDialect sm_dialect;            //!< A dummy dialect.
+        static te::da::DataSourceCapabilities sm_capabilities;      //!< The Memory data source capabilities.
+        static const te::da::SQLDialect sm_dialect;                 //!< A dummy dialect.
     };
 
   } // end namespace mem
 }   // end namespace te
 
 #endif  // __TERRALIB_MEMORY_INTERNAL_DATASOURCE_H
-

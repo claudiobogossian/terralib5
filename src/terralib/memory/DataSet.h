@@ -43,7 +43,6 @@ namespace te
   {
 // Forward declarations
     class DataSetItem;
-    class DataSourceTransactor;
 
     /*!
       \class DataSet
@@ -60,11 +59,10 @@ namespace te
           \brief It constructs an empty dataset having the schema dt.
 
           \param dt The DataSetType associated to the dataset.
-          \param t  The associated transactor.
-          
+
           \note The dataset will NOT take the ownership of the given DataSetType.
         */
-        explicit DataSet(const te::da::DataSetType* const dt, DataSourceTransactor* t = 0);
+        explicit DataSet(const te::da::DataSetType* const dt);
 
         /*!
           \brief Regular copy constructor.
@@ -105,7 +103,7 @@ namespace te
           \param limit      The number of items to be copied. Use 0 to copy all items.
 
           \pre The properties in the property vector must come from the source dataset (rhs) schema. In other
-               words, they must be valid pointers in the rhs dataset type.
+                words, they must be valid pointers in the rhs dataset type.
 
           \note This constructor will use the method "moveNext()" of the given data set
                 in order to read its dataset items. It will start reading the given 
@@ -145,7 +143,7 @@ namespace te
           \param limit      The number of items to be copied. Use 0 to copy all items.
 
           \pre The properties in the property vector must come from the source dataset (rhs) schema. In other
-               words, they must be valid pointers in the rhs dataset type.
+                words, they must be valid pointers in the rhs dataset type.
 
           \note This method will call moveNext() for the source dataset
                 in order to read its items. It will start reading the given 
@@ -209,7 +207,7 @@ namespace te
 
           \param prop The property that will be updated.
 
-          \note For now, for all item the value will be changed to 0.
+          \note For now, for all items, the value will be changed to 0.
 
           \todo Update the method to perform the necessary conversions
                 when the type change
@@ -218,18 +216,9 @@ namespace te
         */
         void update(te::dt::Property* prop);
 
-        /*!
-          \note In-Memory driver extended method.
-        */
-        void setTransactor(DataSourceTransactor* t);
-
         te::common::TraverseType getTraverseType() const;
 
         te::common::AccessPolicy getAccessPolicy() const;
-
-        te::da::DataSourceTransactor* getTransactor() const;
-
-        te::gm::Envelope* getExtent(std::size_t i);
 
         std::size_t getNumProperties() const;
 
@@ -247,7 +236,11 @@ namespace te
 
         bool isEmpty() const;
 
+        bool isConnected() const;
+
         std::size_t size() const;
+
+        std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i);
 
         bool moveNext();
 
@@ -329,33 +322,33 @@ namespace te
 
         void setString(const std::string& name, const std::string& value);
 
-        te::dt::ByteArray* getByteArray(std::size_t i) const;
+        std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const;
 
         void setByteArray(std::size_t i, const te::dt::ByteArray& value);
 
         void setByteArray(const std::string& name, const te::dt::ByteArray& value);
 
-        te::gm::Geometry* getGeometry(std::size_t i) const;
+        std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const;
 
         void setGeometry(std::size_t i, const te::gm::Geometry& value);
 
         void setGeometry(const std::string& name, const te::gm::Geometry& value);
 
-        te::rst::Raster* getRaster(std::size_t i) const;
+        std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
 
         void setRaster(std::size_t i, const te::rst::Raster& value);
 
         void setRaster(const std::string& name, const  te::rst::Raster& value);
 
-        te::dt::DateTime* getDateTime(std::size_t i) const;
+        std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const;
 
         void setDateTime(std::size_t i, const te::dt::DateTime& value);
 
         void setDateTime(const std::string& name, const te::dt::DateTime& value);
 
-        te::dt::Array* getArray(std::size_t i) const;
+        std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
-        te::dt::AbstractData* getValue(std::size_t i) const;
+        std::auto_ptr<te::dt::AbstractData> getValue(std::size_t i) const;
 
         void setValue(std::size_t i, te::dt::AbstractData* value);
 
@@ -365,12 +358,13 @@ namespace te
 
       protected:
 
-        boost::shared_ptr<boost::ptr_vector<te::mem::DataSetItem> > m_items;   //!< The list of dataset items.
-        std::vector<std::string> m_pnames;                                     //!< The list of property names.
-        std::vector<int> m_ptypes;                                             //!< The list of property types.
-        DataSourceTransactor* m_t;                                             //!< The associated datasource transactor.
-        int m_i;                                                               //!< The index of the current item.
+        boost::shared_ptr<boost::ptr_vector<DataSetItem> > m_items;   //!< The list of dataset items.
+        std::vector<std::string> m_pnames;                            //!< The list of property names.
+        std::vector<int> m_ptypes;                                    //!< The list of property types.
+        int m_i;                                                      //!< The index of the current item.
     };
+
+    typedef boost::shared_ptr<DataSet> DataSetPtr;
 
   } // end namespace mem
 }   // end namespace te

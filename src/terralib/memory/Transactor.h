@@ -18,34 +18,51 @@
  */
 
 /*!
-  \file terralib/ogr2/Transactor.h
+  \file terralib/memory/Transactor.h
 
-  \brief A DataSourceTransactor can be viewed as a connection to the data source for reading/writing things into it.
+  \brief An implementation of the Transactor class for the Memory Data Access driver.
 */
 
-#ifndef __TERRALIB_OGR_INTERNAL_TRANSACTOR_H
-#define __TERRALIB_OGR_INTERNAL_TRANSACTOR_H
+#ifndef __TERRALIB_MEMORY_INTERNAL_TRANSACTOR_H
+#define __TERRALIB_MEMORY_INTERNAL_TRANSACTOR_H
 
+// TerraLib
+#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "Config.h"
+#include "DataSource.h"
 
-#include "../dataaccess2/datasource/DataSourceTransactor.h"
+// STL
+#include <memory>
 
 namespace te
 {
-  namespace ogr
-  {
+  namespace mem
+  { 
+// Forward declaration
     class DataSource;
+	
+    /*!
+      \class Transactor
 
-    class TEOGREXPORT Transactor : public te::da::DataSourceTransactor
+      \brief An implementation of the Transactor class for the Memory Data Access driver.
+
+      \sa te::da::DataSourceTransactor
+    */
+    class TEMEMORYEXPORT Transactor : public te::da::DataSourceTransactor
     {
       public:
 
+        /*!
+          \brief Constructor.
+
+          \param ds The Memory data source associated to this transactor.
+        */
         Transactor(DataSource* ds);
 
         ~Transactor();
-    
+
         te::da::DataSource* getDataSource() const;
-    
+
         void begin();
 
         void commit();
@@ -55,29 +72,29 @@ namespace te
         bool isInTransaction() const;
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
                                                   bool connected = false);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
                                                   bool connected = false);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
                                                   bool connected = false);
 
         std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
                                              bool connected = false);
 
         std::auto_ptr<te::da::DataSet> query(const std::string& query,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
                                              bool connected = false);
 
         void execute(const te::da::Query& command);
@@ -101,8 +118,8 @@ namespace te
         std::vector<std::string> getDataSetNames();
 
         std::size_t getNumberOfDataSets();
-    
-        te::da::DataSetTypePtr getDataSetType(const std::string& name);
+
+        std::auto_ptr<te::da::DataSetType> getDataSetType(const std::string& name);
 
         boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
@@ -184,7 +201,7 @@ namespace te
         void dropSequence(const std::string& name);
 
         std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
-                                                          const std::string& propertyName);
+                                                  const std::string& propertyName);
 
         std::auto_ptr<te::gm::Envelope> getExtent(const std::string& datasetName,
                                                           std::size_t propertyPos);
@@ -198,36 +215,35 @@ namespace te
         void createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options);
 
         void cloneDataSet(const std::string& name,
-                                  const std::string& cloneName,
-                                  const std::map<std::string, std::string>& options);
+                          const std::string& cloneName,
+                          const std::map<std::string, std::string>& options);
 
         void dropDataSet(const std::string& name);
 
         void renameDataSet(const std::string& name, const std::string& newName);
 
         void add(const std::string& datasetName,
-                         te::da::DataSet* d,
-                         const std::map<std::string, std::string>& options,
-                         std::size_t limit = 0);
+                 te::da::DataSet* d,
+                 const std::map<std::string, std::string>& options,
+                 std::size_t limit = 0);
 
         void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids = 0);
 
         void update(const std::string& datasetName,
-                            te::da::DataSet* dataset,
-                            const std::vector<std::size_t>& properties,
-                            const te::da::ObjectIdSet* oids,
-                            const std::map<std::string, std::string>& options,
-                            std::size_t limit = 0);
+                    te::da::DataSet* dataset,
+                    const std::vector<std::size_t>& properties,
+                    const te::da::ObjectIdSet* oids,
+                    const std::map<std::string, std::string>& options,
+                    std::size_t limit = 0);
 
         void optimize(const std::map<std::string, std::string>& opInfo);
 
-        protected:
+      private:
 
-          DataSource* m_ogrDs;
-
-          bool m_isInTransaction;
+        DataSource* m_ds;                      //!< The associated data source.
     };
-  }
-}
 
-#endif //__TERRALIB_OGR_INTERNAL_TRANSACTOR_H
+  } // end namespace mem
+}   // end namespace te
+
+#endif  // __TERRALIB_MEMORY_INTERNAL_TRANSACTOR_H

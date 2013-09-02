@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -19,15 +19,17 @@
 
 /*!
   \file terralib/memory/CachedBandBlocksManager.cpp
- 
+
   \brief RAM cached and tiled raster band blocks manager.
 */
 
-#include "CachedBandBlocksManager.h"
+// TerraLib
+#include "../common/PlatformUtils.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
-#include "../common/PlatformUtils.h"
+#include "CachedBandBlocksManager.h"
 
+// STL
 #include <algorithm>
 
 void te::mem::CachedBandBlocksManager::initState()
@@ -47,22 +49,9 @@ te::mem::CachedBandBlocksManager::CachedBandBlocksManager()
   initState();
 }
 
-te::mem::CachedBandBlocksManager::CachedBandBlocksManager(
-  const CachedBandBlocksManager& )
-{
-  initState();
-}
-
 te::mem::CachedBandBlocksManager::~CachedBandBlocksManager()
 {
   free();
-}
-
-const  te::mem::CachedBandBlocksManager& 
-  te::mem::CachedBandBlocksManager::operator=( 
-  const CachedBandBlocksManager& rhs )
-{
-  return rhs;
 }
 
 bool te::mem::CachedBandBlocksManager::initialize( 

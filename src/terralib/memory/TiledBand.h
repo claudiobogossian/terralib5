@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,7 +32,7 @@
 #include "Config.h"
 
 namespace te
-{  
+{
   namespace mem
   {
 // Forward declaration
@@ -93,8 +93,7 @@ namespace te
         int m_blkh;
     };
 
-  } // end namespace mem
-}   // end namespace te
+  }  // end namespace mem
+}    // end namespace te
 
 #endif  // __TERRALIB_MEMORY_INTERNAL_TILEDBAND_H
-

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -28,8 +28,10 @@
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../dataaccess/datasource/DataSourceFactory.h"
 #include "Config.h"
 #include "DataSource.h"
+#include "DataSourceFactory.h"
 #include "Module.h"
 
 const te::mem::Module& sm_module = te::mem::Module::getInstance();
@@ -55,7 +57,9 @@ te::mem::Module::~Module()
 
 void te::mem::Module::initialize()
 {
-  // DataSource Capabilities
+  // Register the data source factory
+  te::da::DataSourceFactory::add(TE_MEMORY_DRIVER_IDENTIFIER, te::mem::Build);
+
   te::da::DataSourceCapabilities capabilities;
   capabilities.setAccessPolicy(te::common::RWAccess);
   capabilities.setSupportDataSetPesistenceAPI(true);
@@ -87,10 +91,14 @@ void te::mem::Module::initialize()
   DataSource::setCapabilities(capabilities);
 
   TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver initialized!"));
+
+  TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver initialized!"));
 }
 
 void te::mem::Module::finalize()
 {
+  // Unregister the data source factory
+  te::da::DataSourceFactory::remove(TE_MEMORY_DRIVER_IDENTIFIER);
+
   TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver finalized!"));
 }
-

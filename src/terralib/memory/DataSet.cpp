@@ -38,15 +38,13 @@
 #include "../geometry/Utils.h"
 #include "DataSet.h"
 #include "DataSetItem.h"
-#include "DataSourceTransactor.h"
 #include "Exception.h"
 
 // STL
 #include <limits>
 
-te::mem::DataSet::DataSet(const te::da::DataSetType* const dt, DataSourceTransactor* t)
+te::mem::DataSet::DataSet(const te::da::DataSetType* const dt)
   : m_items(new boost::ptr_vector<DataSetItem>),
-    m_t(t),
     m_i(-1)
 {
   te::da::GetPropertyInfo(dt, m_pnames, m_ptypes);
@@ -54,7 +52,6 @@ te::mem::DataSet::DataSet(const te::da::DataSetType* const dt, DataSourceTransac
 
 te::mem::DataSet::DataSet(te::da::DataSet& rhs)
   : m_items(new boost::ptr_vector<DataSetItem>),
-    m_t(0),
     m_i(-1)
 {
   te::da::GetPropertyInfo(&rhs, m_pnames, m_ptypes);
@@ -64,7 +61,6 @@ te::mem::DataSet::DataSet(te::da::DataSet& rhs)
 
 te::mem::DataSet::DataSet(const DataSet& rhs, const bool deepCopy)
   : m_items(),
-    m_t(rhs.m_t),
     m_i(-1)
 {
   te::da::GetPropertyInfo(&rhs, m_pnames, m_ptypes);
@@ -77,7 +73,6 @@ te::mem::DataSet::DataSet(const DataSet& rhs, const bool deepCopy)
 
 te::mem::DataSet::DataSet(te::da::DataSet& rhs, const std::vector<std::size_t>& properties, std::size_t limit)
   : m_items(),
-    m_t(0),
     m_i(-1)
 {
   for(std::size_t i = 0; i != properties.size(); ++i)
@@ -135,7 +130,7 @@ void te::mem::DataSet::copy(te::da::DataSet& src, const std::vector<std::size_t>
     for(std::size_t c = 0; c < nproperties; ++c)
     {
       if(!src.isNull(properties[c]))
-        item->setValue(c, src.getValue(properties[c]));
+        item->setValue(c, src.getValue(properties[c]).get());
       else
         item->setValue(c, 0);
     }
@@ -209,11 +204,6 @@ void te::mem::DataSet::update(te::dt::Property* /*prop*/)
   throw Exception("No implemented yet!");
 }
 
-void te::mem::DataSet::setTransactor(DataSourceTransactor* t)
-{
-  m_t = t;
-}
-
 te::common::TraverseType te::mem::DataSet::getTraverseType() const 
 { 
   return te::common::RANDOM;
@@ -224,25 +214,20 @@ te::common::AccessPolicy te::mem::DataSet::getAccessPolicy() const
   return te::common::RWAccess;
 }
 
-te::da::DataSourceTransactor* te::mem::DataSet::getTransactor() const
-{
-  return m_t;
-}
-
-te::gm::Envelope* te::mem::DataSet::getExtent(std::size_t i)
+std::auto_ptr<te::gm::Envelope> te::mem::DataSet::getExtent(std::size_t i)
 {
   std::auto_ptr<te::gm::Envelope> mbr(new te::gm::Envelope);
 
   const std::size_t nitems = m_items->size();
   
-  for(std::size_t i = 0; i < nitems; ++i)
+  for(std::size_t ii = 0; ii < nitems; ++ii)
   {
-    std::auto_ptr<te::gm::Geometry> geom((*m_items)[i].getGeometry(i));
+    std::auto_ptr<te::gm::Geometry> geom((*m_items)[ii].getGeometry(i));
 
     mbr->Union(*(geom->getMBR()));
   }
 
-  return mbr.release();
+  return mbr;
 }
 
 std::size_t te::mem::DataSet::getNumProperties() const
@@ -270,7 +255,7 @@ void te::mem::DataSet::setPropertyName(const std::string& name, std::size_t pos)
   m_pnames[pos] = name;
 }
 
-std::string te::mem::DataSet::getDatasetNameOfProperty(std::size_t pos) const
+std::string te::mem::DataSet::getDatasetNameOfProperty(std::size_t /*pos*/) const
 {
   throw Exception("No implemented yet!");
 }
@@ -283,6 +268,11 @@ te::mem::DataSetItem* te::mem::DataSet::getItem() const
 bool te::mem::DataSet::isEmpty() const
 {
   return m_items->empty();
+}
+
+bool te::mem::DataSet::isConnected() const
+{
+  return false;
 }
 
 std::size_t te::mem::DataSet::size() const
@@ -496,9 +486,9 @@ void te::mem::DataSet::setString(const std::string& name, const std::string& val
   (*m_items)[m_i].setString(name, value);
 }
 
-te::dt::ByteArray* te::mem::DataSet::getByteArray(std::size_t i) const
+std::auto_ptr<te::dt::ByteArray> te::mem::DataSet::getByteArray(std::size_t i) const
 {
-  return (*m_items)[m_i].getByteArray(i);
+  return std::auto_ptr<te::dt::ByteArray>((*m_items)[m_i].getByteArray(i));
 }
 
 void te::mem::DataSet::setByteArray(std::size_t i, const te::dt::ByteArray& value)
@@ -511,9 +501,9 @@ void te::mem::DataSet::setByteArray(const std::string& name, const te::dt::ByteA
   (*m_items)[m_i].setByteArray(name, value);
 }
 
-te::gm::Geometry* te::mem::DataSet::getGeometry(std::size_t i) const
+std::auto_ptr<te::gm::Geometry> te::mem::DataSet::getGeometry(std::size_t i) const
 {
-  return (*m_items)[m_i].getGeometry(i);
+  return std::auto_ptr<te::gm::Geometry>((*m_items)[m_i].getGeometry(i));
 }
 
 void te::mem::DataSet::setGeometry(std::size_t i, const te::gm::Geometry& value)
@@ -526,9 +516,9 @@ void te::mem::DataSet::setGeometry(const std::string& name, const te::gm::Geomet
   (*m_items)[m_i].setGeometry(name, value);
 }
 
-te::rst::Raster* te::mem::DataSet::getRaster(std::size_t i) const
+std::auto_ptr<te::rst::Raster> te::mem::DataSet::getRaster(std::size_t i) const
 {
-  return (*m_items)[m_i].getRaster(i);
+  return std::auto_ptr<te::rst::Raster>((*m_items)[m_i].getRaster(i));
 }
 
 void te::mem::DataSet::setRaster(std::size_t i, const te::rst::Raster& value)
@@ -541,9 +531,9 @@ void te::mem::DataSet::setRaster(const std::string& name, const te::rst::Raster&
   (*m_items)[m_i].setRaster(name, value);
 }
 
-te::dt::DateTime* te::mem::DataSet::getDateTime(std::size_t i) const
+std::auto_ptr<te::dt::DateTime> te::mem::DataSet::getDateTime(std::size_t i) const
 {
-  return (*m_items)[m_i].getDateTime(i);
+  return std::auto_ptr<te::dt::DateTime>((*m_items)[m_i].getDateTime(i));
 }
 
 void te::mem::DataSet::setDateTime(std::size_t i, const te::dt::DateTime& value) 
@@ -556,14 +546,14 @@ void te::mem::DataSet::setDateTime(const std::string& name, const te::dt::DateTi
   (*m_items)[m_i].setDateTime(name, value);
 }
 
-te::dt::Array* te::mem::DataSet::getArray(std::size_t i) const
+std::auto_ptr<te::dt::Array> te::mem::DataSet::getArray(std::size_t i) const
 {
-  return (*m_items)[m_i].getArray(i);
+  return std::auto_ptr<te::dt::Array>((*m_items)[m_i].getArray(i));
 }
 
-te::dt::AbstractData* te::mem::DataSet::getValue(std::size_t i) const
+std::auto_ptr<te::dt::AbstractData> te::mem::DataSet::getValue(std::size_t i) const
 {
-  return (*m_items)[m_i].getValue(i);
+  return std::auto_ptr<te::dt::AbstractData>((*m_items)[m_i].getValue(i));
 }
 
 void te::mem::DataSet::setValue(std::size_t i, te::dt::AbstractData* value)
