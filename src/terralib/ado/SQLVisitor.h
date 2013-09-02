@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ado/SQLVisitor.h
+  \file terralib/ado2/SQLVisitor.h
 
   \brief A visitor for building an SQL statement using ADO dialect.
 */
@@ -36,7 +36,6 @@
 // ADO
 #import "msado15.dll" \
   no_namespace rename("EOF", "EndOfFile")
-#import "msadox.dll"
 
 namespace te
 {
@@ -78,12 +77,10 @@ namespace te
 
       private:
 
-        _ConnectionPtr  m_conn; //!< The ADO connection
+        _ConnectionPtr m_conn; //!< The PostGIS connection used to escape string!
     };
 
   } // end namespace ado
 }   // end namespace te
 
-
 #endif  // __TERRALIB_ADO_INTERNAL_SQLVISITOR_H
-

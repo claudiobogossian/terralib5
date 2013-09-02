@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ado/Utils.h
+  \file terralib/ado2/Utils.h
    
   \brief Utility functions for ADO.  
 */
@@ -27,15 +27,23 @@
 #define __TERRALIB_ADO_INTERNAL_UTILS_H
 
 // TerraLib
+#include "../common/StringUtils.h"
 #include "../geometry/Geometry.h"
+#include "Config.h"
+
+// STL
+#include <cstdlib>
+#include <cstring>
+#include <vector>
 
 // ADO
 #import "msado15.dll" \
-    no_namespace rename("EOF", "EndOfFile")
+  no_namespace rename("EOF", "EndOfFile")
 #import "msadox.dll"
 
 namespace te
 {
+
   namespace da
   {
     class DataSet;
@@ -63,6 +71,7 @@ namespace te
 
   namespace ado
   {
+
     /*!
       \brief Add a ADO propert based on the TerraLib property
 
@@ -79,7 +88,16 @@ namespace te
       \param var Result variant
     */
     void Blob2Variant(const char* blob, int size, _variant_t & var);
-    
+
+    /*!
+      \brief Create a connection string based on a map
+
+      \param dsInfo Information Map.
+
+      \return ADO connection string
+    */
+    std::string MakeConnectionStr(const std::map<std::string, std::string>& dsInfo);
+
     /*!
       \brief Convert a variant to a blob
 
@@ -114,6 +132,8 @@ namespace te
       \return TerraLib Type
     */
     int Convert2Terralib(ADOX::DataTypeEnum adoType);
+
+    int Convert2Terralib(::DataTypeEnum adoType);
 
     /*!
       \brief Bind ADO column to Terralib property

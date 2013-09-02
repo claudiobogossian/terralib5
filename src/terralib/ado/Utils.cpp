@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ado/Utils.cpp
+  \file terralib/ado2/Utils.cpp
    
   \brief Utility functions for ADO.  
 */
@@ -26,7 +26,13 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../datatype.h"
-#include "../dataaccess.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/dataset/ForeignKey.h"
+#include "../dataaccess/dataset/CheckConstraint.h"
+#include "../dataaccess/dataset/Constraint.h"
+#include "../dataaccess/dataset/PrimaryKey.h"
+#include "../dataaccess/dataset/UniqueKey.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Enums.h"
@@ -37,6 +43,9 @@
 #include "Utils.h"
 #include "Exception.h"
 #include "Globals.h"
+
+// Boost
+#include <boost/lexical_cast.hpp>
 
 inline void TESTHR( HRESULT hr )
 {
@@ -116,6 +125,33 @@ void te::ado::Blob2Variant(const char* blob, int size, _variant_t & var)
   {
     throw Exception(TR_ADO(e.Description()));
   }
+}
+
+std::string te::ado::MakeConnectionStr(const std::map<std::string, std::string>& dsInfo)
+{
+  std::map<std::string, std::string>::const_iterator it = dsInfo.find("PROVIDER");
+  std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
+  std::string connInfo;
+
+  if(it != it_end)
+    connInfo += "Provider=" + it->second;
+  
+  it = dsInfo.find("DB_NAME");
+
+  if(it != it_end)
+    connInfo += ";Data Source=" + it->second;
+
+  it = dsInfo.find("USER_NAME");
+
+  if(it != it_end)
+    connInfo += ";User Id=" + it->second;
+
+  it = dsInfo.find("PASSWORD");
+
+  if(it != it_end)
+    connInfo += ";Jet OLEDB:Database Password=" + it->second + ";";
+
+  return connInfo;
 }
 
 void te::ado::Variant2Blob(const _variant_t var, int size, char* & blob)
@@ -235,7 +271,7 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
     case ADOX::adLongVarWChar:
     case ADOX::adBSTR:
     case ADOX::adChar:
-      return te::dt::VAR_STRING;
+      return te::dt::STRING_TYPE;
       break;
 
     case ADOX::adBigInt:
@@ -288,6 +324,91 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
     //case ADOX::adFileTime:
     //case ADOX::adPropVariant:
     //case ADOX::adUserDefined:
+
+    default:
+      return te::dt::UNKNOWN_TYPE;
+    break;
+  }
+}
+
+int te::ado::Convert2Terralib(::DataTypeEnum adoType)
+{
+  switch(adoType)
+  {
+    case ::adBoolean:
+      return te::dt::BOOLEAN_TYPE;
+      break;
+
+    case ::adEmpty:
+      return te::dt::VOID_TYPE;
+      break;
+
+    case ::adBinary:
+    case ::adVarBinary:
+    case ::adLongVarBinary:
+      return te::dt::BYTE_ARRAY_TYPE;
+      break;
+
+    case ::adVarWChar:
+    case ::adWChar:
+    case ::adVarChar:
+    case ::adLongVarChar:
+    case ::adLongVarWChar:
+    case ::adBSTR:
+    case ::adChar:
+      return te::dt::STRING_TYPE;
+      break;
+
+    case ::adBigInt:
+      return te::dt::INT16_TYPE;
+      break;
+
+    case ::adSingle:
+      return te::dt::FLOAT_TYPE;
+      break;
+
+    case ::adDouble:
+      return te::dt::DOUBLE_TYPE;
+      break;
+
+    case ::adInteger:
+      return te::dt::INT32_TYPE;
+    break;
+
+    case ::adTinyInt:
+    case ::adSmallInt:
+      return te::dt::INT16_TYPE;
+      break;
+
+    case ::adUnsignedBigInt:
+      return te::dt::UINT64_TYPE;
+      break;
+
+    case ::adUnsignedInt:
+      return te::dt::UINT32_TYPE;
+      break;
+
+    case ::adUnsignedSmallInt:
+    case ::adUnsignedTinyInt:
+      return te::dt::UINT16_TYPE;
+      break;
+
+    //case ::adDate:
+    //case ::adDBDate:
+    //case ::adDBTime:
+    //case ::adDBTimeStamp:
+
+    //case ::adGUID:
+    //case ::adError:
+    //case ::adSingle:
+    //case ::adDecimal:
+    //case ::adNumeric:
+    //case ::adChapter:
+    //case ::adVarNumeric:
+    //case ::adCurrency:
+    //case ::adFileTime:
+    //case ::adPropVariant:
+    //case ::adUserDefined:
 
     default:
       return te::dt::UNKNOWN_TYPE;

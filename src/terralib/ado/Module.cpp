@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,48 +21,17 @@
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
+#include "../dataaccess/query/BinaryOpEncoder.h"
+#include "../dataaccess/query/FunctionEncoder.h"
 #include "../dataaccess/query/SQLDialect.h"
-#include "../dataaccess/serialization/xml/Serializer.h"
+#include "../dataaccess/query/SQLFunctionEncoder.h"
+#include "../dataaccess/query/TemplateEncoder.h"
+#include "../dataaccess/query/UnaryOpEncoder.h"
+#include "DataSource.h"
 #include "DataSourceFactory.h"
-#include "Globals.h"
 #include "Module.h"
-
-// Boost
-#include <boost/filesystem.hpp>
-
-const std::string te::ado::Module::sm_unknownTypeName("UNKNOWN");
-const std::string te::ado::Module::sm_int2TypeName("INT2");
-const std::string te::ado::Module::sm_intTypeName("INT");
-const std::string te::ado::Module::sm_int8TypeName("INT8");
-const std::string te::ado::Module::sm_numericTypeName("NUMERIC");
-const std::string te::ado::Module::sm_dateTypeName("DATE");
-const std::string te::ado::Module::sm_timeTypeName("TIME");
-const std::string te::ado::Module::sm_timeTZTypeName("TIMETZ");
-const std::string te::ado::Module::sm_timeStampTypeName("TIMESTAMP");
-const std::string te::ado::Module::sm_timeStampTZTypeName("TIMESTAMPTZ");
-const std::string te::ado::Module::sm_floatTypeName("FLOAT4");
-const std::string te::ado::Module::sm_doubleTypeName("FLOAT8");
-const std::string te::ado::Module::sm_booleanTypeName("BOOL");
-const std::string te::ado::Module::sm_charTypeName("CHAR");
-const std::string te::ado::Module::sm_varcharTypeName("VARCHAR");
-const std::string te::ado::Module::sm_stringTypeName("TEXT");
-const std::string te::ado::Module::sm_byteArrayTypeName("BYTEA");
-const std::string te::ado::Module::sm_pointTypeName("POINT");
-const std::string te::ado::Module::sm_pointMTypeName("POINTM");
-const std::string te::ado::Module::sm_lineStringTypeName("LINESTRING");
-const std::string te::ado::Module::sm_lineStringMTypeName("LINESTRINGM");
-const std::string te::ado::Module::sm_polygonTypeName("POLYGON");
-const std::string te::ado::Module::sm_polygonMTypeName("POLYGONM");
-const std::string te::ado::Module::sm_geometryCollectionTypeName("GEOMETRYCOLLECTION");
-const std::string te::ado::Module::sm_geometryCollectionMTypeName("GEOMETRYCOLLECTIONM");
-const std::string te::ado::Module::sm_multiPointTypeName("MULTIPOINT");
-const std::string te::ado::Module::sm_multiPointMTypeName("MULTIPOINTM");
-const std::string te::ado::Module::sm_multiLineStringTypeName("MULTILINESTRING");
-const std::string te::ado::Module::sm_multiLineStringMTypeName("MULTILINESTRINGM");
-const std::string te::ado::Module::sm_multiPolygonTypeName("MULTIPOLYGON");
-const std::string te::ado::Module::sm_multiPolygonMTypeName("MULTIPOLYGONM");
-const std::string te::ado::Module::sm_geometryTypeName("GEOMETRY");
 
 te::ado::Module::Module(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo)
@@ -78,23 +47,18 @@ void te::ado::Module::startup()
   if(m_initialized)
     return;
 
-// it initializes the Translator support for the TerraLib ADO driver support
+// it initializes the Translator support for the TerraLib PostGIS driver support
   TE_ADD_TEXT_DOMAIN(TE_ADO_TEXT_DOMAIN, TE_ADO_TEXT_DOMAIN_DIR, "UTF-8");
 
-// it initializes the OGR Factory support
-  DataSourceFactory::initialize();
+  // Register the data source factory
+  te::da::DataSourceFactory::add("ADO", te::ado::Build);
 
-  // retrieve the Capabilities
-  boost::filesystem::path driverpath(m_pluginInfo.m_folder);
+  //DataSourceFactory::initialize();
 
-  boost::filesystem::path capabilitiesFile = driverpath / "ado-capabilities.xml";
+  //#include "PostGISCapabilities.h"
+  //#include "PostGISDialect.h"
 
-  te::ado::Globals::sm_capabilities = new te::da::DataSourceCapabilities();
-  te::ado::Globals::sm_queryDialect = new te::da::SQLDialect();
-
-  te::serialize::xml::Read(capabilitiesFile.string(), *te::ado::Globals::sm_capabilities, *te::ado::Globals::sm_queryDialect);
-
-  TE_LOG_TRACE(TR_ADO("TerraLib ADO driver startup!"));
+  TE_LOG_TRACE(TR_ADO("TerraLib ADO driver support initialized!"));
 
   m_initialized = true;
 }
@@ -104,16 +68,18 @@ void te::ado::Module::shutdown()
   if(!m_initialized)
     return;
 
-// it finalizes the OGR factory support.
-  te::ado::DataSourceFactory::finalize();
+  // Unregister the ADO factory support.
+  te::da::DataSourceFactory::remove("ADO");
 
-// free OGR registered drivers
-  te::da::DataSourceManager::getInstance().detachAll(ADO_DRIVER_IDENTIFIER);
+  //te::ado::DataSourceFactory::finalize();
+  //DataSource::setDialect(0);
+
+  // Free the PostGIS registered drivers
+  //te::da::DataSourceManager::getInstance().detachAll(PGIS_DRIVER_IDENTIFIER);
  
-  TE_LOG_TRACE(TR_ADO("TerraLib OGR driver shutdown!"));
+  TE_LOG_TRACE(TR_ADO("TerraLib ADO driver shutdown!"));
 
   m_initialized = false;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::ado::Module)
-

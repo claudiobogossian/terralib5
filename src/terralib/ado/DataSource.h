@@ -18,68 +18,62 @@
  */
 
 /*!
-  \file terralib/ado/DataSource.h
+  \file terralib/ado2/DataSource.h
 
-  \brief It implements the DataSource class for ADO.
+  \brief Implementation of the data source for the ADO driver.
 */
 
 #ifndef __TERRALIB_ADO_INTERNAL_DATASOURCE_H
 #define __TERRALIB_ADO_INTERNAL_DATASOURCE_H
 
 // TerraLib
-#include "../common/ThreadingPolicies.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/query/SQLDialect.h"
 #include "Config.h"
 
 // ADO
 #import "msado15.dll" \
-    no_namespace rename("EOF", "EndOfFile")
+  no_namespace rename("EOF", "EndOfFile")
 #import "msadox.dll"
 
-#include <stdio.h>
-#include "icrsint.h"
-
-// Boost
-#include <boost/ptr_container/ptr_map.hpp>
 
 namespace te
 {
-  namespace da
-  {
-// Forward declarations
-    class DataSourceCatalog;
-  }
+  namespace gm  { class GeometryProperty; }
 
   namespace ado
   {
+    // Forward declaration
+    class ConnectionPool;
+    struct VersionInfo;
+
     /*!
       \class DataSource
 
-      \brief It implements the DataSource class for ADO.
+      \brief The ADO driver.
 
-      \sa te::da::DataSource
+      \sa te::da::DataSource, te::da::DataSourceFactory, te::da::DataSourceManager, DataSourceFactory
     */
     class TEADOEXPORT DataSource : public te::da::DataSource
     {
       public:
 
+        /** @name Initializer Methods
+         *  Methods related to the instantiation and destruction.
+         */
+        //@{
+
         DataSource();
 
         ~DataSource();
 
-        const std::string& getType() const;
+        std::string getType() const;
 
         const std::map<std::string, std::string>& getConnectionInfo() const;
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        std::string getConnectionStr();
-
-        const te::da::DataSourceCapabilities& getCapabilities() const;
-
-        const te::da::SQLDialect* getDialect() const;
+        std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
 
         void open();
 
@@ -89,25 +83,17 @@ namespace te
 
         bool isValid() const;
 
-        /*!
-          \brief It checks if the data source connection is being used.
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
-          \return It returns true if the connection is being used.
-        */
-        bool isConnectionInUse() const;
+        const te::da::SQLDialect* getDialect() const;
 
-        /*!
-          \brief It sets the data source connection as being used.
+        void cancel();
 
-          \param connInUse It indicates if the data source connection is to be set as being used or not.
-        */
-        void setConnectionAsUsed(bool connInUse);
+        boost::int64_t getLastGeneratedId();
 
-        te::da::DataSourceCatalog* getCatalog() const;
+        static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info);
 
-        te::da::DataSourceTransactor* getTransactor();
-
-        void optimize(const std::map<std::string, std::string>& opInfo);
+        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
 
       protected:
 
@@ -117,20 +103,27 @@ namespace te
 
         bool exists(const std::map<std::string, std::string>& dsInfo);
 
-        std::vector<std::string> getDataSources(const std::map<std::string, std::string>& info);
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
 
-        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
+
+        void getIndexes(te::da::DataSetTypePtr& dt);
+
+        void getProperties(te::da::DataSetTypePtr& dt);
 
       private:
 
-        std::string m_connStr;                                //!< Connection string
-        std::map<std::string, std::string> m_connectionInfo;  //!< Connection information.
-        _ConnectionPtr m_conn;                                //!< ADO connection
-        bool m_connInUse;                                     //!< Flag indicating if the data source connection is being used
-        te::da::DataSourceCatalog* m_catalog;                 //!< The data source catalog.
+        te::da::DataSourceCatalog* m_catalog;             //!< The main system catalog.
+        std::map<std::string, std::string> m_connInfo;    //!< Connection information.
+        Connection* m_conn;                               //!< The Connection.
+        std::string m_currentSchema;                      //!< The default schema used when no one is provided.
+        bool m_isInTransaction;                           //!< It indicates if there is a transaction in progress.
 
+        static te::da::DataSourceCapabilities sm_capabilities;  //!< ADO capabilities.
+        static te::da::SQLDialect* sm_dialect; 
     };
-  } // end namespace ado
+
+  } // end namespace pgis
 }   // end namespace te
 
 #endif  // __TERRALIB_ADO_INTERNAL_DATASOURCE_H

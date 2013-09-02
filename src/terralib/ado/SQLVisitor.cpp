@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/ado/SQLVisitor.cpp
+  \file terralib/postgis/SQLVisitor.cpp
 
   \brief A visitor for building an SQL statement from a given Query hierarchy.
 */
@@ -28,11 +28,15 @@
 #include "../dataaccess/query/LiteralDateTime.h"
 #include "../dataaccess/query/LiteralEnvelope.h"
 #include "../dataaccess/query/LiteralGeom.h"
+#include "../geometry/Envelope.h"
 #include "SQLVisitor.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
+
+// Boost
+#include <boost/lexical_cast.hpp>
 
 te::ado::SQLVisitor::SQLVisitor(const te::da::SQLDialect& dialect, std::string& sql, _ConnectionPtr conn)
   : te::da::SQLVisitor(dialect, sql),
@@ -55,12 +59,16 @@ void te::ado::SQLVisitor::visit(const te::da::LiteralDateTime& visited)
 void te::ado::SQLVisitor::visit(const te::da::LiteralEnvelope& visited)
 {
   assert(visited.getValue() != 0);
-  assert(false);  //TODO
+  te::gm::Envelope* env = visited.getValue();
+
+  m_sql += " lower_x = " + boost::lexical_cast<std::string>(env->getLowerLeftX());
+  m_sql += " upper_x = " + boost::lexical_cast<std::string>(env->getUpperRightX());
+  m_sql += " lower_y = " + boost::lexical_cast<std::string>(env->getLowerLeftY());
+  m_sql += " upper_y = " + boost::lexical_cast<std::string>(env->getUpperRightY());
 }
 
 void te::ado::SQLVisitor::visit(const te::da::LiteralGeom& visited)
 {
   assert(visited.getValue() != 0);
-  assert(false);  //TODO
+  //Convert2PostGIS(m_conn, static_cast<te::gm::Geometry*>(visited.getValue()), m_sql);
 }
-

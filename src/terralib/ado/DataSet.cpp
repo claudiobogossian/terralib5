@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,94 +18,98 @@
  */
 
 /*!
-  \file terralib/ado/DataSet.cpp
+  \file terralib/ado2/DataSet.cpp
 
-  \brief Implementation of the DataSet class to ADO.
+  \brief Implementation of a dataset for the ADO driver.
 */
 
 // TerraLib
+#include "../common/ByteSwapUtils.h"
+#include "../common/Globals.h"
+#include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../datatype/Array.h"
 #include "../datatype/ByteArray.h"
-#include "../datatype/ByteArrayProperty.h"
-#include "../datatype/SimpleProperty.h"
+#include "../datatype/DateTime.h"
+#include "../datatype/SimpleData.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/WKBReader.h"
-#include "../geometry/WKBWriter.h"
+#include "Connection.h"
+//#include "CatalogLoader.h"
 #include "DataSet.h"
-#include "DataSourceTransactor.h"
+#include "DataSource.h"
 #include "Exception.h"
 #include "Utils.h"
 
-te::ado::DataSet::DataSet(te::da::DataSetType* dt, _RecordsetPtr result, te::da::DataSourceTransactor* transactor)
+// STL
+#include <memory>
+
+// Boost
+#include <boost/dynamic_bitset.hpp>
+
+te::ado::DataSet::DataSet(_RecordsetPtr result,
+                          Connection* conn,
+                          const std::vector<int>& ptypes,
+                          const std::vector<std::string>& pnames)
   : m_i(-1),
     m_result(result),
-    m_dt(dt),
-    m_t(transactor),
-    m_name(0),
-    m_geomFilter(0),
-    m_mbrFilter(0),
-    m_relation(te::gm::UNKNOWN_SPATIAL_RELATION)
+    m_conn(conn)
 {
   m_size = m_result->GetRecordCount();
   m_ncols = m_result->GetFields()->GetCount();
+  m_ptypes = ptypes;
+  m_pnames = pnames;
 }
 
 te::ado::DataSet::~DataSet()
 {
-  delete m_dt;
-  delete m_geomFilter;
+  m_result->Close();
 }
 
 te::common::TraverseType te::ado::DataSet::getTraverseType() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return te::common::RANDOM;
 }
 
 te::common::AccessPolicy te::ado::DataSet::getAccessPolicy() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return te::common::RAccess;
 }
 
-te::da::DataSourceTransactor* te::ado::DataSet::getTransactor() const
+std::auto_ptr<te::gm::Envelope> te::ado::DataSet::getExtent(std::size_t i)
 {
-  return m_t;
-}
-
-te::da::DataSet* te::ado::DataSet::getParent() const
-{
-  return 0;
-}
-
-te::gm::Envelope* te::ado::DataSet::getExtent(std::size_t /*i*/)
-{
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return std::auto_ptr<te::gm::Envelope>(0); // TODO
 }
 
 std::size_t te::ado::DataSet::getNumProperties() const
 {
-  return m_dt->size();
+  return m_ncols;
 }
 
-int te::ado::DataSet::getPropertyDataType(std::size_t pos) const
+int te::ado::DataSet::getPropertyDataType(std::size_t i) const
 {
-  return m_dt->getProperty(pos)->getType();
+  return m_ptypes[i];
 }
 
-std::string te::ado::DataSet::getPropertyName(std::size_t pos) const
+std::string te::ado::DataSet::getPropertyName(std::size_t i) const
 {
-  return m_dt->getProperty(pos)->getName();
+  return m_pnames[i];
 }
 
-std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t pos) const
+std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t i) const
 {
-  return "";
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 bool te::ado::DataSet::isEmpty() const
 {
   return (m_size == 0);
+}
+
+bool te::ado::DataSet::isConnected() const
+{
+  return true; //TODO
 }
 
 std::size_t te::ado::DataSet::size() const
@@ -117,7 +121,7 @@ bool te::ado::DataSet::moveNext()
 {
   if(m_i != -1)
     m_result->MoveNext();
-  
+
   ++m_i;
   return (m_i < m_size);
 }
@@ -201,18 +205,7 @@ char te::ado::DataSet::getChar(std::size_t i) const
 
 char te::ado::DataSet::getChar(const std::string& name) const
 {
-  char ival;
-
-  try
-  {
-    ival = (char)m_result->GetFields()->GetItem(name.c_str())->GetValue();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  return ival;
+  return '\0'; // TODO
 }
 
 unsigned char te::ado::DataSet::getUChar(std::size_t i) const
@@ -222,7 +215,7 @@ unsigned char te::ado::DataSet::getUChar(std::size_t i) const
 
 unsigned char te::ado::DataSet::getUChar(const std::string& name) const
 {
-  return (unsigned char)getChar(name);
+  return '\0'; // TODO
 }
 
 boost::int16_t te::ado::DataSet::getInt16(std::size_t i) const
@@ -247,18 +240,7 @@ boost::int16_t te::ado::DataSet::getInt16(std::size_t i) const
 
 boost::int16_t te::ado::DataSet::getInt16(const std::string& name) const
 {
-  int16_t ival; 
-  
-  try
-  {
-    ival = (int16_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  return ival;
+  return 0; // TODO
 }
 
 boost::int32_t te::ado::DataSet::getInt32(std::size_t i) const
@@ -268,7 +250,7 @@ boost::int32_t te::ado::DataSet::getInt32(std::size_t i) const
   vtIndex.lVal = i;
 
   int32_t ival;
-  
+
   try
   {
     ival = (int32_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
@@ -283,18 +265,7 @@ boost::int32_t te::ado::DataSet::getInt32(std::size_t i) const
 
 boost::int32_t te::ado::DataSet::getInt32(const std::string& name) const
 {
-  int32_t ival;
-  
-  try
-  {
-    ival = (int32_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  return ival;
+  return 0; // TODO
 }
 
 boost::int64_t te::ado::DataSet::getInt64(std::size_t i) const
@@ -304,7 +275,7 @@ boost::int64_t te::ado::DataSet::getInt64(std::size_t i) const
   vtIndex.lVal = i;
 
   int64_t ival;
-  
+
   try
   {
     ival = (int64_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
@@ -319,18 +290,7 @@ boost::int64_t te::ado::DataSet::getInt64(std::size_t i) const
 
 boost::int64_t te::ado::DataSet::getInt64(const std::string& name) const
 {
-  int64_t ival;
-  
-  try
-  {
-    ival = (int64_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  return ival;
+  return 0; // TODO
 }
 
 bool te::ado::DataSet::getBool(std::size_t i) const
@@ -340,7 +300,7 @@ bool te::ado::DataSet::getBool(std::size_t i) const
   vtIndex.lVal = i;
 
   bool ival;
-  
+
   try
   {
     ival = (bool)m_result->GetFields()->GetItem(vtIndex)->GetValue();
@@ -355,18 +315,7 @@ bool te::ado::DataSet::getBool(std::size_t i) const
 
 bool te::ado::DataSet::getBool(const std::string& name) const
 {
-  bool ival;
-  
-  try
-  {
-    ival = (bool)m_result->GetFields()->GetItem(name.c_str())->GetValue();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  return ival;
+  return true; // TODO
 }
 
 float te::ado::DataSet::getFloat(std::size_t i) const
@@ -391,18 +340,7 @@ float te::ado::DataSet::getFloat(std::size_t i) const
 
 float te::ado::DataSet::getFloat(const std::string& name) const
 {
-  float ival;
-  
-  try
-  {
-    ival = (float)m_result->GetFields()->GetItem(name.c_str())->GetValue();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  return ival;
+  return 0; // TODO
 }
 
 double te::ado::DataSet::getDouble(std::size_t i) const
@@ -427,28 +365,17 @@ double te::ado::DataSet::getDouble(std::size_t i) const
 
 double te::ado::DataSet::getDouble(const std::string& name) const
 {
-  double ival;
-  
-  try
-  {
-    ival = (double)m_result->GetFields()->GetItem(name.c_str())->GetValue();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  return ival;
+  return 0; // TODO
 }
 
-std::string te::ado::DataSet::getNumeric(std::size_t /*i*/) const
+std::string te::ado::DataSet::getNumeric(std::size_t i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return ""; // TODO
 }
 
-std::string te::ado::DataSet::getNumeric(const std::string& /*name*/) const
+std::string te::ado::DataSet::getNumeric(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return ""; // TODO
 }
 
 std::string te::ado::DataSet::getString(std::size_t i) const
@@ -458,7 +385,7 @@ std::string te::ado::DataSet::getString(std::size_t i) const
   vtIndex.lVal = i;
 
   std::string ival;
-  
+
   try
   {
     ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
@@ -473,26 +400,15 @@ std::string te::ado::DataSet::getString(std::size_t i) const
 
 std::string te::ado::DataSet::getString(const std::string& name) const
 {
-  std::string ival;
-  
-  try
-  {
-    ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  return ival;
+  return ""; // TODO
 }
 
-te::dt::ByteArray* te::ado::DataSet::getByteArray(std::size_t i) const
+std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(std::size_t i) const
 {
   _variant_t vtIndex;
   vtIndex.vt = VT_I4;
   vtIndex.lVal = i;
-  
+
   _variant_t varBLOB;
   char *cdata = 0;
   long size;
@@ -523,40 +439,19 @@ te::dt::ByteArray* te::ado::DataSet::getByteArray(std::size_t i) const
     throw Exception(TR_ADO(e.Description()));
   }
 
-  return new te::dt::ByteArray(data, size);
+  return std::auto_ptr<te::dt::ByteArray>(new te::dt::ByteArray(data, size));
 }
 
-te::dt::ByteArray* te::ado::DataSet::getByteArray(const std::string& name) const
+std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(const std::string& name) const
 {
-  _variant_t varBLOB;
-  char *cdata = 0;
-  long size;
-  char* data;
-
-  try
-  {
-    size = m_result->GetFields()->GetItem(name.c_str())->ActualSize;
-    if(size > 0)
-    {
-      VariantInit(&varBLOB);
-
-      varBLOB = m_result->GetFields()->GetItem(name.c_str())->GetChunk(size);
-      te::ado::Variant2Blob(varBLOB, size, data);
-    }
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  return new te::dt::ByteArray(data, size);
+  return std::auto_ptr<te::dt::ByteArray>(0); // TODO
 }
 
-te::gm::Geometry* te::ado::DataSet::getGeometry(std::size_t i) const
+std::auto_ptr<te::gm::Geometry> te::ado::DataSet::getGeometry(std::size_t i) const
 {
-  te::dt::ByteArray* ba = getByteArray(i);
+  std::auto_ptr<te::dt::ByteArray> ba(getByteArray(i));
 
-  te::gm::Geometry* geom = te::gm::WKBReader::read(ba->getData());
+  std::auto_ptr<te::gm::Geometry> geom(te::gm::WKBReader::read(ba->getData()));
 
   std::size_t wkb_size = geom->getWkbSize();
 
@@ -566,55 +461,46 @@ te::gm::Geometry* te::ado::DataSet::getGeometry(std::size_t i) const
   return geom;
 }
 
-te::gm::Geometry* te::ado::DataSet::getGeometry(const std::string& name) const
+std::auto_ptr<te::gm::Geometry> te::ado::DataSet::getGeometry(const std::string& name) const
 {
-  te::dt::ByteArray* ba = getByteArray(name);
-  
-  te::gm::Geometry* geom = te::gm::WKBReader::read(ba->getData());
-
-  std::size_t wkb_size = geom->getWkbSize();
-
-  if(ba->bytesUsed() - wkb_size >= 4)
-    geom->setSRID(*((int*)(ba->getData() + wkb_size)));
-
-  return geom;
+  return std::auto_ptr<te::gm::Geometry>(0); // TODO
 }
 
-te::rst::Raster* te::ado::DataSet::getRaster(std::size_t /*i*/) const
+std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(std::size_t i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return std::auto_ptr<te::rst::Raster>(0); // TODO ?
 }
 
-te::rst::Raster* te::ado::DataSet::getRaster(const std::string& /*name*/) const
+std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return std::auto_ptr<te::rst::Raster>(0); // TODO ?
 }
 
-te::dt::DateTime* te::ado::DataSet::getDateTime(std::size_t /*i*/) const
+std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return std::auto_ptr<te::dt::DateTime>(0); // TODO
 }
 
-te::dt::DateTime* te::ado::DataSet::getDateTime(const std::string& /*name*/) const
+std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return std::auto_ptr<te::dt::DateTime>(0); // TODO
 }
 
-te::dt::Array* te::ado::DataSet::getArray(std::size_t /*i*/) const
+std::auto_ptr<te::dt::Array> te::ado::DataSet::getArray(std::size_t i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return std::auto_ptr<te::dt::Array>(0); // TODO
 }
 
-te::dt::Array* te::ado::DataSet::getArray(const std::string& /*name*/) const
+std::auto_ptr<te::dt::Array> te::ado::DataSet::getArray(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return std::auto_ptr<te::dt::Array>(0); // TODO
 }
 
 bool te::ado::DataSet::isNull(std::size_t i) const
 {
   _variant_t value;
 
-  std::string propertyName = m_dt->getProperty(i)->getName();
+  std::string propertyName = getPropertyName(i);
 
   try
   {
@@ -630,4 +516,9 @@ bool te::ado::DataSet::isNull(std::size_t i) const
     return true;
 
   return false;
+}
+
+bool te::ado::DataSet::isNull(const std::string& name) const
+{
+  return true; //TODO
 }
