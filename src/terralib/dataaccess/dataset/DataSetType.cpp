@@ -289,6 +289,14 @@ void te::da::DataSetType::remove(te::da::Constraint* c)
   }
 }
 
+void te::da::DataSetType::add(const std::vector<UniqueKey*>& uks)
+{
+  std::size_t size = uks.size();
+
+  for(std::size_t i = 0; i < size; ++i)
+    add(uks[i]);
+}
+
 te::da::UniqueKey* te::da::DataSetType::getUniqueKey(const std::string& name) const
 {
   std::size_t size = m_uniqueKeys.size();

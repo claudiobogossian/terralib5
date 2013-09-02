@@ -27,7 +27,6 @@
 #include "../../common/Translator.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../datatype/Property.h"
-#include "../dataset/DataSetType.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../query/DataSetName.h"
 #include "../query/Field.h"
@@ -37,115 +36,20 @@
 #include "../utils/Utils.h"
 #include "../Exception.h"
 #include "DataSource.h"
-#include "DataSourceCatalog.h"
-#include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
 
-// STL
-#include <memory>
-
-te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& name,
-                                                          const te::gm::Envelope* e,
-                                                          te::gm::SpatialRelation r,
-                                                          te::common::TraverseType travType, 
-                                                          te::common::AccessPolicy rwRole)
+te::da::DataSourceTransactor::DataSourceTransactor()
 {
-  if(e == 0)
-    throw Exception(TR_DATAACCESS("You must provide a MBR for using this method!"));
-
-// let's find the default geometric property
-  te::dt::Property* p = 0;
-
-// look in the catalog first
-  te::da::DataSourceCatalog* catalog = getDataSource()->getCatalog();
-
-  if(catalog != 0)
-  {
-    const te::da::DataSetTypePtr& dt = catalog->getDataSetType(name);
-
-    if(dt.get() != 0)
-    {
-      p = GetFirstSpatialProperty(dt.get());
-
-      if(p == 0)
-        throw Exception(TR_DATAACCESS("The dataset doesn't have a default geometric column or you missed it during catalog management!"));
-      else
-        return getDataSet(name, p, e, r, travType, rwRole);
-    }
-  }
-  
-// still looking for the property?
-  std::auto_ptr<DataSourceCatalogLoader> cloader(getCatalogLoader());
-
-  DataSetTypePtr dt(cloader->getDataSetType(name, false));
-
-  p = GetFirstSpatialProperty(dt.get());
-
-  if(p == 0)
-    throw Exception(TR_DATAACCESS("The dataset doesn't have a default geometric column or you missed it during catalog management!"));
-  else
-  {
-// let's cache the data set type if there is a catalog!
-    if(catalog)
-      catalog->add(dt);
-
-    return getDataSet(name, p, e, r, travType, rwRole);
-  }
 }
 
-te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& name,
-                                                          const te::gm::Geometry* g,
-                                                          te::gm::SpatialRelation r,
-                                                          te::common::TraverseType travType, 
-                                                          te::common::AccessPolicy rwRole)
+te::da::DataSourceTransactor::~DataSourceTransactor()
 {
-  if(g == 0)
-    throw Exception(TR_DATAACCESS("You must provide a valid geometry for using this method!"));
-
-// let's find the default geometric property
-  te::dt::Property* p = 0;
-
-// look in the catalog first
-  te::da::DataSourceCatalog* catalog = getDataSource()->getCatalog();
-
-  if(catalog != 0)
-  {
-    const te::da::DataSetTypePtr& dt = catalog->getDataSetType(name);
-
-    if(dt.get() != 0)
-    {
-      p = GetFirstSpatialProperty(dt.get());
-    
-      if(p == 0)
-        throw Exception(TR_DATAACCESS("The dataset doesn't have a default geometric column or you missed it during catalog management!"));
-      else
-        return getDataSet(name, p, g, r, travType, rwRole);
-    }
-  }
-  
-// still looking for the property?
-  std::auto_ptr<DataSourceCatalogLoader> cloader(getCatalogLoader());
-
-  DataSetTypePtr dt(cloader->getDataSetType(name, false));
-
-  p = GetFirstSpatialProperty(dt.get());
-
-  if(p == 0)
-    throw Exception(TR_DATAACCESS("The dataset doesn't have a default geometric column or you missed it during catalog management!"));
-  else
-  {
-// let's cache the data set type if there is a catalog!
-    if(catalog)
-      catalog->add(dt);
-
-    return getDataSet(name, p, g, r, travType, rwRole);
-  }
 }
 
-te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& name,
-                                                          const te::da::ObjectIdSet* oids,
-                                                          te::common::TraverseType travType,
-                                                          te::common::AccessPolicy rwRole)
+std::auto_ptr<te::da::DataSet> te::da::DataSourceTransactor::getDataSet(const std::string& name,
+                                                                        const te::da::ObjectIdSet* oids,
+                                                                        te::common::TraverseType travType, 
+                                                                        bool connected)
 {
   assert(!name.empty());
   assert(oids);
@@ -170,7 +74,7 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
   // The final Select
   std::auto_ptr<Select> select(new Select(all, from, filter));
 
-  DataSet* result = query(select.get(), travType, rwRole);
+  std::auto_ptr<te::da::DataSet> result = query(select.get(), travType, connected);
 
   return result;
 }

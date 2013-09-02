@@ -20,117 +20,56 @@
 /*!
   \file terralib/dataaccess/datasource/DataSourceFactory.h
 
-  \brief This is the abstract factory for DataSource.
+  \brief A factory for data sources.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEFACTORY_H
-#define __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEFACTORY_H
+#ifndef __TERRALIB_DATAACCESS_DATASOURCE_INTERNAL_DATASOURCEFACTORY_H
+#define __TERRALIB_DATAACCESS_DATASOURCE_INTERNAL_DATASOURCEFACTORY_H
 
 // TerraLib
-#include "../../common/AbstractFactory.h"
-#include "DataSource.h"
+#include "../../common/Static.h"
+#include "../Config.h"
+#include "../Exception.h"
+
+// STL
+#include <map>
+#include <memory>
+#include <string>
+
+// Boost
+#include <boost/function.hpp>
 
 namespace te
 {
   namespace da
-  {   
+  {
+    class DataSource;
 
     /*!
       \class DataSourceFactory
 
-      \brief This is the abstract factory for DataSource.
-
-      This is an abstract factory, so you will need to call the static method make
-      as follow:
-
-      \code
-      DataSource* ds = DataSourceFactory::make("POSTGIS");
-
-      try
-      {
-        std::string dsInfo("host=localhost&port=5432&dbname=bdgeo&user=gribeiro&password=pppppp&connect_timeout=4");
-        
-        ds->open(dsInfo);
-
-        ...
-      }
-      catch(const te::da::Exception& e)
-      {
-        ...
-      }
-
-      \endcode
-
-      or
-
-      \code
-      DataSource* ds = DataSourceFactory::make("POSTGIS");
-
-      try
-      {
-        std::map<std::string, std::string> dsInfo;      
-        dsInfo["user"] = "postgres";
-        dsInfo["password"] = "mypasswd";
-        dsInfo["dbname"] = "citiesdb";
-        dsInfo["port"] = "5432";
-        
-        ds->open(dsInfo);
-
-        ...
-      }
-      catch(const te::da::Exception& e)
-      {
-        ...
-      }
-      \endcode
+      \brief A factory for data sources.
 
       \sa DataSource
     */
-    class TEDATAACCESSEXPORT DataSourceFactory : public te::common::AbstractFactory<te::da::DataSource, std::string>
+    class TEDATAACCESSEXPORT DataSourceFactory : public te::common::Static
     {
       public:
 
-        static te::da::DataSource* make(const std::string& dsType);
+        typedef boost::function<DataSource* ()> FactoryFnctType;
 
-        static te::da::DataSource* open(const std::string& dsType, const std::map<std::string, std::string>& dsInfo);
+        static std::auto_ptr<DataSource> make(const std::string& dsType);
 
-        static te::da::DataSource* open(const std::string& dsType, const std::string& dsInfo);
+        static void add(const std::string& dsType, FactoryFnctType f);
 
-        /*!
-          \brief Virtual destructor.
+        static void remove(const std::string& dsType);
 
-          \note It will automatically unregister the factory from the dictionary.
-        */
-        virtual ~DataSourceFactory() {}
+      private:
 
-        /*!
-          \brief It returns the type of data source that the factory knows how to create.
+        static std::map<std::string, FactoryFnctType> sm_factories;
+    };
 
-          \return The type of data source that the factory knows how to create.
-        */
-        virtual const std::string& getType() const = 0;
+  }   // end namespace da
+}     // end namespace te
 
-        /*!
-          \brief It returns the list of data source connection parameters.
-
-          \param params A vector to output the list of data source connection parameters.
-        */
-        virtual void getConnectionParameters(std::vector<std::string>& params) const = 0;
-
-      protected:
-
-        /*!
-          \brief It creates the factory.
-
-          The key of a DataSourceFactory is a string.
-
-          \param factoryKey The key that identifies the factory.
-        */
-        DataSourceFactory(const std::string& factoryKey);
-    };    
-
-  } // end namespace da
-}   // end namespace te
-
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEFACTORY_H
-
+#endif  // __TERRALIB_DATAACCESS_DATASOURCE_INTERNAL_DATASOURCEFACTORY_H

@@ -42,7 +42,7 @@ namespace te
     /*!
       \class ScopedTransaction
 
-      \brief An utitily class to coordinate transactions.
+      \brief An utility class to coordinate transactions.
 
       This class can be used to create an object that
       automatically rollback a transaction when it goes out of scope.
@@ -84,4 +84,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_DATAACCESS_INTERNAL_SCOPEDTRANSACTION_H
-

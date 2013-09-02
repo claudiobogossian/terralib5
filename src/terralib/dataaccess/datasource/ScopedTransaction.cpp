@@ -20,7 +20,7 @@
 /*!
   \file terralib/dataaccess/datasource/ScopedTransaction.cpp
 
-  \brief An utitily class to coordinate transactions.
+  \brief An utility class to coordinate transactions.
 */
 
 // TerraLib
@@ -52,4 +52,3 @@ void te::da::ScopedTransaction::commit()
 
   m_rollback = false;
 }
-

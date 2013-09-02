@@ -61,7 +61,8 @@ te::da::DataSourcePtr te::da::DataSourceManager::open(const std::string& id, con
   if(ds.get() == 0)
     throw Exception(TR_DATAACCESS("Could not create the required data source instance!"));
 
-  ds->open(connInfo);
+  ds->setConnectionInfo(connInfo);
+  ds->open();
 
   ds->setId(id);
 
@@ -88,13 +89,21 @@ te::da::DataSourcePtr te::da::DataSourceManager::get(const std::string& id, cons
   if(it != m_dss.end())
     return it->second;
 
-  DataSourcePtr newds(DataSourceFactory::open(dsType, connInfo));
+  //DataSourcePtr newds(DataSourceFactory::open(dsType, connInfo));
+
+  std::auto_ptr<te::da::DataSource> newds = DataSourceFactory::make(dsType);
+
+  newds->setConnectionInfo(connInfo);
+
+  newds->open();
 
   newds->setId(id);
 
-  insert(newds);
+  //insert(newds);
+  insert(DataSourcePtr(newds));
 
-  return newds;
+  //return newds;
+  return DataSourcePtr(newds);
 }
 
 te::da::DataSourcePtr te::da::DataSourceManager::find(const std::string& id) const

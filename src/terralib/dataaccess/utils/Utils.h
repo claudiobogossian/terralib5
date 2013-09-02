@@ -29,11 +29,15 @@
 // TerraLib
 #include "../../geometry/Enums.h"
 #include "../datasource/DataSource.h"
+#include "../query/Expression.h"
+#include "../query/Fields.h"
+#include "../query/Select.h"
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
 
 // STL
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -65,67 +69,26 @@ namespace te
 
     TEDATAACCESSEXPORT void LoadFull(te::da::DataSetType* dataset, const std::string& datasourceId);
 
-    TEDATAACCESSEXPORT void LoadFull(te::da::DataSetType* dataset, te::da::DataSource* datasource);
-
-    TEDATAACCESSEXPORT void LoadFull(te::da::DataSetType* dataset, te::da::DataSourceTransactor* transactor);
-
-    TEDATAACCESSEXPORT void LoadFull(te::da::DataSetType* dataset, te::da::DataSourceCatalogLoader* cloader);
+//    TEDATAACCESSEXPORT void LoadFull(te::da::DataSetType* dataset, te::da::DataSource* datasource);
 
     TEDATAACCESSEXPORT void LoadProperties(te::da::DataSetType* dataset, const std::string& datasourceId);
 
-    TEDATAACCESSEXPORT void LoadProperties(te::da::DataSetType* dataset, te::da::DataSource* datasource);
-
-    TEDATAACCESSEXPORT void LoadProperties(te::da::DataSetType* dataset, te::da::DataSourceTransactor* transactor);
-
-    /*!
-      \brief It computes the bounding rectangle for the first spatial property of the given dataset.
-
-      \return The bounding rectangle for the first spatial property of the given dataset.
-
-      \post The caller of this method will take the ownership of the returned box.
-
-      \exception Exception It throws an exception if something goes wrong during MBR search.
-    */
-    TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(te::da::DataSet* dataset);
-
     /*!
       \return The data extent considering the informed property. The caller will take the ownership of the returned box.
 
       \exception Exception It throws an exception if the extent can not be determined.
     */
-    TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(te::gm::GeometryProperty* gp, const std::string& datasourceId);
+    TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(const std::string& datasetName,
+                                                   const std::string& propertyName,
+                                                   const std::string& datasourceId);
 
-    /*!
-      \return The data extent considering the informed property. The caller will take the ownership of the returned box.
-
-      \exception Exception It throws an exception if the extent can not be determined.
-    */
-    TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(te::gm::GeometryProperty* gp, te::da::DataSource* datasource);
-
-    /*!
-      \return The data extent considering the informed property. The caller will take the ownership of the returned box.
-
-      \exception Exception It throws an exception if the extent can not be determined.
-    */
-    TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(te::gm::GeometryProperty* gp, te::da::DataSourceTransactor* transactor);
-
-    TEDATAACCESSEXPORT void GetDataSets(boost::ptr_vector<std::string>& datasets, const std::string& datasourceId);
-
-    TEDATAACCESSEXPORT void GetDataSets(boost::ptr_vector<std::string>& datasets, te::da::DataSource* datasource);
-
-    TEDATAACCESSEXPORT void GetDataSets(boost::ptr_vector<std::string>& datasets, te::da::DataSourceTransactor* transactor);
+    TEDATAACCESSEXPORT void GetDataSets(std::vector<std::string>& datasets, const std::string& datasourceId);
 
     TEDATAACCESSEXPORT std::string GetDataSetCategoryName(int category);
 
     TEDATAACCESSEXPORT bool HasDataSet(const std::string& datasourceId);
 
-    TEDATAACCESSEXPORT bool HasDataSet(te::da::DataSource* datasource);
-
-    TEDATAACCESSEXPORT bool HasDataSet(te::da::DataSourceTransactor* transactor);
-
     TEDATAACCESSEXPORT DataSet* GetDataSet(const std::string& name, const std::string& datasourceId);
-
-    TEDATAACCESSEXPORT DataSet* GetDataSet(const std::string& name, te::da::DataSource* datasource);
 
     /*!
       \brief Search for a data source with the informed id in the DataSourceManager.
@@ -259,7 +222,7 @@ namespace te
             current position. So, keep in mind that it is the caller responsability
             to inform the dataset 'd' in the right position (and a valid one) to start processing it.
     */
-    TEDATAACCESSEXPORT void Create(DataSourceTransactor* t, DataSetType* dt, DataSet* d, std::size_t limit = 0);
+    TEDATAACCESSEXPORT void Create(DataSource* ds, DataSetType* dt, DataSet* d, std::size_t limit = 0);
 
     /*!
       \brief It creates the dataset definition in a data source and then fill it with data from the input dataset.
@@ -282,7 +245,7 @@ namespace te
             current position. So, keep in mind that it is the caller responsability
             to inform the dataset 'd' in the right position (and a valid one) to start processing it.
     */
-    TEDATAACCESSEXPORT void Create(DataSourceTransactor* t,
+    TEDATAACCESSEXPORT void Create(DataSource* ds,
                                    DataSetType* dt,
                                    DataSet* d,
                                    const std::map<std::string, std::string>& options,
@@ -295,6 +258,37 @@ namespace te
     TEDATAACCESSEXPORT std::string GetSQLValueNames(const DataSet* dataset);
 
     TEDATAACCESSEXPORT std::vector<int> GetPropertyDataTypes(const te::da::DataSet* dataset);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Fields> BuildFields(const std::vector<std::string>& properties);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Expression> BuildSpatialOp(Expression* e1,
+                                                                Expression* e2,
+                                                                te::gm::SpatialRelation r);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
+                                                         const std::string& propertyName);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
+                                                         const std::vector<std::string>& properties);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
+                                                         const std::vector<std::string>& properties,
+                                                         const std::string& geometryProperty,
+                                                         const te::gm::Envelope* e,
+                                                         int srid,
+                                                         te::gm::SpatialRelation r);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
+                                                         const std::vector<std::string>& properties,
+                                                         const std::string& geometryProperty,
+                                                         te::gm::Geometry* g,
+                                                         te::gm::SpatialRelation r);
+
+    TEDATAACCESSEXPORT std::auto_ptr<Select> BuildSelect(const std::string& dsname,
+                                                         const std::vector<std::string>& properties,
+                                                         const ObjectIdSet* oids);
 
   } // end namespace da
 }   // end namespace te

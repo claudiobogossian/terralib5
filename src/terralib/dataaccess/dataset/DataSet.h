@@ -28,8 +28,12 @@
 
 // TerraLib
 #include "../../common/Enums.h"
+#include "../../datatype/Array.h"
+#include "../../datatype/ByteArray.h"
+#include "../../datatype/DateTime.h"
 #include "../../datatype/Enums.h"
 #include "../../geometry/Enums.h"
+#include "../../raster/Raster.h"
 #include "../Config.h"
 
 // STL
@@ -46,9 +50,6 @@ namespace te
   namespace dt
   {
     class AbstractData;
-    class Array;
-    class ByteArray;
-    class DateTime;
   }
 
 // Forward declarations
@@ -56,12 +57,6 @@ namespace te
   {
     class Envelope;
     class Geometry;
-  }
-
-// Forward declarations
-  namespace rst
-  {
-    class Raster;
   }
 
   namespace da
@@ -96,9 +91,16 @@ namespace te
       datasets, you can find out the dataset that gave the original
       dataset name of a specific property.
 
-      \sa DataSourceCatalogLoader, DataSetType
+      A dataset can be connected or disconnected. A connected dataset, after its creation through
+      the data source transactor, continues to depend on the connection given by its associated
+      data source. Differently, a disconnected dataset, after its creation, no more depends of the
+      connection given by the data source, and it continues to live after the connection has been
+      released to the data source.
 
-      \todo Whe can generaliza the dataset API so that a dataset may contain other datasets, in this case it will be a collection of datasets.
+      \sa DataSource, DataSourceTransactor, DataSetType
+
+      \todo We can generalize the dataset API so that a dataset may contain other datasets;
+            in this case, it will be a collection of datasets.
 
       \note A geometric or raster property is represented just like any other data type.
 
@@ -134,21 +136,6 @@ namespace te
         virtual te::common::AccessPolicy getAccessPolicy() const = 0;
 
         /*!
-          \brief It computes the bounding rectangle for a spatial property of the dataset.
-
-          \param i The position of a spatial property to get its bounding box.
-
-          \return The spatial property bounding rectangle or an invalid box if none is found.
-
-          \pre The position i must be associated to a spatial property of the dataset.
-
-          \post The caller of this method will take the ownership of the returned box.
-
-          \exception Exception It throws an exception if something goes wrong during MBR search.
-        */
-        virtual te::gm::Envelope* getExtent(std::size_t i) = 0;
-
-        /*!
           \brief It returns the number of properties that composes an item of the dataset.
 
           \return The number of properties that composes an item of the dataset.
@@ -181,7 +168,6 @@ namespace te
           \return The underlying dataset name of the property at position pos.
         */
         virtual std::string getDatasetNameOfProperty(std::size_t i) const = 0;
-
         //@}
 
         /** @name Collection Methods
@@ -197,14 +183,39 @@ namespace te
         virtual bool isEmpty() const = 0;
 
         /*!
+          \brief It returns true if the dataset is connected and false if it is disconnected.
+                 A dataset can be connected or disconnected. A connected dataset, after its creation through
+                 the data source transactor, continues to depend on the connection given by its associated
+                 data source. Differently, a disconnected dataset, after its creation, no more depends of the
+                 connection given by the data source, and it continues to live after the connection has been
+                 released to the data source.
+
+          \return True, if the dataset is connected, or false if it is disconnected.
+        */
+        virtual bool isConnected() const = 0;
+
+        /*!
           \brief It returns the collection size, if it is known.
 
           It may return std::string::npos if the size is not known,
           or it would be too costly to compute it.
 
-          \return The size of the collection if it is known.
+          \return The size of the collection, if it is known.
         */
         virtual std::size_t size() const = 0;
+
+        /*!
+          \brief It computes the bounding rectangle for a spatial property of the dataset.
+
+          \param i The position of a spatial property to get its bounding box.
+
+          \pre The position i must be associated to a spatial property of the dataset.
+
+          \exception Exception It throws an exception if something goes wrong during MBR search.
+
+          \return The spatial property bounding rectangle, or an invalid box, if none is found.
+        */
+        virtual std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i) = 0;
 
         /*!
           \brief It moves the internal pointer to the next item of the collection.
@@ -486,10 +497,8 @@ namespace te
           \param i The attribute index.
           
           \return The byte array attribute.
-
-          \note The caller of this method will take the ownership of the returned byte array.
         */
-        virtual te::dt::ByteArray* getByteArray(std::size_t i) const = 0;
+        virtual std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const = 0;
 
         /*!
           \brief Method for retrieving a byte array.
@@ -499,10 +508,8 @@ namespace te
           \param name The attribute name.
           
           \return The byte array attribute.
-
-          \note The caller of this method will take the ownership of the returned byte array.
         */
-        virtual te::dt::ByteArray* getByteArray(const std::string& name) const;
+        virtual std::auto_ptr<te::dt::ByteArray> getByteArray(const std::string& name) const;
 
         /*!
           \brief Method for retrieving a geometric attribute value.
@@ -510,10 +517,8 @@ namespace te
           \param i The attribute index.
 
           \return The geometric attribute value in the given position.
-
-          \note The caller of this method will take the ownership of the returned Geometry.
         */
-        virtual te::gm::Geometry* getGeometry(std::size_t i) const = 0;
+        virtual std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const = 0;
 
         /*!
           \brief Method for retrieving a geometric attribute value.
@@ -521,10 +526,8 @@ namespace te
           \param name The attribute name.
 
           \return The geometric attribute value with the given name.
-
-          \note The caller of this method will take the ownership of the returned Geometry.
         */
-        virtual te::gm::Geometry* getGeometry(const std::string& name) const;
+        virtual std::auto_ptr<te::gm::Geometry> getGeometry(const std::string& name) const;
 
         /*!
           \brief Method for retrieving a raster attribute value.
@@ -532,10 +535,8 @@ namespace te
           \param i The attribute index.
 
           \return The raster attribute value in the given position.
-
-          \note The caller of this method will take the ownership of the returned raster.
         */
-        virtual te::rst::Raster* getRaster(std::size_t i) const = 0;
+        virtual std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const = 0;
 
         /*!
           \brief Method for retrieving a raster attribute value.
@@ -543,10 +544,8 @@ namespace te
           \param name The attribute name.
 
           \return The raster attribute value with the given name.
-
-          \note The caller of this method will take the ownership of the returned raster.
         */
-        virtual te::rst::Raster* getRaster(const std::string& name) const;
+        virtual std::auto_ptr<te::rst::Raster> getRaster(const std::string& name) const;
 
         /*!
           \brief Method for retrieving a date and time attribute value.
@@ -554,10 +553,8 @@ namespace te
           \param i The attribute index.
 
           \return The date and time attribute value in the given position.
-
-          \note The caller of this method will take the ownership of the returned datetime.
         */
-        virtual te::dt::DateTime* getDateTime(std::size_t i) const = 0;
+        virtual std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const = 0;
 
         /*!
           \brief Method for retrieving a date and time attribute value.
@@ -565,19 +562,15 @@ namespace te
           \param name The attribute name.
 
           \return The date and time attribute value with the given name.
-
-          \note The caller of this method will take the ownership of the returned datetime.
         */
-        virtual te::dt::DateTime* getDateTime(const std::string& name) const;
+        virtual std::auto_ptr<te::dt::DateTime> getDateTime(const std::string& name) const;
 
         /*!
           \brief Method for retrieving an array.
 
           \param i The attribute index.
-
-          \return An array. The caller will take its ownership.
         */
-        virtual te::dt::Array* getArray(std::size_t i) const = 0;
+        virtual std::auto_ptr<te::dt::Array> getArray(std::size_t i) const = 0;
 
         /*!
           \brief Method for retrieving an array.
@@ -585,10 +578,8 @@ namespace te
           \param name The attribute name.
 
           \return An array. The caller will take its ownership.
-
-          \return An array. The caller will take its ownership.
         */
-        virtual te::dt::Array* getArray(const std::string& name) const;
+          virtual std::auto_ptr<te::dt::Array> getArray(const std::string& name) const;
 
         /*!
           \brief Method for retrieving any other type of data value stored in the data source.
@@ -598,10 +589,8 @@ namespace te
           \param i The attribute index.
 
           \return A pointer to the data value.
-
-          \note The caller of this method will take the ownership of the returned pointer.
         */
-        virtual te::dt::AbstractData* getValue(std::size_t i) const;
+        virtual std::auto_ptr<te::dt::AbstractData> getValue(std::size_t i) const;
 
         /*!
           \brief Method for retrieving any other type of data value stored in the data source.
@@ -611,10 +600,8 @@ namespace te
           \param name The attribute name.
 
           \return A pointer to the data value.
-
-          \note The caller of this method will take the ownership of the returned pointer.
          */
-        virtual te::dt::AbstractData* getValue(const std::string& name) const;
+        virtual std::auto_ptr<te::dt::AbstractData> getValue(const std::string& name) const;
 
         /*!
           \brief Method for retrieving a data value as a string plain representation.
@@ -659,7 +646,6 @@ namespace te
           \return True if the attribute value is NULL.
         */
         virtual bool isNull(const std::string& name) const;
-
         //@}
     };
 
@@ -670,5 +656,3 @@ namespace te
 
 
 #endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASET_H
-
-

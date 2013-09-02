@@ -18,44 +18,50 @@
  */
 
 /*!
-  \file terralib/dataaccess/datasource/DataSourceFactory.cpp
+  \file terralib/dataaccess/core/datasource/DataSourceFactory.cpp
 
-  \brief This is the abstract factory for DataSource.
+  \brief A factory of data sources.
 */
 
 // TerraLib
-#include "../../common/StringUtils.h"
+#include "../../common/Translator.h"
+#include "DataSource.h"
 #include "DataSourceFactory.h"
 
-// STL
-#include <memory>
+// Boost
+#include <boost/format.hpp>
 
-te::da::DataSource* te::da::DataSourceFactory::make(const std::string& dsType)
+std::map<std::string, te::da::DataSourceFactory::FactoryFnctType>
+te::da::DataSourceFactory::sm_factories;
+
+std::auto_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::string& dsType)
 {
-  std::string ucase = te::common::Convert2UCase(dsType);
-  return te::common::AbstractFactory<te::da::DataSource, std::string>::make(ucase);
+  std::map<std::string, FactoryFnctType>::const_iterator it = sm_factories.find(dsType);
+
+  if(it == sm_factories.end())
+    throw Exception((boost::format(TR_DATAACCESS("Could not find a data source factory named: %1!")) % dsType).str());
+
+  std::auto_ptr<DataSource> ds(sm_factories[dsType]());
+
+  return ds;
 }
 
-te::da::DataSource* te::da::DataSourceFactory::open(const std::string& dsType, const std::map<std::string, std::string>& dsInfo)
+void te::da::DataSourceFactory::add(const std::string& dsType, FactoryFnctType f)
 {
-  std::auto_ptr<DataSource> ds(make(dsType));
+  std::map<std::string, FactoryFnctType>::const_iterator it = sm_factories.find(dsType);
 
-  ds->open(dsInfo);
+  if(it != sm_factories.end())
+    throw Exception((boost::format(TR_DATAACCESS("A data source factory with name '%1' is already registered.")) % dsType).str());
 
-  return ds.release();
+  sm_factories[dsType] = f;
 }
 
-te::da::DataSource* te::da::DataSourceFactory::open(const std::string& dsType, const std::string& dsInfo)
+void te::da::DataSourceFactory::remove(const std::string& dsType)
 {
-  std::auto_ptr<DataSource> ds(make(dsType));
+  std::map<std::string, FactoryFnctType>::iterator it = sm_factories.find(dsType);
 
-  ds->open(dsInfo);
+  if(it == sm_factories.end())
+    throw Exception((boost::format(TR_DATAACCESS("There is no registered data source factory named '%1'.")) % dsType).str());
 
-  return ds.release();
+  sm_factories.erase(it);
 }
-
-te::da::DataSourceFactory::DataSourceFactory(const std::string& factoryKey)
-  : te::common::AbstractFactory<te::da::DataSource, std::string>(factoryKey)
-{
-}
-

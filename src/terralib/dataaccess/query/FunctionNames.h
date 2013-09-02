@@ -76,7 +76,6 @@ namespace te
         static const std::string sm_Crosses;
         static const std::string sm_Intersects;
         static const std::string sm_Contains;
-        static const std::string sm_ST_Intersection;
         static const std::string sm_ST_Intersects;
         static const std::string sm_ST_Relate;
         static const std::string sm_ST_Union;

@@ -66,4 +66,3 @@ te::da::Constraint* te::da::CheckConstraint::clone()
 {
   return new CheckConstraint(*this);
 }
-

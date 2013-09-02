@@ -49,7 +49,6 @@ const std::string te::da::FunctionNames::sm_Overlaps("st_overlaps");
 const std::string te::da::FunctionNames::sm_Crosses("st_crosses");
 const std::string te::da::FunctionNames::sm_Intersects("st_intersects");
 const std::string te::da::FunctionNames::sm_Contains("st_contains");
-const std::string te::da::FunctionNames::sm_ST_Intersection("st_intersection");
 const std::string te::da::FunctionNames::sm_ST_Intersects("st_intersects");
 const std::string te::da::FunctionNames::sm_ST_Relate("st_relate");
 const std::string te::da::FunctionNames::sm_ST_Union("st_union");

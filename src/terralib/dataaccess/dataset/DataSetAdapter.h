@@ -78,7 +78,7 @@ namespace te
 
         te::common::AccessPolicy getAccessPolicy() const;
 
-        te::gm::Envelope* getExtent(std::size_t i);
+        std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i);
 
         std::size_t getNumProperties() const;
 
@@ -98,6 +98,8 @@ namespace te
         std::string getDatasetNameOfProperty(std::size_t pos) const;
 
         bool isEmpty() const;
+
+        bool isConnected() const;
 
         std::size_t size() const;
 
@@ -141,15 +143,15 @@ namespace te
 
         std::string getString(std::size_t i) const;
 
-        te::dt::ByteArray* getByteArray(std::size_t i) const;
+        std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const;
 
-        te::gm::Geometry* getGeometry(std::size_t i) const;
+        std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const;
 
-        te::rst::Raster* getRaster(std::size_t i) const;
+        std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
 
-        te::dt::DateTime* getDateTime(std::size_t i) const;
+        std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const;
 
-        te::dt::Array* getArray(std::size_t i) const;
+        std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
         bool isNull(std::size_t i) const;
 

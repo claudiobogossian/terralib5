@@ -25,4 +25,3 @@
 
 // TerraLib
 #include "AbstractConnectionPool.h"
-
