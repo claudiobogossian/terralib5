@@ -200,7 +200,7 @@ namespace te
           It may return std::string::npos if the size is not known,
           or it would be too costly to compute it.
 
-          \return The size of the collection if it is known.
+          \return The size of the collection, if it is known.
         */
         virtual std::size_t size() const = 0;
 
@@ -209,13 +209,11 @@ namespace te
 
           \param i The position of a spatial property to get its bounding box.
 
-          \return The spatial property bounding rectangle or an invalid box if none is found.
-
           \pre The position i must be associated to a spatial property of the dataset.
 
-          \post The caller of this method will take the ownership of the returned box.
-
           \exception Exception It throws an exception if something goes wrong during MBR search.
+
+          \return The spatial property bounding rectangle, or an invalid box, if none is found.
         */
         virtual std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i) = 0;
 
