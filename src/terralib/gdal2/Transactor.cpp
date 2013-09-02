@@ -50,7 +50,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
-std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getMetadata(const std::string& dsfullname)
+std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getType(const std::string& dsfullname)
 {
   GDALDataset* ds = static_cast<GDALDataset*>(GDALOpen(dsfullname.c_str(), GA_ReadOnly));
   if (!ds)
@@ -207,59 +207,64 @@ std::size_t te::gdal::Transactor::getNumberOfDataSets()
 
 std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const std::string& name)
 {
-  return getDataSetType(m_path,name);
+  std::string uri;
+  return getDataSetType(m_path,name,uri);
 }
 
-std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const boost::filesystem::path& path, const std::string& name)
+std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const boost::filesystem::path& path, const std::string& name, std::string& uri)
 {
   if (boost::filesystem::is_regular_file(path))
   {
     if (path.leaf() == name)
-    {
-      std::auto_ptr<te::da::DataSetType> dsty = getMetadata(path.string());
+    { 
+      // it is a regular file and the dataset we expect
+      std::auto_ptr<te::da::DataSetType> dsty = getType(path.string());
       dsty->setName(name);
-      dsty->setTitle(path.string());
+      dsty->setTitle(name);
+      uri=path.string();
       return dsty;
     }
     else
     {
+      // it might be one of its sub datasets 
       GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.c_str(), GA_ReadOnly));
       if (!gds)
         return std::auto_ptr<te::da::DataSetType>();
-    
+      
       char** subdatasets = gds->GetMetadata("SUBDATASETS");
       if(subdatasets == 0)
+        return std::auto_ptr<te::da::DataSetType>(); // it has no subdatasets
+      
+      for(char** i = subdatasets; *i != 0; i=i+2)
       {
-        GDALClose(gds);
-        return std::auto_ptr<te::da::DataSetType>();
-      }
-    
-      for(char** i = subdatasets; *i != 0; ++i)
-      {
-        std::map<std::string, std::string> sdsmap;
+        std::string sds_name = std::string(*i);
+        std::string sds_desc = std::string(*(i+1));
         
-        te::common::ExtractKVP(std::string(*i), sdsmap);
-        
-        if(sdsmap.begin()->first.find("_NAME") != std::string::npos)
+        unsigned pos = sds_name.find("=");
+        std::string val = sds_name.substr(++pos);
+        if(GetSubDataSetName(val, te::gdal::GetDriverName(path.string())) == name)
         {
-          std::string subdsname = GetSubDataSetName(sdsmap.begin()->second, te::gdal::GetDriverName(path.string()));
-          if (subdsname == name) 
-          {
-            GDALClose(gds);
-            std::auto_ptr<te::da::DataSetType> dsty = getMetadata(sdsmap.begin()->second);
-            dsty->setName(name);
-            dsty->setTitle(sdsmap.begin()->second);
-            return dsty;            
-          }
+          GDALClose(gds);
+          
+          uri = val;
+          std::auto_ptr<te::da::DataSetType> dsty = getType(val);
+          dsty->setName(name);
+          
+          pos = sds_desc.find("=");
+          val = sds_desc.substr(++pos);
+          dsty->setTitle(val);
+          
+          return dsty;
         }
       }
+      GDALClose(gds);
     }
   }
   else 
   {
     for (boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
     {
-      std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(*it,name);
+      std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(*it,name,uri);
       if (dsty.get())
         return dsty;
     }
@@ -272,11 +277,11 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::strin
                                                                 te::common::TraverseType travType, 
                                                                 bool /*connected*/) 
 {
-  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(name);
+  std::string uri;
+  std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(m_path,name,uri);
   if (!dsty.get())
     return std::auto_ptr<te::da::DataSet>();
-  
-  std::string uri = dsty->getTitle();
+
   return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,uri)); 
 }
 
