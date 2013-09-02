@@ -25,7 +25,6 @@
 #include "Segmenter.h"
 
 #include "SegmenterStrategyFactory.h"
-#include "RasterHandler.h"
 #include "Functions.h"
 #include "Macros.h"
 
@@ -41,10 +40,8 @@
 #include "../geometry/Coord2D.h"
 #include "../datatype/Enums.h"
 
-#include <boost/shared_ptr.hpp>
-
 #include <map>
-
+#include <memory>
 #include <climits>
 #include <cmath>
 #include <cfloat>
@@ -280,7 +277,7 @@ namespace te
         
         // instantiating the segmentation strategy
         
-        boost::shared_ptr< SegmenterStrategy > strategyPtr(
+        std::auto_ptr< SegmenterStrategy > strategyPtr(
           SegmenterStrategyFactory::make( m_inputParameters.m_strategyName ) );
         TERP_TRUE_OR_RETURN_FALSE( strategyPtr.get(), 
           "Unable to create an segmentation strategy" ); 
@@ -610,13 +607,13 @@ namespace te
           
           runningThreadsCounter = maxSegThreads;
           
-          std::vector< boost::shared_ptr< boost::thread > > threadsVector;
+          boost::thread_group threads;
           
           for( unsigned int threadIdx = 0 ; threadIdx < maxSegThreads ;
             ++threadIdx )
           {
-            threadsVector.push_back( boost::shared_ptr< boost::thread >( new
-              boost::thread( segmenterThreadEntry, &segmenterThreadEntryParams ) ) );
+            threads.add_thread( new boost::thread( segmenterThreadEntry, 
+               &segmenterThreadEntryParams ) );
           };
           
           // waiting all threads to finish
@@ -634,16 +631,12 @@ namespace te
           
           // joining all threads
           
-          for( unsigned int threadIdx = 0 ; threadIdx < maxSegThreads ;
-            ++threadIdx )
-          {
-            threadsVector[ threadIdx ]->join();
+          threads.join_all();
 /*
-            globalMutex.lock();
-            std::cout << std::endl << "Thread joined." << std::endl;
-            globalMutex.unlock();
+          globalMutex.lock();
+          std::cout << std::endl << "Threads joined." << std::endl;
+          globalMutex.unlock();
 */            
-          };
         }
         else
         { // non-threaded segmentation mode 
@@ -809,10 +802,8 @@ namespace te
 
       // Looking for a non processed segments block
       
-      boost::shared_ptr< RasterHandler > tempInRasterHandlerPtr(
-        new RasterHandler );
-      boost::shared_ptr< RasterHandler > tempOutRasterHandlerPtr(
-        new RasterHandler );
+      std::auto_ptr< te::rst::Raster > tempInRasterPtr;
+      std::auto_ptr< te::rst::Raster > tempOutRasterPtr;
       
       te::rst::Raster const* currentInRasterPtr = 0;
       te::rst::Raster* currentOutRasterPtr = 0;
@@ -890,7 +881,7 @@ namespace te
                     
                   std::map< std::string, std::string > rInfo;
 
-                  tempInRasterHandlerPtr->reset( 
+                  tempInRasterPtr.reset( 
                     te::rst::RasterFactory::make( "MEM", new te::rst::Grid( 
                     segsBlk.m_width, segsBlk.m_height, 
                     oldGridPtr->getResolutionX(),
@@ -898,7 +889,7 @@ namespace te
                     &newULC, oldGridPtr->getSRID() ), 
                     newInBandProperties, rInfo ) );
                     
-                  if( tempInRasterHandlerPtr->getRasterPtr() == 0 )
+                  if( tempInRasterPtr.get() == 0 )
                   {
                     paramsPtr->m_inputRasterIOMutexPtr->unlock();
                     
@@ -915,7 +906,7 @@ namespace te
                     return;
                   }
                   
-                  currentInRasterPtr = tempInRasterHandlerPtr->getRasterPtr();
+                  currentInRasterPtr = tempInRasterPtr.get();
                   
                   currentInRasterBands.clear();
                   
@@ -950,8 +941,7 @@ namespace te
                       paramsPtr->m_inputParametersPtr->m_inputRasterBands[ 
                       inRasterBandsIdx ] );
                     outBandPtr = 
-                      tempInRasterHandlerPtr->getRasterPtr()->getBand(
-                      inRasterBandsIdx );
+                      tempInRasterPtr->getBand( inRasterBandsIdx );
                       
                     for( blkY = 0 ; blkY < segsBlk.m_height ; ++blkY )
                     {
@@ -992,14 +982,15 @@ namespace te
                  
                   std::map< std::string, std::string > rInfo;
 
-                  tempOutRasterHandlerPtr->reset( 
+                  tempOutRasterPtr.reset( 
                     te::rst::RasterFactory::make( "MEM", new te::rst::Grid( 
                     segsBlk.m_width, segsBlk.m_height,
                     oldGridPtr->getResolutionX(),
                     oldGridPtr->getResolutionY(),
                     &newULC, oldGridPtr->getSRID() ), 
                     newBandProperties, rInfo ) );
-                  if( tempOutRasterHandlerPtr->getRasterPtr() == 0 )
+                    
+                  if( tempOutRasterPtr.get() == 0 )
                   {
                     paramsPtr->m_inputRasterIOMutexPtr->unlock();
                     
@@ -1018,7 +1009,7 @@ namespace te
                   
                   paramsPtr->m_inputRasterIOMutexPtr->unlock();
                   
-                  currentOutRasterPtr = tempOutRasterHandlerPtr->getRasterPtr();
+                  currentOutRasterPtr = tempOutRasterPtr.get();
                   currentOutRasterBand = 0;
                 }                
               }
@@ -1064,8 +1055,7 @@ namespace te
                 unsigned int blkY = 0;
                 unsigned int blkX = 0;
                 unsigned int rasterY = 0;
-                te::rst::Band& inBand =  
-                  *( tempOutRasterHandlerPtr->getRasterPtr()->getBand(0) );
+                te::rst::Band& inBand =  *( tempOutRasterPtr->getBand(0) );
                 te::rst::Band& outBand = 
                   *( paramsPtr->m_outputParametersPtr->m_outputRasterPtr->getBand( 
                   0 ) );

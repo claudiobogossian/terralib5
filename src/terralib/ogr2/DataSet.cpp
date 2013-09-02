@@ -84,14 +84,6 @@ te::ogr::DataSet::~DataSet()
     m_ogrDs->ReleaseResultSet(m_layer);
 }
 
-std::auto_ptr<te::gm::Envelope> te::ogr::DataSet::getExtent(std::size_t /*i*/)
-{
-  OGREnvelope psExtent;
-  m_layer->GetExtent(&psExtent);
-  te::gm::Envelope* env =  Convert2TerraLib(&psExtent);
-  return std::auto_ptr<te::gm::Envelope>(env);
-}
-
 std::size_t te::ogr::DataSet::getNumProperties() const
 {
   return m_dt->size();
@@ -115,6 +107,14 @@ std::string te::ogr::DataSet::getDatasetNameOfProperty(std::size_t pos) const
 bool te::ogr::DataSet::isEmpty() const
 {
   return !(size() > 0);
+}
+
+std::auto_ptr<te::gm::Envelope> te::ogr::DataSet::getExtent(std::size_t /*i*/)
+{
+  OGREnvelope psExtent;
+  m_layer->GetExtent(&psExtent);
+  te::gm::Envelope* env =  Convert2TerraLib(&psExtent);
+  return std::auto_ptr<te::gm::Envelope>(env);
 }
 
 std::size_t te::ogr::DataSet::size() const
