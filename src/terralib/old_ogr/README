@@ -1,0 +1,39 @@
+             TerraLib 5 - OGR Data Access Driver
+             ===================================
+          
+This folder contains an implementation of the Data Access classes
+over the GDAL/OGR Library. It can acccess spatial data in several
+data formats.
+
+Driver Dependencies:
+--------------------
+
+This driver requires the following modules in order to be built:
+1. Common Runtime
+2. XML
+3. Plugin
+4. Data Type
+5. SRS
+6. Geometry
+7. Raster
+8. Data Access
+8. Memory
+
+The third-party software needed:
+1. GDAL/OGR
+2. Boost.FileSystem
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of this driver:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:drivers:ogr
+
+
+      ---------------------------------------------------------
+             TerraLib Team <terralib-team@dpi.inpe.br>
+            National Institute For Space Research - INPE
+      P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
+                            11/18/2008
+							
