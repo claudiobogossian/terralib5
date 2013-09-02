@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/Exception.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/DateTimeProperty.h"
@@ -35,8 +34,8 @@
 #include "../geometry/WKBReader.h"
 #include "../srs/Config.h"
 #include "DataSource.h"
-#include "DataSourceTransactor.h"
 #include "DataSet.h"
+#include "Exception.h"
 #include "Utils.h"
 
 // OGR
@@ -46,9 +45,9 @@
 #include <cassert>
 #include <memory>
 
-te::ogr::DataSet::DataSet(DataSourceTransactor* trans, OGRLayer* layer, bool isOwner)
-  : m_trans(trans),
-    m_dt(0),
+te::ogr::DataSet::DataSet(OGRDataSource* dsrc, OGRLayer* layer, bool isOwner)
+  : m_dt(0),
+    m_ogrDs(dsrc),
     m_layer(layer),
     m_currentFeature(0),
     m_i(-1),
@@ -82,19 +81,7 @@ te::ogr::DataSet::~DataSet()
   delete m_dt;
 
   if(m_isOwner)
-    m_trans->getOGRDataSource()->ReleaseResultSet(m_layer);
-}
-
-te::da::DataSourceTransactor* te::ogr::DataSet::getTransactor() const
-{
-  return m_trans;
-}
-
-te::gm::Envelope* te::ogr::DataSet::getExtent(std::size_t /*i*/)
-{
-  OGREnvelope psExtent;
-  m_layer->GetExtent(&psExtent);
-  return Convert2TerraLib(&psExtent);
+    m_ogrDs->ReleaseResultSet(m_layer);
 }
 
 std::size_t te::ogr::DataSet::getNumProperties() const
@@ -120,6 +107,14 @@ std::string te::ogr::DataSet::getDatasetNameOfProperty(std::size_t pos) const
 bool te::ogr::DataSet::isEmpty() const
 {
   return !(size() > 0);
+}
+
+std::auto_ptr<te::gm::Envelope> te::ogr::DataSet::getExtent(std::size_t /*i*/)
+{
+  OGREnvelope psExtent;
+  m_layer->GetExtent(&psExtent);
+  te::gm::Envelope* env =  Convert2TerraLib(&psExtent);
+  return std::auto_ptr<te::gm::Envelope>(env);
 }
 
 std::size_t te::ogr::DataSet::size() const
@@ -241,7 +236,7 @@ std::string te::ogr::DataSet::getString(std::size_t i) const
   return m_currentFeature->GetFieldAsString(i);
 }
 
-te::dt::ByteArray* te::ogr::DataSet::getByteArray(std::size_t i) const
+std::auto_ptr<te::dt::ByteArray> te::ogr::DataSet::getByteArray(std::size_t i) const
 {
   int size = 0;
   GByte* bytes = m_currentFeature->GetFieldAsBinary(i, &size);
@@ -249,26 +244,28 @@ te::dt::ByteArray* te::ogr::DataSet::getByteArray(std::size_t i) const
   te::dt::ByteArray* byteArray = new te::dt::ByteArray(size);
   byteArray->copy((char*)bytes, size);
   
-  return byteArray;
+  return std::auto_ptr<te::dt::ByteArray>(byteArray);
 }
 
-te::gm::Geometry* te::ogr::DataSet::getGeometry(std::size_t /*i*/) const
+std::auto_ptr<te::gm::Geometry> te::ogr::DataSet::getGeometry(std::size_t /*i*/) const
 {
   char* wkb = (char*)getWKB();
+
   te::gm::Geometry* geom = te::gm::WKBReader::read(wkb);
   geom->setSRID(m_srid);
-  return geom;
+
+  return std::auto_ptr<te::gm::Geometry>(geom);
 }
 
-te::rst::Raster* te::ogr::DataSet::getRaster(std::size_t /*i*/) const
+std::auto_ptr<te::rst::Raster> te::ogr::DataSet::getRaster(std::size_t /*i*/) const
 {
   throw te::common::Exception(TR_OGR("OGR driver: getRaster not supported."));
 }
 
-te::dt::DateTime* te::ogr::DataSet::getDateTime(std::size_t i) const
+std::auto_ptr<te::dt::DateTime> te::ogr::DataSet::getDateTime(std::size_t i) const
 {
   if(m_dt == 0)
-    return 0;
+    return std::auto_ptr<te::dt::DateTime>(0);
 
   int pnYear,
       pnMonth,
@@ -279,7 +276,7 @@ te::dt::DateTime* te::ogr::DataSet::getDateTime(std::size_t i) const
       pnTZFlag;
 
   if(m_currentFeature->GetFieldAsDateTime(i, &pnYear, &pnMonth, &pnDay, &pnHour, &pnMinute, &pnSecond, &pnTZFlag) == FALSE)
-    return new te::dt::Date;
+    return std::auto_ptr<te::dt::DateTime>(new te::dt::Date);
 
   te::dt::Property* p = m_dt->getProperty(i);
   te::dt::DateTimeType subType = static_cast<te::dt::DateTimeProperty*>(p)->getSubType();
@@ -300,12 +297,12 @@ te::dt::DateTime* te::ogr::DataSet::getDateTime(std::size_t i) const
     dateTime = new te::dt::TimeInstant(d, td);
   }
 
-  return dateTime;
+  return std::auto_ptr<te::dt::DateTime>(dateTime);
 }
 
-te::dt::Array* te::ogr::DataSet::getArray(std::size_t /*i*/) const
+std::auto_ptr<te::dt::Array> te::ogr::DataSet::getArray(std::size_t /*i*/) const
 {
-  return 0; // Not supported by OGR library
+  return std::auto_ptr<te::dt::Array>(0); // Not supported by OGR library
 }
 
 bool te::ogr::DataSet::isNull(std::size_t i) const

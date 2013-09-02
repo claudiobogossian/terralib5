@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,16 +20,18 @@
 /*!
   \file terralib/ogr/DataSource.h
 
-  \brief The OGR data source provider.  
- */
+  \brief A class for data providers of OGR.
+*/
 
 #ifndef __TERRALIB_OGR_INTERNAL_DATASOURCE_H
 #define __TERRALIB_OGR_INTERNAL_DATASOURCE_H
 
 // TerraLib
+#include "Config.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "Config.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "Exception.h"
 
 // Forward declarations
 class OGRDataSource;
@@ -42,55 +44,40 @@ namespace te
       \class DataSource
 
       \brief The OGR data source provider.
-
-      \sa te::da::DataSource, te::da::DataSourceFactory, te::da::DataSourceManager, Transactor, DataSourceFactory
-     */
+    */
     class TEOGREXPORT DataSource : public te::da::DataSource
     {
-      public:        
+      public:
 
-        /** @name Initializer Methods
-         *  Methods related to instantiation and destruction.
-         */
-        //@{
-
-        /*! \brief It initializes a new OGR data source object. */
+        /*! \brief Default constructor that can be called by subclasses. */
         DataSource();
 
-        /*!
-          \brief Destructor.
-
-          \note It will automatically release any used resources.
-         */
+        /*! \brief Virtual destructor. */
         ~DataSource();
 
-        //@}
-
-        const std::string& getType() const;
+        std::string getType() const;
 
         const std::map<std::string, std::string>& getConnectionInfo() const;
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        const te::da::DataSourceCapabilities& getCapabilities() const;
-
-        const te::da::SQLDialect* getDialect() const;
-
-        static void setDialect(te::da::SQLDialect* myDialect);
+        std::auto_ptr<te::da::DataSourceTransactor> getTransactor();
 
         void open();
         
         void close();
-       
+
         bool isOpened() const;
-        
+
         bool isValid() const;
 
-        te::da::DataSourceCatalog* getCatalog() const;        
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
-        te::da::DataSourceTransactor* getTransactor();
+        const te::da::SQLDialect* getDialect() const;
 
-        void optimize(const std::map<std::string, std::string>& opInfo);
+        static void setDialect(te::da::SQLDialect* dialect);
+
+        OGRDataSource* getOGRDataSource();
 
       protected:
 
@@ -100,25 +87,23 @@ namespace te
 
         bool exists(const std::map<std::string, std::string>& dsInfo);
 
-        std::vector<std::string> getDataSources(const std::map<std::string, std::string>& info);
+        std::vector<std::string> getDataSourceNames(const std::map<std::string, std::string>& dsInfo);
 
-        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& dsInfo);
 
-      private:
+      protected:
 
         std::map<std::string, std::string> m_connectionInfo;        //!< Connection information.
-        te::da::DataSourceCatalog* m_catalog;                       //!< The main system catalog.
         OGRDataSource* m_ogrDS;                                     //!< A pointer to OGR Data Source.
         bool m_isValid;                                             //!< True if this is a valid datasource.
         te::da::DataSourceCapabilities m_capabilities;              //!< OGR capabilities.
+        bool m_isInTransaction;                                     //!< Tells if there is a transaction in progress.
 
-        static te::da::SQLDialect* sm_myDialect;                //!< OGR SQL dialect.
+        static te::da::SQLDialect* sm_myDialect;                    //!< OGR SQL dialect.
     };
 
-  } // end namespace ogr
-}   // end namespace te
-
+    DataSource* Build();
+  }    // end namespace da
+}      // end namespace te
 
 #endif  // __TERRALIB_OGR_INTERNAL_DATASOURCE_H
-
-

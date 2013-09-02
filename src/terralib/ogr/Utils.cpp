@@ -51,7 +51,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
-
 te::gm::Geometry* te::ogr::Convert2TerraLib(OGRGeometry* ogrGeom)
 {
   int wkbSize = ogrGeom->WkbSize();
@@ -124,7 +123,7 @@ OGREnvelope* te::ogr::Convert2OGR(const te::gm::Envelope* env)
 }
 
 int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
-{  
+{
   if(osrs->AutoIdentifyEPSG() != OGRERR_UNSUPPORTED_SRS) 
     return atoi(osrs->GetAuthorityCode(0));
   
@@ -143,7 +142,7 @@ int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
     double centralm = osrs->GetProjParm(SRS_PP_CENTRAL_MERIDIAN,-1);
     if (centralm == -1)
       return  TE_UNKNOWN_SRS;
-    int zone = centralm/6 + 31;
+    int zone = (int)(centralm/6 + 31);
     
     double fsnorth = osrs->GetProjParm(SRS_PP_FALSE_NORTHING,-1);
     if (fsnorth > 0)
@@ -184,7 +183,7 @@ void te::ogr::Convert2TerraLib(OGRFeatureDefn* featDef,  te::da::DataSetType* dt
   if(ogrGeomType != wkbNone) // has geometry?
   {
     te::gm::GeomType geomType = Convert2TerraLib(ogrGeomType);
-    te::gm::GeometryProperty* geomPropertyType = new te::gm::GeometryProperty("geom", TE_UNKNOWN_SRS, geomType);
+    te::gm::GeometryProperty* geomPropertyType = new te::gm::GeometryProperty("OGR_GEOMETRY", TE_UNKNOWN_SRS, geomType);
     dt->add(geomPropertyType);
   }
 }

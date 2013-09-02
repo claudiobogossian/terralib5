@@ -36,6 +36,7 @@
 // Forward declarations
 class OGRLayer;
 class OGRFeature;
+class OGRDataSource;
 
 namespace te
 {
@@ -47,9 +48,6 @@ namespace te
 
   namespace ogr
   {
-// Forward declarations
-    class DataSourceTransactor;
-
     /*!
       \class DataSet
 
@@ -67,7 +65,7 @@ namespace te
         //@{
 
         /*! \brief Constructor. */
-        DataSet(DataSourceTransactor* trans, OGRLayer* layer, bool isOwner = false);
+        DataSet(OGRDataSource* dsrc, OGRLayer* layer, bool isOwner = false);
 
         /*! \brief Destructor. */
         ~DataSet();
@@ -77,10 +75,6 @@ namespace te
         te::common::TraverseType getTraverseType() const { return te::common::FORWARDONLY; }
 
         te::common::AccessPolicy getAccessPolicy() const { return te::common::RAccess; }
-
-        te::da::DataSourceTransactor* getTransactor() const;
-
-        te::gm::Envelope* getExtent(std::size_t i);
 
         std::size_t getNumProperties() const;
 
@@ -92,7 +86,11 @@ namespace te
 
         bool isEmpty() const;
 
+        bool isConnected() const { return true; }
+
         std::size_t size() const;
+
+        std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i);
 
         bool moveNext();
 
@@ -134,28 +132,27 @@ namespace te
 
         std::string getString(std::size_t i) const;
 
-        te::dt::ByteArray* getByteArray(std::size_t i) const;
+        std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const;
 
-        te::gm::Geometry* getGeometry(std::size_t i) const;
+        std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const;
 
-        te::rst::Raster* getRaster(std::size_t i) const;
+        std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
 
-        te::dt::DateTime* getDateTime(std::size_t i) const;
+        std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const;
 
-        te::dt::Array* getArray(std::size_t i) const;
+        std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
         bool isNull(std::size_t i) const;
-
+      
       private:
 
         const unsigned char* getWKB() const;
 
       private:
 
-        DataSourceTransactor* m_trans;        //!< The OGR transactor associated to this dataset.
-
         mutable te::da::DataSetType* m_dt;    //!< DataSetType.
 
+        OGRDataSource* m_ogrDs;               //<! Pointer to OGR data source. 
         OGRLayer* m_layer;                    //<! A pointer to OGR Layer.
         OGRFeature* m_currentFeature;         //<! A pointer to current OGR Feature of layer.
         int m_i;                              //<! The current dataset index.

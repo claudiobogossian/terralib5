@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -16,47 +16,25 @@
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
  */
-
-/*!
-  \file terralib/ogr/DataSource.cpp
-
-  \brief The OGR data provider.  
- */
-
-// TerraLib
-#include "../common/Exception.h"
-#include "../common/StringUtils.h"
-#include "../common/Translator.h"
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/datasource/DataSourceCatalog.h"
-#include "../geometry/Geometry.h"
-#include "DataSet.h"
 #include "DataSource.h"
-#include "DataSourceTransactor.h"
 #include "Globals.h"
+#include "Transactor.h"
 #include "Utils.h"
+
+#include "../common/Translator.h"
 
 // OGR
 #include <ogrsf_frmts.h>
 
-// STL
-#include <cassert>
-#include <cstring>
-
 // Boost
-#include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
 te::da::SQLDialect* te::ogr::DataSource::sm_myDialect(0);
 
 te::ogr::DataSource::DataSource()
-  : m_catalog(0),
-    m_ogrDS(0),
+  : m_ogrDS(0),
     m_isValid(false)
 {
-  m_catalog = new te::da::DataSourceCatalog;
-  m_catalog->setDataSource(this);
 }
 
 te::ogr::DataSource::~DataSource()
@@ -64,7 +42,7 @@ te::ogr::DataSource::~DataSource()
   close();
 }
 
-const std::string& te::ogr::DataSource::getType() const
+std::string te::ogr::DataSource::getType() const
 {
   return Globals::m_driverIdentifier;
 }
@@ -79,19 +57,9 @@ void te::ogr::DataSource::setConnectionInfo(const std::map<std::string, std::str
   m_connectionInfo = connInfo;
 }
 
-const te::da::DataSourceCapabilities& te::ogr::DataSource::getCapabilities() const
+std::auto_ptr<te::da::DataSourceTransactor> te::ogr::DataSource::getTransactor()
 {
-  return m_capabilities;
-}
-
-const te::da::SQLDialect* te::ogr::DataSource::getDialect() const
-{
-  return sm_myDialect; // Throw an exception? OGR Library not supports sql dialect
-}
-
-void te::ogr::DataSource::setDialect(te::da::SQLDialect* myDialect)
-{
-  sm_myDialect = myDialect;
+  return std::auto_ptr<te::da::DataSourceTransactor>(new Transactor(this));
 }
 
 void te::ogr::DataSource::open()
@@ -99,7 +67,7 @@ void te::ogr::DataSource::open()
   close();
 
   if(m_connectionInfo.empty())
-    throw te::common::Exception(TR_OGR("There is no information about the data source")); 
+    throw Exception(TR_OGR("There is no information about the data source")); 
 
   std::string path = m_connectionInfo.begin()->second;
   m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str());
@@ -107,7 +75,7 @@ void te::ogr::DataSource::open()
   if(m_ogrDS == 0)
   {
     m_isValid = false;
-    throw te::common::Exception(TR_OGR("Error open data source: " + path));
+    throw Exception(TR_OGR("Error open data source: " + path));
   }
 
   m_isValid = true;
@@ -118,8 +86,6 @@ void te::ogr::DataSource::close()
   OGRDataSource::DestroyDataSource(m_ogrDS);
   m_ogrDS = 0;  
   
-  m_catalog->clear();
-    
   m_isValid = false;
 }
 
@@ -133,105 +99,88 @@ bool te::ogr::DataSource::isValid() const
   return m_isValid;
 }
 
-te::da::DataSourceCatalog* te::ogr::DataSource::getCatalog() const
+const te::da::DataSourceCapabilities& te::ogr::DataSource::getCapabilities() const
 {
-  return m_catalog;
+  return m_capabilities;
 }
 
-te::da::DataSourceTransactor* te::ogr::DataSource::getTransactor()
+const te::da::SQLDialect* te::ogr::DataSource::getDialect() const
 {
-  return new DataSourceTransactor(this, m_ogrDS);
+  return sm_myDialect;
 }
 
-void te::ogr::DataSource::optimize(const std::map<std::string, std::string>& /*opInfo*/)
+void te::ogr::DataSource::setDialect(te::da::SQLDialect* dialect)
 {
-  throw te::common::Exception(TR_OGR("Not implemented yet!"));
+  sm_myDialect = dialect;
+}
+
+OGRDataSource* te::ogr::DataSource::getOGRDataSource()
+{
+  return m_ogrDS;
 }
 
 void te::ogr::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
   std::string path = dsInfo.begin()->second;
- 
-  if (boost::filesystem::is_directory(path.c_str()))
-  {  
-    try
-    {
-      boost::filesystem::create_directory(path);
-    }
-    catch (boost::filesystem::filesystem_error &e)
-    { 
-      std::string m = TR_OGR("Could not create directory. ");
-                  m += e.what();
-      throw te::common::Exception(m);
-    }
-    setConnectionInfo(dsInfo);
-    //open();
-  }
-  else
-  {
-    OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
-    OGRSFDriver* driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
-    if (driver == 0)
-      throw(te::common::Exception(TR_OGR("Driver not found.")));
+  OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
+  OGRSFDriver* driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
 
-    if(!driver->TestCapability(ODrCCreateDataSource))
-      throw(te::common::Exception(TR_OGR("The Driver does not have create capability.")));
+  if (driver == 0)
+    throw(Exception(TR_OGR("Driver not found.")));
 
-    m_ogrDS = driver->CreateDataSource(path.c_str());
-    if(m_ogrDS == 0)
-      throw(te::common::Exception(TR_OGR("Error when attempting create the data source.")));   
+  if(!driver->TestCapability(ODrCCreateDataSource))
+    throw(Exception(TR_OGR("The Driver does not have create capability.")));
 
-    //OGRDataSource::DestroyDataSource(newDS);
-    setConnectionInfo(dsInfo);
-  }
+  OGRDataSource* newDs = driver->CreateDataSource(path.c_str());
+
+  if(newDs == 0)
+    throw(Exception(TR_OGR("Error when attempting create the data source.")));   
+
+  OGRDataSource::DestroyDataSource(newDs);
 }
 
 void te::ogr::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
-  //std::string path = m_connectionInfo.begin()->second;
- 
-  //if (boost::filesystem::is_directory(path.c_str()))
-  //{  
-  //  try
-  //  {
-  //    boost::filesystem::remove(path);
-  //  }
-  //  catch (boost::filesystem::filesystem_error &e)
-  //  { 
-  //    std::string m = TR_OGR("Could not drop directory. ");
-  //                m += e.what();
-  //    throw te::common::Exception(m);
-  //  }
-  //}
-  //else
-  //{
-  //  OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
-  //  OGRSFDriver* driver = driverManager->GetDriverByName(te::ogr::Platform::getDriverName(path).c_str());
-  //  if(driver == 0)
-  //    throw(te::common::Exception(TR_OGR("Driver not found.")));
+  std::string path = dsInfo.begin()->second;
 
-  //  if(!driver->TestCapability(ODrCDeleteDataSource))
-  //    throw(te::common::Exception(TR_OGR("The Driver does not have drop capability.")));
+  if(m_ogrDS!=0 && path.compare(m_ogrDS->GetName()) == 0)
+    close();
 
-  //  if(driver->DeleteDataSource(path.c_str()) != OGRERR_NONE)
-  //    throw(te::common::Exception(TR_OGR("Error when attempting drop the data source.")));
+  OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
+  OGRSFDriver* driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
 
-  //  if(driver->DeleteDataSource("") != OGRERR_NONE)
-  //    throw(te::common::Exception(TR_OGR("Error when attempting drop the data source.")));
-  //}
+  if (driver == 0)
+    throw(Exception(TR_OGR("Driver not found.")));
+
+  if(!driver->TestCapability(ODrCDeleteDataSource))
+    throw(Exception(TR_OGR("The Driver does not have drop capability.")));
+
+  if(driver->DeleteDataSource(path.c_str()) != OGRERR_NONE)
+    throw(Exception(TR_OGR("Error when dropping the data source.")));   
 }
 
-bool te::ogr::DataSource::exists(const std::map<std::string, std::string>& /*dsInfo*/)
+bool te::ogr::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
 {
-  throw te::common::Exception(TR_OGR("Not implemented yet!"));
+  return boost::filesystem::exists(dsInfo.begin()->second);
 }
 
-std::vector<std::string> te::ogr::DataSource::getDataSources(const std::map<std::string, std::string>& info)
+std::vector<std::string> te::ogr::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
 {
-  throw te::common::Exception(TR_OGR("Not implemented yet!"));
+  std::vector<std::string> names;
+
+  names.push_back(dsInfo.begin()->second);
+
+  return names;
 }
 
-std::vector<std::string>te::ogr::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+std::vector<std::string> te::ogr::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  throw te::common::Exception(TR_OGR("Not implemented yet!"));
+  std::vector<std::string> encodings;
+
+  return encodings;
+}
+
+te::ogr::DataSource* te::ogr::Build()
+{
+  return new te::ogr::DataSource;
 }
