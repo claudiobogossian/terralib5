@@ -120,7 +120,7 @@ bool te::qt::widgets::SegmenterWizard::execute()
   //get layer
   std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
   te::map::AbstractLayerPtr l = *list.begin();
-  te::da::DataSet* ds = l->getData();
+  std::auto_ptr<te::da::DataSet> ds(l->getData());
 
   //run contrast
   te::rp::Segmenter algorithmInstance;
@@ -137,34 +137,40 @@ bool te::qt::widgets::SegmenterWizard::execute()
   algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
 
-
-  if(algorithmInstance.initialize(algoInputParams))
+  try
   {
-    if(algorithmInstance.execute(algoOutputParams))
+    if(algorithmInstance.initialize(algoInputParams))
     {
-      //set output layer
-      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
-                                                   m_rasterInfoPage->getWidget()->getInfo());
+      if(algorithmInstance.execute(algoOutputParams))
+      {
+        //set output layer
+        m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+                                                     m_rasterInfoPage->getWidget()->getInfo());
 
-      QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully"));
+        QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully"));
+      }
+      else
+      {
+        QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter execution error"));
+        return false;
+      }
     }
     else
     {
-      QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter execution error"));
-
-      delete ds;
+      QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter initialization error"));
       return false;
     }
   }
-  else
+  catch(const std::exception& e)
   {
-    QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter initialization error"));
-
-    delete ds;
+    QMessageBox::warning(this, tr("Register"), e.what());
     return false;
   }
-
-  delete ds;
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Register"), tr("An exception has occuried!"));
+    return false;
+  }
 
   return true;
 }
