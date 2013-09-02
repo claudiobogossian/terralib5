@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2010 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/postgis/DataSet.cpp
 
-  \brief Implementation of a dataset for PostGIS driver.
+  \brief Implementation of a dataset for the PostGIS driver.
 */
 
 // TerraLib
@@ -35,12 +35,12 @@
 #include "../datatype/SimpleData.h"
 #include "../geometry/Geometry.h"
 #include "Connection.h"
-#include "CatalogLoader.h"
+#include "ConnectionPool.h"
+//#include "CatalogLoader.h"
 #include "DataSet.h"
 #include "DataSource.h"
 #include "EWKBReader.h"
 #include "Exception.h"
-#include "Transactor.h"
 #include "Utils.h"
 
 // STL
@@ -126,22 +126,20 @@ namespace te
 }   // end namespace te
 
 te::pgis::DataSet::DataSet(PGresult* result,
-                           Transactor* transactor,
-                           std::string* sql)
+                           const std::vector<int>& ptypes,
+                           bool timeIsInteger)
   : m_i(-1),
     m_result(result),
-    m_t(transactor),
-    m_sql(sql)
+    m_ptypes(ptypes),
+    m_mbr(0),
+    m_timeIsInteger(timeIsInteger)
 {
   m_size = PQntuples(m_result);
-
-  Convert2TerraLib(m_result, m_t->getPGDataSource()->getGeomTypeId(), m_t->getPGDataSource()->getRasterTypeId(), m_ptypes);
 }
 
 te::pgis::DataSet::~DataSet()
 {
   PQclear(m_result);
-  delete m_sql;
 }
 
 te::common::TraverseType te::pgis::DataSet::getTraverseType() const
@@ -152,41 +150,6 @@ te::common::TraverseType te::pgis::DataSet::getTraverseType() const
 te::common::AccessPolicy te::pgis::DataSet::getAccessPolicy() const
 {
   return te::common::RAccess;
-}
-
-te::gm::Envelope* te::pgis::DataSet::getExtent(std::size_t i)
-{
-  if(m_ptypes[i] != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_PGIS("This driver only supports the getExtent method over a geometry column!"));
-
-  std::string sql("SELECT ST_Extent(");
-              sql += PQfname(m_result, i);
-              sql += ") FROM (";
-              sql += *m_sql;
-              sql += ") pgis_driver_subquery";
-
-  PGresult* result = PQexec(m_t->getConnection()->getConn(), sql.c_str());
-
-  if(PQresultStatus(result) != PGRES_TUPLES_OK)
-  {
-    std::string errmsg(TR_PGIS("Could not find mbr for the given geometry property due to the following error: "));
-                errmsg += PQerrorMessage(m_t->getConnection()->getConn());
-
-    PQclear(result);
-
-    throw Exception(errmsg);
-  }
-
-  const char* boxStr = PQgetvalue(result, 0, 0);
-
-  te::gm::Envelope* mbr = 0;
-
-  if(*boxStr != '\0')
-    mbr = GetEnvelope(boxStr);
-
-  PQclear(result);
-
-  return mbr;
 }
 
 std::size_t te::pgis::DataSet::getNumProperties() const
@@ -214,9 +177,36 @@ bool te::pgis::DataSet::isEmpty() const
   return (m_size == 0);
 }
 
+bool te::pgis::DataSet::isConnected() const
+{
+  return false;
+}
+
 std::size_t te::pgis::DataSet::size() const
 {
   return m_size;
+}
+
+std::auto_ptr<te::gm::Envelope> te::pgis::DataSet::getExtent(std::size_t i)
+{
+  if(!m_mbr)
+  {
+    if(m_ptypes[i] != te::dt::GEOMETRY_TYPE)
+      throw Exception(TR_PGIS("This driver only supports the getExtent method over a geometry column!"));
+
+    m_mbr = new te::gm::Envelope;
+
+    m_i = -1;
+    while(moveNext())
+    {
+      std::auto_ptr<te::gm::Geometry> geom(getGeometry(i));
+      m_mbr->Union(*(geom->getMBR()));
+    }
+  }
+
+  te::gm::Envelope* mbr = new te::gm::Envelope(*m_mbr);
+
+  return std::auto_ptr<te::gm::Envelope>(mbr);
 }
 
 bool te::pgis::DataSet::moveNext()
@@ -452,26 +442,26 @@ std::string te::pgis::DataSet::getString(std::size_t i) const
   return value;
 }
 
-te::dt::ByteArray* te::pgis::DataSet::getByteArray(std::size_t i) const
+std::auto_ptr<te::dt::ByteArray> te::pgis::DataSet::getByteArray(std::size_t i) const
 {
   int size = PQgetlength(m_result, m_i, i);
 
   te::dt::ByteArray* b = new te::dt::ByteArray(size);
   b->copy(PQgetvalue(m_result, m_i, i), size);
-  return b;
+  return std::auto_ptr<te::dt::ByteArray>(b);
 }
 
-te::gm::Geometry* te::pgis::DataSet::getGeometry(std::size_t i) const
+std::auto_ptr<te::gm::Geometry> te::pgis::DataSet::getGeometry(std::size_t i) const
 {
-  return EWKBReader::read(PQgetvalue(m_result, m_i, i));
+  return std::auto_ptr<te::gm::Geometry>(EWKBReader::read(PQgetvalue(m_result, m_i, i)));
 }
 
-te::rst::Raster* te::pgis::DataSet::getRaster(std::size_t /*i*/) const
+std::auto_ptr<te::rst::Raster> te::pgis::DataSet::getRaster(std::size_t /*i*/) const
 {
-  return 0;
+  return std::auto_ptr<te::rst::Raster>(0);
 }
 
-te::dt::DateTime* te::pgis::DataSet::getDateTime(std::size_t i) const
+std::auto_ptr<te::dt::DateTime> te::pgis::DataSet::getDateTime(std::size_t i) const
 {
   Oid tid = PQftype(m_result, i);
   boost::int64_t ival = 0;
@@ -483,7 +473,7 @@ te::dt::DateTime* te::pgis::DataSet::getDateTime(std::size_t i) const
   {
     case PG_TIME_TYPE:
       {
-        if(m_t->getPGDataSource()->m_timeIsInteger)
+        if(m_timeIsInteger)
         {
           ival = getInt64(i);
         }
@@ -493,7 +483,7 @@ te::dt::DateTime* te::pgis::DataSet::getDateTime(std::size_t i) const
           ival = (boost::int64_t)(dval * 1000000);
         }
 
-        return Internal2Time(ival);
+        return std::auto_ptr<te::dt::DateTime>(Internal2Time(ival));
       }
 
     case PG_DATE_TYPE:
@@ -505,12 +495,12 @@ te::dt::DateTime* te::pgis::DataSet::getDateTime(std::size_t i) const
         te::common::SwapBytes(lval);
 #endif
 
-        return Internal2Date(lval);
+        return std::auto_ptr<te::dt::DateTime>(Internal2Date(lval));
       }
 
     case PG_TIMESTAMP_TYPE:
       {
-        if(m_t->getPGDataSource()->m_timeIsInteger)
+        if(m_timeIsInteger)
           ival = getInt64(i);
         else
         {
@@ -518,12 +508,12 @@ te::dt::DateTime* te::pgis::DataSet::getDateTime(std::size_t i) const
           ival = (boost::int64_t)(dval * 1000000);      
         }
     
-        return Internal2TimeStamp(ival);    
+        return std::auto_ptr<te::dt::DateTime>(Internal2TimeStamp(ival)); 
       }
 
     case PG_TIMESTAMPTZ_TYPE:
       {
-        if(m_t->getPGDataSource()->m_timeIsInteger)
+        if(m_timeIsInteger)
           ival = getInt64(i);
         else
         {
@@ -536,11 +526,11 @@ te::dt::DateTime* te::pgis::DataSet::getDateTime(std::size_t i) const
 
           ival = (boost::int64_t)(dval * 1000000);
         }
-        return Internal2TimeStamp(ival);    
+        return std::auto_ptr<te::dt::DateTime>(Internal2TimeStamp(ival));
       }
     case PG_TIMETZ_TYPE:
       {
-        if(m_t->getPGDataSource()->m_timeIsInteger)
+        if(m_timeIsInteger)
         {
           ival = getInt64(i);
           iz = 0;
@@ -564,7 +554,7 @@ te::dt::DateTime* te::pgis::DataSet::getDateTime(std::size_t i) const
           iz = -12;
         if(iz > 14)
           iz = 14;
-        return Internal2TimeTZ(ival, iz);
+        return std::auto_ptr<te::dt::DateTime>(Internal2TimeTZ(ival, iz));
       }
 
     default:
@@ -572,7 +562,7 @@ te::dt::DateTime* te::pgis::DataSet::getDateTime(std::size_t i) const
   }
 }
 
-te::dt::Array* te::pgis::DataSet::getArray(std::size_t i) const
+std::auto_ptr<te::dt::Array> te::pgis::DataSet::getArray(std::size_t i) const
 {
   char* value = PQgetvalue(m_result, m_i, i);
 
@@ -683,7 +673,7 @@ te::dt::Array* te::pgis::DataSet::getArray(std::size_t i) const
           }
         }
 
-        return arr.release();
+        return std::auto_ptr<te::dt::Array>(arr.release());
       }
     break;
 
@@ -728,7 +718,7 @@ te::dt::Array* te::pgis::DataSet::getArray(std::size_t i) const
           }
         }
 
-        return arr.release();
+        return std::auto_ptr<te::dt::Array>(arr.release());
       }
     break;
 
@@ -769,11 +759,11 @@ te::dt::Array* te::pgis::DataSet::getArray(std::size_t i) const
 
             arr->insert(new te::dt::Int16(val), pos);
 
-            value += sizeof(boost::int16_t);
+            value += sizeof(uint32_t);
           }
         }
 
-        return arr.release();
+        return std::auto_ptr<te::dt::Array>(arr.release());
       }
     break;
 
@@ -815,9 +805,3 @@ bool te::pgis::DataSet::isNull(std::size_t i) const
 {
   return PQgetisnull(m_result, m_i, i) == 1;
 }
-
-std::string* te::pgis::DataSet::getSQL() const
-{
-  return m_sql;
-}
-

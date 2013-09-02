@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,6 +27,7 @@
 #define __TERRALIB_POSTGIS_INTERNAL_CONNECTION_H
 
 // TerraLib
+//#include "../dataaccess/datasource/Connection.h"
 #include "Config.h"
 
 // STL
@@ -37,7 +38,7 @@
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/noncopyable.hpp>
 
-// Forward delcarations for libpq
+// Forward declarations for libpq
 extern "C"
 {
   struct pg_conn;
@@ -51,7 +52,7 @@ namespace te
 {
   namespace pgis
   {
-// Forward declarations
+    // Forward declarations
     class ConnectionPool;
 
     /*!
@@ -138,5 +139,3 @@ namespace te
 
 
 #endif  // __TERRALIB_POSTGIS_INTERNAL_CONNECTION_H
-
-

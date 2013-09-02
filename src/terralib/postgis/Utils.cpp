@@ -73,15 +73,11 @@ namespace te
     inline void SetColumnDef(std::string& s, const te::dt::NumericProperty* p, bool justDataType = false)
     {
       s += Globals::sm_numericTypeName;
-
-      if(p->getPrecision() > 0 && p->getScale() > 0)
-      {
-        s += "(";
-        s += te::common::Convert2String(p->getPrecision());
-        s += ", ";
-        s += te::common::Convert2String(p->getScale());
-        s += ")";
-      }
+      s += "(";
+      s += te::common::Convert2String(p->getPrecision());
+      s += ", ";
+      s += te::common::Convert2String(p->getScale());
+      s += ")";
 
       if(justDataType)
         return;
@@ -644,4 +640,3 @@ std::string te::pgis::GetLoadDataRow(const te::da::DataSetType* dt, te::da::Data
 
   return values;
 }
-

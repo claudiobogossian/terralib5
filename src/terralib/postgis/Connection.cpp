@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -132,4 +132,3 @@ te::pgis::Connection::Connection(ConnectionPool* pool, const std::string& connin
 static void PostGISNoticeProcessor(void* /*arg*/, const char* /*pszMessage*/)
 {
 }
-

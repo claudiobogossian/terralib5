@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/postgis/DataSet.h
 
-  \brief Implementation of a dataset for PostGIS driver.
+  \brief Implementation of a dataset for the PostGIS driver.
 */
 
 #ifndef __TERRALIB_POSTGIS_INTERNAL_DATASET_H
@@ -31,33 +31,31 @@
 #include "Config.h"
 
 // Forward declaration for libpq
-extern "C"
-{
-  struct pg_conn;
-  typedef struct pg_conn PGconn;
-  struct pg_result;
-  typedef struct pg_result PGresult;
-}
+//extern "C"
+//{
+//  struct pg_conn;
+//  typedef struct pg_conn PGconn;
+//  struct pg_result;
+//  typedef struct pg_result PGresult;
+//}
 
 namespace te
 {
 // Forward declarations
   namespace da
   {
+    class DataSource;
     class GeometryProperty;
   }
 
   namespace pgis
   {
-// Forward declarations
-    class Transactor;
-
     /*!
       \class DataSet
 
-      \brief Implementation of a dataset for PostGIS driver.
+      \brief Implementation of a dataset for the PostGIS driver.
 
-      \sa Transactor, te::da::DataSet
+      \sa te::da::DataSet
     */
     class TEPGISEXPORT DataSet : public te::da::DataSet
     {
@@ -66,13 +64,12 @@ namespace te
         /*!
           \brief Constructor.
 
-          \param result     The internal PGresult.
-          \param transactor The transactor associated to this DataSet.
-          \param sql        The sql command that generated the dataset.
+          \param result       The internal PGresult.
+          \param ds           The data source.
         */
         DataSet(PGresult* result,
-                Transactor* transactor,
-                std::string* sql);
+                const std::vector<int>& ptypes,
+                bool timeIsInteger = true);
 
         /*! \brief The destructor will clear the internal PGresult. */
         ~DataSet();
@@ -80,8 +77,6 @@ namespace te
         te::common::TraverseType getTraverseType() const;
 
         te::common::AccessPolicy getAccessPolicy() const;
-
-        te::gm::Envelope* getExtent(std::size_t i);
 
         std::size_t getNumProperties() const;
 
@@ -93,7 +88,11 @@ namespace te
 
         bool isEmpty() const;
 
+        bool isConnected() const;
+
         std::size_t size() const;
+
+        std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i);
 
         bool moveNext();
 
@@ -135,15 +134,15 @@ namespace te
 
         std::string getString(std::size_t i) const;
 
-        te::dt::ByteArray* getByteArray(std::size_t i) const;
+        std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const;
 
-        te::gm::Geometry* getGeometry(std::size_t i) const;
+        std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const;
 
-        te::rst::Raster* getRaster(std::size_t i) const;
+        std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
 
-        te::dt::DateTime* getDateTime(std::size_t i) const; 
+        std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const; 
 
-        te::dt::Array* getArray(std::size_t i) const;
+        std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
         bool isNull(std::size_t i) const;
 
@@ -151,13 +150,6 @@ namespace te
          *  Methods that exists only in the PostGIS DataSet implementation.
          */
         //@{
-
-        /*!
-          \brief It returns the internal SQL used to generate the dataset.
-
-          \return The internal SQL used to generate the dataset.
-        */
-        std::string* DataSet::getSQL() const;
 
         /*!
           \brief It returns the internal pg result.
@@ -173,9 +165,9 @@ namespace te
         int m_i;                            //!< The index of the current row.
         int m_size;                         //!< The number of datasets in the collection.
         PGresult* m_result;                 //!< The internal buffer with the result query.
-        Transactor* m_t;                    //!< The PostGIS transactor associated to this dataset.
-        std::string* m_sql;                 //!< The sql command that generated the dataset.
         std::vector<int> m_ptypes;          //!< The list of property types.
+        te::gm::Envelope* m_mbr;            //!< The dataset extent.
+        bool m_timeIsInteger;               //!< It indicates if the postgis stores, internally, the time and timestamp as an integer. 
     };
 
   } // end namespace pgis

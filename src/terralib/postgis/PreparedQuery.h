@@ -160,5 +160,3 @@ namespace te
 
 
 #endif  // __TERRALIB_POSTGIS_INTERNAL_PREPAREDQUERY_H
-
-

@@ -162,10 +162,11 @@ std::string te::pgis::PreparedQuery::getName() const
 
 void te::pgis::PreparedQuery::prepare(const te::da::Query& query, const std::vector<te::dt::Property*>& paramTypes)
 {
-  assert(m_t && m_t->getPGDataSource() && m_t->getPGDataSource()->getDialect());
+  te::pgis::DataSource* pgds = static_cast<te::pgis::DataSource*>(m_t->getDataSource());
+  assert(m_t && pgds && pgds->getDialect());
   std::string sql;
 
-  SQLVisitor visitor(*(m_t->getPGDataSource()->getDialect()), sql, m_t->getConnection()->getConn());
+  SQLVisitor visitor(*(pgds->getDialect()), sql, m_t->getConnection()->getConn());
   query.accept(visitor);
 
   prepare(sql, paramTypes);
@@ -207,7 +208,12 @@ te::da::DataSet* te::pgis::PreparedQuery::query(te::common::TraverseType /*travT
 {
   execute();
 
-  DataSet* dataset = new DataSet(m_result, m_t, 0);
+  te::pgis::DataSource* ds = static_cast<te::pgis::DataSource*>(m_t->getDataSource());
+
+  std::vector<int> ptypes;
+  Convert2TerraLib(m_result, ds->getGeomTypeId(), ds->getRasterTypeId(), ptypes);
+
+  DataSet* dataset = new DataSet(m_result, std::vector<int>(), ds->isTimeAnInteger());
 
   m_result = 0;
 

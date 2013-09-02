@@ -82,7 +82,7 @@ void te::pgis::ConnectionPool::initialize()
   boost::lock_guard<boost::mutex> lock(m_pImpl->m_mtx);
 
   if(isInitialized())
-    throw Exception(TR_PGIS("The connection pool is already iniatialized!"));
+    throw Exception(TR_PGIS("The connection pool is already initialized!"));
 
 // check for pool parameters...
   const std::map<std::string, std::string>& connInfo = m_pImpl->m_ds->getConnectionInfo();
@@ -132,9 +132,9 @@ void te::pgis::ConnectionPool::initialize()
     std::string answer = PQparameterStatus(m_pImpl->m_connections.front()->m_pgconn, "integer_datetimes");
 
     if(answer == off)
-      m_pImpl->m_ds->m_timeIsInteger = false;
+      m_pImpl->m_ds->setTimeAsInteger(false);
     else
-      m_pImpl->m_ds->m_timeIsInteger = true;
+      m_pImpl->m_ds->setTimeAsInteger(true);
   }
 
   m_pImpl->m_initialized = true;
@@ -238,6 +238,11 @@ bool te::pgis::ConnectionPool::isValid() const
 bool te::pgis::ConnectionPool::isInitialized() const
 {
   return m_pImpl->m_initialized;
+}
+
+te::pgis::DataSource* te::pgis::ConnectionPool::getDataSource() const
+{
+  return m_pImpl->m_ds;
 }
 
 std::size_t te::pgis::ConnectionPool::getPoolSize() const
@@ -353,5 +358,3 @@ te::pgis::ConnectionPool::~ConnectionPool()
 
   delete m_pImpl;
 }
-
-
