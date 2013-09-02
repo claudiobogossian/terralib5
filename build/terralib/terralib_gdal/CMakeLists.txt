@@ -1,2 +1,2 @@
-set (GDAL_DIR "${ROOT}/src/terralib/gdal2")
+set (GDAL_DIR "${ROOT}/src/terralib/gdal")
 makePluginProject("gdal" "${GDAL_DIR}" "${GDAL_DIR}")
