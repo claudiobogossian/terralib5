@@ -29,6 +29,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "ContrastWizardPage.h"
+#include "RasterHistogramDialog.h"
 #include "RasterNavigatorWidget.h"
 #include "ui_ContrastWizardPageForm.h"
 
@@ -52,10 +53,12 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
 
 //build form
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
-  m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
+  m_navigator.reset(new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
   m_navigator->showAsPreview(true);
   displayLayout->addWidget(m_navigator.get());
   displayLayout->setContentsMargins(0,0,0,0);
+
+  m_histogramDlg.reset(new te::qt::widgets::RasterHistogramDialog(this));
 
 //connects
   connect(m_ui->m_histogramPushButton, SIGNAL(clicked()), this, SLOT(showHistogram()));
@@ -82,6 +85,8 @@ void te::qt::widgets::ContrastWizardPage::set(te::map::AbstractLayerPtr layer)
   list.push_back(m_layer);
 
   m_navigator->set(m_layer);
+
+  m_histogramDlg->set(m_layer);
 
   listBands();
 }
@@ -259,6 +264,8 @@ void te::qt::widgets::ContrastWizardPage::listBands()
 void te::qt::widgets::ContrastWizardPage::showHistogram()
 {
   assert(m_layer.get());
+
+  m_histogramDlg->show();
 }
 
 void te::qt::widgets::ContrastWizardPage::onContrastTypeComboBoxActivated(int index)
