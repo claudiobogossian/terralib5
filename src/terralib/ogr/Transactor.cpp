@@ -282,14 +282,14 @@ std::size_t te::ogr::Transactor::getNumberOfDataSets()
   return m_ogrDs->getOGRDataSource()->GetLayerCount();
 }
     
-te::da::DataSetTypePtr te::ogr::Transactor::getDataSetType(const std::string& name)
+std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std::string& name)
 {
   OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(name.c_str());
 
   if(l==0)
-    return te::da::DataSetTypePtr();
+    return std::auto_ptr<te::da::DataSetType>();
 
-  return te::da::DataSetTypePtr(Convert2TerraLib(l->GetLayerDefn()));
+  return std::auto_ptr<te::da::DataSetType>(Convert2TerraLib(l->GetLayerDefn()));
 }
 
 boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std::string& datasetName)
