@@ -241,7 +241,6 @@ void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
   {
     if(layerID == it->get()->getId().c_str())
     {
-      std::size_t type;
       te::map::AbstractLayerPtr selectedLayer = it->get();
       m_selectedLayer = selectedLayer;
       std::auto_ptr<const te::map::LayerSchema> schema(selectedLayer->getSchema());
