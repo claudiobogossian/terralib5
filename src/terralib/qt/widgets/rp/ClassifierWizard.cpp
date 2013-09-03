@@ -130,13 +130,13 @@ bool te::qt::widgets::ClassifierWizard::execute()
 
   std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
 
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   //run contrast
   te::rp::Classifier algorithmInstance;
 
   te::rp::Classifier::InputParameters algoInputParams = m_classifierPage->getInputParams();
-  algoInputParams.m_inputRasterPtr = inputRst;
+  algoInputParams.m_inputRasterPtr = inputRst.release();
 
   te::rp::Classifier::OutputParameters algoOutputParams = m_classifierPage->getOutputParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();

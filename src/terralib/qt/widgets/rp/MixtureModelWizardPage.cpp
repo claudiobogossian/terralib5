@@ -53,6 +53,9 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+//STL
+#include <memory>
+
 #define PATTERN_SIZE 12
 
 te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
@@ -219,9 +222,9 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y, 
   if(ds)
   {
     std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
-    te::rst::Raster* inputRst = ds->getRaster(rpos);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
-    if(inputRst)
+    if(inputRst.get())
     {
       te::gm::Coord2D pixelLocation = inputRst->getGrid()->geoToGrid(x, y);
 
@@ -346,9 +349,9 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
   if(ds)
   {
     std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
-    te::rst::Raster* inputRst = ds->getRaster(rpos);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
-    if(inputRst)
+    if(inputRst.get())
     {
       // define sensor information
       QStringList sensorsDescriptions;

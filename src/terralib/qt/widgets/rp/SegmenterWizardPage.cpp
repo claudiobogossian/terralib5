@@ -39,6 +39,9 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/QMessageBox>
 
+// STL
+#include <memory>
+
 
 te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
   : QWizardPage(parent),
@@ -89,10 +92,10 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
   //get input raster
   te::da::DataSet* ds = m_layer->getData();
   std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   //set segmenter parameters
-  algoInputParams.m_inputRasterPtr = inputRst;
+  algoInputParams.m_inputRasterPtr = inputRst.release();
 
   int nBands = m_ui->m_bandTableWidget->rowCount();
 
@@ -210,9 +213,9 @@ void te::qt::widgets::SegmenterWizardPage::listBands()
   {
     std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
 
-    te::rst::Raster* inputRst = ds->getRaster(rpos);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
-    if(inputRst)
+    if(inputRst.get())
     {
       for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
       {

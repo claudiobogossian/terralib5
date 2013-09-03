@@ -54,6 +54,9 @@
 #include "RasterNavigatorWidget.h"
 #include "ui_RasterNavigatorWidgetForm.h"
 
+//STL
+#include <memory>
+
 
 te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -168,13 +171,13 @@ te::rst::Raster* te::qt::widgets::RasterNavigatorWidget::getExtentRaster()
   //get raster
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   //get style
   te::se::Style* style = m_layer->getStyle();
   te::se::CoverageStyle* cs = dynamic_cast<te::se::CoverageStyle*>(style);
 
-  return te::map::GetExtentRaster(inputRst, m_mapDisplay->getWidth(), m_mapDisplay->getHeight(), reprojectedBBOX, m_mapDisplay->getSRID(), ibbox, m_layer->getSRID(), cs);
+  return te::map::GetExtentRaster(inputRst.get(), m_mapDisplay->getWidth(), m_mapDisplay->getHeight(), reprojectedBBOX, m_mapDisplay->getSRID(), ibbox, m_layer->getSRID(), cs);
 }
 
 void te::qt::widgets::RasterNavigatorWidget::drawRaster(te::rst::Raster* rst)
@@ -265,9 +268,9 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
   if(ds)
   {
     std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
-    te::rst::Raster* inputRst = ds->getRaster(rpos);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
-    if(inputRst)
+    if(inputRst.get())
     {
       // find the selected pixel location for component
       te::gm::Coord2D pixelLocation = inputRst->getGrid()->geoToGrid((double) coordinate.rx(), (double)coordinate.ry());
@@ -443,9 +446,9 @@ void te::qt::widgets::RasterNavigatorWidget::listBands()
   {
     std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
 
-    te::rst::Raster* inputRst = ds->getRaster(rpos);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
-    if(inputRst)
+    if(inputRst.get())
     {
       for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
       {
