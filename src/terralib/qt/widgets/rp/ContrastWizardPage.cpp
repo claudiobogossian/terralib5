@@ -41,6 +41,9 @@
 // Boost
 #include <boost/lexical_cast.hpp>
 
+//STL
+#include <memory>
+
 te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::ContrastWizardPageForm),
@@ -228,9 +231,9 @@ void te::qt::widgets::ContrastWizardPage::listBands()
   {
     std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
 
-    te::rst::Raster* inputRst = ds->getRaster(rpos);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
-    if(inputRst)
+    if(inputRst.get())
     {
       for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
       {

@@ -119,13 +119,13 @@ bool te::qt::widgets::ContrastWizard::execute()
 
   std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
 
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   //run contrast
   te::rp::Contrast algorithmInstance;
 
   te::rp::Contrast::InputParameters algoInputParams = m_contrastPage->getInputParams();
-  algoInputParams.m_inRasterPtr = inputRst;
+  algoInputParams.m_inRasterPtr = inputRst.release();
 
   te::rp::Contrast::OutputParameters algoOutputParams;
   algoOutputParams.m_createdOutRasterDSType = m_rasterInfoPage->getWidget()->getType();

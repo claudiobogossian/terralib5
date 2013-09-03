@@ -42,6 +42,9 @@
 // Qt
 #include <QGridLayout>
 
+//STL
+#include <memory>
+
 te::qt::widgets::RasterHistogramWidget::RasterHistogramWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::RasterHistogramWidgetForm)
@@ -98,7 +101,7 @@ void te::qt::widgets::RasterHistogramWidget::set(te::map::AbstractLayerPtr layer
 
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
   {
@@ -124,8 +127,6 @@ void te::qt::widgets::RasterHistogramWidget::onRedToolButtonToggled(bool flag)
   te::se::Fill* fill = te::se::CreateFill("#009900", "1.0");
 
   te::se::Stroke* stroke = te::se::CreateStroke("#000000", "1");
-
-  te::qt::widgets::HistogramStyle* histStyle = new te::qt::widgets::HistogramStyle(fill, stroke);
 
   te::qt::widgets::HistogramChart* histChart = new te::qt::widgets::HistogramChart(hist);
 
