@@ -112,15 +112,13 @@ void te::qt::widgets::DataSetGroupItem::fetchMore()
   if(ds.get() == 0)
     return;
 
-  boost::ptr_vector<std::string> datasets;
+  std::vector<std::string> datasetNames = ds->getDataSetNames();
 
-  te::da::GetDataSets(datasets, ds.get());
-
-  const std::size_t ndatasets = datasets.size();
+  const std::size_t ndatasets = datasetNames.size();
 
   for(std::size_t i = 0; i < ndatasets; ++i)
   {
-    te::da::DataSetTypePtr dt(new te::da::DataSetType(datasets[i]));
+    te::da::DataSetTypePtr dt(new te::da::DataSetType(datasetNames[i]));
 
     new DataSetItem(dt, ds.get(), this);
   }
@@ -141,7 +139,7 @@ bool te::qt::widgets::DataSetGroupItem::hasChildren() const
     if(ds.get() == 0)
       return false;
 
-    return te::da::HasDataSet(ds.get());
+    return ds->hasDataSets();
   }
   catch(...)
   {

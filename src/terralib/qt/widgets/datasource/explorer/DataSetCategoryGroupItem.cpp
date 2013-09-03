@@ -135,7 +135,7 @@ bool te::qt::widgets::DataSetCategoryGroupItem::hasChildren() const
     if(ds.get() == 0)
       return false;
 
-    return te::da::HasDataSet(ds.get());
+    return ds->hasDataSets();
   }
   catch(...)
   {
