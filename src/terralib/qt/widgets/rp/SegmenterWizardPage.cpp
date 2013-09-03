@@ -90,8 +90,8 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
   te::rp::Segmenter::InputParameters algoInputParams;
 
   //get input raster
-  te::da::DataSet* ds = m_layer->getData();
-  std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+  std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   //set segmenter parameters
@@ -149,8 +149,6 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
     algoInputParams.setSegStrategyParams( strategyParameters );
   }
 
-  delete ds;
-
   return algoInputParams;
 }
 
@@ -207,11 +205,11 @@ void te::qt::widgets::SegmenterWizardPage::listBands()
   assert(m_layer.get());
 
   //get input raster
-  te::da::DataSet* ds = m_layer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
 
     std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
@@ -237,6 +235,4 @@ void te::qt::widgets::SegmenterWizardPage::listBands()
       }
     }
   }
-
-  delete ds;
 }

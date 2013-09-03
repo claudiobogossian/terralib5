@@ -158,11 +158,11 @@ void te::qt::widgets::ClassifierWizardPage::listBands()
   assert(m_layer.get());
 
   //get input raster
-  te::da::DataSet* ds = m_layer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
 
     std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
@@ -174,8 +174,6 @@ void te::qt::widgets::ClassifierWizardPage::listBands()
       }
     }
   }
-
-  delete ds;
 }
 
 void te::qt::widgets::ClassifierWizardPage::drawSamples()

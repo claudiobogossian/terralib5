@@ -233,11 +233,11 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceLayer(te::map::Abstract
   m_refNavigator->set(layer);
   
   //list bands
-  te::da::DataSet* ds = m_refLayer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_refLayer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
     std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
     if(inputRst.get())
@@ -261,8 +261,6 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceLayer(te::map::Abstract
       m_ui->m_inputResYLineEdit->setText(strResY);
     }
   }
-
-  delete ds;
 }
 
 void te::qt::widgets::TiePointLocatorWidget::setAdjustLayer(te::map::AbstractLayerPtr layer)
@@ -272,11 +270,11 @@ void te::qt::widgets::TiePointLocatorWidget::setAdjustLayer(te::map::AbstractLay
   m_adjNavigator->set(layer);
 
   //list bands
-  te::da::DataSet* ds = m_adjLayer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_adjLayer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
     std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
     if(inputRst.get())
@@ -299,8 +297,6 @@ void te::qt::widgets::TiePointLocatorWidget::setAdjustLayer(te::map::AbstractLay
       m_ui->m_resYLineEdit->setText(strResY);
     }
   }
-
-  delete ds;
 }
 
 void te::qt::widgets::TiePointLocatorWidget::getOutputSRID(int& srid)
@@ -319,11 +315,11 @@ void te::qt::widgets::TiePointLocatorWidget::refCoordPicked(double x, double y)
   assert(m_refLayer.get());
 
   //get input raster
-  te::da::DataSet* ds = m_refLayer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_refLayer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
     std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
     if(inputRst.get())
@@ -333,8 +329,6 @@ void te::qt::widgets::TiePointLocatorWidget::refCoordPicked(double x, double y)
       m_tiePointHasFirstCoord = true;
     }
   }
-
-  delete ds;
 }
 
 void te::qt::widgets::TiePointLocatorWidget::adjCoordPicked(double x, double y)
@@ -342,11 +336,11 @@ void te::qt::widgets::TiePointLocatorWidget::adjCoordPicked(double x, double y)
   assert(m_adjLayer.get());
 
   //get input raster
-  te::da::DataSet* ds = m_adjLayer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_adjLayer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
     std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
     if(inputRst.get())
@@ -369,8 +363,6 @@ void te::qt::widgets::TiePointLocatorWidget::adjCoordPicked(double x, double y)
       }
     }
   }
-
-  delete ds;
 }
 
 void te::qt::widgets::TiePointLocatorWidget::setTiePointMarkLegend(QPixmap p)
@@ -971,20 +963,20 @@ void te::qt::widgets::TiePointLocatorWidget::drawTiePoints()
   //get rasters
   if(!m_refLayer.get())
     return;
-  te::da::DataSet* dsRef = m_refLayer->getData();
-  if(!dsRef)
+  std::auto_ptr<te::da::DataSet> dsRef = m_refLayer->getData();
+  if(!dsRef.get())
     return;
-  std::size_t rpos = te::da::GetFirstPropertyPos(dsRef, te::dt::RASTER_TYPE);
+  std::size_t rpos = te::da::GetFirstPropertyPos(dsRef.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> rstRef = dsRef->getRaster(rpos);
   if(!rstRef.get())
     return;
 
   if(!m_adjLayer.get())
     return;
-  te::da::DataSet* dsAdj = m_adjLayer->getData();
-  if(!dsAdj)
+  std::auto_ptr<te::da::DataSet> dsAdj = m_adjLayer->getData();
+  if(!dsAdj.get())
     return;
-  rpos = te::da::GetFirstPropertyPos(dsAdj, te::dt::RASTER_TYPE);
+  rpos = te::da::GetFirstPropertyPos(dsAdj.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> rstAdj = dsAdj->getRaster(rpos);
   if(!rstAdj.get())
     return;
@@ -1068,9 +1060,6 @@ void te::qt::widgets::TiePointLocatorWidget::drawTiePoints()
 
   refDisplay->repaint();
   adjDisplay->repaint();
-
-  delete dsRef;
-  delete dsAdj;
 }
 
 QPixmap te::qt::widgets::TiePointLocatorWidget::getPixmap(te::color::RGBAColor** rgba)

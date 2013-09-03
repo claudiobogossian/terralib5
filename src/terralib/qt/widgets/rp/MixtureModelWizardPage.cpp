@@ -217,11 +217,11 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y, 
   m_display = map;
 
   //get input raster
-  te::da::DataSet* ds = m_layer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
     std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
     if(inputRst.get())
@@ -271,8 +271,6 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y, 
       updateComponents();
     }
   }
-
-  delete ds;
 }
 
 void te::qt::widgets::MixtureModelWizardPage::onItemChanged(QTableWidgetItem* item)
@@ -344,11 +342,11 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
   assert(m_layer.get());
 
   //get input raster
-  te::da::DataSet* ds = m_layer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
     std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
     if(inputRst.get())
@@ -383,8 +381,6 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
       m_ui->m_bandTableWidget->resizeColumnToContents(0);
     }
   }
-
-  delete ds;
 }
 
 void te::qt::widgets::MixtureModelWizardPage::drawMarks()

@@ -263,11 +263,11 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
     m_zoomInMapDisplay->drawCursorPosition((double) coordinate.rx(), (double)coordinate.ry());
 
   //get input raster
-  te::da::DataSet* ds = m_layer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
     std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
     if(inputRst.get())
@@ -297,8 +297,6 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
       m_ui->m_label->setText(label);
     }
   }
-
-  delete ds;
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onGeomAquired(te::gm::Polygon* poly)
@@ -440,11 +438,11 @@ void te::qt::widgets::RasterNavigatorWidget::listBands()
   m_ui->m_greenComboBox->clear();
   m_ui->m_blueComboBox->clear();
 
-  te::da::DataSet* ds = m_layer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
 
     std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
@@ -458,8 +456,6 @@ void te::qt::widgets::RasterNavigatorWidget::listBands()
       }
     }
   }
-
-  delete ds;
 }
 
 void te::qt::widgets::RasterNavigatorWidget::getCompositionInfo()

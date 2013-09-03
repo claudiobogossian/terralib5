@@ -126,9 +126,9 @@ bool te::qt::widgets::ClassifierWizard::execute()
   //get layer
   std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
   te::map::AbstractLayerPtr l = *list.begin();
-  te::da::DataSet* ds = l->getData();
+  std::auto_ptr<te::da::DataSet> ds = l->getData();
 
-  std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
 
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
@@ -153,20 +153,14 @@ bool te::qt::widgets::ClassifierWizard::execute()
     else
     {
       QMessageBox::critical(this, tr("Classifier"), tr("Classifier execution error"));
-
-      delete ds;
       return false;
     }
   }
   else
   {
     QMessageBox::critical(this, tr("Classifier"), tr("Classifier initialization error"));
-
-    delete ds;
     return false;
   }
-
-  delete ds;
 
   return true;
 }

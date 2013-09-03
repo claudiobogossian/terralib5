@@ -120,7 +120,7 @@ void te::qt::widgets::RasterHistogramWidget::onRedToolButtonToggled(bool flag)
   int band = m_ui->m_redComboBox->currentText().toInt();
 
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
-  std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)m_layer->getSchema());
+  std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)m_layer->getSchema().get());
 
   te::qt::widgets::Histogram* hist = te::qt::widgets::createHistogram(ds.get(), dsType.get(), band);
 
