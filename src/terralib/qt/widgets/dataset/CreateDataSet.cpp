@@ -28,15 +28,13 @@
 #include "CreateDataSet.h"
 
 te::qt::widgets::CreateDataSet::CreateDataSet(te::da::DataSource* ds, QWidget* parent)
-  : QDialog(parent), m_ds(ds), m_catalog(0), m_dataSetType(0)
+  : QDialog(parent), m_ds(ds), m_dataSetType(0)
 {
   if (m_ds == 0)
     QMessageBox::critical(this, tr("Missing a Valid Data Source"), tr("Provide a valid data source!"));
 
   setupUi(this);
 
-  // Get a data source catalog
-  m_catalog = m_ds->getCatalog();
     
   // Connect the signals/slots
   connect(okPushButton, SIGNAL(clicked()), this, SLOT(okPushButtonClicked()));
@@ -46,9 +44,6 @@ te::qt::widgets::CreateDataSet::CreateDataSet(te::da::DataSource* ds, QWidget* p
 
 te::qt::widgets::CreateDataSet::~CreateDataSet()
 {
-  //// Release the transactor
-  //if (m_transactor)
-  // delete m_transactor;
 }
 
 void te::qt::widgets::CreateDataSet::okPushButtonClicked()
@@ -64,17 +59,12 @@ void te::qt::widgets::CreateDataSet::okPushButtonClicked()
 
   // Create the dataset type
   m_dataSetType = new te::da::DataSetType(fullDataSetName);
-  //m_dataSetType->setCatalog(m_catalog);
 
   accept();
 }
 
 void te::qt::widgets::CreateDataSet::cancelPushButtonClicked()
 {
-  // Release the transactor
-  //delete m_transactor;
-  //m_transactor = 0;
-
   reject();
 }
 
@@ -84,6 +74,4 @@ void te::qt::widgets::CreateDataSet::helpPushButtonClicked()
 
 void te::qt::widgets::CreateDataSet::closeEvent(QCloseEvent* /*e*/)
 {
-  // Release the transactor
-  //delete m_transactor;
 }
