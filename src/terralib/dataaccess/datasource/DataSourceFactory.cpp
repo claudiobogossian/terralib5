@@ -46,6 +46,13 @@ std::auto_ptr<te::da::DataSource> te::da::DataSourceFactory::make(const std::str
   return ds;
 }
 
+bool te::da::DataSourceFactory::find(const std::string& dsType)
+{
+  std::map<std::string, FactoryFnctType>::const_iterator it = sm_factories.find(dsType);
+  
+  return (it != sm_factories.end());
+}
+
 void te::da::DataSourceFactory::add(const std::string& dsType, FactoryFnctType f)
 {
   std::map<std::string, FactoryFnctType>::const_iterator it = sm_factories.find(dsType);

@@ -63,6 +63,8 @@ namespace te
         static void add(const std::string& dsType, FactoryFnctType f);
 
         static void remove(const std::string& dsType);
+      
+        static bool find(const std::string& dsType);
 
       private:
 
