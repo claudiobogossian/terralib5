@@ -365,8 +365,7 @@ namespace te
         virtual std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
                                                        const te::gm::Geometry* g,
                                                        te::gm::SpatialRelation r,
-                                                       te::common::TraverseType travType = te::common::FORWARDONLY,
-                                                       te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+                                                       te::common::TraverseType travType = te::common::FORWARDONLY) const = 0;
 
         /*!
           \brief It gets the dataset identified by the layer name using the given restriction.
