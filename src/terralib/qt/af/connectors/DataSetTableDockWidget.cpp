@@ -54,8 +54,8 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
-  m_view->setDataSet(m_layer->getData());
-  m_view->setLayerSchema(m_layer->getSchema(true));
+  m_view->setDataSet(m_layer->getData().get());
+  m_view->setLayerSchema(m_layer->getSchema().get());
 
   if(layer->getSelected() != 0)
     m_view->highlightOIds(layer->getSelected());

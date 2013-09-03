@@ -91,7 +91,7 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
     m_layer->clearSelected();
 
   std::vector<std::size_t> objIdIdx;
-  te::da::GetOIDPropertyPos(m_layer->getSchema(true), objIdIdx);
+  te::da::GetOIDPropertyPos(m_layer->getSchema().get(), objIdIdx);
 
   std::vector<size_t>::iterator it;
 
