@@ -27,8 +27,6 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/datasource/DataSourceCatalog.h"
-#include "../../../dataaccess/datasource/DataSourceCatalogLoader.h"
-#include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/query/BinaryFunction.h"
 #include "../../../dataaccess/query/DataSetName.h"
 #include "../../../dataaccess/query/Distinct.h"
@@ -286,13 +284,11 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
   select->setDistinct(dist);
   select->setFrom(from);
 
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
-
-  te::da::DataSet* dataset = 0;
+  std::auto_ptr<te::da::DataSet> dataset;
 
   try
   {
-    dataset = transactor->query(*select);
+    dataset = m_ds->query(*select);
   }
   catch(const std::exception& e)
   {
@@ -300,10 +296,6 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
                 msg += e.what();
 
     QMessageBox::warning(0, "Query Example", msg.c_str());
-
-    delete transactor;
-    delete dataset;
-    delete select;
 
     return;
   }
@@ -313,14 +305,10 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
 
     QMessageBox::warning(0, "Query Example", msg.c_str());
 
-    delete transactor;
-    delete dataset;
-    delete select;
-
     return;
   }
 
-  if(dataset)
+  if(dataset.get())
   {
     while(dataset->moveNext())
     {
@@ -329,10 +317,6 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
       m_ui->m_valueValueComboBox->addItem(value.c_str());
     }
   }
-
-  delete transactor;
-  delete dataset;
-  delete select;
 }
 
 te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QString& value, const std::string& propName)
@@ -356,13 +340,9 @@ te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QStr
     return 0;
 
   //get the dataset property type
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-  catalog->loadCatalog(true);
+  std::auto_ptr<te::da::DataSetType> dsType = m_ds->getDataSetType(dataSetName);
 
-  te::da::DataSetType* dsType = catalog->getDataSetType(dataSetName);
-
-  if(dsType)
+  if(dsType.get())
   {
     te::dt::Property* prop = dsType->getProperty(propertyName);
 
@@ -384,16 +364,8 @@ te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QStr
       }
     }
 
-    delete dsType;
-    delete catalog;
-    delete transactor;
-
     return l;
   }
-
-  delete dsType;
-  delete catalog;
-  delete transactor;
 
   return 0;
 }

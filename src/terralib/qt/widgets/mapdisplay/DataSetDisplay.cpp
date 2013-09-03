@@ -86,10 +86,8 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
   if(m_canvas.get() == 0)
     m_canvas.reset(new Canvas(width(), height()));
 
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
-
   if(dataset->size() == 0)
-    te::da::LoadProperties(dataset.get(), transactor.get());
+    te::da::LoadProperties(dataset.get(), ds->getId());
 
   if(!dataset->hasGeom())
   {
@@ -100,7 +98,7 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
 
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
 
-  std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(gp, transactor.get()));
+  std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataset->getName(), gp->getName(), ds->getId()));
 
   if(mbr.get() == 0)
     return;
@@ -154,7 +152,7 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
       break;
   }
 
-  std::auto_ptr<te::da::DataSet> feature(transactor->getDataSet(dataset->getName()));
+  std::auto_ptr<te::da::DataSet> feature(ds->getDataSet(dataset->getName()));
 
   std::size_t gpos = te::da::GetFirstPropertyPos(feature.get(), te::dt::GEOMETRY_TYPE);
 

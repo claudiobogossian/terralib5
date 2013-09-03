@@ -73,7 +73,7 @@ namespace te
 
         public:
 
-          void setDataSetNames(const boost::ptr_vector<std::string>& names);
+          void setDataSetNames(const std::vector<std::string>& names);
 
           void setDataSetNames(std::vector<std::pair<std::string, std::string> >& list); // pair dsName, dsAlias
 

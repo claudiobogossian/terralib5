@@ -31,9 +31,7 @@
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/query/QueryCapabilities.h"
 #include "../../../dataaccess/query/Select.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -221,20 +219,17 @@ void te::qt::widgets::QueryLayerBuilderWizard::getDataSets()
 {
   std::string dsId = m_ds->getId();
 
-  boost::ptr_vector<std::string> datasets;
+  std::vector<std::string> datasetNames;
 
-  te::da::GetDataSets(datasets, dsId);
+  te::da::GetDataSets(datasetNames, dsId);
 
-  m_dataSetPage->getWidget()->setDataSetNames(datasets);
+  m_dataSetPage->getWidget()->setDataSetNames(datasetNames);
 }
 
 void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
 {
-  //get dataset list
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
-  te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
-  boost::ptr_vector<std::string> datasets;
-  cloader->getDataSets(datasets);
+  //get the dataset names
+  std::vector<std::string> datasetNames = m_ds->getDataSetNames();
 
   std::vector<std::pair<std::string, std::string> > dataSetSelecteds;
 
@@ -252,17 +247,15 @@ void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
     std::string dataSetName = dataSetSelecteds[t].first;
 
     //get datasettype
-    te::da::DataSetType* dsType = 0;
+    std::auto_ptr<te::da::DataSetType> dsType(0);
 
-    for(unsigned int i = 0; i < datasets.size(); ++i)
+    for(unsigned int i = 0; i < datasetNames.size(); ++i)
     {
-      if(datasets[i] == dataSetName)
-      {
-        dsType = cloader->getDataSetType(datasets[i], true);
-      }
+      if(datasetNames[i] == dataSetName)
+        dsType = m_ds->getDataSetType(datasetNames[i]);
     }
 
-    if(dsType)
+    if(dsType.get())
     {
       for(size_t i = 0; i < dsType->size(); ++i)
       {
@@ -272,12 +265,7 @@ void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
         inputProperties.push_back(fullName);
       }
     }
-    
-    delete dsType;
   }
-
-  delete cloader;
-  delete transactor;
 
   //set values in other pages
   m_fieldPage->getWidget()->setInputValues(inputProperties);
