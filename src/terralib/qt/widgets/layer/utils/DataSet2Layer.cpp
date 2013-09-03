@@ -69,13 +69,13 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
   {
     te::da::DataSourcePtr ds(te::da::DataSourceManager::getInstance().find(m_datasourceId));
     std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
-    te::da::LoadProperties(dataset.get(), transactor.get());
+    te::da::LoadProperties(dataset.get(), m_datasourceId);
   }
 
   if(dataset->hasGeom())
   {
     te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
-    std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(gp, m_datasourceId));
+    std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataset->getName(), gp->getName(), m_datasourceId));
     layer->setSRID(gp->getSRID());
     layer->setExtent(*mbr);
     layer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));

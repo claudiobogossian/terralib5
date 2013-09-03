@@ -28,30 +28,24 @@
 #include "RenameProperty.h"
 
 te::qt::widgets::RenameProperty::RenameProperty(te::da::DataSource* ds, QWidget* parent)
-  : QDialog(parent), m_ds(ds), m_transactor(0), m_catalogLoader(0), m_property(0), m_propertyParent(0)
+  : QDialog(parent),
+    m_ds(ds),
+    m_property(0)
 {
   if (m_ds == 0)
     QMessageBox::critical(this, tr("Missing a Valid Data Source"), tr("Provide a valid data source!"));
 
   setupUi(this);
 
-  // Get a data source catalog loader to access the datasource catalog
-  m_transactor = m_ds->getTransactor();
-  m_catalogLoader = m_transactor->getCatalogLoader();
-    
-  // Load the catalog to find out the information in the data source (only the schemas)
-  m_catalogLoader->loadCatalog();
-
   // Get the dataset names of the data source
-  boost::ptr_vector<std::string> datasets;
-  m_catalogLoader->getDataSets(datasets);
+  std::vector<std::string> datasetNames = m_ds->getDataSetNames();
 
   // Fill alphabetically the dataSetCombobox with the dataset names of the data source
   QStringList dataSetList;
 
-  size_t numDataSets = datasets.size();
+  size_t numDataSets = datasetNames.size();
   for (size_t i = 0; i < numDataSets; ++i)
-    dataSetList << (datasets[i]).c_str();
+    dataSetList << (datasetNames[i]).c_str();
 
   dataSetList.sort();
   dataSetComboBox->addItems(dataSetList);
@@ -67,9 +61,6 @@ te::qt::widgets::RenameProperty::RenameProperty(te::da::DataSource* ds, QWidget*
 
 te::qt::widgets::RenameProperty::~RenameProperty()
 {
-  // Release the transactor
-  if (m_transactor)
-   delete m_transactor;
 }
 
 std::string te::qt::widgets::RenameProperty::getOldPropertyName()
@@ -82,23 +73,14 @@ std::string te::qt::widgets::RenameProperty::getNewPropertyName()
   return newPropertyNameLineEdit->text().toStdString();
 }
 
-void te::qt::widgets::RenameProperty::dataSetComboBoxChanged(const QString& dataSet)
+void te::qt::widgets::RenameProperty::dataSetComboBoxChanged(const QString& datasetName)
 {
   propertiesComboBox->clear();
 
-  // Get the DataSetType associated to the dataset selected; 
-  // it will be used as the parent of the property to be added.
-  if(m_propertyParent)
-    delete m_propertyParent;
+  std::vector<std::string> pNames = m_ds->getPropertyNames(datasetName.toStdString());
 
-  if(dataSetComboBox->currentText().isEmpty() == false)
-    m_propertyParent = m_catalogLoader->getDataSetType(dataSet.toStdString(), false);
-
-  // Fill the propertiesComboBox with the names of the properties of the dataset selected
-  size_t numProperties = m_propertyParent->size();
-
-  for (size_t i = 0; i < numProperties; ++i)
-    propertiesComboBox->addItem(m_propertyParent->getProperty(i)->getName().c_str());
+  for (size_t i = 0; i < pNames.size(); ++i)
+    propertiesComboBox->addItem(pNames[i].c_str());
 }
 
 void te::qt::widgets::RenameProperty::okPushButtonClicked()
@@ -106,27 +88,13 @@ void te::qt::widgets::RenameProperty::okPushButtonClicked()
   // Get the property selected
   int propertyPos = propertiesComboBox->currentIndex();
 
-  m_property = m_propertyParent->getProperty(propertyPos);
-
-  // Release the transactor
-  if (m_transactor)
-  {
-    delete m_transactor;
-    m_transactor = 0;
-  }
+  m_property = m_ds->getProperty(dataSetComboBox->currentText().toStdString(), propertyPos).get();
 
   accept();
 }
 
 void te::qt::widgets::RenameProperty::cancelPushButtonClicked()
 {
-  // Release the transactor
-  if (m_transactor)
-  {
-    delete m_transactor;
-    m_transactor = 0;
-  }
-
   reject();
 }
 
@@ -136,10 +104,4 @@ void te::qt::widgets::RenameProperty::helpPushButtonClicked()
 
 void te::qt::widgets::RenameProperty::closeEvent(QCloseEvent* /*e*/)
 {
-  // Release the transactor
-  if (m_transactor)
-  {
-    delete m_transactor;
-    m_transactor = 0;
-  }
 }

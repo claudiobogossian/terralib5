@@ -38,10 +38,7 @@ namespace te
 {
   namespace da
   {
-    class DataSetType;
     class DataSource;
-    class DataSourceTransactor;
-    class DataSourceCatalogLoader;
   }
 
   namespace dt { class Property; }
@@ -60,7 +57,6 @@ namespace te
           ~RemoveProperty();
 
           te::dt::Property* getProperty() const  { return m_property; }
-          te::da::DataSetType* getPropertyParent() const { return m_propertyParent; }
 
         private slots:
           void dataSetComboBoxChanged(const QString& dataSet); 
@@ -73,11 +69,7 @@ namespace te
       
         private:
           te::da::DataSource* m_ds;
-          te::da::DataSourceTransactor* m_transactor;
-          te::da::DataSourceCatalogLoader* m_catalogLoader;
-
           te::dt::Property* m_property;
-          te::da::DataSetType* m_propertyParent;
       };
     }
   }

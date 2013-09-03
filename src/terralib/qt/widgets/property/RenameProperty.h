@@ -37,10 +37,7 @@ namespace te
 {
   namespace da
   {
-    class DataSetType;
     class DataSource;
-    class DataSourceTransactor;
-    class DataSourceCatalogLoader;
   }
 
   namespace dt { class Property; }
@@ -59,7 +56,6 @@ namespace te
           ~RenameProperty();
 
           te::dt::Property* getProperty() const  { return m_property; }
-          te::da::DataSetType* getPropertyParent() const { return m_propertyParent; }
 
           std::string getOldPropertyName();
           std::string getNewPropertyName();
@@ -75,16 +71,10 @@ namespace te
 
         private:
           te::da::DataSource* m_ds;
-          te::da::DataSourceTransactor* m_transactor;
-          te::da::DataSourceCatalogLoader* m_catalogLoader;
-
           te::dt::Property* m_property;
-          te::da::DataSetType* m_propertyParent;
       };
     }
   }
 }
 
 #endif  // __TERRALIB_QT_WIDGETS_INTERNAL_RENAMEPROPERTY_H
-
-  
