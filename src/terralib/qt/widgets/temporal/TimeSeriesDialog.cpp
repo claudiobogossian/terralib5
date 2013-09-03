@@ -41,8 +41,8 @@ te::qt::widgets::TimeSeriesDialog::TimeSeriesDialog(te::map::AbstractLayerPtr la
   m_ui->setupUi(this);
 
   // Time Properties Widget
-  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(layer->getData(), this));
-  m_uniquePropWidget.reset(new te::qt::widgets::TimeSeriesPropertiesWidget(layer->getData(), this));
+  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(layer->getData().get(), this));
+  m_uniquePropWidget.reset(new te::qt::widgets::TimeSeriesPropertiesWidget(layer->getData().get(), this));
 
   //Observed Properties
   std::auto_ptr<te::da::DataSet> dataSet (layer->getData());

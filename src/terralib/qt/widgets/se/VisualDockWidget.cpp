@@ -176,7 +176,7 @@ void te::qt::widgets::VisualDockWidget::onSymbolizerSelected(te::se::Symbolizer*
 
     m_tabWidget->setTabEnabled(3, true);
 
-    te::da::DataSetType* ds = ( te::da::DataSetType*)m_currentLayer->getSchema();
+    te::da::DataSetType* ds = ( te::da::DataSetType*)m_currentLayer->getSchema().get();
 
     te::rst::RasterProperty* prop = te::da::GetFirstRasterProperty(ds);
 

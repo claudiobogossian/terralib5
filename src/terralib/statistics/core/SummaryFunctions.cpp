@@ -216,7 +216,7 @@ void te::stat::GetStringStatisticalSummaryQuery(const te::map::AbstractLayerPtr&
   
   if(dsLayer == 0)
   {
-    std::auto_ptr<te::da::DataSet> dsLayer((te::da::DataSet*)layer->getData());
+    std::auto_ptr<te::da::DataSet> dsLayer((te::da::DataSet*)layer->getData().get());
     std::string propName = prop->getName();
 
     std::vector<std::string> stringVector = te::stat::GetStringData(dsLayer.get(), propName);
@@ -231,7 +231,7 @@ void te::stat::GetStringStatisticalSummaryQuery(const te::map::AbstractLayerPtr&
 
     if(!dsCapabilities.supportsPreparedQueryAPI())
     {
-      std::auto_ptr<te::da::DataSet> ds((te::da::DataSet*)layer->getData());
+      std::auto_ptr<te::da::DataSet> ds((te::da::DataSet*)layer->getData().get());
       std::string propName = prop->getName();
 
       std::vector<std::string> stringVector = te::stat::GetStringData(ds.get(), propName);
@@ -254,7 +254,7 @@ void te::stat::GetNumericStatisticalSummaryQuery( const te::map::AbstractLayerPt
   
   if(dsLayer == 0)
   {
-    std::auto_ptr<te::da::DataSet> ds((te::da::DataSet*)layer->getData());
+    std::auto_ptr<te::da::DataSet> ds((te::da::DataSet*)layer->getData().get());
 
     std::string propName = prop->getName();
 
@@ -270,7 +270,7 @@ void te::stat::GetNumericStatisticalSummaryQuery( const te::map::AbstractLayerPt
 
     if(!dsCapabilities.supportsPreparedQueryAPI())
     {
-      std::auto_ptr<te::da::DataSet> ds((te::da::DataSet*)layer->getData());
+      std::auto_ptr<te::da::DataSet> ds((te::da::DataSet*)layer->getData().get());
 
       std::string propName = prop->getName();
 
@@ -280,7 +280,7 @@ void te::stat::GetNumericStatisticalSummaryQuery( const te::map::AbstractLayerPt
     }
     else
     {
-      te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema();
+      te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema().get();
       te::da::PropertyName* p_name = new te::da::PropertyName(prop->getName());
 
       te::da::Expression* e_min = new te::da::Min(p_name);

@@ -94,12 +94,12 @@ bool te::qt::widgets::ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
   assert(rs);
 
  //get input raster
-  te::da::DataSet* ds = m_layer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
-    te::rst::Raster* inputRst = ds->getRaster(rpos);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+    te::rst::Raster* inputRst = ds->getRaster(rpos).get();
 
     if(inputRst)
     {
@@ -261,8 +261,6 @@ bool te::qt::widgets::ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
       }
     }
   }
-
-  delete ds;
 
   return true;
 }

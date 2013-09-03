@@ -189,7 +189,7 @@ te::map::AbstractLayerPtr te::qt::widgets::QueryLayerBuilderWizard::getQueryLaye
   layer->computeExtent();
 
   // SRID
-  std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema(true));
+  std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
   layer->setSRID(gp->getSRID());
 

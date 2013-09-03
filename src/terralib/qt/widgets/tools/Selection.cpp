@@ -29,6 +29,7 @@
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../srs/Config.h"
 #include "../canvas/MapDisplay.h"
 #include "../utils/ScopedCursor.h"
@@ -164,11 +165,14 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
   try
   {
     // Gets the dataset
-    std::auto_ptr<te::da::DataSet> dataset(layer->getData(reprojectedEnvelope, te::gm::INTERSECTS));
+    std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
+
+    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
+
+    std::auto_ptr<te::da::DataSet> dataset(layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).get());
     assert(dataset.get());
 
     // Let's generate the oids
-    std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema(true));
     te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
     assert(oids);
 
