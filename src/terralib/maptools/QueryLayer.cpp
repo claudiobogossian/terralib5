@@ -25,12 +25,8 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/datasource/DataSource.h"
-#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
-#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/query/And.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Expression.h"
@@ -45,12 +41,9 @@
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
 #include "../geometry/GeometryProperty.h"
-#include "../memory/DataSet.h"
-#include "../memory/DataSetItem.h"
 #include "Exception.h"
 #include "QueryLayer.h"
 #include "RendererFactory.h"
-#include "Utils.h"
 
 // Boost
 #include <boost/format.hpp>
@@ -85,21 +78,11 @@ te::map::QueryLayer::~QueryLayer()
   delete m_query;
 }
 
-const te::map::LayerSchema* te::map::QueryLayer::getSchema(const bool /*full*/) const
+std::auto_ptr<te::map::LayerSchema> te::map::QueryLayer::getSchema() const
 {
-  // TODO: Can we store this schema?
-
   std::auto_ptr<te::map::LayerSchema> output(new te::map::LayerSchema(getTitle()));
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
-
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
-
-  // Get a catalog loader
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
-  assert(cloader.get());
 
   const te::da::Fields* fields = m_query->getFields();
 
@@ -115,7 +98,7 @@ const te::map::LayerSchema* te::map::QueryLayer::getSchema(const bool /*full*/) 
 
     assert(tokens.size() == 2);
 
-    std::auto_ptr<te::da::DataSetType> dt(cloader->getDataSetType(tokens[0]));
+    std::auto_ptr<te::da::DataSetType> dt = ds->getDataSetType(tokens[0]);
 
     te::dt::Property* pRef = dt->getProperty(tokens[1]);
     assert(pRef);
@@ -126,36 +109,22 @@ const te::map::LayerSchema* te::map::QueryLayer::getSchema(const bool /*full*/) 
     output->add(p.release());
   }
 
-  return output.release();
+  return output;
 }
 
-te::da::DataSet* te::map::QueryLayer::getData(te::common::TraverseType travType, 
-                                              te::common::AccessPolicy rwRole) const
+std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::common::TraverseType travType) const
 {
-  return getData(m_query, travType, rwRole);
+  return getData(m_query, travType);
 }
 
-te::da::DataSet* te::map::QueryLayer::getData(const te::gm::Envelope& e,
-                                              te::gm::SpatialRelation r,
-                                              te::common::TraverseType travType,
-                                              te::common::AccessPolicy rwRole) const
+std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& propertyName,
+                                                            const te::gm::Envelope* e,
+                                                            te::gm::SpatialRelation r,
+                                                            te::common::TraverseType travType) const
 {
-  te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(getSchema());
+  te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(*e, m_srid);
 
-  assert(geometryProperty);
-
-  return getData(*geometryProperty, e, r, travType, rwRole);
-}
-
-te::da::DataSet* te::map::QueryLayer::getData(const te::dt::Property& p,
-                                              const te::gm::Envelope& e,
-                                              te::gm::SpatialRelation r,
-                                              te::common::TraverseType travType,
-                                              te::common::AccessPolicy rwRole) const
-{
-  te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(e, m_srid);
-
-  te::da::PropertyName* pname = new te::da::PropertyName(p.getName());
+  te::da::PropertyName* pname = new te::da::PropertyName(propertyName);
 
   // TODO: switch that verifies the given te::gm::SpatialRelation and build the query object (ST_Intersects. ST_Touches, etc).
   te::da::ST_Intersects* intersects = new te::da::ST_Intersects(pname, lenv);
@@ -173,29 +142,19 @@ te::da::DataSet* te::map::QueryLayer::getData(const te::dt::Property& p,
   te::da::And* andop = new te::da::And(exp, intersects);
   wh->setExp(andop);
 
-  return getData(select.get(), travType, rwRole);
+  return getData(select.get(), travType);
 }
 
-te::da::DataSet* te::map::QueryLayer::getData(const te::gm::Geometry& /*g*/,
-                                              te::gm::SpatialRelation /*r*/,
-                                              te::common::TraverseType /*travType*/, 
-                                              te::common::AccessPolicy /*rwRole*/) const
+std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& propertyName,
+                                                            const te::gm::Geometry* /*g*/,
+                                                            te::gm::SpatialRelation /*r*/,
+                                                            te::common::TraverseType /*travType*/) const
 {
-  return 0; // TODO
+  throw Exception("Not implemented yet!");
 }
 
-te::da::DataSet* te::map::QueryLayer::getData(const te::dt::Property& /*p*/,
-                                              const te::gm::Geometry& /*g*/,
-                                              te::gm::SpatialRelation /*r*/,
-                                              te::common::TraverseType /*travType*/,
-                                              te::common::AccessPolicy /*rwRole*/) const
-{
-  return 0; // TODO
-}
-
-te::da::DataSet* te::map::QueryLayer::getData(te::da::Expression* restriction,
-                                              te::common::TraverseType travType,
-                                              te::common::AccessPolicy rwRole) const
+std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::da::Expression* restriction,
+                                                            te::common::TraverseType travType) const
 {
   // The final select
   std::auto_ptr<te::da::Select> select(static_cast<te::da::Select*>(m_query->clone()));
@@ -210,12 +169,11 @@ te::da::DataSet* te::map::QueryLayer::getData(te::da::Expression* restriction,
   te::da::And* andop = new te::da::And(exp, restriction);
   wh->setExp(andop);
 
-  return getData(select.get(), travType, rwRole);
+  return getData(select.get(), travType);
 }
 
-te::da::DataSet* te::map::QueryLayer::getData(const te::da::ObjectIdSet* oids,
-                                              te::common::TraverseType travType,
-                                              te::common::AccessPolicy rwRole) const
+std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const te::da::ObjectIdSet* oids,
+                                                            te::common::TraverseType travType) const
 {
   // The final select
   std::auto_ptr<te::da::Select> select(static_cast<te::da::Select*>(m_query->clone()));
@@ -230,7 +188,7 @@ te::da::DataSet* te::map::QueryLayer::getData(const te::da::ObjectIdSet* oids,
   te::da::And* andop = new te::da::And(exp, oids->getExpression());
   wh->setExp(andop);
 
-  return getData(select.get(), travType, rwRole);
+  return getData(select.get(), travType);
 }
 
 bool te::map::QueryLayer::isValid() const
@@ -295,49 +253,21 @@ void te::map::QueryLayer::computeExtent()
 
   // Get the associated data source
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
-    
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
 
   // Get the dataset
-  std::auto_ptr<te::da::DataSet> dataset(t->query(m_query));
+  std::auto_ptr<te::da::DataSet> dataset(ds->query(m_query));
   assert(dataset.get());
 
   // MBR
   m_mbr = *dataset->getExtent(te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE));
 }
 
-te::da::DataSet* te::map::QueryLayer::getData(te::da::Select* query,
-                                              te::common::TraverseType travType,
-                                              te::common::AccessPolicy rwRole) const
+std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::da::Select* query,
+                                                            te::common::TraverseType travType) const
 {
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  std::auto_ptr<const LayerSchema> schema (getSchema());
+  std::auto_ptr<LayerSchema> schema (getSchema());
 
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
-
-  std::auto_ptr<te::da::DataSet> dset(t->query(query, travType, rwRole));
-  assert(dset.get());
-
-  // Convert to memory
-  te::mem::DataSet* newDs = new te::mem::DataSet(schema.get());
-
-  while(dset->moveNext())
-  {
-    te::mem::DataSetItem* item = new te::mem::DataSetItem(newDs);
-    for(std::size_t i = 0; i < newDs->getNumProperties(); ++i)
-    {
-      std::vector<std::string> tokens;
-      te::common::Tokenize(newDs->getPropertyName(i), tokens, ".");
-
-      item->setValue(newDs->getPropertyName(i), dset->getValue(tokens[1]));
-    }
-    newDs->add(item);
-  }
-
-  return newDs;
+  return ds->query(query, travType);
 }

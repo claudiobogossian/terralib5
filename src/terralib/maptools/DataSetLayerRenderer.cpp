@@ -29,8 +29,6 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSource.h"
-#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
-#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/query/And.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/EqualTo.h"
@@ -109,19 +107,11 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
 // retrieve the associated data source
   te::da::DataSourcePtr ds = te::da::GetDataSource(dlayer->getDataSourceId(), true);
 
-// get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
-  assert(transactor.get());
-
-// get a catalog loader
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
-  assert(cloader.get());
-
 // get dataset information
   std::string dsname = dlayer->getDataSetName();
   assert(!dsname.empty());
 
-  std::auto_ptr<te::da::DataSetType> dstype(cloader->getDataSetType(dsname));
+  std::auto_ptr<te::da::DataSetType> dstype(ds->getDataSetType(dsname));
 
   if(dstype->hasGeom())
   {
@@ -130,7 +120,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
              - Create the StyledLayer and try build a generic renderer that look for Styles and Grouping? */
     if(dlayer->getGrouping())
     {
-      drawGrouping(dlayer, transactor.get(), canvas, ibbox, srid);
+      drawGrouping(dlayer, ds, canvas, ibbox, srid);
       return;
     }
 
@@ -155,7 +145,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
     if(fts == 0)
       throw Exception(TR_MAP("The layer style is not a Feature Type Style!"));
 
-    DrawGeometries(dstype.get(), transactor.get(), canvas, ibbox, dlayer->getSRID(), srid, fts);
+    DrawGeometries(dstype.get(), ds, canvas, ibbox, dlayer->getSRID(), srid, fts);
   }
   else if(dstype->hasRaster())
   {
@@ -180,7 +170,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
     if(cs == 0)
       throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
 
-    DrawRaster(dstype.get(), transactor.get(), canvas, ibbox, dlayer->getSRID(), bbox, srid, cs);
+    DrawRaster(dstype.get(), ds, canvas, ibbox, dlayer->getSRID(), bbox, srid, cs);
   }
   else
   {
@@ -188,7 +178,7 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
   }
 }
 
-void te::map::DataSetLayerRenderer::drawGrouping(DataSetLayer* layer, te::da::DataSourceTransactor* transactor, Canvas* canvas, const te::gm::Envelope& bbox, int srid)
+void te::map::DataSetLayerRenderer::drawGrouping(DataSetLayer* layer, te::da::DataSourcePtr ds, Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
   std::string dsname = layer->getDataSetName();
 
@@ -197,12 +187,8 @@ void te::map::DataSetLayerRenderer::drawGrouping(DataSetLayer* layer, te::da::Da
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
     needRemap = true;
 
-// get a catalog loader
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
-  assert(cloader.get());
-
 // get the dataset type. TODO: Can we pass the datat set type as method parameter?
-  std::auto_ptr<te::da::DataSetType> dataSetType(cloader->getDataSetType(dsname));
+  std::auto_ptr<te::da::DataSetType> dataSetType(ds->getDataSetType(dsname));
   assert(dataSetType.get());
 
 // for while, default geometry. TODO: need a visitor to get which properties the style references
@@ -300,12 +286,12 @@ void te::map::DataSetLayerRenderer::drawGrouping(DataSetLayer* layer, te::da::Da
 // build the Select
     te::da::Select select(all, from, wh);
 
-/* 2) Calling the transactor query method to get the correct restricted dataset. */
+/* 2) Calling the datasource query method to get the correct restricted dataset. */
 
     std::auto_ptr<te::da::DataSet> dataset(0);
     try
     {
-      dataset.reset(transactor->query(select));
+      dataset = ds->query(select);
     }
     catch(std::exception& /*e*/)
     {
@@ -343,8 +329,8 @@ void te::map::DataSetLayerRenderer::drawGrouping(DataSetLayer* layer, te::da::Da
 // update the draw task
         task.pulse();
 
-        te::gm::Geometry* geom = dataset->getGeometry(gpos);
-        if(geom == 0)
+        std::auto_ptr<te::gm::Geometry> geom = dataset->getGeometry(gpos);
+        if(geom.get() == 0)
           continue;
 
 // if necessary, geometry remap
@@ -354,9 +340,7 @@ void te::map::DataSetLayerRenderer::drawGrouping(DataSetLayer* layer, te::da::Da
           geom->transform(srid);
         }
 
-        canvas->draw(geom);
-
-        delete geom;
+        canvas->draw(geom.get());
 
       }while(dataset->moveNext()); // next geometry!
 

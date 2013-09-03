@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../color/RGBAColor.h"
+#include "../dataaccess/datasource/DataSource.h"
 #include "../geometry/Envelope.h"
 #include "../raster/Raster.h"
 #include "AbstractLayer.h"
@@ -50,7 +51,6 @@ namespace te
   {
     class DataSet;
     class DataSetType;
-    class DataSourceTransactor;
   }
 
   namespace rst
@@ -252,14 +252,14 @@ namespace te
       Here, we assume that the given bbox was pre-processed. i.e. the bbox was clipped and contains the same projection of data set geometries.
 
       \param type        The data set type that describes the data set that will be drawn.
-      \param transactor  A transactor that will be used to retrieve the data set objects.
+      \param ds          A datasource that will be used to retrieve the data set objects.
       \param canvas      The canvas were the data set geometries will be drawn.
       \param bbox        The interest area to render the geometries.
       \param bboxSRID    The SRID of interest area.
       \param srid        The SRID to be used to draw the data set geometries.
       \param style       The style that will be used.
     */
-    TEMAPEXPORT void DrawGeometries(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor, Canvas* canvas,
+    TEMAPEXPORT void DrawGeometries(te::da::DataSetType* type, te::da::DataSourcePtr ds, Canvas* canvas,
                                     const te::gm::Envelope& bbox, int bboxSRID,
                                     int srid, te::se::FeatureTypeStyle* style);
 
@@ -276,7 +276,7 @@ namespace te
     TEMAPEXPORT void DrawGeometries(te::da::DataSet* dataset, const std::size_t& gpos,
                                     Canvas* canvas, int fromSRID, int toSRID, te::common::TaskProgress* task = 0);
 
-    TEMAPEXPORT void DrawRaster(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor, Canvas* canvas,
+    TEMAPEXPORT void DrawRaster(te::da::DataSetType* type, te::da::DataSourcePtr ds, Canvas* canvas,
                                 const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
 
     TEMAPEXPORT void DrawRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,

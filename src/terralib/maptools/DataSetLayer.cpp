@@ -25,10 +25,6 @@
 
 // TerraLib
 #include "../common/Translator.h"
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
-#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Field.h"
 #include "../dataaccess/query/Fields.h"
@@ -40,7 +36,6 @@
 #include "DataSetLayer.h"
 #include "Exception.h"
 #include "RendererFactory.h"
-#include "Utils.h"
 
 // Boost
 #include <boost/format.hpp>
@@ -71,150 +66,55 @@ te::map::DataSetLayer::~DataSetLayer()
 {
 }
 
-const te::map::LayerSchema* te::map::DataSetLayer::getSchema(const bool full) const
+std::auto_ptr<te::map::LayerSchema> te::map::DataSetLayer::getSchema() const
 {
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
-
-  // Get a catalog loader
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
-  assert(cloader.get());
-
-  return cloader->getDataSetType(m_datasetName, full);
+  return ds->getDataSetType(m_datasetName);
 }
 
-te::da::DataSet* te::map::DataSetLayer::getData(te::common::TraverseType travType, 
-                                                te::common::AccessPolicy rwRole) const
+std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(te::common::TraverseType travType) const
 {
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
-
-  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, travType, rwRole));
-
-  // TODO: Need review: behaviour of te::mem::DataSet + te::rst::Raster.
-  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
-  if(rpos != std::string::npos)
-    return dataset.release();
-
-  return DataSet2Memory(dataset.get());
+  return ds->getDataSet(m_datasetName, travType);
 }
 
-te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Envelope& e,
-                                                te::gm::SpatialRelation r,
-                                                te::common::TraverseType travType,
-                                                te::common::AccessPolicy rwRole) const
+std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const std::string& propertyName,
+                                                              const te::gm::Envelope* e,
+                                                              te::gm::SpatialRelation r,
+                                                              te::common::TraverseType travType) const
 {
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
-
-  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &e, r, travType, rwRole));
-
-  // TODO: Need review: behaviour of te::mem::DataSet + te::rst::Raster.
-  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
-  if(rpos != std::string::npos)
-    return dataset.release();
-
-  return DataSet2Memory(dataset.get());
+  return ds->getDataSet(m_datasetName, propertyName, e, r, travType);
 }
 
-te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
-                                                const te::gm::Envelope& e,
-                                                te::gm::SpatialRelation r,
-                                                te::common::TraverseType travType,
-                                                te::common::AccessPolicy rwRole) const
+std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const std::string& propertyName,
+                                                              const te::gm::Geometry* g,
+                                                              te::gm::SpatialRelation r,
+                                                              te::common::TraverseType travType) const
 {
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
-
-  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &p, &e, r, travType, rwRole));
-
-  // TODO: Need review: behaviour of te::mem::DataSet + te::rst::Raster.
-  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
-  if(rpos != std::string::npos)
-    return dataset.release();
-
-  return DataSet2Memory(dataset.get());
+  return ds->getDataSet(m_datasetName, propertyName, g, r, travType);
 }
 
-te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Geometry& g,
-                                                te::gm::SpatialRelation r,
-                                                te::common::TraverseType travType, 
-                                                te::common::AccessPolicy rwRole) const
-{
-  assert(!m_datasetName.empty());
-
-  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
-
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
-
-  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &g, r, travType, rwRole));
-
-  // TODO: Need review: behaviour of te::mem::DataSet + te::rst::Raster.
-  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
-  if(rpos != std::string::npos)
-    return dataset.release();
-
-  return DataSet2Memory(dataset.get());
-}
-
-te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
-                                                const te::gm::Geometry& g,
-                                                te::gm::SpatialRelation r,
-                                                te::common::TraverseType travType,
-                                                te::common::AccessPolicy rwRole) const
-{
-  assert(!m_datasetName.empty());
-
-  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
-
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
-
-  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &p, &g, r, travType, rwRole));
-
-  // TODO: Need review: behaviour of te::mem::DataSet + te::rst::Raster.
-  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
-  if(rpos != std::string::npos)
-    return dataset.release();
-
-  return DataSet2Memory(dataset.get());
-}
-
-te::da::DataSet* te::map::DataSetLayer::getData(te::da::Expression* restriction,
-                                                te::common::TraverseType travType,
-                                                te::common::AccessPolicy rwRole) const
+std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(te::da::Expression* restriction,
+                                                              te::common::TraverseType travType) const
 {
   assert(restriction);
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
-
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
 
   // Where clause
   te::da::Where* filter = new te::da::Where(restriction);
@@ -231,26 +131,17 @@ te::da::DataSet* te::map::DataSetLayer::getData(te::da::Expression* restriction,
   // The final Select
   std::auto_ptr<te::da::Select> select(new te::da::Select(all, from, filter));
 
-  std::auto_ptr<te::da::DataSet> dataset(t->query(select.get(), travType, rwRole));
-
-  return DataSet2Memory(dataset.get());
+  return ds->query(select.get(), travType);
 }
 
-te::da::DataSet* te::map::DataSetLayer::getData(const te::da::ObjectIdSet* oids,
-                                                te::common::TraverseType travType,
-                                                te::common::AccessPolicy rwRole) const
+std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const te::da::ObjectIdSet* oids,
+                                                              te::common::TraverseType travType) const
 {
   assert(oids);
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  // Get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
-  assert(t.get());
-
-  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, oids, travType, rwRole));
-
-  return DataSet2Memory(dataset.get());
+  return ds->getDataSet(m_datasetName, oids, travType);
 }
 
 bool te::map::DataSetLayer::isValid() const

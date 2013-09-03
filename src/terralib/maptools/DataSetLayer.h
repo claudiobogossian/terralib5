@@ -31,9 +31,6 @@
 
 namespace te
 {
-// Forward declaration
-  namespace da { class DataSetType; }
-
   namespace map
   {
     /*!
@@ -76,40 +73,25 @@ namespace te
         /*! \brief Destructor. */
         ~DataSetLayer();
 
-        const LayerSchema* getSchema(const bool full = false) const;
+        std::auto_ptr<LayerSchema> getSchema() const;
 
-        te::da::DataSet* getData(te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
-        te::da::DataSet* getData(const te::gm::Envelope& e,
-                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                               const te::gm::Envelope* e,
+                                               te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
-        te::da::DataSet* getData(const te::dt::Property& p,
-                                 const te::gm::Envelope& e,
-                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                               const te::gm::Geometry* g,
+                                               te::gm::SpatialRelation r,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
-        te::da::DataSet* getData(const te::gm::Geometry& g,
-                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
-        te::da::DataSet* getData(const te::dt::Property& p,
-                                 const te::gm::Geometry& g,
-                                 te::gm::SpatialRelation r,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
-
-        te::da::DataSet* getData(te::da::Expression* restriction,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
-
-        te::da::DataSet* getData(const te::da::ObjectIdSet* oids,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* oids,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
         bool isValid() const;
 

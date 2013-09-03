@@ -41,8 +41,7 @@ namespace te
 
       \brief A layer resulting from a query.
 
-      A QueryLayer is a reference to a dataset that will result from
-      a query to a data source.
+      A QueryLayer is a reference to a dataset that will result from a query to a data source.
 
       \sa AbstractLayer, DataSetLayer, RasterLayer, FolderLayer
     */
@@ -77,40 +76,25 @@ namespace te
         /*! \brief Destructor. */
         ~QueryLayer();
 
-        const LayerSchema* getSchema(const bool full = false) const;
+        std::auto_ptr<LayerSchema> getSchema() const;
 
-        te::da::DataSet* getData(te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
-        te::da::DataSet* getData(const te::gm::Envelope& e,
-                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                               const te::gm::Envelope* e,
+                                               te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
-        te::da::DataSet* getData(const te::dt::Property& p,
-                                 const te::gm::Envelope& e,
-                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                               const te::gm::Geometry* g,
+                                               te::gm::SpatialRelation r,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
-        te::da::DataSet* getData(const te::gm::Geometry& g,
-                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
-        te::da::DataSet* getData(const te::dt::Property& p,
-                                 const te::gm::Geometry& g,
-                                 te::gm::SpatialRelation r,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
-
-        te::da::DataSet* getData(te::da::Expression* restriction,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
-
-        te::da::DataSet* getData(const te::da::ObjectIdSet* oids,
-                                 te::common::TraverseType travType = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* oids,
+                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
         bool isValid() const;
 
@@ -169,9 +153,8 @@ namespace te
 
       private:
 
-         te::da::DataSet* getData(te::da::Select* query,
-                                  te::common::TraverseType travType = te::common::FORWARDONLY,
-                                  te::common::AccessPolicy rwRole = te::common::RAccess) const;
+         std::auto_ptr<te::da::DataSet> getData(te::da::Select* query,
+                                                te::common::TraverseType travType = te::common::FORWARDONLY) const;
 
       private:
 

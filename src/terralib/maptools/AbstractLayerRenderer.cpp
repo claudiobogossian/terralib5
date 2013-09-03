@@ -105,7 +105,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
   assert(ibbox.isValid());
 
   // Gets the layer schema
-  std::auto_ptr<const LayerSchema> schema(layer->getSchema(true));
+  std::auto_ptr<LayerSchema> schema(layer->getSchema());
   assert(schema.get());
 
   if(schema->hasGeom())
@@ -164,7 +164,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
       throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
 
     // Retrieves the data
-    std::auto_ptr<te::da::DataSet> dataset(layer->getData(ibbox, te::gm::INTERSECTS));
+    std::auto_ptr<te::da::DataSet> dataset(layer->getData(rasterProperty->getName(), &ibbox, te::gm::INTERSECTS));
 
     if(dataset.get() == 0)
       throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
@@ -219,7 +219,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       try
       {
         // There isn't a Filter expression. Gets the data using only extent spatial restriction...
-        dataset.reset(layer->getData(bbox, te::gm::INTERSECTS));
+        dataset = layer->getData(geomPropertyName, &bbox, te::gm::INTERSECTS);
       }
       catch(std::exception& /*e*/)
       {
@@ -249,7 +249,7 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
         te::da::And* restriction = new te::da::And(exp, intersects);
 
         /* 2) Calling the layer query method to get the correct restricted data. */
-        dataset.reset(layer->getData(restriction));
+        dataset = layer->getData(restriction);
       }
       catch(std::exception& /*e*/)
       {
@@ -402,7 +402,7 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
     std::auto_ptr<te::da::DataSet> dataset(0);
     try
     {
-      dataset.reset(layer->getData(restriction));
+      dataset = layer->getData(restriction);
     }
     catch(std::exception& /*e*/)
     {
@@ -508,7 +508,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   std::auto_ptr<te::da::DataSet> dataset(0);
   try
   {
-    dataset.reset(layer->getData(bbox, te::gm::INTERSECTS));
+    dataset = layer->getData(geomPropertyName, &bbox, te::gm::INTERSECTS);
   }
   catch(std::exception& /*e*/)
   {
@@ -554,11 +554,11 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
       symbolizers = it->second;
     }
 
-    te::gm::Geometry* geom = 0;
+    std::auto_ptr<te::gm::Geometry> geom;
     try
     {
       geom = dataset->getGeometry(gpos);
-      if(geom == 0)
+      if(geom.get() == 0)
         continue;
     }
     catch(std::exception& /*e*/)
@@ -584,10 +584,8 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
         geom->transform(srid);
       }
 
-      canvas->draw(geom);
+      canvas->draw(geom.get());
     }
-
-    delete geom;
 
   }while(dataset->moveNext());
 }
