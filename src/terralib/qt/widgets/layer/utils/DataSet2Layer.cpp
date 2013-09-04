@@ -68,7 +68,6 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
   if(dataset->size() == 0)
   {
     te::da::DataSourcePtr ds(te::da::DataSourceManager::getInstance().find(m_datasourceId));
-    std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
     te::da::LoadProperties(dataset.get(), m_datasourceId);
   }
 
