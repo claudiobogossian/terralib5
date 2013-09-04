@@ -123,6 +123,8 @@ int main(int /*argc*/, char** /*argv*/)
     PrintDataSetPropertyNames(ds.get(), datasetName);
 
     PrintDataSetConstraints(ds.get(), datasetName);
+    PrintDataSourceCapabilities(ds.get());
+
     ds->close();
 
     delete ds.release();
