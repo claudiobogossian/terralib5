@@ -2,8 +2,7 @@
 #include "DataAccessExamples.h"
 
 // TerraLib
-//#include <terralib/dataaccess2.h>
-#include <terralib/dataaccess2/datasource/DataSourceFactory.h>
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
 //#include <../terralib/dataaccess_h.h>
  
@@ -39,7 +38,7 @@ void PostGISExample()
 
 // get a transactor to interact to the data source in the next examples
     std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
-    //te::da::DataSourceTransactor* transactor = transactor_auto.release();
+
 // shows how to use a spatial filter
     RetrieveUsingSpatialFilter(ds.get());
 
@@ -76,12 +75,9 @@ void PostGISExample()
 
     // finally, drop the dataset we have created above
     std::cout << std::endl << "Droping dataSet 'our_country' "<< std::endl;
-    (transactor.get())->dropDataSet( datasetType->getName());
+    //(transactor.get())->dropDataSet( datasetType->getName());
 
     ds->close();
-
-    //delete ds.release();
-
   }
   catch(const std::exception& e)
   {
