@@ -24,9 +24,6 @@
 */
 
 // TerraLib
-#include "../../dataaccess/dataset/DataSetPersistence.h"
-#include "../../dataaccess/dataset/DataSetType.h"
-#include "../../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
@@ -41,6 +38,7 @@
 
 //STL
 #include <vector>
+#include <memory>
 
 // Boost
 #include <boost/algorithm/string.hpp>
@@ -150,5 +148,5 @@ void te::vp::Persistence( te::da::DataSetType* dataSetType,
   te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
   std::auto_ptr<te::da::DataSourceTransactor> t(dataSource->getTransactor());
   pair.second->moveFirst();
-  te::da::Create(t.get(), pair.first, pair.second, options);
+  te::da::Create(dataSource.get(), pair.first, pair.second, options);
 }

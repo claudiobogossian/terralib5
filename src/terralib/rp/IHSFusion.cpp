@@ -34,6 +34,7 @@
 #include "../common/progress/TaskProgress.h"
 
 #include <cmath>
+#include <limits>
 
 #ifndef M_PI
   #define M_PI       3.14159265358979323846
@@ -317,8 +318,8 @@ namespace te
         const double greenNoData = greenBand.getProperty()->m_noDataValue;
         const double blueNoData = blueBand.getProperty()->m_noDataValue;
         
-        rgbMin = DBL_MAX;
-        rgbMax = -1.0 * DBL_MAX;
+        rgbMin = std::numeric_limits<double>::max();
+        rgbMax = -1.0 * std::numeric_limits<double>::max();
 
         unsigned int row = 0;
         unsigned int col = 0;

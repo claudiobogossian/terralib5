@@ -122,7 +122,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     te::map::AbstractLayerPtr layer = it->first;
     std::vector<te::dt::Property*> props = it->second;
 
-    std::auto_ptr<te::map::LayerSchema> schema((te::da::DataSetType*)layer->getSchema());
+    std::auto_ptr<te::map::LayerSchema> schema = layer->getSchema();
 
     for(size_t i = 0; i < props.size(); ++i)
       propsPos.push_back(schema->getPropertyPosition(props[i]->getName()));
