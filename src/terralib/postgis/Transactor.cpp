@@ -1388,12 +1388,10 @@ void te::pgis::Transactor::dropSequence(const std::string& name)
 
 std::auto_ptr<te::gm::Envelope> te::pgis::Transactor::getExtent(const std::string& datasetName, const std::string& propertyName)
 {
-  std::auto_ptr<te::dt::Property> p = getProperty(datasetName, propertyName);
-
   std::string sql("SELECT ST_Extent(");
   sql += propertyName;
   sql += ") FROM ";
-  sql += p->getParent()->getName();
+  sql += datasetName;
 
   PGresult* result = PQexec(m_conn->getConn(), sql.c_str());
 
@@ -1425,7 +1423,7 @@ std::auto_ptr<te::gm::Envelope> te::pgis::Transactor::getExtent(const std::strin
   std::string sql("SELECT ST_Extent(");
   sql += p->getName();
   sql += ") FROM ";
-  sql += p->getParent()->getName();
+  sql += datasetName;
 
   PGresult* result = PQexec(m_conn->getConn(), sql.c_str());
 
