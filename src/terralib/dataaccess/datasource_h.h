@@ -35,7 +35,7 @@
 //#include "datasource/DataSourceCatalogLoader.h"
 //#include "datasource/DataSourceFactory.h"
 #include "datasource/DataSourceManager.h"
-//#include "datasource/DataSourceTransactor.h"
+#include "datasource/DataSourceTransactor.h"
 //#include "datasource/PreparedQuery.h"
 
 #endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASOURCE_H_H

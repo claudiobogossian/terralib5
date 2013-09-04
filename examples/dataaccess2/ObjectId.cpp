@@ -2,14 +2,14 @@
 #include "DataAccessExamples.h"
 
 // TerraLib
-#include <terralib/dataaccess2/dataset/CheckConstraint.h>
-#include <terralib/dataaccess2/dataset/CheckConstraint.h>
-#include <terralib/dataaccess2/dataset/PrimaryKey.h>
-#include <terralib/dataaccess2/dataset/Index.h>
-#include <terralib/dataaccess2/datasource/DataSourceFactory.h>
-#include <terralib/postgis2/DataSource.h>
-#include <terralib/postgis2/DataSourceFactory.h>
-#include <terralib/postgis2/PreparedQuery.h>
+#include <terralib/dataaccess/dataset/CheckConstraint.h>
+#include <terralib/dataaccess/dataset/CheckConstraint.h>
+#include <terralib/dataaccess/dataset/PrimaryKey.h>
+#include <terralib/dataaccess/dataset/Index.h>
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
+#include <terralib/postgis/DataSource.h>
+#include <terralib/postgis/DataSourceFactory.h>
+#include <terralib/postgis/PreparedQuery.h>
 
 //
 // STL
@@ -49,17 +49,16 @@ void ObjectId3()
   assert(dataset.get());
   std::cout << "DataSet size: " << dataset->size() << std::endl;
 
-  // let�s generate the oids using the primary key and then 
-  // test the getDataSet("public.br_munic_2001",oids) using the oids
+// let�s generate the oids using the primary key and then 
+// test the getDataSet("public.br_munic_2001",oids) using the oids
   std::vector<std::string> pk_name;
   pk_name.push_back("gid");
   te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), pk_name);
   
   assert(oids);
   
-  // let's retrieve the identified elements via transactor
+// let's retrieve the identified elements via transactor
   std::auto_ptr<te::da::DataSet> identified = transactor->getDataSet("public.br_munic_2001",oids);
-  //transactor->getDataSetNames();
   assert(identified.get());
   assert(dataset->size() == identified->size());
   bool ini = identified->moveBeforeFirst();
@@ -71,41 +70,33 @@ void ObjectId3()
   std::cout << "== DataSet Retrieved From ObjectIdSet knowing pk == " << std::endl;
   PrintDataSet("munic_2001_identified",identified.get());
 
-  // Another way to get oids 
-  // get a catalogloader and load the dataSetType information in order to find out the pk, uk etc...
-  //std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
-  //cl.reset(transactor-> getCatalogLoader());
-  //cl.get();
-
+// Another way to get oids 
   bool ini2 = dataset->moveBeforeFirst();
-  te::da::DataSetType* dt1 =  (transactor->getDataSetType("public.br_munic_2001")).get();
-  te::da::ObjectIdSet* oids1 = te::da::GenerateOIDSet( dataset.get(), dt1);
+  std::auto_ptr<te::da::DataSetType> dt1 =  transactor->getDataSetType("public.br_munic_2001");
+  te::da::ObjectIdSet* oids1 = te::da::GenerateOIDSet( dataset.get(), dt1.get());
   std::auto_ptr<te::da::DataSet> identified1 = transactor->getDataSet("public.br_munic_2001",oids1);
-
   
   std::cout << "== DataSet Retrieved From ObjectIdSet using dataSetType to discover pk == " << std::endl;
   PrintDataSet("munic_2001_identified",identified1.get());
 
-
-// Another test: Not knowing primary key - do not use this way...all property names will be used in oids including geom  
+// Another test: Not knowing primary key - do not use this way...all property names will be used in oids2 including geom com valores vazios 
   bool ini3 = dataset->moveBeforeFirst();
 
   std::vector<std::string> pnames;
   std::vector<int> ptypes;
   te::da::GetPropertyInfo(dataset.get(), pnames,ptypes); //here I do not have pk, uk, etc information.
-  //te::da::ObjectIdSet* oids2 = te::da::GenerateOIDSet(dataset.get(), pnames);
+  te::da::ObjectIdSet* oids2 = te::da::GenerateOIDSet(dataset.get(), pnames); //CAI...
+
+//CAI ao chamar std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::query(const std::string& query, te::common::TraverseType travType, bool isConnected)
+//query=	"SELECT * FROM public.br_munic_2001 WHERE ((((((gid IN(224, 2261, 2815, 2992, 3009, 3957, 4062, 4151, 4470, 4617, 4777, 4861, 4871, 5151, 5370, 5490) and geocodigo IN('3160900', '3106408', '3115409', '3118007', '3118304', '3131901', '3133907', '3135407', '3140001', '3142304', '3144805', '3145901', '3146107', '3150802', '3154804', '3157203')) and nome IN('São Brás do Suaçuí', 'Belo Vale', 'Catas Altas da Noruega', 'Congonhas', 'Conselheiro Lafaiete', 'Itabirito', 'Itaverava', 'Jeceaba', 'Mariana', 'Moeda', 'Nova Lima', 'Ouro Branco', 'Ouro Preto', 'Piranga', 'Rio Acima', 'Santa Bárbara')) and latitudese IN(-20.625, -20.408, -20.69, -20.5, -20.66, -20.253, -20.678, -20.535, -20.378, -20.333, -19.986, -20.521, -20.288, -20.685, -20.088, -19.959)) and longitudes IN(-43.949, -44.024, -43.498, -43.858, -43.786, -43.801, -43.61, -43.983, -43.416, -44.053, -43.847, -43.692, -43.508, -43.3, -43.789, -43.415)) and area_tot_g IN(110.442, 365.437, 143.366, 305.579, 369.544, 543.007, 282.642, 235.603, 1193.29, 154.228, 428.449, 260.766, 1245.11, 657.484, 230.143, 684.21)) and geom IN(, , , , , , , , , , , , , , , )) "	std::basic_string<char,std::char_traits<char>,std::allocator<char> >
 
   //std::auto_ptr<te::da::DataSet> identified2 = transactor->getDataSet("public.br_munic_2001",oids2);
   std::cout << "== DataSet Retrieved From ObjectIdSet == " << std::endl;
-//CAI ao chamar std::auto_ptr<te::da::DataSet> te::pgis::DataSourceTransactor::query(const std::string& query, te::common::TraverseType travType, bool isConnected)
   //PrintDataSet("munic_2001_identified",identified2.get());
   
-  // Cleaning All! - Unecessary...they are all auto_ptr
-  //delete identified;
-  //delete oids;
-  //delete dataset;
-  //delete transactor;
-  //delete ds;
+  // Cleaning All
+  delete oids1;
+  delete oids2; 
 }
 
 ////void ObjectId2()
