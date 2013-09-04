@@ -82,8 +82,9 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::HiddenDataSetLayerSelector
 
     for(std::size_t i = 0; i < datasetNames.size(); ++i)
     {
-      te::da::DataSetTypePtr dt(datasource->getDataSetType(datasetNames[i]).get());
-      te::map::DataSetLayerPtr layer = converter(dt);
+      std::auto_ptr<te::da::DataSetType> dt = datasource->getDataSetType(datasetNames[i]);
+      te::da::DataSetTypePtr dtpt(dt.release());
+      te::map::DataSetLayerPtr layer = converter(dtpt);
 
       layers.push_back(layer);
     }
