@@ -59,23 +59,18 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
 
-  te::map::DataSetLayerPtr layer(new te::map::DataSetLayer(id, dataset->getTitle().empty() ? dataset->getName() : dataset->getTitle()));
+  std::string title = dataset->getTitle().empty() ? dataset->getName() : dataset->getTitle();
+  
+  te::map::DataSetLayerPtr layer(new te::map::DataSetLayer(id, title));
   layer->setDataSetName(dataset->getName());
   layer->setDataSourceId(m_datasourceId);
   layer->setVisibility(te::map::NOT_VISIBLE);
   layer->setRendererType("DATASET_LAYER_RENDERER");
 
-  if(dataset->size() == 0)
-  {
-    te::da::DataSourcePtr ds(te::da::DataSourceManager::getInstance().find(m_datasourceId));
-    std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
-    te::da::LoadProperties(dataset.get(), transactor.get());
-  }
-
   if(dataset->hasGeom())
   {
-    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
-    std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(gp, m_datasourceId));
+   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
+    std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(dataset->getName(), gp->getName(), m_datasourceId));
     layer->setSRID(gp->getSRID());
     layer->setExtent(*mbr);
     layer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));

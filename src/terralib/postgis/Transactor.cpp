@@ -1819,10 +1819,10 @@ unsigned int te::pgis::Transactor::getGeomTypeId()
 
   std::auto_ptr<te::da::DataSet> result(query(sql));
 
-  if(result->moveNext() == false)
-    return 0;
+  unsigned int id = 0;
 
-  unsigned int id = result->getInt32(0);
+  if(result->moveNext())
+    id = result->getInt32(0);
 
   return id;
 }
@@ -1831,12 +1831,12 @@ unsigned int te::pgis::Transactor::getRasterTypeId()
 {
   std::string sql("SELECT oid FROM pg_type WHERE typname = 'raster'");
 
-  std::auto_ptr<te::da::DataSet> result(m_ds->query(sql));
+  std::auto_ptr<te::da::DataSet> result(query(sql));
 
-  if(result->moveNext() == false)
-    return 0;
+  unsigned int id = 0;
 
-  unsigned int id = result->getInt32(0);
+  if(result->moveNext())
+    id = result->getInt32(0);
 
   return id;
 }
@@ -1847,7 +1847,7 @@ void te::pgis::Transactor::getDatabaseInfo(std::string& currentSchema)
 
   std::auto_ptr<te::da::DataSet> result(query(sql));
 
-  if(result->moveNext() == false)
+  if(!result->moveNext())
     Exception(TR_PGIS("Could not get information about PostgreSQL database backend!"));
 
   currentSchema = result->getString(0);

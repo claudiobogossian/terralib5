@@ -30,8 +30,8 @@
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/query/SQLDialect.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../dataaccess/datasource/DataSourceTransactor.h"
-#include "../../../dataaccess/datasource/DataSourceCatalogLoader.h"
+//#include "../../../dataaccess/datasource/DataSourceTransactor.h"
+//#include "../../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../utils/DoubleListWidget.h"
 #include "ui_DoubleListWidgetForm.h"
@@ -145,23 +145,22 @@ void te::qt::widgets::QueryBuilderWizard::getDataSets()
 {
   std::string dsId = m_ui->m_dataSourceComboBox->currentText().toStdString();
 
-  boost::ptr_vector<std::string> datasets;
+  std::vector<std::string> datasetNames;
 
-  te::da::GetDataSets(datasets, dsId);
+  te::da::GetDataSets(datasetNames, dsId);
 
   QStringList list;
 
-  for(size_t t = 0; t < datasets.size(); ++t)
+  for(size_t t = 0; t < datasetNames.size(); ++t)
   {
-    list.push_back(datasets[t].c_str());
+    list.push_back(datasetNames[t].c_str());
   }
 
   m_ui->m_dataSetComboBox->clear();
   m_ui->m_dataSetComboBox->addItems(list);
 
-  if(datasets.empty() == false)
+  if(datasetNames.empty() == false)
     onDataSetComboBoxActivated(m_ui->m_dataSetComboBox->currentText());
-
 }
 
 void te::qt::widgets::QueryBuilderWizard::getProperties()
@@ -169,10 +168,7 @@ void te::qt::widgets::QueryBuilderWizard::getProperties()
   //get dataset list
   std::string dsId = m_ui->m_dataSourceComboBox->currentText().toStdString();
   te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().find(dsId);
-  te::da::DataSourceTransactor* transactor = ds->getTransactor();
-  te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
-  boost::ptr_vector<std::string> datasets;
-  cloader->getDataSets(datasets);
+  std::vector<std::string> datasetNames = ds->getDataSetNames();
 
   int row = m_ui->m_dataSetTableWidget->rowCount();
 
@@ -191,17 +187,14 @@ void te::qt::widgets::QueryBuilderWizard::getProperties()
     std::string dataSetName = itemDataSet->text().toStdString();
 
     //get datasettype
-    te::da::DataSetType* dsType = 0;
-
-    for(unsigned int i = 0; i < datasets.size(); ++i)
+    std::auto_ptr<te::da::DataSetType> dsType;
+    for(unsigned int i = 0; i < datasetNames.size(); ++i)
     {
-      if(datasets[i] == dataSetName)
-      {
-        dsType = cloader->getDataSetType(datasets[i], true);
-      }
+      if(datasetNames[i] == dataSetName)
+        dsType = ds->getDataSetType(datasetNames[i]);
     }
 
-    if(dsType)
+    if(dsType.get())
     {
       for(size_t t = 0; t < dsType->size(); ++t)
       {
@@ -212,12 +205,8 @@ void te::qt::widgets::QueryBuilderWizard::getProperties()
         list.push_back(fullName.c_str());
       }
     }
-    
-    delete dsType;
-  }
 
-  delete cloader;
-  delete transactor;
+  }
 
   m_propertyList->setInputValues(inputProperties);
   m_groupByList->setInputValues(inputProperties);

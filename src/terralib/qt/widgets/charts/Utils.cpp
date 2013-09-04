@@ -231,9 +231,8 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
         if(dataset->isNull(propX))
           continue;
 
-        te::dt::DateTime* dateTime = dataset->getDateTime(propX);
-        x_doubleValue = getDouble(dateTime);
-        delete dateTime;
+        std::auto_ptr<te::dt::DateTime> dateTime = dataset->getDateTime(propX);
+        x_doubleValue = getDouble(dateTime.get());
       }
 
       //======treat the Y value
@@ -250,9 +249,8 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
         if(dataset->isNull(propY))
           continue;
 
-        te::dt::DateTime* dateTime = dataset->getDateTime(propY);
-        y_doubleValue = getDouble(dateTime);
-        delete dateTime;
+        std::auto_ptr<te::dt::DateTime> dateTime = dataset->getDateTime(propY);
+        y_doubleValue = getDouble(dateTime.get());
       }
 
       //insert values into the vectors
@@ -381,7 +379,8 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
   if(rpos != std::string::npos)
   {
-    const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(dataset->getRaster(rpos), te::rst::SUMMARY_R_HISTOGRAM);
+    std::auto_ptr<te::rst::Raster> rstptr = dataset->getRaster(rpos);
+    const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(rstptr.get(), te::rst::SUMMARY_R_HISTOGRAM);
     std::map<double, unsigned int>* values = rs->at(propId).m_histogramR;
 
       for(std::map<double, unsigned int>::iterator it = values->begin(); it != values->end(); ++it)

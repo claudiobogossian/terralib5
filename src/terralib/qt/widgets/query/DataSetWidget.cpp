@@ -95,7 +95,7 @@ void te::qt::widgets::DataSetWidget::setFrom(const te::da::From* from)
   setDataSetNames(list);
 }
 
-void te::qt::widgets::DataSetWidget::setDataSetNames(const boost::ptr_vector<std::string>& names)
+void te::qt::widgets::DataSetWidget::setDataSetNames(const std::vector<std::string>& names)
 {
   QStringList list;
 
@@ -118,13 +118,13 @@ void te::qt::widgets::DataSetWidget::setDataSetNames(std::vector<std::pair<std::
     int newrow = m_ui->m_dataSetTableWidget->rowCount();
 
     //check if already exist an alias with this name
-    for(int i = 0; i < newrow; ++i)
+    for(int j = 0; j < newrow; ++j)
     {
-      QTableWidgetItem* itemName = m_ui->m_dataSetTableWidget->item(i, 1);
+      QTableWidgetItem* itemName = m_ui->m_dataSetTableWidget->item(j, 1);
 
-      if(itemName->text().toStdString() == list[i].second)
+      if(itemName->text().toStdString() == list[j].second)
       {
-        QMessageBox::warning(this, tr("Query Editor"), tr("Data Set Alias already defined."));
+        QMessageBox::warning(this, tr("Query Editor"), tr("Data Set Alias already defined!"));
         return;
       }
     }

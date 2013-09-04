@@ -102,7 +102,11 @@ void te::qt::plugins::ado::ADOConnectorDialog::openPushButtonPressed()
     getConnectionInfo(dsInfo);
 
 // perform connection
-    m_driver.reset(te::da::DataSourceFactory::open("ADO", dsInfo));
+    //m_driver.reset(te::da::DataSourceFactory::open("ADO", dsInfo));
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO");
+    ds->setConnectionInfo(dsInfo);
+    ds->open();
+    m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open ADO data source due to an unknown error!"));
@@ -170,7 +174,10 @@ void te::qt::plugins::ado::ADOConnectorDialog::testPushButtonPressed()
     getConnectionInfo(dsInfo);
 
 // perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("ADO", dsInfo));
+    //std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("ADO", dsInfo));
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO"));
+    ds->setConnectionInfo(dsInfo);
+    ds->open();
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open ADO database!"));

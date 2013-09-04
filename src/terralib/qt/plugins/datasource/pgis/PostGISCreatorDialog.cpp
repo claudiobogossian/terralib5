@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "PostGISCreatorDialog.h"
+#include "../../../../common/Translator.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
@@ -204,7 +205,7 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::passwordLineEditEditingFinishe
     getConnectionInfo(dsInfo);
 
     // Get Templates/Databases
-    std::vector<std::string> templates = te::da::DataSource::getDataSources("POSTGIS", dsInfo);
+    std::vector<std::string> templates = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
     if(!templates.empty())
       for(std::size_t i = 0; i < templates.size(); i++)
         m_ui->m_templateComboBox->addItem(templates[i].c_str());

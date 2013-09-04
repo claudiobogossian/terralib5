@@ -115,17 +115,17 @@ bool te::qt::widgets::ContrastWizard::execute()
   //get layer
   std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
   te::map::AbstractLayerPtr l = *list.begin();
-  te::da::DataSet* ds = l->getData();
+  std::auto_ptr<te::da::DataSet> ds = l->getData();
 
-  std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
 
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   //run contrast
   te::rp::Contrast algorithmInstance;
 
   te::rp::Contrast::InputParameters algoInputParams = m_contrastPage->getInputParams();
-  algoInputParams.m_inRasterPtr = inputRst;
+  algoInputParams.m_inRasterPtr = inputRst.release();
 
   te::rp::Contrast::OutputParameters algoOutputParams;
   algoOutputParams.m_createdOutRasterDSType = m_rasterInfoPage->getWidget()->getType();
@@ -147,20 +147,13 @@ bool te::qt::widgets::ContrastWizard::execute()
     else
     {
       QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement execution error"));
-
-      delete ds;
       return false;
     }
   }
   else
   {
     QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement initialization error"));
-
-    delete ds;
     return false;
   }
-
-  delete ds;
-
   return true;
 }

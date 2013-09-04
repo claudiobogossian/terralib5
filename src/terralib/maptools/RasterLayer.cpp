@@ -63,9 +63,9 @@ te::map::RasterLayer::~RasterLayer()
   m_rinfo.clear();
 }
 
-const te::map::LayerSchema* te::map::RasterLayer::getSchema(const bool full) const
+std::auto_ptr<te::map::LayerSchema> te::map::RasterLayer::getSchema() const
 {
-  te::map::LayerSchema* ls = 0;
+  LayerSchema* ls = 0;
 
   te::rst::Raster* r = te::rst::RasterFactory::open(m_rinfo);
 
@@ -102,13 +102,7 @@ const te::map::LayerSchema* te::map::RasterLayer::getSchema(const bool full) con
 
   delete r;
 
-  return ls;
-}
-
-te::da::DataSet* te::map::RasterLayer::getData(te::common::TraverseType travType, 
-                                                te::common::AccessPolicy rwRole) const
-{
-  return 0;
+  return std::auto_ptr<LayerSchema>(ls);
 }
 
 bool te::map::RasterLayer::isValid() const

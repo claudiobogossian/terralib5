@@ -78,40 +78,25 @@ namespace te
         /*! \brief Destructor. */
         ~RasterLayer();
 
-        const LayerSchema* getSchema(const bool full = false) const;
+        std::auto_ptr<LayerSchema> getSchema() const;
 
-        te::da::DataSet* getData(te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY) const { return std::auto_ptr<te::da::DataSet>(0); }
 
-        te::da::DataSet* getData(const te::gm::Envelope& /*e*/,
-                                 te::gm::SpatialRelation /*r*/ = te::gm::INTERSECTS,
-                                 te::common::TraverseType /*travType*/ = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy /*rwRole*/ = te::common::RAccess) const { return 0; }
+        std::auto_ptr<te::da::DataSet> getData(const std::string& /*propertyName*/,
+                                               const te::gm::Envelope* /*e*/,
+                                               te::gm::SpatialRelation /*r*/ = te::gm::INTERSECTS,
+                                               te::common::TraverseType /*travType*/ = te::common::FORWARDONLY) const { return std::auto_ptr<te::da::DataSet>(0); }
 
-        te::da::DataSet* getData(const te::dt::Property& /*p*/,
-                                 const te::gm::Envelope& /*e*/,
-                                 te::gm::SpatialRelation /*r*/ = te::gm::INTERSECTS,
-                                 te::common::TraverseType /*travType*/ = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy /*rwRole*/ = te::common::RAccess) const { return 0; }
+        std::auto_ptr<te::da::DataSet> getData(const std::string& /*propertyName*/,
+                                               const te::gm::Geometry* /*g*/,
+                                               te::gm::SpatialRelation /*r*/,
+                                               te::common::TraverseType /*travType*/ = te::common::FORWARDONLY) const { return std::auto_ptr<te::da::DataSet>(0); }
 
-        te::da::DataSet* getData(const te::gm::Geometry& /*g*/,
-                                 te::gm::SpatialRelation /*r*/ = te::gm::INTERSECTS,
-                                 te::common::TraverseType /*travType*/ = te::common::FORWARDONLY, 
-                                 te::common::AccessPolicy /*rwRole*/ = te::common::RAccess) const { return 0; }
+        std::auto_ptr<te::da::DataSet> getData(te::da::Expression* /*restriction*/,
+                                 te::common::TraverseType /*travType*/ = te::common::FORWARDONLY) const { return std::auto_ptr<te::da::DataSet>(0); }
 
-        te::da::DataSet* getData(const te::dt::Property& /*p*/,
-                                 const te::gm::Geometry& /*g*/,
-                                 te::gm::SpatialRelation /*r*/,
-                                 te::common::TraverseType /*travType*/ = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy /*rwRole*/ = te::common::RAccess) const { return 0; }
-
-        te::da::DataSet* getData(te::da::Expression* /*restriction*/,
-                                 te::common::TraverseType /*travType*/ = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy /*rwRole*/ = te::common::RAccess) const { return 0; }
-
-        te::da::DataSet* getData(const te::da::ObjectIdSet* /*oids*/,
-                                 te::common::TraverseType /*travType*/ = te::common::FORWARDONLY,
-                                 te::common::AccessPolicy /*rwRole*/ = te::common::RAccess) const { return 0; }
+        std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* /*oids*/,
+                                 te::common::TraverseType /*travType*/ = te::common::FORWARDONLY) const { return std::auto_ptr<te::da::DataSet>(0); }
 
         /*!
           \brief It returns the layer type: RASTER_LAYER.

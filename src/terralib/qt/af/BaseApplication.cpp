@@ -748,8 +748,8 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       return;
     }
     te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
-    const te::map::LayerSchema* schema = (lay->getSchema(true));
-    te::da::DataSet* dataset = (lay->getData());
+    const te::map::LayerSchema* schema = lay->getSchema().get();
+    te::da::DataSet* dataset = lay->getData().get();
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
@@ -783,8 +783,8 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
       return;
     }
     te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
-    const te::map::LayerSchema* schema = (lay->getSchema(true));
-    te::da::DataSet* dataset = (lay->getData());
+    const te::map::LayerSchema* schema = lay->getSchema().get();
+    te::da::DataSet* dataset = lay->getData().get();
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::ScatterDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));

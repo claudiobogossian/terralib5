@@ -62,7 +62,7 @@ void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
   m_layer = layer;
 
   //VERIFY LATER
-  std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)layer->getSchema());
+  std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)layer->getSchema().get());
 
   if(dsType->hasGeom())
   {
@@ -84,9 +84,9 @@ void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
       {
         m_rasterSymb = te::se::GetRasterSymbolizer(l->getStyle());
 
-        te::da::DataSet* ds = l->getData();
+        te::da::DataSet* ds = l->getData().get();
         std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
-        raster = ds->getRaster(rpos);
+        raster = ds->getRaster(rpos).get();
       }
     }
     else if(layer->getType() == "RASTERLAYER")

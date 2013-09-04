@@ -31,6 +31,7 @@
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Geometry.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../geometry/Utils.h"
 #include "../../../maptools/MarkRendererManager.h"
 #include "../../../raster/Raster.h"
@@ -164,14 +165,18 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
     if(ls->hasGeom())
     {
       // Retrieves the data from layer
-      std::auto_ptr<te::da::DataSet> dataset(layer->getData(reprojectedEnvelope, te::gm::INTERSECTS));
+      te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(ls.get());
+
+      std::auto_ptr<te::da::DataSet> dataset(layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).get());
       getGeometryInfo(layerItem, dataset.get(), reprojectedEnvelope, layer->getSRID(), needRemap);
     }
 
     if(ls->hasRaster())
     {
       // Retrieves the data from layer
-      std::auto_ptr<te::da::DataSet> dataset(layer->getData(*te::da::GetFirstRasterProperty(ls.get()), reprojectedEnvelope, te::gm::INTERSECTS));
+      te::rst::RasterProperty* rp = te::da::GetFirstRasterProperty(ls.get());
+
+      std::auto_ptr<te::da::DataSet> dataset(layer->getData(rp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS));
 
       if(!dataset->moveNext())
         return;

@@ -21,6 +21,12 @@
   \file terralib/gdal/Transactor.cpp
 */
 
+
+// Boost
+#include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
+#include <boost/filesystem.hpp>
+
 // TerraLib
 #include "../common/StringUtils.h"
 #include "../common/Translator.h"
@@ -44,11 +50,6 @@
 
 // STL
 #include <algorithm>
-
-// Boost
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/format.hpp>
 
 std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getType(const std::string& dsfullname)
 {

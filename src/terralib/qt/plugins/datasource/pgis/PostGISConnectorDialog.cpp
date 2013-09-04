@@ -95,17 +95,20 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
 {
   try
   {
-// check if driver is loaded
+    // Check if driver is loaded
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
-// get data source connection info based on form data
+    // Get the data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
 
     getConnectionInfo(dsInfo);
 
-// perform connection
-    m_driver.reset(te::da::DataSourceFactory::open("POSTGIS", dsInfo));
+    // Perform connection
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
+    ds->setConnectionInfo(dsInfo);
+    ds->open();
+    m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open PostgreSQL + PostGIS data source due to an unknown error!"));
@@ -117,7 +120,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
 
     if(m_datasource.get() == 0)
     {
-// create a new data source based on form data
+      // Create a new data source based on the form data
       m_datasource.reset(new te::da::DataSourceInfo);
 
       m_datasource->setConnInfo(dsInfo);
@@ -163,24 +166,29 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::testPushButtonPressed()
 {
   try
   {
-// check if driver is loaded
+    // Check if driver is loaded
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
-// get data source connection info based on form data
+    // Get the data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
 
     getConnectionInfo(dsInfo);
 
-// perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("POSTGIS", dsInfo));
+    // Perform connection
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("POSTGIS"));
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open PostgreSQL + PostGIS database!"));
 
-    QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Data source is ok!"));
+    ds->setConnectionInfo(dsInfo);
+    ds->open();
+
+    QMessageBox::information(this,
+                             tr("TerraLib Qt Components"),
+                             tr("Data source is ok!"));
+
+    ds->close();
   }
   catch(const std::exception& e)
   {
@@ -378,7 +386,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
       getConnectionInfo(dsInfo);
 
       // Get DataSources
-      std::vector<std::string> dbNames = te::da::DataSource::getDataSources("POSTGIS", dsInfo);
+      std::vector<std::string> dbNames = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
       if(!dbNames.empty())
         for(std::size_t i = 0; i < dbNames.size(); i++)
           m_ui->m_databaseComboBox->addItem(dbNames[i].c_str());

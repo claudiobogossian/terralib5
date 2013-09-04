@@ -42,6 +42,10 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+
+// stl
+#include <memory>
+
 te::qt::widgets::ClassifierWizardPage::ClassifierWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::ClassifierWizardPageForm),
@@ -154,15 +158,15 @@ void te::qt::widgets::ClassifierWizardPage::listBands()
   assert(m_layer.get());
 
   //get input raster
-  te::da::DataSet* ds = m_layer->getData();
+  std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
 
-  if(ds)
+  if(ds.get())
   {
-    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
 
-    te::rst::Raster* inputRst = ds->getRaster(rpos);
+    std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
-    if(inputRst)
+    if(inputRst.get())
     {
       for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
       {
@@ -170,8 +174,6 @@ void te::qt::widgets::ClassifierWizardPage::listBands()
       }
     }
   }
-
-  delete ds;
 }
 
 void te::qt::widgets::ClassifierWizardPage::drawSamples()

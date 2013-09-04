@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Enums.h"
@@ -74,23 +73,23 @@ namespace te
 
       // acquiring a transactor instance
 
-      std::auto_ptr< te::da::DataSourceTransactor > transactorPtr(
-        outDataSource.getTransactor() );
+      //std::auto_ptr< te::da::DataSourceTransactor > transactorPtr(
+      //  outDataSource.getTransactor() );
 
-      if( transactorPtr.get() == 0 )
-      {
-        return false;
-      }
+      //if( transactorPtr.get() == 0 )
+      //{
+      //  return false;
+      //}
 
       // acquiring a persistence instance
 
-      std::auto_ptr< te::da::DataSetTypePersistence > persistencePtr(
-        transactorPtr->getDataSetTypePersistence() );
+      //std::auto_ptr< te::da::DataSetTypePersistence > persistencePtr(
+      //  transactorPtr->getDataSetTypePersistence() );
 
-      if( persistencePtr.get() == 0 )
-      {
-        return false;
-      }
+      //if( persistencePtr.get() == 0 )
+      //{
+      //  return false;
+      //}
 
       // Creating a data set instance
 
@@ -98,10 +97,11 @@ namespace te
         new te::da::DataSetType( outDataSetName ) );
       dataSetTypePtr->add( rasterPropertyPtr.release() );
 
-      persistencePtr->create( dataSetTypePtr.release() );
+      //persistencePtr->create( dataSetTypePtr.release() );
 
-      std::auto_ptr< te::da::DataSet > dataSetPtr( transactorPtr->getDataSet(
-        outDataSetName, te::common::FORWARDONLY, te::common::RWAccess) );
+      //std::auto_ptr< te::da::DataSet > dataSetPtr( transactorPtr->getDataSet(
+      std::auto_ptr< te::da::DataSet > dataSetPtr( outDataSource.getDataSet(
+        outDataSetName, te::common::FORWARDONLY) );
 
       if( dataSetPtr.get() == 0 )
       {
@@ -116,10 +116,10 @@ namespace te
 
       if( rasterPtr.get() )
       {
-        outRasterHandler.reset( transactorPtr.release(),
-          persistencePtr.release(), dataSetPtr.release(),
-          rasterPtr.release() );
-
+        //outRasterHandler.reset( transactorPtr.release(),
+          //persistencePtr.release(), dataSetPtr.release(),
+          //rasterPtr.release() );
+        outRasterHandler.reset( dataSetPtr.release(), rasterPtr.release() );
         return true;
       }
       else
@@ -147,23 +147,23 @@ namespace te
 
       // acquiring a transactor instance
 
-       boost::shared_ptr< te::da::DataSourceTransactor > transactorPtr(
-        dataSourcePtr->getTransactor() );
+      // boost::shared_ptr< te::da::DataSourceTransactor > transactorPtr(
+      //  dataSourcePtr->getTransactor() );
 
-      if( transactorPtr.get() == 0 )
-      {
-        return false;
-      }
+      //if( transactorPtr.get() == 0 )
+      //{
+      //  return false;
+      //}
 
       // acquiring a persistence instance
 
-      boost::shared_ptr< te::da::DataSetTypePersistence > persistencePtr(
-        transactorPtr->getDataSetTypePersistence() );
+      //boost::shared_ptr< te::da::DataSetTypePersistence > persistencePtr(
+      //  transactorPtr->getDataSetTypePersistence() );
 
-      if( persistencePtr.get() == 0 )
-      {
-        return false;
-      }
+      //if( persistencePtr.get() == 0 )
+      //{
+      //  return false;
+      //}
 
       // Creating a data set instance
 
@@ -171,10 +171,13 @@ namespace te
         new te::da::DataSetType( "createNewMemRaster" ) );
       dataSetTypePtr->add( rasterPropertyPtr.release() );
 
-      persistencePtr->create( dataSetTypePtr.release() );
+      //persistencePtr->create( dataSetTypePtr.release() );
 
-      boost::shared_ptr< te::da::DataSet > dataSetPtr( transactorPtr->getDataSet(
-        "createNewMemRaster", te::common::FORWARDONLY, te::common::RWAccess) );
+      //boost::shared_ptr< te::da::DataSet > dataSetPtr( transactorPtr->getDataSet(
+      //  "createNewMemRaster", te::common::FORWARDONLY, te::common::RWAccess) );
+
+      boost::shared_ptr< te::da::DataSet > dataSetPtr( dataSourcePtr->getDataSet(
+        "createNewMemRaster", te::common::FORWARDONLY) );
 
       if( dataSetPtr.get() == 0 )
       {
@@ -188,8 +191,10 @@ namespace te
 
       if( rasterPtr.get() )
       {
-        outRasterHandler.reset( dataSourcePtr, transactorPtr,
-          persistencePtr, dataSetPtr, rasterPtr );
+        //outRasterHandler.reset( dataSourcePtr, transactorPtr,
+        //  persistencePtr, dataSetPtr, rasterPtr );
+
+        outRasterHandler.reset( dataSourcePtr, dataSetPtr, rasterPtr );
 
         return true;
       }
@@ -215,7 +220,8 @@ namespace te
       std::map<std::string, std::string> outputRasterInfo;
       outputRasterInfo["URI"] = pathInfo.parent_path().string();
 
-      dataSourcePtr->open(outputRasterInfo);
+      dataSourcePtr->setConnectionInfo(outputRasterInfo);
+      dataSourcePtr->open();
       if( ! dataSourcePtr->isOpened() ) return false;
 
       // Defining the raster properties
@@ -227,23 +233,23 @@ namespace te
 
       // acquiring a transactor instance
 
-       boost::shared_ptr< te::da::DataSourceTransactor > transactorPtr(
-        dataSourcePtr->getTransactor() );
+      // boost::shared_ptr< te::da::DataSourceTransactor > transactorPtr(
+      //  dataSourcePtr->getTransactor() );
 
-      if( transactorPtr.get() == 0 )
-      {
-        return false;
-      }
+      //if( transactorPtr.get() == 0 )
+      //{
+      //  return false;
+      //}
 
       // acquiring a persistence instance
 
-      boost::shared_ptr< te::da::DataSetTypePersistence > persistencePtr(
-        transactorPtr->getDataSetTypePersistence() );
+      //boost::shared_ptr< te::da::DataSetTypePersistence > persistencePtr(
+      //  transactorPtr->getDataSetTypePersistence() );
 
-      if( persistencePtr.get() == 0 )
-      {
-        return false;
-      }
+      //if( persistencePtr.get() == 0 )
+      //{
+      //  return false;
+      //}
 
       // Creating a data set instance
 
@@ -251,11 +257,10 @@ namespace te
         new te::da::DataSetType( pathInfo.filename().string() ) );
       dataSetTypePtr->add( rasterPropertyPtr.release() );
 
-      persistencePtr->create( dataSetTypePtr.release() );
+      //persistencePtr->create( dataSetTypePtr.release() );
 
-      boost::shared_ptr< te::da::DataSet > dataSetPtr( transactorPtr->getDataSet(
-        pathInfo.filename().string(), te::common::FORWARDONLY,
-        te::common::RWAccess) );
+      boost::shared_ptr< te::da::DataSet > dataSetPtr( dataSourcePtr->getDataSet(
+        pathInfo.filename().string(), te::common::FORWARDONLY) );
 
       if( dataSetPtr.get() == 0 )
       {
@@ -269,8 +274,10 @@ namespace te
 
       if( rasterPtr.get() )
       {
-        outRasterHandler.reset( dataSourcePtr, transactorPtr,
-          persistencePtr, dataSetPtr, rasterPtr );
+        //outRasterHandler.reset( dataSourcePtr, transactorPtr,
+        //  persistencePtr, dataSetPtr, rasterPtr );
+
+        outRasterHandler.reset( dataSourcePtr, dataSetPtr, rasterPtr );
 
         return true;
       }

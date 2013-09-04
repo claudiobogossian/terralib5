@@ -27,6 +27,7 @@
 #define __TERRALIB_MAPTOOLS_INTERNAL_DATASETLAYERRENDERER_H
 
 // TerraLib
+#include "../dataaccess/datasource/DataSource.h"
 #include "AbstractRenderer.h"
 
 namespace te
@@ -64,7 +65,7 @@ namespace te
 
       private:
 
-        void drawGrouping(DataSetLayer* layer, te::da::DataSourceTransactor* transactor, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+        void drawGrouping(DataSetLayer* layer, te::da::DataSourcePtr ds, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
     };
 
   } // end namespace map

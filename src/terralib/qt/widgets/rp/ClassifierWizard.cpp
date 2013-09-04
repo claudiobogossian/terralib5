@@ -126,17 +126,17 @@ bool te::qt::widgets::ClassifierWizard::execute()
   //get layer
   std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
   te::map::AbstractLayerPtr l = *list.begin();
-  te::da::DataSet* ds = l->getData();
+  std::auto_ptr<te::da::DataSet> ds = l->getData();
 
-  std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
 
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   //run contrast
   te::rp::Classifier algorithmInstance;
 
   te::rp::Classifier::InputParameters algoInputParams = m_classifierPage->getInputParams();
-  algoInputParams.m_inputRasterPtr = inputRst;
+  algoInputParams.m_inputRasterPtr = inputRst.release();
 
   te::rp::Classifier::OutputParameters algoOutputParams = m_classifierPage->getOutputParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
@@ -153,20 +153,14 @@ bool te::qt::widgets::ClassifierWizard::execute()
     else
     {
       QMessageBox::critical(this, tr("Classifier"), tr("Classifier execution error"));
-
-      delete ds;
       return false;
     }
   }
   else
   {
     QMessageBox::critical(this, tr("Classifier"), tr("Classifier initialization error"));
-
-    delete ds;
     return false;
   }
-
-  delete ds;
 
   return true;
 }

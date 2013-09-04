@@ -42,6 +42,9 @@
 // Qt
 #include <QtGui/QMessageBox>
 
+//STL
+#include <memory>
+
 
 te::qt::widgets::MixtureModelWizard::MixtureModelWizard(QWidget* parent)
   : QWizard(parent)
@@ -117,13 +120,13 @@ bool te::qt::widgets::MixtureModelWizard::execute()
   te::map::AbstractLayerPtr l = *list.begin();
   std::auto_ptr<te::da::DataSet> ds(l->getData());
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   //run contrast
   te::rp::MixtureModel algorithmInstance;
 
   te::rp::MixtureModel::InputParameters algoInputParams = m_mixtureModelPage->getInputParams();
-  algoInputParams.m_inputRasterPtr = inputRst;
+  algoInputParams.m_inputRasterPtr = inputRst.release();
 
   te::rp::MixtureModel::OutputParameters algoOutputParams = m_mixtureModelPage->getOutputParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();

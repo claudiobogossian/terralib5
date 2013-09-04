@@ -46,7 +46,7 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <climits>
+#include <limits>
 
 namespace te
 {
@@ -155,7 +155,7 @@ namespace te
       else
         bandsProperties.push_back(new te::rst::BandProperty( 0, te::dt::DOUBLE_TYPE, "" ));
       bandsProperties[0]->m_colorInterp = te::rst::GrayIdxCInt;
-      bandsProperties[0]->m_noDataValue = -1.0 * DBL_MAX;
+      bandsProperties[0]->m_noDataValue = -1.0 * std::numeric_limits<double>::max();
 
       te::rst::Grid* newgrid = new te::rst::Grid( matrix.getColumnsNumber(),
         matrix.getLinesNumber(), 0, -1 );

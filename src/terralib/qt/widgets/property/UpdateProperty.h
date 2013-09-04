@@ -38,10 +38,7 @@ namespace te
 {
   namespace da
   {
-    class DataSetType;
     class DataSource;
-    class DataSourceTransactor;
-    class DataSourceCatalogLoader;
   }
 
   namespace dt { class Property; }
@@ -110,13 +107,9 @@ namespace te
 
         private:
           te::da::DataSource* m_ds;
-          te::da::DataSourceTransactor* m_transactor;
-          te::da::DataSourceCatalogLoader* m_catalogLoader;
 
           te::dt::Property* m_oldProperty;          // The property to be updated
           te::dt::Property* m_updatedProperty;      // The updated property
-
-          te::da::DataSetType* m_propertyParent;    // The parent of the property to be updated
 
           std::string  m_propertyName;              // The property name
           std::string* m_defaultValue;              // The property default value

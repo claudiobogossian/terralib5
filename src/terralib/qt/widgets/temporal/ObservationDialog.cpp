@@ -40,7 +40,7 @@ te::qt::widgets::ObservationDialog::ObservationDialog(te::map::AbstractLayerPtr 
   m_ui->setupUi(this);
 
   // Time Properties Widget
-  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(layer->getData(), this));
+  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(layer->getData().get(), this));
 
   //Observed Properties
   std::auto_ptr<te::da::DataSet> dataSet (layer->getData());

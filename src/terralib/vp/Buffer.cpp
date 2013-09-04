@@ -29,7 +29,6 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
@@ -246,8 +245,7 @@ te::mem::DataSet* te::vp::SetDissolvedBoundaries(te::da::DataSetType* dataSetTyp
 
   if(dataset->size() > 1)
   {
-    te::gm::Geometry* seedGeometry;
-    seedGeometry = dataset->getGeometry(pos);
+    std::auto_ptr<te::gm::Geometry> seedGeometry = dataset->getGeometry(pos);
 
     te::gm::Geometry* currentGeometry;
 
@@ -259,12 +257,12 @@ te::mem::DataSet* te::vp::SetDissolvedBoundaries(te::da::DataSetType* dataSetTyp
       {
         if(dataset->getGeometry(pos)->isValid() && dataset->getInt32(posLevel) == level)
         {
-          currentGeometry = seedGeometry->Union(dataset->getGeometry(pos));
-          seedGeometry = currentGeometry;
+          currentGeometry = seedGeometry->Union(dataset->getGeometry(pos).get());
+          seedGeometry.reset(currentGeometry);
         }
       }
 
-      te::gm::GeometryCollection* geomCollection = (te::gm::GeometryCollection*)seedGeometry;
+      te::gm::GeometryCollection* geomCollection = (te::gm::GeometryCollection*)seedGeometry.get();
 
       for(std::size_t i = 0; i < geomCollection->getNumGeometries(); ++i)
       {

@@ -29,8 +29,6 @@
 #include "../common/STLUtils.h"
 #include "../common/StringUtils.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
-#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/query/And.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Field.h"
@@ -169,20 +167,8 @@ te::rst::RasterProperty* te::map::GetRasterProperty(DataSetLayer* layer)
 // retrieve the associated data source
   te::da::DataSourcePtr ds = te::da::GetDataSource(layer->getDataSourceId(), true);
 
-// get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
-
-  if(transactor.get() == 0)
-    throw Exception(TR_MAP("Could not get a data source transactor!"));
-
-// get a catalog loader
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
-
-  if(cloader.get() == 0)
-    throw Exception(TR_MAP("Could not get a data source catalog loader!"));
-
 // gets the data set type 
-  std::auto_ptr<te::da::DataSetType> dstype(cloader->getDataSetType(dsname));
+  std::auto_ptr<te::da::DataSetType> dstype(ds->getDataSetType(dsname));
 
   if(dstype.get() == 0)
     throw Exception(TR_MAP("Could not get the data set type!"));
@@ -210,20 +196,8 @@ te::rst::Raster* te::map::GetRaster(DataSetLayer* layer)
 // retrieve the associated data source
   te::da::DataSourcePtr ds = te::da::GetDataSource(layer->getDataSourceId(), true);
 
-// get a transactor
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
-
-  if(transactor.get() == 0)
-    throw Exception(TR_MAP("Could not get a data source transactor!"));
-
-// get a catalog loader
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
-
-  if(cloader.get() == 0)
-    throw Exception(TR_MAP("Could not get a data source catalog loader!"));
-
 // gets the data set type 
-  std::auto_ptr<te::da::DataSetType> dstype(cloader->getDataSetType(dsname));
+  std::auto_ptr<te::da::DataSetType> dstype(ds->getDataSetType(dsname));
 
   if(dstype.get() == 0)
     throw Exception(TR_MAP("Could not get the data set type!"));
@@ -232,7 +206,7 @@ te::rst::Raster* te::map::GetRaster(DataSetLayer* layer)
     throw Exception(TR_MAP("The data set referenced by the layer not contains raster data!"));
 
 // get the referenced data set
-  std::auto_ptr<te::da::DataSet> dataset(transactor->getDataSet(dsname));
+  std::auto_ptr<te::da::DataSet> dataset(ds->getDataSet(dsname));
   if(dataset.get() == 0)
     throw Exception(TR_MAP("Could not get the data set reference by the layer!"));
 
@@ -309,13 +283,12 @@ te::da::DataSet* te::map::DataSet2Memory(te::da::DataSet* dataset)
   return new te::mem::DataSet(*dataset);
 }
 
-void te::map::DrawGeometries(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor,
+void te::map::DrawGeometries(te::da::DataSetType* type, te::da::DataSourcePtr ds,
                              Canvas* canvas, const te::gm::Envelope& bbox, int bboxSRID,
                              int srid, te::se::FeatureTypeStyle* style)
 {
   assert(type);
   assert(type->hasGeom());
-  assert(transactor);
   assert(canvas);
   assert(bbox.isValid());
   assert(style);
@@ -348,7 +321,7 @@ void te::map::DrawGeometries(te::da::DataSetType* type, te::da::DataSourceTransa
     if(!filter)
     {
 // there isn't a Filter expression. Gets the dataset using only box restriction...
-      dataset.reset(transactor->getDataSet(datasetName, &bbox, te::gm::INTERSECTS));
+      dataset = ds->getDataSet(datasetName, geometryProperty->getName(), &bbox, te::gm::INTERSECTS);
     }
     else
     {
@@ -385,8 +358,8 @@ void te::map::DrawGeometries(te::da::DataSetType* type, te::da::DataSourceTransa
 // build the Select
       te::da::Select select(all, from, wh);
 
-/* 2) Calling the transactor query method to get the correct restricted dataset. */
-      dataset.reset(transactor->query(select));
+/* 2) Calling the datasource query method to get the correct restricted dataset. */
+      dataset = ds->query(select);
     }
 
     if(dataset.get() == 0)
@@ -453,11 +426,11 @@ void te::map::DrawGeometries(te::da::DataSet* dataset, const std::size_t& gpos, 
       task->pulse();
     }
 
-    te::gm::Geometry* geom = 0;
+    std::auto_ptr<te::gm::Geometry> geom(0);
     try
     {
       geom = dataset->getGeometry(gpos);
-      if(geom == 0)
+      if(geom.get() == 0)
         continue;
     }
     catch(std::exception& /*e*/)
@@ -472,19 +445,16 @@ void te::map::DrawGeometries(te::da::DataSet* dataset, const std::size_t& gpos, 
       geom->transform(toSRID);
     }
 
-    canvas->draw(geom);
-
-    delete geom;
+    canvas->draw(geom.get());
 
   }while(dataset->moveNext()); // next geometry!
 }
 
-void te::map::DrawRaster(te::da::DataSetType* type, te::da::DataSourceTransactor* transactor, Canvas* canvas,
+void te::map::DrawRaster(te::da::DataSetType* type, te::da::DataSourcePtr ds, Canvas* canvas,
                          const te::gm::Envelope& bbox, int bboxSRID, const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style)
 {
   assert(type);
   assert(type->hasRaster());
-  assert(transactor);
   assert(canvas);
   assert(bbox.isValid());
   assert(visibleArea.isValid());
@@ -497,7 +467,7 @@ void te::map::DrawRaster(te::da::DataSetType* type, te::da::DataSourceTransactor
   te::rst::RasterProperty* rasterProperty = te::da::GetFirstRasterProperty(type);
 
 // retrieve the data set
-  std::auto_ptr<te::da::DataSet> dataset(transactor->getDataSet(datasetName, rasterProperty, &bbox, te::gm::INTERSECTS));
+  std::auto_ptr<te::da::DataSet> dataset(ds->getDataSet(datasetName, rasterProperty->getName(), &bbox, te::gm::INTERSECTS));
   if(dataset.get() == 0)
     throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1%.")) % datasetName).str());
 

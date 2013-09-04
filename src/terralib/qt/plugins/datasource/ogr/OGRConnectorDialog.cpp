@@ -101,7 +101,11 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
     getConnectionInfo(dsInfo);
 
 // perform connection
-    m_driver.reset(te::da::DataSourceFactory::open("OGR", dsInfo));
+    //m_driver.reset(te::da::DataSourceFactory::open("OGR", dsInfo));
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+    ds->setConnectionInfo(dsInfo);
+    ds->open();
+    m_driver.reset(ds.release());
 
     if(m_driver.get() == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open dataset via OGR due to an unknown error!"));
@@ -169,7 +173,10 @@ void te::qt::plugins::ogr::OGRConnectorDialog::testPushButtonPressed()
     getConnectionInfo(dsInfo);
 
 // perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("OGR", dsInfo));
+    //std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("OGR", dsInfo));
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
+    ds->setConnectionInfo(dsInfo);
+    ds->open();
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open feature repository via OGR!"));

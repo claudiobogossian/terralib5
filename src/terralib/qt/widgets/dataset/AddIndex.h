@@ -38,10 +38,7 @@ namespace te
 {
   namespace da
   {
-    class DataSetType;
     class DataSource;
-    class DataSourceCatalogLoader;
-    class DataSourceTransactor;
     class Index;
   }
 
@@ -58,7 +55,6 @@ namespace te
 
           ~AddIndex();
 
-          te::da::DataSetType* getDataSetType() const  { return m_dataSetType; }
           te::da::Index* getIndex() const { return m_index; }
 
         private slots:
@@ -74,10 +70,6 @@ namespace te
       
         private:
           te::da::DataSource* m_ds;
-          te::da::DataSourceTransactor* m_transactor;
-          te::da::DataSourceCatalogLoader* m_catalogLoader;
-
-          te::da::DataSetType* m_dataSetType;
           te::da::Index* m_index;
       };
     }

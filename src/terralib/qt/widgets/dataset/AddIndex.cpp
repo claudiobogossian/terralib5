@@ -28,7 +28,8 @@
 #include "AddIndex.h"
 
 te::qt::widgets::AddIndex::AddIndex(te::da::DataSource* ds, QWidget* parent)
-  : QDialog(parent), m_ds(ds), m_transactor(0), m_catalogLoader(0), m_dataSetType(0),
+  : QDialog(parent),
+    m_ds(ds),
     m_index(0)
 {
   if (m_ds == 0)
@@ -36,23 +37,15 @@ te::qt::widgets::AddIndex::AddIndex(te::da::DataSource* ds, QWidget* parent)
 
   setupUi(this);
 
-  // Get a data source catalog loader to access the datasource catalog
-  m_transactor = m_ds->getTransactor();
-  m_catalogLoader = m_transactor->getCatalogLoader();
-    
-  // Load the catalog to find out the information in the data source (only the schemas)
-  m_catalogLoader->loadCatalog();
-
   // Get the dataset names of the data source
-  boost::ptr_vector<std::string> datasets;
-  m_catalogLoader->getDataSets(datasets);
+  std::vector<std::string> datasetNames = m_ds->getDataSetNames();
 
   // Fill alphabetically the dataSetCombobox with the dataset names of the data source
   QStringList dataSetList;
 
-  size_t numDataSets = datasets.size();
+  size_t numDataSets = datasetNames.size();
   for (size_t i = 0; i < numDataSets; ++i)
-    dataSetList << (datasets[i]).c_str();
+    dataSetList << (datasetNames[i]).c_str();
 
   dataSetList.sort();
   dataSetComboBox->addItems(dataSetList);
@@ -68,30 +61,24 @@ te::qt::widgets::AddIndex::AddIndex(te::da::DataSource* ds, QWidget* parent)
 
 te::qt::widgets::AddIndex::~AddIndex()
 {
-  // Release the transactor
-  if (m_transactor)
-    delete m_transactor;
 }
 
-void te::qt::widgets::AddIndex::dataSetComboBoxChanged(const QString& dataSet)
+void te::qt::widgets::AddIndex::dataSetComboBoxChanged(const QString& datasetNames)
 {
   dataSetPropertiesListWidget->clear();
   indexPropertiesListWidget->clear();
 
+  std::auto_ptr<te::da::DataSetType> dt;
+
   // Get the DataSetType associated to the dataset selected 
   if(dataSetComboBox->currentText().isEmpty() == false)
-  {
-    if(m_dataSetType)
-      delete m_dataSetType;
-
-    m_dataSetType = m_catalogLoader->getDataSetType(dataSet.toStdString(), false);
-  }
+     dt = m_ds->getDataSetType(datasetNames.toStdString());
 
   // Fill the dataSetPropertiesListWidget with the names of the properties of the dataset selected
-  size_t numProperties = m_dataSetType->size();
+  size_t numProperties = dt->size();
 
   for (size_t i = 0; i < numProperties; ++i)
-    dataSetPropertiesListWidget->addItem(m_dataSetType->getProperty(i)->getName().c_str());
+    dataSetPropertiesListWidget->addItem(dt->getProperty(i)->getName().c_str());
 }
 
 void te::qt::widgets::AddIndex::addToIndexPropertiesPushButtonClicked()
@@ -111,10 +98,6 @@ void te::qt::widgets::AddIndex::okPushButtonClicked()
 
 void te::qt::widgets::AddIndex::cancelPushButtonClicked()
 {
-  //Release the transactor
-  delete m_transactor;
-  m_transactor = 0;
-
   reject();
 }
 
@@ -124,6 +107,4 @@ void te::qt::widgets::AddIndex::helpPushButtonClicked()
 
 void te::qt::widgets::AddIndex::closeEvent(QCloseEvent* /*e*/)
 {
-  // Release the transactor
-  delete m_transactor;
 }

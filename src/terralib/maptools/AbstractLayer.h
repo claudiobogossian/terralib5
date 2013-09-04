@@ -29,12 +29,15 @@
 // TerraLib
 #include "../common/Enums.h"
 #include "../common/TreeItem.h"
+#include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetType.h"
 #include "../geometry/Enums.h"
 #include "../geometry/Envelope.h"
 #include "Config.h"
 #include "Enums.h"
 
 // STL
+#include <memory>
 #include <string>
 
 namespace te
@@ -44,8 +47,6 @@ namespace te
 
   namespace da
   {
-    class DataSet;
-    class DataSetType;
     class Expression;
     class ObjectIdSet;
   }
@@ -67,7 +68,7 @@ namespace te
 
       \brief This is the base class for layers.
 
-      \sa TreeItem, DataSetLayer, QueryLayer, FolderLayer
+      \sa TreeItem, DataSetLayer, QueryLayer, FolderLayer, RasterLayer
     */
     class TEMAPEXPORT AbstractLayer : public te::common::TreeItem
     {
@@ -268,6 +269,8 @@ namespace te
           \brief It returns the Grouping associated to the Layer.
 
           \return The Grouping associated to the Layer.
+
+          \note The caller will NOT take the ownership of the given pointer.
         */
         virtual te::map::Grouping* getGrouping() const;
 
@@ -275,25 +278,24 @@ namespace te
           \brief It sets the Grouping associated to the Layer.
 
           \param grouping The Grouping to be associated to the Layer.
+
+          \note The layer will take the ownership of the given pointer.
         */
         virtual void setGrouping(te::map::Grouping* grouping);
 
         /*!
           \brief It returns the layer schema.
 
-          \param full If true it will try to retrieve the maximum information about the layer.
-
           \return The Layer schema.
 
           \note The caller will take the ownership of the returned layer schema.
         */
-        virtual const LayerSchema* getSchema(const bool full = false) const = 0;
+        virtual std::auto_ptr<LayerSchema> getSchema() const = 0;
 
         /*!
           \brief It gets the dataset identified by the layer name.
 
           \param travType The traverse type associated to the returned dataset. 
-          \param rwRole   The read and write permission associated to the returned dataset. 
 
           \return The caller of this method will take the ownership of the returned dataset.
 
@@ -306,50 +308,15 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual te::da::DataSet* getData(te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
-
-        /*!
-          \brief It gets the dataset identified by the layer name using a spatial filter over the default geometric property.
-
-          \param e        A rectangle to be used as a spatial filter when retrieving datasets.
-          \param r        The spatial relation to be used during the filter.
-          \param travType The traverse type associated to the returned dataset. 
-          \param rwRole   The read and write permission associated to the returned dataset. 
-
-          \return The caller of this method will take the ownership of the returned DataSet.
-
-          \exception Exception It can throws an exception if:
-                     <ul>
-                     <li>something goes wrong during data retrieval</li>
-                     <li>if the data source driver doesn't support the traversal type</li>
-                     <li>if the data source driver doesn't support the access policy</li>
-                     </ul>
-
-          \note Transactor will not take the ownership of the given envelope.
-
-          \note The envelope coordinates should be in the same coordinate system as the dataset.
-
-          \note This first attempt of this method will be to retrieve the default geometric column in
-                the data source catalog. If it can not retrieve that information, it may implicitly
-                use the data source catalog loader to query the data source and retrieve the geometric
-                property information.
-
-          \note Not thread-safe!
-        */
-        virtual te::da::DataSet* getData(const te::gm::Envelope& e,
-                                         te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                         te::common::TraverseType travType = te::common::FORWARDONLY,
-                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+        virtual std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY) const = 0;
 
         /*!
           \brief It gets the dataset identified by the layer name using a spatial filter over the specified property.
 
-          \param p        The geometric property in order to apply the spatial filter.
-          \param e        A rectangle to be used as a spatial filter when retrieving datasets.
-          \param r        The spatial relation to be used during the filter.
-          \param travType The traverse type associated to the returned dataset. 
-          \param rwRole   The read and write permission associated to the returned dataset. 
+          \param propertyName  The name of the spatial property used to apply the spatial filter.
+          \param e             A rectangle to be used as a spatial filter when retrieving datasets.
+          \param r             The spatial relation to be used during the filter.
+          \param travType      The traverse type associated to the returned dataset. 
 
           \return The caller of this method will take the ownership of the returned DataSet.
 
@@ -366,53 +333,19 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual te::da::DataSet* getData(const te::dt::Property& p,
-                                         const te::gm::Envelope& e,
-                                         te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                         te::common::TraverseType travType = te::common::FORWARDONLY,
-                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
-
-        /*!
-          \brief It gets the dataset identified by the layer name using a spatial filter over the default geometric property.
-
-          \param g        A geometry to be used as a spatial filter when retrieving datasets.
-          \param r        The spatial relation to be used during the filter.
-          \param travType The traverse type associated to the returned dataset. 
-          \param rwRole   The read and write permission associated to the returned dataset. 
-
-          \return The caller of this method will take the ownership of the returned DataSet.
-
-          \exception Exception It can throws an exception if:
-                     <ul>
-                     <li>something goes wrong during data retrieval</li>
-                     <li>if the data source driver doesn't support the traversal type</li>
-                     <li>if the data source driver doesn't support the access policy</li>
-                     </ul>
-
-          \note Transactor will not take the ownership of the given geometry.
-
-          \note The geometry coordinates should be in the same coordinate system as the dataset.
-
-          \note This first attempt of this method will be to retrieve the default geometric column in
-                the data source catalog. If it can not retrieve that information it may implicitly
-                use the data source catalog loader to query the data source and retrieve the geometric
-                property information.
-
-          \note Not thread-safe!
-        */
-        virtual te::da::DataSet* getData(const te::gm::Geometry& g,
-                                         te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                         te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+        virtual std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                                       const te::gm::Envelope* e,
+                                                       te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                                       te::common::TraverseType travType = te::common::FORWARDONLY) const = 0;
 
         /*!
           \brief It gets the dataset identified by the layer name using a spatial filter over the given geometric property.
 
-          \param p        The geometric property in order to apply the spatial filter.
-          \param g        A geometry to be used as a spatial filter when retrieving datasets.
-          \param r        The spatial relation to be used during the filter.
-          \param travType The traverse type associated to the returned dataset. 
-          \param rwRole   The read and write permission associated to the returned dataset. 
+          \param propertyName  The name of the spatial property used to apply the spatial filter.
+          \param g             A geometry to be used as a spatial filter when retrieving datasets.
+          \param r             The spatial relation to be used during the filter.
+          \param travType      The traverse type associated to the returned dataset. 
+          \param rwRole        The read and write permission associated to the returned dataset. 
 
           \return The caller of this method will take the ownership of the returned DataSet.
 
@@ -429,18 +362,16 @@ namespace te
           
           \note Not thread-safe!
         */
-        virtual te::da::DataSet* getData(const te::dt::Property& p,
-                                         const te::gm::Geometry& g,
-                                         te::gm::SpatialRelation r,
-                                         te::common::TraverseType travType = te::common::FORWARDONLY,
-                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+        virtual std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
+                                                       const te::gm::Geometry* g,
+                                                       te::gm::SpatialRelation r,
+                                                       te::common::TraverseType travType = te::common::FORWARDONLY) const = 0;
 
         /*!
           \brief It gets the dataset identified by the layer name using the given restriction.
 
           \param restriction The restriction expression that will be used.
           \param travType    The traverse type associated to the returned dataset. 
-          \param rwRole      The read and write permission associated to the returned dataset. 
 
           \return The caller of this method will take the ownership of the returned DataSet.
 
@@ -453,16 +384,14 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual te::da::DataSet* getData(te::da::Expression* restriction,
-                                         te::common::TraverseType travType = te::common::FORWARDONLY,
-                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+        virtual std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
+                                                       te::common::TraverseType travType = te::common::FORWARDONLY) const = 0;
 
         /*!
           \brief It gets the dataset from the given set of objects identification.
 
           \param oids     The set of object ids.
           \param travType The traverse type associated to the returned dataset.
-          \param rwRole   The read and write permission associated to the returned dataset. 
 
           \return The caller of this method will take the ownership of the returned dataset.
 
@@ -475,9 +404,8 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual te::da::DataSet* getData(const te::da::ObjectIdSet* oids,
-                                         te::common::TraverseType travType = te::common::FORWARDONLY,
-                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+        virtual std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* oids,
+                                                       te::common::TraverseType travType = te::common::FORWARDONLY) const = 0;
 
         /*!
           \brief It returns the layer type.

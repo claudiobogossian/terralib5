@@ -28,8 +28,6 @@
 #include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/DataSetTypeConverter.h"
-#include "../../../dataaccess/dataset/DataSetPersistence.h"
-#include "../../../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
@@ -204,9 +202,6 @@ void te::qt::widgets::DataExchangerWizard::commit()
   std::auto_ptr<te::da::DataSourceTransactor> otransactor(odatasource->getTransactor());
   std::auto_ptr<te::da::DataSourceTransactor> itransactor(idatasource->getTransactor());
 
-  std::auto_ptr<te::da::DataSetPersistence> dp(otransactor->getDataSetPersistence());
-  std::auto_ptr<te::da::DataSetTypePersistence> dtp(otransactor->getDataSetTypePersistence());
-
 // get selected datasets and modified datasets
   std::list<DataExchangeStatus> result;
 
@@ -221,17 +216,19 @@ void te::qt::widgets::DataExchangerWizard::commit()
 
     try
     {
+      std::map<std::string,std::string> nopt;
+      
       //boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
 
       std::auto_ptr<te::da::DataSet> dataset(itransactor->getDataSet(idset->getName()));
 
 // stay tunned: create can change idset!
-      dtp->create(odset);
+      otransactor->createDataSet(odset, nopt);
 
       std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), it->second));
 
       if(dataset->moveNext())
-        dp->add(odset->getName(), dsAdapter.get());
+        otransactor->add(odset->getName(), dsAdapter.get(), ods->getConnInfo());
 
       // boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
 

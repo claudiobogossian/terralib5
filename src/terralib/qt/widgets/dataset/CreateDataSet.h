@@ -68,8 +68,6 @@ namespace te
       
         private:
           te::da::DataSource* m_ds;
-          te::da::DataSourceCatalog* m_catalog;
-
           te::da::DataSetType* m_dataSetType;
       };
     }

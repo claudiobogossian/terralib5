@@ -41,6 +41,7 @@
 
 // STL
 #include <cassert>
+#include <memory>
 
 // Qt
 #include <QtGui/QMessageBox>
@@ -144,7 +145,7 @@ bool te::qt::widgets::RegisterWizard::execute()
   //get raster
   std::auto_ptr<te::da::DataSet> ds(m_adjLayer->getData());
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
-  te::rst::Raster* inputRst = ds->getRaster(rpos);
+  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   std::vector<unsigned int> vec;
   for(size_t t = 0; t < inputRst->getNumberOfBands(); ++t)
@@ -163,7 +164,7 @@ bool te::qt::widgets::RegisterWizard::execute()
 
   //input parameters
   te::rp::Register::InputParameters algoInputParams;
-  algoInputParams.m_inputRasterPtr = inputRst;
+  algoInputParams.m_inputRasterPtr = inputRst.release();
   algoInputParams.m_inputRasterBands = vec;
   algoInputParams.m_tiePoints = tiePoints;
   algoInputParams.m_outputSRID = srid;

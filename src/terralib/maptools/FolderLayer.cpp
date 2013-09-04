@@ -121,63 +121,42 @@ void te::map::FolderLayer::updateVisibility()
   updateVisibilityOfAncestors();
 }
 
-const te::map::LayerSchema* te::map::FolderLayer::getSchema(const bool /*full*/) const
+std::auto_ptr<te::map::LayerSchema> te::map::FolderLayer::getSchema() const
 {
-  return 0;
+  return std::auto_ptr<LayerSchema>(0);
 }
 
-te::da::DataSet* te::map::FolderLayer::getData(te::common::TraverseType /*travType*/, 
-                                               te::common::AccessPolicy /*rwRole*/) const
+std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(te::common::TraverseType /*travType*/) const
 {
-  return 0;
+  return std::auto_ptr<te::da::DataSet>(0);
 }
 
-te::da::DataSet* te::map::FolderLayer::getData(const te::gm::Envelope& /*e*/,
-                                               te::gm::SpatialRelation /*r*/,
-                                               te::common::TraverseType /*travType*/,
-                                               te::common::AccessPolicy /*rwRole*/) const
+std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(const std::string& /*propertyName*/,
+                                                             const te::gm::Envelope* /*e*/,
+                                                             te::gm::SpatialRelation /*r*/,
+                                                             te::common::TraverseType /*travType*/) const
 {
-  return 0;
+  return std::auto_ptr<te::da::DataSet>(0);
 }
 
-te::da::DataSet* te::map::FolderLayer::getData(const te::dt::Property& /*p*/,
-                                               const te::gm::Envelope& /*e*/,
-                                               te::gm::SpatialRelation /*r*/,
-                                               te::common::TraverseType /*travType*/,
-                                               te::common::AccessPolicy /*rwRole*/) const
+std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(const std::string& /*propertyName*/,
+                                                             const te::gm::Geometry* /*g*/,
+                                                             te::gm::SpatialRelation /*r*/,
+                                                             te::common::TraverseType /*travType*/) const
 {
-  return 0;
+  return std::auto_ptr<te::da::DataSet>(0);
 }
 
-te::da::DataSet* te::map::FolderLayer::getData(const te::gm::Geometry& /*g*/,
-                                               te::gm::SpatialRelation /*r*/,
-                                               te::common::TraverseType /*travType*/, 
-                                               te::common::AccessPolicy /*rwRole*/) const
+std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(te::da::Expression* /*restriction*/,
+                                                             te::common::TraverseType /*travType*/) const
 {
-  return 0;
+  return std::auto_ptr<te::da::DataSet>(0);
 }
 
-te::da::DataSet* te::map::FolderLayer::getData(const te::dt::Property& /*p*/,
-                                               const te::gm::Geometry& /*g*/,
-                                               te::gm::SpatialRelation /*r*/,
-                                               te::common::TraverseType /*travType*/,
-                                               te::common::AccessPolicy /*rwRole*/) const
+std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(const te::da::ObjectIdSet* oids,
+                                                             te::common::TraverseType travType) const
 {
-  return 0;
-}
-
-te::da::DataSet* te::map::FolderLayer::getData(te::da::Expression* /*restriction*/,
-                                               te::common::TraverseType /*travType*/,
-                                               te::common::AccessPolicy /*rwRole*/) const
-{
-  return 0;
-}
-
-te::da::DataSet* te::map::FolderLayer::getData(const te::da::ObjectIdSet* oids,
-                                               te::common::TraverseType travType,
-                                               te::common::AccessPolicy rwRole) const
-{
-  return 0;
+  return std::auto_ptr<te::da::DataSet>(0);
 }
 
 bool te::map::FolderLayer::isValid() const

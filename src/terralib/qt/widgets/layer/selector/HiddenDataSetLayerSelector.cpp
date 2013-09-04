@@ -27,9 +27,7 @@
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess/dataset/DataSetType.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
-#include "../../../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../geometry/GeometryProperty.h"
@@ -76,21 +74,17 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::HiddenDataSetLayerSelector
     if(!datasource->isOpened())
       datasource->open();
 
-    boost::ptr_vector<std::string> datasets;
+    std::vector<std::string> datasetNames;
 
-    te::da::GetDataSets(datasets, datasource.get());
-
-    std::auto_ptr<te::da::DataSourceTransactor> transactor(datasource->getTransactor());
-
-    std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
+    te::da::GetDataSets(datasetNames, datasource->getId());
 
     DataSet2Layer converter((*it)->getId());
 
-    for(std::size_t i = 0; i < datasets.size(); ++i)
+    for(std::size_t i = 0; i < datasetNames.size(); ++i)
     {
-      te::da::DataSetTypePtr dataset(cloader->getDataSetType(datasets[i], true));
-
-      te::map::DataSetLayerPtr layer = converter(dataset);
+      std::auto_ptr<te::da::DataSetType> dt = datasource->getDataSetType(datasetNames[i]);
+      te::da::DataSetTypePtr dtpt(dt.release());
+      te::map::DataSetLayerPtr layer = converter(dtpt);
 
       layers.push_back(layer);
     }

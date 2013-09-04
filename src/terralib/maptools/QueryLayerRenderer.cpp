@@ -102,7 +102,7 @@ void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
   te::gm::Envelope ibbox = reprojectedBBOX.intersection(qlayer->getExtent());
 
 // get dataset information
-  std::auto_ptr<const te::map::LayerSchema> schema(qlayer->getSchema());
+  std::auto_ptr<LayerSchema> schema(qlayer->getSchema());
   assert(schema.get());
 
   if(schema->hasGeom())
@@ -176,7 +176,7 @@ void te::map::QueryLayerRenderer::drawGeometries(QueryLayer* layer,
     if(!filter)
     {
 // there isn't a Filter expression. Gets the dataset using only box restriction...
-      dataset.reset(layer->getData(*geometryProperty, bbox, te::gm::INTERSECTS));
+      dataset = layer->getData(geometryProperty->getName(), &bbox, te::gm::INTERSECTS);
     }
     else
     {
@@ -225,8 +225,8 @@ void te::map::QueryLayerRenderer::drawGeometries(QueryLayer* layer,
 // update the draw task
         task.pulse();
 
-        te::gm::Geometry* geom = dataset->getGeometry(gpos);
-        if(geom == 0)
+        std::auto_ptr<te::gm::Geometry> geom = dataset->getGeometry(gpos);
+        if(geom.get() == 0)
           continue;
 
 // if necessary, geometry remap
@@ -236,9 +236,7 @@ void te::map::QueryLayerRenderer::drawGeometries(QueryLayer* layer,
           geom->transform(srid);
         }
 
-        canvas->draw(geom);
-
-        delete geom;
+        canvas->draw(geom.get());
 
       }while(dataset->moveNext()); // next geometry!
 
