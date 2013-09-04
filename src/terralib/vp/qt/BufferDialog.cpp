@@ -165,49 +165,58 @@ void te::vp::BufferDialog::setAttributesForDistance(std::vector<te::dt::Property
 std::map<te::gm::Geometry*, double> te::vp::BufferDialog::getDistante()
 {
   std::map<te::gm::Geometry*, double> distance;
+  
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
-
-  te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema();
+  
+  std::auto_ptr<te::map::LayerSchema> dsType = dsLayer->getSchema();
+  
   std::size_t geomIdx;
   std::string geomName = "";
 
   if(dsType->hasGeom())
   {
-    std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType));
+    std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType.get()));
     geomName = geom->getName();
     geomIdx = boost::lexical_cast<std::size_t>(dsType->getPropertyPosition(geomName));
   }
-
-  std::auto_ptr<te::mem::DataSet> inputDataSet((te::mem::DataSet*)dsLayer->getData());
+  
+  std::auto_ptr<te::da::DataSet> inputDataSet = dsLayer->getData();
   inputDataSet->moveBeforeFirst();
-
+  
   if(m_ui->m_fixedRadioButton->isChecked())
   {
+    double dist = m_ui->m_fixedDistanceLineEdit->text().toDouble();
     while(inputDataSet->moveNext())
     {
-      distance.insert(std::map<te::gm::Geometry*, double>::value_type( inputDataSet->getGeometry(geomIdx), m_ui->m_fixedDistanceLineEdit->text().toDouble()));
+      std::auto_ptr<te::gm::Geometry> g = inputDataSet->getGeometry(geomIdx);
+      
+      distance.insert(std::map<te::gm::Geometry*, double>::value_type(g.release(), dist));
     }
   }
   else if(m_ui->m_fromAttRadioButton->isChecked())
   {
     while(inputDataSet->moveNext())
     {
+      std::auto_ptr<te::gm::Geometry> g = inputDataSet->getGeometry(geomIdx);
+      double dist = 0.0;
+      
       if(inputDataSet->getPropertyDataType(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())) == te::dt::INT32_TYPE)
       {
-        distance.insert(std::map<te::gm::Geometry*, double>::value_type( inputDataSet->getGeometry(geomIdx), 
-            boost::lexical_cast<double>(inputDataSet->getInt32(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())))));
+        dist = boost::lexical_cast<double>(inputDataSet->getInt32(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())));
       }
       else if(inputDataSet->getPropertyDataType(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())) == te::dt::DOUBLE_TYPE)
       {
-        distance.insert(std::map<te::gm::Geometry*, double>::value_type( inputDataSet->getGeometry(geomIdx), 
-            inputDataSet->getDouble(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString()))));
+        dist = inputDataSet->getDouble(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString()));
       }
       else if(inputDataSet->getPropertyDataType(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())) == te::dt::NUMERIC_TYPE)
       {
-        distance.insert(std::map<te::gm::Geometry*, double>::value_type( inputDataSet->getGeometry(geomIdx), 
-          boost::lexical_cast<double>(inputDataSet->getNumeric(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())))));
-        te::gm::Geometry* geo = inputDataSet->getGeometry(geomIdx);
+        dist = boost::lexical_cast<double>(inputDataSet->getNumeric(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())));
       }
+      else 
+      {
+        continue;
+      }
+      distance.insert(std::map<te::gm::Geometry*, double>::value_type(g.release(), dist));
     }
   }
 

@@ -26,11 +26,8 @@
 //Terralib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetPersistence.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
@@ -171,7 +168,8 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
   
   te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
 
-  te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema();
+  te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema().get();
+  
   te::da::Fields* fields = new te::da::Fields;
 
   for(std::size_t i = 0; i < groupingProperties.size(); ++i)
@@ -282,11 +280,9 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
   }
 
   std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
-  te::da::DataSet* dsQuery = dsTransactor->query(select);
+  std::auto_ptr<te::da::DataSet> dsQuery = dsTransactor->query(select);
 
-  te::vp::SetOutputDatasetQuery(groupingProperties, dsQuery, outputDataSet);
-
-  delete dsQuery;
+  te::vp::SetOutputDatasetQuery(groupingProperties, dsQuery.get(), outputDataSet);
 }
 
 void te::vp::SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProperties,
@@ -407,10 +403,10 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
                                 const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                 te::mem::DataSet* outputDataSet)
 {
-  std::auto_ptr<te::mem::DataSet> inputDataSet((te::mem::DataSet*)inputLayer->getData());
+  std::auto_ptr<te::mem::DataSet> inputDataSet((te::mem::DataSet*)inputLayer->getData().get());
   std::auto_ptr<te::mem::DataSetItem> dataSetItem(new te::mem::DataSetItem(inputDataSet.get()));
 
-  te::da::DataSetType* dsType = (te::da::DataSetType*)inputLayer->getSchema();
+  te::da::DataSetType* dsType = (te::da::DataSetType*)inputLayer->getSchema().get();
   std::size_t geomIdx;
   std::string geomName = "";
 
@@ -482,7 +478,6 @@ std::map<std::string, std::vector<te::mem::DataSetItem*> > te::vp::GetGroups( te
   {
     te::mem::DataSetItem* dataSetItem = inputDataSet->getItem();
 
-    std::size_t propertyType = 0;
     std::size_t propertyIndex = 0;
 
     bool found = false;
