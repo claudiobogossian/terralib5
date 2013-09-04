@@ -1831,7 +1831,7 @@ unsigned int te::pgis::Transactor::getRasterTypeId()
 {
   std::string sql("SELECT oid FROM pg_type WHERE typname = 'raster'");
 
-  std::auto_ptr<te::da::DataSet> result(m_ds->query(sql));
+  std::auto_ptr<te::da::DataSet> result(query(sql));
 
   if(result->moveNext() == false)
     return 0;
