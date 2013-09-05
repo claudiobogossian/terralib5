@@ -64,8 +64,14 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   if (!value.isEmpty())
   {
     m_recentSRS = value.split(',');
-    int aux = 0;
+    
+    m_ui->m_SRSRecentTableWidget->setItem(0, 0, new QTableWidgetItem("UNKNOWN SRS"));
+    m_ui->m_SRSRecentTableWidget->setItem(0, 1, new QTableWidgetItem(""));    
+    m_ui->m_SRSRecentTableWidget->setItem(0, 2, new QTableWidgetItem(""));
+    
+    int aux = 1;
     int srid;
+    
     QStringList::const_iterator it;
     for (it = m_recentSRS.constBegin(); it != m_recentSRS.constEnd(); ++it)
     {

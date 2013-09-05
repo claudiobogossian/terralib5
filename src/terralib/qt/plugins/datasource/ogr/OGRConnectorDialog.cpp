@@ -237,9 +237,9 @@ void te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::s
     throw te::qt::widgets::Exception(TR_QT_WIDGETS("Please select a feature file first!"));
 
   if(boost::filesystem::is_directory(qstr.toUtf8().data()))
-    connInfo["URI"] = qstr.toUtf8().data();
-  else
     connInfo["SOURCE"] = qstr.toUtf8().data();
+  else
+    connInfo["URI"] = qstr.toUtf8().data();
 }
 
 void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
