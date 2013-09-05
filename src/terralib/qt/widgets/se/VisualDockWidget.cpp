@@ -176,15 +176,16 @@ void te::qt::widgets::VisualDockWidget::onSymbolizerSelected(te::se::Symbolizer*
 
     m_tabWidget->setTabEnabled(3, true);
 
-    te::da::DataSetType* ds = ( te::da::DataSetType*)m_currentLayer->getSchema().get();
+    std::auto_ptr<te::map::LayerSchema> lschema = m_currentLayer->getSchema();
 
-    te::rst::RasterProperty* prop = te::da::GetFirstRasterProperty(ds);
-
-    m_visualWidget->setBandProperty(prop->getBandProperties());
+    te::rst::RasterProperty* prop = te::da::GetFirstRasterProperty(lschema.get());
+    
+    const std::vector<te::rst::BandProperty*>& bprops = prop->getBandProperties();
+    
+    m_visualWidget->setBandProperty(bprops);
 
     m_visualWidget->setRasterSymbolizer(dynamic_cast<te::se::RasterSymbolizer*>(s));
 
-    delete ds;
   }
 }
 
