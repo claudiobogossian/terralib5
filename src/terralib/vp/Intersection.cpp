@@ -27,11 +27,8 @@
 #include "../common/Translator.h"
 #include "../common/Exception.h"
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetPersistence.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
@@ -44,8 +41,6 @@
 #include "../maptools/AbstractLayer.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
-#include "../postgis/DataSet.h"
-#include "../postgis/Utils.h"
 #include "../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "Config.h"
 #include "Exception.h"
@@ -55,6 +50,8 @@
 // Boost
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
+#include <memory>
 
 
 te::da::DataSetType* te::vp::CreateDataSetType(std::string newName, 
@@ -99,11 +96,9 @@ te::vp::DataSetRTree te::vp::CreateRTree(te::da::DataSetType* dt, te::da::DataSe
   size_t secondDsCount = 0;
   while(ds->moveNext())
   {
-    te::gm::Geometry* g = ds->getGeometry(secGeomPropPos);
+    std::auto_ptr<te::gm::Geometry> g = ds->getGeometry(secGeomPropPos);
 
     rtree->insert(*g->getMBR(), secondDsCount);
-
-    delete g;
 
     ++secondDsCount;
   }
@@ -143,19 +138,13 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 
   te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsinfo->getId(), dsinfo->getType(), dsinfo->getConnInfo());
 
-  te::da::DataSourceTransactor* t = dataSource->getTransactor();
-
-  te::da::Create(t, resultPair.first, resultPair.second, options);
+  te::da::Create(dataSource.get(), resultPair.first, resultPair.second, options);
 
   te::qt::widgets::DataSet2Layer converter(dataSource->getId());
 
-  te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
-  te::da::DataSetTypePtr dstPtr(loader->getDataSetType(resultPair.first->getName()));
+  te::da::DataSetTypePtr dt(dataSource->getDataSetType(resultPair.first->getName()).get());
 
-  delete t;
-  delete loader;
-
-  te::map::DataSetLayerPtr newLayer = converter(dstPtr);
+  te::map::DataSetLayerPtr newLayer = converter(dt);
 
   delete resultPair.first;
   delete resultPair.second;
@@ -186,22 +175,16 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 
   std::map<std::string, std::string> conn;
   conn["connection_string"] = outputArchive;
-
-  te::da::DataSource* dataSource = te::da::DataSource::create("OGR", conn);
-
-  te::da::DataSourceTransactor* t = dataSource->getTransactor();
-
-  te::da::Create(t, resultPair.first, resultPair.second, options);
+  
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(id, "OGR", conn);
+  
+  te::da::Create(dataSource.get(),resultPair.first,resultPair.second,options);
 
   te::qt::widgets::DataSet2Layer converter(dataSource->getId());
 
-  te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
-  te::da::DataSetTypePtr dstPtr(loader->getDataSetType(resultPair.first->getName()));
-
-  delete t;
-  delete loader;
-
-  te::map::DataSetLayerPtr newLayer = converter(dstPtr);
+  te::da::DataSetTypePtr dt(dataSource->getDataSetType(resultPair.first->getName()).get());
+  
+  te::map::DataSetLayerPtr newLayer = converter(dt);
 
   return newLayer;
 }
@@ -233,8 +216,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::Intersection(const std
     std::vector<size_t> secondPropsPos = idata[i].second;
 
     IntersectionMember secondMember;
-    secondMember.dt = (te::da::DataSetType*)secondLayer->getSchema();
-    secondMember.ds = secondLayer->getData();
+    secondMember.dt = secondLayer->getSchema().release();
+    secondMember.ds = secondLayer->getData().release();
     secondMember.props = GetPropertiesByPos(secondMember.dt, secondPropsPos);
 
     if(countAux == 1)
@@ -242,8 +225,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::Intersection(const std
       std::vector<size_t> firstPropsPos = aux.second;
 
       IntersectionMember firstMember;
-      firstMember.dt = (te::da::DataSetType*)aux.first->getSchema();
-      firstMember.ds = aux.first->getData();
+      firstMember.dt = aux.first->getSchema().release();
+      firstMember.ds = aux.first->getData().release();
       firstMember.props = GetPropertiesByPos(firstMember.dt, firstPropsPos);
 
       resultPair = PairwiseIntersection(newLayerName, firstMember, secondMember, outputSRID);
@@ -312,8 +295,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
 
       dataSource = te::da::GetDataSource(currentDSLayer->getDataSourceId(), true);
 
-      currentDSType.reset((te::da::DataSetType*)currentDSLayer->getSchema());
-      nextDSType.reset((te::da::DataSetType*)nextDSLayer->getSchema());
+      currentDSType.reset(currentDSLayer->getSchema().release());
+      nextDSType.reset(nextDSLayer->getSchema().release());
 
       currentProps = GetPropertiesByPos(currentDSType.get(), idata[layerPos].second);
       nextProps = GetPropertiesByPos(nextDSType.get(), idata[layerPos + 1].second);
@@ -342,7 +325,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
         fields->push_back(f_field);
       }
 
-      te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(currentDSType->getName() + "." + currentGeom->getName()),
+      te::da::Expression* e_intersection = new te::da::ST_Intersects( new te::da::PropertyName(currentDSType->getName() + "." + currentGeom->getName()),
                                                                         new te::da::PropertyName(nextDSType->getName() + "." + nextGeom->getName()));
       te::da::Field* f_intersection = new te::da::Field(*e_intersection, "geom");
       fields->push_back(f_intersection);
@@ -371,7 +354,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
       select->accept(visitor);
 
       te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
-      std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)currentDSLayer->getSchema());
+      std::auto_ptr<te::da::DataSetType> dsType(currentDSLayer->getSchema().release());
 
       te::gm::GeometryProperty* geom;
 
@@ -380,7 +363,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
         geom = te::da::GetFirstGeomProperty(dsType.get());
       }
 
-      te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
+      te::da::Expression* e_intersection = new te::da::ST_Intersects( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
                                                                         new te::da::PropertyName(previousQuery));
       
       te::da::Field* f_intersection = new te::da::Field(*e_intersection, "geom");
@@ -402,14 +385,13 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
     }
   }
 
-  std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
-  te::da::DataSet* dsQuery = dsTransactor->query(select);
+  std::auto_ptr<te::da::DataSet> dsQuery = dataSource->query(select);
   dsQuery->moveFirst();
 
   te::da::DataSetType* dsType = CreateDataSetType(newLayerName, currentDSType.get(), currentProps, nextDSType.get(), nextProps);
 
   resultPair.first = dsType;
-  resultPair.second = dsQuery;
+  resultPair.second = dsQuery.release();
   
   return resultPair;
 }
@@ -436,7 +418,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
   while(firstMember.ds->moveNext())
   {
-    te::gm::Geometry* currGeom = firstMember.ds->getGeometry(fiGeomPropPos);
+    te::gm::Geometry* currGeom = firstMember.ds->getGeometry(fiGeomPropPos).get();
 
     if(currGeom->getSRID() != outputSRID && outputSRID != 0)
       currGeom->transform(outputSRID);
@@ -447,7 +429,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
     for(size_t i = 0; i < report.size(); ++i)
     {
       secondMember.ds->move(report[i]);
-      te::gm::Geometry* secGeom = secondMember.ds->getGeometry(secGeomPropPos);
+      te::gm::Geometry* secGeom = secondMember.ds->getGeometry(secGeomPropPos).get();
 
       if(secGeom->getSRID() != outputSRID && outputSRID != 0)
         secGeom->transform(outputSRID);
@@ -471,7 +453,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
         if(!firstMember.ds->isNull(firstMember.props[j]->getName()))
         {
-          te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName());
+          te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).get();
 
           item->setValue(name, ad);
         }
@@ -483,7 +465,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
         if(!secondMember.ds->isNull(secondMember.props[j]->getName()))
         {
-          te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName());
+          te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).get();
 
           item->setValue(name, ad);
         }

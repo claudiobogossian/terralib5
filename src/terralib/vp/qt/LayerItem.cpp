@@ -35,6 +35,9 @@
 // Qt
 #include <QtGui/QWidget>
 
+// STL
+#include <memory>
+
 te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
   : te::qt::widgets::AbstractTreeItem(parent),
     m_layer(layer),
@@ -59,9 +62,9 @@ te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
   }
   else if(m_layer->getSchema()->getProperties().size() > 0)
   {
-    const te::map::LayerSchema* schema = m_layer->getSchema();
+    std::auto_ptr<te::map::LayerSchema> schema = m_layer->getSchema();
 
-    if(schema == 0)
+    if(schema.get() == 0)
       return;
 
     std::vector<te::dt::Property*> properties = schema->getProperties();

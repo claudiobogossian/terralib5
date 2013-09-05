@@ -9,7 +9,7 @@ project(${PROJ_NAME})
   
 find_package (terralib 5.0 COMPONENTS common dataaccess datatype filter 
   geometry gml memory  plugin postgis raster srs  
-  symbology xerces xlink xml REQUIRED)
+   xerces xlink xml REQUIRED)
  
 if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
   set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
