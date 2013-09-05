@@ -75,7 +75,7 @@ void te::pgis::Module::shutdown()
   DataSource::setDialect(0);
 
   // Free the PostGIS registered drivers
-  //te::da::DataSourceManager::getInstance().detachAll(PGIS_DRIVER_IDENTIFIER);
+  te::da::DataSourceManager::getInstance().detachAll(PGIS_DRIVER_IDENTIFIER);
  
   TE_LOG_TRACE(TR_PGIS("TerraLib PostGIS driver shutdown!"));
 
