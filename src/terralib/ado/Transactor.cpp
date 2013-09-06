@@ -62,6 +62,7 @@
 #include <cassert>
 //#include <cstring>
 #include <memory>
+#include <iostream>
 
 // Boost
 //#include <boost/algorithm/string/case_conv.hpp>

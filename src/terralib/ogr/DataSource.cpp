@@ -22,6 +22,7 @@
 #include "Utils.h"
 
 #include "../common/Translator.h"
+#include "../dataaccess/query/SQLDialect.h"
 
 // OGR
 #include <ogrsf_frmts.h>
@@ -31,9 +32,10 @@
 
 te::da::SQLDialect* te::ogr::DataSource::sm_myDialect(0);
 
-te::ogr::DataSource::DataSource()
-  : m_ogrDS(0),
-    m_isValid(false)
+te::ogr::DataSource::DataSource() :
+te::da::DataSource(),
+m_ogrDS(0),
+m_isValid(false)
 {
 }
 
@@ -111,6 +113,9 @@ const te::da::SQLDialect* te::ogr::DataSource::getDialect() const
 
 void te::ogr::DataSource::setDialect(te::da::SQLDialect* dialect)
 {
+  if(sm_myDialect != 0)
+    delete sm_myDialect;
+
   sm_myDialect = dialect;
 }
 

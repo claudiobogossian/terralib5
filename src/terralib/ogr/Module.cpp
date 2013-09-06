@@ -65,7 +65,7 @@ void te::ogr::Module::startup()
   OGRRegisterAll();
 
 // it initializes the OGR Factory support
-  te::da::DataSourceFactory::add("OGR", te::ogr::Build);
+  te::da::DataSourceFactory::add(OGR_DRIVER_IDENTIFIER, te::ogr::Build);
 
   #include "OGRDialect.h"
 
@@ -80,10 +80,10 @@ void te::ogr::Module::shutdown()
     return;
 
 // it finalizes the OGR factory support.
-  te::da::DataSourceFactory::remove("OGR");
+  te::da::DataSourceFactory::remove(OGR_DRIVER_IDENTIFIER);
 
 // free OGR registered drivers
- // te::da::DataSourceManager::getInstance().detachAll(OGR_DRIVER_IDENTIFIER);
+  te::da::DataSourceManager::getInstance().detachAll(OGR_DRIVER_IDENTIFIER);
  
   OGRCleanupAll();
 

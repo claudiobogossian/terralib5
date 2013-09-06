@@ -236,6 +236,9 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_project;
   delete m_progressDockWidget;
 
+  while(!m_tableDocks.empty())
+    delete *m_tableDocks.begin();
+
   te::qt::af::ApplicationController::getInstance().finalize();
 
   delete m_controller;
