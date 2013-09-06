@@ -103,6 +103,7 @@
 #include <utility>
 
 // Boost
+#include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -318,7 +319,12 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
   switch(evt->m_id)
   {
     case te::qt::af::evt::PROJECT_UNSAVED:
+    {
+      // Add the unsave asterisk
+      setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), true));
+
       m_project->projectChanged(true);
+    }
     break;
 
     case te::qt::af::evt::TOOLBAR_ADDED:
@@ -426,6 +432,8 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     }
 
     SaveLastDatasourceOnSettings(dsTypeId.c_str());
+
+    setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
   }
   catch(const std::exception& e)
   {
@@ -460,6 +468,8 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
     if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
       m_explorer->getExplorer()->add(layer);
 
+    setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
+
   }
   catch(const std::exception& e)
   {
@@ -487,6 +497,8 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
       m_explorer->getExplorer()->remove(item);
     }
   }
+
+  setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
 }
 
 void te::qt::af::BaseApplication::onPluginsManagerTriggered()
@@ -525,6 +537,8 @@ void te::qt::af::BaseApplication::onRecentProjectsTriggered(QAction* proj)
 void te::qt::af::BaseApplication::onNewProjectTriggered()
 {
   newProject();
+
+  onSaveProjectAsTriggered();
 }
 
 void te::qt::af::BaseApplication::onOpenProjectTriggered()
@@ -560,7 +574,10 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   UpdateProject(m_project, m_explorer->getExplorer(), false);
 
   te::qt::af::Save(*m_project, m_project->getFileName());
+
   m_project->projectChanged(false);
+
+  setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
 
   te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
 }
@@ -585,7 +602,13 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
 
   m_project->projectChanged(false);
 
+  setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
+
   ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
+
+  QString projectTile(tr(" - Project: %1 - %2"));
+  std::string name = boost::filesystem::basename(m_project->getFileName()) + boost::filesystem::extension(m_project->getFileName());
+  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str(), name.c_str()));
 }
 
 void te::qt::af::BaseApplication::onToolsCustomizeTriggered()
@@ -627,8 +650,9 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
   
   if(editor.exec() == QDialog::Accepted)
   {
-    QString projectTile(tr(" - Project: %1"));
-    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
+    QString projectTile(tr(" - Project: %1 - %2"));
+    std::string fName = boost::filesystem::basename(m_project->getFileName()) + boost::filesystem::extension(m_project->getFileName());
+    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str(), fName.c_str()));
   }
 }
 
@@ -751,8 +775,8 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       return;
     }
     te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
-    const te::map::LayerSchema* schema = lay->getSchema().get();
-    te::da::DataSet* dataset = lay->getData().get();
+    const te::map::LayerSchema* schema = lay->getSchema().release();
+    te::da::DataSet* dataset = lay->getData().release();
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
@@ -786,8 +810,8 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
       return;
     }
     te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
-    const te::map::LayerSchema* schema = lay->getSchema().get();
-    te::da::DataSet* dataset = lay->getData().get();
+    const te::map::LayerSchema* schema = lay->getSchema().release();
+    te::da::DataSet* dataset = lay->getData().release();
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::ScatterDialog dlg(dataset, dataType, this);
     dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));
@@ -1080,9 +1104,9 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 
     ApplicationController::getInstance().updateRecentProjects(projectFileName, m_project->getTitle().c_str());
 
-    QString projectTile(tr(" - Project: %1"));
-
-    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
+    QString projectTile(tr(" - Project: %1 - %2"));
+    std::string fName = boost::filesystem::basename(m_project->getFileName()) + boost::filesystem::extension(m_project->getFileName());
+    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str(), fName.c_str()));
 
     te::qt::af::ApplicationController::getInstance().set(m_project);
 
@@ -1137,9 +1161,9 @@ void te::qt::af::BaseApplication::newProject()
 
   m_project->setAuthor(author.toStdString());
 
-  QString projectTile(tr(" - Project: %1"));
-
-  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
+  QString projectTile(tr(" - Project: %1 - %2"));
+  std::string fName = boost::filesystem::basename(m_project->getFileName()) + boost::filesystem::extension(m_project->getFileName());
+  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str(), fName.c_str()));
 
   te::qt::af::ApplicationController::getInstance().set(m_project);
 

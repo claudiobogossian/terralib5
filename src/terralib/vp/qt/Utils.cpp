@@ -146,7 +146,6 @@ void te::vp::Persistence( te::da::DataSetType* dataSetType,
   pair.second = dataSet;
 
   te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
-  std::auto_ptr<te::da::DataSourceTransactor> t(dataSource->getTransactor());
   pair.second->moveFirst();
   te::da::Create(dataSource.get(), pair.first, pair.second, options);
 }

@@ -23,10 +23,6 @@ void DataSetGetExtent(te::da::DataSourceTransactor* transactor)
               << extent->m_lly << ", "
               << extent->m_urx << ", "
               << extent->m_ury << std::endl;
-
-    //delete dataset;
-
-    //delete extent;
   }
 
 // now we will retrieve all cities that contains a given point and then retrieves its extent
@@ -45,9 +41,8 @@ void DataSetGetExtent(te::da::DataSourceTransactor* transactor)
               << extent->m_urx << ", "
               << extent->m_ury << std::endl;
 
-    //delete dataset;
-
-    //delete extent;
+    //delete dataset; //it is auto_ptr
+    //delete extent;  //it is auto_ptr
   }
 
 // now we will retrieve all cities that contains a given point and then retrieves its extent

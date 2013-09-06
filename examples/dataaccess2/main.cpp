@@ -27,16 +27,16 @@
 // TerraLib
 #include <terralib/common/TerraLib.h>
 #include <terralib/plugin.h>
-#include <terralib/dataaccess2/dataset/CheckConstraint.h>
-#include <terralib/dataaccess2/dataset/PrimaryKey.h>
-#include <terralib/dataaccess2/dataset/Index.h>
-#include <terralib/dataaccess2/datasource/DataSourceFactory.h>
+#include <terralib/dataaccess/dataset/CheckConstraint.h>
+#include <terralib/dataaccess/dataset/PrimaryKey.h>
+#include <terralib/dataaccess/dataset/Index.h>
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/datatype/SimpleProperty.h>
-#include <terralib/memory2/DataSource.h>
-#include <terralib/memory2/DataSourceFactory.h>
-#include <terralib/postgis2/DataSource.h>
-#include <terralib/postgis2/DataSourceFactory.h>
-#include <terralib/postgis2/PreparedQuery.h>
+#include <terralib/memory/DataSource.h>
+#include <terralib/memory/DataSourceFactory.h>
+#include <terralib/postgis/DataSource.h>
+#include <terralib/postgis/DataSourceFactory.h>
+#include <terralib/postgis/PreparedQuery.h>
 
 // Examples
 
@@ -123,29 +123,29 @@ int main(int /*argc*/, char** /*argv*/)
     PrintDataSetPropertyNames(ds.get(), datasetName);
 
     PrintDataSetConstraints(ds.get(), datasetName);
+    PrintDataSourceCapabilities(ds.get());
+
     ds->close();
 
     delete ds.release();
 
 //===========Juan end of example ======================
 
-    PostGISExample();
+    //PostGISExample();  //ok
 
-    //ObjectId3(); //CAI...
+    GDALExample();  //ok
+
+    //ObjectId3(); //ok mas cai no ultimo...
 
     //////OGRExampleRead();
 
     //////ORGExampleWrite();
 
-    //////PostGISExample();
-    //////
     //////QueryExample(); //??? tem codigo comentado - cai...
 
-    ////////QueryExample_2();
+    QueryExample_2();
 
     //////CopyingData();
-
-    //////GDALExample();
 
     //////MemoryExample();
 

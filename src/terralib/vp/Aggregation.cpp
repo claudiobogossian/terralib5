@@ -144,7 +144,6 @@ te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName,
 
     ++it;
   }
-  propertyResult.erase(propertyResult.end());
 
   te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
   geometry->setGeometryType(te::gm::GeometryType);
@@ -168,7 +167,7 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
   
   te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
 
-  te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema().get();
+  std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
   
   te::da::Fields* fields = new te::da::Fields;
 
@@ -254,7 +253,7 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
 
   if(dsType->hasGeom())
   {
-    std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType));
+    te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(dsType.get());
     
     te::da::Expression* e_union = new te::da::ST_Union(te::da::PropertyName(geom->getName()));
     te::da::Field* f_union = new te::da::Field(*e_union, "geom");
@@ -279,8 +278,8 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
     select.setGroupBy(groupBy);
   }
 
-  std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
-  std::auto_ptr<te::da::DataSet> dsQuery = dsTransactor->query(select);
+  //std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
+  std::auto_ptr<te::da::DataSet> dsQuery = dataSource->query(select);
 
   te::vp::SetOutputDatasetQuery(groupingProperties, dsQuery.get(), outputDataSet);
 }
@@ -316,7 +315,7 @@ void te::vp::SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupi
       {
         std::string propName = dsQuery->getPropertyName(i);
 
-        if(propName == "aggregation_count")
+        if(boost::iequals(propName, "aggregation_count"))
         {
           int aggregValue = boost::lexical_cast<int>(dsQuery->getAsString(i));
           outputDataSetItem->setInt32(1, aggregValue);

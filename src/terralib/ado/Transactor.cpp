@@ -150,15 +150,11 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
   _RecordsetPtr result = m_conn->query(*sql, connected);
 
-  FieldsPtr props = result->GetFields();
+  FieldsPtr fields = result->GetFields();
   std::vector<int> types;
   std::vector<std::string> names;
 
-  for(long i = 0; i < props->GetCount(); ++i)
-  {
-    types.push_back(Convert2Terralib(props->GetItem(i)->GetType()));
-    names.push_back(std::string(props->GetItem(i)->GetName()));
-  }
+  te::ado::GetFieldsInfo(m_conn->getConn(), name, fields, types, names);
 
   return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
 }
@@ -187,16 +183,11 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
   _RecordsetPtr result = m_conn->query(*query, connected);
 
-  ::PropertiesPtr props = result->GetProperties();
-
+  FieldsPtr fields = result->GetFields();
   std::vector<int> types;
   std::vector<std::string> names;
 
-  for(long i = 0; i < props->GetCount(); ++i)
-  {
-    types.push_back(Convert2Terralib(props->GetItem(i)->GetType()));
-    names.push_back(std::string(props->GetItem(i)->GetName()));
-  }
+  te::ado::GetFieldsInfo(m_conn->getConn(), name, fields, types, names);
 
   return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
 }
@@ -368,12 +359,12 @@ boost::ptr_vector<te::dt::Property> te::ado::Transactor::getProperties(const std
 {
   std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
-  std::vector<te::dt::Property*>& dtProperties = dt->getProperties();
+  std::vector<te::dt::Property*> dtProperties = dt->getProperties();
 
   boost::ptr_vector<te::dt::Property> properties;
 
   for(std::size_t i = 0; i < dtProperties.size(); ++i)
-    properties.push_back(dtProperties[i]);
+    properties.push_back(dtProperties[i]->clone());
 
   return properties;
 }

@@ -67,6 +67,12 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
   layer->setVisibility(te::map::NOT_VISIBLE);
   layer->setRendererType("DATASET_LAYER_RENDERER");
 
+  if(dataset->size() == 0)
+  {
+    te::da::DataSourcePtr ds(te::da::DataSourceManager::getInstance().find(m_datasourceId));
+    te::da::LoadProperties(dataset.get(), m_datasourceId);
+  }
+
   if(dataset->hasGeom())
   {
    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(dataset.get());
