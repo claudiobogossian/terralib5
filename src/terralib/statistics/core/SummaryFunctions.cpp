@@ -47,6 +47,7 @@
 #include <map>
 #include <numeric>
 #include <vector>
+#include <memory>
 
 void te::stat::GetStringStatisticalSummary(std::vector<std::string>& values, te::stat::StringStatisticalSummary& ss)
 {
@@ -280,7 +281,7 @@ void te::stat::GetNumericStatisticalSummaryQuery( const te::map::AbstractLayerPt
     }
     else
     {
-      te::da::DataSetType* dsType = (te::da::DataSetType*)dsLayer->getSchema().get();
+      std::auto_ptr<te::map::LayerSchema> dsType(dsLayer->getSchema());
       te::da::PropertyName* p_name = new te::da::PropertyName(prop->getName());
 
       te::da::Expression* e_min = new te::da::Min(p_name);

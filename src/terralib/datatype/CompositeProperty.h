@@ -210,7 +210,7 @@ namespace te
         bool hasPropertyOfType(const int t) const;
 
         /*!
-          \brief returns the first property of the given data type.
+          \brief returns the first property of the given data type. Caller doesn't take ownership of the returned pointer.
         */
         Property* findFirstPropertyOfType(const int t) const;
 

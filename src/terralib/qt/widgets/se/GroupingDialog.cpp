@@ -62,7 +62,7 @@ void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
   m_layer = layer;
 
   //VERIFY LATER
-  std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)layer->getSchema().get());
+  std::auto_ptr<te::map::LayerSchema> dsType(layer->getSchema());
 
   if(dsType->hasGeom())
   {
