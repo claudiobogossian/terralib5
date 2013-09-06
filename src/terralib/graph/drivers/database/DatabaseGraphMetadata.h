@@ -28,8 +28,9 @@
 #define __TERRALIB_GRAPH_INTERNAL_DATABASEGRAPHMETADATA_H
 
 // Terralib Includes
-#include "../Config.h"
-#include "GraphMetadata.h"
+#include "../../core/GraphMetadata.h"
+#include "../../Config.h"
+
 
 // STL Includes
 #include <string>

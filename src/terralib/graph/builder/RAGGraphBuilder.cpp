@@ -1,24 +1,53 @@
-#include "RAGGraphBuilder.h"
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
-#include "AbstractGraphFactory.h"
-#include "Config.h"
-#include "Edge.h"
-#include "Exception.h"
-#include "Graph.h"
-#include "Vertex.h"
-#include "VertexProperty.h"
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file RAGGraphBuilder.cpp
+
+  \brief This class defines the RAG strategy to build a graph,
+
+        This is strategy is based on adjacency of a region.
+
+*/
 
 // TerraLib
-#include "../dataaccess.h"
-#include "../datatype.h"
-#include "../geometry.h"
-#include "../common/StringUtils.h"
-#include "../sam.h"
+#include "../../common/progress/TaskProgress.h"
+#include "../../common/StringUtils.h"
+#include "../../common/STLUtils.h"
+#include "../../common/Translator.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../datatype/AbstractData.h"
+#include "../../geometry/GeometryProperty.h"
+#include "../../geometry/MultiPolygon.h"
+#include "../../geometry/Point.h"
+#include "../../geometry/Polygon.h"
+#include "../../sam/rtree.h"
+#include "../core/AbstractGraphFactory.h"
+#include "../core/Edge.h"
+#include "../core/Vertex.h"
+#include "../core/VertexProperty.h"
+#include "../graphs/Graph.h"
+#include "../Config.h"
+#include "../Exception.h"
+#include "RAGGraphBuilder.h"
 
-#include "../common/Translator.h"
-#include "../common/progress/TaskProgress.h"
-
-#include "../common/Translator.h"
 
 te::graph::RAGGraphBuilder::RAGGraphBuilder() : AbstractGraphBuilder()
 {
@@ -61,72 +90,52 @@ int  te::graph::RAGGraphBuilder::getEdgeId()
 }
 
 
-te::da::DataSource* te::graph::RAGGraphBuilder::getDataSource(const std::string fileName)
+std::auto_ptr<te::da::DataSource> te::graph::RAGGraphBuilder::getDataSource(const std::string fileName)
 {
   // Creates and connects data source
   std::map<std::string, std::string> connInfo;
   connInfo["path"] = fileName;
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
-  ds->open(connInfo);
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+  ds->setConnectionInfo(connInfo);
+  ds->open();
 
   return ds;
 }
 
-te::da::DataSet* te::graph::RAGGraphBuilder::getDataSet(te::da::DataSource* ds)
+std::auto_ptr<te::da::DataSet> te::graph::RAGGraphBuilder::getDataSet(te::da::DataSource* ds)
 {
-   // Gets a transactor
-  te::da::DataSourceTransactor* t = ds->getTransactor();
-  assert(t);
+  std::vector<std::string> names = ds->getDataSetNames();
 
-  // Get the number of data set types that belongs to the data source
-  boost::ptr_vector<std::string> datasets;
-  t->getCatalogLoader()->getDataSets(datasets);
-  assert(!datasets.empty());
+  std::string dsName = names[0];
 
-  // Gets DataSet Type
-  std::string dsName = datasets[0];
-
-  te::da::DataSet* dataset = t->getDataSet(dsName);
+  std::auto_ptr<te::da::DataSet> dataset = ds->getDataSet(dsName);
 
   return dataset;
 }
 
-std::vector<te::dt::Property*>& te::graph::RAGGraphBuilder::getProperties(te::da::DataSource* ds)
+boost::ptr_vector<te::dt::Property> te::graph::RAGGraphBuilder::getProperties(te::da::DataSource* ds)
 {
-// Transactor and catalog loader
-  te::da::DataSourceTransactor* transactor = ds->getTransactor();
-  te::da::DataSourceCatalogLoader* cl = transactor->getCatalogLoader();
-  cl->loadCatalog();
+  std::vector<std::string> names = ds->getDataSetNames();
 
-  // Get the number of data set types that belongs to the data source
-  boost::ptr_vector<std::string> datasets;
-  transactor->getCatalogLoader()->getDataSets(datasets);
-  assert(!datasets.empty());
+  std::string dsName = names[0];
 
-  // Gets DataSet Type
-  std::string dsName = datasets[0];
-  te::da::DataSetType* dt = cl->getDataSetType(dsName);
-
-  delete transactor;
-
-  // get properties
-  return dt->getProperties();
+  return ds->getProperties(dsName);
 }
 
 bool te::graph::RAGGraphBuilder::createVertexObjects(const std::string& shapeFileName, const std::string& linkColumn, const int& srid)
 {
  //get data source
-  te::da::DataSource* ds = getDataSource(shapeFileName);
+  std::auto_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
 
-  if(ds == 0)
+  if(ds.get() == 0)
   {
     return false;
   }
 
   //get data set
-  te::da::DataSet* dataSet = getDataSet(ds);
+  std::auto_ptr<te::da::DataSet> dataSet = getDataSet(ds.get());
 
-  if(dataSet == 0)
+  if(dataSet.get() == 0)
   {
     return false;
   }
@@ -155,7 +164,7 @@ bool te::graph::RAGGraphBuilder::createVertexObjects(const std::string& shapeFil
     
     v->setAttributeVecSize(1);
 
-    te::gm::Geometry* g = dataSet->getGeometry(geomColumn);
+    te::gm::Geometry* g = dataSet->getGeometry(geomColumn).release();
     g->setSRID(srid);
 
     te::dt::AbstractData* ad = 0;
@@ -186,26 +195,23 @@ bool te::graph::RAGGraphBuilder::createVertexObjects(const std::string& shapeFil
     m_graph->add(v);
   }
 
-  delete dataSet;
-  delete ds;
-
   return true;
 }
 
 bool te::graph::RAGGraphBuilder::createEdgeObjects(const std::string& shapeFileName, const std::string& linkColumn)
 {
-//get data source
-  te::da::DataSource* ds = getDataSource(shapeFileName);
+ //get data source
+  std::auto_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
 
-  if(ds == 0)
+  if(ds.get() == 0)
   {
     return false;
   }
 
   //get data set
-  te::da::DataSet* dataSet = getDataSet(ds);
+  std::auto_ptr<te::da::DataSet> dataSet = getDataSet(ds.get());
 
-  if(dataSet == 0)
+  if(dataSet.get() == 0)
   {
     return false;
   }
@@ -223,7 +229,7 @@ bool te::graph::RAGGraphBuilder::createEdgeObjects(const std::string& shapeFileN
   while(dataSet->moveNext())
   {
     int id = dataSet->getInt32(linkColumn);
-    te::gm::Geometry* g = dataSet->getGeometry(geomColumn);
+    te::gm::Geometry* g = dataSet->getGeometry(geomColumn).release();
     const te::gm::Envelope* box = g->getMBR();
 
     rtree.insert(*box, id);
@@ -243,7 +249,7 @@ bool te::graph::RAGGraphBuilder::createEdgeObjects(const std::string& shapeFileN
   {
     int vFromId = dataSet->getInt32(linkColumn);
 
-    te::gm::Geometry* g = dataSet->getGeometry(geomColumn);
+    std::auto_ptr<te::gm::Geometry> g = dataSet->getGeometry(geomColumn);
 
     std::vector<int> results;
 
@@ -271,42 +277,43 @@ bool te::graph::RAGGraphBuilder::createEdgeObjects(const std::string& shapeFileN
     task.pulse();
   }
 
-  delete dataSet;
-  delete ds;
+  te::common::FreeContents(geomMap);
+  geomMap.clear();
 
   return true;
 }
 
 bool te::graph::RAGGraphBuilder::getGeometryColumn(const std::string& shapeFileName, std::string& columnName)
 {
-//get data source
-  te::da::DataSource* ds = getDataSource(shapeFileName);
+ //get data source
+  std::auto_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
 
-  if(ds == 0)
+  if(ds.get() == 0)
   {
     return false;
   }
 
   //get properties
-  std::vector<te::dt::Property*> properties = getProperties(ds);
+  boost::ptr_vector<te::dt::Property> properties = getProperties(ds.get());
 
   if(properties.empty())
   {
-    delete ds;
     return false;
   }
 
-  for(size_t t = 0; t < properties.size(); ++t)
+  boost::ptr_vector<te::dt::Property>::iterator it = properties.begin();
+  while(it != properties.end())
   {
-    if(properties[t]->getType() == te::dt::GEOMETRY_TYPE)
+    if(it->getType() == te::dt::GEOMETRY_TYPE)
     {
-      columnName = properties[t]->getName();
+      columnName = it->getName();
     }
+
+    ++it;
   }
 
   if(columnName.empty())
   {
-    delete ds;
     return false;
   }
 

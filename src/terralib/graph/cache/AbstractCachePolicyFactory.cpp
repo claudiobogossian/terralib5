@@ -24,10 +24,10 @@
 */
 
 // TerraLib
-#include "../common/StringUtils.h"
-#include "../common/Translator.h"
-#include "Config.h"
-#include "Exception.h"
+#include "../../common/StringUtils.h"
+#include "../../common/Translator.h"
+#include "../Config.h"
+#include "../Exception.h"
 #include "AbstractCachePolicyFactory.h"
 
 // STL

@@ -24,14 +24,15 @@
 */
 
 // TerraLib
-#include "../common/StringUtils.h"
-#include "../common/Translator.h"
-#include "Config.h"
-#include "Exception.h"
+#include "../../common/StringUtils.h"
+#include "../../common/Translator.h"
+#include "../Config.h"
+#include "../Exception.h"
 #include "AbstractGraphLoaderStrategyFactory.h"
 
 // STL
 #include <memory>
+
 
 te::graph::AbstractGraphLoaderStrategy* te::graph::AbstractGraphLoaderStrategyFactory::make()
 {

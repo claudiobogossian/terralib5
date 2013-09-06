@@ -28,8 +28,9 @@
 #define __TERRALIB_GRAPH_INTERNAL_VERTEXPROPERTY_H
 
 // Terralib Includes
+#include "../../datatype/CompositeProperty.h"
 #include "../Config.h"
-#include "../datatype/CompositeProperty.h"
+
 
 // STL Includes
 #include <vector>

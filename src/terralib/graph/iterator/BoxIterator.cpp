@@ -23,17 +23,20 @@
   \brief 
 */
 
-#include "BoxIterator.h"
-#include "GraphMetadata.h"
-#include "Globals.h"
-
 // Terralib Includes
-#include "Config.h"
-#include "Exception.h"
-#include "../common/Translator.h"
-#include "../common/StringUtils.h"
-#include "../dataaccess.h"
-#include "../geometry/Envelope.h"
+#include "../../common/Translator.h"
+#include "../../common/StringUtils.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/query_h.h"
+#include "../../datatype/Property.h"
+#include "../../geometry/Envelope.h"
+#include "../core/AbstractGraph.h"
+#include "../core/GraphMetadata.h"
+#include "../Config.h"
+#include "../Exception.h"
+#include "../Globals.h"
+#include "BoxIterator.h"
 
 te::graph::BoxIterator::BoxIterator(te::graph::AbstractGraph* g) : 
   te::graph::AbstractIterator(g),
@@ -60,7 +63,7 @@ te::graph::Vertex* te::graph::BoxIterator::getFirstVertex()
     throw Exception(TR_GRAPH("Invalid graph pointer."));
   }
 
-  if(m_vertexQuery)
+  if(m_vertexQuery.get())
   {
     if(m_vertexQuery->moveFirst())
     {
@@ -81,14 +84,6 @@ te::graph::Vertex* te::graph::BoxIterator::getFirstVertex()
 
       break;
     }
-  }
-
-  // get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = m_graph->getMetadata()->getDataSource()->getTransactor();
-
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
   }
 
   //create a query to get eache vertex id
@@ -119,12 +114,11 @@ te::graph::Vertex* te::graph::BoxIterator::getFirstVertex()
 
   te::da::Select select(fields, from, wh, ob);
 
-  delete m_vertexQuery;
-  m_vertexQuery = transactor->query(select);
+  m_vertexQuery.reset(0);
+  m_vertexQuery = m_graph->getMetadata()->getDataSource()->query(select);
 
-  if(m_vertexQuery == 0)
+  if(m_vertexQuery.get() == 0)
   {
-    delete transactor;
     throw Exception(TR_GRAPH("Iterator not initialized."));
   }
 
@@ -136,11 +130,9 @@ te::graph::Vertex* te::graph::BoxIterator::getFirstVertex()
   }
   else
   {
-    delete transactor;
     return 0;
   }
 
-  delete transactor;
   return m_graph->getVertex(id);
 }
 
@@ -151,7 +143,7 @@ te::graph::Edge* te::graph::BoxIterator::getFirstEdge()
     throw Exception(TR_GRAPH("Invalid graph pointer."));
   }
 
-  if(m_edgeQuery)
+  if(m_edgeQuery.get())
   {
     if(m_edgeQuery->moveFirst())
     {
@@ -172,14 +164,6 @@ te::graph::Edge* te::graph::BoxIterator::getFirstEdge()
 
       break;
     }
-  }
-
-  // get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = m_graph->getMetadata()->getDataSource()->getTransactor();
-
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
   }
 
   //create a query to get eache edge id
@@ -244,10 +228,10 @@ te::graph::Edge* te::graph::BoxIterator::getFirstEdge()
   //select
   te::da::Select select(fields, from, wh, ob);
 
-  delete m_edgeQuery;
-  m_edgeQuery = transactor->query(select);
+  m_edgeQuery.reset(0);
+  m_edgeQuery = m_graph->getMetadata()->getDataSource()->query(select);
 
-  if(m_edgeQuery == 0)
+  if(m_edgeQuery.get() == 0)
   {
     throw Exception(TR_GRAPH("Iterator not initialized."));
   }
@@ -260,11 +244,9 @@ te::graph::Edge* te::graph::BoxIterator::getFirstEdge()
   }
   else
   {
-    delete transactor;
     return 0;
   }
 
-  delete transactor;
   return m_graph->getEdge(id);
 }
 

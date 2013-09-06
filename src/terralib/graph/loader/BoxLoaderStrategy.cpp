@@ -1,24 +1,53 @@
-#include "BoxLoaderStrategy.h"
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
-#include "AbstractGraph.h"
-#include "Edge.h"
-#include "GraphCache.h"
-#include "EdgeProperty.h"
-#include "Globals.h"
-#include "GraphData.h"
-#include "GraphMetadata.h"
-#include "Vertex.h"
-#include "VertexProperty.h"
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file BoxLoaderStrategy.cpp
+
+  \brief This class implements the main functions necessary to
+        save and load the graph data and metadata information
+        using as strategy a bounding box to create a region
+        that defines a group of elements.
+*/
 
 // Terralib Includes
-#include "Config.h"
-#include "Exception.h"
-#include "../common/Translator.h"
-#include "../common/StringUtils.h"
-#include "../dataaccess.h"
-#include "../datatype.h"
-#include "../memory.h"
-#include "../geometry.h"
+#include "../../common/Translator.h"
+#include "../../common/StringUtils.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/query_h.h"
+#include "../../datatype/AbstractData.h"
+#include "../../geometry/Envelope.h"
+#include "../../geometry/Point.h"
+#include "../core/AbstractGraph.h"
+#include "../core/Edge.h"
+#include "../core/EdgeProperty.h"
+#include "../core/GraphCache.h"
+#include "../core/GraphData.h"
+#include "../core/GraphMetadata.h"
+#include "../core/Vertex.h"
+#include "../core/VertexProperty.h"
+#include "../Config.h"
+#include "../Globals.h"
+#include "../Exception.h"
+#include "BoxLoaderStrategy.h"
 
 
 te::graph::BoxLoaderStrategy::BoxLoaderStrategy(te::graph::GraphMetadata* metadata) : AbstractGraphLoaderStrategy(metadata)
@@ -135,17 +164,9 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
   te::da::Select select(all, from, wh);
 
   //query
-  te::da::DataSourceTransactor* transactor = m_graphMetadata->getDataSource()->getTransactor();
+  std::auto_ptr<te::da::DataSet> dataset = m_graphMetadata->getDataSource()->query(select);
 
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSet* dataset = transactor->query(select);
-  te::da::DataSetType* vertexDsType = catalog->getDataSetType(vertexAttrTable);
+  std::auto_ptr<te::da::DataSetType> vertexDsType = m_graphMetadata->getDataSource()->getDataSetType(vertexAttrTable);
 
   int vertexProperties = vertexDsType->getProperties().size();
 
@@ -174,7 +195,7 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
 
         for(int i = 1; i < vertexProperties; ++i)
         {
-          v->addAttribute(i - 1, dataset->getValue(i));
+          v->addAttribute(i - 1, dataset->getValue(i).release());
         }
 
         g->add(v);
@@ -199,9 +220,6 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
 
   delete vAux;
   delete envelope;
-  delete dataset;
-  delete catalog;
-  delete transactor;
 }
 
 
@@ -330,18 +348,10 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
   te::da::Select select(all, from, wh);
 
   //query
-  te::da::DataSourceTransactor* transactor = m_graphMetadata->getDataSource()->getTransactor();
+  std::auto_ptr<te::da::DataSet> dataset = m_graphMetadata->getDataSource()->query(select);
 
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSet* dataset = transactor->query(select);
-  te::da::DataSetType* vertexDsType = catalog->getDataSetType(vertexAttrTable);
-  te::da::DataSetType* edgeDsType = catalog->getDataSetType(edgeAttrTable);
+  std::auto_ptr<te::da::DataSetType> vertexDsType = m_graphMetadata->getDataSource()->getDataSetType(vertexAttrTable);
+  std::auto_ptr<te::da::DataSetType> edgeDsType = m_graphMetadata->getDataSource()->getDataSetType(edgeAttrTable);
 
   int vertexProperties = vertexDsType->getProperties().size();
   int edgeProperties = edgeDsType->getProperties().size();
@@ -368,7 +378,7 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
 
         for(int i = 3; i < edgeProperties; ++i)
         {
-          e->addAttribute(i - 3, dataset->getValue(i + vertexProperties));
+          e->addAttribute(i - 3, dataset->getValue(i + vertexProperties).release());
         };
 
         g->add(e);
@@ -380,9 +390,6 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
 
   delete vAux;
   delete envelope;
-  delete dataset;
-  delete catalog;
-  delete transactor;
 }
 
 

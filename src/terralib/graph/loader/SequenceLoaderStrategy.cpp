@@ -1,23 +1,51 @@
-#include "SequenceLoaderStrategy.h"
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
-#include "AbstractGraph.h"
-#include "Edge.h"
-#include "GraphCache.h"
-#include "EdgeProperty.h"
-#include "Globals.h"
-#include "GraphData.h"
-#include "GraphMetadata.h"
-#include "Vertex.h"
-#include "VertexProperty.h"
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file SequenceLoaderStrategy.cpp
+
+  \brief This class implements the main functions necessary to
+        save and load the graph data and metadata information
+        using as strategy a "order by" to create a sequence
+        of objects.
+*/
 
 // Terralib Includes
-#include "Config.h"
-#include "Exception.h"
-#include "../common/Translator.h"
-#include "../common/StringUtils.h"
-#include "../dataaccess.h"
-#include "../datatype.h"
-#include "../memory.h"
+#include "../../common/Translator.h"
+#include "../../common/StringUtils.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/query_h.h"
+#include "../../datatype/AbstractData.h"
+#include "../core/AbstractGraph.h"
+#include "../core/Edge.h"
+#include "../core/GraphCache.h"
+#include "../core/EdgeProperty.h"
+#include "../core/GraphData.h"
+#include "../core/GraphMetadata.h"
+#include "../core/Vertex.h"
+#include "../core/VertexProperty.h"
+#include "../Config.h"
+#include "../Globals.h"
+#include "../Exception.h"
+#include "SequenceLoaderStrategy.h"
 
 
 te::graph::SequenceLoaderStrategy::SequenceLoaderStrategy(te::graph::GraphMetadata* metadata) : AbstractGraphLoaderStrategy(metadata)
@@ -102,18 +130,9 @@ void te::graph::SequenceLoaderStrategy::loadDataByVertexId(int vertexId, te::gra
   te::da::Select select(all, from, wh, ob);
 
   //query
-  te::da::DataSourceTransactor* transactor = m_graphMetadata->getDataSource()->getTransactor();
+  std::auto_ptr<te::da::DataSet> dataset = m_graphMetadata->getDataSource()->query(select);
 
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSet* dataset = transactor->query(select);
-
-  te::da::DataSetType* vertexDsType = catalog->getDataSetType(vertexAttrTable);
+  std::auto_ptr<te::da::DataSetType> vertexDsType = m_graphMetadata->getDataSource()->getDataSetType(vertexAttrTable);
 
   int vertexProperties = vertexDsType->getProperties().size();
 
@@ -140,9 +159,9 @@ void te::graph::SequenceLoaderStrategy::loadDataByVertexId(int vertexId, te::gra
 
         v->setAttributeVecSize(vertexProperties - 1);
 
-        for(size_t i = 1; i < vertexProperties; ++i)
+        for(int i = 1; i < vertexProperties; ++i)
         {
-          v->addAttribute(i - 1, dataset->getValue(i));
+          v->addAttribute(i - 1, dataset->getValue(i).release());
         }
 
         g->add(v);
@@ -164,10 +183,6 @@ void te::graph::SequenceLoaderStrategy::loadDataByVertexId(int vertexId, te::gra
       //TODO for other graph types
     }
   }
-
-  delete catalog;
-  delete dataset;
-  delete transactor;
 }
 
 
@@ -219,18 +234,9 @@ void te::graph::SequenceLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::
   te::da::Select select(all, from, wh, ob);
 
   //query
-  te::da::DataSourceTransactor* transactor = m_graphMetadata->getDataSource()->getTransactor();
+  std::auto_ptr<te::da::DataSet> dataset = m_graphMetadata->getDataSource()->query(select);
 
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
-   te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSet* dataset = transactor->query(select);
-
-  te::da::DataSetType* edgeDsType = catalog->getDataSetType(edgeTable);
+  std::auto_ptr<te::da::DataSetType> edgeDsType = m_graphMetadata->getDataSource()->getDataSetType(edgeTable);
 
   int edgeProperties = edgeDsType->getProperties().size();
 
@@ -248,16 +254,12 @@ void te::graph::SequenceLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::
 
       e->setAttributeVecSize(edgeProperties - 3);
 
-      for(size_t i = 3; i < edgeProperties; ++i)
+      for(int i = 3; i < edgeProperties; ++i)
       {
-        e->addAttribute(i - 3, dataset->getValue(i));
+        e->addAttribute(i - 3, dataset->getValue(i).release());
       };
 
       g->add(e);
     }
   }
-
-  delete catalog;
-  delete dataset;
-  delete transactor;
 }

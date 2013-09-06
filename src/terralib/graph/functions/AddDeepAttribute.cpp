@@ -24,24 +24,20 @@
 
 */
 
-#include "AddDeepAttribute.h"
-
-#include "BidirectionalGraph.h"
-#include "Edge.h"
-#include "Exception.h"
-#include "Graph.h"
-#include "SequenceIterator.h"
-#include "Vertex.h"
-#include "VertexProperty.h"
-
-#include "../datatype/SimpleProperty.h"
-#include "../datatype/SimpleData.h"
-#include "../datatype/Enums.h"
-
 // Terralib
-#include "../common/Translator.h"
-#include "../common/progress/TaskProgress.h"
-
+#include "../../common/Translator.h"
+#include "../../common/progress/TaskProgress.h"
+#include "../../datatype/SimpleProperty.h"
+#include "../../datatype/SimpleData.h"
+#include "../../datatype/Enums.h"
+#include "../core/Edge.h"
+#include "../core/Vertex.h"
+#include "../core/VertexProperty.h"
+#include "../graphs/Graph.h"
+#include "../graphs/BidirectionalGraph.h"
+#include "../iterator/SequenceIterator.h"
+#include "../Exception.h"
+#include "AddDeepAttribute.h"
 
 
 te::graph::AddDeepAttribute::AddDeepAttribute(te::graph::BidirectionalGraph* graph, std::string attributeName) 

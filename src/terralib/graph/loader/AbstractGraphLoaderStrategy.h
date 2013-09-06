@@ -29,9 +29,8 @@
 #define __TERRALIB_GRAPH_INTERNAL_ABSTRACTGRAPHLOADERSTRATEGY_H
 
 // Terralib Includes
+#include "../core/GraphMetadata.h"
 #include "../Config.h"
-
-#include "GraphMetadata.h"
 
 namespace te
 {

@@ -24,27 +24,25 @@
 
 */
 
-#include "AddRasterAttribute.h"
-
-#include "AbstractGraph.h"
-#include "Edge.h"
-#include "Exception.h"
-#include "Graph.h"
-#include "GraphMetadata.h"
-#include "SequenceIterator.h"
-#include "Vertex.h"
-#include "VertexProperty.h"
-
-#include "../datatype/SimpleProperty.h"
-#include "../datatype/SimpleData.h"
-#include "../datatype/Enums.h"
-#include "../geometry.h"
-#include "../raster.h"
-
 // Terralib
-#include "../common/Translator.h"
-#include "../common/progress/TaskProgress.h"
-
+#include "../../common/Translator.h"
+#include "../../common/progress/TaskProgress.h"
+#include "../../datatype/SimpleProperty.h"
+#include "../../datatype/SimpleData.h"
+#include "../../datatype/Enums.h"
+#include "../../geometry/Coord2D.h"
+#include "../../geometry/Point.h"
+#include "../../raster/Grid.h"
+#include "../../raster/Raster.h"
+#include "../core/AbstractGraph.h"
+#include "../core/Edge.h"
+#include "../core/GraphMetadata.h"
+#include "../core/Vertex.h"
+#include "../core/VertexProperty.h"
+#include "../graphs/Graph.h"
+#include "../iterator/SequenceIterator.h"
+#include "../Exception.h"
+#include "AddRasterAttribute.h"
 
 
 te::graph::AddRasterAttribute::AddRasterAttribute(te::graph::AbstractGraph* graph, std::string spatialAttributeName, std::string attributeName, te::rst::Raster* raster, int band) 
@@ -108,7 +106,7 @@ te::graph::AddRasterAttribute::AddRasterAttribute(te::graph::AbstractGraph* grap
 
         double pixelValue;
 
-        raster->getValue(coord.x, coord.y, pixelValue, band);
+        raster->getValue((int)coord.x, (int)coord.y, pixelValue, band);
 
         vertex->addAttribute(pIdx, new te::dt::SimpleData<int, te::dt::INT32_TYPE>((int)pixelValue));
 

@@ -24,25 +24,25 @@
  */
 
 // TerraLib
-#include "../common/STLUtils.h"
-#include "../datatype/Enums.h"
-#include "../geometry.h"
-#include "../se/Mark.h"
-#include "../se/Style.h"
-#include "../se/Rule.h"
-#include "../se/Utils.h"
-#include "../maptools/AbstractMarkFactory.h"
-#include "../maptools/AbstractLayer.h"
-#include "../maptools/Canvas.h"
-#include "../maptools/CanvasConfigurer.h"
-
-#include "AbstractGraph.h"
-#include "BoxIterator.h"
-#include "Edge.h"
+#include "../../common/STLUtils.h"
+#include "../../datatype/Enums.h"
+#include "../../geometry/LineString.h"
+#include "../../geometry/Point.h"
+#include "../../maptools/AbstractLayer.h"
+#include "../../maptools/Canvas.h"
+#include "../../maptools/CanvasConfigurer.h"
+#include "../../maptools/MarkRendererManager.h"
+#include "../../se/Mark.h"
+#include "../../se/Style.h"
+#include "../../se/Rule.h"
+#include "../../se/Utils.h"
+#include "../core/AbstractGraph.h"
+#include "../core/Edge.h"
+#include "../core/Vertex.h"
+#include "../iterator/BoxIterator.h"
+#include "../iterator/SequenceIterator.h"
 #include "Layer.h"
 #include "LayerRenderer.h"
-#include "Vertex.h"
-#include "SequenceIterator.h"
 
 
 te::graph::LayerRenderer::LayerRenderer()
@@ -69,7 +69,7 @@ void te::graph::LayerRenderer::draw(te::map::AbstractLayer* layer, te::map::Canv
   }
   else
   {
-    if(style->getNRules() == 0)
+    if(style->getRules().empty())
     {
       throw;
     }
@@ -219,7 +219,7 @@ void te::graph::LayerRenderer::configDefaultPoint(te::map::Canvas* canvas)
 {
   te::se::Mark* mark = te::se::CreateMark("circle", te::se::CreateStroke("#000000", "2"), te::se::CreateFill("#FFFF00", "1.0"));
   std::size_t size = 12;
-  te::color::RGBAColor** rgba = te::map::AbstractMarkFactory::make(mark, size);
+  te::color::RGBAColor** rgba =  te::map::MarkRendererManager::getInstance().render(mark, size);
   canvas->setPointColor(te::color::RGBAColor(255, 0, 0, TE_TRANSPARENT));
   canvas->setPointPattern(rgba, size, size);
 
@@ -231,7 +231,7 @@ void te::graph::LayerRenderer::configLoopPoint(te::map::Canvas* canvas)
 {
   te::se::Mark* mark = te::se::CreateMark("star", te::se::CreateStroke("#000000", "2"), te::se::CreateFill("#FFFF00", "1.0"));
   std::size_t size = 12;
-  te::color::RGBAColor** rgba = te::map::AbstractMarkFactory::make(mark, size);
+  te::color::RGBAColor** rgba =  te::map::MarkRendererManager::getInstance().render(mark, size);
   canvas->setPointColor(te::color::RGBAColor(255, 0, 0, TE_TRANSPARENT));
   canvas->setPointPattern(rgba, size, size);
 

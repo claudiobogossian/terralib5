@@ -1,14 +1,42 @@
-#include "GraphCache.h"
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
-#include "AbstractCachePolicy.h"
-#include "AbstractCachePolicyFactory.h"
-#include "AbstractGraphLoaderStrategy.h"
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file GraphCache.cpp
+
+  \brief Class used to manager the graph data elements.
+        This class uses a cache policy to control the elements in memory.
+        If a element was requested and not found  in cache, the 
+        GraphDataManager is used to loaded a new GraphData.
+*/
+
+// Terralib Includes
+#include "../../common/STLUtils.h"
+#include "../cache/AbstractCachePolicy.h"
+#include "../cache/AbstractCachePolicyFactory.h"
+#include "../loader/AbstractGraphLoaderStrategy.h"
+#include "GraphCache.h"
 #include "GraphData.h"
 #include "GraphDataManager.h"
 
-// Terralib Includes
-#include "../common/STLUtils.h"
 
+// STL Includes
 #include <iostream>
 
 te::graph::GraphCache::GraphCache(AbstractCachePolicy* cp, GraphDataManager* dm): m_dataManager(dm), m_policy(cp)

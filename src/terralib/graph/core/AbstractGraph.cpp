@@ -23,15 +23,13 @@
   \brief 
 */
 
-#include "AbstractGraph.h"
-
 // Terralib Includes
-#include "AbstractIterator.h"
-#include "Config.h"
-#include "Exception.h"
-
-#include "../common/Translator.h"
-#include "../common/StringUtils.h"
+#include "../../common/Translator.h"
+#include "../../common/StringUtils.h"
+#include "../iterator/AbstractIterator.h"
+#include "../Config.h"
+#include "../Exception.h"
+#include "AbstractGraph.h"
 
 te::graph::AbstractGraph::AbstractGraph() :
   m_iterator(0)

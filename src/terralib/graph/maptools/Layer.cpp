@@ -24,12 +24,11 @@
 */
 
 // TerraLib
-#include "../geometry/Envelope.h"
-#include "../se/FeatureTypeStyle.h"
-#include "../se/Style.h"
-
-#include "AbstractGraph.h"
-#include "GraphMetadata.h"
+#include "../../geometry/Envelope.h"
+#include "../../se/FeatureTypeStyle.h"
+#include "../../se/Style.h"
+#include "../core/AbstractGraph.h"
+#include "../core/GraphMetadata.h"
 #include "Layer.h"
 #include "LayerRenderer.h"
 
@@ -55,48 +54,13 @@ const std::string& te::graph::Layer::getType() const
 
 bool te::graph::Layer::isValid() const
 {
-  return true;;
-}
-
-bool te::graph::Layer::isQueryable() const
-{
-  return false;
+  return true;
 }
 
 void te::graph::Layer::draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
   assert(m_renderer.get());
   m_renderer->draw(this, canvas, bbox, srid);
-}
-
-te::se::Style* te::graph::Layer::getStyle() const
-{
-  return m_style.get();
-}
-
-void te::graph::Layer::setStyle(te::se::Style* style)
-{
-  m_style.reset(style);
-}
-
-const te::gm::Envelope* te::graph::Layer::getExtent() const
-{
-  return m_mbr.get();
-}
-
-void te::graph::Layer::setExtent(te::gm::Envelope* mbr)
-{
-  m_mbr.reset(mbr);
-}
-
-int te::graph::Layer::getSRID() const
-{
-  return m_srid;
-}
-
-void te::graph::Layer::setSRID(int srid)
-{
-  m_srid = srid;
 }
 
 te::graph::AbstractGraph* te::graph::Layer::getGraph() const

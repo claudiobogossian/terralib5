@@ -30,20 +30,17 @@
 #define __TERRALIB_GRAPH_INTERNAL_ABSTRACTITERATOR_H
 
 // Terralib Includes
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../core/AbstractGraph.h"
 #include "../Config.h"
-#include "AbstractGraph.h"
+
 
 // STL Includes
+#include <memory>
 #include <vector>
 
 namespace te
 {
-  // Forward declarations
-  namespace da 
-  { 
-    class DataSet;
-  }
-
   namespace graph
   {
     //forward declarations
@@ -167,8 +164,8 @@ namespace te
 
        te::graph::AbstractGraph* m_graph;   //!< Pointer to a abstract graph used to access the elements
 
-       te::da::DataSet* m_vertexQuery;      //!< Attribute used to keep the vertex iterator
-       te::da::DataSet* m_edgeQuery;        //!< Attribute used to keep the edge iterator
+       std::auto_ptr<te::da::DataSet> m_vertexQuery;      //!< Attribute used to keep the vertex iterator
+       std::auto_ptr<te::da::DataSet> m_edgeQuery;        //!< Attribute used to keep the edge iterator
 
        bool m_listIsolatedVertex;           //!< Flag used to indicated that the isolated vertex will be listed
     };

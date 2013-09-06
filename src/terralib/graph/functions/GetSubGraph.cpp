@@ -24,25 +24,23 @@
 
 */
 
-#include "GetSubGraph.h"
-
-#include "AbstractGraph.h"
-#include "BidirectionalGraph.h"
-#include "Config.h"
-#include "Edge.h"
-#include "Exception.h"
-#include "Graph.h"
-#include "SequenceIterator.h"
-#include "Vertex.h"
-
-
 // Terralib
-#include "../common/Translator.h"
-#include "../common/progress/TaskProgress.h"
+#include "../../common/Translator.h"
+#include "../../common/progress/TaskProgress.h"
+#include "../core/AbstractGraph.h"
+#include "../core/Edge.h"
+#include "../core/Vertex.h"
+#include "../graphs/BidirectionalGraph.h"
+#include "../graphs/Graph.h"
+#include "../iterator/SequenceIterator.h"
+#include "../Config.h"
+#include "../Exception.h"
+#include "GetSubGraph.h"
 
 // STL
 #include <cstdlib>
 #include <iostream>
+
 
 te::graph::GetSubGraph::GetSubGraph(te::graph::BidirectionalGraph* graph, te::graph::AbstractGraph* outGraph, int vertexId)
 {

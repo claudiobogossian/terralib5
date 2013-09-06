@@ -1,14 +1,40 @@
-#include "UndirectedGraph.h"
-#include "GraphCache.h"
-#include "GraphData.h"
-#include "GraphDataManager.h"
-#include "Graph.h"
-#include "Edge.h"
-#include "Vertex.h"
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file UndirectedGraph.cpp
+
+  \brief This is a implementation of a UndirectedGraph Graph.
+         By definition a undirected graph has no direction 
+         information about his edges.
+*/
 
 // Terralib Includes
-#include "../common/STLUtils.h"
+#include "../../common/STLUtils.h"
+#include "../core/Edge.h"
+#include "../core/GraphCache.h"
+#include "../core/GraphData.h"
+#include "../core/GraphDataManager.h"
+#include "../core/Vertex.h"
+#include "../graphs/Graph.h"
+#include "UndirectedGraph.h"
+
 
 te::graph::UndirectedGraph::UndirectedGraph() : Graph()
 {

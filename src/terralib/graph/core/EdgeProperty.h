@@ -28,8 +28,9 @@
 #define __TERRALIB_GRAPH_INTERNAL_EDGEPROPERTY_H
 
 // Terralib Include
+#include "../../datatype/CompositeProperty.h"
 #include "../Config.h"
-#include "../datatype/CompositeProperty.h"
+
 
 // STL Includes
 #include <vector>

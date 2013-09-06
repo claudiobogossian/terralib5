@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "Globals.h"
+#include "../Globals.h"
 #include "FIFOCachePolicy.h"
 #include "FIFOCachePolicyFactory.h"
 

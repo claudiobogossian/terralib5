@@ -23,12 +23,12 @@
   \brief This is the concrete factory for the database box loader strategy.
 */
 
-// TerraLib
-#include "Globals.h"
+// TerraLib Includes
+#include "../Globals.h"
 #include "SequenceLoaderStrategy.h"
 #include "SequenceLoaderStrategyFactory.h"
 
-// STL
+// STL Includes
 #include <memory>
 
 te::graph::SequenceLoaderStrategyFactory* te::graph::SequenceLoaderStrategyFactory::sm_factory(0);

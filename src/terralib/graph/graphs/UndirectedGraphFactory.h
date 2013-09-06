@@ -27,7 +27,7 @@
 #define __TERRALIB_GRAPH_INTERNAL_UNDIRECTEDGRAPHFACTORY_H
 
 // TerraLib
-#include "AbstractGraphFactory.h"
+#include "../core/AbstractGraphFactory.h"
 #include "../Config.h"
 
 namespace te

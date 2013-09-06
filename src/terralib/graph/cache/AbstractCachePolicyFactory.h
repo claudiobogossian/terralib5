@@ -27,9 +27,10 @@
 #define __TERRALIB_GRAPH_INTERNAL_ABSTRACTCACHEPOLICYFACTORY_H
 
 // TerraLib
-#include "../common/AbstractFactory.h"
+#include "../../common/AbstractFactory.h"
+#include "../graphs/Graph.h"
 #include "../Config.h"
-#include "Graph.h"
+
 
 namespace te
 {

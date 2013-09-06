@@ -33,9 +33,9 @@
 #define __TERRALIB_GRAPH_INTERNAL_SEQUENCEITERATOR_H
 
 // Terralib Includes
+#include "../core/AbstractGraph.h"
+#include "../iterator/AbstractIterator.h"
 #include "../Config.h"
-#include "AbstractIterator.h"
-#include "AbstractGraph.h"
 
 // STL Includes
 #include <vector>

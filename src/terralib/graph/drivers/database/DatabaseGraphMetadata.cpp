@@ -1,17 +1,50 @@
-#include "DatabaseGraphMetadata.h"
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
-#include "EdgeProperty.h"
-#include "VertexProperty.h"
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file DatabaseGraphMetadata.cpp
+
+  \brief Class used to define the graph metadata informations
+         over a SGBD source
+*/
 
 // Terralib Includes
-#include "Config.h"
-#include "Exception.h"
-#include "Globals.h"
-#include "../common.h"
-#include "../dataaccess.h"
-#include "../datatype.h"
-#include "../memory.h"
-#include "../geometry.h"
+#include "../../../common/StringUtils.h"
+#include "../../../common/Translator.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/dataset/ForeignKey.h"
+#include "../../../dataaccess/dataset/Index.h"
+#include "../../../dataaccess/dataset/PrimaryKey.h"
+#include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/query_h.h"
+#include "../../../dataaccess/Enums.h"
+#include "../../../datatype/SimpleProperty.h"
+#include "../../../datatype/StringProperty.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../memory/DataSet.h"
+#include "../../../memory/DataSetItem.h"
+#include "../../core/EdgeProperty.h"
+#include "../../core/VertexProperty.h"
+#include "../../Config.h"
+#include "../../Exception.h"
+#include "../../Globals.h"
+#include "DatabaseGraphMetadata.h"
 
 
 te::graph::DatabaseGraphMetadata::DatabaseGraphMetadata(te::da::DataSource* ds) : te::graph::GraphMetadata(ds)
@@ -288,8 +321,6 @@ void te::graph::DatabaseGraphMetadata::createGraphTableEdgeModel()
       if(p->getType() == te::dt::GEOMETRY_TYPE)
       {
         geomProp = (te::gm::GeometryProperty*)p;
-
-        dt->setDefaultGeomProperty(geomProp);
       }
     }
   }
@@ -354,8 +385,6 @@ void te::graph::DatabaseGraphMetadata::createVertexAttrTable()
       if(p->getType() == te::dt::GEOMETRY_TYPE)
       {
         geomProp = (te::gm::GeometryProperty*)p;
-
-        dt->setDefaultGeomProperty(geomProp);
       }
     }
   }
@@ -391,40 +420,15 @@ void te::graph::DatabaseGraphMetadata::createEdgeAttrTable()
 
 void te::graph::DatabaseGraphMetadata::createTable(std::string tableName, te::da::DataSetType* dt)
 {
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
-
-  if(transactor)
+  if(m_ds->dataSetExists(tableName))
   {
-    te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-    if(catalog == 0)
-    {
-      throw Exception(TR_GRAPH("Error getting Catalog Loader."));
-    }
-
-    if(catalog->datasetExists(tableName))
-    {
-      delete dt;
-      delete catalog;
-      delete transactor;
-      return;
-    }
-
-    delete catalog;
-  }
-  else
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
+    delete dt;
+    return;
   }
 
-  //create a dataset type
-  te::da::DataSetTypePersistence* persistence = transactor->getDataSetTypePersistence();
+  std::map<std::string, std::string> options;
 
-  persistence->create(dt);
-
-  delete dt;
-  delete persistence;
-  delete transactor;
+  m_ds->createDataSet(dt, options);
 }
 
 bool te::graph::DatabaseGraphMetadata::isValidGraphName(std::string graphName)
@@ -437,21 +441,13 @@ void te::graph::DatabaseGraphMetadata::addGraphTableNewEntry()
   //create the graph metadata table model
   createGraphMetadataTable();
 
-  //get transactor
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
+  //get dataset type
+  std::auto_ptr<te::da::DataSetType> dsType(m_ds->getDataSetType(Globals::sm_tableGraphName));
 
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
-  //get data set 
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSetType* ds = catalog->getDataSetType(Globals::sm_tableGraphName, true);
+  std::auto_ptr<te::mem::DataSet> dsMem(new te::mem::DataSet(dsType.get()));
 
   //create new item
-  te::da::DataSetItem* dsItem = new te::mem::DataSetItem((te::da::DataSetType*)ds->clone());
+  te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dsMem.get());
 
   dsItem->setString(0, this->getName());
   dsItem->setInt32(1, (int)this->getStorageMode());
@@ -467,20 +463,13 @@ void te::graph::DatabaseGraphMetadata::addGraphTableNewEntry()
 
   dsItem->setString(3, this->getDescription());
 
-  //get persistence and add new item
-  te::da::DataSetPersistence* dsP = transactor->getDataSetPersistence();
+  //add item
+  std::map<std::string, std::string> options;
 
-  te::da::DataSetType* dsType = (te::da::DataSetType*)ds->clone();
+  m_ds->add(Globals::sm_tableGraphName, dsMem.get(), options);
 
-  dsType->remove(dsType->getProperty(0));
-
-  dsP->add(dsType, dsItem);
-
-  delete dsItem;
-  delete dsType;
-  delete dsP;
-  delete ds;
-  delete transactor;
+  //clear
+  dsMem->clear();
 
   //update graph id
   updateGraphId();
@@ -515,118 +504,60 @@ void te::graph::DatabaseGraphMetadata::addGraphAttrTableNewEntry()
 
 void te::graph::DatabaseGraphMetadata::saveGraphAttrTableNewEntry(int graphId, std::string tableName, std::string attrName, std::string linkColumn, te::graph::GraphAttrType type)
 {
-//get transactor
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
+  //get dataset type
+  std::auto_ptr<te::da::DataSetType> dsType(m_ds->getDataSetType(Globals::sm_tableAttributeName));
 
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
+  std::auto_ptr<te::mem::DataSet> dsMem(new te::mem::DataSet(dsType.get()));
 
-  //get data set
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
+  //create datase item
+  te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dsMem.get());
 
-  te::da::DataSetType* ds = catalog->getDataSetType(Globals::sm_tableAttributeName, true);
-
-  //get persistence and add new item
-  te::da::DataSetPersistence* dsP = transactor->getDataSetPersistence();
-
-  te::da::DataSetType* dsType = (te::da::DataSetType*)ds->clone();
-
-  dsType->remove(dsType->getProperty(0));
-
-  te::da::DataSetItem* dsItem = new te::mem::DataSetItem(ds);
-    
   dsItem->setInt32(0, graphId);
   dsItem->setString(1, tableName);
   dsItem->setString(2, te::common::Convert2LCase(attrName));
   dsItem->setString(3, te::common::Convert2LCase(linkColumn));
   dsItem->setInt32(4, type);
 
-  dsP->add(dsType, dsItem);
+  //add item
+  std::map<std::string, std::string> options;
 
-  delete dsItem;
-  delete dsType;
-  delete dsP;
-  delete catalog;
-  delete transactor;
+  m_ds->add(Globals::sm_tableAttributeName, dsMem.get(), options);
+
+  //clear
+  dsMem->clear();
 }
 
 void te::graph::DatabaseGraphMetadata::saveProperty(std::string tableName, te::dt::Property* p)
 {
- // get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = getDataSource()->getTransactor();
+  //get dataset type
+  std::auto_ptr<te::da::DataSetType> dsType(m_ds->getDataSetType(tableName));
 
-  if(!transactor)
+  //add property
+  m_ds->addProperty(tableName, p);
+
+  //if property is a geometry property
+  if(p->getType() == te::dt::GEOMETRY_TYPE)
   {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-  
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSetType* ds = catalog->getDataSetType(tableName,true);
-
-  te::da::DataSetTypePersistence* dsP = transactor->getDataSetTypePersistence();
-
-  te::dt::Property* pClone = p->clone();
-  pClone->setParent(0);
-
-  dsP->add(ds, pClone);
-
-  if(pClone->getType() == te::dt::GEOMETRY_TYPE)
-  {
-    te::gm::GeometryProperty* geomProp = (te::gm::GeometryProperty*)pClone;
-
-    ds->setDefaultGeomProperty(geomProp);
-
+    //create index
     std::string idxSpatial = tableName;
                 idxSpatial += "_spatial_idx";
-    te::da::Index* idx = new te::da::Index(idxSpatial, te::da::R_TREE_TYPE, ds); 
-    idx->add((te::dt::Property*)geomProp);
+    te::da::Index* idx = new te::da::Index(idxSpatial, te::da::R_TREE_TYPE, dsType.get()); 
+    idx->add(p);
 
-    dsP->add(ds, idx);
+    //add index
+    std::map<std::string, std::string> options;
+
+    m_ds->addIndex(tableName, idx, options);
   }
-
-  delete dsP;
-  delete catalog;
-  delete transactor;
 }
 
 void te::graph::DatabaseGraphMetadata::removeProperty(std::string tableName, std::string propertyName)
 {
-// get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = getDataSource()->getTransactor();
-
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSetType* ds = catalog->getDataSetType(tableName,true);
-
-  te::dt::Property* pds = ds->getProperty(propertyName);
-
-  te::da::DataSetTypePersistence* dsP = transactor->getDataSetTypePersistence();
-
-  dsP->drop(pds);
-
-  delete dsP;
-  delete catalog;
-  delete transactor;
+  m_ds->dropProperty(tableName, propertyName);
 }
 
 void te::graph::DatabaseGraphMetadata::loadGraphInfo(int id)
 {
-  //get transactor
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
-
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
   //load graph info
   te::da::Field* f = new te::da::Field("*");
   te::da::Fields* fields = new te::da::Fields;
@@ -644,7 +575,8 @@ void te::graph::DatabaseGraphMetadata::loadGraphInfo(int id)
 
   te::da::Select select(fields, from, filter);
 
-  te::da::DataSet* dataset = transactor->query(select);
+  //get dataset result
+  std::auto_ptr<te::da::DataSet> dataset = m_ds->query(select);
 
   if(dataset->moveNext())
   {
@@ -662,21 +594,10 @@ void te::graph::DatabaseGraphMetadata::loadGraphInfo(int id)
       m_mode =te::graph::Vertex_List;
     }
   }
-
-  delete dataset;
-  delete transactor;
 }
 
 void te::graph::DatabaseGraphMetadata::loadGraphAttrInfo(int id)
 {
-  //get transactor
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
-
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
   //load attributes
   te::da::Field* f = new te::da::Field("*");
   te::da::Fields* fields = new te::da::Fields;
@@ -694,7 +615,8 @@ void te::graph::DatabaseGraphMetadata::loadGraphAttrInfo(int id)
 
   te::da::Select select(fields, from, filter);
 
-  te::da::DataSet* dataset = transactor->query(select);
+  //get dataset result
+  std::auto_ptr<te::da::DataSet> dataset = m_ds->query(select);
 
   while(dataset->moveNext())
   {
@@ -712,65 +634,30 @@ void te::graph::DatabaseGraphMetadata::loadGraphAttrInfo(int id)
       loadEdgeAttr(tableName, columnName);
     }
   }
-
-  delete dataset;
-  delete transactor;
 }
 
 void te::graph::DatabaseGraphMetadata::loadVertexAttr(std::string tableName, std::string columnName)
 {
-// get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = getDataSource()->getTransactor();
+  //get property
+  std::auto_ptr<te::dt::Property> p = m_ds->getProperty(tableName, columnName);
 
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
+  te::dt::Property* myProp = p.release();
 
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSetType* ds = catalog->getDataSetType(tableName, true);
-
-  te::dt::Property* p = ds->getProperty(columnName)->clone();
-
-  te::graph::GraphMetadata::addVertexProperty(p);
-
-  delete catalog;
-  delete transactor;
+  te::graph::GraphMetadata::addVertexProperty(myProp);
 }
 
 void te::graph::DatabaseGraphMetadata::loadEdgeAttr(std::string tableName, std::string columnName)
 {
-// get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = getDataSource()->getTransactor();
+  //get property
+  std::auto_ptr<te::dt::Property> p = m_ds->getProperty(tableName, columnName);
 
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
+  te::dt::Property* myProp = p.release();
 
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSetType* ds = catalog->getDataSetType(tableName, true);
-
-  te::dt::Property* p = ds->getProperty(columnName)->clone();
-
-  te::graph::GraphMetadata::addEdgeProperty(p);
-
-  delete catalog;
-  delete transactor;
+  te::graph::GraphMetadata::addEdgeProperty(myProp);
 }
 
 void te::graph::DatabaseGraphMetadata::updateGraphId()
 {
-  //get transactor
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
-
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
   te::da::Field* f = new te::da::Field(new te::da::PropertyName(Globals::sm_tableGraphAttrId));
   te::da::Fields* fields = new te::da::Fields;
   fields->push_back(f);
@@ -787,7 +674,7 @@ void te::graph::DatabaseGraphMetadata::updateGraphId()
 
   te::da::Select select(fields, from, filter);
 
-  te::da::DataSet* dataset = transactor->query(select);
+  std::auto_ptr<te::da::DataSet> dataset = m_ds->query(select);
 
   if(dataset->moveNext())
   {
@@ -795,9 +682,6 @@ void te::graph::DatabaseGraphMetadata::updateGraphId()
   
     m_id = id;
   }
-
-  delete dataset;
-  delete transactor;
 }
 
 /*

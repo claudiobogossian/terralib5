@@ -1,24 +1,53 @@
-#include "AbstractGraphLoaderStrategy.h"
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
-#include "AbstractGraph.h"
-#include "Edge.h"
-#include "GraphCache.h"
-#include "EdgeProperty.h"
-#include "Globals.h"
-#include "GraphData.h"
-#include "GraphMetadata.h"
-#include "Vertex.h"
-#include "VertexProperty.h"
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file AbstractGraphLoaderStrategy.h
+
+  \brief This class define the main functions necessary to
+        save and load the graph data and metadata information
+        using the Graph Data and Graph Cache conceptions.
+*/
+
 
 // Terralib Includes
-#include "Config.h"
-#include "Exception.h"
-#include "../common/STLUtils.h"
-#include "../common/StringUtils.h"
-#include "../dataaccess.h"
-#include "../datatype.h"
-#include "../memory.h"
-#include "../geometry.h"
+#include "../../common/STLUtils.h"
+#include "../../common/StringUtils.h"
+#include "../../common/Translator.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/query_h.h"
+#include "../../memory/DataSet.h"
+#include "../../memory/DataSetItem.h"
+#include "../core/AbstractGraph.h"
+#include "../core/Edge.h"
+#include "../core/GraphCache.h"
+#include "../core/EdgeProperty.h"
+#include "../core/GraphData.h"
+#include "../core/GraphMetadata.h"
+#include "../core/Vertex.h"
+#include "../core/VertexProperty.h"
+#include "../Config.h"
+#include "../Globals.h"
+#include "../Exception.h"
+#include "AbstractGraphLoaderStrategy.h"
 
 
 te::graph::AbstractGraphLoaderStrategy::AbstractGraphLoaderStrategy(te::graph::GraphMetadata* metadata) : m_graphMetadata(metadata)
@@ -75,25 +104,14 @@ void te::graph::AbstractGraphLoaderStrategy::saveGraphEdgeList(GraphData* data)
     return;
   }
 
-  // get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = m_graphMetadata->getDataSource()->getTransactor();
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  //get data set
   std::string tableName = m_graphMetadata->getEdgeTableName();
 
-  te::da::DataSetType* ds = catalog->getDataSetType(tableName, true);
+  //get dataset type
+  std::auto_ptr<te::da::DataSetType> dsType(m_graphMetadata->getDataSource()->getDataSetType(tableName));
 
-  //get persistence
-  te::da::DataSetPersistence* dsP = transactor->getDataSetPersistence();
-
-  te::mem::DataSet* outDataSet = new te::mem::DataSet((te::da::DataSetType*)ds->clone());
-  te::mem::DataSet* outDataSetUpdate = new te::mem::DataSet((te::da::DataSetType*)ds->clone());
+  //create outputs data sets
+  std::auto_ptr<te::mem::DataSet> outDataSet(new te::mem::DataSet(dsType.get()));
+  std::auto_ptr<te::mem::DataSet> outDataSetUpdate(new te::mem::DataSet(dsType.get()));
 
   te::graph::GraphData::EdgeMap::iterator it = data->getEdgeMap().begin();
 
@@ -105,7 +123,7 @@ void te::graph::AbstractGraphLoaderStrategy::saveGraphEdgeList(GraphData* data)
     if(it->second->isNew()) //new element
     {
       //create new item
-      te::da::DataSetItem* dsItem = new te::mem::DataSetItem((te::da::DataSetType*)ds->clone());
+      te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(outDataSet.get());
 
       dsItem->setInt32(0, it->second->getId());
       dsItem->setInt32(1, it->second->getIdFrom());
@@ -129,7 +147,7 @@ void te::graph::AbstractGraphLoaderStrategy::saveGraphEdgeList(GraphData* data)
     else if(it->second->isDirty()) //update element
     {
       //create new item
-      te::da::DataSetItem* dsItem = new te::mem::DataSetItem((te::da::DataSetType*)ds->clone());
+      te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(outDataSetUpdate.get());
 
       dsItem->setInt32(0, it->second->getId());
       dsItem->setInt32(1, it->second->getIdFrom());
@@ -154,30 +172,36 @@ void te::graph::AbstractGraphLoaderStrategy::saveGraphEdgeList(GraphData* data)
     ++it;
   }
 
+  std::map<std::string, std::string> options;
+
   if(hasNewObjects)
   {
     outDataSet->moveFirst();
-    dsP->add(ds, outDataSet);
+    m_graphMetadata->getDataSource()->add(tableName, outDataSet.get(), options);
   }
-  delete outDataSet;
+  outDataSet->clear();
 
   if(hasUpdatedObjects)
   {
     outDataSetUpdate->moveFirst();
     std::map<std::string, std::string> options;
-    dsP->update(ds, outDataSetUpdate, ds->getProperties(), options);
+    std::vector<std::size_t> properties;
+
+    for(size_t t = 0; t < dsType->getProperties().size(); ++t)
+    {
+      if(t != 0)
+        properties.push_back(t);
+    }
+
+    m_graphMetadata->getDataSource()->update(tableName, outDataSetUpdate.get(), properties, 0, options);
   }
-  delete outDataSetUpdate;
+  outDataSetUpdate->clear();
 
   //must save the vertex attributes
   if(m_graphMetadata->getVertexPropertySize() != 0)
   {
     saveVertexAttributes(data);
   }
-
-  delete dsP;
-  delete catalog;
-  delete transactor;
 }
 
 void te::graph::AbstractGraphLoaderStrategy::saveVertexAttributes(GraphData* data)
@@ -187,26 +211,14 @@ void te::graph::AbstractGraphLoaderStrategy::saveVertexAttributes(GraphData* dat
     return;
   }
 
-  // get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = m_graphMetadata->getDataSource()->getTransactor();
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  //get data set
-
   std::string tableName = m_graphMetadata->getVertexTableName();
 
-  te::da::DataSetType* ds = catalog->getDataSetType(tableName, true);
+  //get dataset type
+  std::auto_ptr<te::da::DataSetType> dsType(m_graphMetadata->getDataSource()->getDataSetType(tableName));
 
-  //get persistence
-  te::da::DataSetPersistence* dsP = transactor->getDataSetPersistence();
-
-  te::mem::DataSet* outDataSet = new te::mem::DataSet((te::da::DataSetType*)ds->clone());
-  te::mem::DataSet* outDataSetUpdate = new te::mem::DataSet((te::da::DataSetType*)ds->clone());
+  //create outputs data sets
+  std::auto_ptr<te::mem::DataSet> outDataSet(new te::mem::DataSet(dsType.get()));
+  std::auto_ptr<te::mem::DataSet> outDataSetUpdate(new te::mem::DataSet(dsType.get()));
 
   te::graph::GraphData::VertexMap::iterator it = data->getVertexMap().begin();
 
@@ -218,7 +230,7 @@ void te::graph::AbstractGraphLoaderStrategy::saveVertexAttributes(GraphData* dat
     if(it->second->isNew()) //new element
     {
       //create new item
-      te::da::DataSetItem* dsItem = new te::mem::DataSetItem((te::da::DataSetType*)ds->clone());
+      te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(outDataSet.get());
 
       dsItem->setInt32(0, it->second->getId());
 
@@ -240,7 +252,7 @@ void te::graph::AbstractGraphLoaderStrategy::saveVertexAttributes(GraphData* dat
     else if(it->second->isDirty()) //update element
     {
       //create new item
-      te::da::DataSetItem* dsItem = new te::mem::DataSetItem((te::da::DataSetType*)ds->clone());
+      te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(outDataSetUpdate.get());
 
       dsItem->setInt32(0, it->second->getId());
 
@@ -263,24 +275,30 @@ void te::graph::AbstractGraphLoaderStrategy::saveVertexAttributes(GraphData* dat
     ++it;
   }
 
+  std::map<std::string, std::string> options;
+
   if(hasNewObjects)
   {
     outDataSet->moveFirst();
-    dsP->add(ds, outDataSet);
+    m_graphMetadata->getDataSource()->add(tableName, outDataSet.get(), options);
   }
-  delete outDataSet;
+  outDataSet->clear();
 
   if(hasUpdatedObjects)
   {
     outDataSetUpdate->moveFirst();
     std::map<std::string, std::string> options;
-    dsP->update(ds, outDataSetUpdate, ds->getProperties(), options);
-  }
-  delete outDataSetUpdate;
+    std::vector<std::size_t> properties;
 
-  delete dsP;
-  delete catalog;
-  delete transactor;
+    for(size_t t = 0; t < dsType->getProperties().size(); ++t)
+    {
+      if(t != 0)
+        properties.push_back(t);
+    }
+
+    m_graphMetadata->getDataSource()->update(tableName, outDataSetUpdate.get(), properties, 0, options);
+  }
+  outDataSetUpdate->clear();
 }
 
 void te::graph::AbstractGraphLoaderStrategy::saveGraphVertexList(GraphData* data)
@@ -300,20 +318,9 @@ te::graph::Vertex* te::graph::AbstractGraphLoaderStrategy::loadVertex(int id)
 
 te::graph::Vertex* te::graph::AbstractGraphLoaderStrategy::loadVertexAttrs(int id)
 {
-  // get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = m_graphMetadata->getDataSource()->getTransactor();
-
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
-  //get data set
+  //get dataset type
   std::string tableName = m_graphMetadata->getVertexTableName();
-
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSetType* ds = catalog->getDataSetType(tableName, true);
+  std::auto_ptr<te::da::DataSetType> dsType(m_graphMetadata->getDataSource()->getDataSetType(tableName));
 
   //create query
   te::da::Field* f = new te::da::Field(new te::da::PropertyName("*"));
@@ -332,7 +339,7 @@ te::graph::Vertex* te::graph::AbstractGraphLoaderStrategy::loadVertexAttrs(int i
 
   te::da::Select select(fields, from, filter);
 
-  te::da::DataSet* dataset = transactor->query(select);
+  std::auto_ptr<te::da::DataSet> dataset = m_graphMetadata->getDataSource()->query(select);
 
   //create vertex
   te::graph::Vertex* v = 0;
@@ -344,37 +351,22 @@ te::graph::Vertex* te::graph::AbstractGraphLoaderStrategy::loadVertexAttrs(int i
 
     v = new te::graph::Vertex(id);
 
-    v->setAttributeVecSize(ds->getProperties().size() - 1);
+    v->setAttributeVecSize(dsType->getProperties().size() - 1);
 
-    for(size_t i = 1; i < ds->getProperties().size(); ++i)
+    for(size_t i = 1; i < dsType->getProperties().size(); ++i)
     {
-      v->addAttribute(i - 1, dataset->getValue(ds->getProperty(i)->getName()));
+      v->addAttribute(i - 1, dataset->getValue(dsType->getProperty(i)->getName()).release());
     }
   }
-
-  delete dataset;
-  delete catalog;
-  delete transactor;
 
   return v;
 }
 
 te::graph::Edge* te::graph::AbstractGraphLoaderStrategy::loadEdge(int id)
 {
- // get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = m_graphMetadata->getDataSource()->getTransactor();
-
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
-  }
-
-  //get data set
+  //get dataset type
   std::string tableName = m_graphMetadata->getEdgeTableName();
-
-  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
-
-  te::da::DataSetType* ds = catalog->getDataSetType(tableName, true);
+  std::auto_ptr<te::da::DataSetType> dsType(m_graphMetadata->getDataSource()->getDataSetType(tableName));
 
   //create query
   te::da::Field* f = new te::da::Field(new te::da::PropertyName("*"));
@@ -393,7 +385,7 @@ te::graph::Edge* te::graph::AbstractGraphLoaderStrategy::loadEdge(int id)
 
   te::da::Select select(fields, from, filter);
 
-  te::da::DataSet* dataset = transactor->query(select);
+  std::auto_ptr<te::da::DataSet> dataset = m_graphMetadata->getDataSource()->query(select);
 
   //create vertex
   te::graph::Edge* e = 0;
@@ -407,17 +399,13 @@ te::graph::Edge* te::graph::AbstractGraphLoaderStrategy::loadEdge(int id)
 
     e = new te::graph::Edge(id, vFrom, vTo);
 
-    e->setAttributeVecSize(ds->getProperties().size() - 3);
+    e->setAttributeVecSize(dsType->getProperties().size() - 3);
 
-    for(size_t i = 3; i < ds->getProperties().size(); ++i)
+    for(size_t i = 3; i < dsType->getProperties().size(); ++i)
     {
-      e->addAttribute(i - 3, dataset->getValue(ds->getProperty(i)->getName()));
+      e->addAttribute(i - 3, dataset->getValue(dsType->getProperty(i)->getName()).release());
     }
   }
-
-  delete dataset;
-  delete catalog;
-  delete transactor;
 
   return e;
 }

@@ -33,8 +33,9 @@
 #define __TERRALIB_GRAPH_INTERNAL_GRAPH_H
 
 // Terralib Includes
+#include "../core/AbstractGraph.h"
 #include "../Config.h"
-#include "AbstractGraph.h"
+
 
 // STL Includes
 #include <vector>

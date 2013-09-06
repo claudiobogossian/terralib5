@@ -31,10 +31,10 @@
 
 // Terralib Includes
 #include "../Config.h"
-#include "Enums.h"
-
+#include "../Enums.h"
 #include "AbstractGraphLoaderStrategy.h"
 
+// STL Includes
 #include <string>
 
 namespace te

@@ -23,18 +23,18 @@
   \brief This is the concrete factory for the undirected Graph type.
 */
 
-// TerraLib
-#include "Globals.h"
+// TerraLib Includes
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../cache/AbstractCachePolicyFactory.h"
+#include "../drivers/database/DatabaseGraphMetadata.h"
+#include "../loader/AbstractGraphLoaderStrategyFactory.h"
+#include "../Exception.h"
+#include "../Globals.h"
 #include "UndirectedGraph.h"
 #include "UndirectedGraphFactory.h"
-#include "../dataaccess.h"
 
-#include "AbstractCachePolicyFactory.h"
-#include "AbstractGraphLoaderStrategyFactory.h"
-#include "DatabaseGraphMetadata.h"
-#include "Exception.h"
-
-// STL
+// STL Includes
 #include <memory>
 
 te::graph::UndirectedGraphFactory* te::graph::UndirectedGraphFactory::sm_factory(0);
@@ -80,13 +80,16 @@ te::graph::AbstractGraph* te::graph::UndirectedGraphFactory::iOpen(const std::ma
   //create data source
   it = gInfo.find("GRAPH_DATA_SOURCE_TYPE");
 
-  te::da::DataSource* ds = 0;
+  std::auto_ptr<te::da::DataSource> dsPtr;
 
   if(it != itend)
   {
-    ds = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
-    ds->open(dsInfo);
+    dsPtr = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
+    dsPtr->setConnectionInfo(dsInfo);
+    dsPtr->open();
   }
+
+  te::da::DataSource* ds = dsPtr.release();
 
   //create graph metadata
   te::graph::DatabaseGraphMetadata* gMetadata = new te::graph::DatabaseGraphMetadata(ds);
@@ -143,13 +146,16 @@ te::graph::AbstractGraph* te::graph::UndirectedGraphFactory::create(const std::m
   //create data source
   it = gInfo.find("GRAPH_DATA_SOURCE_TYPE");
 
-  te::da::DataSource* ds = 0;
+  std::auto_ptr<te::da::DataSource> dsPtr;
 
   if(it != itend)
   {
-    ds = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
-    ds->open(dsInfo);
+    dsPtr = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
+    dsPtr->setConnectionInfo(dsInfo);
+    dsPtr->open();
   }
+
+  te::da::DataSource* ds = dsPtr.release();
   
    //create graph metadata
   te::graph::DatabaseGraphMetadata* gMetadata = new te::graph::DatabaseGraphMetadata(ds);

@@ -1,23 +1,60 @@
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/graph/FlowGraphBuilder.cpp
+
+  \brief This class defines the Flow strategy to build a graph.
+
+  This function needs a vectorial data and table with flow information,
+  this table must have the origin and destination info about each flow.
+
+*/
+ 
+// TerraLib Includes
+#include "../../common/StringUtils.h"
+#include "../../common/Translator.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../datatype/AbstractData.h"
+#include "../../datatype/SimpleData.h"
+#include "../../datatype/SimpleProperty.h"
+#include "../../geometry/GeometryProperty.h"
+#include "../../geometry/MultiPolygon.h"
+#include "../../geometry/Point.h"
+#include "../../geometry/Polygon.h"
+#include "../core/AbstractGraphFactory.h"
+#include "../core/Edge.h"
+#include "../core/Vertex.h"
+#include "../core/VertexProperty.h"
+#include "../graphs/Graph.h"
+#include "../Config.h"
+#include "../Exception.h"
 #include "FlowGraphBuilder.h"
 
-#include "AbstractGraphFactory.h"
-#include "Config.h"
-#include "Edge.h"
-#include "Exception.h"
-#include "Graph.h"
-#include "Vertex.h"
-#include "VertexProperty.h"
-
-// TerraLib
-#include "../dataaccess.h"
-#include "../datatype.h"
-#include "../geometry.h"
-#include "../common/StringUtils.h"
-
-#include "../common/Translator.h"
-
-// STL
+// STL Includes
+#include <fstream>
 #include <iosfwd>
+
+// BOOST Includes
+#include<boost/tokenizer.hpp>
 
 
 te::graph::FlowGraphBuilder::FlowGraphBuilder() : AbstractGraphBuilder()
@@ -59,94 +96,79 @@ int  te::graph::FlowGraphBuilder::getEdgeId()
   return id;
 }
 
-te::da::DataSource* te::graph::FlowGraphBuilder::getDataSource(const std::string fileName)
+std::auto_ptr<te::da::DataSource> te::graph::FlowGraphBuilder::getDataSource(const std::string fileName)
 {
   // Creates and connects data source
   std::map<std::string, std::string> connInfo;
   connInfo["path"] = fileName;
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
-  ds->open(connInfo);
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+  ds->setConnectionInfo(connInfo);
+  ds->open();
 
   return ds;
 }
 
-te::da::DataSet* te::graph::FlowGraphBuilder::getDataSet(te::da::DataSource* ds)
+std::auto_ptr<te::da::DataSet> te::graph::FlowGraphBuilder::getDataSet(te::da::DataSource* ds)
 {
-   // Gets a transactor
-  te::da::DataSourceTransactor* t = ds->getTransactor();
-  assert(t);
+  std::vector<std::string> names = ds->getDataSetNames();
 
-  // Get the number of data set types that belongs to the data source
-  boost::ptr_vector<std::string> datasets;
-  t->getCatalogLoader()->getDataSets(datasets);
-  assert(!datasets.empty());
+  std::string dsName = names[0];
 
-  // Gets DataSet Type
-  std::string dsName = datasets[0];
-
-  te::da::DataSet* dataset = t->getDataSet(dsName);
+  std::auto_ptr<te::da::DataSet> dataset = ds->getDataSet(dsName);
 
   return dataset;
 }
 
-std::vector<te::dt::Property*>& te::graph::FlowGraphBuilder::getProperties(te::da::DataSource* ds)
+boost::ptr_vector<te::dt::Property> te::graph::FlowGraphBuilder::getProperties(te::da::DataSource* ds)
 {
-// Transactor and catalog loader
-  te::da::DataSourceTransactor* transactor = ds->getTransactor();
-  te::da::DataSourceCatalogLoader* cl = transactor->getCatalogLoader();
-  cl->loadCatalog();
+  std::vector<std::string> names = ds->getDataSetNames();
 
-  // Get the number of data set types that belongs to the data source
-  boost::ptr_vector<std::string> datasets;
-  transactor->getCatalogLoader()->getDataSets(datasets);
-  assert(!datasets.empty());
+  std::string dsName = names[0];
 
-  // Gets DataSet Type
-  std::string dsName = datasets[0];
-  te::da::DataSetType* dt = cl->getDataSetType(dsName);
-
-  delete transactor;
-
-  // get properties
-  return dt->getProperties();
+  return ds->getProperties(dsName);
 }
 
 bool te::graph::FlowGraphBuilder::createVertexObjects(const std::string& shapeFileName, const std::string& linkColumn, const int& srid)
 {
  //get data source
-  te::da::DataSource* ds = getDataSource(shapeFileName);
+  std::auto_ptr<te::da::DataSource> ds = getDataSource(shapeFileName);
 
-  if(ds == 0)
+  if(ds.get() == 0)
   {
     return false;
   }
 
   //get data set
-  te::da::DataSet* dataSet = getDataSet(ds);
+  std::auto_ptr<te::da::DataSet> dataSet = getDataSet(ds.get());
 
-  if(dataSet == 0)
+  if(dataSet.get() == 0)
   {
     return false;
   }
 
   //get properties
-  std::vector<te::dt::Property*> properties = getProperties(ds);
+  boost::ptr_vector<te::dt::Property> properties = getProperties(ds.get());
 
   if(properties.empty())
   {
     return false;
   }
+
 //create graph vertex attrs
-  for(size_t t = 0; t < properties.size(); ++t)
+  boost::ptr_vector<te::dt::Property>::iterator it = properties.begin();
+
+  int count = 0;
+
+  while(it != properties.end())
   {
-    if(te::common::Convert2UCase(properties[t]->getName()) == te::common::Convert2UCase(linkColumn))
+    if(te::common::Convert2UCase(it->getName()) == te::common::Convert2UCase(linkColumn))
     {
       continue;
     }
 
     te::dt::Property* p;
 
-    if(properties[t]->getType() == te::dt::GEOMETRY_TYPE)
+    if(it->getType() == te::dt::GEOMETRY_TYPE)
     {
       //create graph attrs
       te::gm::GeometryProperty* gProp = new te::gm::GeometryProperty("coords");
@@ -158,12 +180,16 @@ bool te::graph::FlowGraphBuilder::createVertexObjects(const std::string& shapeFi
     }
     else
     {
-      p = properties[t]->clone();
+      p = it->clone();
       p->setParent(0);
-      p->setId(t);
+      p->setId(count);
     }
 
     m_graph->addVertexProperty(p);
+
+    ++count;
+
+    ++it;
   }
 
   //create vertex objects
@@ -177,9 +203,13 @@ bool te::graph::FlowGraphBuilder::createVertexObjects(const std::string& shapeFi
 
     int shift = 0;
 
-    for(size_t t = 0; t < properties.size(); ++t)
+    it = properties.begin();
+
+    count = 0;
+
+    while(it != properties.end())
     {
-      if(te::common::Convert2UCase(properties[t]->getName()) == te::common::Convert2UCase(linkColumn))
+      if(te::common::Convert2UCase(it->getName()) == te::common::Convert2UCase(linkColumn))
       {
         shift = 1;
         continue;
@@ -187,9 +217,9 @@ bool te::graph::FlowGraphBuilder::createVertexObjects(const std::string& shapeFi
 
       te::dt::AbstractData* ad = 0;
 
-      if(properties[t]->getType() == te::dt::GEOMETRY_TYPE)
+      if(it->getType() == te::dt::GEOMETRY_TYPE)
       {
-        te::gm::Geometry* g = dataSet->getGeometry(properties[t]->getName());
+        te::gm::Geometry* g = dataSet->getGeometry(it->getName()).release();
         g->setSRID(srid);
 
         if(g->getGeomTypeId() == te::gm::PointType)
@@ -215,17 +245,18 @@ bool te::graph::FlowGraphBuilder::createVertexObjects(const std::string& shapeFi
       }
       else
       {
-        ad = dataSet->getValue(properties[t]->getName());
+        ad = dataSet->getValue(it->getName()).release();
       }
       
-      v->addAttribute(t - shift, ad);
+      v->addAttribute(count - shift, ad);
+
+      ++ count;
+
+      ++it;
     }
 
     m_graph->add(v);
   }
-
-  delete dataSet;
-  delete ds;
 
   return true;
 }

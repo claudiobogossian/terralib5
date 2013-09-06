@@ -27,8 +27,9 @@
 #define __TERRALIB_GRAPH_INTERNAL_LAYERRENDERER_H
 
 // TerraLib
+#include "../../maptools/AbstractRenderer.h"
 #include "../Config.h"
-#include "../maptools/AbstractRenderer.h"
+
 
 namespace te
 {

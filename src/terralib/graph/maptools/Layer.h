@@ -27,8 +27,9 @@
 #define __TERRALIB_GRAPH_INTERNAL_LAYER_H
 
 // TerraLib
+#include "../../maptools/AbstractLayer.h"
 #include "../Config.h"
-#include "../maptools/AbstractLayer.h"
+
 
 // STL
 #include <memory>
@@ -95,15 +96,6 @@ namespace te
         virtual bool isValid() const;
 
         /*!
-          \brief It returns true if the layer can be queried, otherwise, it returns false.
-
-          Not all layers can be queried (ex: some WMS layers).
-
-          \return True, if the layer can be queried, otherwise, it returns false.
-        */
-        virtual bool isQueryable() const;
-
-        /*!
           \brief It draws the layer geographic objects in the given canvas using the informed SRS.
 
           The informed bounding box can be used to constraint the layer objects to be drawn.
@@ -116,52 +108,6 @@ namespace te
         */
         virtual void draw(te::map::Canvas* canvas, const te::gm::Envelope& bbox, int srid) ;
 
-        /*!
-          \brief It returns the style applied to the layer.
-
-          \return The style applied to the layer.
-        */
-        virtual te::se::Style* getStyle() const;
-
-        /*!
-          \brief It sets the style to be applied to the layer.
-
-          \param style The layer style.
-
-          \note The layer will take the ownership of the given style.
-        */
-        virtual void setStyle(te::se::Style* style);
-
-        /*!
-          \brief It returns the Layer extent (or minimum bounding box). Its coordinates are in the same SRS as the layer.
-
-          \return The Layer extent (or minimum bounding box).
-        */
-        virtual const te::gm::Envelope* getExtent() const;
-
-        /*!
-          \brief It sets the Layer extent (or minimum bounding box). Its coordinates must be in the same SRS as the layer.
-
-          \param mbr The Layer extent (or minimum bounding box).
-
-          \note The layer will take the ownership of the given MBR.
-        */
-        virtual void setExtent(te::gm::Envelope* mbr);
-
-        /*!
-          \brief It returns the Spatial Reference System ID associated to the Layer.
-
-          \return The Spatial Reference System ID associated to the Layer.
-        */
-        virtual int getSRID() const;
-
-        /*!
-          \brief It sets the Spatial Reference System ID associated to the Layer.
-
-          \param srid The Spatial Reference System ID to be associated to the Layer.
-        */
-        virtual void setSRID(int srid);
-       
         /*!
           \brief It returns the graph associated to the layer.
 

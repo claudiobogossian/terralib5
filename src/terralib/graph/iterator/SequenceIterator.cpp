@@ -23,16 +23,18 @@
   \brief 
 */
 
-#include "SequenceIterator.h"
-#include "GraphMetadata.h"
-#include "Globals.h"
-
 // Terralib Includes
-#include "Config.h"
-#include "Exception.h"
-#include "../common/Translator.h"
-#include "../common/StringUtils.h"
-#include "../dataaccess.h"
+#include "../../common/Translator.h"
+#include "../../common/StringUtils.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/query_h.h"
+#include "../core/GraphMetadata.h"
+#include "../Config.h"
+#include "../Exception.h"
+#include "../Globals.h"
+#include "SequenceIterator.h"
 
 te::graph::SequenceIterator::SequenceIterator(te::graph::AbstractGraph* g) : te::graph::AbstractIterator(g)
 {
@@ -49,7 +51,7 @@ te::graph::Vertex* te::graph::SequenceIterator::getFirstVertex()
     throw Exception(TR_GRAPH("Invalid graph pointer."));
   }
 
-  if(m_vertexQuery)
+  if(m_vertexQuery.get())
   {
     if(m_vertexQuery->moveFirst())
     {
@@ -57,14 +59,6 @@ te::graph::Vertex* te::graph::SequenceIterator::getFirstVertex()
 
       return m_graph->getVertex(id);
     }
-  }
-
-  // get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = m_graph->getMetadata()->getDataSource()->getTransactor();
-
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
   }
 
   if(m_listIsolatedVertex)
@@ -86,8 +80,8 @@ te::graph::Vertex* te::graph::SequenceIterator::getFirstVertex()
 
     te::da::Select select(fields, from, ob);
 
-    delete m_vertexQuery;
-    m_vertexQuery = transactor->query(select);
+    m_vertexQuery.reset(0);
+    m_vertexQuery = m_graph->getMetadata()->getDataSource()->query(select);
   }
   else
   {
@@ -138,13 +132,12 @@ te::graph::Vertex* te::graph::SequenceIterator::getFirstVertex()
 
     te::da::Select select(fields, from, wh, gb, ob);
 
-    delete m_vertexQuery;
-    m_vertexQuery = transactor->query(select);
+    m_vertexQuery.reset(0);
+    m_vertexQuery = m_graph->getMetadata()->getDataSource()->query(select);
   }
 
-  if(m_vertexQuery == 0)
+  if(m_vertexQuery.get() == 0)
   {
-    delete transactor;
     throw Exception(TR_GRAPH("Iterator not initialized."));
   }
 
@@ -156,11 +149,9 @@ te::graph::Vertex* te::graph::SequenceIterator::getFirstVertex()
   }
   else
   {
-    delete transactor;
     return 0;
   }
 
-  delete transactor;
   return m_graph->getVertex(id);
 }
 
@@ -171,7 +162,7 @@ te::graph::Edge* te::graph::SequenceIterator::getFirstEdge()
     throw Exception(TR_GRAPH("Invalid graph pointer."));
   }
 
-  if(m_edgeQuery)
+  if(m_edgeQuery.get())
   {
     if(m_edgeQuery->moveFirst())
     {
@@ -179,14 +170,6 @@ te::graph::Edge* te::graph::SequenceIterator::getFirstEdge()
 
       return m_graph->getEdge(id);
     }
-  }
-
-  // get a transactor to interact to the data source
-  te::da::DataSourceTransactor* transactor = m_graph->getMetadata()->getDataSource()->getTransactor();
-
-  if(!transactor)
-  {
-    throw Exception(TR_GRAPH("Error getting Transactor."));
   }
 
   //create a query to get eache vertex id
@@ -206,10 +189,10 @@ te::graph::Edge* te::graph::SequenceIterator::getFirstEdge()
 
   te::da::Select select(fields, from, ob);
 
-  delete m_edgeQuery;
-  m_edgeQuery = transactor->query(select);
+  m_edgeQuery.reset(0);
+  m_edgeQuery = m_graph->getMetadata()->getDataSource()->query(select);
 
-  if(m_edgeQuery == 0)
+  if(m_edgeQuery.get() == 0)
   {
     throw Exception(TR_GRAPH("Iterator not initialized."));
   }
@@ -222,10 +205,8 @@ te::graph::Edge* te::graph::SequenceIterator::getFirstEdge()
   }
   else
   {
-    delete transactor;
     return 0;
   }
 
-  delete transactor;
   return m_graph->getEdge(id);
 }

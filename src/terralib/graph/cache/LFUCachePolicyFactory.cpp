@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "Globals.h"
+#include "../Globals.h"
 #include "LFUCachePolicy.h"
 #include "LFUCachePolicyFactory.h"
 

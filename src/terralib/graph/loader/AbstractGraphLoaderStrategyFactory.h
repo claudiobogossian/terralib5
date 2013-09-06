@@ -27,7 +27,7 @@
 #define __TERRALIB_GRAPH_INTERNAL_ABSTRACTGRAPHLOADERSTRATEGYFACTORY_H
 
 // TerraLib
-#include "../common/AbstractFactory.h"
+#include "../../common/AbstractFactory.h"
 #include "../Config.h"
 
 namespace te
@@ -36,8 +36,8 @@ namespace te
   {
     //forward declarations
     class AbstractGraphLoaderStrategy;
-	class GraphMetadata;
-	
+    class GraphMetadata;
+
     /*!
       \class AbstractGraphLoaderStrategyFactory
 

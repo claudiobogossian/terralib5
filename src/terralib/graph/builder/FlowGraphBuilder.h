@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/graph/FlowGraphBuilder.cpp
+  \file terralib/graph/FlowGraphBuilder.h
 
   \brief This class defines the Flow strategy to build a graph.
 
@@ -35,8 +35,10 @@
 #include "AbstractGraphBuilder.h"
 
 // STL Includes
-#include <vector>
 #include <map>
+#include <memory>
+#include <vector>
+
 
 namespace te
 {
@@ -123,7 +125,7 @@ namespace te
           \return Data source.
 
         */
-        te::da::DataSource* getDataSource(const std::string fileName);
+        std::auto_ptr<te::da::DataSource> getDataSource(const std::string fileName);
 
         /*!
           \brief Function used to get the data set with the vectorial data
@@ -131,7 +133,7 @@ namespace te
           \return Data set.
 
         */
-        te::da::DataSet* getDataSet(te::da::DataSource* ds);
+        std::auto_ptr<te::da::DataSet> getDataSet(te::da::DataSource* ds);
 
         /*!
           \brief Function used to get the data source properties
@@ -139,7 +141,7 @@ namespace te
           \return A vector with all properties from a data source
 
         */
-        std::vector<te::dt::Property*>& getProperties(te::da::DataSource* ds);
+        boost::ptr_vector<te::dt::Property> getProperties(te::da::DataSource* ds);
 
         /*!
           \brief Function used to create all vertex object based on vectorial data

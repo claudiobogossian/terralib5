@@ -24,15 +24,15 @@
 */
 
 // TerraLib
-#include "Globals.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../cache/AbstractCachePolicyFactory.h"
+#include "../drivers/database/DatabaseGraphMetadata.h"
+#include "../loader/AbstractGraphLoaderStrategyFactory.h"
+#include "../Exception.h"
+#include "../Globals.h"
 #include "Graph.h"
 #include "GraphFactory.h"
-#include "../dataaccess.h"
-
-#include "AbstractCachePolicyFactory.h"
-#include "AbstractGraphLoaderStrategyFactory.h"
-#include "DatabaseGraphMetadata.h"
-#include "Exception.h"
 
 // STL
 #include <memory>
@@ -80,13 +80,16 @@ te::graph::AbstractGraph* te::graph::GraphFactory::iOpen(const std::map<std::str
   //create data source
   it = gInfo.find("GRAPH_DATA_SOURCE_TYPE");
 
-  te::da::DataSource* ds = 0;
+  std::auto_ptr<te::da::DataSource> dsPtr;
 
   if(it != itend)
   {
-    ds = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
-    ds->open(dsInfo);
+    dsPtr = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
+    dsPtr->setConnectionInfo(dsInfo);
+    dsPtr->open();
   }
+
+  te::da::DataSource* ds = dsPtr.release();
 
   //create graph metadata
   te::graph::DatabaseGraphMetadata* gMetadata = new te::graph::DatabaseGraphMetadata(ds);
@@ -143,13 +146,16 @@ te::graph::AbstractGraph* te::graph::GraphFactory::create(const std::map<std::st
   //create data source
   it = gInfo.find("GRAPH_DATA_SOURCE_TYPE");
 
-  te::da::DataSource* ds = 0;
+  std::auto_ptr<te::da::DataSource> dsPtr;
 
   if(it != itend)
   {
-    ds = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
-    ds->open(dsInfo);
+    dsPtr = te::da::DataSourceFactory::make(it->second); //example: dsType = POSTGIS
+    dsPtr->setConnectionInfo(dsInfo);
+    dsPtr->open();
   }
+
+  te::da::DataSource* ds = dsPtr.release();
   
    //create graph metadata
   te::graph::DatabaseGraphMetadata* gMetadata = new te::graph::DatabaseGraphMetadata(ds);

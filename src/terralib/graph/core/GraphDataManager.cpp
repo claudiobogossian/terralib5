@@ -1,15 +1,40 @@
-#include "GraphDataManager.h"
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
-#include "AbstractGraphLoaderStrategy.h"
-#include "Config.h"
-#include "Edge.h"
-#include "Exception.h"
-#include "Vertex.h"
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file GraphDataManager.cpp
+
+  \brief This class defines a interface to access the graph
+         elements inside a data source. Its use a implementation of
+         Loader Strategy that defines how a data must be loaded.
+         
+*/
 
 // Terralib Includes
-#include "../common/Translator.h"
-#include "../common/StringUtils.h"
-
+#include "../../common/Translator.h"
+#include "../../common/StringUtils.h"
+#include "../core/Edge.h"
+#include "../core/Vertex.h"
+#include "../loader/AbstractGraphLoaderStrategy.h"
+#include "../Config.h"
+#include "../Exception.h"
+#include "GraphDataManager.h"
 
 
 te::graph::GraphDataManager::GraphDataManager(te::graph::AbstractGraph* g) : m_loadStrategy(0), m_graph(g)
