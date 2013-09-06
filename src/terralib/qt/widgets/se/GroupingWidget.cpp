@@ -431,7 +431,7 @@ int te::qt::widgets::GroupingWidget::getGeometryType()
 {
   assert(m_layer.get());
 
-  std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)m_layer->getSchema().get());
+  std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
   te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(dsType.get());
 
@@ -462,7 +462,7 @@ void te::qt::widgets::GroupingWidget::listAttributes()
 {
   m_ui->m_attrComboBox->clear();
 
-  std::auto_ptr<te::da::DataSetType> dsType((te::da::DataSetType*)m_layer->getSchema().get());
+  std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
 
   //grouping type
   int index = m_ui->m_typeComboBox->currentIndex();

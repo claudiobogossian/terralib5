@@ -266,8 +266,6 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::da::Select* quer
                                                             te::common::TraverseType travType) const
 {
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
-
-  std::auto_ptr<LayerSchema> schema (getSchema());
-
+  
   return ds->query(query, travType);
 }
