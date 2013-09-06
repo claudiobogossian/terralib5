@@ -21,6 +21,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../memory/DataSet.h"
 #include "../../widgets/table/DataSetTableView.h"
 #include "../../widgets/utils/ScopedCursor.h"
 #include "../events/LayerEvents.h"

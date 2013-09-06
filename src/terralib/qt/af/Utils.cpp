@@ -473,3 +473,21 @@ void te::qt::af::CreateDefaultSettings()
 
   sett.endGroup();
 }
+
+QString te::qt::af::UnsavedStar(const QString windowTitle, bool isUnsaved)
+{
+  QString result(windowTitle);
+
+  if(isUnsaved)
+  {
+    if(result.at(result.count()-1) != '*')
+      result += "*";
+  }
+  else
+  {
+    if(result.at(result.count()-1) == '*')
+      result.remove((result.count()-1), 1);
+  }
+
+  return result;
+}

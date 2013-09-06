@@ -22,6 +22,7 @@
 #include "Utils.h"
 
 #include "../common/Translator.h"
+#include "../dataaccess/query/SQLDialect.h"
 
 // OGR
 #include <ogrsf_frmts.h>
@@ -31,9 +32,10 @@
 
 te::da::SQLDialect* te::ogr::DataSource::sm_myDialect(0);
 
-te::ogr::DataSource::DataSource()
-  : m_ogrDS(0),
-    m_isValid(false)
+te::ogr::DataSource::DataSource() :
+te::da::DataSource(),
+m_ogrDS(0),
+m_isValid(false)
 {
 }
 
@@ -111,6 +113,9 @@ const te::da::SQLDialect* te::ogr::DataSource::getDialect() const
 
 void te::ogr::DataSource::setDialect(te::da::SQLDialect* dialect)
 {
+  if(sm_myDialect != 0)
+    delete sm_myDialect;
+
   sm_myDialect = dialect;
 }
 
@@ -131,12 +136,14 @@ void te::ogr::DataSource::create(const std::map<std::string, std::string>& dsInf
   if(!driver->TestCapability(ODrCCreateDataSource))
     throw(Exception(TR_OGR("The Driver does not have create capability.")));
 
-  OGRDataSource* newDs = driver->CreateDataSource(path.c_str());
+  m_ogrDS = driver->CreateDataSource(path.c_str());
 
-  if(newDs == 0)
+  if(m_ogrDS == 0)
     throw(Exception(TR_OGR("Error when attempting create the data source.")));   
 
-  OGRDataSource::DestroyDataSource(newDs);
+  setConnectionInfo(dsInfo);
+
+  close();
 }
 
 void te::ogr::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
@@ -182,5 +189,5 @@ std::vector<std::string> te::ogr::DataSource::getEncodings(const std::map<std::s
 
 te::ogr::DataSource* te::ogr::Build()
 {
-  return new te::ogr::DataSource;
+  return new DataSource;
 }

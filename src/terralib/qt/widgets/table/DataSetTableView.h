@@ -80,7 +80,7 @@ namespace te
           /*!
             \brief Updates the data set being visualized.
 
-            Note that this DataSet MUST HAVE random access. The view DOES NOT get the ownership of the pointer.
+            Note that this DataSet MUST HAVE random access. The view DOES TAKE the ownership of the pointer.
 
             \param dset The new data set to be visualized.
           */
@@ -185,6 +185,16 @@ namespace te
         protected:
 
           void removeSelection(const int& initRow, const int& finalRow);
+
+          void showEvent (QShowEvent * event); 
+          
+          void paintEvent (QPaintEvent * event); 
+
+          void focusOutEvent (QFocusEvent * event);
+
+          void focusInEvent (QFocusEvent * event);
+          
+          void hideEvent (QHideEvent * event); 
 
           DataSetTableModel* m_model;       //!< The model to be used.
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
