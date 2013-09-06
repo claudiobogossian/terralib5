@@ -129,7 +129,7 @@ te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
 
 te::qt::widgets::DataSetTableModel::~DataSetTableModel()
 {
-  delete m_dataset;
+  //delete m_dataset;    // TO DO: Why the dataset is not valid!!!!
   delete m_promoter;
 }
 
