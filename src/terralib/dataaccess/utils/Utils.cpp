@@ -143,17 +143,15 @@ te::gm::Envelope* te::da::GetExtent(const std::string& datasetName,
   return mbr.release();
 }
 
-void te::da::GetDataSets(std::vector<std::string>& datasets, const std::string& datasourceId)
+void te::da::GetDataSetNames(std::vector<std::string>& datasetNames, const std::string& datasourceId)
 {
   assert(!datasourceId.empty());
 
-  //DataSourcePtr datasource(te::da::DataSourceManager::getInstance().get(datasourceId));
-
-  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
-  if(datasource.get() == 0)
+  DataSourcePtr ds(te::da::DataSourceManager::getInstance().find(datasourceId));
+  if(ds.get() == 0)
     return;
 
-  datasets = datasource->getDataSetNames();
+  datasetNames = ds->getDataSetNames();
 }
 
 std::string te::da::GetDataSetCategoryName(int category)
