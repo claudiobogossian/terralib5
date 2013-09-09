@@ -204,6 +204,8 @@ std::auto_ptr<te::gm::Envelope> te::pgis::DataSet::getExtent(std::size_t i)
     }
   }
 
+  m_i = -1;
+
   te::gm::Envelope* mbr = new te::gm::Envelope(*m_mbr);
 
   return std::auto_ptr<te::gm::Envelope>(mbr);

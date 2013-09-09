@@ -21,6 +21,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../memory/DataSet.h"
 #include "../../widgets/table/DataSetTableView.h"
 #include "../../widgets/utils/ScopedCursor.h"
 #include "../events/LayerEvents.h"
@@ -54,7 +55,7 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
-  m_view->setDataSet(m_layer->getData().get());
+  m_view->setDataSet(m_layer->getData().release());
   m_view->setLayerSchema(m_layer->getSchema().get());
 
   if(layer->getSelected() != 0)

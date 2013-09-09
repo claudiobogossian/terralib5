@@ -26,9 +26,11 @@
 #ifndef __TERRALIB_OGR_INTERNAL_DATASET_H
 #define __TERRALIB_OGR_INTERNAL_DATASET_H
 
-// TerraLib
-#include "../dataaccess/dataset/DataSet.h"
 #include "Config.h"
+
+// TerraLib
+#include "../common/ThreadingPolicies.h"
+#include "../dataaccess/dataset/DataSet.h"
 
 // STL
 #include <vector>
@@ -55,7 +57,10 @@ namespace te
 
       \sa Transactor, te::da::DataSet
      */
-    class TEOGREXPORT DataSet : public te::da::DataSet
+    class TEOGREXPORT DataSet : public te::da::DataSet,  public te::common::ClassLevelLockable<DataSet,
+                                                                                 ::boost::recursive_mutex,
+                                                                                 ::boost::lock_guard< ::boost::recursive_mutex>,
+                                                                                 ::boost::lock_guard< ::boost::recursive_mutex> >
     {
       public:
 

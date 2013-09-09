@@ -76,7 +76,7 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::HiddenDataSetLayerSelector
 
     std::vector<std::string> datasetNames;
 
-    te::da::GetDataSets(datasetNames, datasource->getId());
+    te::da::GetDataSetNames(datasetNames, datasource->getId());
 
     DataSet2Layer converter((*it)->getId());
 

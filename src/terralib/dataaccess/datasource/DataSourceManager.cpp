@@ -89,9 +89,7 @@ te::da::DataSourcePtr te::da::DataSourceManager::get(const std::string& id, cons
   if(it != m_dss.end())
     return it->second;
 
-  //DataSourcePtr newds(DataSourceFactory::open(dsType, connInfo));
-
-  std::auto_ptr<te::da::DataSource> newds = DataSourceFactory::make(dsType);
+  DataSourcePtr newds(DataSourceFactory::make(dsType).release());
 
   newds->setConnectionInfo(connInfo);
 
@@ -99,11 +97,9 @@ te::da::DataSourcePtr te::da::DataSourceManager::get(const std::string& id, cons
 
   newds->setId(id);
 
-  //insert(newds);
-  insert(DataSourcePtr(newds));
+  insert(newds);
 
-  //return newds;
-  return DataSourcePtr(newds);
+  return newds;
 }
 
 te::da::DataSourcePtr te::da::DataSourceManager::find(const std::string& id) const

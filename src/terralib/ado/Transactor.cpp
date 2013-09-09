@@ -62,6 +62,7 @@
 #include <cassert>
 //#include <cstring>
 #include <memory>
+#include <iostream>
 
 // Boost
 //#include <boost/algorithm/string/case_conv.hpp>
@@ -174,18 +175,6 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
   std::string upperY = "upper_y";
 
   std::auto_ptr<std::string> query(new std::string("SELECT * FROM " + name + " WHERE "));
-
- /* std::vector<std::string> propsNames = getPropertyNames(name);
-
-  for(std::size_t i = 0; i < propsNames.size(); ++i)
-  {
-    *query += propsNames[i] + ", ";
-
-    if(i == propsNames.size()-1)
-      *query += propsNames[i] + " ";
-  }
-
-  *query += " FROM " + name + " WHERE ";*/
 
   *query += "NOT("+ lowerX +" > " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
   *query += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
@@ -370,12 +359,12 @@ boost::ptr_vector<te::dt::Property> te::ado::Transactor::getProperties(const std
 {
   std::auto_ptr<te::da::DataSetType> dt(getDataSetType(datasetName));
 
-  std::vector<te::dt::Property*>& dtProperties = dt->getProperties();
+  std::vector<te::dt::Property*> dtProperties = dt->getProperties();
 
   boost::ptr_vector<te::dt::Property> properties;
 
   for(std::size_t i = 0; i < dtProperties.size(); ++i)
-    properties.push_back(dtProperties[i]);
+    properties.push_back(dtProperties[i]->clone());
 
   return properties;
 }

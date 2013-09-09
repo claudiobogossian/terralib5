@@ -147,7 +147,7 @@ void te::qt::widgets::QueryBuilderWizard::getDataSets()
 
   std::vector<std::string> datasetNames;
 
-  te::da::GetDataSets(datasetNames, dsId);
+  te::da::GetDataSetNames(datasetNames, dsId);
 
   QStringList list;
 

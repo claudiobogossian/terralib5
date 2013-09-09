@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
-#include "../../../widgets/layer/selector/HiddenDataSetLayerSelector.h"
+#include "../../../widgets/layer/selector/DataSetLayerSelector.h"
 #include "ADOConnector.h"
 #include "ADOType.h"
 
@@ -64,7 +64,7 @@ QWidget* te::qt::plugins::ado::ADOType::getWidget(int widgetType, QWidget* paren
       return new ADOConnector(parent, f);
 
     case DataSourceType::WIDGET_LAYER_SELECTOR:
-      return new te::qt::widgets::HiddenDataSetLayerSelector(parent, f);
+      return new te::qt::widgets::DataSetLayerSelector(parent, f);
 
     default:
       return 0;

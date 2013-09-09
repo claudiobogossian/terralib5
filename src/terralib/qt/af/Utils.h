@@ -103,6 +103,11 @@ namespace te
       TEQTAFEXPORT void SaveDataSourcesFile();
 
       /*!
+        \brief Unsaved star
+      */
+      TEQTAFEXPORT QString UnsavedStar(const QString windowTitle, bool isUnsaved);
+
+      /*!
         \brief Update plugins file.
       */
       TEQTAFEXPORT void UpdateApplicationPlugins();
