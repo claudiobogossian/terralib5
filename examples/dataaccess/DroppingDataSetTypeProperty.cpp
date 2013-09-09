@@ -8,15 +8,16 @@
 // STL
 #include <iostream>
 
-void DroppingDataSetTypeProperty(te::dt::Property* prop, te::da::DataSourceTransactor* trans)
+void DroppingDataSetTypeProperty(const std::string& datasetname, const std::string &propname, te::da::DataSourceTransactor* trans)
 {
   try
   {  
-    te::da::DataSetTypePersistence* dtPersistence = trans->getDataSetTypePersistence();
+    //te::da::DataSetTypePersistence* dtPersistence = trans->getDataSetTypePersistence();
 
-    dtPersistence->drop(prop);
+    //dtPersistence->drop(prop);
 
-    delete dtPersistence;
+    //delete dtPersistence;
+    trans->dropProperty(datasetname, propname);
     return;
   }
   catch(const std::exception& e)
