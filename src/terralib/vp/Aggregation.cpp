@@ -30,7 +30,6 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
-#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/query_h.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
@@ -278,7 +277,6 @@ void te::vp::AggregationQuery(  const te::map::AbstractLayerPtr& inputLayer,
     select.setGroupBy(groupBy);
   }
 
-  //std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
   std::auto_ptr<te::da::DataSet> dsQuery = dataSource->query(select);
 
   te::vp::SetOutputDatasetQuery(groupingProperties, dsQuery.get(), outputDataSet);
@@ -292,10 +290,10 @@ void te::vp::SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupi
   te::mem::DataSetItem* outputDataSetItem;
   int dsPropType;
   std::size_t selectedPropSize = groupingProperties.size();
-
-  dsQuery->moveFirst();
   
-  while(!dsQuery->isAfterEnd())
+  dsQuery->moveBeforeFirst();
+  
+  while(dsQuery->moveNext())
   {
     outputDataSetItem = new te::mem::DataSetItem(outputDataSet);
     std::string aggregItem = "";
@@ -387,7 +385,6 @@ void te::vp::SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupi
     }
 
     outputDataSet->add(outputDataSetItem);
-    dsQuery->moveNext();
   }
   
   outputDataSet->moveFirst();

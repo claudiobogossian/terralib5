@@ -60,6 +60,9 @@
 // STL
 #include <cassert>
 
+//BOOST
+#include <boost/algorithm/string.hpp>
+
 void te::da::LoadFull(te::da::DataSetType* dataset, const std::string& datasourceId)
 {
   assert(dataset);
@@ -438,7 +441,7 @@ std::size_t te::da::GetPropertyPos(const DataSet* dataset, const std::string& na
   {
     std::string pname = dataset->getPropertyName(i);
 
-    if(pname == name)
+    if(boost::iequals(pname, name))
       return i;
   }
 

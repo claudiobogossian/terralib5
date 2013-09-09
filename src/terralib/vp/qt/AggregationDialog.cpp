@@ -118,9 +118,9 @@ std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> > te::vp::
   for(int i = 0; i < itemList.size(); ++i)
   {
     std::vector<std::string> tokens;
-    std::string aux = itemList[i]->text().toStdString();
+    std::string auxItem = itemList[i]->text().toStdString();
 
-    boost::split(tokens, aux, boost::is_any_of(":"));
+    boost::split(tokens, auxItem, boost::is_any_of(":"));
     
     if(tokens[0] == "")
     {
