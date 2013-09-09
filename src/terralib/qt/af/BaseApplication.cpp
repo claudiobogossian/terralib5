@@ -347,10 +347,18 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
       te::qt::af::evt::MapSRIDChanged* e = static_cast<te::qt::af::evt::MapSRIDChanged*>(evt);
 
       std::pair<int, std::string> srid = e->m_srid;
-
-      QString sridText(srid.second.c_str());
-      sridText += ":" + QString::number(srid.first);
-      m_mapSRIDLineEdit->setText(sridText);
+      
+      if (srid.first != TE_UNKNOWN_SRS)
+      {
+        QString sridText(srid.second.c_str());
+        sridText += ":" + QString::number(srid.first);
+        m_mapSRIDLineEdit->setText(sridText);
+      }
+      else 
+      {
+        m_mapSRIDLineEdit->setText("Unknown SRS");
+        m_coordinateLineEdit->setText("Coordinates");
+      }
     }
     break;
 
@@ -873,6 +881,15 @@ void te::qt::af::BaseApplication::onMapSRIDTriggered()
   ApplicationController::getInstance().broadcast(&mapSRIDChagned);
 
   m_display->getDisplay()->setSRID(srid.first);
+}
+
+void te::qt::af::BaseApplication::onMapSetUnknwonSRIDTriggered()
+{
+  std::pair<int, std::string> srid = std::make_pair(TE_UNKNOWN_SRS, "");
+  te::qt::af::evt::MapSRIDChanged mapSRIDChagned(srid);
+  ApplicationController::getInstance().broadcast(&mapSRIDChagned);
+  
+  m_display->getDisplay()->setSRID(TE_UNKNOWN_SRS);
 }
 
 void te::qt::af::BaseApplication::onDrawTriggered()
@@ -1413,7 +1430,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_filePrintPreview, "document-print-preview", "File.Print Preview", tr("Print Pre&view..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Map- actions
-  initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);
+  initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);//
+  initAction(m_mapUnknownSRID, "srs-unknown", "Map.UnknownSRID", tr("&Unknown SRS..."), tr("Set the Map SRS to unknown"), true, false, true, m_menubar);
   initAction(m_mapDraw, "map-draw", "Map.Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true, m_menubar);
   initAction(m_mapZoomIn, "zoom-in", "Map.Zoom In", tr("Zoom &In"), tr(""), true, true, true, m_menubar);
   initAction(m_mapZoomOut, "zoom-out", "Map.Zoom Out", tr("Zoom &Out"), tr(""), true, true, true, m_menubar);
@@ -1673,6 +1691,11 @@ void te::qt::af::BaseApplication::initToolbars()
 
 void te::qt::af::BaseApplication::initStatusBar()
 {
+  // Map SRID reset action
+  QToolButton* mapUnknownSRIDToolButton = new QToolButton(m_statusbar);
+  mapUnknownSRIDToolButton->setDefaultAction(m_mapUnknownSRID);
+  m_statusbar->addPermanentWidget(mapUnknownSRIDToolButton);
+  
   // Map SRID action
   QToolButton* mapSRIDToolButton = new QToolButton(m_statusbar);
   mapSRIDToolButton->setDefaultAction(m_mapSRID);
@@ -1727,6 +1750,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerSRS, SIGNAL(triggered()), SLOT(onLayerSRSTriggered()));
   connect(m_layerGrouping, SIGNAL(triggered()), SLOT(onLayerGroupingTriggered()));
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
+  connect(m_mapUnknownSRID, SIGNAL(triggered()), SLOT(onMapSetUnknwonSRIDTriggered()));
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
   connect(m_setBoxOnMapDisplay, SIGNAL(triggered()), SLOT(onSetBoxOnMapDisplayTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
