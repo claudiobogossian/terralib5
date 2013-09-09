@@ -28,6 +28,7 @@
 #include "../plugin/PluginInfo.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
+#include "../dataaccess/datasource/DataSourceManager.h"
 #include "Config.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
@@ -53,7 +54,7 @@ void te::gdal::Module::startup()
 // it initializes the Translator support for the TerraLib GDAL driver support
   TE_ADD_TEXT_DOMAIN(TE_GDAL_TEXT_DOMAIN, TE_GDAL_TEXT_DOMAIN_DIR, "UTF-8");
   
-  te::da::DataSourceFactory::add("GDAL", te::gdal::Build);
+  te::da::DataSourceFactory::add(TE_GDAL_DRIVER_IDENTIFIER, te::gdal::Build);
 
   GDALAllRegister();
 
@@ -97,12 +98,12 @@ void te::gdal::Module::shutdown()
     return;
 
 //! it finalizes the GDAL factory support.
-  //te::da::core::gdal::DataSourceFactory::finalize();
+ te::da::DataSourceFactory::remove(TE_GDAL_DRIVER_IDENTIFIER);
 
   RasterFactory::finalize();
 
 //! free GDAL registered drivers
-//  te::da::DataSourceManager::getInstance().detachAll(GDAL_DRIVER_IDENTIFIER);
+  te::da::DataSourceManager::getInstance().detachAll(TE_GDAL_DRIVER_IDENTIFIER);
  
   TE_LOG_TRACE(TR_GDAL("TerraLib GDAL driver shutdown!"));
 
