@@ -538,7 +538,7 @@ void te::pgis::Transactor::dropProperty(const std::string& datasetName, const st
   else
   {
     sql  = " ALTER TABLE ";
-    sql += p->getParent()->getName();
+    sql += fullDatasetName;
     sql += " DROP COLUMN ";
     sql += name;
   }
