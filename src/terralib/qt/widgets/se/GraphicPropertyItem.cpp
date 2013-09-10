@@ -74,17 +74,17 @@ te::qt::widgets::GraphicPropertyItem::GraphicPropertyItem(QtTreePropertyBrowser*
   te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setSingleStep(m_opacityProperty, 10);
   generalProperty->addSubProperty(m_opacityProperty);
 
-  //displacement
-  m_displacementProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->addProperty(tr("Displacement"));
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setValue(m_displacementProperty, QPointF(0., 0.));
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setDecimals(m_displacementProperty, 2);
-  generalProperty->addSubProperty(m_displacementProperty);
+  ////displacement
+  //m_displacementProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->addProperty(tr("Displacement"));
+  //te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setValue(m_displacementProperty, QPointF(0., 0.));
+  //te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setDecimals(m_displacementProperty, 2);
+  //generalProperty->addSubProperty(m_displacementProperty);
 
-  //anchor
-  m_anchorProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->addProperty(tr("Anchor"));
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setValue(m_anchorProperty, QPointF(0.5, 0.5));
-  te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setDecimals(m_anchorProperty, 2);
-  generalProperty->addSubProperty(m_anchorProperty);
+  ////anchor
+  //m_anchorProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->addProperty(tr("Anchor"));
+  //te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setValue(m_anchorProperty, QPointF(0.5, 0.5));
+  //te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setDecimals(m_anchorProperty, 2);
+  //generalProperty->addSubProperty(m_anchorProperty);
 
   addProperty(generalProperty, tr("Graphic"), QColor(210, 210, 210));
 
@@ -206,24 +206,24 @@ void te::qt::widgets::GraphicPropertyItem::valueChanged(QtProperty* p, const QPo
   xStr.setNum(value.x());
   yStr.setNum(value.y());
 
-  if(p == m_displacementProperty)
-  {
-    te::se::Displacement* disp = new te::se::Displacement;
-    disp->setDisplacementX(new te::se::ParameterValue(xStr.toStdString()));
-    disp->setDisplacementY(new te::se::ParameterValue(yStr.toStdString()));
-    m_graphic->setDisplacement(disp);
+  //if(p == m_displacementProperty)
+  //{
+  //  te::se::Displacement* disp = new te::se::Displacement;
+  //  disp->setDisplacementX(new te::se::ParameterValue(xStr.toStdString()));
+  //  disp->setDisplacementY(new te::se::ParameterValue(yStr.toStdString()));
+  //  m_graphic->setDisplacement(disp);
 
-    emit graphicChanged();
-  }
-  else if(p == m_anchorProperty)
-  {
-    te::se::AnchorPoint* ac = new te::se::AnchorPoint;
-    ac->setAnchorPointX(new te::se::ParameterValue(xStr.toStdString()));
-    ac->setAnchorPointY(new te::se::ParameterValue(yStr.toStdString()));
-    m_graphic->setAnchorPoint(ac);
+  //  emit graphicChanged();
+  //}
+  //else if(p == m_anchorProperty)
+  //{
+  //  te::se::AnchorPoint* ac = new te::se::AnchorPoint;
+  //  ac->setAnchorPointX(new te::se::ParameterValue(xStr.toStdString()));
+  //  ac->setAnchorPointY(new te::se::ParameterValue(yStr.toStdString()));
+  //  m_graphic->setAnchorPoint(ac);
 
-    emit graphicChanged();
-  }
+  //  emit graphicChanged();
+  //}
 }
 
 void te::qt::widgets::GraphicPropertyItem::updateUi()
@@ -243,27 +243,27 @@ void te::qt::widgets::GraphicPropertyItem::updateUi()
   if(opacity)
     te::qt::widgets::AbstractPropertyManager::getInstance().m_intSliderManager->setValue(m_opacityProperty, te::map::GetDouble(opacity) * 100);
 
-  // Displacement
-  const te::se::Displacement* disp = m_graphic->getDisplacement();
-  if(disp)
-  {
-    const te::se::ParameterValue* dispx = disp->getDisplacementX();
-    const te::se::ParameterValue* dispy = disp->getDisplacementY();
-    if(dispx && dispy)
-      te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setValue(m_displacementProperty, 
-        QPointF(te::map::GetDouble(dispx), te::map::GetDouble(dispy)));
-  }
+  //// Displacement
+  //const te::se::Displacement* disp = m_graphic->getDisplacement();
+  //if(disp)
+  //{
+  //  const te::se::ParameterValue* dispx = disp->getDisplacementX();
+  //  const te::se::ParameterValue* dispy = disp->getDisplacementY();
+  //  if(dispx && dispy)
+  //    te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setValue(m_displacementProperty, 
+  //      QPointF(te::map::GetDouble(dispx), te::map::GetDouble(dispy)));
+  //}
 
-  // Anchor Point
-  const te::se::AnchorPoint* ac = m_graphic->getAnchorPoint();
-  if(ac)
-  {
-    const te::se::ParameterValue* acx = ac->getAnchorPointX();
-    const te::se::ParameterValue* acy = ac->getAnchorPointY();
-    if(acx && acy)
-      te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setValue(m_anchorProperty, 
-        QPointF(te::map::GetDouble(acx), te::map::GetDouble(acy)));
-  }
+  //// Anchor Point
+  //const te::se::AnchorPoint* ac = m_graphic->getAnchorPoint();
+  //if(ac)
+  //{
+  //  const te::se::ParameterValue* acx = ac->getAnchorPointX();
+  //  const te::se::ParameterValue* acy = ac->getAnchorPointY();
+  //  if(acx && acy)
+  //    te::qt::widgets::AbstractPropertyManager::getInstance().m_pointFManager->setValue(m_anchorProperty, 
+  //      QPointF(te::map::GetDouble(acx), te::map::GetDouble(acy)));
+  //}
 }
 
 void te::qt::widgets::GraphicPropertyItem::onWellKnownMarkChanged()
