@@ -484,7 +484,7 @@
                           <number>1024</number>
                          </property>
                          <property name="value">
-                          <number>1</number>
+                          <number>4</number>
                          </property>
                         </widget>
                        </item>
@@ -651,6 +651,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>m_datasourceTitleLineEdit</tabstop>
   <tabstop>m_datasourceDescriptionTextEdit</tabstop>
@@ -694,11 +701,4 @@
    </hints>
   </connection>
  </connections>
- <CustomWidgets>
-	<CustomWidget>
-	 <class>te::qt::widgets::HelpPushButton</class> 
-	 <extends>QPushButton</extends> 
-	 <header>terralib/qt/widgets/help/HelpPushButton.h</header>
-	</CustomWidget>
- </CustomWidgets>
 </ui>
