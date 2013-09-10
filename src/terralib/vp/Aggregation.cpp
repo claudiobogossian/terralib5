@@ -399,16 +399,17 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
                                 const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
                                 te::mem::DataSet* outputDataSet)
 {
-  std::auto_ptr<te::mem::DataSet> inputDataSet((te::mem::DataSet*)inputLayer->getData().get());
+  std::auto_ptr<te::da::DataSet> inputDataSet = inputLayer->getData();
   std::auto_ptr<te::mem::DataSetItem> dataSetItem(new te::mem::DataSetItem(inputDataSet.get()));
 
-  te::da::DataSetType* dsType = (te::da::DataSetType*)inputLayer->getSchema().get();
+
+  std::auto_ptr<te::da::DataSetType> dsType = inputLayer->getSchema();
   std::size_t geomIdx;
   std::string geomName = "";
 
   if(dsType->hasGeom())
   {
-    std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType));
+    te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(dsType.get());
     geomName = geom->getName();
     geomIdx = boost::lexical_cast<std::size_t>(dsType->getPropertyPosition(geomName));
   }
@@ -465,14 +466,19 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
   }
 }
 
-std::map<std::string, std::vector<te::mem::DataSetItem*> > te::vp::GetGroups( te::mem::DataSet* inputDataSet,
+std::map<std::string, std::vector<te::mem::DataSetItem*> > te::vp::GetGroups( te::da::DataSet* inputDataSet,
                                                                               const std::vector<te::dt::Property*>& groupingProperties)
 {
   std::map<std::string, std::vector<te::mem::DataSetItem*> > groupValues;
 
   while(inputDataSet->moveNext())
   {
-    te::mem::DataSetItem* dataSetItem = inputDataSet->getItem();
+    te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(inputDataSet);
+    
+    for(std::size_t i = 0; i < inputDataSet->getNumProperties(); ++i)
+    {
+      dataSetItem->setValue(i, inputDataSet->getValue(i).release());
+    }
 
     std::size_t propertyIndex = 0;
 

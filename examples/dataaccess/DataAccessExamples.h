@@ -28,8 +28,16 @@
 
 // TerraLib
 #include <terralib/common.h>
-#include <terralib/dataaccess_fw.h>
+#include <terralib/dataaccess.h>
 #include <terralib/datatype_fw.h>
+#include <terralib/dataaccess_fw.h>
+
+//#include <terralib/dataaccess/datasource/datasourceTransactor.h>
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
+#include <terralib/geometry.h>
+
+
+
 #include "Config.h"
 
 /*
@@ -42,11 +50,12 @@
   \exception Exception It throws an exception if something goes wrong.
  */
 te::da::DataSetType* CreateDataSetType(te::da::DataSourceTransactor* transactor);
+te::da::DataSetType* CreateDataSetTypeInMemory(const std::string& datasettypename);
 
 /*
   \brief It adds a Primary Key to the given dataset type.
 
-  \param datasetType The target dataset type.
+  \param datasetname The target dataset name.
   \param transactor  The transactor to be used to persist the modifications
 
   \return A pointer to the created primary key.
@@ -59,7 +68,7 @@ te::da::DataSetType* CreateDataSetType(te::da::DataSourceTransactor* transactor)
 
   \exception Exception It throws an exception if something goes wrong.
  */
-te::da::PrimaryKey* AddPrimaryKey(te::da::DataSetType* datasetType,
+te::da::PrimaryKey* AddPrimaryKey(const std::string& datasetname,
                                              te::da::DataSourceTransactor* transactor);
 
 /*
@@ -78,7 +87,7 @@ te::da::PrimaryKey* AddPrimaryKey(te::da::DataSetType* datasetType,
 
   \exception Exception It throws an exception if something goes wrong.
  */
-te::da::UniqueKey* AddUniqueKey(te::da::DataSetType* datasetType,
+te::da::UniqueKey* AddUniqueKey(const std::string& datasetname,
                                            te::da::DataSourceTransactor* transactor);
 
 /*
@@ -96,7 +105,7 @@ te::da::UniqueKey* AddUniqueKey(te::da::DataSetType* datasetType,
 
   \exception Exception It throws an exception if something goes wrong.
  */
-te::da::Index* AddSpatialIndex(te::da::DataSetType* datasetType,
+te::da::Index* AddSpatialIndex(const std::string& datasetname,
                                           te::da::DataSourceTransactor* transactor);
 
 /*
@@ -115,7 +124,7 @@ te::da::Index* AddSpatialIndex(te::da::DataSetType* datasetType,
 
   \exception Exception It throws an exception if something goes wrong.
  */
-te::dt::SimpleProperty* AddProperty(te::da::DataSetType* datasetType,
+te::dt::SimpleProperty* AddProperty(const std::string& datasetname,
                                   te::da::DataSourceTransactor* transactor);
 
 /*!
@@ -144,7 +153,7 @@ void PrintDataSet(const std::string& datasetName, te::da::DataSet* dataset);
 
   \param transactor The transactor to be used to retrieve the data.
  */
-void RetrieveUsingSpatialFilter(te::da::DataSourceTransactor* transactor);
+void RetrieveUsingSpatialFilter(te::da::DataSource* ds);
 
 /*!
   \brief An example showing how to retrieve the extent of a DataSet.
@@ -220,7 +229,8 @@ void AddingDataSetPropertyValues(te::da::DataSet* ds);
   \param prop   the property that will be removed. 
   \param trans  the transactor to be used in the removing. 
 */
-void DroppingDataSetTypeProperty(te::dt::Property* prop, te::da::DataSourceTransactor* trans);
+//void DroppingDataSetTypeProperty(te::dt::Property* prop, te::da::DataSourceTransactor* trans);
+void DroppingDataSetTypeProperty(const std::string& datasetname, const std::string &propname, te::da::DataSourceTransactor* trans);
 
 /*! 
   \brief It removes a data set type from the associated data source.

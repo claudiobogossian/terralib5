@@ -120,6 +120,8 @@ namespace te
           void onLayerGroupingTriggered();
 
           void onMapSRIDTriggered();
+        
+          void onMapSetUnknwonSRIDTriggered();
 
           void onDrawTriggered();
           
@@ -243,6 +245,7 @@ namespace te
           QAction* m_filePrint;
           QAction* m_filePrintPreview;
           QAction* m_mapSRID;
+          QAction* m_mapUnknownSRID;
           QAction* m_mapDraw;
           QAction* m_mapZoomIn;
           QAction* m_mapZoomOut;
