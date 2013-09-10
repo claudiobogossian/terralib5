@@ -133,21 +133,21 @@ int main(int /*argc*/, char** /*argv*/)
 
     //PostGISExample();  //ok
 
-    GDALExample();  //ok
+    //GDALExample();  //ok
 
     //ObjectId3(); //ok mas cai no ultimo...
 
-    //////OGRExampleRead();
+    //QueryExample_2(); //ok
 
-    //////ORGExampleWrite();
+    MemoryExample(); //Ok-cai no add (chamando o copy)
+
+    //OGRExampleRead(); //ok
+
+    //ORGExampleWrite();
 
     //////QueryExample(); //??? tem codigo comentado - cai...
-
-    QueryExample_2();
-
+   
     //////CopyingData();
-
-    //////MemoryExample();
 
     ////////PersistenceExample();
 

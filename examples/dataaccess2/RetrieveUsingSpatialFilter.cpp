@@ -12,7 +12,6 @@ void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
     std::auto_ptr<te::da::DataSet> dataset = ds->getDataSet("public.br_munic_2001");
 
     std::size_t pos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
-    //int pos = static_cast<int>(dType->getDefaultGeomPropertyPos());
 
     int row = 0;
 

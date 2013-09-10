@@ -234,11 +234,11 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_display->getSRID()))
     needRemap = true;
 
-  // Try to retrieve the layer selection
+  // Try retrieves the layer selection
   std::auto_ptr<te::da::DataSet> selected;
   try
   {
-    selected.reset(layer->getData(oids).release());
+    selected = layer->getData(oids);
   }
   catch(std::exception& e)
   {
