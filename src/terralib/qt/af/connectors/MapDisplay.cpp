@@ -238,7 +238,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
   std::auto_ptr<te::da::DataSet> selected;
   try
   {
-    selected.reset(layer->getData(oids).get());
+    selected = layer->getData(oids);
   }
   catch(std::exception& e)
   {
