@@ -471,8 +471,8 @@ void te::mem::DataSource::add(const std::string& datasetName,
                               const std::map<std::string, std::string>& /*options*/,
                               std::size_t limit)
 {
-  if(dataSetExists(datasetName))
-    throw Exception((boost::format(TR_MEMORY("There is a dataset with this name: \"%1%\"!")) % datasetName).str());
+  if(!dataSetExists(datasetName))
+    throw Exception((boost::format(TR_MEMORY("There is no dataset with this name: \"%1%\"!")) % datasetName).str());
 
   boost::lock_guard<boost::recursive_mutex> lock(m_mtx);
 
