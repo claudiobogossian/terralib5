@@ -82,7 +82,7 @@ namespace te
                                                    const std::string& propertyName,
                                                    const std::string& datasourceId);
 
-    TEDATAACCESSEXPORT void GetDataSets(std::vector<std::string>& datasets, const std::string& datasourceId);
+    TEDATAACCESSEXPORT void GetDataSetNames(std::vector<std::string>& datasetNames, const std::string& datasourceId);
 
     TEDATAACCESSEXPORT std::string GetDataSetCategoryName(int category);
 

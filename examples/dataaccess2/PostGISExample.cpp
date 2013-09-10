@@ -70,13 +70,21 @@ void PostGISExample()
 
 // Now, let's  remove things from the data source using transactor
     // first, drop the recently added property
-    std::cout << std::endl << "Droping Property population of 'our_country' "<< std::endl;
-//CAI    (transactor.get())->dropProperty(datasetType->getName(), "population");
+    std::cout << std::endl << "Droping Property population of 'our_country' using transactor or ds"<< std::endl;
+    //(transactor.get())->dropProperty(datasetType->getName(), "population");
+    DroppingDataSetTypeProperty("our_country1", "population",transactor.get()); 
+    //or using ds
+    ds->dropProperty("our_country1", "population");
 
     // finally, drop the dataset we have created above
     std::cout << std::endl << "Droping dataSet 'our_country' "<< std::endl;
-    //(transactor.get())->dropDataSet( datasetType->getName());
-
+    ds->dropDataSet("our_country1");
+    //(transactor.get())->dropDataSet( datasetType->getName()); /Not implemented Yet
+    
+    if (transactor->isInTransaction())
+    {
+      std::cout << std::endl << "Transactor in transaction! "<< std::endl;
+    }
     ds->close();
   }
   catch(const std::exception& e)

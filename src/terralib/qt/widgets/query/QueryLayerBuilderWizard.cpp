@@ -221,7 +221,7 @@ void te::qt::widgets::QueryLayerBuilderWizard::getDataSets()
 
   std::vector<std::string> datasetNames;
 
-  te::da::GetDataSets(datasetNames, dsId);
+  te::da::GetDataSetNames(datasetNames, dsId);
 
   m_dataSetPage->getWidget()->setDataSetNames(datasetNames);
 }

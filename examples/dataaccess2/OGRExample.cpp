@@ -46,9 +46,11 @@ void ORGExampleWrite()
 {
   try
   {
-    te::da::DataSet* datas = CreatingDataSetInMemory("marisa_soilmeasures");  
-    PrintDataSet("marisa_soilmeasures", datas);
+    //te::da::DataSet* datas = CreatingDataSetInMemory("marisa_soilmeasures");
+
+    //PrintDataSet("marisa_soilmeasures", datas);
     
+    te::da::DataSetType* dt1 = CreateDataSetTypeInMemory("test_marisa");
     //Writing in OGR
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
     std::map<std::string, std::string> connInfo;
@@ -57,15 +59,17 @@ void ORGExampleWrite()
     ds->open();
     
     //std::auto_ptr<te::da::DataSetType> dt1 =  datas->getDataSetType("marisa_soilmeasures"); 
-    //std::map<std::string, std::string> options; 
+    std::map<std::string, std::string> options; 
     //ds->createDataSet(dt1.get(),options);
-    te::da::DataSetType* dt1 = new te::da::DataSetType("marisa_soilmeasures");
+    //te::da::DataSetType* dt1 = new te::da::DataSetType("marisa_soilmeasures");
+    ds->createDataSet(dt1,options);
+    te::da::DataSet* datas = CreatingDataSetInMemoryGivingDt(dt1);
     //std::vector<std::string> pnames;
     //std::vector<int> ptypes;
     //te::da::GetPropertyInfo(datas,pnames,ptypes);
  
     ////Como obter o dataSetType do dataset em memory para criar e criá-lo e depois  adicionar o conteudo...
-    //ds->add("marisa_soilmeasures",datas,options);
+    ds->add("test_marisa",datas,options);
 
     ////Checking ...
     //std::auto_ptr<te::da::DataSet> datas_ogr = ds->getDataSet("marisa_soilmeasures");

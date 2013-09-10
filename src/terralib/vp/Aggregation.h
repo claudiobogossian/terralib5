@@ -123,7 +123,7 @@ namespace te
 
       \return The aggregation groups.
     */
-    std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::mem::DataSet* inputDataSet,
+    std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::da::DataSet* inputDataSet,
                                                                           const std::vector<te::dt::Property*>& groupingProperties);
 
     /*!
