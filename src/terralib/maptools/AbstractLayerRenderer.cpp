@@ -164,7 +164,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
       throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
 
     // Retrieves the data
-    std::auto_ptr<te::da::DataSet> dataset(layer->getData(rasterProperty->getName(), &ibbox, te::gm::INTERSECTS));
+    std::auto_ptr<te::da::DataSet> dataset(layer->getData(rasterProperty->getName(), &ibbox, te::gm::INTERSECTS).release());
 
     if(dataset.get() == 0)
       throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());

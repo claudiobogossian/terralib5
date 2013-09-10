@@ -167,7 +167,7 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
       // Retrieves the data from layer
       te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(ls.get());
 
-      std::auto_ptr<te::da::DataSet> dataset(layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).get());
+      std::auto_ptr<te::da::DataSet> dataset(layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).release());
       getGeometryInfo(layerItem, dataset.get(), reprojectedEnvelope, layer->getSRID(), needRemap);
     }
 
@@ -176,7 +176,7 @@ void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, cons
       // Retrieves the data from layer
       te::rst::RasterProperty* rp = te::da::GetFirstRasterProperty(ls.get());
 
-      std::auto_ptr<te::da::DataSet> dataset(layer->getData(rp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS));
+      std::auto_ptr<te::da::DataSet> dataset(layer->getData(rp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).release());
 
       if(!dataset->moveNext())
         return;
