@@ -468,8 +468,8 @@ void te::qt::af::CreateDefaultSettings()
 
   sett.beginGroup("projects");
 
-  sett.setValue("default author", "INPE team");
-  sett.setValue("maximum saved", "10");
+  sett.setValue("default author", "");
+  sett.setValue("maximum saved", "8");
 
   sett.endGroup();
 }
