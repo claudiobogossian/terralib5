@@ -324,8 +324,6 @@ QTableView(parent)
 
   setItemDelegate(m_delegate);
 
-  setFocus(Qt::ActiveWindowFocusReason);
-
   connect(verticalHeader(), SIGNAL(selectedRow(const int&, const bool&)), SLOT(highlightRow(const int&, const bool&)));
   connect(verticalHeader(), SIGNAL(selectedRows(const int&, const int&)), SLOT(highlightRows(const int&, const int&)));
 }
@@ -347,8 +345,6 @@ void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset)
 
   m_popupFilter->setDataSet(dset);
   m_delegate->setDataSet(dset);
-
-//  dset->moveFirst();
 }
 
 void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType* schema)
@@ -522,35 +518,4 @@ void te::qt::widgets::DataSetTableView::removeSelection(const int& initRow, cons
       toRemove.select(*it, *it);
 
   selectionModel()->select(toRemove, QItemSelectionModel::Deselect);
-}
-
-void te::qt::widgets::DataSetTableView::showEvent (QShowEvent * event)
-{
-  QTableView::showEvent(event);
-}
-
-void te::qt::widgets::DataSetTableView::paintEvent (QPaintEvent * event)
-{
-  QTableView::paintEvent(event);
-
-  if(event->type() == QEvent::ApplicationActivate)
-    setUpdatesEnabled(true);
-}
-
-void te::qt::widgets::DataSetTableView::focusOutEvent (QFocusEvent * event)
-{
-  QTableView::focusOutEvent(event);
-
-  setUpdatesEnabled(false);
-}
-
-void te::qt::widgets::DataSetTableView::focusInEvent (QFocusEvent * event)
-{
-  QTableView::focusInEvent(event);
-
-}
-
-void te::qt::widgets::DataSetTableView::hideEvent (QHideEvent * event)
-{
-  QTableView::hideEvent(event);
 }
