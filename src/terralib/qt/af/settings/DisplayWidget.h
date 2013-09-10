@@ -57,15 +57,17 @@ namespace te
 
           ~DisplayWidget();
 
-          virtual void saveChanges(){}
+          virtual void saveChanges();
 
-          virtual void resetState(){};
+          virtual void resetState();
 
           virtual void getHelpInformations(QString& ns, QString& helpFile);
 
         public slots:
 
-          void onApplyButtonClicked(){}
+          void onChangeBackgroundPushButton();
+
+          void onApplyButtonClicked();
 
         private:
 
