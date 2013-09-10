@@ -169,7 +169,7 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
 
     te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
 
-    std::auto_ptr<te::da::DataSet> dataset(layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).get());
+    std::auto_ptr<te::da::DataSet> dataset(layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).release());
     assert(dataset.get());
 
     // Let's generate the oids
