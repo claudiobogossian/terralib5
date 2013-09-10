@@ -60,7 +60,7 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
 
   try
   {
-    te::da::DataSourcePtr auxDs(te::da::DataSourceManager::getInstance().get(ds->getId(), ds->getType(), ds->getConnInfo()));
+    te::da::DataSourcePtr auxDs = te::da::DataSourceManager::getInstance().get(ds->getId(), ds->getType(), ds->getConnInfo());
 
     draw(dataset, auxDs);
   }

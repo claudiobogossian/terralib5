@@ -311,7 +311,7 @@ boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std
     std::vector<te::dt::Property*>::iterator it;
 
     for(it=props.begin(); it!=props.end(); ++it)
-      ps.push_back(*it);
+      ps.push_back((*it)->clone());
   }
 
   m_ogrDs->getOGRDataSource()->ReleaseResultSet(l);
