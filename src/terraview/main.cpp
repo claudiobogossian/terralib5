@@ -39,7 +39,7 @@
 #include <QtGui/QApplication>
 #include <QtGui/QSplashScreen>
 
-#include <locale.h>
+#include <locale>
 
 int main(int argc, char** argv)
 {

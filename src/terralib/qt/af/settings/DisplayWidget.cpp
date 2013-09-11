@@ -21,6 +21,25 @@ m_ui(new Ui::DisplayWidgetForm)
 
   m_resumeText = tr("Configurations of the display");
 
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QString hexColor = sett.value("display/defaultDisplayColor").toString();
+  QColor dColor;
+  dColor.setNamedColor(hexColor);
+
+  QPalette palette = m_ui->m_backColor->palette();
+
+  if(!dColor.isValid())
+  {
+    palette.setColor(QPalette::Window, Qt::white);
+  }
+  else
+  {
+    palette.setColor(QPalette::Window, dColor);
+  }
+
+  m_ui->m_backColor->setPalette(palette);
+  m_ui->m_backColor->setAutoFillBackground(true);
+
   connect(m_ui->m_changeBackgroundPushButton, SIGNAL(clicked()), SLOT(onChangeBackgroundPushButton()));
 }
 
@@ -40,6 +59,8 @@ void te::qt::af::DisplayWidget::onChangeBackgroundPushButton()
   palette.setColor(QPalette::Window, color);
   m_ui->m_backColor->setPalette(palette);
   m_ui->m_backColor->setAutoFillBackground(true);
+
+  changeApplyButtonState(true);
 }
 
 void te::qt::af::DisplayWidget::saveChanges()
@@ -47,11 +68,30 @@ void te::qt::af::DisplayWidget::saveChanges()
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.setValue("display/defaultDisplayColor", m_ui->m_backColor->palette().color(QPalette::Window).name());
+
+  changeApplyButtonState(false);
 }
 
 void te::qt::af::DisplayWidget::resetState()
 {
-  
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QString hexColor = sett.value("display/defaultDisplayColor").toString();
+  QColor dColor;
+  dColor.setNamedColor(hexColor);
+
+  QPalette palette = m_ui->m_backColor->palette();
+
+  if(!dColor.isValid())
+  {
+    palette.setColor(QPalette::Window, Qt::white);
+  }
+  else
+  {
+    palette.setColor(QPalette::Window, dColor);
+  }
+
+  m_ui->m_backColor->setPalette(palette);
+  m_ui->m_backColor->setAutoFillBackground(true);
 }
 
 void te::qt::af::DisplayWidget::onApplyButtonClicked()

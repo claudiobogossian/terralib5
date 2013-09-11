@@ -491,3 +491,15 @@ QString te::qt::af::UnsavedStar(const QString windowTitle, bool isUnsaved)
 
   return result;
 }
+
+QColor te::qt::af::GetDefaultDisplayColorFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QString hexColor = sett.value("display/defaultDisplayColor").toString();  
+  QColor defaultColor;
+  defaultColor.setNamedColor(hexColor);
+  if(!defaultColor.isValid())
+    return Qt::white;
+
+  return defaultColor;
+}

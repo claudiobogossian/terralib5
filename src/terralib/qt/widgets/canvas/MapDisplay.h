@@ -155,6 +155,20 @@ namespace te
           */
           virtual QPointF transform(const QPointF& p);
 
+          /*!
+            \brief Get the display Background Color
+
+            \return The display Background Color.
+          */
+          virtual QColor getBackgroundColor();
+
+          /*!
+            \brief Set the display Background Color
+
+            \param color The color.
+          */
+          virtual void setBackgroundColor(const QColor& color);
+
         protected:
 
           /*!

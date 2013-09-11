@@ -290,3 +290,13 @@ void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize
 
   setExtent(e);
 }
+
+QColor te::qt::widgets::MapDisplay::getBackgroundColor()
+{
+  return m_backgroundColor;
+}
+
+void te::qt::widgets::MapDisplay::setBackgroundColor(const QColor& color)
+{
+  m_backgroundColor = color;
+}

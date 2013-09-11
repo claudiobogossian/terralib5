@@ -173,6 +173,13 @@ namespace te
       TEQTAFEXPORT QString GetLastDatasourceFromSettings();
 
       /*!
+        \brief
+
+        \return
+      */
+      TEQTAFEXPORT QColor GetDefaultDisplayColorFromSettings();
+
+      /*!
         \brief Creates a default QSettings.
       */
       TEQTAFEXPORT void CreateDefaultSettings();
