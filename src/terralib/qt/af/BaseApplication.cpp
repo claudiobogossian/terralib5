@@ -1076,12 +1076,16 @@ void te::qt::af::BaseApplication::onLayerSelectionChanged(const te::map::Abstrac
 
 void te::qt::af::BaseApplication::onLayerExplorerVisibilityChanged(bool visible)
 {
+  m_viewLayerExplorer->blockSignals(true);
   m_viewLayerExplorer->setChecked(visible);
+  m_viewLayerExplorer->blockSignals(false);
 }
 
 void te::qt::af::BaseApplication::onDisplayVisibilityChanged(bool visible)
 {
+  m_viewMapDisplay->blockSignals(true);
   m_viewMapDisplay->setChecked(visible);
+  m_viewMapDisplay->blockSignals(false);
 }
 
 void te::qt::af::BaseApplication::onDisplayDataTableChanged(bool visible)
@@ -1102,7 +1106,9 @@ void te::qt::af::BaseApplication::onDisplayDataTableChanged(bool visible)
 
 void te::qt::af::BaseApplication::onStyleExplorerVisibilityChanged(bool visible)
 {
+  m_viewStyleExplorer->blockSignals(true);
   m_viewStyleExplorer->setChecked(visible);
+  m_viewStyleExplorer->blockSignals(false);
 }
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
@@ -1282,7 +1288,6 @@ void te::qt::af::BaseApplication::makeDialog()
   te::qt::af::ApplicationController::getInstance().addListener(m_display);
   te::qt::af::ApplicationController::getInstance().addListener(m_symbolizerExplorer);
   //te::qt::af::ApplicationController::getInstance().addListener(m_viewer);
-
 
 // initializing connector widgets
   QDockWidget* doc = new QDockWidget(tr("Map Display"), this);
