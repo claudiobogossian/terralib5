@@ -28,7 +28,7 @@
 
 // TerraLib
 #include <terralib/common.h>
-#include <terralib/dataaccess_fw.h>
+#include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/datatype_fw.h>
 #include "../Config.h"
 
@@ -55,6 +55,10 @@ void PrintDataSets(te::da::DataSource* ds);
   \param dataset A dataset.
  */
 void PrintDataSetValues(const std::string& datasetName, te::da::DataSet* dataset);
+
+void Copy(std::string dataSetName, std::auto_ptr<te::da::DataSource> inDs, std::auto_ptr<te::da::DataSource> outDs);
+
+void CopyFromShapeFile();
 
 #endif  // __TERRALIB_EXAMPLES_ADO_INTERNAL_ADOEXAMPLES_H
 

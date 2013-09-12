@@ -102,7 +102,7 @@ std::auto_ptr<te::map::Grouping> te::qt::widgets::GroupingWidget::getGrouping()
   group->setStdDeviation(m_ui->m_stdDevDoubleSpinBox->value());
 
   std::vector<te::map::GroupingItem*> groupingItems;
-  for(size_t t = 0; t < m_legend.size(); ++t)
+  for(std::size_t t = 0; t < m_legend.size(); ++t)
   {
     te::map::GroupingItem* gi = new te::map::GroupingItem(*m_legend[t]);
 
@@ -157,7 +157,7 @@ void te::qt::widgets::GroupingWidget::updateUi()
 {
   m_ui->m_tableWidget->setRowCount(0);
 
-  for(size_t t = 0; t < m_legend.size(); ++t)
+  for(std::size_t t = 0; t < m_legend.size(); ++t)
   {
     te::map::GroupingItem* gi = m_legend[t];
 
@@ -379,28 +379,41 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
 {
   assert(m_layer.get());
 
+  std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
+
+  std::size_t idx;
+
+  for(std::size_t t = 0; t < dsType->getProperties().size(); ++t)
+  {
+    if(dsType->getProperty(t)->getName() == attrName)
+    {
+      idx = t;
+      break;
+    }
+  }
+
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
 
   ds->moveBeforeFirst();
 
   while(ds->moveNext())
   {
-    if(ds->isNull(attrName))
+    if(ds->isNull(idx))
       continue;
 
     if(dataType == te::dt::INT16_TYPE)
-      vec.push_back((double)ds->getInt16(attrName));
+      vec.push_back((double)ds->getInt16(idx));
     else if(dataType == te::dt::INT32_TYPE)
-      vec.push_back((double)ds->getInt32(attrName));
+      vec.push_back((double)ds->getInt32(idx));
     else if(dataType == te::dt::INT64_TYPE)
-      vec.push_back((double)ds->getInt64(attrName));
+      vec.push_back((double)ds->getInt64(idx));
     else if(dataType == te::dt::FLOAT_TYPE)
-      vec.push_back((double)ds->getFloat(attrName));
+      vec.push_back((double)ds->getFloat(idx));
     else if(dataType == te::dt::DOUBLE_TYPE)
-      vec.push_back(ds->getDouble(attrName));
+      vec.push_back(ds->getDouble(idx));
     else if(dataType == te::dt::NUMERIC_TYPE)
     {
-      QString strNum = ds->getNumeric(attrName).c_str();
+      QString strNum = ds->getNumeric(idx).c_str();
 
       bool ok = false;
 
@@ -416,14 +429,27 @@ void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& 
 {
   assert(m_layer.get());
 
+  std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
+
+  std::size_t idx;
+
+  for(std::size_t t = 0; t < dsType->getProperties().size(); ++t)
+  {
+    if(dsType->getProperty(t)->getName() == attrName)
+    {
+      idx = t;
+      break;
+    }
+  }
+
   std::auto_ptr<te::da::DataSet> ds(m_layer->getData());
 
   ds->moveBeforeFirst();
 
   while(ds->moveNext())
   {
-    if(!ds->isNull(attrName))
-      vec.push_back(ds->getAsString(attrName));
+    if(!ds->isNull(idx))
+      vec.push_back(ds->getAsString(idx));
   }
 }
 
@@ -515,6 +541,4 @@ void te::qt::widgets::GroupingWidget::listAttributes()
       }
     }
   }
-
-  
 }

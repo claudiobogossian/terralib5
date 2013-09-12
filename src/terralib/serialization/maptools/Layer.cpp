@@ -506,9 +506,12 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   /* Visible Element */
   reader.next();
   std::string visible = ReadLayerVisibility(reader);
+  reader.next();
+
+  /* Grouping */
+  te::map::Grouping* grouping = ReadLayerGrouping(reader);
 
   /* Query Element */
-  reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Select");
   te::da::Select* query = te::serialize::xml::ReadSelect(reader);
@@ -579,6 +582,9 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
   layer->setStyle(style.release());
+
+  if(grouping)
+    layer->setGrouping(grouping);
 
   return layer.release();
 }

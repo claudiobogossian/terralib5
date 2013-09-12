@@ -28,14 +28,18 @@
 
 // TerraLib
 #include <terralib/common.h>
-#include <terralib/dataaccess.h>
+#include <terralib/dataaccess/dataset/DataSet.h>
+#include <terralib/dataaccess/datasource/DataSource.h>
+#include <terralib/dataaccess/datasource/DataSourceTransactor.h>
 
 // STL
 #include <iostream>
+#include <memory>
 
 
 void PrintCatalog(te::da::DataSource* ds)
 {
+
   if(ds == 0 || !ds->isOpened())
   {
     std::cout << "The informed data source is NULL or is closed!" << std::endl;
@@ -46,14 +50,7 @@ void PrintCatalog(te::da::DataSource* ds)
   std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
   //te::da::DataSourceTransactor* t = ds->getTransactor();
 
-  // From the transactor, take a catalog loader to find out the datasets stored in the data source
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
-  //te::da::DataSourceCatalogLoader* cloader = t->getCatalogLoader();
-
-  // Retrieve the name of the datasets
-  boost::ptr_vector<std::string> datasets;
-
-  cloader->getDataSets(datasets);
+  std::vector<std::string> datasets = ds->getDataSetNames();
 
   // Iterate over the dataset names to retrieve its information
   std::cout << "Printing information about datasets...\n\nNumber of datasets: " << datasets.size() << std::endl;
@@ -63,7 +60,7 @@ void PrintCatalog(te::da::DataSource* ds)
     // Get dataset information: the parameter true indicates that we want all the information about the dataset;
     // you can set it to false and see the difference (no primary key and other stuffs are retrieved)
 
-    std::auto_ptr<te::da::DataSetType> dt(cloader->getDataSetType(datasets[i], true));
+    std::auto_ptr<te::da::DataSetType> dt(ds->getDataSetType(datasets[i]));
 
     std::cout << "\n=============================================================================" << std::endl;
     std::cout << "DataSet: " << dt->getName() << std::endl;
