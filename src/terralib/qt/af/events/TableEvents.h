@@ -52,14 +52,20 @@ namespace te
             \brief Constructor.
 
             \param isAlternating If table has alternating row colors.
+            \param primaryColor Primary Color.
+            \param secondaryColor Secondary Color.
           */
-          TableAlternatingColorsChanged(bool isAlternating) : 
+          TableAlternatingColorsChanged(bool isAlternating, QColor primaryColor, QColor secondaryColor) : 
             Event(TABLE_ALTERNATE_COLORS_CHANGED),
-            m_isAlternating(isAlternating)
+            m_isAlternating(isAlternating),
+            m_primaryColor(primaryColor),
+            m_secondaryColor(secondaryColor)
           {
           }
 
           bool m_isAlternating;
+          QColor m_primaryColor;
+          QColor m_secondaryColor;
         };
       }
     }

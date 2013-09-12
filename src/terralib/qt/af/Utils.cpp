@@ -503,3 +503,39 @@ QColor te::qt::af::GetDefaultDisplayColorFromSettings()
 
   return defaultColor;
 }
+
+QString te::qt::af::GetStyleSheetFromColors(QColor primaryColor, QColor secondaryColor)
+{
+  QString sty("alternate-background-color: ");
+  sty += "rgb(" + QString::number(secondaryColor.red()) + ", " + QString::number(secondaryColor.green());
+  sty += ", " + QString::number(secondaryColor.blue()) + ")";
+  sty += ";background-color: rgb(" + QString::number(primaryColor.red()) + ", " + QString::number(primaryColor.green());
+  sty += ", " + QString::number(primaryColor.blue()) + ");";
+
+  return sty;
+}
+
+QString te::qt::af::GetStyleSheetFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  bool isChecked = sett.value("table/tableAlternateColors").toBool();
+  QColor pColor;
+  pColor.setNamedColor(sett.value("table/primaryColor").toString());
+  QColor sColor;
+  sColor.setNamedColor(sett.value("table/secondaryColor").toString());
+
+  if(!pColor.isValid())
+    pColor = Qt::white;
+  if(!sColor.isValid())
+    sColor = Qt::white;
+
+  return GetStyleSheetFromColors(pColor, sColor);
+}
+
+bool te::qt::af::GetAlternateRowColorsFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  bool isChecked = sett.value("table/tableAlternateColors").toBool();
+
+  return isChecked;
+}

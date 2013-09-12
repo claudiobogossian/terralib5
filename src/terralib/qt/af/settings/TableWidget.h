@@ -67,11 +67,17 @@ namespace te
 
           void onApplyButtonClicked();
 
-          void onAlternateColorsCheckBoxClicked();
+          void onAlternateRowColorsGroupBoxClicked();
+
+          void onPrimaryPushButtonClicked();
+
+          void onSecondaryPushButtonClicked();
 
         private:
 
           Ui::TableWidgetForm* m_ui;
+          QColor m_primaryColor;
+          QColor m_secondaryColor;
 
       };
 
