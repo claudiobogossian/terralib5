@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "AbstractRenderer.h"
+#include "WorldDeviceTransformer.h"
 
 // STL
 #include <string>
@@ -127,10 +128,13 @@ namespace te
                                   Canvas* canvas,
                                   const te::gm::Envelope& bbox,
                                   int srid);
+
+      private:
+
+        WorldDeviceTransformer m_transformer;
     };
 
   } // end namespace map
 }   // end namespace te
 
 #endif  // __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTLAYERRENDERER_H
-
