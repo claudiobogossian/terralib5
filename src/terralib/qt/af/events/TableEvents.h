@@ -18,16 +18,18 @@
  */
 
 /*!
-  \file terralib/qt/af/events/Enums.h
+  \file TableEvents.h
 
-  \brief Enumerations for the TerraLib Application Framework.
+  \brief Contains a list of the table events.
 */
 
-#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
-#define __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
+#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_TABLEEVENTS_H
+#define __TERRALIB_QT_AF_EVENTS_INTERNAL_TABLEEVENTS_H
 
-// TerraLib
+#include "../../../maptools/Enums.h"
+#include "../../../maptools/AbstractLayer.h"
 #include "Event.h"
+#include "Enums.h"
 
 namespace te
 {
@@ -37,33 +39,31 @@ namespace te
     {
       namespace evt
       {
-        enum
+        /*!
+          \struct TableAlternatingColorsChanged
+
+          \brief This event signals that table has alternating row colors.
+
+          \ingroup afevents
+         */
+        struct TableAlternatingColorsChanged : public Event
         {
-          APP_CLOSED,
-          TOOLBAR_ADDED,
-          DISPLAY_RESIZED,
-          LAYER_ADDED,
-          LAYER_SELECTED,
-          LAYER_VISIBILITY_CHANGED,
-          LAYER_SELECTION_CHANGED,
-          LAYERS_CHANGED,
-          TOOL_CHANGED,
-          COORDINATE_TRACKED,
-          POINT_GEOMETRIES,
-          VISIBLE_BBOX_CHANGED,
-          STYLE_CHANGED,
-          PROJECT_ADDED,
-          PROJECT_UNSAVED,
-          MAP_SRID_CHANGED,
-          MAP_COLOR_CHANGED,
-          TABLE_ALTERNATE_COLORS_CHANGED,
-          CUSTOM = 1024
+          /*!
+            \brief Constructor.
+
+            \param isAlternating If table has alternating row colors.
+          */
+          TableAlternatingColorsChanged(bool isAlternating) : 
+            Event(TABLE_ALTERNATE_COLORS_CHANGED),
+            m_isAlternating(isAlternating)
+          {
+          }
+
+          bool m_isAlternating;
         };
+      }
+    }
+  }
+}
 
-      } // end namespace evt
-    }   // end namespace af
-  }     // end namesopace qt
-}       // end namespace te
-
-#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
-
+#endif //__TERRALIB_QT_AF_EVENTS_INTERNAL_TABLEEVENTS_H
