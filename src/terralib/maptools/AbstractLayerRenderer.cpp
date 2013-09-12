@@ -624,20 +624,12 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   if(dataset->moveNext() == false)
     return;
 
+  // Gets the first geometry property
   std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
 
-  std::auto_ptr<te::map::LayerSchema> dsType(layer->getSchema());
-
-  std::size_t idx;
-
-  for(std::size_t t = 0; t < dsType->getProperties().size(); ++t)
-  {
-    if(dsType->getProperty(t)->getName() == propertyName)
-    {
-      idx = t;
-      break;
-    }
-  }
+  // Gets the property position
+  std::auto_ptr<te::map::LayerSchema> dt(layer->getSchema());
+  std::size_t propertyPos = te::da::GetPropertyPos(dt.get(), propertyName);
 
   // Verifies if is necessary convert the data set geometries to the given srid
   bool needRemap = false;
@@ -649,7 +641,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
     std::vector<te::se::Symbolizer*> symbolizers;
 
     // Finds the current data set item on group map
-    std::string value = dataset->getAsString(idx, precision);
+    std::string value = dataset->getAsString(propertyPos, precision);
 
     if(type == UNIQUE_VALUE)
     {
