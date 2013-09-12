@@ -58,7 +58,7 @@
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Maximum recent projects:</string>
+          <string>Maximum number of projects shown in “Recent projects”:</string>
          </property>
         </widget>
        </item>

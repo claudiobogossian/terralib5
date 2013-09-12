@@ -55,6 +55,7 @@ namespace te
           PROJECT_ADDED,
           PROJECT_UNSAVED,
           MAP_SRID_CHANGED,
+          MAP_COLOR_CHANGED,
           CUSTOM = 1024
         };
 
