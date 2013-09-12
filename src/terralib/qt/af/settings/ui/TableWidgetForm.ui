@@ -119,8 +119,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>m_alternateColorsCheckBox</zorder>
-  <zorder>groupBox_2</zorder>
  </widget>
  <resources/>
  <connections/>

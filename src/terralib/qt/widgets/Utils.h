@@ -189,6 +189,13 @@ namespace te
       TEQTWIDGETSEXPORT te::color::RGBAColor Convert2TerraLib(const QColor& color);
 
       /*!
+        \brief It converts a TerraLib Color to Qt Color.
+
+        \param color The TerraLib Color that will be converted.
+      */
+      TEQTWIDGETSEXPORT QColor Convert2Qt(const te::color::RGBAColor& color);
+
+      /*!
         \brief It configs (i.e. prepares) the given canvas to draw polygons.
 
         \param canvas The canvas that will be configured. Do not pass NULL!
