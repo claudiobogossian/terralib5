@@ -33,6 +33,9 @@
 #include <string>
 #include <utility>
 
+// Qt
+#include <QtGui/QColor>
+
 namespace te
 {
   namespace qt
@@ -62,6 +65,29 @@ namespace te
           }
 
           std::pair<int, std::string> m_srid;
+        };
+
+        /*!
+          \struct MapColorChanged
+
+          \brief This event signals that the color of the map display changed.
+
+          \ingroup afevents
+         */
+        struct MapColorChanged : public Event
+        {
+          /*!
+            \brief Constructor.
+
+            \param color The new color of map display.
+          */
+          MapColorChanged(QColor color)
+            : Event(MAP_COLOR_CHANGED),
+              m_color(color)
+          {
+          }
+
+          QColor m_color;
         };
       }
     }

@@ -49,8 +49,6 @@ te::ado::Connection::Connection(const std::string& conninfo, bool inuse)
   if(conninfo.empty())
     return;
 
-  ::CoInitialize(0);
-
   _bstr_t connStr = conninfo.c_str();
 
   try
@@ -83,7 +81,6 @@ te::ado::Connection::~Connection()
 {
   if(m_conn)
     m_conn->Close();
-  ::CoUninitialize();
 }
 
 _RecordsetPtr te::ado::Connection::query(const std::string& query, bool connected)

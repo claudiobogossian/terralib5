@@ -28,6 +28,7 @@
 #include "../se/Style.h"
 #include "../srs/Config.h"
 #include "AbstractLayer.h"
+#include "Chart.h"
 #include "Grouping.h"
 
 te::map::AbstractLayer::AbstractLayer(AbstractLayer* parent)
@@ -37,7 +38,8 @@ te::map::AbstractLayer::AbstractLayer(AbstractLayer* parent)
     m_visibilityChanged(false),
     m_selected(0),
     m_style(0),
-    m_grouping(0)
+    m_grouping(0),
+    m_chart(0)
 {
 }
 
@@ -49,7 +51,8 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id, AbstractLayer* pare
     m_visibilityChanged(false),
     m_selected(0),
     m_style(0),
-    m_grouping(0)
+    m_grouping(0),
+    m_chart(0)
 {
 }
 
@@ -64,7 +67,8 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id,
     m_visibilityChanged(false),
     m_selected(0),
     m_style(0),
-    m_grouping(0)
+    m_grouping(0),
+    m_chart(0)
 {
 }
 
@@ -73,6 +77,7 @@ te::map::AbstractLayer::~AbstractLayer()
   delete m_selected;
   delete m_style;
   delete m_grouping;
+  delete m_chart;
 }
 
 const std::string& te::map::AbstractLayer::getId() const
@@ -280,4 +285,15 @@ void te::map::AbstractLayer::setGrouping(te::map::Grouping* grouping)
 {
   delete m_grouping;
   m_grouping = grouping;
+}
+
+te::map::Chart* te::map::AbstractLayer::getChart() const
+{
+  return m_chart;
+}
+
+void te::map::AbstractLayer::setChart(te::map::Chart* chart)
+{
+  delete m_chart;
+  m_chart = chart;
 }

@@ -25,6 +25,7 @@
 #include "../../widgets/table/DataSetTableView.h"
 #include "../../widgets/utils/ScopedCursor.h"
 #include "../events/LayerEvents.h"
+#include "../events/TableEvents.h"
 #include "../ApplicationController.h"
 
 te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
@@ -79,6 +80,13 @@ void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt:
 
       if(ev->m_layer->getId() == m_layer->getId())
         m_view->highlightOIds(ev->m_layer->getSelected());
+    }
+    break;
+
+    case te::qt::af::evt::TABLE_ALTERNATE_COLORS_CHANGED:
+    {
+      te::qt::af::evt::TableAlternatingColorsChanged* ev = static_cast<te::qt::af::evt::TableAlternatingColorsChanged*>(evt);
+      m_view->setAlternatingRowColors(ev->m_isAlternating);
     }
     break;
   }

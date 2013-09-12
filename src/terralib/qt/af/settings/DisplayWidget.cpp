@@ -1,4 +1,5 @@
 #include "../ApplicationController.h"
+#include "../events/MapEvents.h"
 #include "../Utils.h"
 
 #include "ui_DisplayWidgetForm.h"
@@ -68,6 +69,10 @@ void te::qt::af::DisplayWidget::saveChanges()
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   sett.setValue("display/defaultDisplayColor", m_ui->m_backColor->palette().color(QPalette::Window).name());
+
+  te::qt::af::evt::MapColorChanged mapColorChanged(m_ui->m_backColor->palette().color(QPalette::Window));
+
+  te::qt::af::ApplicationController::getInstance().broadcast(&mapColorChanged);
 
   changeApplyButtonState(false);
 }

@@ -217,6 +217,14 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     }
     break;
 
+    case te::qt::af::evt::MAP_COLOR_CHANGED:
+    {
+      te::qt::af::evt::MapColorChanged* mapColorChanged = static_cast<te::qt::af::evt::MapColorChanged*>(e);
+      m_display->setBackgroundColor(mapColorChanged->m_color);
+      m_display->refresh();
+    }
+    break;
+
     default:
       return;
   }

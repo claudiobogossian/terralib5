@@ -446,6 +446,23 @@ std::size_t te::da::GetPropertyPos(const DataSet* dataset, const std::string& na
   return std::string::npos;
 }
 
+std::size_t te::da::GetPropertyPos(const DataSetType* dt, const std::string& name)
+{
+  assert(dt);
+
+  const std::size_t np = dt->getProperties().size();
+
+  for(std::size_t i = 0; i != np; ++i)
+  {
+    std::string pname = dt->getProperty(i)->getName();
+
+    if(boost::iequals(pname, name))
+      return i;
+  }
+
+  return std::string::npos;
+}
+
 te::dt::Property* te::da::GetFirstSpatialProperty(const DataSetType* dt)
 {
   assert(dt);
