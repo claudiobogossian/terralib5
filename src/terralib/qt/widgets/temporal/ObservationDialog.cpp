@@ -40,18 +40,18 @@ te::qt::widgets::ObservationDialog::ObservationDialog(te::map::AbstractLayerPtr 
   m_ui->setupUi(this);
 
   // Time Properties Widget
-  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(layer->getData().get(), this));
+  te::da::DataSet* dataset = layer->getData().release();
+  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(dataset, this));
 
   //Observed Properties
-  std::auto_ptr<te::da::DataSet> dataSet (layer->getData());
   std::vector<std::string> properties;
 
   // Creating the properties list. DATETIME_TYPE properties can not be included.
-  for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
+  for (std::size_t i = 0; i < dataset->getNumProperties(); i++)
   {
-    if(dataSet->getPropertyDataType(i) != te::dt::DATETIME_TYPE)
+    if(dataset->getPropertyDataType(i) != te::dt::DATETIME_TYPE)
     {
-      properties.push_back(dataSet->getPropertyName(i));
+      properties.push_back(dataset->getPropertyName(i));
     }
   }
 

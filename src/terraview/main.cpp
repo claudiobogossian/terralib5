@@ -39,9 +39,13 @@
 #include <QtGui/QApplication>
 #include <QtGui/QSplashScreen>
 
+#include <locale>
+
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
+
+  setlocale(LC_ALL,"C");// This force to use "." as decimal separator.
 
   //QResource::registerResource(TERRAVIEW_RESOURCE_FILE);
 

@@ -186,16 +186,6 @@ namespace te
 
           void removeSelection(const int& initRow, const int& finalRow);
 
-          void showEvent (QShowEvent * event); 
-          
-          void paintEvent (QPaintEvent * event); 
-
-          void focusOutEvent (QFocusEvent * event);
-
-          void focusInEvent (QFocusEvent * event);
-          
-          void hideEvent (QHideEvent * event); 
-
           DataSetTableModel* m_model;       //!< The model to be used.
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
           HighlightDelegate* m_delegate;    //!< Delegate used for rendering selected rows.

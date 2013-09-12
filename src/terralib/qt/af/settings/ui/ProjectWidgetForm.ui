@@ -40,7 +40,7 @@
        <item>
         <widget class="QLineEdit" name="m_authorLineEdit">
          <property name="text">
-          <string>Default auhor name</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -58,12 +58,12 @@
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Maximum projects saved:</string>
+          <string>Maximum recent projects:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="m_numSavedProjectsSpinBox">
+        <widget class="QSpinBox" name="m_numRecentProjectsSpinBox">
          <property name="minimum">
           <number>1</number>
          </property>
@@ -108,7 +108,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <widget class="QRadioButton" name="radioButton">
+             <widget class="QRadioButton" name="m_lastProjectRadioButton">
               <property name="text">
                <string>Last</string>
               </property>
@@ -118,9 +118,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="radioButton_2">
+             <widget class="QRadioButton" name="m_noneProjectRadioButton">
               <property name="text">
-               <string>Most used</string>
+               <string>None</string>
               </property>
              </widget>
             </item>

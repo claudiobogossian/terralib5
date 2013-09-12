@@ -468,8 +468,8 @@ void te::qt::af::CreateDefaultSettings()
 
   sett.beginGroup("projects");
 
-  sett.setValue("default author", "INPE team");
-  sett.setValue("maximum saved", "10");
+  sett.setValue("default author", "");
+  sett.setValue("maximum saved", "8");
 
   sett.endGroup();
 }
@@ -490,4 +490,16 @@ QString te::qt::af::UnsavedStar(const QString windowTitle, bool isUnsaved)
   }
 
   return result;
+}
+
+QColor te::qt::af::GetDefaultDisplayColorFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QString hexColor = sett.value("display/defaultDisplayColor").toString();  
+  QColor defaultColor;
+  defaultColor.setNamedColor(hexColor);
+  if(!defaultColor.isValid())
+    return Qt::white;
+
+  return defaultColor;
 }
