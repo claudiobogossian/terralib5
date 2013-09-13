@@ -285,9 +285,13 @@ namespace te
           */
           bool remove(AbstractTreeItem* item);
 
+          /*! \brief It refreshes the model. */
+          void refresh();
+
         signals:
 
           void visibilityChanged(te::qt::widgets::AbstractTreeItem* item);
+
           void layerAdded(te::qt::widgets::AbstractTreeItem* item);
 
         protected:
@@ -309,7 +313,7 @@ namespace te
         private:
 
           std::vector<AbstractTreeItem*> m_items;                  //!< The list of layers of this model.
-          bool m_checkable;                                             //!< It informs if the model is checkable.
+          bool m_checkable;                                        //!< It informs if the model is checkable.
       };
 
     } // end namespace widgets

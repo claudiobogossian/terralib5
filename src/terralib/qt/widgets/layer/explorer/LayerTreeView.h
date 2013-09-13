@@ -56,7 +56,7 @@ namespace te
 
         \brief A tree view for the layers of an application.
 
-        \sa LayerExplorer, LayerTreeViewModel
+        \sa LayerExplorer, LayerTreeModel
       */
       class TEQTWIDGETSEXPORT LayerTreeView : public QTreeView, public boost::noncopyable
       {
@@ -77,6 +77,8 @@ namespace te
           ~LayerTreeView();
 
           std::list<AbstractTreeItem*> getSelectedItems() const;
+
+          void refresh();
 
         signals:
 
