@@ -57,7 +57,7 @@ int main(int /*argc*/, char** /*argv*/)
     connInfo["HOST"] = "localhost";
     connInfo["USER_NAME"] = "";
     connInfo["PASSWORD"] = "";
-    connInfo["DB_NAME"] = ""TE_DATA_EXAMPLE_DIR"/data/ado/ADODataSource.accdb";
+    connInfo["DB_NAME"] = ""TE_DATA_EXAMPLE_DIR"/data/mdb/ADODataSource.mdb";
    
     // Create a data source using the data source factory
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO"));
