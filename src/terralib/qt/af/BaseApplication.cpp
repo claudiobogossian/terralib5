@@ -293,7 +293,7 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
 // try to load the last opened project
   QString recentProject = te::qt::af::ApplicationController::getInstance().getMostRecentProject();
 
-  if(recentProject.isEmpty())
+  if(recentProject.isEmpty() || !te::qt::af::GetOpenLastProjectFromSettings())
     newProject();
   else
   {

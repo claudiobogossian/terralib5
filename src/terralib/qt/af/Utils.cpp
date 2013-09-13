@@ -417,11 +417,31 @@ void te::qt::af::SaveLastDatasourceOnSettings(const QString& dsType)
   sett.setValue("projects/last datasource used", dsType);
 }
 
+void te::qt::af::SaveOpenLastProjectOnSettings(bool openLast)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.setValue("projects/openLastDataSource", openLast);
+}
+
 QString te::qt::af::GetLastDatasourceFromSettings()
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   return sett.value("projects/last datasource used").toString();
+}
+
+bool te::qt::af::GetOpenLastProjectFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  QVariant variant = sett.value("projects/openLastDataSource");
+
+  // If the option was never edited
+  if(variant.isNull() || !variant.isValid())
+    return true;
+
+  return variant.toBool();
 }
 
 void te::qt::af::CreateDefaultSettings()
