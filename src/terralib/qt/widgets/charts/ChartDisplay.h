@@ -122,6 +122,14 @@ namespace te
           void highlightOIds(const te::da::ObjectIdSet* oids);
 
           /*!
+            \brief color used to hgihlight selected objects on this display.
+
+            \param selColor The color used to hgihlight selected objects on this display.
+
+          */
+          void setSelectionColor(QColor selColor);
+
+          /*!
             \brief Updates the general display settings according to the ChartStyle.
                    The adjusted properties are:
                       Title;

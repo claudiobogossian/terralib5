@@ -72,7 +72,9 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
     setSymbol(new QwtSymbol( QwtSymbol::Ellipse, QBrush( Qt::gray ), QPen( Qt::black, 1 ), QSize( 8, 8 )));
   }
 
-  m_selection->setSymbol(new QwtSymbol( symbol()->style(), symbol()->brush().color().darker (180 ), symbol()->pen().color().darker( 180), symbol()->size()));
+  //The default selection color is green
+  m_selColor = ("#00FF00");
+  m_selection->setSymbol(new QwtSymbol( symbol()->style(), m_selColor, m_selColor, symbol()->size()));
 }
 
 te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, ScatterStyle* style, size_t size) :
@@ -153,9 +155,7 @@ void te::qt::widgets::ScatterChart::setScatterStyle(te::qt::widgets::ScatterStyl
 
   QwtSymbol* selSymbol = new QwtSymbol( symbol()->style(), symbol()->brush().color().darker (180 ), symbol()->pen().color().darker( 180), symbol()->size());
   QPixmap selPixmap = symbol()->pixmap();
-  QColor selColor = selSymbol->brush().color();
-  selColor.setAlpha(100);
-  selPixmap.fill(selColor);
+  selPixmap.fill(m_selColor);
   selSymbol->setPixmap(selPixmap);
   m_selection->setSymbol(selSymbol);
 }
@@ -220,4 +220,12 @@ te::da::ObjectIdSet* te::qt::widgets::ScatterChart::highlight(QRectF rect)
     }
   }
   return m_scatter->find(selected);
+}
+
+void te::qt::widgets::ScatterChart::setSelectionColor(QColor selColor)
+{
+  m_selColor = selColor;
+
+  //The highlighted color will always have an alpha aplied to it
+  m_selColor.setAlpha(100);
 }

@@ -792,6 +792,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     if (res == QDialog::Accepted)
     {
       ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
+	  doc->setSelectionColor(ApplicationController::getInstance().getSelectionColor());
       doc->setWindowTitle("Histogram");
       doc->setWindowIcon(QIcon::fromTheme("chart-bar"));
       doc->setLayer(lay.get());
@@ -827,6 +828,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     if (res == QDialog::Accepted)
     {
       ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
+	  doc->setSelectionColor(ApplicationController::getInstance().getSelectionColor());
       doc->setWindowTitle("Scatter");
       doc->setWindowIcon(QIcon::fromTheme("chart-scatter"));
       ApplicationController::getInstance().addListener(doc);
