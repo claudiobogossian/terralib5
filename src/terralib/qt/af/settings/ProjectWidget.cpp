@@ -13,6 +13,8 @@ te::qt::af::ProjectWidget::ProjectWidget(QWidget* parent)
 
   connect(m_ui->m_authorLineEdit, SIGNAL(textChanged(const QString&)), SLOT(authorChanged(const QString&)));
   connect(m_ui->m_numRecentProjectsSpinBox, SIGNAL(valueChanged(int)), SLOT(maxSavedChanged(int)));
+  connect(m_ui->m_lastProjectRadioButton, SIGNAL(clicked()), SLOT(onOpeningOptionChanged()));
+  connect(m_ui->m_noneProjectRadioButton, SIGNAL(clicked()), SLOT(onOpeningOptionChanged()));
 
   resetState();
 }
@@ -34,6 +36,8 @@ void te::qt::af::ProjectWidget::saveChanges()
   int maxSaved = m_ui->m_numRecentProjectsSpinBox->value();
 
   SaveProjectInformationsOnSettings(author, maxSaved);
+
+  SaveOpenLastProjectOnSettings(m_ui->m_lastProjectRadioButton->isChecked());
 
   changeApplyButtonState(false);
 }
@@ -57,6 +61,11 @@ void te::qt::af::ProjectWidget::authorChanged(const QString& text)
 }
 
 void te::qt::af::ProjectWidget::maxSavedChanged(int i)
+{
+  changeApplyButtonState(true);
+}
+
+void te::qt::af::ProjectWidget::onOpeningOptionChanged()
 {
   changeApplyButtonState(true);
 }

@@ -69,6 +69,8 @@ namespace te
 
           void maxSavedChanged(int i);
 
+          void onOpeningOptionChanged();
+
         private:
 
           Ui::ProjectWidgetForm* m_ui;
