@@ -44,7 +44,7 @@ namespace te
 
         public:
 
-          GroupingTreeItem(const te::map::Grouping* grouping, QObject* parent = 0);
+          GroupingTreeItem(te::map::Grouping* grouping, QObject* parent = 0);
 
           ~GroupingTreeItem();
 
@@ -72,7 +72,7 @@ namespace te
 
         private:
 
-          const te::map::Grouping* m_grouping;
+          te::map::Grouping* m_grouping;
           bool m_isCheckable;
           bool m_isChecked;
 

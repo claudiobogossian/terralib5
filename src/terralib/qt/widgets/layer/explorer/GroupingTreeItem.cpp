@@ -32,11 +32,11 @@
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
-te::qt::widgets::GroupingTreeItem::GroupingTreeItem(const te::map::Grouping* grouping, QObject* parent)
+te::qt::widgets::GroupingTreeItem::GroupingTreeItem(te::map::Grouping* grouping, QObject* parent)
   : AbstractTreeItem(parent),
     m_grouping(grouping),
-    m_isCheckable(false),
-    m_isChecked(false)
+    m_isCheckable(true),
+    m_isChecked(true)
 {
 }
 
@@ -107,6 +107,10 @@ bool te::qt::widgets::GroupingTreeItem::setData(int /*column*/, const QVariant& 
       return false;
 
     m_isChecked = (checkState == Qt::Checked ? true : false);
+
+    m_grouping->setVisibility(m_isChecked);
+
+    return true;
   }
 
   return false;

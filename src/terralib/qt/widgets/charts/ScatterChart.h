@@ -132,6 +132,14 @@ namespace te
           */
           te::da::ObjectIdSet* highlight(QRectF rect);
 
+          /*!
+            \brief color used to hgihlight selected objects on this chart.
+
+            \param selColor The color used to hgihlight selected objects on this chart.
+
+          */
+          void setSelectionColor(QColor selColor);
+
         private:
 
           void setData();
@@ -139,6 +147,7 @@ namespace te
         private:
           Scatter*       m_scatter;       //!< The scatter that will be shown on this chart.
           ScatterStyle*  m_scatterStyle;  //!< The symbol that defines the look of a scatter's point.
+          QColor         m_selColor;      //!< THe color used to highlight selected obecjts.
           QwtPlotCurve*  m_selection;     //!< The PlotItems to be highlighted when a selection occurs;
       };
     } // end namespace widgets

@@ -143,6 +143,14 @@ namespace te
           */
           te::da::ObjectIdSet* highlight(QPointF point);
 
+          /*!
+            \brief color used to hgihlight selected objects on this chart.
+
+            \param selColor The color used to hgihlight selected objects on this chart.
+
+          */
+          void setSelectionColor(QColor selColor);
+
         private:
 
             Histogram*                        m_histogram;           //!< The histogram that will be shown on this chart.

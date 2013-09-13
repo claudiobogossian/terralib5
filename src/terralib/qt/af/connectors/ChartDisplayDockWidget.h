@@ -75,7 +75,7 @@ namespace te
             \brief Constructor.
 
           \param display The widget's chart display.
-            \param parent The widget's parent.
+          \param parent The widget's parent.
           */
           ChartDisplayDockWidget(te::qt::widgets::ChartDisplayWidget* displayWidget, QWidget* parent=0);
 
@@ -90,6 +90,14 @@ namespace te
             \param layer The layer to be showed.
           */
           void setLayer(te::map::AbstractLayer* layer);
+
+          /*!
+            \brief color used to hgihlight selected objects on this display.
+
+            \param selColor The color used to hgihlight selected objects on this display.
+
+          */
+          void setSelectionColor(QColor selColor);
 
           /*!
             \brief Returns the layer being used.

@@ -168,15 +168,25 @@ namespace te
         */
         void setGroupingItems(std::vector<te::map::GroupingItem*>& items);
 
+        /*! \brief It gets the grouping visibility. */
+        bool isVisible() const;
+
+        /*!
+          \brief It sets the grouping visibility.
+
+          \param visible The visibility value.
+        */
+        void setVisibility(bool visible);
+
       private:
 
-        std::string m_propertyName;      //!< The property name whose values will be used to make the grouping.
-        int m_propertyType;              //!< The property type whose values will be used to make the grouping.
-        GroupingType m_type;             //!< The grouping type.
-        size_t m_precision;              //!< The precision of the values.
-        size_t m_numSlices;              //!< The number of slices used in the Equal Steps and Quantil groupings.
-        double m_stdDeviation;            //!< The standard deviation used in the Standard Deviation grouping.
-
+        std::string m_propertyName;                  //!< The property name whose values will be used to make the grouping.
+        int m_propertyType;                          //!< The property type whose values will be used to make the grouping.
+        GroupingType m_type;                         //!< The grouping type.
+        size_t m_precision;                          //!< The precision of the values.
+        size_t m_numSlices;                          //!< The number of slices used in the Equal Steps and Quantil groupings.
+        double m_stdDeviation;                       //!< The standard deviation used in the Standard Deviation grouping.
+        bool m_isVisible;                            //!< A flag that indicates if the grouping is visible.
         std::vector<te::map::GroupingItem*> m_items; //!< The vector of grouping items.
     };
 
