@@ -459,7 +459,12 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 {
    try
   {
+    if(m_project == 0)
+      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+
     std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
+
+    qlb->setLayerList(m_project->getLayers());
 
     int retval = qlb->exec();
 
@@ -467,9 +472,6 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
       return;
 
     te::map::AbstractLayerPtr layer = qlb->getQueryLayer();
-
-    if(m_project == 0)
-      throw Exception(TR_QT_AF("Error: there is no opened project!"));
 
     m_project->add(layer);
 

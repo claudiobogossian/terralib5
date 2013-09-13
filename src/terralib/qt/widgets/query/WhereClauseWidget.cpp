@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/datasource/DataSourceCatalog.h"
 #include "../../../dataaccess/query/BinaryFunction.h"
 #include "../../../dataaccess/query/DataSetName.h"
@@ -34,18 +35,24 @@
 #include "../../../dataaccess/query/Fields.h"
 #include "../../../dataaccess/query/From.h"
 #include "../../../dataaccess/query/LiteralDouble.h"
+#include "../../../dataaccess/query/LiteralGeom.h"
 #include "../../../dataaccess/query/LiteralInt16.h"
 #include "../../../dataaccess/query/LiteralInt32.h"
 #include "../../../dataaccess/query/LiteralString.h"
 #include "../../../dataaccess/query/PropertyName.h"
 #include "../../../dataaccess/query/Select.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/Geometry.h"
+#include "../../../geometry/GeometryCollection.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "ui_WhereClauseWidgetForm.h"
 #include "WhereClauseWidget.h"
 
 // Qt
 #include <QtGui/QIcon>
 #include <QtGui/QMessageBox>
+
+Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
 
 te::qt::widgets::WhereClauseWidget::WhereClauseWidget(QWidget* parent, Qt::WindowFlags f)
@@ -64,11 +71,13 @@ te::qt::widgets::WhereClauseWidget::WhereClauseWidget(QWidget* parent, Qt::Windo
   connect(m_ui->m_addWhereClausePushButton, SIGNAL(clicked()), this, SLOT(onAddWhereClausePushButtonClicked()));
   connect(m_ui->m_removeWhereClausePushButton, SIGNAL(clicked()), this, SLOT(onRemoveWhereClausePushButtonClicked()));
   connect(m_ui->m_valueValueRadioButton, SIGNAL(clicked()), this, SLOT(onValuePropertyRadioButtonClicked()));
+
+  m_count = 0;
 }
 
 te::qt::widgets::WhereClauseWidget::~WhereClauseWidget()
 {
-
+  m_mapExp.clear();
 }
 
 Ui::WhereClauseWidgetForm* te::qt::widgets::WhereClauseWidget::getForm() const
@@ -96,20 +105,11 @@ te::da::Where* te::qt::widgets::WhereClauseWidget::getWhere()
     std::string funcName = itemFuncName->text().toStdString();
 
     QTableWidgetItem* itemValue = m_ui->m_whereClauseTableWidget->item(i, 2);
+    int expIdx = itemValue->data(Qt::UserRole).toInt();
     QString value = itemValue->text();
 
     te::da::Expression* exp1 = new te::da::PropertyName(propName);
-    te::da::Expression* exp2 = 0;
-    
-    if(m_ui->m_valuePropertyRadioButton->isChecked())
-    {
-      std::string valueProperty = value.toStdString();
-      exp2 = new te::da::PropertyName(valueProperty);
-    }
-    else if(m_ui->m_valueValueRadioButton->isChecked())
-    {
-        exp2 = getExpression(value, propName);
-    }
+    te::da::Expression* exp2 = m_mapExp[expIdx];
 
     te::da::BinaryFunction* func = new te::da::BinaryFunction(funcName, exp1, exp2);
 
@@ -146,6 +146,20 @@ void te::qt::widgets::WhereClauseWidget::setDataSource(const te::da::DataSourceP
   m_ds = ds;
 }
 
+void te::qt::widgets::WhereClauseWidget::setLayerList(std::list<te::map::AbstractLayerPtr>& layerList)
+{
+  std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
+
+  while(it != layerList.end())
+  {
+    te::map::AbstractLayerPtr l = *it;
+
+    m_ui->m_layerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+
+    ++it;
+  }
+}
+
 void te::qt::widgets::WhereClauseWidget::setFromItems(std::vector<std::pair<std::string, std::string> > vec)
 {
   m_fromItems = vec;
@@ -155,11 +169,13 @@ void te::qt::widgets::WhereClauseWidget::setAttributeList(const std::vector<std:
 {
   m_ui->m_restrictValueComboBox->clear();
   m_ui->m_valuePropertyComboBox->clear();
+  m_ui->m_geomAttrComboBox->clear();
 
   for(size_t t = 0; t <vec.size(); ++t)
   {
     m_ui->m_restrictValueComboBox->addItem(vec[t].c_str());
     m_ui->m_valuePropertyComboBox->addItem(vec[t].c_str());
+    m_ui->m_geomAttrComboBox->addItem(vec[t].c_str());
   }
 }
 
@@ -170,6 +186,16 @@ void te::qt::widgets::WhereClauseWidget::setOperatorsList(const std::vector<std:
   for(size_t t = 0; t <vec.size(); ++t)
   {
     m_ui->m_OperatorComboBox->addItem(vec[t].c_str());
+  }
+}
+
+void te::qt::widgets::WhereClauseWidget::setSpatialOperatorsList(const std::vector<std::string>& vec)
+{
+  m_ui->m_SpatialOperatorComboBox->clear();
+
+  for(size_t t = 0; t <vec.size(); ++t)
+  {
+    m_ui->m_SpatialOperatorComboBox->addItem(vec[t].c_str());
   }
 }
 
@@ -185,47 +211,130 @@ void te::qt::widgets::WhereClauseWidget::setConnectorsList(const std::vector<std
 
 void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 {
-  if(m_ui->m_restrictValueComboBox->currentText().isEmpty())
-  {
-    QMessageBox::warning(this, tr("Query Builder"), tr("Restrict value not defined."));
-    return;
-  }
+  std::string restrictValue = "";
+  std::string operatorStr = "";
+  std::string valueStr = "";
+  int expId = ++m_count;
 
-  if(m_ui->m_valuePropertyRadioButton->isChecked() == false &&
-     m_ui->m_valueValueRadioButton->isChecked() == false)
+  if(m_ui->m_criteriaTabWidget->currentIndex() == 0) // criteria by attribute restriction
   {
-     if(m_ui->m_valueValueComboBox->currentText().isEmpty())
+    if(m_ui->m_restrictValueComboBox->currentText().isEmpty())
     {
-      QMessageBox::warning(this, tr("Query Builder"), tr("Value not defined."));
+      QMessageBox::warning(this, tr("Query Builder"), tr("Restrict value not defined."));
       return;
     }
-  }
 
-  if(m_ui->m_valueValueRadioButton->isChecked())
-  {
-    if(m_ui->m_valueValueComboBox->currentText().isEmpty())
+    if(m_ui->m_valuePropertyRadioButton->isChecked() == false &&
+       m_ui->m_valueValueRadioButton->isChecked() == false)
     {
-      QMessageBox::warning(this, tr("Query Builder"), tr("Value not defined."));
-      return;
+       if(m_ui->m_valueValueComboBox->currentText().isEmpty())
+      {
+        QMessageBox::warning(this, tr("Query Builder"), tr("Value not defined."));
+        return;
+      }
+    }
+
+    if(m_ui->m_valueValueRadioButton->isChecked())
+    {
+      if(m_ui->m_valueValueComboBox->currentText().isEmpty())
+      {
+        QMessageBox::warning(this, tr("Query Builder"), tr("Value not defined."));
+        return;
+      }
+    }
+
+    restrictValue = m_ui->m_restrictValueComboBox->currentText().toStdString();
+    operatorStr = m_ui->m_OperatorComboBox->currentText().toStdString();
+
+    if(m_ui->m_valuePropertyRadioButton->isChecked())
+    {
+      valueStr = m_ui->m_valuePropertyComboBox->currentText().toStdString();
+
+      te::da::Expression* exp = new te::da::PropertyName(valueStr);
+
+      m_mapExp.insert(std::map<int, te::da::Expression*>::value_type(expId, exp));
+    }
+    else if(m_ui->m_valueValueRadioButton->isChecked())
+    {
+      valueStr = m_ui->m_valueValueComboBox->currentText().toStdString();
+
+      te::da::Expression* exp = getExpression(m_ui->m_valueValueComboBox->currentText(), restrictValue);
+
+      m_mapExp.insert(std::map<int, te::da::Expression*>::value_type(expId, exp));
     }
   }
+  else // criteria by spatial restriction
+  {
+    operatorStr = m_ui->m_SpatialOperatorComboBox->currentText().toStdString();
 
-  int newrow = m_ui->m_whereClauseTableWidget->rowCount();
+    restrictValue = m_ui->m_geomAttrComboBox->currentText().toStdString();
 
-  std::string restrictValue = m_ui->m_restrictValueComboBox->currentText().toStdString();
-  std::string operatorStr = m_ui->m_OperatorComboBox->currentText().toStdString();
-  
+    valueStr = "geom";
+
+    //get layer
+    int layerIdx = m_ui->m_layerComboBox->currentIndex();
+    QVariant varLayer = m_ui->m_layerComboBox->itemData(layerIdx, Qt::UserRole);
+    te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+    std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
+
+    te::gm::GeometryProperty* prop = te::da::GetFirstGeomProperty(schema.get());
+
+    if(!prop)
+    {
+      QMessageBox::warning(this, tr("Query Builder"), tr("Selected layer has no geometry property."));
+      return;
+    }
+
+    std::auto_ptr<te::da::DataSet> ds;
+
+    if(m_ui->m_selectedObjCheckBox->isChecked())
+    {
+      const te::da::ObjectIdSet* selecteds = layer->getSelected();
+
+      if(!selecteds)
+      {
+        QMessageBox::warning(this, tr("Query Builder"), tr("Selected layer has no selected geometries."));
+        return;
+      }
+
+      ds = layer->getData(selecteds);
+    }
+    else
+    {
+      ds = layer->getData();
+    }
+
+    //get all geometries
+    //te::gm::GeometryCollection* geom = new te::gm::GeometryCollection(0, prop->getGeometryType(), layer->getSRID());
+    te::gm::Geometry* geom;
+
+    ds->moveBeforeFirst();
+
+    while(ds->moveNext())
+    {
+      //geom->add(ds->getGeometry(prop->getName()).release());
+      geom = ds->getGeometry(prop->getName()).release();
+    }
+
+    geom->setSRID(layer->getSRID());
+
+    //convert
+
+    //create expression
+    te::da::LiteralGeom* lGeom = new te::da::LiteralGeom(geom);
+
+    m_mapExp.insert(std::map<int, te::da::Expression*>::value_type(expId, lGeom));
+  }
+
+  //set connector
   std::string connector = "";
   if(m_ui->m_connectorCheckBox->isChecked())
     connector = m_ui->m_connectorComboBox->currentText().toStdString();
-  
-  std::string valueStr = "";
-  if(m_ui->m_valuePropertyRadioButton->isChecked())
-    valueStr = m_ui->m_valuePropertyComboBox->currentText().toStdString();
-  else if(m_ui->m_valueValueRadioButton->isChecked())
-    valueStr = m_ui->m_valueValueComboBox->currentText().toStdString();
 
-//new entry
+  //new entry
+  int newrow = m_ui->m_whereClauseTableWidget->rowCount();
+
   m_ui->m_whereClauseTableWidget->insertRow(newrow);
 
   QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromStdString(restrictValue));
@@ -235,6 +344,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
   m_ui->m_whereClauseTableWidget->setItem(newrow, 1, itemOperator);
 
   QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromStdString(valueStr));
+  itemValue->setData(Qt::UserRole, QVariant(expId));
   m_ui->m_whereClauseTableWidget->setItem(newrow, 2, itemValue);
 
   QTableWidgetItem* itemConnector = new QTableWidgetItem(QString::fromStdString(connector));
