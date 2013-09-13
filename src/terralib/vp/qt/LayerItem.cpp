@@ -168,7 +168,7 @@ bool te::vp::LayerItem::setData(int column, const QVariant& value, int role)
 
       std::vector<te::qt::widgets::AbstractTreeItem*> items = m_propertyGroup->getItems();
 
-      for(size_t i = 0; i < items.size(); ++i)
+       for(size_t i = 0; i < items.size(); ++i)
       {
         PropertyItem* pItem = dynamic_cast<PropertyItem*>(items[i]);
         pItem->setSelected(m_selected);
