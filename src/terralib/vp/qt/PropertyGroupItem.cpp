@@ -42,7 +42,7 @@ te::vp::PropertyGroupItem::PropertyGroupItem(std::vector<te::dt::Property*> prop
 
   for(size_t i = 0; i < properties.size(); ++i)
   {
-    te::dt::Property* prop = properties[i];
+    te::dt::Property* prop = properties[i]->clone();
 
     if(prop->getType() == te::dt::GEOMETRY_TYPE)
       continue;

@@ -29,6 +29,7 @@
 #include "../../../../se/Style.h"
 #include "../../Exception.h"
 #include "DataSetLayerItem.h"
+#include "GroupingTreeItem.h"
 #include "LegendItem.h"
 
 // Qt
@@ -52,8 +53,8 @@ int te::qt::widgets::DataSetLayerItem::columnCount() const
 
 QVariant te::qt::widgets::DataSetLayerItem::data(int /*column*/, int role) const
 {
-  //if(role == Qt::DecorationRole)
-  //  return QVariant(QIcon::fromTheme("dataset-layer"));
+  if(role == Qt::DecorationRole)
+    return QVariant(QIcon::fromTheme("dataset-layer"));
 
   if(role == Qt::DisplayRole)
     return QVariant(QString::fromStdString(m_layer->getTitle()));
@@ -66,43 +67,36 @@ QVariant te::qt::widgets::DataSetLayerItem::data(int /*column*/, int role) const
 
 QMenu* te::qt::widgets::DataSetLayerItem::getMenu(QWidget* /*parent*/) const
 {
-  //QMenu* m = new QMenu(parent);
-
-  //QAction* aOpenDataSource = m->addAction(tr("&Open data source"));
-
-  //connect(aOpenDataSource, SIGNAL(triggered()), this, SLOT(openDataSource()));
-
-  //return m;
   return 0;
 }
 
 bool te::qt::widgets::DataSetLayerItem::canFetchMore() const
 {
-  return (m_layer->getStyle() != 0) && (m_layer->getStyle()->getRules().empty() == false) && children().isEmpty();
+  return (((m_layer->getStyle() != 0) && (!m_layer->getStyle()->getRules().empty())) || m_layer->getGrouping() != 0) && children().size() < 2;
 }
 
 Qt::ItemFlags te::qt::widgets::DataSetLayerItem::flags() const
 {
-  return Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;;
+  return Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 
 void te::qt::widgets::DataSetLayerItem::fetchMore()
 {
-  if(!children().isEmpty())
-    return;
-
-  if(m_layer->getStyle())
+  if(m_layer->getStyle() && children().empty())
   {
     const std::vector<te::se::Rule*>& rules = m_layer->getStyle()->getRules();
 
     for(std::size_t i = 0; i != rules.size(); ++i)
       new LegendItem(rules[i], this);
   }
+
+  if(m_layer->getGrouping() && children().size() == 1)
+    new GroupingTreeItem(m_layer->getGrouping(), this);
 }
 
 bool te::qt::widgets::DataSetLayerItem::hasChildren() const
 {
-  return (m_layer->getStyle() != 0) && (m_layer->getStyle()->getRules().empty() == false);
+  return ((m_layer->getStyle() != 0) && (!m_layer->getStyle()->getRules().empty())) || m_layer->getGrouping() != 0;
 }
 
 bool te::qt::widgets::DataSetLayerItem::setData(int column, const QVariant& value, int role)
@@ -127,6 +121,3 @@ te::map::AbstractLayerPtr te::qt::widgets::DataSetLayerItem::getLayer() const
 {
   return m_layer;
 }
-
-
-

@@ -28,7 +28,8 @@
 
 // TerraLib
 #include <terralib/common.h>
-#include <terralib/dataaccess.h>
+#include <terralib/dataaccess/dataset/DataSet.h>
+#include <terralib/dataaccess/datasource/DataSource.h>
 
 // STL
 #include <iostream>
@@ -36,6 +37,8 @@
 
 void PrintDataSetValues(const std::string& datasetName, te::da::DataSet* dataset)
 {
+
+  dataset->isConnected(); //teste
   if(dataset == 0)
   {
     std::cout << "The informed dataset is NULL!" << std::endl;

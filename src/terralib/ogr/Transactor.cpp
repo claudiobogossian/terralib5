@@ -170,9 +170,9 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& 
   if(layer == 0)
     throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
 
-  std::auto_ptr<te::gm::Envelope> e(visitor.getMBR());
+  te::gm::Envelope* e = visitor.getMBR();
 
-  if(e.get() != 0)
+  if(e != 0)
     layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
 
   return std::auto_ptr<te::da::DataSet>(new DataSet(ds, layer));

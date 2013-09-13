@@ -70,68 +70,68 @@ int main(int /*argc*/, char** /*argv*/)
 
     LoadModules();
 
-//============Juan initial example==============
-    std::map<std::string, std::string> connInfo;
-
-    connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;
-    //connInfo["PG_HOST"] = "localhost" ;
-    connInfo["PG_PORT"] = "5433" ;
-    connInfo["PG_USER"] = "postgres";
-//    connInfo["PG_PASSWORD"] = "postgres";
-    connInfo["PG_DB_NAME"] = "terralib4";
-    //connInfo["PG_DB_NAME"] = "Northwind";
-    connInfo["PG_CONNECT_TIMEOUT"] = "4";
-
-    std::string dsType = "POSTGIS";
-
-    PrintDataSourceNames(dsType, connInfo);
-
-    // Creation of a data source
-    connInfo["PG_NEWDB_NAME"] = "new_db";
-
-    std::auto_ptr<te::da::DataSource> newds = CreateDataSource(dsType, connInfo);
-
-    delete newds.release();
-
-    // Drop a data source
-    connInfo["PG_DB_TO_DROP"] = "new_db";
-    DropDataSource(dsType, connInfo);
-
-    // Check the data source existence
-    connInfo["PG_CHECK_DB_EXISTENCE"] = "terralib4";
-    bool dsExists = CheckDataSourceExistence(dsType, connInfo);
-
-    if(dsExists)
-      std::cout << "\nThe data source \"terralib4\" exists!\n";
-    else
-      std::cout << "\nThe data source \"terralib4\" doesn't exist!\n";
-
-    PrintDataSourceEncodings(dsType, connInfo);
-
-    // Connection to a data source
-    //te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
-    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
-
-    // Open the data source using the connection info above
-    ds->setConnectionInfo(connInfo);
-    ds->open();
-
-    PrintDataSetNames(ds.get());
-
-    std::string datasetName = "public.br_munic_2001";
-
-    PrintDataSetPropertyNames(ds.get(), datasetName);
-
-    PrintDataSetConstraints(ds.get(), datasetName);
-    PrintDataSourceCapabilities(ds.get());
-
-    ds->close();
-
-    delete ds.release();
-
+////============Juan initial example==============
+//    std::map<std::string, std::string> connInfo;
+//
+//    connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;
+//    //connInfo["PG_HOST"] = "localhost" ;
+//    connInfo["PG_PORT"] = "5433" ;
+//    connInfo["PG_USER"] = "postgres";
+////    connInfo["PG_PASSWORD"] = "postgres";
+//    connInfo["PG_DB_NAME"] = "terralib4";
+//    //connInfo["PG_DB_NAME"] = "Northwind";
+//    connInfo["PG_CONNECT_TIMEOUT"] = "4";
+//
+//    std::string dsType = "POSTGIS";
+//
+//    PrintDataSourceNames(dsType, connInfo);
+//
+//    // Creation of a data source
+//    connInfo["PG_NEWDB_NAME"] = "new_db";
+//
+//    std::auto_ptr<te::da::DataSource> newds = CreateDataSource(dsType, connInfo);
+//
+//    delete newds.release();
+//
+//    // Drop a data source
+//    connInfo["PG_DB_TO_DROP"] = "new_db";
+//    DropDataSource(dsType, connInfo);
+//
+//    // Check the data source existence
+//    connInfo["PG_CHECK_DB_EXISTENCE"] = "terralib4";
+//    bool dsExists = CheckDataSourceExistence(dsType, connInfo);
+//
+//    if(dsExists)
+//      std::cout << "\nThe data source \"terralib4\" exists!\n";
+//    else
+//      std::cout << "\nThe data source \"terralib4\" doesn't exist!\n";
+//
+//    PrintDataSourceEncodings(dsType, connInfo);
+//
+//    // Connection to a data source
+//    //te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
+//    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
+//
+//    // Open the data source using the connection info above
+//    ds->setConnectionInfo(connInfo);
+//    ds->open();
+//
+//    PrintDataSetNames(ds.get());
+//
+//    std::string datasetName = "public.br_munic_2001";
+//
+//    PrintDataSetPropertyNames(ds.get(), datasetName);
+//
+//    PrintDataSetConstraints(ds.get(), datasetName);
+//    PrintDataSourceCapabilities(ds.get());
+//
+//    ds->close();
+//
+//    delete ds.release();
+//
 //===========Juan end of example ======================
 
-    //PostGISExample();  //ok
+    PostGISExample();  //ok
 
     //GDALExample();  //ok
 
@@ -139,7 +139,7 @@ int main(int /*argc*/, char** /*argv*/)
 
     //QueryExample_2(); //ok
 
-    MemoryExample(); //Ok-cai no add (chamando o copy)
+    //MemoryExample(); //Ok-cai no add (chamando o copy)
 
     //OGRExampleRead(); //ok
 

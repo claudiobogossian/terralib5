@@ -113,16 +113,15 @@ te::gm::GeometryProperty* te::vp::SetOutputGeometryType(const te::gm::GeometryPr
   if( (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::PolygonType) ||
       (firstGeom->getGeometryType() == te::gm::MultiPolygonType && secondGeom->getGeometryType() == te::gm::MultiPolygonType) ||
       (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::MultiPolygonType) ||
-      (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::PolygonType))
+      (firstGeom->getGeometryType() == te::gm::MultiPolygonType && secondGeom->getGeometryType() == te::gm::PolygonType))
   {
     fiGeomProp->setName("geom");
     fiGeomProp->setGeometryType(te::gm::PolygonType);
   }
   else if((firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::LineStringType) ||
-          (firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::PolygonType) ||
-          (firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::MultiPolygonType) ||
-          (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::LineStringType) ||
-          (firstGeom->getGeometryType() == te::gm::MultiPolygonType && secondGeom->getGeometryType() == te::gm::LineStringType))
+          (firstGeom->getGeometryType() == te::gm::MultiLineStringType && secondGeom->getGeometryType() == te::gm::MultiLineStringType) ||
+          (firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::MultiLineStringType) ||
+          (firstGeom->getGeometryType() == te::gm::MultiLineStringType && secondGeom->getGeometryType() == te::gm::LineStringType))
   {
     fiGeomProp->setName("geom");
     fiGeomProp->setGeometryType(te::gm::LineStringType);

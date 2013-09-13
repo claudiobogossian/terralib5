@@ -53,11 +53,6 @@ void te::ado::Module::startup()
   // Register the data source factory
   te::da::DataSourceFactory::add("ADO", te::ado::Build);
 
-  //DataSourceFactory::initialize();
-
-  //#include "PostGISCapabilities.h"
-  //#include "PostGISDialect.h"
-
   TE_LOG_TRACE(TR_ADO("TerraLib ADO driver support initialized!"));
 
   m_initialized = true;
@@ -71,11 +66,8 @@ void te::ado::Module::shutdown()
   // Unregister the ADO factory support.
   te::da::DataSourceFactory::remove("ADO");
 
-  //te::ado::DataSourceFactory::finalize();
-  //DataSource::setDialect(0);
-
-  // Free the PostGIS registered drivers
-  //te::da::DataSourceManager::getInstance().detachAll(PGIS_DRIVER_IDENTIFIER);
+  // Free the ADO registered drivers
+  te::da::DataSourceManager::getInstance().detachAll(ADO_DRIVER_IDENTIFIER);
  
   TE_LOG_TRACE(TR_ADO("TerraLib ADO driver shutdown!"));
 

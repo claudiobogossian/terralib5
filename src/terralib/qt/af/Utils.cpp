@@ -417,11 +417,31 @@ void te::qt::af::SaveLastDatasourceOnSettings(const QString& dsType)
   sett.setValue("projects/last datasource used", dsType);
 }
 
+void te::qt::af::SaveOpenLastProjectOnSettings(bool openLast)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.setValue("projects/openLastDataSource", openLast);
+}
+
 QString te::qt::af::GetLastDatasourceFromSettings()
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   return sett.value("projects/last datasource used").toString();
+}
+
+bool te::qt::af::GetOpenLastProjectFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  QVariant variant = sett.value("projects/openLastDataSource");
+
+  // If the option was never edited
+  if(variant.isNull() || !variant.isValid())
+    return true;
+
+  return variant.toBool();
 }
 
 void te::qt::af::CreateDefaultSettings()
@@ -502,4 +522,40 @@ QColor te::qt::af::GetDefaultDisplayColorFromSettings()
     return Qt::white;
 
   return defaultColor;
+}
+
+QString te::qt::af::GetStyleSheetFromColors(QColor primaryColor, QColor secondaryColor)
+{
+  QString sty("alternate-background-color: ");
+  sty += "rgb(" + QString::number(secondaryColor.red()) + ", " + QString::number(secondaryColor.green());
+  sty += ", " + QString::number(secondaryColor.blue()) + ")";
+  sty += ";background-color: rgb(" + QString::number(primaryColor.red()) + ", " + QString::number(primaryColor.green());
+  sty += ", " + QString::number(primaryColor.blue()) + ");";
+
+  return sty;
+}
+
+QString te::qt::af::GetStyleSheetFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  bool isChecked = sett.value("table/tableAlternateColors").toBool();
+  QColor pColor;
+  pColor.setNamedColor(sett.value("table/primaryColor").toString());
+  QColor sColor;
+  sColor.setNamedColor(sett.value("table/secondaryColor").toString());
+
+  if(!pColor.isValid())
+    pColor = Qt::white;
+  if(!sColor.isValid())
+    sColor = Qt::white;
+
+  return GetStyleSheetFromColors(pColor, sColor);
+}
+
+bool te::qt::af::GetAlternateRowColorsFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  bool isChecked = sett.value("table/tableAlternateColors").toBool();
+
+  return isChecked;
 }
