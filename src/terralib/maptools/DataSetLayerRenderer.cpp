@@ -118,7 +118,8 @@ void te::map::DataSetLayerRenderer::draw(AbstractLayer* layer,
     /* For while if the DataSetLayer has a grouping, do not consider the style.
        TODO: - Create the GroupingRenderer?
              - Create the StyledLayer and try build a generic renderer that look for Styles and Grouping? */
-    if(dlayer->getGrouping())
+    Grouping* grouping = dlayer->getGrouping();
+    if(grouping && grouping->isVisible())
     {
       drawGrouping(dlayer, ds, canvas, ibbox, srid);
       return;

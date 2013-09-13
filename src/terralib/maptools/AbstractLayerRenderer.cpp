@@ -123,7 +123,8 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(schema.get());
 
     /** For while if the AbstractLayer has a grouping, do not consider the style. Need review! **/
-    if(layer->getGrouping())
+    Grouping* grouping = layer->getGrouping();
+    if(grouping && grouping->isVisible())
     {
       drawLayerGroupingMem(layer, geometryProperty->getName(), canvas, ibbox, srid);
       return;
