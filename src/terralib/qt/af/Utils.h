@@ -168,9 +168,23 @@ namespace te
       /*!
         \brief
 
+        \param
+      */
+      TEQTAFEXPORT void SaveOpenLastProjectOnSettings(bool openLast);
+
+      /*!
+        \brief
+
         \return
       */
       TEQTAFEXPORT QString GetLastDatasourceFromSettings();
+
+      /*!
+        \brief
+
+        \return
+      */
+      TEQTAFEXPORT bool GetOpenLastProjectFromSettings();
 
       /*!
         \brief

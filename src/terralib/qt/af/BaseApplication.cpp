@@ -42,6 +42,7 @@
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/exchanger/DataExchangerWizard.h"
 #include "../widgets/help/HelpManager.h"
+#include "../widgets/layer/explorer/GroupingTreeItem.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
 #include "../widgets/layer/explorer/LayerTreeView.h"
 #include "../widgets/layer/explorer/AbstractTreeItem.h"
@@ -293,7 +294,7 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
 // try to load the last opened project
   QString recentProject = te::qt::af::ApplicationController::getInstance().getMostRecentProject();
 
-  if(recentProject.isEmpty())
+  if(recentProject.isEmpty() || !te::qt::af::GetOpenLastProjectFromSettings())
     newProject();
   else
   {
@@ -845,21 +846,41 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
 {
   try
   {
-    std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+    std::list<te::qt::widgets::AbstractTreeItem*> layerItems = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
-    if(layers.empty())
+    if(layerItems.empty())
     {
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
       return;
     }
 
-    te::map::AbstractLayerPtr l = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+    te::qt::widgets::AbstractTreeItem* currentItem = *layerItems.begin();
+
+    te::map::AbstractLayerPtr layer = FindLayerInProject(currentItem->getLayer().get(), m_project);
 
     te::qt::widgets::GroupingDialog dlg(this);
 
-    dlg.setLayer(l);
+    dlg.setLayer(layer);
 
     dlg.exec();
+
+    std::vector<te::qt::widgets::AbstractTreeItem*> descendants = currentItem->getDescendants();
+
+    for(std::size_t i = 0; i < descendants.size(); ++i)
+    {
+      te::qt::widgets::GroupingTreeItem* grouping = dynamic_cast<te::qt::widgets::GroupingTreeItem*>(descendants[i]);
+      if(grouping)
+      {
+        m_explorer->getExplorer()->remove(grouping);
+        break;
+      }
+    }
+
+    m_explorer->getExplorer()->getTreeView()->refresh();
+
+    m_explorer->getExplorer()->getTreeView()->expandAll();
+
+    m_display->getDisplay()->refresh();
   }
   catch(const std::exception& e)
   {
@@ -1228,6 +1249,7 @@ void te::qt::af::BaseApplication::makeDialog()
 // 1. Layer Explorer
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
   te::qt::widgets::LayerTreeView* treeView = lexplorer->getTreeView();
+  treeView->setAnimated(true);
 
   treeView->add(m_setBoxOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerEdit, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
