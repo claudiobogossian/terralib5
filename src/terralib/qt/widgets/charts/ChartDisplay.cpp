@@ -135,6 +135,26 @@ void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oid
   }
 }
 
+void te::qt::widgets::ChartDisplay::setSelectionColor(QColor selColor)
+{
+  const QwtPlotItemList& itmList = itemList(); 
+
+  for ( QwtPlotItemIterator it = itmList.begin();
+      it != itmList.end(); ++it )
+  {
+    if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
+      {
+        static_cast<te::qt::widgets::ScatterChart*>(*it)->setSelectionColor(selColor);
+        break;
+      }
+     else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
+      {
+        static_cast<te::qt::widgets::HistogramChart*>(*it)->setSelectionColor(selColor);
+        break;
+      }
+  }
+}
+
 void  te::qt::widgets::ChartDisplay::adjustDisplay()
 {
   if(m_chartStyle)

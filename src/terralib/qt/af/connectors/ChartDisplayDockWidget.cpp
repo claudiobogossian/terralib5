@@ -63,6 +63,11 @@ void te::qt::af::ChartDisplayDockWidget::setLayer(te::map::AbstractLayer* layer)
   setWindowTitle(m_layer->getTitle().c_str());
 }
 
+void te::qt::af::ChartDisplayDockWidget::setSelectionColor(QColor selColor)
+{
+  m_displayWidget->setSelectionColor(selColor);
+}
+
 te::map::AbstractLayer* te::qt::af::ChartDisplayDockWidget::getLayer() const
 {
   return m_layer;

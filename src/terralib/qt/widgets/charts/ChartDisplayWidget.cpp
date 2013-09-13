@@ -105,3 +105,8 @@ void te::qt::widgets::ChartDisplayWidget::selectionChanged(te::da::ObjectIdSet* 
 {
   emit selected(oids, add);
 }
+
+void te::qt::widgets::ChartDisplayWidget::setSelectionColor(QColor selColor)
+{
+  m_display->setSelectionColor(selColor);
+}
