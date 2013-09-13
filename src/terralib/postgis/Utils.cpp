@@ -73,11 +73,15 @@ namespace te
     inline void SetColumnDef(std::string& s, const te::dt::NumericProperty* p, bool justDataType = false)
     {
       s += Globals::sm_numericTypeName;
-      s += "(";
-      s += te::common::Convert2String(p->getPrecision());
-      s += ", ";
-      s += te::common::Convert2String(p->getScale());
-      s += ")";
+
+      if(p->getPrecision() > 0)
+      {
+        s += "(";
+        s += te::common::Convert2String(p->getPrecision());
+        s += ", ";
+        s += te::common::Convert2String(p->getScale());
+        s += ")";
+      }
 
       if(justDataType)
         return;
@@ -232,7 +236,9 @@ bool te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool just
     break;
  
     case te::dt::NUMERIC_TYPE:
-      SetColumnDef(s, static_cast<const te::dt::NumericProperty*>(p), justDataType);
+      {
+        SetColumnDef(s, static_cast<const te::dt::NumericProperty*>(p), justDataType);
+      }
     break;
 
     case te::dt::DATETIME_TYPE:
