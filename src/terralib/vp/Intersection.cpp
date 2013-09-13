@@ -1,3 +1,4 @@
+
 /*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
@@ -29,10 +30,8 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/datasource/DataSourceFactory.h"
+#include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
-#include "../dataaccess/datasource/DataSourceTransactor.h"
-#include "../dataaccess/query_fw.h"
 #include "../dataaccess/query_h.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
@@ -142,7 +141,7 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 
   te::qt::widgets::DataSet2Layer converter(dataSource->getId());
 
-  te::da::DataSetTypePtr dt(dataSource->getDataSetType(resultPair.first->getName()).get());
+  te::da::DataSetTypePtr dt(dataSource->getDataSetType(resultPair.first->getName()).release());
 
   te::map::DataSetLayerPtr newLayer = converter(dt);
 
@@ -304,11 +303,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
       te::gm::GeometryProperty* currentGeom;
       te::gm::GeometryProperty* nextGeom;
 
-      if(currentDSType->hasGeom() && nextDSType->hasGeom())
-      {
-        currentGeom = te::da::GetFirstGeomProperty(currentDSType.get());
-        nextGeom = te::da::GetFirstGeomProperty(currentDSType.get());
-      }
+      currentGeom = te::da::GetFirstGeomProperty(currentDSType.get());
+      nextGeom = te::da::GetFirstGeomProperty(nextDSType.get());
       
       std::string currentTableName = te::vp::GetSimpleTableName(currentDSType->getTitle());
       std::string nextTableName = te::vp::GetSimpleTableName(nextDSType->getTitle());
@@ -325,7 +321,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
         fields->push_back(f_field);
       }
 
-      te::da::Expression* e_intersection = new te::da::ST_Intersects( new te::da::PropertyName(currentDSType->getName() + "." + currentGeom->getName()),
+      te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(currentDSType->getName() + "." + currentGeom->getName()),
                                                                         new te::da::PropertyName(nextDSType->getName() + "." + nextGeom->getName()));
       te::da::Field* f_intersection = new te::da::Field(*e_intersection, "geom");
       fields->push_back(f_intersection);
@@ -358,10 +354,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
 
       te::gm::GeometryProperty* geom;
 
-      if(dsType->hasGeom())
-      {
-        geom = te::da::GetFirstGeomProperty(dsType.get());
-      }
+      geom = te::da::GetFirstGeomProperty(dsType.get());
 
       te::da::Expression* e_intersection = new te::da::ST_Intersects( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
                                                                         new te::da::PropertyName(previousQuery));
@@ -418,7 +411,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
   while(firstMember.ds->moveNext())
   {
-    te::gm::Geometry* currGeom = firstMember.ds->getGeometry(fiGeomPropPos).get();
+    te::gm::Geometry* currGeom = firstMember.ds->getGeometry(fiGeomPropPos).release();
 
     if(currGeom->getSRID() != outputSRID && outputSRID != 0)
       currGeom->transform(outputSRID);
@@ -429,7 +422,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
     for(size_t i = 0; i < report.size(); ++i)
     {
       secondMember.ds->move(report[i]);
-      te::gm::Geometry* secGeom = secondMember.ds->getGeometry(secGeomPropPos).get();
+      te::gm::Geometry* secGeom = secondMember.ds->getGeometry(secGeomPropPos).release();
 
       if(secGeom->getSRID() != outputSRID && outputSRID != 0)
         secGeom->transform(outputSRID);

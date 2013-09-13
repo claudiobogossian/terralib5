@@ -42,8 +42,8 @@ te::vp::PropertyItem::PropertyItem(te::dt::Property* p, AbstractTreeItem* parent
 
 te::vp::PropertyItem::~PropertyItem()
 {
-  //if(m_property && (m_property->getParent() == 0))
-  //  delete m_property;
+  if(m_property && (m_property->getParent() == 0))
+    delete m_property;
 }
 
 int te::vp::PropertyItem::columnCount() const
@@ -58,7 +58,7 @@ QVariant te::vp::PropertyItem::data(int column, int role) const
   if(role == Qt::DisplayRole && column == 0)
     return QVariant(m_property->getName().c_str());
 
-  if(role == Qt::CheckStateRole && column == 0)
+  if(role == Qt::CheckStateRole && column == 0 && litem != 0)
     return ((m_selected && litem->isSelected()) ? Qt::Checked : Qt::Unchecked);
 
   return QVariant();

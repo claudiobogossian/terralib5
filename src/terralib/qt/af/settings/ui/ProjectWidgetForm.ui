@@ -98,7 +98,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox">
+      <widget class="QGroupBox" name="m_autoSelectGroupBox">
        <property name="title">
         <string>Auto select</string>
        </property>
