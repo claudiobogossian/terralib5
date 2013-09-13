@@ -34,6 +34,7 @@
 #include "../../../dataaccess/query/Fields.h"
 #include "../../../dataaccess/query/From.h"
 #include "../../../dataaccess/query/LiteralDouble.h"
+#include "../../../dataaccess/query/LiteralInt16.h"
 #include "../../../dataaccess/query/LiteralInt32.h"
 #include "../../../dataaccess/query/LiteralString.h"
 #include "../../../dataaccess/query/PropertyName.h"
@@ -353,6 +354,10 @@ te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QStr
       if(prop->getType() == te::dt::DOUBLE_TYPE)
       {
         l = new te::da::LiteralDouble(value.toDouble());
+      }
+      else if(prop->getType() == te::dt::INT16_TYPE)
+      {
+        l = new te::da::LiteralInt16(value.toInt());
       }
       else if(prop->getType() == te::dt::INT32_TYPE)
       {

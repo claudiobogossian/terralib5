@@ -44,6 +44,7 @@
 #include "../events/ToolEvents.h"
 #include "../ApplicationController.h"
 #include "../Project.h"
+#include "../Utils.h"
 #include "MapDisplay.h"
 
 // Qt
@@ -91,6 +92,9 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 
   // Config the default SRS
   m_display->setSRID(ApplicationController::getInstance().getDefaultSRID(), false);
+  
+  // Getting default display color
+  m_display->setBackgroundColor(te::qt::af::GetDefaultDisplayColorFromSettings());
 }
 
 te::qt::af::MapDisplay::~MapDisplay()
@@ -213,6 +217,14 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     }
     break;
 
+    case te::qt::af::evt::MAP_COLOR_CHANGED:
+    {
+      te::qt::af::evt::MapColorChanged* mapColorChanged = static_cast<te::qt::af::evt::MapColorChanged*>(e);
+      m_display->setBackgroundColor(mapColorChanged->m_color);
+      m_display->refresh();
+    }
+    break;
+
     default:
       return;
   }
@@ -234,11 +246,11 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_display->getSRID()))
     needRemap = true;
 
-  // Try to retrieve the layer selection
+  // Try retrieves the layer selection
   std::auto_ptr<te::da::DataSet> selected;
   try
   {
-    selected.reset(layer->getData(oids).release());
+    selected = layer->getData(oids);
   }
   catch(std::exception& e)
   {

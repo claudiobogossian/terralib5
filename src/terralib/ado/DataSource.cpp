@@ -74,6 +74,7 @@ te::ado::DataSource::DataSource()
   : m_catalog(0),
     m_conn(0)
 {
+  ::CoInitialize(0);
   m_catalog = new te::da::DataSourceCatalog;
   m_catalog->setDataSource(this);
 }
@@ -81,6 +82,7 @@ te::ado::DataSource::DataSource()
 te::ado::DataSource::~DataSource()
 {
   delete m_catalog;
+  ::CoUninitialize();
 }
 
 std::string te::ado::DataSource::getType() const
@@ -158,35 +160,8 @@ static std::vector<std::string> getEncodings(const std::string& dsType, const st
 
 void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  // Create a connection to an auxiliary data source
-  std::auto_ptr<DataSource> ds(new DataSource());
-
-  ds->setConnectionInfo(dsInfo);
-
-  // Mount the connection string
-  std::string connStr;
-
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("PROVIDER");
-  std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
-
-  if(it != it_end)
-    connStr += "Provider=" + it->second + ";";
-  else
-    throw Exception(TR_ADO("The database couldn't be created due the missing parameter: PROVIDER!"));
-
-  it = dsInfo.find("DB_NAME");
-  if(it != it_end)
-    connStr += "Data Source=" + it->second + ";";
-  else
-    throw Exception(TR_ADO("The database couldn't be created due the missing parameter: DB_NAME!"));
-
-  it = dsInfo.find("USER_NAME");
-  if(it != it_end)
-    connStr += "User Id=" + it->second + ";";
-
-  it = dsInfo.find("PASSWORD");
-  if(it != it_end)
-    connStr += "Jet OLEDB:Database Password=" + it->second + ";";
+  m_connInfo = dsInfo;
+  std::string connInfo = te::ado::MakeConnectionStr(dsInfo);
 
   // Create the new database
   ADOX::_CatalogPtr pCatalog = 0;
@@ -194,15 +169,16 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
 
   try
   {
-    pCatalog->Create(connStr.c_str());
-    ds->open();
+    pCatalog->Create(connInfo.c_str());
   }
   catch(_com_error& e)
   {
     throw Exception(TR_ADO(e.Description()));
   }
+  
+  std::map<std::string, std::string>::const_iterator it = dsInfo.find("CREATE_OGC_METADATA_TABLES");
+  std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
 
-  it = dsInfo.find("CREATE_OGC_METADATA_TABLES");
   if(it != it_end && it->second == "TRUE")
   {
     // Create the geometry_columns dataset

@@ -46,6 +46,7 @@ add_definitions(-DTE_PLUGINS_PATH=\"${TE_BIN_DIR}\")
 
 add_subdirectory(terralib_unittest_common)
 add_subdirectory(terralib_unittest_dataaccess)
+add_subdirectory(terralib_unittest_dataaccess2)
 add_subdirectory(terralib_unittest_datatype)
 add_subdirectory(terralib_unittest_geometry)
 add_subdirectory(terralib_unittest_memory)

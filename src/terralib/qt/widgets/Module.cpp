@@ -27,6 +27,7 @@
 #include "../../common/Logger.h"
 #include "../../common/TerraLib.h"
 #include "../../common/Translator.h"
+#include "../../maptools/ChartRendererManager.h"
 #include "../../maptools/ExternalGraphicRendererManager.h"
 #include "../../maptools/MarkRendererManager.h"
 #include "layer/explorer/AbstractTreeItemFactory.h"
@@ -34,6 +35,7 @@
 #include "property/GeometryPropertyWidgetFactory.h"
 #include "property/NumericPropertyWidgetFactory.h"
 #include "property/StringPropertyWidgetFactory.h"
+#include "charts/ChartRenderer.h"
 #include "se/BasicFillWidgetFactory.h"
 #include "se/ExternalGraphicRenderer.h"
 #include "se/GlyphGraphicWidgetFactory.h"
@@ -82,6 +84,9 @@ void te::qt::widgets::Module::initialize()
 
 // ExternalGraphic renderer
   te::map::ExternalGraphicRendererManager::getInstance().add(new ExternalGraphicRenderer);
+
+// Chart Renderer
+  te::map::ChartRendererManager::getInstance().set(new ChartRenderer);
 
 // It initializes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::initialize();
