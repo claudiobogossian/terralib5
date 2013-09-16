@@ -291,8 +291,7 @@ QMimeData* te::qt::widgets::LayerTreeModel::mimeData(const QModelIndexList& inde
 {
   if(indexes.empty())
     return 0;
-
-  int nItems = indexes.count();
+  
   std::vector<AbstractTreeItem*>* draggedItems = new std::vector<AbstractTreeItem*>;
 
   for(int i = 0; i < indexes.count(); ++i)

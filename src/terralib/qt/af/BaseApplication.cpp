@@ -460,7 +460,12 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 {
    try
   {
+    if(m_project == 0)
+      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+
     std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
+
+    qlb->setLayerList(m_project->getLayers());
 
     int retval = qlb->exec();
 
@@ -468,9 +473,6 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
       return;
 
     te::map::AbstractLayerPtr layer = qlb->getQueryLayer();
-
-    if(m_project == 0)
-      throw Exception(TR_QT_AF("Error: there is no opened project!"));
 
     m_project->add(layer);
 
@@ -1140,6 +1142,12 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
   {
     checkProjectSave();
 
+    if(!boost::filesystem::exists(projectFileName.toStdString()))
+    {
+      QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TR_QT_AF("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
+      return;
+    }
+
     CloseAllTables(m_tableDocks);
 
     Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
@@ -1391,7 +1399,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_viewLayerExplorer, "view-layer-explorer", "View.Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true, m_menubar);
   initAction(m_viewMapDisplay, "view-map-display", "View.Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true, m_menubar);
   initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, true, m_menubar);
-  initAction(m_viewStyleExplorer, "grid-visible", "View.Style Explorer", tr("&Styler Explorer"), tr("Show or hide the style explorer"), true, true, true, m_menubar);
+  initAction(m_viewStyleExplorer, "raster-visual", "View.Style Explorer", tr("&Styler Explorer"), tr("Show or hide the style explorer"), true, true, true, m_menubar);
   initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, true, true, m_menubar);
   initAction(m_viewRefresh, "view-refresh", "View.Refresh", tr("&Refresh"), tr(""), true, false, false, m_menubar);
   //initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
@@ -1437,17 +1445,17 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerRename, "layer-rename", "Layer.Rename", tr("R&ename"), tr(""), true, false, false, m_menubar);
   initAction(m_layerExport, "document-export", "Layer.Export", tr("E&xport..."), tr(""), true, false, false, m_menubar);
   initAction(m_layerNewLayerGroup, "", "Layer.New Layer Group", tr("&New Layer Group..."), tr(""), false, false, true, m_menubar);
-  initAction(m_layerGrouping, "", "Layer.Grouping", tr("&Grouping..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerProperties, "", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerSRS, "", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
-  initAction(m_layerShowTable, "", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
+  initAction(m_layerGrouping, "grouping", "Layer.Grouping", tr("&Grouping..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerSRS, "srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
+  initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
   initAction(m_layerRaise, "layer-raise", "Layer.Raise", tr("&Raise"), tr(""), true, false, false, m_menubar);
   initAction(m_layerLower, "layer-lower", "Layer.Lower", tr("&Lower"), tr(""), true, false, false, m_menubar);
   initAction(m_layerToTop, "layer-to-top", "Layer.To Top", tr("To &Top"), tr(""), true, false, false, m_menubar);
   initAction(m_layerToBottom, "layer-to-bottom", "Layer.To Bottom", tr("To &Bottom"), tr(""), true, false, false, m_menubar);
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, true, m_menubar);
-  initAction(m_setBoxOnMapDisplay, "set-box-on-map-display", "Set.Box.On.Map.Display", tr("Set Box on &Map Display"), tr(""), true, false, true, m_menubar);
+  initAction(m_setBoxOnMapDisplay, "zoom-extent", "Layer.Set Box On Map Display", tr("Set Box on &Map Display"), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
@@ -1459,7 +1467,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_filePrintPreview, "document-print-preview", "File.Print Preview", tr("Print Pre&view..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Map- actions
-  initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);//
+  initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);
   initAction(m_mapUnknownSRID, "srs-unknown", "Map.UnknownSRID", tr("&Unknown SRS..."), tr("Set the Map SRS to unknown"), true, false, true, m_menubar);
   initAction(m_mapDraw, "map-draw", "Map.Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true, m_menubar);
   initAction(m_mapZoomIn, "zoom-in", "Map.Zoom In", tr("Zoom &In"), tr(""), true, true, true, m_menubar);
@@ -1561,6 +1569,7 @@ void te::qt::af::BaseApplication::initMenus()
 
   m_projectAddLayerMenu->setObjectName("Project.Add Layer");
   m_projectAddLayerMenu->setTitle(tr("&Add Layer"));
+  m_projectAddLayerMenu->setIcon(QIcon::fromTheme("layer-add"));
 
   m_projectMenu->addAction(m_projectRemoveLayer);
   m_projectMenu->addSeparator();

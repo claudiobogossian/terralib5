@@ -72,7 +72,8 @@ te::da::SQLDialect* te::ado::DataSource::sm_dialect(0);
 
 te::ado::DataSource::DataSource()
   : m_catalog(0),
-    m_conn(0)
+    m_conn(0),
+    m_isOpened(0)
 {
   ::CoInitialize(0);
   m_catalog = new te::da::DataSourceCatalog;
@@ -118,6 +119,8 @@ void te::ado::DataSource::open()
 
   m_conn = new te::ado::Connection(connInfo);
 
+  m_isOpened = true;
+
   // Get the dataset names of the data source
   getDataSetNames();
 }
@@ -126,11 +129,13 @@ void te::ado::DataSource::close()
 {
   if(m_conn)
     delete m_conn;
+
+  m_isOpened = false;
 }
 
 bool te::ado::DataSource::isOpened() const
 {
-  return m_conn->isValid();
+  return m_isOpened;
 }
 
 bool te::ado::DataSource::isValid() const

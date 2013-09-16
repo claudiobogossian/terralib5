@@ -927,7 +927,7 @@ te::dt::Property* te::qt::widgets::AddProperty::buildStringProperty()
   // Get the string type and the string size
   te::dt::StringType stringType;
   size_t stringSize = 0;
-  bool ok;
+  bool ok = false;
 
   if(dataTypeComboBox->currentText() == "STRING")
   {

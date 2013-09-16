@@ -114,8 +114,6 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
   std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> >::iterator it;
 
-  bool hasGeom = true;
-
   for(it = selected.begin(); it != selected.end(); ++it)
   {
     LayerInputData layerInput;
