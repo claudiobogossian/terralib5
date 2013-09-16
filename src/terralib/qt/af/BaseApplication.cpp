@@ -1140,6 +1140,12 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
   {
     checkProjectSave();
 
+    if(!boost::filesystem::exists(projectFileName.toStdString()))
+    {
+      QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), (boost::format(TR_QT_AF("This project could not be found: %1%.")) % projectFileName.toStdString()).str().c_str());
+      return;
+    }
+
     CloseAllTables(m_tableDocks);
 
     Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
