@@ -126,6 +126,15 @@ namespace te
       \param vect The vector  to output the values.
     */
     TECOMMONEXPORT void Convert(const boost::property_tree::ptree& p, std::vector<std::map<std::string, std::string> >& vectm);
+
+    /*!
+      \brief Converts a string from latin1 to utf8 and vice-versa.
+
+      \param data The string to be translated.
+
+      \param toUtf If true converts a Latin1 string to UTF-8 string, else converts from a UTF-8 string to a Latin1 string.
+    */
+    TECOMMONEXPORT std::string ConvertLatin1UTFString(const std::string& data, const bool& toUtf = true);
   } // end namespace common
 }   // end namespace te
 
