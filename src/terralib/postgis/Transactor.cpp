@@ -1134,8 +1134,6 @@ std::auto_ptr<te::da::Index> te::pgis::Transactor::getIndex(const std::string& d
     std::auto_ptr<te::dt::Array> idxCols(idxInfo->getArray(3));
 
     std::string idxType = idxInfo->getString(4);
-    bool isUK = idxInfo->getBool(5);
-    bool isPK = idxInfo->getBool(6);
 
     idx = new te::da::Index(idxName, GetIndexType(idxType.c_str()), 0, idxId);
 
