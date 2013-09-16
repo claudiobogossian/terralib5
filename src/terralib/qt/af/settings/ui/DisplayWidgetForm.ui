@@ -81,6 +81,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="m_showScaleChckBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Show scale</string>
           </property>
@@ -88,6 +91,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="m_showNorthChackBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Show north</string>
           </property>
@@ -104,6 +110,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QLabel" name="label_2">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Renderization time of feedback (in ms):</string>
             </property>
@@ -111,6 +120,9 @@
           </item>
           <item>
            <widget class="QSpinBox" name="m_renderTine">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimum">
              <number>500</number>
             </property>

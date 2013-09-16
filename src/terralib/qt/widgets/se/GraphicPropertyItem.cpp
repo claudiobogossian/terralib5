@@ -43,7 +43,7 @@
 
 
 te::qt::widgets::GraphicPropertyItem::GraphicPropertyItem(QtTreePropertyBrowser* pb, QColor c) : te::qt::widgets::AbstractPropertyItem(pb, c),
-  m_graphic(new te::se::Graphic), m_setLocalGraphic(false)
+  m_setLocalGraphic(false), m_graphic(new te::se::Graphic)
 {
   //build property browser basic stroke
   QtProperty* generalProperty = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Graphic"));

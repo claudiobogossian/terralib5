@@ -145,7 +145,7 @@ namespace te
       /*!
         \enum GroupingType
 
-        \brief The grouping type associated to this layer.
+        \brief The grouping type associated to the layer.
       */
       enum GroupingType
       {
@@ -153,6 +153,17 @@ namespace te
         QUANTIL,           /*!< If the legend was generated using the quantil algorithm.                                */
         STD_DEVIATION,     /*!< If the legend was generated using the standard deviation algorithm.                     */
         UNIQUE_VALUE       /*!< If the legend was generated using the unique value algorithm.                           */
+      };
+
+      /*!
+        \enum ChartType
+
+        \brief The chart types.
+      */
+      enum ChartType
+      {
+        Pie, /*!< A pie chart. */
+        Bar  /*!< A bar chart. */
       };
 
   }   // end namespace map

@@ -210,6 +210,13 @@ te::color::RGBAColor te::qt::widgets::Convert2TerraLib(const QColor& color)
   return te::color::RGBAColor(color.red(), color.green(), color.blue(), color.alpha());
 }
 
+QColor te::qt::widgets::Convert2Qt(const te::color::RGBAColor& color)
+{
+  QColor qcolor(color.getRgba());
+  qcolor.setAlpha(qAlpha(color.getRgba()));
+  return qcolor;
+}
+
 void te::qt::widgets::Config2DrawPolygons(te::map::Canvas* canvas, const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth)
 {
   canvas->setPolygonContourWidth(contourWidth);

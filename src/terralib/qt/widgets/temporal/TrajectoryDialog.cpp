@@ -37,8 +37,10 @@ te::qt::widgets::TrajectoryDialog::TrajectoryDialog(te::map::AbstractLayerPtr la
   m_ui->setupUi(this);
 
   // Time Properties Widgets
-  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(layer->getData().get(), this));
-  m_uniquePropWidget.reset(new te::qt::widgets::TrajectoryPropertiesWidget(layer->getData().get(), this));
+  te::da::DataSet* dataset = layer->getData().release();
+
+  m_propertiesWidget.reset(new te::qt::widgets::TemporalPropertiesWidget(dataset, this));
+  m_uniquePropWidget.reset(new te::qt::widgets::TrajectoryPropertiesWidget(dataset, this));
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_propertiesWidgetFrame);

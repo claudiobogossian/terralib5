@@ -434,7 +434,7 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
   }
@@ -462,7 +462,7 @@ void te::ado::Transactor::dropProperty(const std::string& datasetName, const std
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(p->getParent()->getName().c_str());
     TESTHR(pTable->GetColumns()->Delete(p->getName().c_str()));
@@ -490,7 +490,7 @@ void te::ado::Transactor::renameProperty(const std::string& datasetName,
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
     ADOX::_ColumnPtr col = pTable->GetColumns()->GetItem(propertyName.c_str());
@@ -537,7 +537,7 @@ void te::ado::Transactor::addPrimaryKey(const std::string& datasetName, te::da::
   
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
 
@@ -570,7 +570,7 @@ void te::ado::Transactor::dropPrimaryKey(const std::string& datasetName)
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
 
@@ -632,7 +632,7 @@ void te::ado::Transactor::addForeignKey(const std::string& datasetName, te::da::
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
 
@@ -671,7 +671,7 @@ void te::ado::Transactor::dropForeignKey(const std::string& datasetName, const s
   try
   {
 
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
 
@@ -736,7 +736,7 @@ void te::ado::Transactor::addUniqueKey(const std::string& datasetName, te::da::U
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
 
@@ -768,7 +768,7 @@ void te::ado::Transactor::dropUniqueKey(const std::string& datasetName, const st
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
 
@@ -872,7 +872,7 @@ void te::ado::Transactor::addIndex(const std::string& datasetName, te::da::Index
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
 
@@ -1008,7 +1008,7 @@ void te::ado::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable->Name = dt->getName().c_str();
 
@@ -1044,9 +1044,8 @@ void te::ado::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
     geomProp = te::da::GetFirstGeomProperty(dt);
   }
 
-  //TODO: Verificar o motivo do erro ao descomentar a ultima linha
-  //if(geomProp)
-    //te::ado::InsertInGeometryColumns(m_conn, dt);
+  if(geomProp)
+    te::ado::InsertInGeometryColumns(m_conn->getConn(), dt);
 }
 
 void te::ado::Transactor::cloneDataSet(const std::string& name,
@@ -1064,7 +1063,7 @@ void te::ado::Transactor::dropDataSet(const std::string& name)
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
     
     TESTHR(pCatalog->Tables->Delete(name.c_str()));
   }
@@ -1101,7 +1100,7 @@ void te::ado::Transactor::add(const std::string& datasetName,
   try
   {
     TESTHR(recset->Open(_bstr_t(datasetName.c_str()),
-      _variant_t((IDispatch*)m_conn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+      _variant_t((IDispatch*)m_conn->getConn(),true), adOpenKeyset, adLockOptimistic, adCmdTable));
     
     do
     {
@@ -1207,7 +1206,7 @@ void te::ado::Transactor::remove(const std::string& datasetName, const te::da::O
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
     
     TESTHR(pCatalog->Tables->Delete(datasetName.c_str()));
   }

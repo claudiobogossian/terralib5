@@ -40,7 +40,7 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::PointSymbolizerProperty::PointSymbolizerProperty(QWidget* parent) : m_symb(new te::se::PointSymbolizer), m_setLocalSymbol(false)
+te::qt::widgets::PointSymbolizerProperty::PointSymbolizerProperty(QWidget* parent) :  m_setLocalSymbol(false), m_symb(new te::se::PointSymbolizer)
 {
   QGridLayout* layout = new QGridLayout(this);
 

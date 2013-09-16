@@ -3,7 +3,7 @@
 
 // TerraLib
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
-
+#include <terralib/datatype.h>
 //#include <../terralib/dataaccess_h.h>
  
 // STL
@@ -40,52 +40,64 @@ void PostGISExample()
     std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
 
 // shows how to use a spatial filter
-    RetrieveUsingSpatialFilter(ds.get());
+    //RetrieveUsingSpatialFilter(ds.get());
 
 // shows several examples on how to retrieve the dataset extent
-    DataSetGetExtent(transactor.get());
+    //DataSetGetExtent(transactor.get());
 
 // it creates a DataSetType called 'our_country' using the schema 'public' in the given data source
-    std::cout << std::endl << "Creating dataSet 'our_country'  "<< std::endl;
-    te::da::DataSetType* datasetType = CreateDataSetType(transactor.get());
+    std::string dt_name = "public.our_country2";
+    std::cout << std::endl << "Creating dataSet= " << dt_name  << std::endl;
+    te::da::DataSetType* dtype = new te::da::DataSetType(dt_name);
+    dtype->add(new te::dt::SimpleProperty("gid", te::dt::INT32_TYPE, true));
+    dtype->add(new te::dt::StringProperty("country_name", te::dt::STRING));
+    dtype->add(new te::dt::StringProperty("city_name", te::dt::VAR_STRING, 50, true));
+    dtype->add(new te::gm::GeometryProperty("spatial_data", 4326, te::gm::GeometryType, true));
+
+    te::da::DataSetType* datasetType = CreateDataSetType(dt_name,dtype,transactor.get());
 
 // it adds a primary key to the given dataset type
-    std::cout << std::endl << "Adding Primary Key to 'our_country'"<< std::endl;
+    std::cout << std::endl << "Adding Primary Key to " << dt_name << std::endl;
     te::da::PrimaryKey* pk = AddPrimaryKey(datasetType->getName(), transactor.get());
     assert(pk);
 
 // it adds an Unique Key to the given dataset type
-    std::cout << std::endl << "Adding Unique Key to 'our_country'"<< std::endl;
+    std::cout << std::endl << "Adding Unique Key to " << dt_name << std::endl;
     te::da::UniqueKey* uk = AddUniqueKey(datasetType->getName(), transactor.get());
     assert(uk);
 
 // it adds a spatial index to the given dataset type
-    std::cout << std::endl << "Adding spatial index to 'our_country' "<< std::endl;
+    std::cout << std::endl << "Adding spatial index to " << dt_name << std::endl;
     te::da::Index* idx = AddSpatialIndex(datasetType->getName(), transactor.get());
     assert(idx);
 
 // it adds an integer property called 'population' to the given dataset type
-    std::cout << std::endl << "Adding new Property population to 'our_country' "<< std::endl;
+    std::cout << std::endl << "Adding new Property population to " << dt_name << std::endl;
     te::dt::SimpleProperty* p = AddProperty(datasetType->getName(), transactor.get());
 
 // Now, let's  remove things from the data source using transactor
     // first, drop the recently added property
-    std::cout << std::endl << "Droping Property population of 'our_country' using transactor or ds"<< std::endl;
+    std::cout << std::endl << "Droping Property population of " << dt_name <<" using transactor or ds"<< std::endl;
     //(transactor.get())->dropProperty(datasetType->getName(), "population");
-    DroppingDataSetTypeProperty("our_country1", "population",transactor.get()); 
+    DroppingDataSetTypeProperty(dt_name, "population",transactor.get()); 
     //or using ds
-    ds->dropProperty("our_country1", "population");
+    //ds->dropProperty(dt_name, "population");
 
     // finally, drop the dataset we have created above
-    std::cout << std::endl << "Droping dataSet 'our_country' "<< std::endl;
-    ds->dropDataSet("our_country1");
+    std::cout << std::endl << "Droping dataSet " << dt_name << std::endl;
+    //ds->dropDataSet(dt_name);
     //(transactor.get())->dropDataSet( datasetType->getName()); /Not implemented Yet
-    
+    DroppingDataSetType(datasetType->getName(),transactor.get()); 
     if (transactor->isInTransaction())
     {
       std::cout << std::endl << "Transactor in transaction! "<< std::endl;
     }
-    ds->close();
+    //USE O DELETE transactor ANTES de FECHAR O BANCO. 
+    //TEM QUE SER RELEASE E NAO GET senao ao sair do escopo, 
+    //como é auto_ptr tenta destruir denovo e cai.
+    delete transactor.release(); 
+    ds->close(); //close nao libera o transactor. USE O delete ACIMA.  
+    int i =1;
   }
   catch(const std::exception& e)
   {

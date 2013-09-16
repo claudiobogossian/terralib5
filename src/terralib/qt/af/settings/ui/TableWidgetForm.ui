@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
-    <height>317</height>
+    <width>298</width>
+    <height>443</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,18 +15,26 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout_5">
+    <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,1">
      <item>
-      <widget class="QCheckBox" name="m_alwaysVisibleCheckBox">
-       <property name="text">
-        <string>Always visible</string>
+      <widget class="QGroupBox" name="m_alternateRowColorsGroupBox">
+       <property name="mouseTracking">
+        <bool>false</bool>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox">
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
        <property name="title">
-        <string>Realce colors of the lines</string>
+        <string>Alternate Row Colors</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
@@ -39,17 +47,14 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,1">
             <item>
              <widget class="QListWidget" name="m_previewListWidget">
-              <property name="alternatingRowColors">
-               <bool>true</bool>
-              </property>
-              <property name="isWrapping" stdset="0">
-               <bool>false</bool>
-              </property>
-              <property name="layoutMode">
-               <enum>QListView::SinglePass</enum>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
               </property>
               <item>
                <property name="text">
@@ -78,14 +83,14 @@
               <item>
                <widget class="QPushButton" name="m_primaryPushButton">
                 <property name="text">
-                 <string>Change primary color</string>
+                 <string>Primary Color</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="m_secondaryPushButton">
                 <property name="text">
-                 <string>Change secondary color</string>
+                 <string>Secondary Color</string>
                 </property>
                </widget>
               </item>
@@ -112,101 +117,100 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="title">
-          <string>Show</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout">
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="title">
+        <string>Show</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout">
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout">
-              <item>
-               <widget class="QRadioButton" name="m_unicRadioButton">
-                <property name="text">
-                 <string>Unic table</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-                <property name="autoExclusive">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
+             <widget class="QRadioButton" name="m_unicRadioButton">
+              <property name="text">
+               <string>Unic table</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+              <property name="autoExclusive">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <item>
-               <widget class="QRadioButton" name="m_tablLayerRadioButton">
-                <property name="text">
-                 <string>A table for Layer</string>
-                </property>
-                <property name="autoExclusive">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="m_groupedCheckBox">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Grouped</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QRadioButton" name="m_tablLayerRadioButton">
+              <property name="text">
+               <string>A table for Layer</string>
+              </property>
+              <property name="autoExclusive">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="m_groupedCheckBox">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Grouped</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>

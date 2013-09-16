@@ -1,3 +1,4 @@
+
 /*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
@@ -29,10 +30,8 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../dataaccess/datasource/DataSourceFactory.h"
+#include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
-#include "../dataaccess/datasource/DataSourceTransactor.h"
-#include "../dataaccess/query_fw.h"
 #include "../dataaccess/query_h.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
@@ -48,6 +47,7 @@
 #include "Utils.h"
 
 // Boost
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
@@ -142,7 +142,7 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 
   te::qt::widgets::DataSet2Layer converter(dataSource->getId());
 
-  te::da::DataSetTypePtr dt(dataSource->getDataSetType(resultPair.first->getName()).get());
+  te::da::DataSetTypePtr dt(dataSource->getDataSetType(resultPair.first->getName()).release());
 
   te::map::DataSetLayerPtr newLayer = converter(dt);
 
@@ -304,11 +304,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
       te::gm::GeometryProperty* currentGeom;
       te::gm::GeometryProperty* nextGeom;
 
-      if(currentDSType->hasGeom() && nextDSType->hasGeom())
-      {
-        currentGeom = te::da::GetFirstGeomProperty(currentDSType.get());
-        nextGeom = te::da::GetFirstGeomProperty(currentDSType.get());
-      }
+      currentGeom = te::da::GetFirstGeomProperty(currentDSType.get());
+      nextGeom = te::da::GetFirstGeomProperty(nextDSType.get());
       
       std::string currentTableName = te::vp::GetSimpleTableName(currentDSType->getTitle());
       std::string nextTableName = te::vp::GetSimpleTableName(nextDSType->getTitle());
@@ -325,7 +322,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
         fields->push_back(f_field);
       }
 
-      te::da::Expression* e_intersection = new te::da::ST_Intersects( new te::da::PropertyName(currentDSType->getName() + "." + currentGeom->getName()),
+      te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(currentDSType->getName() + "." + currentGeom->getName()),
                                                                         new te::da::PropertyName(nextDSType->getName() + "." + nextGeom->getName()));
       te::da::Field* f_intersection = new te::da::Field(*e_intersection, "geom");
       fields->push_back(f_intersection);
@@ -354,25 +351,26 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
       select->accept(visitor);
 
       te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
-      std::auto_ptr<te::da::DataSetType> dsType(currentDSLayer->getSchema().release());
+      std::auto_ptr<te::da::DataSetType> dsType(dsLayer->getSchema().release());
 
       te::gm::GeometryProperty* geom;
 
-      if(dsType->hasGeom())
-      {
-        geom = te::da::GetFirstGeomProperty(dsType.get());
-      }
+      geom = te::da::GetFirstGeomProperty(dsType.get());
 
-      te::da::Expression* e_intersection = new te::da::ST_Intersects( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
-                                                                        new te::da::PropertyName(previousQuery));
-      
+      te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
+                                                                        new te::da::PropertyName("("+ previousQuery +")"));
+
       te::da::Field* f_intersection = new te::da::Field(*e_intersection, "geom");
+
+      fields->clear();
       fields->push_back(f_intersection);
 
+      std::string alias = "layer" + boost::lexical_cast<std::string>(layerPos);
+
       te::da::FromItem* currentFromItem = new te::da::DataSetName(dsType->getName());
-      te::da::FromItem* nextFromItem = new te::da::DataSetName(previousQuery);
+      te::da::FromItem* nextFromItem = new te::da::DataSetName("("+ previousQuery +") "+ alias);
       te::da::Expression* e_intersects = new te::da::ST_Intersects( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
-                                                                    new te::da::PropertyName(previousQuery));
+                                                                    new te::da::PropertyName("("+ previousQuery +")"));
       te::da::JoinConditionOn* on = new te::da::JoinConditionOn(e_intersects);
       te::da::Join* join = new te::da::Join(*currentFromItem, *nextFromItem, te::da::INNER_JOIN, *on);
 
@@ -407,8 +405,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
   firstMember.ds->moveBeforeFirst();
 
-  te::gm::GeometryProperty* fiGeomProp = te::da::GetFirstGeomProperty(firstMember.dt);
-  size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp);
+  std::auto_ptr<te::gm::GeometryProperty> fiGeomProp (te::da::GetFirstGeomProperty(firstMember.dt));
+  size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp.get());
 
   size_t secGeomPropPos = secondMember.dt->getPropertyPosition(te::da::GetFirstGeomProperty(secondMember.dt));
 
@@ -418,7 +416,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
   while(firstMember.ds->moveNext())
   {
-    te::gm::Geometry* currGeom = firstMember.ds->getGeometry(fiGeomPropPos).get();
+    std::auto_ptr<te::gm::Geometry> currGeom = firstMember.ds->getGeometry(fiGeomPropPos);
 
     if(currGeom->getSRID() != outputSRID && outputSRID != 0)
       currGeom->transform(outputSRID);
@@ -429,18 +427,19 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
     for(size_t i = 0; i < report.size(); ++i)
     {
       secondMember.ds->move(report[i]);
-      te::gm::Geometry* secGeom = secondMember.ds->getGeometry(secGeomPropPos).get();
+      std::auto_ptr<te::gm::Geometry> secGeom = secondMember.ds->getGeometry(secGeomPropPos);
 
       if(secGeom->getSRID() != outputSRID && outputSRID != 0)
         secGeom->transform(outputSRID);
 
-      if(!currGeom->intersects(secGeom))
+      if(!currGeom->intersects(secGeom.get()))
         continue;
 
       te::mem::DataSetItem* item = new te::mem::DataSetItem(outputDs);
-      te::gm::Geometry* newGeom = currGeom->intersection(secGeom);
 
-      item->setGeometry(fiGeomProp->getName(), *newGeom);
+      te::gm::Geometry* newGeom = currGeom->intersection(secGeom.get());
+
+      item->setGeometry("geom", *newGeom);
 
       for(size_t j = 0; j < firstMember.props.size(); ++j)
       {
@@ -453,7 +452,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
         if(!firstMember.ds->isNull(firstMember.props[j]->getName()))
         {
-          te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).get();
+          te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
 
           item->setValue(name, ad);
         }
@@ -465,7 +464,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
         if(!secondMember.ds->isNull(secondMember.props[j]->getName()))
         {
-          te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).get();
+          te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
 
           item->setValue(name, ad);
         }

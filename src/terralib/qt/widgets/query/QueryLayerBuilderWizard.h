@@ -27,9 +27,10 @@
 #define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_QUERYLAYERBUILDERWIZARD_H
 
 // TerraLib
-#include "../Config.h"
+#include "../../../maptools/AbstractLayer.h"
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../Config.h"
 
 // Qt
 #include <QtGui/QWizard>
@@ -61,6 +62,8 @@ namespace te
           virtual bool validateCurrentPage();
 
           void setDataSource(const te::da::DataSourcePtr& ds);
+
+          void setLayerList(std::list<te::map::AbstractLayerPtr>& layerList);
 
           te::da::Select getSelectQuery();
 

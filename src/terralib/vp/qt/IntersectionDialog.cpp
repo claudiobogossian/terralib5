@@ -124,6 +124,12 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
     std::auto_ptr<te::map::LayerSchema> schema = layer->getSchema();
 
+    if(!schema->hasGeom())
+    {
+      QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("Some layer do not have a geometry column!"));
+      return;
+    }
+
     for(size_t i = 0; i < props.size(); ++i)
       propsPos.push_back(schema->getPropertyPosition(props[i]->getName()));
 
@@ -143,7 +149,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
   if(newLayerName.empty())
   {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("It is necessary a name for the new layer"));
+    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("It is necessary a name for the new layer."));
     return;
   }
 

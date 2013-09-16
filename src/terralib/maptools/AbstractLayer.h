@@ -59,6 +59,7 @@ namespace te
   {
 // Forward declaration
     class Canvas;
+    class Chart;
     class Grouping;
 
     typedef te::da::DataSetType LayerSchema;
@@ -284,6 +285,24 @@ namespace te
         virtual void setGrouping(te::map::Grouping* grouping);
 
         /*!
+          \brief It returns the Chart associated to the Layer.
+
+          \return The Chart associated to the Layer.
+
+          \note The caller will NOT take the ownership of the given pointer.
+        */
+        virtual te::map::Chart* getChart() const;
+
+        /*!
+          \brief It sets the Chart associated to the Layer.
+
+          \param chart The Chart to be associated to the Layer.
+
+          \note The layer will take the ownership of the given pointer.
+        */
+        virtual void setChart(te::map::Chart* chart);
+
+        /*!
           \brief It returns the layer schema.
 
           \return The Layer schema.
@@ -447,6 +466,7 @@ namespace te
         te::da::ObjectIdSet* m_selected;  //!< The selected group of the layer.
         te::se::Style* m_style;           //!< The style to be applied to the geographic objects in the layer.
         te::map::Grouping* m_grouping;    //!< The grouping information.
+        te::map::Chart* m_chart;          //!< The chart information.
     };
 
     typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;

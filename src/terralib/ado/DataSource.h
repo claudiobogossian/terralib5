@@ -118,6 +118,7 @@ namespace te
         Connection* m_conn;                               //!< The Connection.
         std::string m_currentSchema;                      //!< The default schema used when no one is provided.
         bool m_isInTransaction;                           //!< It indicates if there is a transaction in progress.
+        bool m_isOpened;
 
         static te::da::DataSourceCapabilities sm_capabilities;  //!< ADO capabilities.
         static te::da::SQLDialect* sm_dialect; 

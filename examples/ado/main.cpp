@@ -25,7 +25,10 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
-#include <terralib/dataaccess.h>
+#include <terralib/dataaccess/datasource/DataSource.h>
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
+#include <terralib/dataaccess/datasource/DataSourceTransactor.h>
+#include <terralib/memory/DataSet.h>
 #include <terralib/plugin.h>
 
 // Example
@@ -43,8 +46,10 @@ int main(int /*argc*/, char** /*argv*/)
   {
     // Initialize Terralib support
     TerraLib::getInstance().initialize();
-    
+
     LoadModules();
+
+    //CopyFromShapeFile();
 
     // Set the minimum server connection information needed to connect to the database server
     std::map<std::string, std::string> connInfo;
@@ -52,19 +57,21 @@ int main(int /*argc*/, char** /*argv*/)
     connInfo["HOST"] = "localhost";
     connInfo["USER_NAME"] = "";
     connInfo["PASSWORD"] = "";
-    connInfo["DB_NAME"] = ""TE_DATA_EXAMPLE_DIR"/data/mdb/Northwind.mdb";
+    connInfo["DB_NAME"] = ""TE_DATA_EXAMPLE_DIR"/data/mdb/ADODataSource.mdb";
    
     // Create a data source using the data source factory
-    te::da::DataSource* ds = te::da::DataSourceFactory::make("ADO");
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("ADO"));
 
     // Open the data source using the connection information given above
-    ds->open(connInfo);
+    ds->setConnectionInfo(connInfo);
+    ds->open();
+
 
     // Show the information about datasets stored in the data source catalog
-    PrintCatalog(ds);
+    PrintCatalog(ds.get());
 
     // Retrieve and then print the datasets stored in the data source
-    PrintDataSets(ds);
+    PrintDataSets(ds.get());
   }
   catch(const std::exception& e)
   {

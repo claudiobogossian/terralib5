@@ -149,6 +149,12 @@ void te::qt::widgets::QueryLayerBuilderWizard::setDataSource(const te::da::DataS
   getQueryCapabilities();
 }
 
+void te::qt::widgets::QueryLayerBuilderWizard::setLayerList(std::list<te::map::AbstractLayerPtr>& layerList)
+{
+  if(m_whereClausePage.get())
+    m_whereClausePage->getWidget()->setLayerList(layerList);
+}
+
 te::da::Select te::qt::widgets::QueryLayerBuilderWizard::getSelectQuery()
 {
   //fields
@@ -184,7 +190,7 @@ te::map::AbstractLayerPtr te::qt::widgets::QueryLayerBuilderWizard::getQueryLaye
 
   te::map::QueryLayerPtr layer(new te::map::QueryLayer(id, title));
   layer->setDataSourceId(m_ds->getId());
-  layer->setRendererType("QUERY_LAYER_RENDERER");
+  layer->setRendererType("ABSTRACT_LAYER_RENDERER");
   layer->setQuery(s);
   layer->computeExtent();
 
@@ -305,17 +311,21 @@ void te::qt::widgets::QueryLayerBuilderWizard::getQueryCapabilities()
     ++it;
   }
 
-  //Comparsion Operators
+  m_whereClausePage->getWidget()->setOperatorsList(vecOperators);
+
+  //Spatial Operators
+  std::vector<std::string> vecSpatialOperators;
+
   it = queryCap.getSpatialOperators().begin();
 
   while(it != queryCap.getSpatialOperators().end())
   {
-    vecOperators.push_back(*it);
+    vecSpatialOperators.push_back(*it);
 
     ++it;
   }
 
-  m_whereClausePage->getWidget()->setOperatorsList(vecOperators);
+  m_whereClausePage->getWidget()->setSpatialOperatorsList(vecSpatialOperators);
 
   //Logical Operators
   std::vector<std::string> vecConnectors;

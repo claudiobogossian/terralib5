@@ -30,10 +30,11 @@
 #include "../Config.h"
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/query/Where.h"
-
+#include "../../../maptools/AbstractLayer.h"
 
 // STL
 #include <memory>
+#include <map>
 
 // Qt
 #include <QtGui/QWidget>
@@ -43,6 +44,8 @@ namespace Ui { class WhereClauseWidgetForm; }
 
 namespace te
 {
+  namespace da { class Expression; }
+
   namespace qt
   {
     namespace widgets
@@ -71,11 +74,15 @@ namespace te
 
           void setDataSource(const te::da::DataSourcePtr& ds);
 
+          void setLayerList(std::list<te::map::AbstractLayerPtr>& layerList);
+
           void setFromItems(std::vector<std::pair<std::string, std::string> > vec);
 
           void setAttributeList(const std::vector<std::string>& vec);
 
           void setOperatorsList(const std::vector<std::string>& vec);
+
+          void setSpatialOperatorsList(const std::vector<std::string>& vec);
 
           void setConnectorsList(const std::vector<std::string>& vec);
 
@@ -100,6 +107,10 @@ namespace te
           te::da::DataSourcePtr m_ds;
 
           std::vector<std::pair<std::string, std::string> > m_fromItems;
+
+          std::map<int, te::da::Expression*> m_mapExp;
+
+          int m_count;
       }; 
 
     } // end namespace widgets

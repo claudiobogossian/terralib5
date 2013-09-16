@@ -44,6 +44,7 @@
 #include "../events/ToolEvents.h"
 #include "../ApplicationController.h"
 #include "../Project.h"
+#include "../Utils.h"
 #include "MapDisplay.h"
 
 // Qt
@@ -91,6 +92,9 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 
   // Config the default SRS
   m_display->setSRID(ApplicationController::getInstance().getDefaultSRID(), false);
+  
+  // Getting default display color
+  m_display->setBackgroundColor(te::qt::af::GetDefaultDisplayColorFromSettings());
 }
 
 te::qt::af::MapDisplay::~MapDisplay()
@@ -210,6 +214,14 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
     {
       // TODO
+    }
+    break;
+
+    case te::qt::af::evt::MAP_COLOR_CHANGED:
+    {
+      te::qt::af::evt::MapColorChanged* mapColorChanged = static_cast<te::qt::af::evt::MapColorChanged*>(e);
+      m_display->setBackgroundColor(mapColorChanged->m_color);
+      m_display->refresh();
     }
     break;
 

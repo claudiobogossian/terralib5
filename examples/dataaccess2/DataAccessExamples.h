@@ -49,7 +49,7 @@
 
   \exception Exception It throws an exception if something goes wrong.
  */
-te::da::DataSetType* CreateDataSetType(te::da::DataSourceTransactor* transactor);
+te::da::DataSetType* CreateDataSetType(const std::string& datasetname,te::da::DataSetType*dt, te::da::DataSourceTransactor* transactor);
 
 te::da::DataSetType* CreateDataSetTypeInMemory(const std::string& datasettypename);
 
@@ -242,7 +242,8 @@ void DroppingDataSetTypeProperty(const std::string& datasetname, const std::stri
   \param dt     the dataSetType that will be removed from data source.
   \param trans  the transactor to be used in the removing. 
 */
-void DroppingDataSetType(te::da::DataSetType* dt, te::da::DataSourceTransactor* trans);
+//void DroppingDataSetType(te::da::DataSetType* dt, te::da::DataSourceTransactor* trans);
+void DroppingDataSetType(const std::string& datasetname, te::da::DataSourceTransactor* trans);
 
 /*!
   \brief It retrieves and prints the capabilities of a given data source.
