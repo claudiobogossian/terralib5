@@ -405,8 +405,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
   firstMember.ds->moveBeforeFirst();
 
-  te::gm::GeometryProperty* fiGeomProp = te::da::GetFirstGeomProperty(firstMember.dt);
-  size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp);
+  std::auto_ptr<te::gm::GeometryProperty> fiGeomProp (te::da::GetFirstGeomProperty(firstMember.dt));
+  size_t fiGeomPropPos = firstMember.dt->getPropertyPosition(fiGeomProp.get());
 
   size_t secGeomPropPos = secondMember.dt->getPropertyPosition(te::da::GetFirstGeomProperty(secondMember.dt));
 
@@ -416,7 +416,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
   while(firstMember.ds->moveNext())
   {
-    te::gm::Geometry* currGeom = firstMember.ds->getGeometry(fiGeomPropPos).release();
+    std::auto_ptr<te::gm::Geometry> currGeom = firstMember.ds->getGeometry(fiGeomPropPos);
 
     if(currGeom->getSRID() != outputSRID && outputSRID != 0)
       currGeom->transform(outputSRID);
@@ -427,17 +427,17 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
     for(size_t i = 0; i < report.size(); ++i)
     {
       secondMember.ds->move(report[i]);
-      te::gm::Geometry* secGeom = secondMember.ds->getGeometry(secGeomPropPos).release();
+      std::auto_ptr<te::gm::Geometry> secGeom = secondMember.ds->getGeometry(secGeomPropPos);
 
       if(secGeom->getSRID() != outputSRID && outputSRID != 0)
         secGeom->transform(outputSRID);
 
-      if(!currGeom->intersects(secGeom))
+      if(!currGeom->intersects(secGeom.get()))
         continue;
 
       te::mem::DataSetItem* item = new te::mem::DataSetItem(outputDs);
 
-      te::gm::Geometry* newGeom = currGeom->intersection(secGeom);
+      te::gm::Geometry* newGeom = currGeom->intersection(secGeom.get());
 
       item->setGeometry("geom", *newGeom);
 

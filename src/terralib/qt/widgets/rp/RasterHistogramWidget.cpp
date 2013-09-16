@@ -124,9 +124,9 @@ void te::qt::widgets::RasterHistogramWidget::onRedToolButtonToggled(bool flag)
 
   te::qt::widgets::Histogram* hist = te::qt::widgets::createHistogram(ds.get(), dsType.get(), band);
 
-  te::se::Fill* fill = te::se::CreateFill("#009900", "1.0");
+//  te::se::Fill* fill = te::se::CreateFill("#009900", "1.0");
 
-  te::se::Stroke* stroke = te::se::CreateStroke("#000000", "1");
+//  te::se::Stroke* stroke = te::se::CreateStroke("#000000", "1");
 
   te::qt::widgets::HistogramChart* histChart = new te::qt::widgets::HistogramChart(hist);
 

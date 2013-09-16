@@ -173,13 +173,10 @@ std::map<te::gm::Geometry*, double> te::vp::BufferDialog::getDistante()
   std::size_t geomIdx;
   std::string geomName = "";
 
-  if(dsType->hasGeom())
-  {
-    std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType.get()));
-    geomName = geom->getName();
-    geomIdx = boost::lexical_cast<std::size_t>(dsType->getPropertyPosition(geomName));
-  }
-  
+  std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType.get()));
+  geomName = geom->getName();
+  geomIdx = boost::lexical_cast<std::size_t>(dsType->getPropertyPosition(geomName));
+
   std::auto_ptr<te::da::DataSet> inputDataSet = dsLayer->getData();
   inputDataSet->moveBeforeFirst();
   
@@ -377,6 +374,15 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   {
     QMessageBox::information(this, "Buffer", "Please, you must select a layer.");
 
+    return;
+  }
+
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+  std::auto_ptr<te::map::LayerSchema> dsType = dsLayer->getSchema();
+
+  if(!dsType->hasGeom())
+  {
+    QMessageBox::information(this, "Buffer", "The selected layer do not have a geometry column!");
     return;
   }
 
