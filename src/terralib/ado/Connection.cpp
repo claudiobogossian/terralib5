@@ -118,5 +118,5 @@ void te::ado::Connection::execute(const std::string& command)
 
 bool te::ado::Connection::isValid()
 {
-  return m_conn->GetState() == adStateOpen;
+  return m_conn != 0;
 }
