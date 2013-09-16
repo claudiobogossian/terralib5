@@ -30,6 +30,7 @@
 // STL
 #include <cassert>
 #include <cmath>
+#include <stdlib.h>
 
 te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties)
   : m_type(type),
