@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "OverlayDialog.h"
-#include "OVerlayWidget.h"
+#include "OverlayWidget.h"
 #include "ui_OverlayWidgetForm.h"
 #include "ui_OverlayDialogForm.h"
 
