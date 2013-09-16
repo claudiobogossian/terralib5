@@ -241,8 +241,6 @@ namespace te
       
       bool m_isOpened;
       
-      Transactor* m_transactor;
-      
       static te::da::DataSourceCapabilities sm_capabilities; 
 
     };
