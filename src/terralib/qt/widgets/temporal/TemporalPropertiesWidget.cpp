@@ -33,9 +33,10 @@
 #include <QtGui/QWidget>
 
 te::qt::widgets::TemporalPropertiesWidget::TemporalPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
-  : m_dataSet (dataSet),
-    QWidget(parent, f),
-    m_ui(new Ui::TemporalPropertiesWidgetForm)
+: QWidget(parent, f),
+  m_ui(new Ui::TemporalPropertiesWidgetForm),
+  m_dataSet (dataSet)
+    
 {
   m_ui->setupUi(this);
   QString item;
