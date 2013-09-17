@@ -78,7 +78,6 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   m_menu.addSeparator();
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom In"));
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Out"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Area"));
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Pan"));
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Extent")); 
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Previous Extent"));
