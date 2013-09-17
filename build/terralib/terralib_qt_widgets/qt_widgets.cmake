@@ -134,6 +134,8 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/charts/ChartDisplay.h
   ${SRCDIR}/widgets/charts/ChartDisplayWidget.h
+  ${SRCDIR}/widgets/charts/ChartLayerDialog.h
+  ${SRCDIR}/widgets/charts/ChartLayerWidget.h
   ${SRCDIR}/widgets/charts/ChartStyleFrame.h
   ${SRCDIR}/widgets/charts/ChartStyleWidget.h
   ${SRCDIR}/widgets/charts/HistogramDataWidget.h
