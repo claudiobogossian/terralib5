@@ -961,7 +961,7 @@ void te::qt::af::BaseApplication::onDrawTriggered()
   m_display->draw(m_explorer->getExplorer()->getAllLayers());
 }
 
-void te::qt::af::BaseApplication::onSetBoxOnMapDisplayTriggered()
+void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
 {
   try
   {
@@ -973,20 +973,26 @@ void te::qt::af::BaseApplication::onSetBoxOnMapDisplayTriggered()
     }
 
     te::qt::widgets::MapDisplay* display = m_display->getDisplay();
-    te::map::AbstractLayerPtr lay = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
 
-    if((display->getSRID() != lay->getSRID()) && (display->getSRID() == TE_UNKNOWN_SRS || lay->getSRID() == TE_UNKNOWN_SRS))
+    te::map::AbstractLayerPtr layer = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+
+    te::gm::Envelope env = layer->getExtent();
+
+    if(display->getSRID() == TE_UNKNOWN_SRS && layer->getSRID() == TE_UNKNOWN_SRS || (display->getSRID() == layer->getSRID()))
     {
-      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), TR_QT_AF("The SRS of canvas and layer are not compatible."));
+      display->setExtent(env, true);
       return;
     }
 
-    te::gm::Envelope env = lay->getExtent();
-    if(display->getSRID() != lay->getSRID())
+    if(display->getSRID() == TE_UNKNOWN_SRS || layer->getSRID() == TE_UNKNOWN_SRS)
     {
-      env = lay->getExtent();
-      env.transform(lay->getSRID(), display->getSRID());
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), TR_QT_AF("The SRS of Map Display and layer are not compatible."));
+      return;
     }
+
+    if(display->getSRID() != layer->getSRID())
+      env.transform(layer->getSRID(), display->getSRID());
+
     display->setExtent(env, true);
   }
   catch(const std::exception& e)
@@ -1328,7 +1334,7 @@ void te::qt::af::BaseApplication::makeDialog()
   te::qt::widgets::LayerTreeView* treeView = lexplorer->getTreeView();
   treeView->setAnimated(true);
 
-  treeView->add(m_setBoxOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerFitOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   
   // TODO
   //treeView->add(m_layerEdit, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
@@ -1528,7 +1534,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart"), tr(""), true, false, true, m_menubar);
-  initAction(m_setBoxOnMapDisplay, "zoom-extent", "Layer.Set Box On Map Display", tr("Set Box on &Map Display"), tr(""), true, false, true, m_menubar);
+  initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit On Map Display", tr("Fit on &Map Display"), tr("Fit the current layer on Map Display"), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
@@ -1651,7 +1657,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->setObjectName("Layer");
   m_layerMenu->setTitle(tr("&Layer"));
 
-  m_layerMenu->addAction(m_setBoxOnMapDisplay);
+  m_layerMenu->addAction(m_layerFitOnMapDisplay);
   //m_layerMenu->addAction(m_layerEdit); TODO
   //m_layerMenu->addAction(m_layerRename); TODO
   //m_layerMenu->addAction(m_layerExport); TODO
@@ -1862,7 +1868,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
   connect(m_mapUnknownSRID, SIGNAL(triggered()), SLOT(onMapSetUnknwonSRIDTriggered()));
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
-  connect(m_setBoxOnMapDisplay, SIGNAL(triggered()), SLOT(onSetBoxOnMapDisplayTriggered()));
+  connect(m_layerFitOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitOnMapDisplayTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
   connect(m_mapPan, SIGNAL(toggled(bool)), SLOT(onPanToggled(bool)));
