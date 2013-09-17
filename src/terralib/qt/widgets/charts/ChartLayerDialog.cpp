@@ -58,7 +58,15 @@ void te::qt::widgets::ChartLayerDialog::setLayer(te::map::AbstractLayerPtr layer
   m_chartWidget->setLayer(layer);
 }
 
+void te::qt::widgets::ChartLayerDialog::setChart(te::map::Chart* chart)
+{
+  m_chartWidget->setChart(chart);
+}
+
 void te::qt::widgets::ChartLayerDialog::onPushButtonClicked()
 {
-  accept();
+  bool res = m_chartWidget->buildChart();
+
+  if(res)
+    accept();
 }

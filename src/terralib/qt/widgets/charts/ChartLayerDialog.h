@@ -41,6 +41,9 @@ namespace Ui { class ChartLayerDialogForm; }
 
 namespace te
 {
+// Forward declarations
+  namespace map { class Chart; }
+
   namespace qt
   {
     namespace widgets
@@ -75,10 +78,17 @@ namespace te
 
         public:
 
+          /*! \brief Set a layer. */
           void setLayer(te::map::AbstractLayerPtr layer);
+
+          /*! 
+            \brief Update the interface with the chart properties
+          */
+          void setChart(te::map::Chart* chart);
 
         public slots:
 
+          /*! \brief Function used when the user clicked over the ok push button. */
           void onPushButtonClicked();
 
         private:

@@ -218,6 +218,11 @@ namespace te
         \brief Creates a default QSettings.
       */
       TEQTAFEXPORT void CreateDefaultSettings();
+
+      /*!
+        \brief
+      */
+      TEQTAFEXPORT void AddActionToCustomToolbars(QAction* act);
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

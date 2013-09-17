@@ -39,6 +39,8 @@
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QMessageBox>
+#include <QtGui/QPainter>
+#include <QtGui/QPen>
 #include <QtGui/QTreeWidgetItem>
 #include <QtGui/QTreeWidgetItemIterator>
 
@@ -316,4 +318,28 @@ void te::qt::widgets::Config2DrawLayerSelection(te::map::Canvas* canvas, const Q
     default:
       return;
   }
+}
+
+QPixmap te::qt::widgets::CreatePixmapIcon(const int& size, const QColor& penColor, const QColor& brushColor, const int& contourSize)
+{
+  QPixmap pix(size, size);
+
+  QPainterPath path;
+  path.addRect(0,0, pix.width() - 1, pix.height() - 1);
+
+  QPen pen;
+  pen.setColor(penColor);
+  pen.setWidth(contourSize);
+
+  QBrush brush;
+  brush.setColor(brushColor);
+
+  QPainter p(&pix);
+  p.setPen(pen);
+  p.setBrush(brushColor);
+
+  p.fillPath(path, brush);
+  p.drawPath(path);
+    
+  return pix;
 }

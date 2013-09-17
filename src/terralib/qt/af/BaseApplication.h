@@ -117,6 +117,8 @@ namespace te
 
           void onLayerScatterTriggered();
 
+          void onLayerChartTriggered();
+
           void onLayerGroupingTriggered();
 
           void onMapSRIDTriggered();
@@ -130,8 +132,6 @@ namespace te
           void onZoomInToggled(bool checked);
 
           void onZoomOutToggled(bool checked);
-
-          void onZoomAreaToggled(bool checked);
 
           void onPanToggled(bool checked);
 
@@ -236,6 +236,7 @@ namespace te
           QAction* m_layerToBottom;
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
+          QAction* m_layerChart;
           QAction* m_layerGrouping;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;

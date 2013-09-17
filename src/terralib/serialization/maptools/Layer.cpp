@@ -24,8 +24,10 @@
 */
 
 // TerraLib
+#include "../../common/BoostUtils.h"
 #include "../../common/Translator.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/serialization/xml/Serializer.h"
 #include "../../se/CoverageStyle.h"
@@ -350,6 +352,59 @@ void WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& wr
   writer.writeEndElement("te_map:Grouping");
 }
 
+void WriteOGRAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& writer)
+{
+  writer.writeAttribute("id", layer->getId());
+  writer.writeElement("te_map:Title", te::common::ConvertLatin1UTFString(layer->getTitle()));
+  writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
+
+  te::map::Grouping* g = layer->getGrouping();
+
+  if(g == 0)
+    return;
+
+  writer.writeStartElement("te_map:Grouping");
+
+  te::map::GroupingType type = g->getType();
+
+  writer.writeElement("te_map:PropertyName", g->getPropertyName());
+  writer.writeElement("te_map:PropertyDataType", g->getPropertyType());
+  writer.writeElement("te_map:Type", GetGroupingType(type));
+  writer.writeElement("te_map:Precision", static_cast<unsigned int>(g->getPrecision()));
+  
+  if(type == te::map::STD_DEVIATION)
+    writer.writeElement("te_map:StandardDeviation", g->getStdDeviation());
+
+  const std::vector<te::map::GroupingItem*>& items = g->getGroupingItems();
+
+  for(std::size_t i = 0; i < items.size(); ++i)
+  {
+    te::map::GroupingItem* item = items[i];
+    assert(item);
+
+    writer.writeStartElement("te_map:GroupingItem");
+
+    writer.writeElement("te_map:Title", item->getTitle());
+
+    if(type != te::map::UNIQUE_VALUE)
+    {
+      writer.writeElement("te_map:From", item->getLowerLimit());
+      writer.writeElement("te_map:To", item->getUpperLimit());
+    }
+    else
+      writer.writeElement("te_map:Value", item->getValue());
+
+    const std::vector<te::se::Symbolizer*>& symbs = item->getSymbolizers();
+
+    for(std::size_t j = 0; j < symbs.size(); ++j)
+      te::serialize::Symbolizer::getInstance().write(symbs[j], writer);
+
+    writer.writeEndElement("te_map:GroupingItem");
+  }
+
+  writer.writeEndElement("te_map:Grouping");
+}
+
 void te::serialize::Layer::reg(const std::string& layerType, const LayerFnctSerializeType& fncts)
 {
   m_fncts[layerType] = fncts;
@@ -479,6 +534,10 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "DataSetLayer");
 
   reader.next();
+
+  te::da::DataSourcePtr dsc = te::da::GetDataSource(datasourceId);
+
+  bool isOgr = dsc.get() != 0 && dsc->getType() == "OGR";
 
   std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer(id, title, 0));
   layer->setSRID(srid);
@@ -753,9 +812,14 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& w
 
   writer.writeStartElement("te_map:DataSetLayer");
 
-  WriteAbstractLayer(layer, writer);
+  bool ogrType = te::da::GetDataSource(layer->getDataSourceId())->getType() == "OGR";
 
-  writer.writeElement("te_map:DataSetName", layer->getDataSetName());
+  if(ogrType)
+    WriteOGRAbstractLayer(layer, writer);
+  else
+    WriteAbstractLayer(layer, writer);
+
+  writer.writeElement("te_map:DataSetName", (ogrType) ? te::common::ConvertLatin1UTFString(layer->getDataSetName()) : layer->getDataSetName());
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::xml::SaveExtent(layer->getExtent(), writer);

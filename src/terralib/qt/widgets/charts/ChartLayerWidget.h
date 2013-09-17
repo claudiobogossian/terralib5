@@ -31,6 +31,7 @@
 #include "../Config.h"
 
 // STL
+#include <map>
 #include <memory>
 
 // QT
@@ -42,12 +43,14 @@ namespace Ui { class ChartLayerWidgetForm; }
 namespace te
 {
 // Forward declarations
+  namespace map { class Chart; }
 
   namespace qt
   {
     namespace widgets
     {
       // Forward declarations
+      class ColorPickerToolButton;
 
       /*!
         \class ChartLayerWidget
@@ -77,31 +80,65 @@ namespace te
 
         public:
 
+          /*! \brief Set a layer. */
           void setLayer(te::map::AbstractLayerPtr layer);
 
+          /*! 
+            \brief Creates the te::map::Chart object using the interface parameters
+
+            \return true if the object was build and false in other case.
+
+            \note This method set in layer the chart object.
+          
+          */
+          bool buildChart();
+
+          /*! 
+            \brief Update the interface with the chart properties
+          */
+          void setChart(te::map::Chart* chart);
 
         protected:
 
           /*! \brief Internal method to initialize the widget (e.g.: color, combos, icons, etc.) */
           void initialize();
 
-          /*! \brief Updates the widget form based on internal fill element. */
-          void updateUi();
-
+          /*! \brief List the layer attributes (from layer schema) */
           void listAttributes();
 
 
         public slots:
 
+          /*! \brief Updates the widget form based on internal fill element. */
+          void updateUi();
+
+          /*! 
+            \brief Function used when the user clicked over the add tool button. 
+
+            \note This function adds a new attribute to be used in Chart object.
+          */
           void onAddToolButtonClicked();
 
+          /*! 
+            \brief Function used when the user clicked over the remove tool button. 
+
+            \note This function removes a selected attribute used in Chart object.
+          */
           void onRemoveToolButtonClicked();
+
+          /*! 
+            \brief Function used when the user clicked over the table (color column). 
+
+            \note This function gives a new color to a selected attribute.
+          */
+          void onItemClicked(int row, int column);
 
         private:
 
           std::auto_ptr<Ui::ChartLayerWidgetForm> m_ui;             //!< Widget form.
-
-          te::map::AbstractLayerPtr m_layer;                        //!< TerraLib layer auto ptr          
+          ColorPickerToolButton* m_colorPicker;                     //!< The color picker used to customise the color of several chart parameters.
+          te::map::AbstractLayerPtr m_layer;                        //!< TerraLib layer auto ptr
+          std::map<std::string, QColor> m_chartMap;                 //!< Chart Map
       };
 
     } // end namespace widgets

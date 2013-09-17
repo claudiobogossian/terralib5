@@ -390,6 +390,14 @@ namespace te
           */
           QColor getSelectionColor() const;
 
+
+          /*!
+            \brief Returns main window.
+
+            \return The main window pointer.
+          */
+          QWidget* getMainWindow() const;
+
         protected:
 
           std::map<QString, QToolBar*> m_toolbars;    //!< Toolbars registered.
