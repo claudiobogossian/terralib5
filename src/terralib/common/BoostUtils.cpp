@@ -149,42 +149,43 @@ void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::
   }
 }
 
-std::string GetSystemEncoding()
-{
-  std::string loc_name = boost::locale::util::get_system_locale();
-
-  size_t pos = loc_name.find(".");
-
-  if(pos == std::string::npos)
-    return "";
-
-  std::string encod = loc_name.substr(pos+1);
-
-  if(encod.compare("windows-1252") == 0)
-    return "ISO8859-1";
-
-  return encod;
-}
+//std::string GetSystemEncoding()
+//{
+//  std::string loc_name = boost::locale::util::get_system_locale();
+//
+//  size_t pos = loc_name.find(".");
+//
+//  if(pos == std::string::npos)
+//    return "";
+//
+//  std::string encod = loc_name.substr(pos+1);
+//
+//  if(encod.compare("windows-1252") == 0)
+//    return "ISO8859-1";
+//
+//  return encod;
+//}
 
 std::string te::common::ConvertLatin1UTFString(const std::string& data, const bool& toUtf)
 {
-  std::string encoding = GetSystemEncoding();
+  return data;
+  //std::string encoding = GetSystemEncoding();
 
-  if(encoding.empty())
-    return data;
+  //if(encoding.empty())
+  //  return data;
 
-  if(toUtf)
-    return boost::locale::conv::to_utf<char>(data, "ISO8859-1");
-  else
-  {
-    if(encoding.compare("ISO8859-1") == 0)
-      return data;
+  //if(toUtf)
+  //  return boost::locale::conv::to_utf<char>(data, "ISO8859-1");
+  //else
+  //{
+  //  if(encoding.compare("ISO8859-1") == 0)
+  //    return data;
 
-    std::string word = data;
+  //  std::string word = data;
 
-    if (encoding.compare("UTF-8") != 0)
-      word = boost::locale::conv::to_utf<char>(data, encoding);
+  //  if (encoding.compare("UTF-8") != 0)
+  //    word = boost::locale::conv::to_utf<char>(data, encoding);
 
-    return boost::locale::conv::from_utf<char>(data, "ISO8859-1");
-  }
+  //  return boost::locale::conv::from_utf<char>(data, "ISO8859-1");
+  //}
 }

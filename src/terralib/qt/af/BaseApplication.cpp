@@ -753,6 +753,10 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
 
   te::map::AbstractLayerPtr lay = (*layers.begin())->getLayer();
 
+  if (lay->getSchema()->hasRaster())
+    return;
+
+
   te::qt::af::DataSetTableDockWidget* doc = GetLayerDock(lay.get(), m_tableDocks);
 
   if(doc == 0)
