@@ -27,13 +27,18 @@
 #include "../../../../common/Config.h"
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
-#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../../widgets/datasource/core/DataSourceTypeManager.h"
-#include "ShapeFileType.h"
+
+#include "../../../af/ApplicationController.h"
+
 #include "Plugin.h"
 
-te::qt::plugins::shp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+// Qt 
+#include <QAction>
+#include <QMenu>
+
+te::qt::plugins::shp::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo) :
+QObject(),
+te::plugin::Plugin(pluginInfo)
 {
 }
 
@@ -46,14 +51,26 @@ void te::qt::plugins::shp::Plugin::startup()
   if(m_initialized)
     return;
 
-  te::qt::widgets::DataSourceTypeManager::getInstance().add(new ShapeFileType);
-
 // it initializes the Translator support for the TerraLib Shapefile driver support
   TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_SHP_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_SHP_TEXT_DOMAIN_DIR, "UTF-8");
 
   TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_SHP("TerraLib Qt Shapefile widget startup!"));
 
   m_initialized = true;
+
+  //Initializing action
+  QAction* act = te::qt::af::ApplicationController::getInstance().findAction("Project.Add Layer.All Sources");
+  QMenu* mnu = te::qt::af::ApplicationController::getInstance().findMenu("Project.Add Layer");
+
+  if(act != 0 && mnu != 0)
+  {
+    QWidget* parent = act->parentWidget();
+    m_showWindow = new QAction(QIcon::fromTheme("datasource-shapefile"), tr("Vector File..."), parent);
+    m_showWindow->setObjectName("Project.Add Layer.Vector File");
+    mnu->insertAction(act, m_showWindow);
+
+    connect (m_showWindow, SIGNAL(triggered()), SLOT(showWindow()));
+  }
 }
 
 void te::qt::plugins::shp::Plugin::shutdown()
@@ -61,12 +78,15 @@ void te::qt::plugins::shp::Plugin::shutdown()
   if(!m_initialized)
     return;
 
-  te::da::DataSourceInfoManager::getInstance().removeByType("SHAPEFILE");
-  te::qt::widgets::DataSourceTypeManager::getInstance().remove("SHAPEFILE");
-
   TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_SHP("TerraLib Qt Shapefile widget shutdown!"));
 
+  delete m_showWindow;
+
   m_initialized = false;
+}
+
+void te::qt::plugins::shp::Plugin::showWindow()
+{
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::shp::Plugin)
