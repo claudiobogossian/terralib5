@@ -63,6 +63,29 @@ namespace te
         };
 
         /*!
+          \struct LayersAdded
+
+          \brief This event signals that new layers were created.
+
+          \ingroup afevents
+         */
+        struct LayersAdded : public Event
+        {
+          /*!
+            \brief Constructor.
+
+            \param newLayers List of pointers to the layers created.
+          */
+          LayersAdded(std::list<te::map::AbstractLayerPtr> newlayers) : 
+            Event(LAYERS_ADDED),
+            m_layers(newlayers)
+          {
+          }
+
+          std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of pointers to the new layers.
+        };
+
+        /*!
           \struct LayerVisibilityChanged
 
           \brief This event signals that a the layer visibility changed.

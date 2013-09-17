@@ -131,8 +131,6 @@ namespace te
 
           void onZoomOutToggled(bool checked);
 
-          void onZoomAreaToggled(bool checked);
-
           void onPanToggled(bool checked);
 
           void onZoomExtentTriggered();
@@ -164,6 +162,8 @@ namespace te
           void onDisplayDataTableChanged(bool visible);
 
           void onStyleExplorerVisibilityChanged(bool visible);
+
+          void onDataSourceExplorerTriggered();
 
         protected:
 

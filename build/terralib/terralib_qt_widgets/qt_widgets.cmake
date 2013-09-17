@@ -134,6 +134,8 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/charts/ChartDisplay.h
   ${SRCDIR}/widgets/charts/ChartDisplayWidget.h
+  ${SRCDIR}/widgets/charts/ChartLayerDialog.h
+  ${SRCDIR}/widgets/charts/ChartLayerWidget.h
   ${SRCDIR}/widgets/charts/ChartStyleFrame.h
   ${SRCDIR}/widgets/charts/ChartStyleWidget.h
   ${SRCDIR}/widgets/charts/HistogramDataWidget.h
@@ -174,6 +176,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/explorer" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/datasource/selector/DataSourceExplorerDialog.h
   ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorDialog.h
   ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWidget.h
   ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWizardPage.h
