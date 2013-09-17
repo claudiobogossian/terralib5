@@ -30,14 +30,14 @@
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <boost/locale.hpp>
+//#include <boost/locale.hpp>
 
-#include <boost/locale/encoding.hpp>
-#include <boost/locale/util.hpp>
+//#include <boost/locale/encoding.hpp>
+//#include <boost/locale/util.hpp>
 #include <boost/property_tree/ptree.hpp>
 
 
-class std::locale::id boost::locale::info::id;
+//class std::locale::id boost::locale::info::id;
 
 void te::common::Convert(const boost::property_tree::ptree& p, std::map<std::string, std::string>& dict)
 {
