@@ -228,6 +228,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   m_menubar->addAction(m_pluginsMenu->menuAction());
   m_helpMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_helpMenu->menuAction());
+
+  te::qt::af::ApplicationController::getInstance().setMsgBoxParentWidget(this);
 }
 
 te::qt::af::BaseApplication::~BaseApplication()
