@@ -50,6 +50,8 @@ namespace te
         /*! \brief Destructor. */
         ~SQLVisitor() {}
 
+        void visit(const te::da::DataSetName& visited);
+
         void visit(const te::da::LiteralEnvelope& visited);
 
         void visit(const te::da::Select& visited);
