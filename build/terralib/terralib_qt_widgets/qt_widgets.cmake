@@ -174,6 +174,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/explorer" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/datasource/selector/DataSourceExplorerDialog.h
   ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorDialog.h
   ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWidget.h
   ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWizardPage.h

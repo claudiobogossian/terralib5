@@ -165,6 +165,8 @@ namespace te
 
           void onStyleExplorerVisibilityChanged(bool visible);
 
+          void onDataSourceExplorerTriggered();
+
         protected:
 
           virtual void openProject(const QString& projectFileName);
