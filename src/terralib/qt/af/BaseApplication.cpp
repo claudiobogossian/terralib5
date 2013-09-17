@@ -35,6 +35,7 @@
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
+#include "../widgets/charts/ChartLayerDialog.h"
 #include "../widgets/charts/HistogramDialog.h"
 #include "../widgets/charts/ScatterDialog.h"
 #include "../widgets/datasource/core/DataSourceType.h"
@@ -838,13 +839,44 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     if (res == QDialog::Accepted)
     {
       ChartDisplayDockWidget* doc = new ChartDisplayDockWidget(dlg.getDisplayWidget(), this);
-	  doc->setSelectionColor(ApplicationController::getInstance().getSelectionColor());
+      doc->setSelectionColor(ApplicationController::getInstance().getSelectionColor());
       doc->setWindowTitle("Scatter");
       doc->setWindowIcon(QIcon::fromTheme("chart-scatter"));
       ApplicationController::getInstance().addListener(doc);
       doc->setLayer(lay.get());
       addDockWidget(Qt::RightDockWidgetArea, doc, Qt::Horizontal);
       doc->show();
+    }
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onLayerChartTriggered()
+{
+ try
+  {
+    std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+    if(layers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+      return;
+    }
+
+    te::map::AbstractLayerPtr l = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+   
+    te::qt::widgets::ChartLayerDialog dlg(this);
+
+    dlg.setLayer(l);
+
+    if(l->getChart())
+      dlg.setChart(l->getChart());
+
+    if(dlg.exec() == QDialog::Accepted)
+    {
     }
   }
   catch(const std::exception& e)
@@ -1495,6 +1527,7 @@ void te::qt::af::BaseApplication::initActions()
   //initAction(m_layerToBottom, "layer-to-bottom", "Layer.To Bottom", tr("To &Bottom"), tr(""), true, false, false, m_menubar); TODO
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, true, m_menubar);
+  initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart"), tr(""), true, false, true, m_menubar);
   initAction(m_setBoxOnMapDisplay, "zoom-extent", "Layer.Set Box On Map Display", tr("Set Box on &Map Display"), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions
@@ -1635,6 +1668,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addMenu(m_layerChartsMenu);
   m_layerChartsMenu->addAction(m_layerChartsHistogram);
   m_layerChartsMenu->addAction(m_layerChartsScatter);
+  m_layerChartsMenu->addAction(m_layerChart);
   m_layerMenu->addSeparator();
 
   // TODO
@@ -1820,6 +1854,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
+  connect(m_layerChart, SIGNAL(triggered()), SLOT(onLayerChartTriggered()));
   connect(m_layerNewLayerGroup, SIGNAL(triggered()), SLOT(onLayerNewLayerGroupTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
   connect(m_layerSRS, SIGNAL(triggered()), SLOT(onLayerSRSTriggered()));

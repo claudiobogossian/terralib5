@@ -24,8 +24,19 @@
 */
 
 // TerraLib
+#include "../../../color/RGBAColor.h"
+#include "../../../common/STLUtils.h"
+#include "../../../maptools/Chart.h"
+#include "../../../maptools/Enums.h"
+#include "../utils/ColorPickerToolButton.h"
+#include "../Utils.h"
 #include "ChartLayerWidget.h"
 #include "ui_ChartLayerWidgetForm.h"
+
+// Qt
+#include <QColor>
+#include <QMessageBox>
+#include <QPainterPath>
 
 te::qt::widgets::ChartLayerWidget::ChartLayerWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -33,15 +44,28 @@ te::qt::widgets::ChartLayerWidget::ChartLayerWidget(QWidget* parent, Qt::WindowF
 {
   m_ui->setupUi(this);
 
-//connects
-  connect(m_ui->m_addToolButton, SIGNAL(clicked()), this, SLOT(onAddToolButtonClicked(int)));
-  connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked(int)));
+// Adjusting the color picker
+  QGridLayout* layout = new QGridLayout(m_ui->m_contourColorWidget);
+  layout->setContentsMargins(0, 0, 0, 0);
+
+//Color Picker
+  m_colorPicker = new te::qt::widgets::ColorPickerToolButton(m_ui->m_contourColorWidget);
+  m_colorPicker->setFixedSize(107, 24);
+  layout->addWidget(m_colorPicker);
+
+  //connects
+  connect(m_ui->m_addToolButton, SIGNAL(clicked()), this, SLOT(onAddToolButtonClicked()));
+  connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked()));
+  connect(m_ui->m_contourWidthSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateUi()));
+  connect(m_ui->m_tableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(onItemClicked(int, int)));
+  connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), this, SLOT(updateUi()));
 
   initialize();
 }
 
 te::qt::widgets::ChartLayerWidget::~ChartLayerWidget()
 {
+  m_chartMap.clear();
 }
 
 void te::qt::widgets::ChartLayerWidget::setLayer(te::map::AbstractLayerPtr layer)
@@ -51,22 +75,164 @@ void te::qt::widgets::ChartLayerWidget::setLayer(te::map::AbstractLayerPtr layer
   listAttributes();
 }
 
+bool te::qt::widgets::ChartLayerWidget::buildChart()
+{
+  if(m_chartMap.empty())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("None attribute selected."));
+    return false;
+  }
+
+  //chart type
+  int index = m_ui->m_typeComboBox->currentIndex();
+  int chartType = m_ui->m_typeComboBox->itemData(index).toInt();
+
+  //get attributes
+  std::vector<std::string> attrs;
+  std::vector<te::color::RGBAColor> colors;
+
+  std::map<std::string, QColor>::iterator it = m_chartMap.begin();
+
+  while(it != m_chartMap.end())
+  {
+    attrs.push_back(it->first);
+    te::color::RGBAColor c = te::qt::widgets::Convert2TerraLib(it->second);
+    colors.push_back(c);
+
+    ++it;
+  }
+
+  te::map::Chart* chart = new te::map::Chart((te::map::ChartType)chartType, attrs, colors);
+  chart->setHeight((std::size_t)m_ui->m_sizeSpinBox->value());
+  chart->setContourWidth((std::size_t)m_ui->m_contourWidthSpinBox->value());
+  chart->setContourColor(te::qt::widgets::Convert2TerraLib(m_colorPicker->getColor()));
+
+  m_layer->setChart(chart);
+
+  return true;
+}
+
+void te::qt::widgets::ChartLayerWidget::setChart(te::map::Chart* chart)
+{
+  m_chartMap.clear();
+
+  int type = (int)chart->getType();
+
+  for(int i = 0; i < m_ui->m_typeComboBox->count(); ++i)
+  {
+    int t = m_ui->m_typeComboBox->itemData(i).toInt();
+
+    if(t == type)
+    {
+      m_ui->m_typeComboBox->setCurrentIndex(i);
+      break;
+    }
+  }
+
+  m_ui->m_sizeSpinBox->setValue((int)chart->getHeight());
+  m_ui->m_contourWidthSpinBox->setValue((int)chart->getContourWidth());
+  m_colorPicker->setColor(te::qt::widgets::Convert2Qt(chart->getContourColor()));
+
+  for(std::size_t t = 0; t < chart->getProperties().size(); ++t)
+  {
+    std::string value = chart->getProperties()[t];
+    QColor c = te::qt::widgets::Convert2Qt(chart->getColor(t));
+    m_chartMap.insert(std::map<std::string, QColor>::value_type(value, c));
+  }
+
+  updateUi();
+}
+
 void te::qt::widgets::ChartLayerWidget::initialize()
 {
+  //add chart types
+  m_ui->m_typeComboBox->clear();
+  m_ui->m_typeComboBox->addItem(tr("Pie Chart"), QVariant(te::map::Pie));
+  m_ui->m_typeComboBox->addItem(tr("Bar Chart"), QVariant(te::map::Bar));
 
+
+  //set icons
+  m_ui->m_addToolButton->setIcon(QIcon::fromTheme("list-add"));
+  m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("list-remove"));
 }
 
 void te::qt::widgets::ChartLayerWidget::updateUi()
 {
   m_ui->m_tableWidget->setRowCount(0);
+
+  std::map<std::string, QColor>::iterator it = m_chartMap.begin();
+
+  while(it != m_chartMap.end())
+  {
+    int newrow = m_ui->m_tableWidget->rowCount();
+    m_ui->m_tableWidget->insertRow(newrow);
+
+    QIcon icon(te::qt::widgets::CreatePixmapIcon(28, m_colorPicker->getColor(), it->second, m_ui->m_contourWidthSpinBox->value()));
+
+    QTableWidgetItem* item = new QTableWidgetItem(icon, "");
+    item->setFlags(Qt::ItemIsEnabled);
+    m_ui->m_tableWidget->setItem(newrow, 0, item);
+
+    //attr name
+    QTableWidgetItem* itemAttr = new QTableWidgetItem(it->first.c_str());
+    itemAttr->setFlags(Qt::ItemIsEnabled);
+    m_ui->m_tableWidget->setItem(newrow, 1, itemAttr);
+
+    ++it;
+  }
 }
 
 void te::qt::widgets::ChartLayerWidget::onAddToolButtonClicked()
 {
+  std::string value = m_ui->m_attrComboBox->currentText().toStdString();
+
+  std::map<std::string, QColor>::iterator it = m_chartMap.find(value);
+
+  if(it != m_chartMap.end())
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Attribute already selected."));
+    return;
+  }
+
+  QColor c(rand() % 255,rand() % 255,rand() % 255);
+
+  m_chartMap.insert(std::map<std::string, QColor>::value_type(value, c));
+
+  updateUi();
 }
 
 void te::qt::widgets::ChartLayerWidget::onRemoveToolButtonClicked()
 {
+  if(m_ui->m_tableWidget->currentRow() == -1)
+    return;
+
+  std::string value = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 1)->text().toStdString();
+
+  std::map<std::string, QColor>::iterator it = m_chartMap.find(value);
+
+  if(it != m_chartMap.end())
+    m_chartMap.erase(it);
+
+  updateUi();
+}
+
+void te::qt::widgets::ChartLayerWidget::onItemClicked(int row, int column)
+{
+  if(column != 0)
+    return;
+
+  std::string attr = m_ui->m_tableWidget->item(row, 1)->text().toStdString();
+
+  std::map<std::string, QColor>::iterator it = m_chartMap.find(attr);
+
+  if(it != m_chartMap.end())
+  {
+    QColor c = QColorDialog::getColor(it->second, this);
+
+    it->second = c;
+
+    updateUi();
+  }
 }
 
 void te::qt::widgets::ChartLayerWidget::listAttributes()
