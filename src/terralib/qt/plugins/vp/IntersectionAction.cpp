@@ -59,9 +59,7 @@ void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
     dlg.setLayers(prj->getLayers());
   }
 
-  std::size_t r = dlg.exec();
-
-  if(QDialog::Rejected)
+  if(dlg.exec() != QDialog::Accepted)
     return;
 
   te::map::AbstractLayerPtr layer = dlg.getLayer();

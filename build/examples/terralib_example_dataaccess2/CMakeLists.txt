@@ -29,6 +29,7 @@ set(DEP_LIBS
 		terralib_postgis
 		terralib_plugin
 		terralib_srs
+		terralib_memory
 		${Boost_LIBRARIES}
     )
 		

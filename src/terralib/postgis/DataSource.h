@@ -189,7 +189,6 @@ namespace te
         unsigned int m_rasterTypeOid;                     //!< PostGIS Raster type OID.
         std::string m_currentSchema;                      //!< The default schema used when no one is provided.
         bool m_timeIsInteger;                             //!< It indicates if the postgis stores, internally, time and timestamp as an integer. 
-        bool m_isInTransaction;                           //!< It indicates if there is a transaction in progress.
 
         static te::da::DataSourceCapabilities sm_capabilities;  //!< PostGIS capabilities.
         static te::da::SQLDialect* sm_dialect;                  //!< PostGIS SQL dialect.

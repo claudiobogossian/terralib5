@@ -48,7 +48,7 @@ std::string te::qt::plugins::gdal::GDALType::getName() const
 
 std::string te::qt::plugins::gdal::GDALType::getTitle() const
 {
-  return TR_QT_WIDGETS("GDAL");
+  return TR_QT_WIDGETS("Raster files");
 }
 
 std::string te::qt::plugins::gdal::GDALType::getDescription() const

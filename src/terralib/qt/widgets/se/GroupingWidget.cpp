@@ -362,7 +362,7 @@ void te::qt::widgets::GroupingWidget::onTypeComboBoxActivated(int idx)
 
 void te::qt::widgets::GroupingWidget::onAttrComboBoxActivated(int idx)
 {
-  int attrType = m_ui->m_attrComboBox->itemData(idx).toInt();
+//  int attrType = m_ui->m_attrComboBox->itemData(idx).toInt();
 }
 
 void te::qt::widgets::GroupingWidget::onColorBarChanged()

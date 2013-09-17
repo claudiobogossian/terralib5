@@ -47,7 +47,7 @@ std::string te::qt::plugins::ogr::OGRType::getName() const
 
 std::string te::qt::plugins::ogr::OGRType::getTitle() const
 {
-  return TE_QT_PLUGIN_DATASOURCE_OGR("OGR");
+  return TE_QT_PLUGIN_DATASOURCE_OGR("Vector files");
 }
 
 std::string te::qt::plugins::ogr::OGRType::getDescription() const
