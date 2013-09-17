@@ -230,6 +230,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   m_menubar->addAction(m_pluginsMenu->menuAction());
   m_helpMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_helpMenu->menuAction());
+
+  te::qt::af::ApplicationController::getInstance().setMsgBoxParentWidget(this);
 }
 
 te::qt::af::BaseApplication::~BaseApplication()
@@ -752,6 +754,10 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
 
   te::map::AbstractLayerPtr lay = (*layers.begin())->getLayer();
 
+  if (lay->getSchema()->hasRaster())
+    return;
+
+
   te::qt::af::DataSetTableDockWidget* doc = GetLayerDock(lay.get(), m_tableDocks);
 
   if(doc == 0)
@@ -994,10 +1000,10 @@ void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
   if(!checked)
     return;
 
-  QCursor zoomInCursor(QIcon::fromTheme("zoom-in").pixmap(m_mapCursorSize));
+  QCursor zoomAreaCursor(QIcon::fromTheme("zoom-in").pixmap(m_mapCursorSize));
 
-  te::qt::widgets::ZoomClick* zoomIn = new te::qt::widgets::ZoomClick(m_display->getDisplay(), zoomInCursor, 2.0);
-  m_display->setCurrentTool(zoomIn);
+  te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_display->getDisplay(), zoomAreaCursor);
+  m_display->setCurrentTool(zoomArea);
 }
 
 void te::qt::af::BaseApplication::onZoomOutToggled(bool checked)
@@ -1009,17 +1015,6 @@ void te::qt::af::BaseApplication::onZoomOutToggled(bool checked)
 
   te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_display->getDisplay(), zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
   m_display->setCurrentTool(zoomOut);
-}
-
-void te::qt::af::BaseApplication::onZoomAreaToggled(bool checked)
-{
-  if(!checked)
-    return;
-
-  QCursor zoomAreaCursor(QIcon::fromTheme("zoom-area").pixmap(m_mapCursorSize));
-
-  te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_display->getDisplay(), zoomAreaCursor);
-  m_display->setCurrentTool(zoomArea);
 }
 
 void te::qt::af::BaseApplication::onPanToggled(bool checked)
@@ -1046,7 +1041,8 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
   if(!checked)
     return;
 
-  QCursor infoCursor(QIcon::fromTheme("pointer-info").pixmap(m_mapCursorSize));
+  QPixmap pxmap = QIcon::fromTheme("pointer-info").pixmap(m_mapCursorSize);
+  QCursor infoCursor(pxmap, 5, 5);
 
   te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_project->getLayers());
   m_display->setCurrentTool(info);
@@ -1057,9 +1053,7 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
   if(!checked)
     return;
 
-  QCursor selectionCursor(QIcon::fromTheme("pointer-selection").pixmap(m_mapCursorSize));
-
-  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), selectionCursor, m_project->getLayers());
+  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_project->getLayers());
   m_display->setCurrentTool(selection);
 
   connect(selection, SIGNAL(layerSelectionChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectionChanged(const te::map::AbstractLayerPtr&)));
@@ -1514,7 +1508,7 @@ void te::qt::af::BaseApplication::initActions()
 // Menu -Project- actions
   initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, m_menubar);
   initAction(m_projectProperties, "", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
-  initAction(m_projectAddLayerDataset, "", "Project.Add Layer.Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true, m_menubar);
+  initAction(m_projectAddLayerDataset, "", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
@@ -1551,7 +1545,6 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapDraw, "map-draw", "Map.Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true, m_menubar);
   initAction(m_mapZoomIn, "zoom-in", "Map.Zoom In", tr("Zoom &In"), tr(""), true, true, true, m_menubar);
   initAction(m_mapZoomOut, "zoom-out", "Map.Zoom Out", tr("Zoom &Out"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapZoomArea, "zoom-area", "Map.Zoom Area", tr("Zoom &Area"), tr(""), true, true, true, m_menubar);
   initAction(m_mapPan, "pan", "Map.Pan", tr("&Pan"), tr(""), true, true, true, m_menubar);
   initAction(m_mapZoomExtent, "zoom-extent", "Map.Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, true, m_menubar);
   initAction(m_mapPreviousExtent, "edit-undo", "Map.Previous Extent", tr("&Previous Extent"), tr(""), true, false, false, m_menubar);
@@ -1567,7 +1560,6 @@ void te::qt::af::BaseApplication::initActions()
   QActionGroup* mapToolsGroup = new QActionGroup(this);
   mapToolsGroup->addAction(m_mapZoomIn);
   mapToolsGroup->addAction(m_mapZoomOut);
-  mapToolsGroup->addAction(m_mapZoomArea);
   mapToolsGroup->addAction(m_mapPan);
   mapToolsGroup->addAction(m_mapMeasureDistance);
   mapToolsGroup->addAction(m_mapMeasureArea);
@@ -1695,7 +1687,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapZoomIn);
   m_mapMenu->addAction(m_mapZoomOut);
-  m_mapMenu->addAction(m_mapZoomArea);
   m_mapMenu->addAction(m_mapPan);
   m_mapMenu->addAction(m_mapZoomExtent);
   m_mapMenu->addAction(m_mapPreviousExtent);
@@ -1794,7 +1785,6 @@ void te::qt::af::BaseApplication::initToolbars()
   //m_mapToolBar->addAction(m_mapDraw);
   //m_mapToolBar->addAction(m_mapZoomIn);
   //m_mapToolBar->addAction(m_mapZoomOut);
-  //m_mapToolBar->addAction(m_mapZoomArea);
   //m_mapToolBar->addAction(m_mapPan);
   //m_mapToolBar->addAction(m_mapZoomExtent);
   //m_mapToolBar->addAction(m_mapPreviousExtent);
@@ -1875,7 +1865,6 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_setBoxOnMapDisplay, SIGNAL(triggered()), SLOT(onSetBoxOnMapDisplayTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
-  connect(m_mapZoomArea, SIGNAL(toggled(bool)), SLOT(onZoomAreaToggled(bool)));
   connect(m_mapPan, SIGNAL(toggled(bool)), SLOT(onPanToggled(bool)));
   connect(m_mapZoomExtent, SIGNAL(triggered()), SLOT(onZoomExtentTriggered()));
   connect(m_mapInfo, SIGNAL(toggled(bool)), SLOT(onInfoToggled(bool)));

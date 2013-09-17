@@ -118,7 +118,7 @@ void te::qt::widgets::DataSetGroupItem::fetchMore()
 
   for(std::size_t i = 0; i < ndatasets; ++i)
   {
-    te::da::DataSetTypePtr dt(new te::da::DataSetType(datasetNames[i]));
+    te::da::DataSetTypePtr dt(new te::da::DataSetType(datasetNames[i].c_str()));
 
     new DataSetItem(dt, ds.get(), this);
   }

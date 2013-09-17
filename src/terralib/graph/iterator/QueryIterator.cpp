@@ -173,9 +173,9 @@ te::graph::Edge* te::graph::QueryIterator::getFirstEdge()
   te::da::Field* fv2id = new te::da::Field(v2Id);
   te::da::Expression* exp2 = new te::da::EqualTo(fvt->getExpression(), fv2id->getExpression());
 
-  te::da::And* and = new te::da::And(exp1, exp2);
+  te::da::And* anda = new te::da::And(exp1, exp2);
 
-  te::da::And* andd = new te::da::And(and, m_exp);
+  te::da::And* andd = new te::da::And(anda, m_exp);
 
   te::da::Where* w = new te::da::Where(andd);
 
