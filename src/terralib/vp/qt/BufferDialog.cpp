@@ -144,9 +144,9 @@ void te::vp::BufferDialog::setAttributesForDistance(std::vector<te::dt::Property
        properties[i]->getType() == te::dt::CFLOAT_TYPE ||
        properties[i]->getType() == te::dt::CINT16_TYPE ||
        properties[i]->getType() == te::dt::CINT32_TYPE ||
-       properties[i]->getType() == te::dt::DOUBLE_TYPE || 
-       properties[i]->getType() == te::dt::INT16_TYPE ||                              
-       properties[i]->getType() == te::dt::INT32_TYPE || 
+       properties[i]->getType() == te::dt::DOUBLE_TYPE ||
+       properties[i]->getType() == te::dt::INT16_TYPE ||
+       properties[i]->getType() == te::dt::INT32_TYPE ||
        properties[i]->getType() == te::dt::INT64_TYPE ||
        properties[i]->getType() == te::dt::FLOAT_TYPE ||
        properties[i]->getType() == te::dt::NUMERIC_TYPE ||

@@ -27,8 +27,10 @@
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
+#include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
@@ -197,37 +199,68 @@ std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties(
 
 void te::vp::AggregationDialog::setStatisticalSummary()
 {
-  m_ui->m_selectAllComboBox->addItem("");
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), te::stat::MEAN);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), te::stat::SUM);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), te::stat::COUNT);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), te::stat::VALID_COUNT);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), te::stat::STANDARD_DEVIATION);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), te::stat::VARIANCE);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SKEWNESS).c_str()), te::stat::SKEWNESS);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::KURTOSIS).c_str()), te::stat::KURTOSIS);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), te::stat::AMPLITUDE);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
-  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
+  //te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+  //te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+  //const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
 
-  m_ui->m_rejectAllComboBox->addItem("");
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), te::stat::MEAN);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), te::stat::SUM);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), te::stat::COUNT);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), te::stat::VALID_COUNT);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), te::stat::STANDARD_DEVIATION);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), te::stat::VARIANCE);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SKEWNESS).c_str()), te::stat::SKEWNESS);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::KURTOSIS).c_str()), te::stat::KURTOSIS);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), te::stat::AMPLITUDE);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
-  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
+  //if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
+  //{
+  //  m_ui->m_selectAllComboBox->addItem("");
+  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
+  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
+  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), te::stat::MEAN);
+  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), te::stat::SUM);
+  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), te::stat::COUNT);
+  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), te::stat::VALID_COUNT);
+  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), te::stat::STANDARD_DEVIATION);
+  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), te::stat::VARIANCE);
+  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), te::stat::AMPLITUDE);
+
+  //  m_ui->m_rejectAllComboBox->addItem("");
+  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
+  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
+  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), te::stat::MEAN);
+  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), te::stat::SUM);
+  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), te::stat::COUNT);
+  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), te::stat::VALID_COUNT);
+  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), te::stat::STANDARD_DEVIATION);
+  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), te::stat::VARIANCE);
+  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), te::stat::AMPLITUDE);
+  //}
+  //else
+  //{
+    m_ui->m_selectAllComboBox->addItem("");
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), te::stat::MEAN);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), te::stat::SUM);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), te::stat::COUNT);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), te::stat::VALID_COUNT);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), te::stat::STANDARD_DEVIATION);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), te::stat::VARIANCE);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SKEWNESS).c_str()), te::stat::SKEWNESS);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::KURTOSIS).c_str()), te::stat::KURTOSIS);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), te::stat::AMPLITUDE);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
+    m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
+
+    m_ui->m_rejectAllComboBox->addItem("");
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), te::stat::MEAN);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), te::stat::SUM);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), te::stat::COUNT);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), te::stat::VALID_COUNT);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), te::stat::STANDARD_DEVIATION);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), te::stat::VARIANCE);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SKEWNESS).c_str()), te::stat::SKEWNESS);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::KURTOSIS).c_str()), te::stat::KURTOSIS);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), te::stat::AMPLITUDE);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
+    m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
+  //}
 }
 
 void te::vp::AggregationDialog::setStatisticalSummaryMap()
@@ -256,97 +289,175 @@ void te::vp::AggregationDialog::setFunctionsByLayer(std::vector<te::dt::Property
   m_ui->m_selectAllComboBox->setCurrentIndex(0);
   m_ui->m_rejectAllComboBox->setCurrentIndex(0);
   m_ui->m_outputListWidget->clear();
-    
-  for(size_t i=0; i < properties.size(); ++i)
+
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+  te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+  const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
+
+  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
   {
-    propertyType = properties[i]->getType();
-    if(propertyType != te::dt::GEOMETRY_TYPE)
+    for(size_t i=0; i < properties.size(); ++i)
     {
-      if(propertyType == te::dt::STRING_TYPE)
-      {  
-        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-        m_ui->m_outputListWidget->addItem(item);
-
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-        m_ui->m_outputListWidget->addItem(item);
-        
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-        m_ui->m_outputListWidget->addItem(item);
-
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-        m_ui->m_outputListWidget->addItem(item);
-
-        item = new QListWidgetItem("");
-        m_ui->m_outputListWidget->addItem(item);
-      }
-      else
+      propertyType = properties[i]->getType();
+      if(propertyType != te::dt::GEOMETRY_TYPE)
       {
-        QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
-        m_ui->m_outputListWidget->addItem(item);
+        if(propertyType == te::dt::STRING_TYPE)
+        {  
+          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
+          m_ui->m_outputListWidget->addItem(item);
+        
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEAN].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SUM].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::SUM));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem("");
+          m_ui->m_outputListWidget->addItem(item);
+        }
+        else
+        {
+          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEAN].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SUM].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::SUM));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VARIANCE].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SKEWNESS].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::SKEWNESS));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::KURTOSIS].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::KURTOSIS));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::AMPLITUDE].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VARIANCE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEDIAN].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::MEDIAN));
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::AMPLITUDE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
+          m_ui->m_outputListWidget->addItem(item);
 
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VAR_COEFF].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::VAR_COEFF));
-        m_ui->m_outputListWidget->addItem(item);
-
-        item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MODE].c_str());
-        item->setData(Qt::UserRole, QVariant(te::stat::MODE));
-        m_ui->m_outputListWidget->addItem(item);
-
-        item = new QListWidgetItem("");
-        m_ui->m_outputListWidget->addItem(item);
+          item = new QListWidgetItem("");
+          m_ui->m_outputListWidget->addItem(item);
+        }
       }
     }
   }
+  else
+  {
+    for(size_t i=0; i < properties.size(); ++i)
+    {
+      propertyType = properties[i]->getType();
+      if(propertyType != te::dt::GEOMETRY_TYPE)
+      {
+        if(propertyType == te::dt::STRING_TYPE)
+        {  
+          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
+          m_ui->m_outputListWidget->addItem(item);
 
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
+          m_ui->m_outputListWidget->addItem(item);
+        
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem("");
+          m_ui->m_outputListWidget->addItem(item);
+        }
+        else
+        {
+          QListWidgetItem* item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MIN_VALUE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MIN_VALUE));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MAX_VALUE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MAX_VALUE));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEAN].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MEAN));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SUM].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::SUM));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::COUNT].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::COUNT));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VALID_COUNT].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::VALID_COUNT));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::STANDARD_DEVIATION].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::STANDARD_DEVIATION));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VARIANCE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::VARIANCE));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::SKEWNESS].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::SKEWNESS));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::KURTOSIS].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::KURTOSIS));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::AMPLITUDE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::AMPLITUDE));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MEDIAN].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MEDIAN));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::VAR_COEFF].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::VAR_COEFF));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem(QString(properties[i]->getName().c_str()) + " : " + m_StatisticalSummaryMap[te::stat::MODE].c_str());
+          item->setData(Qt::UserRole, QVariant(te::stat::MODE));
+          m_ui->m_outputListWidget->addItem(item);
+
+          item = new QListWidgetItem("");
+          m_ui->m_outputListWidget->addItem(item);
+        }
+      }
+    }
+  }
   int lastRow = m_ui->m_outputListWidget->count() - 1;
   delete m_ui->m_outputListWidget->item(lastRow);
 }

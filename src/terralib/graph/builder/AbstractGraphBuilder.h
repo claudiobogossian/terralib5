@@ -35,6 +35,7 @@
 #include "../Config.h"
 
 // STL Includes
+#include <string>
 #include <vector>
 
 namespace te
