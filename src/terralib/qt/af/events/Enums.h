@@ -43,6 +43,7 @@ namespace te
           TOOLBAR_ADDED,
           DISPLAY_RESIZED,
           LAYER_ADDED,
+          LAYER_REMOVED,
           LAYER_SELECTED,
           LAYER_VISIBILITY_CHANGED,
           LAYER_SELECTION_CHANGED,
