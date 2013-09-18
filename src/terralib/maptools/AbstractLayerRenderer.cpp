@@ -699,6 +699,9 @@ void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* datas
 
 void te::map::AbstractLayerRenderer::buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom)
 {
+  if(!chart->isVisible())
+    return;
+
   // Builds the chart point (world coordinates)
   const te::gm::Envelope* e = geom->getMBR();
 

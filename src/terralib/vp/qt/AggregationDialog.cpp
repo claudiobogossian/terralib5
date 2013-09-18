@@ -197,6 +197,11 @@ std::vector<te::dt::Property*> te::vp::AggregationDialog::getSelectedProperties(
   return selProperties;
 }
 
+te::map::AbstractLayerPtr te::vp::AggregationDialog::getLayer()
+{
+  return m_layer;
+}
+
 void te::vp::AggregationDialog::setStatisticalSummary()
 {
   //te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
@@ -650,7 +655,8 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
   try
   {
-    te::vp::Aggregation(m_selectedLayer, selProperties, outputStatisticalSummary, outputLayerName, m_outputDatasource);
+    //Chamada da função que iniciara a operação de agregação.
+    m_layer = te::vp::Aggregation(m_selectedLayer, selProperties, outputStatisticalSummary, outputLayerName, m_outputDatasource);
   }
   catch(const std::exception& e)
   {

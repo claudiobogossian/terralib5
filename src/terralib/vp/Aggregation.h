@@ -56,11 +56,11 @@ namespace te
 
       \return                       The aggregation result.
     */
-    void Aggregation(const te::map::AbstractLayerPtr& inputLayer,
-                     const std::vector<te::dt::Property*>& groupingProperties,
-                     const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                     const std::string& outputLayerName,
-                     const te::da::DataSourceInfoPtr& dsInfo);
+    te::map::AbstractLayerPtr Aggregation(const te::map::AbstractLayerPtr& inputLayer,
+                                          const std::vector<te::dt::Property*>& groupingProperties,
+                                          const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                                          const std::string& outputLayerName,
+                                          const te::da::DataSourceInfoPtr& dsInfo);
 
     /*!
       \brief It returns the output DataSetType.

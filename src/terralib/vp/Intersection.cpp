@@ -127,6 +127,7 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
 {
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
 
+  //Lógica para execução da operação, em memória ou via query.
   if(SupportsSpatialOperators(idata))
   {
     resultPair = IntersectionQuery(newLayerName, idata, outputSRID);

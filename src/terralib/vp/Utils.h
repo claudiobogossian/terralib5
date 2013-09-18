@@ -27,10 +27,10 @@
 #define __TERRALIB_VP_QT_INTERNAL_UTILS_H
 
 // Terralib
-#include "../../geometry/Geometry.h"
-#include "../../maptools/AbstractLayer.h"
-#include "../../memory/DataSet.h"
-#include "../../memory/DataSetItem.h"
+#include "../geometry/Geometry.h"
+#include "../maptools/AbstractLayer.h"
+#include "../memory/DataSet.h"
+#include "../memory/DataSetItem.h"
 
 //STL
 #include <map>
@@ -41,14 +41,32 @@ namespace te
   namespace vp
   {
     /*!
-      \brief Get a list of AbstractLayer filtered by the name;
+      \brief It returns the union of a geometry vector.
 
-      \param text   Text that the filter is based.
-      \param layers List of layer to filter.
+      \param items  Vector of itens that represents a group.
 
-      \return A list of layer filtered by the name.
+      \return Union of the geometry.
     */
-    std::list<te::map::AbstractLayerPtr> GetFilteredLayers(std::string text, std::list<te::map::AbstractLayerPtr> layers);
+    te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx);
+
+    std::string GetSimpleTableName(std::string fullName);
+
+    te::gm::GeometryProperty* SetOutputGeometryType(const te::gm::GeometryProperty* firstGeom, const te::gm::GeometryProperty* secondGeom);
+
+    /*!
+      \brief It persists the buffer result.
+
+      \param dataSetType  The output DataSetType.
+      \param dataSet      The output DataSet.
+      \param dsInfo       Information of datasource persistence.
+      \param options      A list of optional modifiers. It is driver specific.
+
+      \return The buffer result persistence.
+    */
+    void Persistence( te::da::DataSetType* dataSetType,
+                            te::mem::DataSet* dataSet,
+                            const te::da::DataSourceInfoPtr& dsInfo,
+                            const std::map<std::string, std::string> options = std::map<std::string, std::string>());
 
   } // end namespace vp
 }   // end namespace te

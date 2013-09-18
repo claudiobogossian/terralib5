@@ -133,6 +133,10 @@ namespace te
 
           void onZoomOutToggled(bool checked);
 
+          void onPreviousExtentTriggered();
+
+          void onNextExtentTriggered();
+
           void onPanToggled(bool checked);
 
           void onZoomExtentTriggered();
@@ -181,7 +185,7 @@ namespace te
 
           virtual void initAction(QAction*& act, const QString& icon, const QString& name,
                                   const QString& text, const QString& tooltip,
-                                  bool iconVisibleInMenu, bool isCheckable, bool enabled, QMenuBar* menu);
+                                  bool iconVisibleInMenu, bool isCheckable, bool enabled, QObject* parent);
 
           virtual void initActions();
 

@@ -18,33 +18,35 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/DataSetLayerItem.h
+  \file terralib/qt/widgets/layer/explorer/ChartItem.h
 
-  \brief The class that represents a dataset layer item in a LayerTreeModel.
+  \brief A class that represents a chart of a layer in a LayerTreeModel.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_CHARTITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_CHARTITEM_H
 
 // TerraLib
-#include "../../../../maptools/DataSetLayer.h"
 #include "AbstractTreeItem.h"
 
 namespace te
 {
+// Forward declaration
+  namespace map { class Chart; }
+
   namespace qt
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT DataSetLayerItem : public AbstractTreeItem
+      class TEQTWIDGETSEXPORT ChartItem : public AbstractTreeItem
       {
         Q_OBJECT
 
         public:
 
-          DataSetLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent = 0);
+          ChartItem(te::map::Chart* chart, QObject* parent = 0);
 
-          ~DataSetLayerItem();
+          ~ChartItem();
 
           int columnCount() const;
 
@@ -64,18 +66,19 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
-        private:
+          void setCheckable(bool checkable);
 
-          bool hasGroupingItem() const;
-
-          bool hasChartItem() const;
+          bool getCheckable();
 
         private:
 
-          te::map::DataSetLayerPtr m_layer;
-      }; 
+          te::map::Chart* m_chart;
+          bool m_isCheckable;
+          bool m_isChecked;
+      };
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_CHARTITEM_H
