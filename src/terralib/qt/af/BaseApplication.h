@@ -131,6 +131,10 @@ namespace te
 
           void onZoomOutToggled(bool checked);
 
+          void onPreviousExtentTriggered();
+
+          void onNextExtentTriggered();
+
           void onPanToggled(bool checked);
 
           void onZoomExtentTriggered();
