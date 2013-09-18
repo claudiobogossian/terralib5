@@ -978,7 +978,7 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
 
     te::gm::Envelope env = layer->getExtent();
 
-    if(display->getSRID() == TE_UNKNOWN_SRS && layer->getSRID() == TE_UNKNOWN_SRS || (display->getSRID() == layer->getSRID()))
+    if( (display->getSRID() == TE_UNKNOWN_SRS && layer->getSRID() == TE_UNKNOWN_SRS) || (display->getSRID() == layer->getSRID()))
     {
       display->setExtent(env, true);
       return;
