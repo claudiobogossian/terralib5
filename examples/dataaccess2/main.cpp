@@ -131,7 +131,7 @@ int main(int /*argc*/, char** /*argv*/)
 //
 //===========Juan end of example ======================
 
-    PostGISExample();  //ok
+    //PostGISExample();  //ok
 
     //GDALExample();  //ok
 
@@ -147,7 +147,7 @@ int main(int /*argc*/, char** /*argv*/)
 
     //////QueryExample(); //??? tem codigo comentado - cai...
    
-    //////CopyingData();
+    CopyingData();
 
     ////////PersistenceExample();
 

@@ -118,9 +118,9 @@ te::graph::Vertex* te::graph::SequenceIterator::getFirstVertex()
     te::da::Field* fv2id = new te::da::Field(vId);
     te::da::Expression* exp2 = new te::da::EqualTo(fv2id->getExpression(), fvt->getExpression());
 
-    te::da::Or* or = new te::da::Or(exp1, exp2);
+    te::da::Or* ora = new te::da::Or(exp1, exp2);
 
-    te::da::Where* wh = new te::da::Where(or);
+    te::da::Where* wh = new te::da::Where(ora);
 
     te::da::GroupByItem* gbItem = new te::da::GroupByItem(new te::da::PropertyName(Globals::sm_tableVertexModelAttrId));
     te::da::GroupBy* gb = new te::da::GroupBy();

@@ -117,21 +117,25 @@ namespace te
 
           void onLayerScatterTriggered();
 
+          void onLayerChartTriggered();
+
           void onLayerGroupingTriggered();
+
+          void onLayerFitOnMapDisplayTriggered();
 
           void onMapSRIDTriggered();
         
           void onMapSetUnknwonSRIDTriggered();
 
           void onDrawTriggered();
-          
-          void onSetBoxOnMapDisplayTriggered();
 
           void onZoomInToggled(bool checked);
 
           void onZoomOutToggled(bool checked);
 
-          void onZoomAreaToggled(bool checked);
+          void onPreviousExtentTriggered();
+
+          void onNextExtentTriggered();
 
           void onPanToggled(bool checked);
 
@@ -165,6 +169,8 @@ namespace te
 
           void onStyleExplorerVisibilityChanged(bool visible);
 
+          void onDataSourceExplorerTriggered();
+
         protected:
 
           virtual void openProject(const QString& projectFileName);
@@ -179,7 +185,7 @@ namespace te
 
           virtual void initAction(QAction*& act, const QString& icon, const QString& name,
                                   const QString& text, const QString& tooltip,
-                                  bool iconVisibleInMenu, bool isCheckable, bool enabled, QMenuBar* menu);
+                                  bool iconVisibleInMenu, bool isCheckable, bool enabled, QObject* parent);
 
           virtual void initActions();
 
@@ -234,7 +240,9 @@ namespace te
           QAction* m_layerToBottom;
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
+          QAction* m_layerChart;
           QAction* m_layerGrouping;
+           QAction* m_layerFitOnMapDisplay;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
@@ -260,7 +268,6 @@ namespace te
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
           QAction* m_mapStopDraw;
-          QAction* m_setBoxOnMapDisplay;
           QSize m_mapCursorSize;
 
           QWidget* m_centralwidget;

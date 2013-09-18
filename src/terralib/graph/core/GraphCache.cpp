@@ -35,11 +35,10 @@
 #include "GraphData.h"
 #include "GraphDataManager.h"
 
-
 // STL Includes
 #include <iostream>
 
-te::graph::GraphCache::GraphCache(AbstractCachePolicy* cp, GraphDataManager* dm): m_dataManager(dm), m_policy(cp)
+te::graph::GraphCache::GraphCache(AbstractCachePolicy* cp, GraphDataManager* dm): m_policy(cp),m_dataManager(dm)
 {
   m_graphDataCounter = 0; // initializate the graph data counter
 

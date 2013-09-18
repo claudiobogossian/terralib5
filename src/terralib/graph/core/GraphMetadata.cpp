@@ -32,12 +32,13 @@
 #include "GraphMetadata.h"
 
 te::graph::GraphMetadata::GraphMetadata(te::da::DataSource* ds) : 
-  m_id(-1), 
-  m_ds(ds),
-  m_vertexProp(0), 
-  m_edgeProp(0),
+  m_id(-1),
   m_extent(0),
-  m_type("")
+  m_type(""),
+  m_ds(ds),
+  m_vertexProp(0),
+  m_edgeProp(0)
+
 {
   m_maxCacheSize = te::graph::Globals::sm_graphCacheDefaultMaxSize;
   m_maxVecCacheSize = te::graph::Globals::sm_graphVecCacheDefaultMaxSize;

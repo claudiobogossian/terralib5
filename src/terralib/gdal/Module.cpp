@@ -58,8 +58,7 @@ void te::gdal::Module::startup()
 
   GDALAllRegister();
 
-
-  //RasterFactory::initialize();
+  RasterFactory::initialize();
 
   // DataType Capabilites
   te::da::DataTypeCapabilities dataTypeCapabilities;
