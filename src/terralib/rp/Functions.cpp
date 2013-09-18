@@ -1026,6 +1026,8 @@ namespace te
           blueBand.setValue( col, row, blue );
         }
       }        
+      
+      return true;
     }
 
   } // end namespace rp
