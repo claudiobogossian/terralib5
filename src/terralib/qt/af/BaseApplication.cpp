@@ -1463,9 +1463,9 @@ void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
 void te::qt::af::BaseApplication::initAction(QAction*& act, const QString& icon, const QString& name,
                                              const QString& text, const QString& tooltip,
                                              bool iconVisibleInMenu, bool isCheckable,
-                                             bool enabled, QMenuBar* menu)
+                                             bool enabled, QObject* parent)
 {
-  act = new QAction (menu);
+  act = new QAction (parent);
 
   if(!icon.isEmpty())
     act->setIcon(QIcon::fromTheme(icon));
@@ -1493,7 +1493,7 @@ void te::qt::af::BaseApplication::initActions()
   //initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
   //initAction(m_viewGrid, "view-grid", "View.Grid", tr("&Grid"), tr("Show or hide the geographic grid"), true, true, false, m_menubar); TODO
   initAction(m_viewDataSourceExplorer, "view-datasource-explorer", "View.Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), 
-    true, true, true, m_menubar);
+    true, false, true, m_menubar);
 
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
@@ -1522,7 +1522,6 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_helpAbout, "", "Help.About", tr("&About..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Project- actions
-  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, m_menubar);
   initAction(m_projectProperties, "", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   initAction(m_projectAddLayerDataset, "", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
@@ -1582,6 +1581,9 @@ void te::qt::af::BaseApplication::initActions()
   mapToolsGroup->addAction(m_mapMeasureAngle);
   mapToolsGroup->addAction(m_mapInfo);
   mapToolsGroup->addAction(m_mapSelection);
+
+// Layer context menu
+  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, this);
 }
 
 void te::qt::af::BaseApplication::initMenus()
@@ -1658,7 +1660,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectAddLayerMenu->setTitle(tr("&Add Layer"));
   m_projectAddLayerMenu->setIcon(QIcon::fromTheme("layer-add"));
 
-  //m_projectMenu->addAction(m_projectRemoveLayer); TODO
   m_projectMenu->addSeparator();
   m_projectMenu->addAction(m_projectProperties);
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
