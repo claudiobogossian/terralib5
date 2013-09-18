@@ -117,15 +117,17 @@ namespace te
 
           void onLayerScatterTriggered();
 
+          void onLayerChartTriggered();
+
           void onLayerGroupingTriggered();
+
+          void onLayerFitOnMapDisplayTriggered();
 
           void onMapSRIDTriggered();
         
           void onMapSetUnknwonSRIDTriggered();
 
           void onDrawTriggered();
-          
-          void onSetBoxOnMapDisplayTriggered();
 
           void onZoomInToggled(bool checked);
 
@@ -238,7 +240,9 @@ namespace te
           QAction* m_layerToBottom;
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
+          QAction* m_layerChart;
           QAction* m_layerGrouping;
+           QAction* m_layerFitOnMapDisplay;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
@@ -264,7 +268,6 @@ namespace te
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
           QAction* m_mapStopDraw;
-          QAction* m_setBoxOnMapDisplay;
           QSize m_mapCursorSize;
 
           QWidget* m_centralwidget;

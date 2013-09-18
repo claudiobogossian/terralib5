@@ -37,7 +37,9 @@ te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties
     m_properties(properties),
     m_contourColor(te::color::RGBAColor(0, 0, 0, TE_OPAQUE)),
     m_contourWidth(1),
-    m_height(24)
+    m_height(24),
+    m_barWidth(16),
+    m_isVisible(true)
 {
   assert(!properties.empty());
 
@@ -55,7 +57,9 @@ te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties
     m_colors(colors),
     m_contourColor(te::color::RGBAColor(0, 0, 0, TE_OPAQUE)),
     m_contourWidth(1),
-    m_height(24)
+    m_height(24),
+    m_barWidth(16),
+    m_isVisible(true)
 {
   assert(!properties.empty());
   assert(properties.size() == colors.size());
@@ -117,4 +121,39 @@ std::size_t te::map::Chart::getHeight() const
 void te::map::Chart::setHeight(std::size_t height)
 {
   m_height = height;
+}
+
+std::size_t te::map::Chart::getWidth() const
+{
+  // TODO: need review! Cause: dynamic chart sizes...
+  switch(m_type)
+  {
+    case Pie:
+      return m_height;
+    
+    case Bar:
+      return m_barWidth * m_properties.size();
+  }
+
+  return 0;
+}
+
+std::size_t te::map::Chart::getBarWidth() const
+{
+  return m_barWidth;
+}
+
+void te::map::Chart::setBarWidth(std::size_t width)
+{
+  m_barWidth = width;
+}
+
+bool te::map::Chart::isVisible() const
+{
+  return m_isVisible;
+}
+
+void te::map::Chart::setVisibility(bool visible)
+{
+  m_isVisible = visible;
 }

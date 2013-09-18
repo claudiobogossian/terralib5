@@ -242,7 +242,10 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
   if(oids == 0 || oids->size() == 0)
+  {
+    m_display->repaint();
     return;
+  }
 
   bool needRemap = false;
 
