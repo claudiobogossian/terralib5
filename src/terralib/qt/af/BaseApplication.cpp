@@ -44,6 +44,7 @@
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/exchanger/DataExchangerWizard.h"
 #include "../widgets/help/HelpManager.h"
+#include "../widgets/layer/explorer/ChartItem.h"
 #include "../widgets/layer/explorer/GroupingTreeItem.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
 #include "../widgets/layer/explorer/LayerTreeView.h"
@@ -858,25 +859,39 @@ void te::qt::af::BaseApplication::onLayerChartTriggered()
 {
  try
   {
-    std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+    std::list<te::qt::widgets::AbstractTreeItem*> layerItems = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
-    if(layers.empty())
+    if(layerItems.empty())
     {
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
       return;
     }
 
-    te::map::AbstractLayerPtr l = FindLayerInProject((*layers.begin())->getLayer().get(), m_project);
+    te::qt::widgets::AbstractTreeItem* currentItem = *layerItems.begin();
+
+    te::map::AbstractLayerPtr layer = FindLayerInProject(currentItem->getLayer().get(), m_project);
    
     te::qt::widgets::ChartLayerDialog dlg(this);
 
-    dlg.setLayer(l);
+    dlg.setLayer(layer);
 
-    if(l->getChart())
-      dlg.setChart(l->getChart());
+    te::map::Chart* chart = layer->getChart();
+
+    if(chart)
+      dlg.setChart(chart);
 
     if(dlg.exec() == QDialog::Accepted)
     {
+      te::qt::widgets::ChartItem* chartItem = currentItem->findChild<te::qt::widgets::ChartItem*>();
+
+      if(chartItem)
+        m_explorer->getExplorer()->remove(chartItem);
+
+      m_explorer->getExplorer()->getTreeView()->refresh();
+
+      m_explorer->getExplorer()->getTreeView()->expandAll();
+
+      m_display->getDisplay()->refresh();
     }
   }
   catch(const std::exception& e)
@@ -905,25 +920,19 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
 
     dlg.setLayer(layer);
 
-    dlg.exec();
-
-    std::vector<te::qt::widgets::AbstractTreeItem*> descendants = currentItem->getDescendants();
-
-    for(std::size_t i = 0; i < descendants.size(); ++i)
+    if(dlg.exec() == QDialog::Accepted)
     {
-      te::qt::widgets::GroupingTreeItem* grouping = dynamic_cast<te::qt::widgets::GroupingTreeItem*>(descendants[i]);
-      if(grouping)
-      {
-        m_explorer->getExplorer()->remove(grouping);
-        break;
-      }
+      te::qt::widgets::GroupingTreeItem* groupingItem = currentItem->findChild<te::qt::widgets::GroupingTreeItem*>();
+
+      if(groupingItem)
+        m_explorer->getExplorer()->remove(groupingItem);
+
+      m_explorer->getExplorer()->getTreeView()->refresh();
+
+      m_explorer->getExplorer()->getTreeView()->expandAll();
+
+      m_display->getDisplay()->refresh();
     }
-
-    m_explorer->getExplorer()->getTreeView()->refresh();
-
-    m_explorer->getExplorer()->getTreeView()->expandAll();
-
-    m_display->getDisplay()->refresh();
   }
   catch(const std::exception& e)
   {

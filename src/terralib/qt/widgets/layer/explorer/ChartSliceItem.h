@@ -18,17 +18,20 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/DataSetLayerItem.h
+  \file terralib/qt/widgets/layer/explorer/ChartSliceItem.h
 
-  \brief The class that represents a dataset layer item in a LayerTreeModel.
+  \brief A class that represents a chart slice in a LayerTreeModel.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_CHARTSLICETITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_CHARTSLICETITEM_H
 
 // TerraLib
-#include "../../../../maptools/DataSetLayer.h"
 #include "AbstractTreeItem.h"
+
+// Qt
+#include <QtCore/QString>
+#include <QtGui/QColor>
 
 namespace te
 {
@@ -36,15 +39,17 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT DataSetLayerItem : public AbstractTreeItem
+      class TEQTWIDGETSEXPORT ChartSliceItem : public AbstractTreeItem
       {
         Q_OBJECT
 
         public:
 
-          DataSetLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent = 0);
+          ChartSliceItem(const QString& propertyName, const QColor& color,
+                         const QColor& contourColor, int contourWidth,
+                         QObject* parent = 0);
 
-          ~DataSetLayerItem();
+          ~ChartSliceItem();
 
           int columnCount() const;
 
@@ -64,18 +69,23 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
-        private:
+          void setCheckable(bool checkable);
 
-          bool hasGroupingItem() const;
-
-          bool hasChartItem() const;
+          bool getCheckable();
 
         private:
 
-          te::map::DataSetLayerPtr m_layer;
-      }; 
+          QString m_propertyName;
+          QColor m_color;
+          QColor m_contourColor;
+          int m_contourWidth;
+          int m_size;
+          bool m_isCheckable;
+          bool m_isChecked;
+      };
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_CHARTSLICETITEM_H
