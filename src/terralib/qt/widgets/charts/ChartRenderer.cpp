@@ -85,17 +85,14 @@ void te::qt::widgets::ChartRenderer::end()
 
 QImage* te::qt::widgets::ChartRenderer::drawPies(const te::map::Chart* chart, const te::da::DataSet* dataset, std::size_t& width)
 {
-  width = chart->getHeight();
-
   // Creates the image that will represent the chart
-  QImage* img = new QImage(width, chart->getHeight(), QImage::Format_ARGB32_Premultiplied);
+  QImage* img = new QImage(chart->getWidth(), chart->getHeight(), QImage::Format_ARGB32_Premultiplied);
   img->fill(Qt::transparent);
 
   setup(img);
 
   m_pen.setColor(Convert2Qt(chart->getContourColor()));
   m_pen.setWidth(static_cast<int>(chart->getContourWidth()));
-  m_painter.setPen(m_pen);
 
   std::vector<double> values;
   getValues(chart, dataset, values);
@@ -107,10 +104,20 @@ QImage* te::qt::widgets::ChartRenderer::drawPies(const te::map::Chart* chart, co
   // Draw each pie slice
   for(std::size_t i = 0; i < values.size(); ++i)
   {
-    // Configs a new color for this slice
-    m_painter.setBrush(Convert2Qt(chart->getColor(i)));
-
     int currentAngle = static_cast<int>((values[i] * 5760) / sum);
+
+    // Test: Try shadow to help the chart svisualization
+    QColor shadowColor = Convert2Qt(chart->getColor(i));
+    shadowColor.setAlpha(128);
+    //QColor shadowColor = QColorQColor(128, 128, 128, 128);
+    QPen shadowPen(shadowColor);
+    shadowPen.setWidth(2);
+    m_painter.setPen(shadowPen);
+    m_painter.drawPie(img->rect(), lastAngle, currentAngle);
+
+    // Configs a new color for this slice
+    m_painter.setPen(m_pen);
+    m_painter.setBrush(Convert2Qt(chart->getColor(i)));
 
     m_painter.drawPie(img->rect(), lastAngle, currentAngle);
 
@@ -124,16 +131,8 @@ QImage* te::qt::widgets::ChartRenderer::drawPies(const te::map::Chart* chart, co
 
 QImage* te::qt::widgets::ChartRenderer::drawBars(const te::map::Chart* chart, const te::da::DataSet* dataset, std::size_t& width)
 {
-  // TODO: For while, add it on te::map::Chart
-  std::size_t barWidth = 16;
-
-  std::vector<double> values;
-  getValues(chart, dataset, values);
-
-  width = barWidth * values.size();
-
   // Creates the image that will represent the chart
-  QImage* img = new QImage(width, chart->getHeight(), QImage::Format_ARGB32_Premultiplied);
+  QImage* img = new QImage(chart->getWidth(), chart->getHeight(), QImage::Format_ARGB32_Premultiplied);
   img->fill(Qt::transparent);
 
   setup(img);
@@ -142,28 +141,49 @@ QImage* te::qt::widgets::ChartRenderer::drawBars(const te::map::Chart* chart, co
   m_pen.setWidth(static_cast<int>(chart->getContourWidth()));
   m_painter.setPen(m_pen);
 
+  std::vector<double> values;
+  getValues(chart, dataset, values);
+
   double maxValue = getMaxValue(values);
 
   int lastx = 0;
 
+  int shadowOffset = 2;
+
   // Draw each bar
   for(std::size_t i = 0; i < values.size(); ++i)
   {
-    // Configs a new color for this slice
-    m_painter.setBrush(Convert2Qt(chart->getColor(i)));
-
     int barHeight = static_cast<int>((values[i] * chart->getHeight()) / maxValue);
 
-    QRect bar(lastx, 0, barWidth, barHeight);
+    // Test: Try shadow to help the chart svisualization
+    QRect shadowBar(lastx - shadowOffset, -shadowOffset, chart->getBarWidth() + shadowOffset, barHeight + shadowOffset);
+    QColor shadowColor = Convert2Qt(chart->getColor(i));
+    shadowColor.setAlpha(128);
+    m_painter.setBrush(shadowColor);
+    //m_painter.setBrush(QColor(128, 128, 128, 128));
+    m_painter.setPen(Qt::NoPen);
+    m_painter.drawRect(shadowBar);
+
+    // Current bar
+    QRect bar(lastx, 0, chart->getBarWidth(), barHeight);
+
+    // Configs a new color for this bar
+    m_painter.setPen(m_pen);
+    m_painter.setBrush(Convert2Qt(chart->getColor(i)));
 
     m_painter.drawRect(bar);
 
-    lastx += barWidth;
+    lastx += chart->getBarWidth();
   }
 
   end();
 
-  return img;
+  // TODO: Need review! Draw the bar on right place! ... For while, return the mirrored image.
+  QImage* mirroed = new QImage(img->mirrored());
+
+  delete img;
+
+  return mirroed;
 }
 
 void te::qt::widgets::ChartRenderer::getValues(const te::map::Chart* chart, const te::da::DataSet* dataset, std::vector<double>& values)
@@ -194,7 +214,7 @@ double te::qt::widgets::ChartRenderer::getMaxValue(const std::vector<double>& va
   double max = 0.0;
 
   for(std::size_t i = 0; i < values.size(); ++i)
-    if(values[i] > max)
+    if(std::abs(values[i]) > max)
       max = values[i];
 
   return max;

@@ -45,7 +45,7 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
     m_backgroundColor(Qt::white),
     m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
     m_timer(new QTimer(this)),
-    m_interval(0)
+    m_interval(200)
 {
   m_timer->setSingleShot(true);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));

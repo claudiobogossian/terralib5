@@ -90,6 +90,22 @@ namespace te
 
         void setHeight(std::size_t height);
 
+        std::size_t getWidth() const;
+
+        std::size_t getBarWidth() const;
+
+        void setBarWidth(std::size_t width);
+
+        /*! \brief It gets the chart visibility. */
+        bool isVisible() const;
+
+        /*!
+          \brief It sets the chart visibility.
+
+          \param visible The visibility value.
+        */
+        void setVisibility(bool visible);
+
       private:
 
         ChartType m_type;                           //!< The chart type.
@@ -98,6 +114,8 @@ namespace te
         te::color::RGBAColor m_contourColor;        //!< The chart contour color.
         std::size_t m_contourWidth;                 //!< The chart contour width (in pixels).
         std::size_t m_height;                       //!< The chart height (in pixels).
+        std::size_t m_barWidth;                     //!< The bar width for char Bar type (in pixels).
+        bool m_isVisible;                          //!< A flag that indicates if the chart is visible.
     };
 
   } // end namespace map

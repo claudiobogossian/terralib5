@@ -37,7 +37,6 @@
 #include "../dataaccess/query/UnaryOpEncoder.h"
 
 #include "DataSource.h"
-//#include "DataSourceFactory.h"
 #include "Globals.h"
 #include "Module.h"
 
@@ -58,7 +57,7 @@ void te::ogr::Module::startup()
   if(m_initialized)
     return;
 
-// it initializes the Translator support for the TerraLib PostGIS driver support
+// it initializes the Translator support for the TerraLib OGR driver support
   TE_ADD_TEXT_DOMAIN(TE_OGR_TEXT_DOMAIN, TE_OGR_TEXT_DOMAIN_DIR, "UTF-8");
 
 // registers all format drivers built into OGR.

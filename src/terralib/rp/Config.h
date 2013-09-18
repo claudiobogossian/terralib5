@@ -27,6 +27,11 @@
  */
 
 /*!
+ \defgroup RPFunctions Raster processing functions.
+ \ingroup RPModule
+ */
+
+/*!
  \defgroup SegmentationAlgorithms Raster segmentation algorithms.
  \ingroup RPAlgorithms
  */

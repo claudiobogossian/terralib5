@@ -66,6 +66,12 @@ namespace te
 
         private:
 
+          bool hasGroupingItem() const;
+
+          bool hasChartItem() const;
+
+        private:
+
           te::map::DataSetLayerPtr m_layer;
       }; 
     } // end namespace widgets

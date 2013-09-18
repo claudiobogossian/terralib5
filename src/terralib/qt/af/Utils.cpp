@@ -538,7 +538,7 @@ QString te::qt::af::GetStyleSheetFromColors(QColor primaryColor, QColor secondar
 QString te::qt::af::GetStyleSheetFromSettings()
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-  bool isChecked = sett.value("table/tableAlternateColors").toBool();
+  //bool isChecked = sett.value("table/tableAlternateColors").toBool();
   QColor pColor;
   pColor.setNamedColor(sett.value("table/primaryColor").toString());
   QColor sColor;
@@ -558,4 +558,35 @@ bool te::qt::af::GetAlternateRowColorsFromSettings()
   bool isChecked = sett.value("table/tableAlternateColors").toBool();
 
   return isChecked;
+}
+
+void te::qt::af::AddActionToCustomToolbars(QAction* act)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("toolbars");
+  QStringList lst = sett.childGroups();
+  QStringList::iterator it;
+
+  for(it=lst.begin(); it!=lst.end(); ++it)
+  {
+    int size = sett.beginReadArray(*it+"/Actions");
+
+    for(int i=0; i<size; i++)
+    {
+      sett.setArrayIndex(i);
+
+      QString v = sett.value("action").toString(); 
+
+      if (v == act->objectName())
+      {
+        ApplicationController::getInstance().getToolBar(*it)->addAction(act);
+        break;
+      }
+    }
+
+    sett.endArray();
+  }
+
+  sett.endGroup();
 }

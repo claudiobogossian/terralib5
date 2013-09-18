@@ -128,8 +128,8 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      m_datasource->setTitle(title.toLatin1().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toLatin1().data());
       m_datasource->setAccessDriver("OGR");
       m_datasource->setType("OGR");
     }
@@ -137,8 +137,8 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      m_datasource->setTitle(title.toLatin1().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toLatin1().data());
     }
   }
   catch(const std::exception& e)
@@ -236,10 +236,10 @@ void te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::s
   if(qstr.isEmpty())
     throw te::qt::widgets::Exception(TR_QT_WIDGETS("Please select a feature file first!"));
 
-  if(boost::filesystem::is_directory(qstr.toUtf8().data()))
-    connInfo["SOURCE"] = qstr.toUtf8().data();
+  if(boost::filesystem::is_directory(qstr.toLatin1().data()))
+    connInfo["SOURCE"] = qstr.toLatin1().data();
   else
-    connInfo["URI"] = qstr.toUtf8().data();
+    connInfo["URI"] = qstr.toLatin1().data();
 }
 
 void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
@@ -249,7 +249,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::map<
 
   if(it != itend)
   {
-    m_ui->m_featureRepoLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+    m_ui->m_featureRepoLineEdit->setText(it->second.c_str());
     m_ui->m_dirRadioButton->setChecked(true);
     return;
   }
@@ -258,7 +258,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::map<
 
   if(it != itend)
   {
-    m_ui->m_featureRepoLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+    m_ui->m_featureRepoLineEdit->setText(it->second.c_str());
     m_ui->m_fileRadioButton->setChecked(true);
   }
 }

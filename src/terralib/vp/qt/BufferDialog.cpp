@@ -168,14 +168,14 @@ std::map<te::gm::Geometry*, double> te::vp::BufferDialog::getDistante()
   
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
   
-  std::auto_ptr<te::map::LayerSchema> dsType = dsLayer->getSchema();
-  
+  std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
+
   std::size_t geomIdx;
   std::string geomName = "";
 
-  std::auto_ptr<te::gm::GeometryProperty> geom(te::da::GetFirstGeomProperty(dsType.get()));
+  te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(dsType.get());
   geomName = geom->getName();
-  geomIdx = boost::lexical_cast<std::size_t>(dsType->getPropertyPosition(geomName));
+  geomIdx = dsType->getPropertyPosition(geomName);
 
   std::auto_ptr<te::da::DataSet> inputDataSet = dsLayer->getData();
   inputDataSet->moveBeforeFirst();
@@ -186,7 +186,6 @@ std::map<te::gm::Geometry*, double> te::vp::BufferDialog::getDistante()
     while(inputDataSet->moveNext())
     {
       std::auto_ptr<te::gm::Geometry> g = inputDataSet->getGeometry(geomIdx);
-      
       distance.insert(std::map<te::gm::Geometry*, double>::value_type(g.release(), dist));
     }
   }
@@ -236,6 +235,11 @@ int te::vp::BufferDialog::getBoundariesRule()
     return te::vp::DISSOLVE;
   else
     return te::vp::NOT_DISSOLVE;
+}
+
+te::map::AbstractLayerPtr te::vp::BufferDialog::getLayer()
+{
+  return m_outputLayer;
 }
 
 void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
@@ -409,6 +413,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
 
   try
   {
+    //Chamada da função que iniciara a operação de buffer.
     if(m_outputDatasource.get())
       m_outputLayer = te::vp::Buffer( m_selectedLayer, 
                                       distance, 

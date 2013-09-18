@@ -46,7 +46,6 @@
 #include "../geometry/GeometryProperty.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterProperty.h"
-#include "../sam/rtree/Index.h"
 #include "../se/FeatureTypeStyle.h"
 #include "../se/CoverageStyle.h"
 #include "../se/Rule.h"
@@ -75,6 +74,7 @@
 #include <utility>
 
 te::map::AbstractLayerRenderer::AbstractLayerRenderer()
+  : m_index(0)
 {
 }
 
@@ -108,6 +108,9 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
 
   // Adjust internal renderer transformer
   m_transformer.setTransformationParameters(bbox.m_llx, bbox.m_lly, bbox.m_urx, bbox.m_ury, canvas->getWidth(), canvas->getHeight());
+
+  // Resets internal renderer state
+  reset();
 
   te::gm::Envelope ibbox = reprojectedBBOX.intersection(layer->getExtent());
 
@@ -209,22 +212,6 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
 
   // Number of rules defined on feature type style
   std::size_t nRules = style->getRules().size();
-
-  // Verifies if is necessary convert the data set geometries to the given srid
-  bool needRemap = false;
-  if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
-    needRemap = true;
-
-  // The layer chart
-  Chart* chart = layer->getChart();
-
-  // Used to draw the charts
-  std::size_t chartWidth = 0; // TODO: Put it on te::map::Chart class
-  std::vector<te::gm::Coord2D> chartCoordinates;
-  std::vector<te::color::RGBAColor**> chartImages;
-
-  std::size_t index = 0;
-  te::sam::rtree::Index<std::size_t, 8> rtree;
 
   for(std::size_t i = 0; i < nRules; ++i) // for each <Rule>
   {
@@ -331,70 +318,10 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       cc.config(symb);
 
       // Let's draw! for each data set geometry...
-      do
-      {
-        if(!task.isActive())
-          return;
-
-        // Updates the draw task
-        task.pulse();
-
-        std::auto_ptr<te::gm::Geometry> geom(0);
-        try
-        {
-          geom = dataset->getGeometry(gpos);
-          if(geom.get() == 0)
-            continue;
-        }
-        catch(std::exception& /*e*/)
-        {
-          continue;
-        }
-
-        // If necessary, geometry remap
-        if(needRemap)
-        {
-          geom->setSRID(layer->getSRID());
-          geom->transform(srid);
-        }
-
-        canvas->draw(geom.get());
-
-        if(chart && (j == nSymbolizers - 1))
-        {
-          // Builds the chart point (world coordinates)
-          const te::gm::Envelope* e = geom->getMBR();
-
-          // Device coordinates
-          double dx = 0.0; double dy = 0.0;
-          m_transformer.world2Device(e->getCenter().x, e->getCenter().y, dx, dy);
-
-          double dw = dx + chart->getHeight(); // TODO: here, should be use chart->getWidth();
-          double dh = dy + chart->getHeight();
-
-          // Builds the chart envelopes
-          te::gm::Envelope chartEnvelope(dx, dy, dw, dh);
-
-          // Search on rtree
-          std::vector<std::size_t> report;
-          rtree.search(chartEnvelope, report);
-
-          if(!report.empty())
-            continue;
-
-          // Here, no intersections considering the current chart envelope
-          rtree.insert(chartEnvelope, ++index);
-
-          // Stores the chart coordinate
-          chartCoordinates.push_back(te::gm::Coord2D(dx, dy));
-
-          // Builds the chart image
-          te::color::RGBAColor** rgba = ChartRendererManager::getInstance().render(chart, dataset.get(), chartWidth);
-
-          chartImages.push_back(rgba);
-        }
-
-      } while(dataset->moveNext()); // next geometry!
+      if(j != nSymbolizers - 1)
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, &task);
+      else
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), &task); // Here, produces the chart if exists
 
       // Prepares to draw the other symbolizer
       dataset->moveFirst();
@@ -402,18 +329,6 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
     } // end for each <Symbolizer>
 
   }   // end for each <Rule>
-
-  // Let's draw the charts
-  for(std::size_t i = 0; i < chartCoordinates.size(); ++i)
-  {
-    canvas->drawImage(static_cast<int>(chartCoordinates[i].x),
-                      static_cast<int>(chartCoordinates[i].y),
-                      chartImages[i],
-                      chartWidth,
-                      chart->getHeight());
-
-    te::common::Free(chartImages[i], chartWidth);
-  }
 }
 
 void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
@@ -523,6 +438,9 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
     const std::vector<te::se::Symbolizer*>& symbolizers = item->getSymbolizers();
     std::size_t nSymbolizers = symbolizers.size();
 
+    // For while, first geometry property. TODO: get which geometry property the symbolizer references
+    std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+
     for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {
       // The current symbolizer
@@ -531,11 +449,11 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
       // Let's config the canvas based on the current symbolizer
       cc.config(symb);
 
-      // For while, first geometry property. TODO: get which geometry property the symbolizer references
-      std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
-
       // Let's draw! for each data set geometry...
-      DrawGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0);
+       if(j != nSymbolizers - 1)
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, &task);
+      else
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), &task); // Here, produces the chart if exists
 
       // Prepares to draw the other symbolizer
       dataset->moveFirst();
@@ -637,6 +555,9 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
     needRemap = true;
 
+  // The layer chart
+  Chart* chart = layer->getChart();
+
   do
   {
     std::vector<te::se::Symbolizer*> symbolizers;
@@ -694,7 +615,128 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
       }
 
       canvas->draw(geom.get());
+
+      if(chart && j == nSymbolizers - 1)
+        buildChart(chart, dataset.get(), geom.get());
     }
 
-  }while(dataset->moveNext());
+  } while(dataset->moveNext());
+
+  // Let's draw the generated charts
+  for(std::size_t i = 0; i < m_chartCoordinates.size(); ++i)
+  {
+    canvas->drawImage(static_cast<int>(m_chartCoordinates[i].x),
+                      static_cast<int>(m_chartCoordinates[i].y),
+                      m_chartImages[i],
+                      chart->getWidth(),
+                      chart->getHeight());
+
+    te::common::Free(m_chartImages[i], chart->getHeight());
+  }
+}
+
+void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* dataset, const std::size_t& gpos, Canvas* canvas,
+                                                          int fromSRID, int toSRID,
+                                                          Chart* chart, te::common::TaskProgress* task)
+{
+  assert(dataset);
+  assert(canvas);
+
+  // Verify if is necessary convert the data set geometries to the given srid
+  bool needRemap = false;
+  if((fromSRID != TE_UNKNOWN_SRS) && (toSRID != TE_UNKNOWN_SRS) && (fromSRID != toSRID))
+    needRemap = true;
+
+  do
+  {
+    if(task)
+    {
+      if(!task->isActive())
+        return;
+
+      // update the draw task
+      task->pulse();
+    }
+
+    std::auto_ptr<te::gm::Geometry> geom(0);
+    try
+    {
+      geom = dataset->getGeometry(gpos);
+      if(geom.get() == 0)
+        continue;
+    }
+    catch(std::exception& /*e*/)
+    {
+      continue;
+    }
+
+    // If necessary, geometry remap
+    if(needRemap)
+    {
+      geom->setSRID(fromSRID);
+      geom->transform(toSRID);
+    }
+
+    canvas->draw(geom.get());
+
+    if(chart)
+      buildChart(chart, dataset, geom.get());
+
+  } while(dataset->moveNext()); // next geometry!
+
+  // Let's draw the generated charts
+  for(std::size_t i = 0; i < m_chartCoordinates.size(); ++i)
+  {
+    canvas->drawImage(static_cast<int>(m_chartCoordinates[i].x),
+                      static_cast<int>(m_chartCoordinates[i].y),
+                      m_chartImages[i],
+                      chart->getWidth(),
+                      chart->getHeight());
+
+    te::common::Free(m_chartImages[i], chart->getHeight());
+  }
+}
+
+void te::map::AbstractLayerRenderer::buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom)
+{
+  if(!chart->isVisible())
+    return;
+
+  // Builds the chart point (world coordinates)
+  const te::gm::Envelope* e = geom->getMBR();
+
+  // Device coordinates
+  double dx = 0.0; double dy = 0.0;
+  m_transformer.world2Device(e->getCenter().x, e->getCenter().y, dx, dy);
+
+  double dw = dx + chart->getWidth();
+  double dh = dy + chart->getHeight();
+
+  // Builds the chart envelope
+  te::gm::Envelope chartEnvelope(dx, dy, dw, dh);
+
+  // Search on rtree
+  std::vector<std::size_t> report;
+  m_rtree.search(chartEnvelope, report);
+
+  if(!report.empty())
+    return;
+
+  // Here, no intersections considering the current chart envelope
+  m_rtree.insert(chartEnvelope, ++m_index);
+
+  // Stores the chart coordinate
+  m_chartCoordinates.push_back(te::gm::Coord2D(dx, dy));
+
+  // Builds the chart image
+  std::size_t width = 0;
+  te::color::RGBAColor** rgba = ChartRendererManager::getInstance().render(chart, dataset, width);
+  m_chartImages.push_back(rgba);
+}
+
+void te::map::AbstractLayerRenderer::reset()
+{
+  m_index = 0;
+  m_chartCoordinates.clear();
+  m_chartImages.clear();
 }

@@ -105,7 +105,7 @@ void te::graph::SequenceLoaderStrategy::loadDataByVertexId(int vertexId, te::gra
   te::da::Field* fvtEnd = new te::da::Field(Globals::sm_tableVertexModelAttrId);
   te::da::LessThanOrEqualTo* ltetvt = new te::da::LessThanOrEqualTo(fvtEnd->getExpression(), new te::da::LiteralInt32(vertexId + m_graphMetadata->m_maxCacheSize));
 
-  te::da::And* and = new te::da::And(gtetvt, ltetvt);
+  te::da::And* andop = new te::da::And(gtetvt, ltetvt);
 
   te::da::Field* fvf = new te::da::Field(vertexFrom);
   te::da::Field* fv1id = new te::da::Field(vId);
@@ -115,9 +115,9 @@ void te::graph::SequenceLoaderStrategy::loadDataByVertexId(int vertexId, te::gra
   te::da::Field* fv2id = new te::da::Field(vId);
   te::da::Expression* exp2 = new te::da::EqualTo(fvt->getExpression(), fv2id->getExpression());
 
-  te::da::Or* or = new te::da::Or(exp1, exp2);
+  te::da::Or* orop = new te::da::Or(exp1, exp2);
 
-  te::da::And* andd = new te::da::And(and, or);
+  te::da::And* andd = new te::da::And(andop, orop);
 
   te::da::Where* wh = new te::da::Where(andd);
 
@@ -148,7 +148,7 @@ void te::graph::SequenceLoaderStrategy::loadDataByVertexId(int vertexId, te::gra
     int vId   = dataset->getInt32(0);                       //first item is the vertex id
     int eId   = dataset->getInt32(vertexProperties);        //first after vertexProperties item is the edge id
     int vFrom = dataset->getInt32(vertexProperties + 1);    //second after vertexPropertie item is the vertex from id
-    int vTo   = dataset->getInt32(vertexProperties + 2);    //third after vertexPropertie item is the vertex to id
+    //int vTo   = dataset->getInt32(vertexProperties + 2);    //third after vertexPropertie item is the vertex to id
 
     if(currentId != vId)
     {
@@ -221,9 +221,9 @@ void te::graph::SequenceLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::
   te::da::Field* feiEnd = new te::da::Field(Globals::sm_tableEdgeModelAttrId);
   te::da::LessThanOrEqualTo* ltet = new te::da::LessThanOrEqualTo(feiEnd->getExpression(), new te::da::LiteralInt32(edgeId + m_graphMetadata->m_maxCacheSize));
 
-  te::da::And* and = new te::da::And(gtet, ltet);
+  te::da::And* andop = new te::da::And(gtet, ltet);
 
-  te::da::Where* wh = new te::da::Where(and);
+  te::da::Where* wh = new te::da::Where(andop);
 
   // order by
   te::da::OrderByItem* obItem = new te::da::OrderByItem(new te::da::PropertyName(Globals::sm_tableEdgeModelAttrId));
