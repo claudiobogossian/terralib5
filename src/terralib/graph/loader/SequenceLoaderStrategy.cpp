@@ -148,7 +148,7 @@ void te::graph::SequenceLoaderStrategy::loadDataByVertexId(int vertexId, te::gra
     int vId   = dataset->getInt32(0);                       //first item is the vertex id
     int eId   = dataset->getInt32(vertexProperties);        //first after vertexProperties item is the edge id
     int vFrom = dataset->getInt32(vertexProperties + 1);    //second after vertexPropertie item is the vertex from id
-    int vTo   = dataset->getInt32(vertexProperties + 2);    //third after vertexPropertie item is the vertex to id
+    //int vTo   = dataset->getInt32(vertexProperties + 2);    //third after vertexPropertie item is the vertex to id
 
     if(currentId != vId)
     {
