@@ -25,14 +25,15 @@
            - basic stroke
 */
 
+// TerraLib
+#include "../../../se/LineSymbolizer.h"
+#include "BasicStrokePropertyItem.h"
 #include "LineSymbolizerProperty.h"
 
-#include "../../../se/LineSymbolizer.h"
-
-#include "BasicStrokePropertyItem.h"
-
 // Qt
+#include "../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
 #include <QtGui/QGridLayout>
+#include <QtGui/QToolBox>
 
 // STL
 #include <cassert>
@@ -40,18 +41,22 @@
 te::qt::widgets::LineSymbolizerProperty::LineSymbolizerProperty(QWidget* parent) : m_symb(new te::se::LineSymbolizer)
 {
   QGridLayout* layout = new QGridLayout(this);
-
   this->setLayout(layout);
 
-  m_propertyBrowser = new QtTreePropertyBrowser(this);
+  QToolBox* tb = new QToolBox(this);
+  layout->addWidget(tb);
 
-  layout->addWidget(m_propertyBrowser);
+  QtTreePropertyBrowser* basicPropBrowser = new QtTreePropertyBrowser(this);
+  basicPropBrowser->setIndentation(10);
+  basicPropBrowser->setPropertiesWithoutValueMarked(true);
+  basicPropBrowser->setRootIsDecorated(false);
+  basicPropBrowser->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
 
-  m_propertyBrowser->setPropertiesWithoutValueMarked(true);
-  m_propertyBrowser->setRootIsDecorated(false);
-  m_propertyBrowser->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
+  layout->addWidget(basicPropBrowser);
 
-  m_bs = new te::qt::widgets::BasicStrokePropertyItem(m_propertyBrowser);
+  m_bs = new te::qt::widgets::BasicStrokePropertyItem(basicPropBrowser);
+
+  tb->addItem(basicPropBrowser, "Basic Symbology");
 
   connect(m_bs, SIGNAL(strokeChanged()), this, SLOT(onStrokeChanged()));
 }
