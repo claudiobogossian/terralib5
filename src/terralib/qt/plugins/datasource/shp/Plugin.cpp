@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -49,7 +49,6 @@
 
 // Qt 
 #include <QAction>
-#include <QApplication>
 #include <QMenu>
 #include <QFileDialog>
 
@@ -202,7 +201,7 @@ void te::qt::plugins::shp::Plugin::showWindow()
 
     ds->setId(id);
 
-    boost::filesystem::path mpath(it->toStdString());
+    boost::filesystem::path mpath(dsinfo["URI"]);
 
     std::string fileBaseName = mpath.stem().string();
 
@@ -215,9 +214,10 @@ void te::qt::plugins::shp::Plugin::showWindow()
     GetLayers(ds, layers);
   }
 
-  if(!layers.empty())
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  for(it = layers.begin(); it != layers.end(); ++it)
   {
-    te::qt::af::evt::LayersAdded evt(layers);
+    te::qt::af::evt::LayerAdded evt(*it);
     te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 }

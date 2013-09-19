@@ -26,16 +26,18 @@
            - basic stroke
 */
 
-#include "PolygonSymbolizerProperty.h"
+// Terralib
+#include "../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
 #include "../../../se/Fill.h"
 #include "../../../se/PolygonSymbolizer.h"
-
 #include "BasicFillPropertyItem.h"
 #include "BasicStrokePropertyItem.h"
-#include "GraphicPropertyItem.h"
+#include "GraphicProperty.h"
+#include "PolygonSymbolizerProperty.h"
 
 // Qt
 #include <QtGui/QGridLayout>
+#include <QtGui/QToolBox>
 
 // STL
 #include <cassert>
@@ -43,24 +45,31 @@
 te::qt::widgets::PolygonSymbolizerProperty::PolygonSymbolizerProperty(QWidget* parent) : m_symb(new te::se::PolygonSymbolizer), m_setLocalSymbol(false)
 {
   QGridLayout* layout = new QGridLayout(this);
-
   this->setLayout(layout);
 
-  m_propertyBrowser = new QtTreePropertyBrowser(this);
+  QToolBox* tb = new QToolBox(this);
+  layout->addWidget(tb);
 
-  layout->addWidget(m_propertyBrowser);
+  QtTreePropertyBrowser* basicPropBrowser = new QtTreePropertyBrowser(this);
+  basicPropBrowser->setIndentation(10);
+  basicPropBrowser->setPropertiesWithoutValueMarked(true);
+  basicPropBrowser->setRootIsDecorated(false);
+  basicPropBrowser->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
 
-  m_propertyBrowser->setPropertiesWithoutValueMarked(true);
-  m_propertyBrowser->setRootIsDecorated(false);
-  m_propertyBrowser->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
+  layout->addWidget(basicPropBrowser);
+  
+  m_bf = new te::qt::widgets::BasicFillPropertyItem(basicPropBrowser);
+  m_bs = new te::qt::widgets::BasicStrokePropertyItem(basicPropBrowser);
 
-  m_bf = new te::qt::widgets::BasicFillPropertyItem(m_propertyBrowser);
-  m_bs = new te::qt::widgets::BasicStrokePropertyItem(m_propertyBrowser);
-  m_generalProp = new te::qt::widgets::GraphicPropertyItem(m_propertyBrowser);
+  tb->addItem(basicPropBrowser, "Basic Symbology");
+
+  m_graph = new te::qt::widgets::GraphicProperty(this);
+
+  tb->addItem(m_graph, "Graphic Symbology");
 
   connect(m_bf, SIGNAL(fillChanged()), this, SLOT(onFillChanged()));
   connect(m_bs, SIGNAL(strokeChanged()), this, SLOT(onStrokeChanged()));
-  connect(m_generalProp, SIGNAL(graphicChanged()), this, SLOT(onPolyGraphicChanged()));
+  connect(m_graph, SIGNAL(graphicChanged()), this, SLOT(onPolyGraphicChanged()));
 }
 
 te::qt::widgets::PolygonSymbolizerProperty::~PolygonSymbolizerProperty()
@@ -76,7 +85,7 @@ void te::qt::widgets::PolygonSymbolizerProperty::setSymbolizer(te::se::PolygonSy
   if(m_symb->getFill())
   {
     if(m_symb->getFill()->getGraphicFill())
-      m_generalProp->setGraphic(m_symb->getFill()->getGraphicFill());
+      m_graph->setGraphic(m_symb->getFill()->getGraphicFill());
     else
       m_bf->setFill(m_symb->getFill());
   }
@@ -112,7 +121,7 @@ void te::qt::widgets::PolygonSymbolizerProperty::onPolyGraphicChanged()
   {
     te::se::Fill* fill = m_symb->getFill()->clone();
   
-    fill->setGraphicFill(m_generalProp->getGraphic());
+    fill->setGraphicFill(m_graph->getGraphic());
 
     m_symb->setFill(fill);
 

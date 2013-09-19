@@ -20,9 +20,11 @@ set (
 
 set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../src/terralib/qt/plugins")  # change this if the terralib root directory is somewhere else
  
-# Go into sub-directories
-if(BUILD_QT_PLUGIN_DATASOURCE_ADO)
-  add_subdirectory(terralib_qt_plugins/datasource_ado)
+if(WIN32)
+  # Go into sub-directories
+  if(BUILD_QT_PLUGIN_DATASOURCE_ADO)
+    add_subdirectory(terralib_qt_plugins/datasource_ado)
+  endif()
 endif()
 
 if(BUILD_QT_PLUGIN_DATASOURCE_GDAL)

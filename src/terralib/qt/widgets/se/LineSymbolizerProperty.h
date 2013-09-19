@@ -33,7 +33,7 @@
 
 // Qt
 #include <QtGui/QWidget>
-#include "../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
+
 
 namespace te
 {
@@ -108,8 +108,6 @@ namespace te
 
 
         protected:
-
-          QtTreePropertyBrowser*    m_propertyBrowser;
 
           te::qt::widgets::BasicStrokePropertyItem* m_bs;
 

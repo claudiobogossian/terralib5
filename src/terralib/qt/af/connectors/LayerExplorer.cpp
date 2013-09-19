@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A GIS Application.
 
@@ -79,18 +79,6 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       m_explorer->add(e->m_layer);
 
       ApplicationController::getInstance().getProject()->add(e->m_layer);
-    }
-
-    case te::qt::af::evt::LAYERS_ADDED:
-    {
-      te::qt::af::evt::LayersAdded* e = static_cast<te::qt::af::evt::LayersAdded*>(evt);
-      std::list<te::map::AbstractLayerPtr>::iterator it;
-
-      for(it = e->m_layers.begin(); it != e->m_layers.end(); ++it)
-      {
-        m_explorer->add(*it);
-        ApplicationController::getInstance().getProject()->add(*it);
-      }
     }
     break;
 
