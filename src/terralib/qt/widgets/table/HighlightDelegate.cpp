@@ -28,6 +28,9 @@
 
 bool toHighlight(te::da::DataSet* dset, const te::da::ObjectIdSet* objs, const int& row)
 {
+  if(objs == 0)
+    return false;
+
   dset->move(row);
 
   std::vector<std::string> pNames = objs->getPropertyNames();

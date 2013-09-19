@@ -21,7 +21,6 @@
 #include "Transactor.h"
 #include "Utils.h"
 
-#include "../common/BoostUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/query/SQLDialect.h"
 
@@ -72,7 +71,7 @@ void te::ogr::DataSource::open()
   if(m_connectionInfo.empty())
     throw Exception(TR_OGR("There is no information about the data source")); 
 
-  std::string path = te::common::ConvertLatin1UTFString(m_connectionInfo.begin()->second);
+  std::string path = m_connectionInfo.begin()->second;
   m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str());
   
   if(m_ogrDS == 0)
