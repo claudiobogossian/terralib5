@@ -596,6 +596,8 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
   setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
 
   te::qt::af::ApplicationController::getInstance().updateRecentProjects(m_project->getFileName().c_str(), m_project->getTitle().c_str());
+
+  te::qt::af::SaveDataSourcesFile();
 }
 
 void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
@@ -625,6 +627,8 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   QString projectTile(tr(" - Project: %1 - %2"));
   std::string name = boost::filesystem::basename(m_project->getFileName()) + boost::filesystem::extension(m_project->getFileName());
   setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str(), name.c_str()));
+
+  te::qt::af::SaveDataSourcesFile();
 }
 
 void te::qt::af::BaseApplication::onToolsCustomizeTriggered()
