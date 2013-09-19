@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(terralib_unittest_rp)
 
+add_subdirectory(terralib_unittest_rp_functions)
 add_subdirectory(terralib_unittest_rp_classifier)
 add_subdirectory(terralib_unittest_rp_contrast)
 add_subdirectory(terralib_unittest_rp_matrix)

@@ -1629,9 +1629,9 @@ void te::pgis::Transactor::renameDataSet(const std::string& name, const std::str
 }
 
 void te::pgis::Transactor::add(const std::string& datasetName,
-                                         te::da::DataSet* d,
-                                         const std::map<std::string, std::string>& options,
-                                         std::size_t limit)
+                               te::da::DataSet* d,
+                               const std::map<std::string, std::string>& options,
+                               std::size_t limit)
 {
   if(limit == 0)
     limit = std::string::npos;
@@ -1653,14 +1653,13 @@ void te::pgis::Transactor::add(const std::string& datasetName,
 
   pq->prepare(sql, paramTypes);
 
-  do
+  while(d->moveNext() && (nProcessedRows != limit))
   {
     pq->bind(d);
     pq->execute();
 
     ++nProcessedRows;
-
-  }while(d->moveNext() && (nProcessedRows != limit));
+  }
 
   st.commit();
 }

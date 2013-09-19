@@ -59,6 +59,10 @@ namespace te
   namespace rp
   {
     class RasterHandler;
+    
+    /** \addtogroup RPFunctions 
+     *  @{
+     */    
 
     /*!
       \brief Create a new raster into the givem data source.
@@ -262,6 +266,42 @@ namespace te
       \return A vector of random positions (points).
     */
     TERPEXPORT std::vector<te::gm::Point*> GetRandomPointsInRaster(const te::rst::Raster& inputRaster, unsigned int numberOfPoints = 1000);    
+    
+    /*!
+      \brief RGB to IHS conversion.
+      \param inputRGBRaster The input raster.
+      \param redBandIdx The red band index.
+      \param greenBandIdx The red band index.
+      \param blueBandIdx The red band index.
+      \param rgbRangeMin The minimum RGB value.
+      \param rgbRangeMax The maximum RGB value.
+      \param outputIHSRaster The output IHS raster.
+      \return true if OK, false on errors.
+      \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].      
+    */
+    TERPEXPORT bool ConvertRBG2IHS( const te::rst::Raster& inputRGBRaster, 
+      const unsigned int redBandIdx, const unsigned int greenBandIdx,
+      const unsigned int blueBandIdx, const double rgbRangeMin, 
+      const double rgbRangeMax, te::rst::Raster& outputIHSRaster );  
+      
+    /*!
+      \brief IHS to RGB conversion.
+      \param inputIHSRaster The input raster.
+      \param intensityBandIdx The intensity band index.
+      \param hueBandIdx The hue band index.
+      \param saturationBandIdx The saturation band index.
+      \param rgbRangeMin The minimum RGB value.
+      \param rgbRangeMax The maximum RGB value.      
+      \param outputRGBRaster The output RGB raster.
+      \return true if OK, false on errors.
+      \note IHS data with the following channels ranges: I:[0,1] H:[0,2pi] (radians) S:[0,1].      
+    */
+    TERPEXPORT bool ConvertIHS2RGB( const te::rst::Raster& inputIHSRaster, 
+      const unsigned int intensityBandIdx, const unsigned int hueBandIdx,
+      const unsigned int saturationBandIdx, const double rgbRangeMin, 
+      const double rgbRangeMax, te::rst::Raster& outputRGBRaster );      
+    
+    /** @}*/
 
   } // end namespace rp
 }   // end namespace te

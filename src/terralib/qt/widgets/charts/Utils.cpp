@@ -50,6 +50,7 @@
 
 //QT
 #include <QPen>
+#include <QPixmap>
 
 //STL
 #include <memory>
@@ -516,7 +517,7 @@ QwtSymbol* te::qt::widgets::Terralib2Qwt(te::se::Graphic* graphic)
 
   QImage* qimg = te::qt::widgets::GetImage(image, height, width);
   QPixmap pixmap;
-  pixmap.convertFromImage(*qimg);
+  pixmap = QPixmap::fromImage(*qimg);
 
   //Adjusting the symbol
   symbol->setPixmap(pixmap);

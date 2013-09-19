@@ -159,8 +159,9 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     std::map<std::string, std::string> op;
 
     if(m_outputDatasource.get())
+      //Chamada da função que iniciara a operação de intersecção.
       m_layer = te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
-    else if(!m_outputArchive.empty())
+    else if(!m_outputArchive.empty()){}
       m_layer = te::vp::Intersection(newLayerName, layers, m_outputArchive, srid, op);
   }
   catch(const std::exception& e)

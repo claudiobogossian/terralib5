@@ -379,7 +379,7 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::advancedConnectionOptionsChe
 
 void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinished()
 {
-  if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
+  if(m_ui->m_userNameLineEdit->text() != "" || m_ui->m_passwordLineEdit->text() != "")
   {
     try{
       std::map<std::string, std::string> dsInfo;
@@ -388,8 +388,11 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
       // Get DataSources
       std::vector<std::string> dbNames = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
       if(!dbNames.empty())
+      {
+        m_ui->m_databaseComboBox->clear();
         for(std::size_t i = 0; i < dbNames.size(); i++)
           m_ui->m_databaseComboBox->addItem(dbNames[i].c_str());
+      }
 
       // Get Encodings
       m_ui->m_clientEncodingComboBox->addItem("");

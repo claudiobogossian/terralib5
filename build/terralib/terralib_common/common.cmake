@@ -13,7 +13,7 @@ if(Log4Cxx_FOUND)
   set (TE_USE_APACHE_LOG4CXX TRUE PARENT_SCOPE)
 endif()
 
-find_package(Boost ${_Boost_VERSION} COMPONENTS filesystem system locale REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS filesystem system REQUIRED)
 if(Boost_FOUND)
   list (APPEND TE_DEP_LIBS ${Boost_LIBRARIES})
   list (APPEND TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})

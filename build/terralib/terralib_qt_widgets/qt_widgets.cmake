@@ -194,6 +194,8 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/layer/explorer/AbstractTreeItem.h
+  ${SRCDIR}/widgets/layer/explorer/ChartItem.h
+  ${SRCDIR}/widgets/layer/explorer/ChartSliceItem.h
   ${SRCDIR}/widgets/layer/explorer/DataSetLayerItem.h
   ${SRCDIR}/widgets/layer/explorer/FolderLayerItem.h
   ${SRCDIR}/widgets/layer/explorer/GroupingItemTreeItem.h

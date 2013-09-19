@@ -40,6 +40,7 @@
 #include "../maptools/AbstractLayer.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
+#include "../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../statistics/core/SummaryFunctions.h"
 #include "../statistics/core/StringStatisticalSummary.h"
 #include "../statistics/core/NumericStatisticalSummary.h"
@@ -60,38 +61,49 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-void te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
-                         const std::vector<te::dt::Property*>& groupingProperties,
-                         const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                         const std::string& outputLayerName,
-                         const te::da::DataSourceInfoPtr& dsInfo)
+te::map::AbstractLayerPtr te::vp::Aggregation(const te::map::AbstractLayerPtr& inputLayer,
+                                              const std::vector<te::dt::Property*>& groupingProperties,
+                                              const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                                              const std::string& outputLayerName,
+                                              const te::da::DataSourceInfoPtr& dsInfo)
 {
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(inputLayer.get());
-
+  //o retorno da função, é um dataSetType "preparado" com as propriedades que serão utilizadas para o resultado da operação
+  
   std::auto_ptr<te::da::DataSetType> outputDataSetType(GetDataSetType(outputLayerName, groupingProperties, statisticalSummary));
+  te::gm::GeometryProperty* p = static_cast<te::gm::GeometryProperty*>(outputDataSetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+  p->setSRID(inputLayer->getSRID());
+  
   std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
 
-  if(dsLayer != 0)
-  {
-    te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-    const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
+  //Faço um dynamic cast para um dataSetLayer para ter acesso ao seu dataSource
+  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(inputLayer.get());
+  te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+  
+  //Por meio do dataSource tenho acesso aos seus capabilities
+  const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
 
-    if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
-    {
-      AggregationQuery(dsLayer, groupingProperties, statisticalSummary, outputDataSet.get());
-    }
-    else
-    {
-      AggregationMemory(inputLayer, groupingProperties, statisticalSummary, outputDataSet.get());
-    }
+  //Lógica para execução da operação, em memória ou via query.
+  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
+  {
+    AggregationQuery(dsLayer, groupingProperties, statisticalSummary, outputDataSet.get());
   }
   else
   {
     AggregationMemory(inputLayer, groupingProperties, statisticalSummary, outputDataSet.get());
   }
 
+  //Função de armazenamento do resultado da operação
   Persistence(outputDataSetType.get(), outputDataSet.get(), dsInfo);
- }
+  
+  te::da::DataSourcePtr dataSourceManager = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
+  
+  //Conversão de um DataSet para um Layer
+  te::qt::widgets::DataSet2Layer converter(dataSourceManager->getId());
+  te::da::DataSetTypePtr dt(dataSourceManager->getDataSetType(outputDataSetType->getName()).release());
+  te::map::DataSetLayerPtr newLayer = converter(dt);
+
+  return newLayer;
+}
 
 te::da::DataSetType* te::vp::GetDataSetType(const std::string& outputLayerName, 
                                             const std::vector<te::dt::Property*>& properties, 
