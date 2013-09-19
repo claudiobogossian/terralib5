@@ -30,7 +30,8 @@ endif()
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/GDALConnectorDialog.h
+  ${INCLDIR}/GDALConnectorDialog.h
+  ${INCLDIR}/Plugin.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/gdal" MOC)
 
@@ -46,6 +47,7 @@ list (APPEND
   terralib_common
   terralib_dataaccess
   terralib_plugin
+  terralib_qt_af
   terralib_qt_widgets
 )
 
