@@ -26,6 +26,7 @@
 // TerraView
 #include "AboutDialog.h"
 #include "TerraView.h"
+#include "TerraViewConfig.h"
 
 // TerraLib
 #include <terralib/qt/af/ApplicationController.h>
@@ -36,6 +37,7 @@
 
 // Qt
 #include <QtGui/QAction>
+#include <QtGui/QApplication>
 #include <QtGui/QMenu>
 
 TerraView::TerraView(QWidget* parent)
@@ -55,6 +57,13 @@ void TerraView::init()
 void TerraView::init(const std::string& configFile)
 {
   te::qt::af::BaseApplication::init(configFile);
+
+  //set application icon
+  std::string tvIcon = TVIEW_LOGO_ICON;
+  QPixmap pix(tvIcon.c_str());
+  QIcon icon(pix);
+
+  this->setWindowIcon(icon);
 }
 
 void TerraView::makeDialog()

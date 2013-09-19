@@ -29,6 +29,9 @@
 //! Image to be showed on splash screen
 #define TVIEW_SPLASH_SCREEN_PIXMAP "${TVIEW_SPLASH_SCREEN_PIXMAP}"
 
+//! Image to be showed as tv icon
+#define TVIEW_LOGO_ICON "${TVIEW_ICO}"
+
 //! Image to be showed as tv logo
 #define TVIEW_LOGO_PIXMAP "${TVIEW_LOGO}"
 
