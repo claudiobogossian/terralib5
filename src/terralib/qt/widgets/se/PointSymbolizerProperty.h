@@ -37,7 +37,6 @@
 
 // Qt
 #include <QtGui/QWidget>
-#include "../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
 
 namespace te
 {
@@ -52,7 +51,7 @@ namespace te
   {
     namespace widgets
     {
-      class GraphicPropertyItem;
+      class GraphicProperty;
 
       /*!
         \class PointSymbolizerProperty
@@ -115,9 +114,7 @@ namespace te
 
         protected:
 
-          QtTreePropertyBrowser*    m_propertyBrowser;
-
-          te::qt::widgets::GraphicPropertyItem* m_generalProp;
+          te::qt::widgets::GraphicProperty* m_graphProp;
 
           bool m_setLocalSymbol;
 

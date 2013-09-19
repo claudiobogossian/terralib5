@@ -23,12 +23,15 @@
   \brief A widget used to define the general properties of a se object.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICPROPERTYITEM_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICPROPERTYITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICPROPERTY_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICPROPERTY_H
 
 // TerraLib
 #include "../Config.h"
-#include "AbstractPropertyItem.h"
+
+
+// Qt
+#include <QtGui/QWidget>
 
 namespace te
 {
@@ -42,14 +45,19 @@ namespace te
   {
     namespace widgets
     {
+      class GraphicPropertyItem;
+      class WellKnownMarkPropertyItem;
+      class GlyphMarkPropertyItem;
+      class LocalImagePropertyItem;
+
       /*!
-        \class GraphicPropertyItem
+        \class GraphicProperty
 
         \brief A widget used to define the general properties of a se object.
 
       */
 
-      class TEQTWIDGETSEXPORT GraphicPropertyItem : public te::qt::widgets::AbstractPropertyItem
+      class TEQTWIDGETSEXPORT GraphicProperty : public QWidget
       {
         Q_OBJECT
 
@@ -60,10 +68,10 @@ namespace te
           //@{
 
           /*! \brief Constructor */
-          GraphicPropertyItem(QtTreePropertyBrowser* pb, QColor c = QColor());
+          GraphicProperty(QWidget* parent);
 
           /*! \brief Destructor. */
-          ~GraphicPropertyItem();
+          ~GraphicProperty();
 
           //@}
 
@@ -80,16 +88,15 @@ namespace te
 
           //@}
 
-        private:
-
-          /*! \brief Updates the widget form based on internal graphic element. */
-          void updateUi();
-
         public slots:
 
-          virtual void valueChanged(QtProperty* p, int value);
-          virtual void valueChanged(QtProperty* p, double value);
-          virtual void valueChanged(QtProperty* p, const QPointF &value);
+          void onGraphicPropertyChanged();
+
+          void onWellKnownMarkChanged();
+
+          void onGlyphMarkChanged();
+
+          void onLocalImageChanged();
 
         signals:
 
@@ -98,11 +105,10 @@ namespace te
 
         protected:
 
-          QtProperty* m_sizeProperty;
-          QtProperty* m_angleProperty;
-          QtProperty* m_opacityProperty;
-          QtProperty* m_displacementProperty;
-          QtProperty* m_anchorProperty;
+          te::qt::widgets::GraphicPropertyItem* m_graphp;
+          te::qt::widgets::WellKnownMarkPropertyItem* m_mp;
+          te::qt::widgets::GlyphMarkPropertyItem* m_gp;
+          te::qt::widgets::LocalImagePropertyItem* m_li;
 
           bool m_setLocalGraphic;
 
@@ -112,4 +118,4 @@ namespace te
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICPROPERTYITEM_H
+#endif //__TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICPROPERTY_H

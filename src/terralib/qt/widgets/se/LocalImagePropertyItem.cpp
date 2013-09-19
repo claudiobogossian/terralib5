@@ -59,7 +59,7 @@ te::qt::widgets::LocalImagePropertyItem::LocalImagePropertyItem(QtTreePropertyBr
   connect(te::qt::widgets::AbstractPropertyManager::getInstance().m_dlgFactory, SIGNAL(internalDlg(QWidget *, QtProperty *)), this, SLOT(setDlg(QWidget *, QtProperty *)));
   localImgProperty->addSubProperty(m_imgProperty);
 
-  addProperty(localImgProperty, tr("Local Image"), QColor(175, 175, 255));
+  addProperty(localImgProperty, tr("Local Image"), QColor(255, 190, 160));
 }
 
 te::qt::widgets::LocalImagePropertyItem::~LocalImagePropertyItem()
