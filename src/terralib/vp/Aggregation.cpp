@@ -68,7 +68,11 @@ te::map::AbstractLayerPtr te::vp::Aggregation(const te::map::AbstractLayerPtr& i
                                               const te::da::DataSourceInfoPtr& dsInfo)
 {
   //o retorno da função, é um dataSetType "preparado" com as propriedades que serão utilizadas para o resultado da operação
+  
   std::auto_ptr<te::da::DataSetType> outputDataSetType(GetDataSetType(outputLayerName, groupingProperties, statisticalSummary));
+  te::gm::GeometryProperty* p = static_cast<te::gm::GeometryProperty*>(outputDataSetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+  p->setSRID(inputLayer->getSRID());
+  
   std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
 
   //Faço um dynamic cast para um dataSetLayer para ter acesso ao seu dataSource
