@@ -153,16 +153,16 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     return;
   }
 
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, TR_VP("Aggregation"), TR_VP("Set a repository for the new Layer."));
+
+    return;
+  }
+
   try
   {
-    size_t srid = 0;
-    std::map<std::string, std::string> op;
-
-    if(m_outputDatasource.get())
-      //Chamada da função que iniciara a operação de intersecção.
-      m_layer = te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
-    else if(!m_outputArchive.empty()){}
-      m_layer = te::vp::Intersection(newLayerName, layers, m_outputArchive, srid, op);
+    m_layer = te::vp::Intersection(layers, newLayerName, m_outputDatasource);
   }
   catch(const std::exception& e)
   {
