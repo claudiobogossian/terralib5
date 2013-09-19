@@ -379,7 +379,9 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::advancedConnectionOptionsChe
 
 void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinished()
 {
-  if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
+  m_ui->m_databaseComboBox->clear();
+
+  if(m_ui->m_userNameLineEdit->text() != "" || m_ui->m_passwordLineEdit->text() != "")
   {
     try{
       std::map<std::string, std::string> dsInfo;
