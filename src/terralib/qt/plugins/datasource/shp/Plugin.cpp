@@ -49,7 +49,6 @@
 
 // Qt 
 #include <QAction>
-#include <QApplication>
 #include <QMenu>
 #include <QFileDialog>
 

@@ -1672,6 +1672,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectMenu->addSeparator();
   m_projectMenu->addAction(m_projectProperties);
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
+  m_projectAddLayerMenu->addSeparator();
   m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
 
   m_layerMenu->setObjectName("Layer");
