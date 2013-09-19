@@ -367,6 +367,7 @@ set (
   ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
   ${SRCDIR}/widgets/se/GlyphMarkPropertyItem.h
   ${SRCDIR}/widgets/se/GlyphMarkWidget.h
+  ${SRCDIR}/widgets/se/GraphicProperty.h
   ${SRCDIR}/widgets/se/GraphicPropertyItem.h
   ${SRCDIR}/widgets/se/GraphicFillWidget.h
   ${SRCDIR}/widgets/se/GraphicSelectorWidget.h

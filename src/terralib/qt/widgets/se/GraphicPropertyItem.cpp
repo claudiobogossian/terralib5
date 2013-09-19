@@ -23,17 +23,12 @@
   \brief A widget used to define the general properties of a se object.
 */
 
-#include "GraphicPropertyItem.h"
-#include "AbstractPropertyManager.h"
-
-#include "GlyphMarkPropertyItem.h"
-#include "LocalImagePropertyItem.h"
-#include "WellKnownMarkPropertyItem.h"
-
+// TerraLib
 #include "../../../maptools/Utils.h"
 #include "../../../se.h"
 #include "../../../xlink/SimpleLink.h"
-
+#include "GraphicPropertyItem.h"
+#include "AbstractPropertyManager.h"
 
 // Qt
 #include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
@@ -87,17 +82,6 @@ te::qt::widgets::GraphicPropertyItem::GraphicPropertyItem(QtTreePropertyBrowser*
   //generalProperty->addSubProperty(m_anchorProperty);
 
   addProperty(generalProperty, tr("Graphic"), QColor(210, 210, 210));
-
-  m_mp = new te::qt::widgets::WellKnownMarkPropertyItem(pb);
-  m_gp = new te::qt::widgets::GlyphMarkPropertyItem(pb);
-  m_li = new te::qt::widgets::LocalImagePropertyItem(pb);
-
-  connect(m_mp, SIGNAL(markChanged()), this, SLOT(onWellKnownMarkChanged()));
-  connect(m_gp, SIGNAL(markChanged()), this, SLOT(onGlyphMarkChanged()));
-  connect(m_li, SIGNAL(externalGraphicChanged()), this, SLOT(onLocalImageChanged()));
-
-  // Setups initial graphic
-  m_graphic->add(m_mp->getMark());
 }
 
 te::qt::widgets::GraphicPropertyItem::~GraphicPropertyItem()
@@ -113,44 +97,6 @@ bool te::qt::widgets::GraphicPropertyItem::setGraphic(const te::se::Graphic* gra
   m_setLocalGraphic = true;
 
   m_graphic = graphic->clone();
-
-  // Verifying if this widget can deal with the given graphic...
-  const std::vector<te::se::Mark*> marks = m_graphic->getMarks();
-  if(marks.empty() == false)
-  {
-    te::se::Mark* mark = marks[0];
-    const std::string* name = mark->getWellKnownName();
-    if(name != 0)
-    {
-      std::size_t found = name->find("ttf://");
-      if(found != std::string::npos)
-        m_gp->setMark(marks[0]);
-
-      found = name->find("://");
-      if(found == std::string::npos)
-        m_mp->setMark(marks[0]);
-    }
-  }
-
-  const std::vector<te::se::ExternalGraphic*> extGraphics = m_graphic->getExternalGraphics();
-  if(extGraphics.empty() == false)
-  {
-    te::se::ExternalGraphic* g = extGraphics[0];
-    const te::xl::SimpleLink* link = g->getOnlineResource();
-    if(link == 0)
-      return false;
-  
-    const std::string href = link->getHref();
-    if(href.empty())
-      return false;
-
-    QImage img;
-    if(!img.load(href.c_str()))
-      return false;
-
-    // I know it!
-    m_li->setExternalGraphic(g);
-  }
 
   updateUi();
 
@@ -266,43 +212,3 @@ void te::qt::widgets::GraphicPropertyItem::updateUi()
   //}
 }
 
-void te::qt::widgets::GraphicPropertyItem::onWellKnownMarkChanged()
-{
-  te::se::Mark* mark = m_mp->getMark();
-  if(!mark)
-    return;
-
-  m_graphic->clear();
-  m_graphic->add(mark);
-
-
-  if(!m_setLocalGraphic)
-    emit graphicChanged();
-}
-
-void te::qt::widgets::GraphicPropertyItem::onGlyphMarkChanged()
-{
-  te::se::Mark* mark = m_gp->getMark();
-  if(!mark)
-    return;
-
-  m_graphic->clear();
-  m_graphic->add(mark);
- 
-
-  if(!m_setLocalGraphic)
-    emit graphicChanged();
-}
-
-void te::qt::widgets::GraphicPropertyItem::onLocalImageChanged()
-{
-  te::se::ExternalGraphic* eg = m_li->getExternalGraphic();
-  if(!eg)
-    return;
-
-  m_graphic->clear();
-  m_graphic->add(eg);
-
-  if(!m_setLocalGraphic)
-    emit graphicChanged();
-}
