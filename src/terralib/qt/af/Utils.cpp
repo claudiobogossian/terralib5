@@ -538,7 +538,7 @@ QString te::qt::af::GetStyleSheetFromColors(QColor primaryColor, QColor secondar
 QString te::qt::af::GetStyleSheetFromSettings()
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-  bool isChecked = sett.value("table/tableAlternateColors").toBool();
+  //bool isChecked = sett.value("table/tableAlternateColors").toBool();
   QColor pColor;
   pColor.setNamedColor(sett.value("table/primaryColor").toString());
   QColor sColor;

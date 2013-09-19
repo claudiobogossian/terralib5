@@ -95,6 +95,13 @@ namespace te
         std::vector<te::dt::Property*> getSelectedProperties();
 
         /*!
+          \brief Get the generated layer.
+
+          \return the generated layer.
+        */
+        te::map::AbstractLayerPtr getLayer();
+
+        /*!
           \brief Set Statistical Summary Type for combobox 'm_selectAllComboBox' and 'm_rejectAllComboBox' based on a enum.
         */
         void setStatisticalSummary();
@@ -140,11 +147,12 @@ namespace te
         typedef std::map<te::stat::StatisticalSummary, std::string> StaticalSummaryMap;
 
         std::auto_ptr<Ui::AggregationDialogForm> m_ui;
-        te::da::DataSourceInfoPtr m_outputDatasource;                                     //!< DataSource information.
-        std::list<te::map::AbstractLayerPtr> m_layers;                                    //!< List of layers.
-        te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for aggregation
-        std::vector<te::dt::Property*> m_properties;                                      //!< Properties related to the selected Layer
-        StaticalSummaryMap m_StatisticalSummaryMap;      //!< Maping of Statistical Summary enum
+        te::da::DataSourceInfoPtr m_outputDatasource;                 //!< DataSource information.
+        std::list<te::map::AbstractLayerPtr> m_layers;                //!< List of layers.
+        te::map::AbstractLayerPtr m_selectedLayer;                    //!< Layer used for aggregation
+        std::vector<te::dt::Property*> m_properties;                  //!< Properties related to the selected Layer
+        StaticalSummaryMap m_StatisticalSummaryMap;                   //!< Maping of Statistical Summary enum
+        te::map::AbstractLayerPtr m_layer;                            //!< Generated Layer.
     };
   }   // end namespace vp
 }     // end namespace te

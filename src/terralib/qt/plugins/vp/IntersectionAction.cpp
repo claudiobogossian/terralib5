@@ -32,6 +32,7 @@
 
 // Qt
 #include <QtCore/QObject>
+#include <QtGui/QMessageBox>
 
 // STL
 #include <cassert>
@@ -67,7 +68,9 @@ void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
   if(!layer)
     return;
 
-  if(prj)
+  int reply = QMessageBox::question(0, tr("Intersection Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
+
+  if(prj && reply == QMessageBox::Yes)
   {
     prj->add(layer);
 

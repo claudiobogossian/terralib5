@@ -26,11 +26,13 @@
 // Terralib
 #include "../../../vp/qt/BufferDialog.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/events/LayerEvents.h"
 #include "../../af/Project.h"
 #include "BufferAction.h"
 
 // Qt
 #include <QtCore/QObject>
+#include <QtGui/QMessageBox>
 
 // STL
 #include <memory>
@@ -57,5 +59,22 @@ void te::qt::plugins::vp::BufferAction::onActionActivated(bool checked)
     dlg.setLayers(prj->getLayers());
   }
 
-  dlg.exec();
+  if(dlg.exec() != QDialog::Accepted)
+    return;
+
+  te::map::AbstractLayerPtr layer = dlg.getLayer();
+
+  if(!layer)
+    return;
+
+  int reply = QMessageBox::question(0, tr("Buffer Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
+
+  if(prj && reply == QMessageBox::Yes)
+  {
+    prj->add(layer);
+
+    te::qt::af::evt::LayerAdded evt(layer.get());
+
+    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  }
 }

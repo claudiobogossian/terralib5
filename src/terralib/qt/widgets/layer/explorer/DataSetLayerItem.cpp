@@ -28,6 +28,7 @@
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../../../se/Style.h"
 #include "../../Exception.h"
+#include "ChartItem.h"
 #include "DataSetLayerItem.h"
 #include "GroupingTreeItem.h"
 #include "LegendItem.h"
@@ -72,7 +73,7 @@ QMenu* te::qt::widgets::DataSetLayerItem::getMenu(QWidget* /*parent*/) const
 
 bool te::qt::widgets::DataSetLayerItem::canFetchMore() const
 {
-  return (((m_layer->getStyle() != 0) && (!m_layer->getStyle()->getRules().empty())) || m_layer->getGrouping() != 0) && children().size() < 2;
+  return (((m_layer->getStyle() != 0) && (!m_layer->getStyle()->getRules().empty())) || m_layer->getGrouping() != 0 || m_layer->getChart() != 0);
 }
 
 Qt::ItemFlags te::qt::widgets::DataSetLayerItem::flags() const
@@ -90,13 +91,16 @@ void te::qt::widgets::DataSetLayerItem::fetchMore()
       new LegendItem(rules[i], this);
   }
 
-  if(m_layer->getGrouping() && children().size() == 1)
+  if(m_layer->getGrouping() && !hasGroupingItem())
     new GroupingTreeItem(m_layer->getGrouping(), this);
+
+  if(m_layer->getChart() && !hasChartItem())
+    new ChartItem(m_layer->getChart(), this);
 }
 
 bool te::qt::widgets::DataSetLayerItem::hasChildren() const
 {
-  return ((m_layer->getStyle() != 0) && (!m_layer->getStyle()->getRules().empty())) || m_layer->getGrouping() != 0;
+  return ((m_layer->getStyle() != 0) && (!m_layer->getStyle()->getRules().empty())) || m_layer->getGrouping() != 0 || m_layer->getChart() != 0;
 }
 
 bool te::qt::widgets::DataSetLayerItem::setData(int column, const QVariant& value, int role)
@@ -104,6 +108,7 @@ bool te::qt::widgets::DataSetLayerItem::setData(int column, const QVariant& valu
   if(role == Qt::CheckStateRole)
   {
     Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt());
+
     if(checkState == Qt::Checked)
       m_layer->setVisibility(te::map::VISIBLE);
     else if(checkState == Qt::Unchecked)
@@ -120,4 +125,18 @@ bool te::qt::widgets::DataSetLayerItem::setData(int column, const QVariant& valu
 te::map::AbstractLayerPtr te::qt::widgets::DataSetLayerItem::getLayer() const
 {
   return m_layer;
+}
+
+bool te::qt::widgets::DataSetLayerItem::hasGroupingItem() const
+{
+  GroupingTreeItem* groupingItem = findChild<GroupingTreeItem*>();
+
+  return groupingItem != 0;
+}
+
+bool te::qt::widgets::DataSetLayerItem::hasChartItem() const
+{
+  ChartItem* chartItem = findChild<ChartItem*>();
+
+  return chartItem != 0;
 }

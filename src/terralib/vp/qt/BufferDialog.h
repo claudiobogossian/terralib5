@@ -81,6 +81,8 @@ namespace te
 
         int getBoundariesRule();
 
+        te::map::AbstractLayerPtr getLayer();
+
       private:
 
       protected slots:

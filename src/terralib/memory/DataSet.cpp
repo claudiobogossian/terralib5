@@ -140,7 +140,7 @@ void te::mem::DataSet::copy(te::da::DataSet& src, const std::vector<std::size_t>
     ++i;
   }
 
-  m_i = -1;
+  src.moveBeforeFirst();
 
   if(!unlimited & (i < limit))
     throw Exception(TR_MEMORY("The source dataset has few items than requested copy limit!"));

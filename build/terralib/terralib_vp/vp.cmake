@@ -59,9 +59,6 @@ appPrefix ("${SRCDIR}" "${_DIRS}" QT_INC_DIRS)
 # Files in build tree
 appPrefix ("qt" "${_DIRS}" QT_INC_INST_DIRS)
 
-# Files in build tree
-appPrefix ("core" "${_DIRS}" QT_INC_INST_DIRS)
-
 # Get files by structured by folders.
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 

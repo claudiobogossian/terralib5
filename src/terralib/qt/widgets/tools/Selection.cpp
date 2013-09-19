@@ -157,7 +157,10 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
 
   // Clear previous selection?
   if(!m_keepPreviousSelection)
+  {
     layer->clearSelected();
+    emit layerSelectionChanged(layer);
+  }
 
   if(!reprojectedEnvelope.intersects(layer->getExtent()))
     return;

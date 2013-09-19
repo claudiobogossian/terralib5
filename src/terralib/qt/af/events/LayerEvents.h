@@ -51,15 +51,15 @@ namespace te
           /*!
             \brief Constructor.
 
-            \param newLayer Pointer to the layer created.
+            \param newLayer Layer added.
           */
-          LayerAdded(te::map::AbstractLayer* newlayer) : 
+          LayerAdded(te::map::AbstractLayer* newlayer) :
             Event(LAYER_ADDED),
             m_layer(newlayer)
           {
           }
 
-          te::map::AbstractLayer* m_layer;  //!< Pointer to the new layer.
+          te::map::AbstractLayer* m_layer;  //!< Layer added.
         };
 
         /*!
@@ -83,6 +83,29 @@ namespace te
           }
 
           std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of pointers to the new layers.
+        };
+		
+        /*!
+          \struct LayerRemoved
+
+          \brief This event signals that a layer was removed.
+
+          \ingroup afevents
+         */
+        struct LayerRemoved : public Event
+        {
+          /*!
+            \brief Constructor.
+
+            \param layer Layer removed.
+          */
+          LayerRemoved(te::map::AbstractLayer* layer) :
+            Event(LAYER_REMOVED),
+            m_layer(layer)
+          {
+          }
+
+          te::map::AbstractLayer* m_layer;  //!< Layer removed.
         };
 
         /*!
