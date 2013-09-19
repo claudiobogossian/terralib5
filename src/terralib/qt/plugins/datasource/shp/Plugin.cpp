@@ -201,7 +201,7 @@ void te::qt::plugins::shp::Plugin::showWindow()
 
     ds->setId(id);
 
-    boost::filesystem::path mpath(it->toStdString());
+    boost::filesystem::path mpath(dsinfo["URI"]);
 
     std::string fileBaseName = mpath.stem().string();
 

@@ -1,6 +1,5 @@
 #include "SQLVisitor.h"
 
-#include "../common/BoostUtils.h"
 #include "../geometry/Envelope.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Having.h"
@@ -17,7 +16,7 @@ te::da::SQLVisitor(dialect, sql),
 
 void te::ogr::SQLVisitor::visit(const te::da::DataSetName& visited)
 {
-  m_sql += "\'" + te::common::ConvertLatin1UTFString(visited.getName()) + "\'";
+  m_sql += "\'" + visited.getName() + "\'";
 }
 
 void te::ogr::SQLVisitor::visit(const te::da::LiteralEnvelope& visited)
