@@ -24,7 +24,6 @@
 #include "Utils.h"
 
 #include "../common/Translator.h"
-#include "../common/BoostUtils.h"
 #include "../dataaccess/dataset/ObjectId.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../dataaccess/query/DataSetName.h"
@@ -98,7 +97,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
 {
   OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
-  std::string sql = "SELECT FID, * FROM \'" + te::common::ConvertLatin1UTFString(name) + "\'";
+  std::string sql = "SELECT FID, * FROM \'" + name + "\'";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -116,7 +115,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
 {
   OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
-  std::string sql = "SELECT FID, * FROM \'" + te::common::ConvertLatin1UTFString(name) + "\'";
+  std::string sql = "SELECT FID, * FROM \'" + name + "\'";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -136,7 +135,7 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
 {
   OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
-  std::string sql = "SELECT FID, * FROM \'" + te::common::ConvertLatin1UTFString(name) + "\'";
+  std::string sql = "SELECT FID, * FROM \'" + name + "\'";
   OGRLayer* layer = ds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
@@ -256,7 +255,7 @@ std::vector<std::string> te::ogr::Transactor::getDataSetNames()
   int count = src->GetLayerCount();
 
   for(int i=0; i<count; i++)
-    names.push_back(te::common::ConvertLatin1UTFString(src->GetLayer(i)->GetName(), false));
+    names.push_back(src->GetLayer(i)->GetName());
 
   return names;
 }
@@ -269,7 +268,7 @@ std::size_t te::ogr::Transactor::getNumberOfDataSets()
 std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std::string& name)
 {
   std::string sql("SELECT FID, * FROM \'");
-  sql += te::common::ConvertLatin1UTFString(name) + "\'";
+  sql += name + "\'";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -302,7 +301,7 @@ boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std
   boost::ptr_vector<te::dt::Property> ps;
 
   std::string sql("SELECT FID, * FROM \'");
-  sql += te::common::ConvertLatin1UTFString(datasetName) + "\'";
+  sql += datasetName + "\'";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -325,7 +324,7 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
 {
   int idx = -1;
   std::string sql("SELECT FID, * FROM \'");
-  sql += te::common::ConvertLatin1UTFString(datasetName) + "\'";
+  sql += datasetName + "\'";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -341,7 +340,7 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
 {
   std::auto_ptr<te::dt::Property> res;
   std::string sql ("SELECT FID, * FROM \'");
-  sql += te::common::ConvertLatin1UTFString(datasetName) + "\'";
+  sql += datasetName + "\'";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -363,7 +362,7 @@ std::vector<std::string> te::ogr::Transactor::getPropertyNames(const std::string
 {
   std::vector<std::string> res;
   std::string sql ("SELECT FID, * FROM \'");
-  sql += te::common::ConvertLatin1UTFString(datasetName) + "\'";
+  sql += datasetName + "\'";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -383,7 +382,7 @@ std::vector<std::string> te::ogr::Transactor::getPropertyNames(const std::string
 std::size_t te::ogr::Transactor::getNumberOfProperties(const std::string& datasetName)
 {
   std::string sql("SELECT FID, * FROM \'");
-  sql += te::common::ConvertLatin1UTFString(datasetName) + "\'";
+  sql += datasetName + "\'";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -401,7 +400,7 @@ std::size_t te::ogr::Transactor::getNumberOfProperties(const std::string& datase
 bool te::ogr::Transactor::propertyExists(const std::string& datasetName, const std::string& name)
 {
   std::string sql("SELECT FID, * FROM \'");
-  sql += te::common::ConvertLatin1UTFString(datasetName) + "\'";
+  sql += datasetName + "\'";
   bool res = false;
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
@@ -464,7 +463,7 @@ std::auto_ptr<te::da::PrimaryKey> te::ogr::Transactor::getPrimaryKey(const std::
 {
   std::auto_ptr<te::da::PrimaryKey> res;
   std::string sql("SELECT FID, * FROM \'");
-  sql += te::common::ConvertLatin1UTFString(datasetName) + "\'";
+  sql += datasetName + "\'";
 
   OGRLayer* layer = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
@@ -624,7 +623,7 @@ std::auto_ptr<te::gm::Envelope> te::ogr::Transactor::getExtent(const std::string
   std::auto_ptr<te::gm::Envelope> res;
   std::string sql("SELECT ");
   sql += propertyName + " FROM \'";
-  sql += te::common::ConvertLatin1UTFString(datasetName) + "\'";
+  sql += datasetName + "\'";
 
   OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
 
