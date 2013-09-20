@@ -120,46 +120,32 @@ namespace te
           void changeText();
 
         private:
-          bool m_undo;
           QColor m_cor;
-          QFont* m_font;
-          int m_pointSize;
-          double m_auxPointSize;
-          double m_auxHeight;
-          double m_auxWidth;
+          QPointF m_point; // text point (bottom left) em milimetros do papel
+          double m_angle; // degree
           QString m_family;
           int m_stretch; // default = 100 (normalmente usado entre 50 e 200)
-          double m_auxStretch;
           int m_align; // Qt::AlignLeft, Qt::AlignHCenter, Qt::AlignRight
           QFont::Style m_style; // QFont::StyleNormal, QFont::StyleItalic, QFont::StyleOblique
-          QFont::Weight m_weight; // QFont::Light, QFont::Normal, QFont::DemiBold, QFont::Bold, QFont::Black
-          QFont::Capitalization m_capitalization; // default = QFont::MixedCase, QFont::AllUppercase,QFont::AllLowercase,QFont::SmallCaps, QFont::Capitalize
           bool m_overline;
           bool m_strikeOut;
           bool m_underline;
           double m_letterSpacing; // A value of 100 will keep the spacing unchanged; a value of 200 will enlarge the spacing after a character by the width of the character itself
           double m_wordSpacing; // A positive value increases the word spacing by a corresponding amount of pixels, while a negative value decreases the inter-word spacing accordingly.
-          double m_angle; // degree
+          QFont::Capitalization m_capitalization; // default = QFont::MixedCase, QFont::AllUppercase,QFont::AllLowercase,QFont::SmallCaps, QFont::Capitalize
+          QFont::Weight m_weight; // QFont::Light, QFont::Normal, QFont::DemiBold, QFont::Bold, QFont::Black
+          QString m_text;
+
+          bool m_undo;
+          QFont* m_font;
+          int m_pointSize;
+          double m_auxPointSize;
+          double m_auxHeight;
+          double m_auxWidth;
+          double m_auxStretch;
           double m_auxAngle;
           double m_iniAngle;
           double m_refAngle;
-          QPointF m_point; // text point (bottom left) em milimetros do papel
-          QString m_text;
-          //QRectF m_textRect; // em milimetros do papel
-          //QRectF m_auxTextRect; // em pixels (para edicao)
-          //QRectF m_copyAuxTextRect; // em pixels (para edicao)
-          //QRect m_recSel1;
-          //QRect m_recSel2;
-          //QRect m_recSel3;
-          //QRect m_recSel4;
-          //QRect m_recSel5;
-          //QRect m_recSel6;
-          //QRect m_recSel7;
-          //QRect m_recSel8;
-          //QRect m_recSel10;
-          //int m_selected;
-          //QPoint m_pressPoint;
-          //bool m_dragging;
           QPixmap m_pixmap;
           QMenu *m_menu;
           QAction *m_setTextAction;

@@ -28,26 +28,11 @@
 #include "DataFrame.h"
 #include "TextFrame.h"
 #include "EditorInfo.h"
-////#include <math.h>
-//
-//// TerraLib
-//#include <terralib/geometry.h>
-//#include <terralib/srs.h>
-//#include <terralib/qt/widgets.h>
-//#include <terralib/postgis.h>
-//#include <terralib/dataaccess.h>
-//#include <terralib/dataaccess/dataset/DataSetType.h>
-//
-//// STL
-////#include <memory>
-//
+
 // Qt
-#include <QtGui/QAction>
-//#include <QtGui/QMenu>
 
 #include <QtGui/QPainter>
 #include <QtGui/QColor>
-#include <QtCore/QRect>
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 #include <QtGui/QInputDialog>

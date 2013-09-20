@@ -31,8 +31,6 @@
 #include "GraphicScaleFrame.h"
 
 #include <terralib/geometry.h>
-//#include <terralib/postgis.h>
-//#include <terralib/dataaccess.h>
 #include <terralib/srs/Config.h>
 #include <terralib/srs/Converter.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
@@ -55,12 +53,12 @@
 
 te::qt::widgets::DataFrame::DataFrame(const QRectF& frameRect, te::qt::widgets::LayoutEditor* me, Qt::WindowFlags f) :
   te::qt::widgets::Frame(me, f),
-  m_dataUnitToMilimeter(-1),
+  m_mapDisplay(0),
   m_scale(-1),
-  m_UTMGridFrame(0),
+  m_dataUnitToMilimeter(-1),
   m_geoGridFrame(0),
-  m_graphicScaleFrame(0),
-  m_mapDisplay(0)
+  m_UTMGridFrame(0),
+  m_graphicScaleFrame(0)
 {
   setWindowTitle("DataFrame");
   setMouseTracking(true);

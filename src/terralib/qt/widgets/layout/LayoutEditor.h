@@ -112,6 +112,18 @@ namespace te
 
         private:
           unsigned int m_idCount;
+          QSize m_paperSize;
+          int m_horizontalRulerWidth;
+          int m_verticalRulerWidth;
+          te::qt::widgets::LayoutObject* m_layoutObjectSelected;
+          bool m_dataPan; // flag for datab pan execution
+          bool m_showRulerGrid;
+          int m_rulerGridLines; // grid options: 1 = all, 2 = only medium and large, 3 = only large
+          int m_undoBufferSize;
+          te::qt::widgets::EditorInfo* m_editorState;
+          bool m_resize; // true indica resize operation
+          bool m_move; // true indica move operation
+
           // IMPORTANTE IMPORTANTE IMPORTANTE IMPORTANTE IMPORTANTE ////////////////////
           QWidget* m_auxWidget; // support to view port area. Area interna do LayoutEditor que exclui as reguas. Ele é necessario
                                 // para que os widgets de frame nao escondam as reguas.
@@ -126,28 +138,17 @@ namespace te
           QPointF m_difTopLeft; // offset used to resize operation
           QPointF m_difBottomRight; // offset used to resize operation
           bool m_paperViewReseted;
-          te::qt::widgets::LayoutObject* m_layoutObjectSelected;
-          QSize m_paperSize;
           QPixmap m_totalPixmap;
           QPixmap m_viewPixmap;
-          int m_horizontalRulerWidth;
-          int m_verticalRulerWidth;
           std::vector<te::qt::widgets::LayoutObject*> m_layoutObjects;
           std::vector<te::qt::widgets::LayoutObject*> m_undoLayoutObjects;
-          te::qt::widgets::EditorInfo* m_editorState;
           bool m_putUndo;
-          int m_undoBufferSize;
           QPointF m_pressPoint;
           QPointF m_startPan; // for pan operation (viewport coordenate) - paper pan and data pan
-          bool m_dataPan; // flag for datab pan execution
-          bool m_showRulerGrid;
-          int m_rulerGridLines; // grid options: 1 = all, 2 = only medium and large, 3 = only large
           int m_rulerSmall;
           int m_rulerMedium;
           int m_rulerLarge;
           QPixmap m_rulerGridPixmap;
-          bool m_resize; // true indica resize operation
-          bool m_move; // true indica move operation
       };
     } // end namespace widgets
   }   // end namespace qt

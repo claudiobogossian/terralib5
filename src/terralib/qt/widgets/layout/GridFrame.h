@@ -96,18 +96,19 @@ namespace te
 
         protected:
           te::qt::widgets::DataFrame* m_dataFrame;
-          QPixmap m_pixmap;
-          QFont m_font;
+          unsigned int m_hSpace; // espaco horizontal (mm) em torno do data frame
+          unsigned int m_vSpace; // espaco vertical (mm) em torno do data frame
           unsigned int m_verticalLabelSpace; // em mm
           unsigned int m_horizontalLabelSpace; // em mm
           int m_verticalLabelAngle; // em graus
           int m_horizontalLabelAngle; // em graus
+
+          QPixmap m_pixmap;
+          QFont m_font;
           double m_initialCoordX;
           double m_deltaX;
           double m_initialCoordY;
           double m_deltaY;
-          unsigned int m_hSpace; // espaco horizontal (mm) em torno do data frame
-          unsigned int m_vSpace; // espaco vertical (mm) em torno do data frame
       };
     } // end namespace widgets
   }   // end namespace qt

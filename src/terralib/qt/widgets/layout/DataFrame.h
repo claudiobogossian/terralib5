@@ -108,17 +108,17 @@ namespace te
 
         private:
           te::qt::widgets::MultiThreadMapDisplay* m_mapDisplay;
+          double m_scale;
+          double m_dataUnitToMilimeter; // conversion factor to milimeter
+          te::qt::widgets::GeographicGridFrame* m_geoGridFrame;
+          te::qt::widgets::UTMGridFrame* m_UTMGridFrame;
+          te::qt::widgets::GraphicScaleFrame* m_graphicScaleFrame;
+
           bool m_undo;
           QRectF m_dataRect;
           bool m_dataChanged;
-          double m_scale;
           te::map::AbstractLayerPtr m_data;
-          double m_dataUnitToMilimeter; // conversion factor to milimeter
 
-          te::qt::widgets::GeographicGridFrame* m_geoGridFrame;
-          te::qt::widgets::UTMGridFrame* m_UTMGridFrame;
-
-          te::qt::widgets::GraphicScaleFrame* m_graphicScaleFrame;
 
           //te::qt::widgets::NorthOrientationFrame* m_northFrame;
 

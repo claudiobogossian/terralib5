@@ -140,31 +140,32 @@ namespace te
 
 
       private:
-        bool m_undo;
         te::qt::widgets::DataFrame* m_dataFrame; // pointer to data frame
-        QPixmap m_pixmap; // widget pixmap
         int m_type; // 1 = line, 2 = steped, 3 = hollow bar, 4 = alternating bar
         QFont m_font; // font for label and unit
         int m_pointSize; // point size for label and unit
         QColor m_labelColor; // label and uinit color
-        std::vector<QString> m_labels; // numeric labels
-        QString m_subDivisionString; // subDivision string
-        std::vector<double> m_labelLengths; // length (mm)
-        double m_labelHeight; // label height
-        bool m_labelAbove; // true = label above the bar
         QColor m_barColor; // bar color
-        QRectF m_barRect; // bar rect (mm). If type = 1: use this width for tick size
-        double m_subTickSize; // subdivision tick size (mm). Used for only type = 1
-        bool m_tickCentralized; // true = centralized ticks, false = follow the label position. Used for only type = 1
         double m_step; // step
-        int m_precision; // label decimal precision
         int m_divisions; // number of divisions
         int m_subDivisions; // number of subdivisions. Used for first division
-        double m_subDivisionLabelLength; // subdivision label length
+        bool m_labelAbove; // true = label above the bar
+        double m_subTickSize; // subdivision tick size (mm). Used for only type = 1
+        bool m_tickCentralized; // true = centralized ticks, false = follow the label position. Used for only type = 1
         double m_space; // space (mm) for labels and unit
         QString m_unit;  // Meters, Kilometers, Miles, Leagues, Inches, Feet, Hand, Fingers, Nautic Miles, Nautic Fathom, Decimal Degrees, Yards, Fourlongs, Chains, Marathons, Unknow
         bool m_unitAbove; // true = unit above the bar
         bool m_offsetOrigin; // true = offset origin
+
+        bool m_undo;
+        QPixmap m_pixmap; // widget pixmap
+        std::vector<QString> m_labels; // numeric labels
+        QString m_subDivisionString; // subDivision string
+        std::vector<double> m_labelLengths; // length (mm)
+        double m_labelHeight; // label height
+        QRectF m_barRect; // bar rect (mm). If type = 1: use this width for tick size
+        int m_precision; // label decimal precision
+        double m_subDivisionLabelLength; // subdivision label length
         double m_toKm; // projection data unit to kilometer
         double m_kmToUnit; // convert km to Unit
         double m_stepmm; // step in milimeters

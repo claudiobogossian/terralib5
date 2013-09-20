@@ -65,6 +65,11 @@ namespace te
           QRectF getFrameRect();
 
         protected:
+          int m_selected; // ponto selecionado
+          bool m_dragging; // para edicao
+          bool m_showToolTip; // true = mostra tool tip para edição por mouse
+          bool m_new; // se true, indica ao undo que deve ser deletado (pois o frame foi criado por edicao durante a secao).
+
           QRectF m_frameRect; // tamanho do frame em mm
 
           // selection points em mm
@@ -79,14 +84,10 @@ namespace te
           QRect m_recSel9;
           QRect m_recSel10;
 
-          int m_selected; // ponto selecionado
 
           QRectF m_auxFrameRect; // para edicao
           QRectF m_copyAuxFrameRect; // para edicao
           QPoint m_pressPoint; // para edicao
-          bool m_dragging; // para edicao
-          bool m_showToolTip; // true = mostra tool tip para edição por mouse
-          bool m_new; // se true, indica ao undo que deve ser deletado (pois o frame foi criado por edicao durante a secao).
       };
     } // end namespace widgets
   }   // end namespace qt
