@@ -130,6 +130,6 @@ void te::vp::Persistence( te::da::DataSetType* dataSetType,
   pair.second = dataSet;
 
   te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
-  pair.second->moveFirst();
+  pair.second->moveBeforeFirst();
   te::da::Create(dataSource.get(), pair.first, pair.second, options);
 }
