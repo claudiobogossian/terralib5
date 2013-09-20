@@ -74,6 +74,7 @@ get_filename_component(TVIEW_OUT_DIR "${TVIEW_CONFIG_FILE}" PATH)
 
 set(TVIEW_TE_LOGO "${ROOT}/resources/images/png/terralib.png" CACHE STRING "Image to be used as TerraLib logo.")
 set(TVIEW_LOGO "${ROOT}/resources/images/png/terraview.png" CACHE STRING "Image to be used as TerraView logo.")
+set(TVIEW_ICO "${ROOT}/resources/images/png/terraview-globe.png" CACHE STRING "Image to be used as TerraView Icon.")
 set(TVIEW_LARGE_LOGO "${ROOT}/resources/images/png/terraview-textual.png" CACHE STRING "Image to be used as TerraView large logo.")
 set(TVIEW_SPLASH_SCREEN_PIXMAP "${ROOT}/resources/images/png/terraview-splashscreen.png" CACHE STRING "Image to be used as TerraView Splash Screen")
 

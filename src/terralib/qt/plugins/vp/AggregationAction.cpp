@@ -49,7 +49,8 @@ te::qt::plugins::vp::AggregationAction::~AggregationAction()
 
 void te::qt::plugins::vp::AggregationAction::onActionActivated(bool checked)
 {
-  te::vp::AggregationDialog dlg(0);
+  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  te::vp::AggregationDialog dlg(parent);
 
   // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
