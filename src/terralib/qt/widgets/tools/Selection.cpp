@@ -157,7 +157,10 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
 
   // Clear previous selection?
   if(!m_keepPreviousSelection)
+  {
     layer->clearSelected();
+    emit layerSelectionChanged(layer);
+  }
 
   if(!reprojectedEnvelope.intersects(layer->getExtent()))
     return;
@@ -169,7 +172,7 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
 
     te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
 
-    std::auto_ptr<te::da::DataSet> dataset(layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS).get());
+    std::auto_ptr<te::da::DataSet> dataset = layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS);
     assert(dataset.get());
 
     // Let's generate the oids

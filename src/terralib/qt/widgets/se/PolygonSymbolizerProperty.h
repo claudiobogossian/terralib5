@@ -34,7 +34,7 @@
 
 // Qt
 #include <QtGui/QWidget>
-#include "../../../../../third-party/qt/propertybrowser/qttreepropertybrowser.h"
+
 
 namespace te
 {
@@ -51,7 +51,7 @@ namespace te
     {
       class BasicFillPropertyItem;
       class BasicStrokePropertyItem;
-      class GraphicPropertyItem;
+      class GraphicProperty;
       /*!
         \class PolygonSymbolizerProperty
 
@@ -116,12 +116,9 @@ namespace te
 
 
         protected:
-
-          QtTreePropertyBrowser*    m_propertyBrowser;
-
           te::qt::widgets::BasicFillPropertyItem* m_bf;
           te::qt::widgets::BasicStrokePropertyItem* m_bs;
-          te::qt::widgets::GraphicPropertyItem* m_generalProp;
+          te::qt::widgets::GraphicProperty* m_graph;
 
           bool m_setLocalSymbol;
 

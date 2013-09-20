@@ -45,7 +45,7 @@
 #include <cassert>
 #include <memory>
 
-te::ogr::DataSet::DataSet(OGRDataSource* dsrc, OGRLayer* layer, bool isOwner) :
+te::ogr::DataSet::DataSet(OGRDataSource* dsrc, OGRLayer* layer) :
 te::da::DataSet(),
 m_dt(0),
 m_ogrDs(dsrc),
@@ -54,7 +54,6 @@ m_currentFeature(0),
 m_i(-1),
 m_wkbArray(0),
 m_wkbArraySize(0),
-m_isOwner(isOwner),
 m_srid(TE_UNKNOWN_SRS)
 {
   assert(layer);
@@ -81,8 +80,9 @@ te::ogr::DataSet::~DataSet()
 
   delete m_dt;
 
-  if(m_isOwner)
-    m_ogrDs->ReleaseResultSet(m_layer);
+  m_ogrDs->ReleaseResultSet(m_layer);
+
+  OGRDataSource::DestroyDataSource(m_ogrDs);
 }
 
 std::size_t te::ogr::DataSet::getNumProperties() const
@@ -120,15 +120,11 @@ std::auto_ptr<te::gm::Envelope> te::ogr::DataSet::getExtent(std::size_t /*i*/)
 
 std::size_t te::ogr::DataSet::size() const
 {
-  LockRead l(this);
-
   return m_layer->GetFeatureCount();
 }
 
 bool te::ogr::DataSet::moveNext()
 {
-  LockRead l(this);
-
   OGRFeature::DestroyFeature(m_currentFeature);
 
   m_currentFeature = m_layer->GetNextFeature();
@@ -168,8 +164,6 @@ bool te::ogr::DataSet::move(std::size_t i)
     return true;
 
   int p = static_cast<int>(i);
-
-  LockRead l(this);
 
   OGRErr error = m_layer->SetNextByIndex(p);
 

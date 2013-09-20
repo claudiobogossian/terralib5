@@ -417,11 +417,31 @@ void te::qt::af::SaveLastDatasourceOnSettings(const QString& dsType)
   sett.setValue("projects/last datasource used", dsType);
 }
 
+void te::qt::af::SaveOpenLastProjectOnSettings(bool openLast)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.setValue("projects/openLastDataSource", openLast);
+}
+
 QString te::qt::af::GetLastDatasourceFromSettings()
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
   return sett.value("projects/last datasource used").toString();
+}
+
+bool te::qt::af::GetOpenLastProjectFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  QVariant variant = sett.value("projects/openLastDataSource");
+
+  // If the option was never edited
+  if(variant.isNull() || !variant.isValid())
+    return true;
+
+  return variant.toBool();
 }
 
 void te::qt::af::CreateDefaultSettings()
@@ -442,25 +462,41 @@ void te::qt::af::CreateDefaultSettings()
   sett.endArray();
   sett.endGroup();
 
-  sett.beginGroup("Map Tool Bar");
-  sett.setValue("name", "Map Tool Bar");
+  sett.beginGroup("View Tool Bar");
+  sett.setValue("name", "View Tool Bar");
   sett.beginWriteArray("Actions");
   sett.setArrayIndex(0);
-  sett.setValue("action", "Map.Draw");
+  sett.setValue("action", "View.Layer Explorer");
+  sett.setArrayIndex(1);
+  sett.setValue("action", "View.Map Display");
+  sett.setArrayIndex(2);
+  sett.setValue("action", "View.Data Table");
+  sett.setArrayIndex(3);
+  sett.setValue("action", "View.Style Explorer");
+  sett.endArray();
+  sett.endGroup();
+
+  sett.beginGroup("Map Tool Bar");
+  sett.setValue("name", "Map Tool Bar");
+  sett.beginWriteArray("Actions");  
+  sett.setArrayIndex(0);
+  sett.setValue("action", "Map.Selection");
   sett.setArrayIndex(1);
   sett.setValue("action", "Map.Zoom In");
   sett.setArrayIndex(2);
   sett.setValue("action", "Map.Zoom Out");
   sett.setArrayIndex(3);
-  sett.setValue("action", "Map.Zoom Area");
-  sett.setArrayIndex(4);
   sett.setValue("action", "Map.Pan");
-  sett.setArrayIndex(5);
-  sett.setValue("action", "Map.Zoom Extent");
-  sett.setArrayIndex(6);
+  sett.setArrayIndex(4);
   sett.setValue("action", "Map.Info");
+  sett.setArrayIndex(5);
+  sett.setValue("action", "Map.Draw");
+  sett.setArrayIndex(6);
+  sett.setValue("action", "Map.Previous Extent");
   sett.setArrayIndex(7);
-  sett.setValue("action", "Map.Selection");
+  sett.setValue("action", "Map.Next Extent");
+  sett.setArrayIndex(8);
+  sett.setValue("action", "Map.Zoom Extent");
   sett.endArray();
   sett.endGroup();
 
@@ -468,8 +504,8 @@ void te::qt::af::CreateDefaultSettings()
 
   sett.beginGroup("projects");
 
-  sett.setValue("default author", "INPE team");
-  sett.setValue("maximum saved", "10");
+  sett.setValue("default author", "");
+  sett.setValue("maximum saved", "8");
 
   sett.endGroup();
 }
@@ -490,4 +526,83 @@ QString te::qt::af::UnsavedStar(const QString windowTitle, bool isUnsaved)
   }
 
   return result;
+}
+
+QColor te::qt::af::GetDefaultDisplayColorFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QString hexColor = sett.value("display/defaultDisplayColor").toString();  
+  QColor defaultColor;
+  defaultColor.setNamedColor(hexColor);
+  if(!defaultColor.isValid())
+    return Qt::white;
+
+  return defaultColor;
+}
+
+QString te::qt::af::GetStyleSheetFromColors(QColor primaryColor, QColor secondaryColor)
+{
+  QString sty("alternate-background-color: ");
+  sty += "rgb(" + QString::number(secondaryColor.red()) + ", " + QString::number(secondaryColor.green());
+  sty += ", " + QString::number(secondaryColor.blue()) + ")";
+  sty += ";background-color: rgb(" + QString::number(primaryColor.red()) + ", " + QString::number(primaryColor.green());
+  sty += ", " + QString::number(primaryColor.blue()) + ");";
+
+  return sty;
+}
+
+QString te::qt::af::GetStyleSheetFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  //bool isChecked = sett.value("table/tableAlternateColors").toBool();
+  QColor pColor;
+  pColor.setNamedColor(sett.value("table/primaryColor").toString());
+  QColor sColor;
+  sColor.setNamedColor(sett.value("table/secondaryColor").toString());
+
+  if(!pColor.isValid())
+    pColor = Qt::white;
+  if(!sColor.isValid())
+    sColor = Qt::white;
+
+  return GetStyleSheetFromColors(pColor, sColor);
+}
+
+bool te::qt::af::GetAlternateRowColorsFromSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  bool isChecked = sett.value("table/tableAlternateColors").toBool();
+
+  return isChecked;
+}
+
+void te::qt::af::AddActionToCustomToolbars(QAction* act)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("toolbars");
+  QStringList lst = sett.childGroups();
+  QStringList::iterator it;
+
+  for(it=lst.begin(); it!=lst.end(); ++it)
+  {
+    int size = sett.beginReadArray(*it+"/Actions");
+
+    for(int i=0; i<size; i++)
+    {
+      sett.setArrayIndex(i);
+
+      QString v = sett.value("action").toString(); 
+
+      if (v == act->objectName())
+      {
+        ApplicationController::getInstance().getToolBar(*it)->addAction(act);
+        break;
+      }
+    }
+
+    sett.endArray();
+  }
+
+  sett.endGroup();
 }

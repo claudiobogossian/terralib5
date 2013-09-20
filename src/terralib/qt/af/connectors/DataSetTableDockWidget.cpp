@@ -25,7 +25,9 @@
 #include "../../widgets/table/DataSetTableView.h"
 #include "../../widgets/utils/ScopedCursor.h"
 #include "../events/LayerEvents.h"
+#include "../events/TableEvents.h"
 #include "../ApplicationController.h"
+#include "../Utils.h"
 
 te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
   : QDockWidget(parent, Qt::Widget),
@@ -39,6 +41,13 @@ te::qt::af::DataSetTableDockWidget::DataSetTableDockWidget(QWidget* parent)
 
   connect (m_view, SIGNAL(selectOIds(te::da::ObjectIdSet*, const bool&)), SLOT(selectionChanged(te::da::ObjectIdSet*, const bool&)));
   connect (m_view, SIGNAL(deselectOIds(te::da::ObjectIdSet*)), SLOT(removeSelectedOIds(te::da::ObjectIdSet*)));
+
+  // Alternate Colors
+  if(te::qt::af::GetAlternateRowColorsFromSettings())
+  {
+    m_view->setAlternatingRowColors(true);
+    m_view->setStyleSheet(te::qt::af::GetStyleSheetFromSettings());
+  }
 }
 
 te::qt::af::DataSetTableDockWidget::~DataSetTableDockWidget()
@@ -79,6 +88,21 @@ void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt:
 
       if(ev->m_layer->getId() == m_layer->getId())
         m_view->highlightOIds(ev->m_layer->getSelected());
+    }
+    break;
+
+    case te::qt::af::evt::TABLE_ALTERNATE_COLORS_CHANGED:
+    {
+      te::qt::af::evt::TableAlternatingColorsChanged* ev = static_cast<te::qt::af::evt::TableAlternatingColorsChanged*>(evt);
+      m_view->setAlternatingRowColors(ev->m_isAlternating);
+      if(ev->m_isAlternating)
+      {
+        m_view->setStyleSheet(te::qt::af::GetStyleSheetFromColors(ev->m_primaryColor, ev->m_secondaryColor));
+      }
+      else
+      {
+        m_view->setStyleSheet("background-color: white;");
+      }
     }
     break;
   }

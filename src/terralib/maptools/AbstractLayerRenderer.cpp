@@ -24,7 +24,9 @@
 */
 
 // TerraLib
+#include "../color/RGBAColor.h"
 #include "../common/progress/TaskProgress.h"
+#include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -39,6 +41,7 @@
 #include "../dataaccess/query/ST_Intersects.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../fe/Filter.h"
+#include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
 #include "../raster/Raster.h"
@@ -52,6 +55,8 @@
 #include "AbstractLayerRenderer.h"
 #include "Canvas.h"
 #include "CanvasConfigurer.h"
+#include "Chart.h"
+#include "ChartRendererManager.h"
 #include "Exception.h"
 #include "Grouping.h"
 #include "GroupingItem.h"
@@ -69,6 +74,7 @@
 #include <utility>
 
 te::map::AbstractLayerRenderer::AbstractLayerRenderer()
+  : m_index(0)
 {
 }
 
@@ -100,6 +106,12 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
   if(!reprojectedBBOX.intersects(layer->getExtent()))
     return;
 
+  // Adjust internal renderer transformer
+  m_transformer.setTransformationParameters(bbox.m_llx, bbox.m_lly, bbox.m_urx, bbox.m_ury, canvas->getWidth(), canvas->getHeight());
+
+  // Resets internal renderer state
+  reset();
+
   te::gm::Envelope ibbox = reprojectedBBOX.intersection(layer->getExtent());
 
   assert(ibbox.isValid());
@@ -114,7 +126,8 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
     te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(schema.get());
 
     /** For while if the AbstractLayer has a grouping, do not consider the style. Need review! **/
-    if(layer->getGrouping())
+    Grouping* grouping = layer->getGrouping();
+    if(grouping && grouping->isVisible())
     {
       drawLayerGroupingMem(layer, geometryProperty->getName(), canvas, ibbox, srid);
       return;
@@ -164,7 +177,7 @@ void te::map::AbstractLayerRenderer::draw(AbstractLayer* layer,
       throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
 
     // Retrieves the data
-    std::auto_ptr<te::da::DataSet> dataset(layer->getData(rasterProperty->getName(), &ibbox, te::gm::INTERSECTS));
+    std::auto_ptr<te::da::DataSet> dataset = layer->getData(rasterProperty->getName(), &ibbox, te::gm::INTERSECTS);
 
     if(dataset.get() == 0)
       throw Exception((boost::format(TR_MAP("Could not retrieve the data set from the layer %1%.")) % layer->getTitle()).str());
@@ -294,7 +307,9 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       dataset->moveFirst();
     }
 
-    for(std::size_t j = 0; j < symbolizers.size(); ++j) // for each <Symbolizer>
+    std::size_t nSymbolizers = symbolizers.size();
+
+    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {
       // The current symbolizer
       te::se::Symbolizer* symb = symbolizers[j];
@@ -303,12 +318,16 @@ void te::map::AbstractLayerRenderer::drawLayerGeometries(AbstractLayer* layer,
       cc.config(symb);
 
       // Let's draw! for each data set geometry...
-      DrawGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, &task);
+      if(j != nSymbolizers - 1)
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, &task);
+      else
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), &task); // Here, produces the chart if exists
 
       // Prepares to draw the other symbolizer
       dataset->moveFirst();
 
     } // end for each <Symbolizer>
+
   }   // end for each <Rule>
 }
 
@@ -419,6 +438,9 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
     const std::vector<te::se::Symbolizer*>& symbolizers = item->getSymbolizers();
     std::size_t nSymbolizers = symbolizers.size();
 
+    // For while, first geometry property. TODO: get which geometry property the symbolizer references
+    std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+
     for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {
       // The current symbolizer
@@ -427,11 +449,11 @@ void te::map::AbstractLayerRenderer::drawLayerGrouping(AbstractLayer* layer,
       // Let's config the canvas based on the current symbolizer
       cc.config(symb);
 
-      // For while, first geometry property. TODO: get which geometry property the symbolizer references
-      std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
-
       // Let's draw! for each data set geometry...
-      DrawGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0);
+       if(j != nSymbolizers - 1)
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, 0, &task);
+      else
+        drawDatSetGeometries(dataset.get(), gpos, canvas, layer->getSRID(), srid, layer->getChart(), &task); // Here, produces the chart if exists
 
       // Prepares to draw the other symbolizer
       dataset->moveFirst();
@@ -521,19 +543,27 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   if(dataset->moveNext() == false)
     return;
 
+  // Gets the first geometry property
   std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+
+  // Gets the property position
+  std::auto_ptr<te::map::LayerSchema> dt(layer->getSchema());
+  std::size_t propertyPos = te::da::GetPropertyPos(dt.get(), propertyName);
 
   // Verifies if is necessary convert the data set geometries to the given srid
   bool needRemap = false;
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS) && (layer->getSRID() != srid))
     needRemap = true;
 
+  // The layer chart
+  Chart* chart = layer->getChart();
+
   do
   {
     std::vector<te::se::Symbolizer*> symbolizers;
 
     // Finds the current data set item on group map
-    std::string value = dataset->getAsString(propertyName, precision);
+    std::string value = dataset->getAsString(propertyPos, precision);
 
     if(type == UNIQUE_VALUE)
     {
@@ -585,7 +615,128 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
       }
 
       canvas->draw(geom.get());
+
+      if(chart && j == nSymbolizers - 1)
+        buildChart(chart, dataset.get(), geom.get());
     }
 
-  }while(dataset->moveNext());
+  } while(dataset->moveNext());
+
+  // Let's draw the generated charts
+  for(std::size_t i = 0; i < m_chartCoordinates.size(); ++i)
+  {
+    canvas->drawImage(static_cast<int>(m_chartCoordinates[i].x),
+                      static_cast<int>(m_chartCoordinates[i].y),
+                      m_chartImages[i],
+                      chart->getWidth(),
+                      chart->getHeight());
+
+    te::common::Free(m_chartImages[i], chart->getHeight());
+  }
+}
+
+void te::map::AbstractLayerRenderer::drawDatSetGeometries(te::da::DataSet* dataset, const std::size_t& gpos, Canvas* canvas,
+                                                          int fromSRID, int toSRID,
+                                                          Chart* chart, te::common::TaskProgress* task)
+{
+  assert(dataset);
+  assert(canvas);
+
+  // Verify if is necessary convert the data set geometries to the given srid
+  bool needRemap = false;
+  if((fromSRID != TE_UNKNOWN_SRS) && (toSRID != TE_UNKNOWN_SRS) && (fromSRID != toSRID))
+    needRemap = true;
+
+  do
+  {
+    if(task)
+    {
+      if(!task->isActive())
+        return;
+
+      // update the draw task
+      task->pulse();
+    }
+
+    std::auto_ptr<te::gm::Geometry> geom(0);
+    try
+    {
+      geom = dataset->getGeometry(gpos);
+      if(geom.get() == 0)
+        continue;
+    }
+    catch(std::exception& /*e*/)
+    {
+      continue;
+    }
+
+    // If necessary, geometry remap
+    if(needRemap)
+    {
+      geom->setSRID(fromSRID);
+      geom->transform(toSRID);
+    }
+
+    canvas->draw(geom.get());
+
+    if(chart)
+      buildChart(chart, dataset, geom.get());
+
+  } while(dataset->moveNext()); // next geometry!
+
+  // Let's draw the generated charts
+  for(std::size_t i = 0; i < m_chartCoordinates.size(); ++i)
+  {
+    canvas->drawImage(static_cast<int>(m_chartCoordinates[i].x),
+                      static_cast<int>(m_chartCoordinates[i].y),
+                      m_chartImages[i],
+                      chart->getWidth(),
+                      chart->getHeight());
+
+    te::common::Free(m_chartImages[i], chart->getHeight());
+  }
+}
+
+void te::map::AbstractLayerRenderer::buildChart(Chart* chart, te::da::DataSet* dataset, te::gm::Geometry* geom)
+{
+  if(!chart->isVisible())
+    return;
+
+  // Builds the chart point (world coordinates)
+  const te::gm::Envelope* e = geom->getMBR();
+
+  // Device coordinates
+  double dx = 0.0; double dy = 0.0;
+  m_transformer.world2Device(e->getCenter().x, e->getCenter().y, dx, dy);
+
+  double dw = dx + chart->getWidth();
+  double dh = dy + chart->getHeight();
+
+  // Builds the chart envelope
+  te::gm::Envelope chartEnvelope(dx, dy, dw, dh);
+
+  // Search on rtree
+  std::vector<std::size_t> report;
+  m_rtree.search(chartEnvelope, report);
+
+  if(!report.empty())
+    return;
+
+  // Here, no intersections considering the current chart envelope
+  m_rtree.insert(chartEnvelope, ++m_index);
+
+  // Stores the chart coordinate
+  m_chartCoordinates.push_back(te::gm::Coord2D(dx, dy));
+
+  // Builds the chart image
+  std::size_t width = 0;
+  te::color::RGBAColor** rgba = ChartRendererManager::getInstance().render(chart, dataset, width);
+  m_chartImages.push_back(rgba);
+}
+
+void te::map::AbstractLayerRenderer::reset()
+{
+  m_index = 0;
+  m_chartCoordinates.clear();
+  m_chartImages.clear();
 }

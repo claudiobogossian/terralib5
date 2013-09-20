@@ -64,12 +64,7 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   if (!value.isEmpty())
   {
     m_recentSRS = value.split(',');
-    
-    m_ui->m_SRSRecentTableWidget->setItem(0, 0, new QTableWidgetItem("UNKNOWN SRS"));
-    m_ui->m_SRSRecentTableWidget->setItem(0, 1, new QTableWidgetItem(""));    
-    m_ui->m_SRSRecentTableWidget->setItem(0, 2, new QTableWidgetItem(""));
-    
-    int aux = 1;
+    int aux = 0;
     int srid;
     
     QStringList::const_iterator it;
@@ -204,7 +199,7 @@ void te::qt::widgets::SRSManagerDialog::onSRSTreeWidgetItemClicked(QTreeWidgetIt
 {
   if (!item || item->text(1).isEmpty()) 
   {
-    m_selSrsId.first = -1;  
+    m_selSrsId.first = TE_UNKNOWN_SRS;  
     m_selSrsId.second = "";
     m_ui->m_p4descPlainTextEdit->clear();
     return;
@@ -228,8 +223,8 @@ void te::qt::widgets::SRSManagerDialog::onSRSRecentTableWidgetItemClicked(QTable
 
 void te::qt::widgets::SRSManagerDialog::onOkPushButtonClicked()
 {
-  if (m_selSrsId.first == -1)
-    reject();
+  if (m_selSrsId.first == TE_UNKNOWN_SRS)
+    accept();
   else 
   {
     QStringList aux;

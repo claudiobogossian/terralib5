@@ -28,38 +28,34 @@
               - basic stroke
 */
 
-#include "PointSymbolizerProperty.h"
+
 #include "../../../se/PointSymbolizer.h"
 #include "../../../se/Graphic.h"
-
-#include "GraphicPropertyItem.h"
+#include "GraphicProperty.h"
+#include "PointSymbolizerProperty.h"
 
 // Qt
+#include "../../../../../third-party/qt/propertybrowser/qtpropertybrowser.h"
 #include <QtGui/QGridLayout>
 
 // STL
 #include <cassert>
 
-te::qt::widgets::PointSymbolizerProperty::PointSymbolizerProperty(QWidget* parent) : m_symb(new te::se::PointSymbolizer), m_setLocalSymbol(false)
+te::qt::widgets::PointSymbolizerProperty::PointSymbolizerProperty(QWidget* parent) :  m_setLocalSymbol(false), m_symb(new te::se::PointSymbolizer)
 {
   QGridLayout* layout = new QGridLayout(this);
 
   this->setLayout(layout);
 
-  m_propertyBrowser = new QtTreePropertyBrowser(this);
+  m_graphProp = new te::qt::widgets::GraphicProperty(this);
 
-  layout->addWidget(m_propertyBrowser);
-
-  m_propertyBrowser->setPropertiesWithoutValueMarked(true);
-  m_propertyBrowser->setRootIsDecorated(false);
-  m_propertyBrowser->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
-
-  m_generalProp = new te::qt::widgets::GraphicPropertyItem(m_propertyBrowser);
-
-  connect(m_generalProp, SIGNAL(graphicChanged()), this, SLOT(onGraphicChanged()));
+  layout->addWidget(m_graphProp);
+  layout->setContentsMargins(0,0,0,0);
+  
+  connect(m_graphProp, SIGNAL(graphicChanged()), this, SLOT(onGraphicChanged()));
 
   // Setups initial point symbolizer
-  m_symb->setGraphic(m_generalProp->getGraphic());
+  m_symb->setGraphic(m_graphProp->getGraphic());
 }
 
 te::qt::widgets::PointSymbolizerProperty::~PointSymbolizerProperty()
@@ -72,7 +68,7 @@ void te::qt::widgets::PointSymbolizerProperty::setSymbolizer( te::se::PointSymbo
 
   m_setLocalSymbol = true;
 
-  m_generalProp->setGraphic(m_symb->getGraphic());
+  m_graphProp->setGraphic(m_symb->getGraphic());
 
   m_setLocalSymbol = false;
 }
@@ -84,7 +80,7 @@ te::se::Symbolizer* te::qt::widgets::PointSymbolizerProperty::getSymbolizer() co
 
 void te::qt::widgets::PointSymbolizerProperty::onGraphicChanged()
 {
-  m_symb->setGraphic(m_generalProp->getGraphic());
+  m_symb->setGraphic(m_graphProp->getGraphic());
 
   if(!m_setLocalSymbol)
     emit symbolizerChanged();

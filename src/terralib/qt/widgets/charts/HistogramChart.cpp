@@ -140,11 +140,6 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
     setData(new QwtIntervalSeriesData(samples));
   }
 
-  m_selection = new QwtPlotHistogram();
-  m_selection->setStyle(QwtPlotHistogram::Columns);
-  m_selection->setBrush(brush().color().darker( 180 ));
-  m_selection->attach(plot());
-
   if(!m_histogramStyle)
   {
     m_histogramStyle = new te::qt::widgets::HistogramStyle();
@@ -157,8 +152,15 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
 
     setPen(barPen);
     setBrush(barBrush);
-    m_selection->setBrush(brush().color().darker( 180 ));
   }
+
+  m_selection = new QwtPlotHistogram();
+  m_selection->setStyle(QwtPlotHistogram::Columns);
+
+  //The default selection color is green
+  m_selection->setBrush(QColor("#00FF00"));
+  m_selection->attach(plot());
+
 }
 
 te::qt::widgets::HistogramChart::~HistogramChart()
@@ -228,7 +230,6 @@ void te::qt::widgets::HistogramChart::setHistogramStyle(te::qt::widgets::Histogr
 
   setPen(barPen);
   setBrush(barBrush);
-  m_selection->setBrush(brush().color().darker( 180 ));
 }
 
 void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
@@ -328,4 +329,9 @@ te::da::ObjectIdSet* te::qt::widgets::HistogramChart::highlight(QPointF point)
 
     return m_histogram->find(data.get());
   }
+}
+
+void te::qt::widgets::HistogramChart::setSelectionColor(QColor selColor)
+{
+  m_selection->setBrush(selColor);
 }

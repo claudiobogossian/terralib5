@@ -320,10 +320,13 @@ te::da::DataSourcePtr te::qt::plugins::geofile::GeoFileConnectorDialog::test()
     throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! Unknown data access driver for the selected file!"));
   }
 
-  te::da::DataSourcePtr ds(te::da::DataSourceFactory::open(driverType, dsInfo));
+  te::da::DataSourcePtr ds(te::da::DataSourceFactory::make(driverType));
 
   if(ds.get() == 0)
     throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open data source due to an unexpected error!"));
+  
+  ds->setConnectionInfo(dsInfo);
+  ds->open();
 
   return ds;
 }

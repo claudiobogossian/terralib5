@@ -1,9 +1,7 @@
 #include "SQLVisitor.h"
 
-#include "../common/StringUtils.h"
 #include "../geometry/Envelope.h"
-#include "../dataaccess/query/From.h"
-#include "../dataaccess/query/GroupBy.h"
+#include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Having.h"
 #include "../dataaccess/query/LiteralEnvelope.h"
 #include "../dataaccess/query/Select.h"
@@ -14,6 +12,11 @@ te::ogr::SQLVisitor::SQLVisitor(const te::da::SQLDialect& dialect, std::string& 
 te::da::SQLVisitor(dialect, sql),
   m_bbox(0)
 {
+}
+
+void te::ogr::SQLVisitor::visit(const te::da::DataSetName& visited)
+{
+  m_sql += "\'" + visited.getName() + "\'";
 }
 
 void te::ogr::SQLVisitor::visit(const te::da::LiteralEnvelope& visited)

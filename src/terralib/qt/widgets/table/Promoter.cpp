@@ -277,7 +277,7 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
     }
 
     for(size_t j=0; j<cols.size(); j++)
-      value[j] = (dset->isNull((size_t)cols[j])) ? 0 : dset->getValue((size_t)cols[j]).get();
+      value[j] = (dset->isNull((size_t)cols[j])) ? 0 : dset->getValue((size_t)cols[j]).release();
 
     order.insert(std::pair<std::vector<te::dt::AbstractData*>, int>(value, i++));
 

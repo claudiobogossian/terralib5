@@ -39,6 +39,8 @@
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QMessageBox>
+#include <QtGui/QPainter>
+#include <QtGui/QPen>
 #include <QtGui/QTreeWidgetItem>
 #include <QtGui/QTreeWidgetItemIterator>
 
@@ -210,6 +212,13 @@ te::color::RGBAColor te::qt::widgets::Convert2TerraLib(const QColor& color)
   return te::color::RGBAColor(color.red(), color.green(), color.blue(), color.alpha());
 }
 
+QColor te::qt::widgets::Convert2Qt(const te::color::RGBAColor& color)
+{
+  QColor qcolor(color.getRgba());
+  qcolor.setAlpha(qAlpha(color.getRgba()));
+  return qcolor;
+}
+
 void te::qt::widgets::Config2DrawPolygons(te::map::Canvas* canvas, const QColor& fillColor, const QColor& contourColor, const std::size_t& contourWidth)
 {
   canvas->setPolygonContourWidth(contourWidth);
@@ -309,4 +318,31 @@ void te::qt::widgets::Config2DrawLayerSelection(te::map::Canvas* canvas, const Q
     default:
       return;
   }
+}
+
+QPixmap te::qt::widgets::CreatePixmapIcon(const int& size, const QColor& penColor, const QColor& brushColor, const int& contourSize)
+{
+  QPixmap pix(size, size);
+  pix.fill(Qt::transparent);
+
+  int offset = 2;
+
+  QPainterPath path;
+  path.addRect(offset, offset, pix.width() -  2 * offset, pix.height() - 2 * offset);
+
+  QPen pen;
+  pen.setColor(penColor);
+  pen.setWidth(contourSize);
+
+  QBrush brush;
+  brush.setColor(brushColor);
+
+  QPainter p(&pix);
+  p.setPen(pen);
+  p.setBrush(brushColor);
+
+  p.fillPath(path, brush);
+  p.drawPath(path);
+    
+  return pix;
 }

@@ -106,11 +106,17 @@ namespace te
           */
           void setCurrentTool(te::qt::widgets::AbstractTool* tool);
 
+          void nextExtent();
+
+          void previousExtent();
+
         protected slots:
 
           void onCoordTracked(QPointF& coordinate);
 
           void onDrawLayersFinished(const QMap<QString, QString>& errors);
+
+          void onExtentChanged();
 
           /*!
             \brief Listener to the application framewrork events.
@@ -125,10 +131,12 @@ namespace te
 
         protected:
 
-          te::qt::widgets::MapDisplay* m_display; //!< Pointer to a component te::qt::widgets::MapDisplay.
-          te::qt::widgets::AbstractTool* m_tool;  //!< Pointer to the current tool being used.
-          QMenu m_menu;                           //!< The map display popup menu.
-          QPixmap m_lastDisplayContent;           //!< The last map display content. i.e. a "clean" pixmap.
+          te::qt::widgets::MapDisplay* m_display;             //!< Pointer to a component te::qt::widgets::MapDisplay.
+          te::qt::widgets::AbstractTool* m_tool;              //!< Pointer to the current tool being used.
+          QMenu m_menu;                                       //!< The map display popup menu.
+          QPixmap m_lastDisplayContent;                       //!< The last map display content. i.e. a "clean" pixmap.
+          std::vector<te::gm::Envelope> m_extentStack;  //!< The stack of MapDisplay extents;
+          std::size_t m_currentExtent;
       };
     }
   }

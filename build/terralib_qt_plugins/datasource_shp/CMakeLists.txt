@@ -27,6 +27,12 @@ if(Boost_FOUND)
   add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 endif()
 
+find_package(GDAL ${_GDAL_VERSION} REQUIRED)
+if(GDAL_FOUND)
+  list (APPEND DEP_INCLUDES ${GDAL_INCLUDE_DIR})
+  list (APPEND DEP_LIBS ${GDAL_LIBRARY})
+endif()
+
 list (APPEND DEP_INCLUDES ${TE_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 list (APPEND 
   DEP_LIBS 
@@ -34,10 +40,19 @@ list (APPEND
   terralib_dataaccess
   terralib_plugin
   terralib_qt_widgets
+  terralib_qt_af
 )
 
 file(GLOB SRCS ${SRCDIR}/*.cpp)
 file(GLOB HDRS ${INCLDIR}/*.h)
+
+set (
+  HDRS_TO_MOC
+  ${INCLDIR}/Plugin.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/shp" MOC)
+
+source_group("Generated Files" FILES ${MOC})
 
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -46,7 +61,7 @@ endif(WIN32)
 add_definitions(-DTEQTPLUGINSHPDLL)
 
 include_directories( ${DEP_INCLUDES} )
-add_library (${PROJ_NAME} SHARED ${HDRS} ${SRCS})
+add_library (${PROJ_NAME} SHARED ${HDRS} ${SRCS} ${MOC})
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
 

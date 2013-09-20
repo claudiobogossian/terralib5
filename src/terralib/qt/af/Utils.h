@@ -168,14 +168,61 @@ namespace te
       /*!
         \brief
 
+        \param
+      */
+      TEQTAFEXPORT void SaveOpenLastProjectOnSettings(bool openLast);
+
+      /*!
+        \brief
+
         \return
       */
       TEQTAFEXPORT QString GetLastDatasourceFromSettings();
 
       /*!
+        \brief
+
+        \return
+      */
+      TEQTAFEXPORT bool GetOpenLastProjectFromSettings();
+
+      /*!
+        \brief
+
+        \return
+      */
+      TEQTAFEXPORT QColor GetDefaultDisplayColorFromSettings();
+
+      /*!
+        \brief
+
+        \return
+      */
+      TEQTAFEXPORT QString GetStyleSheetFromColors(QColor primaryColor, QColor secondaryColor);
+
+      /*!
+        \brief
+
+        \return
+      */
+      TEQTAFEXPORT QString GetStyleSheetFromSettings();
+
+      /*!
+        \brief
+
+        \return
+      */
+      TEQTAFEXPORT bool GetAlternateRowColorsFromSettings();
+
+      /*!
         \brief Creates a default QSettings.
       */
       TEQTAFEXPORT void CreateDefaultSettings();
+
+      /*!
+        \brief
+      */
+      TEQTAFEXPORT void AddActionToCustomToolbars(QAction* act);
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/BoostUtils.h"
 #include "../../../datatype/AbstractData.h"
 #include "../../../datatype/Enums.h"
 #include "../../../datatype/serialization/xml/Serializer.h"
@@ -224,6 +225,8 @@ void te::serialize::xml::Save(te::xml::Writer& writer)
 
   for(it=itBegin; it!=itEnd; ++it)
   {
+    bool ogrDsrc = it->second->getAccessDriver() == "OGR";
+
     writer.writeStartElement("te_da:DataSource");
 
     writer.writeAttribute("id", it->second->getId());
@@ -231,11 +234,11 @@ void te::serialize::xml::Save(te::xml::Writer& writer)
     writer.writeAttribute("access_driver", it->second->getAccessDriver());
 
     writer.writeStartElement("te_da:Title");
-    writer.writeValue(it->second->getTitle());
+    writer.writeValue((!ogrDsrc) ? it->second->getTitle() : te::common::ConvertLatin1UTFString(it->second->getTitle()));
     writer.writeEndElement("te_da:Title");
 
     writer.writeStartElement("te_da:Description");
-    writer.writeValue(it->second->getDescription());
+    writer.writeValue((!ogrDsrc) ? it->second->getDescription() : te::common::ConvertLatin1UTFString(it->second->getDescription()));
     writer.writeEndElement("te_da:Description");
 
     writer.writeStartElement("te_da:ConnectionInfo");
@@ -251,7 +254,7 @@ void te::serialize::xml::Save(te::xml::Writer& writer)
       writer.writeEndElement("te_common:Name");
 
       writer.writeStartElement("te_common:Value");
-      writer.writeValue(conIt->second);
+      writer.writeValue((ogrDsrc && (conIt->first == "URI" || conIt->first == "SOURCE")) ? te::common::ConvertLatin1UTFString(conIt->second) : conIt->second);
       writer.writeEndElement("te_common:Value");
 
       writer.writeEndElement("te_common:Parameter");
@@ -2087,33 +2090,33 @@ void te::serialize::xml::Save(const te::da::Select* select, te::xml::Writer& wri
   assert(select);
   writer.writeStartElement("te_da:Select");
 
-  std::auto_ptr<const te::da::Fields> fields(select->getFields());
-  if(fields.get())
-    Save(fields.get(), writer); // Fields
+  const te::da::Fields* fields = select->getFields();
+  if(fields)
+    Save(fields, writer); // Fields
   
-  std::auto_ptr<const te::da::From> from(select->getFrom());
-  if(from.get())
-    Save(from.get(), writer); // From
+  const te::da::From* from = select->getFrom();
+  if(from)
+    Save(from, writer); // From
 
-  std::auto_ptr<const te::da::Where> wh(select->getWhere());
-  if(wh.get())
-    Save(wh.get(), writer); // Where
+  const te::da::Where* wh = select->getWhere();
+  if(wh)
+    Save(wh, writer); // Where
 
-  std::auto_ptr<const te::da::GroupBy> groupBy(select->getGroupBy());
-  if(groupBy.get())
-    Save(groupBy.get(), writer); // GroupBy
+  const te::da::GroupBy*  groupBy = select->getGroupBy();
+  if(groupBy)
+    Save(groupBy, writer); // GroupBy
 
-  std::auto_ptr<const te::da::Having> having(select->getHaving());
-  if(having.get())
-    Save(having.get(), writer); // Having
+  const te::da::Having* having = select->getHaving();
+  if(having)
+    Save(having, writer); // Having
 
-  std::auto_ptr<const te::da::OrderBy> orderBy(select->getOrderBy());
-  if(orderBy.get())
-    Save(orderBy.get(), writer); // OrderBy
+  const te::da::OrderBy* orderBy = select->getOrderBy();
+  if(orderBy)
+    Save(orderBy, writer); // OrderBy
 
-  std::auto_ptr<const te::da::Distinct> distinct(select->getDistinct());
-  if(distinct.get())
-    Save(distinct.get(), writer); // Distinct
+  const te::da::Distinct* distinct = select->getDistinct();
+  if(distinct)
+    Save(distinct, writer); // Distinct
 
   if(select->getLimit() != 0) // Limit
   {

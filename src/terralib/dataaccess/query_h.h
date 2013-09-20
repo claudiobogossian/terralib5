@@ -98,6 +98,7 @@
 #include "query/ST_DistanceBuffer.h"
 #include "query/ST_DWithin.h"
 #include "query/ST_Equals.h"
+#include "query/ST_Intersection.h"
 #include "query/ST_Intersects.h"
 #include "query/ST_Overlaps.h"
 #include "query/ST_Relate.h"

@@ -44,6 +44,7 @@
 #include "../events/ToolEvents.h"
 #include "../ApplicationController.h"
 #include "../Project.h"
+#include "../Utils.h"
 #include "MapDisplay.h"
 
 // Qt
@@ -54,10 +55,13 @@
 #include <cassert>
 #include <utility>
 
+#define EXTENT_STACK_SIZE 5
+
 te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   : QObject(display),
     m_display(display),
-    m_tool(0)
+    m_tool(0),
+    m_currentExtent(-1)
 {
   // CoordTracking tool
   te::qt::widgets::CoordTracking* coordTracking = new te::qt::widgets::CoordTracking(m_display, this);
@@ -69,6 +73,7 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 
   // Signals & slots
   connect(m_display, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
+  connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 
   // Build the popup menu
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.SRID"));
@@ -77,7 +82,6 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   m_menu.addSeparator();
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom In"));
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Out"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Area"));
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Pan"));
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Extent")); 
   m_menu.addAction(ApplicationController::getInstance().findAction("Map.Previous Extent"));
@@ -91,6 +95,9 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 
   // Config the default SRS
   m_display->setSRID(ApplicationController::getInstance().getDefaultSRID(), false);
+  
+  // Getting default display color
+  m_display->setBackgroundColor(te::qt::af::GetDefaultDisplayColorFromSettings());
 }
 
 te::qt::af::MapDisplay::~MapDisplay()
@@ -213,6 +220,14 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
     }
     break;
 
+    case te::qt::af::evt::MAP_COLOR_CHANGED:
+    {
+      te::qt::af::evt::MapColorChanged* mapColorChanged = static_cast<te::qt::af::evt::MapColorChanged*>(e);
+      m_display->setBackgroundColor(mapColorChanged->m_color);
+      m_display->refresh();
+    }
+    break;
+
     default:
       return;
   }
@@ -227,18 +242,21 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
   if(oids == 0 || oids->size() == 0)
+  {
+    m_display->repaint();
     return;
+  }
 
   bool needRemap = false;
 
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_display->getSRID()))
     needRemap = true;
 
-  // Try to retrieve the layer selection
+  // Try retrieves the layer selection
   std::auto_ptr<te::da::DataSet> selected;
   try
   {
-    selected.reset(layer->getData(oids).release());
+    selected = layer->getData(oids);
   }
   catch(std::exception& e)
   {
@@ -277,4 +295,66 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
   }
 
   m_display->repaint();
+}
+
+void te::qt::af::MapDisplay::onExtentChanged()
+{
+  if(!m_extentStack.empty() && m_display->getExtent().equals(m_extentStack[m_currentExtent]))
+    return;
+
+  if(m_currentExtent != EXTENT_STACK_SIZE)
+  {
+    std::vector<te::gm::Envelope> aux;
+
+    if(m_currentExtent == -1)
+    {
+      aux.push_back(m_display->getExtent());
+      m_extentStack = aux;
+      m_currentExtent += 1;
+    }
+    else
+    {
+      for(std::size_t i = 0; i <= m_currentExtent; ++i)
+      {
+        aux.push_back(m_extentStack[i]);
+      }
+      aux.push_back(m_display->getExtent());
+
+      m_extentStack = aux;
+      m_currentExtent += 1;
+    }
+  }
+  else
+  {
+    std::vector<te::gm::Envelope> aux;
+    for(std::size_t i = 0; i <= m_currentExtent; ++i)
+    {
+      if(i == 0)
+        continue;
+
+      aux.push_back(m_extentStack[i]);
+    }
+    aux.push_back(m_display->getExtent());
+
+    m_extentStack = aux;
+    m_currentExtent = EXTENT_STACK_SIZE;
+  }
+}
+
+void te::qt::af::MapDisplay::nextExtent()
+{
+  if(m_currentExtent != EXTENT_STACK_SIZE-1 && m_extentStack.size() != m_currentExtent+1)
+  {
+    m_currentExtent += 1;
+    m_display->setExtent(m_extentStack[m_currentExtent]);
+  }
+}
+
+void te::qt::af::MapDisplay::previousExtent()
+{
+  if(m_currentExtent != 0)
+  {
+    m_currentExtent -= 1;
+    m_display->setExtent(m_extentStack[m_currentExtent]);
+  }
 }

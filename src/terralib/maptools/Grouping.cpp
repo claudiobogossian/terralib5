@@ -31,7 +31,10 @@
 
 
 te::map::Grouping::Grouping(const std::string& propertyName, te::map::GroupingType type, size_t precision)
-  : m_propertyName(propertyName), m_type(type), m_precision(precision)
+  : m_propertyName(propertyName),
+    m_type(type),
+    m_precision(precision),
+    m_isVisible(true)
 {
   m_propertyType = te::dt::UNKNOWN_TYPE;
 }
@@ -111,4 +114,14 @@ const std::vector<te::map::GroupingItem*>& te::map::Grouping::getGroupingItems()
 void te::map::Grouping::setGroupingItems(std::vector<te::map::GroupingItem*>& items)
 {
   m_items = items;
+}
+
+bool te::map::Grouping::isVisible() const
+{
+  return m_isVisible;
+}
+
+void te::map::Grouping::setVisibility(bool visible)
+{
+  m_isVisible = visible;
 }

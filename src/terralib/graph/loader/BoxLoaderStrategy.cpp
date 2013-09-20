@@ -146,7 +146,7 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
   te::da::Field* fv2id = new te::da::Field(vId);
   te::da::Expression* exp2 = new te::da::EqualTo(fv2id->getExpression(), fvt->getExpression());
 
-  te::da::Or* or = new te::da::Or(exp1, exp2);
+  te::da::Or* ora = new te::da::Or(exp1, exp2);
 
   
   std::string vEttr = "vertex." + geometryAttrName;
@@ -156,7 +156,7 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
   te::da::Field* fvattr = new te::da::Field(vEttr);
   te::da::ST_Intersects* intersects = new te::da::ST_Intersects(fvattr->getExpression(), lenv);
 
-  te::da::And* andd = new te::da::And(intersects, or);
+  te::da::And* andd = new te::da::And(intersects, ora);
 
   te::da::Where* wh = new te::da::Where(andd);
   
@@ -182,7 +182,7 @@ void te::graph::BoxLoaderStrategy::loadDataByVertexId(int vertexId, te::graph::A
     int vId   = dataset->getInt32(0);                       //first item is the vertex id
     int eId   = dataset->getInt32(vertexProperties);        //first after vertexProperties item is the edge id
     int vFrom = dataset->getInt32(vertexProperties + 1);    //second after vertexPropertie item is the vertex from id
-    int vTo   = dataset->getInt32(vertexProperties + 2);    //third after vertexPropertie item is the vertex to id
+//    int vTo   = dataset->getInt32(vertexProperties + 2);    //third after vertexPropertie item is the vertex to id
 
     if(currentId != vId)
     {
@@ -330,7 +330,7 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
   te::da::Field* fv2id = new te::da::Field(vId);
   te::da::Expression* exp2 = new te::da::EqualTo(fv2id->getExpression(), fvt->getExpression());
 
-  te::da::Or* or = new te::da::Or(exp1, exp2);
+  te::da::Or* ora = new te::da::Or(exp1, exp2);
 
   
   std::string vEttr = "vertex." + geometryAttrName;
@@ -340,7 +340,7 @@ void te::graph::BoxLoaderStrategy::loadDataByEdgeId(int edgeId, te::graph::Abstr
   te::da::Field* fvattr = new te::da::Field(vEttr);
   te::da::ST_Intersects* intersects = new te::da::ST_Intersects(fvattr->getExpression(), lenv);
 
-  te::da::And* andd = new te::da::And(intersects, or);
+  te::da::And* andd = new te::da::And(intersects, ora);
 
   te::da::Where* wh = new te::da::Where(andd);
   

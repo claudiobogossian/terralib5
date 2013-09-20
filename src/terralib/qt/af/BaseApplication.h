@@ -83,6 +83,8 @@ namespace te
 
           void onAddQueryLayerTriggered();
 
+          void onRemoveFolderTriggered();
+
           void onRemoveLayerTriggered();
 
           void onPluginsManagerTriggered();
@@ -105,7 +107,7 @@ namespace te
 
           void onProjectPropertiesTriggered();
 
-          void onLayerNewLayerGroupTriggered();
+          void onNewFolderTriggered();
 
           void onLayerPropertiesTriggered();
         
@@ -117,19 +119,25 @@ namespace te
 
           void onLayerScatterTriggered();
 
+          void onLayerChartTriggered();
+
           void onLayerGroupingTriggered();
 
+          void onLayerFitOnMapDisplayTriggered();
+
           void onMapSRIDTriggered();
+        
+          void onMapSetUnknwonSRIDTriggered();
 
           void onDrawTriggered();
-          
-          void onSetBoxOnMapDisplayTriggered();
 
           void onZoomInToggled(bool checked);
 
           void onZoomOutToggled(bool checked);
 
-          void onZoomAreaToggled(bool checked);
+          void onPreviousExtentTriggered();
+
+          void onNextExtentTriggered();
 
           void onPanToggled(bool checked);
 
@@ -163,6 +171,8 @@ namespace te
 
           void onStyleExplorerVisibilityChanged(bool visible);
 
+          void onDataSourceExplorerTriggered();
+
         protected:
 
           virtual void openProject(const QString& projectFileName);
@@ -177,7 +187,7 @@ namespace te
 
           virtual void initAction(QAction*& act, const QString& icon, const QString& name,
                                   const QString& text, const QString& tooltip,
-                                  bool iconVisibleInMenu, bool isCheckable, bool enabled, QMenuBar* menu);
+                                  bool iconVisibleInMenu, bool isCheckable, bool enabled, QObject* parent);
 
           virtual void initActions();
 
@@ -207,22 +217,23 @@ namespace te
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
           QAction* m_toolsDataExchanger;
+          QAction* m_toolsDataSourceExplorer;
           QAction* m_pluginsManager;
           QAction* m_pluginsBuilder;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
           //QAction* m_viewToolBars;
           QAction* m_viewGrid;
-          QAction* m_viewDataSourceExplorer;
           QAction* m_projectRemoveLayer;
+          QAction* m_projectRemoveFolder;
           QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;
           QAction* m_projectAddLayerGraph;
+          QAction* m_projectNewFolder;
           QAction* m_layerEdit;
           QAction* m_layerRename;
           QAction* m_layerExport;
-          QAction* m_layerNewLayerGroup;
           QAction* m_layerProperties;
           QAction* m_layerSRS;
           QAction* m_layerShowTable;
@@ -232,7 +243,9 @@ namespace te
           QAction* m_layerToBottom;
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
+          QAction* m_layerChart;
           QAction* m_layerGrouping;
+           QAction* m_layerFitOnMapDisplay;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
@@ -243,6 +256,7 @@ namespace te
           QAction* m_filePrint;
           QAction* m_filePrintPreview;
           QAction* m_mapSRID;
+          QAction* m_mapUnknownSRID;
           QAction* m_mapDraw;
           QAction* m_mapZoomIn;
           QAction* m_mapZoomOut;
@@ -257,7 +271,6 @@ namespace te
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
           QAction* m_mapStopDraw;
-          QAction* m_setBoxOnMapDisplay;
           QSize m_mapCursorSize;
 
           QWidget* m_centralwidget;

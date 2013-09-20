@@ -538,7 +538,7 @@ void te::pgis::Transactor::dropProperty(const std::string& datasetName, const st
   else
   {
     sql  = " ALTER TABLE ";
-    sql += p->getParent()->getName();
+    sql += fullDatasetName;
     sql += " DROP COLUMN ";
     sql += name;
   }
@@ -1134,8 +1134,6 @@ std::auto_ptr<te::da::Index> te::pgis::Transactor::getIndex(const std::string& d
     std::auto_ptr<te::dt::Array> idxCols(idxInfo->getArray(3));
 
     std::string idxType = idxInfo->getString(4);
-    bool isUK = idxInfo->getBool(5);
-    bool isPK = idxInfo->getBool(6);
 
     idx = new te::da::Index(idxName, GetIndexType(idxType.c_str()), 0, idxId);
 
@@ -1631,9 +1629,9 @@ void te::pgis::Transactor::renameDataSet(const std::string& name, const std::str
 }
 
 void te::pgis::Transactor::add(const std::string& datasetName,
-                                         te::da::DataSet* d,
-                                         const std::map<std::string, std::string>& options,
-                                         std::size_t limit)
+                               te::da::DataSet* d,
+                               const std::map<std::string, std::string>& options,
+                               std::size_t limit)
 {
   if(limit == 0)
     limit = std::string::npos;
@@ -1655,14 +1653,13 @@ void te::pgis::Transactor::add(const std::string& datasetName,
 
   pq->prepare(sql, paramTypes);
 
-  do
+  while(d->moveNext() && (nProcessedRows != limit))
   {
     pq->bind(d);
     pq->execute();
 
     ++nProcessedRows;
-
-  }while(d->moveNext() && (nProcessedRows != limit));
+  }
 
   st.commit();
 }

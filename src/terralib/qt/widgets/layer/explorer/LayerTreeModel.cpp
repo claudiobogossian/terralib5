@@ -292,8 +292,7 @@ QMimeData* te::qt::widgets::LayerTreeModel::mimeData(const QModelIndexList& inde
 {
   if(indexes.empty())
     return 0;
-
-  int nItems = indexes.count();
+  
   std::vector<AbstractTreeItem*>* draggedItems = new std::vector<AbstractTreeItem*>;
 
   for(int i = 0; i < indexes.count(); ++i)
@@ -510,13 +509,14 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
     // First, remove the associated layer associated to the item
     te::map::AbstractLayer* removingItemParentLayer = static_cast<te::map::AbstractLayer*>(removingItemParent->getLayer().get());
 
-    removingItemParentLayer->remove(row);
+    if(removingItem->getLayer() != 0)
+      removingItemParentLayer->remove(row);
 
     // Finally, remove the item from the tree
     const QList<QObject*>& childrenList = removingItemParent->children();
     int numChildren = childrenList.count();
 
-    if (numChildren == 0 || row < 0 || row >= numChildren)
+    if(numChildren == 0 || row < 0 || row >= numChildren)
       return false;
 
     removingItem->setParent(0);
@@ -631,6 +631,11 @@ bool te::qt::widgets::LayerTreeModel::remove(AbstractTreeItem* item)
   }
 
   return removeRows(itemRow, 1, parentIndex);
+}
+
+void te::qt::widgets::LayerTreeModel::refresh()
+{
+  emit layoutChanged();
 }
 
 void te::qt::widgets::LayerTreeModel::emitDataChangedForDescendants(const QModelIndex& parent)

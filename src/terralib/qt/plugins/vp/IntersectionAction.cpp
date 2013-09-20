@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,6 +32,7 @@
 
 // Qt
 #include <QtCore/QObject>
+#include <QtGui/QMessageBox>
 
 // STL
 #include <cassert>
@@ -49,7 +50,8 @@ te::qt::plugins::vp::IntersectionAction::~IntersectionAction()
 
 void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
 {
-  te::vp::IntersectionDialog dlg(0);
+  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  te::vp::IntersectionDialog dlg(parent);
 
   // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
@@ -59,9 +61,7 @@ void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
     dlg.setLayers(prj->getLayers());
   }
 
-  std::size_t r = dlg.exec();
-
-  if(QDialog::Rejected)
+  if(dlg.exec() != QDialog::Accepted)
     return;
 
   te::map::AbstractLayerPtr layer = dlg.getLayer();
@@ -69,11 +69,13 @@ void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
   if(!layer)
     return;
 
-  if(prj)
+  int reply = QMessageBox::question(0, tr("Intersection Result"), tr("The operation was concluded successfully. Would you like to add the layer to the project?"), QMessageBox::No, QMessageBox::Yes);
+
+  if(prj && reply == QMessageBox::Yes)
   {
     prj->add(layer);
 
-    te::qt::af::evt::LayerAdded evt(layer.get());
+    te::qt::af::evt::LayerAdded evt(layer);
 
     te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }

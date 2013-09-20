@@ -42,10 +42,6 @@ namespace te
   {
     namespace widgets
     {
-      class WellKnownMarkPropertyItem;
-      class GlyphMarkPropertyItem;
-      class LocalImagePropertyItem;
-
       /*!
         \class GraphicPropertyItem
 
@@ -95,12 +91,6 @@ namespace te
           virtual void valueChanged(QtProperty* p, double value);
           virtual void valueChanged(QtProperty* p, const QPointF &value);
 
-          void onWellKnownMarkChanged();
-
-          void onGlyphMarkChanged();
-
-          void onLocalImageChanged();
-
         signals:
 
           /*! This signal is emitted when the internal graphic element is changed. */
@@ -113,10 +103,6 @@ namespace te
           QtProperty* m_opacityProperty;
           QtProperty* m_displacementProperty;
           QtProperty* m_anchorProperty;
-
-          te::qt::widgets::WellKnownMarkPropertyItem* m_mp;
-          te::qt::widgets::GlyphMarkPropertyItem* m_gp;
-          te::qt::widgets::LocalImagePropertyItem* m_li;
 
           bool m_setLocalGraphic;
 

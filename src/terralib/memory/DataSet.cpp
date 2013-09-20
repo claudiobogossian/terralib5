@@ -123,14 +123,14 @@ void te::mem::DataSet::copy(te::da::DataSet& src, const std::vector<std::size_t>
 
   const std::size_t nproperties = properties.size();
 
-  do
+  while(src.moveNext() && (i < limit))
   {
     std::auto_ptr<DataSetItem> item(new DataSetItem(this));
 
     for(std::size_t c = 0; c < nproperties; ++c)
     {
       if(!src.isNull(properties[c]))
-        item->setValue(c, src.getValue(properties[c]).get());
+        item->setValue(c, src.getValue(properties[c]).release());
       else
         item->setValue(c, 0);
     }
@@ -138,8 +138,9 @@ void te::mem::DataSet::copy(te::da::DataSet& src, const std::vector<std::size_t>
     m_items->push_back(item.release());
 
     ++i;
+  }
 
-  }while(src.moveNext() && (i < limit));
+  src.moveBeforeFirst();
 
   if(!unlimited & (i < limit))
     throw Exception(TR_MEMORY("The source dataset has few items than requested copy limit!"));

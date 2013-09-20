@@ -25,6 +25,8 @@
 
 #include "LFUCachePolicy.h"
 
+#include <limits>
+
 te::graph::LFUCachePolicy::LFUCachePolicy()
 {
 }
@@ -49,7 +51,7 @@ void te::graph::LFUCachePolicy::toRemove(int& value)
   std::map<int, double>::iterator itLFU = m_LFU.begin();
   std::map<int, double>::iterator itMin = m_LFU.end();
 
-  double minValue = DBL_MAX;
+  double minValue = std::numeric_limits<double>::max();
 
   while(itLFU != m_LFU.end())
   {

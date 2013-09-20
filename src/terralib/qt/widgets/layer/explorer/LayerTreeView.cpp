@@ -265,6 +265,16 @@ std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerTreeView::ge
   return layers;
 }
 
+void te::qt::widgets::LayerTreeView::refresh()
+{
+  LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());
+
+  if(model == 0)
+    return;
+
+  model->refresh();
+}
+
 void te::qt::widgets::LayerTreeView::add(const te::map::AbstractLayerPtr& layer)
 {
   LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());

@@ -124,6 +124,12 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
     std::auto_ptr<te::map::LayerSchema> schema = layer->getSchema();
 
+    if(!schema->hasGeom())
+    {
+      QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("Some layer do not have a geometry column!"));
+      return;
+    }
+
     for(size_t i = 0; i < props.size(); ++i)
       propsPos.push_back(schema->getPropertyPosition(props[i]->getName()));
 
@@ -143,19 +149,20 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
   if(newLayerName.empty())
   {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("It is necessary a name for the new layer"));
+    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("It is necessary a name for the new layer."));
+    return;
+  }
+
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, TR_VP("Aggregation"), TR_VP("Set a repository for the new Layer."));
+
     return;
   }
 
   try
   {
-    size_t srid = 0;
-    std::map<std::string, std::string> op;
-
-    if(m_outputDatasource.get())
-      m_layer = te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
-    else if(!m_outputArchive.empty())
-      m_layer = te::vp::Intersection(newLayerName, layers, m_outputArchive, srid, op);
+    m_layer = te::vp::Intersection(layers, newLayerName, m_outputDatasource);
   }
   catch(const std::exception& e)
   {

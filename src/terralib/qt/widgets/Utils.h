@@ -36,6 +36,7 @@
 // Qt
 #include <QtCore/QObject>
 #include <QtGui/QColor>
+#include <QtGui/QPixmap>
 
 // Forward declarations
 class QAction;
@@ -189,6 +190,13 @@ namespace te
       TEQTWIDGETSEXPORT te::color::RGBAColor Convert2TerraLib(const QColor& color);
 
       /*!
+        \brief It converts a TerraLib Color to Qt Color.
+
+        \param color The TerraLib Color that will be converted.
+      */
+      TEQTWIDGETSEXPORT QColor Convert2Qt(const te::color::RGBAColor& color);
+
+      /*!
         \brief It configs (i.e. prepares) the given canvas to draw polygons.
 
         \param canvas The canvas that will be configured. Do not pass NULL!
@@ -237,6 +245,16 @@ namespace te
         \param type The geometry type that will be drawn.
       */
       TEQTWIDGETSEXPORT void Config2DrawLayerSelection(te::map::Canvas* canvas, const QColor& selectionColor, const te::gm::GeomType& type);
+
+      /*!
+        \brief It creates a pixmap to use as icon (to be used as legend icon).
+
+        \param size         The height and width for the pixmap.
+        \param penColor     The color that will be used to set the pen.
+        \param brushColor   The color that will be used to set the brush.
+        \param contourSize  The countour size.
+      */
+      TEQTWIDGETSEXPORT QPixmap CreatePixmapIcon(const int& size, const QColor& penColor, const QColor& brushColor, const int& contourSize);
 
     } // end namespace widgets
   }   // end namespace qt

@@ -228,8 +228,6 @@ namespace te
         protected:
 
           DataSource* m_ogrDs;
-
-          bool m_isInTransaction;
     };
   }
 }

@@ -54,6 +54,10 @@
 #include <map>
 #include <memory>
 
+#ifndef M_PI
+  #define M_PI       3.14159265358979323846
+#endif
+
 namespace te
 {
   namespace rp
@@ -776,7 +780,255 @@ namespace te
       }
 
       return randomPoints;
-    }    
+    }   
+    
+    bool ConvertRBG2IHS( const te::rst::Raster& inputRGBRaster, 
+      const unsigned int redBandIdx, const unsigned int greenBandIdx,
+      const unsigned int blueBandIdx, const double rgbRangeMin, 
+      const double rgbRangeMax, te::rst::Raster& outputIHSRaster ) 
+    {
+      if( ( inputRGBRaster.getAccessPolicy() & te::common::RAccess ) == 0 )
+        return false;
+      if( redBandIdx > inputRGBRaster.getNumberOfBands() ) return false;
+      if( greenBandIdx > inputRGBRaster.getNumberOfBands() ) return false;
+      if( blueBandIdx > inputRGBRaster.getNumberOfBands() ) return false;
+      if( ( outputIHSRaster.getAccessPolicy() & te::common::WAccess ) == 0 )
+        return false;      
+      if( outputIHSRaster.getNumberOfBands() < 3 ) return false;
+      if( inputRGBRaster.getNumberOfColumns() != outputIHSRaster.getNumberOfColumns() )
+        return false;
+      if( inputRGBRaster.getNumberOfRows() != outputIHSRaster.getNumberOfRows() )
+        return false;      
+      
+      const te::rst::Band& redBand = *inputRGBRaster.getBand( redBandIdx );
+      const te::rst::Band& greenBand = *inputRGBRaster.getBand( greenBandIdx );
+      const te::rst::Band& blueBand = *inputRGBRaster.getBand( blueBandIdx );      
+      
+      const unsigned int outNCols = outputIHSRaster.getNumberOfColumns();
+      const unsigned int outNRows = outputIHSRaster.getNumberOfRows();
+      const double redNoData = redBand.getProperty()->m_noDataValue;
+      const double greenNoData = greenBand.getProperty()->m_noDataValue;
+      const double blueNoData = inputRGBRaster.getBand( 
+        blueBandIdx )->getProperty()->m_noDataValue;
+      
+      unsigned int outRow = 0;
+      unsigned int outCol = 0;
+      double red = 0;
+      double green = 0;
+      double blue = 0;
+      double teta = 0;
+      double redNorm = 0, greenNorm = 0, blueNorm = 0;
+      double rMinusG = 0, rMinusB = 0;
+      double rgbSum = 0;
+      double cosValue = 0;
+      const double twoPi = 2.0 * ((double)M_PI);
+      const double pi2 = ((double)M_PI) / 2.0;   
+      const double rgbNormFac = ( rgbRangeMax == rgbRangeMin ) ? 0.0 :
+        ( 1.0 / ( rgbRangeMax - rgbRangeMin ) );
+      double intensity = 0;
+      double hue = 0;
+      double saturation = 0;
+      
+      for( outRow = 0 ; outRow < outNRows ; ++outRow )
+      {
+        for( outCol = 0 ; outCol < outNCols ; ++outCol )
+        {
+          redBand.getValue( outCol, outRow, red );
+          greenBand.getValue( outCol, outRow, green );
+          blueBand.getValue( outCol, outRow, blue );
+          
+          if( ( red == redNoData ) || ( green == greenNoData ) ||
+            ( blue == blueNoData ) )
+          {
+            intensity = 0.0;
+            hue = 0.0;
+            saturation = 0.0;
+          }            
+          else
+          {
+            if( ( red == green ) && ( green == blue ) ) 
+            { // Gray scale case
+              // From Wikipedia:
+              // h = 0 is used for grays though the hue has no geometric 
+              // meaning there, where the saturation s = 0. Similarly, 
+              // the choice of 0 as the value for s when l is equal to 0 or 1 
+              // is arbitrary.        
+              
+              hue = 0.0;
+              saturation = 0.0;
+              intensity = ( red * rgbNormFac ); // or green or blue since they all are the same.
+            }
+            else
+            { // Color case
+              redNorm = ( red - rgbRangeMin ) * rgbNormFac;
+              greenNorm = ( green - rgbRangeMin ) * rgbNormFac;
+              blueNorm = ( blue - rgbRangeMin ) * rgbNormFac;
+              
+              rMinusG = redNorm - greenNorm;
+              rMinusB = redNorm - blueNorm;
+              
+              cosValue = std::sqrt( ( rMinusG * rMinusG ) + ( rMinusB * 
+                ( greenNorm - blueNorm ) ) );
+                
+              if( cosValue == 0.0 )
+              {
+                teta = pi2;
+              }
+              else
+              {
+                cosValue =  ( 0.5 * ( rMinusG + rMinusB )  ) /
+                  cosValue;
+                teta = std::acos( cosValue );  
+              }
+                
+              assert( ( cosValue >= (-1.0) ) && ( cosValue <= (1.0) ) );
+                
+              if( blueNorm > greenNorm )
+              {
+                hue = ( twoPi - teta );
+              }
+              else
+              {
+                hue = teta;
+              }
+                
+              rgbSum = ( redNorm + greenNorm + blueNorm );
+              
+              saturation = ( 1.0 - ( 3 * std::min( std::min( redNorm, greenNorm ), blueNorm ) /
+                rgbSum ) );
+                
+              intensity = ( rgbSum / 3.0 );            
+            }
+          }
+          
+          outputIHSRaster.setValue( outCol, outRow, intensity, 0 );
+          outputIHSRaster.setValue( outCol, outRow, hue, 1 );
+          outputIHSRaster.setValue( outCol, outRow, saturation, 2 );          
+        }
+      }      
+      
+      return true;
+    }
+    
+    bool ConvertIHS2RGB( const te::rst::Raster& inputIHSRaster, 
+      const unsigned int intensityBandIdx, const unsigned int hueBandIdx,
+      const unsigned int saturationBandIdx, const double rgbRangeMin, 
+      const double rgbRangeMax, te::rst::Raster& outputRGBRaster )
+    {
+      if( ( inputIHSRaster.getAccessPolicy() & te::common::RAccess ) == 0 )
+        return false;
+      if( intensityBandIdx > inputIHSRaster.getNumberOfBands() ) return false;
+      if( hueBandIdx > inputIHSRaster.getNumberOfBands() ) return false;
+      if( saturationBandIdx > inputIHSRaster.getNumberOfBands() ) return false;
+      if( ( outputRGBRaster.getAccessPolicy() & te::common::WAccess ) == 0 )
+        return false;      
+      if( outputRGBRaster.getNumberOfBands() < 3 ) return false;
+      if( inputIHSRaster.getNumberOfColumns() != outputRGBRaster.getNumberOfColumns() )
+        return false;
+      if( inputIHSRaster.getNumberOfRows() != outputRGBRaster.getNumberOfRows() )
+        return false;      
+      
+      const unsigned int nCols = outputRGBRaster.getNumberOfColumns();
+      const unsigned int nRows = outputRGBRaster.getNumberOfRows();
+      const double intensityNoData = inputIHSRaster.getBand( 
+        intensityBandIdx )->getProperty()->m_noDataValue;
+      const double hueNoData = inputIHSRaster.getBand( 
+        hueBandIdx )->getProperty()->m_noDataValue;
+      const double saturationNoData = inputIHSRaster.getBand( 
+        saturationBandIdx )->getProperty()->m_noDataValue;
+        
+      const double rgbNormFac = ( rgbRangeMax == rgbRangeMin ) ? 0.0 :
+        ( rgbRangeMax - rgbRangeMin ); 
+      const double pi3 = M_PI / 3.0; // 60
+      const double twoPi3 = 2.0 * M_PI / 3.0; // 120
+      const double fourPi3 = 4.0 * M_PI / 3.0; // 240        
+      unsigned int row = 0;
+      unsigned int col = 0;  
+      double hue = 0;
+      double lig = 0;
+      double sat = 0;
+      double red = 0;
+      double green = 0;
+      double blue = 0;  
+      const te::rst::Band& intensityBand = *inputIHSRaster.getBand( intensityBandIdx );
+      const te::rst::Band& hueBand = *inputIHSRaster.getBand( hueBandIdx );
+      const te::rst::Band& saturationBand = *inputIHSRaster.getBand( saturationBandIdx );      
+      te::rst::Band& redBand = *outputRGBRaster.getBand( 0 );
+      te::rst::Band& greenBand = *outputRGBRaster.getBand( 1 );
+      te::rst::Band& blueBand = *outputRGBRaster.getBand( 2 );
+      
+      for( row = 0 ; row < nRows ; ++row )
+      {
+        for( col = 0 ; col < nCols ; ++col )
+        {     
+          intensityBand.getValue( col, row, lig );
+          hueBand.getValue( col, row, hue );
+          saturationBand.getValue( col, row, sat );
+          
+          if( ( lig == intensityNoData ) || ( hue == hueNoData ) || 
+            ( sat == saturationNoData ) )
+          {
+            red = green = blue = 0;
+          }
+          else
+          {
+            if( ( hue == 0.0 ) && ( sat == 0.0 ) )
+            { // Gray scale case
+              red = green = blue = ( lig * rgbNormFac );
+            }
+            else
+            { // color case
+              /* Hue inside RG sector */
+              if( hue < twoPi3 )
+              {
+                blue = lig * ( 1.0 - sat );
+                red = lig * ( 1.0 + ( sat * std::cos( hue ) / 
+                  std::cos( pi3 - hue ) ) );
+                green = ( 3.0 * lig ) - ( red + blue );
+              }
+              else if( hue < fourPi3 )
+              { /* Hue inside GB sector */
+              
+                hue -= twoPi3;
+                
+                red = lig * ( 1.0 - sat );
+                green = lig * ( 1.0 + ( sat * std::cos( hue ) / 
+                  std::cos( pi3 - hue ) ) );
+                blue = ( 3.0 * lig ) - ( red + green );
+              }
+              else
+              { /* Hue inside BR sector */
+              
+                hue -= fourPi3;
+                
+                green = lig * ( 1.0 - sat );
+                blue = lig * ( 1.0 + ( sat * std::cos( hue ) / 
+                  std::cos( pi3 - hue ) ) );
+                red = ( 3.0 * lig ) - ( green + blue );
+              }
+              
+              red = ( red * rgbNormFac ) + rgbRangeMin;
+              green = ( green * rgbNormFac ) + rgbRangeMin;
+              blue = ( blue * rgbNormFac ) + rgbRangeMin;
+            }
+          }
+          
+          red = MIN( red, rgbRangeMax );
+          green = MIN( green, rgbRangeMax );
+          blue = MIN( blue, rgbRangeMax );
+          
+          red = MAX( red, rgbRangeMin );
+          green = MAX( green, rgbRangeMin );
+          blue = MAX( blue, rgbRangeMin );           
+          
+          redBand.setValue( col, row, red );
+          greenBand.setValue( col, row, green );
+          blueBand.setValue( col, row, blue );
+        }
+      }        
+      
+      return true;
+    }
 
   } // end namespace rp
 }   // end namespace te

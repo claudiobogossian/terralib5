@@ -43,6 +43,7 @@ namespace te
           TOOLBAR_ADDED,
           DISPLAY_RESIZED,
           LAYER_ADDED,
+          LAYER_REMOVED,
           LAYER_SELECTED,
           LAYER_VISIBILITY_CHANGED,
           LAYER_SELECTION_CHANGED,
@@ -55,6 +56,8 @@ namespace te
           PROJECT_ADDED,
           PROJECT_UNSAVED,
           MAP_SRID_CHANGED,
+          MAP_COLOR_CHANGED,
+          TABLE_ALTERNATE_COLORS_CHANGED,
           CUSTOM = 1024
         };
 

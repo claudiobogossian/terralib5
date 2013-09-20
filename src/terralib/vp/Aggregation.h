@@ -56,11 +56,11 @@ namespace te
 
       \return                       The aggregation result.
     */
-    void Aggregation(const te::map::AbstractLayerPtr& inputLayer,
-                     const std::vector<te::dt::Property*>& groupingProperties,
-                     const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                     const std::string& outputLayerName,
-                     const te::da::DataSourceInfoPtr& dsInfo);
+    te::map::AbstractLayerPtr Aggregation(const te::map::AbstractLayerPtr& inputLayer,
+                                          const std::vector<te::dt::Property*>& groupingProperties,
+                                          const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                                          const std::string& outputLayerName,
+                                          const te::da::DataSourceInfoPtr& dsInfo);
 
     /*!
       \brief It returns the output DataSetType.
@@ -123,7 +123,7 @@ namespace te
 
       \return The aggregation groups.
     */
-    std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::mem::DataSet* inputDataSet,
+    std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::da::DataSet* inputDataSet,
                                                                           const std::vector<te::dt::Property*>& groupingProperties);
 
     /*!

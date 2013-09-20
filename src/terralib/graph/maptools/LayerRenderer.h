@@ -34,7 +34,7 @@
 namespace te
 {
 // Forward declarations
-  namespace gm { Envelope; }
+  namespace gm { class Envelope; }
 
   namespace map 
   { 

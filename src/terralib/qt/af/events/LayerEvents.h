@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -51,15 +51,38 @@ namespace te
           /*!
             \brief Constructor.
 
-            \param newLayer Pointer to the layer created.
+            \param newLayer Layer added.
           */
-          LayerAdded(te::map::AbstractLayer* newlayer) : 
+          LayerAdded(te::map::AbstractLayerPtr newlayer) :
             Event(LAYER_ADDED),
             m_layer(newlayer)
           {
           }
 
-          te::map::AbstractLayer* m_layer;  //!< Pointer to the new layer.
+          te::map::AbstractLayerPtr m_layer;  //!< Layer added.
+        };
+
+        /*!
+          \struct LayerRemoved
+
+          \brief This event signals that a layer was removed.
+
+          \ingroup afevents
+         */
+        struct LayerRemoved : public Event
+        {
+          /*!
+            \brief Constructor.
+
+            \param layer Layer removed.
+          */
+          LayerRemoved(te::map::AbstractLayer* layer) :
+            Event(LAYER_REMOVED),
+            m_layer(layer)
+          {
+          }
+
+          te::map::AbstractLayer* m_layer;  //!< Layer removed.
         };
 
         /*!

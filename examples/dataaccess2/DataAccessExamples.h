@@ -49,7 +49,9 @@
 
   \exception Exception It throws an exception if something goes wrong.
  */
-te::da::DataSetType* CreateDataSetType(te::da::DataSourceTransactor* transactor);
+te::da::DataSetType* CreateDataSetType(const std::string& datasetname,te::da::DataSetType*dt, te::da::DataSourceTransactor* transactor);
+
+te::da::DataSetType* CreateDataSetTypeInMemory(const std::string& datasettypename);
 
 /*
   \brief It adds a Primary Key to the given dataset type.
@@ -203,6 +205,9 @@ void SQLiteExample();
 */
 te::da::DataSet* CreatingDataSetInMemory(const std::string& datasetName);
 
+
+te::da::DataSet* CreatingDataSetInMemoryGivingDt(te::da::DataSetType* dt);
+
 /*! \brief This example shows how to use the TerraLib Persistence. */
 void PersistenceExample();
 
@@ -228,7 +233,8 @@ void AddingDataSetPropertyValues(te::da::DataSet* ds);
   \param prop   the property that will be removed. 
   \param trans  the transactor to be used in the removing. 
 */
-void DroppingDataSetTypeProperty(te::dt::Property* prop, te::da::DataSourceTransactor* trans);
+//void DroppingDataSetTypeProperty(te::dt::Property* prop, te::da::DataSourceTransactor* trans);
+void DroppingDataSetTypeProperty(const std::string& datasetname, const std::string &propname, te::da::DataSourceTransactor* trans);
 
 /*! 
   \brief It removes a data set type from the associated data source.
@@ -236,7 +242,8 @@ void DroppingDataSetTypeProperty(te::dt::Property* prop, te::da::DataSourceTrans
   \param dt     the dataSetType that will be removed from data source.
   \param trans  the transactor to be used in the removing. 
 */
-void DroppingDataSetType(te::da::DataSetType* dt, te::da::DataSourceTransactor* trans);
+//void DroppingDataSetType(te::da::DataSetType* dt, te::da::DataSourceTransactor* trans);
+void DroppingDataSetType(const std::string& datasetname, te::da::DataSourceTransactor* trans);
 
 /*!
   \brief It retrieves and prints the capabilities of a given data source.

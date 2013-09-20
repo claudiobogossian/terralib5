@@ -63,17 +63,9 @@ namespace te
 
     DataSetRTree CreateRTree(te::da::DataSetType* dt, te::da::DataSet* ds);
 
-    te::map::AbstractLayerPtr Intersection(const std::string& newLayerName,
-                                           const std::vector<LayerInputData>& idata,
-                                           const te::da::DataSourceInfoPtr& dsinfo,
-                                           size_t outputSRID = 0,
-                                           const std::map<std::string, std::string>& options = std::map<std::string, std::string>());
-
-    te::map::AbstractLayerPtr Intersection(const std::string& newLayerName,
-                                           const std::vector<LayerInputData>& idata,
-                                           std::string outputArchive,
-                                           size_t outputSRID = 0,
-                                           const std::map<std::string, std::string>& options = std::map<std::string, std::string>());
+    te::map::AbstractLayerPtr Intersection(const std::vector<LayerInputData>& idata,
+                                           const std::string& newLayerName,
+                                           const te::da::DataSourceInfoPtr& dsinfo);
 
     std::pair<te::da::DataSetType*, te::da::DataSet*> Intersection(const std::string& newLayerName,
                                                                    const std::vector<LayerInputData>& idata,

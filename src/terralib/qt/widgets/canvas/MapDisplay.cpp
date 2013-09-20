@@ -47,7 +47,7 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
     m_backgroundColor(Qt::white),
     m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
     m_timer(new QTimer(this)),
-    m_interval(0)
+    m_interval(200)
 {
   m_timer->setSingleShot(true);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
@@ -365,4 +365,14 @@ void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize
   }
 
   setExtent(e);
+}
+
+QColor te::qt::widgets::MapDisplay::getBackgroundColor()
+{
+  return m_backgroundColor;
+}
+
+void te::qt::widgets::MapDisplay::setBackgroundColor(const QColor& color)
+{
+  m_backgroundColor = color;
 }
