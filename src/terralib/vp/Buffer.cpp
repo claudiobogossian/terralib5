@@ -110,20 +110,6 @@ te::map::AbstractLayerPtr te::vp::Buffer(const te::map::AbstractLayerPtr& inputL
   return newLayer;
 }
 
-te::map::AbstractLayerPtr te::vp::Buffer(const te::map::AbstractLayerPtr& inputLayer,
-                                  const std::map<te::gm::Geometry*, double>& distance,
-                                  const int& bufferPolygonRule,
-                                  const int& bufferBoundariesRule,
-                                  const bool& copyInputColumns,
-                                  const int& levels,
-                                  const std::string& outputLayerName,
-                                  const std::string& outputArchive)
-{
-  te::map::AbstractLayerPtr outputLayer;
-
-  return outputLayer;
-}
-
 te::da::DataSetType* te::vp::GetDataSetType(const te::map::AbstractLayerPtr& inputLayer,
                                             const std::string& outputLayerName,
                                             const int& bufferBoundariesRule,

@@ -83,6 +83,8 @@ namespace te
 
           void onAddQueryLayerTriggered();
 
+          void onRemoveFolderTriggered();
+
           void onRemoveLayerTriggered();
 
           void onPluginsManagerTriggered();
@@ -105,7 +107,7 @@ namespace te
 
           void onProjectPropertiesTriggered();
 
-          void onLayerNewLayerGroupTriggered();
+          void onNewFolderTriggered();
 
           void onLayerPropertiesTriggered();
         
@@ -215,22 +217,23 @@ namespace te
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
           QAction* m_toolsDataExchanger;
+          QAction* m_toolsDataSourceExplorer;
           QAction* m_pluginsManager;
           QAction* m_pluginsBuilder;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
           //QAction* m_viewToolBars;
           QAction* m_viewGrid;
-          QAction* m_viewDataSourceExplorer;
           QAction* m_projectRemoveLayer;
+          QAction* m_projectRemoveFolder;
           QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;
           QAction* m_projectAddLayerGraph;
+          QAction* m_projectNewFolder;
           QAction* m_layerEdit;
           QAction* m_layerRename;
           QAction* m_layerExport;
-          QAction* m_layerNewLayerGroup;
           QAction* m_layerProperties;
           QAction* m_layerSRS;
           QAction* m_layerShowTable;

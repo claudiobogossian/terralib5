@@ -49,6 +49,7 @@
 #include "../widgets/layer/explorer/LayerExplorer.h"
 #include "../widgets/layer/explorer/LayerTreeView.h"
 #include "../widgets/layer/explorer/AbstractTreeItem.h"
+#include "../widgets/layer/explorer/FolderLayerItem.h"
 #include "../widgets/layer/info/LayerPropertiesInfoWidget.h"
 #include "../widgets/layer/selector/AbstractLayerSelector.h"
 #include "../widgets/plugin/builder/PluginBuilderWizard.h"
@@ -499,6 +500,30 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onRemoveFolderTriggered()
+{
+  int btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("Do you really want to remove the folder?"), QMessageBox::No, QMessageBox::Yes);
+
+  if(btn == QMessageBox::No)
+    return;
+
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractTreeItem*>::iterator it;
+
+  for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
+  {
+    te::qt::widgets::AbstractTreeItem* item = *it;
+    te::qt::widgets::FolderLayerItem* folderItem = 0;
+    folderItem = dynamic_cast<te::qt::widgets::FolderLayerItem*>(item);
+
+    if(folderItem != 0)
+    {
+      m_project->remove(item->getLayer());
+      m_explorer->getExplorer()->remove(item);
+    }
+  }
+}
+
 void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
   std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
@@ -676,11 +701,11 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
   }
 }
 
-void te::qt::af::BaseApplication::onLayerNewLayerGroupTriggered()
+void te::qt::af::BaseApplication::onNewFolderTriggered()
 {
   bool ok;
   QString text = QInputDialog::getText(this, ApplicationController::getInstance().getAppTitle(),
-                                      tr("Layer name:"), QLineEdit::Normal,
+                                      tr("Folder name:"), QLineEdit::Normal,
                                       tr("Insert name"), &ok);
 
   if (!ok)
@@ -803,7 +828,6 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     te::da::DataSet* dataset = lay->getData().release();
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
-    dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
     int res = dlg.exec();
     if (res == QDialog::Accepted)
     {
@@ -839,7 +863,6 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     te::da::DataSet* dataset = lay->getData().release();
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::ScatterDialog dlg(dataset, dataType, this);
-    dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));
     int res = dlg.exec();
     if (res == QDialog::Accepted)
     {
@@ -1364,8 +1387,7 @@ void te::qt::af::BaseApplication::makeDialog()
   //treeView->add(m_layerRename, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   //treeView->add(m_layerExport, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   
-  treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  treeView->add(m_layerNewLayerGroup, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
+  treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);  
   treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerSRS, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
@@ -1377,6 +1399,7 @@ void te::qt::af::BaseApplication::makeDialog()
   //treeView->add(m_layerToTop, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   //treeView->add(m_layerToBottom, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
+  treeView->add(m_projectNewFolder, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
 
@@ -1505,14 +1528,12 @@ void te::qt::af::BaseApplication::initActions()
   //initAction(m_viewRefresh, "view-refresh", "View.Refresh", tr("&Refresh"), tr(""), true, false, false, m_menubar); TODO
   //initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
   //initAction(m_viewGrid, "view-grid", "View.Grid", tr("&Grid"), tr("Show or hide the geographic grid"), true, true, false, m_menubar); TODO
-  initAction(m_viewDataSourceExplorer, "view-datasource-explorer", "View.Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), 
-    true, false, true, m_menubar);
 
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
-  initAction(m_toolsDataExchanger, "", "Tools.Data Exchanger", tr("&Data Exchanger..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
-  initAction(m_toolsDataSourceManagement, "", "Tools.Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, 
-    false, m_menubar);
+  initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Data Exchanger", tr("&Data Exchanger..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
+  initAction(m_toolsDataSourceExplorer, "datasource-explorer", "Tools.Data Source Explorer", tr("&Data Source Explorer..."), tr("Show or hide the data source explorer"), 
+    true, false, true, m_menubar);
 
 // Menu -Edit- actions
   //initAction(m_editUndo, "edit-undo", "Undo", tr("&Undo"), tr("Undo the last operation"), true, false, false);
@@ -1535,19 +1556,21 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_helpAbout, "", "Help.About", tr("&About..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Project- actions
-  initAction(m_projectProperties, "", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   initAction(m_projectAddLayerDataset, "", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
+  initAction(m_projectNewFolder, "folder-new", "Project.New Folder", tr("&New Folder..."), tr("Add a new folder"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
+  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, m_menubar);
+  initAction(m_projectRemoveFolder, "folder-remove", "Project.Remove Folder", tr("Remove &Folder(s)"), tr("Remove folder from the project"), true, false, true, m_menubar);
+  initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
 // Menu -Layer- actions
   //initAction(m_layerEdit, "layer-edit", "Layer.Edit", tr("&Edit"), tr(""), true, false, false, m_menubar); TODO
   //initAction(m_layerRename, "layer-rename", "Layer.Rename", tr("R&ename"), tr(""), true, false, false, m_menubar); TODO
   //initAction(m_layerExport, "document-export", "Layer.Export", tr("E&xport..."), tr(""), true, false, false, m_menubar); TODO
-  initAction(m_layerNewLayerGroup, "", "Layer.New Layer Group", tr("&New Layer Group..."), tr(""), false, false, true, m_menubar);
   initAction(m_layerGrouping, "grouping", "Layer.Grouping", tr("&Grouping..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerSRS, "srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
+  initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
   initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
   //initAction(m_layerRaise, "layer-raise", "Layer.Raise", tr("&Raise"), tr(""), true, false, false, m_menubar); TODO
   //initAction(m_layerLower, "layer-lower", "Layer.Lower", tr("&Lower"), tr(""), true, false, false, m_menubar); TODO
@@ -1594,9 +1617,6 @@ void te::qt::af::BaseApplication::initActions()
   mapToolsGroup->addAction(m_mapMeasureAngle);
   mapToolsGroup->addAction(m_mapInfo);
   mapToolsGroup->addAction(m_mapSelection);
-
-// Layer context menu
-  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, this);
 }
 
 void te::qt::af::BaseApplication::initMenus()
@@ -1659,7 +1679,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_viewMenu->addAction(m_viewDataTable);
   m_viewMenu->addAction(m_viewStyleExplorer);
   //m_viewMenu->addAction(m_viewGrid); TODO
-  m_viewMenu->addAction(m_viewDataSourceExplorer);
   m_viewMenu->addSeparator();
   m_viewMenu->addAction(m_viewFullScreen);
   m_viewMenu->addSeparator();
@@ -1673,11 +1692,14 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectAddLayerMenu->setTitle(tr("&Add Layer"));
   m_projectAddLayerMenu->setIcon(QIcon::fromTheme("layer-add"));
 
-  m_projectMenu->addSeparator();
-  m_projectMenu->addAction(m_projectProperties);
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
   m_projectAddLayerMenu->addSeparator();
   m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
+  m_projectMenu->addAction(m_projectNewFolder);
+  m_projectMenu->addAction(m_projectRemoveLayer);
+  m_projectMenu->addAction(m_projectRemoveFolder);
+  m_projectMenu->addSeparator();
+  m_projectMenu->addAction(m_projectProperties);
 
   m_layerMenu->setObjectName("Layer");
   m_layerMenu->setTitle(tr("&Layer"));
@@ -1686,8 +1708,7 @@ void te::qt::af::BaseApplication::initMenus()
   //m_layerMenu->addAction(m_layerEdit); TODO
   //m_layerMenu->addAction(m_layerRename); TODO
   //m_layerMenu->addAction(m_layerExport); TODO
-  m_layerMenu->addAction(m_layerGrouping);
-  m_layerMenu->addAction(m_layerNewLayerGroup);
+  m_layerMenu->addAction(m_layerGrouping);  
   m_layerMenu->addAction(m_layerProperties);
   m_layerMenu->addAction(m_layerSRS);
   m_layerMenu->addAction(m_layerShowTable);
@@ -1740,7 +1761,7 @@ void te::qt::af::BaseApplication::initMenus()
 //  m_toolsMenu->addAction(m_toolbarsManagement);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsDataExchanger);
-  m_toolsMenu->addAction(m_toolsDataSourceManagement);
+  m_toolsMenu->addAction(m_toolsDataSourceExplorer);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsCustomize);  
 
@@ -1871,6 +1892,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
   connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
+  connect(m_projectRemoveFolder, SIGNAL(triggered()), SLOT(onRemoveFolderTriggered()));
   connect(m_projectRemoveLayer, SIGNAL(triggered()), SLOT(onRemoveLayerTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
@@ -1886,7 +1908,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
   connect(m_layerChart, SIGNAL(triggered()), SLOT(onLayerChartTriggered()));
-  connect(m_layerNewLayerGroup, SIGNAL(triggered()), SLOT(onLayerNewLayerGroupTriggered()));
+  connect(m_projectNewFolder, SIGNAL(triggered()), SLOT(onNewFolderTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
   connect(m_layerSRS, SIGNAL(triggered()), SLOT(onLayerSRSTriggered()));
   connect(m_layerGrouping, SIGNAL(triggered()), SLOT(onLayerGroupingTriggered()));
@@ -1908,5 +1930,5 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapStopDraw, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
   connect(m_layerShowTable, SIGNAL(triggered()), SLOT(onLayerShowTableTriggered()));
   connect(m_viewFullScreen, SIGNAL(toggled(bool)), SLOT(onFullScreenToggled(bool)));
-  connect(m_viewDataSourceExplorer, SIGNAL(triggered()), SLOT(onDataSourceExplorerTriggered()));
+  connect(m_toolsDataSourceExplorer, SIGNAL(triggered()), SLOT(onDataSourceExplorerTriggered()));
 }

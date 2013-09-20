@@ -49,7 +49,8 @@ te::qt::plugins::vp::BufferAction::~BufferAction()
 
 void te::qt::plugins::vp::BufferAction::onActionActivated(bool checked)
 {
-  te::vp::BufferDialog dlg(0);
+  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  te::vp::BufferDialog dlg(parent);
 
   // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
