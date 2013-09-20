@@ -803,7 +803,6 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     te::da::DataSet* dataset = lay->getData().release();
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::HistogramDialog dlg(dataset, dataType, this);
-    dlg.setWindowIcon(QIcon::fromTheme("chart-bar"));
     int res = dlg.exec();
     if (res == QDialog::Accepted)
     {
@@ -839,7 +838,6 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     te::da::DataSet* dataset = lay->getData().release();
     te::da::DataSetType* dataType = (te::da::DataSetType*) schema;
     te::qt::widgets::ScatterDialog dlg(dataset, dataType, this);
-    dlg.setWindowIcon(QIcon::fromTheme("chart-scatter"));
     int res = dlg.exec();
     if (res == QDialog::Accepted)
     {
