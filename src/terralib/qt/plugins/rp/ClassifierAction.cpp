@@ -47,7 +47,7 @@ te::qt::plugins::rp::ClassifierAction::~ClassifierAction()
 
 void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::ClassifierWizard dlg(0);
+  te::qt::widgets::ClassifierWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
 // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();

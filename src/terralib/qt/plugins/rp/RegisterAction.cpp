@@ -46,7 +46,7 @@ te::qt::plugins::rp::RegisterAction::~RegisterAction()
 
 void te::qt::plugins::rp::RegisterAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::RegisterWizard dlg(0);
+  te::qt::widgets::RegisterWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
 // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
