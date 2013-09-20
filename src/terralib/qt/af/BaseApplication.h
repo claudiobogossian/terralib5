@@ -89,8 +89,6 @@ namespace te
 
           void onPluginsManagerTriggered();
 
-          void onPluginsBuilderTriggered();
-
           void onRecentProjectsTriggered(QAction* proj);
 
           void onNewProjectTriggered();
@@ -219,7 +217,6 @@ namespace te
           QAction* m_toolsDataExchanger;
           QAction* m_toolsDataSourceExplorer;
           QAction* m_pluginsManager;
-          QAction* m_pluginsBuilder;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
           //QAction* m_viewToolBars;
@@ -288,7 +285,6 @@ namespace te
           QMenu* m_projectMenu;
           QMenu* m_projectAddLayerMenu;
           QMenu* m_layerMenu;
-          QMenu *m_layerChartsMenu;
           QMenu* m_fileMenu;
           QMenu* m_recentProjectsMenu;
           QMenu* m_mapMenu;
