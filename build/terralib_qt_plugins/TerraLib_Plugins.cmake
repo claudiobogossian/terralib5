@@ -9,6 +9,7 @@ option (BUILD_QT_PLUGIN_DATASOURCE_SQLITE "Build SQLite datasource plugin for Qt
 option (BUILD_QT_PLUGIN_DATASOURCE_WCS "Build WCS datasource plugin for Qt." OFF)  
 option (BUILD_QT_PLUGIN_DATASOURCE_WFS "Build WFS datasource plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_DATASOURCE_WMS "Build WMS datasource plugin for Qt." OFF)  
+option (BUILD_QT_PLUGIN_LAYOUT "Build LAYOUT plugin for Qt." ON)
 option (BUILD_QT_PLUGIN_RP "Build RP plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_VP "Build VP plugin for Qt." OFF) 
 
@@ -63,6 +64,10 @@ endif()
 
 if(BUILD_QT_PLUGIN_DATASOURCE_WFS)
   add_subdirectory(terralib_qt_plugins/datasource_wfs)
+endif()
+
+if(BUILD_QT_PLUGIN_LAYOUT)
+  add_subdirectory(terralib_qt_plugins/layout)
 endif()
 
 if(BUILD_QT_PLUGIN_RP)

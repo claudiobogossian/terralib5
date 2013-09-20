@@ -42,14 +42,15 @@ te::qt::widgets::LayerTreeModel::LayerTreeModel(QObject* parent)
   : QAbstractItemModel(parent),
     m_checkable(false)
 {
-  setSupportedDragActions(Qt::MoveAction);
+  setSupportedDragActions(Qt::MoveAction | Qt::CopyAction);
 }
+
 
 te::qt::widgets::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject * parent)
   : QAbstractItemModel(parent),
     m_checkable(false)
 {
-  setSupportedDragActions(Qt::MoveAction);
+  setSupportedDragActions(Qt::MoveAction | Qt::CopyAction);
 }
 
 te::qt::widgets::LayerTreeModel::~LayerTreeModel()

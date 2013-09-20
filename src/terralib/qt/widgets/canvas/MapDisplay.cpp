@@ -28,6 +28,8 @@
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../maptools/Utils.h"
+#include "../../../qt/widgets/layer/explorer/AbstractTreeItem.h"
 #include "MapDisplay.h"
 #include "Canvas.h"
 #include "ScopedCursor.h"
@@ -66,6 +68,70 @@ te::qt::widgets::MapDisplay::~MapDisplay()
     delete it->second;
 
   m_layerCanvasMap.clear();
+}
+
+void te::qt::widgets::MapDisplay::dragEnterEvent(QDragEnterEvent* e)
+{
+  Qt::DropActions actions = e->dropAction();
+  if(actions != Qt::CopyAction)
+    return;
+
+  const QMimeData* mime = e->mimeData();
+  QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
+  if(s.isEmpty())
+    return;
+
+  e->accept();
+  return;
+}
+
+void te::qt::widgets::MapDisplay::dropEvent(QDropEvent* e)
+{
+  const QMimeData* mime = e->mimeData();
+  QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
+  unsigned long v = s.toULongLong();
+  std::vector<te::qt::widgets::AbstractTreeItem*>* draggedItems = reinterpret_cast<std::vector<AbstractTreeItem*>*>(v);
+  te::qt::widgets::AbstractTreeItem* item = draggedItems->operator[](0);
+  te::map::AbstractLayerPtr al = item->getLayer();
+  changeData(al);
+}
+
+void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al)
+{
+  // limpe todos os canvas antes usados 
+  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
+  for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
+  {
+    te::map::Canvas* c = getCanvas(it->first);
+    delete c;
+  }
+  m_layerCanvasMap.clear();
+  m_srid = -1;
+
+  if(al.get() == 0)
+    return;
+
+  std::list<te::map::AbstractLayerPtr> visibleLayers;
+  te::map::GetVisibleLayers(al, visibleLayers);
+  setLayerList(visibleLayers);
+
+  // calcule novo SRID e extent
+  te::gm::Envelope envelope;
+
+  std::list<te::map::AbstractLayerPtr>::iterator lit;
+  for(lit = visibleLayers.begin(); lit != visibleLayers.end(); ++lit)
+  {
+    te::gm::Envelope env = (*lit)->getExtent();
+
+    int srid = (*lit)->getSRID();
+    if(m_srid <= 0)
+      m_srid = srid;
+    if(srid != m_srid)
+      env.transform(srid, m_srid);
+
+    envelope.Union(env);
+  }
+  setExtent(envelope);
 }
 
 void te::qt::widgets::MapDisplay::setExtent(te::gm::Envelope& e, bool doRefresh)
@@ -206,12 +272,17 @@ void te::qt::widgets::MapDisplay::resizeEvent(QResizeEvent* e)
 {
   QWidget::resizeEvent(e);
 
-  // Stores the old size
-  if(!m_oldSize.isValid())
-    e->oldSize().isValid() ? m_oldSize = e->oldSize() : m_oldSize = e->size();
+  if(m_interval == 0)
+    onResizeTimeout();
+  else
+  {
+    // Stores the old size
+    if(!m_oldSize.isValid())
+      e->oldSize().isValid() ? m_oldSize = e->oldSize() : m_oldSize = e->size();
 
-  // Setups the timer controller
-  m_timer->start(m_interval);
+    // Setups the timer controller
+    m_timer->start(m_interval);
+  }
 }
 
 QPointF te::qt::widgets::MapDisplay::transform(const QPointF& p)
@@ -256,8 +327,13 @@ void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize
   }
 
   te::gm::Envelope e = m_extent;
+  //if(m_resizePolicy == te::qt::widgets::MapDisplay::Fixed)
+  //  setExtent(e);
   if(m_resizePolicy == te::qt::widgets::MapDisplay::Fixed)
+  {
     setExtent(e);
+    return;
+  }
 
   double widthW = e.m_urx - e.m_llx;
   double heightW = e.m_ury - e.m_lly;
