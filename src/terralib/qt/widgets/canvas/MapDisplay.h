@@ -97,6 +97,12 @@ namespace te
           /** @name AbstractMapDisplay Methods */
           //@{
 
+          virtual void dragEnterEvent(QDragEnterEvent*);
+
+          virtual void dropEvent(QDropEvent*);
+
+          virtual void changeData(te::map::AbstractLayerPtr);
+
           virtual void setExtent(te::gm::Envelope& e, bool doRefresh = true);
 
           virtual void refresh();
