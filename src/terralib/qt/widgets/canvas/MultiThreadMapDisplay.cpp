@@ -69,6 +69,7 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh()
 
   // Cleaning...
   m_displayPixmap->fill(m_backgroundColor);
+  m_draftPixmap->fill(Qt::transparent);
 
   // Considering only the visible layers
   m_visibleLayers.clear();
