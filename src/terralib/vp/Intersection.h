@@ -63,24 +63,30 @@ namespace te
 
     DataSetRTree CreateRTree(te::da::DataSetType* dt, te::da::DataSet* ds);
 
-    te::map::AbstractLayerPtr Intersection(const std::vector<LayerInputData>& idata,
-                                           const std::string& newLayerName,
-                                           const te::da::DataSourceInfoPtr& dsinfo);
+    te::map::AbstractLayerPtr Intersection( const te::map::AbstractLayerPtr& firstLayer,
+                                            const te::map::AbstractLayerPtr& secondLayer,
+                                            const bool& copyInputColumns,
+                                            const std::string& newLayerName,
+                                            const te::da::DataSourceInfoPtr& dsinfo);
 
-    std::pair<te::da::DataSetType*, te::da::DataSet*> Intersection(const std::string& newLayerName,
-                                                                   const std::vector<LayerInputData>& idata,
-                                                                   size_t outputSRID = 0);
+    std::pair<te::da::DataSetType*, te::da::DataSet*> IntersectionMemory(const std::string& newLayerName,
+                                                                        const te::map::AbstractLayerPtr& firstLayer,
+                                                                        const te::map::AbstractLayerPtr& secondLayer,
+                                                                        const bool& copyInputColumns,
+                                                                        size_t outputSRID);
 
     std::pair<te::da::DataSetType*, te::da::DataSet*> IntersectionQuery(const std::string& newLayerName,
-                                                                                const std::vector<LayerInputData>& idata,
-                                                                                size_t outputSRID);
+                                                                        const te::map::AbstractLayerPtr& firstLayer,
+                                                                        const te::map::AbstractLayerPtr& secondLayer,
+                                                                        const bool& copyInputColumns,
+                                                                        size_t outputSRID);
 
     std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::string newName, 
                                                                            IntersectionMember firstMember, 
                                                                            IntersectionMember secondMember,
                                                                            std::size_t outputSRID = 0);
 
-    bool SupportsSpatialOperators(const std::vector<LayerInputData>& idata);
+    std::vector<te::dt::Property*> GetPropertiesWithoutGeom(te::da::DataSetType* dsType);
   }
 }
 
