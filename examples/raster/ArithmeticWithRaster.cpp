@@ -3,6 +3,7 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/gdal.h>
 #include <terralib/geometry.h>
 #include <terralib/raster.h>
@@ -45,20 +46,20 @@ void ArithmeticWithRaster()
 // access a raster datasource to create temporary raster
     std::map<std::string, std::string> connInfoRaster;
     connInfoRaster["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
-    te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
-    ds->open(connInfoRaster);
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
+    ds->setConnectionInfo(connInfoRaster);
+    ds->open();
 
-    te::da::DataSourceTransactor* tr = ds->getTransactor();
-    te::da::DataSetTypePersistence* pers = tr->getDataSetTypePersistence();
+    std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
 
 // create temporary raster using data set type persistence
-    pers->create(dstpden);
+    tr->createDataSet(dstpden, std::map<std::string, std::string> ());
 
 // access the temporary data set
-    te::da::DataSet* dsden = tr->getDataSet(srden["URI"], te::common::FORWARDONLY, te::common::RWAccess);
+    std::auto_ptr<te::da::DataSet> dsden = tr->getDataSet(srden["URI"], te::common::FORWARDONLY, te::common::RWAccess);
 
-    std::size_t rpos = te::da::GetFirstPropertyPos(dsden, te::dt::RASTER_TYPE);
-    te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster(rpos));
+    std::size_t rpos = te::da::GetFirstPropertyPos(dsden.get(), te::dt::RASTER_TYPE);
+    te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster(rpos).get());
     //te::gdal::Raster* rden = static_cast<te::gdal::Raster*> (dsden->getRaster());
 
 // create ndvi raster
@@ -117,15 +118,12 @@ void ArithmeticWithRaster()
 
 // remove temporary raster using data set type persistence
     delete rden;
-    pers->drop(dstpden);
+    tr->dropDataSet(dstpden->getName());
 
 // clean up
     delete ri;
     delete rndvi;
     delete rndvin;
-    delete pers;
-    delete tr;
-    delete ds;
 
     std::cout << "Done!" << std::endl << std::endl;
   }

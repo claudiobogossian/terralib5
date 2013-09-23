@@ -50,7 +50,8 @@ te::qt::plugins::vp::IntersectionAction::~IntersectionAction()
 
 void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
 {
-  te::vp::IntersectionDialog dlg(0);
+  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  te::vp::IntersectionDialog dlg(parent);
 
   // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
