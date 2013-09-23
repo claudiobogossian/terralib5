@@ -1067,9 +1067,7 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
   if(!m_project && m_project->getLayers().empty())
     return;
 
-  te::qt::widgets::MapDisplay* display = m_display->getDisplay();
-  te::gm::Envelope e = te::map::GetExtent(m_project->getLayers(), display->getSRID(), true);
-  display->setExtent(e, true);
+  m_display->fit(m_project->getLayers());
 }
 
 void te::qt::af::BaseApplication::onInfoToggled(bool checked)
