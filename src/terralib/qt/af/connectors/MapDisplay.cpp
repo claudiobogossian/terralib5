@@ -188,7 +188,11 @@ void te::qt::af::MapDisplay::fit(const std::list<te::map::AbstractLayerPtr>& lay
 
   te::gm::Envelope displayExtent = te::map::GetExtent(layers, m_display->getSRID(), true);
 
-  m_display->setExtent(displayExtent, true);
+  m_display->setExtent(displayExtent, false);
+
+  m_display->setLayerList(layers);
+
+  m_display->refresh();
 }
 
 void te::qt::af::MapDisplay::onCoordTracked(QPointF& coordinate)
