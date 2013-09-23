@@ -108,7 +108,9 @@ namespace te
           void onNewFolderTriggered();
 
           void onLayerPropertiesTriggered();
-        
+
+          void onLayerRemoveSelectionTriggered();
+
           void onLayerSRSTriggered();
 
           void onLayerShowTableTriggered();
@@ -142,6 +144,8 @@ namespace te
           void onZoomExtentTriggered();
 
           void onInfoToggled(bool checked);
+
+          void onMapRemoveSelectionTriggered();
 
           void onSelectionToggled(bool checked);
 
@@ -229,6 +233,7 @@ namespace te
           QAction* m_projectAddLayerGraph;
           QAction* m_projectNewFolder;
           QAction* m_layerEdit;
+          QAction* m_layerRemoveSelection;
           QAction* m_layerRename;
           QAction* m_layerExport;
           QAction* m_layerProperties;
@@ -263,6 +268,7 @@ namespace te
           QAction* m_mapPreviousExtent;
           QAction* m_mapNextExtent;
           QAction* m_mapInfo;
+          QAction* m_mapRemoveSelection;
           QAction* m_mapSelection;
           QAction* m_mapMeasureDistance;
           QAction* m_mapMeasureArea;
