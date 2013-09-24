@@ -48,6 +48,8 @@ te::qt::widgets::RasterInfoWidget::RasterInfoWidget(QWidget* parent, Qt::WindowF
 
   //connects
   connect(m_ui->m_openFileDlgToolButton, SIGNAL(clicked()), this, SLOT(onOpenFileDlgToolButtonClicked()));
+
+
 }
 
 te::qt::widgets::RasterInfoWidget::~RasterInfoWidget()

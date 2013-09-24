@@ -83,9 +83,9 @@ namespace te
 
           void onStrategyTypeComboBoxActivated(int index);
 
-        protected:
-
           void apply();
+
+        protected:
 
           void fillSegmenterTypes();
 

@@ -90,7 +90,7 @@ te::qt::widgets::DataExchangerWizard::DataExchangerWizard(QWidget* parent, Qt::W
   setPage(PAGE_TARGET_DATASOURCE, m_targetSelectorPage.get());
 
   m_datasetOptionsPage.reset(new DataSetOptionsWizardPage(this));
-  m_datasetOptionsPage->showSimpleMode(true); // USED TO HIDE ADVANCED OPTIONS
+  //m_datasetOptionsPage->showSimpleMode(true); // USED TO HIDE ADVANCED OPTIONS
   //m_datasetOptionsPage->setFinalPage(true);
   m_datasetOptionsPage->setCommitPage(true);
   //m_datasetOptionsPage->setTitle(tr("Transfer Options"));
@@ -193,14 +193,13 @@ void te::qt::widgets::DataExchangerWizard::commit()
 // get output data source
   te::da::DataSourceInfoPtr ods = getTargetDataSource();
 
+  if(ods.get() == 0)
+    return;
+
   te::da::DataSourcePtr odatasource = te::da::DataSourceManager::getInstance().get(ods->getId(), ods->getAccessDriver(), ods->getConnInfo());
 
   if(odatasource.get() == 0)
     return;
-
-// get a persistence
-  std::auto_ptr<te::da::DataSourceTransactor> otransactor(odatasource->getTransactor());
-  std::auto_ptr<te::da::DataSourceTransactor> itransactor(idatasource->getTransactor());
 
 // get selected datasets and modified datasets
   std::list<DataExchangeStatus> result;
@@ -220,15 +219,15 @@ void te::qt::widgets::DataExchangerWizard::commit()
       
       //boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
 
-      std::auto_ptr<te::da::DataSet> dataset(itransactor->getDataSet(idset->getName()));
+      std::auto_ptr<te::da::DataSet> dataset(idatasource->getDataSet(idset->getName()));
 
-// stay tunned: create can change idset!
-      otransactor->createDataSet(odset, nopt);
+      // stay tunned: create can change idset!
+      odatasource->createDataSet(odset, nopt);
 
       std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), it->second));
 
       if(dataset->moveNext())
-        otransactor->add(odset->getName(), dsAdapter.get(), ods->getConnInfo());
+        odatasource->add(odset->getName(), dsAdapter.get(), ods->getConnInfo());
 
       // boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
 
