@@ -419,6 +419,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/table/DataSetTableView.h
   ${SRCDIR}/widgets/table/DataSetTableVerticalHeader.h
+  ${SRCDIR}/widgets/table/AddColumnDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/table" MOC)
 
@@ -433,11 +434,6 @@ set (
 		  
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/temporal" MOC)
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/dataview/TabularViewer.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/dataview" MOC)
 
 set (
   HDRS_TO_MOC
@@ -498,6 +494,7 @@ file(
   ${SRCDIR}/widgets/se/ui/*.ui
   ${SRCDIR}/widgets/slider/ui/*.ui
   ${SRCDIR}/widgets/srs/ui/*.ui
+  ${SRCDIR}/widgets/table/ui/*.ui
   ${SRCDIR}/widgets/temporal/ui/*.ui
   ${SRCDIR}/widgets/plugin/builder/ui/*.ui
   ${SRCDIR}/widgets/plugin/manager/ui/*.ui

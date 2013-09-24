@@ -43,6 +43,12 @@ namespace te
     class DataSet;
     class DataSetType;
     class ObjectIdSet;
+    class DataSourceCapabilities;
+  }
+
+  namespace map
+  {
+    class AbstractLayer;
   }
 
   namespace qt
@@ -78,6 +84,13 @@ namespace te
           virtual ~DataSetTableView();
 
           /*!
+            \brief Sets the layer to be presented.
+          
+            \param layer Pointer to the layer to be presented.
+          */
+          void setLayer(const te::map::AbstractLayer* layer);
+
+          /*!
             \brief Updates the data set being visualized.
 
             Note that this DataSet MUST HAVE random access. The view DOES TAKE the ownership of the pointer.
@@ -92,6 +105,8 @@ namespace te
             \param schema The DataSetType to extract keys.
           */
           virtual void setLayerSchema(const te::da::DataSetType* schema);
+
+        public:
 
           /*!
             \brief Highlights the objects identified by \a oids
@@ -173,6 +188,11 @@ namespace te
           */
           void setOIdsColumnsVisible(const bool& visible);
 
+          /*!
+            \brief Add column to the table.
+          */
+          void addColumn();
+
         signals:
 
           /*!
@@ -189,6 +209,7 @@ namespace te
           DataSetTableModel* m_model;       //!< The model to be used.
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
           HighlightDelegate* m_delegate;    //!< Delegate used for rendering selected rows.
+          const te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
       };
     }
   }
