@@ -441,8 +441,30 @@ void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
   }
 }
 
-void te::ogr::Transactor::dropProperty(const std::string& /*datasetName*/, const std::string& /*name*/)
+void te::ogr::Transactor::dropProperty(const std::string& datasetName, const std::string& name)
 {
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
+
+  if(l != 0)
+  {
+    if(!l->TestCapability(OLCDeleteField))
+      throw Exception(TR_OGR("This dataset do not support remove properties operation."));
+
+    int fPos = l->GetLayerDefn()->GetFieldIndex(name.c_str());
+
+    if(fPos < 0)
+      throw Exception(TR_OGR("Field not found."));
+
+    OGRErr error = l->DeleteField(fPos);
+
+    if(error != OGRERR_NONE)
+      throw Exception(TR_OGR("Error when attempting remove the property."));
+
+    error = l->SyncToDisk();
+
+    if(error != OGRERR_NONE)
+      throw Exception(TR_OGR("Error saving changes on the file."));
+  }
 }
 
 void te::ogr::Transactor::renameProperty(const std::string& datasetName,

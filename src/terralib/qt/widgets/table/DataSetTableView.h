@@ -193,6 +193,13 @@ namespace te
           */
           void addColumn();
 
+          /*
+            \brief Removes a column from the table.
+            
+            \param column Position of the column to be removed.
+          */
+          void removeColumn(const int& column);
+
         signals:
 
           /*!

@@ -162,6 +162,8 @@ namespace te
           bool setData (const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
 
           bool insertColumns(int column, int count, const QModelIndex& parent = QModelIndex());
+
+          bool removeColumns(int column, int count, const QModelIndex& parent = QModelIndex());
           //@}
 
         protected:
