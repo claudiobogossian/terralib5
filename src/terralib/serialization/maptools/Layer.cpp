@@ -44,6 +44,7 @@
 #include "../se/Style.h"
 #include "../se/Symbolizer.h"
 #include "../Exception.h"
+#include "Chart.h"
 #include "Layer.h"
 
 // STL
@@ -307,49 +308,56 @@ void WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& wr
 
   te::map::Grouping* g = layer->getGrouping();
 
-  if(g == 0)
-    return;
-
-  writer.writeStartElement("te_map:Grouping");
-
-  te::map::GroupingType type = g->getType();
-
-  writer.writeElement("te_map:PropertyName", g->getPropertyName());
-  writer.writeElement("te_map:PropertyDataType", g->getPropertyType());
-  writer.writeElement("te_map:Type", GetGroupingType(type));
-  writer.writeElement("te_map:Precision", static_cast<unsigned int>(g->getPrecision()));
-  
-  if(type == te::map::STD_DEVIATION)
-    writer.writeElement("te_map:StandardDeviation", g->getStdDeviation());
-
-  const std::vector<te::map::GroupingItem*>& items = g->getGroupingItems();
-
-  for(std::size_t i = 0; i < items.size(); ++i)
+  if(g != 0)
   {
-    te::map::GroupingItem* item = items[i];
-    assert(item);
+    writer.writeStartElement("te_map:Grouping");
 
-    writer.writeStartElement("te_map:GroupingItem");
+    te::map::GroupingType type = g->getType();
 
-    writer.writeElement("te_map:Title", item->getTitle());
+    writer.writeElement("te_map:PropertyName", g->getPropertyName());
+    writer.writeElement("te_map:PropertyDataType", g->getPropertyType());
+    writer.writeElement("te_map:Type", GetGroupingType(type));
+    writer.writeElement("te_map:Precision", static_cast<unsigned int>(g->getPrecision()));
+  
+    if(type == te::map::STD_DEVIATION)
+      writer.writeElement("te_map:StandardDeviation", g->getStdDeviation());
 
-    if(type != te::map::UNIQUE_VALUE)
+    const std::vector<te::map::GroupingItem*>& items = g->getGroupingItems();
+
+    for(std::size_t i = 0; i < items.size(); ++i)
     {
-      writer.writeElement("te_map:From", item->getLowerLimit());
-      writer.writeElement("te_map:To", item->getUpperLimit());
+      te::map::GroupingItem* item = items[i];
+      assert(item);
+
+      writer.writeStartElement("te_map:GroupingItem");
+
+      writer.writeElement("te_map:Title", item->getTitle());
+
+      if(type != te::map::UNIQUE_VALUE)
+      {
+        writer.writeElement("te_map:From", item->getLowerLimit());
+        writer.writeElement("te_map:To", item->getUpperLimit());
+      }
+      else
+        writer.writeElement("te_map:Value", item->getValue());
+
+      const std::vector<te::se::Symbolizer*>& symbs = item->getSymbolizers();
+
+      for(std::size_t j = 0; j < symbs.size(); ++j)
+        te::serialize::Symbolizer::getInstance().write(symbs[j], writer);
+
+      writer.writeEndElement("te_map:GroupingItem");
     }
-    else
-      writer.writeElement("te_map:Value", item->getValue());
 
-    const std::vector<te::se::Symbolizer*>& symbs = item->getSymbolizers();
-
-    for(std::size_t j = 0; j < symbs.size(); ++j)
-      te::serialize::Symbolizer::getInstance().write(symbs[j], writer);
-
-    writer.writeEndElement("te_map:GroupingItem");
+    writer.writeEndElement("te_map:Grouping");
   }
 
-  writer.writeEndElement("te_map:Grouping");
+  te::map::Chart* chart = layer->getChart();
+
+  if(chart != 0)
+  {
+    te::serialize::Save(chart, writer);
+  }
 }
 
 void WriteOGRAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& writer)
@@ -360,49 +368,57 @@ void WriteOGRAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer&
 
   te::map::Grouping* g = layer->getGrouping();
 
-  if(g == 0)
-    return;
-
-  writer.writeStartElement("te_map:Grouping");
-
-  te::map::GroupingType type = g->getType();
-
-  writer.writeElement("te_map:PropertyName", g->getPropertyName());
-  writer.writeElement("te_map:PropertyDataType", g->getPropertyType());
-  writer.writeElement("te_map:Type", GetGroupingType(type));
-  writer.writeElement("te_map:Precision", static_cast<unsigned int>(g->getPrecision()));
-  
-  if(type == te::map::STD_DEVIATION)
-    writer.writeElement("te_map:StandardDeviation", g->getStdDeviation());
-
-  const std::vector<te::map::GroupingItem*>& items = g->getGroupingItems();
-
-  for(std::size_t i = 0; i < items.size(); ++i)
+  if(g != 0)
   {
-    te::map::GroupingItem* item = items[i];
-    assert(item);
 
-    writer.writeStartElement("te_map:GroupingItem");
+    writer.writeStartElement("te_map:Grouping");
 
-    writer.writeElement("te_map:Title", item->getTitle());
+    te::map::GroupingType type = g->getType();
 
-    if(type != te::map::UNIQUE_VALUE)
+    writer.writeElement("te_map:PropertyName", g->getPropertyName());
+    writer.writeElement("te_map:PropertyDataType", g->getPropertyType());
+    writer.writeElement("te_map:Type", GetGroupingType(type));
+    writer.writeElement("te_map:Precision", static_cast<unsigned int>(g->getPrecision()));
+  
+    if(type == te::map::STD_DEVIATION)
+      writer.writeElement("te_map:StandardDeviation", g->getStdDeviation());
+
+    const std::vector<te::map::GroupingItem*>& items = g->getGroupingItems();
+
+    for(std::size_t i = 0; i < items.size(); ++i)
     {
-      writer.writeElement("te_map:From", item->getLowerLimit());
-      writer.writeElement("te_map:To", item->getUpperLimit());
+      te::map::GroupingItem* item = items[i];
+      assert(item);
+
+      writer.writeStartElement("te_map:GroupingItem");
+
+      writer.writeElement("te_map:Title", item->getTitle());
+
+      if(type != te::map::UNIQUE_VALUE)
+      {
+        writer.writeElement("te_map:From", item->getLowerLimit());
+        writer.writeElement("te_map:To", item->getUpperLimit());
+      }
+      else
+        writer.writeElement("te_map:Value", item->getValue());
+
+      const std::vector<te::se::Symbolizer*>& symbs = item->getSymbolizers();
+
+      for(std::size_t j = 0; j < symbs.size(); ++j)
+        te::serialize::Symbolizer::getInstance().write(symbs[j], writer);
+
+      writer.writeEndElement("te_map:GroupingItem");
     }
-    else
-      writer.writeElement("te_map:Value", item->getValue());
 
-    const std::vector<te::se::Symbolizer*>& symbs = item->getSymbolizers();
-
-    for(std::size_t j = 0; j < symbs.size(); ++j)
-      te::serialize::Symbolizer::getInstance().write(symbs[j], writer);
-
-    writer.writeEndElement("te_map:GroupingItem");
+    writer.writeEndElement("te_map:Grouping");
   }
 
-  writer.writeEndElement("te_map:Grouping");
+  te::map::Chart* chart = layer->getChart();
+
+  if(chart != 0)
+  {
+    te::serialize::Save(chart, writer);
+  }
 }
 
 void te::serialize::Layer::reg(const std::string& layerType, const LayerFnctSerializeType& fncts)
@@ -466,6 +482,8 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
 
   /* Grouping */
   te::map::Grouping* grouping = ReadLayerGrouping(reader);
+
+  std::auto_ptr<te::map::Chart> chart(te::serialize::ReadChart(reader));
 
   /* DataSetName Element */
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -550,6 +568,9 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
 
   if(grouping)
     layer->setGrouping(grouping);
+
+  if(chart.get())
+    layer->setChart(chart.release());
 
   return layer.release();
 }
