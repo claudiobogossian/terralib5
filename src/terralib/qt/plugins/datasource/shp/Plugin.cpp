@@ -149,7 +149,7 @@ void te::qt::plugins::shp::Plugin::startup()
   if(act != 0 && mnu != 0)
   {
     QWidget* parent = act->parentWidget();
-    m_showWindow = new QAction(QIcon::fromTheme("datasource-shapefile"), tr("Vector File..."), parent);
+    m_showWindow = new QAction(QIcon::fromTheme("file-vector"), tr("Vector File..."), parent);
     m_showWindow->setObjectName("Project.Add Layer.Vector File");
     mnu->insertAction(act, m_showWindow);
 

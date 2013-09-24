@@ -107,7 +107,7 @@ void te::qt::plugins::gdal::Plugin::startup()
   if(act != 0 && mnu != 0)
   {
     QWidget* parent = act->parentWidget();
-    m_openFile = new QAction(QIcon::fromTheme("datasource-gdal"), tr("Raster File..."), parent);
+    m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), parent);
     m_openFile->setObjectName("Project.Add Layer.Raster File");
     mnu->insertAction(act, m_openFile);
 
