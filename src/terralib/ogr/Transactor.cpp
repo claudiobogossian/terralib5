@@ -432,6 +432,11 @@ void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
 
       if(error != OGRERR_NONE)
         throw Exception(TR_OGR("Error when attempting add the property."));
+
+      error = l->SyncToDisk();
+
+      if(error != OGRERR_NONE)
+        throw Exception(TR_OGR("Error saving changes on the file."));
     }
   }
 }

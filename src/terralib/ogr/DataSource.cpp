@@ -32,6 +32,28 @@
 
 te::da::SQLDialect* te::ogr::DataSource::sm_myDialect(0);
 
+void GetCapabilities(OGRDataSource* ds, te::da::DataSourceCapabilities& caps)
+{
+  // DataSet
+  if(ds->GetLayerCount() <= 0)
+    return;
+
+  te::da::DataSetCapabilities ds_caps;
+
+  OGRLayer* l = ds->GetLayer(0);
+  
+  ds_caps.setSupportEfficientMove((l->TestCapability(OLCFastSetNextByIndex)) ? true : false);
+  ds_caps.setSupportRandomTraversing((l->TestCapability(OLCRandomRead)) ? true : false);
+  ds_caps.setSupportBidirectionalTraversing((l->TestCapability(OLCRandomRead)) ? true : false);
+  ds_caps.setSupportInsertion(l->TestCapability((OLCSequentialWrite)) ? true : false);
+  ds_caps.setSupportUpdate(l->TestCapability((OLCRandomWrite)) ? true : false);
+  ds_caps.setSupportDeletion(l->TestCapability((OLCDeleteFeature)) ? true : false);
+  ds_caps.setSupportEfficientDataSetSize((l->TestCapability(OLCFastGetExtent)) ? true : false);
+
+  caps.setDataSetCapabilities(ds_caps);
+}
+
+
 te::ogr::DataSource::DataSource() :
 te::da::DataSource(),
 m_ogrDS(0),
@@ -72,7 +94,7 @@ void te::ogr::DataSource::open()
     throw Exception(TR_OGR("There is no information about the data source")); 
 
   std::string path = m_connectionInfo.begin()->second;
-  m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str());
+  m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
   
   if(m_ogrDS == 0)
   {
@@ -81,6 +103,8 @@ void te::ogr::DataSource::open()
   }
 
   m_isValid = true;
+
+  GetCapabilities(m_ogrDS, m_capabilities);
 }
 
 void te::ogr::DataSource::close()

@@ -64,11 +64,10 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
-  m_view->setDataSet(m_layer->getData().release());
-  m_view->setLayerSchema(m_layer->getSchema().get());
+  m_view->setLayer(m_layer);
 
-  if(layer->getSelected() != 0)
-    m_view->highlightOIds(layer->getSelected());
+  if(m_layer->getSelected() != 0)
+    m_view->highlightOIds(m_layer->getSelected());
 
   setWindowTitle(m_layer->getTitle().c_str());
 }

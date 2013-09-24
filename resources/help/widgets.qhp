@@ -11,6 +11,9 @@
         <section title="Classifier" ref="./widgets/rp/classifier.html"/>
         <section title="Data set selector" ref="./widgets/dataset_selector/dataset_selector.html"/>
         <section title="Data source selector" ref="./widgets/datasource_selector/datasource_selector.html"/>
+        <section title="Data Table" ref="./widgets/table/index.html">
+          <section title="Add Column" ref="./widgets/table/addColumn.html"/>
+        </section>
       </section>
     </toc>
     <keywords>
@@ -20,6 +23,8 @@
       <keyword name="Classifier" ref="./widgets/rp/classifier.html"/>
       <keyword name="Dataset" ref="./widgets/dataset_selector/dataset_selector.html"/>
       <keyword name="Data source" ref="./widgets/datasource_selector/datasource_selector.html"/>
+      <keyword name="Table" ref="./widgets/table/index.html"/>
+      <keyword name="Add Column" ref="./widgets/table/addColumn.html"/>
     </keywords>
      <files>
       <file>widgets/index.html</file>
@@ -29,6 +34,8 @@
       <file>widgets/rp/classifier.html</file>
       <file>widgets/dataset_selector/dataset_selector.html</file>
       <file>widgets/datasource_selector/datasource_selector.html</file>
+      <file>widgets/table/index.html</file>
+      <file>widgets/table/addColumn.html</file>
     </files>
   </filterSection>
 </QtHelpProject>

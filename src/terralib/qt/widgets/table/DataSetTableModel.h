@@ -160,6 +160,8 @@ namespace te
           Qt::ItemFlags flags(const QModelIndex & index) const;
 
           bool setData (const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
+
+          bool insertColumns(int column, int count, const QModelIndex& parent = QModelIndex());
           //@}
 
         protected:
