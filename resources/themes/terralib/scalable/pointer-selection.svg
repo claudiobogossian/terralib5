@@ -299,9 +299,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.0530808"
-     inkscape:cx="-37.093674"
-     inkscape:cy="74.075043"
+     inkscape:zoom="24.186496"
+     inkscape:cx="12.473848"
+     inkscape:cy="11.442951"
      inkscape:document-units="px"
      inkscape:current-layer="pointer"
      showgrid="false"
@@ -353,13 +353,13 @@
            id="tool-pointer"
            transform="matrix(0.84032393,0,0,0.84032393,-15.794567,23.646208)"
            inkscape:label="#pointer"
-           style="fill:#ffffff;stroke:#000000">
+           style="fill:#000000;stroke:#000000">
           <path
              inkscape:connector-curvature="0"
              sodipodi:nodetypes="ssssssss"
              id="path730"
              d="m -103.70564,154.97308 -0.0575,-18.2662 12.040141,12.8752 -5.398815,-0.0773 3.622235,5.63616 -4.47307,2.1183 -2.038591,-6.51575 z"
-             style="font-size:12px;fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none" />
+             style="font-size:12px;fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none" />
         </g>
       </g>
     </g>

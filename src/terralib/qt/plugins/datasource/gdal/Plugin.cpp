@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -107,7 +107,7 @@ void te::qt::plugins::gdal::Plugin::startup()
   if(act != 0 && mnu != 0)
   {
     QWidget* parent = act->parentWidget();
-    m_openFile = new QAction(QIcon::fromTheme("datasource-gdal"), tr("Raster File..."), parent);
+    m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), parent);
     m_openFile->setObjectName("Project.Add Layer.Raster File");
     mnu->insertAction(act, m_openFile);
 
@@ -175,9 +175,10 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
     GetLayers(ds, layers);
   }
 
-  if(!layers.empty())
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  for(it = layers.begin(); it != layers.end(); ++it)
   {
-    te::qt::af::evt::LayersAdded evt(layers);
+    te::qt::af::evt::LayerAdded evt(*it);
     te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 }

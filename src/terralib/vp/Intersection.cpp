@@ -119,27 +119,35 @@ std::vector<te::dt::Property*> GetPropertiesByPos(te::da::DataSetType* dt, std::
   return props;
 }
 
-te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
-                                               const std::vector<LayerInputData>& idata,
-                                               const te::da::DataSourceInfoPtr& dsinfo,
-                                               size_t outputSRID,
-                                               const std::map<std::string, std::string>& options)
+te::map::AbstractLayerPtr te::vp::Intersection( const te::map::AbstractLayerPtr& firstLayer,
+                                                const te::map::AbstractLayerPtr& secondLayer,
+                                                const bool& copyInputColumns,
+                                                const std::string& newLayerName,
+                                                const te::da::DataSourceInfoPtr& dsinfo)
 {
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+  std::size_t outputSRID = 0;
 
-  //Lógica para execução da operação, em memória ou via query.
-  if(SupportsSpatialOperators(idata))
+  te::map::DataSetLayer* firstDSLayer = dynamic_cast<te::map::DataSetLayer*>(firstLayer.get());
+  te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDSLayer->getDataSourceId(), true);
+  const te::da::DataSourceCapabilities firstDSCapabilities = firstDataSource->getCapabilities();
+
+  te::map::DataSetLayer* secondDSLayer = dynamic_cast<te::map::DataSetLayer*>(secondLayer.get());
+  te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDSLayer->getDataSourceId(), true);
+  const te::da::DataSourceCapabilities secondDSCapabilities = secondDataSource->getCapabilities();
+
+  if(firstDSCapabilities.supportsSpatialOperators() && secondDSCapabilities.supportsSpatialOperators() && (firstDataSource->getId() == secondDataSource->getId()))
   {
-    resultPair = IntersectionQuery(newLayerName, idata, outputSRID);
+    resultPair = IntersectionQuery(newLayerName, firstLayer, secondLayer, copyInputColumns, outputSRID);
   }
   else
   {
-    resultPair = Intersection(newLayerName, idata, outputSRID);
+    resultPair = IntersectionMemory(newLayerName, firstLayer, secondLayer, copyInputColumns, outputSRID);
   }
 
   te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsinfo->getId(), dsinfo->getType(), dsinfo->getConnInfo());
 
-  te::da::Create(dataSource.get(), resultPair.first, resultPair.second, options);
+  te::da::Create(dataSource.get(), resultPair.first, resultPair.second);
 
   te::qt::widgets::DataSet2Layer converter(dataSource->getId());
 
@@ -153,106 +161,39 @@ te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
   return newLayer;
 }
 
-te::map::AbstractLayerPtr te::vp::Intersection(const std::string& newLayerName,
-                                               const std::vector<LayerInputData>& idata,
-                                               std::string outputArchive,
-                                               size_t outputSRID,
-                                               const std::map<std::string, std::string>& options)
+std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory(const std::string& newLayerName,
+                                                                            const te::map::AbstractLayerPtr& firstLayer,
+                                                                            const te::map::AbstractLayerPtr& secondLayer,
+                                                                            const bool& copyInputColumns,
+                                                                            size_t outputSRID)
 {
-  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
-
-  if(SupportsSpatialOperators(idata))
-  {
-    resultPair = IntersectionQuery(newLayerName, idata, outputSRID);
-  }
-  else
-  {
-    resultPair = Intersection(newLayerName, idata, outputSRID);
-  }
-
-  static boost::uuids::basic_random_generator<boost::mt19937> gen;
-  boost::uuids::uuid u = gen();
-  std::string id = boost::uuids::to_string(u);
-
-  std::map<std::string, std::string> conn;
-  conn["connection_string"] = outputArchive;
-  
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(id, "OGR", conn);
-  
-  te::da::Create(dataSource.get(),resultPair.first,resultPair.second,options);
-
-  te::qt::widgets::DataSet2Layer converter(dataSource->getId());
-
-  te::da::DataSetTypePtr dt(dataSource->getDataSetType(resultPair.first->getName()).get());
-  
-  te::map::DataSetLayerPtr newLayer = converter(dt);
-
-  return newLayer;
-}
-
-std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::Intersection(const std::string& newLayerName,
-  const std::vector<LayerInputData>& idata,
-  size_t outputSRID)
-{
-  if(idata.size() <= 1)
-    throw te::common::Exception(TR_VP("At least two layers are necessary for an intersection!"));
-
   if(outputSRID == 0)
-    outputSRID = idata.begin()->first->getSRID();
+    outputSRID = firstLayer->getSRID();
 
-  size_t countAux = 0;
-  LayerInputData aux;
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
 
-  for(size_t i = 0; i < idata.size(); ++i)
-  {
-    if(i == 0)
-    {
-      aux = idata[i];
-      ++countAux;
-      continue;
-    }
+  te::map::DataSetLayer* firstDSLayer = dynamic_cast<te::map::DataSetLayer*>(firstLayer.get());
+  te::map::DataSetLayer* secondDSLayer = dynamic_cast<te::map::DataSetLayer*>(secondLayer.get());
 
-    te::map::AbstractLayerPtr secondLayer = idata[i].first;
-    std::vector<size_t> secondPropsPos = idata[i].second;
+  std::auto_ptr<te::da::DataSetType> firstDSType(firstDSLayer->getSchema().release());
+  std::auto_ptr<te::da::DataSetType> secondDSType(secondDSLayer->getSchema().release());
 
-    IntersectionMember secondMember;
-    secondMember.dt = secondLayer->getSchema().release();
-    secondMember.ds = secondLayer->getData().release();
-    secondMember.props = GetPropertiesByPos(secondMember.dt, secondPropsPos);
+  std::vector<te::dt::Property*> firstProps = GetPropertiesWithoutGeom(firstDSType.get());
 
-    if(countAux == 1)
-    {
-      std::vector<size_t> firstPropsPos = aux.second;
+  IntersectionMember firstMember;
+  firstMember.dt = firstLayer->getSchema().release();
+  firstMember.ds = firstLayer->getData().release();
+  firstMember.props = firstProps;
 
-      IntersectionMember firstMember;
-      firstMember.dt = aux.first->getSchema().release();
-      firstMember.ds = aux.first->getData().release();
-      firstMember.props = GetPropertiesByPos(firstMember.dt, firstPropsPos);
+  std::vector<te::dt::Property*> secondProps = GetPropertiesWithoutGeom(secondDSType.get());
 
-      resultPair = PairwiseIntersection(newLayerName, firstMember, secondMember, outputSRID);
-    }
-    else if(countAux > 1)
-    {
-      std::vector<te::dt::Property*> resultProps = resultPair.first->getProperties();
-      std::vector<te::dt::Property*> auxProps;
+  IntersectionMember secondMember;
+  secondMember.dt = secondLayer->getSchema().release();
+  secondMember.ds = secondLayer->getData().release();
+  if(copyInputColumns)
+    secondMember.props = secondProps;
 
-      for(size_t i = 0; i < resultProps.size(); ++i)
-      {
-        if(resultProps[i] != resultPair.first->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE))
-          auxProps.push_back(resultProps[i]);
-      }
-
-      IntersectionMember auxMember;
-      auxMember.dt = resultPair.first;
-      auxMember.ds = resultPair.second;
-      auxMember.props = auxProps;
-
-      resultPair = PairwiseIntersection(newLayerName, auxMember, secondMember, outputSRID);
-    }
-
-    ++countAux;
-  }
+  resultPair = PairwiseIntersection(newLayerName, firstMember, secondMember, outputSRID);
 
   if(resultPair.second->size() < 1)
     throw te::common::Exception(TR_VP("The Layers do not intersect!"));
@@ -261,137 +202,84 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::Intersection(const std
 }
 
 std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(const std::string& newLayerName,
-                                                                            const std::vector<LayerInputData>& idata,
+                                                                            const te::map::AbstractLayerPtr& firstLayer,
+                                                                            const te::map::AbstractLayerPtr& secondLayer,
+                                                                            const bool& copyInputColumns,
                                                                             size_t outputSRID)
 {
-  if(idata.size() <= 1)
-    throw te::common::Exception(TR_VP("At least two layers are necessary for an intersection!"));
-
   if(outputSRID == 0)
-    outputSRID = idata.begin()->first->getSRID();
+    outputSRID = firstLayer->getSRID();
 
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
 
-  te::map::DataSetLayer* currentDSLayer;
-  te::map::DataSetLayer* nextDSLayer;
-  
-  std::auto_ptr<te::da::DataSetType> currentDSType;
-  std::auto_ptr<te::da::DataSetType> nextDSType;
-
-  std::vector<te::dt::Property*> currentProps;
-  std::vector<te::dt::Property*> nextProps;
-
-  te::da::DataSourcePtr dataSource;
+  te::map::DataSetLayer* firstDSLayer;
+  te::map::DataSetLayer* secondDSLayer;
 
   te::da::Fields* fields = new te::da::Fields;
-
   te::da::Select* select = new te::da::Select;
 
-  for(std::size_t layerPos = 0; layerPos < idata.size(); ++layerPos)
-  {
-    if(layerPos == 0)
-    {
-      currentDSLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
-      nextDSLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos + 1].first.get());
+  firstDSLayer = dynamic_cast<te::map::DataSetLayer*>(firstLayer.get());
+  secondDSLayer = dynamic_cast<te::map::DataSetLayer*>(secondLayer.get());
 
-      dataSource = te::da::GetDataSource(currentDSLayer->getDataSourceId(), true);
+  te::da::DataSourcePtr dataSource = te::da::GetDataSource(firstDSLayer->getDataSourceId(), true);
 
-      currentDSType.reset(currentDSLayer->getSchema().release());
-      nextDSType.reset(nextDSLayer->getSchema().release());
+  std::auto_ptr<te::da::DataSetType> firstDSType(firstDSLayer->getSchema().release());
+  std::auto_ptr<te::da::DataSetType> secondDSType(secondDSLayer->getSchema().release());
 
-      currentProps = GetPropertiesByPos(currentDSType.get(), idata[layerPos].second);
-      nextProps = GetPropertiesByPos(nextDSType.get(), idata[layerPos + 1].second);
+  std::vector<te::dt::Property*> firstProps = GetPropertiesWithoutGeom(firstDSType.get());
+  std::vector<te::dt::Property*> secondProps;
+  if(copyInputColumns)
+    secondProps = GetPropertiesWithoutGeom(secondDSType.get());
 
-      te::gm::GeometryProperty* currentGeom;
-      te::gm::GeometryProperty* nextGeom;
+  te::gm::GeometryProperty* firstGeom;
+  te::gm::GeometryProperty* secondGeom;
 
-      currentGeom = te::da::GetFirstGeomProperty(currentDSType.get());
-      nextGeom = te::da::GetFirstGeomProperty(nextDSType.get());
+  firstGeom = te::da::GetFirstGeomProperty(firstDSType.get());
+  secondGeom = te::da::GetFirstGeomProperty(secondDSType.get());
       
-      std::string currentTableName = te::vp::GetSimpleTableName(currentDSType->getTitle());
-      std::string nextTableName = te::vp::GetSimpleTableName(nextDSType->getTitle());
+  std::string firstTableName = te::vp::GetSimpleTableName(firstDSType->getTitle());
+  std::string secondTableName = te::vp::GetSimpleTableName(secondDSType->getTitle());
 
-      for(std::size_t i = 0; i < currentProps.size(); ++i)
-      {
-        te::da::Field* f_field = new te::da::Field(currentTableName + "." + currentProps[i]->getName() + " ", currentTableName + "_" + currentProps[i]->getName());
-        fields->push_back(f_field);
-      }
-
-      for(std::size_t i = 0; i < nextProps.size(); ++i)
-      {
-        te::da::Field* f_field = new te::da::Field(nextTableName + "." + nextProps[i]->getName() + " ", nextTableName + "_" + nextProps[i]->getName());
-        fields->push_back(f_field);
-      }
-
-      te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(currentDSType->getName() + "." + currentGeom->getName()),
-                                                                        new te::da::PropertyName(nextDSType->getName() + "." + nextGeom->getName()));
-      te::da::Field* f_intersection = new te::da::Field(*e_intersection, "geom");
-      fields->push_back(f_intersection);
-
-      te::da::FromItem* currentFromItem = new te::da::DataSetName(currentDSType->getName());
-      te::da::FromItem* nextFromItem = new te::da::DataSetName(nextDSType->getName());
-      te::da::Expression* e_intersects = new te::da::ST_Intersects( new te::da::PropertyName(currentDSType->getName() + "." + currentGeom->getName()),
-                                                                    new te::da::PropertyName(nextDSType->getName() + "." + nextGeom->getName()));
-      te::da::JoinConditionOn* on = new te::da::JoinConditionOn(e_intersects);
-      te::da::Join* join = new te::da::Join(*currentFromItem, *nextFromItem, te::da::INNER_JOIN, *on);
-
-      te::da::From* from = new te::da::From;
-      from->push_back(join);
-
-      select->setFields(fields);
-      select->setFrom(from);
-
-      ++layerPos;
-    }
-    else
-    {
-      std::string previousQuery;
-      std::auto_ptr<te::da::DataSourceTransactor> dsTransactor(dataSource->getTransactor());
-
-      te::da::SQLVisitor visitor(*(dataSource->getDialect()), previousQuery);
-      select->accept(visitor);
-
-      te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(idata[layerPos].first.get());
-      std::auto_ptr<te::da::DataSetType> dsType(dsLayer->getSchema().release());
-
-      te::gm::GeometryProperty* geom;
-
-      geom = te::da::GetFirstGeomProperty(dsType.get());
-
-      te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
-                                                                        new te::da::PropertyName("("+ previousQuery +")"));
-
-      te::da::Field* f_intersection = new te::da::Field(*e_intersection, "geom");
-
-      fields->clear();
-      fields->push_back(f_intersection);
-
-      std::string alias = "layer" + boost::lexical_cast<std::string>(layerPos);
-
-      te::da::FromItem* currentFromItem = new te::da::DataSetName(dsType->getName());
-      te::da::FromItem* nextFromItem = new te::da::DataSetName("("+ previousQuery +") "+ alias);
-      te::da::Expression* e_intersects = new te::da::ST_Intersects( new te::da::PropertyName(dsType->getName() + "." + geom->getName()),
-                                                                    new te::da::PropertyName("("+ previousQuery +")"));
-      te::da::JoinConditionOn* on = new te::da::JoinConditionOn(e_intersects);
-      te::da::Join* join = new te::da::Join(*currentFromItem, *nextFromItem, te::da::INNER_JOIN, *on);
-
-      te::da::From* from = new te::da::From;
-      from->push_back(join);
-
-      select->setFields(fields);
-      select->setFrom(from);
-
-    }
+  for(std::size_t i = 0; i < firstProps.size(); ++i)
+  {
+    te::da::Field* f_field = new te::da::Field(firstTableName + "." + firstProps[i]->getName() + " ", firstTableName + "_" + firstProps[i]->getName());
+    fields->push_back(f_field);
   }
+
+  for(std::size_t i = 0; i < secondProps.size(); ++i)
+  {
+    te::da::Field* f_field = new te::da::Field(secondTableName + "." + secondProps[i]->getName() + " ", secondTableName + "_" + secondProps[i]->getName());
+    fields->push_back(f_field);
+  }
+
+  te::da::Expression* e_intersection = new te::da::ST_Intersection( new te::da::PropertyName(firstDSType->getName() + "." + firstGeom->getName()),
+                                                                    new te::da::PropertyName(secondDSType->getName() + "." + secondGeom->getName()));
+  te::da::Field* f_intersection = new te::da::Field(*e_intersection, "geom");
+  fields->push_back(f_intersection);
+
+  te::da::FromItem* firstFromItem = new te::da::DataSetName(firstDSType->getName());
+  te::da::FromItem* secondFromItem = new te::da::DataSetName(secondDSType->getName());
+  te::da::Expression* e_intersects = new te::da::ST_Intersects( new te::da::PropertyName(firstDSType->getName() + "." + firstGeom->getName()),
+                                                                new te::da::PropertyName(secondDSType->getName() + "." + secondGeom->getName()));
+  te::da::JoinConditionOn* on = new te::da::JoinConditionOn(e_intersects);
+  te::da::Join* join = new te::da::Join(*firstFromItem, *secondFromItem, te::da::INNER_JOIN, *on);
+
+  te::da::From* from = new te::da::From;
+  from->push_back(join);
+
+  select->setFields(fields);
+  select->setFrom(from);
 
   std::auto_ptr<te::da::DataSet> dsQuery = dataSource->query(select);
   dsQuery->moveFirst();
 
-  te::da::DataSetType* dsType = CreateDataSetType(newLayerName, currentDSType.get(), currentProps, nextDSType.get(), nextProps);
+  te::da::DataSetType* dsType = CreateDataSetType(newLayerName, firstDSType.get(), firstProps, secondDSType.get(), secondProps);
 
   resultPair.first = dsType;
   resultPair.second = dsQuery.release();
-  
+
+  resultPair.second->moveBeforeFirst();
+
   return resultPair;
 }
 
@@ -477,38 +365,28 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
     }
   }
 
+  outputDs->moveBeforeFirst();
+
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
   resultPair.first = outputDt;
   resultPair.second = outputDs;
   return resultPair;
 }
 
-bool te::vp::SupportsSpatialOperators(const std::vector<LayerInputData>& idata)
+std::vector<te::dt::Property*> te::vp::GetPropertiesWithoutGeom(te::da::DataSetType* dsType)
 {
-  bool supportsSpatialOp = false;
+  std::vector<te::dt::Property*> props;
+  te::dt::Property* prop;
 
-  for(std::size_t i = 0; i < idata.size(); ++i)
+  for(std::size_t i = 0; i < dsType->getProperties().size(); ++i)
   {
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(idata[i].first.get());
-    
-    if(dsLayer != 0)
-    {
-      te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-      const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
+    prop = dsType->getProperty(i);
 
-      if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
-      {
-        supportsSpatialOp = true;
-      }
-      else
-      {
-        return false;
-      }
-    }
-    else
+    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE)
     {
-      return false;
+      props.push_back(prop);
     }
   }
-  return supportsSpatialOp;
+
+  return props;
 }

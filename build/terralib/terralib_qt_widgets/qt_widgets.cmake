@@ -82,6 +82,7 @@ set (
   widgets/layer/selector
   widgets/layer/utils
   widgets/layer/info
+  widgets/layout
   widgets/mapdisplay
   widgets/progress
   widgets/property

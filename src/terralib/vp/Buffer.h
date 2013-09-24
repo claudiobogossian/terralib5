@@ -68,29 +68,6 @@ namespace te
                                     const std::string& outputLayerName,
                                     const te::da::DataSourceInfoPtr& dsInfo);
 
-    /*!
-    \brief It receives the required parameters to the buffer process.
-
-    \param inputLayer             The input layer witch is used in buffer operation.
-    \param distance               The buffer distance for each geometry.
-    \param bufferPolygonRule      The buffer rule for all geometries (enum RuleForBuffer)
-    \param bufferBoundariesRule   The buffer boundaries rule for all geometries (enum BoundariesBetweenBuffers)
-    \param copyInputColumns       If boudaries between geometries was not dissolved, the user has the option to Copy de columns from the InputLayer.
-    \param levels
-    \param outputLayerName        The name of output layer.
-    \param outputArchive          Information of datasource persistence.
-
-    \return                       The layer result.
-    */
-    te::map::AbstractLayerPtr Buffer(const te::map::AbstractLayerPtr& inputLayer,
-                                    const std::map<te::gm::Geometry*, double>& distance,
-                                    const int& bufferPolygonRule,
-                                    const int& bufferBoundariesRule,
-                                    const bool& copyInputColumns,
-                                    const int& levels,
-                                    const std::string& outputLayerName,
-                                    const std::string& outputArchive);
-
     te::da::DataSetType* GetDataSetType(const te::map::AbstractLayerPtr& inputLayer,
                                         const std::string& outputLayerName,
                                         const int& bufferBoundariesRule,

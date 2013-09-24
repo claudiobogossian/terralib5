@@ -28,13 +28,9 @@
 
 // TerraLib
 #include "gdal/Config.h"
-#include "gdal/CatalogLoader.h"
 #include "gdal/DataSet.h"
-#include "gdal/DataSetPersistence.h"
-#include "gdal/DataSetTypePersistence.h"
 #include "gdal/DataSource.h"
 #include "gdal/DataSourceFactory.h"
-#include "gdal/DataSourceTransactor.h"
 #include "gdal/Module.h"
 #include "gdal/Raster.h"
 

@@ -72,7 +72,9 @@ namespace te
 
       protected slots:
 
-        void onFilterLineEditTextChanged(const QString& text);
+        void onFirstLayerComboBoxChanged(int index);
+
+        void onSecondLayerComboBoxChanged(int index);
 
         void onHelpPushButtonClicked();
 
@@ -85,11 +87,12 @@ namespace te
       private:
 
         std::auto_ptr<Ui::IntersectionDialogForm> m_ui;
-        te::da::DataSourceInfoPtr m_outputDatasource;   //!< DataSource information.
-        std::string m_outputArchive;                    //!< Archive information.
-        std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of layers.
-        te::map::AbstractLayerPtr m_layer;              //!< Generated Layer.
-        LayerTreeModel* m_model;                        //!< Layer Tree Model.
+        std::list<te::map::AbstractLayerPtr> m_layers;    //!< First layer selected.
+        te::map::AbstractLayerPtr m_firstSelectedLayer;   //!< First layer selected.
+        te::map::AbstractLayerPtr m_secondSelectedLayer;  //!< Second layer selected.
+        te::da::DataSourceInfoPtr m_outputDatasource;     //!< DataSource information.
+        std::string m_outputArchive;                      //!< Archive information.
+        te::map::AbstractLayerPtr m_layerResult;          //!< Generated Layer.
     };
   }   // end namespace vp
 }     // end namespace te

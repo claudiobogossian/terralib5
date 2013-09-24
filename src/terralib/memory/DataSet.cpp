@@ -60,7 +60,7 @@ te::mem::DataSet::DataSet(te::da::DataSet& rhs)
 }
 
 te::mem::DataSet::DataSet(const DataSet& rhs, const bool deepCopy)
-  : m_items(),
+  : m_items(new boost::ptr_vector<DataSetItem>),
     m_i(-1)
 {
   te::da::GetPropertyInfo(&rhs, m_pnames, m_ptypes);
@@ -72,7 +72,7 @@ te::mem::DataSet::DataSet(const DataSet& rhs, const bool deepCopy)
 }
 
 te::mem::DataSet::DataSet(te::da::DataSet& rhs, const std::vector<std::size_t>& properties, std::size_t limit)
-  : m_items(),
+  : m_items(new boost::ptr_vector<DataSetItem>),
     m_i(-1)
 {
   for(std::size_t i = 0; i != properties.size(); ++i)

@@ -47,17 +47,16 @@
 te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::IntersectionDialogForm),
-    m_layers(std::list<te::map::AbstractLayerPtr>()),
-    m_model(0)
+    m_layers(std::list<te::map::AbstractLayerPtr>())
 {
 // add controls
   m_ui->setupUi(this);
 
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme(VP_IMAGES"/vp-intersection-hint").pixmap(48,48));
   m_ui->m_targetDatasourceToolButton->setIcon(QIcon::fromTheme("datasource"));
-  m_ui->m_layerTreeView->setSelectionMode(QAbstractItemView::NoSelection);
 
-  connect(m_ui->m_filterLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onFilterLineEditTextChanged(const QString&)));
+  connect(m_ui->m_firstLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFirstLayerComboBoxChanged(int)));
+  connect(m_ui->m_secondLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSecondLayerComboBoxChanged(int)));
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
@@ -66,37 +65,63 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
 
 te::vp::IntersectionDialog::~IntersectionDialog()
 {
-  delete m_model;
 }
 
 void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
 
-  if(m_model != 0)
-    delete m_model;
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
-  m_model = new LayerTreeModel(m_layers);
-  
-  m_ui->m_layerTreeView->setModel(m_model);
-  m_ui->m_layerTreeView->resizeColumnToContents(0);
-
-  //m_ui->m_layerTreeView->resizeColumnsToContents();
-  //m_ui->m_layerTreeView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+  while(it != m_layers.end())
+  {  
+    m_ui->m_firstLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    ++it;
+  }
 }
 
-void te::vp::IntersectionDialog::onFilterLineEditTextChanged(const QString& text)
+te::map::AbstractLayerPtr te::vp::IntersectionDialog::getLayer()
 {
-  std::list<te::map::AbstractLayerPtr> filteredLayers = te::vp::GetFilteredLayers(text.toStdString(), m_layers);
+  return m_layerResult;
+}
 
-  delete m_model;
+void te::vp::IntersectionDialog::onFirstLayerComboBoxChanged(int index)
+{
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  std::string layerID = m_ui->m_firstLayerComboBox->itemData(index, Qt::UserRole).toString().toStdString();
 
-  if(text == "")
-    filteredLayers = m_layers;
+  m_ui->m_secondLayerComboBox->clear();
+  while(it != m_layers.end())
+  {
+    if(layerID != it->get()->getId().c_str())
+    {
+      m_ui->m_secondLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+    }
+    else
+    {
+      te::map::AbstractLayerPtr selectedLayer = it->get();
+      m_firstSelectedLayer = selectedLayer;
+    }
 
-  m_model = new LayerTreeModel(filteredLayers);
+    ++it;
+  }
+}
 
-  m_ui->m_layerTreeView->setModel(m_model);
+void te::vp::IntersectionDialog::onSecondLayerComboBoxChanged(int index)
+{
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+  std::string layerID = m_ui->m_secondLayerComboBox->itemData(index, Qt::UserRole).toString().toStdString();
+
+  while(it != m_layers.end())
+  {
+    if(layerID == it->get()->getId().c_str())
+    {
+      te::map::AbstractLayerPtr selectedLayer = it->get();
+      m_secondSelectedLayer = selectedLayer;
+    }
+
+    ++it;
+  }
 }
 
 void te::vp::IntersectionDialog::onHelpPushButtonClicked()
@@ -106,63 +131,57 @@ void te::vp::IntersectionDialog::onHelpPushButtonClicked()
 
 void te::vp::IntersectionDialog::onOkPushButtonClicked()
 {
-  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> > selected;
-
-  selected = m_model->getSelected();
-
-  std::vector<LayerInputData> layers;
-
-  std::map<te::map::AbstractLayerPtr, std::vector<te::dt::Property*> >::iterator it;
-
-  for(it = selected.begin(); it != selected.end(); ++it)
+  if(m_ui->m_firstLayerComboBox->currentText().isEmpty())
   {
-    LayerInputData layerInput;
-    LayerPropertiesPosList propsPos;
-
-    te::map::AbstractLayerPtr layer = it->first;
-    std::vector<te::dt::Property*> props = it->second;
-
-    std::auto_ptr<te::map::LayerSchema> schema = layer->getSchema();
-
-    if(!schema->hasGeom())
-    {
-      QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("Some layer do not have a geometry column!"));
-      return;
-    }
-
-    for(size_t i = 0; i < props.size(); ++i)
-      propsPos.push_back(schema->getPropertyPosition(props[i]->getName()));
-
-    layerInput.first = layer;
-    layerInput.second = propsPos;
-
-    layers.push_back(layerInput);
-  }
-
-  if(selected.size() < 2)
-  {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("At least two layers are necessary for an intersection!"));
+    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("Choose an input layer."));
     return;
   }
 
-  std::string newLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::auto_ptr<te::map::LayerSchema> firstSchema = m_firstSelectedLayer->getSchema();
 
+  if(!firstSchema->hasGeom())
+  {
+    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("The input layer do not have a geometry column!"));
+    return;
+  }
+
+  if(m_ui->m_secondLayerComboBox->currentText().isEmpty())
+  {
+    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("Choose an input layer."));
+    return;
+  }
+
+  std::auto_ptr<te::map::LayerSchema> secondSchema = m_secondSelectedLayer->getSchema();
+
+  if(!secondSchema->hasGeom())
+  {
+    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("The input layer do not have a geometry column!"));
+    return;
+  }
+
+  bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
+
+  std::string newLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
   if(newLayerName.empty())
   {
     QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("It is necessary a name for the new layer."));
     return;
   }
 
+  if(m_ui->m_repositoryLineEdit->text().isEmpty())
+  {
+    QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("Set a repository for the new Layer."));
+
+    return;
+  }
+
   try
   {
-    size_t srid = 0;
-    std::map<std::string, std::string> op;
-
-    if(m_outputDatasource.get())
-      //Chamada da função que iniciara a operação de intersecção.
-      m_layer = te::vp::Intersection(newLayerName, layers, m_outputDatasource, srid, op);
-    else if(!m_outputArchive.empty()){}
-      m_layer = te::vp::Intersection(newLayerName, layers, m_outputArchive, srid, op);
+    m_layerResult = te::vp::Intersection( m_firstSelectedLayer, 
+                                          m_secondSelectedLayer, 
+                                          copyInputColumns,
+                                          newLayerName, 
+                                          m_outputDatasource);
   }
   catch(const std::exception& e)
   {
@@ -208,9 +227,4 @@ void te::vp::IntersectionDialog::onTargetFileToolButtonPressed()
   m_ui->m_repositoryLineEdit->setText(fullName);
 
   m_outputArchive = std::string(fullName.toStdString());
-}
-
-te::map::AbstractLayerPtr te::vp::IntersectionDialog::getLayer()
-{
-  return m_layer;
 }

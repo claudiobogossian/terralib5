@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -53,38 +53,15 @@ namespace te
 
             \param newLayer Layer added.
           */
-          LayerAdded(te::map::AbstractLayer* newlayer) :
+          LayerAdded(te::map::AbstractLayerPtr newlayer) :
             Event(LAYER_ADDED),
             m_layer(newlayer)
           {
           }
 
-          te::map::AbstractLayer* m_layer;  //!< Layer added.
+          te::map::AbstractLayerPtr m_layer;  //!< Layer added.
         };
 
-        /*!
-          \struct LayersAdded
-
-          \brief This event signals that new layers were created.
-
-          \ingroup afevents
-         */
-        struct LayersAdded : public Event
-        {
-          /*!
-            \brief Constructor.
-
-            \param newLayers List of pointers to the layers created.
-          */
-          LayersAdded(std::list<te::map::AbstractLayerPtr> newlayers) : 
-            Event(LAYERS_ADDED),
-            m_layers(newlayers)
-          {
-          }
-
-          std::list<te::map::AbstractLayerPtr> m_layers;  //!< List of pointers to the new layers.
-        };
-		
         /*!
           \struct LayerRemoved
 

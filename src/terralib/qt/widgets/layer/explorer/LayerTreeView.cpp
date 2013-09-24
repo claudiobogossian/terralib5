@@ -388,8 +388,12 @@ void te::qt::widgets::LayerTreeView::dragEnterEvent(QDragEnterEvent* e)
 
 void te::qt::widgets::LayerTreeView::dragMoveEvent(QDragMoveEvent* e)
 {
-  e->acceptProposedAction();
-
+  if(e->keyboardModifiers() == Qt::ControlModifier)
+    e->setDropAction(Qt::CopyAction);
+  else
+    e->setDropAction(Qt::MoveAction);
+  e->accept();
+  //e->acceptProposedAction();
   QTreeView::dragMoveEvent(e);
 }
 

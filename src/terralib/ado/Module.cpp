@@ -29,9 +29,14 @@
 #include "../dataaccess/query/SQLFunctionEncoder.h"
 #include "../dataaccess/query/TemplateEncoder.h"
 #include "../dataaccess/query/UnaryOpEncoder.h"
+#include "../dataaccess/serialization/xml/Serializer.h"
 #include "DataSource.h"
 #include "DataSourceFactory.h"
+#include "Globals.h"
 #include "Module.h"
+
+// Boost
+#include <boost/filesystem.hpp>
 
 te::ado::Module::Module(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo)
@@ -52,6 +57,16 @@ void te::ado::Module::startup()
 
   // Register the data source factory
   te::da::DataSourceFactory::add("ADO", te::ado::Build);
+
+  // retrieve the Capabilities
+  boost::filesystem::path driverpath(m_pluginInfo.m_folder);
+
+  boost::filesystem::path capabilitiesFile = driverpath / "ado-capabilities.xml";
+
+  te::ado::Globals::sm_capabilities = new te::da::DataSourceCapabilities();
+  te::ado::Globals::sm_queryDialect = new te::da::SQLDialect();
+
+  te::serialize::xml::Read(capabilitiesFile.string(), *te::ado::Globals::sm_capabilities, *te::ado::Globals::sm_queryDialect);
 
   TE_LOG_TRACE(TR_ADO("TerraLib ADO driver support initialized!"));
 
