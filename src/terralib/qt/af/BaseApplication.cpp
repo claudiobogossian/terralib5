@@ -52,7 +52,6 @@
 #include "../widgets/layer/explorer/FolderLayerItem.h"
 #include "../widgets/layer/info/LayerPropertiesInfoWidget.h"
 #include "../widgets/layer/selector/AbstractLayerSelector.h"
-#include "../widgets/plugin/builder/PluginBuilderWizard.h"
 #include "../widgets/plugin/manager/PluginManagerDialog.h"
 #include "../widgets/progress/ProgressViewerBar.h"
 #include "../widgets/progress/ProgressViewerDialog.h"
@@ -222,8 +221,6 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
   m_layerMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_layerMenu->menuAction());
-  m_layerChartsMenu = new QMenu(m_layerMenu);
-  m_layerMenu->addMenu(m_layerChartsMenu);
   m_mapMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_mapMenu->menuAction());
   m_toolsMenu = new QMenu(m_menubar);
@@ -555,19 +552,6 @@ void te::qt::af::BaseApplication::onPluginsManagerTriggered()
   }
 }
 
-void te::qt::af::BaseApplication::onPluginsBuilderTriggered()
-{
-  try
-  {
-    te::qt::widgets::PluginBuilderWizard dlg(this);
-    dlg.exec();
-  }
-  catch(const std::exception& e)
-  {
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
-  }
-}
-
 void te::qt::af::BaseApplication::onRecentProjectsTriggered(QAction* proj)
 {
   QString projFile = proj->data().toString();
@@ -748,6 +732,28 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
   doc->setAttribute(Qt::WA_DeleteOnClose, true);
 
   doc->show();
+}
+
+void te::qt::af::BaseApplication::onLayerRemoveSelectionTriggered()
+{
+  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+  if(layers.empty())
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+    return;
+  }
+
+  std::list<te::qt::widgets::AbstractTreeItem*>::iterator it = layers.begin();
+
+  while(it != layers.end())
+  {
+    (*it)->getLayer()->clearSelected();
+
+    ++it;
+  }
+
+  m_display->getDisplay()->refresh();
 }
 
 void te::qt::af::BaseApplication::onLayerSRSTriggered()
@@ -1083,9 +1089,7 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
   if(!m_project && m_project->getLayers().empty())
     return;
 
-  te::qt::widgets::MapDisplay* display = m_display->getDisplay();
-  te::gm::Envelope e = te::map::GetExtent(m_project->getLayers(), display->getSRID(), true);
-  display->setExtent(e, true);
+  m_display->fit(m_project->getLayers());
 }
 
 void te::qt::af::BaseApplication::onInfoToggled(bool checked)
@@ -1098,6 +1102,21 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
 
   te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_project->getLayers());
   m_display->setCurrentTool(info);
+}
+
+void te::qt::af::BaseApplication::onMapRemoveSelectionTriggered()
+{
+  std::list<te::map::AbstractLayerPtr> layers = m_project->getLayers();
+  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
+
+  while(it != layers.end())
+  {
+    (*it)->clearSelected();
+
+    ++it;
+  }
+
+  m_display->getDisplay()->refresh();
 }
 
 void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
@@ -1387,12 +1406,12 @@ void te::qt::af::BaseApplication::makeDialog()
   //treeView->add(m_layerRename, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   //treeView->add(m_layerExport, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   
+  treeView->add(m_layerRemoveSelection, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);  
   treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerSRS, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  treeView->add(m_layerChartsMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  
+
   // TODO
   //treeView->add(m_layerRaise, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   //treeView->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
@@ -1548,7 +1567,6 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Plugins- actions
   initAction(m_pluginsManager, "", "Plugins.Management", tr("&Manage Plugins..."), tr("Manage the application plugins"), true, false, true, m_menubar);
-  initAction(m_pluginsBuilder, "", "Plugins.Build a New Plugin", tr("&Build a New Plugin..."), tr("Create a new plugin"), true, false, true, m_menubar);
 
 // Menu -Help- actions
   initAction(m_helpContents, "help-browser", "Help.View Help", tr("&View Help..."), tr("Shows help dialog"), true, false, true, m_menubar);
@@ -1568,6 +1586,7 @@ void te::qt::af::BaseApplication::initActions()
   //initAction(m_layerEdit, "layer-edit", "Layer.Edit", tr("&Edit"), tr(""), true, false, false, m_menubar); TODO
   //initAction(m_layerRename, "layer-rename", "Layer.Rename", tr("R&ename"), tr(""), true, false, false, m_menubar); TODO
   //initAction(m_layerExport, "document-export", "Layer.Export", tr("E&xport..."), tr(""), true, false, false, m_menubar); TODO
+  initAction(m_layerRemoveSelection, "pointer-remove-selection", "Map.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
   initAction(m_layerGrouping, "grouping", "Layer.Grouping", tr("&Grouping..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
@@ -1592,7 +1611,7 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Map- actions
   initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);
-  initAction(m_mapUnknownSRID, "srs-unknown", "Map.UnknownSRID", tr("&Unknown SRS..."), tr("Set the Map SRS to unknown"), true, false, true, m_menubar);
+  initAction(m_mapUnknownSRID, "srs-unknown", "Map.UnknownSRID", tr("&Set Unknown SRS"), tr("Set the Map SRS to unknown"), true, false, true, m_menubar);
   initAction(m_mapDraw, "map-draw", "Map.Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true, m_menubar);
   initAction(m_mapZoomIn, "zoom-in", "Map.Zoom In", tr("Zoom &In"), tr(""), true, true, true, m_menubar);
   initAction(m_mapZoomOut, "zoom-out", "Map.Zoom Out", tr("Zoom &Out"), tr(""), true, true, true, m_menubar);
@@ -1601,7 +1620,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapPreviousExtent, "edit-undo", "Map.Previous Extent", tr("&Previous Extent"), tr(""), true, false, true, m_menubar);
   initAction(m_mapNextExtent, "edit-redo", "Map.Next Extent", tr("&Next Extent"), tr(""), true, false, true, m_menubar);
   initAction(m_mapInfo, "pointer-info", "Map.Info", tr("&Info"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapSelection, "pointer-selection", "Map.Selection", tr("&Selection"), tr(""), true, true, true, m_menubar);
+  initAction(m_mapRemoveSelection, "pointer-remove-selection", "Map.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
+  initAction(m_mapSelection, "pointer-selection", "Map.Selection", tr("&Selection"), tr(""), true, true, true, m_menubar);  
   initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, true, m_menubar);
@@ -1617,6 +1637,7 @@ void te::qt::af::BaseApplication::initActions()
   mapToolsGroup->addAction(m_mapMeasureAngle);
   mapToolsGroup->addAction(m_mapInfo);
   mapToolsGroup->addAction(m_mapSelection);
+  mapToolsGroup->addAction(m_mapRemoveSelection);
 }
 
 void te::qt::af::BaseApplication::initMenus()
@@ -1704,24 +1725,26 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->setObjectName("Layer");
   m_layerMenu->setTitle(tr("&Layer"));
 
+  m_layerMenu->addAction(m_layerRemoveSelection);
+  m_layerMenu->addAction(m_layerGrouping);
+  m_layerMenu->addAction(m_layerChartsHistogram);
+  m_layerMenu->addAction(m_layerChartsScatter);
+  m_layerMenu->addAction(m_layerChart);
+  m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerFitOnMapDisplay);
-  //m_layerMenu->addAction(m_layerEdit); TODO
-  //m_layerMenu->addAction(m_layerRename); TODO
-  //m_layerMenu->addAction(m_layerExport); TODO
-  m_layerMenu->addAction(m_layerGrouping);  
-  m_layerMenu->addAction(m_layerProperties);
-  m_layerMenu->addAction(m_layerSRS);
+  //Pan to Selected Objects TODO
+  //Zoom to Selected Objects TODO
+  //Ver mais menus que tem a ver com layer
+  m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerShowTable);
+  m_layerMenu->addAction(m_viewStyleExplorer);
   m_layerMenu->addSeparator();
-
-  m_layerChartsMenu->setObjectName("Layer.Charts");
-  m_layerChartsMenu->setTitle(tr("&Charts"));
-
-  m_layerMenu->addMenu(m_layerChartsMenu);
-  m_layerChartsMenu->addAction(m_layerChartsHistogram);
-  m_layerChartsMenu->addAction(m_layerChartsScatter);
-  m_layerChartsMenu->addAction(m_layerChart);
-  m_layerMenu->addSeparator();
+  m_layerMenu->addAction(m_layerSRS);
+  m_layerMenu->addAction(m_layerProperties);
+  
+  
+  
+  
 
   // TODO
   //m_layerMenu->addAction(m_layerRaise);
@@ -1733,26 +1756,26 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->setObjectName("Map");
   m_mapMenu->setTitle(tr("&Map"));
 
-  m_mapMenu->addAction(m_mapSRID);
-  m_mapMenu->addSeparator();
-  m_mapMenu->addAction(m_mapDraw);
+  m_mapMenu->addAction(m_mapSelection);
+  m_mapMenu->addAction(m_mapRemoveSelection);
+  m_mapMenu->addAction(m_mapInfo);
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapZoomIn);
   m_mapMenu->addAction(m_mapZoomOut);
   m_mapMenu->addAction(m_mapPan);
-  m_mapMenu->addAction(m_mapZoomExtent);
+  m_mapMenu->addAction(m_mapZoomExtent);  
   m_mapMenu->addAction(m_mapPreviousExtent);
   m_mapMenu->addAction(m_mapNextExtent);
   m_mapMenu->addSeparator();
-  m_mapMenu->addAction(m_mapInfo);
-  m_mapMenu->addSeparator();
-  m_mapMenu->addAction(m_mapSelection);
+  m_mapMenu->addAction(m_mapDraw);
+  m_mapMenu->addAction(m_mapStopDraw);
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapMeasureDistance);
   m_mapMenu->addAction(m_mapMeasureArea);
   m_mapMenu->addAction(m_mapMeasureAngle);
   m_mapMenu->addSeparator();
-  m_mapMenu->addAction(m_mapStopDraw);
+  m_mapMenu->addAction(m_mapSRID);
+  m_mapMenu->addAction(m_mapUnknownSRID);
 
 // Tools menu
   m_toolsMenu->setObjectName("Tools");
@@ -1770,8 +1793,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_pluginsMenu->setTitle(tr("Pl&ugins"));
 
   m_pluginsMenu->addAction(m_pluginsManager);
-  m_pluginsMenu->addSeparator();
-  m_pluginsMenu->addAction(m_pluginsBuilder);
 
 // Help menu
   m_helpMenu->setObjectName("Help");
@@ -1895,7 +1916,6 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_projectRemoveFolder, SIGNAL(triggered()), SLOT(onRemoveFolderTriggered()));
   connect(m_projectRemoveLayer, SIGNAL(triggered()), SLOT(onRemoveLayerTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
-  connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
   connect(m_fileNewProject, SIGNAL(triggered()), SLOT(onNewProjectTriggered()));
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
@@ -1910,6 +1930,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerChart, SIGNAL(triggered()), SLOT(onLayerChartTriggered()));
   connect(m_projectNewFolder, SIGNAL(triggered()), SLOT(onNewFolderTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
+  connect(m_layerRemoveSelection, SIGNAL(triggered()), SLOT(onLayerRemoveSelectionTriggered()));
   connect(m_layerSRS, SIGNAL(triggered()), SLOT(onLayerSRSTriggered()));
   connect(m_layerGrouping, SIGNAL(triggered()), SLOT(onLayerGroupingTriggered()));
   connect(m_mapSRID, SIGNAL(triggered()), SLOT(onMapSRIDTriggered()));
@@ -1923,6 +1944,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapPan, SIGNAL(toggled(bool)), SLOT(onPanToggled(bool)));
   connect(m_mapZoomExtent, SIGNAL(triggered()), SLOT(onZoomExtentTriggered()));
   connect(m_mapInfo, SIGNAL(toggled(bool)), SLOT(onInfoToggled(bool)));
+  connect(m_mapRemoveSelection, SIGNAL(triggered()), SLOT(onMapRemoveSelectionTriggered()));
   connect(m_mapSelection, SIGNAL(toggled(bool)), SLOT(onSelectionToggled(bool)));
   connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
   connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));

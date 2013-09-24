@@ -29,6 +29,7 @@
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../../../memory/DataSet.h"
 #include "../../datasource/explorer/AbstractDataSourceTreeItem.h"
 #include "../../datasource/explorer/DataSetItem.h"
 #include "../../mapdisplay/DataSetDisplay.h"
@@ -41,6 +42,8 @@
 // STL
 #include <algorithm>
 #include <iterator>
+#include <string>
+#include <vector>
 
 // Qt
 #include <QtGui/QMessageBox>
@@ -72,6 +75,17 @@ te::qt::widgets::DataSetSelectorWidget::DataSetSelectorWidget(QWidget* parent, Q
   m_tblView.reset(new DataSetTableView(m_ui->m_dataPreviewGroupBox));
   QVBoxLayout* dataPreviewGroupBoxLayout = new QVBoxLayout(m_ui->m_dataPreviewGroupBox);
   dataPreviewGroupBoxLayout->addWidget(m_tblView.get(), 1);
+
+  QFont font;
+  font.setPointSize(8);
+
+  m_tblView->setFont(font);
+
+  m_tblView->setAlternatingRowColors(true);
+  m_tblView->verticalHeader()->setVisible(false);
+  m_tblView->setSelectionMode(QAbstractItemView::NoSelection);
+  m_ui->m_dataPreviewGroupBox->setChecked(false);
+
   m_tblView->show();
 
 // connect signals and slots
@@ -213,38 +227,32 @@ void te::qt::widgets::DataSetSelectorWidget::previewMap(const te::da::DataSetTyp
 
 void te::qt::widgets::DataSetSelectorWidget::previewData(const te::da::DataSetTypePtr& dataset)
 {
-  //if((dataset.get() == 0) || (m_datasource.get() == 0))
-  //  return;
+  if((dataset.get() == 0) || (m_datasource.get() == 0))
+    return;
 
-  //if(!m_ui->m_dataPreviewGroupBox->isChecked())
-  //  return;
+  if(!m_ui->m_dataPreviewGroupBox->isChecked())
+    return;
 
-  //try
-  //{
-  //  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(m_datasource->getId(), m_datasource->getAccessDriver(), m_datasource->getConnInfo());
+  try
+  {
+    te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(m_datasource->getId(), m_datasource->getAccessDriver(), m_datasource->getConnInfo());
 
-  //  if(ds.get() == 0)
-  //    return;
+    if(ds.get() == 0)
+      return;
 
-  //  std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
+    std::auto_ptr<te::da::DataSet> feature(ds->getDataSet(dataset->getName()));
 
-  //  std::auto_ptr<te::da::DataSet> feature(transactor->getDataSet(dataset->getName()));
+    std::vector<std::size_t> properties;
+    for(std::size_t i = 0; i < feature->getNumProperties(); ++i)
+      properties.push_back(i);
 
-  //  te::da::DataSetTypePtr dt(static_cast<te::da::DataSetType*>(feature->getType()->clone()));
+    std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*feature.get(), properties, m_nPreviewRows)));
 
-  //  std::auto_ptr<te::mem::LightDataSet> memFeature(new te::mem::LightDataSet(dt, m_nPreviewRows));
-
-  //  if(feature->moveNext())
-  //    memFeature->copy(feature.get(), m_nPreviewRows);
-
-  //  QAbstractItemModel* oldModel = m_tblView->model();
-  //  m_tblView->setModel(0);
-  //  delete oldModel;
-  //  m_tblView->set(memFeature.release());
-  //}
-  //catch(...)
-  //{
-  //}
+    m_tblView->setDataSet(memFeature.release());
+  }
+  catch(...)
+  {
+  }
 }
 
 void te::qt::widgets::DataSetSelectorWidget::onDataSetToggled(DataSetItem* item)

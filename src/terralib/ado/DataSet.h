@@ -116,67 +116,35 @@ namespace te
 
         char getChar(std::size_t i) const;
 
-        char getChar(const std::string& name) const;
-
         unsigned char getUChar(std::size_t i) const;
-
-        unsigned char getUChar(const std::string& name) const;
 
         boost::int16_t getInt16(std::size_t i) const;
 
-        boost::int16_t getInt16(const std::string& name) const;
-
         boost::int32_t getInt32(std::size_t i) const;
-
-        boost::int32_t getInt32(const std::string& name) const;
 
         boost::int64_t getInt64(std::size_t i) const;
 
-        boost::int64_t getInt64(const std::string& name) const;
-
         bool getBool(std::size_t i) const;
-
-        bool getBool(const std::string& name) const;
 
         float getFloat(std::size_t i) const;
 
-        float getFloat(const std::string& name) const;
-
         double getDouble(std::size_t i) const;
-
-        double getDouble(const std::string& name) const;
 
         std::string getNumeric(std::size_t i) const;
 
-        std::string getNumeric(const std::string& name) const;
-
         std::string getString(std::size_t i) const;
-
-        std::string getString(const std::string& name) const;
 
         std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const;
 
-        std::auto_ptr<te::dt::ByteArray> getByteArray(const std::string& name) const;
-
         std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const;
-
-        std::auto_ptr<te::gm::Geometry> getGeometry(const std::string& name) const;
 
         std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
 
-        std::auto_ptr<te::rst::Raster> getRaster(const std::string& name) const;
-
         std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const;
-
-        std::auto_ptr<te::dt::DateTime> getDateTime(const std::string& name) const;
 
         std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
-        std::auto_ptr<te::dt::Array> getArray(const std::string& name) const;
-
         bool isNull(std::size_t i) const;
-
-        bool isNull(const std::string& name) const;
 
       protected:
 
