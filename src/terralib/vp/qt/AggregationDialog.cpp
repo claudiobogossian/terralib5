@@ -30,6 +30,7 @@
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../datatype/Enums.h"
@@ -54,12 +55,16 @@
 
 // Boost
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::AggregationDialogForm),
     m_layers(std::list<te::map::AbstractLayerPtr>()),
-    m_selectedLayer(0)
+    m_selectedLayer(0),
+    m_toFile(false)
 {
 // add controls
   m_ui->setupUi(this);
@@ -85,6 +90,8 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+  
+  m_outputDatasource = te::da::DataSourceInfoPtr();
 }
 
 te::vp::AggregationDialog::~AggregationDialog()
@@ -595,21 +602,38 @@ void te::vp::AggregationDialog::onTargetDatasourceToolButtonPressed()
   m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
 
   m_outputDatasource = *it;
+  
+  m_toFile = false;
 }
 
 void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
 {
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Open Feature File"), QString(""), tr("Common Formats (*.shp *.SHP *.kml *.KML *.geojson *.GEOJSON *.gml *.GML);; Shapefile (*.shp *.SHP);; GML (*.gml *.GML);; Web Feature Service - WFS (*.xml *.XML *.wfs *.WFS);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
-  
-  if(fileName.isEmpty())
+  QString directoryName = QFileDialog::getExistingDirectory(this, tr("Open Feature File"), QString(""));  
+  if(directoryName.isEmpty())
     return;
-
-  m_ui->m_repositoryLineEdit->setText(fileName);
-
-  std::vector<te::da::DataSourceInfoPtr> datasources;
-  te::da::DataSourceInfoManager::getInstance().getByType("OGR", datasources);
-
-  m_outputDatasource = datasources[0];
+  
+  m_ui->m_repositoryLineEdit->setText(directoryName);
+//
+//  QString fileName = QFileDialog::getSaveFileName(this, tr("Open Feature File"), QString(""), tr("Common Formats (*.shp *.SHP *.kml *.KML *.geojson *.GEOJSON *.gml *.GML);; Shapefile (*.shp *.SHP);; GML (*.gml *.GML);; Web Feature Service - WFS (*.xml *.XML *.wfs *.WFS);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
+//  
+//  if(fileName.isEmpty())
+//    return;
+  
+//  std::vector<te::da::DataSourceInfoPtr> datasources;
+//  te::da::DataSourceInfoManager::getInstance().getByType("OGR", datasources);
+//  m_outputDatasource = datasources[0];
+  
+  std::string outputLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string fname = outputLayerName;
+  std::size_t found = outputLayerName.find('.');
+  
+  if (found != std::string::npos)
+    fname = outputLayerName.substr(0,found);
+  fname = fname + ".shp";
+  
+  m_ui->m_newLayerNameLineEdit->setText(fname.c_str());
+  
+  m_toFile = true;
 }
 
 void te::vp::AggregationDialog::onHelpPushButtonClicked()
@@ -655,8 +679,47 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
   try
   {
-    //Chamada da função que iniciara a operação de agregação.
+    std::string id = "";
+    if (m_toFile)
+    {
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+      uri /= outputLayerName;
+      
+      if (boost::filesystem::exists(uri))
+      {
+        QMessageBox::information(this, "Aggregation", "File exists!");
+        return;
+      }
+      
+      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+
+      ds->setAccessDriver("OGR");
+      ds->setType("OGR");
+      ds->setDescription("A single shapefile");
+      std::map<std::string, std::string> dsinfo;
+      dsinfo["URI"] = uri.string();
+      ds->setConnInfo(dsinfo);
+      ds->setTitle(uri.stem().string());
+    
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      id = boost::uuids::to_string(u);
+      ds->setId(id);
+    
+      te::da::DataSourceInfoManager::getInstance().add(ds);
+      
+      m_outputDatasource = ds;
+    }
+
     m_layer = te::vp::Aggregation(m_selectedLayer, selProperties, outputStatisticalSummary, outputLayerName, m_outputDatasource);
+    
+    if (m_layer.get() == 0)
+    {
+      if (m_toFile)
+        te::da::DataSourceInfoManager::getInstance().remove(id);
+      
+      reject();
+    }
   }
   catch(const std::exception& e)
   {

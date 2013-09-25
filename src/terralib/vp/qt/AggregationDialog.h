@@ -153,6 +153,7 @@ namespace te
         std::vector<te::dt::Property*> m_properties;                  //!< Properties related to the selected Layer
         StaticalSummaryMap m_StatisticalSummaryMap;                   //!< Maping of Statistical Summary enum
         te::map::AbstractLayerPtr m_layer;                            //!< Generated Layer.
+        bool m_toFile;
     };
   }   // end namespace vp
 }     // end namespace te
