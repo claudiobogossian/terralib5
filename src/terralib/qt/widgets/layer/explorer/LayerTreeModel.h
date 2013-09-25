@@ -292,8 +292,6 @@ namespace te
 
           void visibilityChanged(te::qt::widgets::AbstractTreeItem* item);
 
-          void layerAdded(te::qt::widgets::AbstractTreeItem* item);
-
         protected:
 
           /*!
