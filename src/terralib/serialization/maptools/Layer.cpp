@@ -483,6 +483,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   /* Grouping */
   te::map::Grouping* grouping = ReadLayerGrouping(reader);
 
+  /* Chart */
   std::auto_ptr<te::map::Chart> chart(te::serialize::ReadChart(reader));
 
   /* DataSetName Element */

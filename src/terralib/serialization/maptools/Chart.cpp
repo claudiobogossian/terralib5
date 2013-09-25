@@ -40,9 +40,13 @@
 // Boost
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
 
 std::auto_ptr<te::map::Chart> te::serialize::ReadChart(te::xml::Reader& reader)
 {
+  if(reader.getElementLocalName() != "Chart")
+    return std::auto_ptr<te::map::Chart>();
+
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Chart");
 
@@ -307,12 +311,12 @@ void te::serialize::Save(const te::map::Chart* chart, te::xml::Writer& writer)
   Save(chart->getContourColor(), writer);
   writer.writeEndElement("te_map:ContourColor");
 
-  writer.writeElement("te_map:ContourWidth", chart->getContourWidth());
+  writer.writeElement("te_map:ContourWidth", boost::lexical_cast<int>(chart->getContourWidth()));
 
-  writer.writeElement("te_map:Height", chart->getHeight());
+  writer.writeElement("te_map:Height", boost::lexical_cast<double>(chart->getHeight()));
 
   if(chart->getType() == te::map::Bar)
-    writer.writeElement("te_map:BarWidth", chart->getBarWidth());
+    writer.writeElement("te_map:BarWidth", boost::lexical_cast<int>(chart->getBarWidth()));
 
   writer.writeElement("te_map:IsVisible", (chart->isVisible() ? "TRUE" : "FALSE"));
 

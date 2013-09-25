@@ -55,9 +55,9 @@ void GetCapabilities(OGRDataSource* ds, te::da::DataSourceCapabilities& caps)
 
 
 te::ogr::DataSource::DataSource() :
-te::da::DataSource(),
-m_ogrDS(0),
-m_isValid(false)
+  te::da::DataSource(),
+  m_ogrDS(0),
+  m_isValid(false)
 {
 }
 
@@ -93,18 +93,21 @@ void te::ogr::DataSource::open()
   if(m_connectionInfo.empty())
     throw Exception(TR_OGR("There is no information about the data source")); 
 
-  std::string path = m_connectionInfo.begin()->second;
-  m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
+  std::string path;
+  std::map<std::string, std::string>::const_iterator it;
   
-  if(m_ogrDS == 0)
-  {
-    m_isValid = false;
-    throw Exception(TR_OGR("Error open data source: " + path));
-  }
+  it = m_connectionInfo.find("URI");
+  if (it==m_connectionInfo.end())
+    throw(Exception(TR_OGR("Not enough information to open the data source.")));
+  path = it->second;
+
+  if (boost::filesystem::exists(path))
+    m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str());
 
   m_isValid = true;
 
-  GetCapabilities(m_ogrDS, m_capabilities);
+  if (m_ogrDS)
+    GetCapabilities(m_ogrDS, m_capabilities);
 }
 
 void te::ogr::DataSource::close()
@@ -150,24 +153,67 @@ OGRDataSource* te::ogr::DataSource::getOGRDataSource()
 
 void te::ogr::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  std::string path = dsInfo.begin()->second;
-  OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
-  OGRSFDriver* driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
-
-  if (driver == 0)
-    throw(Exception(TR_OGR("Driver not found.")));
-
-  if(!driver->TestCapability(ODrCCreateDataSource))
-    throw(Exception(TR_OGR("The Driver does not have create capability.")));
-
-  m_ogrDS = driver->CreateDataSource(path.c_str());
-
-  if(m_ogrDS == 0)
-    throw(Exception(TR_OGR("Error when attempting create the data source.")));   
-
   setConnectionInfo(dsInfo);
 
   close();
+}
+
+void  te::ogr::DataSource::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options)
+{
+  if (!m_ogrDS)
+  {
+    std::string path;
+    std::map<std::string, std::string>::const_iterator it;
+    
+    it = m_connectionInfo.find("URI");
+    if (it==m_connectionInfo.end())
+      throw(Exception(TR_OGR("Not enough information to create data set.")));
+    path = it->second;
+    
+    boost::filesystem::path bpath(path);
+    std::string dir = bpath.parent_path().string();
+    if (!boost::filesystem::exists(dir))
+      boost::filesystem::create_directory(dir);
+    
+    OGRSFDriverRegistrar* driverManager = OGRSFDriverRegistrar::GetRegistrar();
+    OGRSFDriver* driver;
+    
+    it = m_connectionInfo.find("DRIVER");
+    if (it!=m_connectionInfo.end())
+      driver = driverManager->GetDriverByName(it->second.c_str());
+    else
+      driver = driverManager->GetDriverByName(GetDriverName(path).c_str());
+    
+    if (driver == 0)
+      throw(Exception(TR_OGR("Driver not found.")));
+    
+    if(!driver->TestCapability(ODrCCreateDataSource))
+      throw(Exception(TR_OGR("The Driver does not have create capability.")));
+    
+    char** papszOptions = 0;
+    it = m_connectionInfo.begin();
+    while(it != m_connectionInfo.end())
+    {
+      if(it->first == "URI" || it->first == "SOURCE" || it->first == "DRIVER")
+      {
+        ++it;
+        continue;
+      }
+      papszOptions = CSLSetNameValue(papszOptions, it->first.c_str(), it->second.c_str());
+      ++it;
+    }
+    
+    m_ogrDS = driver->CreateDataSource(path.c_str(),papszOptions);
+    
+    if(papszOptions)
+      CSLDestroy(papszOptions);
+  }
+  
+  if (!m_ogrDS)
+    throw(Exception(TR_OGR("Error creating the dataset.")));
+  
+  std::auto_ptr<te::da::DataSourceTransactor> t = getTransactor();
+  return t->createDataSet(dt, options);
 }
 
 void te::ogr::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
