@@ -1253,6 +1253,18 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SupportBatchExecutorAPI
   
   xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader->getElementLocalName() == "SupportSpatialOperators");
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::VALUE);
+
+  capabilities.setSupportSpatialOperators(xmlReader->getElementValueAsBoolean());
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SupportSpatialOperators
+
+  xmlReader->next();
   
   assert(xmlReader->getNodeType() == te::xml::END_DOCUMENT); // DataSourceCapabilities
 }

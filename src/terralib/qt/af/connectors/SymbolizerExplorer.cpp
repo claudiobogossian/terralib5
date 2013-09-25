@@ -33,8 +33,7 @@
 
 te::qt::af::SymbolizerExplorer::SymbolizerExplorer(te::qt::widgets::VisualDockWidget* explorer, QObject* parent)
   : QObject(parent),
-    m_explorer(explorer),
-    m_layer(0)
+    m_explorer(explorer)
 {
   assert(explorer);
 }
@@ -56,31 +55,31 @@ void te::qt::af::SymbolizerExplorer::onApplicationTriggered(te::qt::af::evt::Eve
     {
       te::qt::af::evt::LayerSelected* e = static_cast<te::qt::af::evt::LayerSelected*>(evt);
 
-      m_layer = e->m_layer;
+      te::map::AbstractLayer* layer = e->m_layer;
+      assert(layer);
 
-      if(m_layer->getType() == "DATASETLAYER")
-      {
-        te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(m_layer);
+      m_explorer->setStyle(layer->getStyle(), layer);
+    }
+    break;
 
-        if(l && (l->getStyle() != 0))
-          m_explorer->setStyle(l->getStyle(), l);
-      }
-      else if(m_layer->getType() == "RASTERLAYER")
-      {
-        te::map::RasterLayer* l = dynamic_cast<te::map::RasterLayer*>(m_layer);
+    case te::qt::af::evt::LAYER_STYLE_SELECTED:
+    {
+      te::qt::af::evt::LayerStyleSelected* e = static_cast<te::qt::af::evt::LayerStyleSelected*>(evt);
 
-        if(l && (l->getStyle() != 0))
-          m_explorer->setStyle(l->getStyle(), l);
-      }
+      te::map::AbstractLayer* layer = e->m_layer;
+      assert(layer);
+
+      m_explorer->setStyle(layer->getStyle(), layer);
+
+      m_explorer->setVisible(true);
     }
     break;
 
     default:
-    break;
+      return;
   }
 }
 
 void te::qt::af::SymbolizerExplorer::onSymbolizerChanged()
 {
-
 }

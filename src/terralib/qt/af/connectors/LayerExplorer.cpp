@@ -22,6 +22,7 @@
 #include "../../widgets/layer/explorer/LayerExplorer.h"
 #include "../../widgets/layer/explorer/LayerTreeModel.h"
 #include "../../widgets/layer/explorer/LayerTreeView.h"
+#include "../../widgets/layer/explorer/LegendItem.h"
 #include "../events/Event.h"
 #include "../events/ProjectEvents.h"
 #include "../events/LayerEvents.h"
@@ -64,10 +65,15 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
       m_explorer->set(projectAdded->m_proj->getLayers());
 
-      assert(m_explorer->getTreeView());
-      assert(m_explorer->getTreeView()->selectionModel());
+      te::qt::widgets::LayerTreeView* treeView = m_explorer->getTreeView();
 
-      QItemSelectionModel* layerTreeSelectionModel = m_explorer->getTreeView()->selectionModel();
+      QItemSelectionModel* layerTreeSelectionModel = treeView->selectionModel();
+
+      assert(treeView);
+      assert(layerTreeSelectionModel);
+
+      // Signals & slots
+      connect(m_explorer->getTreeView(), SIGNAL(doubleClicked(te::qt::widgets::AbstractTreeItem*)), SLOT(onAbstractTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem*)));
       connect(layerTreeSelectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), SLOT(onSelectionChanged(const QItemSelection&, const QItemSelection&)));
     }
     break;
@@ -115,6 +121,7 @@ void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::qt::widgets::Abstra
   ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
 
   te::map::AbstractLayer* layer = item->getLayer().get();
+
   te::qt::af::evt::LayerVisibilityChanged layerVisibilityChangedEvent(layer, layer->getVisibility());
   ApplicationController::getInstance().broadcast(&layerVisibilityChangedEvent);
 }
@@ -123,4 +130,20 @@ void te::qt::af::LayerExplorer::layersChanged(const std::vector<te::map::Abstrac
 {
   te::qt::af::evt::LayersChanged evt(layers);
   ApplicationController::getInstance().broadcast(&evt);
+}
+
+void te::qt::af::LayerExplorer::onAbstractTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item)
+{
+  te::qt::widgets::LegendItem* legendItem = dynamic_cast<te::qt::widgets::LegendItem*>(item);
+  if(legendItem == 0)
+    return;
+
+  te::qt::widgets::AbstractTreeItem* layerItem = dynamic_cast<te::qt::widgets::AbstractTreeItem*>(item->parent());
+  assert(layerItem);
+
+  te::map::AbstractLayer* layer = layerItem->getLayer().get();
+  assert(layer);
+
+  te::qt::af::evt::LayerStyleSelected layerStyleSelected(layer);
+  ApplicationController::getInstance().broadcast(&layerStyleSelected);
 }

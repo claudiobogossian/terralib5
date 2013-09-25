@@ -179,4 +179,5 @@
   <SupportDataSetTypePesistenceAPI>true</SupportDataSetTypePesistenceAPI>
   <SupportPreparedQueryAPI>true</SupportPreparedQueryAPI>
   <SupportBatchExecutorAPI>true</SupportBatchExecutorAPI>
+  <SupportSpatialOperators>false</SupportSpatialOperators>
 </DataSourceCapabilities>
