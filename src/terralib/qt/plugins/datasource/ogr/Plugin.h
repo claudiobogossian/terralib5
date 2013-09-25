@@ -30,6 +30,12 @@
 #include "../../../../plugin/Plugin.h"
 #include "Config.h"
 
+// Qt
+#include <QObject>
+
+// Forward declarations
+class QAction;
+
 namespace te
 {
   namespace qt
@@ -38,8 +44,10 @@ namespace te
     {
       namespace ogr
       {
-        class Plugin : public te::plugin::Plugin
+        class Plugin : public QObject, public te::plugin::Plugin
         {
+          Q_OBJECT
+          
           public:
 
             Plugin(const te::plugin::PluginInfo& pluginInfo);
@@ -49,6 +57,14 @@ namespace te
             void startup();
 
             void shutdown();
+            
+          protected slots:
+          
+            void showWindow();
+            
+          protected:
+          
+            QAction* m_showWindow;
         };
 
       } // end namespace ogr
