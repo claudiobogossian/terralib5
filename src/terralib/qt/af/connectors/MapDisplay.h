@@ -129,6 +129,8 @@ namespace te
 
         protected:
 
+          void drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers);
+
           void drawLayerSelection(te::map::AbstractLayer* layer);
 
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
@@ -137,7 +139,7 @@ namespace te
 
           te::qt::widgets::MapDisplay* m_display;             //!< Pointer to a component te::qt::widgets::MapDisplay.
           te::qt::widgets::AbstractTool* m_tool;              //!< Pointer to the current tool being used.
-          QMenu m_menu;                                       //!< The map display popup menu.
+          QMenu* m_menu;                                      //!< The map display popup menu.
           QPixmap m_lastDisplayContent;                       //!< The last map display content. i.e. a "clean" pixmap.
           std::vector<te::gm::Envelope> m_extentStack;        //!< The stack of MapDisplay extents.
           std::size_t m_currentExtent;                        //!< The current extent index.

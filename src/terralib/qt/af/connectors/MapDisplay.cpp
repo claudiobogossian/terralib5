@@ -61,6 +61,7 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   : QObject(display),
     m_display(display),
     m_tool(0),
+    m_menu(0),
     m_currentExtent(-1)
 {
   // CoordTracking tool
@@ -75,20 +76,8 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   connect(m_display, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 
-  // Build the popup menu
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.SRID"));
-  m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Draw"));
-  m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom In"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Out"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Pan"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Extent")); 
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Previous Extent"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Next Extent"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Info"));
-  m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Stop Draw"));
+  // Gets the popup menu
+  m_menu = ApplicationController::getInstance().findMenu("Map");
 
   // To show popup menu
   m_display->installEventFilter(this);
@@ -115,7 +104,8 @@ bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
   switch(e->type())
   {
     case QEvent::ContextMenu:
-      m_menu.exec(static_cast<QContextMenuEvent*>(e)->globalPos());
+      if(m_menu)
+        m_menu->exec(static_cast<QContextMenuEvent*>(e)->globalPos());
     break;
           
     default:
@@ -206,8 +196,8 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
   // Stores the clean pixmap!
   m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
 
-  // TODO!!!
-  drawLayerSelection((ApplicationController::getInstance().getProject()->getLayers().begin())->get());
+  // Draw the layers selection
+  drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -220,7 +210,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 
     case te::qt::af::evt::LAYER_SELECTION_CHANGED:
     {
-      te::qt::af::evt::LayerSelectionChanged* layerSelectionChanged = static_cast<te::qt::af::evt::LayerSelectionChanged*>(e);
+      //te::qt::af::evt::LayerSelectionChanged* layerSelectionChanged = static_cast<te::qt::af::evt::LayerSelectionChanged*>(e);
 
       QPixmap* content = m_display->getDisplayPixmap();
       content->fill(Qt::transparent);
@@ -229,7 +219,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.drawPixmap(0, 0, m_lastDisplayContent);
       painter.end();
 
-      drawLayerSelection(layerSelectionChanged->m_layer);
+      drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
     }
     break;
 
@@ -252,6 +242,15 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
   }
 }
 
+void te::qt::af::MapDisplay::drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+  for(it = layers.begin(); it != layers.end(); ++it)
+    drawLayerSelection(it->get());
+
+  m_display->repaint();
+}
+
 void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
 {
   assert(layer);
@@ -261,10 +260,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
   if(oids == 0 || oids->size() == 0)
-  {
-    m_display->repaint();
     return;
-  }
 
   bool needRemap = false;
 
@@ -312,8 +308,6 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
 
     canvas.draw(g.get());
   }
-
-  m_display->repaint();
 }
 
 void te::qt::af::MapDisplay::onExtentChanged()

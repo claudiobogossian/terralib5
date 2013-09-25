@@ -1124,9 +1124,10 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_project->getLayers());
+  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_explorer->getExplorer()->getSelectedLayers());
   m_display->setCurrentTool(selection);
 
+  connect(m_explorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
   connect(selection, SIGNAL(layerSelectionChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectionChanged(const te::map::AbstractLayerPtr&)));
 }
 
@@ -1741,10 +1742,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerSRS);
   m_layerMenu->addAction(m_layerProperties);
-  
-  
-  
-  
 
   // TODO
   //m_layerMenu->addAction(m_layerRaise);
@@ -1776,6 +1773,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapSRID);
   m_mapMenu->addAction(m_mapUnknownSRID);
+
+  ApplicationController::getInstance().registerMenu(m_mapMenu);
 
 // Tools menu
   m_toolsMenu->setObjectName("Tools");

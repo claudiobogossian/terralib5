@@ -109,9 +109,6 @@ bool te::qt::widgets::Selection::mouseMoveEvent(QMouseEvent* e)
 
 bool te::qt::widgets::Selection::mouseReleaseEvent(QMouseEvent* e)
 {
-  if(m_layers.empty())
-    return false;
-
   ScopedCursor cursor(Qt::WaitCursor);
 
   m_selectionStarted = false;
@@ -138,11 +135,17 @@ bool te::qt::widgets::Selection::mouseReleaseEvent(QMouseEvent* e)
 
   te::gm::Envelope envelope(ll.x(), ll.y(), ur.x(), ur.y());
 
-  // For while, select the last layer
-  const te::map::AbstractLayerPtr& layer = *(m_layers.rbegin());
-  executeSelection(layer, envelope);
+  // Select the layers
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  for(it = m_layers.begin(); it != m_layers.end(); ++it)
+    executeSelection(*it, envelope);
 
   return true;
+}
+
+void te::qt::widgets::Selection::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  m_layers = layers;
 }
 
 void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e)

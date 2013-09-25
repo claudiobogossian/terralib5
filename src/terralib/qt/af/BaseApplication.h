@@ -247,7 +247,7 @@ namespace te
           QAction* m_layerChartsScatter;
           QAction* m_layerChart;
           QAction* m_layerGrouping;
-           QAction* m_layerFitOnMapDisplay;
+          QAction* m_layerFitOnMapDisplay;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
