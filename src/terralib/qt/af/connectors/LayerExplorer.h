@@ -48,7 +48,7 @@ namespace te
 // Forward declarations
     namespace widgets 
     { 
-      class LayerExplorer; 
+      class LayerExplorer;
       class AbstractTreeItem;
     }
 
@@ -112,6 +112,8 @@ namespace te
           void onLayerVisibilityChanged(te::qt::widgets::AbstractTreeItem* item);
 
           void layersChanged(const std::vector<te::map::AbstractLayerPtr>& layers);
+
+          void onAbstractTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
 
         signals:
 

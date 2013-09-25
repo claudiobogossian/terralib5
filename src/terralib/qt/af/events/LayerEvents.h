@@ -169,12 +169,35 @@ namespace te
             \param layers The layers.
           */
           LayersChanged(const std::vector<te::map::AbstractLayerPtr>& layers) :
-          Event(LAYERS_CHANGED),
+            Event(LAYERS_CHANGED),
             m_layers(layers)
           {
           }
 
           std::vector<te::map::AbstractLayerPtr> m_layers; //!< Vector of layers.
+        };
+
+        /*!
+          \struct LayerStyleSelected
+
+          \brief This event signals that the layer style has selected on layer explorer.
+        
+          \ingroup afevents
+        */
+        struct LayerStyleSelected : public Event
+        {
+          /*!
+            \brief Construtor.
+
+            \param layer The layer that has the selected style.
+          */
+          LayerStyleSelected(te::map::AbstractLayer* layer) :
+            Event(LAYER_STYLE_SELECTED),
+            m_layer(layer)
+          {
+          }
+  
+          te::map::AbstractLayer* m_layer;  //!< Pointer to the layer that has the selected style.
         };
       }
     }
