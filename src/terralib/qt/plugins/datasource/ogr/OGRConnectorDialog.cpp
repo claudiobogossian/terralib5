@@ -175,15 +175,19 @@ void te::qt::plugins::ogr::OGRConnectorDialog::testPushButtonPressed()
     getConnectionInfo(dsInfo);
 
 // perform connection
-    //std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("OGR", dsInfo));
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
     ds->setConnectionInfo(dsInfo);
     ds->open();
 
     if(ds.get() == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open feature repository via OGR!"));
-
-    QMessageBox::information(this,
+    
+    if (m_ui->m_dirRadioButton->isChecked() && ds->getNumberOfDataSets() <= 0)
+      QMessageBox::information(this,
+                               tr("TerraLib Qt Components"),
+                               tr("Directory does not contain datasets!"));
+    else
+      QMessageBox::information(this,
                        tr("TerraLib Qt Components"),
                        tr("Data source is ok!"));
   }
@@ -219,7 +223,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()
   }
   else if(m_ui->m_dirRadioButton->isChecked())
   {
-    QString dirName = QFileDialog::getExistingDirectory(this, tr("Select a directory with vector files"), te::qt::af::GetFilePathFromSettings("vector"), QFileDialog::ShowDirsOnly);
+    QString dirName = QFileDialog::getExistingDirectory(this, tr("Select a directory with shape files"), te::qt::af::GetFilePathFromSettings("vector"), QFileDialog::ShowDirsOnly);
 
     if(dirName.isEmpty())
       return;
@@ -244,11 +248,8 @@ void te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::s
   
   if(qstr.isEmpty())
     throw te::qt::widgets::Exception(TR_QT_WIDGETS("Please select a feature file first!"));
-
-  if(boost::filesystem::is_directory(qstr.toLatin1().data()))
-    connInfo["SOURCE"] = qstr.toLatin1().data();
-  else
-    connInfo["URI"] = qstr.toLatin1().data();
+  
+  connInfo["URI"] = qstr.toLatin1().data();
 }
 
 void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
