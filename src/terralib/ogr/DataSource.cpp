@@ -35,7 +35,7 @@ te::da::SQLDialect* te::ogr::DataSource::sm_myDialect(0);
 void GetCapabilities(OGRDataSource* ds, te::da::DataSourceCapabilities& caps)
 {
   // DataSet
-  if(ds->GetLayerCount() <= 0)
+  if(!ds || ds->GetLayerCount() <= 0)
     return;
 
   te::da::DataSetCapabilities ds_caps;
