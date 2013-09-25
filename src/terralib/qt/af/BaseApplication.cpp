@@ -1742,10 +1742,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerSRS);
   m_layerMenu->addAction(m_layerProperties);
-  
-  
-  
-  
 
   // TODO
   //m_layerMenu->addAction(m_layerRaise);
@@ -1777,6 +1773,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapSRID);
   m_mapMenu->addAction(m_mapUnknownSRID);
+
+  ApplicationController::getInstance().registerMenu(m_mapMenu);
 
 // Tools menu
   m_toolsMenu->setObjectName("Tools");

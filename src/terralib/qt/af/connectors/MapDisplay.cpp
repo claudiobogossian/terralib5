@@ -61,6 +61,7 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   : QObject(display),
     m_display(display),
     m_tool(0),
+    m_menu(0),
     m_currentExtent(-1)
 {
   // CoordTracking tool
@@ -75,20 +76,8 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   connect(m_display, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 
-  // Build the popup menu
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.SRID"));
-  m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Draw"));
-  m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom In"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Out"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Pan"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Extent")); 
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Previous Extent"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Next Extent"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Info"));
-  m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Stop Draw"));
+  // Gets the popup menu
+  m_menu = ApplicationController::getInstance().findMenu("Map");
 
   // To show popup menu
   m_display->installEventFilter(this);
@@ -115,7 +104,8 @@ bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
   switch(e->type())
   {
     case QEvent::ContextMenu:
-      m_menu.exec(static_cast<QContextMenuEvent*>(e)->globalPos());
+      if(m_menu)
+        m_menu->exec(static_cast<QContextMenuEvent*>(e)->globalPos());
     break;
           
     default:
