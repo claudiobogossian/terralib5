@@ -206,8 +206,8 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
   // Stores the clean pixmap!
   m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
 
-  // TODO!!!
-  drawLayerSelection((ApplicationController::getInstance().getProject()->getLayers().begin())->get());
+  // Draw the layers selection
+  drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -220,7 +220,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 
     case te::qt::af::evt::LAYER_SELECTION_CHANGED:
     {
-      te::qt::af::evt::LayerSelectionChanged* layerSelectionChanged = static_cast<te::qt::af::evt::LayerSelectionChanged*>(e);
+      //te::qt::af::evt::LayerSelectionChanged* layerSelectionChanged = static_cast<te::qt::af::evt::LayerSelectionChanged*>(e);
 
       QPixmap* content = m_display->getDisplayPixmap();
       content->fill(Qt::transparent);
@@ -229,7 +229,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.drawPixmap(0, 0, m_lastDisplayContent);
       painter.end();
 
-      drawLayerSelection(layerSelectionChanged->m_layer);
+      drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
     }
     break;
 
@@ -252,6 +252,15 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
   }
 }
 
+void te::qt::af::MapDisplay::drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+  for(it = layers.begin(); it != layers.end(); ++it)
+    drawLayerSelection(it->get());
+
+  m_display->repaint();
+}
+
 void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
 {
   assert(layer);
@@ -261,10 +270,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
   if(oids == 0 || oids->size() == 0)
-  {
-    m_display->repaint();
     return;
-  }
 
   bool needRemap = false;
 
@@ -312,8 +318,6 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
 
     canvas.draw(g.get());
   }
-
-  m_display->repaint();
 }
 
 void te::qt::af::MapDisplay::onExtentChanged()
