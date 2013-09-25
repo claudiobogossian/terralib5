@@ -606,3 +606,22 @@ void te::qt::af::AddActionToCustomToolbars(QAction* act)
 
   sett.endGroup();
 }
+
+void te::qt::af::AddFilePathToSettings(const QString& path, const QString& typeFile)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  QString key = "Last used file path/" + typeFile;
+
+  sett.setValue(key, path);
+}
+
+QString te::qt::af::GetFilePathFromSettings(const QString& typeFile)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  QString key = "Last used file path/" + typeFile;
+
+  return sett.value(key).toString();
+}
+

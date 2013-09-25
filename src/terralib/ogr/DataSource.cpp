@@ -99,6 +99,7 @@ void te::ogr::DataSource::open()
   it = m_connectionInfo.find("URI");
   if (it==m_connectionInfo.end())
     throw(Exception(TR_OGR("Not enough information to open the data source.")));
+
   path = it->second;
 
   if (boost::filesystem::exists(path))
