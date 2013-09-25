@@ -72,6 +72,8 @@ namespace te
 
           std::list<te::map::AbstractLayerPtr> getAllLayers() const;
 
+          std::list<te::map::AbstractLayerPtr> getSelectedLayers() const;
+
           std::list<te::qt::widgets::AbstractTreeItem*> getSelectedItems() const;
 
         public slots:

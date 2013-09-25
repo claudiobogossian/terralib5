@@ -89,6 +89,8 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
 void te::qt::af::LayerExplorer::onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
+  emit selectedLayersChanged(m_explorer->getSelectedLayers());
+
   QModelIndexList lst = selected.indexes();
 
   if(lst.isEmpty())

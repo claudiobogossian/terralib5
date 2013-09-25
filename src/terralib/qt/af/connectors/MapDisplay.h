@@ -129,6 +129,8 @@ namespace te
 
         protected:
 
+          void drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers);
+
           void drawLayerSelection(te::map::AbstractLayer* layer);
 
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);

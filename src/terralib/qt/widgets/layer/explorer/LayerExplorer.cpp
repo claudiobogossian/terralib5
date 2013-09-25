@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../../maptools/AbstractLayer.h"
+#include "AbstractTreeItem.h"
 #include "LayerExplorer.h"
 #include "LayerTreeModel.h"
 #include "LayerTreeView.h"
@@ -84,6 +85,29 @@ void te::qt::widgets::LayerExplorer::set(const std::list<te::map::AbstractLayerP
 std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getAllLayers() const
 {
   return m_treeModel->getLayers();
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelectedLayers() const
+{
+  std::list<te::map::AbstractLayerPtr> selectedLayers;
+
+  if(m_treeView == 0)
+    return selectedLayers;
+
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = getSelectedItems();
+
+  std::list<te::qt::widgets::AbstractTreeItem*>::iterator it;
+  for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
+  {
+    te::map::AbstractLayerPtr layer = (*it)->getLayer();
+
+    if(layer.get() == 0)
+      continue;
+
+    selectedLayers.push_back(layer);
+  }
+
+  return selectedLayers;
 }
 
 std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerExplorer::getSelectedItems() const

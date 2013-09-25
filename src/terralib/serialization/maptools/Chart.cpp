@@ -44,6 +44,9 @@
 
 std::auto_ptr<te::map::Chart> te::serialize::ReadChart(te::xml::Reader& reader)
 {
+  if(reader.getElementLocalName() != "Chart")
+    return std::auto_ptr<te::map::Chart>();
+
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Chart");
 
