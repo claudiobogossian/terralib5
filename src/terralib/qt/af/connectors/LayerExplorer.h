@@ -34,7 +34,9 @@
 // Qt
 #include <QtCore/QObject>
 
+// STL
 #include <vector>
+#include <list>
 
 // Forward declarations
 class QItemSelection;
@@ -110,6 +112,10 @@ namespace te
           void onLayerVisibilityChanged(te::qt::widgets::AbstractTreeItem* item);
 
           void layersChanged(const std::vector<te::map::AbstractLayerPtr>& layers);
+
+        signals:
+
+          void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
 
         protected:
 
