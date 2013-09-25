@@ -27,7 +27,7 @@
 #define __TERRALIB_STMEMORY_INTERNAL_DATASET_H
 
 // TerraLib
-#include "../dataaccess2/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSet.h"
 #include "../sam/rtree/Index.h"
 #include "Config.h"
 

@@ -27,7 +27,7 @@
 #define __TERRALIB_STMEMORY_INTERNAL_TRANSACTOR_H
 
 // TerraLib
-#include "../dataaccess2/datasource/DataSourceTransactor.h"
+#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "Config.h"
 
 namespace te

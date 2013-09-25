@@ -27,7 +27,7 @@
 #define __TERRALIB_STMEMORY_INTERNAL_EXCEPTION_H
 
 // TerraLib
-#include "../dataaccess2/Exception.h"
+#include "../dataaccess/Exception.h"
 #include "Config.h"
 
 namespace te
