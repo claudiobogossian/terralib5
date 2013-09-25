@@ -36,6 +36,7 @@
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
 #include "../geometry/Geometry.h"
+#include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
 #include "../maptools/AbstractLayer.h"
 #include "../memory/DataSet.h"
@@ -382,7 +383,7 @@ std::vector<te::dt::Property*> te::vp::GetPropertiesWithoutGeom(te::da::DataSetT
   {
     prop = dsType->getProperty(i);
 
-    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE)
+    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE) //Remover o numeric da condição quando ajustar o driver do PostGis
     {
       props.push_back(prop);
     }
