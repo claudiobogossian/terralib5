@@ -187,6 +187,7 @@
       <xsd:element name="SupportDataSetTypePesistenceAPI" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="SupportPreparedQueryAPI" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="SupportBatchExecutorAPI" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="SupportSpatialOperators" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="version" type="xsd:string" use="required"/>
   </xsd:complexType>
