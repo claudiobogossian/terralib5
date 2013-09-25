@@ -47,7 +47,7 @@ te::qt::plugins::rp::SegmenterAction::~SegmenterAction()
 
 void te::qt::plugins::rp::SegmenterAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::SegmenterWizard dlg(0);
+  te::qt::widgets::SegmenterWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
 // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();

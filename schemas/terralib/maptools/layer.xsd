@@ -14,6 +14,7 @@
     <xsd:documentation>Layer Schema</xsd:documentation>
   </xsd:annotation>
 
+  <xsd:import namespace="http://www.terralib.org/schemas/maptools" schemaLocation="../maptools/chart.xsd" />
   <xsd:import namespace="http://www.terralib.org/schemas/dataaccess" schemaLocation="../dataaccess/dataaccess.xsd" />
   <xsd:import namespace="http://www.terralib.org/schemas/geometry" schemaLocation="../geometry/geometry.xsd" />
   <xsd:import namespace="http://www.opengis.net/se" schemaLocation="../../ogc/se/1.1.0/FeatureStyle.xsd" />
@@ -37,6 +38,7 @@
       <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Visible" type="te_map:VisibilityType" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Grouping" type="te_map:GroupingType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="Chart" type="te_map:ChartType" minOccurs="0" maxOccurs="1" />
     </xsd:sequence>
     <xsd:attribute name="id" type="xsd:string" use="required" />
   </xsd:complexType>

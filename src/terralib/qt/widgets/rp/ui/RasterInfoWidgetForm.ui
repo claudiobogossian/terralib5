@@ -84,6 +84,9 @@
           </item>
           <item row="1" column="0">
            <widget class="QRadioButton" name="m_memRadioButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -140,6 +143,9 @@
           </item>
           <item row="3" column="0">
            <widget class="QRadioButton" name="m_overightRadioButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Overwrite</string>
             </property>

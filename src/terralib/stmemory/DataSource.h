@@ -27,9 +27,9 @@
 #define __TERRALIB_STMEMORY_INTERNAL_DATASOURCE_H
 
 // TerraLib
-#include "../dataaccess2/datasource/DataSource.h"
-#include "../dataaccess2/datasource/DataSourceCapabilities.h"
-#include "../dataaccess2/query/SQLDialect.h"
+#include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../dataaccess/query/SQLDialect.h"
 #include "Config.h"
 
 // STL

@@ -26,8 +26,8 @@
 
 // TerraLib
 #include "../common/STLUtils.h"
-#include "../dataaccess2/dataset/DataSetType.h"
-#include "../dataaccess2/utils/Utils.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../datatype/ByteArray.h"
 #include "../datatype/DataType.h"
 #include "../datatype/Property.h"

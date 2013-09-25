@@ -64,6 +64,8 @@ namespace te
         private:
 
           std::auto_ptr<Ui::DataExchangeSummaryWizardPageForm> m_ui;
+
+          bool m_status;
       };
 
     } // end namespace widgets

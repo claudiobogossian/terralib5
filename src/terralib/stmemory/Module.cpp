@@ -27,7 +27,7 @@
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
-#include "../dataaccess2/datasource/DataSourceFactory.h"
+#include "../dataaccess/datasource/DataSourceFactory.h"
 
 #include "Config.h"
 #include "DataSourceFactory.h"

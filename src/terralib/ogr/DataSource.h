@@ -74,6 +74,8 @@ namespace te
         const te::da::DataSourceCapabilities& getCapabilities() const;
 
         const te::da::SQLDialect* getDialect() const;
+      
+        void createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& options);
 
         static void setDialect(te::da::SQLDialect* dialect);
 
