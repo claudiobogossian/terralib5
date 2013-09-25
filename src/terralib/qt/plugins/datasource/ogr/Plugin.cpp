@@ -50,9 +50,10 @@
 #include <boost/filesystem.hpp>
 
 // Qt 
-#include <QAction>
-#include <QMenu>
-#include <QFileDialog>
+#include <QtCore/QFileInfo>
+#include <QtGui/QAction>
+#include <QtGui/QFileDialog>
+#include <QtGui/QMenu>
 
 std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPtr& info)
 {
@@ -182,10 +183,14 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 {
   QString filter = GetSupportedFiles();
 
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), QString(), filter);
+  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), filter);
 
   if(fileNames.isEmpty())
     return;
+
+  QFileInfo info(fileNames.value(0));
+
+  te::qt::af::AddFilePathToSettings(info.absolutePath(), "vector");
 
   std::list<te::map::AbstractLayerPtr> layers;
 
