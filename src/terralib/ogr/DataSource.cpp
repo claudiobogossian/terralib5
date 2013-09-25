@@ -103,7 +103,7 @@ void te::ogr::DataSource::open()
   path = it->second;
 
   if (boost::filesystem::exists(path))
-    m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str());
+    m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
 
   m_isValid = true;
 
