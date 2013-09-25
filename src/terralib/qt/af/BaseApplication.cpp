@@ -1089,7 +1089,7 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
   if(!m_project && m_project->getLayers().empty())
     return;
 
-  m_display->fit(m_project->getLayers());
+  m_display->fit(m_explorer->getExplorer()->getAllLayers());
 }
 
 void te::qt::af::BaseApplication::onInfoToggled(bool checked)
@@ -1100,7 +1100,7 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
   QPixmap pxmap = QIcon::fromTheme("pointer-info").pixmap(m_mapCursorSize);
   QCursor infoCursor(pxmap, 5, 5);
 
-  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_project->getLayers());
+  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_explorer->getExplorer()->getAllLayers());
   m_display->setCurrentTool(info);
 }
 
