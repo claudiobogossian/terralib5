@@ -69,11 +69,17 @@ void te::srs::SpatialReferenceSystemManager::init()
   if(!m_set.empty())
     throw Exception(TR_SRS("The spatial reference system manager is already initialized!"));
   
+  const char* te_env = getenv("TERRALIB_DIR");
+
+  if(te_env == 0)
+    throw Exception(TR_SRS("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
+
   try
   {
     std::ifstream f;
-    std::string jsonf = TE_JSON_FILES_LOCATION;
-    jsonf += "/srs.json";
+
+    std::string jsonf(te_env);
+    jsonf += "resources/json/srs.json";
     
     f.open(jsonf.c_str());
     if (!f.is_open())
