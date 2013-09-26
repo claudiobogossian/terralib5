@@ -42,7 +42,7 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::PolygonSymbolizerProperty::PolygonSymbolizerProperty(QWidget* parent) : m_symb(new te::se::PolygonSymbolizer), m_setLocalSymbol(false)
+te::qt::widgets::PolygonSymbolizerProperty::PolygonSymbolizerProperty(QWidget* parent) :  m_setLocalSymbol(false), m_symb(new te::se::PolygonSymbolizer)
 {
   QGridLayout* layout = new QGridLayout(this);
   this->setLayout(layout);

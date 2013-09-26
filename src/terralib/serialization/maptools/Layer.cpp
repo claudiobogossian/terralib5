@@ -556,8 +556,6 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
 
   te::da::DataSourcePtr dsc = te::da::GetDataSource(datasourceId);
 
-  bool isOgr = dsc.get() != 0 && dsc->getType() == "OGR";
-
   std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer(id, title, 0));
   layer->setSRID(srid);
   layer->setExtent(*mbr.get());
