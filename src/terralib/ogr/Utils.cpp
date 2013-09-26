@@ -346,13 +346,13 @@ te::gm::GeomType te::ogr::Convert2TerraLib(OGRwkbGeometryType ogrGeomType)
   switch(ogrGeomType)
   {
     case wkbPoint:
-      return te::gm::PointType;
+      return te::gm::MultiPointType;
 
     case wkbLineString:
-      return te::gm::LineStringType;
+      return te::gm::MultiLineStringType;
 
     case wkbPolygon:
-      return te::gm::PolygonType;
+      return te::gm::MultiPolygonType;
 
     case wkbMultiPoint:
       return te::gm::MultiPointType;

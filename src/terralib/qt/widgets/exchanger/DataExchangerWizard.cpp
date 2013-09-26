@@ -226,7 +226,7 @@ void te::qt::widgets::DataExchangerWizard::commit()
 
       std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), it->second));
 
-      if(dataset->moveNext())
+      if(dataset->moveBeforeFirst())
         odatasource->add(odset->getName(), dsAdapter.get(), ods->getConnInfo());
 
       // boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
