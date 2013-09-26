@@ -198,6 +198,74 @@ void te::qt::widgets::DataSourceSelectorWidget::setDataSource(const QString& dsT
   }
 }
 
+void  te::qt::widgets::DataSourceSelectorWidget::showDataSourceWithDatabaseSupport(bool visible)
+{
+  int count = m_ui->m_datasourceTypeListWidget->count();
+
+  for(int i=0; i<count; i++)
+  {
+    QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->item(i);
+
+    std::string name = item->data(Qt::UserRole).toString().toStdString();
+
+    const te::qt::widgets::DataSourceType* type = DataSourceTypeManager::getInstance().get(name);
+
+    if(type->hasDatabaseSupport())
+      item->setHidden(!visible);
+  }
+}
+
+void  te::qt::widgets::DataSourceSelectorWidget::showDataSourceWithFileSupport(bool visible)
+{
+  int count = m_ui->m_datasourceTypeListWidget->count();
+
+  for(int i=0; i<count; i++)
+  {
+    QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->item(i);
+
+    std::string name = item->data(Qt::UserRole).toString().toStdString();
+
+    const te::qt::widgets::DataSourceType* type = DataSourceTypeManager::getInstance().get(name);
+
+    if(type->hasFileSupport())
+      item->setHidden(!visible);
+  }
+}
+
+void  te::qt::widgets::DataSourceSelectorWidget::showDataSourceWithRasterSupport(bool visible)
+{
+  int count = m_ui->m_datasourceTypeListWidget->count();
+
+  for(int i=0; i<count; i++)
+  {
+    QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->item(i);
+
+    std::string name = item->data(Qt::UserRole).toString().toStdString();
+
+    const te::qt::widgets::DataSourceType* type = DataSourceTypeManager::getInstance().get(name);
+
+    if(type->hasRasterSupport())
+      item->setHidden(!visible);
+  }
+}
+
+void  te::qt::widgets::DataSourceSelectorWidget::showDataSourceWithVectorialSupport(bool visible)
+{
+  int count = m_ui->m_datasourceTypeListWidget->count();
+
+  for(int i=0; i<count; i++)
+  {
+    QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->item(i);
+
+    std::string name = item->data(Qt::UserRole).toString().toStdString();
+
+    const te::qt::widgets::DataSourceType* type = DataSourceTypeManager::getInstance().get(name);
+
+    if(type->hasVectorialSupport())
+      item->setHidden(!visible);
+  }
+}
+
 void te::qt::widgets::DataSourceSelectorWidget::addDataSourcePushButtonPressed()
 {
   QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->currentItem();

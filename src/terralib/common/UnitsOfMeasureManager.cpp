@@ -252,7 +252,15 @@ void te::common::UnitsOfMeasureManager::init()
 
   boost::property_tree::ptree pt;
 
-  boost::property_tree::json_parser::read_json(TE_JSON_FILES_LOCATION "/uom.json",pt);
+  const char* te_env = getenv("TERRALIB_DIR");
+
+  if(te_env == 0)
+    throw Exception(TR_COMMON("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
+
+  std::string uom_file(te_env);
+  uom_file += "/resources/json/uom.json";
+
+  boost::property_tree::json_parser::read_json(uom_file, pt);
 
   BOOST_FOREACH(boost::property_tree::ptree::value_type& v, pt.get_child("units"))
   {

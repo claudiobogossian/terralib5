@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GeoSpatial Data Exchange</string>
+   <string>Data Exchange</string>
   </property>
   <property name="wizardStyle">
    <enum>QWizard::ModernStyle</enum>

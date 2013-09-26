@@ -73,6 +73,9 @@ te::qt::widgets::DataExchangerWizard::DataExchangerWizard(QWidget* parent, Qt::W
   //m_datasourceSelectorPage->getSelectorWidget()->setButtonsEnabled(false);
   m_datasourceSelectorPage->getSelectorWidget()->getForm()->m_mainLayout->setStretch(0, 49);
   m_datasourceSelectorPage->getSelectorWidget()->getForm()->m_mainLayout->setStretch(1, 100);
+
+  m_datasourceSelectorPage->getSelectorWidget()->showDataSourceWithRasterSupport(false);
+
   setPage(PAGE_DATASOURCE_SELECTION, m_datasourceSelectorPage.get());
 
   m_datasetSelectorPage.reset(new DataSetSelectorWizardPage(this));
