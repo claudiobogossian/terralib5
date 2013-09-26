@@ -55,6 +55,7 @@
 // Boost
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
 
 te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader);
@@ -476,12 +477,12 @@ void WriteLayerChart(te::map::Chart* chart, te::xml::Writer& writer)
 
   writer.writeElement("te_map:ContourColor", chart->getContourColor().getColor());
 
-  writer.writeElement("te_map:ContourWidth", chart->getContourWidth());
+  writer.writeElement("te_map:ContourWidth", boost::lexical_cast<int>(chart->getContourWidth()));
 
-  writer.writeElement("te_map:Height", chart->getHeight());
+  writer.writeElement("te_map:Height", boost::lexical_cast<int>(chart->getHeight()));
 
   if(chart->getType() == te::map::Bar)
-    writer.writeElement("te_map:BarWidth", chart->getBarWidth());
+    writer.writeElement("te_map:BarWidth", boost::lexical_cast<int>(chart->getBarWidth()));
 
   writer.writeElement("te_map:IsVisible", (chart->isVisible() ? "true" : "false"));
 
