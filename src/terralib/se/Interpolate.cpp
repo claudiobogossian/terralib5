@@ -51,6 +51,7 @@ te::se::Interpolate::Interpolate(const Interpolate& rhs)
     m_interpolationPoints.push_back(rhs.m_interpolationPoints[t]->clone());
   }
 
+  m_fallbackValue = rhs.getFallbackValue();
   m_mode = rhs.m_mode;
   m_method = rhs.m_method;
 }

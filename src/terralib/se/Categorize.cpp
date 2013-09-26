@@ -60,6 +60,8 @@ te::se::Categorize::Categorize(const Categorize& rhs)
     m_thresholdValues.push_back(rhs.m_thresholdValues[t]->clone());
   }
 
+  m_fallbackValue = rhs.getFallbackValue();
+
   m_threshholdsBelongTo = rhs.m_threshholdsBelongTo;
 }
 
