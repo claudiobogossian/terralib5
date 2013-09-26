@@ -63,6 +63,14 @@ namespace te
 
           virtual ~DataSourceType();
 
+          virtual bool hasDatabaseSupport() const = 0;
+
+          virtual bool hasFileSupport() const = 0;
+
+          virtual bool hasRasterSupport() const = 0;
+
+          virtual bool hasVectorialSupport() const = 0;
+
           virtual std::string getName() const = 0;
 
           virtual std::string getTitle() const = 0;

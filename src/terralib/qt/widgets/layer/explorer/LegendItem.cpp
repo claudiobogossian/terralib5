@@ -70,7 +70,7 @@ QVariant te::qt::widgets::LegendItem::data(int column, int role) const
       if(m_rule->getName())
         return QVariant(QString::fromStdString(*(m_rule->getName())));
 
-      return QVariant(QString(tr("No Description")));
+      return QVariant(QString(tr("Style")));
     }
   }
 

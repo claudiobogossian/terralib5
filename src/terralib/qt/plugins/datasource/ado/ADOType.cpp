@@ -40,6 +40,26 @@ te::qt::plugins::ado::ADOType::~ADOType()
 {
 }
 
+bool te::qt::plugins::ado::ADOType::hasDatabaseSupport() const
+{
+  return true;
+}
+
+bool te::qt::plugins::ado::ADOType::hasFileSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::ado::ADOType::hasRasterSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::ado::ADOType::hasVectorialSupport() const
+{
+  return true;
+}
+
 std::string te::qt::plugins::ado::ADOType::getName() const
 {
   return "ADO";

@@ -85,6 +85,14 @@ namespace te
 
           void setDataSource(const QString& dsType);
 
+          void showDataSourceWithDatabaseSupport(bool visible);
+
+          void showDataSourceWithFileSupport(bool visible);
+
+          void showDataSourceWithRasterSupport(bool visible);
+
+          void showDataSourceWithVectorialSupport(bool visible);
+
         //signals:
 
           //void hasSelectedDataSource(bool selected);

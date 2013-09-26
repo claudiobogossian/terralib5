@@ -40,6 +40,26 @@ te::qt::plugins::pgis::PostGISType::~PostGISType()
 {
 }
 
+bool te::qt::plugins::pgis::PostGISType::hasDatabaseSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::pgis::PostGISType::hasFileSupport() const
+{
+  return true;
+}
+
+bool te::qt::plugins::pgis::PostGISType::hasRasterSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::pgis::PostGISType::hasVectorialSupport() const
+{
+  return true;
+}
+
 std::string te::qt::plugins::pgis::PostGISType::getName() const
 {
   return "POSTGIS";
