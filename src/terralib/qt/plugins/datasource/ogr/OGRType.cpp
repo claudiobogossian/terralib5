@@ -75,10 +75,10 @@ QIcon te::qt::plugins::ogr::OGRType::getIcon(int iconType) const
   switch(iconType)
   {
     case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
-      return QIcon::fromTheme("datasource-ogr");
+      return QIcon::fromTheme("file-vector");
 
     case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
-      return QIcon::fromTheme("datasource-ogr");
+      return QIcon::fromTheme("file-vector");
 
     default:
       return QIcon::fromTheme("unknown-icon");

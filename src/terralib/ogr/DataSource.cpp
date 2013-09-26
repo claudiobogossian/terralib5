@@ -35,7 +35,7 @@ te::da::SQLDialect* te::ogr::DataSource::sm_myDialect(0);
 void GetCapabilities(OGRDataSource* ds, te::da::DataSourceCapabilities& caps)
 {
   // DataSet
-  if(ds->GetLayerCount() <= 0)
+  if(!ds || ds->GetLayerCount() <= 0)
     return;
 
   te::da::DataSetCapabilities ds_caps;
@@ -99,10 +99,11 @@ void te::ogr::DataSource::open()
   it = m_connectionInfo.find("URI");
   if (it==m_connectionInfo.end())
     throw(Exception(TR_OGR("Not enough information to open the data source.")));
+
   path = it->second;
 
   if (boost::filesystem::exists(path))
-    m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str());
+    m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
 
   m_isValid = true;
 

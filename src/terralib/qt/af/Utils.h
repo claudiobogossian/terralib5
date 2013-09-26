@@ -30,9 +30,15 @@
 #include "../../common/Exception.h"
 #include "Config.h"
 
+// Qt
+#include <QtCore/QString>
+#include <QtGui/QColor>
+    
 // Forward declarations
+class QAction;    
 class QStringList;
 class QToolBar;
+class QWidget;
 
 namespace te
 {
@@ -220,9 +226,32 @@ namespace te
       TEQTAFEXPORT void CreateDefaultSettings();
 
       /*!
-        \brief
+        \brief Check QSettings for existance of \a act and adds it if necessary.
+
+        \param act Action to be inserted.
       */
       TEQTAFEXPORT void AddActionToCustomToolbars(QAction* act);
+
+      /*!
+        \brief Save last used path in QSettings.
+
+        \param path The path to last used file.
+
+        \param typeFile The type of file opened. Actually we assume three values: "vector", "raster", "database". Any other value may be not used in the system. 
+
+        \note The params are case sensitive. It means that a "Vector" value for the argument \a typeFile is unkowned by application.
+      */
+      TEQTAFEXPORT void AddFilePathToSettings(const QString& path, const QString& typeFile);
+
+      /*!
+        \brief Returns the value of the last saved file path for the \a typeFile required.
+
+        \param typeFile The type of file opened. Actually we assume three values: "vector", "raster", "database". Any other value may be not used in the system.
+
+        \return The path if encountered or a null QString.
+      */
+      TEQTAFEXPORT QString GetFilePathFromSettings(const QString& typeFile);
+
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

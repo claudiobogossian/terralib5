@@ -1089,7 +1089,7 @@ void te::qt::af::BaseApplication::onZoomExtentTriggered()
   if(!m_project && m_project->getLayers().empty())
     return;
 
-  m_display->fit(m_project->getLayers());
+  m_display->fit(m_explorer->getExplorer()->getAllLayers());
 }
 
 void te::qt::af::BaseApplication::onInfoToggled(bool checked)
@@ -1100,7 +1100,7 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
   QPixmap pxmap = QIcon::fromTheme("pointer-info").pixmap(m_mapCursorSize);
   QCursor infoCursor(pxmap, 5, 5);
 
-  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_project->getLayers());
+  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_explorer->getExplorer()->getAllLayers());
   m_display->setCurrentTool(info);
 }
 
@@ -1401,27 +1401,20 @@ void te::qt::af::BaseApplication::makeDialog()
   treeView->setAnimated(true);
 
   treeView->add(m_layerFitOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  
-  // TODO
-  //treeView->add(m_layerEdit, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  //treeView->add(m_layerRename, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  //treeView->add(m_layerExport, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  
-  treeView->add(m_layerRemoveSelection, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);  
-  treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  treeView->add(m_layerSRS, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  treeView->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
-  // TODO
-  //treeView->add(m_layerRaise, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  //treeView->add(m_layerLower, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  //treeView->add(m_layerToTop, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  //treeView->add(m_layerToBottom, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerRemoveSelection, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerChartsHistogram, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerChartsScatter, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerChart, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_viewStyleExplorer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  treeView->add(m_layerSRS, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   treeView->add(m_projectNewFolder, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
-  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 
@@ -1448,8 +1441,6 @@ void te::qt::af::BaseApplication::makeDialog()
   connect(visualDock, SIGNAL(visibilityChanged(bool)), this, SLOT(onStyleExplorerVisibilityChanged(bool)));
 
   m_symbolizerExplorer = new te::qt::af::SymbolizerExplorer(visualDock, this);
-
-  lexplorer->getTreeView()->add(m_viewStyleExplorer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   initStatusBar();
 
