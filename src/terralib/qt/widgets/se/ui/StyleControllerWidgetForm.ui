@@ -47,7 +47,7 @@
         <property name="margin">
          <number>2</number>
         </property>
-        <item row="0" column="0">
+        <item row="0" column="2">
          <widget class="QToolButton" name="m_addSymbToolButton">
           <property name="text">
            <string>...</string>
@@ -57,7 +57,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
+        <item row="0" column="5">
          <widget class="QToolButton" name="m_downSymbToolButton">
           <property name="text">
            <string>...</string>
@@ -67,7 +67,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
+        <item row="0" column="3">
          <widget class="QToolButton" name="m_delSymbToolButton">
           <property name="text">
            <string>...</string>
@@ -77,7 +77,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
+        <item row="0" column="4">
          <widget class="QToolButton" name="m_upSymbToolButton">
           <property name="text">
            <string>...</string>
@@ -87,7 +87,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="5">
+        <item row="0" column="7">
          <widget class="QSlider" name="m_iconSizeSlider">
           <property name="minimum">
            <number>16</number>
@@ -112,8 +112,25 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="4">
+        <item row="0" column="6">
          <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QToolButton" name="m_mapRefreshToolButton">
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="Line" name="line_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
