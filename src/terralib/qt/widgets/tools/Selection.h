@@ -112,7 +112,7 @@ namespace te
         signals:
 
           /*! This signal is emitted when the layer selection changed. */
-          void layerSelectionChanged(const te::map::AbstractLayerPtr& layer);
+          void layerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
 
         private:
 

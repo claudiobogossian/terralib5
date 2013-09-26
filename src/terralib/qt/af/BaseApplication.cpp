@@ -429,23 +429,24 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     if(m_project == 0)
       throw Exception(TR_QT_AF("Error: there is no opened project!"));
 
-// TODO: use signal/slot to avoid inserting direct in th explorer and in the project!
     std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
     std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();
 
     while(it != itend)
     {
-      m_project->add(*it);
-
       if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
-        m_explorer->getExplorer()->add(*it);
+      {
+        te::qt::af::evt::LayerAdded evt(*it);
+        te::qt::af::ApplicationController::getInstance().broadcast(&evt);        
+      }
 
       ++it;
     }
 
     SaveLastDatasourceOnSettings(dsTypeId.c_str());
 
-    setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
+    te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+    ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
   }
   catch(const std::exception& e)
   {
@@ -477,13 +478,14 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
     te::map::AbstractLayerPtr layer = qlb->getQueryLayer();
 
-    m_project->add(layer);
-
     if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
-      m_explorer->getExplorer()->add(layer);
+    {
+      te::qt::af::evt::LayerAdded evt(layer);
+      te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+    }
 
-    setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
-
+    te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+    ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
   }
   catch(const std::exception& e)
   {
@@ -525,18 +527,23 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
   std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
   std::list<te::qt::widgets::AbstractTreeItem*>::iterator it;
+
+  QString msg = tr("Do you really want to remove the selected layer(s)?");
+
+  int reply = QMessageBox::question(this, tr("Remove Layer(s)"), msg, QMessageBox::No, QMessageBox::Yes);
+
+  if(reply == QMessageBox::No)
+    return;
   
   for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
   {
     te::qt::widgets::AbstractTreeItem* item = *it;
     if(item->getLayer() != 0)
-    {
-      m_project->remove(item->getLayer());
       m_explorer->getExplorer()->remove(item);
-    }
   }
 
-  setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
+  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
 }
 
 void te::qt::af::BaseApplication::onPluginsManagerTriggered()
@@ -1190,11 +1197,11 @@ void te::qt::af::BaseApplication::onFullScreenToggled(bool checked)
   checked ? showFullScreen() : showMaximized();
 }
 
-void te::qt::af::BaseApplication::onLayerSelectionChanged(const te::map::AbstractLayerPtr& layer)
+void te::qt::af::BaseApplication::onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer)
 {
   assert(layer.get());
 
-  te::qt::af::evt::LayerSelectionChanged e(layer.get());
+  te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
   ApplicationController::getInstance().broadcast(&e);
 }
 
@@ -1327,7 +1334,7 @@ void te::qt::af::BaseApplication::checkProjectSave()
 
   if(m_project != 0 && m_project->hasChanged())
   {
-    QString msg("The current project has unsaved changes. Do you want to save?");
+    QString msg("The current project has unsaved changes. Do you want to save them?");
     int btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg, QMessageBox::No, QMessageBox::Yes);
 
     if(btn == QMessageBox::Yes)

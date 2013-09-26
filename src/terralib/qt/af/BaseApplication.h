@@ -163,7 +163,7 @@ namespace te
 
           void onFullScreenToggled(bool checked);
 
-          void onLayerSelectionChanged(const te::map::AbstractLayerPtr& layer);
+          void onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
 
           void onLayerExplorerVisibilityChanged(bool visible);
 

@@ -131,7 +131,7 @@ namespace te
 
           void drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers);
 
-          void drawLayerSelection(te::map::AbstractLayer* layer);
+          void drawLayerSelection(te::map::AbstractLayerPtr layer);
 
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
 
