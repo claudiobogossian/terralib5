@@ -36,8 +36,10 @@ set (thirdParty_dlls
   ${TE_DEPENDENCIES_DIR}/bin/v8.dll
   ${TE_DEPENDENCIES_DIR}/bin/xerces-c.dll
   ${TE_DEPENDENCIES_DIR}/bin/zlib1.dll
-  ${TE_DEPENDENCIES_DIR}/gdal/win32/release/gdal18.dll
+  ${TE_DEPENDENCIES_DIR}/gdal/win32/release/gdal110.dll
+  ${TE_DEPENDENCIES_DIR}/gdal/win32/release/hdf5.dll
   ${TE_DEPENDENCIES_DIR}/gdal/win32/release/libexpat.dll
+  ${TE_DEPENDENCIES_DIR}/gdal/win32/release/szip.dll
 )
 
 find_package(Qt4)
