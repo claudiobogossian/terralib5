@@ -346,13 +346,13 @@ te::gm::GeomType te::ogr::Convert2TerraLib(OGRwkbGeometryType ogrGeomType)
   switch(ogrGeomType)
   {
     case wkbPoint:
-      return te::gm::MultiPointType;
+      return te::gm::PointType;
 
     case wkbLineString:
-      return te::gm::MultiLineStringType;
+      return te::gm::LineStringType;
 
     case wkbPolygon:
-      return te::gm::MultiPolygonType;
+      return te::gm::PolygonType;
 
     case wkbMultiPoint:
       return te::gm::MultiPointType;
@@ -462,4 +462,22 @@ std::string te::ogr::GetDriverName(const std::string& path)
     return std::string("Mapinfo File");
 
   return "";
+}
+
+std::vector<std::string> te::ogr::GetOGRDrivers(bool filterCreate
+                                                )
+{
+  std::vector<std::string> drivernames;
+  
+  int ndrivers = OGRSFDriverRegistrar::GetRegistrar()->GetDriverCount();
+  
+  for (unsigned int i=0; i<ndrivers; ++i)
+  {
+    OGRSFDriver* driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriver(i);
+    if (filterCreate && !driver->TestCapability(ODrCCreateDataSource))
+      continue;
+    drivernames.push_back(driver->GetName());
+  }
+  
+  return drivernames;
 }

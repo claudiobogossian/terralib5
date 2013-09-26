@@ -74,9 +74,9 @@
 
 // Boost
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 void te::serialize::xml::ReadDataSourceInfo(const std::string& datasourcesFileName)
 {
@@ -204,8 +204,17 @@ void te::serialize::xml::Save(std::ostream& ostr)
 
 void te::serialize::xml::Save(te::xml::Writer& writer)
 {
-  boost::filesystem::path p(TE_SCHEMA_LOCATION);
+  const char* te_env = getenv("TERRALIB_DIR");
 
+  if(te_env == 0)
+    throw te::da::Exception(TR_DATAACCESS("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
+
+  std::string schema_loc(te_env);
+  schema_loc += "/schemas/terralib";
+
+  boost::replace_all(schema_loc, " ", "%20");
+
+  schema_loc = "file:///" + schema_loc;
 
   writer.writeStartDocument("UTF-8", "no");
 
@@ -215,7 +224,7 @@ void te::serialize::xml::Save(te::xml::Writer& writer)
   writer.writeAttribute("xmlns:te_common", "http://www.terralib.org/schemas/common");
   writer.writeAttribute("xmlns:te_da", "http://www.terralib.org/schemas/dataaccess");
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/dataaccess");
-  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/dataaccess " + p.generic_string() + "/dataaccess/dataaccess.xsd");
+  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/dataaccess " + schema_loc + "/dataaccess/dataaccess.xsd");
   writer.writeAttribute("version", TERRALIB_STRING_VERSION);
   writer.writeAttribute("release", "2013-01-01");
 

@@ -127,6 +127,8 @@ namespace te
 
           void onLayerFitOnMapDisplayTriggered();
 
+          void onLayerFitSelectedOnMapDisplayTriggered();
+
           void onMapSRIDTriggered();
         
           void onMapSetUnknwonSRIDTriggered();
@@ -251,6 +253,7 @@ namespace te
           QAction* m_layerChart;
           QAction* m_layerGrouping;
           QAction* m_layerFitOnMapDisplay;
+          QAction* m_layerFitSelectedOnMapDisplay;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;

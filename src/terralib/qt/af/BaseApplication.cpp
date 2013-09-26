@@ -30,8 +30,6 @@
 #include "../../common/STLUtils.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
-#include "../../maptools/AbstractLayer.h"
-#include "../../maptools/FolderLayer.h"
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
@@ -1063,6 +1061,20 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onLayerFitSelectedOnMapDisplayTriggered()
+{
+  std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getSelectedLayers();
+  if(layers.empty())
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+    return;
+  }
+
+  te::gm::Envelope finalEnv = te::map::GetSelectedExtent(layers, m_display->getDisplay()->getSRID(), true);
+
+  m_display->getDisplay()->setExtent(finalEnv, true);
+}
+
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
 {
   if(!checked)
@@ -1421,6 +1433,7 @@ void te::qt::af::BaseApplication::makeDialog()
   treeView->setAnimated(true);
 
   treeView->add(m_layerFitOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerFitSelectedOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
 
   treeView->add(m_layerRemoveSelection, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
@@ -1597,22 +1610,16 @@ void te::qt::af::BaseApplication::initActions()
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
 // Menu -Layer- actions
-  //initAction(m_layerEdit, "layer-edit", "Layer.Edit", tr("&Edit"), tr(""), true, false, false, m_menubar); TODO
-  //initAction(m_layerRename, "layer-rename", "Layer.Rename", tr("R&ename"), tr(""), true, false, false, m_menubar); TODO
-  //initAction(m_layerExport, "document-export", "Layer.Export", tr("E&xport..."), tr(""), true, false, false, m_menubar); TODO
   initAction(m_layerRemoveSelection, "pointer-remove-selection", "Map.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
   initAction(m_layerGrouping, "grouping", "Layer.Grouping", tr("&Grouping..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
   initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
-  //initAction(m_layerRaise, "layer-raise", "Layer.Raise", tr("&Raise"), tr(""), true, false, false, m_menubar); TODO
-  //initAction(m_layerLower, "layer-lower", "Layer.Lower", tr("&Lower"), tr(""), true, false, false, m_menubar); TODO
-  //initAction(m_layerToTop, "layer-to-top", "Layer.To Top", tr("To &Top"), tr(""), true, false, false, m_menubar); TODO
-  //initAction(m_layerToBottom, "layer-to-bottom", "Layer.To Bottom", tr("To &Bottom"), tr(""), true, false, false, m_menubar); TODO
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, true, m_menubar);
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart"), tr(""), true, false, true, m_menubar);
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit On Map Display", tr("Fit on &Map Display"), tr("Fit the current layer on Map Display"), true, false, true, m_menubar);
+  initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected On Map Display", tr("Fit Selected On Map Display"), tr("Fit the selected objects of layer on Map Display"), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
@@ -1746,6 +1753,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerChart);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerFitOnMapDisplay);
+  m_layerMenu->addAction(m_layerFitSelectedOnMapDisplay);
   //Pan to Selected Objects TODO
   //Zoom to Selected Objects TODO
   //Ver mais menus que tem a ver com layer
@@ -1955,6 +1963,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapUnknownSRID, SIGNAL(triggered()), SLOT(onMapSetUnknwonSRIDTriggered()));
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
   connect(m_layerFitOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitOnMapDisplayTriggered()));
+  connect(m_layerFitSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitSelectedOnMapDisplayTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
   connect(m_mapPreviousExtent, SIGNAL(triggered()), SLOT(onPreviousExtentTriggered()));
