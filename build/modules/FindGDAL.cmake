@@ -44,14 +44,14 @@ set(GDAL_INCLUDE_DIR
 
 find_library(
   GDAL_LIBRARY_RELEASE 
-  NAMES gdal_i.lib gdal gdal1 gdal1.6.0
+  NAMES gdal_i gdal gdal1 gdal1.6.0
   PATHS /usr/local/lib /usr/lib win32/release
   PATH_SUFFIXES "gdal/lib" "win32/release"
 )
 
 find_library(
   GDAL_LIBRARY_DEBUG 
-  NAMES gdal_i.lib gdal gdal1 gdal1.6.0
+  NAMES gdal_i gdal gdal1 gdal1.6.0
   PATHS /usr/local/lib /usr/lib 
   PATH_SUFFIXES "gdal/lib" "win32/debug"
 )

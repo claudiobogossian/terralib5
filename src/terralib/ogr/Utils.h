@@ -223,6 +223,16 @@ namespace te
       \return The driver name used by OGR Library or an empty string if not possible extract the driver name.
     */
     std::string GetDriverName(const std::string& path);
+    
+    /*!
+     \brief It returns the list of OGR Drivers available.
+     
+     \param filterCreate Set TRUE to indicate to retrieve only the drivers with the capacity to create datasources.
+     
+     \return A list of OGR Drivers.
+     */
+    TEOGREXPORT std::vector<std::string> GetOGRDrivers(bool filterCreate = false);
+    
 
   } // end namespace ogr
 }   // end namespace te

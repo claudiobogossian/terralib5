@@ -38,6 +38,7 @@
 #include <QtCore/QResource>
 #include <QtGui/QApplication>
 #include <QtGui/QSplashScreen>
+#include <QtGui/QMessageBox>
 
 #include <locale>
 
@@ -53,7 +54,18 @@ int main(int argc, char** argv)
 
   try
   {
-    QPixmap pixmap(TVIEW_SPLASH_SCREEN_PIXMAP);
+    const char* te_env = getenv("TERRALIB_DIR");
+
+    if(te_env == 0)
+    {
+      QMessageBox::critical(0, QObject::tr("Execution Failure"), QObject::tr("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
+      throw std::exception();
+    }
+
+    std::string splash_pix(te_env);
+    splash_pix += "/resources/images/png/terraview-splashscreen.png";
+
+    QPixmap pixmap(splash_pix.c_str());
 
     QSplashScreen* splash(new QSplashScreen(pixmap/*, Qt::WindowStaysOnTopHint*/));
 
@@ -67,7 +79,9 @@ int main(int argc, char** argv)
 
     TerraView tview;
 
-    tview.init(TVIEW_CONFIG_FILE);
+    std::string appPath = qApp->applicationDirPath().toStdString();
+
+    tview.init(appPath+"/config.xml");
 
     splash->finish(&tview);
 

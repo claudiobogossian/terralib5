@@ -38,6 +38,9 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/MultiLineString.h"
+#include "../geometry/MultiPoint.h"
+#include "../geometry/MultiPolygon.h"
 #include "../maptools/AbstractLayer.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
@@ -327,9 +330,30 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
       te::mem::DataSetItem* item = new te::mem::DataSetItem(outputDs);
 
-      te::gm::Geometry* newGeom = currGeom->intersection(secGeom.get());
+      te::gm::Geometry* resultGeom = currGeom->intersection(secGeom.get());
 
-      item->setGeometry("geom", *newGeom);
+      if(resultGeom->getGeomTypeId() == te::gm::PolygonType)
+      {
+        te::gm::MultiPolygon* newGeom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, resultGeom->getSRID());
+        newGeom->add(resultGeom);
+        item->setGeometry("geom", *newGeom);
+      }
+      else if(resultGeom->getGeomTypeId() == te::gm::LineStringType)
+      {
+        te::gm::MultiLineString* newGeom = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, resultGeom->getSRID());
+        newGeom->add(resultGeom);
+        item->setGeometry("geom", *newGeom);
+      }
+      else if(resultGeom->getGeomTypeId() == te::gm::PointType)
+      {
+        te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::MultiPointType, resultGeom->getSRID());
+        newGeom->add(resultGeom);
+        item->setGeometry("geom", *newGeom);
+      }
+      else
+      {
+        item->setGeometry("geom", *resultGeom);
+      }
 
       for(size_t j = 0; j < firstMember.props.size(); ++j)
       {

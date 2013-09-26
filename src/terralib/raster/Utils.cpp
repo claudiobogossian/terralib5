@@ -109,7 +109,7 @@ te::rst::Grid* te::rst::GetGrid(const std::map<std::string, std::string>& rinfo)
 {
   unsigned nCols, nRows;
   double resX = 1.0, resY = 1.0, ulX =0.0, ulY=0.0;
-  int srid;
+  int srid = TE_UNKNOWN_SRS;
   te::gm::Coord2D* ulc;
 
   std::map<std::string, std::string>::const_iterator it = rinfo.find("NCOLS");
