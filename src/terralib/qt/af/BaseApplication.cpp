@@ -43,6 +43,7 @@
 #include "../widgets/datasource/selector/DataSourceExplorerDialog.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/exchanger/DataExchangerWizard.h"
+#include "../widgets/exchanger/SHP2PostGISDialog.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/ChartItem.h"
 #include "../widgets/layer/explorer/GroupingTreeItem.h"
@@ -224,6 +225,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   m_mapMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_mapMenu->menuAction());
   m_toolsMenu = new QMenu(m_menubar);
+  m_toolsExchangerMenu = new QMenu(m_toolsMenu);
+  m_toolsMenu->addAction(m_toolsExchangerMenu->menuAction());
   m_menubar->addAction(m_toolsMenu->menuAction());
   m_pluginsMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_pluginsMenu->menuAction());
@@ -658,6 +661,23 @@ void te::qt::af::BaseApplication::onToolsDataExchangerTriggered()
   try
   {
     te::qt::widgets::DataExchangerWizard dlg(this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onToolsDataExchangerSHP2PGISTriggered()
+{
+  try
+  {
+    te::qt::widgets::SHP2PostGISDialog dlg(this);
+    
+    if(m_project)
+      dlg.setLayers(m_project->getLayers());
+
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -1543,7 +1563,8 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
-  initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Data Exchanger", tr("&Data Exchanger..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Exchanger.All to All", tr("&All to All..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchangerSHP2PGIS, "data-exchange-shp-pgis-icon", "Tools.Exchanger.SHP to PostGIS", tr("&SHP to PostGIS..."), tr("Exchange data sets between SHP and PostGIS"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceExplorer, "datasource-explorer", "Tools.Data Source Explorer", tr("&Data Source Explorer..."), tr("Show or hide the data source explorer"), 
     true, false, true, m_menubar);
 
@@ -1567,7 +1588,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_helpAbout, "", "Help.About", tr("&About..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Project- actions
-  initAction(m_projectAddLayerDataset, "", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
+  initAction(m_projectAddLayerDataset, "datasource", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
   initAction(m_projectNewFolder, "folder-new", "Project.New Folder", tr("&New Folder..."), tr("Add a new folder"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
   initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, m_menubar);
@@ -1773,8 +1794,13 @@ void te::qt::af::BaseApplication::initMenus()
   m_toolsMenu->setTitle(tr("&Tools"));
 
 //  m_toolsMenu->addAction(m_toolbarsManagement);
-  m_toolsMenu->addSeparator();
-  m_toolsMenu->addAction(m_toolsDataExchanger);
+//  m_toolsMenu->addSeparator();
+  m_toolsExchangerMenu->setObjectName("Tools.Exchanger");
+  m_toolsExchangerMenu->setTitle(tr("&Exchanger"));
+  m_toolsExchangerMenu->setIcon(QIcon::fromTheme("datasource-exchanger"));
+  m_toolsExchangerMenu->addAction(m_toolsDataExchangerSHP2PGIS);
+  m_toolsExchangerMenu->addAction(m_toolsDataExchanger);
+
   m_toolsMenu->addAction(m_toolsDataSourceExplorer);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsCustomize);  
@@ -1914,6 +1940,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
+  connect(m_toolsDataExchangerSHP2PGIS, SIGNAL(triggered()), SLOT(onToolsDataExchangerSHP2PGISTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
