@@ -50,6 +50,7 @@ te::se::InterpolationPoint* te::serialize::ReadInterpolationPoint(te::xml::Reade
   ip->setData(data);
 
   reader.next();
+  reader.next();
 
   assert(reader.getElementLocalName() == "Value");
   reader.next();
