@@ -103,6 +103,8 @@ namespace te
 
           void onToolsDataExchangerTriggered();
 
+          void onToolsDataExchangerSHP2PGISTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onNewFolderTriggered();
@@ -221,6 +223,7 @@ namespace te
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
           QAction* m_toolsDataExchanger;
+          QAction* m_toolsDataExchangerSHP2PGIS;
           QAction* m_toolsDataSourceExplorer;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
@@ -289,6 +292,7 @@ namespace te
           QMenu* m_viewMenu;
           QMenu* m_viewToolBarsMenu;
           QMenu* m_toolsMenu;
+          QMenu* m_toolsExchangerMenu;
           QMenu* m_pluginsMenu;
           QMenu* m_helpMenu;
           QMenu* m_projectMenu;
