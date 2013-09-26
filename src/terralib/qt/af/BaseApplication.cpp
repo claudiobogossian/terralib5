@@ -1439,6 +1439,7 @@ void te::qt::af::BaseApplication::makeDialog()
   m_viewStyleExplorer->setChecked(false);
   visualDock->setVisible(false);
   connect(visualDock, SIGNAL(visibilityChanged(bool)), this, SLOT(onStyleExplorerVisibilityChanged(bool)));
+  connect(visualDock, SIGNAL(repaintMapDisplay()), this, SLOT(onDrawTriggered()));
 
   m_symbolizerExplorer = new te::qt::af::SymbolizerExplorer(visualDock, this);
 
