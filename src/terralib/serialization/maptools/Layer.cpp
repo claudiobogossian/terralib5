@@ -46,7 +46,6 @@
 #include "../se/Style.h"
 #include "../se/Symbolizer.h"
 #include "../Exception.h"
-#include "Chart.h"
 #include "Layer.h"
 
 // STL
