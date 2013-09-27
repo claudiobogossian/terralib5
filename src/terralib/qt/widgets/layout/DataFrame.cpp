@@ -34,8 +34,8 @@
 #include <terralib/srs/Config.h>
 #include <terralib/srs/Converter.h>
 #include <terralib/dataaccess/dataset/ObjectIdSet.h>
-#include <terralib/dataaccess/utils/utils.h>
-#include <terralib/qt/widgets/utils.h>
+#include <terralib/dataaccess/utils/Utils.h>
+#include <terralib/qt/widgets/Utils.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
 #include <terralib/qt/widgets/canvas/MultiThreadMapDisplay.h>
 #include <terralib/qt/widgets/layer/explorer/AbstractTreeItem.h>
@@ -407,6 +407,9 @@ void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al)
   m_mapDisplay->changeData(al);
   m_visibleLayers.clear();
   getLayerList(al, m_visibleLayers);
+  if(m_visibleLayers.size() == 0)
+    return;
+
   //m_mapDisplay->setLayerList(m_visibleLayers);
   m_mapDisplay->refresh();
 
@@ -585,7 +588,16 @@ void te::qt::widgets::DataFrame::drawButtonClicked()
   std::list<te::map::AbstractLayerPtr> visibleLayers;
   te::map::AbstractLayerPtr al(m_data);
   getLayerList(al, visibleLayers);
-  //te::map::GetVisibleLayers(al, visibleLayers);
+  if(m_visibleLayers.size())
+  {
+    if(visibleLayers.size() == 0)
+      return;
+    else
+    {
+      setData(m_data);
+      return;
+    }
+  }
 
   if(visibleLayers.size() != m_visibleLayers.size())
     m_dataChanged = true;
