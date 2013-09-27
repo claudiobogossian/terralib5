@@ -1198,7 +1198,7 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
   m_display->setCurrentTool(selection);
 
   connect(m_explorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
-  connect(selection, SIGNAL(layerSelectionChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectionChanged(const te::map::AbstractLayerPtr&)));
+  connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
 }
 
 void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)

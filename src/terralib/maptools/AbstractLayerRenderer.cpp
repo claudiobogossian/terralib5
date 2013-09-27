@@ -568,7 +568,8 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
     if(type == UNIQUE_VALUE)
     {
       std::map<std::string, std::vector<te::se::Symbolizer*> >::const_iterator it = uniqueGroupsMap.find(value);
-      assert(it != uniqueGroupsMap.end());
+      if(it == uniqueGroupsMap.end())
+        continue;
       symbolizers = it->second;
     }
     else
@@ -580,7 +581,9 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
         if(dvalue < it->first)
           break;
       }
-      assert(it != othersGroupsMap.end());
+      
+      if(it == othersGroupsMap.end())
+        continue;
       symbolizers = it->second;
     }
 
