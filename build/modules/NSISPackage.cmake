@@ -10,20 +10,18 @@ set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.dpi.inpe.br")
 set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.funcate.org.br")
 
 # Creating TERRALIB_DIR enviroment variable.
-set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "  WriteRegStr HKCU 'Environment' 'TERRALIB_DIR' '$INSTDIR' ")
-set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS "MessageBox MB_YESNO|MB_ICONQUESTION \"Do you wish to reboot the system?\" IDNO +2 Reboot")
+list (APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "  SetRebootFlag true \\n  WriteRegStr HKCU 'Environment' 'TERRALIB_DIR' '$INSTDIR' ")
 
+# Removing TERRALIB_DIR from enviroment variables.
+set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS " DeleteRegValue HKCU 'Environment' 'TERRALIB_DIR' ")
 
-#Removing TERRALIB_DIR from enviroment variables.
-SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS " DeleteRegValue HKCU 'Environment' 'TERRALIB_DIR' ")
-
-LIST ( APPEND CPACK_NSIS_CREATE_ICONS_EXTRA ${CPACK_NSIS_CREATE_ICONS_EXTRA}
+list (APPEND CPACK_NSIS_CREATE_ICONS_EXTRA ${CPACK_NSIS_CREATE_ICONS_EXTRA}
 "\nSetOutPath \\\"$INSTDIR\\\\bin\\\""
 "\nCreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\TerraView.lnk\\\" \\\"$INSTDIR\\\\bin\\\\terraview.exe\\\" \\\"\\\" \\\"$INSTDIR\\\\resources\\\\images\\\\ico\\\\terralib-install-icon.ico\\\""
 "\nCreateShortCut \\\"$DESKTOP\\\\TerraView.lnk\\\" \\\"$INSTDIR\\\\bin\\\\terraview.exe\\\" \\\"\\\" \\\"$INSTDIR\\\\resources\\\\images\\\\ico\\\\terralib-install-icon.ico\\\""
 )
 
- LIST ( APPEND CPACK_NSIS_DELETE_ICONS_EXTRA ${CPACK_NSIS_DELETE_ICONS_EXTRA}
+list (APPEND CPACK_NSIS_DELETE_ICONS_EXTRA ${CPACK_NSIS_DELETE_ICONS_EXTRA}
 "\nDelete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\TerraView.lnk\\\""
 "\nDelete \\\"$DESKTOP\\\\TerraView.lnk\\\""
 )
