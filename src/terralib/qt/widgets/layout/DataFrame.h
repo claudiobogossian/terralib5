@@ -29,7 +29,6 @@
 // TerraLib
 #include "../Config.h"
 #include "../canvas/MultiThreadMapDisplay.h"
-//#include "../canvas/MapDisplay.h"
 #include "Frame.h"
 
 // Qt
@@ -67,13 +66,14 @@ namespace te
           DataFrame& operator=(const DataFrame& rhs);
 
           te::qt::widgets::MultiThreadMapDisplay* getMapDisplay();
+          void getLayerList(te::map::AbstractLayerPtr, std::list<te::map::AbstractLayerPtr>&);
           QRectF getDataRect();
           void setDataRect(QRectF& r);
           void adjust();
           void adjustWidgetToFrameRect(const QRectF& r);
           double getScale();
           void setScale(double v);
-          te::map::AbstractLayerPtr getData();
+          te::map::AbstractLayer* getData();
           void setData(te::map::AbstractLayerPtr d);
           bool transformEnvelope(te::gm::Envelope& e, int oldsrid, int newsrid);
           double getDataUnitToMilimeter();
@@ -89,6 +89,8 @@ namespace te
           void toolTip(const QPoint&, const QString&);
           QPoint getGlobalPositionCenter();
           void setDataChanged(bool);
+          void drawButtonClicked();
+          QPixmap* getLastDisplayContent();
 
           bool eventFilter(QObject*, QEvent*);
 
@@ -106,8 +108,14 @@ namespace te
           //void createLegend();
           //void removeLegend();
 
+          void drawLayerSelection(te::map::AbstractLayer* layer);
+
+        protected slots:
+          void onDrawLayersFinished(const QMap<QString, QString>& errors);
+
         private:
           te::qt::widgets::MultiThreadMapDisplay* m_mapDisplay;
+          QPixmap m_lastDisplayContent;
           double m_scale;
           double m_dataUnitToMilimeter; // conversion factor to milimeter
           te::qt::widgets::GeographicGridFrame* m_geoGridFrame;
@@ -117,7 +125,8 @@ namespace te
           bool m_undo;
           QRectF m_dataRect;
           bool m_dataChanged;
-          te::map::AbstractLayerPtr m_data;
+          te::map::AbstractLayer* m_data;
+          std::list<te::map::AbstractLayerPtr> m_visibleLayers;
 
 
           //te::qt::widgets::NorthOrientationFrame* m_northFrame;

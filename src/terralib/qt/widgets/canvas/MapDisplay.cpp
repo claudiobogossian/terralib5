@@ -111,8 +111,17 @@ void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al)
   if(al.get() == 0)
     return;
 
-  std::list<te::map::AbstractLayerPtr> visibleLayers;
-  te::map::GetVisibleLayers(al, visibleLayers);
+  std::list<te::map::AbstractLayerPtr> vis, visibleLayers;
+  te::map::GetVisibleLayers(al, vis);
+  // remove folders
+  std::list<te::map::AbstractLayerPtr>::iterator vit;
+  for(vit = vis.begin(); vit != vis.end(); ++vit)
+  {
+    if((*vit)->getType() == "FOLDERLAYER")
+      continue;
+    visibleLayers.push_front(*vit);
+  }
+
   setLayerList(visibleLayers);
 
   // calcule novo SRID e extent

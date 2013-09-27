@@ -27,6 +27,7 @@
 #include "UTMGridFrame.h"
 #include "DataFrame.h"
 #include "LayoutEditor.h"
+#include "../canvas/MultiThreadMapDisplay.h"
 
 #include <QtGui/QPainter>
 #include <QtGui/QMouseEvent>
