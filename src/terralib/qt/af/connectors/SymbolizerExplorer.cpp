@@ -55,10 +55,10 @@ void te::qt::af::SymbolizerExplorer::onApplicationTriggered(te::qt::af::evt::Eve
     {
       te::qt::af::evt::LayerSelected* e = static_cast<te::qt::af::evt::LayerSelected*>(evt);
 
-      te::map::AbstractLayer* layer = e->m_layer;
+      te::map::AbstractLayerPtr layer = e->m_layer;
       assert(layer);
 
-      m_explorer->setStyle(layer->getStyle(), layer);
+      m_explorer->setStyle(layer->getStyle(), layer.get());
     }
     break;
 
@@ -66,10 +66,10 @@ void te::qt::af::SymbolizerExplorer::onApplicationTriggered(te::qt::af::evt::Eve
     {
       te::qt::af::evt::LayerStyleSelected* e = static_cast<te::qt::af::evt::LayerStyleSelected*>(evt);
 
-      te::map::AbstractLayer* layer = e->m_layer;
+      te::map::AbstractLayerPtr layer = e->m_layer;
       assert(layer);
 
-      m_explorer->setStyle(layer->getStyle(), layer);
+      m_explorer->setStyle(layer->getStyle(), layer.get());
 
       m_explorer->setVisible(true);
     }

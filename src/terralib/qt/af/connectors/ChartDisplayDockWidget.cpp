@@ -77,9 +77,9 @@ void te::qt::af::ChartDisplayDockWidget::onApplicationTriggered(te::qt::af::evt:
 {
   switch(evt->m_id)
   {
-    case te::qt::af::evt::LAYER_SELECTION_CHANGED:
+    case te::qt::af::evt::LAYER_SELECTED_OBJECTS_CHANGED:
       {
-        te::qt::af::evt::LayerSelectionChanged* ev = static_cast<te::qt::af::evt::LayerSelectionChanged*>(evt);
+        te::qt::af::evt::LayerSelectedObjectsChanged* ev = static_cast<te::qt::af::evt::LayerSelectedObjectsChanged*>(evt);
 
         if(ev->m_layer->getId() == m_layer->getId())
         {
@@ -104,6 +104,6 @@ void te::qt::af::ChartDisplayDockWidget::selectionChanged(te::da::ObjectIdSet* o
     oids->addProperty(m_layer->getData()->getPropertyName(*it), *it, m_layer->getData()->getPropertyDataType(*it));
 
   m_layer->select(oids);
-  te::qt::af::evt::LayerSelectionChanged e(m_layer);
+  te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
   ApplicationController::getInstance().broadcast(&e);
 }

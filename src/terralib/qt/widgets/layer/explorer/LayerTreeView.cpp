@@ -290,6 +290,16 @@ void te::qt::widgets::LayerTreeView::add(const te::map::AbstractLayerPtr& layer)
   model->add(layer);
 }
 
+void te::qt::widgets::LayerTreeView::remove(te::qt::widgets::AbstractTreeItem* item)
+{
+  LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());
+
+  te::map::AbstractLayerPtr layer = item->getLayer();
+
+  if(model->remove(item))
+    emit layerRemoved(layer);
+}
+
 void te::qt::widgets::LayerTreeView::add(QAction* action,
                                          const QString& menu,
                                          const QString& layerType,
@@ -326,27 +336,27 @@ void te::qt::widgets::LayerTreeView::itemClicked(const QModelIndex& index)
 
   // If the item visibility was changed, emit the signal of visibilityChanged for this item,
   // for their descendants(if any) and for their ancestors
-  te::map::AbstractLayer* itemLayer = item->getLayer().get();
+  te::map::AbstractLayerPtr itemLayer = item->getLayer();
   if((itemLayer != 0) && itemLayer->hasVisibilityChanged())
   {
-    emit visibilityChanged(item);
+    emit visibilityChanged(itemLayer);
 
     // For their descendants
     std::vector<AbstractTreeItem*> descendantItems = item->getDescendants();
     for(std::size_t i = 0; i < descendantItems.size(); ++i)
     {
-      te::map::AbstractLayer* descendantLayer = descendantItems[i]->getLayer().get();
+      te::map::AbstractLayerPtr descendantLayer = descendantItems[i]->getLayer();
       if((descendantLayer != 0) && descendantLayer->hasVisibilityChanged())
-        emit visibilityChanged(descendantItems[i]);
+        emit visibilityChanged(descendantLayer);
     }
 
     // For their ancestors
     std::vector<AbstractTreeItem*> ancestorItems = item->getAncestors();
     for(std::size_t i = 0; i < ancestorItems.size(); ++i)
     {
-      te::map::AbstractLayer* ancestorLayer = ancestorItems[i]->getLayer().get();
+      te::map::AbstractLayerPtr ancestorLayer = ancestorItems[i]->getLayer();
       if((ancestorLayer != 0) && ancestorLayer->hasVisibilityChanged())
-        emit visibilityChanged(ancestorItems[i]);
+        emit visibilityChanged(ancestorLayer);
     }
   }
 }
@@ -392,8 +402,9 @@ void te::qt::widgets::LayerTreeView::dragMoveEvent(QDragMoveEvent* e)
     e->setDropAction(Qt::CopyAction);
   else
     e->setDropAction(Qt::MoveAction);
+
   e->accept();
-  //e->acceptProposedAction();
+
   QTreeView::dragMoveEvent(e);
 }
 

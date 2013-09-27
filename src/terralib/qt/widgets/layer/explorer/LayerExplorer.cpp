@@ -131,7 +131,7 @@ void te::qt::widgets::LayerExplorer::remove(AbstractTreeItem* item)
   if(m_treeView == 0)
     return;
 
-  m_treeModel->remove(item);
+  m_treeView->remove(item);
 }
 
 //void te::qt::widgets::LayerExplorer::dragEnterEvent(QDragEnterEvent* e)

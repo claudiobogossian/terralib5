@@ -68,10 +68,13 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
   connect(m_ui->m_delSymbToolButton, SIGNAL(clicked()), this, SLOT(onDelSymbolizerClicked()));
   connect(m_ui->m_upSymbToolButton, SIGNAL(clicked()), this, SLOT(onUpSymbolizerClicked()));
   connect(m_ui->m_downSymbToolButton, SIGNAL(clicked()), this, SLOT(onDownSymbolizerClicked()));
+  connect(m_ui->m_mapRefreshToolButton, SIGNAL(clicked()), this, SLOT(onMapRefreshClicked()));
 
   //m_ui->m_tabWidget->setCurrentWidget(m_ui->m_previewTab);
 
   //m_ui->m_ruleGroupBox->setVisible(false);
+
+  m_ui->m_delSymbToolButton->setEnabled(false);
 
   updateUi();
 }
@@ -91,6 +94,7 @@ void te::qt::widgets::StyleControllerWidget::updateUi()
   m_ui->m_downSymbToolButton->setIcon(QIcon::fromTheme("go-down").pixmap(16,16));
   m_ui->m_addSymbToolButton->setIcon(QIcon::fromTheme("list-add").pixmap(16,16));
   m_ui->m_delSymbToolButton->setIcon(QIcon::fromTheme("list-remove").pixmap(16,16));
+  m_ui->m_mapRefreshToolButton->setIcon(QIcon::fromTheme("map-draw").pixmap(16,16));
 }
 
 void te::qt::widgets::StyleControllerWidget::onAddSymbolizerClicked()
@@ -149,6 +153,11 @@ void te::qt::widgets::StyleControllerWidget::onRuleClicked(const te::se::Rule* r
 {
   //if(!rule->getSymbolizers().empty())
   //  m_rulePreview->updatePreview(rule->getSymbolizers());
+}
+
+void te::qt::widgets::StyleControllerWidget::onMapRefreshClicked()
+{
+  emit mapRefresh();
 }
 
 void te::qt::widgets::StyleControllerWidget::changeLegendIconSize(int size)

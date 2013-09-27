@@ -27,6 +27,7 @@
 #include "GridFrame.h"
 #include "DataFrame.h"
 #include "LayoutEditor.h"
+#include "../canvas/MultiThreadMapDisplay.h"
 
 // Qt
 #include <QtGui/QPainter>

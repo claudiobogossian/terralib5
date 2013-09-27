@@ -205,13 +205,62 @@ void te::plugin::PluginManager::load(boost::ptr_vector<PluginInfo>& plugins, con
 
 void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
 {
-  if(isLoaded(pInfo.m_name))
-    throw Exception((boost::format("Plugin %1% is already loaded") % pInfo.m_name).str());
+  PluginInfo internalPInfo = pInfo;
+  
+  // If no folder was supplied, try to find the plugin folder using the finders
+  
+  if( internalPInfo.m_folder.empty() )
+  {
+    boost::ptr_vector<PluginInfo> pluginsInfos;
+    
+    if(m_finders.empty())
+    {
+      DefaultFinder f;
+      f.getPlugins(pluginsInfos);
+      
+      for( boost::ptr_vector<PluginInfo>::size_type pIdx = 0; pIdx <
+        pluginsInfos.size() ; ++pIdx )
+      {
+        if( pluginsInfos[ pIdx ].m_name == internalPInfo.m_name )
+        {
+          internalPInfo.m_folder = pluginsInfos[ pIdx ].m_folder;
+          break;
+        }
+      }      
+    }
+    else
+    {
+      const std::size_t nfinders = m_finders.size();
+
+      for(std::size_t i = 0; i < nfinders; ++i)
+      {
+        pluginsInfos.clear();
+        
+        m_finders[i]->getPlugins(pluginsInfos);
+        
+        for( boost::ptr_vector<PluginInfo>::size_type pIdx = 0; pIdx <
+          pluginsInfos.size() ; ++pIdx )
+        {
+          if( pluginsInfos[ pIdx ].m_name == internalPInfo.m_name )
+          {
+            internalPInfo.m_folder = pluginsInfos[ pIdx ].m_folder;
+            i = nfinders;
+            break;
+          }
+        }        
+      }
+    }
+  }
+  
+  // Checking if is already loaded
+  
+  if(isLoaded(internalPInfo.m_name))
+    throw Exception((boost::format("Plugin %1% is already loaded") % internalPInfo.m_name).str());
 
 // check if required plugins is already loaded
-  if(!isLoaded(pInfo.m_requiredPlugins))
+  if(!isLoaded(internalPInfo.m_requiredPlugins))
   {
-    moveToBrokenList(pInfo);
+    moveToBrokenList(internalPInfo);
     throw Exception(TR_PLUGIN("A required plugin is not loaded!"));
   }
 
@@ -225,25 +274,25 @@ void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
   try
   {
 // if everything is ready for loading the plugin let's call its engine
-    std::auto_ptr<AbstractPluginEngine> engine(PluginEngineFactory::make(pInfo.m_engine));
+    std::auto_ptr<AbstractPluginEngine> engine(PluginEngineFactory::make(internalPInfo.m_engine));
 
     if(engine.get() == 0)
-      throw Exception((boost::format("Could not determine plugin's language type for %1%!") % pInfo.m_name).str());
+      throw Exception((boost::format("Could not determine plugin's language type for %1%!") % internalPInfo.m_name).str());
 
-    plugin.reset(engine->load(pInfo));
+    plugin.reset(engine->load(internalPInfo));
 
     if(plugin.get() == 0)
-      throw Exception((boost::format("Could not load plugin %1%!") % pInfo.m_name).str());
+      throw Exception((boost::format("Could not load plugin %1%!") % internalPInfo.m_name).str());
   }
   catch(const std::exception& e)
   {
-    moveToBrokenList(pInfo);
+    moveToBrokenList(internalPInfo);
     Exception ee(e.what());
     throw ee;
   }
   catch(...)
   {
-    moveToBrokenList(pInfo);
+    moveToBrokenList(internalPInfo);
     throw;
   }
 
@@ -265,25 +314,25 @@ void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
 
     std::string plg_name = plugin->getInfo().m_name;
 // register plugin in the map and add it to its category
-    m_pluginCategoryMap[pInfo.m_category].push_back(plugin.get());
+    m_pluginCategoryMap[internalPInfo.m_category].push_back(plugin.get());
     m_plugins.push_back(plugin.get());
     m_pluginsMap[plg_name] = plugin.release();
 
 // remove plugin from broken or unloaded list
-    removeFromBrokenList(pInfo);
-    removeFromUnloadedList(pInfo);
+    removeFromBrokenList(internalPInfo);
+    removeFromUnloadedList(internalPInfo);
 
     updateDependents(plg_name);
   }
   catch(const std::exception& e)
   {
-    moveToBrokenList(pInfo);
+    moveToBrokenList(internalPInfo);
     Exception ee(e.what());
     throw ee;
   }
   catch(...)
   {
-    moveToBrokenList(pInfo);
+    moveToBrokenList(internalPInfo);
     throw;  // sorry, but maybe this will cause the code to crash due to the unload of plugin module!
   }
 }

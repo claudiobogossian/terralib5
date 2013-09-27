@@ -290,9 +290,7 @@ namespace te
 
         signals:
 
-          void visibilityChanged(te::qt::widgets::AbstractTreeItem* item);
-
-          void layerAdded(te::qt::widgets::AbstractTreeItem* item);
+          void visibilityChanged(te::map::AbstractLayerPtr layer);
 
         protected:
 

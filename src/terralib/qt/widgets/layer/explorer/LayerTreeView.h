@@ -92,11 +92,15 @@ namespace te
 
           void pressed(te::qt::widgets::AbstractTreeItem* item);
 
-          void visibilityChanged(te::qt::widgets::AbstractTreeItem* item);
+          void visibilityChanged(te::map::AbstractLayerPtr layer);
+
+          void layerRemoved(te::map::AbstractLayerPtr layer);
 
         public slots:
 
           void add(const te::map::AbstractLayerPtr& layer);
+
+          void remove(te::qt::widgets::AbstractTreeItem* item);
 
         public:
 

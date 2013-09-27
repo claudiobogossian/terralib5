@@ -109,10 +109,13 @@ namespace te
           void onLineSymbolizerChanged();
           void onPointSymbolizerChanged();
           void onRasterSymbolizerChanged();
+          void onMapRefresh();
 
         signals:
 
           void symbolizerChanged(te::se::Symbolizer* s);
+
+          void repaintMapDisplay();
 
         private:
 

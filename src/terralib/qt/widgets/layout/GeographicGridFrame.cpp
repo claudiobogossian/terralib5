@@ -26,6 +26,7 @@
 // TerraLib
 #include "GeographicGridFrame.h"
 #include "DataFrame.h"
+#include "../canvas/MultiThreadMapDisplay.h"
 
 #include <QtGui/QPainter>
 #include <QtGui/QMouseEvent>

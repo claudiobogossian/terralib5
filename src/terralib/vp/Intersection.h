@@ -87,6 +87,8 @@ namespace te
                                                                            std::size_t outputSRID = 0);
 
     std::vector<te::dt::Property*> GetPropertiesWithoutGeom(te::da::DataSetType* dsType);
+
+    te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet* ds);
   }
 }
 
