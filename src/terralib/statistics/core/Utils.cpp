@@ -158,22 +158,8 @@ std::vector<std::string> te::stat::GetStringData(te::da::DataSet* dataSet, const
 
   do
   {
-    flag = false;
     value = dataSet->getString(propName);
-
-    if(result.empty())
-      result.push_back(value);
-    else
-    {
-      for(std::size_t i = 0; i < result.size(); ++i)
-      {
-        if(value == result[i])
-          flag = true;
-      }
-
-      if(flag == false)
-        result.push_back(value);
-    }
+    result.push_back(value);
 
   }while(dataSet->moveNext());
 
