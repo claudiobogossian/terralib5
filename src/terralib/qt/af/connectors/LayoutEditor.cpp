@@ -95,10 +95,16 @@ void te::qt::af::LayoutEditor::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
   switch(e->m_id)
   {
-    case te::qt::af::evt::LAYER_SELECTION_CHANGED:
+    case te::qt::af::evt::LAYER_SELECTED_OBJECTS_CHANGED:
     {
-      te::qt::af::evt::LayerSelectionChanged* layerSelectionChanged = static_cast<te::qt::af::evt::LayerSelectionChanged*>(e);
-      m_layoutEditor->layerSelectionChanged();
+      //QPixmap* content = m_display->getDisplayPixmap();
+      //content->fill(Qt::transparent);
+
+      //QPainter painter(content);
+      //painter.drawPixmap(0, 0, m_lastDisplayContent);
+      //painter.end();
+
+      //drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
 
       //std::vector<te::qt::widgets::LayoutObject*>::iterator it;
       //for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
