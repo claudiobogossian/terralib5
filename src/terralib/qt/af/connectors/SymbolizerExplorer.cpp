@@ -58,7 +58,8 @@ void te::qt::af::SymbolizerExplorer::onApplicationTriggered(te::qt::af::evt::Eve
       te::map::AbstractLayerPtr layer = e->m_layer;
       assert(layer);
 
-      m_explorer->setStyle(layer->getStyle(), layer.get());
+      if(layer->getType() != "FOLDERLAYER")
+        m_explorer->setStyle(layer->getStyle(), layer.get());
     }
     break;
 
