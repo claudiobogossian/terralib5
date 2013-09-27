@@ -48,6 +48,11 @@
 // Boost
 #include <boost/dynamic_bitset.hpp>
 
+inline void TESTHR( HRESULT hr )
+{
+  if( FAILED(hr) ) _com_issue_error( hr );
+}
+
 te::ado::DataSet::DataSet(_RecordsetPtr result,
                           Connection* conn,
                           const std::vector<int>& ptypes,
@@ -99,7 +104,7 @@ std::string te::ado::DataSet::getPropertyName(std::size_t i) const
 
 std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return "";
 }
 
 bool te::ado::DataSet::isEmpty() const
@@ -120,7 +125,7 @@ std::size_t te::ado::DataSet::size() const
 bool te::ado::DataSet::moveNext()
 {
   if(m_i != -1)
-    m_result->MoveNext();
+    TESTHR(m_result->MoveNext());
 
   ++m_i;
   return (m_i < m_size);
@@ -137,7 +142,7 @@ bool te::ado::DataSet::movePrevious()
 
 bool te::ado::DataSet::moveBeforeFirst()
 {
-  m_result->MoveFirst();
+  TESTHR(m_result->MoveFirst());
   m_i = -1;
   return m_size != 0;
 }
@@ -151,15 +156,24 @@ bool te::ado::DataSet::moveFirst()
 
 bool te::ado::DataSet::moveLast()
 {
-  m_result->MoveLast();
+  TESTHR(m_result->MoveLast());
   m_i = m_size - 1;
   return (m_i < m_size);
 }
 
 bool te::ado::DataSet::move(std::size_t i)
 {
-  m_result->Move((long)i);
-  m_i = static_cast<int>(i);
+  if(i == 0)
+    return moveFirst();
+
+  if(m_i == i)
+    return true;
+
+  long p = static_cast<long>(i-m_i);
+
+  TESTHR(m_result->Move(p));
+
+  m_i += p;
   return (m_i < m_size);
 }
 
@@ -203,19 +217,9 @@ char te::ado::DataSet::getChar(std::size_t i) const
   return ival;
 }
 
-char te::ado::DataSet::getChar(const std::string& name) const
-{
-  return '\0'; // TODO
-}
-
 unsigned char te::ado::DataSet::getUChar(std::size_t i) const
 {
   return (unsigned char)getChar(i);
-}
-
-unsigned char te::ado::DataSet::getUChar(const std::string& name) const
-{
-  return '\0'; // TODO
 }
 
 boost::int16_t te::ado::DataSet::getInt16(std::size_t i) const
@@ -238,11 +242,6 @@ boost::int16_t te::ado::DataSet::getInt16(std::size_t i) const
   return ival;
 }
 
-boost::int16_t te::ado::DataSet::getInt16(const std::string& name) const
-{
-  return 0; // TODO
-}
-
 boost::int32_t te::ado::DataSet::getInt32(std::size_t i) const
 {
   _variant_t vtIndex;
@@ -261,11 +260,6 @@ boost::int32_t te::ado::DataSet::getInt32(std::size_t i) const
   }
 
   return ival;
-}
-
-boost::int32_t te::ado::DataSet::getInt32(const std::string& name) const
-{
-  return 0; // TODO
 }
 
 boost::int64_t te::ado::DataSet::getInt64(std::size_t i) const
@@ -288,11 +282,6 @@ boost::int64_t te::ado::DataSet::getInt64(std::size_t i) const
   return ival;
 }
 
-boost::int64_t te::ado::DataSet::getInt64(const std::string& name) const
-{
-  return 0; // TODO
-}
-
 bool te::ado::DataSet::getBool(std::size_t i) const
 {
   _variant_t vtIndex;
@@ -311,11 +300,6 @@ bool te::ado::DataSet::getBool(std::size_t i) const
   }
 
   return ival;
-}
-
-bool te::ado::DataSet::getBool(const std::string& name) const
-{
-  return true; // TODO
 }
 
 float te::ado::DataSet::getFloat(std::size_t i) const
@@ -338,11 +322,6 @@ float te::ado::DataSet::getFloat(std::size_t i) const
   return value;
 }
 
-float te::ado::DataSet::getFloat(const std::string& name) const
-{
-  return 0; // TODO
-}
-
 double te::ado::DataSet::getDouble(std::size_t i) const
 {
   double value;
@@ -363,17 +342,7 @@ double te::ado::DataSet::getDouble(std::size_t i) const
   return value;
 }
 
-double te::ado::DataSet::getDouble(const std::string& name) const
-{
-  return 0; // TODO
-}
-
 std::string te::ado::DataSet::getNumeric(std::size_t i) const
-{
-  return ""; // TODO
-}
-
-std::string te::ado::DataSet::getNumeric(const std::string& name) const
 {
   return ""; // TODO
 }
@@ -396,11 +365,6 @@ std::string te::ado::DataSet::getString(std::size_t i) const
   }
 
   return ival;
-}
-
-std::string te::ado::DataSet::getString(const std::string& name) const
-{
-  return ""; // TODO
 }
 
 std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(std::size_t i) const
@@ -442,11 +406,6 @@ std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(std::size_t i) c
   return std::auto_ptr<te::dt::ByteArray>(new te::dt::ByteArray(data, size));
 }
 
-std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(const std::string& name) const
-{
-  return std::auto_ptr<te::dt::ByteArray>(0); // TODO
-}
-
 std::auto_ptr<te::gm::Geometry> te::ado::DataSet::getGeometry(std::size_t i) const
 {
   std::auto_ptr<te::dt::ByteArray> ba(getByteArray(i));
@@ -461,17 +420,7 @@ std::auto_ptr<te::gm::Geometry> te::ado::DataSet::getGeometry(std::size_t i) con
   return geom;
 }
 
-std::auto_ptr<te::gm::Geometry> te::ado::DataSet::getGeometry(const std::string& name) const
-{
-  return std::auto_ptr<te::gm::Geometry>(0); // TODO
-}
-
 std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(std::size_t i) const
-{
-  return std::auto_ptr<te::rst::Raster>(0); // TODO ?
-}
-
-std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(const std::string& name) const
 {
   return std::auto_ptr<te::rst::Raster>(0); // TODO ?
 }
@@ -481,17 +430,7 @@ std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) con
   return std::auto_ptr<te::dt::DateTime>(0); // TODO
 }
 
-std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(const std::string& name) const
-{
-  return std::auto_ptr<te::dt::DateTime>(0); // TODO
-}
-
 std::auto_ptr<te::dt::Array> te::ado::DataSet::getArray(std::size_t i) const
-{
-  return std::auto_ptr<te::dt::Array>(0); // TODO
-}
-
-std::auto_ptr<te::dt::Array> te::ado::DataSet::getArray(const std::string& name) const
 {
   return std::auto_ptr<te::dt::Array>(0); // TODO
 }
@@ -516,9 +455,4 @@ bool te::ado::DataSet::isNull(std::size_t i) const
     return true;
 
   return false;
-}
-
-bool te::ado::DataSet::isNull(const std::string& name) const
-{
-  return true; //TODO
 }

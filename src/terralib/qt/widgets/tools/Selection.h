@@ -101,6 +101,10 @@ namespace te
 
           //@}
 
+        public slots:
+
+          void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
+
         private:
 
           void executeSelection(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e);
@@ -108,11 +112,11 @@ namespace te
         signals:
 
           /*! This signal is emitted when the layer selection changed. */
-          void layerSelectionChanged(const te::map::AbstractLayerPtr& layer);
+          void layerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
 
         private:
 
-          const std::list<te::map::AbstractLayerPtr>& m_layers; //!< A pointer to layer list that will be selected.
+          std::list<te::map::AbstractLayerPtr> m_layers;        //!< The layer list that will be selected.
           bool m_selectionStarted;                              //!< Flag that indicates if selection operation was started.
           bool m_keepPreviousSelection;                         //!< Flag that indicates if the tool must keep the previous selection.
           bool m_selectionByPointing;                           //!< Flag that indicates if the selection is by pointing.

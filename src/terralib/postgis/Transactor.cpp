@@ -480,7 +480,7 @@ void te::pgis::Transactor::addProperty(const std::string& datasetName, te::dt::P
       sql += "', '";
     }
 
-    sql += gp->getName();
+    sql += te::common::Convert2LCase(gp->getName());
     sql += "', ";
     sql += te::common::Convert2String(gp->getSRID());
     sql += ", '";

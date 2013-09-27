@@ -37,6 +37,7 @@
       <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Visible" type="te_map:VisibilityType" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Grouping" type="te_map:GroupingType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="Chart" type="te_map:ChartType" minOccurs="0" maxOccurs="1" />
     </xsd:sequence>
     <xsd:attribute name="id" type="xsd:string" use="required" />
   </xsd:complexType>
@@ -129,7 +130,7 @@
   <xsd:complexType name="GroupingType">
     <xsd:sequence>
       <xsd:element name="PropertyName" type="xsd:string" minOccurs="1" maxOccurs="1" />
-	  <xsd:element name="PropertyDataType" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="PropertyDataType" type="xsd:integer" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Type" type="te_map:GroupingMethodType" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Precision" type="xsd:integer" minOccurs="1" maxOccurs="1" />
       <xsd:element name="StandardDeviation" type="xsd:double" minOccurs="0" maxOccurs="1" />
@@ -159,6 +160,36 @@
       <xsd:enumeration value="QUANTIL" />
       <xsd:enumeration value="STD_DEVIATION" />
       <xsd:enumeration value="UNIQUE_VALUE" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Chart" type="te_map:ChartType" />
+
+  <xsd:complexType name="ChartType">
+    <xsd:sequence>
+      <xsd:element name="Type" type="te_map:ChartTypeType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="ContourColor" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="ContourWidth" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Height" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="BarWidth" type="xsd:integer" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="IsVisible" type="xsd:boolean" minOccurs="1" maxOccurs="1" />
+      <xsd:element ref="te_map:Slice" minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="Slice" type="te_map:SliceType" />
+
+  <xsd:complexType name="SliceType">
+    <xsd:sequence>
+      <xsd:element name="PropertyName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Color" type="xsd:string" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="ChartTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="PIE" />
+      <xsd:enumeration value="BAR" />
     </xsd:restriction>
   </xsd:simpleType>
 

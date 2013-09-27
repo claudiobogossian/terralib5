@@ -43,6 +43,8 @@ te::qt::widgets::DataExchangeSummaryWizardPage::DataExchangeSummaryWizardPage(QW
 // setup controls
   m_ui->setupUi(this);
 
+  m_status = true;
+
   m_ui->m_reportTableWidget->resizeColumnsToContents();
 }
 
@@ -52,7 +54,7 @@ te::qt::widgets::DataExchangeSummaryWizardPage::~DataExchangeSummaryWizardPage()
 
 bool te::qt::widgets::DataExchangeSummaryWizardPage::isComplete() const
 {
-  return true;
+  return m_status;
 }
 
 void te::qt::widgets::DataExchangeSummaryWizardPage::set(const std::list<DataExchangeStatus>& result)
@@ -105,6 +107,8 @@ void te::qt::widgets::DataExchangeSummaryWizardPage::set(const std::list<DataExc
       item = new QTableWidgetItem(QString::fromStdString(t));
       m_ui->m_reportTableWidget->setItem(row, 2, item);
     }
+    else
+      m_status = false;
 
     item = new QTableWidgetItem(it->m_successful ? tr("Successfully transferred") : QString::fromStdString(it->m_exceptionMsg));
     m_ui->m_reportTableWidget->setItem(row, 3, item);

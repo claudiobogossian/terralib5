@@ -77,7 +77,7 @@ te::se::Interpolate* te::serialize::ReadInterpolate(te::xml::Reader& reader)
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
         reader.getElementLocalName() == "InterpolationPoint")
   {
-    reader.next();
+    //reader.next();
     interpolate->add(ReadInterpolationPoint(reader));
   }
 
@@ -120,7 +120,7 @@ void te::serialize::Save(const te::se::Interpolate* interpolate, te::xml::Writer
     break;
 
     case te::se::Interpolate::COLOR:
-      writer.writeAttribute("mode", "color");
+      writer.writeAttribute("method", "color");
     break;
   }
 

@@ -41,6 +41,26 @@ te::qt::plugins::gdal::GDALType::~GDALType()
 {
 }
 
+bool te::qt::plugins::gdal::GDALType::hasDatabaseSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::gdal::GDALType::hasFileSupport() const
+{
+  return true;
+}
+
+bool te::qt::plugins::gdal::GDALType::hasRasterSupport() const
+{
+  return true;
+}
+
+bool te::qt::plugins::gdal::GDALType::hasVectorialSupport() const
+{
+  return false;
+}
+
 std::string te::qt::plugins::gdal::GDALType::getName() const
 {
   return "GDAL";
@@ -77,10 +97,10 @@ QIcon te::qt::plugins::gdal::GDALType::getIcon(int iconType) const
   switch(iconType)
   {
     case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
-      return QIcon::fromTheme("datasource-gdal");
+      return QIcon::fromTheme("file-raster");
 
     case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
-      return QIcon::fromTheme("datasource-gdal");
+      return QIcon::fromTheme("file-raster");
 
     default:
       return QIcon::fromTheme("unknown-icon");

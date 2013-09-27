@@ -64,11 +64,10 @@ void te::qt::af::DataSetTableDockWidget::setLayer(te::map::AbstractLayer* layer)
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
-  m_view->setDataSet(m_layer->getData().release());
-  m_view->setLayerSchema(m_layer->getSchema().get());
+  m_view->setLayer(m_layer);
 
-  if(layer->getSelected() != 0)
-    m_view->highlightOIds(layer->getSelected());
+  if(m_layer->getSelected() != 0)
+    m_view->highlightOIds(m_layer->getSelected());
 
   setWindowTitle(m_layer->getTitle().c_str());
 }
@@ -82,9 +81,9 @@ void te::qt::af::DataSetTableDockWidget::onApplicationTriggered(te::qt::af::evt:
 {
   switch(evt->m_id)
   {
-    case te::qt::af::evt::LAYER_SELECTION_CHANGED:
+    case te::qt::af::evt::LAYER_SELECTED_OBJECTS_CHANGED:
     {
-      te::qt::af::evt::LayerSelectionChanged* ev = static_cast<te::qt::af::evt::LayerSelectionChanged*>(evt);
+      te::qt::af::evt::LayerSelectedObjectsChanged* ev = static_cast<te::qt::af::evt::LayerSelectedObjectsChanged*>(evt);
 
       if(ev->m_layer->getId() == m_layer->getId())
         m_view->highlightOIds(ev->m_layer->getSelected());
@@ -115,7 +114,7 @@ void te::qt::af::DataSetTableDockWidget::selectionChanged(te::da::ObjectIdSet* o
 
   m_layer->select(oids);
 
-  te::qt::af::evt::LayerSelectionChanged e(m_layer);
+  te::qt::af::evt::LayerSelectedObjectsChanged e(m_layer);
   ApplicationController::getInstance().broadcast(&e);
 }
 

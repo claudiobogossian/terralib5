@@ -150,6 +150,32 @@ namespace te
     TEMAPEXPORT std::string GetString(const te::se::ParameterValue* param);
 
     /*!
+      \brief It calculates the extent of selected objects of the given layers in the given SRID.
+
+      \param layers       The layer list that will be consulted.
+      \param srid         The result extent SRID.
+      \param onlyVisibles A flag that indicates if the method should consider only the visible layers.
+
+      \return The extent of selected objects of the given layers in the given SRID.
+
+      \note This method considers the children of layers.
+    */
+    TEMAPEXPORT te::gm::Envelope GetSelectedExtent(const std::list<te::map::AbstractLayerPtr> layers, int srid, bool onlyVisibles);
+
+    /*!
+      \brief It calculates the extent of selected objects of the given layer in the given SRID.
+
+      \param layer        The layer that will be consulted.
+      \param srid         The result extent SRID.
+      \param onlyVisibles A flag that indicates if the method should consider only the visible layers.
+
+      \return The extent of the selected objects of the given layer in the given SRID.
+
+      \note This method considers the children of layers.
+    */
+    TEMAPEXPORT te::gm::Envelope GetSelectedExtent(const te::map::AbstractLayerPtr layer, int srid, bool onlyVisibles);
+
+    /*!
       \brief Converts a dasharray pattern coded by a string to a vector of double.
 
       \param dasharray The dasharray pattern coded by a string.

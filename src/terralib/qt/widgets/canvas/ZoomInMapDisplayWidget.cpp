@@ -156,6 +156,9 @@ void te::qt::widgets::ZoomInMapDisplayWidget::onParentMapDisplayExtentChanged()
 
     te::gm::Envelope ext = calculateExtent(e);
 
+    if(!ext.isValid())
+      return;
+
     m_itsMe = true;
     m_mapDisplay->setExtent(ext, true);
     m_itsMe = false;

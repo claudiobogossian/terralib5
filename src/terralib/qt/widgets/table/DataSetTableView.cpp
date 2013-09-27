@@ -1,13 +1,18 @@
+#include "AddColumnDialog.h"
 #include "DataSetTableView.h"
 #include "DataSetTableModel.h"
 #include "HighlightDelegate.h"
 #include "DataSetTableVerticalHeader.h"
 
 // TerraLib include files
+#include "../../../common/Exception.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
+#include "../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../maptools/DataSetLayer.h"
 #include "../../../statistics/qt/StatisticsDialog.h"
 #include "../utils/ScopedCursor.h"
 
@@ -18,6 +23,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QCursor>
 #include <QtGui/QPainter>
+#include <QtGui/QMessageBox>
 
 // STL
 #include <vector>
@@ -89,6 +95,31 @@ QAction* GetShowAllMenu(QHeaderView* hView, te::da::DataSet* dset, QMenu* hMnu)
   return act;
 }
 
+te::da::DataSourcePtr GetDataSource(const te::map::AbstractLayer* layer)
+{
+  // Getting data source, if it is available
+  te::da::DataSourcePtr ds;
+
+  const te::map::DataSetLayer* l = dynamic_cast<const te::map::DataSetLayer*>(layer);
+
+  if(l != 0)
+    ds = te::da::DataSourceManager::getInstance().find(l->getDataSourceId());
+
+  return ds;
+}
+
+const te::da::DataSourceCapabilities* GetCapabilities(const te::map::AbstractLayer* layer)
+{
+  // Getting data source capabilities, if it is available
+  te::da::DataSourcePtr ds = GetDataSource(layer);
+
+  if(ds.get() != 0)
+    return (&ds->getCapabilities());
+
+  return 0;
+}
+
+
 /*!
   \class Filter for popup menus
 */
@@ -107,6 +138,8 @@ class TablePopupFilter : public QObject
       m_hMenu(0),
       m_vMenu(0),
       m_vportMenu(0),
+      m_dset(0),
+      m_caps(0),
       m_showOidsColumns(false),
       m_enabled(true)
     {
@@ -116,6 +149,7 @@ class TablePopupFilter : public QObject
 
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
+      m_view->connect(this, SIGNAL(removeColumn(const int&)), SLOT(removeColumn(const int&)));
     }
 
     /*!
@@ -194,17 +228,34 @@ class TablePopupFilter : public QObject
             act6->setToolTip(tr("Show the statistics summary of the selected colunm."));
             m_hMenu->addAction(act6);
 
+            m_hMenu->addSeparator();
 
-            // Signal / Slot connections
-            connect (act, SIGNAL(triggered()), SLOT(hideColumn()));
-            connect (hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
+            QAction* act7 = new QAction(m_hMenu);
+            act7->setText(tr("Add column"));
+            act7->setToolTip(tr("Adds a column to the table."));
+            m_hMenu->addAction(act7);
 
-            m_view->connect (act2, SIGNAL(triggered()), SLOT(showAllColumns()));
-            m_view->connect (act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
-            m_view->connect (act5, SIGNAL(triggered()), SLOT(sortByColumns()));
+            act7->setEnabled(m_caps->getDataSetCapabilities().supportsInsertion());
+
+            QAction* act8 = new QAction(m_hMenu);
+            act8->setText(tr("Remove column"));
+            act8->setToolTip(tr("Removes a column from the table."));
+            m_hMenu->addAction(act8);
+
+            act8->setEnabled(m_caps->getDataSetCapabilities().supportsDeletion());
+
+             // Signal / Slot connections
+            connect(act, SIGNAL(triggered()), SLOT(hideColumn()));
+            connect(hMnu, SIGNAL(triggered(QAction*)), SLOT(showColumn(QAction*)));
+            connect(act8, SIGNAL(triggered()), SLOT(removeColumn()));
+
+            m_view->connect(act2, SIGNAL(triggered()), SLOT(showAllColumns()));
+            m_view->connect(act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
+            m_view->connect(act5, SIGNAL(triggered()), SLOT(sortByColumns()));
+            m_view->connect(act7, SIGNAL(triggered()), SLOT(addColumn()));
+            
             connect(act4, SIGNAL(triggered()), SLOT(showOIdsColumns()));
-
-            connect (act6, SIGNAL(triggered()), SLOT(showStatistics()));
+            connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
 
             m_hMenu->popup(pos);
           }
@@ -248,6 +299,11 @@ class TablePopupFilter : public QObject
       m_enabled = enabled;
     }
 
+    void setDataSourceCapabilities(const te::da::DataSourceCapabilities* caps)
+    {
+      m_caps = caps;
+    }
+
   protected slots:
 
     void hideColumn()
@@ -277,6 +333,11 @@ class TablePopupFilter : public QObject
       statisticDialog.exec();
     }
 
+    void removeColumn()
+    {
+      emit removeColumn(m_columnPressed);
+    }
+
   signals:
 
     void hideColumn(const int&);
@@ -289,6 +350,8 @@ class TablePopupFilter : public QObject
 
     void promote();
 
+    void removeColumn(const int&);
+
   protected:
 
     te::qt::widgets::DataSetTableView* m_view;
@@ -296,14 +359,15 @@ class TablePopupFilter : public QObject
     QMenu* m_vMenu;
     QMenu* m_vportMenu;
     te::da::DataSet* m_dset;
+    const te::da::DataSourceCapabilities* m_caps;
     bool m_showOidsColumns;
     bool m_enabled;
-
     int m_columnPressed;
 };
 
 te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
-QTableView(parent)
+QTableView(parent),
+m_layer(0)
 {
   m_model = new DataSetTableModel(this);
 
@@ -330,6 +394,15 @@ QTableView(parent)
 
 te::qt::widgets::DataSetTableView::~DataSetTableView()
 {
+}
+
+void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer)
+{
+  m_layer = layer;
+  setDataSet(m_layer->getData().release());
+  setLayerSchema(m_layer->getSchema().get());
+
+  m_popupFilter->setDataSourceCapabilities(GetCapabilities(m_layer));
 }
 
 void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset)
@@ -504,6 +577,81 @@ void te::qt::widgets::DataSetTableView::setOIdsColumnsVisible(const bool& visibl
   m_model->showOIdsVisible(visible);
 
   horizontalHeader()->viewport()->repaint();
+}
+
+void te::qt::widgets::DataSetTableView::addColumn()
+{
+  if(m_layer == 0)
+    return;
+
+  try
+  {
+    AddColumnDialog dlg(parentWidget());
+
+    std::auto_ptr<te::da::DataSetType> ds_t = m_layer->getSchema();
+
+    std::string dsName = ds_t->getName();
+    int n_prop = ds_t->getProperties().size();
+    dlg.setTableName(dsName);
+
+    if(dlg.exec() == QDialog::Accepted)
+    {
+      te::da::DataSourcePtr ds = GetDataSource(m_layer);
+
+      if(ds.get() == 0)
+        throw te::common::Exception(tr("Fail to get data source of the layer.").toStdString());
+
+      std::auto_ptr<te::dt::Property> p(dlg.getNewProperty());
+
+      if(p->getName().empty())
+        throw te::common::Exception(tr("Name must not be empty.").toStdString());
+
+      if(!ds->isPropertyNameValid(p->getName()))
+        throw te::common::Exception(tr("The property name is invalid.").toStdString());
+
+      if(ds->propertyExists(dsName, p->getName()))
+        throw te::common::Exception(tr("There already exists a property with this name.").toStdString());
+
+      ds->addProperty(dsName, p.get());
+
+      m_model->insertColumns(n_prop-1, 0);
+
+      setLayer(m_layer);
+    }
+  }
+  catch(te::common::Exception& e)
+  {
+    QMessageBox::information(this, tr("Creating column failure"), tr("The column could not be created: ") + e.what());
+  }
+}
+
+void te::qt::widgets::DataSetTableView::removeColumn(const int& column)
+{
+  try
+  {
+    if(QMessageBox::question(this, tr("Remove column"), tr("Are you sure you want to remove this column?"), QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+    {
+      te::da::DataSourcePtr ds = GetDataSource(m_layer);
+
+      if(ds.get() == 0)
+        throw te::common::Exception(tr("Fail to get data source of the layer.").toStdString());
+
+      std::auto_ptr<te::da::DataSetType> ds_t = m_layer->getSchema();
+      std::string dsName = ds_t->getName();
+
+      std::string pName = ds_t->getProperty(column)->getName();
+
+      ds->dropProperty(dsName, pName);
+
+      m_model->removeColumns(column, 0);
+
+      setLayer(m_layer);
+    }
+  }
+  catch(te::common::Exception& e)
+  {
+    QMessageBox::information(this, tr("Removing column failure"), tr("The column could not be removed: ") + e.what());
+  }
 }
 
 void te::qt::widgets::DataSetTableView::removeSelection(const int& initRow, const int& finalRow)

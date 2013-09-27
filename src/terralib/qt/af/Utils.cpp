@@ -48,9 +48,9 @@
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 //Qt
-#include <QtCore/QDir>
 #include <QtCore/QSettings>
 #include <QtGui/QApplication>
 #include <QtGui/QAction>
@@ -158,11 +158,21 @@ void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri
 
 void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& writer)
 {
+  const char* te_env = getenv("TERRALIB_DIR");
+
+  if(te_env == 0)
+    throw Exception(TR_QT_AF("Environment variable \"TERRALIB_DIR\" not found.\nTry to set it before run the application."));
+
+  std::string schema_loc(te_env);
+  schema_loc += "/schemas/terralib";
+
   writer.writeStartDocument("UTF-8", "no");
 
   writer.writeStartElement("Project");
 
-  QDir schemaLocation(TE_SCHEMA_LOCATION);
+  boost::replace_all(schema_loc, " ", "%20");
+
+  schema_loc = "file:///" + schema_loc;
 
   writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
   writer.writeAttribute("xmlns:te_da", "http://www.terralib.org/schemas/dataaccess");
@@ -174,7 +184,7 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   writer.writeAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/qt/af");
-  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schemaLocation.absolutePath().toStdString() + "/qt/af/project.xsd");
+  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schema_loc + "/qt/af/project.xsd");
   writer.writeAttribute("version", TERRALIB_STRING_VERSION);
 
   writer.writeElement("Title", project.getTitle());
@@ -606,3 +616,22 @@ void te::qt::af::AddActionToCustomToolbars(QAction* act)
 
   sett.endGroup();
 }
+
+void te::qt::af::AddFilePathToSettings(const QString& path, const QString& typeFile)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  QString key = "Last used file path/" + typeFile;
+
+  sett.setValue(key, path);
+}
+
+QString te::qt::af::GetFilePathFromSettings(const QString& typeFile)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  QString key = "Last used file path/" + typeFile;
+
+  return sett.value(key).toString();
+}
+

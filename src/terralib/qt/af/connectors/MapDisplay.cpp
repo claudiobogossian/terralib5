@@ -61,6 +61,7 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   : QObject(display),
     m_display(display),
     m_tool(0),
+    m_menu(0),
     m_currentExtent(-1)
 {
   // CoordTracking tool
@@ -75,20 +76,8 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   connect(m_display, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 
-  // Build the popup menu
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.SRID"));
-  m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Draw"));
-  m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom In"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Out"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Pan"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Extent")); 
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Previous Extent"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Next Extent"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Info"));
-  m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Stop Draw"));
+  // Gets the popup menu
+  m_menu = ApplicationController::getInstance().findMenu("Map");
 
   // To show popup menu
   m_display->installEventFilter(this);
@@ -115,7 +104,8 @@ bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
   switch(e->type())
   {
     case QEvent::ContextMenu:
-      m_menu.exec(static_cast<QContextMenuEvent*>(e)->globalPos());
+      if(m_menu)
+        m_menu->exec(static_cast<QContextMenuEvent*>(e)->globalPos());
     break;
           
     default:
@@ -130,26 +120,10 @@ void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& la
   if(layers.empty())
     return;
 
-  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+  std::list<te::map::AbstractLayerPtr> visibleLayers;
+  te::map::GetVisibleLayers(layers, visibleLayers);
 
-  if(m_display->getSRID() == TE_UNKNOWN_SRS)
-  {
-    for(it = layers.begin(); it != layers.end(); ++it)
-    {
-      const te::map::AbstractLayerPtr& layer = *it;
-
-      if(!layer->getVisibility() || layer->getSRID() == TE_UNKNOWN_SRS)
-        continue;
-
-      m_display->setSRID(layer->getSRID(), false);
-
-      std::pair<int, std::string> srid(layer->getSRID(), "EPSG");
-      te::qt::af::evt::MapSRIDChanged mapSRIDChagned(srid);
-      ApplicationController::getInstance().broadcast(&mapSRIDChagned);
-
-      break;
-    }
-  }
+  configSRS(visibleLayers);
 
   if(!m_display->getExtent().isValid())
   {
@@ -158,6 +132,7 @@ void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& la
   }
   
   m_display->setLayerList(layers);
+
   m_display->refresh();
 }
 
@@ -176,6 +151,40 @@ void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
   m_display->installEventFilter(m_tool);
 }
 
+void te::qt::af::MapDisplay::nextExtent()
+{
+  if(m_currentExtent != EXTENT_STACK_SIZE-1 && m_extentStack.size() != m_currentExtent+1)
+  {
+    m_currentExtent += 1;
+    m_display->setExtent(m_extentStack[m_currentExtent]);
+  }
+}
+
+void te::qt::af::MapDisplay::previousExtent()
+{
+  if(m_currentExtent != 0)
+  {
+    m_currentExtent -= 1;
+    m_display->setExtent(m_extentStack[m_currentExtent]);
+  }
+}
+
+void te::qt::af::MapDisplay::fit(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  std::list<te::map::AbstractLayerPtr> visibleLayers;
+  te::map::GetVisibleLayers(layers, visibleLayers);
+
+  configSRS(visibleLayers);
+
+  te::gm::Envelope displayExtent = te::map::GetExtent(layers, m_display->getSRID(), true);
+
+  m_display->setExtent(displayExtent, false);
+
+  m_display->setLayerList(layers);
+
+  m_display->refresh();
+}
+
 void te::qt::af::MapDisplay::onCoordTracked(QPointF& coordinate)
 {
   te::qt::af::evt::CoordinateTracked e(coordinate.x(), coordinate.y());
@@ -187,8 +196,8 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
   // Stores the clean pixmap!
   m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
 
-  // TODO!!!
-  drawLayerSelection((ApplicationController::getInstance().getProject()->getLayers().begin())->get());
+  // Draw the layers selection
+  drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -199,9 +208,9 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       clear();
     break;
 
-    case te::qt::af::evt::LAYER_SELECTION_CHANGED:
+    case te::qt::af::evt::LAYER_SELECTED_OBJECTS_CHANGED:
     {
-      te::qt::af::evt::LayerSelectionChanged* layerSelectionChanged = static_cast<te::qt::af::evt::LayerSelectionChanged*>(e);
+      //te::qt::af::evt::LayerSelectedObjectsChanged* LayerSelectedObjectsChanged = static_cast<te::qt::af::evt::LayerSelectedObjectsChanged*>(e);
 
       QPixmap* content = m_display->getDisplayPixmap();
       content->fill(Qt::transparent);
@@ -210,7 +219,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.drawPixmap(0, 0, m_lastDisplayContent);
       painter.end();
 
-      drawLayerSelection(layerSelectionChanged->m_layer);
+      drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
     }
     break;
 
@@ -233,19 +242,25 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
   }
 }
 
-void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
+void te::qt::af::MapDisplay::drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers)
 {
-  assert(layer);
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+  for(it = layers.begin(); it != layers.end(); ++it)
+    drawLayerSelection(it->get());
+
+  m_display->repaint();
+}
+
+void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
+{
+  assert(layer.get());
 
   if(layer->getVisibility() != te::map::VISIBLE)
     return;
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
   if(oids == 0 || oids->size() == 0)
-  {
-    m_display->repaint();
     return;
-  }
 
   bool needRemap = false;
 
@@ -293,8 +308,6 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
 
     canvas.draw(g.get());
   }
-
-  m_display->repaint();
 }
 
 void te::qt::af::MapDisplay::onExtentChanged()
@@ -341,20 +354,36 @@ void te::qt::af::MapDisplay::onExtentChanged()
   }
 }
 
-void te::qt::af::MapDisplay::nextExtent()
+void te::qt::af::MapDisplay::configSRS(const std::list<te::map::AbstractLayerPtr>& layers)
 {
-  if(m_currentExtent != EXTENT_STACK_SIZE-1 && m_extentStack.size() != m_currentExtent+1)
+  if(layers.size() == 1 && (*layers.begin())->getSRID() ==  TE_UNKNOWN_SRS && m_display->getSRID() != TE_UNKNOWN_SRS)
   {
-    m_currentExtent += 1;
-    m_display->setExtent(m_extentStack[m_currentExtent]);
-  }
-}
+    const te::map::AbstractLayerPtr& layer = *layers.begin();
 
-void te::qt::af::MapDisplay::previousExtent()
-{
-  if(m_currentExtent != 0)
+    m_display->setSRID(TE_UNKNOWN_SRS, false);
+
+    std::pair<int, std::string> srid(layer->getSRID(), "EPSG");
+    te::qt::af::evt::MapSRIDChanged mapSRIDChanged(srid);
+    ApplicationController::getInstance().broadcast(&mapSRIDChanged);
+  }
+  else if(m_display->getSRID() == TE_UNKNOWN_SRS)
   {
-    m_currentExtent -= 1;
-    m_display->setExtent(m_extentStack[m_currentExtent]);
+    std::list<te::map::AbstractLayerPtr>::const_iterator it;
+
+    for(it = layers.begin(); it != layers.end(); ++it)
+    {
+      const te::map::AbstractLayerPtr& layer = *it;
+
+      if(layer->getSRID() == TE_UNKNOWN_SRS)
+        continue;
+
+      m_display->setSRID(layer->getSRID(), false);
+
+      std::pair<int, std::string> srid(layer->getSRID(), "EPSG");
+      te::qt::af::evt::MapSRIDChanged mapSRIDChanged(srid);
+      ApplicationController::getInstance().broadcast(&mapSRIDChanged);
+
+      break;
+    }
   }
 }

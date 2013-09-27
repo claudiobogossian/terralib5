@@ -321,3 +321,21 @@ bool te::qt::widgets::DataSetTableModel::setData (const QModelIndex & /*index*/,
 {
   return true;
 }
+
+bool te::qt::widgets::DataSetTableModel::insertColumns(int column, int count, const QModelIndex& parent)
+{
+  beginInsertColumns(parent, column, column+count);
+
+  endInsertColumns();
+
+  return true;
+}
+
+bool te::qt::widgets::DataSetTableModel::removeColumns(int column, int count, const QModelIndex& parent)
+{
+  beginRemoveColumns(parent, column, column+count);
+
+  endRemoveColumns();
+
+  return true;
+}

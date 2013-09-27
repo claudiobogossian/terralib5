@@ -34,7 +34,9 @@
 // Qt
 #include <QtCore/QObject>
 
+// STL
 #include <vector>
+#include <list>
 
 // Forward declarations
 class QItemSelection;
@@ -46,7 +48,7 @@ namespace te
 // Forward declarations
     namespace widgets 
     { 
-      class LayerExplorer; 
+      class LayerExplorer;
       class AbstractTreeItem;
     }
 
@@ -107,9 +109,17 @@ namespace te
           */
           void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
-          void onLayerVisibilityChanged(te::qt::widgets::AbstractTreeItem* item);
+          void onLayerVisibilityChanged(te::map::AbstractLayerPtr layer);
+
+          void onLayerRemoved(te::map::AbstractLayerPtr layer);
 
           void layersChanged(const std::vector<te::map::AbstractLayerPtr>& layers);
+
+          void onAbstractTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
+
+        signals:
+
+          void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
 
         protected:
 

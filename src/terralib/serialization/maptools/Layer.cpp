@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../common/BoostUtils.h"
 #include "../../common/Translator.h"
+#include "../../color/RGBAColor.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../geometry/Envelope.h"
@@ -34,6 +35,7 @@
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "../../maptools/AbstractLayer.h"
+#include "../../maptools/Chart.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../maptools/FolderLayer.h"
 #include "../../maptools/Grouping.h"
@@ -53,6 +55,7 @@
 // Boost
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
 
 te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader);
@@ -299,17 +302,208 @@ te::map::Grouping* ReadLayerGrouping(te::xml::Reader& reader)
   return g.release();
 }
 
-void WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& writer)
+std::auto_ptr<te::map::Chart> ReadLayerChart(te::xml::Reader& reader)
 {
-  writer.writeAttribute("id", layer->getId());
-  writer.writeElement("te_map:Title", layer->getTitle());
-  writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
+  if(reader.getElementLocalName() != "Chart")
+    return std::auto_ptr<te::map::Chart>();
 
-  te::map::Grouping* g = layer->getGrouping();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Chart");
 
-  if(g == 0)
-    return;
+  reader.next();
 
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Type");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  te::map::ChartType type = reader.getElementValue() == "PIE" ? te::map::Pie : te::map::Bar;
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // Type
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "ContourColor");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+  
+  std::string hexColor = reader.getElementValue();
+
+  te::color::RGBAColor contourColor(hexColor);
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // ContourColor
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "ContourWidth");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::size_t contourWidth = reader.getElementValueAsInt32();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // ContourWidth
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Height");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::size_t height = reader.getElementValueAsInt32();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // Height
+
+  reader.next();
+
+  std::size_t barWidth = -1;
+
+  if(reader.getNodeType() == te::xml::START_ELEMENT &&
+     reader.getElementLocalName() == "BarWidth")
+  {
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    barWidth = reader.getElementValueAsInt32();
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // BarWidth
+
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "IsVisible");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  bool isVisible = reader.getElementValueAsBoolean();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // IsVisible
+
+  reader.next();
+
+  std::vector<std::string> properties;
+  std::vector<te::color::RGBAColor> colors;
+
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "Slice")
+  {
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "PropertyName");
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    std::string propName = reader.getElementValue();
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // PropertyName
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "Color");
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    std::string hColor = reader.getElementValue();
+    te::color::RGBAColor color(hColor);
+
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // Color
+
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // Slice
+
+    reader.next();
+
+    properties.push_back(propName);
+    colors.push_back(hColor);
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // Chart
+
+  reader.next();
+
+  std::auto_ptr<te::map::Chart> chart(new te::map::Chart(type, properties, colors));
+  chart->setContourColor(contourColor);
+  chart->setContourWidth(contourWidth);
+  chart->setHeight(height);
+  chart->setVisibility(isVisible);
+  if(barWidth != -1)
+    chart->setBarWidth(barWidth);
+
+  return chart;
+}
+
+void WriteLayerChart(te::map::Chart* chart, te::xml::Writer& writer)
+{
+  writer.writeStartElement("te_map:Chart");
+
+  te::map::ChartType type = chart->getType();
+
+  writer.writeElement("te_map:Type", (type == te::map::Pie ? "PIE" : "BAR"));
+
+  writer.writeElement("te_map:ContourColor", chart->getContourColor().getColor());
+
+  writer.writeElement("te_map:ContourWidth", boost::lexical_cast<int>(chart->getContourWidth()));
+
+  writer.writeElement("te_map:Height", boost::lexical_cast<int>(chart->getHeight()));
+
+  if(chart->getType() == te::map::Bar)
+    writer.writeElement("te_map:BarWidth", boost::lexical_cast<int>(chart->getBarWidth()));
+
+  writer.writeElement("te_map:IsVisible", (chart->isVisible() ? "true" : "false"));
+
+  std::vector<std::string> properties = chart->getProperties();
+
+  for(std::size_t i = 0; i < properties.size(); ++i)
+  {
+    writer.writeStartElement("te_map:Slice");
+
+    writer.writeElement("te_map:PropertyName", properties[i]);
+
+    writer.writeElement("te_map:Color", chart->getColor(i).getColor());
+
+    writer.writeEndElement("te_map:Slice");
+  }
+
+  writer.writeEndElement("te_map:Chart");
+}
+
+void WriteLayerGrouping(te::map::Grouping* g, te::xml::Writer& writer)
+{
   writer.writeStartElement("te_map:Grouping");
 
   te::map::GroupingType type = g->getType();
@@ -352,6 +546,23 @@ void WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& wr
   writer.writeEndElement("te_map:Grouping");
 }
 
+void WriteAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& writer)
+{
+  writer.writeAttribute("id", layer->getId());
+  writer.writeElement("te_map:Title", layer->getTitle());
+  writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
+
+  te::map::Grouping* g = layer->getGrouping();
+
+  if(g != 0)
+    WriteLayerGrouping(g, writer);
+
+  te::map::Chart* chart = layer->getChart();
+
+  if(chart != 0)
+    WriteLayerChart(chart, writer);
+}
+
 void WriteOGRAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer& writer)
 {
   writer.writeAttribute("id", layer->getId());
@@ -360,49 +571,13 @@ void WriteOGRAbstractLayer(const te::map::AbstractLayer* layer, te::xml::Writer&
 
   te::map::Grouping* g = layer->getGrouping();
 
-  if(g == 0)
-    return;
+  if(g != 0)
+    WriteLayerGrouping(g, writer);
 
-  writer.writeStartElement("te_map:Grouping");
+  te::map::Chart* chart = layer->getChart();
 
-  te::map::GroupingType type = g->getType();
-
-  writer.writeElement("te_map:PropertyName", g->getPropertyName());
-  writer.writeElement("te_map:PropertyDataType", g->getPropertyType());
-  writer.writeElement("te_map:Type", GetGroupingType(type));
-  writer.writeElement("te_map:Precision", static_cast<unsigned int>(g->getPrecision()));
-  
-  if(type == te::map::STD_DEVIATION)
-    writer.writeElement("te_map:StandardDeviation", g->getStdDeviation());
-
-  const std::vector<te::map::GroupingItem*>& items = g->getGroupingItems();
-
-  for(std::size_t i = 0; i < items.size(); ++i)
-  {
-    te::map::GroupingItem* item = items[i];
-    assert(item);
-
-    writer.writeStartElement("te_map:GroupingItem");
-
-    writer.writeElement("te_map:Title", item->getTitle());
-
-    if(type != te::map::UNIQUE_VALUE)
-    {
-      writer.writeElement("te_map:From", item->getLowerLimit());
-      writer.writeElement("te_map:To", item->getUpperLimit());
-    }
-    else
-      writer.writeElement("te_map:Value", item->getValue());
-
-    const std::vector<te::se::Symbolizer*>& symbs = item->getSymbolizers();
-
-    for(std::size_t j = 0; j < symbs.size(); ++j)
-      te::serialize::Symbolizer::getInstance().write(symbs[j], writer);
-
-    writer.writeEndElement("te_map:GroupingItem");
-  }
-
-  writer.writeEndElement("te_map:Grouping");
+  if(chart != 0)
+    WriteLayerChart(chart, writer);
 }
 
 void te::serialize::Layer::reg(const std::string& layerType, const LayerFnctSerializeType& fncts)
@@ -466,6 +641,9 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
 
   /* Grouping */
   te::map::Grouping* grouping = ReadLayerGrouping(reader);
+
+  /* Chart */
+  std::auto_ptr<te::map::Chart> chart(ReadLayerChart(reader));
 
   /* DataSetName Element */
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -537,8 +715,6 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
 
   te::da::DataSourcePtr dsc = te::da::GetDataSource(datasourceId);
 
-  bool isOgr = dsc.get() != 0 && dsc->getType() == "OGR";
-
   std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer(id, title, 0));
   layer->setSRID(srid);
   layer->setExtent(*mbr.get());
@@ -550,6 +726,9 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
 
   if(grouping)
     layer->setGrouping(grouping);
+
+  if(chart.get())
+    layer->setChart(chart.release());
 
   return layer.release();
 }

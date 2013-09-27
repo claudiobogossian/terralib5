@@ -35,6 +35,7 @@
 #include "../datatype/TimeInstant.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
+#include "../srs/Config.h"
 
 // OGR
 #include <ogrsf_frmts.h>
@@ -95,6 +96,9 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
                                           te::common::TraverseType /*travType*/, 
                                           bool /*connected*/)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return std::auto_ptr<te::da::DataSet>();
+  
   OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
   std::string sql = "SELECT FID, * FROM \'" + name + "\'";
@@ -113,6 +117,9 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
                                           te::common::TraverseType /*travType*/, 
                                           bool /*connected*/)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return std::auto_ptr<te::da::DataSet>();
+  
   OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
   std::string sql = "SELECT FID, * FROM \'" + name + "\'";
@@ -133,6 +140,9 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
                                           te::common::TraverseType /*travType*/, 
                                           bool /*connected*/)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return std::auto_ptr<te::da::DataSet>();
+  
   OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
   std::string sql = "SELECT FID, * FROM \'" + name + "\'";
@@ -154,6 +164,9 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& 
                                       te::common::TraverseType /*travType*/, 
                                       bool /*connected*/)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return std::auto_ptr<te::da::DataSet>();
+  
   OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
   std::string sql;
@@ -181,6 +194,9 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& que
                                       te::common::TraverseType /*travType*/, 
                                       bool /*connected*/)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return std::auto_ptr<te::da::DataSet>();
+  
   OGRDataSource* ds = OGRSFDriverRegistrar::Open(m_ogrDs->getOGRDataSource()->GetName());
 
   OGRLayer* layer = ds->ExecuteSQL(query.c_str(), 0, 0);
@@ -203,14 +219,15 @@ void te::ogr::Transactor::execute(const te::da::Query& command)
 
 void te::ogr::Transactor::execute(const std::string& command)
 {
-  OGRDataSource* ds = m_ogrDs->getOGRDataSource();
+  if (!m_ogrDs->getOGRDataSource())
+    return;
 
-  OGRLayer* layer = ds->ExecuteSQL(command.c_str(), 0, "");
+  OGRLayer* layer = m_ogrDs->getOGRDataSource()->ExecuteSQL(command.c_str(), 0, "");
 
   if(layer == 0)
     throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
 
-  ds->ReleaseResultSet(layer);
+  m_ogrDs->getOGRDataSource()->ReleaseResultSet(layer);
 }
 
 std::auto_ptr<te::da::PreparedQuery> te::ogr::Transactor::getPrepared(const std::string& /*qName*/)
@@ -250,23 +267,29 @@ bool te::ogr::Transactor::isPropertyNameValid(const std::string& /*propertyName*
 std::vector<std::string> te::ogr::Transactor::getDataSetNames()
 {
   std::vector<std::string> names;
-  OGRDataSource* src = m_ogrDs->getOGRDataSource();
+  
+  if (!m_ogrDs->getOGRDataSource())
+    return names;
 
-  int count = src->GetLayerCount();
-
-  for(int i=0; i<count; i++)
-    names.push_back(src->GetLayer(i)->GetName());
+  for(int i=0; i<m_ogrDs->getOGRDataSource()->GetLayerCount(); i++)
+    names.push_back(m_ogrDs->getOGRDataSource()->GetLayer(i)->GetName());
 
   return names;
 }
 
 std::size_t te::ogr::Transactor::getNumberOfDataSets()
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return 0;
+  
   return m_ogrDs->getOGRDataSource()->GetLayerCount();
 }
     
 std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std::string& name)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return std::auto_ptr<te::da::DataSetType>();
+  
   std::string sql("SELECT FID, * FROM \'");
   sql += name + "\'";
 
@@ -300,6 +323,9 @@ boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std
 {
   boost::ptr_vector<te::dt::Property> ps;
 
+  if (!m_ogrDs->getOGRDataSource())
+    return ps;
+
   std::string sql("SELECT FID, * FROM \'");
   sql += datasetName + "\'";
 
@@ -322,6 +348,9 @@ boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std
 
 std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::string& datasetName, const std::string& name)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return std::auto_ptr<te::dt::Property>();
+
   int idx = -1;
   std::string sql("SELECT FID, * FROM \'");
   sql += datasetName + "\'";
@@ -338,11 +367,15 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
 
 std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
+  OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  if (!ogrds)
+    return std::auto_ptr<te::dt::Property>();
+
   std::auto_ptr<te::dt::Property> res;
   std::string sql ("SELECT FID, * FROM \'");
   sql += datasetName + "\'";
 
-  OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
+  OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(l != 0)
   {
@@ -360,11 +393,15 @@ std::auto_ptr<te::dt::Property> te::ogr::Transactor::getProperty(const std::stri
 
 std::vector<std::string> te::ogr::Transactor::getPropertyNames(const std::string& datasetName)
 {
+  OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  if (!ogrds)
+    return std::vector<std::string>();
+  
   std::vector<std::string> res;
   std::string sql ("SELECT FID, * FROM \'");
   sql += datasetName + "\'";
 
-  OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
+  OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(l != 0)
   {
@@ -374,24 +411,28 @@ std::vector<std::string> te::ogr::Transactor::getPropertyNames(const std::string
       res.push_back(def->GetFieldDefn(i)->GetNameRef());
   }
 
-  m_ogrDs->getOGRDataSource()->ReleaseResultSet(l);
+  ogrds->ReleaseResultSet(l);
 
   return res;
 }
 
 std::size_t te::ogr::Transactor::getNumberOfProperties(const std::string& datasetName)
 {
+  OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  if (!ogrds)
+    return 0;
+
   std::string sql("SELECT FID, * FROM \'");
   sql += datasetName + "\'";
 
-  OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
+  OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
   int res = 0;
 
   if(l != 0)
   {
     res = l->GetLayerDefn()->GetFieldCount();
-    m_ogrDs->getOGRDataSource()->ReleaseResultSet(l);
+    ogrds->ReleaseResultSet(l);
   }
 
   return res;
@@ -399,16 +440,20 @@ std::size_t te::ogr::Transactor::getNumberOfProperties(const std::string& datase
 
 bool te::ogr::Transactor::propertyExists(const std::string& datasetName, const std::string& name)
 {
+  OGRDataSource* ogrds = m_ogrDs->getOGRDataSource();
+  if (!ogrds)
+    return false;
+
   std::string sql("SELECT FID, * FROM \'");
   sql += datasetName + "\'";
   bool res = false;
 
-  OGRLayer* l = m_ogrDs->getOGRDataSource()->ExecuteSQL(sql.c_str(), 0, 0);
+  OGRLayer* l = ogrds->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(l != 0)
   {
     res = (l->GetLayerDefn()->GetFieldIndex(name.c_str()) != -1);
-    m_ogrDs->getOGRDataSource()->ReleaseResultSet(l);
+    ogrds->ReleaseResultSet(l);
   }
 
   return res;
@@ -416,14 +461,17 @@ bool te::ogr::Transactor::propertyExists(const std::string& datasetName, const s
 
 void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Property* p)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return;
+
   OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
   if(l != 0)
   {
     if(p->getType() != te::dt::GEOMETRY_TYPE)
     {
-      if(!l->TestCapability(OLCCreateField))
-        throw Exception(TR_OGR("This dataset do not support add fields operation."));
+//      if(!l->TestCapability(OLCCreateField))
+//        throw Exception(TR_OGR("This dataset do not support add fields operation."));
 
       OGRFieldDefn* nField = Convert2OGR(p);
       OGRErr error = l->CreateField(nField);
@@ -432,18 +480,48 @@ void te::ogr::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
 
       if(error != OGRERR_NONE)
         throw Exception(TR_OGR("Error when attempting add the property."));
+
+      error = l->SyncToDisk();
+
+      if(error != OGRERR_NONE)
+        throw Exception(TR_OGR("Error saving changes on the file."));
     }
   }
 }
 
-void te::ogr::Transactor::dropProperty(const std::string& /*datasetName*/, const std::string& /*name*/)
+void te::ogr::Transactor::dropProperty(const std::string& datasetName, const std::string& name)
 {
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
+
+  if(l != 0)
+  {
+    if(!l->TestCapability(OLCDeleteField))
+      throw Exception(TR_OGR("This dataset do not support remove properties operation."));
+
+    int fPos = l->GetLayerDefn()->GetFieldIndex(name.c_str());
+
+    if(fPos < 0)
+      throw Exception(TR_OGR("Field not found."));
+
+    OGRErr error = l->DeleteField(fPos);
+
+    if(error != OGRERR_NONE)
+      throw Exception(TR_OGR("Error when attempting remove the property."));
+
+    error = l->SyncToDisk();
+
+    if(error != OGRERR_NONE)
+      throw Exception(TR_OGR("Error saving changes on the file."));
+  }
 }
 
 void te::ogr::Transactor::renameProperty(const std::string& datasetName,
                             const std::string& propertyName,
                             const std::string& newPropertyName)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return;
+
   OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
   if(l != 0)
@@ -461,6 +539,9 @@ void te::ogr::Transactor::renameProperty(const std::string& datasetName,
 
 std::auto_ptr<te::da::PrimaryKey> te::ogr::Transactor::getPrimaryKey(const std::string& datasetName)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return std::auto_ptr<te::da::PrimaryKey>();
+  
   std::auto_ptr<te::da::PrimaryKey> res;
   std::string sql("SELECT FID, * FROM \'");
   sql += datasetName + "\'";
@@ -620,6 +701,9 @@ void te::ogr::Transactor::dropSequence(const std::string& /*name*/)
 std::auto_ptr<te::gm::Envelope> te::ogr::Transactor::getExtent(const std::string& datasetName,
                                                   const std::string& propertyName)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return std::auto_ptr<te::gm::Envelope>();
+  
   std::auto_ptr<te::gm::Envelope> res;
   std::string sql("SELECT ");
   sql += propertyName + " FROM \'";
@@ -653,6 +737,9 @@ std::auto_ptr<te::gm::Envelope> te::ogr::Transactor::getExtent(const std::string
 
 std::size_t te::ogr::Transactor::getNumberOfItems(const std::string& datasetName)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return 0;
+  
   OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
   if(l != 0)
@@ -663,29 +750,64 @@ std::size_t te::ogr::Transactor::getNumberOfItems(const std::string& datasetName
 
 bool te::ogr::Transactor::hasDataSets()
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return false;
+
   return (m_ogrDs->getOGRDataSource()->GetLayerCount() > 0);
 }
 
 bool te::ogr::Transactor::dataSetExists(const std::string& name)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return false;
+  
   return (m_ogrDs->getOGRDataSource()->GetLayerByName(name.c_str()) != 0);
 }
 
 void te::ogr::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<std::string, std::string>& /*options*/)
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return;
+  
   if(!m_ogrDs->getOGRDataSource()->TestCapability(ODsCCreateLayer))
     throw Exception(TR_OGR("This driver does not support dataset creation."));
 
   OGRwkbGeometryType geomType = wkbUnknown;
-
+  OGRSpatialReference* srs = 0;
   if(dt->hasGeom())
+  {
     geomType = Convert2OGR(te::da::GetFirstGeomProperty(dt)->getGeometryType());
+    int srid = te::da::GetFirstGeomProperty(dt)->getSRID();
+    if (srid != TE_UNKNOWN_SRS)
+    {
+      srs = new OGRSpatialReference();
+      srs->importFromEPSG(srid);
+    }
+  }
+  
+  char** papszOptions = 0;
+  std::map<std::string, std::string>::const_iterator it = m_ogrDs->getConnectionInfo().begin();
+  while(it != m_ogrDs->getConnectionInfo().end())
+  {
+    if(it->first == "URI" || it->first == "SOURCE" || it->first == "DRIVER")
+    {
+      ++it;
+      continue;
+    }
+    papszOptions = CSLSetNameValue(papszOptions, it->first.c_str(), it->second.c_str());
+    ++it;
+  }
 
-  OGRLayer* newLayer = m_ogrDs->getOGRDataSource()->CreateLayer(dt->getName().c_str(), 0, geomType);
+  OGRLayer* newLayer = m_ogrDs->getOGRDataSource()->CreateLayer(dt->getName().c_str(), srs, geomType, papszOptions);
+  
+  if(papszOptions)
+    CSLDestroy(papszOptions);
+  
+  dt->setName(newLayer->GetName());
 
   if(newLayer == 0)
     throw Exception(TR_OGR("Error when attempting create the dataset type."));
-
+  
 // add the properties
   for(size_t i = 0; i < dt->size(); ++i)
     addProperty(dt->getName(), dt->getProperty(i));
@@ -695,17 +817,18 @@ void te::ogr::Transactor::cloneDataSet(const std::string& name,
                           const std::string& cloneName,
                           const std::map<std::string, std::string>& /*options*/)
 {
-  OGRDataSource* dsrc = m_ogrDs->getOGRDataSource();
+  if (!m_ogrDs->getOGRDataSource())
+    return;
 
-  if(!dsrc->TestCapability(ODsCCreateLayer))
+  if(!m_ogrDs->getOGRDataSource()->TestCapability(ODsCCreateLayer))
     throw Exception(TR_OGR("This driver does not support creates a dataset."));
 
-  OGRLayer* l = dsrc->GetLayerByName(name.c_str());
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(name.c_str());
 
   if(l == 0)
     throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
 
-  OGRLayer* cl = dsrc->CopyLayer(l, cloneName.c_str());
+  OGRLayer* cl = m_ogrDs->getOGRDataSource()->CopyLayer(l, cloneName.c_str());
 
   if(cl == 0)
     throw Exception(TR_OGR("Error when attempting clone the dataset."));
@@ -713,21 +836,22 @@ void te::ogr::Transactor::cloneDataSet(const std::string& name,
 
 void te::ogr::Transactor::dropDataSet(const std::string& name)
 {
-  OGRDataSource* dsrc = m_ogrDs->getOGRDataSource();
+  if (!m_ogrDs->getOGRDataSource())
+    return;
 
-  if(!dsrc->TestCapability(ODsCDeleteLayer))
+  if(!m_ogrDs->getOGRDataSource()->TestCapability(ODsCDeleteLayer))
     throw Exception(TR_OGR("This driver does not support remove a dataset."));
 
   int i=0;
 
-  for(; i<dsrc->GetLayerCount(); i++)
-    if(name.compare(dsrc->GetLayer(i)->GetName()) == 0)
+  for(; i<m_ogrDs->getOGRDataSource()->GetLayerCount(); i++)
+    if(name.compare(m_ogrDs->getOGRDataSource()->GetLayer(i)->GetName()) == 0)
       break;
 
-  if(i == dsrc->GetLayerCount())
+  if(i == m_ogrDs->getOGRDataSource()->GetLayerCount())
     throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
 
-  if(dsrc->DeleteLayer(i) != OGRERR_NONE)
+  if(m_ogrDs->getOGRDataSource()->DeleteLayer(i) != OGRERR_NONE)
     throw Exception(TR_OGR("Error when attempting to remove the dataset."));
 }
 
@@ -742,6 +866,9 @@ void te::ogr::Transactor::add(const std::string& datasetName,
 {
   if(limit == 0)
     limit = std::string::npos;
+  
+  if (!m_ogrDs->getOGRDataSource())
+    return;
 
   OGRLayer* layer = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
@@ -756,7 +883,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
 
     std::size_t nProcessedRows = 0;
 
-    do
+    while(d->moveNext() && (nProcessedRows != limit))
     {
       OGRFeature* feat = OGRFeature::CreateFeature(layer->GetLayerDefn());
 
@@ -870,7 +997,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
 
       OGRFeature::DestroyFeature(feat);
 
-    }while(d->moveNext() && (nProcessedRows != limit));
+    }
 
     commit();
   }
@@ -883,9 +1010,10 @@ void te::ogr::Transactor::add(const std::string& datasetName,
 
 void te::ogr::Transactor::remove(const std::string& datasetName, const te::da::ObjectIdSet* oids)
 {
-  OGRDataSource* dsrc = m_ogrDs->getOGRDataSource();
+  if(!m_ogrDs->getOGRDataSource())
+    return;
 
-  OGRLayer* l = dsrc->GetLayerByName(datasetName.c_str());
+  OGRLayer* l = m_ogrDs->getOGRDataSource()->GetLayerByName(datasetName.c_str());
 
   if(l == 0)
     throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));

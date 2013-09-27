@@ -1102,7 +1102,7 @@ void te::ado::Transactor::add(const std::string& datasetName,
     TESTHR(recset->Open(_bstr_t(datasetName.c_str()),
       _variant_t((IDispatch*)m_conn->getConn(),true), adOpenKeyset, adLockOptimistic, adCmdTable));
     
-    do
+    while(d->moveNext())
     {
       TESTHR(recset->AddNew());
 
@@ -1190,7 +1190,6 @@ void te::ado::Transactor::add(const std::string& datasetName,
       TESTHR(recset->Update());
 
     }
-    while(d->moveNext());
   }
   catch(_com_error& e)
   {

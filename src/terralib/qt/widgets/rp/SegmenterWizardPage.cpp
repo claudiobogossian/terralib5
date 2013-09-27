@@ -66,6 +66,7 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
 
 //connects
   connect(m_ui->m_strategyTypeComboBox, SIGNAL(activated(int)), this, SLOT(onStrategyTypeComboBoxActivated(int)));
+  connect(m_navigator.get(), SIGNAL(previewClicked()), this, SLOT(apply()));
 }
 
 te::qt::widgets::SegmenterWizardPage::~SegmenterWizardPage()
@@ -95,7 +96,7 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
 
   //set segmenter parameters
-  algoInputParams.m_inputRasterPtr = inputRst.release();
+  algoInputParams.m_inputRasterPtr = inputRst.get();
 
   int nBands = m_ui->m_bandTableWidget->rowCount();
 
@@ -190,6 +191,51 @@ void te::qt::widgets::SegmenterWizardPage::onStrategyTypeComboBoxActivated(int i
 
   m_ui->m_bandTableWidget->resizeColumnsToContents();
   m_ui->m_bandTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+}
+
+void te::qt::widgets::SegmenterWizardPage::apply()
+{
+//get preview raster
+  te::rst::Raster* inputRst = m_navigator->getExtentRaster();
+
+  //set segmenters parameters
+  te::rp::Segmenter::InputParameters algoInputParams = getInputParams();
+
+  algoInputParams.m_inputRasterPtr = inputRst;
+
+  te::rp::Segmenter::OutputParameters algoOutputParams;
+
+  std::map<std::string, std::string> rinfo;
+  rinfo["MEM_RASTER_NROWS"] = inputRst->getNumberOfRows();
+  rinfo["MEM_RASTER_NCOLS"] = inputRst->getNumberOfColumns();
+  rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>(inputRst->getBandDataType(0));
+  rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfBands());
+
+  algoOutputParams.m_rType = "MEM";
+  algoOutputParams.m_rInfo = rinfo;
+
+  //run contrast
+  te::rp::Segmenter algorithmInstance;
+
+  try
+  {
+    if(algorithmInstance.initialize(algoInputParams))
+    {
+      if(algorithmInstance.execute(algoOutputParams))
+      {
+        std::auto_ptr<te::rst::Raster> rst = algoOutputParams.m_outputRasterPtr;
+
+        m_navigator->drawRaster(rst.get());
+      }
+    }
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("Constrast error."));
+  }
+
+  //delete input raster dataset
+  delete inputRst;
 }
 
 void te::qt::widgets::SegmenterWizardPage::fillSegmenterTypes()

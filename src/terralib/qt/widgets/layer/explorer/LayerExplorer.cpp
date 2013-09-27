@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../../maptools/AbstractLayer.h"
+#include "AbstractTreeItem.h"
 #include "LayerExplorer.h"
 #include "LayerTreeModel.h"
 #include "LayerTreeView.h"
@@ -86,6 +87,29 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getAllLayer
   return m_treeModel->getLayers();
 }
 
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelectedLayers() const
+{
+  std::list<te::map::AbstractLayerPtr> selectedLayers;
+
+  if(m_treeView == 0)
+    return selectedLayers;
+
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = getSelectedItems();
+
+  std::list<te::qt::widgets::AbstractTreeItem*>::iterator it;
+  for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
+  {
+    te::map::AbstractLayerPtr layer = (*it)->getLayer();
+
+    if(layer.get() == 0)
+      continue;
+
+    selectedLayers.push_back(layer);
+  }
+
+  return selectedLayers;
+}
+
 std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerExplorer::getSelectedItems() const
 {
   if(m_treeView == 0)
@@ -107,7 +131,7 @@ void te::qt::widgets::LayerExplorer::remove(AbstractTreeItem* item)
   if(m_treeView == 0)
     return;
 
-  m_treeModel->remove(item);
+  m_treeView->remove(item);
 }
 
 //void te::qt::widgets::LayerExplorer::dragEnterEvent(QDragEnterEvent* e)

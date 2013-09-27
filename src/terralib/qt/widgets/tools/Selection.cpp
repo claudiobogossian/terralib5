@@ -29,7 +29,9 @@
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/Geometry.h"
 #include "../../../geometry/GeometryProperty.h"
+#include "../../../geometry/Utils.h"
 #include "../../../srs/Config.h"
 #include "../canvas/MapDisplay.h"
 #include "../utils/ScopedCursor.h"
@@ -109,9 +111,6 @@ bool te::qt::widgets::Selection::mouseMoveEvent(QMouseEvent* e)
 
 bool te::qt::widgets::Selection::mouseReleaseEvent(QMouseEvent* e)
 {
-  if(m_layers.empty())
-    return false;
-
   ScopedCursor cursor(Qt::WaitCursor);
 
   m_selectionStarted = false;
@@ -138,11 +137,17 @@ bool te::qt::widgets::Selection::mouseReleaseEvent(QMouseEvent* e)
 
   te::gm::Envelope envelope(ll.x(), ll.y(), ur.x(), ur.y());
 
-  // For while, select the last layer
-  const te::map::AbstractLayerPtr& layer = *(m_layers.rbegin());
-  executeSelection(layer, envelope);
+  // Select the layers
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  for(it = m_layers.begin(); it != m_layers.end(); ++it)
+    executeSelection(*it, envelope);
 
   return true;
+}
+
+void te::qt::widgets::Selection::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  m_layers = layers;
 }
 
 void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e)
@@ -159,7 +164,7 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
   if(!m_keepPreviousSelection)
   {
     layer->clearSelected();
-    emit layerSelectionChanged(layer);
+    emit layerSelectedObjectsChanged(layer);
   }
 
   if(!reprojectedEnvelope.intersects(layer->getExtent()))
@@ -176,13 +181,42 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
     assert(dataset.get());
 
     // Let's generate the oids
-    te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+    te::da::ObjectIdSet* oids = 0;
+
+    if(m_selectionByPointing == false)
+    {
+      oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+    }
+    else
+    {
+      std::vector<std::string> pnames;
+      te::da::GetOIDPropertyNames(schema.get(), pnames);
+
+      te::da::GetEmptyOIDSet(schema.get(), oids);
+      assert(oids);
+
+      // Generates a geometry from the given extent
+      std::auto_ptr<te::gm::Geometry> geometryFromEnvelope(te::gm::GetGeomFromEnvelope(&reprojectedEnvelope, layer->getSRID()));
+
+      while(dataset->moveNext())
+      {
+        std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gp->getName()));
+        if(!g->intersects(geometryFromEnvelope.get()))
+          continue;
+
+        // Feature found!
+        oids->add(te::da::GenerateOID(dataset.get(), pnames));
+
+        break;
+      }
+    }
+
     assert(oids);
 
     // Adjusts the layer selection
     layer->select(oids);
 
-    emit layerSelectionChanged(layer);
+    emit layerSelectedObjectsChanged(layer);
   }
   catch(std::exception& e)
   {

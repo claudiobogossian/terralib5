@@ -36,7 +36,11 @@
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
 #include "../geometry/Geometry.h"
+#include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/MultiLineString.h"
+#include "../geometry/MultiPoint.h"
+#include "../geometry/MultiPolygon.h"
 #include "../maptools/AbstractLayer.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
@@ -326,9 +330,30 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
       te::mem::DataSetItem* item = new te::mem::DataSetItem(outputDs);
 
-      te::gm::Geometry* newGeom = currGeom->intersection(secGeom.get());
+      te::gm::Geometry* resultGeom = currGeom->intersection(secGeom.get());
 
-      item->setGeometry("geom", *newGeom);
+      if(resultGeom->getGeomTypeId() == te::gm::PolygonType)
+      {
+        te::gm::MultiPolygon* newGeom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, resultGeom->getSRID());
+        newGeom->add(resultGeom);
+        item->setGeometry("geom", *newGeom);
+      }
+      else if(resultGeom->getGeomTypeId() == te::gm::LineStringType)
+      {
+        te::gm::MultiLineString* newGeom = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, resultGeom->getSRID());
+        newGeom->add(resultGeom);
+        item->setGeometry("geom", *newGeom);
+      }
+      else if(resultGeom->getGeomTypeId() == te::gm::PointType)
+      {
+        te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::MultiPointType, resultGeom->getSRID());
+        newGeom->add(resultGeom);
+        item->setGeometry("geom", *newGeom);
+      }
+      else
+      {
+        item->setGeometry("geom", *resultGeom);
+      }
 
       for(size_t j = 0; j < firstMember.props.size(); ++j)
       {
@@ -382,7 +407,7 @@ std::vector<te::dt::Property*> te::vp::GetPropertiesWithoutGeom(te::da::DataSetT
   {
     prop = dsType->getProperty(i);
 
-    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE)
+    if(prop->getType() != te::dt::GEOMETRY_TYPE && prop->getType() != te::dt::NUMERIC_TYPE) //Remover o numeric da condição quando ajustar o driver do PostGis
     {
       props.push_back(prop);
     }

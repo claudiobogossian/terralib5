@@ -99,8 +99,6 @@ namespace te
         protected:
 
           te::qt::widgets::VisualDockWidget* m_explorer; //!< Pointer to a component te::qt::widgets::VisualDockWidget.
-
-          te::map::AbstractLayer* m_layer;
       };
 
     } // end namespace af

@@ -40,6 +40,7 @@
 
 // OGR
 #include <ogrsf_frmts.h>
+#include <ogr_core.h>
 
 // STL
 #include <cassert>
@@ -328,6 +329,13 @@ const unsigned char* te::ogr::DataSet::getWKB() const
 
   if(geom == 0)
     return 0;
+
+  if(geom->getGeometryType() == wkbPolygon)
+    geom = OGRGeometryFactory::forceToMultiPolygon(geom);
+  else if(geom->getGeometryType() == wkbLineString)
+    geom = OGRGeometryFactory::forceToMultiLineString(geom);
+  else if(geom->getGeometryType() == wkbPoint)
+    geom = OGRGeometryFactory::forceToMultiPoint(geom);
 
   int wkbSize = geom->WkbSize();
   

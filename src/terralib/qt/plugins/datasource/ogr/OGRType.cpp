@@ -40,6 +40,26 @@ te::qt::plugins::ogr::OGRType::~OGRType()
 {
 }
 
+bool te::qt::plugins::ogr::OGRType::hasDatabaseSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::ogr::OGRType::hasFileSupport() const
+{
+  return true;
+}
+
+bool te::qt::plugins::ogr::OGRType::hasRasterSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::ogr::OGRType::hasVectorialSupport() const
+{
+  return true;
+}
+
 std::string te::qt::plugins::ogr::OGRType::getName() const
 {
   return "OGR";
@@ -75,10 +95,10 @@ QIcon te::qt::plugins::ogr::OGRType::getIcon(int iconType) const
   switch(iconType)
   {
     case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
-      return QIcon::fromTheme("datasource-ogr");
+      return QIcon::fromTheme("file-vector");
 
     case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
-      return QIcon::fromTheme("datasource-ogr");
+      return QIcon::fromTheme("file-vector");
 
     default:
       return QIcon::fromTheme("unknown-icon");

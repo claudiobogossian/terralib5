@@ -53,9 +53,9 @@ namespace te
 
             \param newLayer Layer added.
           */
-          LayerAdded(te::map::AbstractLayerPtr newlayer) :
-            Event(LAYER_ADDED),
-            m_layer(newlayer)
+          LayerAdded(te::map::AbstractLayerPtr newlayer)
+            : Event(LAYER_ADDED),
+              m_layer(newlayer)
           {
           }
 
@@ -76,13 +76,13 @@ namespace te
 
             \param layer Layer removed.
           */
-          LayerRemoved(te::map::AbstractLayer* layer) :
-            Event(LAYER_REMOVED),
-            m_layer(layer)
+          LayerRemoved(te::map::AbstractLayerPtr layer)
+            : Event(LAYER_REMOVED),
+              m_layer(layer)
           {
           }
 
-          te::map::AbstractLayer* m_layer;  //!< Layer removed.
+          te::map::AbstractLayerPtr m_layer;  //!< Layer removed.
         };
 
         /*!
@@ -92,30 +92,30 @@ namespace te
 
           \ingroup afevents
         */
-        struct LayerVisibilityChanged : public Event 
+        struct LayerVisibilityChanged : public Event
         {
           /*! 
             \brief Constructor.
 
-            \param layer The pointer to the layer.
+            \param layer The layer whose visibility has changed.
 
             \param visibility The new visibility state: VISIBLE, NOT_VISIBLE, PARTIALLY_VISIBLE.
           */
-          LayerVisibilityChanged(te::map::AbstractLayer* layer, te::map::Visibility visibility) :
-            Event(LAYER_VISIBILITY_CHANGED),
-            m_layer(layer),
-            m_visibility(visibility)
+          LayerVisibilityChanged(te::map::AbstractLayerPtr layer, te::map::Visibility visibility)
+            : Event(LAYER_VISIBILITY_CHANGED),
+              m_layer(layer),
+              m_visibility(visibility)
           {
-          };
+          }
 
-          te::map::AbstractLayer* m_layer;     //!< Pointer to the layer.
-          te::map::Visibility m_visibility;    //!< Layer visibility.
+          te::map::AbstractLayerPtr m_layer;     //!< Layer whose visibility has changed.
+          te::map::Visibility m_visibility;      //!< Layer visibility.
         };
 
         /*!
           \struct LayerSelected
 
-          \brief This event signals that the selected layer on layer explorer has changed.
+          \brief This event indicates that the layer has been selected.
         
           \ingroup afevents
         */
@@ -126,34 +126,34 @@ namespace te
 
             \param layer The new selected layer.
           */
-          LayerSelected(te::map::AbstractLayer* layer) :
-            Event(LAYER_SELECTED),
-            m_layer(layer)
+          LayerSelected(te::map::AbstractLayerPtr layer)
+            : Event(LAYER_SELECTED),
+              m_layer(layer)
           {
           }
   
-          te::map::AbstractLayer* m_layer;  //!< Pointer to the selected layer.
+          te::map::AbstractLayerPtr m_layer;  //!< Pointer to the selected layer.
         };
 
         /*!
-          \struct LayerSelectionChanged
+          \struct LayerSelectedObjectsChanged
 
-          \brief This event signals that the selected objects in the layer has changed.
+          \brief This event indicates that the selected objects of the layer were changed.
         */
-        struct LayerSelectionChanged : public Event
+        struct LayerSelectedObjectsChanged : public Event
         {
           /*!
             \brief Constructor
 
-            \param layer The layer that its selected objects has changed.
+            \param layer The layer whose selected objects were changed.
           */
-          LayerSelectionChanged(te::map::AbstractLayer* layer) :
-            Event(LAYER_SELECTION_CHANGED),
-            m_layer(layer)
+          LayerSelectedObjectsChanged(te::map::AbstractLayerPtr layer)
+            : Event(LAYER_SELECTED_OBJECTS_CHANGED),
+              m_layer(layer)
           {
           }
 
-          te::map::AbstractLayer* m_layer; //!< Layer that has changed its selection.
+          te::map::AbstractLayerPtr m_layer; //!< Layer whose selected objects were changed.
         };
 
         /*!
@@ -168,13 +168,36 @@ namespace te
 
             \param layers The layers.
           */
-          LayersChanged(const std::vector<te::map::AbstractLayerPtr>& layers) :
-          Event(LAYERS_CHANGED),
-            m_layers(layers)
+          LayersChanged(const std::vector<te::map::AbstractLayerPtr>& layers)
+            : Event(LAYERS_CHANGED),
+              m_layers(layers)
           {
           }
 
           std::vector<te::map::AbstractLayerPtr> m_layers; //!< Vector of layers.
+        };
+
+        /*!
+          \struct LayerStyleSelected
+
+          \brief This event indicates that the layer style was selected on the layer explorer.
+        
+          \ingroup afevents
+        */
+        struct LayerStyleSelected : public Event
+        {
+          /*!
+            \brief Construtor.
+
+            \param layer The layer that has the selected style.
+          */
+          LayerStyleSelected(te::map::AbstractLayerPtr layer) :
+            Event(LAYER_STYLE_SELECTED),
+            m_layer(layer)
+          {
+          }
+  
+          te::map::AbstractLayerPtr m_layer;  //!< Layer whose style was selected.
         };
       }
     }

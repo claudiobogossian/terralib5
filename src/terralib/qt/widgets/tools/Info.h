@@ -115,7 +115,7 @@ namespace te
 
         private:
 
-          const std::list<te::map::AbstractLayerPtr>& m_layers; //!< A pointer to layer list that will be queried.
+          std::list<te::map::AbstractLayerPtr> m_layers;        //!<The layer list that will be queried.
           QTreeWidget* m_infoWidget;                            //!< Widget used to show the informations.
       };
 

@@ -145,6 +145,79 @@ std::string te::map::GetString(const te::se::ParameterValue* param)
   }
 }
 
+te::gm::Envelope te::map::GetSelectedExtent(const std::list<te::map::AbstractLayerPtr> layers, int srid, bool onlyVisibles)
+{
+  std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
+
+  te::gm::Envelope finalEnv;
+
+  while(it != layers.end())
+  {
+    if(it == layers.begin())
+      finalEnv = GetSelectedExtent((*it), srid, onlyVisibles);
+    else
+      finalEnv.Union(GetSelectedExtent((*it), srid, onlyVisibles));
+
+    ++it;
+  }
+
+  return finalEnv;
+}
+
+te::gm::Envelope te::map::GetSelectedExtent(const te::map::AbstractLayerPtr layer, int srid, bool onlyVisibles)
+{
+  if(onlyVisibles && layer->getVisibility() == te::map::NOT_VISIBLE)
+    return te::gm::Envelope();
+
+  te::gm::Envelope finalEnv;
+
+  bool isFirst = true;
+
+  if(!layer->hasChildren())
+  {
+    std::auto_ptr<te::da::DataSetType> dt(layer->getSchema());
+
+    const te::da::ObjectIdSet* objSet = layer->getSelected();
+
+    std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
+
+    te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());
+
+    while(ds->moveNext())
+    {
+      std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(geomProp->getName());
+
+      te::gm::Envelope auxEnv(*geom->getMBR());
+
+      if(layer->getSRID() != srid)
+        auxEnv.transform(layer->getSRID(), srid);
+
+      if(isFirst)
+      {
+        finalEnv = auxEnv;
+        isFirst = false;
+        continue;
+      }
+
+      finalEnv.Union(auxEnv);
+    }
+  }
+  else
+  {
+    for(std::size_t i = 0; i < layer->getChildrenCount(); ++i)
+    {
+      te::map::AbstractLayerPtr child(boost::dynamic_pointer_cast<AbstractLayer>(layer->getChild(i)));
+      
+      if(i == 0)
+        finalEnv = GetSelectedExtent(child, srid, onlyVisibles);
+      else
+        finalEnv.Union(GetSelectedExtent(child, srid, onlyVisibles));
+    }
+  }
+
+  return finalEnv;
+}
+
 void te::map::GetDashStyle(const std::string& dasharray, std::vector<double>& style)
 {
   std::vector<std::string> values;

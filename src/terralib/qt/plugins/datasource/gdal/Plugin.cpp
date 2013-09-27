@@ -47,9 +47,10 @@
 #include <boost/filesystem.hpp>
 
 // Qt 
-#include <QAction>
-#include <QMenu>
-#include <QFileDialog>
+#include <QtGui/QAction>
+#include <QtGui/QFileDialog>
+#include <QtGui/QMenu>
+#include <QtCore/QFileInfo>
 
 std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPtr& info)
 {
@@ -107,7 +108,7 @@ void te::qt::plugins::gdal::Plugin::startup()
   if(act != 0 && mnu != 0)
   {
     QWidget* parent = act->parentWidget();
-    m_openFile = new QAction(QIcon::fromTheme("datasource-gdal"), tr("Raster File..."), parent);
+    m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), parent);
     m_openFile->setObjectName("Project.Add Layer.Raster File");
     mnu->insertAction(act, m_openFile);
 
@@ -136,10 +137,14 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 {
   QString filter = tr("Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)");
 
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Raster File"), QString(), filter);
+  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Raster File"), te::qt::af::GetFilePathFromSettings("raster"), filter);
 
   if(fileNames.isEmpty())
     return;
+
+  QFileInfo info(fileNames.value(0));
+
+  te::qt::af::AddFilePathToSettings(info.absolutePath(), "raster");
 
   std::list<te::map::AbstractLayerPtr> layers;
 
