@@ -1094,23 +1094,26 @@ void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
     return;
   }
 
-  te::gm::Envelope auxEnv = te::map::GetSelectedExtent(layers, m_display->getDisplay()->getSRID(), true);
-  te::gm::Coord2D auxCenter = auxEnv.getCenter();
+  te::map::MapDisplay* display = m_display->getDisplay();
 
-  te::gm::Envelope displayEnv = m_display->getDisplay()->getExtent();
-  te::gm::Coord2D displayCenter = auxEnv.getCenter();
+  te::gm::Envelope selectedExtent = te::map::GetSelectedExtent(layers, display->getSRID(), true);
 
-  double xxx = auxCenter.x - displayCenter.x;
-  double yyy = auxCenter.y - displayCenter.x;
+  te::gm::Coord2D centerOfSelectedExtent = selectedExtent.getCenter();
 
-  te::gm::Envelope finalEnv;
+  te::gm::Envelope displayExtent = display->getExtent();
 
-  finalEnv.m_llx = displayEnv.getLowerLeftX()+xxx;
-  finalEnv.m_lly = displayEnv.getLowerLeftY()+yyy;
-  finalEnv.m_urx = displayEnv.getUpperRightX()+xxx;
-  finalEnv.m_ury = displayEnv.getUpperRightY()+yyy;
+  double halfWidth = displayExtent.getWidth() * 0.5;
+  double halfHeight = displayExtent.getHeight() * 0.5;
 
-  m_display->getDisplay()->setExtent(finalEnv);
+  te::gm::Envelope newExtent;
+
+  newExtent.m_llx = centerOfSelectedExtent.x - halfWidth;
+  newExtent.m_lly = centerOfSelectedExtent.y - halfHeight;
+
+  newExtent.m_urx = centerOfSelectedExtent.x + halfWidth;
+  newExtent.m_ury = centerOfSelectedExtent.y + halfHeight;
+
+  display->setExtent(newExtent);
 }
 
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
@@ -1658,7 +1661,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart"), tr(""), true, false, true, m_menubar);
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit On Map Display", tr("Fit on &Map Display"), tr("Fit the current layer on Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected On Map Display", tr("Fit Selected On Map Display"), tr("Fit the selected objects of layer on Map Display"), true, false, true, m_menubar);
-  initAction(m_layerPanToSelectedOnMapDisplay, "", "Layer.Pan To Selected On Map Display", tr("Pan To Selected On Map Display"), tr("Fit the selected objects of layer on Map Display"), true, false, true, m_menubar);
+  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan To Selected On Map Display", tr("Pan To Selected On Map Display"), tr("Fit the selected objects of layer on Map Display"), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
