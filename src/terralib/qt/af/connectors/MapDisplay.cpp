@@ -208,9 +208,9 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       clear();
     break;
 
-    case te::qt::af::evt::LAYER_SELECTION_CHANGED:
+    case te::qt::af::evt::LAYER_SELECTED_OBJECTS_CHANGED:
     {
-      //te::qt::af::evt::LayerSelectionChanged* layerSelectionChanged = static_cast<te::qt::af::evt::LayerSelectionChanged*>(e);
+      //te::qt::af::evt::LayerSelectedObjectsChanged* LayerSelectedObjectsChanged = static_cast<te::qt::af::evt::LayerSelectedObjectsChanged*>(e);
 
       QPixmap* content = m_display->getDisplayPixmap();
       content->fill(Qt::transparent);
@@ -251,9 +251,9 @@ void te::qt::af::MapDisplay::drawLayersSelection(const std::list<te::map::Abstra
   m_display->repaint();
 }
 
-void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayer* layer)
+void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
 {
-  assert(layer);
+  assert(layer.get());
 
   if(layer->getVisibility() != te::map::VISIBLE)
     return;
@@ -363,8 +363,8 @@ void te::qt::af::MapDisplay::configSRS(const std::list<te::map::AbstractLayerPtr
     m_display->setSRID(TE_UNKNOWN_SRS, false);
 
     std::pair<int, std::string> srid(layer->getSRID(), "EPSG");
-    te::qt::af::evt::MapSRIDChanged mapSRIDChagned(srid);
-    ApplicationController::getInstance().broadcast(&mapSRIDChagned);
+    te::qt::af::evt::MapSRIDChanged mapSRIDChanged(srid);
+    ApplicationController::getInstance().broadcast(&mapSRIDChanged);
   }
   else if(m_display->getSRID() == TE_UNKNOWN_SRS)
   {
@@ -380,8 +380,8 @@ void te::qt::af::MapDisplay::configSRS(const std::list<te::map::AbstractLayerPtr
       m_display->setSRID(layer->getSRID(), false);
 
       std::pair<int, std::string> srid(layer->getSRID(), "EPSG");
-      te::qt::af::evt::MapSRIDChanged mapSRIDChagned(srid);
-      ApplicationController::getInstance().broadcast(&mapSRIDChagned);
+      te::qt::af::evt::MapSRIDChanged mapSRIDChanged(srid);
+      ApplicationController::getInstance().broadcast(&mapSRIDChanged);
 
       break;
     }

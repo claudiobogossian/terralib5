@@ -121,6 +121,27 @@ namespace te
 
           QToolBar* m_toolbar;  //!< Pointer to the new QToolBar.
         };
+
+        /*!
+          \struct Draw Button Clicked
+
+          \brief This event signals that the draw button clicked
+
+          \ingroup afevents
+        */
+
+        struct DrawButtonClicked : public Event
+        {
+          /*!
+            \brief Constructor.
+
+            \param toolbar Pointer to the new tool bar.
+          */
+          DrawButtonClicked() :
+          Event(DRAW_BUTTON_CLICKED)
+          {
+          }
+        };
       }
     }
   }

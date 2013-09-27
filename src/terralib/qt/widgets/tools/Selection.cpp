@@ -164,7 +164,7 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
   if(!m_keepPreviousSelection)
   {
     layer->clearSelected();
-    emit layerSelectionChanged(layer);
+    emit layerSelectedObjectsChanged(layer);
   }
 
   if(!reprojectedEnvelope.intersects(layer->getExtent()))
@@ -216,7 +216,7 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
     // Adjusts the layer selection
     layer->select(oids);
 
-    emit layerSelectionChanged(layer);
+    emit layerSelectedObjectsChanged(layer);
   }
   catch(std::exception& e)
   {

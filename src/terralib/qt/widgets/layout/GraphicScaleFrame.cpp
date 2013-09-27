@@ -27,6 +27,7 @@
 #include "GraphicScaleFrame.h"
 #include "LayoutEditor.h"
 #include "DataFrame.h"
+#include "../canvas/MultiThreadMapDisplay.h"
 
 #include <terralib/geometry.h>
 #include <terralib/common.h>

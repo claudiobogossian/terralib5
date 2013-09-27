@@ -46,7 +46,7 @@ namespace te
           LAYER_REMOVED,
           LAYER_SELECTED,
           LAYER_VISIBILITY_CHANGED,
-          LAYER_SELECTION_CHANGED,
+          LAYER_SELECTED_OBJECTS_CHANGED,
           LAYERS_CHANGED,
           LAYER_STYLE_SELECTED,
           TOOL_CHANGED,
@@ -59,6 +59,7 @@ namespace te
           MAP_SRID_CHANGED,
           MAP_COLOR_CHANGED,
           TABLE_ALTERNATE_COLORS_CHANGED,
+          DRAW_BUTTON_CLICKED,
           CUSTOM = 1024
         };
 

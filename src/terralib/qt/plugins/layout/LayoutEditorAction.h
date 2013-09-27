@@ -29,6 +29,7 @@
 // TerraLib
 #include "Config.h"
 #include "AbstractAction.h"
+#include "../../../qt/af/connectors/LayoutEditor.h"
 
 namespace te
 {
@@ -64,7 +65,7 @@ namespace te
             virtual void onActionActivated(bool checked);
 
           private:
-            te::qt::widgets::LayoutEditor* m_layoutEditor;
+            te::qt::af::LayoutEditor* m_layoutEditor;
         };
 
       } // end namespace layout

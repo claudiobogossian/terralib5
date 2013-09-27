@@ -54,16 +54,19 @@ void te::qt::plugins::layout::LayoutEditorAction::onActionActivated(bool checked
 {
   if(m_layoutEditor == 0)
   {
-    m_layoutEditor = new te::qt::widgets::LayoutEditor();
-    m_layoutEditor->show();
-
     // ache o parent...
     QMenu* menu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
     QMenuBar* menubar = (QMenuBar*)menu->parent();
     QWidget* parent = (QWidget*)menubar->parent();
 
-    Qt::WindowFlags flags = 	m_layoutEditor->windowFlags();
-    m_layoutEditor->setParent(parent, flags);
+    te::qt::widgets::LayoutEditor* layoutEditor = new te::qt::widgets::LayoutEditor(parent);
+    layoutEditor->show();
+
+    //Qt::WindowFlags flags = 	layoutEditor->windowFlags();
+    //layoutEditor->setParent(parent, flags);
+
+    m_layoutEditor = new te::qt::af::LayoutEditor(layoutEditor);
   }
-  m_layoutEditor->show();
+  m_layoutEditor->getLayoutEditor()->show();
+    
 }

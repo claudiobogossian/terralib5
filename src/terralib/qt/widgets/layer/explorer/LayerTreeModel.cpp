@@ -45,7 +45,6 @@ te::qt::widgets::LayerTreeModel::LayerTreeModel(QObject* parent)
   setSupportedDragActions(Qt::MoveAction | Qt::CopyAction);
 }
 
-
 te::qt::widgets::LayerTreeModel::LayerTreeModel(const std::list<te::map::AbstractLayerPtr>& layers, QObject * parent)
   : QAbstractItemModel(parent),
     m_checkable(false)
@@ -477,9 +476,9 @@ bool te::qt::widgets::LayerTreeModel::insertRows(int row, int count, const QMode
     std::vector<AbstractTreeItem*> ancestorItems = insertingItems[i]->getAncestors();
     for(std::size_t i = 0; i < ancestorItems.size(); ++i)
     {
-      te::map::AbstractLayer* ancestorLayer = ancestorItems[i]->getLayer().get();
+      te::map::AbstractLayerPtr ancestorLayer = ancestorItems[i]->getLayer();
       if(ancestorLayer->hasVisibilityChanged())
-        emit visibilityChanged(ancestorItems[i]);
+        emit visibilityChanged(ancestorLayer);
     }
   }
 
@@ -507,7 +506,7 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
     AbstractTreeItem* removingItemParent = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
     // First, remove the associated layer associated to the item
-    te::map::AbstractLayer* removingItemParentLayer = static_cast<te::map::AbstractLayer*>(removingItemParent->getLayer().get());
+    te::map::AbstractLayerPtr removingItemParentLayer = static_cast<te::map::AbstractLayerPtr>(removingItemParent->getLayer());
 
     if(removingItem->getLayer() != 0)
       removingItemParentLayer->remove(row);
@@ -531,7 +530,7 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
     removingItemParentLayer->updateVisibility();
 
     if(removingItemParentLayer->hasVisibilityChanged())
-      emit visibilityChanged(removingItemParent);
+      emit visibilityChanged(removingItemParentLayer);
 
     // Adjust the visibility of the ancestors of the parent of the removed layer
     removingItemParentLayer->updateVisibilityOfAncestors();
@@ -539,9 +538,9 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
     std::vector<AbstractTreeItem*> ancestorItems = removingItemParent->getAncestors();
     for(std::size_t i = 0; i < ancestorItems.size(); ++i)
     {
-      te::map::AbstractLayer* ancestorLayer = ancestorItems[i]->getLayer().get();
+      te::map::AbstractLayerPtr ancestorLayer = ancestorItems[i]->getLayer();
       if(ancestorLayer->hasVisibilityChanged())
-        emit visibilityChanged(ancestorItems[i]);
+        emit visibilityChanged(ancestorLayer);
     }
   }
 
