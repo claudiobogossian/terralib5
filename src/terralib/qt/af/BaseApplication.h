@@ -103,6 +103,8 @@ namespace te
 
           void onToolsDataExchangerTriggered();
 
+          void onToolsDataExchangerSHP2PGISTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onNewFolderTriggered();
@@ -124,6 +126,8 @@ namespace te
           void onLayerGroupingTriggered();
 
           void onLayerFitOnMapDisplayTriggered();
+
+          void onLayerFitSelectedOnMapDisplayTriggered();
 
           void onMapSRIDTriggered();
         
@@ -163,7 +167,7 @@ namespace te
 
           void onFullScreenToggled(bool checked);
 
-          void onLayerSelectionChanged(const te::map::AbstractLayerPtr& layer);
+          void onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
 
           void onLayerExplorerVisibilityChanged(bool visible);
 
@@ -219,6 +223,7 @@ namespace te
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
           QAction* m_toolsDataExchanger;
+          QAction* m_toolsDataExchangerSHP2PGIS;
           QAction* m_toolsDataSourceExplorer;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
@@ -248,6 +253,7 @@ namespace te
           QAction* m_layerChart;
           QAction* m_layerGrouping;
           QAction* m_layerFitOnMapDisplay;
+          QAction* m_layerFitSelectedOnMapDisplay;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
@@ -286,6 +292,7 @@ namespace te
           QMenu* m_viewMenu;
           QMenu* m_viewToolBarsMenu;
           QMenu* m_toolsMenu;
+          QMenu* m_toolsExchangerMenu;
           QMenu* m_pluginsMenu;
           QMenu* m_helpMenu;
           QMenu* m_projectMenu;

@@ -41,6 +41,26 @@ te::qt::plugins::gdal::GDALType::~GDALType()
 {
 }
 
+bool te::qt::plugins::gdal::GDALType::hasDatabaseSupport() const
+{
+  return false;
+}
+
+bool te::qt::plugins::gdal::GDALType::hasFileSupport() const
+{
+  return true;
+}
+
+bool te::qt::plugins::gdal::GDALType::hasRasterSupport() const
+{
+  return true;
+}
+
+bool te::qt::plugins::gdal::GDALType::hasVectorialSupport() const
+{
+  return false;
+}
+
 std::string te::qt::plugins::gdal::GDALType::getName() const
 {
   return "GDAL";

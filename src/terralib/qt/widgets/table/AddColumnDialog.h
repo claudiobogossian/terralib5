@@ -25,7 +25,11 @@
 
 #include "../Config.h"
 
+// Qt
 #include <QtGui/QDialog>
+
+// STL
+#include <memory>
 
 // Forward declarations
 namespace Ui

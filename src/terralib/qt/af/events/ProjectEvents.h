@@ -42,7 +42,7 @@ namespace te
         /*!
           \struct ProjectAdded
 
-          \brief Signals that a new project was created.
+          \brief It indicates that a new project was createed.
 
           \ingroup afevents
         */
@@ -51,11 +51,11 @@ namespace te
           /*!
             \brief Constructor.
 
-            \param proj The pointer to the project added.
+            \param proj The project to be added.
           */
-          ProjectAdded(Project* proj) :
-          Event(PROJECT_ADDED),
-          m_proj(proj)
+          ProjectAdded(Project* proj)
+            : Event(PROJECT_ADDED),
+              m_proj(proj)
           {
           }
 
@@ -65,15 +65,15 @@ namespace te
         /*!
           \struct ProjectUnsaved
 
-          \brief Signals that the project has unsaved changes.
+          \brief It indicates that the project has unsaved changes.
         */
         struct ProjectUnsaved : public Event
         {
           /*!
             \brief Constructor.
           */
-          ProjectUnsaved() :
-          Event(PROJECT_UNSAVED)
+          ProjectUnsaved()
+            : Event(PROJECT_UNSAVED)
           {
           }
         };

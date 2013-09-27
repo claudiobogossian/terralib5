@@ -9,7 +9,8 @@ cmake_minimum_required(VERSION 2.8)
 
 # Find path - tries to find *.h in paths hard-coded by the script
 find_path(
-  GEOS_INCLUDE_DIR geos.h
+  GEOS_INCLUDE_DIR 
+  NAMES geos.h geos_c.h
   PATHS /usr/local/include /usr/include
   PATH_SUFFIXES "geos" "geos/include"
 )
@@ -23,7 +24,7 @@ find_library(
              
 find_library(
   GEOS_LIBRARY_DEBUG
-  NAMES geos_d geos_i_d
+  NAMES geos_d geos_i_d libgeos_d
   PATHS /usr/local/lib /usr/lib  
   PATH_SUFFIXES "geos/lib"
 )

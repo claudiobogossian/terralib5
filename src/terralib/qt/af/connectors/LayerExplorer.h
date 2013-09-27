@@ -109,7 +109,9 @@ namespace te
           */
           void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
-          void onLayerVisibilityChanged(te::qt::widgets::AbstractTreeItem* item);
+          void onLayerVisibilityChanged(te::map::AbstractLayerPtr layer);
+
+          void onLayerRemoved(te::map::AbstractLayerPtr layer);
 
           void layersChanged(const std::vector<te::map::AbstractLayerPtr>& layers);
 

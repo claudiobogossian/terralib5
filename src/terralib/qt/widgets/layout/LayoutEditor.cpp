@@ -28,6 +28,7 @@
 #include "DataFrame.h"
 #include "TextFrame.h"
 #include "EditorInfo.h"
+#include "../canvas/MultiThreadMapDisplay.h"
 
 // Qt
 
@@ -124,14 +125,14 @@ te::qt::widgets::LayoutEditor::LayoutEditor(const QSize& paperSize, QWidget* par
 
 te::qt::widgets::LayoutEditor::~LayoutEditor()
 {
+  delete m_draftLayoutEditor;
+  delete m_editorState;
+
   std::vector<te::qt::widgets::LayoutObject*>::iterator it;
   for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
     delete *it;
   for(it = m_undoLayoutObjects.begin(); it != m_undoLayoutObjects.end(); ++it)
     delete *it;
-  //delete m_editorState;
-  //delete m_auxWidget;
-  //delete m_draftLayoutEditor;
 }
 
 void te::qt::widgets::LayoutEditor::resetPaperView()
@@ -1009,6 +1010,19 @@ void te::qt::widgets::LayoutEditor::draw()
   update();
 }
 
+void te::qt::widgets::LayoutEditor::drawButtonClicked()
+{
+  std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+  for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+  {
+    if((*it)->windowTitle() == "DataFrame")
+    {
+      te::qt::widgets::DataFrame* df = (te::qt::widgets::DataFrame*)*it;
+      df->drawButtonClicked();
+    }
+  }
+}
+
 void te::qt::widgets::LayoutEditor::mousePressEvent(QMouseEvent* e)
 {
   //te::qt::widgets::DataFrame* df0 = m_layoutObjects[0];
@@ -1612,8 +1626,13 @@ void te::qt::widgets::LayoutEditor::keyPressEvent(QKeyEvent* e)
         m_layoutObjectSelected->hideSelectionPoints();
         remove(m_layoutObjectSelected);
         insertCopy2Undo(m_layoutObjectSelected);
+        m_layoutObjectSelected->hide();
         delete m_layoutObjectSelected;
         m_layoutObjectSelected = 0;
+        te::qt::widgets::LayoutObject* f = m_undoLayoutObjects[m_undoLayoutObjects.size()-1];
+        f->hideSelectionPoints();
+        f->hide();
+        setFrameSelected(0);
         update();
       }
     }
@@ -1670,7 +1689,9 @@ void te::qt::widgets::LayoutEditor::keyPressEvent(QKeyEvent* e)
             if(undof->windowTitle() == "DataFrame")
             {
               te::qt::widgets::DataFrame* df = (te::qt::widgets::DataFrame*)undof;
-              df->setDataChanged(true);
+              te::map::AbstractLayerPtr data(df->getData());
+              df->setData(0);
+              df->setData(data);
               df->draw();
             }
             undof->show();
@@ -1935,4 +1956,38 @@ void te::qt::widgets::LayoutEditor::raiseDraftLayoutEditor()
 void te::qt::widgets::LayoutEditor::lowerDraftLayoutEditor()
 {
   m_draftLayoutEditor->lower();
+}
+
+void te::qt::widgets::LayoutEditor::layerSelectionChanged()
+{
+  std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+  for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+  {
+    if((*it)->windowTitle() == "DataFrame")
+    {
+      te::qt::widgets::DataFrame* df = (te::qt::widgets::DataFrame*)(*it);
+      QPixmap* pixmap = df->getLastDisplayContent();
+      QPixmap* content = df->getMapDisplay()->getDisplayPixmap();
+      content->fill(Qt::transparent);
+
+      QPainter painter(content);
+      painter.drawPixmap(0, 0, *pixmap);
+      painter.end();
+
+      df->drawLayerSelection(df->getData());
+    }
+  }
+}
+
+void te::qt::widgets::LayoutEditor::setDisplayBackgroundColor(QColor cor)
+{
+  std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+  for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+  {
+    if((*it)->windowTitle() == "DataFrame")
+    {
+      te::qt::widgets::DataFrame* df = (te::qt::widgets::DataFrame*)*it;
+      df->getMapDisplay()->setBackgroundColor(cor);
+    }
+  }
 }

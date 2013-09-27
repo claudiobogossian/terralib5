@@ -44,6 +44,8 @@ namespace te
 {
   namespace map { class Grouping; }
 
+  namespace rst { class Raster; }
+
   namespace se { class RasterSymbolizer; }
 
   namespace qt
@@ -100,7 +102,7 @@ namespace te
           te::qt::widgets::ColorMapWidget* m_colorMapWidget; //!< Color Map Widget used to configure the grouping operation over a raster.
 
           te::map::AbstractLayerPtr m_layer;                  //!< Layer ptr.
-
+          std::auto_ptr<te::rst::Raster> m_raster;
           te::se::RasterSymbolizer* m_rasterSymb;
       }; 
 

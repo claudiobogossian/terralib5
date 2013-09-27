@@ -89,6 +89,7 @@ QWidget* te::qt::widgets::VisualDockWidget::buildUi()
   layout->addWidget(m_styleController, 0, 0);
   m_styleController->setMaximumHeight(300);
 
+  connect(m_styleController, SIGNAL(mapRefresh()), this, SLOT(onMapRefresh()));
   connect(m_styleController, SIGNAL(symbolizerSelected(te::se::Symbolizer*)), this, SLOT(onSymbolizerSelected(te::se::Symbolizer*)));
   connect(this, SIGNAL(symbolizerChanged(te::se::Symbolizer*)), m_styleController, SLOT(onSymbolizerChanged(te::se::Symbolizer*)));
 
@@ -215,4 +216,9 @@ void te::qt::widgets::VisualDockWidget::onRasterSymbolizerChanged()
   te::se::Symbolizer* s = m_visualWidget->getRasterSymbolizer();
 
   emit symbolizerChanged(s);
+}
+
+void te::qt::widgets::VisualDockWidget::onMapRefresh()
+{
+  emit repaintMapDisplay();
 }

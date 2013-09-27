@@ -33,9 +33,9 @@
 #include <QtGui/QWidget>
 
 te::qt::widgets::TimeSeriesPropertiesWidget::TimeSeriesPropertiesWidget(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
-  : m_dataSet (dataSet),
-    QWidget(parent, f),
-    m_ui(new Ui::TimeSeriesPropertiesWidgetForm)
+: QWidget(parent, f),
+  m_ui(new Ui::TimeSeriesPropertiesWidgetForm),
+  m_dataSet (dataSet)
 {
   m_ui->setupUi(this);
   QString item;

@@ -115,12 +115,16 @@ namespace te
 
           void onRuleClicked(const te::se::Rule* rule);
 
+          void onMapRefreshClicked();
+
           void changeLegendIconSize(int size);
 
         signals:
 
           /*! This signal is emitted when a symbolizer is clicked. */
           void symbolizerSelected(te::se::Symbolizer* symb);
+
+          void mapRefresh();
 
         private:
 

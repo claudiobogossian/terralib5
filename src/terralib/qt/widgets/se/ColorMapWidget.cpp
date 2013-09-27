@@ -291,6 +291,8 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
   //added dummy color for values > than max values...
   c->addValue(new te::se::ParameterValue(colorWhiteStr));
 
+  c->setThresholdsBelongTo(te::se::Categorize::SUCCEEDING);
+
   if(m_cm)
   {
     m_cm->setCategorize(c);

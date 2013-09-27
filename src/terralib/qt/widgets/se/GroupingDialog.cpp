@@ -74,8 +74,6 @@ void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
   {
     buildRasterGroupingInteface();
 
-    te::rst::Raster* raster = 0;
-
     if(layer->getType() == "DATASETLAYER")
     {
       te::map::DataSetLayer* l = dynamic_cast<te::map::DataSetLayer*>(layer.get());
@@ -84,9 +82,13 @@ void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
       {
         m_rasterSymb = te::se::GetRasterSymbolizer(l->getStyle());
 
-        te::da::DataSet* ds = l->getData().get();
-        std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
-        raster = ds->getRaster(rpos).get();
+        std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
+
+        if(ds.get())
+        {
+          std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+          m_raster.reset(ds->getRaster(rpos).release());
+        }
       }
     }
     else if(layer->getType() == "RASTERLAYER")
@@ -97,7 +99,7 @@ void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
       {
         m_rasterSymb = te::se::GetRasterSymbolizer(l->getStyle());
 
-        raster = l->getRaster();
+        m_raster.reset(l->getRaster());
       }
     }
 
@@ -115,9 +117,9 @@ void te::qt::widgets::GroupingDialog::setLayer(te::map::AbstractLayerPtr layer)
       }
     }
 
-    if(raster)
+    if(m_raster.get())
     {
-      m_colorMapWidget->setRaster(raster);
+      m_colorMapWidget->setRaster(m_raster.get());
     }
   }
 }

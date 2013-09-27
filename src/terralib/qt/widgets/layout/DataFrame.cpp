@@ -33,7 +33,13 @@
 #include <terralib/geometry.h>
 #include <terralib/srs/Config.h>
 #include <terralib/srs/Converter.h>
+#include <terralib/dataaccess/dataset/ObjectIdSet.h>
+#include <terralib/dataaccess/utils/utils.h>
+#include <terralib/qt/widgets/utils.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
+#include <terralib/qt/widgets/canvas/MultiThreadMapDisplay.h>
+#include <terralib/qt/widgets/layer/explorer/AbstractTreeItem.h>
+
 
 // Qt
 #include <QtGui/QApplication>
@@ -46,6 +52,7 @@
 #include <QtGui/QFontDatabase>
 #include <QtGui/QResizeEvent>
 #include <QtGui/QBoxLayout>
+#include <QtGui/QMessageBox>
 
 #include <QtCore/QRect>
 #include <QtCore/QCoreApplication>
@@ -77,6 +84,8 @@ te::qt::widgets::DataFrame::DataFrame(const QRectF& frameRect, te::qt::widgets::
 
   m_mapDisplay->show();
 
+  connect(m_mapDisplay, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), this, SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
+
   m_menu = new QMenu(this);
   m_createUTMGridAction = m_menu->addAction("Create UTM Grid");
   m_removeUTMGridAction = m_menu->addAction("Remove UTM Grid");
@@ -104,7 +113,8 @@ te::qt::widgets::DataFrame::DataFrame(const DataFrame& rhs) :
   m_geoGridFrame = 0;
   m_graphicScaleFrame = 0;
 
-  te::map::AbstractLayerPtr m_data = rhs.m_data;
+  m_data = rhs.m_data;
+  m_visibleLayers = rhs.m_visibleLayers;
 
   adjust();
   show();
@@ -174,7 +184,8 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
     m_geoGridFrame = 0;
     m_graphicScaleFrame = 0;
 
-    te::map::AbstractLayerPtr m_data = rhs.m_data;
+    m_data = rhs.m_data;
+    m_visibleLayers = rhs.m_visibleLayers;
 
     adjust();
     show();
@@ -280,7 +291,7 @@ void te::qt::widgets::DataFrame::adjustWidgetToFrameRect(const QRectF& r)
 {
   //if(m_frameRect == r)
   //  return;
-
+  //setDataChanged(true);
   m_frameRect = r;
   QMatrix matrix = m_layoutEditor->getMatrixPaperViewToVp();
   QRect rec = matrix.mapRect(m_frameRect).toRect();
@@ -352,31 +363,61 @@ void te::qt::widgets::DataFrame::setScale(double v)
   adjust();
 }
 
-te::map::AbstractLayerPtr te::qt::widgets::DataFrame::getData()
+te::map::AbstractLayer* te::qt::widgets::DataFrame::getData()
 {
   return m_data;
 }
 
-void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr d)
+void te::qt::widgets::DataFrame::getLayerList(te::map::AbstractLayerPtr al, std::list<te::map::AbstractLayerPtr>& layerList)
 {
-  m_data = d;
-  m_mapDisplay->changeData(m_data);
+  try
+  {
+    if(al->getType() != "FOLDERLAYER")
+    {
+      if(al->getVisibility() == te::map::VISIBLE)
+        layerList.push_back(al);
+        //layerList.push_front(al);
+    }
 
+    te::common::TreeItem::iterator it;
+    for(it = al.get()->begin(); it != al.get()->end(); ++it)
+    {
+      te::common::TreeItemPtr p = (*it);
+      te::common::TreeItem* tp = p.get();
+      te::map::AbstractLayer* l = dynamic_cast<te::map::AbstractLayer*>(tp);
+      te::map::AbstractLayerPtr t(l);
+      getLayerList(t, layerList);
+    }
+  }
+  catch(te::common::Exception& e)
+  {
+    throw(te::common::Exception(e.what()));
+  }
+}
+
+void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al)
+{
+  m_data = al.get();
   if(m_data == 0)
     return;
 
-  te::gm::Envelope e = m_data->getExtent();
+  m_dataChanged = true;
+  m_mapDisplay->changeData(al);
+  m_visibleLayers.clear();
+  getLayerList(al, m_visibleLayers);
+  //m_mapDisplay->setLayerList(m_visibleLayers);
+  m_mapDisplay->refresh();
+
+  te::gm::Envelope e = m_mapDisplay->getExtent();
   m_dataRect = QRectF();
   QRectF r(e.getLowerLeftX(), e.getLowerLeftY(), e.getWidth(), e.getHeight());
   setDataRect(r);
 
-  te::gm::Envelope env = m_mapDisplay->getExtent();
-  findDataUnitToMilimeter(env, m_mapDisplay->getSRID());
+  findDataUnitToMilimeter(e, m_mapDisplay->getSRID());
 
   double w = m_frameRect.width();
-  double ww = m_dataUnitToMilimeter * env.getWidth();
+  double ww = m_dataUnitToMilimeter * e.getWidth();
   m_scale = ww / w;
-  setDataChanged(true);
 }
 
 void te::qt::widgets::DataFrame::setDataChanged(bool b)
@@ -535,10 +576,47 @@ double te::qt::widgets::DataFrame::getDataUnitToMilimeter()
   return m_dataUnitToMilimeter;
 }
 
+void te::qt::widgets::DataFrame::drawButtonClicked()
+{
+  // verificar se mudou a lista de layers visiveis
+  m_dataChanged = false;
+  std::list<te::map::AbstractLayerPtr> visibleLayers;
+  te::map::AbstractLayerPtr al(m_data);
+  getLayerList(al, visibleLayers);
+  //te::map::GetVisibleLayers(al, visibleLayers);
+
+  if(visibleLayers.size() != m_visibleLayers.size())
+    m_dataChanged = true;
+  else
+  {
+    std::list<te::map::AbstractLayerPtr>::iterator it, mit;
+    for(it = visibleLayers.begin(), mit = m_visibleLayers.begin(); it != visibleLayers.end(); ++it, ++mit)
+    {
+      te::map::AbstractLayerPtr p = *it;
+      te::map::AbstractLayerPtr pp = *mit;
+      if(p != pp)
+      {
+        m_dataChanged = true;
+        break;
+      }
+    }
+  }
+
+  if(m_dataChanged)
+  {
+    setData(0);
+    setData(al);
+  }
+
+  draw();
+}
+
 void te::qt::widgets::DataFrame::draw()
 {
   if(m_dataChanged)
     m_mapDisplay->refresh();
+  else
+    m_mapDisplay->update();
 
   if(m_UTMGridFrame)
   {
@@ -731,7 +809,13 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
 
   if(obj == m_mapDisplay) 
   {
-    if(type == QEvent::Drop)
+    if(type == QEvent::DragEnter)
+    {
+      QDragEnterEvent* dragEnterEvent = (QDragEnterEvent*)e;
+      m_mapDisplay->dragEnterEvent(dragEnterEvent);
+      return true;
+    }
+    else if(type == QEvent::Drop)
     {
       QDropEvent* dropEvent = (QDropEvent*)e;
       const QMimeData* mime = dropEvent->mimeData();
@@ -741,14 +825,12 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
         removeUTMGrid();
         removeGeographicGrid();
         removeGraphicScale(); // and remove others..............................
-        m_mapDisplay->dropEvent(dropEvent);
-        te::gm::Envelope env = m_mapDisplay->getExtent();
-        int srid = m_mapDisplay->getSRID();
-        findDataUnitToMilimeter(env, srid);
-        m_dataRect = QRectF(env.getLowerLeftX(), env.getLowerLeftY(), env.getWidth(), env.getHeight());
-        double w = m_frameRect.width();
-        double ww = m_dataUnitToMilimeter * env.getWidth();
-        m_scale = ww / w;
+
+        unsigned long v = s.toULongLong();
+        std::vector<te::qt::widgets::AbstractTreeItem*>* draggedItems = reinterpret_cast<std::vector<AbstractTreeItem*>*>(v);
+        te::qt::widgets::AbstractTreeItem* item = draggedItems->operator[](0);
+        te::map::AbstractLayerPtr al = item->getLayer();
+        setData(al);
       }
       return true;
     }
@@ -854,7 +936,7 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
           setCursor();
         }
       }
-      return true;
+      return false;
     }
     else if(type == QEvent::MouseButtonRelease)
     {
@@ -899,7 +981,7 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
           showSelectionPoints();
         }
       }
-      return true;
+      return false;
     }
     else if(type == QEvent::Enter)
     {
@@ -909,7 +991,7 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
       m_layoutEditor->setFrameSelected(this);
       raise();
       m_selected = 10;
-      return true;
+      return false;
     }
     else if(type == QEvent::Leave)
     {
@@ -930,6 +1012,7 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
       setCursor();
       return false;
     }
+    return false;
   }
 
   // pass the event on to the parent class
@@ -1053,33 +1136,118 @@ void te::qt::widgets::DataFrame::removeGraphicScale()
 
 void te::qt::widgets::DataFrame::hide()
 {
-  QWidget::hide();
   if(m_UTMGridFrame)
     m_UTMGridFrame->hide();
   if(m_geoGridFrame)
     m_geoGridFrame->hide();
   if(m_graphicScaleFrame)
     m_graphicScaleFrame->hide();
+  if(m_mapDisplay)
+    m_mapDisplay->hide();
+  te::qt::widgets::Frame::hide();
 }
 
 void te::qt::widgets::DataFrame::show()
 {
-  QWidget::show();
-
   if(m_UTMGridFrame)
     m_UTMGridFrame->show();
   if(m_geoGridFrame)
     m_geoGridFrame->show();
   if(m_graphicScaleFrame)
     m_graphicScaleFrame->show();
+  if(m_mapDisplay)
+    m_mapDisplay->show();
+  te::qt::widgets::Frame::show();
 }
 
 void te::qt::widgets::DataFrame::lower()
 {
-  QWidget::show();
+  te::qt::widgets::Frame::lower();
+  if(m_mapDisplay)
+    m_mapDisplay->lower();
 
   if(m_UTMGridFrame)
     m_UTMGridFrame->lower();
   if(m_geoGridFrame)
     m_geoGridFrame->lower();
+}
+
+QPixmap* te::qt::widgets::DataFrame::getLastDisplayContent()
+{
+  return &m_lastDisplayContent;
+}
+
+void te::qt::widgets::DataFrame::onDrawLayersFinished(const QMap<QString, QString>& /*errors*/)
+{
+  // Stores the clean pixmap!
+  m_lastDisplayContent = QPixmap(*m_mapDisplay->getDisplayPixmap());
+
+  // TODO!!!
+  if(m_data)
+    drawLayerSelection(m_data);
+}
+
+void te::qt::widgets::DataFrame::drawLayerSelection(te::map::AbstractLayer* layer)
+{
+  assert(layer);
+
+  if(layer->getVisibility() != te::map::VISIBLE)
+    return;
+
+  const te::da::ObjectIdSet* oids = layer->getSelected();
+  if(oids == 0 || oids->size() == 0)
+  {
+    m_mapDisplay->repaint();
+    return;
+  }
+
+  bool needRemap = false;
+
+  if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_mapDisplay->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_mapDisplay->getSRID()))
+    needRemap = true;
+
+  // Try retrieves the layer selection
+  std::auto_ptr<te::da::DataSet> selected;
+  try
+  {
+    selected = layer->getData(oids);
+  }
+  catch(std::exception& e)
+  {
+    QMessageBox::critical(m_mapDisplay, tr("Error"), QString(tr("The layer selection cannot be drawn. Details:") + " %1.").arg(e.what()));
+    return;
+  }
+
+  std::size_t gpos = te::da::GetFirstPropertyPos(selected.get(), te::dt::GEOMETRY_TYPE);
+
+  QPixmap* content = m_mapDisplay->getDisplayPixmap();
+
+  const te::gm::Envelope& displayExtent = m_mapDisplay->getExtent();
+
+  te::qt::widgets::Canvas canvas(content);
+  canvas.setWindow(displayExtent.m_llx, displayExtent.m_lly, displayExtent.m_urx, displayExtent.m_ury);
+
+  te::gm::GeomType currentGeomType = te::gm::UnknownGeometryType;
+
+  while(selected->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> g(selected->getGeometry(gpos));
+
+    if(needRemap)
+    {
+      g->setSRID(layer->getSRID());
+      g->transform(m_mapDisplay->getSRID());
+    }
+
+    if(currentGeomType != g->getGeomTypeId())
+    {
+      currentGeomType = g->getGeomTypeId();
+      te::qt::widgets::Config2DrawLayerSelection(&canvas, QColor(255, 0, 0), currentGeomType);
+      //te::qt::widgets::Config2DrawLayerSelection(&canvas, ApplicationController::getInstance().getSelectionColor(), currentGeomType);
+    }
+
+    canvas.draw(g.get());
+  }
+
+  m_mapDisplay->repaint();
 }
