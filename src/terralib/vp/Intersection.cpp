@@ -55,8 +55,8 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include <iostream>
 #include <memory>
-
 
 te::da::DataSetType* te::vp::CreateDataSetType(std::string newName, 
                                                te::da::DataSetType* firstDt,
