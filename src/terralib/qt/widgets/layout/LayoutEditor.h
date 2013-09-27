@@ -95,7 +95,7 @@ namespace te
           void pan(const QPointF& p);
           void draw();
           void drawButtonClicked();
-          void layerSelectionChanged();
+          void drawLayersSelection(QColor selColor);
           void setDisplayBackgroundColor(QColor);
           void resetPaperView();
           QMatrix getMatrixPaperViewToVp();
