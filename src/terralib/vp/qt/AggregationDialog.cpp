@@ -32,6 +32,7 @@
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/utils/Utils.h"
+#include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
@@ -608,30 +609,18 @@ void te::vp::AggregationDialog::onTargetDatasourceToolButtonPressed()
 
 void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
 {
-  QString directoryName = QFileDialog::getExistingDirectory(this, tr("Open Feature File"), QString(""));  
-  if(directoryName.isEmpty())
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
+  
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                                        QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
+  
+  if (fileName.isEmpty())
     return;
   
-  m_ui->m_repositoryLineEdit->setText(directoryName);
-//
-//  QString fileName = QFileDialog::getSaveFileName(this, tr("Open Feature File"), QString(""), tr("Common Formats (*.shp *.SHP *.kml *.KML *.geojson *.GEOJSON *.gml *.GML);; Shapefile (*.shp *.SHP);; GML (*.gml *.GML);; Web Feature Service - WFS (*.xml *.XML *.wfs *.WFS);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
-//  
-//  if(fileName.isEmpty())
-//    return;
-  
-//  std::vector<te::da::DataSourceInfoPtr> datasources;
-//  te::da::DataSourceInfoManager::getInstance().getByType("OGR", datasources);
-//  m_outputDatasource = datasources[0];
-  
-  std::string outputLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
-  std::string fname = outputLayerName;
-  std::size_t found = outputLayerName.find('.');
-  
-  if (found != std::string::npos)
-    fname = outputLayerName.substr(0,found);
-  fname = fname + ".shp";
-  
-  m_ui->m_newLayerNameLineEdit->setText(fname.c_str());
+  boost::filesystem::path outfile(fileName.toStdString());
+  m_ui->m_newLayerNameLineEdit->setText(outfile.leaf().c_str());
+  m_ui->m_repositoryLineEdit->setText(outfile.c_str());
   
   m_toFile = true;
 }
@@ -683,11 +672,10 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     if (m_toFile)
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
-      uri /= outputLayerName;
       
       if (boost::filesystem::exists(uri))
       {
-        QMessageBox::information(this, "Aggregation", "File exists!");
+        QMessageBox::information(this, "Aggregation", "Output file already exists. Remove it and try again. ");
         return;
       }
       
@@ -695,7 +683,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
       ds->setAccessDriver("OGR");
       ds->setType("OGR");
-      ds->setDescription("A single shapefile");
+      ds->setDescription(uri.string());
       std::map<std::string, std::string> dsinfo;
       dsinfo["URI"] = uri.string();
       ds->setConnInfo(dsinfo);
@@ -705,8 +693,6 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
       boost::uuids::uuid u = gen();
       id = boost::uuids::to_string(u);
       ds->setId(id);
-    
-      te::da::DataSourceInfoManager::getInstance().add(ds);
       
       m_outputDatasource = ds;
     }
@@ -714,12 +700,9 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     m_layer = te::vp::Aggregation(m_selectedLayer, selProperties, outputStatisticalSummary, outputLayerName, m_outputDatasource);
     
     if (m_layer.get() == 0)
-    {
-      if (m_toFile)
-        te::da::DataSourceInfoManager::getInstance().remove(id);
-      
       reject();
-    }
+    else
+      te::da::DataSourceInfoManager::getInstance().add(m_outputDatasource);
   }
   catch(const std::exception& e)
   {
