@@ -34,8 +34,8 @@
 #include <terralib/srs/Config.h>
 #include <terralib/srs/Converter.h>
 #include <terralib/dataaccess/dataset/ObjectIdSet.h>
-#include <terralib/dataaccess/utils/utils.h>
-#include <terralib/qt/widgets/utils.h>
+#include <terralib/dataaccess/utils/Utils.h>
+#include <terralib/qt/widgets/Utils.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
 #include <terralib/qt/widgets/canvas/MultiThreadMapDisplay.h>
 #include <terralib/qt/widgets/layer/explorer/AbstractTreeItem.h>
