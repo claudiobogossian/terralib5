@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GDAL Connector</string>
+   <string>OGR Connector</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -206,6 +206,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>m_featureRepoLineEdit</tabstop>
   <tabstop>m_searchFeatureToolButton</tabstop>
@@ -238,11 +245,4 @@
    </hints>
   </connection>
  </connections>
- <CustomWidgets>
-	<CustomWidget>
-	 <class>te::qt::widgets::HelpPushButton</class> 
-	 <extends>QPushButton</extends> 
-	 <header>terralib/qt/widgets/help/HelpPushButton.h</header>
-	</CustomWidget>
- </CustomWidgets>
 </ui>
