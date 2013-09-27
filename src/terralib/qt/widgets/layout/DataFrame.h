@@ -108,7 +108,7 @@ namespace te
           //void createLegend();
           //void removeLegend();
 
-          void drawLayerSelection(te::map::AbstractLayer* layer);
+          void drawLayerSelection(QColor selColor);
 
         protected slots:
           void onDrawLayersFinished(const QMap<QString, QString>& errors);

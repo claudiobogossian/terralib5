@@ -1958,7 +1958,7 @@ void te::qt::widgets::LayoutEditor::lowerDraftLayoutEditor()
   m_draftLayoutEditor->lower();
 }
 
-void te::qt::widgets::LayoutEditor::layerSelectionChanged()
+void te::qt::widgets::LayoutEditor::drawLayersSelection(QColor selColor)
 {
   std::vector<te::qt::widgets::LayoutObject*>::iterator it;
   for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
@@ -1974,7 +1974,7 @@ void te::qt::widgets::LayoutEditor::layerSelectionChanged()
       painter.drawPixmap(0, 0, *pixmap);
       painter.end();
 
-      df->drawLayerSelection(df->getData());
+      df->drawLayerSelection(selColor);
     }
   }
 }
