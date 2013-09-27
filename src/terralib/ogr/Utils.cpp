@@ -458,8 +458,17 @@ std::string te::ogr::GetDriverName(const std::string& path)
   if(ext == ".shp" || ext == ".SHP")
     return std::string("ESRI Shapefile");
 
-  if(ext == ".mid" || ext == ".MID")
+  if(ext == ".mif" || ext == ".MIF")
     return std::string("Mapinfo File");
+  
+  if(ext == ".kml" || ext == ".KML")
+    return std::string("KML");
+  
+  if(ext == ".geojson" || ext == ".GEOJSON")
+    return std::string("GeoJSON");
+  
+  if(ext == ".gml" || ext == ".GML")
+    return std::string("GML");
 
   return "";
 }
