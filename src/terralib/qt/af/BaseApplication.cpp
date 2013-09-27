@@ -1085,6 +1085,37 @@ void te::qt::af::BaseApplication::onLayerFitSelectedOnMapDisplayTriggered()
   m_display->getDisplay()->setExtent(finalEnv, true);
 }
 
+void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
+{
+  std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getSelectedLayers();
+  if(layers.empty())
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+    return;
+  }
+
+  te::map::MapDisplay* display = m_display->getDisplay();
+
+  te::gm::Envelope selectedExtent = te::map::GetSelectedExtent(layers, display->getSRID(), true);
+
+  te::gm::Coord2D centerOfSelectedExtent = selectedExtent.getCenter();
+
+  te::gm::Envelope displayExtent = display->getExtent();
+
+  double halfWidth = displayExtent.getWidth() * 0.5;
+  double halfHeight = displayExtent.getHeight() * 0.5;
+
+  te::gm::Envelope newExtent;
+
+  newExtent.m_llx = centerOfSelectedExtent.x - halfWidth;
+  newExtent.m_lly = centerOfSelectedExtent.y - halfHeight;
+
+  newExtent.m_urx = centerOfSelectedExtent.x + halfWidth;
+  newExtent.m_ury = centerOfSelectedExtent.y + halfHeight;
+
+  display->setExtent(newExtent);
+}
+
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
 {
   if(!checked)
@@ -1449,6 +1480,7 @@ void te::qt::af::BaseApplication::makeDialog()
   treeView->add(m_layerChart, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerFitOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerFitSelectedOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
+  treeView->add(m_layerPanToSelectedOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
   treeView->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_viewStyleExplorer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);  
   treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
@@ -1629,6 +1661,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart"), tr(""), true, false, true, m_menubar);
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit On Map Display", tr("Fit on &Map Display"), tr("Fit the current layer on Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected On Map Display", tr("Fit Selected On Map Display"), tr("Fit the selected objects of layer on Map Display"), true, false, true, m_menubar);
+  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan To Selected On Map Display", tr("Pan To Selected On Map Display"), tr("Fit the selected objects of layer on Map Display"), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
@@ -1763,7 +1796,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerChart);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerFitOnMapDisplay);
-  m_layerMenu->addAction(m_layerFitSelectedOnMapDisplay);  
+  m_layerMenu->addAction(m_layerFitSelectedOnMapDisplay);
+  m_layerMenu->addAction(m_layerPanToSelectedOnMapDisplay);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerShowTable);
   m_layerMenu->addAction(m_viewStyleExplorer);
@@ -1971,6 +2005,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
   connect(m_layerFitOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitOnMapDisplayTriggered()));
   connect(m_layerFitSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitSelectedOnMapDisplayTriggered()));
+  connect(m_layerPanToSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerPanToSelectedOnMapDisplayTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
   connect(m_mapPreviousExtent, SIGNAL(triggered()), SLOT(onPreviousExtentTriggered()));
