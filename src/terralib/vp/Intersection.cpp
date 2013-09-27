@@ -416,9 +416,9 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
       outputDs->moveNext();
 
-      int i = te::da::GetFirstSpatialPropertyPos(outputDs);
+      int aux = te::da::GetFirstSpatialPropertyPos(outputDs);
 
-      if(!item->isNull(i))
+      if(!item->isNull(aux))
         outputDs->add(item);
     }
   }
