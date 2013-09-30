@@ -52,31 +52,31 @@ te::qt::plugins::layout::LayoutEditorAction::~LayoutEditorAction()
 
 void te::qt::plugins::layout::LayoutEditorAction::onActionActivated(bool checked)
 {
-  //if(m_layoutEditor == 0)
-  //{
-  //  // ache o parent...
-  //  QMenu* menu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
-  //  QMenuBar* menubar = (QMenuBar*)menu->parent();
-  //  QWidget* parent = (QWidget*)menubar->parent();
+  if(m_layoutEditor == 0)
+  {
+    // ache o parent...
+    QMenu* menu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
+    QMenuBar* menubar = (QMenuBar*)menu->parent();
+    QWidget* parent = (QWidget*)menubar->parent();
 
-  //  te::qt::widgets::LayoutEditor* layoutEditor = new te::qt::widgets::LayoutEditor(parent);
-  //  layoutEditor->show();
+    te::qt::widgets::LayoutEditor* layoutEditor = new te::qt::widgets::LayoutEditor(parent);
+    layoutEditor->show();
 
-  //  m_layoutEditor = new te::qt::af::LayoutEditor(layoutEditor);
-  //}
-  //m_layoutEditor->getLayoutEditor()->show();
-
-  if(m_layoutEditor)
-    delete m_layoutEditor;
-
-  // ache o parent...
-  QMenu* menu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
-  QMenuBar* menubar = (QMenuBar*)menu->parent();
-  QWidget* parent = (QWidget*)menubar->parent();
-
-  te::qt::widgets::LayoutEditor* layoutEditor = new te::qt::widgets::LayoutEditor(parent);
-  layoutEditor->show();
-
-  m_layoutEditor = new te::qt::af::LayoutEditor(layoutEditor);
+    m_layoutEditor = new te::qt::af::LayoutEditor(layoutEditor);
+  }
   m_layoutEditor->getLayoutEditor()->show();
+
+  //if(m_layoutEditor)
+  //  delete m_layoutEditor;
+
+  //// ache o parent...
+  //QMenu* menu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
+  //QMenuBar* menubar = (QMenuBar*)menu->parent();
+  //QWidget* parent = (QWidget*)menubar->parent();
+
+  //te::qt::widgets::LayoutEditor* layoutEditor = new te::qt::widgets::LayoutEditor(parent);
+  //layoutEditor->show();
+
+  //m_layoutEditor = new te::qt::af::LayoutEditor(layoutEditor);
+  //m_layoutEditor->getLayoutEditor()->show();
 }
