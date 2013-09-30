@@ -52,7 +52,7 @@ namespace te
         public:
           GridFrame(te::qt::widgets::DataFrame* df, Qt::WindowFlags f = Qt::Window);
           GridFrame(const GridFrame& rhs);
-          ~GridFrame();
+          virtual ~GridFrame();
 
           GridFrame& operator=(const GridFrame& rhs);
 

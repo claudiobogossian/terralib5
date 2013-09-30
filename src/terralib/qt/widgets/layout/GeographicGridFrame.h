@@ -52,7 +52,7 @@ namespace te
         public:
           GeographicGridFrame(te::qt::widgets::DataFrame* df, Qt::WindowFlags f = Qt::Widget);
           GeographicGridFrame(const GeographicGridFrame& rhs);
-          ~GeographicGridFrame();
+          virtual ~GeographicGridFrame();
 
           GeographicGridFrame& operator=(const GeographicGridFrame& rhs);
 
