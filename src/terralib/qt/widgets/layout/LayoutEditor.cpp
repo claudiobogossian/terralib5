@@ -125,14 +125,18 @@ te::qt::widgets::LayoutEditor::LayoutEditor(const QSize& paperSize, QWidget* par
 
 te::qt::widgets::LayoutEditor::~LayoutEditor()
 {
+  hide();
   delete m_draftLayoutEditor;
   delete m_editorState;
 
   std::vector<te::qt::widgets::LayoutObject*>::iterator it;
   for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
     delete *it;
+  m_layoutObjects.clear();
+
   for(it = m_undoLayoutObjects.begin(); it != m_undoLayoutObjects.end(); ++it)
     delete *it;
+  m_undoLayoutObjects.clear();
 }
 
 void te::qt::widgets::LayoutEditor::resetPaperView()

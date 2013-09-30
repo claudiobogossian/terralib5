@@ -47,6 +47,7 @@ te::qt::widgets::EditorInfo::EditorInfo(const EditorInfo& rhs) :
 
 te::qt::widgets::EditorInfo::~EditorInfo()
 {
+  hide();
 }
 
 

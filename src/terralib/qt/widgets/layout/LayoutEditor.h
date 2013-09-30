@@ -67,7 +67,7 @@ namespace te
         public:
           LayoutEditor(QWidget* parent = 0, Qt::WindowFlags f = Qt::Window );
           LayoutEditor(const QSize& paperSize, QWidget* parent = 0, Qt::WindowFlags f = Qt::Window );
-          ~LayoutEditor();
+          virtual ~LayoutEditor();
 
           void createWorkingArea(bool undo = true);
           void insertRulers();

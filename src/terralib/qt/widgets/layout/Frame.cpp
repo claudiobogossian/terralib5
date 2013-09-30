@@ -63,6 +63,7 @@ te::qt::widgets::Frame::Frame(const Frame& rhs) :
 
 te::qt::widgets::Frame::~Frame()
 {
+  hide();
 }
 
 

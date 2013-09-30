@@ -51,6 +51,7 @@ te::qt::widgets::UTMGridFrame::UTMGridFrame(const UTMGridFrame& rhs) :
 
 te::qt::widgets::UTMGridFrame::~UTMGridFrame()
 {
+  hide();
 }
 
 te::qt::widgets::UTMGridFrame& te::qt::widgets::UTMGridFrame::operator=(const UTMGridFrame& rhs)
