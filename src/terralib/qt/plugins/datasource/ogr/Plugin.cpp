@@ -60,6 +60,8 @@ std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPt
   std::list<te::da::DataSetTypePtr> res;
 
   te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(info->getId(), info->getType(), info->getConnInfo());
+  if (!ds->isOpened())
+    ds->open();
 
   std::vector<std::string> dsets = ds->getDataSetNames();
 
@@ -84,21 +86,19 @@ QString GetFileExtensionName(const std::string& type)
   if(type.compare("ESRI Shapefile") == 0)
     return QObject::tr("ESRI Shapefile (*.shp *.SHP)");
   else if(type.compare("MapInfo File") == 0)
-    return QObject::tr("MapInfo File (*.mid *.MID)");
+    return QObject::tr("MapInfo File (*.mif *.MIF)");
   else if(type.compare("DGN") == 0)
     return QObject::tr("DGN File (*.dgn *.DGN)");
-  else if(type.compare("CSV") == 0)
-    return QObject::tr("CSV File (*.csv *.CSV)");
+//  else if(type.compare("CSV") == 0)
+//    return QObject::tr("CSV File (*.csv *.CSV)");
   else if(type.compare("GML") == 0)
     return QObject::tr("GML File (*.gml *.GML)");
   else if(type.compare("KML") == 0)
     return QObject::tr("KML File (*.kml *.KML)");
   else if(type.compare("GeoJSON") == 0)
-    return QObject::tr("GeoJSON File (*.json *.JSON)");
+    return QObject::tr("GeoJSON File (*.geojson *.GEOJSON)");
   else if(type.compare("DXF") == 0)
     return QObject::tr("DXF File (*.dxf *.DXF)");
-  else if(type.compare("PDF") == 0)
-    return QObject::tr("PDF File (*.pdf *.PDF)");
 
   return "";
 }
@@ -215,7 +215,7 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 
     boost::filesystem::path mpath(dsinfo["URI"]);
 
-    std::string fileBaseName = mpath.stem().string();
+    std::string fileBaseName = mpath.leaf().string();
 
     ds->setTitle(fileBaseName);
 
