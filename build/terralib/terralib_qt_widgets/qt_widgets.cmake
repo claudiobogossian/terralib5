@@ -440,6 +440,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/temporal" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/tools/CoordTracking.h
+  ${SRCDIR}/widgets/tools/Info.h
   ${SRCDIR}/widgets/tools/Measure.h
   ${SRCDIR}/widgets/tools/PanExtent.h
   ${SRCDIR}/widgets/tools/PointPicker.h

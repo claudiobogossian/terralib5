@@ -49,7 +49,7 @@ namespace te
       {
         public:
           DraftLayoutEditor(QWidget* parent = 0, Qt::WindowFlags f = Qt::Widget);
-          ~DraftLayoutEditor();
+          virtual ~DraftLayoutEditor();
 
           QPixmap* getDraftPixmap();
           void resizeEvent(QResizeEvent*);

@@ -50,6 +50,7 @@ te::qt::widgets::GeographicGridFrame::GeographicGridFrame(const GeographicGridFr
 
 te::qt::widgets::GeographicGridFrame::~GeographicGridFrame()
 {
+  hide();
 }
 
 te::qt::widgets::GeographicGridFrame& te::qt::widgets::GeographicGridFrame::operator=(const GeographicGridFrame& rhs)
