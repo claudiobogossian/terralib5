@@ -62,7 +62,7 @@ namespace te
           DataFrame(const QRectF& frameRect, te::qt::widgets::LayoutEditor* me, Qt::WindowFlags f = Qt::Window);
           DataFrame(const DataFrame& rhs);
 
-          ~DataFrame();
+          virtual ~DataFrame();
           DataFrame& operator=(const DataFrame& rhs);
 
           te::qt::widgets::MultiThreadMapDisplay* getMapDisplay();

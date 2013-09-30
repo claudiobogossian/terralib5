@@ -1177,8 +1177,10 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
   QPixmap pxmap = QIcon::fromTheme("pointer-info").pixmap(m_mapCursorSize);
   QCursor infoCursor(pxmap, 5, 5);
 
-  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_explorer->getExplorer()->getAllLayers());
+  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_explorer->getExplorer()->getSelectedLayers());
   m_display->setCurrentTool(info);
+
+  connect(m_explorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), info, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
 }
 
 void te::qt::af::BaseApplication::onMapRemoveSelectionTriggered()

@@ -132,6 +132,11 @@ bool te::qt::widgets::Info::mouseReleaseEvent(QMouseEvent* e)
   return true;
 }
 
+void te::qt::widgets::Info::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  m_layers = layers;
+}
+
 void te::qt::widgets::Info::getInfo(const te::map::AbstractLayerPtr& layer, const te::gm::Envelope& e)
 {
   if(layer->getVisibility() != te::map::VISIBLE)

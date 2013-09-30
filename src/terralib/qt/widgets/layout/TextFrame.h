@@ -60,7 +60,7 @@ namespace te
 
           TextFrame(const TextFrame& rhs);
 
-          ~TextFrame();
+          virtual ~TextFrame();
 
           TextFrame& operator=(const TextFrame& rhs);
 

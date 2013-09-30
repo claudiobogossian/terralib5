@@ -62,11 +62,21 @@ void te::qt::plugins::layout::LayoutEditorAction::onActionActivated(bool checked
     te::qt::widgets::LayoutEditor* layoutEditor = new te::qt::widgets::LayoutEditor(parent);
     layoutEditor->show();
 
-    //Qt::WindowFlags flags = 	layoutEditor->windowFlags();
-    //layoutEditor->setParent(parent, flags);
-
     m_layoutEditor = new te::qt::af::LayoutEditor(layoutEditor);
   }
   m_layoutEditor->getLayoutEditor()->show();
-    
+
+  //if(m_layoutEditor)
+  //  delete m_layoutEditor;
+
+  //// ache o parent...
+  //QMenu* menu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
+  //QMenuBar* menubar = (QMenuBar*)menu->parent();
+  //QWidget* parent = (QWidget*)menubar->parent();
+
+  //te::qt::widgets::LayoutEditor* layoutEditor = new te::qt::widgets::LayoutEditor(parent);
+  //layoutEditor->show();
+
+  //m_layoutEditor = new te::qt::af::LayoutEditor(layoutEditor);
+  //m_layoutEditor->getLayoutEditor()->show();
 }

@@ -70,6 +70,8 @@ namespace te
       */
       class TEQTWIDGETSEXPORT Info : public AbstractTool
       {
+        Q_OBJECT
+
         public:
 
           /** @name Initializer Methods
@@ -102,6 +104,10 @@ namespace te
           bool mouseReleaseEvent(QMouseEvent* e);
 
           //@}
+
+        public slots:
+
+          void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
 
         private:
 
