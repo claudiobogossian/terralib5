@@ -243,6 +243,7 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
 
 te::qt::widgets::DataFrame::~DataFrame()
 {
+  hide();
   delete m_mapDisplay;
   delete m_UTMGridFrame;
   delete m_geoGridFrame;

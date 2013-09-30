@@ -41,6 +41,7 @@ te::qt::widgets::DraftLayoutEditor::DraftLayoutEditor(QWidget* parent, Qt::Windo
 
 te::qt::widgets::DraftLayoutEditor::~DraftLayoutEditor()
 {
+  hide();
 }
 
 QPixmap* te::qt::widgets::DraftLayoutEditor::getDraftPixmap()

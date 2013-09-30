@@ -59,7 +59,7 @@
 #define EXTENT_STACK_SIZE 5
 
 te::qt::af::LayoutEditor::LayoutEditor(te::qt::widgets::LayoutEditor* le)
-  : QObject((QObject*)le),
+  : QObject(),
     m_layoutEditor(le),
     m_tool(0)
 {

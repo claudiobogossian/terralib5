@@ -77,7 +77,7 @@ namespace te
           LayoutEditor(te::qt::widgets::LayoutEditor* le);
 
           /*! \brief destructor. */
-          ~LayoutEditor();
+          virtual ~LayoutEditor();
 
           te::qt::widgets::LayoutEditor* getLayoutEditor();
 

@@ -85,6 +85,7 @@ te::qt::widgets::GridFrame::GridFrame(const GridFrame& rhs) :
 
 te::qt::widgets::GridFrame::~GridFrame()
 {
+  hide();
 }
 
 te::qt::widgets::GridFrame& te::qt::widgets::GridFrame::operator=(const GridFrame& rhs)

@@ -61,7 +61,7 @@ namespace te
 
           GraphicScaleFrame(const GraphicScaleFrame& rhs);
 
-          ~GraphicScaleFrame();
+          virtual ~GraphicScaleFrame();
 
           GraphicScaleFrame& operator=(const GraphicScaleFrame& rhs);
 

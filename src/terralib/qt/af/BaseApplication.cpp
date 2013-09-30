@@ -317,6 +317,10 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
       newProject();
     }
   }
+
+  // The selection tool come active as default
+  onSelectionToggled(true);
+  m_mapSelection->setChecked(true);
 }
 
 void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event* evt)
