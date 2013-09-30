@@ -39,32 +39,55 @@
 
 te::plugin::DefaultFinder::DefaultFinder()
 {
+  getDefaultDirs( m_pluginsDir );
 }
 
 te::plugin::DefaultFinder::~DefaultFinder()
 {
 }
 
-std::string te::plugin::DefaultFinder::getDefaultDir() const
+void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs ) const
 {
-// let's check if there is a directory called TE_DEFAULT_PLUGINS_DIR in the current application dir
-  if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
-    return boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string();
+  dirs.clear();
+  
+  // The first default directory 
+  
+  dirs.push_back( boost::filesystem::system_complete( "." ).string() );    
+  
+  // let's check if there is a directory called TE_DEFAULT_PLUGINS_DIR in the current application dir
+  
+  #ifdef TE_DEFAULT_PLUGINS_DIR
+    if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
+    {
+      dirs.push_back( boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string() );
+    }
 
-// if the default dir is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
-  char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
+  // if the default dir is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
 
-  if(e != 0)
-  {
-    boost::filesystem::path p(e);
-    p /= TE_DEFAULT_PLUGINS_DIR;
+    #ifdef TE_DIR_ENVIRONMENT_VARIABLE
+      {
+        char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
 
-    if(boost::filesystem::is_directory(p))
-      return boost::filesystem::system_complete(p).string();
-  }
+        if(e != 0)
+        {
+          boost::filesystem::path p(e);
+          p /= TE_DEFAULT_PLUGINS_DIR;
 
-// Humm: default plugin dir not found!
-  return "";
+          if(boost::filesystem::is_directory(p))
+            dirs.push_back( boost::filesystem::system_complete(p).string() );
+        }
+      }
+    #endif
+  #endif
+  
+  #ifdef TE_PLUGINS_INSTALL_PATH
+    {
+      boost::filesystem::path p(TE_PLUGINS_INSTALL_PATH);
+
+      if(boost::filesystem::is_directory(p))
+        dirs.push_back( boost::filesystem::system_complete(p).string() );
+    }
+  #endif   
 }
 
 void te::plugin::DefaultFinder::addPluginsDir(const std::string& path)
@@ -91,18 +114,6 @@ void te::plugin::DefaultFinder::getPlugins(boost::ptr_vector<PluginInfo>& plugin
 {
 // is there a base dir for looking for plugins?
   std::size_t ndirs = m_pluginsDir.size();
-
-  if(ndirs == 0)
-  {
-    std::string basedir = getDefaultDir();
-
-    if(basedir.empty())
-      return;
-
-    m_pluginsDir.push_back(basedir);
-
-    ndirs = 1;
-  }
 
 // let's look in each plugins base dir
   for(std::size_t i = 0; i < ndirs; ++i)

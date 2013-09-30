@@ -24,6 +24,8 @@
 */
 
 // TerraLib
+#include "../../../dataaccess/dataset/DataSetAdapter.h"
+#include "../../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
@@ -155,13 +157,39 @@ void te::qt::widgets::SHP2PostGISDialog::onOkPushButtonClicked()
   try
   {
     //create adapter
+    std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
+    
+    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
+
+    if(dsType->size() == 0)
+      te::da::LoadProperties(dsType.get(), dsLayer->getDataSourceId());
+
+    te::da::DataSourcePtr targetDSPtr = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo()); 
+
+    te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), targetDSPtr->getCapabilities());
+
+    te::da::DataSetType* dsTypeResult = converter->getResult();
+    
+    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toStdString());
 
     //exchange
+    std::map<std::string,std::string> nopt;
+
+    std::auto_ptr<te::da::DataSet> dataset = layer->getData();
+
+    targetDSPtr->createDataSet(dsTypeResult, nopt);
+
+    std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(dataset.get(), converter));
+
+     if(dataset->moveBeforeFirst())
+       targetDSPtr->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());
 
     //create index
     if(m_ui->m_spatialIndexCheckBox->isChecked())
     {
     }
+
+    QMessageBox::information(this, tr("Exchanger"), tr("Layer exported successfully."));
   }
   catch(const std::exception& e)
   {
@@ -169,7 +197,7 @@ void te::qt::widgets::SHP2PostGISDialog::onOkPushButtonClicked()
 
     errMsg = errMsg.arg(e.what());
 
-    QMessageBox::information(this, "Exchanger", errMsg);
+    QMessageBox::information(this, tr("Exchanger"), errMsg);
   }
 
   accept();

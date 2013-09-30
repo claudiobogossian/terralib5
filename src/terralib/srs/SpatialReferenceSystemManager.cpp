@@ -79,7 +79,7 @@ void te::srs::SpatialReferenceSystemManager::init()
     std::ifstream f;
 
     std::string jsonf(te_env);
-    jsonf += "resources/json/srs.json";
+    jsonf += "/resources/json/srs.json";
     
     f.open(jsonf.c_str());
     if (!f.is_open())
