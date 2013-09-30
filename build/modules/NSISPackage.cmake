@@ -10,10 +10,10 @@ set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.dpi.inpe.br")
 set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.funcate.org.br")
 
 # Creating TERRALIB_DIR enviroment variable.
-list (APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "  SetRebootFlag true \\n  WriteRegStr HKCU 'Environment' 'TERRALIB_DIR' '$INSTDIR' ")
+list (APPEND CPACK_NSIS_EXTRA_INSTALL_COMMANDS "  WriteRegStr HKCU 'Environment' 'TERRALIB_DIR' '$INSTDIR'  \\n  SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000")
 
 # Removing TERRALIB_DIR from enviroment variables.
-set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS " DeleteRegValue HKCU 'Environment' 'TERRALIB_DIR' ")
+set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS " DeleteRegValue HKCU 'Environment' 'TERRALIB_DIR' \\n  SendMessage \\\${HWND_BROADCAST} \\\${WM_WININICHANGE} 0 \\\"STR:Environment\\\" /TIMEOUT=5000")
 
 list (APPEND CPACK_NSIS_CREATE_ICONS_EXTRA ${CPACK_NSIS_CREATE_ICONS_EXTRA}
 "\nSetOutPath \\\"$INSTDIR\\\\bin\\\""
