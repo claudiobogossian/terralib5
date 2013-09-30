@@ -81,6 +81,10 @@ void te::ogr::Transactor::begin()
 
 void te::ogr::Transactor::commit()
 {
+  if (!m_ogrDs->getOGRDataSource())
+    return;
+  
+  m_ogrDs->getOGRDataSource()->SyncToDisk();
 }
 
 void te::ogr::Transactor::rollBack()
@@ -996,7 +1000,7 @@ void te::ogr::Transactor::add(const std::string& datasetName,
       }
 
       OGRFeature::DestroyFeature(feat);
-
+      nProcessedRows++;
     }
 
     commit();
