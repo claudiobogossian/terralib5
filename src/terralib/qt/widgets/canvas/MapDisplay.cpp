@@ -117,9 +117,12 @@ void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al)
   std::list<te::map::AbstractLayerPtr>::iterator vit;
   for(vit = vis.begin(); vit != vis.end(); ++vit)
   {
-    if((*vit)->getType() == "FOLDERLAYER")
-      continue;
-    visibleLayers.push_front(*vit);
+    if((*vit)->getType() == "DATASETLAYER" || 
+      (*vit)->getType() == "QUERYLAYER" ||
+      (*vit)->getType() == "RASTERLAYER")
+    {
+      visibleLayers.push_front(*vit);
+    }
   }
 
   setLayerList(visibleLayers);

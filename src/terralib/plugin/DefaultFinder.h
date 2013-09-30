@@ -56,18 +56,19 @@ namespace te
         ~DefaultFinder();
 
         /*!
-          \brief It returns the default plugins directory.
+          \brief It returns the default plugins directories.
 
           This method will search for a special directory called plugins (defined in the macro TE_DEFAULT_PLUGINS_DIR) in the following order:
           <ul>
           <li>first, in a default plugins dir (TE_DEFAULT_PLUGINS_DIR) under application current dir</li>
           <li>then in the default plugins dir under an environment variable that specifies the path to the TerraLib dir (TERRALIB_DIR_ENVIRONMENT_VARIABLE)</li>
+          <li> then they will be searched under the directory defined by TE_PLUGINS_INSTALL_PATH
           <li>if not found returns an empty string</li>
           </ul>
 
-          \return The default plugin directory (the absolute path) or an empty string if none is found.
+          \param dirs The default plugin directories (the absolute path) or an empty string if none is found.
         */
-        std::string getDefaultDir() const;
+        void getDefaultDirs( std::vector< std::string >& dirs ) const;
 
         /*!
           \brief It adds a new base location where the finder will search for installed plugins.

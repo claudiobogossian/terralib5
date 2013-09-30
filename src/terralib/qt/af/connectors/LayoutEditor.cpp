@@ -104,26 +104,8 @@ void te::qt::af::LayoutEditor::onApplicationTriggered(te::qt::af::evt::Event* e)
       //painter.drawPixmap(0, 0, m_lastDisplayContent);
       //painter.end();
 
-      //drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
-
-      //std::vector<te::qt::widgets::LayoutObject*>::iterator it;
-      //for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
-      //{
-      //  if((*it)->windowTitle() == "DataFrame")
-      //  {
-      //    te::qt::widgets::DataFrame* df = (te::qt::widgets::DataFrame*)(*it);
-      //    Qpixmap* pixmap = df->getLastDisplayContent();
-      //    te::qt::widgets::MultiThreadMapDisplay* display = df->getMapDisplay();
-      //    QPixmap* content = display->getDisplayPixmap();
-      //    content->fill(Qt::transparent);
-
-      //    QPainter painter(content);
-      //    painter.drawPixmap(0, 0, *pixmap);
-      //    painter.end();
-
-      //    df->drawLayerSelection(layerSelectionChanged->m_layer);
-      //  }
-      //}
+      QColor selColor = ApplicationController::getInstance().getSelectionColor();
+      m_layoutEditor->drawLayersSelection(selColor);
     }
     break;
 

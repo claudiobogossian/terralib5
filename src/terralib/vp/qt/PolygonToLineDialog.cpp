@@ -41,7 +41,7 @@
 
 // Qt
 #include <QtCore/QList>
-#include <QtCore/QSize.h>
+#include <QtCore/QSize>
 #include <QtGui/QFileDialog>
 #include <QtGui/QListWidget>
 #include <QtGui/QListWidgetItem>

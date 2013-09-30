@@ -346,13 +346,13 @@ te::gm::GeomType te::ogr::Convert2TerraLib(OGRwkbGeometryType ogrGeomType)
   switch(ogrGeomType)
   {
     case wkbPoint:
-      return te::gm::PointType;
+      return te::gm::MultiPointType;
 
     case wkbLineString:
-      return te::gm::LineStringType;
+      return te::gm::MultiLineStringType;
 
     case wkbPolygon:
-      return te::gm::PolygonType;
+      return te::gm::MultiPolygonType;
 
     case wkbMultiPoint:
       return te::gm::MultiPointType;
@@ -458,8 +458,17 @@ std::string te::ogr::GetDriverName(const std::string& path)
   if(ext == ".shp" || ext == ".SHP")
     return std::string("ESRI Shapefile");
 
-  if(ext == ".mid" || ext == ".MID")
+  if(ext == ".mif" || ext == ".MIF")
     return std::string("Mapinfo File");
+  
+  if(ext == ".kml" || ext == ".KML")
+    return std::string("KML");
+  
+  if(ext == ".geojson" || ext == ".GEOJSON")
+    return std::string("GeoJSON");
+  
+  if(ext == ".gml" || ext == ".GML")
+    return std::string("GML");
 
   return "";
 }

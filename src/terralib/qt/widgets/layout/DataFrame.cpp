@@ -34,8 +34,8 @@
 #include <terralib/srs/Config.h>
 #include <terralib/srs/Converter.h>
 #include <terralib/dataaccess/dataset/ObjectIdSet.h>
-#include <terralib/dataaccess/utils/utils.h>
-#include <terralib/qt/widgets/utils.h>
+#include <terralib/dataaccess/utils/Utils.h>
+#include <terralib/qt/widgets/Utils.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
 #include <terralib/qt/widgets/canvas/MultiThreadMapDisplay.h>
 #include <terralib/qt/widgets/layer/explorer/AbstractTreeItem.h>
@@ -372,7 +372,9 @@ void te::qt::widgets::DataFrame::getLayerList(te::map::AbstractLayerPtr al, std:
 {
   try
   {
-    if(al->getType() != "FOLDERLAYER")
+    if(al->getType() == "DATASETLAYER" || 
+      al->getType() == "QUERYLAYER" ||
+      al->getType() == "RASTERLAYER")
     {
       if(al->getVisibility() == te::map::VISIBLE)
         layerList.push_back(al);
@@ -405,6 +407,9 @@ void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al)
   m_mapDisplay->changeData(al);
   m_visibleLayers.clear();
   getLayerList(al, m_visibleLayers);
+  if(m_visibleLayers.size() == 0)
+    return;
+
   //m_mapDisplay->setLayerList(m_visibleLayers);
   m_mapDisplay->refresh();
 
@@ -583,7 +588,16 @@ void te::qt::widgets::DataFrame::drawButtonClicked()
   std::list<te::map::AbstractLayerPtr> visibleLayers;
   te::map::AbstractLayerPtr al(m_data);
   getLayerList(al, visibleLayers);
-  //te::map::GetVisibleLayers(al, visibleLayers);
+  if(m_visibleLayers.size())
+  {
+    if(visibleLayers.size() == 0)
+      return;
+    else
+    {
+      setData(m_data);
+      return;
+    }
+  }
 
   if(visibleLayers.size() != m_visibleLayers.size())
     m_dataChanged = true;
@@ -1184,70 +1198,80 @@ void te::qt::widgets::DataFrame::onDrawLayersFinished(const QMap<QString, QStrin
 
   // TODO!!!
   if(m_data)
-    drawLayerSelection(m_data);
+    drawLayerSelection(Qt::red); // teste........
 }
 
-void te::qt::widgets::DataFrame::drawLayerSelection(te::map::AbstractLayer* layer)
+void te::qt::widgets::DataFrame::drawLayerSelection(QColor selColor)
 {
-  assert(layer);
+  assert(m_data);
 
-  if(layer->getVisibility() != te::map::VISIBLE)
-    return;
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  std::list<te::map::AbstractLayerPtr> layers;
+  te::map::AbstractLayerPtr al(m_data);
+  getLayerList(al, layers);
 
-  const te::da::ObjectIdSet* oids = layer->getSelected();
-  if(oids == 0 || oids->size() == 0)
+  for(it = layers.begin(); it != layers.end(); ++it)
   {
-    m_mapDisplay->repaint();
-    return;
-  }
-
-  bool needRemap = false;
-
-  if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_mapDisplay->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_mapDisplay->getSRID()))
-    needRemap = true;
-
-  // Try retrieves the layer selection
-  std::auto_ptr<te::da::DataSet> selected;
-  try
-  {
-    selected = layer->getData(oids);
-  }
-  catch(std::exception& e)
-  {
-    QMessageBox::critical(m_mapDisplay, tr("Error"), QString(tr("The layer selection cannot be drawn. Details:") + " %1.").arg(e.what()));
-    return;
-  }
-
-  std::size_t gpos = te::da::GetFirstPropertyPos(selected.get(), te::dt::GEOMETRY_TYPE);
-
-  QPixmap* content = m_mapDisplay->getDisplayPixmap();
-
-  const te::gm::Envelope& displayExtent = m_mapDisplay->getExtent();
-
-  te::qt::widgets::Canvas canvas(content);
-  canvas.setWindow(displayExtent.m_llx, displayExtent.m_lly, displayExtent.m_urx, displayExtent.m_ury);
-
-  te::gm::GeomType currentGeomType = te::gm::UnknownGeometryType;
-
-  while(selected->moveNext())
-  {
-    std::auto_ptr<te::gm::Geometry> g(selected->getGeometry(gpos));
-
-    if(needRemap)
+    te::map::AbstractLayer* layer = (*it).get();
     {
-      g->setSRID(layer->getSRID());
-      g->transform(m_mapDisplay->getSRID());
-    }
+      if(layer->getVisibility() != te::map::VISIBLE)
+        continue;
 
-    if(currentGeomType != g->getGeomTypeId())
-    {
-      currentGeomType = g->getGeomTypeId();
-      te::qt::widgets::Config2DrawLayerSelection(&canvas, QColor(255, 0, 0), currentGeomType);
-      //te::qt::widgets::Config2DrawLayerSelection(&canvas, ApplicationController::getInstance().getSelectionColor(), currentGeomType);
-    }
+      const te::da::ObjectIdSet* oids = layer->getSelected();
+      if(oids == 0 || oids->size() == 0)
+      {
+        m_mapDisplay->repaint();
+        return;
+      }
 
-    canvas.draw(g.get());
+      bool needRemap = false;
+
+      if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_mapDisplay->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_mapDisplay->getSRID()))
+        needRemap = true;
+
+      // Try retrieves the layer selection
+      std::auto_ptr<te::da::DataSet> selected;
+      try
+      {
+        selected = layer->getData(oids);
+      }
+      catch(std::exception& e)
+      {
+        QMessageBox::critical(m_mapDisplay, tr("Error"), QString(tr("The layer selection cannot be drawn. Details:") + " %1.").arg(e.what()));
+        return;
+      }
+
+      std::size_t gpos = te::da::GetFirstPropertyPos(selected.get(), te::dt::GEOMETRY_TYPE);
+
+      QPixmap* content = m_mapDisplay->getDisplayPixmap();
+
+      const te::gm::Envelope& displayExtent = m_mapDisplay->getExtent();
+
+      te::qt::widgets::Canvas canvas(content);
+      canvas.setWindow(displayExtent.m_llx, displayExtent.m_lly, displayExtent.m_urx, displayExtent.m_ury);
+
+      te::gm::GeomType currentGeomType = te::gm::UnknownGeometryType;
+
+      while(selected->moveNext())
+      {
+        std::auto_ptr<te::gm::Geometry> g(selected->getGeometry(gpos));
+
+        if(needRemap)
+        {
+          g->setSRID(layer->getSRID());
+          g->transform(m_mapDisplay->getSRID());
+        }
+
+        if(currentGeomType != g->getGeomTypeId())
+        {
+          currentGeomType = g->getGeomTypeId();
+          te::qt::widgets::Config2DrawLayerSelection(&canvas, selColor, currentGeomType);
+          //te::qt::widgets::Config2DrawLayerSelection(&canvas, ApplicationController::getInstance().getSelectionColor(), currentGeomType);
+        }
+
+        canvas.draw(g.get());
+      }
+    }
   }
-
   m_mapDisplay->repaint();
 }
