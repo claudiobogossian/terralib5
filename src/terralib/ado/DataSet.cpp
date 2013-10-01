@@ -380,7 +380,20 @@ std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(std::size_t i) c
 
   try
   {
-    ::Field15Ptr field = m_result->GetFields()->GetItem(vtIndex);
+    ::Field15Ptr field;
+
+    if(m_result->MoveNext() == S_OK)
+      m_result->MovePrevious();
+    else if(m_result->MovePrevious() == S_OK)
+      m_result->MoveNext();
+    else
+    {
+      _RecordsetPtr copy = m_result->Clone(LockTypeEnum::adLockReadOnly);
+
+      field = copy->GetFields()->GetItem(vtIndex);
+    }
+
+    field = m_result->GetFields()->GetItem(vtIndex);
 
     size = field->ActualSize;
     if(size > 0)

@@ -129,8 +129,10 @@ namespace te
 
           void onLayerFitSelectedOnMapDisplayTriggered();
 
+          void onLayerPanToSelectedOnMapDisplayTriggered();
+
           void onMapSRIDTriggered();
-        
+
           void onMapSetUnknwonSRIDTriggered();
 
           void onDrawTriggered();
@@ -254,6 +256,7 @@ namespace te
           QAction* m_layerGrouping;
           QAction* m_layerFitOnMapDisplay;
           QAction* m_layerFitSelectedOnMapDisplay;
+          QAction* m_layerPanToSelectedOnMapDisplay;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
@@ -279,7 +282,7 @@ namespace te
           QAction* m_mapMeasureDistance;
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
-          QAction* m_mapStopDraw;
+          QAction* m_mapStopDrawing;
           QSize m_mapCursorSize;
 
           QWidget* m_centralwidget;

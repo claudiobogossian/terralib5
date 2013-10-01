@@ -52,7 +52,7 @@ namespace te
         public:
           UTMGridFrame(te::qt::widgets::DataFrame* df, Qt::WindowFlags f = Qt::Widget);
           UTMGridFrame(const UTMGridFrame& rhs);
-          ~UTMGridFrame();
+          virtual ~UTMGridFrame();
 
           UTMGridFrame& operator=(const UTMGridFrame& rhs);
 

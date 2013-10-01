@@ -43,6 +43,7 @@ te::qt::widgets::LayoutObject::LayoutObject(const LayoutObject& rhs) :
 
 te::qt::widgets::LayoutObject::~LayoutObject()
 {
+  hide();
 }
 
 te::qt::widgets::LayoutObject& te::qt::widgets::LayoutObject::operator=(const LayoutObject& rhs)

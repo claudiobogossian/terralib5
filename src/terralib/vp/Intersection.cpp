@@ -55,8 +55,8 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include <iostream>
 #include <memory>
-
 
 te::da::DataSetType* te::vp::CreateDataSetType(std::string newName, 
                                                te::da::DataSetType* firstDt,
@@ -416,9 +416,9 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
 
       outputDs->moveNext();
 
-      int i = te::da::GetFirstSpatialPropertyPos(outputDs);
+      int aux = te::da::GetFirstSpatialPropertyPos(outputDs);
 
-      if(!item->isNull(i))
+      if(!item->isNull(aux))
         outputDs->add(item);
     }
   }
