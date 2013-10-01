@@ -58,7 +58,7 @@ te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, 
   {
     for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
     {
-      if(dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE & dataSet->getPropertyDataType(i) != te::dt::STRING_TYPE)
+      if((dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE) & (dataSet->getPropertyDataType(i) != te::dt::STRING_TYPE))
       {
         item = QString::fromStdString(dataSet->getPropertyName(i));
         m_ui->m_propertyXComboBox->addItem(item);

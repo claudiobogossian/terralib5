@@ -74,9 +74,7 @@ void te::qt::widgets::ChartConfigurer::config(const te::se::Symbolizer* symboliz
 
 void te::qt::widgets::ChartConfigurer::config(te::map::AbstractLayer* layer)
 {
-  te::se::Style* testStyle = layer->getStyle();
-  te::se::Rule* testRule = testStyle->getRule(0);
-  config(testRule->getSymbolizer(0));
+  config(layer->getStyle()->getRule(0)->getSymbolizer(0));
 }
 
 void te::qt::widgets::ChartConfigurer::visit(const te::se::Style& visited)
@@ -126,12 +124,10 @@ void te::qt::widgets::ChartConfigurer::visit(const te::se::PointSymbolizer& visi
 
 void te::qt::widgets::ChartConfigurer::visit(const te::se::TextSymbolizer& visited)
 {
-// no need
 }
 
 void te::qt::widgets::ChartConfigurer::visit(const te::se::RasterSymbolizer& visited)
 {
-// no need
 }
 
 void te::qt::widgets::ChartConfigurer::config(const te::se::Stroke* stroke)
@@ -141,7 +137,7 @@ void te::qt::widgets::ChartConfigurer::config(const te::se::Stroke* stroke)
   switch(chartType)
   {
     case(te::qt::widgets::SCATTER_CHART):
-      //static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->getScatterStyle();
+      static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->getScatterStyle()->setStroke(stroke->clone());
       break;
     case(te::qt::widgets::HISTOGRAM_CHART):
       static_cast<te::qt::widgets::HistogramChart*>(m_chart->getChart())->getHistogramStyle()->setStroke(stroke->clone());
@@ -157,7 +153,7 @@ void te::qt::widgets::ChartConfigurer::config(const te::se::Fill* fill)
   switch(chartType)
   {
     case(te::qt::widgets::SCATTER_CHART):
-      //static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->getScatterStyle();
+      static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->getScatterStyle()->setFill(fill->clone());
       break;
     case(te::qt::widgets::HISTOGRAM_CHART):
       static_cast<te::qt::widgets::HistogramChart*>(m_chart->getChart())->getHistogramStyle()->setFill(fill->clone());
