@@ -185,6 +185,8 @@ void te::plugin::PluginManager::load(boost::ptr_vector<PluginInfo>& plugins, con
 
   const std::size_t nplugins = plugins.size();
 
+  std::string exceptionPlugins;
+
   for(std::size_t i = 0; i < nplugins; ++i)
   {
     const PluginInfo& pInfo = plugins[i];
@@ -196,11 +198,12 @@ void te::plugin::PluginManager::load(boost::ptr_vector<PluginInfo>& plugins, con
     catch(...)
     {
       hasException = true;
+      exceptionPlugins += "\n" + pInfo.m_name;
     }
   }
 
   if(hasException || !m_brokenPlugins.empty())
-    throw Exception(TR_PLUGIN("Some plugins couldn't be loaded!"));
+    throw Exception(TR_PLUGIN("\n\nPlugins not loaded:" ) + exceptionPlugins);
 }
 
 void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)

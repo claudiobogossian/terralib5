@@ -196,7 +196,7 @@ bool te::qt::widgets::RegisterWizard::execute()
       QMessageBox::warning(this, tr("Register"), tr("Register Done!"));
 
       //set output layer
-      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                    m_rasterInfoPage->getWidget()->getInfo());
     }
   }

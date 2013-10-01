@@ -107,7 +107,11 @@ void te::map::RasterTransformConfigurer::getChannelSelection()
 
   if(type == te::se::GRAY_COMPOSITION)
   {
-    m_rstTransform->setTransfFunction(te::map::RasterTransform::MONO2THREE_TRANSF);
+    if((m_rstTransform->getInputRaster() && m_rstTransform->getOutputRaster()) &&
+      (m_rstTransform->getInputRaster()->getNumberOfBands() == m_rstTransform->getOutputRaster()->getNumberOfBands()))
+      m_rstTransform->setTransfFunction(te::map::RasterTransform::BAND2BAND_TRANSF);
+    else
+      m_rstTransform->setTransfFunction(te::map::RasterTransform::MONO2THREE_TRANSF);
 
     getGrayChannelProperties(cs->getGrayChannel());
   }

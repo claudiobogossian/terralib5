@@ -76,6 +76,8 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
+          te::gm::Envelope getCurrentExtent();
+
           void drawCursorPosition(double x, double y);
 
           void setEnabled(bool status);

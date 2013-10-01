@@ -84,7 +84,7 @@ te::qt::widgets::MixtureModelWizardPage::MixtureModelWizardPage(QWidget* parent)
 
   //configure raster navigator
   m_navigatorDlg.reset(new te::qt::widgets::RasterNavigatorDialog(this, Qt::Tool));
-  m_navigatorDlg->setWindowTitle(tr("Referece"));
+  m_navigatorDlg->setWindowTitle(tr("Display"));
   m_navigatorDlg->setMinimumSize(550, 400);
   m_navigatorDlg->getWidget()->hideGeomTool(true);
   m_navigatorDlg->getWidget()->hideInfoTool(true);
