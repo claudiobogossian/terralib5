@@ -162,9 +162,9 @@
   <tabstop>m_dbPathLineEdit</tabstop>
   <tabstop>m_datasourceTitleLineEdit</tabstop>
   <tabstop>m_resumeTextEdit</tabstop>
-  <tabstop>m_testPushButton</tabstop>
   <tabstop>m_openPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
+  <tabstop>m_testPushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
  </tabstops>
  <resources/>
