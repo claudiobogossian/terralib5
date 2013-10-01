@@ -265,17 +265,18 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>m_datasourceLineEdit</tabstop>
+  <tabstop>m_datasourceListWidget</tabstop>
   <tabstop>m_fileSearchToolButton</tabstop>
+  <tabstop>m_datasourceLineEdit</tabstop>
   <tabstop>m_datasourceTitleLineEdit</tabstop>
   <tabstop>m_datasourceDescriptionTextEdit</tabstop>
-  <tabstop>m_addDatasourceToolButton</tabstop>
-  <tabstop>m_removeDatasourceToolButton</tabstop>
-  <tabstop>m_testPushButton</tabstop>
   <tabstop>m_openPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
+  <tabstop>m_testPushButton</tabstop>
+  <tabstop>m_addDatasourceToolButton</tabstop>
+  <tabstop>m_removeDatasourceToolButton</tabstop>
+  <tabstop>m_updateDatasourceToolButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
-  <tabstop>m_datasourceListWidget</tabstop>
  </tabstops>
  <resources/>
  <connections>

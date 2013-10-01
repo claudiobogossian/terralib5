@@ -432,6 +432,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>m_hostNameLineEdit</tabstop>
   <tabstop>m_portLineEdit</tabstop>
@@ -440,14 +447,14 @@
   <tabstop>m_newDatabaseNameLineEdit</tabstop>
   <tabstop>m_templateComboBox</tabstop>
   <tabstop>m_advancedOptionsCheckBox</tabstop>
-  <tabstop>m_ownerComboBox</tabstop>
-  <tabstop>m_encodingComboBox</tabstop>
-  <tabstop>m_tablespaceLineEdit</tabstop>
-  <tabstop>m_noLimitConnectionsGroupBox</tabstop>
-  <tabstop>m_connectionsLimitSpinBox</tabstop>
   <tabstop>m_applyPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
+  <tabstop>m_noLimitConnectionsGroupBox</tabstop>
+  <tabstop>m_connectionsLimitSpinBox</tabstop>
+  <tabstop>m_ownerComboBox</tabstop>
+  <tabstop>m_encodingComboBox</tabstop>
+  <tabstop>m_tablespaceLineEdit</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -468,11 +475,4 @@
    </hints>
   </connection>
  </connections>
- <CustomWidgets>
-	<CustomWidget>
-	 <class>te::qt::widgets::HelpPushButton</class> 
-	 <extends>QPushButton</extends> 
-	 <header>terralib/qt/widgets/help/HelpPushButton.h</header>
-	</CustomWidget>
- </CustomWidgets>
 </ui>
