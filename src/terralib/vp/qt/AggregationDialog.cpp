@@ -93,6 +93,7 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
   
   m_outputDatasource = te::da::DataSourceInfoPtr();
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
 }
 
 te::vp::AggregationDialog::~AggregationDialog()
@@ -590,6 +591,8 @@ void te::vp::AggregationDialog::onOutputListWidgetClicked(QListWidgetItem * item
 
 void te::vp::AggregationDialog::onTargetDatasourceToolButtonPressed()
 {
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
   te::qt::widgets::DataSourceSelectorDialog dlg(this);
   dlg.exec();
 
@@ -623,6 +626,7 @@ void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
   m_ui->m_repositoryLineEdit->setText(outfile.c_str());
   
   m_toFile = true;
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
 void te::vp::AggregationDialog::onHelpPushButtonClicked()

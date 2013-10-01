@@ -29,8 +29,8 @@
 // TerraLib
 #include "../../../color/RGBAColor.h"
 #include "../../../se/Visitor.h"
-#include "../widgets/charts/ChartDisplayWidget.h"
-#include "Config.h"
+#include "../Config.h"
+#include "ChartDisplayWidget.h"
 #include "Enums.h"
 
 // STL
@@ -69,7 +69,7 @@ namespace te
 
       \sa te::se::Visitor
     */
-    class TEMAPEXPORT ChartConfigurer : public te::se::Visitor, public boost::noncopyable
+    class TEQTWIDGETSEXPORT ChartConfigurer : public te::se::Visitor, public boost::noncopyable
     {
       public:
 
