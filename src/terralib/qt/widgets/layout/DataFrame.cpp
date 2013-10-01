@@ -597,6 +597,9 @@ double te::qt::widgets::DataFrame::getDataUnitToMilimeter()
 
 void te::qt::widgets::DataFrame::drawButtonClicked()
 {
+  if(m_data == 0)
+    return;
+
   // verificar se mudou a lista de layers visiveis
   m_dataChanged = false;
   std::list<te::map::AbstractLayerPtr>::iterator it, mit;
@@ -847,7 +850,6 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
     if(type == QEvent::DragEnter)
     {
       QDragEnterEvent* dragEnterEvent = (QDragEnterEvent*)e;
-      m_mapDisplay->setAcceptDrops(true);
       m_mapDisplay->dragEnterEvent(dragEnterEvent);
       return true;
     }
