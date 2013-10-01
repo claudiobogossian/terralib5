@@ -372,15 +372,22 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
     break;
 
     case te::qt::af::evt::LAYERS_CHANGED:
-      {
-        te::qt::af::evt::LayersChanged* e = static_cast<te::qt::af::evt::LayersChanged*>(evt);
-        m_project->clear();
+    {
+      te::qt::af::evt::LayersChanged* e = static_cast<te::qt::af::evt::LayersChanged*>(evt);
+      m_project->clear();
 
-        std::vector<te::map::AbstractLayerPtr>::iterator it;
+      std::vector<te::map::AbstractLayerPtr>::iterator it;
 
-        for(it=e->m_layers.begin(); it!=e->m_layers.end(); ++it)
-          m_project->add(*it);
-      }
+      for(it=e->m_layers.begin(); it!=e->m_layers.end(); ++it)
+        m_project->add(*it);
+    }
+    break;
+
+    case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
+    {
+      // For while, force the redraw! I will create a smart solution soon... (Uba, Oct 2013)
+      onDrawTriggered();
+    }
     break;
 
     default:
