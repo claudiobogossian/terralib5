@@ -43,6 +43,7 @@
 #include <memory>
 
 // Qt
+#include <QtCore/QAbstractItemModel>
 #include <QtGui/QMenu>
 #include <QtGui/QMessageBox>
 #include <QtGui/QWidget>
@@ -120,7 +121,12 @@ void te::qt::widgets::DataSetGroupItem::fetchMore()
   {
     te::da::DataSetTypePtr dt(new te::da::DataSetType(datasetNames[i].c_str()));
 
-    new DataSetItem(dt, ds.get(), this);
+    m_items.push_back(new DataSetItem(dt, ds.get(), this));
+  }
+
+  if(m_items.size() == 1)
+  {
+    m_items[0]->setData(true, Qt::CheckStateRole);
   }
 }
 
@@ -153,6 +159,11 @@ bool te::qt::widgets::DataSetGroupItem::setData(const QVariant& value, int role)
   if(role == Qt::CheckStateRole)
   {
     m_checked = value.toBool();
+
+    for(std::size_t i = 0; i < m_items.size(); ++i)
+    {
+      m_items[i]->setData(value, role);
+    }
     return true;
   }
 
@@ -164,3 +175,18 @@ bool te::qt::widgets::DataSetGroupItem::isChecked() const
   return m_checked;
 }
 
+void te::qt::widgets::DataSetGroupItem::checkState()
+{
+  bool check = false;
+
+  for(std::size_t i = 0; i < m_items.size(); ++i)
+  {
+    if(m_items[i]->isChecked())
+    {
+      check = true;
+      break;
+    }
+  }
+
+  m_checked = check;
+}
