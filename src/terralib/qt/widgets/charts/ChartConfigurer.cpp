@@ -20,20 +20,14 @@
 /*!
   \file terralib/qt/widgets/charts/ChartConfigurer.cpp
   
-  \brief A Symbology Enconding visitor that configures a given chart based on symbolizers elements.
+  \brief A Symbology Enconding visitor that configures a given chart based on symbolizer elements.
 */
 
 // TerraLib
 
-#include "../../../common/STLUtils.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../maptools/Utils.h"
-#include "../../../maptools/ExternalGraphicRendererManager.h"
-#include "../../../maptools/MarkRendererManager.h"
-#include "../../../se/ExternalGraphic.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Graphic.h"
-#include "../../../se/GraphicStroke.h"
 #include "../../../se/LineSymbolizer.h"
 #include "../../../se/Mark.h"
 #include "../../../se/PointSymbolizer.h"
@@ -42,18 +36,11 @@
 #include "../../../se/Symbolizer.h"
 #include "../../../se/Style.h"
 #include "../../../se/Rule.h"
-#include "../../../se/Utils.h"
 #include "ChartConfigurer.h"
 #include "HistogramChart.h"
 #include "HistogramStyle.h"
 #include "ScatterChart.h"
 #include "ScatterStyle.h"
-
-// STL
-#include <cassert>
-#include <cstdlib>
-#include <fstream>
-#include <vector>
 
 //QWT
 #include <qwt_plot_seriesitem.h>
@@ -107,12 +94,8 @@ void te::qt::widgets::ChartConfigurer::visit(const te::se::PolygonSymbolizer& vi
 void te::qt::widgets::ChartConfigurer::visit(const te::se::LineSymbolizer& visited)
 {
   const te::se::Stroke* stroke = visited.getStroke();
-  if(!stroke)
-  {
-    return;
-  }
-
-  config(stroke);
+  if(stroke)
+    config(stroke);
 }
 
 void te::qt::widgets::ChartConfigurer::visit(const te::se::PointSymbolizer& visited)
