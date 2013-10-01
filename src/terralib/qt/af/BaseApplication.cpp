@@ -1651,8 +1651,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectAddLayerDataset, "datasource", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
   initAction(m_projectNewFolder, "folder-new", "Project.New Folder", tr("&New Folder..."), tr("Add a new folder"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
-  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, m_menubar);
-  initAction(m_projectRemoveFolder, "folder-remove", "Project.Remove Folder", tr("Remove &Folder(s)"), tr("Remove folder from the project"), true, false, true, m_menubar);
+  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, this);
+  initAction(m_projectRemoveFolder, "folder-remove", "Project.Remove Folder", tr("Remove &Folder(s)"), tr("Remove folder from the project"), true, false, true, this);
   initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
@@ -1662,12 +1662,12 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
   initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
-  initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, true, m_menubar);
-  initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, true, m_menubar);
-  initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart"), tr(""), true, false, true, m_menubar);
+  initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit On Map Display", tr("Fit on &Map Display"), tr("Fit the current layer on Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected On Map Display", tr("Fit Selected On Map Display"), tr("Fit the selected objects of layer on Map Display"), true, false, true, m_menubar);
-  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan To Selected On Map Display", tr("Pan To Selected On Map Display"), tr("Fit the selected objects of layer on Map Display"), true, false, true, m_menubar);
+  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan To Selected On Map Display", tr("Pan To Selected On Map Display"), tr("Pan to selected objects of layer on Map Display"), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);

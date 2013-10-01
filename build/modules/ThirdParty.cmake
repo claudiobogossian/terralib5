@@ -40,6 +40,7 @@ set (thirdParty_dlls
   ${TE_DEPENDENCIES_DIR}/gdal/win32/release/hdf5.dll
   ${TE_DEPENDENCIES_DIR}/gdal/win32/release/libexpat.dll
   ${TE_DEPENDENCIES_DIR}/gdal/win32/release/szip.dll
+  ${TE_DEPENDENCIES_DIR}/gdal/win32/release/zlib.dll
 )
 
 find_package(Qt4)
