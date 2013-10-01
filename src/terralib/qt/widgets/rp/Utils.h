@@ -39,7 +39,7 @@ namespace te
   {
     namespace widgets
     {
-      TEQTWIDGETSEXPORT te::map::AbstractLayerPtr createLayer(const std::string& layerName, 
+      TEQTWIDGETSEXPORT te::map::AbstractLayerPtr createLayer(const std::string& driverName, 
                                                               const std::map<std::string, std::string>& connInfo);
 
     } // end namespace widgets

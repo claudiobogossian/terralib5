@@ -372,15 +372,22 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
     break;
 
     case te::qt::af::evt::LAYERS_CHANGED:
-      {
-        te::qt::af::evt::LayersChanged* e = static_cast<te::qt::af::evt::LayersChanged*>(evt);
-        m_project->clear();
+    {
+      te::qt::af::evt::LayersChanged* e = static_cast<te::qt::af::evt::LayersChanged*>(evt);
+      m_project->clear();
 
-        std::vector<te::map::AbstractLayerPtr>::iterator it;
+      std::vector<te::map::AbstractLayerPtr>::iterator it;
 
-        for(it=e->m_layers.begin(); it!=e->m_layers.end(); ++it)
-          m_project->add(*it);
-      }
+      for(it=e->m_layers.begin(); it!=e->m_layers.end(); ++it)
+        m_project->add(*it);
+    }
+    break;
+
+    case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
+    {
+      // For while, force the redraw! I will create a smart solution soon... (Uba, Oct 2013)
+      onDrawTriggered();
+    }
     break;
 
     default:
@@ -1694,7 +1701,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapStopDraw, "process-stop", "Map.Stop Draw", tr("&Stop Draw"), tr("Stop all draw tasks"), true, false, true, m_menubar);
+  initAction(m_mapStopDrawing, "process-stop", "Map.Stop Drawing", tr("&Stop Drawing"), tr("Stop all drawing tasks"), true, false, true, m_menubar);
 
 // Group the map tools
   QActionGroup* mapToolsGroup = new QActionGroup(this);
@@ -1833,7 +1840,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addAction(m_mapNextExtent);
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapDraw);
-  m_mapMenu->addAction(m_mapStopDraw);
+  m_mapMenu->addAction(m_mapStopDrawing);
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapMeasureDistance);
   m_mapMenu->addAction(m_mapMeasureArea);
@@ -1976,7 +1983,7 @@ void te::qt::af::BaseApplication::initStatusBar()
 
   // Stop draw action
   QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
-  stopDrawToolButton->setDefaultAction(m_mapStopDraw);
+  stopDrawToolButton->setDefaultAction(m_mapStopDrawing);
   m_statusbar->addPermanentWidget(stopDrawToolButton);
 }
 
@@ -2024,7 +2031,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
   connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
   connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
-  connect(m_mapStopDraw, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
+  connect(m_mapStopDrawing, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
   connect(m_layerShowTable, SIGNAL(triggered()), SLOT(onLayerShowTableTriggered()));
   connect(m_viewFullScreen, SIGNAL(toggled(bool)), SLOT(onFullScreenToggled(bool)));
   connect(m_toolsDataSourceExplorer, SIGNAL(triggered()), SLOT(onDataSourceExplorerTriggered()));

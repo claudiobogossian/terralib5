@@ -36,7 +36,7 @@
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/Pan.h"
 #include "../canvas/Canvas.h"
-#include "../canvas/MapDisplay.h"
+#include "../canvas/MultiThreadMapDisplay.h"
 #include "ZoomInMapDisplayWidget.h"
 
 // Qt
@@ -50,7 +50,7 @@ te::qt::widgets::ZoomInMapDisplayWidget::ZoomInMapDisplayWidget(te::qt::widgets:
 
 //build form
   QGridLayout* displayLayout = new QGridLayout(this);
-  m_mapDisplay = new te::qt::widgets::MapDisplay(this->size(), this);
+  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(this->size(), this);
   displayLayout->addWidget(m_mapDisplay);
   displayLayout->setContentsMargins(0,0,0,0);
 
@@ -92,17 +92,20 @@ void te::qt::widgets::ZoomInMapDisplayWidget::set(te::map::AbstractLayerPtr laye
   m_mapDisplay->setLayerList(list);
   m_mapDisplay->setSRID(m_layer->getSRID(), false);
 
-  if(m_isEnabled)
-  {
-    m_itsMe = true;
-    m_mapDisplay->setExtent(ext, true);
-    m_itsMe = false;
-  }
+  m_itsMe = true;
+  m_mapDisplay->setExtent(ext, false);
+  m_itsMe = false;
+
+}
+
+te::gm::Envelope te::qt::widgets::ZoomInMapDisplayWidget::getCurrentExtent()
+{
+  return m_mapDisplay->getExtent();
 }
 
 void te::qt::widgets::ZoomInMapDisplayWidget::drawCursorPosition(double x, double y)
 {
-  if(m_isEnabled == false)
+  if(!m_isEnabled)
     return;
 
   m_mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
@@ -128,6 +131,9 @@ void te::qt::widgets::ZoomInMapDisplayWidget::setEnabled(bool status)
 
 void te::qt::widgets::ZoomInMapDisplayWidget::onMapDisplayExtentChanged()
 {
+  if(!m_isEnabled)
+    return;
+
   if(m_itsMe)
     return;
 
@@ -150,19 +156,23 @@ void te::qt::widgets::ZoomInMapDisplayWidget::onMapDisplayExtentChanged()
 
 void te::qt::widgets::ZoomInMapDisplayWidget::onParentMapDisplayExtentChanged()
 {
-  if(m_isEnabled && m_itsMe == false)
-  {
-    te::gm::Envelope e = m_parentMapDisplay->getExtent();
+  if(!m_isEnabled)
+    return;
 
-    te::gm::Envelope ext = calculateExtent(e);
+  if(m_itsMe)
+    return;
 
-    if(!ext.isValid())
-      return;
+  te::gm::Envelope e = m_parentMapDisplay->getExtent();
 
-    m_itsMe = true;
-    m_mapDisplay->setExtent(ext, true);
-    m_itsMe = false;
-  }
+  te::gm::Envelope ext = calculateExtent(e);
+
+  if(!ext.isValid())
+    return;
+
+  m_itsMe = true;
+  m_mapDisplay->setExtent(ext, true);
+  m_itsMe = false;
+
 }
 
 te::gm::Envelope te::qt::widgets::ZoomInMapDisplayWidget::calculateExtent(te::gm::Envelope& e)
