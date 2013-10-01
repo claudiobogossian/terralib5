@@ -36,8 +36,10 @@ namespace te
   // Forward declarations
   namespace se
   {
+    class Fill;
     class Graphic;
     class Mark;
+    class Stroke;
   }
 
   namespace qt
@@ -83,12 +85,64 @@ namespace te
         te::se::Graphic* getGraphic();
 
         /*!
-          \brief It sets the  histogram bar's fill
+          \brief It sets the he scatter's graphic
 
-          \param newFill The new fill.
+          \param newGraphic The new graphic.
           \note It will take ownership of the given pointer
         */
         void setGraphic(te::se::Graphic* newGraphic);
+
+        /*!
+          \brief Returns a  copy of the pointer to the scatter's Mark
+
+          \return A Mark type pointer to the scatter's point style.
+          \note The caller will not take ownership of the returned pointer. 
+        */
+        te::se::Mark* getMark();
+
+        /*!
+          \brief It sets the he scatter's mark
+
+          \param newmark The new mark.
+          \note It will take ownership of the given pointer
+        */
+        void setMark(te::se::Mark* newMark);
+
+          /*!
+            \brief Returns a copy of the pointer to the scatter point's fill
+
+            \return A Fill type pointer to the scatter point's fill.
+            \note The caller will take ownership of the returned pointer.
+            \note Will return a null pointer if the scatter's point does not have a Fill (f.e. if it's using an external graphic)
+          */
+          te::se::Fill* getFill();
+
+          /*!
+            \brief It sets the scatter point's fill
+
+            \param newFill The new fill.
+            \note It will take ownership of the given pointer
+            \note The given pointer will not be used if the scatter's point is not currently represented by a Mark. The given pointer will simply be deleted.
+          */
+          void setFill(te::se::Fill* newFill);
+
+          /*!
+            \brief Returns a copy of thepointer to the scatter point's stroke
+
+            \return A Fill type pointer to the scatter point's stroke.
+            \note The caller will take ownership of the returned pointer.
+            \note Will return a null pointer if the scatter's point does not have a stroke (f.e. if it's using an external graphic)
+          */
+          te::se::Stroke* getStroke();
+
+          /*!            
+            \brief It sets the  scatter point's stroke
+
+            \param newFill The new stroke.
+            \note It will take ownership of the given pointer
+            \note The given pointer will not be used if the scatter's point is not currently represented by a Mark. The given pointer will simply be deleted.
+          */
+          void setStroke(te::se::Stroke* newStroke);
 
         /*!
           \brief Returns a pointer to a QwtSymbol representing the current scatter's point style

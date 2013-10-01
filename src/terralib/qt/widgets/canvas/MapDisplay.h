@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../maptools/MapDisplay.h"
+#include "../../../srs.h"
 #include "../Config.h"
 
 // Qt
@@ -101,7 +102,7 @@ namespace te
 
           virtual void dropEvent(QDropEvent*);
 
-          virtual void changeData(te::map::AbstractLayerPtr);
+          virtual void changeData(te::map::AbstractLayerPtr, int nsrid = TE_UNKNOWN_SRS);
 
           virtual void setExtent(te::gm::Envelope& e, bool doRefresh = true);
 
