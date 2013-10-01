@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../geometry/Envelope.h"
-#include "../canvas/MapDisplay.h"
+#include "../canvas/MultiThreadMapDisplay.h"
 #include "../tools/PanExtent.h"
 #include "EyeBirdMapDisplayWidget.h"
 
@@ -40,7 +40,7 @@ te::qt::widgets::EyeBirdMapDisplayWidget::EyeBirdMapDisplayWidget(te::qt::widget
 {
 //build form
   QGridLayout* displayLayout = new QGridLayout(this);
-  m_mapDisplay = new te::qt::widgets::MapDisplay(this->size(), this);
+  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(this->size(), this);
   displayLayout->addWidget(m_mapDisplay);
   displayLayout->setContentsMargins(0,0,0,0);
 
@@ -70,19 +70,26 @@ void te::qt::widgets::EyeBirdMapDisplayWidget::set(te::map::AbstractLayerPtr lay
   m_mapDisplay->setMouseTracking(true);
   m_mapDisplay->setLayerList(list);
   m_mapDisplay->setSRID(m_layer->getSRID(), false);
-  m_mapDisplay->setExtent(inputExt, m_isEnabled);
 
-  if(m_isEnabled)
-    m_panExtent->setCurrentExtent(inputExt);
+  m_itsMe = true;
+  m_mapDisplay->setExtent(inputExt, false);
+  m_itsMe = false;
 }
 
 void te::qt::widgets::EyeBirdMapDisplayWidget::recompose()
 {
+  if(!m_layer.get())
+    return;
+
   if(!m_isEnabled)
     return;
 
   te::gm::Envelope inputExt = m_layer->getExtent();
+
+  m_itsMe = true;
   m_mapDisplay->setExtent(inputExt, true);
+  m_itsMe = false;
+
   m_panExtent->setCurrentExtent(inputExt);
 }
 
@@ -95,6 +102,12 @@ void te::qt::widgets::EyeBirdMapDisplayWidget::setEnabled(bool status)
 
 void te::qt::widgets::EyeBirdMapDisplayWidget::onExtentMoved(te::gm::Envelope e)
 {
+  if(!m_isEnabled)
+    return;
+
+  if(m_itsMe)
+    return;
+
   m_itsMe = true;
   m_parentMapDisplay->setExtent(e);
   m_itsMe = false;
@@ -102,11 +115,14 @@ void te::qt::widgets::EyeBirdMapDisplayWidget::onExtentMoved(te::gm::Envelope e)
 
 void te::qt::widgets::EyeBirdMapDisplayWidget::onParentMapDisplayExtentChanged()
 {
-  if(m_itsMe == false)
+  if(!m_isEnabled)
+    return;
+
+  if(!m_itsMe)
   {
     te::gm::Envelope e = m_parentMapDisplay->getExtent();
 
-    if(e.isValid() && m_isEnabled)
+    if(e.isValid())
       m_panExtent->setCurrentExtent(e);
   }
 }

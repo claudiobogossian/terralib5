@@ -89,7 +89,8 @@ namespace te
           GREEN2THREE_TRANSF=4, 
           BLUE2THREE_TRANSF=5,
           CATEGORIZE_TRANSF=6,
-          INTERPOLATE_TRANSF=7
+          INTERPOLATE_TRANSF=7,
+          BAND2BAND_TRANSF
         };
 
       public:
@@ -107,6 +108,11 @@ namespace te
         /*! \brief Destructor. */
         ~RasterTransform();
 
+        /*! \brief Gets the input raster. */
+        te::rst::Raster* getInputRaster() { return m_rasterIn; }
+
+        /*! \brief Gets the output raster. */
+        te::rst::Raster* getOutputRaster() { return m_rasterOut; }
 
         /*! \brief Sets the transparency. */
         void setTransparency(double value) { m_transp = value; }
@@ -257,6 +263,10 @@ namespace te
 
         /*! This transformation get the value of the selected band in input  and get the interpolated value */
         te::color::RGBAColor getInterpolate(double icol, double ilin);
+
+        /*! This transformation repeats the value of the n band in input to b band in output */
+        void setBand2Band(double icol, double ilin, double ocol, double olin);
+
 
         /*! Function used to adjust the value in raster range */
         void fixValue(double& value);
