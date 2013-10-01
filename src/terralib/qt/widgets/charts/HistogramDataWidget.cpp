@@ -64,10 +64,14 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
     }
   else
   {
+
     for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
     {
-      item = QString::fromStdString(dataSet->getPropertyName(i));
-      m_ui->m_propertyComboBox->addItem(item);
+      if(dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
+      {
+        item = QString::fromStdString(dataSet->getPropertyName(i));
+        m_ui->m_propertyComboBox->addItem(item);
+      }
     }
   }
 

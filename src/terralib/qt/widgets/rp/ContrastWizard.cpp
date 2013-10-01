@@ -139,7 +139,7 @@ bool te::qt::widgets::ContrastWizard::execute()
       algoOutputParams.reset();
 
       //set output layer
-      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                    m_rasterInfoPage->getWidget()->getInfo());
 
       QMessageBox::information(this, tr("Contrast"), tr("Contrast enhencement ended sucessfully"));

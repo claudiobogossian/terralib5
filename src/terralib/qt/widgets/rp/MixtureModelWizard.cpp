@@ -137,7 +137,7 @@ bool te::qt::widgets::MixtureModelWizard::execute()
     if(algorithmInstance.execute(algoOutputParams))
     {
       //set output layer
-      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                    m_rasterInfoPage->getWidget()->getInfo());
       QMessageBox::information(this, tr("Mixture Model"), tr("Mixture Model ended sucessfully"));
     }

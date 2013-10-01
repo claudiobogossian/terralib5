@@ -24,9 +24,12 @@
 */
 
 // TerraLib
-#include "../../../dataaccess/utils/Utils.h"
-#include "../../../maptools/RasterLayer.h"
-#include "../../../raster/Raster.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../dataaccess/datasource/DataSourceManager.h"
+#include "../layer/utils/DataSet2Layer.h"
 #include "Utils.h"
 
 // Boost
@@ -34,16 +37,50 @@
 #include <boost/uuid/uuid_io.hpp>
 
 
-te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& layerName, 
+te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& driverName, 
                                                        const std::map<std::string, std::string>& connInfo)
 {
   te::map::AbstractLayerPtr layer;
 
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
 
-  boost::uuids::uuid layerU = gen();
-  std::string layerId = boost::uuids::to_string(layerU);
+  boost::uuids::uuid valU = gen();
+  std::string id = boost::uuids::to_string(valU);
 
+  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make(driverName));
+  ds->setConnectionInfo(connInfo);
+  ds->open();
+
+  std::vector<std::string> dsNames = ds->getDataSetNames();
+  assert(!dsNames.empty());
+
+  //add ds info
+  te::da::DataSourceInfoPtr dsInfoPtr(new te::da::DataSourceInfo);
+  dsInfoPtr->setConnInfo(connInfo);
+  dsInfoPtr->setId(id);
+  dsInfoPtr->setTitle(dsNames[0]);
+  dsInfoPtr->setAccessDriver(driverName);
+  dsInfoPtr->setType(driverName);
+
+  te::da::DataSourceInfoManager::getInstance().add(dsInfoPtr);
+
+  //add ds
+  te::da::DataSourcePtr dsPtr(ds.release());
+  dsPtr->setId(id);
+  
+  te::da::DataSourceManager::getInstance().insert(dsPtr);
+
+  //create layer
+  te::da::DataSetTypePtr dsType(dsPtr->getDataSetType(dsNames[0]).release());
+
+  te::qt::widgets::DataSet2Layer ds2l(dsPtr->getId());
+
+  layer = ds2l(dsType);
+
+  return layer;
+}
+
+/*
   te::map::RasterLayer* rLayer = new te::map::RasterLayer(layerId, layerName);
 
   rLayer->setRasterInfo(connInfo);
@@ -52,6 +89,15 @@ te::map::AbstractLayerPtr te::qt::widgets::createLayer(const std::string& layerN
 
   layer.reset(rLayer);
 
-  return layer;
-}
+  std::auto_ptr<te::rst::Raster> rst(rLayer->getRaster());
 
+  te::se::Style* style = layer->getStyle();
+  if(style == 0)
+  {
+    // Try create an appropriate style. i.e. a CoverageStyle
+    style = te::se::CreateCoverageStyle(rst->getNumberOfBands());
+
+    if(style != 0)
+      layer->setStyle(style);
+  }
+*/

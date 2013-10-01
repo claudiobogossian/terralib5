@@ -83,7 +83,6 @@ te::qt::widgets::DataFrame::DataFrame(const QRectF& frameRect, te::qt::widgets::
   setLayout(layout);
 
   m_mapDisplay->show();
-
   connect(m_mapDisplay, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), this, SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
 
   m_menu = new QMenu(this);
@@ -130,6 +129,8 @@ te::qt::widgets::DataFrame::DataFrame(const DataFrame& rhs) :
   setLayout(layout);
 
   m_mapDisplay->show();
+  connect(m_mapDisplay, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), this, SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
+
   te::gm::Envelope env = rhs.m_mapDisplay->getExtent();
   m_mapDisplay->setExtent(env, false);
 
@@ -201,6 +202,8 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
     setLayout(layout);
 
     m_mapDisplay->show();
+    connect(m_mapDisplay, SIGNAL(drawLayersFinished(const QMap<QString, QString>&)), this, SLOT(onDrawLayersFinished(const QMap<QString, QString>&)));
+
     te::gm::Envelope env = rhs.m_mapDisplay->getExtent();
     m_mapDisplay->setExtent(env, false);
 
@@ -398,14 +401,14 @@ void te::qt::widgets::DataFrame::getLayerList(te::map::AbstractLayerPtr al, std:
   }
 }
 
-void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al)
+void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid)
 {
   m_data = al.get();
   if(m_data == 0)
     return;
 
   m_dataChanged = true;
-  m_mapDisplay->changeData(al);
+  m_mapDisplay->changeData(al, nsrid);
   m_visibleLayers.clear();
   getLayerList(al, m_visibleLayers);
   if(m_visibleLayers.size() == 0)
@@ -586,41 +589,48 @@ void te::qt::widgets::DataFrame::drawButtonClicked()
 {
   // verificar se mudou a lista de layers visiveis
   m_dataChanged = false;
+  std::list<te::map::AbstractLayerPtr>::iterator it, mit;
   std::list<te::map::AbstractLayerPtr> visibleLayers;
   te::map::AbstractLayerPtr al(m_data);
   getLayerList(al, visibleLayers);
   if(m_visibleLayers.size())
   {
-    if(visibleLayers.size() == 0)
-      return;
-    else
+    if(visibleLayers.size() == 0) // apagar o display
     {
-      setData(m_data);
+      QPixmap* p = m_mapDisplay->getDisplayPixmap();
+      p->fill(Qt::white);
+      m_mapDisplay->update();
       return;
     }
-  }
-
-  if(visibleLayers.size() != m_visibleLayers.size())
-    m_dataChanged = true;
-  else
-  {
-    std::list<te::map::AbstractLayerPtr>::iterator it, mit;
-    for(it = visibleLayers.begin(), mit = m_visibleLayers.begin(); it != visibleLayers.end(); ++it, ++mit)
+    else // verifique se nada mudou
     {
-      te::map::AbstractLayerPtr p = *it;
-      te::map::AbstractLayerPtr pp = *mit;
-      if(p != pp)
+      if(visibleLayers.size() == m_visibleLayers.size())
       {
-        m_dataChanged = true;
-        break;
+        for(it = visibleLayers.begin(), mit = m_visibleLayers.begin(); it != visibleLayers.end(); ++it, ++mit)
+        {
+          te::map::AbstractLayerPtr p = *it;
+          te::map::AbstractLayerPtr pp = *mit;
+          if(p != pp)
+          {
+            m_dataChanged = true;
+            break;
+          }
+        }
+        if(it == visibleLayers.end())
+        {
+          draw();
+          return;
+        }
       }
     }
   }
 
+  // houve mudancas
+  m_dataChanged = true;
   if(m_dataChanged)
   {
-    setData(0);
-    setData(al);
+    setData(0, m_mapDisplay->getSRID());
+    setData(al, m_mapDisplay->getSRID());
   }
 
   draw();
@@ -827,6 +837,7 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
     if(type == QEvent::DragEnter)
     {
       QDragEnterEvent* dragEnterEvent = (QDragEnterEvent*)e;
+      m_mapDisplay->setAcceptDrops(true);
       m_mapDisplay->dragEnterEvent(dragEnterEvent);
       return true;
     }

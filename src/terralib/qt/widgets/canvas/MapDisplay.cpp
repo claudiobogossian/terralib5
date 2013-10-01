@@ -96,7 +96,7 @@ void te::qt::widgets::MapDisplay::dropEvent(QDropEvent* e)
   changeData(al);
 }
 
-void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al)
+void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al, int nsrid)
 {
   // limpe todos os canvas antes usados 
   std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
@@ -106,7 +106,7 @@ void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al)
     delete c;
   }
   m_layerCanvasMap.clear();
-  m_srid = -1;
+  m_srid = nsrid;
 
   if(al.get() == 0)
     return;
@@ -127,23 +127,26 @@ void te::qt::widgets::MapDisplay::changeData(te::map::AbstractLayerPtr al)
 
   setLayerList(visibleLayers);
 
-  // calcule novo SRID e extent
-  te::gm::Envelope envelope;
-
-  std::list<te::map::AbstractLayerPtr>::iterator lit;
-  for(lit = visibleLayers.begin(); lit != visibleLayers.end(); ++lit)
+  if(m_srid == TE_UNKNOWN_SRS)
   {
-    te::gm::Envelope env = (*lit)->getExtent();
+    // calcule SRID e extent
+    te::gm::Envelope envelope;
 
-    int srid = (*lit)->getSRID();
-    if(m_srid <= 0)
-      m_srid = srid;
-    if(srid != m_srid)
-      env.transform(srid, m_srid);
+    std::list<te::map::AbstractLayerPtr>::iterator lit;
+    for(lit = visibleLayers.begin(); lit != visibleLayers.end(); ++lit)
+    {
+      te::gm::Envelope env = (*lit)->getExtent();
 
-    envelope.Union(env);
+      int srid = (*lit)->getSRID();
+      if(m_srid <= 0)
+        m_srid = srid;
+      if(srid != m_srid)
+        env.transform(srid, m_srid);
+
+      envelope.Union(env);
+    }
+    setExtent(envelope);
   }
-  setExtent(envelope);
 }
 
 void te::qt::widgets::MapDisplay::setExtent(te::gm::Envelope& e, bool doRefresh)
