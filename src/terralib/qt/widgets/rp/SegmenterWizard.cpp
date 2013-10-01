@@ -144,7 +144,7 @@ bool te::qt::widgets::SegmenterWizard::execute()
       if(algorithmInstance.execute(algoOutputParams))
       {
         //set output layer
-        m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+        m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                      m_rasterInfoPage->getWidget()->getInfo());
 
         QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully"));

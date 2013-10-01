@@ -916,7 +916,7 @@ void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
   QGridLayout* layoutRef = new QGridLayout(m_ui->m_refWidget);
 
   m_refNavigator = new te::qt::widgets::RasterNavigatorWidget(m_ui->m_refWidget);
-  m_refNavigator->setWindowTitle(tr("Referece"));
+  m_refNavigator->setWindowTitle(tr("Reference"));
   m_refNavigator->setMinimumSize(550, 400);
   m_refNavigator->hideGeomTool(true);
   m_refNavigator->hideInfoTool(true);

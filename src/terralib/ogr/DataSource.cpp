@@ -104,6 +104,16 @@ void te::ogr::DataSource::open()
 
   if (boost::filesystem::exists(path))
     m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 1);
+  
+  // let's try to open it without update permission
+  if (!m_ogrDS)
+  {
+    m_ogrDS = OGRSFDriverRegistrar::Open(path.c_str(), 0);
+    if (m_ogrDS)
+      m_capabilities.setAccessPolicy(te::common::RAccess);
+  }
+  else
+    m_capabilities.setAccessPolicy(te::common::RWAccess);
 
   m_isValid = true;
 

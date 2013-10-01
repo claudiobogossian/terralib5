@@ -282,7 +282,7 @@ namespace te
           QAction* m_mapMeasureDistance;
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
-          QAction* m_mapStopDraw;
+          QAction* m_mapStopDrawing;
           QSize m_mapCursorSize;
 
           QWidget* m_centralwidget;
