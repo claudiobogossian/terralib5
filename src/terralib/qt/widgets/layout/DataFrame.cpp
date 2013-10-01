@@ -405,14 +405,24 @@ void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid
 {
   m_data = al.get();
   if(m_data == 0)
+  {
+    QPixmap* pix = m_mapDisplay->getDisplayPixmap();
+    pix->fill(Qt::gray);
+    m_mapDisplay->update();
     return;
+  }
 
   m_dataChanged = true;
   m_mapDisplay->changeData(al, nsrid);
   m_visibleLayers.clear();
   getLayerList(al, m_visibleLayers);
   if(m_visibleLayers.size() == 0)
+  {
+    QPixmap* pix = m_mapDisplay->getDisplayPixmap();
+    pix->fill(Qt::gray);
+    m_mapDisplay->update();
     return;
+  }
 
   //m_mapDisplay->setLayerList(m_visibleLayers);
   m_mapDisplay->refresh();
