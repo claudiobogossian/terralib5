@@ -389,7 +389,10 @@ te::gm::GeomType te::ogr::Convert2TerraLib(OGRwkbGeometryType ogrGeomType)
 
     case wkbGeometryCollection25D:
       return te::gm::GeometryCollectionMType;
-
+      
+    case wkbUnknown:
+      return te::gm::GeometryType;
+      
     default:  
       return te::gm::UnknownGeometryType;
   }

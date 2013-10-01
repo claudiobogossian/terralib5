@@ -58,6 +58,8 @@ namespace te
       */
       class TEQTWIDGETSEXPORT DataFrame : public Frame
       {
+        Q_OBJECT
+        
         public:
           DataFrame(const QRectF& frameRect, te::qt::widgets::LayoutEditor* me, Qt::WindowFlags f = Qt::Window);
           DataFrame(const DataFrame& rhs);
@@ -74,7 +76,7 @@ namespace te
           double getScale();
           void setScale(double v);
           te::map::AbstractLayer* getData();
-          void setData(te::map::AbstractLayerPtr d);
+          void setData(te::map::AbstractLayerPtr d, int nsrid = TE_UNKNOWN_SRS);
           bool transformEnvelope(te::gm::Envelope& e, int oldsrid, int newsrid);
           double getDataUnitToMilimeter();
           void findDataUnitToMilimeter(const te::gm::Envelope& e, int srid);

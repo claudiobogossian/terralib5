@@ -394,24 +394,18 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
         if(!firstMember.dt->getTitle().empty())
           name = firstMember.dt->getTitle() + "_" + firstMember.props[j]->getName();
 
-        if(!firstMember.ds->isNull(firstMember.props[j]->getName()))
-        {
           te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
 
           item->setValue(name, ad);
-        }
       }
 
       for(size_t j = 0; j < secondMember.props.size(); ++j)
       {
         std::string name = secondMember.dt->getTitle() + "_" + secondMember.props[j]->getName();
 
-        if(!secondMember.ds->isNull(secondMember.props[j]->getName()))
-        {
-          te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
+        te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
 
-          item->setValue(name, ad);
-        }
+        item->setValue(name, ad);
       }
 
       outputDs->moveNext();
