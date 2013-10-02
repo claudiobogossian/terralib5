@@ -253,7 +253,7 @@ bool te::da::DataSetAdapter::isNull(std::size_t i) const
 {
   std::auto_ptr<te::dt::AbstractData> data(getAdaptedValue(i));
 
-  return data.get() != 0;
+  return data.get() == 0;
 }
 
 te::da::DataSet* te::da::DataSetAdapter::getAdaptee() const

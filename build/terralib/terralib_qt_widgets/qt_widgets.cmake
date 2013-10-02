@@ -190,6 +190,7 @@ set (
   ${SRCDIR}/widgets/exchanger/DataExchangeSummaryWizardPage.h
   ${SRCDIR}/widgets/exchanger/DataSetOptionsWizardPage.h
   ${SRCDIR}/widgets/exchanger/SHP2PostGISDialog.h
+  ${SRCDIR}/widgets/exchanger/PostGIS2SHPDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
 
