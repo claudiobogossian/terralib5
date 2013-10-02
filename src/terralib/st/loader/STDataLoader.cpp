@@ -25,26 +25,30 @@
 */
 
 //TerraLib
-#include "../../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../../dataaccess/utils/Utils.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/utils/Utils.h"
 
 //ST
 #include "STDataLoader.h"
 #include "STDataLoaderImpl.h"
 #include "STDataLoaderImplFactory.h"
-#include "../observation/ObservationDataSet.h"
-#include "../observation/ObservationDataSetInfo.h"
-#include "../trajectory/TrajectoryDataSet.h"
-#include "../trajectory/TrajectoryDataSetInfo.h"
-#include "../timeseries/TimeSeriesDataSet.h"
-#include "../timeseries/TimeSeriesDataSetInfo.h"
-#include "../coverage/CoverageSeries.h"
-#include "../coverage/Coverage.h"
-#include "../coverage/PointCoverage.h"
-#include "../coverage/RasterCoverage.h"
-#include "../coverage/RasterCoverageDataSetInfo.h"
-#include "../coverage/PointCoverageDataSetInfo.h"
-#include "../../Exception.h"
+#include "../core/observation/ObservationDataSet.h"
+#include "../core/observation/ObservationDataSetInfo.h"
+#include "../core/trajectory/TrajectoryDataSet.h"
+#include "../core/trajectory/TrajectoryDataSetInfo.h"
+#include "../core/timeseries/TimeSeriesDataSet.h"
+#include "../core/timeseries/TimeSeriesDataSetInfo.h"
+#include "../core/coverage/CoverageSeries.h"
+#include "../core/coverage/Coverage.h"
+#include "../core/coverage/PointCoverage.h"
+#include "../core/coverage/RasterCoverage.h"
+#include "../core/coverage/RasterCoverageDataSetInfo.h"
+#include "../core/coverage/PointCoverageDataSetInfo.h"
+#include "../Exception.h"
+
+te::st::STDataLoader::STDataLoader()
+{
+}
 
 std::auto_ptr<te::st::ObservationDataSet> 
 te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, 
@@ -176,6 +180,8 @@ te::st::STDataLoader::getCoverageSeries( const PointCoverageSeriesDataSetInfo& i
     result->add(t.release(), cv.release());
     ++it;
   }
+
+  return result;
 }
 
 std::auto_ptr<te::st::CoverageSeries> 
@@ -185,11 +191,12 @@ te::st::STDataLoader::getCoverageSeries(const RasterCoverageSeriesDataSetInfo& i
   std::auto_ptr<te::st::CoverageSeries> result(new CoverageSeries());
   while(it!=info.end())
   {
-    std::auto_ptr<PointCoverage> cv(getCoverage(*it));
+    std::auto_ptr<RasterCoverage> cv(getCoverage(*it));
     std::auto_ptr<te::dt::DateTime> t(cv->getTime());
     result->add(t.release(), cv.release());
     ++it;
   }
+  return result;
 }
 
 std::auto_ptr<te::st::RasterCoverage> 
@@ -298,6 +305,10 @@ te::st::STDataLoader::getSpatialExtent(const te::st::TrajectoryDataSetInfo& info
 {
   std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
   return impl->getSpatialExtent(info);
+}
+
+te::st::STDataLoader::~STDataLoader()
+{
 }
 
 

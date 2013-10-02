@@ -196,7 +196,7 @@ namespace te
         int getInt() const;
        
         /*! \brief Virtual destructor. */
-        virtual ~PointCoverageIterator() { }  
+        virtual ~PointCoverageIterator();
 
       private:
 

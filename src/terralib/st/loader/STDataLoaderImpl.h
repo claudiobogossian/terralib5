@@ -28,13 +28,13 @@
 #define __TERRALIB_ST_INTERNAL_STDATALOADERIMPL_H
 
 //TerraLib
-#include "../../../common/Enums.h"
-#include "../../../geometry/Enums.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../datatype/Enums.h"
+#include "../../common/Enums.h"
+#include "../../geometry/Enums.h"
+#include "../../geometry/Envelope.h"
+#include "../../datatype/Enums.h"
 
 //ST
-#include "../../Config.h"
+#include "../Config.h"
 
 //STL
 #include <memory>
@@ -80,7 +80,7 @@ namespace te
       public:
 
         /*! \brief Empty constructor */
-        STDataLoaderImpl() {};
+        STDataLoaderImpl();
         
         /*! \name Operations for loading ObservationDataSet */
         //@{
@@ -531,7 +531,7 @@ namespace te
         //@}
                 
         /*! \brief Virtual destructor. */
-        virtual ~STDataLoaderImpl() { };   
+        virtual ~STDataLoaderImpl();   
     };
 
   } // end namespace st

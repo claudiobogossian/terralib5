@@ -26,7 +26,7 @@
 // ST
 #include "STDataLoaderFromDSFactory.h"
 #include "STDataLoaderFromDS.h"
-#include "../../Globals.h"
+#include "../Globals.h"
 
 te::st::STDataLoaderFromDSFactory* te::st::STDataLoaderFromDSFactory::sm_factory(0);
 

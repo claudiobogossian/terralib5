@@ -149,7 +149,7 @@ namespace te
         //@}
 
         /*! \brief Virtual destructor. */
-        virtual ~RasterCoverage() { }   
+        virtual ~RasterCoverage(); 
 
        protected:
           

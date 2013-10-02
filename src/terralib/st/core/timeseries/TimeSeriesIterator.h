@@ -177,7 +177,7 @@ namespace te
                       
                
         /*! \brief Virtual destructor. */
-        virtual ~TimeSeriesIterator() { }  
+        virtual ~TimeSeriesIterator();
 
       private:
 

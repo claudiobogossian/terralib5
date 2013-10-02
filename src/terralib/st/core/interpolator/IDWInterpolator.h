@@ -59,12 +59,12 @@ namespace te
         std::auto_ptr<te::dt::AbstractData> estimate(const PointCoverage& cv, unsigned int p, const te::gm::Point& l);
         
         /*! \brief Virtual destructor. */
-        virtual ~IDWInterpolator() {};   
+        virtual ~IDWInterpolator();   
       
       protected:
 
         /*! \brief Constructor. */
-        IDWInterpolator() { };     
+        IDWInterpolator();     
      };
 
   } // end namespace st

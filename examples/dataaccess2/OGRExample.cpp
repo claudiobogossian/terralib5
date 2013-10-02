@@ -15,7 +15,7 @@ void OGRExampleRead()
   {
     std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
     std::map<std::string, std::string> connInfo;
-    connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
     ds->setConnectionInfo(connInfo);
     ds->open();
@@ -29,7 +29,7 @@ void OGRExampleRead()
 // for each dataset in teh data source print all its data
     PrintDataSets(ds.get());
 
-// release the data source: you are the owner 
+// release the data source: you are the owner
     //delete ds; //it is auto_ptr
   }
   catch(const std::exception& e)
@@ -49,17 +49,17 @@ void ORGExampleWrite()
     //te::da::DataSet* datas = CreatingDataSetInMemory("marisa_soilmeasures");
 
     //PrintDataSet("marisa_soilmeasures", datas);
-    
+
     te::da::DataSetType* dt1 = CreateDataSetTypeInMemory("test_marisa");
     //Writing in OGR
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
     std::map<std::string, std::string> connInfo;
-    connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
     ds->setConnectionInfo(connInfo);
     ds->open();
-    
-    //std::auto_ptr<te::da::DataSetType> dt1 =  datas->getDataSetType("marisa_soilmeasures"); 
-    std::map<std::string, std::string> options; 
+
+    //std::auto_ptr<te::da::DataSetType> dt1 =  datas->getDataSetType("marisa_soilmeasures");
+    std::map<std::string, std::string> options;
     //ds->createDataSet(dt1.get(),options);
     //te::da::DataSetType* dt1 = new te::da::DataSetType("marisa_soilmeasures");
     ds->createDataSet(dt1,options);
@@ -67,7 +67,7 @@ void ORGExampleWrite()
     //std::vector<std::string> pnames;
     //std::vector<int> ptypes;
     //te::da::GetPropertyInfo(datas,pnames,ptypes);
- 
+
     ////Como obter o dataSetType do dataset em memory para criar e criá-lo e depois  adicionar o conteudo...
     ds->add("test_marisa",datas,options);
 
@@ -90,7 +90,7 @@ void ORGExampleWrite()
 //  #if TE_EXAMPLE_USE_OGR
 //  try
 //  {
-//    te::da::DataSet* datas = CreatingDataSetInMemory();  
+//    te::da::DataSet* datas = CreatingDataSetInMemory();
 //
 //    //PrintDataSet(datas);
 //
@@ -98,7 +98,7 @@ void ORGExampleWrite()
 //    std::map<std::string, std::string> ogrInfo;
 //    ogrInfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/soilmeasure.shp";
 //    te::da::DataSource* ds = te::da::DataSource::create("OGR", ogrInfo);
-//      
+//
 //    te::da::DataSourceTransactor* trans = ds->getTransactor();
 //    te::da::DataSetPersistence* dsPers = trans->getDataSetPersistence();
 //    dsPers->create(newDt,datas);

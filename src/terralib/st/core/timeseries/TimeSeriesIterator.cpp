@@ -115,6 +115,10 @@ std::string te::st::TimeSeriesIterator::getString() const
   return m_it->getString(); 
 }
 
+te::st::TimeSeriesIterator::~TimeSeriesIterator() 
+{   
+}
+
 
 
 

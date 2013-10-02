@@ -24,10 +24,10 @@
 */
 
 // TerraLib
-#include "../../../dataaccess/datasource/DataSource.h"
-#include "../../../dataaccess/datasource/DataSourceCapabilities.h"
-#include "../../../dataaccess/query/QueryCapabilities.h"
-#include "../../../dataaccess/utils/Utils.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../../dataaccess/query/QueryCapabilities.h"
+#include "../../dataaccess/utils/Utils.h"
 
 // ST
 #include "STDataLoaderImplFactory.h"
@@ -61,6 +61,10 @@ te::st::STDataLoaderImpl* te::st::STDataLoaderImplFactory::make(const std::strin
 
 te::st::STDataLoaderImplFactory::STDataLoaderImplFactory(const std::string& factoryKey)
   : te::common::AbstractFactory<STDataLoaderImpl, std::string>(factoryKey)
+{
+}
+
+te::st::STDataLoaderImplFactory::~STDataLoaderImplFactory()
 {
 }
 
