@@ -93,10 +93,10 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
   //get input raster
   std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
-  std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
+  m_inputRst.reset(ds->getRaster(rpos).release());
 
   //set segmenter parameters
-  algoInputParams.m_inputRasterPtr = inputRst.get();
+  algoInputParams.m_inputRasterPtr = m_inputRst.get();
 
   int nBands = m_ui->m_bandTableWidget->rowCount();
 
