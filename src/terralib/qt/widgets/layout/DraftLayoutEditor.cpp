@@ -36,7 +36,6 @@ te::qt::widgets::DraftLayoutEditor::DraftLayoutEditor(QWidget* parent, Qt::Windo
 {
   setMouseTracking(true);
   show();
-  installEventFilter(this);
 }
 
 te::qt::widgets::DraftLayoutEditor::~DraftLayoutEditor()

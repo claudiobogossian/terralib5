@@ -92,8 +92,6 @@ te::qt::widgets::TextFrame::TextFrame(const QPointF& p, const QString& txt, cons
 
   show();
   createMenu();
-
-  installEventFilter(me);
 }
 
 te::qt::widgets::TextFrame::TextFrame(const TextFrame& rhs) :
@@ -137,8 +135,6 @@ te::qt::widgets::TextFrame::TextFrame(const TextFrame& rhs) :
 
   show();
   createMenu();
-
-  installEventFilter(rhs.m_layoutEditor);
 }
 
 te::qt::widgets::TextFrame::~TextFrame()
@@ -180,7 +176,6 @@ te::qt::widgets::TextFrame& te::qt::widgets::TextFrame::operator=(const TextFram
 
     show();
     createMenu();
-    installEventFilter(rhs.m_layoutEditor);
   }
 
   return *this;

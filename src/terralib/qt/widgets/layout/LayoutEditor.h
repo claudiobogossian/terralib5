@@ -111,8 +111,9 @@ namespace te
           void wheelEvent(QWheelEvent* e);
           void keyPressEvent(QKeyEvent* e);
 
-          void installDataFrameEventFilter();
-          void removeDataFrameEventFilter();
+          void installEventFilter(); // os layout objects NAO recebem mais eventos (use isto para dar zoom e voo no papel e no dataframes)
+          void removeEventFilter(); // os layout objects recebem eventos para poder mudar de tamanho, posicao, etc.
+          bool eventFilter(QObject*, QEvent*); // deixa passar apenas o event de paint quando o filtro é instalado.
 
           void setFrameSelected(te::qt::widgets::LayoutObject*);
           te::qt::widgets::LayoutObject* getFrameSelected();

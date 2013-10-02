@@ -1117,52 +1117,36 @@ void te::qt::widgets::LayoutEditor::wheelEvent(QWheelEvent* e)
   }
 }
 
-void te::qt::widgets::LayoutEditor::installDataFrameEventFilter()
+void te::qt::widgets::LayoutEditor::installEventFilter()
 {
   std::vector<te::qt::widgets::LayoutObject*>::iterator it;
   for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
-  {
-    if((*it)->windowTitle() == "DataFrame")
-    {
-      te::qt::widgets::DataFrame* f = (te::qt::widgets::DataFrame*)(*it);
-      te::qt::widgets::MapDisplay* md = f->getMapDisplay();
-      md->installEventFilter(f);
-    }
-  }
+    (*it)->installEventFilter(this);
 
   for(it = m_undoLayoutObjects.begin(); it != m_undoLayoutObjects.end(); ++it)
-  {
-    if((*it)->windowTitle() == "DataFrame")
-    {
-      te::qt::widgets::DataFrame* f = (te::qt::widgets::DataFrame*)(*it);
-      te::qt::widgets::MapDisplay* md = f->getMapDisplay();
-      md->installEventFilter(f);
-    }
-  }
+    (*it)->installEventFilter(this);
+
+  setFrameSelected(0);
+  while(QApplication::overrideCursor())
+    QApplication::restoreOverrideCursor();
 }
 
-void te::qt::widgets::LayoutEditor::removeDataFrameEventFilter()
+void te::qt::widgets::LayoutEditor::removeEventFilter()
 {
   std::vector<te::qt::widgets::LayoutObject*>::iterator it;
   for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
-  {
-    if((*it)->windowTitle() == "DataFrame")
-    {
-      te::qt::widgets::DataFrame* f = (te::qt::widgets::DataFrame*)(*it);
-      te::qt::widgets::MapDisplay* md = f->getMapDisplay();
-      md->removeEventFilter(f);
-    }
-  }
+    (*it)->removeEventFilter(this);
 
   for(it = m_undoLayoutObjects.begin(); it != m_undoLayoutObjects.end(); ++it)
-  {
-    if((*it)->windowTitle() == "DataFrame")
-    {
-      te::qt::widgets::DataFrame* f = (te::qt::widgets::DataFrame*)(*it);
-      te::qt::widgets::MapDisplay* md = f->getMapDisplay();
-      md->removeEventFilter(f);
-    }
-  }
+    (*it)->removeEventFilter(this);
+}
+
+bool te::qt::widgets::LayoutEditor::eventFilter(QObject*, QEvent* e)
+{
+  if(e->type() == QEvent::Paint)
+    return false;
+
+  return true;
 }
 
 void te::qt::widgets::LayoutEditor::keyPressEvent(QKeyEvent* e)
@@ -1818,10 +1802,10 @@ void te::qt::widgets::LayoutEditor::keyPressEvent(QKeyEvent* e)
     }
     break;
   case Qt::Key_R: // REMOVE MAP DISPLAY EVENT FILTER
-    removeDataFrameEventFilter();
+    removeEventFilter();
     break;
   case Qt::Key_I: // INSERT MAP DISPLAY EVENT FILTER
-    installDataFrameEventFilter();
+    installEventFilter();
     break;
 
     case Qt::Key_P: // CHANGE PROJECTION

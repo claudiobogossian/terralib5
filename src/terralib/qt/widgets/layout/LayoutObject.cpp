@@ -87,6 +87,21 @@ void te::qt::widgets::LayoutObject::adjust()
 {
 }
 
+void te::qt::widgets::LayoutObject::installEventFilter(QObject* obj)
+{
+  QObject::installEventFilter(obj);
+}
+
+void te::qt::widgets::LayoutObject::removeEventFilter(QObject* obj)
+{
+  QObject::removeEventFilter(obj);
+}
+
+bool te::qt::widgets::LayoutObject::eventFilter(QObject*, QEvent*)
+{
+  return true;
+}
+
 void te::qt::widgets::LayoutObject::showSelectionPoints()
 {
 }
