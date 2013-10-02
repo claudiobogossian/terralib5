@@ -39,7 +39,6 @@ te::qt::widgets::UTMGridFrame::UTMGridFrame(te::qt::widgets::DataFrame* df, Qt::
   setWindowTitle("UTMGridFrame");
   setMouseTracking(true);
   show();
-  installEventFilter(this);
 }
 
 te::qt::widgets::UTMGridFrame::UTMGridFrame(const UTMGridFrame& rhs) :
@@ -48,7 +47,6 @@ te::qt::widgets::UTMGridFrame::UTMGridFrame(const UTMGridFrame& rhs) :
   setWindowTitle("UTMGridFrame");
   setMouseTracking(true);
   show();
-  installEventFilter(this);
 }
 
 te::qt::widgets::UTMGridFrame::~UTMGridFrame()
@@ -64,7 +62,6 @@ te::qt::widgets::UTMGridFrame& te::qt::widgets::UTMGridFrame::operator=(const UT
     setWindowTitle("UTMGridFrame");
     setMouseTracking(true);
     show();
-    installEventFilter(this);
   }
 
   return *this;
@@ -73,7 +70,6 @@ te::qt::widgets::UTMGridFrame& te::qt::widgets::UTMGridFrame::operator=(const UT
 void te::qt::widgets::UTMGridFrame::adjust()
 {
   te::qt::widgets::GridFrame::adjust();
-//  draw();
 }
 
 void te::qt::widgets::UTMGridFrame::draw()
@@ -122,7 +118,6 @@ void te::qt::widgets::UTMGridFrame::draw()
   copyToDraftMapDisplay();
 
   update();
-//  raise();
 }
 
 void te::qt::widgets::UTMGridFrame::paintEvent(QPaintEvent*)

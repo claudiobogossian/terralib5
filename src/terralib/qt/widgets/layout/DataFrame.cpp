@@ -250,7 +250,7 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
 te::qt::widgets::DataFrame::~DataFrame()
 {
   hide();
-  m_mapDisplay->removeEventFilter(this);
+  removeEventFilter(this);
   delete m_mapDisplay;
   delete m_UTMGridFrame;
   delete m_geoGridFrame;
@@ -848,6 +848,18 @@ void te::qt::widgets::DataFrame::rubberBand()
   m_copyAuxFrameRect = m_auxFrameRect;
 
   m_layoutEditor->update();
+}
+
+void te::qt::widgets::DataFrame::installEventFilter(QObject*)
+{
+  // faca com que NAO receba eventos
+  m_mapDisplay->removeEventFilter(this);
+}
+
+void te::qt::widgets::DataFrame::removeEventFilter(QObject*)
+{
+  // faca com que receba eventos
+  m_mapDisplay->installEventFilter(this);
 }
 
 bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)

@@ -426,7 +426,6 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
   std::map<std::string, std::vector<te::mem::DataSetItem*> >::const_iterator itGroupValues = groupValues.begin();
 
   te::common::TaskProgress task("Processing aggregation...");
-  task.setMessage("Wait while the aggregation is being processed.");
   task.setTotalSteps(groupValues.size());
   task.useTimer(true);
 
