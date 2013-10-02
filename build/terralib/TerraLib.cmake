@@ -65,6 +65,7 @@ option (BUILD_SQLITE "Build SQLite module?" OFF)
 option (BUILD_SRS "Build Spatial Reference System module?" ON)
 option (BUILD_ST "Build Spatial-Temporal module?" OFF)
 option (BUILD_STLOADER "Build Spatial-Temporal Loader module?" OFF)
+option (BUILD_STMEMORY "Build Spatial-Temporal Driver In-Memory?" ON)
 option (BUILD_STATISTICS "Build Statistics module?" ON)
 option (BUILD_SYMBOLOGY "Build Symbology module?" ON)
 option (BUILD_VP "Build Vector Processing module?" OFF)
@@ -203,6 +204,10 @@ endif()
 
 IF(BUILD_STLOADER)
 	add_subdirectory(terralib/terralib_stloader)
+endif()
+
+IF(BUILD_STMEMORY)
+	add_subdirectory(terralib/terralib_stmemory)
 endif()
 
 IF(BUILD_STATISTICS)

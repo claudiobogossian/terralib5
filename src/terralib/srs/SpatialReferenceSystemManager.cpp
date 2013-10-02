@@ -30,6 +30,7 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../common/UnitsOfMeasureManager.h"
 #include "Exception.h"
 #include "SpatialReferenceSystemManager.h"
 #include "WKTReader.h"
@@ -261,4 +262,25 @@ size_t te::srs::SpatialReferenceSystemManager::size() const
   return m_set.size();
 }
 
+std::auto_ptr<te::common::UnitOfMeasure> te::srs::SpatialReferenceSystemManager::getUnit(unsigned int id, const std::string& authName)
+{
+  std::auto_ptr<te::srs::SpatialReferenceSystem> srs = getSpatialReferenceSystem(id,authName);
+  if (!srs.get())
+    return std::auto_ptr<te::common::UnitOfMeasure>();
+  
+  std::string unitName = srs->getUnitName();
+  
+  std::auto_ptr<te::common::UnitOfMeasure> unit(te::common::UnitsOfMeasureManager::getInstance().findByName(unitName));
+  
+  return unit;
+}
 
+
+bool te::srs::SpatialReferenceSystemManager::isGeographic(unsigned int id, const std::string& authName)
+{
+  std::auto_ptr<te::srs::SpatialReferenceSystem> srs = getSpatialReferenceSystem(id,authName);
+  if (!srs.get())
+    return false;
+  
+  return srs->isGeographic();
+}

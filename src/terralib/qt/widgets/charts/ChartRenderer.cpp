@@ -144,7 +144,9 @@ QImage* te::qt::widgets::ChartRenderer::drawBars(const te::map::Chart* chart, co
   std::vector<double> values;
   getValues(chart, dataset, values);
 
-  double maxValue = getMaxValue(values);
+  // Gets the previous computed max value
+  double maxValue = chart->getMaxValue();
+  assert(maxValue > 0.0);
 
   int lastx = 0;
 

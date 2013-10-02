@@ -162,6 +162,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>m_componentsListWidget</tabstop>
+  <tabstop>m_tabWidget</tabstop>
+  <tabstop>m_applyPushButton</tabstop>
+  <tabstop>m_exitButton</tabstop>
+  <tabstop>m_helpButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

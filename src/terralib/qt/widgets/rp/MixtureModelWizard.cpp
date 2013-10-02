@@ -52,7 +52,7 @@ te::qt::widgets::MixtureModelWizard::MixtureModelWizard(QWidget* parent)
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Mixture Model"));
-  this->setFixedSize(640, 480);
+  //this->setFixedSize(640, 480);
 
   addPages();
 }

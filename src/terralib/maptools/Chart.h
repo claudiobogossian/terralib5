@@ -96,6 +96,10 @@ namespace te
 
         void setBarWidth(std::size_t width);
 
+        void setMaxValue(double value);
+
+        double getMaxValue() const;
+
         /*! \brief It gets the chart visibility. */
         bool isVisible() const;
 
@@ -115,7 +119,8 @@ namespace te
         std::size_t m_contourWidth;                 //!< The chart contour width (in pixels).
         std::size_t m_height;                       //!< The chart height (in pixels).
         std::size_t m_barWidth;                     //!< The bar width for char Bar type (in pixels).
-        bool m_isVisible;                          //!< A flag that indicates if the chart is visible.
+        bool m_isVisible;                           //!< A flag that indicates if the chart is visible.
+        double m_maxValue;                          //!< The max value of the chart.
     };
 
   } // end namespace map

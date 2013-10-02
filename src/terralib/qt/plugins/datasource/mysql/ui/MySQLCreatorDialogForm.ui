@@ -553,17 +553,17 @@
   <tabstop>m_charsetComboBox</tabstop>
   <tabstop>m_newSchemaNameLineEdit</tabstop>
   <tabstop>m_advancedOptionsCheckBox</tabstop>
-  <tabstop>m_newHostNameLineEdit</tabstop>
-  <tabstop>m_newPortLineEdit</tabstop>
-  <tabstop>m_newUserNameLineEdit</tabstop>
+  <tabstop>m_applyPushButton</tabstop>
+  <tabstop>m_closePushButton</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
   <tabstop>m_newPasswordLineEdit</tabstop>
   <tabstop>m_newCollateComboBox</tabstop>
   <tabstop>m_newCharsetComboBox</tabstop>
   <tabstop>m_createRasterMetadataCheckBox</tabstop>
   <tabstop>m_createOGCMetadataCheckBox</tabstop>
-  <tabstop>m_applyPushButton</tabstop>
-  <tabstop>m_closePushButton</tabstop>
-  <tabstop>m_helpPushButton</tabstop>
+  <tabstop>m_newHostNameLineEdit</tabstop>
+  <tabstop>m_newPortLineEdit</tabstop>
+  <tabstop>m_newUserNameLineEdit</tabstop>
  </tabstops>
  <resources/>
  <connections/>

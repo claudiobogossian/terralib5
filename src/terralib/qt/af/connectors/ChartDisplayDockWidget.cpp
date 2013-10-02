@@ -30,6 +30,7 @@
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../widgets/charts/ChartConfigurer.h"
 #include "../../widgets/charts/ChartDisplayWidget.h"
 #include "events/LayerEvents.h"
 #include "../ApplicationController.h"
@@ -56,6 +57,9 @@ te::qt::af::ChartDisplayDockWidget::~ChartDisplayDockWidget()
 void te::qt::af::ChartDisplayDockWidget::setLayer(te::map::AbstractLayer* layer)
 {
   m_layer = layer;
+
+  te::qt::widgets::ChartConfigurer cc(m_displayWidget);
+  cc.config(m_layer);
 
   if(m_layer==0)
     return;

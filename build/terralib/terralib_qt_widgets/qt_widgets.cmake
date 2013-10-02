@@ -234,6 +234,12 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/selector" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/layout/DataFrame.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layout" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/mapdisplay/DataSetDisplay.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/mapdisplay" MOC)

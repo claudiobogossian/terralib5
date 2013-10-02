@@ -34,9 +34,13 @@
 #include "ui_ChartLayerWidgetForm.h"
 
 // Qt
-#include <QColor>
-#include <QMessageBox>
-#include <QPainterPath>
+#include <QtCore/QString>
+#include <QtGui/QColor>
+#include <QtGui/QMessageBox>
+#include <QtGui/QPainterPath>
+
+// STL
+#include <memory>
 
 te::qt::widgets::ChartLayerWidget::ChartLayerWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -79,7 +83,7 @@ bool te::qt::widgets::ChartLayerWidget::buildChart()
 {
   if(m_chartMap.empty())
   {
-    QMessageBox::warning(this, tr("Warning"), tr("None attribute selected."));
+    QMessageBox::warning(this, tr("Warning"), tr("No attribute selected."));
     return false;
   }
 
@@ -106,6 +110,34 @@ bool te::qt::widgets::ChartLayerWidget::buildChart()
   chart->setHeight((std::size_t)m_ui->m_sizeSpinBox->value());
   chart->setContourWidth((std::size_t)m_ui->m_contourWidthSpinBox->value());
   chart->setContourColor(te::qt::widgets::Convert2TerraLib(m_colorPicker->getColor()));
+
+   // Is necessary compute the max value?
+  if(chart->getType() == te::map::Bar)
+  {
+    double maxValue = 0.0;
+    std::size_t precision = 5;
+
+    // Gets the chart properties
+    const std::vector<std::string>& properties = chart->getProperties();
+
+    // Gets the dataset
+    std::auto_ptr<te::da::DataSet> dataset(m_layer->getData());
+
+    while(dataset->moveNext())
+    {
+      for(std::size_t i = 0; i < properties.size(); ++i)
+      {
+        QString qvalue(dataset->getAsString(properties[i], precision).c_str());
+
+        double value = qvalue.toDouble();
+
+        if(value > maxValue)
+          maxValue = value;
+      }
+    }
+
+    chart->setMaxValue(maxValue);
+  }
 
   m_layer->setChart(chart);
 

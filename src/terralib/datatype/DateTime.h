@@ -30,6 +30,9 @@
 #include "AbstractData.h"
 #include "Enums.h"
 
+// Boost
+#include <boost/shared_ptr.hpp>
+
 namespace te
 {
   namespace dt
@@ -118,6 +121,9 @@ namespace te
         return t1->operator<(*t2);
       }
     };
+	
+	//Typedef 
+    typedef boost::shared_ptr<DateTime>       DateTimeShrPtr;
 
    } // end namespace dt
 }    // end namespace te
