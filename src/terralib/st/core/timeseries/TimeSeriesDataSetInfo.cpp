@@ -99,4 +99,8 @@ std::string te::st::TimeSeriesDataSetInfo::getId() const
   return m_id;
 }
 
+te::st::TimeSeriesDataSetInfo::~TimeSeriesDataSetInfo()
+{
+}
+
 

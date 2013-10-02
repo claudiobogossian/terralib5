@@ -241,7 +241,7 @@ namespace te
         void setRsTimePropIdx(int idx);    
                
         /*! \brief Virtual destructor. */
-        virtual ~ObservationDataSetType() { }; 
+        virtual ~ObservationDataSetType(); 
             
       private:
       

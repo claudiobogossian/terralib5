@@ -93,12 +93,12 @@ namespace te
         
 
         /*! \brief Virtual destructor. */
-        virtual ~AbstractPointCoverageInterp() {}; 
+        virtual ~AbstractPointCoverageInterp(); 
 
       protected:
 
         /*! \brief Constructor. */
-        AbstractPointCoverageInterp() { };             
+        AbstractPointCoverageInterp();             
      };
 
   } // end namespace st

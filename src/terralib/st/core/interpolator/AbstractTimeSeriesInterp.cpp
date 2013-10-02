@@ -27,5 +27,12 @@
 
 #include "AbstractTimeSeriesInterp.h"
 
+te::st::AbstractTimeSeriesInterp::AbstractTimeSeriesInterp()
+{
+}
+
+te::st::AbstractTimeSeriesInterp::~AbstractTimeSeriesInterp()
+{
+}
 
 

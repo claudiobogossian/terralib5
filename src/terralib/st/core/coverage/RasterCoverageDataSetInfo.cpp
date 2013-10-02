@@ -89,5 +89,9 @@ std::auto_ptr<te::dt::DateTime> te::st::RasterCoverageDataSetInfo::getTime() con
   return std::auto_ptr<te::dt::DateTime>(static_cast<te::dt::DateTime*>(m_time->clone())); 
 }
 
+te::st::RasterCoverageDataSetInfo::~RasterCoverageDataSetInfo()
+{
+}
+
 
 

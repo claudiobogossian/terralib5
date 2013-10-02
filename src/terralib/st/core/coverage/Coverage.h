@@ -311,7 +311,7 @@ namespace te
         virtual std::auto_ptr<te::rst::Raster> getRaster(unsigned int p) const = 0;
         
         /*! \brief Virtual destructor. */
-        virtual ~Coverage() { }        
+        virtual ~Coverage();        
      };
 
      //Typedef

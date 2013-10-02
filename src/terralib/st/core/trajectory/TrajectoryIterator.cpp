@@ -96,6 +96,10 @@ te::dt::DateTime* te::st::TrajectoryIterator::getTime() const
   return m_it->first.get(); 
 }
 
+te::st::TrajectoryIterator::~TrajectoryIterator()
+{   
+}
+
 
 
 

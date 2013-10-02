@@ -60,12 +60,12 @@ namespace te
         std::auto_ptr<te::gm::Geometry> estimate(const Trajectory& tj, te::dt::DateTime* time) const;
         
         /*! \brief Virtual destructor. */
-        virtual ~NearestGeometryAtTimeInterp() {}; 
+        virtual ~NearestGeometryAtTimeInterp(); 
 
       protected:
 
         /*! \brief Constructor. */
-        NearestGeometryAtTimeInterp() { };             
+        NearestGeometryAtTimeInterp();             
      };
 
   } // end namespace st

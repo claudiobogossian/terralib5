@@ -26,7 +26,7 @@
 // TerraLib
 #include "STDataLoaderFromMemDSFactory.h"
 #include "STDataLoaderFromMemDS.h"
-#include "../../Globals.h"
+#include "../Globals.h"
 
 te::st::STDataLoaderFromMemDSFactory* te::st::STDataLoaderFromMemDSFactory::sm_factory(0);
 

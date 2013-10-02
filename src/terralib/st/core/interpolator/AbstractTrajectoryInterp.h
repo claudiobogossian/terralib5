@@ -95,12 +95,12 @@ namespace te
         virtual std::auto_ptr<te::gm::Geometry> estimate(const Trajectory& tj, te::dt::DateTime* time) const = 0;
         
         /*! \brief Virtual destructor. */
-        virtual ~AbstractTrajectoryInterp() {}; 
+        virtual ~AbstractTrajectoryInterp(); 
 
       protected:
 
         /*! \brief Constructor. */
-        AbstractTrajectoryInterp() { };             
+        AbstractTrajectoryInterp();             
      };
 
   } // end namespace st

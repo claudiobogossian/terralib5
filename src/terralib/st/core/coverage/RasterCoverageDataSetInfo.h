@@ -120,7 +120,7 @@ namespace te
         std::auto_ptr<te::dt::DateTime> getTime() const;
         
         /*! \brief Virtual destructor. */
-        virtual ~RasterCoverageDataSetInfo() { }; 
+        virtual ~RasterCoverageDataSetInfo(); 
 
       protected:
 

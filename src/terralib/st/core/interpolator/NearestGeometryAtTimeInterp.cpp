@@ -33,6 +33,14 @@
 #include "../trajectory/Trajectory.h"
 #include "NearestGeometryAtTimeInterp.h"
 
+te::st::NearestGeometryAtTimeInterp::NearestGeometryAtTimeInterp()
+{
+}
+
+te::st::NearestGeometryAtTimeInterp::~NearestGeometryAtTimeInterp()
+{
+}  
+
 std::auto_ptr<te::gm::Geometry> 
 te::st::NearestGeometryAtTimeInterp::estimate( const Trajectory& tj, 
                                                te::dt::DateTime* time) const

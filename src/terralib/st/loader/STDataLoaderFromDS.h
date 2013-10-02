@@ -28,7 +28,7 @@
 #define __TERRALIB_ST_INTERNAL_STDATALOADERFROMDS_H
 
 //ST
-#include "../../Config.h"
+#include "../Config.h"
 #include "STDataLoaderImpl.h"
 
 namespace te { namespace da { class DataSet; class DataSourceInfo; } }
@@ -47,7 +47,7 @@ namespace te
     {
       public:
 
-        STDataLoaderFromDS() {};
+        STDataLoaderFromDS();
 
          /*! \name Inhered methods*/
         //@{
@@ -125,7 +125,7 @@ namespace te
         /*! \brief It builds an TimeSeriesDataSet from a given DataSet */
         std::auto_ptr<TimeSeriesDataSet> buildDataSet(te::da::DataSet* ds, const TimeSeriesDataSetInfo& info);
 
-        virtual ~STDataLoaderFromDS() { };     
+        virtual ~STDataLoaderFromDS();     
     };
   } // end namespace st
 }   // end namespace te
