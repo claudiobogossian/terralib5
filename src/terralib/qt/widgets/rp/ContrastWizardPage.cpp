@@ -73,6 +73,8 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
   this->setSubTitle(tr("Select the type of contrast and set their specific parameters."));
 
   onContrastTypeComboBoxActivated(m_ui->m_contrastTypeComboBox->currentIndex());
+
+  m_ui->m_histogramPushButton->setEnabled(false);
 }
 
 te::qt::widgets::ContrastWizardPage::~ContrastWizardPage()

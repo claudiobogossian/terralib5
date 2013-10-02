@@ -1,0 +1,307 @@
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+*/
+
+/*!
+  \file STDataLoader.cpp
+
+  \brief  This file contains a class that contains a set of static methods
+          to load spatiotemporal data from data sources.
+*/
+
+//TerraLib
+#include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../dataaccess/utils/Utils.h"
+
+//ST
+#include "STDataLoader.h"
+#include "STDataLoaderImpl.h"
+#include "STDataLoaderImplFactory.h"
+#include "../observation/ObservationDataSet.h"
+#include "../observation/ObservationDataSetInfo.h"
+#include "../trajectory/TrajectoryDataSet.h"
+#include "../trajectory/TrajectoryDataSetInfo.h"
+#include "../timeseries/TimeSeriesDataSet.h"
+#include "../timeseries/TimeSeriesDataSetInfo.h"
+#include "../coverage/CoverageSeries.h"
+#include "../coverage/Coverage.h"
+#include "../coverage/PointCoverage.h"
+#include "../coverage/RasterCoverage.h"
+#include "../coverage/RasterCoverageDataSetInfo.h"
+#include "../coverage/PointCoverageDataSetInfo.h"
+#include "../../Exception.h"
+
+std::auto_ptr<te::st::ObservationDataSet> 
+te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, 
+                                 te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, travType);
+}
+
+std::auto_ptr<te::st::ObservationDataSet> 
+te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, const te::gm::Envelope& e,
+                                 te::gm::SpatialRelation r, te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, e, r, travType);
+}
+        
+std::auto_ptr<te::st::ObservationDataSet> 
+te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, const te::gm::Geometry& geom, 
+                                 te::gm::SpatialRelation r, te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, geom, r, travType);
+}
+        
+std::auto_ptr<te::st::ObservationDataSet> 
+te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, 
+                                 const te::dt::DateTime& dt, te::dt::TemporalRelation r,
+                                 te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, dt, r, travType);
+}
+
+std::auto_ptr<te::st::ObservationDataSet> 
+te::st::STDataLoader::getDataSet(const te::st::ObservationDataSetInfo& info, 
+                                 const te::gm::Geometry& geom, te::gm::SpatialRelation sr,
+                                 const te::dt::DateTime& dt, te::dt::TemporalRelation tr,
+                                 te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, geom, sr, dt, tr, travType);
+}
+
+void te::st::STDataLoader::getInfo( const te::st::TrajectoryDataSetInfo& input, 
+                             std::vector<te::st::TrajectoryDataSetInfo>& output)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(input.getDataSourceInfo().getType()));
+  return impl->getInfo(input, output); 
+}
+
+std::auto_ptr<te::st::TrajectoryDataSet> 
+te::st::STDataLoader::getDataSet(const te::st::TrajectoryDataSetInfo& info, te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, travType); 
+}
+
+std::auto_ptr<te::st::TrajectoryDataSet> 
+te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info,  
+                             const te::gm::Geometry& geom, te::gm::SpatialRelation r,
+                             te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, travType); 
+}
+
+std::auto_ptr<te::st::TrajectoryDataSet> 
+te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info, const te::gm::Envelope& e, te::gm::SpatialRelation r,               
+                                te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, e, r, travType); 
+}
+
+
+std::auto_ptr<te::st::TrajectoryDataSet> 
+te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info, 
+                                 const te::dt::DateTime& dt, te::dt::TemporalRelation r,
+                                 te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, dt, r, travType); 
+}
+
+std::auto_ptr<te::st::TrajectoryDataSet> 
+te::st::STDataLoader::getDataSet(const TrajectoryDataSetInfo& info, 
+                                 const te::gm::Geometry& geom, te::gm::SpatialRelation sr,
+                                 const te::dt::DateTime& dt, te::dt::TemporalRelation tr, te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, geom, sr, dt, tr, travType);
+}
+
+
+void te::st::STDataLoader::getInfo( const te::st::TimeSeriesDataSetInfo& input, 
+                              std::vector<te::st::TimeSeriesDataSetInfo>& output)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(input.getDataSourceInfo().getType()));
+  return impl->getInfo(input, output);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet> 
+te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info, te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, travType);
+}
+
+std::auto_ptr<te::st::TimeSeriesDataSet> 
+te::st::STDataLoader::getDataSet(const te::st::TimeSeriesDataSetInfo& info, 
+                                 const te::dt::DateTime& dt, te::dt::TemporalRelation r,
+                                 te::common::TraverseType travType)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getDataSet(info, dt, r, travType);
+}
+
+std::auto_ptr<te::st::CoverageSeries> 
+te::st::STDataLoader::getCoverageSeries( const PointCoverageSeriesDataSetInfo& info,
+                                               AbstractPointCoverageInterp* interp)
+{
+  te::st::PointCoverageSeriesDataSetInfo::const_iterator it = info.begin();
+  std::auto_ptr<te::st::CoverageSeries> result(new CoverageSeries());
+  while(it!=info.end())
+  {
+    std::auto_ptr<PointCoverage> cv(getCoverage(*it, interp));
+    std::auto_ptr<te::dt::DateTime> t(cv->getTime());
+    result->add(t.release(), cv.release());
+    ++it;
+  }
+}
+
+std::auto_ptr<te::st::CoverageSeries> 
+te::st::STDataLoader::getCoverageSeries(const RasterCoverageSeriesDataSetInfo& info)
+{
+  te::st::RasterCoverageSeriesDataSetInfo::const_iterator it = info.begin();
+  std::auto_ptr<te::st::CoverageSeries> result(new CoverageSeries());
+  while(it!=info.end())
+  {
+    std::auto_ptr<PointCoverage> cv(getCoverage(*it));
+    std::auto_ptr<te::dt::DateTime> t(cv->getTime());
+    result->add(t.release(), cv.release());
+    ++it;
+  }
+}
+
+std::auto_ptr<te::st::RasterCoverage> 
+te::st::STDataLoader::getCoverage(const RasterCoverageDataSetInfo& info)
+{
+  std::auto_ptr<te::da::DataSet> dset(te::da::GetDataSet(info.getObservationDataSetInfo().getDataSetName(), 
+                                                         info.getDataSourceInfo().getId()));
+  if(!dset.get())
+    throw Exception("The DataSet was not loaded correctly!"); 
+
+  std::auto_ptr<te::st::RasterCoverage> result(new RasterCoverage());
+  while(dset->moveNext())
+  {
+    //por enquanto nao estou considerando tempo em duas propriedades, so pego a primeira
+    std::auto_ptr<te::dt::DateTime> dt(info.getTime());
+    if(dt.get()==0)
+      dt = dset->getDateTime(info.getTimePropIdxs()[0]);
+    std::auto_ptr<te::rst::Raster> raster(dset->getRaster(info.getRasterPropIdx()));
+    result->set(raster.release(), dt.release());
+  }
+  return result;
+}
+
+std::auto_ptr<te::st::PointCoverage> 
+te::st::STDataLoader::getCoverage(const PointCoverageDataSetInfo& info, 
+                                  AbstractPointCoverageInterp* interp)
+{
+  std::auto_ptr<te::da::DataSet> dset(te::da::GetDataSet(info.getObservationDataSetInfo().getDataSetName(), 
+                                                         info.getDataSourceInfo().getId()));
+  if(!dset.get())
+    throw Exception("The DataSet was not loaded correctly!"); 
+  
+  std::vector<int> vPropDS = info.getValuePropIdxs(); //The indexes of the observed properties in the DataSet
+  std::vector<int> ptypes;
+  std::vector<std::string> pnames;
+
+  for(unsigned int i=0; i<vPropDS.size(); ++i)
+  {
+    ptypes.push_back(dset->getPropertyDataType(vPropDS[i]));
+    pnames.push_back(dset->getPropertyName(vPropDS[i]));
+  }
+  
+  //Get the property that has date and time associated to each observation
+  //TO DO: Ainda temos que implementar quando for periodo em duas properties!!!!
+  //TO DO: No caso acima, temos que gerar um periodo e passar para o PointCoverage como uma unica property!
+  int tpDS = -1;
+  int tpCV = -1;
+  const std::vector<int>& tProps = info.getTimePropIdxs();
+  if(tProps.size()>0 && tProps[0]>=0)
+  {
+    tpDS = tProps[0]; //index of the date and time property in the DataSet
+    ptypes.push_back(dset->getPropertyDataType(tpDS));
+    pnames.push_back(dset->getPropertyName(tpDS));
+    vPropDS.push_back(tpDS);
+    tpCV = ptypes.size()-1; //index of the date and time property in the Coverage
+  }
+
+  std::auto_ptr<te::dt::DateTime> dt = info.getTime();
+  std::auto_ptr<te::st::PointCoverage> result(new PointCoverage(interp, 0, dt.get(), vPropDS.size(), ptypes, pnames, tpCV));
+  
+  while(dset->moveNext())
+  {
+    //get the point
+    std::auto_ptr<te::gm::Geometry> geom(dset->getGeometry(info.getPointPropIdx()));
+    
+    //get the observed values. If there is the date and time property, it will be loaded here!!!
+    boost::ptr_vector<te::dt::AbstractData> values;
+    for(unsigned int i=0; i<vPropDS.size(); ++i)
+      values.push_back(dset->getValue(vPropDS[i]));
+
+    result->add(*static_cast<te::gm::Point*>(geom.release()), values); //values.release() ?????
+  }
+  return result;
+}
+
+std::auto_ptr<te::dt::DateTimePeriod> 
+te::st::STDataLoader::getTemporalExtent(const te::st::ObservationDataSetInfo& info)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getTemporalExtent(info);
+}
+
+std::auto_ptr<te::dt::DateTimePeriod> 
+te::st::STDataLoader::getTemporalExtent(const te::st::TrajectoryDataSetInfo& info)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getTemporalExtent(info);
+}
+
+std::auto_ptr<te::dt::DateTimePeriod> 
+te::st::STDataLoader::getTemporalExtent(const te::st::TimeSeriesDataSetInfo& info)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getTemporalExtent(info);
+}
+
+te::gm::Envelope 
+te::st::STDataLoader::getSpatialExtent(const te::st::ObservationDataSetInfo& info)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getSpatialExtent(info);
+}
+
+te::gm::Envelope 
+te::st::STDataLoader::getSpatialExtent(const te::st::TrajectoryDataSetInfo& info)
+{
+  std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
+  return impl->getSpatialExtent(info);
+}
+
+
+
+
+
+

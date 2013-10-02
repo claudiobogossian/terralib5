@@ -53,7 +53,7 @@ te::qt::widgets::RegisterWizard::RegisterWizard(QWidget* parent)
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Register"));
-  this->setFixedSize(640, 480);
+  //this->setFixedSize(640, 480);
 
   addPages();
 }
