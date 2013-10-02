@@ -70,7 +70,7 @@ te::qt::widgets::QueryLayerBuilderWizard::QueryLayerBuilderWizard(QWidget* paren
 
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
-  this->setFixedSize(640, 480);
+  //this->setFixedSize(640, 480);
   this->setWindowTitle(tr("Query Layer Builder"));
 
   addPages();
