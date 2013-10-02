@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
@@ -34,6 +35,7 @@
 #include "../../dataaccess/utils/Utils.h"
 #include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
 #include "../../maptools/AbstractLayer.h"
@@ -622,8 +624,8 @@ void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
     return;
   
   boost::filesystem::path outfile(fileName.toStdString());
-  m_ui->m_newLayerNameLineEdit->setText(outfile.leaf().c_str());
-  m_ui->m_repositoryLineEdit->setText(outfile.c_str());
+//  m_ui->m_newLayerNameLineEdit->setText(outfile.leaf().c_str());
+//  m_ui->m_repositoryLineEdit->setText(outfile.c_str());
   
   m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);
@@ -670,6 +672,10 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     return;
   }
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
     std::string id = "";
@@ -710,12 +716,11 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   }
   catch(const std::exception& e)
   {
-    QString errMsg(tr("Error during map aggregation. The reported error is: %1"));
-
-    errMsg = errMsg.arg(e.what());
-
-    QMessageBox::information(this, "Aggregation", errMsg);
+    QMessageBox::information(this, "Aggregation", e.what());
+    return;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   accept();
 }
