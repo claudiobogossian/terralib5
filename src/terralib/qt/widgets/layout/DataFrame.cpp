@@ -1233,10 +1233,15 @@ void te::qt::widgets::DataFrame::onDrawLayersFinished(const QMap<QString, QStrin
 
   // TODO!!!
   if(m_data)
-    drawLayerSelection(Qt::red); // teste........
+    drawLayerSelection();
 }
 
-void te::qt::widgets::DataFrame::drawLayerSelection(QColor selColor)
+void te::qt::widgets::DataFrame::setSelectionColor(QColor selColor)
+{
+  m_selectionColor = selColor;
+}
+
+void te::qt::widgets::DataFrame::drawLayerSelection()
 {
   assert(m_data);
 
@@ -1300,8 +1305,7 @@ void te::qt::widgets::DataFrame::drawLayerSelection(QColor selColor)
         if(currentGeomType != g->getGeomTypeId())
         {
           currentGeomType = g->getGeomTypeId();
-          te::qt::widgets::Config2DrawLayerSelection(&canvas, selColor, currentGeomType);
-          //te::qt::widgets::Config2DrawLayerSelection(&canvas, ApplicationController::getInstance().getSelectionColor(), currentGeomType);
+          te::qt::widgets::Config2DrawLayerSelection(&canvas, m_selectionColor, currentGeomType);
         }
 
         canvas.draw(g.get());

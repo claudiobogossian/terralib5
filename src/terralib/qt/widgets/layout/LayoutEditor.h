@@ -95,7 +95,8 @@ namespace te
           void pan(const QPointF& p);
           void draw();
           void drawButtonClicked();
-          void drawLayersSelection(QColor selColor);
+          void drawLayersSelection();
+          void setSelectionColor(QColor selColor);
           void setDisplayBackgroundColor(QColor);
           void resetPaperView();
           QMatrix getMatrixPaperViewToVp();
@@ -109,6 +110,9 @@ namespace te
           void mouseReleaseEvent(QMouseEvent* e);
           void wheelEvent(QWheelEvent* e);
           void keyPressEvent(QKeyEvent* e);
+
+          void installDataFrameEventFilter();
+          void removeDataFrameEventFilter();
 
           void setFrameSelected(te::qt::widgets::LayoutObject*);
           te::qt::widgets::LayoutObject* getFrameSelected();
@@ -126,6 +130,7 @@ namespace te
           te::qt::widgets::EditorInfo* m_editorState;
           bool m_resize; // true indica resize operation
           bool m_move; // true indica move operation
+
 
           // IMPORTANTE IMPORTANTE IMPORTANTE IMPORTANTE IMPORTANTE ////////////////////
           QWidget* m_auxWidget; // support to view port area. Area interna do LayoutEditor que exclui as reguas. Ele é necessario
@@ -152,6 +157,7 @@ namespace te
           int m_rulerMedium;
           int m_rulerLarge;
           QPixmap m_rulerGridPixmap;
+          int m_mouseTask; // 0=none, 1=zoomin, 2=zoomout, 3=pan (sobre a area do papel)
       };
     } // end namespace widgets
   }   // end namespace qt

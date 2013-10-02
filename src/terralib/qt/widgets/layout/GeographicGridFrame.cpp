@@ -35,6 +35,7 @@
 te::qt::widgets::GeographicGridFrame::GeographicGridFrame(te::qt::widgets::DataFrame* df, Qt::WindowFlags f) :
   te::qt::widgets::GridFrame(df, f)
 {
+  setWindowTitle("GeographicGridFrame");
   setMouseTracking(true);
   show();
   installEventFilter(this);
@@ -43,6 +44,7 @@ te::qt::widgets::GeographicGridFrame::GeographicGridFrame(te::qt::widgets::DataF
 te::qt::widgets::GeographicGridFrame::GeographicGridFrame(const GeographicGridFrame& rhs) :
   GridFrame(rhs.m_dataFrame, rhs.windowFlags())
 {
+  setWindowTitle("GeographicGridFrame");
   setMouseTracking(true);
   show();
   installEventFilter(this);
@@ -58,6 +60,7 @@ te::qt::widgets::GeographicGridFrame& te::qt::widgets::GeographicGridFrame::oper
   if(this != &rhs)
   {
     te::qt::widgets::GridFrame::operator=(rhs);
+    setWindowTitle("GeographicGridFrame");
     setMouseTracking(true);
     show();
     installEventFilter(this);
@@ -127,35 +130,8 @@ void te::qt::widgets::GeographicGridFrame::paintEvent(QPaintEvent*)
   painter.drawPixmap(0, 0, m_pixmap);
 }
 
-bool te::qt::widgets::GeographicGridFrame::eventFilter(QObject* obj, QEvent* e)
+void te::qt::widgets::GeographicGridFrame::mouseMoveEvent(QMouseEvent* mouseEvent)
 {
-  // return true to stop the event; otherwise return false.
-
-  //if(obj == this) 
-  //{
-  //  if(e->type() == QEvent::MouseMove)
-  //  {
-  //    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-  //    if(mouseEvent->buttons() == Qt::NoButton)
-  //    {
-  //      QRect r = m_dataFrame->getMapDisplay()->getDisplayPixmap()->rect();
-  //      r.moveCenter(m_pixmap.rect().center());
-  //      QPoint p = mouseEvent->pos();
-  //      if(r.contains(p))
-  //        lower();
-  //    }
-  //  }
-  //}
-  if(obj == this) 
-  {
-    if(e->type() == QEvent::MouseMove)
-    {
-      QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-      if(mouseEvent->buttons() == Qt::NoButton)
-        lower();
-    }
-  }
-
-  // pass the event on to the parent class
-  return QWidget::eventFilter(obj, e);
+  if(mouseEvent->buttons() == Qt::NoButton)
+    lower();
 }
