@@ -236,9 +236,22 @@ void te::gdal::Band::read(int x, int y, void* buffer) const
 
 void* te::gdal::Band::read(int x, int y)
 {
-  read( x, y, m_buffer );
-  m_x = x;
-  m_y = y;
+  if( ( x != m_x ) || ( y != m_y ) )
+  {
+    if (m_update_buffer)
+    {
+      m_rasterBand->WriteBlock(m_x, m_y, m_buffer);
+
+      m_rasterBand->FlushCache();
+
+      m_update_buffer = false;
+    }
+        
+    read( x, y, m_buffer );
+    m_x = x;
+    m_y = y;
+  }
+  
   return m_buffer;
 }
 
