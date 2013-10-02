@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -31,6 +32,7 @@
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../datatype/Property.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../Exception.h"
 #include "../Intersection.h"
 #include "IntersectionDialog.h"
@@ -174,7 +176,11 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
     return;
   }
-
+  
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+  
   try
   {
     m_layerResult = te::vp::Intersection( m_firstSelectedLayer, 
@@ -185,9 +191,11 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   }
   catch(const std::exception& e)
   {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), e.what());
+    QMessageBox::warning(this, TR_VP("Intersection"), e.what());
     return;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   accept();
 }
