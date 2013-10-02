@@ -1493,24 +1493,59 @@ void te::qt::af::BaseApplication::makeDialog()
 // initializing well known widgets
 
 // 1. Layer Explorer
+  QAction* act = new QAction(this);
+  act->setSeparator(true);
+
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
   te::qt::widgets::LayerTreeView* treeView = lexplorer->getTreeView();
   treeView->setAnimated(true);
 
+  //selection
   treeView->add(m_layerRemoveSelection, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+
+  QAction* actSel = new QAction(this);
+  actSel->setSeparator(true);
+  treeView->add(actSel, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //tools
   treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerChartsHistogram, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerChartsScatter, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerChart, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+
+  QAction* actTools = new QAction(this);
+  actTools->setSeparator(true);
+  treeView->add(actTools, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //selection2
   treeView->add(m_layerFitOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerFitSelectedOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
   treeView->add(m_layerPanToSelectedOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
+
+  QAction* actSel2 = new QAction(this);
+  actSel2->setSeparator(true);
+  treeView->add(actSel2, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //view
   treeView->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  treeView->add(m_viewStyleExplorer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);  
-  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  treeView->add(m_viewStyleExplorer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+
+  QAction* actView = new QAction(this);
+  actView->setSeparator(true);
+  treeView->add(actView, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //layer
   treeView->add(m_layerSRS, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
+  QAction* actLayer = new QAction(this);
+  actLayer->setSeparator(true);
+  treeView->add(actLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //remove
+  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //project
   treeView->add(m_projectNewFolder, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
 
@@ -1870,7 +1905,7 @@ void te::qt::af::BaseApplication::initMenus()
 //  m_toolsMenu->addAction(m_toolbarsManagement);
 //  m_toolsMenu->addSeparator();
   m_toolsExchangerMenu->setObjectName("Tools.Exchanger");
-  m_toolsExchangerMenu->setTitle(tr("&Exchanger"));
+  m_toolsExchangerMenu->setTitle(tr("&Data Source Exchanger"));
   m_toolsExchangerMenu->setIcon(QIcon::fromTheme("datasource-exchanger"));
   m_toolsExchangerMenu->addAction(m_toolsDataExchangerPGIS2SHP);
   m_toolsExchangerMenu->addAction(m_toolsDataExchangerSHP2PGIS);
