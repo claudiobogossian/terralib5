@@ -30,6 +30,7 @@
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceCatalog.h"
 #include "../../../../dataaccess/utils/Utils.h"
+#include "../../datasource/explorer/DataSetGroupItem.h"
 #include "../../Exception.h"
 #include "ConstraintsItem.h"
 #include "DataSetItem.h"
@@ -159,6 +160,11 @@ bool te::qt::widgets::DataSetItem::setData(const QVariant& value, int role)
   if(role == Qt::CheckStateRole)
   {
     m_checked = value.toBool();
+
+    DataSetGroupItem* p = dynamic_cast<DataSetGroupItem*>(parent());
+
+    p->checkState();
+
     return true;
   }
 

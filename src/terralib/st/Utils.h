@@ -21,19 +21,28 @@
   \file Utils.h
    
   \brief Utility functions for ST module.  
- */
+*/
 
 #ifndef __TERRALIB_ST_INTERNAL_UTILS_H
 #define __TERRALIB_ST_INTERNAL_UTILS_H
 
 // TerraLib
 #include "../datatype/Enums.h"
+#include "../datatype/DateTime.h"
 
 // ST
 #include "Config.h"
 
+// STL
+#include <map>
+#include <vector>
+
+// Boost
+#include <boost/shared_ptr.hpp>
+
 // Forward declarations
-namespace te { namespace dt { class AbstractData; } }
+namespace te { namespace dt { class AbstractData; class Property; } }
+namespace te { namespace da { class DataSetType; } }
 
 namespace te
 {
@@ -41,7 +50,62 @@ namespace te
   {
     // Forward declarations
     class TimeSeries;
+    class ObservationDataSetInfo;
+    class ObservationDataSetType;
+    class TrajectoryDataSetInfo;
+    class TrajectoryDataSetType;
+    class TimeSeriesDataSetInfo;
+    class TimeSeriesDataSetType;
+    //class CoverageSeriesDataSetInfo;
+    //class CoverageSeriesDataSetType;
     
+    /*! 
+      \brief An auxiliary function that transform ObservationDataSetInfo into ObservationDataSetType. 
+    */   
+    TESTEXPORT ObservationDataSetType GetType(const ObservationDataSetInfo& info);
+
+    /*! 
+      \brief An auxiliary function that transform TimeSeriesDataSetInfo into TimeSeriesDataSetType. 
+    */   
+    TESTEXPORT TimeSeriesDataSetType GetType(const TimeSeriesDataSetInfo& info);
+    
+    /*! 
+      \brief An auxiliary function that transform TrajectoryDataSetInfo into TrajectoryDataSetType. 
+    */   
+    TESTEXPORT TrajectoryDataSetType GetType(const TrajectoryDataSetInfo& info);
+    
+    /*!
+      \brief This function tests if v1 is less than or equal to v2
+    */
+    TESTEXPORT bool LessOrEqual(te::dt::AbstractData* v1, te::dt::AbstractData* v2);
+
+    /*! 
+      \brief An auxiliary struct to compare two datetime shared pointers 
+    */
+    struct TESTEXPORT CompareShrDateTime
+    {
+      bool operator()(const boost::shared_ptr<te::dt::DateTime>& t1, const boost::shared_ptr<te::dt::DateTime>& t2)
+      {
+        return t1->operator<(*t2);
+      }
+    };   
+            
+    /*!
+      \brief It adjusts a DataSetType (dtTo) and a ObservationSetType (obstTo) 
+          
+      It adjusts a DataSetType (dtTo) and a ObservationSetType (obstTo) with a subset
+      of properties (properties) coming from a DataSetType (dtFrom) that has 
+      an associated ObservationSetType (obstFrom). 
+                    
+      \param dtTo       The DataSetType to be adjusted.
+      \param dtFrom     The DataSetType that provides the information to adjust dtTo. 
+      \param obstTo     The ObservationSetType to be adjusted.
+      \param obstFrom   The ObservationSetType that provides the information to adjust obstTo. 
+      \param properties The subset of DataSetType "dtFrom" properties to be considered. 
+    */
+    //TESTEXPORT void AdjustDataSetType( te::da::DataSetType* dtTo, const te::da::DataSetType* dtFrom, 
+    //                    te::st::ObservationSetType* obstTo, const te::st::ObservationSetType* obstFrom, 
+    //                    const std::vector<te::dt::Property*>& properties);
     /*!
       \brief It normalizes a given time series, considering a given date and time resolution.
           

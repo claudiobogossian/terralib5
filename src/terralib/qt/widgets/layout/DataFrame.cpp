@@ -405,14 +405,24 @@ void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid
 {
   m_data = al.get();
   if(m_data == 0)
+  {
+    QPixmap* pix = m_mapDisplay->getDisplayPixmap();
+    pix->fill(Qt::gray);
+    m_mapDisplay->update();
     return;
+  }
 
   m_dataChanged = true;
   m_mapDisplay->changeData(al, nsrid);
   m_visibleLayers.clear();
   getLayerList(al, m_visibleLayers);
   if(m_visibleLayers.size() == 0)
+  {
+    QPixmap* pix = m_mapDisplay->getDisplayPixmap();
+    pix->fill(Qt::gray);
+    m_mapDisplay->update();
     return;
+  }
 
   //m_mapDisplay->setLayerList(m_visibleLayers);
   m_mapDisplay->refresh();
@@ -587,6 +597,9 @@ double te::qt::widgets::DataFrame::getDataUnitToMilimeter()
 
 void te::qt::widgets::DataFrame::drawButtonClicked()
 {
+  if(m_data == 0)
+    return;
+
   // verificar se mudou a lista de layers visiveis
   m_dataChanged = false;
   std::list<te::map::AbstractLayerPtr>::iterator it, mit;
@@ -837,7 +850,6 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
     if(type == QEvent::DragEnter)
     {
       QDragEnterEvent* dragEnterEvent = (QDragEnterEvent*)e;
-      m_mapDisplay->setAcceptDrops(true);
       m_mapDisplay->dragEnterEvent(dragEnterEvent);
       return true;
     }
