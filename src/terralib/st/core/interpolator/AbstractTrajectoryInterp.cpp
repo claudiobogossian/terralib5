@@ -27,6 +27,13 @@
 
 #include "AbstractTrajectoryInterp.h"
 
+te::st::AbstractTrajectoryInterp::AbstractTrajectoryInterp()
+{
+}
+
+te::st::AbstractTrajectoryInterp::~AbstractTrajectoryInterp()
+{
+}
 
 
 

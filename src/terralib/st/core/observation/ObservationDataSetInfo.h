@@ -264,7 +264,7 @@ namespace te
         std::string getId() const;
                 
         /*! \brief Virtual destructor. */
-        virtual ~ObservationDataSetInfo() { }; 
+        virtual ~ObservationDataSetInfo(); 
 
       protected:
 

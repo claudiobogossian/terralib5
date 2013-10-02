@@ -132,6 +132,9 @@ int te::st::PointCoverageIterator::getInt() const
   return atoi(aux->second.operator[](0).toString().c_str()); 
 }
 
+te::st::PointCoverageIterator::~PointCoverageIterator() 
+{   
+}
 
 
 

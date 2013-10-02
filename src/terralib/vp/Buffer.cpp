@@ -83,11 +83,11 @@ te::map::AbstractLayerPtr te::vp::Buffer(const te::map::AbstractLayerPtr& inputL
   //Lógica para execução da operação, em memória ou via query.
   if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
   {
-    //te::vp::SetBufferQuery(outputDataSet.get(), distance, bufferPolygonRule, levels);
+    //te::vp::BufferQuery(outputDataSet.get(), distance, bufferPolygonRule, levels);
   }
   else
   {
-    te::vp::SetBuffer(outputDataSet.get(), distance, bufferPolygonRule, levels);
+    te::vp::BufferMemory(outputDataSet.get(), distance, bufferPolygonRule, levels);
   }
 
   //Entra nessa condição caso o usuário queira dissolver as bordas que se tocam entre as geometrias resultantes.
@@ -155,10 +155,10 @@ te::da::DataSetType* te::vp::GetDataSetType(const te::map::AbstractLayerPtr& inp
   return dsType;
 }
 
-void te::vp::SetBuffer(te::mem::DataSet* dataSet,
-                      const std::map<te::gm::Geometry*, double>& distance,
-                      const int& bufferPolygonRule,
-                      const int& levels)
+void te::vp::BufferMemory(te::mem::DataSet* dataSet,
+                          const std::map<te::gm::Geometry*, double>& distance,
+                          const int& bufferPolygonRule,
+                          const int& levels)
 {
   std::map<te::gm::Geometry*, double>::const_iterator it = distance.begin();
   dataSet->moveFirst();
@@ -234,6 +234,15 @@ void te::vp::SetBuffer(te::mem::DataSet* dataSet,
       }
     break;
   }
+}
+
+void te::vp::BufferQuery(te::mem::DataSet* dataSet,
+                        const std::map<te::gm::Geometry*, double>& distance,
+                        const int& bufferPolygonRule,
+                        const int& levels)
+{
+  //te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(firstLayer.get());
+  //te::da::DataSourcePtr dataSource = te::da::GetDataSource(firstDSLayer->getDataSourceId(), true);
 }
 
 te::mem::DataSet* te::vp::SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 

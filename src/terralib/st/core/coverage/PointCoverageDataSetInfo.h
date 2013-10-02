@@ -163,7 +163,7 @@ namespace te
 
         
         /*! \brief Virtual destructor. */
-        virtual ~PointCoverageDataSetInfo() { }; 
+        virtual ~PointCoverageDataSetInfo(); 
 
       protected:
 

@@ -28,8 +28,8 @@
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
 
-#include "core/loader/STDataLoaderFromDSFactory.h"
-#include "core/loader/STDataLoaderFromMemDSFactory.h"
+#include "loader/STDataLoaderFromDSFactory.h"
+#include "loader/STDataLoaderFromMemDSFactory.h"
 #include "Config.h"
 #include "Module.h"
 

@@ -28,14 +28,14 @@
 #define __TERRALIB_ST_INTERNAL_STDATALOADER_H
 
 //TerraLib
-#include "../../../common/Enums.h"
-#include "../../../geometry/Enums.h"
-#include "../../../geometry/Envelope.h"
-#include "../../../datatype/Enums.h"
+#include "../../common/Enums.h"
+#include "../../geometry/Enums.h"
+#include "../../geometry/Envelope.h"
+#include "../../datatype/Enums.h"
 
 //ST
-#include "../../Config.h"
-#include "../coverage/CoverageSeriesDataSetInfo.h"
+#include "../Config.h"
+#include "../core/coverage/CoverageSeriesDataSetInfo.h"
 
 //STL
 #include <memory>
@@ -577,12 +577,12 @@ namespace te
         //@}
         
         /*! \brief Virtual destructor. */
-        virtual ~STDataLoader() { };
+        virtual ~STDataLoader();
 
       protected:
 
         /*! \brief Protected constructor */
-        STDataLoader() {};
+        STDataLoader();
     };
 
   } // end namespace st

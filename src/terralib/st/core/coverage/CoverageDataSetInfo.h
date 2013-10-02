@@ -65,7 +65,7 @@ namespace te
         /*!
           \brief Constructor
         */
-        CoverageDataSetInfo() { };
+        CoverageDataSetInfo();
         
         /*!
           \brief It returns the type of the coverage
@@ -96,7 +96,7 @@ namespace te
         virtual const std::vector<int>& getTimePropIdxs() const = 0;
         
         /*! \brief Virtual destructor. */
-        virtual ~CoverageDataSetInfo() { };        
+        virtual ~CoverageDataSetInfo();        
     };
   } // end namespace st
 }   // end namespace te

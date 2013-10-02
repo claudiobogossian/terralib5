@@ -517,7 +517,7 @@ namespace te
         //@}
                                                 
         /*! \brief Virtual destructor. */
-        virtual ~TimeSeries(); 
+        virtual ~TimeSeries();
 
       private:
         

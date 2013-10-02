@@ -151,8 +151,10 @@ void te::qt::widgets::ScatterChart::setScatterStyle(te::qt::widgets::ScatterStyl
   delete m_scatterStyle;
   m_scatterStyle = newSymbol;
 
+  //Updating the Chart's symbol based on the current style
   setSymbol(m_scatterStyle->getSymbol());
 
+  //Updating the selection symbol based on the current style;
   QwtSymbol* selSymbol = new QwtSymbol( symbol()->style(), symbol()->brush().color().darker (180 ), symbol()->pen().color().darker( 180), symbol()->size());
   QPixmap selPixmap = symbol()->pixmap();
   selPixmap.fill(m_selColor);

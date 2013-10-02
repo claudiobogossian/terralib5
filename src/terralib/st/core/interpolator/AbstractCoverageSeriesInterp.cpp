@@ -27,6 +27,12 @@
 
 #include "AbstractCoverageSeriesInterp.h"
 
+te::st::AbstractCoverageSeriesInterp::AbstractCoverageSeriesInterp()
+{
+}
 
+te::st::AbstractCoverageSeriesInterp::~AbstractCoverageSeriesInterp()
+{
+}
 
 

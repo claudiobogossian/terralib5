@@ -27,4 +27,10 @@
 #include "STDataLoaderImpl.h"
 
 
+te::st::STDataLoaderImpl::STDataLoaderImpl()
+{
+}
 
+te::st::STDataLoaderImpl::~STDataLoaderImpl()
+{
+}

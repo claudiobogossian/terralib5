@@ -156,7 +156,7 @@ namespace te
         te::dt::DateTime* getTime() const;        
                
         /*! \brief Virtual destructor. */
-        virtual ~TrajectoryIterator() { }  
+        virtual ~TrajectoryIterator();
 
       private:
 

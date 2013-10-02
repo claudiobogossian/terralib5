@@ -30,61 +30,10 @@ te::st::Coverage::Coverage()
 {
 }
 
-/*
-te::st::Coverage* te::st::Coverage::after(te::dt::DateTime* dt) const
-{
-  te::dt::DateTimePeriod* period = getTemporalExtent();
-  std::unique_ptr<te::dt::DateTimeInstant> finalTime(period->getFinalInstant());
-  
-  if(dt->operator<(*finalTime.get()))
-    return static_cast<te::st::Coverage*>(clone());
-  return 0;
-}
+te::st::Coverage::~Coverage() 
+{ 
+}    
 
-te::st::Coverage* te::st::Coverage::afterOrAt(te::dt::DateTime* dt) const
-{
-  te::dt::DateTimePeriod* period = getTemporalExtent();
-  std::unique_ptr<te::dt::DateTimeInstant> finalTime(period->getFinalInstant());
-  
-  if(dt->operator<(*finalTime.get()) || dt->operator==(*finalTime.get()))
-    return static_cast<te::st::Coverage*>(clone());
-  return 0; 
-}
 
-te::st::Coverage* te::st::Coverage::during(te::dt::DateTimePeriod* dt, bool includeInitTime, bool includeFinalTime) const
-{
-  te::dt::DateTimePeriod* period = getTemporalExtent();
-  std::unique_ptr<te::dt::DateTimeInstant> initialTime(period->getInitialInstant());
-  std::unique_ptr<te::dt::DateTimeInstant> finalTime(period->getFinalInstant());
-  
-  if( (dt->operator>(*initialTime.get()) || dt->operator==(*initialTime.get()))
-      && (dt->operator<(*finalTime.get()) || dt->operator==(*finalTime.get())))
-  {
-    return static_cast<te::st::Coverage*>(clone());
-  }
-  
-  return 0;
-}
-
-te::st::Coverage* te::st::Coverage::before(te::dt::DateTime* dt) const
-{
-  te::dt::DateTimePeriod* period = getTemporalExtent();
-  std::unique_ptr<te::dt::DateTimeInstant> initialTime(period->getInitialInstant());
-  
-  if(dt->operator>(*initialTime.get()))
-    return static_cast<te::st::Coverage*>(clone());
-  return 0;
-}
-
-te::st::Coverage* te::st::Coverage::beforeOrAt(te::dt::DateTime* dt) const
-{
-  te::dt::DateTimePeriod* period = getTemporalExtent();
-  std::unique_ptr<te::dt::DateTimeInstant> initialTime(period->getInitialInstant());
-  
-  if(dt->operator>(*initialTime.get()) || dt->operator==(*initialTime.get()))
-    return static_cast<te::st::Coverage*>(clone());
-  return 0;
-}
-*/
 
 
