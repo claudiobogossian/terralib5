@@ -97,6 +97,9 @@ te::st::Coverage* te::st::CoverageSeriesIterator::getCoverage() const
   return m_it->second.get(); 
 }
 
+te::st::CoverageSeriesIterator::~CoverageSeriesIterator() 
+{   
+}
 
 
 

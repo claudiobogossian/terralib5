@@ -59,12 +59,12 @@ namespace te
         std::auto_ptr<te::dt::AbstractData> estimate(const TimeSeries& ts, te::dt::DateTime* time) const;
         
         /*! \brief Virtual destructor. */
-        virtual ~NearestValueAtTimeInterp() { }; 
+        virtual ~NearestValueAtTimeInterp(); 
 
       protected:
 
         /*! \brief Constructor. */
-        NearestValueAtTimeInterp() { };             
+        NearestValueAtTimeInterp();             
      };
 
   } // end namespace st

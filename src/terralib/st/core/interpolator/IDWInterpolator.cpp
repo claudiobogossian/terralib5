@@ -33,7 +33,14 @@
 #include "IDWInterpolator.h"
 #include "../coverage/PointCoverage.h"
 
-                                             
+te::st::IDWInterpolator::IDWInterpolator()
+{
+}
+
+te::st::IDWInterpolator::~IDWInterpolator()
+{
+}                         
+
 std::auto_ptr<te::dt::AbstractData> te::st::IDWInterpolator::estimate(const te::st::PointCoverage& cv, unsigned int p, const te::gm::Point& l)
 {
   std::vector<double> di; //inverso da distancia ao quadrado ao ponto i: 1/(distance)2

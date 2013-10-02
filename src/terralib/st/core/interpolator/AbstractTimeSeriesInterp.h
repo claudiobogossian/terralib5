@@ -94,12 +94,12 @@ namespace te
         virtual std::auto_ptr<te::dt::AbstractData> estimate(const TimeSeries& ts, te::dt::DateTime* time) const = 0;
         
         /*! \brief Virtual destructor. */
-        virtual ~AbstractTimeSeriesInterp() {}; 
+        virtual ~AbstractTimeSeriesInterp(); 
 
       protected:
 
         /*! \brief Constructor. */
-        AbstractTimeSeriesInterp() { };             
+        AbstractTimeSeriesInterp();             
      };
 
   } // end namespace st

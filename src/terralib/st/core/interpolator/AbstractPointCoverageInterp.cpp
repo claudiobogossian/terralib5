@@ -29,4 +29,10 @@
 #include "AbstractPointCoverageInterp.h"
 
 
+te::st::AbstractPointCoverageInterp::AbstractPointCoverageInterp()
+{
+}
 
+te::st::AbstractPointCoverageInterp::~AbstractPointCoverageInterp()
+{
+}

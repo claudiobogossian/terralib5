@@ -95,12 +95,12 @@ namespace te
         virtual std::auto_ptr<Coverage> estimate(const CoverageSeries& cvs, te::dt::DateTime* time) const = 0;
         
         /*! \brief Virtual destructor. */
-        virtual ~AbstractCoverageSeriesInterp() {}; 
+        virtual ~AbstractCoverageSeriesInterp(); 
 
       protected:
 
         /*! \brief Constructor. */
-        AbstractCoverageSeriesInterp() { };             
+        AbstractCoverageSeriesInterp();             
      };
   } // end namespace st
 }   // end namespace te

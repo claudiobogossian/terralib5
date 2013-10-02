@@ -195,20 +195,26 @@ bool te::st::ObservationDataSet::isAfterEnd() const
 std::auto_ptr<te::st::Observation> te::st::ObservationDataSet::getObservation() const
 {
   std::auto_ptr<te::dt::DateTime> phTime(m_ds->getDateTime(m_obst.getBeginTimePropIdx()));
-  std::auto_ptr<te::dt::DateTimePeriod> vlTime(0);
-  std::auto_ptr<te::dt::DateTimeInstant> rsTime(0);
+  std::auto_ptr<te::dt::DateTime> vlTime(0);
+  std::auto_ptr<te::dt::DateTime> rsTime(0);
 
   if(m_obst.getVlBeginTimePropIdx()>-1)
-    vlTime = static_cast<std::auto_ptr<te::dt::DateTimePeriod> >(m_ds->getDateTime(m_obst.getVlBeginTimePropIdx()));
+    vlTime = m_ds->getDateTime(m_obst.getVlBeginTimePropIdx());
 
   if(m_obst.getRsTimePropIdx()>-1)
-    rsTime = static_cast<std::auto_ptr<te::dt::DateTimeInstant> >(m_ds->getDateTime(m_obst.getRsTimePropIdx()));
+    rsTime = m_ds->getDateTime(m_obst.getRsTimePropIdx());
 
   boost::ptr_vector<te::dt::AbstractData> obsData;
   for(std::size_t i = 0; i<m_obst.getObsPropIdxs().size(); ++i)
     obsData.push_back(m_ds->getValue(m_obst.getObsPropIdxs()[i]));
 
-  return std::auto_ptr<te::st::Observation>(new Observation(phTime.release(),rsTime.release(),vlTime.release(),obsData));
+  return std::auto_ptr<te::st::Observation>(new 
+    Observation(phTime.release(),static_cast<te::dt::DateTimeInstant*>(rsTime.release()),
+                static_cast<te::dt::DateTimePeriod*>(vlTime.release()),obsData));
+}
+
+te::st::ObservationDataSet::~ObservationDataSet()
+{
 }
 
 

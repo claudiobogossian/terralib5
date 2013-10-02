@@ -27,5 +27,11 @@
 #include "CoverageDataSetInfo.h"
 
 
+te::st::CoverageDataSetInfo::CoverageDataSetInfo() 
+{ 
+}
 
+te::st::CoverageDataSetInfo::~CoverageDataSetInfo() 
+{ 
+}
 

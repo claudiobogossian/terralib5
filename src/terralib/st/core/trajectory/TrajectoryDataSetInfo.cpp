@@ -80,4 +80,8 @@ std::string te::st::TrajectoryDataSetInfo::getId() const
   return m_id;
 }
 
+te::st::TrajectoryDataSetInfo::~TrajectoryDataSetInfo()
+{
+}
+
 

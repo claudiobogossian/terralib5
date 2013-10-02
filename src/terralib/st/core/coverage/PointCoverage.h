@@ -219,7 +219,7 @@ namespace te
         //@}
 
         /*! \brief Virtual destructor. */
-        virtual ~PointCoverage() { }   
+        virtual ~PointCoverage();
 
        protected:
           

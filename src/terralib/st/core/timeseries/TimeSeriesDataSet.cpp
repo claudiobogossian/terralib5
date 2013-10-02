@@ -221,20 +221,23 @@ std::auto_ptr<te::st::TimeSeries> te::st::TimeSeriesDataSet::getTimeSeries(int i
   {
     //Get the time series location if there is one
     if(m_type.getGeomPropIdx()>-1)
-      result->setLocation(ds->getGeometry(m_type.getGeomPropIdx()));
+    {
+      std::auto_ptr<te::gm::Geometry> geom(ds->getGeometry(m_type.getGeomPropIdx()));
+      result->setLocation(geom.release());
+    }
 
     //Get time and value of time series
-    te::dt::DateTime* time = ds->getDateTime(m_type.getBeginTimePropIdx());
-    te::dt::AbstractData* value = ds->getValue(idx);
-    result->add(time, value);
+    std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_type.getBeginTimePropIdx()));
+    std::auto_ptr<te::dt::AbstractData> value(ds->getValue(idx));
+    result->add(time.release(), value.release());
   }
 
   while(ds->moveNext())
   {
     //Get time and value of time series
-    te::dt::DateTime* time = ds->getDateTime(m_type.getBeginTimePropIdx());
-    te::dt::AbstractData* value = ds->getValue(idx);
-    result->add(time, value);
+    std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_type.getBeginTimePropIdx()));
+    std::auto_ptr<te::dt::AbstractData> value(ds->getValue(idx));
+    result->add(time.release(), value.release());
   }
   return result;
 }
@@ -257,12 +260,15 @@ void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInt
     {
       //Get the time series location if there is one
       if(m_type.getGeomPropIdx()>-1)
-        result[i]->setLocation(ds->getGeometry(m_type.getGeomPropIdx()));
+      {
+        std::auto_ptr<te::gm::Geometry> geom(ds->getGeometry(m_type.getGeomPropIdx()));
+        result[i]->setLocation(geom.release());
+      }
 
       //Get time and value of time series
-      te::dt::DateTime* time = ds->getDateTime(m_type.getBeginTimePropIdx());
-      te::dt::AbstractData* value = ds->getValue(m_type.getValuePropIdx()[i]);
-      result[i]->add(time, value);
+      std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_type.getBeginTimePropIdx()));
+      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_type.getValuePropIdx()[i]));
+      result[i]->add(time.release(), value.release());
     }
   }
 
@@ -271,9 +277,9 @@ void te::st::TimeSeriesDataSet::getTimeSeriesSet(  te::st::AbstractTimeSeriesInt
     for(unsigned int i = 0; i<sz; ++i)
     {
       //Get time and value of time series
-      te::dt::DateTime* time = ds->getDateTime(m_type.getBeginTimePropIdx());
-      te::dt::AbstractData* value = ds->getValue(m_type.getValuePropIdx()[i]);
-      result[i]->add(time, value);
+      std::auto_ptr<te::dt::DateTime> time(ds->getDateTime(m_type.getBeginTimePropIdx()));
+      std::auto_ptr<te::dt::AbstractData> value(ds->getValue(m_type.getValuePropIdx()[i]));
+      result[i]->add(time.release(), value.release());
     }
   }
   return;

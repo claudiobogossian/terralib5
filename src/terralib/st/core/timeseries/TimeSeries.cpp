@@ -475,4 +475,8 @@ void te::st::TimeSeries::getResultOrderedByTime(const double& v, te::dt::BasicRe
   return;
 }
 
+te::st::TimeSeries::~TimeSeries()
+{  
+}
+
 

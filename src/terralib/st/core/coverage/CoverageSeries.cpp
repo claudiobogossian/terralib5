@@ -392,5 +392,9 @@ te::st::CoverageSeries::getPatch(const te::gm::Geometry& /*e*/, te::gm::SpatialR
    return std::auto_ptr<te::st::CoverageSeries>();
 }
 
+te::st::CoverageSeries::~CoverageSeries() 
+{
+
+}
 
 
