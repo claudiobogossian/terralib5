@@ -311,6 +311,18 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>m_SRSRecentTableWidget</tabstop>
+  <tabstop>m_okPushButton</tabstop>
+  <tabstop>m_searchedSRSLineEdit</tabstop>
+  <tabstop>m_SRSTreeWidget</tabstop>
+  <tabstop>m_addSRSToolButton</tabstop>
+  <tabstop>m_removeSRSToolButton</tabstop>
+  <tabstop>m_editSRSToolButton</tabstop>
+  <tabstop>m_cancelPushButton</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
+  <tabstop>m_p4descPlainTextEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

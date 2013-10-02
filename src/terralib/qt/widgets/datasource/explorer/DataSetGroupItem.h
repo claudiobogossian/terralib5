@@ -30,12 +30,17 @@
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "AbstractDataSourceTreeItem.h"
 
+// STL
+#include <Vector>
+
 namespace te
 {
   namespace qt
   {
     namespace widgets
     {
+      class DataSetItem;
+
       class TEQTWIDGETSEXPORT DataSetGroupItem : public AbstractDataSourceTreeItem
       {
         Q_OBJECT
@@ -64,11 +69,14 @@ namespace te
 
           bool isChecked() const;
 
+          void checkState();
+
         private:
 
           te::da::DataSourceInfoPtr m_ds;
           bool m_checked;
           mutable bool m_isInvalid;
+          std::vector<DataSetItem*> m_items;
       }; 
     } // end namespace widgets
   }   // end namespace qt
