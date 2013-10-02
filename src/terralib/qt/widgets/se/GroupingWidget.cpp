@@ -61,6 +61,7 @@ te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags
   connect(m_colorBar, SIGNAL(colorBarChanged()), this, SLOT(onColorBarChanged()));
   connect(m_ui->m_typeComboBox, SIGNAL(activated(int)), this, SLOT(onTypeComboBoxActivated(int)));
   connect(m_ui->m_attrComboBox, SIGNAL(activated(int)), this, SLOT(onAttrComboBoxActivated(int)));
+  connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
 
   initialize();
 }

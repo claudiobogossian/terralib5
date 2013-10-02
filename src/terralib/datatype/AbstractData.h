@@ -32,6 +32,9 @@
 // STL
 #include <string>
 
+// Boost
+#include <boost/shared_ptr.hpp>
+
 namespace te
 {
   namespace dt
@@ -88,6 +91,9 @@ namespace te
     {
       return a.clone();
     }
+	
+	//Typedef 
+    typedef boost::shared_ptr<AbstractData>       AbstractDataShrPtr;
 
   } // end namespace dt
 }   // end namespace te

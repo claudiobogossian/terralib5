@@ -72,6 +72,7 @@ te::qt::widgets::ColorMapWidget::ColorMapWidget(QWidget* parent, Qt::WindowFlags
   // Signals & slots
   connect(m_cbWidget, SIGNAL(colorBarChanged()), this, SLOT(onApplyPushButtonClicked()));
   connect(m_ui->m_bandComboBox, SIGNAL(activated(QString)), this, SLOT(onBandSelected(QString)));
+  connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
 }
 
 te::qt::widgets::ColorMapWidget::~ColorMapWidget()

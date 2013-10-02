@@ -27,6 +27,7 @@
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
+#include "../datatype/DateTimePeriod.h"
 #include "DataSet.h"
 #include "DataSource.h"
 #include "Transactor.h"
@@ -591,6 +592,13 @@ void te::stmem::Transactor::add(const std::string& name, te::da::DataSetType* t,
  {
    DataSet* ds = getData(name);
    return std::auto_ptr<te::da::DataSet>(ds->filter(e, sr, dt, tr));
+ }
+
+ std::auto_ptr<te::dt::DateTimePeriod> 
+ te::stmem::Transactor::getTemporalExtent(const std::string& name)
+ {
+   DataSet* ds = getData(name);
+   return std::auto_ptr<te::dt::DateTimePeriod>(ds->getTemporalExtent());
  }
 
 // Protected Methods
