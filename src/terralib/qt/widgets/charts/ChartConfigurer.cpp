@@ -20,20 +20,14 @@
 /*!
   \file terralib/qt/widgets/charts/ChartConfigurer.cpp
   
-  \brief A Symbology Enconding visitor that configures a given chart based on symbolizers elements.
+  \brief A Symbology Enconding visitor that configures a given chart based on symbolizer elements.
 */
 
 // TerraLib
 
-#include "../../../common/STLUtils.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../maptools/Utils.h"
-#include "../../../maptools/ExternalGraphicRendererManager.h"
-#include "../../../maptools/MarkRendererManager.h"
-#include "../../../se/ExternalGraphic.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Graphic.h"
-#include "../../../se/GraphicStroke.h"
 #include "../../../se/LineSymbolizer.h"
 #include "../../../se/Mark.h"
 #include "../../../se/PointSymbolizer.h"
@@ -42,18 +36,11 @@
 #include "../../../se/Symbolizer.h"
 #include "../../../se/Style.h"
 #include "../../../se/Rule.h"
-#include "../../../se/Utils.h"
 #include "ChartConfigurer.h"
 #include "HistogramChart.h"
 #include "HistogramStyle.h"
 #include "ScatterChart.h"
 #include "ScatterStyle.h"
-
-// STL
-#include <cassert>
-#include <cstdlib>
-#include <fstream>
-#include <vector>
 
 //QWT
 #include <qwt_plot_seriesitem.h>
@@ -107,12 +94,8 @@ void te::qt::widgets::ChartConfigurer::visit(const te::se::PolygonSymbolizer& vi
 void te::qt::widgets::ChartConfigurer::visit(const te::se::LineSymbolizer& visited)
 {
   const te::se::Stroke* stroke = visited.getStroke();
-  if(!stroke)
-  {
-    return;
-  }
-
-  config(stroke);
+  if(stroke)
+    config(stroke);
 }
 
 void te::qt::widgets::ChartConfigurer::visit(const te::se::PointSymbolizer& visited)
@@ -137,11 +120,19 @@ void te::qt::widgets::ChartConfigurer::config(const te::se::Stroke* stroke)
   switch(chartType)
   {
     case(te::qt::widgets::SCATTER_CHART):
-      static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->getScatterStyle()->setStroke(stroke->clone());
+    {
+      te::qt::widgets::ScatterStyle* style = static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->getScatterStyle();
+      style->setStroke(stroke->clone());
+      static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->setScatterStyle(style);
       break;
+    }
     case(te::qt::widgets::HISTOGRAM_CHART):
-      static_cast<te::qt::widgets::HistogramChart*>(m_chart->getChart())->getHistogramStyle()->setStroke(stroke->clone());
+    {
+      te::qt::widgets::HistogramStyle* style = static_cast<te::qt::widgets::HistogramChart*>(m_chart->getChart())->getHistogramStyle();
+      style->setStroke(stroke->clone());
+      static_cast<te::qt::widgets::HistogramChart*>(m_chart->getChart())->setHistogramStyle(style);
       break;
+    }
   }
 }
 
@@ -149,15 +140,22 @@ void te::qt::widgets::ChartConfigurer::config(const te::se::Fill* fill)
 {
   int chartType = m_chart->getChart()->rtti();
 
-
   switch(chartType)
   {
     case(te::qt::widgets::SCATTER_CHART):
-      static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->getScatterStyle()->setFill(fill->clone());
+    {
+      te::qt::widgets::ScatterStyle* style = static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->getScatterStyle();
+      style->setFill(fill->clone());
+      static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->setScatterStyle(style);
       break;
+    }
     case(te::qt::widgets::HISTOGRAM_CHART):
-      static_cast<te::qt::widgets::HistogramChart*>(m_chart->getChart())->getHistogramStyle()->setFill(fill->clone());
+    {
+      te::qt::widgets::HistogramStyle* style = static_cast<te::qt::widgets::HistogramChart*>(m_chart->getChart())->getHistogramStyle();
+      style->setFill(fill->clone());
+      static_cast<te::qt::widgets::HistogramChart*>(m_chart->getChart())->setHistogramStyle(style);
       break;
+    }
   }
 }
 
@@ -165,7 +163,9 @@ void te::qt::widgets::ChartConfigurer::config(const te::se::Graphic* graphic)
 {
   int chartType = m_chart->getChart()->rtti();
   if(chartType == te::qt::widgets::SCATTER_CHART)
-    static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->getScatterStyle()->setGraphic(graphic->clone());
+  {
+    te::qt::widgets::ScatterStyle* style = static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->getScatterStyle();
+    style->setGraphic(graphic->clone());
+    static_cast<te::qt::widgets::ScatterChart*>(m_chart->getChart())->setScatterStyle(style);
+  }
 }
-
-

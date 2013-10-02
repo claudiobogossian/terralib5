@@ -153,7 +153,7 @@ namespace te
         std::string getId() const;
  
         /*! \brief Virtual destructor. */
-        virtual ~TimeSeriesDataSetInfo() { }; 
+        virtual ~TimeSeriesDataSetInfo(); 
 
       protected:
 

@@ -34,6 +34,7 @@
 #include "../../../maptools/Grouping.h"
 #include "../../../maptools/GroupingAlgorithms.h"
 #include "../../../maptools/GroupingItem.h"
+#include "../../../maptools/Utils.h"
 #include "../../../se/Utils.h"
 #include "../colorbar/ColorBar.h"
 #include "../se/SymbologyPreview.h"
@@ -458,11 +459,7 @@ int te::qt::widgets::GroupingWidget::getGeometryType()
 {
   assert(m_layer.get());
 
-  std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
-
-  te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(dsType.get());
-
-  return geometryProperty->getGeometryType();
+  return te::map::GetGeomType(m_layer);
 }
 
 void te::qt::widgets::GroupingWidget::buildSymbolizer()

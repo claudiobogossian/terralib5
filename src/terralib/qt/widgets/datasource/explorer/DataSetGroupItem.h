@@ -31,7 +31,7 @@
 #include "AbstractDataSourceTreeItem.h"
 
 // STL
-#include <Vector>
+#include <vector>
 
 namespace te
 {

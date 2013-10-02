@@ -29,11 +29,11 @@
 #define __TERRALIB_ST_INTERNAL_STDATALOADERFROMMEMDS_H
 
 //ST
-#include "../../Config.h"
+#include "../Config.h"
 #include "STDataLoaderImpl.h"
 
 //TerraLib
-#include "../../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSource.h"
 
 //Forward declarations
 namespace te { namespace da { class DataSourceInfo; } } 
@@ -128,7 +128,7 @@ namespace te
         te::gm::Envelope getSpatialExtent(const TrajectoryDataSetInfo& info);
         //@}
     
-        virtual ~STDataLoaderFromMemDS() { };     
+        virtual ~STDataLoaderFromMemDS();     
     
       protected:
 

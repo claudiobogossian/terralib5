@@ -125,7 +125,7 @@ namespace te
         std::string getId() const;
  
         /*! \brief Virtual destructor. */
-        virtual ~TrajectoryDataSetInfo() { }; 
+        virtual ~TrajectoryDataSetInfo(); 
 
       protected:
 

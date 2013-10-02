@@ -180,3 +180,7 @@ std::string te::st::ObservationDataSetInfo::getId() const
 {
   return te::common::Convert2UCase(m_dsInfo.getId()+"&"+m_dsName);
 }
+
+te::st::ObservationDataSetInfo::~ObservationDataSetInfo()
+{
+}

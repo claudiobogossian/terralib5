@@ -30,7 +30,7 @@
 // STL
 #include <cassert>
 #include <cmath>
-#include <stdlib.h>
+#include <cstdlib>
 
 te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties)
   : m_type(type),
@@ -39,7 +39,8 @@ te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties
     m_contourWidth(1),
     m_height(24),
     m_barWidth(16),
-    m_isVisible(true)
+    m_isVisible(true),
+    m_maxValue(0.0)
 {
   assert(!properties.empty());
 
@@ -59,7 +60,8 @@ te::map::Chart::Chart(ChartType type, const std::vector<std::string>& properties
     m_contourWidth(1),
     m_height(24),
     m_barWidth(16),
-    m_isVisible(true)
+    m_isVisible(true),
+    m_maxValue(0.0)
 {
   assert(!properties.empty());
   assert(properties.size() == colors.size());
@@ -146,6 +148,16 @@ std::size_t te::map::Chart::getBarWidth() const
 void te::map::Chart::setBarWidth(std::size_t width)
 {
   m_barWidth = width;
+}
+
+void te::map::Chart::setMaxValue(double value)
+{
+  m_maxValue = value;
+}
+
+double te::map::Chart::getMaxValue() const
+{
+  return m_maxValue;
 }
 
 bool te::map::Chart::isVisible() const

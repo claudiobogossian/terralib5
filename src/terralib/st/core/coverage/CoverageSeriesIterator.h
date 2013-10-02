@@ -157,7 +157,7 @@ namespace te
         te::st::Coverage* getCoverage() const;
         
         /*! \brief Virtual destructor. */
-        virtual ~CoverageSeriesIterator() { }  
+        virtual ~CoverageSeriesIterator();
 
       private:
 

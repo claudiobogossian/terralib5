@@ -59,12 +59,12 @@ namespace te
         std::auto_ptr<Coverage> estimate(const CoverageSeries& cvs, te::dt::DateTime* time) const;
         
         /*! \brief Virtual destructor. */
-        virtual ~NearestCoverageAtTimeInterp() {}; 
+        virtual ~NearestCoverageAtTimeInterp(); 
 
       protected:
 
         /*! \brief Constructor. */
-        NearestCoverageAtTimeInterp() { };             
+        NearestCoverageAtTimeInterp();             
      };
 
   } // end namespace st

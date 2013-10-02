@@ -25,25 +25,29 @@
 */
 
 //TerraLib
-#include "../../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../../dataaccess/datasource/DataSource.h"
-#include "../../../dataaccess/dataset/DataSet.h"
-#include "../../../dataaccess/utils/Utils.h"
-#include "../../../datatype/DateTimePeriod.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/utils/Utils.h"
+#include "../../datatype/DateTimePeriod.h"
 
 //ST
-#include "../../Exception.h"
-#include "../../Utils.h"
+#include "../Exception.h"
+#include "../Utils.h"
 #include "STDataLoaderFromDS.h"
-#include "../observation/ObservationDataSetInfo.h"
-#include "../trajectory/TrajectoryDataSetInfo.h"
-#include "../timeseries/TimeSeriesDataSetInfo.h"
-#include "../observation/ObservationDataSet.h"
-#include "../trajectory/TrajectoryDataSet.h"
-#include "../timeseries/TimeSeriesDataSet.h"
+#include "../core/observation/ObservationDataSetInfo.h"
+#include "../core/trajectory/TrajectoryDataSetInfo.h"
+#include "../core/timeseries/TimeSeriesDataSetInfo.h"
+#include "../core/observation/ObservationDataSet.h"
+#include "../core/trajectory/TrajectoryDataSet.h"
+#include "../core/timeseries/TimeSeriesDataSet.h"
 
 //STL
 #include <vector>
+
+te::st::STDataLoaderFromDS::STDataLoaderFromDS()
+{
+}
 
 std::auto_ptr<te::st::ObservationDataSet> 
 te::st::STDataLoaderFromDS::getDataSet(const ObservationDataSetInfo& info, 
@@ -314,4 +318,8 @@ te::st::STDataLoaderFromDS::buildDataSet(te::da::DataSet* ds, const TimeSeriesDa
 {
   
   return std::auto_ptr<TimeSeriesDataSet> (new TimeSeriesDataSet(ds, te::st::GetType(info), 0));
+}
+
+te::st::STDataLoaderFromDS::~STDataLoaderFromDS()
+{
 }

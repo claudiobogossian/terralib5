@@ -93,11 +93,7 @@ void te::qt::widgets::ScatterStyle::setFill(te::se::Fill* newFill)
 {
   if(!m_graphic->getMarks().empty())
   {
-  //Configuring a new mark
-  te::se::Mark* mark = new te::se::Mark();
-  mark->setFill(newFill);
-  mark->setStroke(m_graphic->getMarks()[0]->getStroke()->clone());
-  m_graphic->setMark(0, mark);
+  m_graphic->getMarks()[0]->setFill(newFill);
   }
   else
   {
@@ -121,11 +117,7 @@ void te::qt::widgets::ScatterStyle::setStroke(te::se::Stroke* newStroke)
 {
   if(!m_graphic->getMarks().empty())
   {
-  //Configuring a new mark
-  te::se::Mark* mark = new te::se::Mark();
-  mark->setFill(m_graphic->getMarks()[0]->getFill()->clone());
-  mark->setStroke(newStroke);
-  m_graphic->setMark(0, mark);
+    m_graphic->getMarks()[0]->setStroke(newStroke);
   }
   else
   {

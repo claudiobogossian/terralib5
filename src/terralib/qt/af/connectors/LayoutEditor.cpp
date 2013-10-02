@@ -105,7 +105,8 @@ void te::qt::af::LayoutEditor::onApplicationTriggered(te::qt::af::evt::Event* e)
       //painter.end();
 
       QColor selColor = ApplicationController::getInstance().getSelectionColor();
-      m_layoutEditor->drawLayersSelection(selColor);
+      m_layoutEditor->setSelectionColor(selColor);
+      m_layoutEditor->drawLayersSelection();
     }
     break;
 
@@ -127,6 +128,8 @@ void te::qt::af::LayoutEditor::onApplicationTriggered(te::qt::af::evt::Event* e)
 
     case te::qt::af::evt::DRAW_BUTTON_CLICKED:
     {
+      QColor selColor = ApplicationController::getInstance().getSelectionColor();
+      m_layoutEditor->setSelectionColor(selColor);
       m_layoutEditor->drawButtonClicked();
     }
     break;
