@@ -176,7 +176,7 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-64</y>
+               <y>0</y>
                <width>201</width>
                <height>194</height>
               </rect>
@@ -352,16 +352,17 @@
   <tabstop>m_fileLineEdit</tabstop>
   <tabstop>m_searchDatabaseToolButton</tabstop>
   <tabstop>m_allowIntermediateDirCheckBox</tabstop>
-  <tabstop>m_advancedOptionsGroupBox</tabstop>
-  <tabstop>m_spatialiteSchemaRadioButton</tabstop>
-  <tabstop>m_ogrSchemaRadioButton</tabstop>
-  <tabstop>m_createTeRasterMetadataCheckBox</tabstop>
-  <tabstop>m_hideSpatialMetatablesCheckBox</tabstop>
-  <tabstop>m_hideRasterTablesCheckBox</tabstop>
-  <tabstop>m_tablesToHideLineEdit</tabstop>
+  <tabstop>m_advancedConnectionOptionsCheckBox</tabstop>
   <tabstop>m_applyPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
+  <tabstop>m_hideRasterTablesCheckBox</tabstop>
+  <tabstop>m_tablesToHideLineEdit</tabstop>
+  <tabstop>m_ogrSchemaRadioButton</tabstop>
+  <tabstop>m_createTeRasterMetadataCheckBox</tabstop>
+  <tabstop>m_hideSpatialMetatablesCheckBox</tabstop>
+  <tabstop>m_spatialiteSchemaRadioButton</tabstop>
+  <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources/>
  <connections>

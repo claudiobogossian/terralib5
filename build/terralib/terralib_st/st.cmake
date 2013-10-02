@@ -1,8 +1,8 @@
 
 find_package(Boost ${_Boost_VERSION} COMPONENTS date_time REQUIRED)
 if(Boost_FOUND)
-  set (TE_DEP_LIBS ${Boost_LIBRARIES})
-  set (TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  set(TE_DEP_LIBS ${Boost_LIBRARIES})
+  set(TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
 # Definitions for windows compiling
@@ -11,10 +11,13 @@ if(WIN32)
 endif(WIN32)
 
 list (APPEND TE_DEP_LIBS 
-    terralib_common
+		terralib_common
+		terralib_dataaccess
 		terralib_datatype
 		terralib_geometry
 		terralib_raster
+		terralib_stmemory
+		terralib_plugin
     )
     
 
@@ -23,11 +26,15 @@ list (APPEND TE_DEP_LIBS
 set (
   _DIRS 
   .
-  coverage
-  interpolator
-  movingobject
-  observation
-  timeseries
+  core/coverage
+  core/event
+  core/interpolator
+  core/observation
+  core/timeseries
+  core/trajectory
+  loader
+  maptools
+  serialization
 )
 
 # Files in build tree

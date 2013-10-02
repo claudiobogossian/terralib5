@@ -22,7 +22,7 @@ endif()
 
 #Definitions for Windows compiling
 if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEMAPDLL  -DTEQTWIDGETSDLL -DBOOST_ALL_NO_LIB
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEQTWIDGETSDLL -DBOOST_ALL_NO_LIB
 		              -DUNICODE
 		              -DQT_LARGEFILE_SUPPORT
 		              -DQT_DLL
@@ -231,6 +231,12 @@ set (
   ${SRCDIR}/widgets/layer/selector/HiddenDataSetLayerSelector.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/selector" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/layout/DataFrame.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layout" MOC)
 
 set (
   HDRS_TO_MOC

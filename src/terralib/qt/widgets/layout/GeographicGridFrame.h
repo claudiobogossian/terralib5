@@ -59,7 +59,7 @@ namespace te
           void draw();
           void adjust();
           void paintEvent(QPaintEvent*);
-          bool eventFilter(QObject*, QEvent*);
+          void mouseMoveEvent(QMouseEvent*);      
       };
     } // end namespace widgets
   }   // end namespace qt

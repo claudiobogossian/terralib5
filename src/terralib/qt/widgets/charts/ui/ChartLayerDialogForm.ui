@@ -114,6 +114,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>m_okPushButton</tabstop>
+  <tabstop>m_cancelPushButton</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

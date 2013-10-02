@@ -101,7 +101,7 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
+               <y>-20</y>
                <width>252</width>
                <height>1017</height>
               </rect>
@@ -1064,10 +1064,10 @@
   <tabstop>m_schemaNameComboBox</tabstop>
   <tabstop>m_charsetComboBox</tabstop>
   <tabstop>m_advancedConnectionOptionsCheckBox</tabstop>
-  <tabstop>m_spatialTableEngineComboBox</tabstop>
-  <tabstop>m_tablesToHideLineEdit</tabstop>
-  <tabstop>m_createOGCMetadataCheckBox</tabstop>
-  <tabstop>m_createRasterMetadataCheckBox</tabstop>
+  <tabstop>m_openPushButton</tabstop>
+  <tabstop>m_closePushButton</tabstop>
+  <tabstop>m_testPushButton</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
   <tabstop>m_hideMetadataTablesCheckBox</tabstop>
   <tabstop>m_hideRasterTablesCheckBox</tabstop>
   <tabstop>m_maxPoolSizeSpinBox</tabstop>
@@ -1092,10 +1092,10 @@
   <tabstop>m_reportDataTruncationCheckBox</tabstop>
   <tabstop>m_noSchemaCheckBox</tabstop>
   <tabstop>m_clientInterativeCheckBox</tabstop>
-  <tabstop>m_openPushButton</tabstop>
-  <tabstop>m_testPushButton</tabstop>
-  <tabstop>m_closePushButton</tabstop>
-  <tabstop>m_helpPushButton</tabstop>
+  <tabstop>m_spatialTableEngineComboBox</tabstop>
+  <tabstop>m_createOGCMetadataCheckBox</tabstop>
+  <tabstop>m_tablesToHideLineEdit</tabstop>
+  <tabstop>m_createRasterMetadataCheckBox</tabstop>
   <tabstop>scrollArea_2</tabstop>
   <tabstop>m_sslCAPathLineEdit</tabstop>
   <tabstop>m_sslCALineEdit</tabstop>

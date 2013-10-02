@@ -89,6 +89,8 @@ namespace te
     TEDATAACCESSEXPORT bool HasDataSet(const std::string& datasourceId);
 
     TEDATAACCESSEXPORT DataSet* GetDataSet(const std::string& name, const std::string& datasourceId);
+    
+    TEDATAACCESSEXPORT DataSetType* GetDataSetType(const std::string& name, const std::string& datasourceId);
 
     /*!
       \brief Search for a data source with the informed id in the DataSourceManager.

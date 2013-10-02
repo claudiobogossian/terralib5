@@ -214,16 +214,16 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>m_featureRepoLineEdit</tabstop>
-  <tabstop>m_searchFeatureToolButton</tabstop>
   <tabstop>m_fileRadioButton</tabstop>
   <tabstop>m_urlRadioButton</tabstop>
   <tabstop>m_dirRadioButton</tabstop>
+  <tabstop>m_searchFeatureToolButton</tabstop>
+  <tabstop>m_featureRepoLineEdit</tabstop>
   <tabstop>m_datasourceTitleLineEdit</tabstop>
   <tabstop>m_datasourceDescriptionTextEdit</tabstop>
-  <tabstop>m_testPushButton</tabstop>
   <tabstop>m_openPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
+  <tabstop>m_testPushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
  </tabstops>
  <resources/>

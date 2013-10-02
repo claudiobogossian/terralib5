@@ -70,7 +70,7 @@ te::qt::widgets::QueryLayerBuilderWizard::QueryLayerBuilderWizard(QWidget* paren
 
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
-  this->setFixedSize(640, 480);
+  //this->setFixedSize(640, 480);
   this->setWindowTitle(tr("Query Layer Builder"));
 
   addPages();
@@ -246,6 +246,7 @@ void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
   m_dataSetPage->getWidget()->getDataSetNames(dataSetSelecteds);
 
   std::vector<std::string> inputProperties;
+  std::vector<std::string> geomProperties;
 
   //get properties for each data set
   for(size_t t = 0; t < dataSetSelecteds.size(); ++t)
@@ -272,13 +273,17 @@ void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
         std::string propName = dsType->getProperty(i)->getName();
         std::string fullName = alias + "." + propName;
 
-        inputProperties.push_back(fullName);
+        if(dsType->getProperty(i)->getType() == te::dt::GEOMETRY_TYPE)
+          geomProperties.push_back(fullName);
+        else
+          inputProperties.push_back(fullName);
       }
     }
   }
 
   //set values in other pages
   m_fieldPage->getWidget()->setInputValues(inputProperties);
+  m_fieldPage->getWidget()->setFixedOutputValues(geomProperties, "geometry");
   m_groupByPage->getWidget()->setInputValues(inputProperties);
   m_whereClausePage->getWidget()->setAttributeList(inputProperties);
   m_orderByPage->getWidget()->setAttributeList(inputProperties);

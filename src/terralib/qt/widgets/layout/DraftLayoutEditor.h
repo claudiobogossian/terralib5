@@ -54,7 +54,7 @@ namespace te
           QPixmap* getDraftPixmap();
           void resizeEvent(QResizeEvent*);
           void paintEvent(QPaintEvent*);
-          bool eventFilter(QObject*, QEvent*);
+          void mouseMoveEvent(QMouseEvent*);
 
         private:
           QPixmap m_draftPixmap;

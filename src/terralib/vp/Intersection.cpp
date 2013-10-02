@@ -25,8 +25,9 @@
 */
 
 // Terralib
-#include "../common/Translator.h"
 #include "../common/Exception.h"
+#include "../common/progress/TaskProgress.h"
+#include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
@@ -308,6 +309,13 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
   te::da::DataSetType* outputDt = CreateDataSetType(newName, firstMember.dt, firstMember.props, secondMember.dt, secondMember.props);
   te::mem::DataSet* outputDs = new te::mem::DataSet(outputDt);
 
+  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+
+  te::common::TaskProgress task("Processing intersection...");
+  task.setMessage("Wait while the intersection is being processed.");
+  task.setTotalSteps(firstMember.ds->size());
+  task.useTimer(true);
+
   while(firstMember.ds->moveNext())
   {
     std::auto_ptr<te::gm::Geometry> currGeom = firstMember.ds->getGeometry(fiGeomPropPos);
@@ -394,24 +402,18 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
         if(!firstMember.dt->getTitle().empty())
           name = firstMember.dt->getTitle() + "_" + firstMember.props[j]->getName();
 
-        if(!firstMember.ds->isNull(firstMember.props[j]->getName()))
-        {
           te::dt::AbstractData* ad = firstMember.ds->getValue(firstMember.props[j]->getName()).release();
 
           item->setValue(name, ad);
-        }
       }
 
       for(size_t j = 0; j < secondMember.props.size(); ++j)
       {
         std::string name = secondMember.dt->getTitle() + "_" + secondMember.props[j]->getName();
 
-        if(!secondMember.ds->isNull(secondMember.props[j]->getName()))
-        {
-          te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
+        te::dt::AbstractData* ad = secondMember.ds->getValue(secondMember.props[j]->getName()).release();
 
-          item->setValue(name, ad);
-        }
+        item->setValue(name, ad);
       }
 
       outputDs->moveNext();
@@ -421,11 +423,20 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
       if(!item->isNull(aux))
         outputDs->add(item);
     }
+    
+    if(task.isActive() == false)
+    {
+      delete outputDt;
+      delete outputDs;
+
+      throw Exception(TR_VP("Operation canceled!"));
+    }
+
+    task.pulse();
   }
 
   outputDs->moveBeforeFirst();
 
-  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
   resultPair.first = outputDt;
   resultPair.second = outputDs;
   return resultPair;
