@@ -312,7 +312,6 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
 
   te::common::TaskProgress task("Processing intersection...");
-  task.setMessage("Wait while the intersection is being processed.");
   task.setTotalSteps(firstMember.ds->size());
   task.useTimer(true);
 
