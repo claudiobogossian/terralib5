@@ -35,6 +35,7 @@
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/Sequence.h"
 #include "../dataaccess/dataset/UniqueKey.h"
+#include "../datatype/DateTimePeriod.h"
 
 #include "DataSet.h"
 #include "DataSource.h"
@@ -171,6 +172,12 @@ std::auto_ptr<te::da::DataSet> te::stmem::DataSource::getDataSet(const std::stri
   return m_transactor->getDataSet(name, e, sr, dt, tr, travType, connected);
 }
 
+std::auto_ptr<te::dt::DateTimePeriod> 
+te::stmem::DataSource::getTemporalExtent(const std::string& name)
+{
+  return m_transactor->getTemporalExtent(name);
+}
+
 ///protected Methods
 void te::stmem::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/) 
 {
@@ -187,7 +194,7 @@ bool te::stmem::DataSource::exists(const std::map<std::string, std::string>& /*d
   return false;
 }
 
-std::vector<std::string> te::stmem::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/) throw(te::da::Exception)
+std::vector<std::string> te::stmem::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/) 
 {
   return std::vector<std::string>();
 }

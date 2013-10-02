@@ -75,6 +75,9 @@ namespace te
           void adjustWidgetToFrameRect(const QRectF& r);
           double getScale();
           void setScale(double v);
+          void removeEventFilter(QObject*);
+          void installEventFilter(QObject*);
+          bool eventFilter(QObject*, QEvent*);
           te::map::AbstractLayer* getData();
           void setData(te::map::AbstractLayerPtr d, int nsrid = TE_UNKNOWN_SRS);
           bool transformEnvelope(te::gm::Envelope& e, int oldsrid, int newsrid);
@@ -94,8 +97,6 @@ namespace te
           void drawButtonClicked();
           QPixmap* getLastDisplayContent();
 
-          bool eventFilter(QObject*, QEvent*);
-
           void hide();
           void show();
           void lower();
@@ -110,7 +111,8 @@ namespace te
           //void createLegend();
           //void removeLegend();
 
-          void drawLayerSelection(QColor selColor);
+          void setSelectionColor(QColor selColor);
+          void drawLayerSelection();
 
         protected slots:
           void onDrawLayersFinished(const QMap<QString, QString>& errors);
@@ -129,7 +131,8 @@ namespace te
           bool m_dataChanged;
           te::map::AbstractLayer* m_data;
           std::list<te::map::AbstractLayerPtr> m_visibleLayers;
-
+          QColor m_selectionColor;
+          int m_mouseTask; // 0=none, 1=zoomin, 2=zoomout, 3=pan (sobre o dado)
 
           //te::qt::widgets::NorthOrientationFrame* m_northFrame;
 

@@ -20,21 +20,17 @@
 /*!
   \file terralib/qt/widgets/charts/ChartConfigurer.h
   
-  \brief A Symbology Enconding visitor that configures a given chart based on symbolizers elements.
+  \brief A Symbology Enconding visitor that configures a given chart based on symbolizer elements.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTCONFIGURER_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTCONFIGURER_H
 
 // TerraLib
-#include "../../../color/RGBAColor.h"
 #include "../../../se/Visitor.h"
 #include "../Config.h"
 #include "ChartDisplayWidget.h"
 #include "Enums.h"
-
-// STL
-#include <map>
 
 // Boost
 #include <boost/noncopyable.hpp>

@@ -1117,6 +1117,38 @@ void te::qt::widgets::LayoutEditor::wheelEvent(QWheelEvent* e)
   }
 }
 
+void te::qt::widgets::LayoutEditor::installEventFilter()
+{
+  std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+  for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+    (*it)->installEventFilter(this);
+
+  for(it = m_undoLayoutObjects.begin(); it != m_undoLayoutObjects.end(); ++it)
+    (*it)->installEventFilter(this);
+
+  setFrameSelected(0);
+  while(QApplication::overrideCursor())
+    QApplication::restoreOverrideCursor();
+}
+
+void te::qt::widgets::LayoutEditor::removeEventFilter()
+{
+  std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+  for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+    (*it)->removeEventFilter(this);
+
+  for(it = m_undoLayoutObjects.begin(); it != m_undoLayoutObjects.end(); ++it)
+    (*it)->removeEventFilter(this);
+}
+
+bool te::qt::widgets::LayoutEditor::eventFilter(QObject*, QEvent* e)
+{
+  if(e->type() == QEvent::Paint)
+    return false;
+
+  return true;
+}
+
 void te::qt::widgets::LayoutEditor::keyPressEvent(QKeyEvent* e)
 {
   m_difTopLeft = QPointF(0., 0.);
@@ -1770,32 +1802,10 @@ void te::qt::widgets::LayoutEditor::keyPressEvent(QKeyEvent* e)
     }
     break;
   case Qt::Key_R: // REMOVE MAP DISPLAY EVENT FILTER
-    {
-      std::vector<te::qt::widgets::LayoutObject*>::iterator it;
-      for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
-      {
-        if((*it)->windowTitle() == "DataFrame")
-        {
-          te::qt::widgets::DataFrame* f = (te::qt::widgets::DataFrame*)(*it);
-          te::qt::widgets::MapDisplay* md = f->getMapDisplay();
-          md->removeEventFilter(f);
-        }
-      }
-    }
+    removeEventFilter();
     break;
   case Qt::Key_I: // INSERT MAP DISPLAY EVENT FILTER
-    {
-      std::vector<te::qt::widgets::LayoutObject*>::iterator it;
-      for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
-      {
-        if((*it)->windowTitle() == "DataFrame")
-        {
-          te::qt::widgets::DataFrame* f = (te::qt::widgets::DataFrame*)(*it);
-          te::qt::widgets::MapDisplay* md = f->getMapDisplay();
-          md->installEventFilter(f);
-        }
-      }
-    }
+    installEventFilter();
     break;
 
     case Qt::Key_P: // CHANGE PROJECTION
@@ -1962,7 +1972,7 @@ void te::qt::widgets::LayoutEditor::lowerDraftLayoutEditor()
   m_draftLayoutEditor->lower();
 }
 
-void te::qt::widgets::LayoutEditor::drawLayersSelection(QColor selColor)
+void te::qt::widgets::LayoutEditor::drawLayersSelection()
 {
   std::vector<te::qt::widgets::LayoutObject*>::iterator it;
   for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
@@ -1978,7 +1988,20 @@ void te::qt::widgets::LayoutEditor::drawLayersSelection(QColor selColor)
       painter.drawPixmap(0, 0, *pixmap);
       painter.end();
 
-      df->drawLayerSelection(selColor);
+      df->drawLayerSelection();
+    }
+  }
+}
+
+void te::qt::widgets::LayoutEditor::setSelectionColor(QColor selColor)
+{
+  std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+  for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+  {
+    if((*it)->windowTitle() == "DataFrame")
+    {
+      te::qt::widgets::DataFrame* df = (te::qt::widgets::DataFrame*)*it;
+      df->setSelectionColor(selColor);
     }
   }
 }

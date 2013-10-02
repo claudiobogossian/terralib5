@@ -16,7 +16,7 @@ void CopyingData()
   std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp");
   std::map<std::string, std::string> connInfo;
   std::auto_ptr<te::da::DataSource> dsOrigin = te::da::DataSourceFactory::make("OGR");
-  connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp";
+  connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp";
 
   dsOrigin->setConnectionInfo(connInfo);
   dsOrigin->open();
@@ -36,7 +36,7 @@ void CopyingData()
   pgisInfo["PG_USER"] = "postgres";
   pgisInfo["PG_PASSWORD"] = "postgres";
   pgisInfo["PG_DB_NAME"] = "terralib4";
-  pgisInfo["PG_CONNECT_TIMEOUT"] = "4"; 
+  pgisInfo["PG_CONNECT_TIMEOUT"] = "4";
 
   std::auto_ptr<te::da::DataSource> dsDestination = te::da::DataSourceFactory::make("POSTGIS");
   dsDestination->setConnectionInfo(pgisInfo);

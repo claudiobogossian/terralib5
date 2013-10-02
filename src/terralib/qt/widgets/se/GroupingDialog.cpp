@@ -129,9 +129,6 @@ void te::qt::widgets::GroupingDialog::buildVectorialGroupingInteface()
   // Fill Widget
   m_groupingWidget = new te::qt::widgets::GroupingWidget(m_ui->m_widget);
 
-  // Signals & slots
-  connect(m_ui->m_applyPushButton, SIGNAL(clicked()), m_groupingWidget, SLOT(onApplyPushButtonClicked()));
-
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
   layout->setContentsMargins(0,0,0,0);
@@ -142,9 +139,6 @@ void te::qt::widgets::GroupingDialog::buildRasterGroupingInteface()
 {
   // Fill Widget
   m_colorMapWidget = new te::qt::widgets::ColorMapWidget(m_ui->m_widget);
-
-  // Signals & slots
-  connect(m_ui->m_applyPushButton, SIGNAL(clicked()), m_colorMapWidget, SLOT(onApplyPushButtonClicked()));
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);

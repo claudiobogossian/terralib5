@@ -26,11 +26,28 @@
 
 // OGR
 #include <ogrsf_frmts.h>
+#include <ogr_core.h>
 
 // Boost
 #include <boost/filesystem/operations.hpp>
 
 te::da::SQLDialect* te::ogr::DataSource::sm_myDialect(0);
+
+void GetDataSetTypeCapabilities(te::da::DataSourceCapabilities& caps)
+{
+  te::da::DataTypeCapabilities dt_caps;
+
+  dt_caps.setSupportInt32(true);
+  dt_caps.setSupportArray(true);
+  dt_caps.setSupportString(true);
+  dt_caps.setSupportDouble(true);
+  dt_caps.setSupportNumeric(true);
+  dt_caps.setSupportByteArray(true);
+  dt_caps.setSupportDateTime(true);
+  dt_caps.setSupportGeometry(true);
+
+  caps.setDataTypeCapabilities(dt_caps);
+}
 
 void GetCapabilities(OGRDataSource* ds, te::da::DataSourceCapabilities& caps)
 {
@@ -116,6 +133,8 @@ void te::ogr::DataSource::open()
     m_capabilities.setAccessPolicy(te::common::RWAccess);
 
   m_isValid = true;
+
+  GetDataSetTypeCapabilities(m_capabilities);
 
   if (m_ogrDS)
     GetCapabilities(m_ogrDS, m_capabilities);

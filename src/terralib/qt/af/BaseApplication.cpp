@@ -42,6 +42,7 @@
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/exchanger/DataExchangerWizard.h"
 #include "../widgets/exchanger/SHP2PostGISDialog.h"
+#include "../widgets/exchanger/PostGIS2SHPDialog.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/ChartItem.h"
 #include "../widgets/layer/explorer/GroupingTreeItem.h"
@@ -383,13 +384,6 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
     }
     break;
 
-    case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
-    {
-      // For while, force the redraw! I will create a smart solution soon... (Uba, Oct 2013)
-      onDrawTriggered();
-    }
-    break;
-
     default:
       break;
   }
@@ -690,6 +684,23 @@ void te::qt::af::BaseApplication::onToolsDataExchangerSHP2PGISTriggered()
   try
   {
     te::qt::widgets::SHP2PostGISDialog dlg(this);
+    
+    if(m_project)
+      dlg.setLayers(m_project->getLayers());
+
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onToolsDataExchangerPGIS2SHPTriggered()
+{
+  try
+  {
+    te::qt::widgets::PostGIS2SHPDialog dlg(this);
     
     if(m_project)
       dlg.setLayers(m_project->getLayers());
@@ -1482,24 +1493,59 @@ void te::qt::af::BaseApplication::makeDialog()
 // initializing well known widgets
 
 // 1. Layer Explorer
+  QAction* act = new QAction(this);
+  act->setSeparator(true);
+
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
   te::qt::widgets::LayerTreeView* treeView = lexplorer->getTreeView();
   treeView->setAnimated(true);
 
+  //selection
   treeView->add(m_layerRemoveSelection, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+
+  QAction* actSel = new QAction(this);
+  actSel->setSeparator(true);
+  treeView->add(actSel, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //tools
   treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerChartsHistogram, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerChartsScatter, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerChart, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+
+  QAction* actTools = new QAction(this);
+  actTools->setSeparator(true);
+  treeView->add(actTools, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //selection2
   treeView->add(m_layerFitOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerFitSelectedOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
   treeView->add(m_layerPanToSelectedOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED);
+
+  QAction* actSel2 = new QAction(this);
+  actSel2->setSeparator(true);
+  treeView->add(actSel2, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //view
   treeView->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  treeView->add(m_viewStyleExplorer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);  
-  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  treeView->add(m_viewStyleExplorer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+
+  QAction* actView = new QAction(this);
+  actView->setSeparator(true);
+  treeView->add(actView, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //layer
   treeView->add(m_layerSRS, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
+  QAction* actLayer = new QAction(this);
+  actLayer->setSeparator(true);
+  treeView->add(actLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //remove
+  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
+  //project
   treeView->add(m_projectNewFolder, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
 
@@ -1631,6 +1677,7 @@ void te::qt::af::BaseApplication::initActions()
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
   initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Exchanger.All to All", tr("&All to All..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchangerPGIS2SHP, "data-exchange-pgis-shp-icon", "Tools.Exchanger.PostGIS to SHP", tr("&PostGIS to SHP..."), tr("Exchange data sets between PostGIS and SHP"), true, false, true, m_menubar);
   initAction(m_toolsDataExchangerSHP2PGIS, "data-exchange-shp-pgis-icon", "Tools.Exchanger.SHP to PostGIS", tr("&SHP to PostGIS..."), tr("Exchange data sets between SHP and PostGIS"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceExplorer, "datasource-explorer", "Tools.Data Source Explorer", tr("&Data Source Explorer..."), tr("Show or hide the data source explorer"), 
     true, false, true, m_menubar);
@@ -1858,8 +1905,9 @@ void te::qt::af::BaseApplication::initMenus()
 //  m_toolsMenu->addAction(m_toolbarsManagement);
 //  m_toolsMenu->addSeparator();
   m_toolsExchangerMenu->setObjectName("Tools.Exchanger");
-  m_toolsExchangerMenu->setTitle(tr("&Exchanger"));
+  m_toolsExchangerMenu->setTitle(tr("&Data Source Exchanger"));
   m_toolsExchangerMenu->setIcon(QIcon::fromTheme("datasource-exchanger"));
+  m_toolsExchangerMenu->addAction(m_toolsDataExchangerPGIS2SHP);
   m_toolsExchangerMenu->addAction(m_toolsDataExchangerSHP2PGIS);
   m_toolsExchangerMenu->addAction(m_toolsDataExchanger);
 
@@ -2003,6 +2051,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
   connect(m_toolsDataExchangerSHP2PGIS, SIGNAL(triggered()), SLOT(onToolsDataExchangerSHP2PGISTriggered()));
+  connect(m_toolsDataExchangerPGIS2SHP, SIGNAL(triggered()), SLOT(onToolsDataExchangerPGIS2SHPTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));

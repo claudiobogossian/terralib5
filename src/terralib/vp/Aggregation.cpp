@@ -25,6 +25,7 @@
 
 //Terralib
 #include "../common/Translator.h"
+#include "../common/progress/TaskProgress.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
@@ -424,6 +425,10 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
   std::map<std::string, std::vector<te::mem::DataSetItem*> > groupValues = GetGroups(inputDataSet.get(), groupingProperties);
   std::map<std::string, std::vector<te::mem::DataSetItem*> >::const_iterator itGroupValues = groupValues.begin();
 
+  te::common::TaskProgress task("Processing aggregation...");
+  task.setTotalSteps(groupValues.size());
+  task.useTimer(true);
+
   while(itGroupValues != groupValues.end())
   {
     std::string value = itGroupValues->first.c_str();
@@ -470,6 +475,13 @@ void te::vp::AggregationMemory( const te::map::AbstractLayerPtr& inputLayer,
     outputDataSet->add(outputDataSetItem);
 
     ++itGroupValues;
+
+    if(task.isActive() == false)
+    {
+      throw Exception(TR_VP("Operation canceled!"));
+    }
+
+    task.pulse();
   }
 }
 

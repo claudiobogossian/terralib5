@@ -29,6 +29,7 @@
 // TerraLib
 #include "../color/RGBAColor.h"
 #include "../dataaccess/datasource/DataSource.h"
+#include "../geometry/Enums.h"
 #include "../geometry/Envelope.h"
 #include "../raster/Raster.h"
 #include "AbstractLayer.h"
@@ -310,6 +311,13 @@ namespace te
 
     TEMAPEXPORT te::rst::Raster* GetExtentRaster(te::rst::Raster* raster, int w, int h, const te::gm::Envelope& bbox, int bboxSRID,
                                 const te::gm::Envelope& visibleArea, int srid, te::se::CoverageStyle* style);
+
+    /*!
+      \brief It gets the geometry type of the given layer.
+
+      \param layer The layer that will be consulted.
+    */
+    TEMAPEXPORT te::gm::GeomType GetGeomType(const  te::map::AbstractLayerPtr& layer);
 
   } // end namespace map
 }   // end namespace te

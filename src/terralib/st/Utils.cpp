@@ -25,25 +25,40 @@
 
 //TerraLib
 #include "../datatype/AbstractData.h"
+#include "../datatype/Enums.h"
+#include "../datatype/SimpleData.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "../datatype/Property.h"
+#include "../geometry/GeometryProperty.h"
+#include "../common/STLUtils.h"
 
 //ST
 #include "Utils.h"
-//#include "timeseries/TimeSeries.h"
+#include "core/trajectory/Trajectory.h"
+#include "core/trajectory/TrajectoryIterator.h"
+#include "core/trajectory/TrajectoryDataSetInfo.h"
+#include "core/trajectory/TrajectoryDataSetType.h"
+#include "core/observation/ObservationDataSetInfo.h"
+#include "core/observation/ObservationDataSetType.h"
+#include "core/timeseries/TimeSeriesDataSetInfo.h"
+#include "core/timeseries/TimeSeriesDataSetType.h"
 
-#include <stdlib.h>
-
-namespace te
+te::st::ObservationDataSetType te::st::GetType(const ObservationDataSetInfo& info)
 {
-  namespace st
-  {
-     TimeSeries* Normalize(TimeSeries* /*ts*/, te::dt::DateTimeResolution /*tRes*/)
-     {
-        return 0;
-     }
-    
-     TimeSeries* Normalize(TimeSeries* /*ts*/, te::dt::DateTimeResolution /*tRes*/, te::dt::AbstractData* /*defvalue*/)
-     {
-        return 0;
-     }
-   }
+  return ObservationDataSetType(info.getTimePropIdxs(), info.getObsPropIdxs(), info.getGeomPropIdx(), 
+                                info.getVlTimePropIdxs(), info.getRsTimePropIdx());
 }
+
+te::st::TimeSeriesDataSetType te::st::GetType(const TimeSeriesDataSetInfo& info)
+{
+  return TimeSeriesDataSetType(GetType(info.getObservationDataSetInfo()), info.getValuePropIdxs(), 
+                               info.getIdPropIdx(), info.getId());
+}
+
+te::st::TrajectoryDataSetType te::st::GetType(const TrajectoryDataSetInfo& info)
+{
+  return TrajectoryDataSetType(GetType(info.getObservationDataSetInfo()), info.getIdPropIdx(), info.getId());
+}
+    
+
+         

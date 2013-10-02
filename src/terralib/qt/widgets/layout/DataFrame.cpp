@@ -75,6 +75,7 @@ te::qt::widgets::DataFrame::DataFrame(const QRectF& frameRect, te::qt::widgets::
 
   m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(QSize(10, 10), true, this, f);
   m_mapDisplay->setAcceptDrops(true);
+  m_mapDisplay->setBackgroundColor(Qt::gray);
   m_mapDisplay->setResizeInterval(0);
   m_mapDisplay->setMouseTracking(true);
   m_mapDisplay->installEventFilter(this);
@@ -118,6 +119,7 @@ te::qt::widgets::DataFrame::DataFrame(const DataFrame& rhs) :
   adjust();
   show();
   m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(rect().size(), true, this, rhs.windowFlags());
+  m_mapDisplay->setBackgroundColor(Qt::gray);
   m_mapDisplay->setAcceptDrops(true);
   m_mapDisplay->setAlign(rhs.m_mapDisplay->getHAlign(), rhs.m_mapDisplay->getVAlign());
   m_mapDisplay->setSRID(rhs.m_mapDisplay->getSRID());
@@ -191,6 +193,7 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
     adjust();
     show();
     m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(rect().size(), true, this, rhs.windowFlags());
+    m_mapDisplay->setBackgroundColor(Qt::gray);
     m_mapDisplay->setAcceptDrops(true);
     m_mapDisplay->setAlign(rhs.m_mapDisplay->getHAlign(), rhs.m_mapDisplay->getVAlign());
     m_mapDisplay->setSRID(rhs.m_mapDisplay->getSRID());
@@ -247,6 +250,7 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
 te::qt::widgets::DataFrame::~DataFrame()
 {
   hide();
+  removeEventFilter(this);
   delete m_mapDisplay;
   delete m_UTMGridFrame;
   delete m_geoGridFrame;
@@ -407,7 +411,7 @@ void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid
   if(m_data == 0)
   {
     QPixmap* pix = m_mapDisplay->getDisplayPixmap();
-    pix->fill(Qt::gray);
+    m_mapDisplay->setBackgroundColor(Qt::gray);
     m_mapDisplay->update();
     return;
   }
@@ -419,10 +423,12 @@ void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid
   if(m_visibleLayers.size() == 0)
   {
     QPixmap* pix = m_mapDisplay->getDisplayPixmap();
-    pix->fill(Qt::gray);
+    m_mapDisplay->setBackgroundColor(Qt::gray);
     m_mapDisplay->update();
     return;
   }
+
+  m_mapDisplay->setBackgroundColor(Qt::white);
 
   //m_mapDisplay->setLayerList(m_visibleLayers);
   m_mapDisplay->refresh();
@@ -597,6 +603,9 @@ double te::qt::widgets::DataFrame::getDataUnitToMilimeter()
 
 void te::qt::widgets::DataFrame::drawButtonClicked()
 {
+  if(m_data == 0)
+    return;
+
   // verificar se mudou a lista de layers visiveis
   m_dataChanged = false;
   std::list<te::map::AbstractLayerPtr>::iterator it, mit;
@@ -605,12 +614,10 @@ void te::qt::widgets::DataFrame::drawButtonClicked()
   getLayerList(al, visibleLayers);
   if(m_visibleLayers.size())
   {
-    if(visibleLayers.size() == 0) // apagar o display
+    if(visibleLayers.size() == 0)
     {
-      QPixmap* p = m_mapDisplay->getDisplayPixmap();
-      p->fill(Qt::white);
-      m_mapDisplay->update();
-      return;
+      m_dataChanged = true;     
+      m_visibleLayers.clear();
     }
     else // verifique se nada mudou
     {
@@ -622,17 +629,24 @@ void te::qt::widgets::DataFrame::drawButtonClicked()
           te::map::AbstractLayerPtr pp = *mit;
           if(p != pp)
           {
-            m_dataChanged = true;
+            m_dataChanged = true; // houve mudancas
             break;
           }
         }
-        if(it == visibleLayers.end())
-        {
-          draw();
+        if(it == visibleLayers.end()) // nada mudou
           return;
-        }
       }
     }
+  }
+  else
+  {
+    if(visibleLayers.size())
+    {
+      m_dataChanged = true; // houve mudancas
+      m_visibleLayers = visibleLayers;
+    }
+    else // nada mudou
+      return;
   }
 
   // houve mudancas
@@ -836,6 +850,18 @@ void te::qt::widgets::DataFrame::rubberBand()
   m_layoutEditor->update();
 }
 
+void te::qt::widgets::DataFrame::installEventFilter(QObject*)
+{
+  // faca com que NAO receba eventos
+  m_mapDisplay->removeEventFilter(this);
+}
+
+void te::qt::widgets::DataFrame::removeEventFilter(QObject*)
+{
+  // faca com que receba eventos
+  m_mapDisplay->installEventFilter(this);
+}
+
 bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
 {
   // return true to stop the event; otherwise return false.
@@ -846,10 +872,9 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
   {
     if(type == QEvent::DragEnter)
     {
-      QDragEnterEvent* dragEnterEvent = (QDragEnterEvent*)e;
-      m_mapDisplay->setAcceptDrops(true);
-      m_mapDisplay->dragEnterEvent(dragEnterEvent);
-      return true;
+      //QDragEnterEvent* dragEnterEvent = (QDragEnterEvent*)e;
+      //m_mapDisplay->dragEnterEvent(dragEnterEvent);
+      return false; // ´passe o evento para o map display
     }
     else if(type == QEvent::Drop)
     {
@@ -1220,10 +1245,15 @@ void te::qt::widgets::DataFrame::onDrawLayersFinished(const QMap<QString, QStrin
 
   // TODO!!!
   if(m_data)
-    drawLayerSelection(Qt::red); // teste........
+    drawLayerSelection();
 }
 
-void te::qt::widgets::DataFrame::drawLayerSelection(QColor selColor)
+void te::qt::widgets::DataFrame::setSelectionColor(QColor selColor)
+{
+  m_selectionColor = selColor;
+}
+
+void te::qt::widgets::DataFrame::drawLayerSelection()
 {
   assert(m_data);
 
@@ -1287,8 +1317,7 @@ void te::qt::widgets::DataFrame::drawLayerSelection(QColor selColor)
         if(currentGeomType != g->getGeomTypeId())
         {
           currentGeomType = g->getGeomTypeId();
-          te::qt::widgets::Config2DrawLayerSelection(&canvas, selColor, currentGeomType);
-          //te::qt::widgets::Config2DrawLayerSelection(&canvas, ApplicationController::getInstance().getSelectionColor(), currentGeomType);
+          te::qt::widgets::Config2DrawLayerSelection(&canvas, m_selectionColor, currentGeomType);
         }
 
         canvas.draw(g.get());
