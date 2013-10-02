@@ -484,11 +484,11 @@ void te::stmem::Transactor::cloneDataSet(const std::string& /*name*/,
 
 void te::stmem::Transactor::dropDataSet(const std::string& name)
 {
-  std::map<std::string, std::auto_ptr<te::da::DataSetType> >::const_iterator itdt =  m_ds->m_schemas.find(name);  
+  std::map<std::string, std::auto_ptr<te::da::DataSetType> >::iterator itdt =  m_ds->m_schemas.find(name);  
   if(itdt==m_ds->m_schemas.end())
     throw Exception("There is not a DataSetType with the given name!");
 
-  std::map<std::string, std::auto_ptr<DataSet> >::const_iterator itds = m_ds->m_datasets.find(name);
+  std::map<std::string, std::auto_ptr<DataSet> >::iterator itds = m_ds->m_datasets.find(name);
   if(itds==m_ds->m_datasets.end())
     throw Exception("There is not a DataSet with the given name!"); 
   
