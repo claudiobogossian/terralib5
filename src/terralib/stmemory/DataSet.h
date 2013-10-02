@@ -374,7 +374,7 @@ namespace te
           \note The caller will take the ownership of the returned pointer.
           \note The returned DataSet will share the intenal observations.  
         */
-        std::auto_ptr<te::stmem::DataSet> te::stmem::DataSet::nearestObservations(const te::dt::DateTime* time, int n) const;
+        std::auto_ptr<te::stmem::DataSet> nearestObservations(const te::dt::DateTime* time, int n) const;
 
                                              
         /*! \name DataSet inherited methods */
@@ -451,7 +451,7 @@ namespace te
 
         bool isNull(std::size_t i) const;
 
-        std::auto_ptr<te::dt::AbstractData> te::stmem::DataSet::getValue(std::size_t i) const;
+        std::auto_ptr<te::dt::AbstractData> getValue(std::size_t i) const;
         //@}
 
         /*! \name Methods to set values to the DataSet */
