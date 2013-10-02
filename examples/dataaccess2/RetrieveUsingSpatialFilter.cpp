@@ -1,5 +1,6 @@
 // Examples
 #include "DataAccessExamples.h"
+#include <iostream>
 
 void RetrieveUsingSpatialFilter(te::da::DataSource* ds)
 {

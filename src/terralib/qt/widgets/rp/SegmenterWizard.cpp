@@ -52,7 +52,7 @@ te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Segmenter"));
-  this->setFixedSize(640, 580);
+  //this->setFixedSize(640, 580);
 
   addPages();
 }

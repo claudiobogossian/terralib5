@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>480</height>
+    <width>484</width>
+    <height>104</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,7 +41,7 @@
            </font>
           </property>
           <property name="text">
-           <string>The grouping operation is applied to a single layer</string>
+           <string>This operation creates a grouping representation in a selected layer</string>
           </property>
          </widget>
         </item>
@@ -89,7 +89,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="3">
+         <item row="0" column="2">
           <widget class="QPushButton" name="m_okPushButton">
            <property name="enabled">
             <bool>true</bool>
@@ -99,17 +99,10 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="4">
+         <item row="0" column="3">
           <widget class="QPushButton" name="m_cancelPushButton">
            <property name="text">
             <string>Cancel</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QPushButton" name="m_applyPushButton">
-           <property name="text">
-            <string>Apply</string>
            </property>
           </widget>
          </item>
@@ -121,6 +114,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>m_okPushButton</tabstop>
+  <tabstop>m_cancelPushButton</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

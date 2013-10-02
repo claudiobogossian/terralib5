@@ -21,12 +21,33 @@
   \file Config.h
 
   \brief Configuration flags for the st (spatiotemporal) module of TerraLib.
- */
+*/
 
 #ifndef __TERRALIB_ST_INTERNAL_CONFIG_H
 #define __TERRALIB_ST_INTERNAL_CONFIG_H
 
 #include "../Config.h"
+
+/*!
+  \def TE_ST_MODULE_NAME
+
+  \brief The st module identifier string.
+*/
+#define TE_ST_MODULE_NAME "te.st"
+
+/*!
+  \def TE_ST_DATALOADER_FROM_DS
+
+  \brief The st data loader from a general data source identifier string.
+*/
+#define TE_ST_DATALOADER_FROM_DS "STDATALOADERFROMDS"
+
+/*!
+  \def TE_ST_DATALOADER_FROM_MEMDS
+
+  \brief The st data loader from a st in-memory data source identifier string.
+*/
+#define TE_ST_DATALOADER_FROM_MEMDS "STDATALOADERFROMMEMDS"
 
 /** @name Internationalization Defines
  *  Flags for TerraLib code internationalization.

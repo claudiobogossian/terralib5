@@ -36,7 +36,8 @@
 #include <map>
 #include <vector>
 
-namespace te { namespace da { class DataSetType; } }     
+namespace te { namespace da { class DataSetType; } }   
+namespace te { namespace dt { class DateTimePeriod; } }  
 
 namespace te
 {
@@ -181,6 +182,18 @@ namespace te
                                                   const te::dt::DateTime* dt, te::dt::TemporalRelation tr = te::dt::DURING,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
 												                          bool connected = false);
+
+        /*!
+          \brief It returns the temporal extent associated to a DataSet.
+
+          \param name         The DataSet name.
+          
+          \return A pointer to its temporal extent.
+
+          \note The caller will take the ownership of the returned pointer.          
+          \note It can throw an Exception when internal errors occur.
+        */
+        std::auto_ptr<te::dt::DateTimePeriod> getTemporalExtent(const std::string& name);
 
       protected:
 

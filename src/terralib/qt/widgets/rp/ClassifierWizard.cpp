@@ -50,7 +50,7 @@ te::qt::widgets::ClassifierWizard::ClassifierWizard(QWidget* parent)
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Classifier"));
-  this->setFixedSize(640, 480);
+  //this->setFixedSize(640, 480);
 
   addPages();
 }
