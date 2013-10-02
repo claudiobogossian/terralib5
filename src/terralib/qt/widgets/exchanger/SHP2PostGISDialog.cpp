@@ -30,6 +30,7 @@
 #include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "SHP2PostGISDialog.h"
 #include "ui_SHP2PostGISDialogForm.h"
@@ -83,6 +84,13 @@ void te::qt::widgets::SHP2PostGISDialog::setLayers(std::list<te::map::AbstractLa
       m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
 
     ++it;
+  }
+
+  if(m_ui->m_inputLayerComboBox->count() > 0)
+  {
+    QString s = m_ui->m_inputLayerComboBox->currentText();
+
+    m_ui->m_dataSetLineEdit->setText(s);
   }
 }
 
@@ -172,6 +180,25 @@ void te::qt::widgets::SHP2PostGISDialog::onOkPushButtonClicked()
     
     dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toStdString());
 
+    //create index
+    if(m_ui->m_spatialIndexCheckBox->isChecked())
+    {
+      te::gm::GeometryProperty* p = te::da::GetFirstGeomProperty(dsTypeResult);
+
+      if(p)
+      {
+        te::da::Index* idx = new te::da::Index(dsTypeResult);
+
+        std::string name = p->getName() + "_idx";
+        idx->setName(name);
+        idx->setIndexType(te::da::R_TREE_TYPE);
+
+        te::dt::Property* pClone = p->clone();
+
+        idx->add(pClone);
+      }
+    }
+
     //exchange
     std::map<std::string,std::string> nopt;
 
@@ -183,11 +210,6 @@ void te::qt::widgets::SHP2PostGISDialog::onOkPushButtonClicked()
 
      if(dataset->moveBeforeFirst())
        targetDSPtr->add(dsTypeResult->getName(), dsAdapter.get(), targetDSPtr->getConnectionInfo());
-
-    //create index
-    if(m_ui->m_spatialIndexCheckBox->isChecked())
-    {
-    }
 
     QMessageBox::information(this, tr("Exchanger"), tr("Layer exported successfully."));
   }

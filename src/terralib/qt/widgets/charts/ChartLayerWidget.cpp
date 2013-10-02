@@ -79,7 +79,7 @@ bool te::qt::widgets::ChartLayerWidget::buildChart()
 {
   if(m_chartMap.empty())
   {
-    QMessageBox::warning(this, tr("Warning"), tr("None attribute selected."));
+    QMessageBox::warning(this, tr("Warning"), tr("No attribute selected."));
     return false;
   }
 
