@@ -76,6 +76,7 @@
 // STL
 #include <cassert>
 #include <cstdlib>
+#include <memory>
 
 void te::map::GetColor(const te::se::Stroke* stroke, te::color::RGBAColor& color)
 {
@@ -815,4 +816,43 @@ te::rst::Raster* te::map::GetExtentRaster(te::rst::Raster* raster, int w, int h,
   }
 
   return rasterOut;
+}
+
+te::gm::GeomType te::map::GetGeomType(const  te::map::AbstractLayerPtr& layer)
+{
+  assert(layer.get());
+
+  std::auto_ptr<te::map::LayerSchema> schema(layer->getSchema());
+
+  te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(schema.get());
+  assert(geometryProperty);
+
+  te::gm::GeomType gtype = geometryProperty->getGeometryType();
+
+  switch(gtype)
+  {
+    case te::gm::UnknownGeometryType:
+    case te::gm::GeometryType:
+    case te::gm::GeometryZType:
+    case te::gm::GeometryMType:
+    case te::gm::GeometryZMType:
+      break;
+
+    default:
+      return gtype;
+  }
+
+  // Here, tries fetch a geometry and retrieve its type
+
+  std::auto_ptr<te::da::DataSet> dataset(layer->getData());
+  assert(dataset.get());
+
+  dataset->moveNext();
+
+  std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+
+  std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
+  assert(g.get());
+
+  return g->getGeomTypeId();
 }

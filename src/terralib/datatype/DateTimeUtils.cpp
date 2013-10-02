@@ -27,6 +27,8 @@
 #include "Date.h"
 #include "DateDuration.h"
 #include "DatePeriod.h"
+#include "DateTimePeriod.h"
+#include "DateTimeInstant.h"
 #include "DateTime.h"
 #include "DateTimeUtils.h"
 #include "Enums.h"

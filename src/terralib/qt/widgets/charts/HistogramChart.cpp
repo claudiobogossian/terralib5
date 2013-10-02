@@ -221,13 +221,16 @@ void te::qt::widgets::HistogramChart::setHistogramStyle(te::qt::widgets::Histogr
   delete m_histogramStyle;
   m_histogramStyle = newStyle;
 
+  //The pen and brush that will be used
   QPen barPen;
   QBrush barBrush;
 
+  //Configuring the pen and brush based on the current style
   te::qt::widgets::Config(barPen, m_histogramStyle->getStroke());
   te::qt::widgets::Config(barBrush, m_histogramStyle->getFill());
   barBrush.setStyle(Qt::SolidPattern);
 
+  //Updating the chart's pen and brush.
   setPen(barPen);
   setBrush(barBrush);
 }
