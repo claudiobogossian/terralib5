@@ -126,6 +126,7 @@ bool te::qt::widgets::ContrastWizard::execute()
 
   te::rp::Contrast::InputParameters algoInputParams = m_contrastPage->getInputParams();
   algoInputParams.m_inRasterPtr = inputRst.get();
+  algoInputParams.m_enableProgress = true;
 
   te::rp::Contrast::OutputParameters algoOutputParams;
   algoOutputParams.m_createdOutRasterDSType = m_rasterInfoPage->getWidget()->getType();
