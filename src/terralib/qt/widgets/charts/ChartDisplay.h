@@ -36,6 +36,7 @@
 #include <string>
 
 class QwtPlotGrid;
+class QwtPlotPanner;
 class QwtPlotPicker;
 
 namespace te
@@ -164,6 +165,7 @@ namespace te
 
           ChartStyle*     m_chartStyle;  //!< The display's style.
           QwtPlotGrid*    m_grid;        //!< The display's grid
+          QwtPlotPanner*  m_panner;       //!< The display's panner.
           QwtPlotPicker*  m_picker;      //!< The display's picker.
       };
     } // end namespace widgets

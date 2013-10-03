@@ -53,9 +53,13 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
 
   if(rpos != std::string::npos)
     {
-      m_ui->m_slicesSpinBox->hide();
-      m_ui->slicesLabel->hide();
+
+      //Adjusting the widget to work with a raster file.
       size_t size =  dataSet->getRaster(rpos)->getNumberOfBands();
+      m_ui->m_slicesSpinBox->setMaximum(size);
+      m_ui->m_slicesSpinBox->setMinimum(0);
+      m_ui->m_slicesSpinBox->setValue(0);
+
       for (size_t i = 0; i < size; i++)
       {
         item = QString::number(i);
@@ -93,55 +97,41 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
   std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet.get(), te::dt::RASTER_TYPE);
   te::qt::widgets::Histogram* histogram;
 
-  if(rpos != std::string::npos)
+  //Getting the Columns that will be used to populate the chart
+
+  size_t selectedPropertyIdx = 0;
+
+  for (size_t i = 0; i < m_dataSet->getNumProperties(); i++)
   {
-    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyComboBox->currentIndex());
+    if(m_ui->m_propertyComboBox->currentText().toStdString() == m_dataSet.get()->getPropertyName(i))
+      selectedPropertyIdx = i;
+  }
+
+  int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
+
+  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+  {
+    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx);
   }
   else
   {
-    //Getting the Columns that will be used to populate the chart
-
-    size_t selectedPropertyIdx = 0;
-
-    for (size_t i = 0; i < m_dataSet->getNumProperties(); i++)
-    {
-      if(m_ui->m_propertyComboBox->currentText().toStdString() == m_dataSet.get()->getPropertyName(i))
-        selectedPropertyIdx = i;
-    }
-
-    int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
-
-    if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
-    {
-      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx);
-    }
-    else
-    {
-      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
-    }
+    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
   }
+
   return histogram;
 }
 
 void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QString text)
 {
-  std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet.get(), te::dt::RASTER_TYPE);
-  if(rpos != std::string::npos)
-  {
-    m_ui->m_slicesSpinBox->setEnabled(false);
-  }
-  else 
-  {
-    int selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet.get(),  m_ui->m_propertyComboBox->currentText().toStdString());
-    int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
+  int selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet.get(),  m_ui->m_propertyComboBox->currentText().toStdString());
+  int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
 
-    if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
-    {
-    m_ui->m_slicesSpinBox->setEnabled(false);
-    }
-    else
-    {
-    m_ui->m_slicesSpinBox->setEnabled(true);
-    }
+  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+  {
+  m_ui->m_slicesSpinBox->setEnabled(false);
+  }
+  else
+  {
+  m_ui->m_slicesSpinBox->setEnabled(true);
   }
 }
