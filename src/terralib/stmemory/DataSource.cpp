@@ -63,6 +63,23 @@ te::stmem::DataSource::DataSource()
 
 te::stmem::DataSource::~DataSource()
 {
+  //delete the pointers
+  std::map<std::string, DataSet* >::iterator it = m_datasets.begin();    
+  while(it!=m_datasets.end())
+  {
+    delete(it->second);
+    ++it;
+  }
+  m_datasets.clear();
+
+  //delete the pointers
+  std::map<std::string, te::da::DataSetType* >::iterator it2 = m_schemas.begin();    
+  while(it2!=m_schemas.end())
+  {
+    delete(it2->second);
+    ++it2;
+  }
+  m_schemas.clear();
 }
 
 std::string te::stmem::DataSource::getType() const 
@@ -112,8 +129,22 @@ void te::stmem::DataSource::close()
   if(!m_isOpened)
     return;
 
+  //delete the pointers
+  std::map<std::string, DataSet* >::iterator it = m_datasets.begin();    
+  while(it!=m_datasets.end())
+  {
+    delete(it->second);
+    ++it;
+  }
   m_datasets.clear();
-  
+
+  //delete the pointers
+  std::map<std::string, te::da::DataSetType* >::iterator it2 = m_schemas.begin();    
+  while(it2!=m_schemas.end())
+  {
+    delete(it2->second);
+    ++it2;
+  }
   m_schemas.clear();
 
   m_maxdatasets = TE_STMEMORY_DRIVER_MAX_DATASETS;
