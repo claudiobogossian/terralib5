@@ -117,8 +117,8 @@ std::complex<double> te::rst::Band::getMaxValue(unsigned int rs, unsigned int cs
 
   std::complex<double> pixel;
 
-  double max_img = std::numeric_limits<double>::min();
-  double max_real = std::numeric_limits<double>::min();
+  double max_img = -1.0 * std::numeric_limits<double>::max();
+  double max_real = -1.0 * std::numeric_limits<double>::max();
 
   for (unsigned r = rs; r <= rf; r++)
     for (unsigned c = cs; c <= cf; c++)
@@ -225,7 +225,7 @@ std::map<double, unsigned> te::rst::Band::getHistogramR(unsigned int rs, unsigne
 // find limits to divide into bins
     double pmin = std::numeric_limits<double>::max();
 
-    double pmax = std::numeric_limits<double>::min();
+    double pmax = -1.0 * std::numeric_limits<double>::max();
 
     for (unsigned r = rs; r <= rf; r++)
       for (unsigned c = cs; c <= cf; c++)
@@ -300,7 +300,7 @@ std::map<double, unsigned> te::rst::Band::getHistogramI(unsigned int rs, unsigne
 // find limits to divide into bins
     double pmin = std::numeric_limits<double>::max();
 
-    double pmax = std::numeric_limits<double>::min();
+    double pmax = -1.0 * std::numeric_limits<double>::max();
 
     for (unsigned r = rs; r <= rf; r++)
       for (unsigned c = cs; c <= cf; c++)
