@@ -37,6 +37,7 @@
 #include "../dataaccess/datasource/DataSource.h"
 #include "../common/PlatformUtils.h"
 #include "../common/StringUtils.h"
+#include "../common/progress/TaskProgress.h"
 #include "../geometry/Coord2D.h"
 #include "../datatype/Enums.h"
 
@@ -78,6 +79,7 @@ namespace te
       m_enableBlockMerging = true;
       m_maxBlockSize = 0;
       m_strategyName.clear();
+      m_enableProgress = false;
       
       if( m_segStratParamsPtr )
       {
@@ -99,6 +101,7 @@ namespace te
       m_enableBlockMerging = params.m_enableBlockMerging;
       m_maxBlockSize = params.m_maxBlockSize;
       m_strategyName = params.m_strategyName;
+      m_enableProgress = params.m_enableProgress;
       
       m_segStratParamsPtr = params.m_segStratParamsPtr ? 
         (SegmenterStrategyParameters*)params.m_segStratParamsPtr->clone()
@@ -581,6 +584,15 @@ namespace te
         
         volatile unsigned int runningThreadsCounter = 0;
         
+        std::auto_ptr< te::common::TaskProgress > progressPtr;
+        if( m_inputParameters.m_enableProgress &&
+          ( ( vBlocksNumber * hBlocksNumber ) > 1 ) )
+        {
+          progressPtr.reset( new te::common::TaskProgress );
+          progressPtr->setTotalSteps( vBlocksNumber * hBlocksNumber );
+          progressPtr->setMessage( "Segmentation" );
+        }        
+        
         SegmenterThreadEntryParams segmenterThreadEntryParams;
         segmenterThreadEntryParams.m_inputParametersPtr = &m_inputParameters;
         segmenterThreadEntryParams.m_outputParametersPtr = outputParamsPtr;
@@ -599,6 +611,8 @@ namespace te
           &runningThreadsCounter;
         segmenterThreadEntryParams.m_inputRasterGainsPtr = &inputRasterGains;
         segmenterThreadEntryParams.m_inputRasterOffsetsPtr = &inputRasterOffsets;
+        segmenterThreadEntryParams.m_enableStrategyProgress = 
+          ( ( vBlocksNumber * hBlocksNumber ) == 1 );
         
         if( maxSegThreads )
         { // threaded segmentation mode
@@ -623,6 +637,34 @@ namespace te
             boost::unique_lock<boost::mutex> lock( blockProcessedSignalMutex );
             blockProcessedSignal.timed_wait( lock, 
               boost::posix_time::seconds( 1 ) );
+              
+            if( progressPtr.get() )
+            {
+              int segmentedBlocksNmb = 0;
+              for( unsigned int segmentsMatrixLine = 0 ; segmentsMatrixLine < 
+                segmentsblocksMatrix.getLinesNumber() ; ++segmentsMatrixLine )
+              {
+                for( unsigned int segmentsMatrixCol = 0 ; segmentsMatrixCol < 
+                  segmentsblocksMatrix.getColumnsNumber() ; ++segmentsMatrixCol )
+                {              
+                  if( segmentsblocksMatrix[ segmentsMatrixLine ][ segmentsMatrixCol ].m_status
+                    == SegmenterSegmentsBlock::BlockSegmented )
+                  {
+                    ++segmentedBlocksNmb;
+                  }
+                }
+              }
+              
+              if( segmentedBlocksNmb != progressPtr->getCurrentStep() )
+              {
+                progressPtr->pulse();
+              }
+              
+              if( ! progressPtr->isActive() ) 
+              {
+                abortSegmentationFlag = true;
+              }
+            }              
               
 //            globalMutex.lock();  
 //            std::cout << std::endl << "Waiting threads..." << std::endl;
@@ -1030,7 +1072,7 @@ namespace te
                 *paramsPtr->m_inputRasterGainsPtr,
                 *paramsPtr->m_inputRasterOffsetsPtr,
                 *currentOutRasterPtr, currentOutRasterBand,
-                !(paramsPtr->m_inputParametersPtr->m_enableBlockProcessing) ) )
+                paramsPtr->m_enableStrategyProgress ) )
               {
                 paramsPtr->m_generalMutexPtr->lock();
                 
