@@ -16,6 +16,7 @@
     <DataType>STRING_TYPE</DataType>
     <DataType>BYTE_ARRAY_TYPE</DataType>
     <DataType>DATETIME_TYPE</DataType>
+	<DataType>GEOMETRY_TYPE</DataType>
   </DataTypeCapabilities>
   <QueryCapabilities>
     <SQLDialect>true</SQLDialect>
