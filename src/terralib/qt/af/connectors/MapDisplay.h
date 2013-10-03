@@ -142,7 +142,7 @@ namespace te
           QMenu* m_menu;                                      //!< The map display popup menu.
           QPixmap m_lastDisplayContent;                       //!< The last map display content. i.e. a "clean" pixmap.
           std::vector<te::gm::Envelope> m_extentStack;        //!< The stack of MapDisplay extents.
-          std::size_t m_currentExtent;                        //!< The current extent index.
+          int m_currentExtent;                                //!< The current extent index.
       };
     }
   }

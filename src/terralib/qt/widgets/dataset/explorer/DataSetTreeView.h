@@ -43,6 +43,7 @@ namespace te
   {
     namespace widgets
     {
+      class DataSetGroupItem;
       class DataSetCategoryGroupItem;
       class DataSetItem;
       class DataSetTreeModel;
@@ -77,25 +78,37 @@ namespace te
 
           void activated(DataSetCategoryGroupItem* item);
 
+          void activated(DataSetGroupItem* item);
+
           void clicked(DataSetItem* item);
 
           void clicked(DataSetCategoryGroupItem* item);
+
+          void clicked(DataSetGroupItem* item);
 
           void doubleClicked(DataSetItem* item);
 
           void doubleClicked(DataSetCategoryGroupItem* item);
 
+          void doubleClicked(DataSetGroupItem* item);
+
           void entered(DataSetItem* item);
 
           void entered(DataSetCategoryGroupItem* item);
+
+          void entered(DataSetGroupItem* item);
 
           void pressed(DataSetItem* item);
 
           void pressed(DataSetCategoryGroupItem* item);
 
+          void pressed(DataSetGroupItem* item);
+
           void toggled(DataSetItem* item);
 
           void toggled(DataSetCategoryGroupItem* item);
+
+          void toggled(DataSetGroupItem* item);
 
         protected slots:
 

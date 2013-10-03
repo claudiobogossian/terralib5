@@ -61,6 +61,7 @@ void TerraView::init(const std::string& configFile)
   //set application icon
   std::string tvIcon = TVIEW_LOGO_ICON;
   QPixmap pix(tvIcon.c_str());
+  pix = pix.scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
   QIcon icon(pix);
 
   this->setWindowIcon(icon);

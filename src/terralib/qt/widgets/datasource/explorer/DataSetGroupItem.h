@@ -71,6 +71,8 @@ namespace te
 
           void checkState();
 
+          const std::vector<DataSetItem*>& getDataSetItems() const;
+
         private:
 
           te::da::DataSourceInfoPtr m_ds;

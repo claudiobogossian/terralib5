@@ -190,3 +190,8 @@ void te::qt::widgets::DataSetGroupItem::checkState()
 
   m_checked = check;
 }
+
+const std::vector<te::qt::widgets::DataSetItem*>&  te::qt::widgets::DataSetGroupItem::getDataSetItems() const
+{
+  return m_items;
+}
