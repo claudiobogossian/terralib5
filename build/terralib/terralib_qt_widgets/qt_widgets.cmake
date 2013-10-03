@@ -189,6 +189,8 @@ set (
   ${SRCDIR}/widgets/exchanger/DataExchangerWizard.h
   ${SRCDIR}/widgets/exchanger/DataExchangeSummaryWizardPage.h
   ${SRCDIR}/widgets/exchanger/DataSetOptionsWizardPage.h
+  ${SRCDIR}/widgets/exchanger/DirectExchangerDialog.h
+  ${SRCDIR}/widgets/exchanger/SHP2ADODialog.h
   ${SRCDIR}/widgets/exchanger/SHP2PostGISDialog.h
   ${SRCDIR}/widgets/exchanger/PostGIS2SHPDialog.h
 )

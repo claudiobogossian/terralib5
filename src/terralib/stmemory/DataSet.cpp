@@ -377,7 +377,7 @@ std::auto_ptr<te::stmem::DataSet> te::stmem::DataSet::filter(const te::gm::Geome
 
   for(unsigned int i=0; i<report.size(); ++i)
   {
-    std::unique_ptr<te::gm::Geometry> geom(report[i]->getGeometry(m_geomPropIdx));
+    std::auto_ptr<te::gm::Geometry> geom(report[i]->getGeometry(m_geomPropIdx));
     if(geom->intersects(g))
       result->add(report[i]->clone());
   }
@@ -601,7 +601,7 @@ bool te::stmem::DataSet::move(std::size_t i)
   if(i>=m_items.size())
     return false;
 
-  m_iterator == m_items.begin();
+  m_iterator = m_items.begin();
   std::size_t c = 0;
   while(m_iterator!=m_items.end() && c < i)
   {

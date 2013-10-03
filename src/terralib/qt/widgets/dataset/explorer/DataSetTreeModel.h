@@ -81,6 +81,23 @@ namespace te
 
           bool forceCatalogCache() const;
 
+        protected:
+
+          /*!
+            \brief It emits the dataChanged signal for the descendants indexes of the given index.
+
+            \param parent The item index whose descendants will have the dataChanged signal emitted.
+          */
+          void emitDataChangedForDescendants(const QModelIndex& parent);
+
+          /*!
+            \brief It emits the dataChanged signal for the indexes that are ancestors of the given index.
+
+            \param index The item index whose ancestors will have the dataChanged signal emitted.
+          */
+          void emitDataChangedForAncestors(const QModelIndex& index);
+
+
         private:
 
           DataSetGroupItem* m_datasets; //!< A container for the datasets of the input data source.

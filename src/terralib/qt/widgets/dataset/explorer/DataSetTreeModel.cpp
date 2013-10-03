@@ -285,6 +285,12 @@ bool te::qt::widgets::DataSetTreeModel::setData(const QModelIndex& index, const 
 
     emit dataChanged(index, index);
 
+    // Emit dataChanged signals for the descendants of this index (if any)
+    emitDataChangedForDescendants(index);
+
+    // Emit dataChanged signals for the descendants of this index (if any)
+    emitDataChangedForAncestors(index);
+
     return retval;
   }
   catch(const std::exception& e)
@@ -313,3 +319,34 @@ bool te::qt::widgets::DataSetTreeModel::isCheckable() const
   return m_checkable;
 }
 
+void te::qt::widgets::DataSetTreeModel::emitDataChangedForDescendants(const QModelIndex& parent)
+{
+  if(!parent.isValid())
+    return;
+
+  int rows = rowCount(parent);
+
+  for(int i = 0; i != rows; ++i)
+  {
+    QModelIndex idx = index(i, 0, parent);
+
+    emit dataChanged(idx, idx);
+
+    if(hasChildren(idx))
+      emitDataChangedForDescendants(idx);
+  }
+}
+
+void te::qt::widgets::DataSetTreeModel::emitDataChangedForAncestors(const QModelIndex& index)
+{ 
+  QModelIndex ancestorIndex = parent(index);
+  if(parent(index).isValid())
+  {
+    // Emit the dataChanged signal for the ascendants indexes
+    while(ancestorIndex.isValid())
+    {
+      emit dataChanged(ancestorIndex, ancestorIndex);
+      ancestorIndex = parent(ancestorIndex);
+    }
+  }
+}

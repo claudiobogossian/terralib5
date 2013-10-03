@@ -95,7 +95,7 @@ namespace te
 
           std::auto_ptr<Ui::SegmenterWizardPageForm> m_ui;
           std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
-
+          std::auto_ptr<te::rst::Raster> m_inputRst;
           te::map::AbstractLayerPtr m_layer;
       };
 

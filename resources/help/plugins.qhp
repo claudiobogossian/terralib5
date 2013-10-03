@@ -6,12 +6,14 @@
     <filterAttribute>help</filterAttribute>
     <toc>
       <section title="TerraLib Qt plugins" ref="./plugins/index.html">
-        <section title="GDAL plugin" ref="./plugins/gdal/gdal.html"/>
-        <section title="OGR plugin" ref="./plugins/ogr/ogr.html"/>
-        <section title="PostGIS plugin" ref="./plugins/pgis/index.html">
+	    <section title="PostGIS plugin" ref="./plugins/pgis/index.html">
           <section title="PostGIS plugin" ref="./plugins/pgis/pgis.html"/>
           <section title="PostGIS creator" ref="./plugins/pgis/pgis_creator.html"/>
         </section>
+        <section title="GDAL plugin" ref="./plugins/gdal/gdal.html"/>
+        <section title="OGR plugin" ref="./plugins/ogr/ogr.html"/>
+		<section title="ADO plugin" ref="./plugins/ado/ado.html"/>
+        <section title="Layout Editor plugin" ref="./plugins/layout/layout.html"/>
       </section>
     </toc>
     <keywords>
@@ -20,12 +22,22 @@
       <keyword name="PostGIS creator" ref="./plugins/pgis/pgis_creator.html"/>
       <keyword name="OGR" ref="./plugins/ogr/ogr.html"/>
       <keyword name="GDAL" ref="./plugins/gdal/gdal.html"/>
+      <keyword name="ADO" ref="./plugins/ado/ado.html"/>
+	  <keyword name="Microsoft Access" ref="./plugins/ado/ado.html"/>
+      <keyword name="Layout Editor" ref="./plugins/layout/layout.html"/>	  
     </keywords>
      <files>
       <file>./plugins/index.html</file>
       <file>./plugins/pgis/*.html</file>
+      <file>./plugins/pgis/*.png</file>	  
       <file>./plugins/ogr/ogr.html</file>
+      <file>./plugins/ogr/*.png</file>	  
       <file>./plugins/gdal/gdal.html</file>
+      <file>./plugins/gdal/*.png</file>	
+      <file>./plugins/ado/ado.html</file>
+      <file>./plugins/ado/*.png</file>
+      <file>./plugins/layout/layout.html</file>
+      <file>./plugins/layout/*.png</file>	  
     </files>
   </filterSection>
 </QtHelpProject>

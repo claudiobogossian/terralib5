@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-//#include "../../datasource/explorer/DataSetGroupItem.h"
+#include "../../datasource/explorer/DataSetGroupItem.h"
 #include "../../datasource/explorer/DataSetCategoryGroupItem.h"
 #include "../../datasource/explorer/DataSetItem.h"
 //#include "DataSetTreeModel.h"
@@ -134,11 +134,18 @@ void te::qt::widgets::DataSetTreeView::onItemActivated(const QModelIndex & index
     return;
   }
 
-  //DataSetGroupItem* dgitem = dynamic_cast<DataSetGroupItem*>(item);
-  DataSetCategoryGroupItem* dgitem = dynamic_cast<DataSetCategoryGroupItem*>(item);
+  DataSetCategoryGroupItem* categoryItem = dynamic_cast<DataSetCategoryGroupItem*>(item);
 
-  if(dgitem != 0)
-    emit activated(dgitem);
+  if(categoryItem != 0)
+  {
+    emit activated(categoryItem);
+    return;
+  }
+
+  DataSetGroupItem* groupItem = dynamic_cast<DataSetGroupItem*>(item);
+
+  if(groupItem != 0)
+    emit activated(groupItem);
 }
 
 void te::qt::widgets::DataSetTreeView::onItemClicked(const QModelIndex & index)
@@ -165,28 +172,52 @@ void te::qt::widgets::DataSetTreeView::onItemClicked(const QModelIndex & index)
       return;
 
     emit toggled(ditem);
+
+    return;
   }
-  else
+
+  DataSetCategoryGroupItem* categoryItem = dynamic_cast<DataSetCategoryGroupItem*>(item);
+
+  if(categoryItem != 0)
   {
-    DataSetCategoryGroupItem* dgitem = dynamic_cast<DataSetCategoryGroupItem*>(item);
+    emit clicked(categoryItem);
 
-    if(dgitem != 0)
-    {
-      emit clicked(dgitem);
+    if(model && !m_useCheckableItems)
+      return;
 
-      if(model && !m_useCheckableItems)
-        return;
+    if(model && !m_useCheckableItems)
+      return;
 
-      if(model && !m_useCheckableItems)
-        return;
+    QVariant value = item->data(0, Qt::CheckStateRole);
 
-      QVariant value = item->data(0, Qt::CheckStateRole);
+    if(value.isNull())
+      return;
 
-      if(value.isNull())
-        return;
+    emit toggled(categoryItem);
 
-      emit toggled(dgitem);
-    }
+    return;
+  }
+
+  DataSetGroupItem* groupItem = dynamic_cast<DataSetGroupItem*>(item);
+
+  if(groupItem != 0)
+  {
+    emit clicked(groupItem);
+
+    if(model && !m_useCheckableItems)
+      return;
+
+    if(model && !m_useCheckableItems)
+      return;
+
+    QVariant value = item->data(0, Qt::CheckStateRole);
+
+    if(value.isNull())
+      return;
+
+    emit toggled(groupItem);
+
+    return;
   }
 }
 
@@ -205,10 +236,18 @@ void te::qt::widgets::DataSetTreeView::onItemDoubleClicked(const QModelIndex & i
     return;
   }
 
-  DataSetCategoryGroupItem* dgitem = dynamic_cast<DataSetCategoryGroupItem*>(item);
+  DataSetCategoryGroupItem* categoryItem = dynamic_cast<DataSetCategoryGroupItem*>(item);
 
-  if(dgitem != 0)
-    emit doubleClicked(dgitem);
+  if(categoryItem != 0)
+  {
+    emit doubleClicked(categoryItem);
+    return;
+  }
+
+  DataSetGroupItem* groupItem = dynamic_cast<DataSetGroupItem*>(item);
+
+  if(groupItem != 0)
+    emit doubleClicked(groupItem);
 }
 
 void te::qt::widgets::DataSetTreeView::onItemEntered(const QModelIndex & index)
@@ -226,10 +265,18 @@ void te::qt::widgets::DataSetTreeView::onItemEntered(const QModelIndex & index)
     return;
   }
 
-  DataSetCategoryGroupItem* dgitem = dynamic_cast<DataSetCategoryGroupItem*>(item);
+  DataSetCategoryGroupItem* categoryItem = dynamic_cast<DataSetCategoryGroupItem*>(item);
 
-  if(dgitem != 0)
-    emit entered(dgitem);
+  if(categoryItem != 0)
+  {
+    emit entered(categoryItem);
+    return;
+  }
+
+  DataSetGroupItem* groupItem = dynamic_cast<DataSetGroupItem*>(item);
+
+  if(groupItem != 0)
+    emit entered(groupItem);
 }
 
 void te::qt::widgets::DataSetTreeView::onItemPressed(const QModelIndex & index)
@@ -247,10 +294,18 @@ void te::qt::widgets::DataSetTreeView::onItemPressed(const QModelIndex & index)
     return;
   }
 
-  DataSetCategoryGroupItem* dgitem = dynamic_cast<DataSetCategoryGroupItem*>(item);
+  DataSetCategoryGroupItem* categoryItem = dynamic_cast<DataSetCategoryGroupItem*>(item);
 
-  if(dgitem != 0)
-    emit pressed(dgitem);
+  if(categoryItem != 0)
+  {
+    emit pressed(categoryItem);
+    return;
+  }
+
+  DataSetGroupItem* groupItem = dynamic_cast<DataSetGroupItem*>(item);
+
+  if(groupItem != 0)
+    emit pressed(groupItem);
 }
 
 void te::qt::widgets::DataSetTreeView::customContextMenu(const QPoint &point)

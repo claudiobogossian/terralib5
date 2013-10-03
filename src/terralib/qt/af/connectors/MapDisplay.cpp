@@ -162,7 +162,7 @@ void te::qt::af::MapDisplay::nextExtent()
 
 void te::qt::af::MapDisplay::previousExtent()
 {
-  if(m_currentExtent != 0)
+  if(m_currentExtent > 0)
   {
     m_currentExtent -= 1;
     m_display->setExtent(m_extentStack[m_currentExtent]);
