@@ -250,7 +250,7 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
 te::qt::widgets::DataFrame::~DataFrame()
 {
   hide();
-  m_mapDisplay->removeEventFilter(this);
+  removeEventFilter(this);
   delete m_mapDisplay;
   delete m_UTMGridFrame;
   delete m_geoGridFrame;
@@ -850,6 +850,18 @@ void te::qt::widgets::DataFrame::rubberBand()
   m_layoutEditor->update();
 }
 
+void te::qt::widgets::DataFrame::installEventFilter(QObject*)
+{
+  // faca com que NAO receba eventos
+  m_mapDisplay->removeEventFilter(this);
+}
+
+void te::qt::widgets::DataFrame::removeEventFilter(QObject*)
+{
+  // faca com que receba eventos
+  m_mapDisplay->installEventFilter(this);
+}
+
 bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
 {
   // return true to stop the event; otherwise return false.
@@ -1233,10 +1245,15 @@ void te::qt::widgets::DataFrame::onDrawLayersFinished(const QMap<QString, QStrin
 
   // TODO!!!
   if(m_data)
-    drawLayerSelection(Qt::red); // teste........
+    drawLayerSelection();
 }
 
-void te::qt::widgets::DataFrame::drawLayerSelection(QColor selColor)
+void te::qt::widgets::DataFrame::setSelectionColor(QColor selColor)
+{
+  m_selectionColor = selColor;
+}
+
+void te::qt::widgets::DataFrame::drawLayerSelection()
 {
   assert(m_data);
 
@@ -1300,8 +1317,7 @@ void te::qt::widgets::DataFrame::drawLayerSelection(QColor selColor)
         if(currentGeomType != g->getGeomTypeId())
         {
           currentGeomType = g->getGeomTypeId();
-          te::qt::widgets::Config2DrawLayerSelection(&canvas, selColor, currentGeomType);
-          //te::qt::widgets::Config2DrawLayerSelection(&canvas, ApplicationController::getInstance().getSelectionColor(), currentGeomType);
+          te::qt::widgets::Config2DrawLayerSelection(&canvas, m_selectionColor, currentGeomType);
         }
 
         canvas.draw(g.get());

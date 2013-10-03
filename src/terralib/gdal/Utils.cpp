@@ -139,98 +139,146 @@ void te::gdal::GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProp
     return;
 
   bprops.clear();
-
-  // retrieve the information about each band
-  for (int rasterIdx = 0; rasterIdx < gds->GetRasterCount(); ++rasterIdx)
+  
+  int nBands = 0;
+  bool hasPalette = false;
+  
+  if( gds->GetRasterCount() > 0 )
   {
-    GDALRasterBand* rasterBand = gds->GetRasterBand(1 + rasterIdx);
-    int dt = te::gdal::GetTeDataType(rasterBand->GetRasterDataType());
-
-    te::rst::BandProperty* rb = new te::rst::BandProperty(rasterIdx, dt);
-
-    rb->m_colorInterp = te::gdal::GetTeColorInterpretation(rasterBand->GetColorInterpretation());
-
-    // find if there is a no data value
-    int noDataValueIsUsed = 0;
-    double nodataval = rasterBand->GetNoDataValue(&noDataValueIsUsed);
-    if (noDataValueIsUsed) 
-      rb->m_noDataValue = nodataval;
-
-    // pallete information (if present)
-    if (rb->m_colorInterp == te::rst::PaletteIdxCInt)
+    if( gds->GetRasterBand(1)->GetColorInterpretation() == GCI_PaletteIndex )
     {
-      const GDALColorTable* colorTable = rasterBand->GetColorTable();
-      if (!colorTable)
-        throw Exception(TR_GDAL("Invalid color table"));
-
-      rb->m_paletteInterp = te::gdal::GetTePaletteInterpretation(colorTable->GetPaletteInterpretation());
-
-      const int colorTableCount = colorTable->GetColorEntryCount();
-      for (int cTIdx = 0 ; cTIdx < colorTableCount ; ++cTIdx)
+      hasPalette = true;
+      assert( gds->GetRasterBand(1)->GetColorTable() );
+      
+      switch( gds->GetRasterBand(1)->GetColorTable()->GetPaletteInterpretation() )
       {
-        const GDALColorEntry& colorEntry = *colorTable->GetColorEntry(cTIdx);
-
-        te::rst::BandProperty::ColorEntry tcolorEntry;
-        tcolorEntry.c1 = colorEntry.c1;
-        tcolorEntry.c2 = colorEntry.c2;
-        tcolorEntry.c3 = colorEntry.c3;
-        tcolorEntry.c4 = colorEntry.c4;
-
-        rb->m_palette.push_back(tcolorEntry);
-      }
+        case GPI_Gray : 
+          nBands = 1;
+          break;
+        case GPI_RGB : // RGBA
+          nBands = 4;
+          break;
+        case GPI_CMYK :
+          nBands = 4;
+          break;          
+        case GPI_HLS :
+          nBands = 3;
+          break;
+        default :
+          throw Exception(TR_GDAL("invalid palette interpretation"));
+          break;
+      }        
     }
-    
-    std::string unitName = rasterBand->GetUnitType();
-    if (!unitName.empty())
-      rb->setUnitOfMeasure(te::common::UnitsOfMeasureManager::getInstance().findByName(unitName));
     else
-      rb->setUnitOfMeasure(0);
-    rb->m_valuesOffset = rasterBand->GetOffset(0);
-    rb->m_valuesScale = rasterBand->GetScale(0);
+    {
+      nBands = gds->GetRasterCount();
+    }
+  }    
 
-    bprops.push_back(rb);
+      // retrieve the information about each band
+  for (int rasterIdx = 0; rasterIdx < nBands ; ++rasterIdx)
+  {
+    GDALRasterBand* rasterBand = gds->GetRasterBand( hasPalette ? 1 : ( 1 + rasterIdx) );
+    bprops.push_back( GetBandProperty( rasterBand, rasterIdx ) ); 
   }
 }
 
-te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband)
+te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
+   const unsigned int bandIndex )
 {
   if (!gband)
     return 0;
 
   te::rst::BandProperty* bprop = new te::rst::BandProperty(gband->GetBand()-1, GetTeDataType(gband->GetRasterDataType()), "");
-
+  
+  bprop->m_idx = bandIndex;
+  
   // te::rst::BandProperty* rb = new te::rst::BandProperty(rasterIdx, dt);
   bprop->m_colorInterp = GetTeColorInterpretation(gband->GetColorInterpretation());
+  
+  if( bprop->m_colorInterp == te::rst::PaletteIdxCInt )
+  {
+    switch( gband->GetColorTable()->GetPaletteInterpretation() )
+    {
+      case GPI_Gray : 
+        switch( bandIndex )
+        {
+          case 0 :
+            bprop->m_colorInterp = te::rst::GrayIdxCInt;
+            break;
+          default :
+            throw Exception(TR_GDAL("invalid band index"));
+            break;
+        }
+        break;
+      case GPI_RGB : // RGBA
+        switch( bandIndex )
+        {
+          case 0 :
+            bprop->m_colorInterp = te::rst::RedCInt;
+            break;
+          case 1 :
+            bprop->m_colorInterp = te::rst::GreenCInt;
+            break;
+          case 2 :
+            bprop->m_colorInterp = te::rst::BlueCInt;
+            break;
+          case 3 :
+            bprop->m_colorInterp = te::rst::AlphaCInt;
+            break;            
+          default :
+            throw Exception(TR_GDAL("invalid band index"));
+            break;
+        }        
+        break;
+      case GPI_CMYK :
+        switch( bandIndex )
+        {
+          case 0 :
+            bprop->m_colorInterp = te::rst::CyanCInt;
+            break;
+          case 1 :
+            bprop->m_colorInterp = te::rst::MagentaCInt;
+            break;
+          case 2 :
+            bprop->m_colorInterp = te::rst::YellowCInt;
+            break;
+          case 3 :
+            bprop->m_colorInterp = te::rst::KeyCInt;
+            break;            
+          default :
+            throw Exception(TR_GDAL("invalid band index"));
+            break;
+        }        
+        break;          
+      case GPI_HLS :
+        switch( bandIndex )
+        {
+          case 0 :
+            bprop->m_colorInterp = te::rst::HueCInt;
+            break;
+          case 1 :
+            bprop->m_colorInterp = te::rst::SatCInt;
+            break;
+          case 2 :
+            bprop->m_colorInterp = te::rst::LigCInt;
+            break;
+          default :
+            throw Exception(TR_GDAL("invalid band index"));
+            break;
+        }         
+        break;
+      default :
+        throw Exception(TR_GDAL("invalid palette interpretation"));
+        break;
+    }
+  }
 
   // find if there is a no data value
   int noDataValueIsUsed = 0;
   double nodataval = gband->GetNoDataValue(&noDataValueIsUsed);
   if (noDataValueIsUsed) 
     bprop->m_noDataValue = nodataval;
-
-  // pallete information (if present)
-  if (bprop->m_colorInterp == te::rst::PaletteIdxCInt)
-  {
-    const GDALColorTable* colorTable = gband->GetColorTable();
-    if (!colorTable)
-      throw Exception(TR_GDAL("invalid color table"));
-
-    bprop->m_paletteInterp = te::gdal::GetTePaletteInterpretation(colorTable->GetPaletteInterpretation());
-
-    const int colorTableCount = colorTable->GetColorEntryCount();
-    for (int cTIdx = 0 ; cTIdx < colorTableCount ; ++cTIdx)
-    {
-      const GDALColorEntry& colorEntry = *colorTable->GetColorEntry(cTIdx);
-
-      te::rst::BandProperty::ColorEntry tcolorEntry;
-      tcolorEntry.c1 = colorEntry.c1;
-      tcolorEntry.c2 = colorEntry.c2;
-      tcolorEntry.c3 = colorEntry.c3;
-      tcolorEntry.c4 = colorEntry.c4;
-
-      bprop->m_palette.push_back(tcolorEntry);
-    }
-  }
 
   std::string unitName = gband->GetUnitType();
   if (!unitName.empty())
@@ -250,8 +298,44 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband)
 void te::gdal::GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& bands)
 {
   bands.clear();
-
-  for (int b = 0; b < rst->getGDALDataset()->GetRasterCount(); b++)
+  
+  int nBands = 0;
+  
+  if( rst->getGDALDataset()->GetRasterCount() > 0 )
+  {
+    if( rst->getGDALDataset()->GetRasterBand(1)->GetColorInterpretation() == GCI_PaletteIndex )
+    {
+      if( rst->getGDALDataset()->GetRasterBand(1)->GetColorTable() == 0 )
+      {
+        throw Exception(TR_GDAL("invalid color table"));
+      }
+      
+      switch( rst->getGDALDataset()->GetRasterBand(1)->GetColorTable()->GetPaletteInterpretation() )
+      {
+        case GPI_Gray : 
+          nBands = 1;
+          break;
+        case GPI_RGB : // RGBA
+          nBands = 4;
+          break;
+        case GPI_CMYK :
+          nBands = 4;
+          break;          
+        case GPI_HLS :
+          nBands = 3;
+          break;
+        default :
+          throw Exception(TR_GDAL("invalid palette interpretation"));
+          break;
+      }        
+    }
+    else
+    {
+      nBands = rst->getGDALDataset()->GetRasterCount();
+    }
+  }  
+  
+  for (int b = 0; b < nBands; b++)
     bands.push_back( new te::gdal::Band(rst, b) );
 }
 

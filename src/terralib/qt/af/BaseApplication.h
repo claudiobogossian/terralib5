@@ -105,6 +105,8 @@ namespace te
 
           void onToolsDataExchangerSHP2PGISTriggered();
 
+          void onToolsDataExchangerPGIS2SHPTriggered();
+
           void onProjectPropertiesTriggered();
 
           void onNewFolderTriggered();
@@ -226,6 +228,7 @@ namespace te
           QAction* m_toolsCustomize;
           QAction* m_toolsDataExchanger;
           QAction* m_toolsDataExchangerSHP2PGIS;
+          QAction* m_toolsDataExchangerPGIS2SHP;
           QAction* m_toolsDataSourceExplorer;
           QAction* m_pluginsManager;
           QAction* m_helpContents;

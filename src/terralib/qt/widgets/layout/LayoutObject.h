@@ -57,6 +57,9 @@ namespace te
           virtual void hide();
           virtual void show();
           virtual void adjust();
+          virtual void removeEventFilter(QObject*);
+          virtual void installEventFilter(QObject*);
+          virtual bool eventFilter(QObject*, QEvent*);
           virtual void showSelectionPoints();
           virtual void hideSelectionPoints();
           virtual double getScale();

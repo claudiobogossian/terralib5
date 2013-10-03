@@ -624,8 +624,10 @@ void te::vp::AggregationDialog::onTargetFileToolButtonPressed()
     return;
   
   boost::filesystem::path outfile(fileName.toStdString());
-//  m_ui->m_newLayerNameLineEdit->setText(outfile.leaf().c_str());
-//  m_ui->m_repositoryLineEdit->setText(outfile.c_str());
+  std::string aux = outfile.leaf().string();
+  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
+  aux = outfile.string();
+  m_ui->m_repositoryLineEdit->setText(aux.c_str());
   
   m_toFile = true;
   m_ui->m_newLayerNameLineEdit->setEnabled(false);

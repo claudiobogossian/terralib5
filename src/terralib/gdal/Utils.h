@@ -178,6 +178,7 @@ namespace te
      \brief Gets the list of bands definition from a GDAL dataset.
      \param gds A pointer to a GDAL dataset.
      \param bprops A reference to a vector to be filled with the bands description extracted from a dataset.
+     \note The caller of this method must take the ownership of the returned properties.
      */
     void GetBandProperties(GDALDataset* gds, std::vector<te::rst::BandProperty*>& bprops);
     
@@ -186,15 +187,20 @@ namespace te
      
      \param gband  A pointer to a GDAL Raster Band.
      
+     \param bandIndex The band index (starting from 0).
+     
      \return A band property.
+     
+     \note The caller of this method must take the ownership of the returned properties.
      */
-    te::rst::BandProperty* GetBandProperty(GDALRasterBand* gband);
+    te::rst::BandProperty* GetBandProperty(GDALRasterBand* gband, const unsigned int bandIndex );
     
     /*!
      \brief Gets the list of bands from a GDAL dataset.
      
      \param rst    A pointer to the raster.
      \param bands  A reference to a vector to be filled with the bands extracted from a dataset.
+     \note The caller of this method must take the ownership of the returned properties.
      */
     void GetBands(te::gdal::Raster* rst, std::vector<te::gdal::Band*>& bands);
     
