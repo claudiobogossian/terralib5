@@ -75,8 +75,7 @@ namespace te
           void adjustWidgetToFrameRect(const QRectF& r);
           double getScale();
           void setScale(double v);
-          void removeEventFilter(QObject*);
-          void installEventFilter(QObject*);
+          void sendEventToChildren(bool);
           bool eventFilter(QObject*, QEvent*);
           te::map::AbstractLayer* getData();
           void setData(te::map::AbstractLayerPtr d, int nsrid = TE_UNKNOWN_SRS);
