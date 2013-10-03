@@ -67,9 +67,6 @@ inline void TESTHR(HRESULT hr)
     _com_issue_error(hr);
 }
 
-te::da::DataSourceCapabilities te::ado::DataSource::sm_capabilities;
-te::da::SQLDialect* te::ado::DataSource::sm_dialect(0);
-
 te::ado::DataSource::DataSource()
   : m_catalog(0),
     m_conn(0),
@@ -145,12 +142,12 @@ bool te::ado::DataSource::isValid() const
 
 const te::da::DataSourceCapabilities& te::ado::DataSource::getCapabilities() const
 {
-  return sm_capabilities;
+  return *te::ado::Globals::sm_capabilities;
 }
 
 const te::da::SQLDialect* te::ado::DataSource::getDialect() const
 {
-  return sm_dialect;
+  return te::ado::Globals::sm_queryDialect;
 }
 
 static std::vector<std::string> getDataSourceNames(const std::string& dsType, const std::map<std::string, std::string>& info)
