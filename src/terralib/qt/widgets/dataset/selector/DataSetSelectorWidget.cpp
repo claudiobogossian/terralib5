@@ -32,6 +32,7 @@
 #include "../../../../memory/DataSet.h"
 #include "../../datasource/explorer/AbstractDataSourceTreeItem.h"
 #include "../../datasource/explorer/DataSetItem.h"
+#include "../../datasource/explorer/DataSetGroupItem.h"
 #include "../../mapdisplay/DataSetDisplay.h"
 #include "../../table/DataSetTableView.h"
 #include "../explorer/DataSetTreeView.h"
@@ -91,6 +92,7 @@ te::qt::widgets::DataSetSelectorWidget::DataSetSelectorWidget(QWidget* parent, Q
 // connect signals and slots
   connect(m_datasetTreeView.get(), SIGNAL(clicked(DataSetItem*)), this, SLOT(onDataSetClicked(DataSetItem*)));
   connect(m_datasetTreeView.get(), SIGNAL(toggled(DataSetItem*)), this, SLOT(onDataSetToggled(DataSetItem*)));
+  connect(m_datasetTreeView.get(), SIGNAL(toggled(DataSetGroupItem*)), this, SLOT(onDataSetGroupToggled(DataSetGroupItem*)));
   connect(m_ui->m_mapPreviewGroupBox, SIGNAL(toggled(bool)), this, SLOT(onMapPreviewToggled(bool)));
   connect(m_ui->m_dataPreviewGroupBox, SIGNAL(toggled(bool)), this, SLOT(onDataPreviewToggled(bool)));
 }
@@ -275,6 +277,17 @@ void te::qt::widgets::DataSetSelectorWidget::onDataSetClicked(DataSetItem* item)
   previewData(item->getDataSet());
 }
 
+void te::qt::widgets::DataSetSelectorWidget::onDataSetGroupToggled(DataSetGroupItem* item)
+{
+  if(item == 0)
+    return;
+
+  const std::vector<DataSetItem*>& items = item->getDataSetItems();
+
+  for(std::size_t i = 0; i < items.size(); ++i)
+    onDataSetToggled(items[i]);
+}
+
 void te::qt::widgets::DataSetSelectorWidget::onMapPreviewToggled(bool on)
 {
   if(on)
@@ -329,4 +342,3 @@ bool te::qt::widgets::DataSetSelectorWidget::DataSetComparer::operator()(const t
 {
   return first->getName() < second->getName();
 }
-
