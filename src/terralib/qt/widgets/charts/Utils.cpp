@@ -268,10 +268,6 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
   te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
 
-  int propType = dataset->getPropertyDataType(propId);
-
-  newHistogram->setType(propType);
-
   std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
   std::vector<std::size_t> objIdIdx;
   te::da::GetOIDPropertyPos(dataType, objIdIdx);
@@ -288,6 +284,9 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
   }
   else
   {
+
+    int propType = dataset->getPropertyDataType(propId);
+    newHistogram->setType(propType);
 
     //The vector containing the frequency of each interval, will be used to every property type
     std::vector< unsigned int> values;
