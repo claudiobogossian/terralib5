@@ -37,6 +37,7 @@
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 #include <QtGui/QInputDialog>
+#include <QtCore/QDir>
 
 te::qt::widgets::LayoutEditor::LayoutEditor(QWidget* parent, Qt::WindowFlags f) :
   QWidget(parent, f),
@@ -92,6 +93,9 @@ te::qt::widgets::LayoutEditor::LayoutEditor(QWidget* parent, Qt::WindowFlags f) 
   tf = new te::qt::widgets::TextFrame(QPointF(10, 270), "divisão de processamento de imagens", pointSize, this, Qt::Widget);
   insert(tf);
 
+  m_zoomInPixmap = 0;
+  m_zoomOutPixmap = 0;
+  m_panPixmap = 0;
 }
 
 te::qt::widgets::LayoutEditor::LayoutEditor(const QSize& paperSize, QWidget* parent, Qt::WindowFlags f) :
@@ -121,6 +125,10 @@ te::qt::widgets::LayoutEditor::LayoutEditor(const QSize& paperSize, QWidget* par
   m_putUndo = false;
   resize(600, 600); 
   m_putUndo = true;
+
+  m_zoomInPixmap = 0;
+  m_zoomOutPixmap = 0;
+  m_panPixmap = 0;
 }
 
 te::qt::widgets::LayoutEditor::~LayoutEditor()
@@ -137,6 +145,10 @@ te::qt::widgets::LayoutEditor::~LayoutEditor()
   for(it = m_undoLayoutObjects.begin(); it != m_undoLayoutObjects.end(); ++it)
     delete *it;
   m_undoLayoutObjects.clear();
+
+  delete m_zoomInPixmap;
+  delete m_zoomOutPixmap;
+  delete m_panPixmap;
 }
 
 void te::qt::widgets::LayoutEditor::resetPaperView()
@@ -273,56 +285,6 @@ void te::qt::widgets::LayoutEditor::createWorkingArea(bool putUndo)
 
   if(putUndo)
     appendToUndo();
-  //if(m_undoBufferSize && putUndo)
-  //{
-  //  if(m_editorState == 0)
-  //  {
-  //    m_editorState = new te::qt::widgets::Frame();
-  //    Fm_reise();
-  //  }
-  //  te::qt::widgets::Frame* f = new te::qt::widgets::Frame(*m_editorState);
-
-  //  // verifique se ultrapassa o numero de undos. Se sim, retire o mais antigo undo.
-  //  if(m_undoBufferSize == m_undoLayoutObjects.size())
-  //  {
-  //    std::vector<te::qt::widgets::Frame*>::iterator it = m_undoLayoutObjects.begin();
-  //    te::qt::widgets::Frame* f = *it;
-  //    m_undoLayoutObjects.erase(it);
-  //    f->hide();
-  //    delete (f);
-  //  }
-
-  //  // se a operacao é resize, elimine os desnecessarios
-  //  if(f->getId() == 0) // é viewer edition
-  //  {
-  //    te::qt::widgets::Frame *fu = 0, *fap = 0;
-  //    std::vector<te::qt::widgets::Frame*>::reverse_iterator it = m_undoLayoutObjects.rbegin();
-  //    if(it != m_undoLayoutObjects.rend())
-  //    {
-  //      fu = *it;
-  //      ++it;
-  //      if(it != m_undoLayoutObjects.rend())
-  //      {
-  //        fap = *it;
-
-  //        if(fu && fap)
-  //        {
-  //          if(fu->getId() == 0 && fap->getId() == 0) // é viewer edition
-  //          {
-  //            if(fu->m_widgetRect != fap->m_widgetRect || fu->m_pos != fap->m_pos)
-  //            {
-  //              m_undoLayoutObjects.pop_back();
-  //              delete fu;
-  //            }
-  //          }
-  //        }
-  //      }
-  //    }
-  //  }
-
-  //  m_undoLayoutObjects.push_back(f);
-  //  copyState();
-  //}
 }
 
 void te::qt::widgets::LayoutEditor::appendToUndo() // usado para quando muda o frame work
@@ -920,79 +882,10 @@ void te::qt::widgets::LayoutEditor::draw()
     if((*it)->windowTitle() == "DataFrame")
     {
       te::qt::widgets::DataFrame* df = (te::qt::widgets::DataFrame*)*it;
-      df->draw();
+      if(df->getFrameRect().intersects(m_paperViewRect))
+        df->draw();
     }
   }
-
-  //QRectF paperRect = QRect(0, 0, m_paperSize.width(), m_paperSize.height());
-  //QRectF paperRectVp = m_matrixPaperViewToVp.mapRect(paperRect);
-
-  //std::vector<te::qt::widgets::DataFrame*>::iterator it;
-  //for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
-  //{
-  //  QRectF frameVp = QRectF(m_matrixPaperViewToVp.mapRect((*it)->getFrameRect()));
-
-  //  //// Colocar titulo com tamanho titleSize = 20 point size
-  //  //int titleSize = 20;
-
-  //  //// ver equivalencia emm mm
-  //  //double tam = (double)titleSize * 25.4 / 72.;
-
-  //  //// ver tam no viewport
-  //  //double vtam = tam * m_matrixPaperViewToVp.m11();
-
-  //  //QString title = (*it)->getTitle() + "- Escala: 1/";
-  //  //QString ss;
-  //  //ss.setNum((*it)->getScale());
-  //  //title += ss;
-  //  //QRectF t = m_matrixPaperViewToVp.mapRect((*it)->getFrameRect());
-  //  //int titlex = t.left() + qRound(t.width() / 2.);
-  //  //int titley = t.top() - qRound(vtam);
-
-  //  //QFont font("Times New Roman");
-  //  //int ps = qRound(vtam);
-  //  //if(ps < 1)
-  //  //  ps = 1;
-  //  //font.setPixelSize(ps);
-  //  //painter.setFont(font);
-  //  //painter.setPen(QColor(0, 255, 255, 255));
-  //  //QRectF br = painter.boundingRect(QRectF(0, 0, m_paperViewRect.width(), m_paperViewRect.height()), Qt::AlignHCenter, title);
-  //  //br.moveCenter(QPoint(titlex, titley));
-  //  //painter.drawText(br, Qt::AlignHCenter, title);  
-
-  //  // desenha contorno do frameRect
-  //  // desenhe o contorno apenas dentro do paper
-  //  //QRectF frameRect = (*it)->getFrameRect();
-  //  //painter.setMatrix(m_matrixPaperViewToVp);
-  //  //painter.setBrush(Qt::NoBrush);
-  //  //painter.setPen(QColor(255, 0, 0, 255));
-
-  //  //if(paperRect.contains(frameRect))
-  //  //  painter.drawRect(frameRect);
-  //  //else
-  //  //{
-  //  //  QPointF topLeft = frameRect.topLeft();
-  //  //  QPointF bottomRight = frameRect.bottomRight();
-  //  //  if(frameRect.top() < paperRect.top())
-  //  //    topLeft.setY(paperRect.top());
-  //  //  if(frameRect.bottom() > paperRect.bottom())
-  //  //    bottomRight.setY(paperRect.bottom());
-  //  //  if(frameRect.left() < paperRect.left())
-  //  //    topLeft.setX(paperRect.left());
-  //  //  if(frameRect.right() > paperRect.right())
-  //  //    bottomRight.setX(paperRect.right());
-
-  //  //  if(topLeft.x() != paperRect.left())
-  //  //    painter.drawLine(QPoint(topLeft.x(), topLeft.y()), QPoint(topLeft.x(), bottomRight.y()));
-  //  //  if(bottomRight.x() != paperRect.right())
-  //  //    painter.drawLine(QPoint(bottomRight.x(), topLeft.y()), QPoint(bottomRight.x(), bottomRight.y()));
-  //  //  if(topLeft.y() != paperRect.top())
-  //  //    painter.drawLine(QPoint(topLeft.x(), topLeft.y()), QPoint(bottomRight.x(), topLeft.y()));
-  //  //  if(bottomRight.y() != paperRect.bottom())
-  //  //    painter.drawLine(QPoint(topLeft.x(), bottomRight.y()), QPoint(bottomRight.x(), bottomRight.y()));
-  //  //}
-  //  painter.resetMatrix();
-  //}
 
   QRect pr = m_matrixPaperViewToVp.mapRect(QRect(0, 0, m_paperSize.width(), m_paperSize.height()));
 
@@ -1029,54 +922,275 @@ void te::qt::widgets::LayoutEditor::drawButtonClicked()
 
 void te::qt::widgets::LayoutEditor::mousePressEvent(QMouseEvent* e)
 {
-  //te::qt::widgets::DataFrame* df0 = m_layoutObjects[0];
-  //te::qt::widgets::DataFrame* df1 = m_layoutObjects[1];
+  m_difTopLeft = QPointF(0., 0.);
+  m_difBottomRight = QPointF(0., 0.);
 
-  //QRectF r = df1->getFrameRect();
-  //double b = r.bottom();
-  //r.setWidth(r.width() * 1.1);
-  //r.setTop(r.top() - (r.height() * 1.1 - r.height()));
-  //df1->setFrameRect(r);
-  //draw();
-  //m_layoutObjects.clear();
-  //m_layoutObjects.push_back(df1);
-  //m_layoutObjects.push_back(df0);
-
-  //df0->stackUnder(df1);
-
-
-
-
-  //int x = 0;
-  //int y = 0;
-  //m_dataPan = false;
-
-  //if(size().width() > m_totalPixmap.width())
-  //  x = qRound((double)(size().width() - m_totalPixmap.width()) / 2.);
-  //if(size().height() > m_totalPixmap.height())
-  //  y = qRound((double)(size().height() - m_totalPixmap.height()) / 2.);
-
-  //// viewport coodenate
-  //m_pressPoint = e->pos() + QPoint(-(x + m_verticalRulerWidth), -(y + m_horizontalRulerWidth));
-
-  //// paper coordenate (milimeter)
-  //QPointF pp = m_matrixPaperViewToVp.inverted().map(m_pressPoint);
-
-  //if(e->buttons() == Qt::LeftButton)
-  //{
-  //  if(m_dataFrameSelected)
-  //    m_frameRectEdit = m_dataFrameSelected->getFrameRect();
-  //  else
-  //    m_frameRectEdit = QRectF();
-  //}
+  m_zpressPoint = e->pos();
+  if(m_zmouseMode == 3)
+    m_zpanEnd = false;
 }
 
 void te::qt::widgets::LayoutEditor::mouseMoveEvent(QMouseEvent* e)
 {
+  m_zpoint = e->pos();
+
+  if(e->buttons() == Qt::LeftButton) //atual estado do botao
+  {
+    if(m_zmouseMode == 3) // pan
+    {
+      m_zrect = QRect();
+      QPointF pfrom(m_zpressPoint.x(), m_zpressPoint.y());
+      pfrom =  m_matrixPaperViewToVp.inverted().map(pfrom);
+
+      QPointF pto(e->pos().x(), e->pos().y());
+      pto =  m_matrixPaperViewToVp.inverted().map(pto);
+
+      m_zpressPoint = e->pos();
+
+      QPointF dif = pto -pfrom;
+      QPointF c = m_paperViewRect.center();
+      c -= dif;
+      m_paperViewRect.moveCenter(c);
+      createWorkingArea(false);
+      draw();
+    }
+    else if(m_zmouseMode == 2) // zoom out
+    {
+      m_zrect = QRect();
+    }
+    else if(m_zmouseMode == 1) // zoom in
+    {
+      int w = abs(m_zpoint.x() - m_zpressPoint.x()) + 1;
+      int h = abs(m_zpoint.y() - m_zpressPoint.y()) + 1;
+      if(m_zpoint.x() > m_zpressPoint.x() && m_zpoint.y() > m_zpressPoint.y())
+        m_zrect.setRect(m_zpressPoint.x(), m_zpressPoint.y(), w, h);
+      else if(m_zpoint.x() > m_zpressPoint.x() && m_zpoint.y() < m_zpressPoint.y())
+        m_zrect.setRect(m_zpressPoint.x(), m_zpoint.y(), w, h);
+      else if(m_zpoint.x() < m_zpressPoint.x() && m_zpoint.y() < m_zpressPoint.y())
+        m_zrect.setRect(m_zpoint.x(), m_zpoint.y(), w, h);
+      else
+        m_zrect.setRect(m_zpoint.x(), m_zpressPoint.y(), w, h);
+      drawRectArea();
+    }
+  }
 }
 
 void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
 {
+  if(e->modifiers() == Qt::NoModifier)
+  {
+    if(e->button() == Qt::LeftButton) // botao que causou o evento
+    {
+      if(m_zmouseMode == 1) // zoom in
+      {
+        if(m_zrect.isValid() && m_zrect.width() > 2 && m_zrect.height() > 2)
+        {
+          QRectF r(m_zrect.left(), m_zrect.top(), m_zrect.width(), m_zrect.height());
+          r = m_matrixPaperViewToVp.inverted().mapRect(r);
+          adjustAspectRatio(r);
+          m_paperViewRect = r;
+          createWorkingArea();
+          draw();
+        }
+        else
+        {
+          QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
+          QPointF cf = m_matrixPaperViewToVp.inverted().map(c);
+          double w = m_paperViewRect.width() / 2;
+          double h = m_paperViewRect.height() / 2;
+          m_paperViewRect = QRectF(0, 0, w, h);
+          m_paperViewRect.moveCenter(cf);
+          createWorkingArea();
+          draw();
+        }
+        m_zrect = QRect();
+        drawRectArea();
+      }
+      else if(m_zmouseMode == 2) // zoom out
+      {
+        QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
+        QPointF cf = m_matrixPaperViewToVp.inverted().map(c);
+        double w = m_paperViewRect.width() * 2;
+        double h = m_paperViewRect.height() * 2;
+        m_paperViewRect = QRectF(0, 0, w, h);
+        m_paperViewRect.moveCenter(cf);
+        createWorkingArea();
+        draw();
+      }
+      else if(m_zmouseMode == 3) // pan
+      {
+        m_zpanEnd = true;
+        QPointF pfrom(m_zpressPoint.x(), m_zpressPoint.y());
+        pfrom =  m_matrixPaperViewToVp.inverted().map(pfrom);
+
+        QPointF pto(e->pos().x(), e->pos().y());
+        pto =  m_matrixPaperViewToVp.inverted().map(pto);
+
+        QPointF dif = pto -pfrom;
+        QPointF c = m_paperViewRect.center();
+        c -= dif;
+        m_paperViewRect.moveCenter(c);
+        createWorkingArea();
+        draw();
+      }
+    }
+  }
+  else if(e->modifiers() == Qt::ControlModifier)
+  {
+    if(e->button() == Qt::LeftButton) // botao que causou o evento
+    {
+      if(m_zmouseMode == 1) // zoom in
+      {
+        if(m_zrect.isValid() && m_zrect.width() > 2 && m_zrect.height() > 2)
+        {
+          QRectF r(m_zrect.left(), m_zrect.top(), m_zrect.width(), m_zrect.height());
+          r = m_matrixPaperViewToVp.inverted().mapRect(r);
+          adjustAspectRatio(r);
+          m_paperViewRect = r;
+          createWorkingArea();
+          draw();
+        }
+        else
+        {
+          QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
+          QPointF cf = m_matrixPaperViewToVp.inverted().map(c);
+          double w = m_paperViewRect.width() / 2;
+          double h = m_paperViewRect.height() / 2;
+          m_paperViewRect = QRectF(0, 0, w, h);
+          m_paperViewRect.moveCenter(cf);
+          createWorkingArea();
+          draw();
+        }
+        m_zrect = QRect();
+        drawRectArea();
+      }
+      else if(m_zmouseMode == 2) // zoom out
+      {
+        QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
+        QPointF cf = m_matrixPaperViewToVp.inverted().map(c);
+        double w = m_paperViewRect.width() * 2;
+        double h = m_paperViewRect.height() * 2;
+        m_paperViewRect = QRectF(0, 0, w, h);
+        m_paperViewRect.moveCenter(cf);
+        createWorkingArea();
+        draw();
+      }
+      else if(m_zmouseMode == 3) // pan
+      {
+        m_zpanEnd = true;
+        QPointF pfrom(m_zpressPoint.x(), m_zpressPoint.y());
+        pfrom =  m_matrixPaperViewToVp.inverted().map(pfrom);
+
+        QPointF pto(e->pos().x(), e->pos().y());
+        pto =  m_matrixPaperViewToVp.inverted().map(pto);
+
+        QPointF dif = pto -pfrom;
+        QPointF c = m_paperViewRect.center();
+        c -= dif;
+        m_paperViewRect.moveCenter(c);
+        createWorkingArea();
+        draw();
+      }
+    }
+  }
+}
+
+void te::qt::widgets::LayoutEditor::drawRectArea()
+{
+  QPixmap* pixmap = getDraftPixmap();
+  pixmap->fill(QColor(0, 0, 0, 0));
+  if(m_zrect.isValid())
+  {
+    QPainter painter(pixmap);
+    painter.setPen(Qt::blue);
+    painter.setBrush(QColor(0, 0, 255, 100));
+    painter.drawRect(m_zrect);
+  }
+  update();
+}
+
+void te::qt::widgets::LayoutEditor::setMouseMode(int m)
+{
+  m_zmouseMode = m;
+
+  if(m_zmouseMode == 0)
+    sendEventToChildren(true);
+  else
+    sendEventToChildren(false);
+
+  QDir dir;
+  if(dir.exists("../../../terralib5/resources/themes/terralib/32x32/zoomInCursor.png"))
+    if(m_zoomInPixmap == 0)
+      m_zoomInPixmap = new QPixmap("../../../terralib5/resources/themes/terralib/32x32/zoomInCursor.png");
+
+  if(dir.exists("../../../terralib5/resources/themes/terralib/32x32/zoomOutCursor.png"))
+    if(m_zoomOutPixmap == 0)
+      m_zoomOutPixmap = new QPixmap("../../../terralib5/resources/themes/terralib/32x32/zoomOutCursor.png");
+
+  if(dir.exists("../../../terralib5/resources/themes/terralib/48x48/panCursor.png"))
+    if(m_panPixmap == 0)
+      m_panPixmap = new QPixmap("../../../terralib5/resources/themes/terralib/48x48/panCursor.png");
+ 
+
+  QCursor* cursor = 0;
+
+  if(m_zmouseMode == 0)
+    cursor = new QCursor(Qt::ArrowCursor);
+  else if(m_zmouseMode == 1)
+  {
+    if(m_zoomInPixmap)
+      cursor = new QCursor(*m_zoomInPixmap, 9, 9);
+    else
+      cursor = new QCursor(Qt::PointingHandCursor);
+  }
+  else if(m_zmouseMode == 2)
+  {
+    if(m_zoomOutPixmap)
+      cursor = new QCursor(*m_zoomOutPixmap, 9, 9);
+    else
+      cursor = new QCursor(Qt::SizeAllCursor);
+  }
+  else if(m_zmouseMode == 3)
+  {
+    if(m_panPixmap)
+      cursor = new QCursor(*m_panPixmap, 24, 24);
+    else
+      cursor = new QCursor(Qt::OpenHandCursor);
+  }
+
+  setCursor(*cursor);
+  delete cursor;
+}
+
+void te::qt::widgets::LayoutEditor::adjustAspectRatio(QRectF& r)
+{
+  double llx = r.left();
+  double lly = r.top();
+  double urx = r.right();
+  double ury = r.bottom();
+  double ww = r.width();
+  double wh = r.height();
+
+  double widthByHeight = m_paperViewRect.width() / m_paperViewRect.height();
+
+  if(widthByHeight > ww / wh)
+  {
+    double v = ww;
+
+    ww = wh * widthByHeight;
+    llx = llx - (ww - v) / 2.0;
+    urx = llx + ww;
+  }
+  else
+  {
+    double v = wh;
+
+    wh = ww / widthByHeight;
+    lly = lly - (wh - v) / 2.0;
+    ury = lly + wh;
+  }
+
+  r = QRectF(llx, lly, urx-llx, ury-lly);
 }
 
 void te::qt::widgets::LayoutEditor::wheelEvent(QWheelEvent* e)
@@ -1117,34 +1231,74 @@ void te::qt::widgets::LayoutEditor::wheelEvent(QWheelEvent* e)
   }
 }
 
-void te::qt::widgets::LayoutEditor::installEventFilter()
+void te::qt::widgets::LayoutEditor::sendEventToChildren(bool b)
 {
   std::vector<te::qt::widgets::LayoutObject*>::iterator it;
   for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
-    (*it)->installEventFilter(this);
+    (*it)->sendEventToChildren(b);
 
   for(it = m_undoLayoutObjects.begin(); it != m_undoLayoutObjects.end(); ++it)
-    (*it)->installEventFilter(this);
+    (*it)->sendEventToChildren(b);
 
-  setFrameSelected(0);
-  while(QApplication::overrideCursor())
-    QApplication::restoreOverrideCursor();
+  if(b == false)
+  {
+    setFrameSelected(0);
+    while(QApplication::overrideCursor())
+      QApplication::restoreOverrideCursor();
+
+    raiseDraftLayoutEditor();    
+    m_draftLayoutEditor->installEventFilter(this);
+  }
+  else
+  {
+    lowerDraftLayoutEditor();
+    m_draftLayoutEditor->removeEventFilter(this);
+  }
 }
 
-void te::qt::widgets::LayoutEditor::removeEventFilter()
-{
-  std::vector<te::qt::widgets::LayoutObject*>::iterator it;
-  for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
-    (*it)->removeEventFilter(this);
-
-  for(it = m_undoLayoutObjects.begin(); it != m_undoLayoutObjects.end(); ++it)
-    (*it)->removeEventFilter(this);
-}
-
-bool te::qt::widgets::LayoutEditor::eventFilter(QObject*, QEvent* e)
+bool te::qt::widgets::LayoutEditor::eventFilter(QObject* obj, QEvent* e)
 {
   if(e->type() == QEvent::Paint)
     return false;
+
+
+  if(obj == m_draftLayoutEditor)
+  {
+    if(e->type() == QEvent::DragEnter)
+    {
+      QDragEnterEvent* dragEnterEvent = (QDragEnterEvent*)e;
+      const QMimeData* mime = dragEnterEvent->mimeData();
+      QString s = mime->data("application/x-terralib;value=\"DraggedItems\"").constData();
+      if(s.isEmpty() == false)
+      {
+        std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+        for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+        {
+          if((*it)->windowTitle() == "DataFrame")
+          {
+            (*it)->sendEventToChildren(true);
+            (*it)->raise();
+          }
+        }
+        return false;
+      }
+    }
+    else if(e->type() == QEvent::DragMove)
+      return false;
+    else if(e->type() == QEvent::Drop)
+      return false;
+    else if(e->type() == QEvent::Resize)
+      return false;
+    else
+      m_draftLayoutEditor->raise();
+
+    if(e->type() == QEvent::MouseButtonPress)
+      mousePressEvent((QMouseEvent*)e);
+    else if(e->type() == QEvent::MouseMove)
+      mouseMoveEvent((QMouseEvent*)e);
+    else if(e->type() == QEvent::MouseButtonRelease)
+      mouseReleaseEvent((QMouseEvent*)e);
+  }
 
   return true;
 }
@@ -1802,10 +1956,10 @@ void te::qt::widgets::LayoutEditor::keyPressEvent(QKeyEvent* e)
     }
     break;
   case Qt::Key_R: // REMOVE MAP DISPLAY EVENT FILTER
-    removeEventFilter();
+    sendEventToChildren(false);
     break;
   case Qt::Key_I: // INSERT MAP DISPLAY EVENT FILTER
-    installEventFilter();
+    sendEventToChildren(true);
     break;
 
     case Qt::Key_P: // CHANGE PROJECTION
@@ -1988,7 +2142,8 @@ void te::qt::widgets::LayoutEditor::drawLayersSelection()
       painter.drawPixmap(0, 0, *pixmap);
       painter.end();
 
-      df->drawLayerSelection();
+      if(df->getFrameRect().intersects(m_paperViewRect))
+        df->drawLayerSelection();
     }
   }
 }

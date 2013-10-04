@@ -104,15 +104,16 @@ namespace te
           QPixmap* getDraftPixmap();
           void raiseDraftLayoutEditor();
           void lowerDraftLayoutEditor();
+          void drawRectArea(); 
+          void adjustAspectRatio(QRectF& r);
+          void setMouseMode(int); // 0=none, 1=zoomin, 2=zoomout, 3=pan (sobre a area do papel/dado)
 
           void mousePressEvent(QMouseEvent* e);
           void mouseMoveEvent(QMouseEvent* e);
           void mouseReleaseEvent(QMouseEvent* e);
           void wheelEvent(QWheelEvent* e);
           void keyPressEvent(QKeyEvent* e);
-
-          void installEventFilter(); // os layout objects NAO recebem mais eventos (use isto para dar zoom e voo no papel e no dataframes)
-          void removeEventFilter(); // os layout objects recebem eventos para poder mudar de tamanho, posicao, etc.
+          void sendEventToChildren(bool b); // true para os layers objects receberem eventos.
           bool eventFilter(QObject*, QEvent*); // deixa passar apenas o event de paint quando o filtro é instalado.
 
           void setFrameSelected(te::qt::widgets::LayoutObject*);
@@ -138,7 +139,7 @@ namespace te
                                 // para que os widgets de frame nao escondam as reguas.
                                 // Todos os frames sao inicializados com LayoutEditor*, mas, a classe base (LayoutObject) é iniciada com m_auxWidget
           ////////////////////////////////////////////////////////////////////////
-          DraftLayoutEditor* m_draftLayoutEditor; // to edition.
+          DraftLayoutEditor* m_draftLayoutEditor; // to edition. É composta da parte interna (sem as reguas).
           QMatrix m_matrixPaperViewToVp;
           QMatrix m_matrix;
           QRectF m_paperViewRect;
@@ -158,7 +159,16 @@ namespace te
           int m_rulerMedium;
           int m_rulerLarge;
           QPixmap m_rulerGridPixmap;
-          int m_mouseTask; // 0=none, 1=zoomin, 2=zoomout, 3=pan (sobre a area do papel)
+
+          int m_zmouseMode; // 0=none, 1=zoomin, 2=zoomout, 3=pan (sobre a area do papel/dado)
+          QPoint m_zpressPoint;
+          QPoint m_zpoint;
+          QRect m_zrect;
+          bool m_zpanEnd;
+          QPixmap* m_zoomInPixmap;
+          QPixmap* m_zoomOutPixmap;
+          QPixmap* m_panPixmap;
+
       };
     } // end namespace widgets
   }   // end namespace qt

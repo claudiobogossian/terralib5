@@ -87,19 +87,12 @@ void te::qt::widgets::LayoutObject::adjust()
 {
 }
 
-void te::qt::widgets::LayoutObject::installEventFilter(QObject* obj)
+void te::qt::widgets::LayoutObject::sendEventToChildren(bool b)
 {
-  QObject::installEventFilter(obj);
-}
-
-void te::qt::widgets::LayoutObject::removeEventFilter(QObject* obj)
-{
-  QObject::removeEventFilter(obj);
-}
-
-bool te::qt::widgets::LayoutObject::eventFilter(QObject*, QEvent*)
-{
-  return true;
+  if(b == true)
+    removeEventFilter(m_layoutEditor);
+  else
+    installEventFilter(m_layoutEditor);
 }
 
 void te::qt::widgets::LayoutObject::showSelectionPoints()
