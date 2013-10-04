@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetAdapter.h"
+#include "../../../dataaccess/dataset/PrimaryKey.h"
 #include "../../../dataaccess/dataset/DataSetTypeConverter.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
@@ -302,6 +303,25 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
         te::dt::Property* pClone = p->clone();
 
         idx->add(pClone);
+      }
+    }
+
+    //create primary key
+    if(dsType->getPrimaryKey())
+    {
+      te::da::PrimaryKey* pk = new te::da::PrimaryKey(dsTypeResult);
+      
+      std::string name = m_ui->m_dataSetLineEdit->text().toStdString() + "_" + dsType->getPrimaryKey()->getName() + "_pk";
+      
+      pk->setName(name);
+
+      std::vector<te::dt::Property*> props =  dsType->getPrimaryKey()->getProperties();
+
+      for(size_t t = 0; t < props.size(); ++ t)
+      {
+        te::dt::Property* p = props[t]->clone();
+
+        pk->add(p);
       }
     }
 
