@@ -249,6 +249,8 @@ namespace te
 
     int GetMonth(const std::string& month);
 
+    std::string GetFormattedDateTime(te::dt::DateTime* dateTime);
+
   } // end namespace ado
 }   // end namespace te
 
