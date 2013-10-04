@@ -18,8 +18,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>450</width>
-     <height>536</height>
+     <width>451</width>
+     <height>546</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_12">
@@ -214,7 +214,7 @@
           <x>0</x>
           <y>10</y>
           <width>317</width>
-          <height>74</height>
+          <height>77</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_7">
@@ -405,7 +405,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>170</width>
+          <width>175</width>
           <height>31</height>
          </rect>
         </property>
@@ -528,7 +528,7 @@
          </widget>
         </item>
         <item row="0" column="0">
-         <widget class="QPushButton" name="m_helpPushButton">
+         <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
           <property name="text">
            <string>Help</string>
           </property>
@@ -548,6 +548,13 @@
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
  <buttongroups>
