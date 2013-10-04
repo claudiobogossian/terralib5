@@ -40,6 +40,7 @@
 #include "../dataaccess/query/SQLDialect.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Array.h"
+#include "../datatype/DateTimeProperty.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleData.h"
 #include "../datatype/StringProperty.h"
@@ -1118,7 +1119,9 @@ void te::ado::Transactor::add(const std::string& datasetName,
             recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)d->getChar(pname.c_str());
             break;
 
-          //case te::dt::UCHAR_TYPE:
+          case te::dt::UCHAR_TYPE:
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)d->getUChar(pname.c_str());
+            break;
 
           case te::dt::INT16_TYPE:
             recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getInt16(pname.c_str());
@@ -1132,8 +1135,14 @@ void te::ado::Transactor::add(const std::string& datasetName,
             recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getInt64(pname.c_str());
             break;
 
-          //case te::dt::NUMERIC_TYPE:
-          //case te::dt::DATETIME_TYPE:
+          case te::dt::NUMERIC_TYPE:
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)d->getNumeric(pname.c_str()).c_str();
+            break;
+
+          case te::dt::DATETIME_TYPE:
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)(d->getDateTime(pname.c_str()))->toString().c_str();
+            break;
+
           case te::dt::FLOAT_TYPE:
             recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getFloat(pname.c_str());
             break;
@@ -1422,7 +1431,7 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
       case ADOX::adDBDate:
       case ADOX::adDBTime:
       case ADOX::adDBTimeStamp:
-        //p = new te::dt::DateTimeProperty(colName, te::dt::TIME_INSTANT);
+        p = new te::dt::DateTimeProperty(colName, te::dt::TIME_INSTANT);
         break;
           
       default:

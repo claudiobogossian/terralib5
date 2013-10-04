@@ -127,6 +127,9 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
 
 te::qt::widgets::RasterNavigatorWidget::~RasterNavigatorWidget()
 {
+  if(m_layer.get())
+    m_layer->setVisibility(m_visibility);
+
   delete m_tool;
   delete m_panTool;
   delete m_zoomTool;
@@ -135,6 +138,10 @@ te::qt::widgets::RasterNavigatorWidget::~RasterNavigatorWidget()
 void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer)
 {
   m_layer = layer;
+
+  m_visibility = m_layer->getVisibility();
+
+  m_layer->setVisibility(te::map::VISIBLE);
 
   std::list<te::map::AbstractLayerPtr> list;
   list.push_back(m_layer);
