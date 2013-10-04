@@ -206,6 +206,11 @@ QRectF te::qt::widgets::TextFrame::getTextRect()
   return m_frameRect;
 }
 
+QPixmap* te::qt::widgets::TextFrame::getPixmap()
+{
+  return &m_pixmap;
+}
+
 void te::qt::widgets::TextFrame::calculateTextRect(QRectF& rt)
 {
   setPointSize(m_pointSize);

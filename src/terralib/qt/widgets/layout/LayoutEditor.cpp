@@ -28,6 +28,9 @@
 #include "DataFrame.h"
 #include "TextFrame.h"
 #include "EditorInfo.h"
+#include "GeographicGridFrame.h"
+#include "UTMGridFrame.h"
+#include "GraphicScaleFrame.h"
 #include "../canvas/MultiThreadMapDisplay.h"
 
 // Qt
@@ -96,6 +99,7 @@ te::qt::widgets::LayoutEditor::LayoutEditor(QWidget* parent, Qt::WindowFlags f) 
   m_zoomInPixmap = 0;
   m_zoomOutPixmap = 0;
   m_panPixmap = 0;
+  m_zmouseMode = 0;
 }
 
 te::qt::widgets::LayoutEditor::LayoutEditor(const QSize& paperSize, QWidget* parent, Qt::WindowFlags f) :
@@ -129,6 +133,7 @@ te::qt::widgets::LayoutEditor::LayoutEditor(const QSize& paperSize, QWidget* par
   m_zoomInPixmap = 0;
   m_zoomOutPixmap = 0;
   m_panPixmap = 0;
+  m_zmouseMode = 0;
 }
 
 te::qt::widgets::LayoutEditor::~LayoutEditor()
@@ -611,10 +616,10 @@ void te::qt::widgets::LayoutEditor::createRulerGrid()
   m_rulerGridPixmap.fill(Qt::white);
 
   // valores minimos e maximos das reguas
-  int xmin = m_paperViewRect.left();
-  int xmax = m_paperViewRect.right();
-  int ymin = m_paperViewRect.top();
-  int ymax = m_paperViewRect.bottom();
+  int xmin = qRound(m_paperViewRect.left()) - m_rulerLarge;
+  int xmax = qRound(m_paperViewRect.right()) + m_rulerLarge;
+  int ymin = qRound(m_paperViewRect.top()) - m_rulerLarge;
+  int ymax = qRound(m_paperViewRect.bottom()) + m_rulerLarge;
 
   while(xmin <= xmax)
   {
@@ -635,7 +640,8 @@ void te::qt::widgets::LayoutEditor::createRulerGrid()
   QPen pen(Qt::blue);
 
   int line;
-  QPoint p1(xmin, m_paperViewRect.top());
+  //QPoint p1(xmin, m_paperViewRect.top());
+  QPoint p1(xmin, ymin);
   QPoint p2(xmin, ymax);
   while(p1.x() <= xmax)
   {
@@ -659,7 +665,8 @@ void te::qt::widgets::LayoutEditor::createRulerGrid()
     p2.setX(p2.x() + m_rulerSmall);
   }
 
-  p1 = QPoint(m_paperViewRect.left(), ymin);
+  //p1 = QPoint(m_paperViewRect.left(), ymin);
+  p1 = QPoint(xmin, ymin);
   p2 = QPoint(xmax, ymin);
   while(p1.y() <= ymax)
   {
@@ -922,37 +929,167 @@ void te::qt::widgets::LayoutEditor::drawButtonClicked()
 
 void te::qt::widgets::LayoutEditor::mousePressEvent(QMouseEvent* e)
 {
+  if(e->button() == Qt::MiddleButton)
+  {
+    int i = m_zmouseMode + 1;
+    if(i > 3)
+      i = 0;  
+    setMouseMode(i);
+    return;
+  }
+
   m_difTopLeft = QPointF(0., 0.);
   m_difBottomRight = QPointF(0., 0.);
+  m_zdataFrame = 0;
 
   m_zpressPoint = e->pos();
   if(m_zmouseMode == 3)
+  {
+    //unsetCursor();
+    //QCursor cursor(Qt::OpenHandCursor);
+    //setCursor(cursor);
     m_zpanEnd = false;
+    m_zpixmap = QPixmap(m_totalPixmap);
+
+    // desenha os layout objects sobre m_zpixmap
+    QPoint p(m_verticalRulerWidth, m_horizontalRulerWidth);
+    QPainter painter(&m_zpixmap);
+
+    std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+    for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+    {
+      QRectF r = (*it)->getFrameRect();
+      if(r.isValid())
+      {
+        QPixmap* pixmap = (*it)->getPixmap();
+        if(pixmap && pixmap->isNull() == false)
+        {
+          r = m_matrixPaperViewToVp.mapRect(r);
+          r.moveCenter(r.center() + p);
+          painter.drawPixmap(r, *pixmap, pixmap->rect());
+        }
+        if((*it)->windowTitle() == "DataFrame")
+        {
+          te::qt::widgets::DataFrame* df = static_cast<te::qt::widgets::DataFrame*>(*it);
+          if(df->getUTMGridFrame())
+          {
+            QRect r = df->getUTMGridFrame()->getFrameRect().toRect();
+            QPixmap* pixmap = df->getUTMGridFrame()->getPixmap();
+            if(pixmap && pixmap->isNull() == false)
+            {
+              r = m_matrixPaperViewToVp.mapRect(r);
+              r.moveCenter(r.center() + p);
+              painter.drawPixmap(r, *pixmap, pixmap->rect());
+            }
+          }
+          if(df->getGeoGridFrame())
+          {
+            QRect r = df->getGeoGridFrame()->getFrameRect().toRect();
+            QPixmap* pixmap = df->getGeoGridFrame()->getPixmap();
+            if(pixmap && pixmap->isNull() == false)
+            {
+              r = m_matrixPaperViewToVp.mapRect(r);
+              r.moveCenter(r.center() + p);
+              painter.drawPixmap(r, *pixmap, pixmap->rect());
+            }
+          }
+          if(df->getGraphicScaleFrame())
+          {
+            QRect r = df->getGraphicScaleFrame()->getFrameRect().toRect();
+            QPixmap* pixmap = df->getGraphicScaleFrame()->getPixmap();
+            if(pixmap && pixmap->isNull() == false)
+            {
+              r = m_matrixPaperViewToVp.mapRect(r);
+              r.moveCenter(r.center() + p);
+              painter.drawPixmap(r, *pixmap, pixmap->rect());
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if(e->modifiers() == Qt::ControlModifier)
+  {
+    //get Data Frame
+    m_zdataFrame = 0;
+    std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+    for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+    {
+      if((*it)->windowTitle() == "DataFrame")
+      {
+        te::qt::widgets::DataFrame* df = (te::qt::widgets::DataFrame*)*it;
+        QRectF r = df->getFrameRect();
+        QPointF p = QPoint(e->pos().x(), e->pos().y());
+        p =  m_matrixPaperViewToVp.inverted().map(p);
+        if(r.contains(p))
+        {
+          if(df->getData())
+          {
+            m_zdataFrame = df;
+            m_zpixmap = QPixmap(*df->getPixmap());
+          }
+          else
+            m_zdataFrame = 0;
+          break;
+        }
+      }
+    }
+  }
 }
 
 void te::qt::widgets::LayoutEditor::mouseMoveEvent(QMouseEvent* e)
 {
+  if(e->modifiers() == Qt::ControlModifier && m_zdataFrame == 0)
+    return;
+
   m_zpoint = e->pos();
 
   if(e->buttons() == Qt::LeftButton) //atual estado do botao
   {
-    if(m_zmouseMode == 3) // pan
+    if(m_zmouseMode == 3)
     {
-      m_zrect = QRect();
-      QPointF pfrom(m_zpressPoint.x(), m_zpressPoint.y());
-      pfrom =  m_matrixPaperViewToVp.inverted().map(pfrom);
+      if(cursor().shape() != Qt::ClosedHandCursor)
+      {
+        unsetCursor();
+        QCursor cursor(Qt::ClosedHandCursor);
+        setCursor(cursor);
+      }
 
-      QPointF pto(e->pos().x(), e->pos().y());
-      pto =  m_matrixPaperViewToVp.inverted().map(pto);
+      if(e->modifiers() == Qt::NoModifier) // pan sobre paper view
+      {
+        hideAllObjects();
+        m_zrect = QRect();
+        QPoint pfrom(m_zpressPoint.x(), m_zpressPoint.y());
+        QPoint pto(e->pos().x(), e->pos().y());
+        QPoint dif = pto - pfrom;
 
-      m_zpressPoint = e->pos();
+        m_totalPixmap.fill(Qt::white);
+        QPainter painter(&m_totalPixmap);
+        QRect r = m_totalPixmap.rect();
+        QPoint c(r.center() + dif);
+        r.moveCenter(c);
+        painter.drawPixmap(r, m_zpixmap, m_zpixmap.rect());
+        painter.end();
+        update();
+      }
+      else if(e->modifiers() == Qt::ControlModifier && m_zdataFrame) // pan sobre data frame
+      {
+        m_zrect = QRect();
+        QPoint pfrom(m_zpressPoint.x(), m_zpressPoint.y());
+        QPoint pto(e->pos().x(), e->pos().y());
+        QPoint dif = pto - pfrom;
 
-      QPointF dif = pto -pfrom;
-      QPointF c = m_paperViewRect.center();
-      c -= dif;
-      m_paperViewRect.moveCenter(c);
-      createWorkingArea(false);
-      draw();
+        QPixmap* pix = m_zdataFrame->getMapDisplay()->getDisplayPixmap();
+        pix->fill(Qt::white);
+        QPainter painter(pix);
+        QRect r = m_zpixmap.rect();
+        QPoint c(r.center() + dif);
+        r.moveCenter(c);
+        painter.drawPixmap(r, m_zpixmap, m_zpixmap.rect());
+        painter.end();
+        m_zdataFrame->getMapDisplay()->update();
+      }
     }
     else if(m_zmouseMode == 2) // zoom out
     {
@@ -977,27 +1114,37 @@ void te::qt::widgets::LayoutEditor::mouseMoveEvent(QMouseEvent* e)
 
 void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
 {
+  double zoomFat = 1.5;
+
+  if(m_zmouseMode == 3)
+  {
+    unsetCursor();
+    QCursor cursor(Qt::OpenHandCursor);
+    setCursor(cursor);
+  }
+
+  // zoom and Pan on the paper view
   if(e->modifiers() == Qt::NoModifier)
   {
     if(e->button() == Qt::LeftButton) // botao que causou o evento
     {
-      if(m_zmouseMode == 1) // zoom in
+      if(m_zmouseMode == 1) // zoom in area (paper view)
       {
         if(m_zrect.isValid() && m_zrect.width() > 2 && m_zrect.height() > 2)
         {
           QRectF r(m_zrect.left(), m_zrect.top(), m_zrect.width(), m_zrect.height());
           r = m_matrixPaperViewToVp.inverted().mapRect(r);
-          adjustAspectRatio(r);
+          adjustAspectRatio(r, m_paperViewRect);
           m_paperViewRect = r;
           createWorkingArea();
           draw();
         }
-        else
+        else // zoom in (paper view)
         {
           QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
           QPointF cf = m_matrixPaperViewToVp.inverted().map(c);
-          double w = m_paperViewRect.width() / 2;
-          double h = m_paperViewRect.height() / 2;
+          double w = m_paperViewRect.width() / zoomFat;
+          double h = m_paperViewRect.height() / zoomFat;
           m_paperViewRect = QRectF(0, 0, w, h);
           m_paperViewRect.moveCenter(cf);
           createWorkingArea();
@@ -1006,18 +1153,18 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
         m_zrect = QRect();
         drawRectArea();
       }
-      else if(m_zmouseMode == 2) // zoom out
+      else if(m_zmouseMode == 2) // zoom out (paper view)
       {
         QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
         QPointF cf = m_matrixPaperViewToVp.inverted().map(c);
-        double w = m_paperViewRect.width() * 2;
-        double h = m_paperViewRect.height() * 2;
+        double w = m_paperViewRect.width() * zoomFat;
+        double h = m_paperViewRect.height() * zoomFat;
         m_paperViewRect = QRectF(0, 0, w, h);
         m_paperViewRect.moveCenter(cf);
         createWorkingArea();
         draw();
       }
-      else if(m_zmouseMode == 3) // pan
+      else if(m_zmouseMode == 3) // pan (paper view)
       {
         m_zpanEnd = true;
         QPointF pfrom(m_zpressPoint.x(), m_zpressPoint.y());
@@ -1026,84 +1173,174 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
         QPointF pto(e->pos().x(), e->pos().y());
         pto =  m_matrixPaperViewToVp.inverted().map(pto);
 
-        QPointF dif = pto -pfrom;
+        QPointF dif = pto - pfrom;
         QPointF c = m_paperViewRect.center();
         c -= dif;
         m_paperViewRect.moveCenter(c);
         createWorkingArea();
+        showAllObjects();
         draw();
       }
     }
   }
-  else if(e->modifiers() == Qt::ControlModifier)
+
+  // Zoom and Pan on the data frame
+  else if(e->modifiers() == Qt::ControlModifier && m_zdataFrame)
   {
     if(e->button() == Qt::LeftButton) // botao que causou o evento
     {
-      if(m_zmouseMode == 1) // zoom in
+      if(m_zmouseMode == 1) // zoom in area (data frame)
       {
         if(m_zrect.isValid() && m_zrect.width() > 2 && m_zrect.height() > 2)
         {
-          QRectF r(m_zrect.left(), m_zrect.top(), m_zrect.width(), m_zrect.height());
-          r = m_matrixPaperViewToVp.inverted().mapRect(r);
-          adjustAspectRatio(r);
-          m_paperViewRect = r;
+          QRectF zr(m_zrect.left(), m_zrect.top(), m_zrect.width(), m_zrect.height());
+
+          // area do zoom em mm
+          zr = m_matrixPaperViewToVp.inverted().mapRect(zr);         
+          // area do data frame em mm
+          QRectF fr = m_zdataFrame->getFrameRect();
+          // ajusta a relacao de aspecto da area do zoom em relacao ao do frame
+          adjustAspectRatio(zr, fr);
+
+          // area do world
+          QRectF r = m_zdataFrame->getDataRect();
+          
+          // calcule new world data rect
+          double x1 = r.left() + ((zr.left() - fr.left()) / fr.width()) * r.width();
+          double y1 = r.top() + ((zr.top() - fr.top()) / fr.height()) * r.height();
+          double w = r.width() * (zr.width() / fr.width());
+          double h = r.height() * (zr.height() / fr.height());
+          QRectF nr(x1, y1, w, h);
+          m_zdataFrame->setDataRect(nr);
+          if(m_zdataFrame->getGraphicScaleFrame())
+          {
+            double step = m_zdataFrame->getGraphicScaleFrame()->getStep();
+            step *= zr.width() / fr.width();
+            m_zdataFrame->getGraphicScaleFrame()->findNiceStep(step);
+          }
           createWorkingArea();
           draw();
         }
-        else
+        else // zoom in (data frame)
         {
           QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
+
+          // centro do zoom em mm
           QPointF cf = m_matrixPaperViewToVp.inverted().map(c);
-          double w = m_paperViewRect.width() / 2;
-          double h = m_paperViewRect.height() / 2;
-          m_paperViewRect = QRectF(0, 0, w, h);
-          m_paperViewRect.moveCenter(cf);
+          // area do data frame em mm
+          QRectF fr = m_zdataFrame->getFrameRect();
+
+          // area do world
+          QRectF r = m_zdataFrame->getDataRect();
+
+          // calcule new world data center
+          double x1 = r.left() + ((cf.x() - fr.left()) / fr.width()) * r.width();
+          double y1 = r.top() + ((cf.y() - fr.top()) / fr.height()) * r.height();
+
+          // calcule novo world data rect
+          double w = r.width() / zoomFat;
+          double h = r.height() / zoomFat;
+          QRectF nr(0, 0, w, h);
+          nr.moveCenter(QPoint(x1, y1));
+
+          m_zdataFrame->setDataRect(nr);
+          if(m_zdataFrame->getGraphicScaleFrame())
+          {
+            double step = m_zdataFrame->getGraphicScaleFrame()->getStep();
+            step /= zoomFat;
+            m_zdataFrame->getGraphicScaleFrame()->findNiceStep(step);
+          }
           createWorkingArea();
           draw();
         }
         m_zrect = QRect();
         drawRectArea();
       }
-      else if(m_zmouseMode == 2) // zoom out
+      else if(m_zmouseMode == 2) // zoom out (data frame)
       {
         QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
+
+        // centro do zoom em mm
         QPointF cf = m_matrixPaperViewToVp.inverted().map(c);
-        double w = m_paperViewRect.width() * 2;
-        double h = m_paperViewRect.height() * 2;
-        m_paperViewRect = QRectF(0, 0, w, h);
-        m_paperViewRect.moveCenter(cf);
+        // area do data frame em mm
+        QRectF fr = m_zdataFrame->getFrameRect();
+
+        // area do world
+        QRectF r = m_zdataFrame->getDataRect();
+
+        // calcule new world data center
+        double x1 = r.left() + ((cf.x() - fr.left()) / fr.width()) * r.width();
+        double y1 = r.top() + ((cf.y() - fr.top()) / fr.height()) * r.height();
+
+        // calcule novo world data rect
+        double w = r.width() * zoomFat;
+        double h = r.height() * zoomFat;
+        QRectF nr(0, 0, w, h);
+        nr.moveCenter(QPoint(x1, y1));
+
+        m_zdataFrame->setDataRect(nr);
+        if(m_zdataFrame->getGraphicScaleFrame())
+        {
+          double step = m_zdataFrame->getGraphicScaleFrame()->getStep();
+          step *= zoomFat;
+          m_zdataFrame->getGraphicScaleFrame()->findNiceStep(step);
+        }
         createWorkingArea();
         draw();
       }
-      else if(m_zmouseMode == 3) // pan
+      else if(m_zmouseMode == 3) // pan (data frame)
       {
         m_zpanEnd = true;
         QPointF pfrom(m_zpressPoint.x(), m_zpressPoint.y());
-        pfrom =  m_matrixPaperViewToVp.inverted().map(pfrom);
-
         QPointF pto(e->pos().x(), e->pos().y());
-        pto =  m_matrixPaperViewToVp.inverted().map(pto);
 
-        QPointF dif = pto -pfrom;
-        QPointF c = m_paperViewRect.center();
-        c -= dif;
-        m_paperViewRect.moveCenter(c);
-        createWorkingArea();
+        // from e to em mm
+        pfrom =  m_matrixPaperViewToVp.inverted().map(pfrom);
+        pto =  m_matrixPaperViewToVp.inverted().map(pto);
+        QPointF dif = pto - pfrom;
+
+        // area do data frame em mm
+        QRectF fr = m_zdataFrame->getFrameRect();
+        QPointF fc = fr.center();
+
+        // new center do frame em mm
+        fc -= dif;
+
+        // calcule new world data center
+        // area do world
+        QRectF r = m_zdataFrame->getDataRect();
+        double x1 = r.left() + ((fc.x() - fr.left()) / fr.width()) * r.width();
+        double y1 = r.top() + ((fc.y() - fr.top()) / fr.height()) * r.height();
+
+        // mova o centro do world data rect
+        r.moveCenter(QPoint(x1, y1));
+
+        m_zdataFrame->setDataRect(r);
         draw();
       }
     }
   }
+  m_zdataFrame = 0;
 }
 
 void te::qt::widgets::LayoutEditor::drawRectArea()
 {
   QPixmap* pixmap = getDraftPixmap();
   pixmap->fill(QColor(0, 0, 0, 0));
+
   if(m_zrect.isValid())
   {
     QPainter painter(pixmap);
-    painter.setPen(Qt::blue);
-    painter.setBrush(QColor(0, 0, 255, 100));
+    if(m_zdataFrame)
+    {
+      painter.setPen(Qt::red);
+      painter.setBrush(QColor(255, 0, 0, 80));
+    }
+    else
+    {
+      painter.setPen(Qt::blue);
+      painter.setBrush(QColor(0, 0, 255, 80));
+    }
     painter.drawRect(m_zrect);
   }
   update();
@@ -1127,9 +1364,9 @@ void te::qt::widgets::LayoutEditor::setMouseMode(int m)
     if(m_zoomOutPixmap == 0)
       m_zoomOutPixmap = new QPixmap("../../../terralib5/resources/themes/terralib/32x32/zoomOutCursor.png");
 
-  if(dir.exists("../../../terralib5/resources/themes/terralib/48x48/panCursor.png"))
-    if(m_panPixmap == 0)
-      m_panPixmap = new QPixmap("../../../terralib5/resources/themes/terralib/48x48/panCursor.png");
+  //if(dir.exists("../../../terralib5/resources/themes/terralib/48x48/panCursor.png"))
+  //  if(m_panPixmap == 0)
+  //    m_panPixmap = new QPixmap("../../../terralib5/resources/themes/terralib/48x48/panCursor.png");
  
 
   QCursor* cursor = 0;
@@ -1152,17 +1389,19 @@ void te::qt::widgets::LayoutEditor::setMouseMode(int m)
   }
   else if(m_zmouseMode == 3)
   {
-    if(m_panPixmap)
-      cursor = new QCursor(*m_panPixmap, 24, 24);
-    else
-      cursor = new QCursor(Qt::OpenHandCursor);
+    //if(m_panPixmap)
+    //  cursor = new QCursor(*m_panPixmap, 24, 24);
+    //else
+    //  cursor = new QCursor(Qt::OpenHandCursor);
+    cursor = new QCursor(Qt::OpenHandCursor);
   }
 
+  unsetCursor();
   setCursor(*cursor);
   delete cursor;
 }
 
-void te::qt::widgets::LayoutEditor::adjustAspectRatio(QRectF& r)
+void te::qt::widgets::LayoutEditor::adjustAspectRatio(QRectF& r, const QRectF& ref)
 {
   double llx = r.left();
   double lly = r.top();
@@ -1171,7 +1410,7 @@ void te::qt::widgets::LayoutEditor::adjustAspectRatio(QRectF& r)
   double ww = r.width();
   double wh = r.height();
 
-  double widthByHeight = m_paperViewRect.width() / m_paperViewRect.height();
+  double widthByHeight = ref.width() / ref.height();
 
   if(widthByHeight > ww / wh)
   {
@@ -1193,42 +1432,34 @@ void te::qt::widgets::LayoutEditor::adjustAspectRatio(QRectF& r)
   r = QRectF(llx, lly, urx-llx, ury-lly);
 }
 
+void te::qt::widgets::LayoutEditor::hideAllObjects()
+{
+    std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+    for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+      (*it)->hide();
+}
+
+void te::qt::widgets::LayoutEditor::showAllObjects()
+{
+    std::vector<te::qt::widgets::LayoutObject*>::iterator it;
+    for(it = m_layoutObjects.begin(); it != m_layoutObjects.end(); ++it)
+      (*it)->show();
+}
+
 void te::qt::widgets::LayoutEditor::wheelEvent(QWheelEvent* e)
 {
-  int delta = e->delta();
+  int i = m_zmouseMode;
+  int d = e->delta();
+  if(d > 0)
+    i++;
+  else
+    i--;
 
-  if(e->modifiers() == Qt::AltModifier) // paperView zoom
-  {
-    QPointF c = m_paperViewRect.center();
-    if(delta > 0)
-    {
-      m_paperViewRect.setWidth(m_paperViewRect.width() * 1.1);
-      m_paperViewRect.setHeight(m_paperViewRect.height() * 1.1);
-    }
-    else
-    {
-      m_paperViewRect.setWidth(m_paperViewRect.width() / 1.1);
-      m_paperViewRect.setHeight(m_paperViewRect.height() / 1.1);
-    }
-    m_paperViewRect.moveCenter(c);
-
-    createWorkingArea();
-    draw();
-  }
-  else if(e->modifiers() == Qt::ControlModifier) // data zoom
-  {
-    if(m_layoutObjectSelected && m_layoutObjectSelected->windowTitle() == "DataFrame")
-    {
-      te::qt::widgets::DataFrame* df = (te::qt::widgets::DataFrame*)m_layoutObjectSelected;
-      if(delta > 0)
-        df->setScale(df->getScale() * 1.1);
-      else
-        df->setScale(df->getScale() / 1.1);
-
-      te::gm::Envelope e(df->getDataRect().left(), df->getDataRect().top(), df->getDataRect().right(), df->getDataRect().bottom());
-      draw();
-    }
-  }
+  if(i > 3)
+    i = 0;  
+  else if(i < 0)
+    i = 3;
+  setMouseMode(i);
 }
 
 void te::qt::widgets::LayoutEditor::sendEventToChildren(bool b)
@@ -1298,6 +1529,8 @@ bool te::qt::widgets::LayoutEditor::eventFilter(QObject* obj, QEvent* e)
       mouseMoveEvent((QMouseEvent*)e);
     else if(e->type() == QEvent::MouseButtonRelease)
       mouseReleaseEvent((QMouseEvent*)e);
+    else if(e->type() == QEvent::Wheel)
+      wheelEvent((QWheelEvent*)e);
   }
 
   return true;

@@ -98,6 +98,7 @@ namespace te
           void adjustSize(QPointF& p);
           void draw();
           QRectF getTextRect();
+          QPixmap* getPixmap();
           void rubberBand();
           void paintEvent(QPaintEvent* event);
           void getSelectionPoint(const QPoint& p);
