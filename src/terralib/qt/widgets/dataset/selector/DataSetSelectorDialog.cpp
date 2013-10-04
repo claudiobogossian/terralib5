@@ -50,6 +50,8 @@ te::qt::widgets::DataSetSelectorDialog::DataSetSelectorDialog(QWidget* parent, Q
 // connect signals and slots
   connect(m_selectorW->getTreeView(), SIGNAL(toggled(DataSetItem*)), this, SLOT(onDataSetToggled(DataSetItem*)));
   connect(m_selectorW->getTreeView(), SIGNAL(clicked(DataSetItem*)), this, SLOT(onDataSetClicked(DataSetItem*)));
+  connect(m_selectorW->getTreeView(), SIGNAL(toggled(DataSetGroupItem*)), this, SLOT(onDataSetGroupToggled(DataSetGroupItem*)));
+  connect(m_selectorW->getTreeView(), SIGNAL(clicked(DataSetGroupItem*)), this, SLOT(onDataSetGroupClicked(DataSetGroupItem*)));
 
   m_ui->m_helpPushButton->setPageReference("widgets/dataset_selector/dataset_selector.html");
 }
@@ -103,17 +105,28 @@ te::qt::widgets::DataSetSelectorWidget* te::qt::widgets::DataSetSelectorDialog::
 
 void te::qt::widgets::DataSetSelectorDialog::onDataSetToggled(DataSetItem* /*item*/)
 {
-  if(m_selectMode == CHECKED_ITEMS)
-    m_ui->m_selectPushButton->setEnabled(m_selectorW->hasCheckedDataSets());
-  else //if(m_selectMode == SELECTED_ITEMS)
-    m_ui->m_selectPushButton->setEnabled(m_selectorW->hasSelectedDataSets());
+  updateSelectPushButton();
 }
 
 void te::qt::widgets::DataSetSelectorDialog::onDataSetClicked(DataSetItem* /*item*/)
+{
+  updateSelectPushButton();
+}
+
+void te::qt::widgets::DataSetSelectorDialog::onDataSetGroupToggled(DataSetGroupItem* /*item*/)
+{
+  updateSelectPushButton();
+}
+
+void te::qt::widgets::DataSetSelectorDialog::onDataSetGroupClicked(DataSetGroupItem* /*item*/)
+{
+  updateSelectPushButton();
+}
+
+void te::qt::widgets::DataSetSelectorDialog::updateSelectPushButton()
 {
   if(m_selectMode == CHECKED_ITEMS)
     m_ui->m_selectPushButton->setEnabled(m_selectorW->hasCheckedDataSets());
   else //if(m_selectMode == SELECTED_ITEMS)
     m_ui->m_selectPushButton->setEnabled(m_selectorW->hasSelectedDataSets());
 }
-

@@ -86,9 +86,17 @@ void te::map::RasterTransform::setLinearTransfParameters(double vmin, double vma
 {
   m_rstMinValue = rmin;
   m_rstMaxValue = rmax;
-
-  m_gain = (double)(rmax-rmin)/(vmax-vmin);
-  m_offset = -1*m_gain*vmin+rmin;
+  
+  if( vmax == vmin )
+  {
+    m_gain = 0.0;
+    m_offset = 0.0;
+  }
+  else
+  {
+    m_gain = (double)(rmax-rmin)/(vmax-vmin);
+    m_offset = -1*m_gain*vmin+rmin;
+  }
 }
 
 te::map::RasterTransform::RasterTransfFunctions te::map::RasterTransform::getTransfFunction()

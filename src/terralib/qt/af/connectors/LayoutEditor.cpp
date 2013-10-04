@@ -97,22 +97,9 @@ void te::qt::af::LayoutEditor::onApplicationTriggered(te::qt::af::evt::Event* e)
   {
     case te::qt::af::evt::LAYER_SELECTED_OBJECTS_CHANGED:
     {
-      //QPixmap* content = m_display->getDisplayPixmap();
-      //content->fill(Qt::transparent);
-
-      //QPainter painter(content);
-      //painter.drawPixmap(0, 0, m_lastDisplayContent);
-      //painter.end();
-
       QColor selColor = ApplicationController::getInstance().getSelectionColor();
       m_layoutEditor->setSelectionColor(selColor);
       m_layoutEditor->drawLayersSelection();
-    }
-    break;
-
-    case te::qt::af::evt::LAYER_VISIBILITY_CHANGED:
-    {
-      // TODO
     }
     break;
 
@@ -121,8 +108,6 @@ void te::qt::af::LayoutEditor::onApplicationTriggered(te::qt::af::evt::Event* e)
       te::qt::af::evt::MapColorChanged* mapColorChanged = static_cast<te::qt::af::evt::MapColorChanged*>(e);
 
       m_layoutEditor->setDisplayBackgroundColor(mapColorChanged->m_color);
-      //m_display->setBackgroundColor(mapColorChanged->m_color);
-      //m_display->refresh();
     }
     break;
 
@@ -131,6 +116,30 @@ void te::qt::af::LayoutEditor::onApplicationTriggered(te::qt::af::evt::Event* e)
       QColor selColor = ApplicationController::getInstance().getSelectionColor();
       m_layoutEditor->setSelectionColor(selColor);
       m_layoutEditor->drawButtonClicked();
+    }
+    break;
+
+    case te::qt::af::evt::ZOOM_IN_BUTTON_TOGGLED:
+    {
+      m_layoutEditor->setMouseMode(1);
+    }
+    break;
+
+    case te::qt::af::evt::ZOOM_OUT_BUTTON_TOGGLED:
+    {
+      m_layoutEditor->setMouseMode(2);
+    }
+    break;
+
+    case te::qt::af::evt::PAN_BUTTON_TOGGLED:
+    {
+      m_layoutEditor->setMouseMode(3);
+    }
+    break;
+
+    case te::qt::af::evt::SELECTION_BUTTON_TOGGLED:
+    {
+      m_layoutEditor->setMouseMode(0);
     }
     break;
 

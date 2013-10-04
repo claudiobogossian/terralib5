@@ -35,6 +35,7 @@ te::qt::widgets::DraftLayoutEditor::DraftLayoutEditor(QWidget* parent, Qt::Windo
   QWidget(parent, f)
 {
   setMouseTracking(true);
+  setAcceptDrops(true);
   show();
 }
 
@@ -48,9 +49,9 @@ QPixmap* te::qt::widgets::DraftLayoutEditor::getDraftPixmap()
   return &m_draftPixmap;
 }
 
-void te::qt::widgets::DraftLayoutEditor::resizeEvent(QResizeEvent*)
+void te::qt::widgets::DraftLayoutEditor::resizeEvent(QResizeEvent* e)
 {
-  m_draftPixmap = QPixmap(size().width(), size().height());
+  m_draftPixmap = QPixmap(e->size().width(), e->size().height());
   m_draftPixmap.fill(Qt::transparent);
 }
 

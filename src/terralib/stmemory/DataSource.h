@@ -210,8 +210,8 @@ namespace te
       private:
 
         std::map<std::string, std::string>                          m_connInfo;    //!< DataSource information.
-        std::map<std::string, std::auto_ptr<DataSet> >              m_datasets;    //!< The set of datasets stored in memory.
-        std::map<std::string, std::auto_ptr<te::da::DataSetType> >  m_schemas;     //!< The set of dataset schemas.
+        std::map<std::string, DataSet* >                            m_datasets;    //!< The set of datasets stored in memory.
+        std::map<std::string, te::da::DataSetType* >                m_schemas;     //!< The set of dataset schemas.
         std::size_t                                                 m_maxdatasets; //!< The maximum number of datasets to be handled by the data source.
         bool                                                        m_isOpened;    //!< A flag to control the state of the data source.
         bool                                                        m_deepCopy;    //!< If true each dataset is cloned in the getDataSet method.
