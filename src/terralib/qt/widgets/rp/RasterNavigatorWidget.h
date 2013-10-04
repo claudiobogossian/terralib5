@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../geometry/Polygon.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../maptools/Enums.h"
 #include "../Config.h"
 
 // STL
@@ -180,6 +181,7 @@ namespace te
 
           int m_currentColumn;                                       //!< The column position of mouse in map display.
           int m_currentRow;                                          //!< The row position of mouse in map display.
+          te::map::Visibility m_visibility;
       };
 
     } // end namespace widgets
