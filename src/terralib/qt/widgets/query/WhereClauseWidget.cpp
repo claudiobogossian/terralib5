@@ -169,12 +169,20 @@ void te::qt::widgets::WhereClauseWidget::setAttributeList(const std::vector<std:
 {
   m_ui->m_restrictValueComboBox->clear();
   m_ui->m_valuePropertyComboBox->clear();
-  m_ui->m_geomAttrComboBox->clear();
 
   for(size_t t = 0; t <vec.size(); ++t)
   {
     m_ui->m_restrictValueComboBox->addItem(vec[t].c_str());
     m_ui->m_valuePropertyComboBox->addItem(vec[t].c_str());
+  }
+}
+
+void  te::qt::widgets::WhereClauseWidget::setGeomAttributeList(const std::vector<std::string>& vec)
+{
+  m_ui->m_geomAttrComboBox->clear();
+
+  for(size_t t = 0; t <vec.size(); ++t)
+  {
     m_ui->m_geomAttrComboBox->addItem(vec[t].c_str());
   }
 }

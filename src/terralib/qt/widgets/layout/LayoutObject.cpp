@@ -87,6 +87,14 @@ void te::qt::widgets::LayoutObject::adjust()
 {
 }
 
+void te::qt::widgets::LayoutObject::sendEventToChildren(bool b)
+{
+  if(b == true)
+    removeEventFilter(m_layoutEditor);
+  else
+    installEventFilter(m_layoutEditor);
+}
+
 void te::qt::widgets::LayoutObject::showSelectionPoints()
 {
 }

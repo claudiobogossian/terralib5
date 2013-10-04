@@ -89,6 +89,8 @@ namespace te
             te::rst::Raster const* m_inRasterPtr; //!< Input raster.
             
             std::vector< unsigned int > m_inRasterBands; //!< Bands to be processed from the input raster.
+            
+            bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
           
             InputParameters();
             
@@ -194,10 +196,12 @@ namespace te
           \param inRasterBand Input raster band.
           \param outRasterBand Output raster band.
           \param remapFuncPtr The remap function pointer used.
+          \param enableProgress Enable the use of a progress interface.
           \return true if OK, false on errors.
          */        
         bool remapBandLevels( const te::rst::Band& inRasterBand,
-          te::rst::Band& outRasterBand, RemapFuncPtrT remapFuncPtr );
+          te::rst::Band& outRasterBand, RemapFuncPtrT remapFuncPtr,
+          const bool enableProgress );
           
         // Variables used by offSetGainRemap
         double m_offSetGainRemap_offset;

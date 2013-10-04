@@ -38,7 +38,6 @@ te::qt::widgets::GeographicGridFrame::GeographicGridFrame(te::qt::widgets::DataF
   setWindowTitle("GeographicGridFrame");
   setMouseTracking(true);
   show();
-  installEventFilter(this);
 }
 
 te::qt::widgets::GeographicGridFrame::GeographicGridFrame(const GeographicGridFrame& rhs) :
@@ -47,7 +46,6 @@ te::qt::widgets::GeographicGridFrame::GeographicGridFrame(const GeographicGridFr
   setWindowTitle("GeographicGridFrame");
   setMouseTracking(true);
   show();
-  installEventFilter(this);
 }
 
 te::qt::widgets::GeographicGridFrame::~GeographicGridFrame()
@@ -63,7 +61,6 @@ te::qt::widgets::GeographicGridFrame& te::qt::widgets::GeographicGridFrame::oper
     setWindowTitle("GeographicGridFrame");
     setMouseTracking(true);
     show();
-    installEventFilter(this);
   }
 
   return *this;

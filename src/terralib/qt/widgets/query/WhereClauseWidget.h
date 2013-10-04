@@ -80,6 +80,8 @@ namespace te
 
           void setAttributeList(const std::vector<std::string>& vec);
 
+          void setGeomAttributeList(const std::vector<std::string>& vec);
+
           void setOperatorsList(const std::vector<std::string>& vec);
 
           void setSpatialOperatorsList(const std::vector<std::string>& vec);

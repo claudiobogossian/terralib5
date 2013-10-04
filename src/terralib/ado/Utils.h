@@ -243,6 +243,12 @@ namespace te
     */
     bool IsZProperty(te::gm::GeomType type);
 
+    std::string GetSystemDateTimeFormat(std::string& indAM, std::string& indPM, std::string& sepD, std::string& sepT);
+
+    std::auto_ptr<te::dt::DateTime> GetDateTime(std::string& value, std::string& mask, std::string& sepD, std::string& sepT);
+
+    int GetMonth(const std::string& month);
+
   } // end namespace ado
 }   // end namespace te
 

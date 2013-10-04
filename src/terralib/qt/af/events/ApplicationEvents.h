@@ -134,11 +134,85 @@ namespace te
         {
           /*!
             \brief Constructor.
-
-            \param toolbar Pointer to the new tool bar.
           */
           DrawButtonClicked() :
           Event(DRAW_BUTTON_CLICKED)
+          {
+          }
+        };
+
+        /*!
+          \struct Zoom In Button Toggled
+
+          \brief This event signals that the zoom in button toggled
+
+          \ingroup afevents
+        */
+
+        struct ZoomInButtonToggled : public Event
+        {
+          /*!
+            \brief Constructor.
+          */
+          ZoomInButtonToggled() :
+          Event(ZOOM_IN_BUTTON_TOGGLED)
+          {
+          }
+        };
+
+        /*!
+          \struct Zoom Out Button Toggled
+
+          \brief This event signals that the zoom out button toggled
+
+          \ingroup afevents
+        */
+
+        struct ZoomOutButtonToggled : public Event
+        {
+          /*!
+            \brief Constructor.
+          */
+          ZoomOutButtonToggled() :
+          Event(ZOOM_OUT_BUTTON_TOGGLED)
+          {
+          }
+        };
+
+        /*!
+          \struct Pan Button Toggled
+
+          \brief This event signals that the pan button toggled
+
+          \ingroup afevents
+        */
+
+        struct PanButtonToggled : public Event
+        {
+          /*!
+            \brief Constructor.
+          */
+          PanButtonToggled() :
+          Event(PAN_BUTTON_TOGGLED)
+          {
+          }
+        };
+
+        /*!
+          \struct Selection Button Toggled
+
+          \brief This event signals that the selection button toggled
+
+          \ingroup afevents
+        */
+
+        struct SelectionButtonToggled : public Event
+        {
+          /*!
+            \brief Constructor.
+          */
+          SelectionButtonToggled() :
+          Event(SELECTION_BUTTON_TOGGLED)
           {
           }
         };

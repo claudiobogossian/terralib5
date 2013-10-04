@@ -136,7 +136,7 @@ bool te::qt::widgets::ClassifierWizard::execute()
   te::rp::Classifier algorithmInstance;
 
   te::rp::Classifier::InputParameters algoInputParams = m_classifierPage->getInputParams();
-  algoInputParams.m_inputRasterPtr = inputRst.release();
+  algoInputParams.m_inputRasterPtr = inputRst.get();
 
   te::rp::Classifier::OutputParameters algoOutputParams = m_classifierPage->getOutputParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();

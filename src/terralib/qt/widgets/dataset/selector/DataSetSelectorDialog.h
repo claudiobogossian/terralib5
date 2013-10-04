@@ -43,6 +43,7 @@ namespace te
     namespace widgets
     {
       class DataSetItem;
+      class DataSetGroupItem;
       class DataSetSelectorWidget;
 
       /*!
@@ -81,6 +82,14 @@ namespace te
           void onDataSetToggled(DataSetItem* item);
 
           void onDataSetClicked(DataSetItem* item);
+
+          void onDataSetGroupToggled(DataSetGroupItem* item);
+
+          void onDataSetGroupClicked(DataSetGroupItem* item);
+
+        protected:
+
+          void updateSelectPushButton();
 
         private:
 

@@ -57,6 +57,7 @@ namespace te
           virtual void hide();
           virtual void show();
           virtual void adjust();
+          virtual void sendEventToChildren(bool);
           virtual void showSelectionPoints();
           virtual void hideSelectionPoints();
           virtual double getScale();

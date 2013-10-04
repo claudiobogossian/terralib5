@@ -75,6 +75,8 @@ namespace te
           void adjustWidgetToFrameRect(const QRectF& r);
           double getScale();
           void setScale(double v);
+          void sendEventToChildren(bool);
+          bool eventFilter(QObject*, QEvent*);
           te::map::AbstractLayer* getData();
           void setData(te::map::AbstractLayerPtr d, int nsrid = TE_UNKNOWN_SRS);
           bool transformEnvelope(te::gm::Envelope& e, int oldsrid, int newsrid);
@@ -93,8 +95,6 @@ namespace te
           void setDataChanged(bool);
           void drawButtonClicked();
           QPixmap* getLastDisplayContent();
-
-          bool eventFilter(QObject*, QEvent*);
 
           void hide();
           void show();

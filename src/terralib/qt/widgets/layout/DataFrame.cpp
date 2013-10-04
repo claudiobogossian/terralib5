@@ -250,7 +250,7 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
 te::qt::widgets::DataFrame::~DataFrame()
 {
   hide();
-  m_mapDisplay->removeEventFilter(this);
+  removeEventFilter(this);
   delete m_mapDisplay;
   delete m_UTMGridFrame;
   delete m_geoGridFrame;
@@ -301,6 +301,14 @@ void te::qt::widgets::DataFrame::adjustWidgetToFrameRect(const QRectF& r)
   //  return;
   //setDataChanged(true);
   m_frameRect = r;
+
+  if(m_layoutEditor->getPaperViewRect().intersects(m_frameRect) == false)
+  {
+    hide();
+    return;
+  }
+  show();
+
   QMatrix matrix = m_layoutEditor->getMatrixPaperViewToVp();
   QRect rec = matrix.mapRect(m_frameRect).toRect();
 
@@ -848,6 +856,24 @@ void te::qt::widgets::DataFrame::rubberBand()
   m_copyAuxFrameRect = m_auxFrameRect;
 
   m_layoutEditor->update();
+}
+
+void te::qt::widgets::DataFrame::sendEventToChildren(bool b)
+{
+  if(b)
+  {
+    m_mapDisplay->installEventFilter(this);
+    raise();
+  }
+  else
+    m_mapDisplay->removeEventFilter(this);
+
+  if(m_UTMGridFrame)
+    m_UTMGridFrame->sendEventToChildren(b);
+  if(m_geoGridFrame)
+    m_geoGridFrame->sendEventToChildren(b);
+  if(m_graphicScaleFrame)
+    m_graphicScaleFrame->sendEventToChildren(b);
 }
 
 bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
