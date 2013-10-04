@@ -103,6 +103,10 @@ namespace te
 
           void onToolsDataExchangerTriggered();
 
+          void onToolsDataExchangerDirectTriggered();
+
+          void onToolsDataExchangerSHP2ADOTriggered();
+
           void onToolsDataExchangerSHP2PGISTriggered();
 
           void onToolsDataExchangerPGIS2SHPTriggered();
@@ -227,6 +231,8 @@ namespace te
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
           QAction* m_toolsDataExchanger;
+          QAction* m_toolsDataExchangerDirect;
+          QAction* m_toolsDataExchangerSHP2ADO;
           QAction* m_toolsDataExchangerSHP2PGIS;
           QAction* m_toolsDataExchangerPGIS2SHP;
           QAction* m_toolsDataSourceExplorer;

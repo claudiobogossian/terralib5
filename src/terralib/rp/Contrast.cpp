@@ -33,6 +33,7 @@
 #include "../raster/RasterProperty.h"
 #include "../raster/RasterSummaryManager.h"
 #include "../raster/RasterFactory.h"
+#include "../common/progress/TaskProgress.h"
 #include "Macros.h"
 
 #include "float.h"
@@ -64,6 +65,7 @@ namespace te
 
       m_inRasterPtr = 0;
       m_inRasterBands.clear();
+      m_enableProgress = false;
     }
 
     const Contrast::InputParameters& Contrast::InputParameters::operator=(
@@ -80,6 +82,7 @@ namespace te
 
       m_inRasterPtr = params.m_inRasterPtr;
       m_inRasterBands = params.m_inRasterBands;
+      m_enableProgress = params.m_enableProgress;
 
       return *this;
     }
@@ -321,6 +324,16 @@ namespace te
     {
       assert( m_inputParameters.m_inRasterPtr );
       assert( m_outputParametersPtr->m_outRasterPtr );
+      
+      const bool enableGlobalProgress = m_inputParameters.m_enableProgress &&
+         ( m_inputParameters.m_inRasterBands.size() > 1 );
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( enableGlobalProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setMessage( "Contrast" );
+        progressPtr->setTotalSteps( m_inputParameters.m_inRasterBands.size() );
+      }
 
       for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
         m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
@@ -346,10 +359,17 @@ namespace te
         }
 
         if( ! remapBandLevels( *inRasterBandPtr, *outRasterBandPtr,
-          &Contrast::offSetGainRemap ) )
+          &Contrast::offSetGainRemap, m_inputParameters.m_enableProgress &&
+          (!enableGlobalProgress) ) )
         {
           return false;
         }
+        
+        if( enableGlobalProgress )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }        
       }
 
       return true;
@@ -368,6 +388,14 @@ namespace te
       double newvalue;
       unsigned int N = m_inputParameters.m_inRasterPtr->getNumberOfRows() *
         m_inputParameters.m_inRasterPtr->getNumberOfColumns();
+        
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setMessage( "Contrast" );
+        progressPtr->setTotalSteps( m_inputParameters.m_inRasterBands.size() );
+      }          
 
       for( unsigned int b = 0 ; b < m_inputParameters.m_inRasterBands.size() ; b++ )
       {
@@ -402,6 +430,12 @@ namespace te
           oband->setValue(ibandit.getColumn(), ibandit.getRow(), lut[value]);
           ++ibandit;
         }
+        
+        if( m_inputParameters.m_enableProgress )
+        {
+          progressPtr->pulse();
+          if( ! progressPtr->isActive() ) return false;
+        }         
       }
 
       return true;
@@ -416,6 +450,15 @@ namespace te
         te::rst::RasterSummaryManager::getInstance().get(
         m_inputParameters.m_inRasterPtr,
         (te::rst::SummaryTypes) (te::rst::SUMMARY_MEAN | te::rst::SUMMARY_STD));
+        
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setMessage( "Contrast" );
+        progressPtr->setTotalSteps( m_inputParameters.m_inRasterBands.size() *
+           m_inputParameters.m_inRasterPtr->getNumberOfRows() );
+      }          
 
       for( unsigned int b = 0 ; b < m_inputParameters.m_inRasterBands.size() ; b++ )
       {
@@ -441,19 +484,28 @@ namespace te
         double newvalue;
 
         for (unsigned r = 0; r < iband->getRaster()->getNumberOfRows(); r++)
+        {
           for (unsigned c = 0; c < iband->getRaster()->getNumberOfColumns(); c++)
           {
             iband->getValue(c, r, value);
             newvalue = (value - meanp) * c1 + c2;
             oband->setValue(c, r, newvalue);
           }
+          
+          if( m_inputParameters.m_enableProgress )
+          {
+            progressPtr->pulse();
+            if( ! progressPtr->isActive() ) return false;
+          }            
+        }
       }
 
       return true;
     }
 
     bool Contrast::remapBandLevels( const te::rst::Band& inRasterBand,
-      te::rst::Band& outRasterBand, RemapFuncPtrT remapFuncPtr )
+      te::rst::Band& outRasterBand, RemapFuncPtrT remapFuncPtr,
+      const bool enableProgress )
     {
       const unsigned int inBlkWidthPixels = inRasterBand.getProperty()->m_blkw;
       const unsigned int inBlkHeightPixels = inRasterBand.getProperty()->m_blkh;
@@ -463,6 +515,13 @@ namespace te
       double outRangeMax = 0.0;
       GetDataTypeRange( outRasterBand.getProperty()->getType(),
         outRangeMin, outRangeMax );
+        
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setMessage( "Contrast" );
+      }          
 
       if( ( inBlkWidthPixels == outBlkWidthPixels ) &&
         ( inBlkHeightPixels == outBlkHeightPixels ) )
@@ -480,6 +539,8 @@ namespace te
         unsigned int blockXIndex = 0;
         unsigned int blockOffset = 0;
         double outValue = 0;
+        
+        if( enableProgress ) progressPtr->setTotalSteps( yBlocksNmb * xBlocksNmb );
 
         for( unsigned int blockYIndex = 0 ; blockYIndex < yBlocksNmb ;
           ++blockYIndex )
@@ -504,6 +565,12 @@ namespace te
               outputVectorDataType, outputBuffer );
 
             outRasterBand.write( blockXIndex, blockYIndex, outputBuffer );
+            
+            if( enableProgress )
+            {
+              progressPtr->pulse();
+              if( ! progressPtr->isActive() ) return false;
+            }
           }
         }
 
@@ -516,6 +583,8 @@ namespace te
       { // pixel by pixel version
         const unsigned int linesNumber = m_inputParameters.m_inRasterPtr->getNumberOfRows();
         const unsigned int columnsNumber =  m_inputParameters.m_inRasterPtr->getNumberOfColumns();
+        
+        if( enableProgress ) progressPtr->setTotalSteps( linesNumber );
 
         unsigned int col = 0;
         double inputValue = 0;
@@ -530,6 +599,12 @@ namespace te
             outRasterBand.setValue( col, line, std::max( outRangeMin, std::min(
               outRangeMax, outputValue ) ) );
           }
+          
+          if( enableProgress )
+          {
+            progressPtr->pulse();
+            if( ! progressPtr->isActive() ) return false;
+          }          
         }
       }
 

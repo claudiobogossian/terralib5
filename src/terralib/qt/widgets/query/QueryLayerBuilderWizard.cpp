@@ -286,6 +286,7 @@ void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
   m_fieldPage->getWidget()->setFixedOutputValues(geomProperties, "geometry");
   m_groupByPage->getWidget()->setInputValues(inputProperties);
   m_whereClausePage->getWidget()->setAttributeList(inputProperties);
+  m_whereClausePage->getWidget()->setGeomAttributeList(geomProperties);
   m_orderByPage->getWidget()->setAttributeList(inputProperties);
 }
 

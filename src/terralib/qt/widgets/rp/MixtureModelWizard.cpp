@@ -126,7 +126,7 @@ bool te::qt::widgets::MixtureModelWizard::execute()
   te::rp::MixtureModel algorithmInstance;
 
   te::rp::MixtureModel::InputParameters algoInputParams = m_mixtureModelPage->getInputParams();
-  algoInputParams.m_inputRasterPtr = inputRst.release();
+  algoInputParams.m_inputRasterPtr = inputRst.get();
 
   te::rp::MixtureModel::OutputParameters algoOutputParams = m_mixtureModelPage->getOutputParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();

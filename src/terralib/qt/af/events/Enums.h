@@ -60,6 +60,10 @@ namespace te
           MAP_COLOR_CHANGED,
           TABLE_ALTERNATE_COLORS_CHANGED,
           DRAW_BUTTON_CLICKED,
+          ZOOM_IN_BUTTON_TOGGLED,
+          ZOOM_OUT_BUTTON_TOGGLED,
+          PAN_BUTTON_TOGGLED,
+          SELECTION_BUTTON_TOGGLED,
           CUSTOM = 1024
         };
 
