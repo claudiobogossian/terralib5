@@ -1183,6 +1183,9 @@ void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
 
   te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_display->getDisplay(), zoomAreaCursor);
   m_display->setCurrentTool(zoomArea);
+
+  te::qt::af::evt::ZoomInButtonToggled ezoom;
+  ApplicationController::getInstance().broadcast(&ezoom);
 }
 
 void te::qt::af::BaseApplication::onZoomOutToggled(bool checked)
@@ -1194,6 +1197,9 @@ void te::qt::af::BaseApplication::onZoomOutToggled(bool checked)
 
   te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_display->getDisplay(), zoomOutCursor, 2.0, te::qt::widgets::Zoom::Out);
   m_display->setCurrentTool(zoomOut);
+
+  te::qt::af::evt::ZoomOutButtonToggled ezoom;
+  ApplicationController::getInstance().broadcast(&ezoom);
 }
 
 void te::qt::af::BaseApplication::onPreviousExtentTriggered()
@@ -1213,6 +1219,9 @@ void te::qt::af::BaseApplication::onPanToggled(bool checked)
 
   te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_display->getDisplay(), Qt::OpenHandCursor, Qt::ClosedHandCursor);
   m_display->setCurrentTool(pan);
+
+  te::qt::af::evt::PanButtonToggled epan;
+  ApplicationController::getInstance().broadcast(&epan);
 }
 
 void te::qt::af::BaseApplication::onZoomExtentTriggered()
@@ -1262,6 +1271,9 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
 
   connect(m_explorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
   connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
+
+  te::qt::af::evt::SelectionButtonToggled esel;
+  ApplicationController::getInstance().broadcast(&esel);
 }
 
 void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
