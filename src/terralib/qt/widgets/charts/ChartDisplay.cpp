@@ -74,7 +74,7 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
 
   // Pan on the plotted chart
   m_panner =  new QwtPlotPanner(this->canvas());
-  m_panner->setMouseButton(Qt::MouseButton::MiddleButton);
+  m_panner->setMouseButton(Qt::MiddleButton);
 
   // Selection based on a point
   m_picker = new QwtPlotPicker(this->canvas());

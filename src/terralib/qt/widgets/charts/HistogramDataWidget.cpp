@@ -56,7 +56,7 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
 
       //Adjusting the widget to work with a raster file.
       size_t size =  dataSet->getRaster(rpos)->getNumberOfBands();
-	  m_ui->m_slicesSpinBox->setMaximum(size);
+      m_ui->m_slicesSpinBox->setMaximum(size);
       m_ui->m_slicesSpinBox->setMinimum(0);
       m_ui->m_slicesSpinBox->setValue(0);
 
