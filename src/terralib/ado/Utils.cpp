@@ -81,7 +81,9 @@ void te::ado::AddAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property
       }
 
       //case te::dt::NUMERIC_TYPE:
-      //case te::dt::DATETIME_TYPE:
+      case te::dt::DATETIME_TYPE:
+        table->Columns->Append(prop->getName().c_str(), ADOX::adDate,0);
+        break;
 
     case te::dt::GEOMETRY_TYPE:
       table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);

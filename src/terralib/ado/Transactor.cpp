@@ -1119,7 +1119,9 @@ void te::ado::Transactor::add(const std::string& datasetName,
             recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)d->getChar(pname.c_str());
             break;
 
-          //case te::dt::UCHAR_TYPE:
+          case te::dt::UCHAR_TYPE:
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)d->getUChar(pname.c_str());
+            break;
 
           case te::dt::INT16_TYPE:
             recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getInt16(pname.c_str());
@@ -1133,8 +1135,14 @@ void te::ado::Transactor::add(const std::string& datasetName,
             recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getInt64(pname.c_str());
             break;
 
-          //case te::dt::NUMERIC_TYPE:
-          //case te::dt::DATETIME_TYPE:
+          case te::dt::NUMERIC_TYPE:
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)d->getNumeric(pname.c_str()).c_str();
+            break;
+
+          case te::dt::DATETIME_TYPE:
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)(d->getDateTime(pname.c_str()))->toString().c_str();
+            break;
+
           case te::dt::FLOAT_TYPE:
             recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getFloat(pname.c_str());
             break;
