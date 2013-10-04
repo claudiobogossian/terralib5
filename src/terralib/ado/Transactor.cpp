@@ -40,6 +40,7 @@
 #include "../dataaccess/query/SQLDialect.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Array.h"
+#include "../datatype/DateTimeProperty.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleData.h"
 #include "../datatype/StringProperty.h"
@@ -1422,7 +1423,7 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
       case ADOX::adDBDate:
       case ADOX::adDBTime:
       case ADOX::adDBTimeStamp:
-        //p = new te::dt::DateTimeProperty(colName, te::dt::TIME_INSTANT);
+        p = new te::dt::DateTimeProperty(colName, te::dt::TIME_INSTANT);
         break;
           
       default:

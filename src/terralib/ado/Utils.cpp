@@ -45,6 +45,7 @@
 #include "Globals.h"
 
 // Boost
+#include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
 inline void TESTHR( HRESULT hr )
@@ -195,7 +196,8 @@ ADOX::DataTypeEnum te::ado::Convert2Ado(int terralib)
     break;
 
     //case te::dt::NUMERIC_TYPE:
-    //case te::dt::DATETIME_TYPE:
+  case te::dt::DATETIME_TYPE:
+    return ADOX::adDate;
 
   case te::dt::FLOAT_TYPE:
   case te::dt::DOUBLE_TYPE:
@@ -308,10 +310,12 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
       return te::dt::UINT16_TYPE;
       break;
 
-    //case ADOX::adDate:
-    //case ADOX::adDBDate:
-    //case ADOX::adDBTime:
-    //case ADOX::adDBTimeStamp:
+    case ADOX::adDate:
+    case ADOX::adDBDate:
+    case ADOX::adDBTime:
+    case ADOX::adDBTimeStamp:
+      return te::dt::DATETIME_TYPE;
+      break;
 
     //case ADOX::adGUID:
     //case ADOX::adError:
@@ -393,10 +397,12 @@ int te::ado::Convert2Terralib(::DataTypeEnum adoType)
       return te::dt::UINT16_TYPE;
       break;
 
-    //case ::adDate:
-    //case ::adDBDate:
-    //case ::adDBTime:
-    //case ::adDBTimeStamp:
+    case ::adDate:
+    case ::adDBDate:
+    case ::adDBTime:
+    case ::adDBTimeStamp:
+      return te::dt::DATETIME_TYPE;
+      break;
 
     //case ::adGUID:
     //case ::adError:
@@ -476,7 +482,11 @@ te::dt::Property* te::ado::Convert2Terralib(ADOX::_ColumnPtr column)
 
     case ADOX::adDate:
     case ADOX::adDBDate:
+      prop = new te::dt::DateTimeProperty(std::string(cName), te::dt::DATE);
+      break;
     case ADOX::adDBTime:
+      prop = new te::dt::DateTimeProperty(std::string(cName), te::dt::TIME_DURATION);
+      break;
     case ADOX::adDBTimeStamp:
       prop = new te::dt::DateTimeProperty(std::string(cName), te::dt::TIME_INSTANT);
       break;
@@ -977,4 +987,335 @@ bool te::ado::IsZProperty(te::gm::GeomType type)
   if( (type >= 1000 && type < 2000) || (type >= 3000 && type < 4000) )
     return true;
   return false;
+}
+
+std::string te::ado::GetSystemDateTimeFormat(std::string& indAM, std::string& indPM, std::string& sepD, std::string& sepT)
+{
+  std::string key = "Control Panel\\International";
+  std::string dateFormat = "sShortDate";	//formato da data d/M/yyyy
+  std::string timeFormat = "sTimeFormat";	//formato da hora HH:mm:ss
+  std::string hourFormat = "iTime";		//12 horas (0) ou 24 horas(1)
+  std::string indicatorAM = "s1159";		//AM
+  std::string indicatorPM = "s2359";		//PM
+  std::string dateSeparator = "sDate";		//separador de data
+  std::string timeSeparator = "sTime";		//separador de hora
+
+  std::string rdateFormat;
+  std::string rtimeFormat;
+  std::string rhourFormat;
+  std::string rdateSeparator;
+  std::string rtimeSeparator; 
+
+  HKEY    hk;
+  DWORD	DataSize = 1024;
+  DWORD   Type = REG_SZ;
+  char    buf[1024];
+    
+  if (RegOpenKeyExA(HKEY_CURRENT_USER, key.c_str(), 0, KEY_READ, &hk) == ERROR_SUCCESS)
+  {
+    memset (buf, 0, 1024);
+    DataSize = 1024;
+    //date format
+    if (RegQueryValueExA(hk, dateFormat.c_str(), NULL, &Type, (LPBYTE)buf, &DataSize) == ERROR_SUCCESS)
+      rdateFormat = buf;
+
+    memset (buf, 0, 1024);
+    DataSize = 1024;
+    //date separator
+    if (RegQueryValueExA(hk, dateSeparator.c_str(), NULL, &Type, (LPBYTE)buf, &DataSize) == ERROR_SUCCESS)
+      rdateSeparator = buf;
+
+    memset (buf, 0, 1024);
+    DataSize = 1024;
+    //time format
+    if (RegQueryValueExA(hk, timeFormat.c_str(), NULL, &Type, (LPBYTE)buf, &DataSize) == ERROR_SUCCESS)
+      rtimeFormat = buf;
+
+    memset (buf, 0, 1024);
+    DataSize = 1024;
+    //hour format
+    if (RegQueryValueExA(hk, hourFormat.c_str(), NULL, &Type, (LPBYTE)buf, &DataSize) == ERROR_SUCCESS)
+      rhourFormat = buf;
+
+    memset (buf, 0, 1024);
+    DataSize = 1024;
+    //indicator AM
+    if (RegQueryValueExA(hk, indicatorAM.c_str(), NULL, &Type, (LPBYTE)buf, &DataSize) == ERROR_SUCCESS)
+      indAM = buf;
+
+    memset (buf, 0, 1024);
+    DataSize = 1024;
+    //indicator PM 
+    if (RegQueryValueExA(hk, indicatorPM.c_str(), NULL, &Type, (LPBYTE)buf, &DataSize) == ERROR_SUCCESS)
+      indPM = buf;
+
+    memset (buf, 0, 1024);
+    DataSize = 1024;
+    //time separator
+    if (RegQueryValueExA(hk, timeSeparator.c_str(), NULL, &Type, (LPBYTE)buf, &DataSize) == ERROR_SUCCESS)
+      rtimeSeparator = buf;
+  }
+  else
+    return "";
+
+  sepD = rdateSeparator;
+  sepT = rtimeSeparator;
+
+  //DATE
+  //first
+  int pos = rdateFormat.find(rdateSeparator);
+  std::string firstD = rdateFormat.substr(0,pos);
+  std::string temp = rdateFormat.substr(pos+1);
+  //second and third
+  pos = temp.find(rdateSeparator);
+  std::string secondD = temp.substr(0,pos);
+  std::string thirdD = temp.substr(pos+1);
+
+  //passar para o formato
+  if(firstD.find("a")==0)
+    replace(firstD.begin(), firstD.end(), 97, 89);
+  else if(secondD.find("a")==0)
+    replace(secondD.begin(), secondD.end(),97, 89);
+  else if(thirdD.find("a")==0)
+    replace(thirdD.begin(), thirdD.end(), 97, 89);
+
+  //TIME
+  //first
+  pos = rtimeFormat.find(rtimeSeparator);
+  std::string firstT = rtimeFormat.substr(0,pos);
+  temp = rtimeFormat.substr(pos+1);
+  //second and third
+  pos = temp.find(rtimeSeparator);
+  std::string secondT = temp.substr(0,pos);
+  int posEmpth = temp.find(" ");
+  std::string thirdT;
+
+  if(posEmpth==-1)
+  thirdT = temp.substr(pos+1);
+  else
+  thirdT = temp.substr(pos+1, (posEmpth-(pos+1)));
+
+  int hFormat = atoi(rhourFormat.c_str());
+
+  //passar para o formato
+  
+  firstT = te::common::Convert2UCase(firstT);
+  secondT = te::common::Convert2UCase(secondT);
+  thirdT = te::common::Convert2UCase(thirdT);
+
+  if((firstT.find("M")==0))
+    replace(firstT.begin(), firstT.end(), 77, 109);
+  else if(secondT.find("M")==0)
+    replace(secondT.begin(), secondT.end(), 77, 109);
+  else if(thirdT.find("M")==0)
+    replace(thirdT.begin(), thirdT.end(), 77, 109);
+
+  std::string timef;
+  if(hFormat==0)
+    timef = "sTT";
+  else
+    timef = "";
+
+  std::string result = te::common::Convert2UCase(firstD) +"s"+ 
+  te::common::Convert2UCase(secondD) +"s"+ 
+  te::common::Convert2UCase(thirdD) +"s"+ 
+  firstT +"s"+ 
+  secondT +"s"+ 
+  thirdT + timef;
+
+  RegCloseKey (hk);
+  return result;
+}
+
+int te::ado::GetMonth(const std::string& month)
+{
+  std::string tempM = te::common::Convert2UCase(month);
+  if(tempM=="JAN")
+    return 0;
+  else if(tempM=="FEB")
+    return 1;
+  else if(tempM=="MAR")
+    return 2;
+  else if(tempM=="APR")
+    return 3;
+  else if(tempM=="MAY")
+    return 4; 
+  else if(tempM=="JUN")
+    return 5;
+  else if(tempM=="JUL")
+    return 6;
+  else if(tempM=="AUG")
+    return 7;
+  else if(tempM=="SEP")
+    return 8;
+  else if(tempM=="OCT")
+    return 9;
+  else if(tempM=="NOV")
+    return 10;
+  else if(tempM=="DEC")
+    return 11;
+
+  return -1;
+}
+
+std::auto_ptr<te::dt::DateTime> te::ado::GetDateTime(std::string& value, std::string& mask, 
+                                                     std::string& sepD, std::string& sepT)
+{
+  int sec = 0;
+  int min = 0;
+  int hour = 0;
+  int day = 0;
+  int mon = 0;
+  int year = 0;
+
+  if(mask == "DDsMMsYYYYsHHsmmsSS")
+  {
+    std::vector<std::string> tokGeneral;
+    te::common::Tokenize(value, tokGeneral, " ");
+
+   // Only Date or only Time
+    if(tokGeneral.size() == 1)
+    {
+      std::vector<std::string> tokDate;
+      te::common::Tokenize(tokGeneral[0], tokDate, sepD);
+      std::vector<std::string> tokTime;
+      te::common::Tokenize(tokGeneral[0], tokTime, sepT);
+
+      // Only Date
+      if(tokDate.size() > 1)
+      {
+        day = boost::lexical_cast<int>(tokDate[0]);
+        mon = boost::lexical_cast<int>(tokDate[1]);
+        year = boost::lexical_cast<int>(tokDate[2]);
+      }
+      // Only Time
+      else if(tokTime.size() > 1)
+      {
+        hour = boost::lexical_cast<int>(tokTime[0]);
+        min = boost::lexical_cast<int>(tokTime[1]);
+        sec = boost::lexical_cast<int>(tokTime[2]);
+      }
+    }
+    // Date and Time
+    else if(tokGeneral.size() == 2)
+    {
+      std::vector<std::string> tokDate;
+      te::common::Tokenize(tokGeneral[0], tokDate, sepD);
+      std::vector<std::string> tokTime;
+      te::common::Tokenize(tokGeneral[1], tokTime, sepT);
+
+      day = boost::lexical_cast<int>(tokDate[0]);
+      mon = boost::lexical_cast<int>(tokDate[1]);
+      year = boost::lexical_cast<int>(tokDate[2]);
+      hour = boost::lexical_cast<int>(tokTime[0]);
+      min = boost::lexical_cast<int>(tokTime[1]);
+      sec = boost::lexical_cast<int>(tokTime[2]);
+    }
+  }
+  else if(mask == "MsDsYYYYsHsmmsSSsTT")
+  {
+    std::vector<std::string> tokGeneral;
+    te::common::Tokenize(value, tokGeneral, " ");
+
+    // Only Date
+    if(tokGeneral.size() == 1)
+    {
+      std::vector<std::string> tokDate;
+      te::common::Tokenize(tokGeneral[0], tokDate, sepD);
+      mon = boost::lexical_cast<int>(tokDate[0]);
+      day = boost::lexical_cast<int>(tokDate[1]);
+      year = boost::lexical_cast<int>(tokDate[2]);
+    }
+    // Only Time
+    else if(tokGeneral.size() == 2)
+    {
+      std::vector<std::string> tokTime;
+      te::common::Tokenize(tokGeneral[0], tokTime, sepT);
+      hour = boost::lexical_cast<int>(tokTime[0]);
+      min = boost::lexical_cast<int>(tokTime[1]);
+      sec = boost::lexical_cast<int>(tokTime[2]);
+    }
+    // Date and Time
+    else if(tokGeneral.size() == 3)
+    {
+      std::vector<std::string> tokDate;
+      std::vector<std::string> tokTime;
+      te::common::Tokenize(tokGeneral[0], tokDate, sepD);
+      te::common::Tokenize(tokGeneral[1], tokTime, sepT);
+
+      mon = boost::lexical_cast<int>(tokDate[0]);
+      day = boost::lexical_cast<int>(tokDate[1]);
+      year = boost::lexical_cast<int>(tokDate[2]);
+      hour = boost::lexical_cast<int>(tokTime[0]);
+      min = boost::lexical_cast<int>(tokTime[1]);
+      sec = boost::lexical_cast<int>(tokTime[2]);
+    }
+  }
+  else if(mask == "YYYYsMMsDDsHHsmmsSS")
+  {
+    std::vector<std::string> tokGeneral;
+    te::common::Tokenize(value, tokGeneral, " ");
+
+   // Only Date or only Time
+    if(tokGeneral.size() == 1)
+    {
+      std::vector<std::string> tokDate;
+      te::common::Tokenize(tokGeneral[0], tokDate, sepD);
+      std::vector<std::string> tokTime;
+      te::common::Tokenize(tokGeneral[0], tokTime, sepT);
+
+      // Only Date
+      if(tokDate.size() > 1)
+      {
+        year = boost::lexical_cast<int>(tokDate[0]);
+        mon = boost::lexical_cast<int>(tokDate[1]);
+        day = boost::lexical_cast<int>(tokDate[2]);
+      }
+      // Only Time
+      else if(tokTime.size() > 1)
+      {
+        hour = boost::lexical_cast<int>(tokTime[0]);
+        min = boost::lexical_cast<int>(tokTime[1]);
+        sec = boost::lexical_cast<int>(tokTime[2]);
+      }
+    }
+    // Date and Time
+    else if(tokGeneral.size() == 2)
+    {
+      std::vector<std::string> tokDate;
+      te::common::Tokenize(tokGeneral[0], tokDate, sepD);
+      std::vector<std::string> tokTime;
+      te::common::Tokenize(tokGeneral[1], tokTime, sepT);
+
+      year = boost::lexical_cast<int>(tokDate[0]);
+      mon = boost::lexical_cast<int>(tokDate[1]);
+      day = boost::lexical_cast<int>(tokDate[2]);
+      hour = boost::lexical_cast<int>(tokTime[0]);
+      min = boost::lexical_cast<int>(tokTime[1]);
+      sec = boost::lexical_cast<int>(tokTime[2]);
+    }
+  }
+  else
+    throw Exception((boost::format(TR_ADO("DateTime format not provided or invalid: %1%!")) % mask).str());
+
+  te::dt::DateTime* result = 0;
+
+  if((day > 0 || mon > 0 || year > 0) && (sec > 0 || min > 0 || hour > 0))
+  {
+    te::dt::Date d(year, mon, day);
+    te::dt::TimeDuration td(hour, min, sec);
+    result = new te::dt::TimeInstant(d, td);
+  }
+  else if(day > 0 || mon > 0 || year > 0)
+  {
+    result = new te::dt::Date(year, mon, day);
+  }
+  else if(sec > 0 || min > 0 || hour > 0)
+  {
+    result = new te::dt::TimeDuration(hour, min, sec);
+  }
+  else
+    return std::auto_ptr<te::dt::DateTime>(0);
+
+  return std::auto_ptr<te::dt::DateTime>(result);
 }
