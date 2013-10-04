@@ -214,7 +214,23 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
     assert(oids);
 
     // Adjusts the layer selection
-    layer->select(oids);
+
+    const te::da::ObjectIdSet* currentOids = layer->getSelected();
+    if(currentOids == 0 || !m_keepPreviousSelection)
+    {
+      layer->select(oids);
+      emit layerSelectedObjectsChanged(layer);
+      return;
+    }
+
+    te::da::ObjectIdSet* finalSelected = currentOids->clone();
+    finalSelected->symDifference(oids);
+
+    delete oids;
+
+    layer->clearSelected();
+
+    layer->select(finalSelected);
 
     emit layerSelectedObjectsChanged(layer);
   }
