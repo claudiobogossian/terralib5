@@ -106,6 +106,7 @@ queryCapabilities.addSpatialOperator("st_m");
 queryCapabilities.addSpatialOperator("st_transform");
 queryCapabilities.addSpatialOperator("st_area");
 queryCapabilities.addSpatialOperator("st_centroid");
+queryCapabilities.addSpatialOperator("st_difference");
 queryCapabilities.addSpatialOperator("st_distance");
 queryCapabilities.addSpatialOperator("st_dfullywithin");
 queryCapabilities.addSpatialOperator("st_dwithin");
