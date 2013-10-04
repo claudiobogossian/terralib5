@@ -126,6 +126,13 @@ bool te::qt::widgets::MixtureModelWizard::execute()
   te::rp::MixtureModel algorithmInstance;
 
   te::rp::MixtureModel::InputParameters algoInputParams = m_mixtureModelPage->getInputParams();
+  
+  if( algoInputParams.m_inputRasterBands.size() != algoInputParams.m_inputSensorBands.size() )
+  {
+    QMessageBox::critical(this, tr("Mixture Model"), tr("The number of components must be the same as the number of selected bands"));
+    return false;
+  }
+  
   algoInputParams.m_inputRasterPtr = inputRst.get();
 
   te::rp::MixtureModel::OutputParameters algoOutputParams = m_mixtureModelPage->getOutputParams();

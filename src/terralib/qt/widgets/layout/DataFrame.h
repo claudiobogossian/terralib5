@@ -95,6 +95,7 @@ namespace te
           void setDataChanged(bool);
           void drawButtonClicked();
           QPixmap* getLastDisplayContent();
+          QPixmap* getPixmap();
 
           void hide();
           void show();
@@ -105,6 +106,9 @@ namespace te
           void removeGeographicGrid();
           void createGraphicScale();
           void removeGraphicScale();
+          te::qt::widgets::GeographicGridFrame* getGeoGridFrame();
+          te::qt::widgets::UTMGridFrame* getUTMGridFrame();
+          te::qt::widgets::GraphicScaleFrame* getGraphicScaleFrame();
           //void createNorthOrientation();
           //void removeNorthOrientation();
           //void createLegend();

@@ -1252,6 +1252,11 @@ QPixmap* te::qt::widgets::DataFrame::getLastDisplayContent()
   return &m_lastDisplayContent;
 }
 
+QPixmap* te::qt::widgets::DataFrame::getPixmap()
+{
+  return &m_lastDisplayContent;
+}
+
 void te::qt::widgets::DataFrame::onDrawLayersFinished(const QMap<QString, QString>& /*errors*/)
 {
   // Stores the clean pixmap!
@@ -1339,4 +1344,19 @@ void te::qt::widgets::DataFrame::drawLayerSelection()
     }
   }
   m_mapDisplay->repaint();
+}
+
+te::qt::widgets::GeographicGridFrame* te::qt::widgets::DataFrame::getGeoGridFrame()
+{
+  return m_geoGridFrame;
+}
+
+te::qt::widgets::UTMGridFrame* te::qt::widgets::DataFrame::getUTMGridFrame()
+{
+  return m_UTMGridFrame;
+}
+
+te::qt::widgets::GraphicScaleFrame* te::qt::widgets::DataFrame::getGraphicScaleFrame()
+{
+  return m_graphicScaleFrame;
 }
