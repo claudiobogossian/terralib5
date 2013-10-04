@@ -57,6 +57,9 @@ namespace te
         /*! \brief Constructor. */
         ObjectIdSet();
 
+        /*! \brief Copy Constructor. */
+        ObjectIdSet(const ObjectIdSet& rhs, bool copyOids = true);
+
         /*! \brief Destructor. */
         ~ObjectIdSet();
 
@@ -161,6 +164,15 @@ namespace te
         void difference(const ObjectIdSet* rhs);
 
         /*!
+          \brief It performs the symmetric difference operation between this ObjectIdSet and the given ObjectIdSet.
+
+          \param rhs A valid ObjectIdSet that will be used on difference operation. Do not pass NULL!
+
+          \note The ObjectIdSet will NOT take the ownership of the given pointer.
+        */
+        void symDifference(const ObjectIdSet* rhs);
+
+        /*!
           \brief Returns an iterator for the object ids in container
           
           \return Iterator for the begin element of the container.
@@ -176,6 +188,8 @@ namespace te
           \return Iterator for the ending element of the container.
         */
         std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator end() const;
+
+        ObjectIdSet* clone() const;
 
       private:
 

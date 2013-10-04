@@ -55,8 +55,11 @@ te::qt::plugins::ado::ADOCreatorDialog::ADOCreatorDialog(QWidget* parent, Qt::Wi
   
 // connect signal and slots
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
-  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
+  //connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
   connect(m_ui->m_searchDatabaseToolButton, SIGNAL(pressed()), this, SLOT(searchDatabaseToolButtonPressed()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
+  m_ui->m_helpPushButton->setPageReference("plugins/ado/ado_creator.html");
 }
 
 te::qt::plugins::ado::ADOCreatorDialog::~ADOCreatorDialog()

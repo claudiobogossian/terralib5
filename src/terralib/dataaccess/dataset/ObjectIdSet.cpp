@@ -42,6 +42,19 @@ te::da::ObjectIdSet::ObjectIdSet()
 {
 }
 
+te::da::ObjectIdSet::ObjectIdSet(const ObjectIdSet& rhs, bool copyOids)
+  : m_pnames(rhs.m_pnames),
+    m_ppos(rhs.m_ppos),
+    m_ptypes(rhs.m_ptypes)
+{
+  if(copyOids)
+  {
+    std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator it;
+    for(it = rhs.m_oids.begin(); it != rhs.m_oids.end(); ++it)
+      m_oids.insert((*it)->clone());
+  }
+}
+
 te::da::ObjectIdSet::~ObjectIdSet()
 {
   te::common::FreeContents(m_oids);
@@ -180,6 +193,27 @@ void te::da::ObjectIdSet::difference(const te::da::ObjectIdSet* rhs)
   }
 }
 
+void te::da::ObjectIdSet::symDifference(const te::da::ObjectIdSet* rhs)
+{
+  assert(rhs);
+
+  const std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >& oidsToInsert = rhs->m_oids;
+
+  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
+  for(it = oidsToInsert.begin(); it != oidsToInsert.end(); ++it)
+  {
+    std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator itSearch = m_oids.find(*it);
+
+    if(itSearch != m_oids.end())
+    {
+      delete *itSearch;
+      m_oids.erase(itSearch);
+    }
+    else
+      m_oids.insert((*it)->clone());
+  }
+}
+
 std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator te::da::ObjectIdSet::begin() const
 {
   return m_oids.begin();
@@ -188,4 +222,9 @@ std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iter
 std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator te::da::ObjectIdSet::end() const
 {
   return m_oids.end();
+}
+
+te::da::ObjectIdSet* te::da::ObjectIdSet::clone() const
+{
+  return new ObjectIdSet(*this);
 }

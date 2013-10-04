@@ -78,10 +78,10 @@ namespace te
                     const int& bufferPolygonRule,
                     const int& levels);
 
-    void BufferQuery(te::mem::DataSet* dataSet,
-                    const std::map<te::gm::Geometry*, double>& distance,
-                    const int& bufferPolygonRule,
-                    const int& levels);
+    te::da::DataSet* BufferQuery(const te::map::AbstractLayerPtr& inputLayer,
+                                const std::map<te::gm::Geometry*, double>& distance,
+                                const int& bufferPolygonRule,
+                                const int& levels);
 
     te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
                                             te::mem::DataSet* dataset, 

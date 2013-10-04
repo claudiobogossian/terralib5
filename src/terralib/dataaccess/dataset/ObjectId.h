@@ -51,6 +51,9 @@ namespace te
         /*! \brief Default constructor. */
         ObjectId();
 
+        /*! \brief Copy constructor. */
+        ObjectId(const ObjectId& rhs);
+
         /*! \brief Destructor. */
         ~ObjectId();
 
@@ -78,6 +81,8 @@ namespace te
           \note This class will take the ownership of the given pointer.
         */
         void addValue(te::dt::AbstractData* data);
+
+        ObjectId* clone() const;
 
         bool operator<(const ObjectId& rhs) const;
 
