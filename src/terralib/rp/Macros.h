@@ -28,6 +28,7 @@
 
   #include "../common/Logger.h"
   #include "../common/Config.h"
+  #include "Module.h"
   #include "Exception.h"
 
   #include <boost/lexical_cast.hpp>
@@ -103,16 +104,18 @@
    */
   #define TERP_LOGMSG( message ) \
   { \
+    te::rp::Module::setLastLogStr( boost::lexical_cast< std::string >( message ) ); \
     TE_LOG_INFO( boost::lexical_cast< std::string >( message ).c_str() ); \
     TERP_LOGMSG_STDOUT( message ); \
   };
 
   /*!
-   \brief Logs a message.
+   \brief Logs an error message.
    \param message Message to be logged.
    */
   #define TERP_LOGERR( message ) \
   { \
+    te::rp::Module::setLastLogStr( boost::lexical_cast< std::string >( message ) ); \
     TE_LOG_ERROR( boost::lexical_cast< std::string >( message ).c_str() ); \
     TERP_LOGERR_STDOUT( message ); \
   };
@@ -123,6 +126,7 @@
    */
   #define TERP_LOGWARN( message ) \
   { \
+    te::rp::Module::setLastLogStr( boost::lexical_cast< std::string >( message ) ); \
     TE_LOG_WARN( boost::lexical_cast< std::string >( message ).c_str() ); \
     TERP_LOGWARN_STDOUT( message ); \
   };
