@@ -34,6 +34,7 @@
 #include <memory>
 
 // QT
+#include <QtGui/QTableWidgetItem>
 #include <QtGui/QWidget>
 
 // Forward declaraion
@@ -128,6 +129,8 @@ namespace te
 
           void onColorBarChanged();
 
+          void onTableWidgetItemChanged(QTableWidgetItem* item);
+
         private:
 
           std::auto_ptr<Ui::GroupingWidgetForm> m_ui;               //!< Widget form.
@@ -136,6 +139,8 @@ namespace te
           te::map::AbstractLayerPtr m_layer;                        //!< TerraLib layer auto ptr
           te::qt::widgets::colorbar::ColorBar* m_colorBar;          //!< Widget used to pick a color.
           std::vector<te::map::GroupingItem*> m_legend;             //!< Grouping items
+
+          bool m_manual;
           
       };
 

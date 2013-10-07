@@ -154,6 +154,8 @@ void te::color::ColorBar::generateSlices(const int& n) //private
   RGBAColor c;
   double d = (double)(m_barSize-1) / (double)(n-1);
 
+  m_colorSliceVec.clear();
+
   for(i = 0; i < n; ++i)
   {
     j = (int)((double)i * d + .5);
@@ -164,6 +166,8 @@ void te::color::ColorBar::generateSlices(const int& n) //private
 
 const std::vector<te::color::RGBAColor>& te::color::ColorBar::getSlices(const int& n)
 {
+  m_colorSliceVec.clear();
+
   if(n == 0)
     return m_colorSliceVec;
   if(n == 1)
