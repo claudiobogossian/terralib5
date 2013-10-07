@@ -28,6 +28,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Contrast.h"
+#include "../../../rp/Module.h"
 #include "ContrastWizard.h"
 #include "ContrastWizardPage.h"
 #include "LayerSearchWidget.h"
@@ -147,13 +148,15 @@ bool te::qt::widgets::ContrastWizard::execute()
     }
     else
     {
-      QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement execution error"));
+      QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement execution error.") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str());
       return false;
     }
   }
   else
   {
-    QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement initialization error"));
+    QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement initialization error.") +
+      ( " " + te::rp::Module::getLastLogStr() ).c_str() );
     return false;
   }
   return true;
