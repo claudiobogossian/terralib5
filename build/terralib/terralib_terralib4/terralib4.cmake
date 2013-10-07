@@ -3,6 +3,12 @@ if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTETERRALIB4DLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
+find_package(Boost ${_Boost_VERSION} REQUIRED)
+
+if(Boost_FOUND)
+  set (TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+endif()
+
 list(APPEND TE_DEP_LIBS  terralib_dataaccess
                          terralib_geometry
                          terralib_raster
