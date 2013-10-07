@@ -765,7 +765,7 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 
 void te::qt::af::BaseApplication::onLayerRemoveSelectionTriggered()
 {
-  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+  std::list<te::map::AbstractLayerPtr> layers =  m_explorer->getExplorer()->getSelectedLayers();
 
   if(layers.empty())
   {
@@ -773,16 +773,18 @@ void te::qt::af::BaseApplication::onLayerRemoveSelectionTriggered()
     return;
   }
 
-  std::list<te::qt::widgets::AbstractTreeItem*>::iterator it = layers.begin();
+  std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
 
   while(it != layers.end())
   {
-    (*it)->getLayer()->clearSelected();
+    te::map::AbstractLayerPtr layer = (*it);
+    layer->clearSelected();
 
     ++it;
-  }
 
-  m_display->getDisplay()->refresh();
+    te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
+    ApplicationController::getInstance().broadcast(&e);
+  }
 }
 
 void te::qt::af::BaseApplication::onLayerSRSTriggered()
@@ -1194,17 +1196,19 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
 
 void te::qt::af::BaseApplication::onMapRemoveSelectionTriggered()
 {
-  std::list<te::map::AbstractLayerPtr> layers = m_project->getLayers();
+  std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
-
+  
   while(it != layers.end())
   {
-    (*it)->clearSelected();
+    te::map::AbstractLayerPtr layer = (*it);
+    layer->clearSelected();
 
     ++it;
-  }
 
-  m_display->getDisplay()->refresh();
+    te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
+    ApplicationController::getInstance().broadcast(&e);
+  }
 }
 
 void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
