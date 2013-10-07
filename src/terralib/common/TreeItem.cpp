@@ -67,6 +67,11 @@ te::common::TreeItem* te::common::TreeItem::getParent() const
   return m_parent;
 }
 
+const std::list<te::common::TreeItemPtr>& te::common::TreeItem::getChildren() const
+{
+  return m_children;
+}
+
 const te::common::TreeItemPtr& te::common::TreeItem::getChild(std::size_t i) const
 {
   assert(i < m_children.size());
