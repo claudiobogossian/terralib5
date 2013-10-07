@@ -127,6 +127,11 @@ te::map::AbstractLayerPtr te::qt::widgets::DataSetLayerItem::getLayer() const
   return m_layer;
 }
 
+te::qt::widgets::AbstractTreeItem::TreeItemType te::qt::widgets::DataSetLayerItem::getType() const
+{
+  return LAYERITEM;
+}
+
 bool te::qt::widgets::DataSetLayerItem::hasGroupingItem() const
 {
   GroupingTreeItem* groupingItem = findChild<GroupingTreeItem*>();

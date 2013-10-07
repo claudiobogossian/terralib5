@@ -76,17 +76,6 @@ void te::qt::widgets::LayerTreeModel::set(const std::list<te::map::AbstractLayer
   endResetModel();
 }
 
-std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeModel::getLayers() const
-{
-  std::list<te::map::AbstractLayerPtr> res;
-  std::vector<AbstractTreeItem*>::const_iterator it;
-
-  for(it=m_items.begin(); it!=m_items.end(); ++it)
-    res.push_back((*it)->getLayer());
-
-  return res;
-}
-
 bool te::qt::widgets::LayerTreeModel::canFetchMore(const QModelIndex& parent) const
 {
   if(!parent.isValid())
@@ -635,6 +624,76 @@ bool te::qt::widgets::LayerTreeModel::remove(AbstractTreeItem* item)
 void te::qt::widgets::LayerTreeModel::refresh()
 {
   emit layoutChanged();
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeModel::getAllTopLevelLayers() const
+{
+  std::list<te::map::AbstractLayerPtr> topLevelLayers;
+
+  std::vector<AbstractTreeItem*>::const_iterator it;
+
+  for(it = m_items.begin(); it != m_items.end(); ++it)
+    topLevelLayers.push_back((*it)->getLayer());
+
+  return topLevelLayers;
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeModel::getAllLayers() const
+{
+  std::list<te::map::AbstractLayerPtr> layers;
+
+  for(std::size_t i = 0; i < m_items.size(); ++i)
+  {
+    te::map::AbstractLayerPtr layer = m_items[i]->getLayer();
+
+    layers.push_back(layer);
+    std::vector<te::map::AbstractLayer*> children  = layer->getDescendants();
+
+    for(std::size_t j = 0; j < children.size(); ++j)
+      layers.push_back(te::map::AbstractLayerPtr(children[j]));
+  }
+
+  return layers;
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeModel::getLayers() const
+{
+  std::list<te::map::AbstractLayerPtr> layers;
+
+  for(std::size_t i = 0; i < m_items.size(); ++i)
+  {
+    te::map::AbstractLayerPtr layer = m_items[i]->getLayer();
+
+    if(layer->getType() != "FOLDERLAYER")
+      layers.push_back(layer);
+    else
+    {
+      std::vector<te::map::AbstractLayer*> children  = layer->getDescendants();
+
+      for(std::size_t j = 0; j < children.size(); ++j)
+      {
+        if(children[j]->getType() != "FOLDERLAYER")
+          layers.push_back(te::map::AbstractLayerPtr(children[j]));
+      }
+    }
+  }
+
+  return layers;
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeModel::getVisibleLayers() const
+{
+  std::list<te::map::AbstractLayerPtr> layers = getLayers();
+  std::list<te::map::AbstractLayerPtr> visibleLayers;
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+  for(it = layers.begin(); it != layers.end(); ++it)
+  {
+    if((*it)->getVisibility() == te::map::VISIBLE)
+      visibleLayers.push_back(*it);
+  }
+
+  return visibleLayers;
 }
 
 void te::qt::widgets::LayerTreeModel::emitDataChangedForDescendants(const QModelIndex& parent)

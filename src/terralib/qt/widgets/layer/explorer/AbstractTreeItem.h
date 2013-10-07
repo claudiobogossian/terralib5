@@ -54,6 +54,22 @@ namespace te
 
         public:
 
+          /*!
+            \enum TreeItemType
+
+            \brief The type of the tree item.
+           */
+          enum TreeItemType
+          {
+            CHARTITEM,
+            CHARTSLICEITEM,
+            FOLDERLAYERITEM,
+            GROUPINGITEMTREEITEM,
+            GROUPINGTREEITEM,
+            LAYERITEM,
+            LEGENDITEM
+          };
+        
           AbstractTreeItem(QObject* parent = 0);
 
           virtual ~AbstractTreeItem();
@@ -66,7 +82,6 @@ namespace te
           virtual int columnCount() const = 0;
 
           // Return the data stored under the given role
-          //http://doc.qt.nokia.com/4.7/qt.html#ItemDataRole-enum
           virtual QVariant data(int column, int role) const = 0;
 
           virtual QMenu* getMenu(QWidget* parent = 0) const = 0;
@@ -82,6 +97,8 @@ namespace te
           virtual bool setData(int column, const QVariant& value, int role = Qt::EditRole) = 0;
 
           virtual te::map::AbstractLayerPtr getLayer() const = 0;
+
+          virtual TreeItemType getType() const = 0;
       };
 
     } // end namespace widgets
