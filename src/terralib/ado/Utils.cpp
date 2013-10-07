@@ -53,57 +53,6 @@ inline void TESTHR( HRESULT hr )
   if( FAILED(hr) ) _com_issue_error( hr );
 }
 
-void te::ado::AddAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop)
-{
-  int pType = prop->getType();
-
-  try
-  {
-    switch(pType)
-    {
-    case te::dt::CHAR_TYPE:
-    case te::dt::UCHAR_TYPE:
-    case te::dt::INT16_TYPE:
-    case te::dt::INT32_TYPE:
-    case te::dt::INT64_TYPE:
-    case te::dt::FLOAT_TYPE:
-    case te::dt::DOUBLE_TYPE:
-    case te::dt::BOOLEAN_TYPE:
-    case te::dt::BYTE_ARRAY_TYPE:
-      table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
-      break;
-
-    case te::dt::STRING_TYPE:
-      {
-        te::dt::StringProperty* p = (te::dt::StringProperty*)prop;
-        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), p->size());
-        break;
-      }
-
-      //case te::dt::NUMERIC_TYPE:
-      case te::dt::DATETIME_TYPE:
-        table->Columns->Append(prop->getName().c_str(), ADOX::adDate,0);
-        break;
-
-    case te::dt::GEOMETRY_TYPE:
-      table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
-      break;
-
-    case te::dt::ARRAY_TYPE:
-      table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
-      break;
-
-    default:
-      throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-      break;
-    }
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-}
-
 void te::ado::Blob2Variant(const char* blob, int size, _variant_t & var)
 {
   try
