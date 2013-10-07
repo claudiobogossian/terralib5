@@ -148,8 +148,8 @@
    */
   #define TERP_TRUE_OR_THROW( value , message ) \
     if( ( value ) == 0 ) { \
-      TERP_LOGERR( boost::lexical_cast< std::string >( message ) + \
-        " - " + boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGERR( boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGERR( boost::lexical_cast< std::string >( message ) ); \
       throw te::rp::Exception( boost::lexical_cast< std::string >( message ) ); \
     };      
 
@@ -169,8 +169,8 @@
    */
   #define TERP_TRUE_OR_LOG( value , message ) \
     if( ( value ) == 0 ) { \
-      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
-        " - " + boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) ); \
     };
 
   /*!
@@ -182,8 +182,8 @@
    */
   #define TERP_TRUE_OR_RETURN_FALSE( value , message ) \
     if( ( value ) == 0 ) { \
-      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
-        " - " + boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) ); \
       return false; \
     };
     
@@ -196,8 +196,8 @@
    */
   #define TERP_TRUE_OR_RETURN( value , message ) \
     if( ( value ) == 0 ) { \
-      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
-        " - " + boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) ); \
       return; \
     };    
     
@@ -210,8 +210,8 @@
    */
   #define TERP_FALSE_OR_RETURN_FALSE( value , message ) \
     if( ( value ) != 0 ) { \
-      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
-        " - " + boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) ); \
       return false; \
     };    
     
@@ -224,8 +224,8 @@
    */
   #define TERP_FALSE_OR_RETURN( value , message ) \
     if( ( value ) != 0 ) { \
-      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
-        " - " + boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) ); \
       return; \
     };     
 
@@ -256,8 +256,8 @@
    */
   #define TERP_FALSE_OR_LOG( value , message ) \
     if( ( value ) != 0 ) { \
-      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) + \
-        " - " + boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( #value ) ); \
+      TERP_LOGWARN( boost::lexical_cast< std::string >( message ) ); \
     };
 
   /*!
@@ -267,11 +267,18 @@
    \param message Message to be logged.
    */
   #define TERP_CHECK_EQUAL( value1 , value2 , message ) \
-    TERP_TRUE_OR_THROW( ( ((double)( value1 ) ) == ((double)( value2 ) ) ), \
-    std::string( "Values must be equal [" ) + \
-    boost::lexical_cast< std::string >( value1 ) + "!=" + \
-    boost::lexical_cast< std::string >( value2 ) + "] - " + \
-    boost::lexical_cast< std::string >( message ) );
+    if( value1 != value2 ) \
+    { \
+      TERP_LOGERR(std::string( "[" ) + \
+        boost::lexical_cast< std::string >( #value1 ) \
+        + std::string( "!=" ) + \
+        + boost::lexical_cast< std::string >( #value2 ) \
+        + "][" \
+        + boost::lexical_cast< std::string >( value1 ) \
+        + std::string( "!=" ) + \
+        + boost::lexical_cast< std::string >( value2 ) ); \
+      TERP_LOG_AND_THROW( message ); \
+    };
 
   /*!
    \brief Checks if two values are diferent and throws an exception if not.
@@ -280,11 +287,18 @@
    \param message Message to be logged.
    */
   #define TERP_CHECK_NOT_EQUAL( value1 , value2 , message ) \
-    TERP_TRUE_OR_THROW( ( ((double)( value1 )) != ((double)( value2 )) ), \
-    std::string( "Values can't be equal [" ) + \
-    boost::lexical_cast< std::string >( #value1 ) + std::string( "==" ) + \
-    boost::lexical_cast< std::string >( #value2 ) + std::string( "==" ) + \
-    boost::lexical_cast< std::string >( value1 ) + std::string( "]" ) );
+    if( value1 == value2 ) \
+    { \
+      TERP_LOGERR(std::string( "[" ) + \
+        boost::lexical_cast< std::string >( #value1 ) \
+        + std::string( "==" ) + \
+        + boost::lexical_cast< std::string >( #value2 ) \
+        + "][" \
+        + boost::lexical_cast< std::string >( value1 ) \
+        + std::string( "==" ) + \
+        + boost::lexical_cast< std::string >( value2 ) ); \
+      TERP_LOG_AND_THROW( message ); \
+    };
 
   /*!
    \brief  Checks if two values are equal ( within an EPS ) and throws an exception if not.
@@ -307,23 +321,24 @@
         TERP_CHECK_EPS_double_diff = ( TERP_CHECK_EPS_double_value1 - \
           TERP_CHECK_EPS_double_value2 ); \
       }; \
-      TERP_TRUE_OR_THROW( \
-        TERP_CHECK_EPS_double_diff <= TERP_CHECK_EPS_double_eps, \
-        std::string( "Values are not equal: " ) + \
-        boost::lexical_cast< std::string >( #value1 ) + \
-        std::string( "=[") + \
-        boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_value1 ) + \
-        std::string( "] " ) + \
-        boost::lexical_cast< std::string >( #value2 ) + \
-        std::string( "=[") + \
-        boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_value2 ) + \
-        std::string( "] eps=[") + \
-        boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_eps ) + \
-        std::string( "] diff=[") + \
-        boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_diff ) + \
-        std::string( "] - " ) + \
-        boost::lexical_cast< std::string >( message ) \
-        ); \
+      if( TERP_CHECK_EPS_double_diff > TERP_CHECK_EPS_double_eps ) \
+      { \
+        TERP_LOGERR( \
+          std::string( "Values are not equal: " ) + \
+          boost::lexical_cast< std::string >( #value1 ) + \
+          std::string( "=[") + \
+          boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_value1 ) + \
+          std::string( "] " ) + \
+          boost::lexical_cast< std::string >( #value2 ) + \
+          std::string( "=[") + \
+          boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_value2 ) + \
+          std::string( "] eps=[") + \
+          boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_eps ) + \
+          std::string( "] diff=[") + \
+          boost::lexical_cast< std::string >( TERP_CHECK_EPS_double_diff ) \
+          ); \
+        TERP_LOG_AND_THROW( message ); \
+      }; \
     };
 
   /*!
