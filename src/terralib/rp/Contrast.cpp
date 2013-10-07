@@ -259,6 +259,9 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE(
         inputParamsPtr->m_inRasterPtr->getAccessPolicy() & te::common::RAccess,
         "Invalid raster" );
+        
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inRasterBands.size() > 0,
+        "Invalid bands number" );
 
       for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
         inputParamsPtr->m_inRasterBands.size() ; ++inRasterBandsIdx )

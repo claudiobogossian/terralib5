@@ -51,6 +51,8 @@ namespace te
           \param inputParams Input parameters.
           
           \return true if OK, false on errors.
+          
+          \note A return error string can be obtained via te::rp::Module::getLastLogStr()
          */
         virtual bool initialize( const AlgorithmInputParameters& inputParams ) throw( te::rp::Exception ) = 0;
         

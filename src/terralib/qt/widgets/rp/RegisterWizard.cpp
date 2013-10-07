@@ -29,6 +29,7 @@
 #include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Register.h"
+#include "../../../rp/Module.h"
 #include "LayerSearchWidget.h"
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
@@ -182,13 +183,15 @@ bool te::qt::widgets::RegisterWizard::execute()
     
     if(!algorithmInstance.initialize(algoInputParams))
     {
-      QMessageBox::warning(this, tr("Register"), tr("Algorithm initialization error."));
+      QMessageBox::warning(this, tr("Register"), tr("Algorithm initialization error.") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str());
       return false;
     }
     
     if(!algorithmInstance.execute(algoOutputParams))
     {
-      QMessageBox::warning(this, tr("Register"), tr("Register Error!"));
+      QMessageBox::warning(this, tr("Register"), tr("Register Error.") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str());
       return false;
     }
     else

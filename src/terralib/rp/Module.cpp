@@ -51,6 +51,7 @@
 //}
 
 const te::rp::Module& sm_module = te::rp::Module::getInstance();
+std::string te::rp::Module::m_lastLogString;
 
 te::rp::Module::Module()
 {

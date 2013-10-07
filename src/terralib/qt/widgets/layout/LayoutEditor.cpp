@@ -90,10 +90,10 @@ te::qt::widgets::LayoutEditor::LayoutEditor(QWidget* parent, Qt::WindowFlags f) 
 
   // insert text frames
   int pointSize = 24;
-  te::qt::widgets::TextFrame* tf = new te::qt::widgets::TextFrame(QPointF(10, 10), "INPE\nTerraView\nVersão 5.0", pointSize, this, Qt::Widget);
+  te::qt::widgets::TextFrame* tf = new te::qt::widgets::TextFrame(QPointF(10, 10), "INPE\nTerraView\nVersao 5.0", pointSize, this, Qt::Widget);
   insert(tf);
 
-  tf = new te::qt::widgets::TextFrame(QPointF(10, 270), "divisão de processamento de imagens", pointSize, this, Qt::Widget);
+  tf = new te::qt::widgets::TextFrame(QPointF(10, 270), "divisao de processamento de imagens", pointSize, this, Qt::Widget);
   insert(tf);
 
   m_zoomInPixmap = 0;
@@ -312,8 +312,8 @@ void te::qt::widgets::LayoutEditor::appendToUndo() // usado para quando muda o f
       delete (fa);
     }
 
-    // se a operacao é resize, elimine os desnecessarios
-    if(m_resize || m_move) // é resize ou move operation
+    // se a operacao ï¿½ resize, elimine os desnecessarios
+    if(m_resize || m_move) // ï¿½ resize ou move operation
     {
       te::qt::widgets::LayoutObject *fu = 0, *fap = 0;
       std::vector<te::qt::widgets::LayoutObject*>::reverse_iterator it = m_undoLayoutObjects.rbegin();
@@ -327,7 +327,7 @@ void te::qt::widgets::LayoutEditor::appendToUndo() // usado para quando muda o f
 
           if(fu && fap)
           {
-            if(fu->getId() == 0 && fap->getId() == 0) // é viewer edition
+            if(fu->getId() == 0 && fap->getId() == 0) // ï¿½ viewer edition
             {
               te::qt::widgets::EditorInfo* eiu = (te::qt::widgets::EditorInfo*)fu;
               te::qt::widgets::EditorInfo* eiap = (te::qt::widgets::EditorInfo*)fap;
@@ -742,7 +742,7 @@ void te::qt::widgets::LayoutEditor::resizeEvent(QResizeEvent* event)
 }
 
 // O evento de move eh chamado apos mover, mas,
-// tambem é chamado antes de resize top/left
+// tambem ï¿½ chamado antes de resize top/left
 void te::qt::widgets::LayoutEditor::moveEvent(QMoveEvent* event)
 { 
   // usado para manter o papel na mesma posicao durante o resize top/left
@@ -796,7 +796,7 @@ te::qt::widgets::LayoutObject* te::qt::widgets::LayoutEditor::find(unsigned int 
   return 0;
 }
 
-// não use este metodo para inserir frames durante a edição
+// nï¿½o use este metodo para inserir frames durante a ediï¿½ï¿½o
 void te::qt::widgets::LayoutEditor::insert(te::qt::widgets::LayoutObject* f)
 {
   if(f->getId() == 0)
@@ -835,7 +835,7 @@ void te::qt::widgets::LayoutEditor::insertCopy2Undo(te::qt::widgets::LayoutObjec
     delete (f);
   }
 
-  if(f->getId() != 0) // é frame edition
+  if(f->getId() != 0) // ï¿½ frame edition
   {
     te::qt::widgets::Frame* frame = (te::qt::widgets::Frame*)f;
     frame->setNew(false);
@@ -929,7 +929,7 @@ void te::qt::widgets::LayoutEditor::drawButtonClicked()
 
 void te::qt::widgets::LayoutEditor::mousePressEvent(QMouseEvent* e)
 {
-  if(e->button() == Qt::MiddleButton)
+  if(e->button() == Qt::MidButton)
   {
     int i = m_zmouseMode + 1;
     if(i > 3)
@@ -2108,7 +2108,7 @@ void te::qt::widgets::LayoutEditor::keyPressEvent(QKeyEvent* e)
               insert(undof); // faca a troca
             }
           }
-          // se o frame nao existe é porque ele foi deletado.
+          // se o frame nao existe ï¿½ porque ele foi deletado.
           else // recuperando frame deletado
           {
             removeUndo(undof);
