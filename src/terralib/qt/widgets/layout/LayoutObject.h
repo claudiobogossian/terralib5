@@ -64,6 +64,8 @@ namespace te
           virtual void setScale(double v);
           virtual bool isNew();
           virtual void setNew(bool);
+          virtual QRectF getFrameRect();
+          virtual QPixmap* getPixmap();
 
 
         protected:

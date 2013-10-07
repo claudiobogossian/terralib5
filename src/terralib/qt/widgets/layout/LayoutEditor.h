@@ -50,6 +50,7 @@ namespace te
     namespace widgets
     {
       class LayoutObject;
+      class DataFrame;
       class EditorInfo;
       class DraftLayoutEditor;
       /*!
@@ -105,8 +106,10 @@ namespace te
           void raiseDraftLayoutEditor();
           void lowerDraftLayoutEditor();
           void drawRectArea(); 
-          void adjustAspectRatio(QRectF& r);
+          void adjustAspectRatio(QRectF& r, const QRectF& ref); // faz a relacao de aspecto de r igual a do ref
           void setMouseMode(int); // 0=none, 1=zoomin, 2=zoomout, 3=pan (sobre a area do papel/dado)
+          void hideAllObjects();
+          void showAllObjects();
 
           void mousePressEvent(QMouseEvent* e);
           void mouseMoveEvent(QMouseEvent* e);
@@ -165,6 +168,8 @@ namespace te
           QPoint m_zpoint;
           QRect m_zrect;
           bool m_zpanEnd;
+          QPixmap m_zpixmap;
+          te::qt::widgets::DataFrame* m_zdataFrame;
           QPixmap* m_zoomInPixmap;
           QPixmap* m_zoomOutPixmap;
           QPixmap* m_panPixmap;

@@ -224,7 +224,6 @@ std::map<double, unsigned> te::rst::Band::getHistogramR(unsigned int rs, unsigne
   {
 // find limits to divide into bins
     double pmin = std::numeric_limits<double>::max();
-
     double pmax = -1.0 * std::numeric_limits<double>::max();
 
     for (unsigned r = rs; r <= rf; r++)
@@ -299,7 +298,6 @@ std::map<double, unsigned> te::rst::Band::getHistogramI(unsigned int rs, unsigne
   {
 // find limits to divide into bins
     double pmin = std::numeric_limits<double>::max();
-
     double pmax = -1.0 * std::numeric_limits<double>::max();
 
     for (unsigned r = rs; r <= rf; r++)

@@ -206,6 +206,11 @@ void te::qt::widgets::GraphicScaleFrame::paintEvent(QPaintEvent*)
   painter.drawPixmap(0, 0, m_pixmap);
 }
 
+QPixmap* te::qt::widgets::GraphicScaleFrame::getPixmap()
+{
+  return &m_pixmap;
+}
+
 te::qt::widgets::DataFrame* te::qt::widgets::GraphicScaleFrame::getDataFrame()
 {
   return m_dataFrame;

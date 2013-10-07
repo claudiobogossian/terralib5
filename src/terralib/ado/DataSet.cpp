@@ -461,7 +461,7 @@ std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) con
   }
 
   if(value.vt == VT_NULL)
-    std::auto_ptr<te::dt::DateTime>(0);
+    return std::auto_ptr<te::dt::DateTime>(0);
 
   strDate = (LPCSTR)(_bstr_t)value;
 
