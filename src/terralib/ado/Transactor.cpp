@@ -40,6 +40,7 @@
 #include "../dataaccess/query/SQLDialect.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Array.h"
+#include "../datatype/Date.h"
 #include "../datatype/DateTimeProperty.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleData.h"
@@ -1027,20 +1028,23 @@ void te::ado::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
 
   if(dt->getPrimaryKey())
     addPrimaryKey(dt->getName(), dt->getPrimaryKey());
-  
+
   te::gm::GeometryProperty* geomProp = 0;
 
   if(dt->hasGeom())
   {
-    te::dt::SimpleProperty* lowerX = new te::dt::SimpleProperty("lower_x", te::dt::DOUBLE_TYPE);
-    te::dt::SimpleProperty* lowerY = new te::dt::SimpleProperty("lower_y", te::dt::DOUBLE_TYPE);
-    te::dt::SimpleProperty* upperX = new te::dt::SimpleProperty("upper_x", te::dt::DOUBLE_TYPE);
-    te::dt::SimpleProperty* upperY = new te::dt::SimpleProperty("upper_y", te::dt::DOUBLE_TYPE);
+    if(!propertyExists(dt->getName(), "lower_x"))
+    {
+      te::dt::SimpleProperty* lowerX = new te::dt::SimpleProperty("lower_x", te::dt::DOUBLE_TYPE);
+      te::dt::SimpleProperty* lowerY = new te::dt::SimpleProperty("lower_y", te::dt::DOUBLE_TYPE);
+      te::dt::SimpleProperty* upperX = new te::dt::SimpleProperty("upper_x", te::dt::DOUBLE_TYPE);
+      te::dt::SimpleProperty* upperY = new te::dt::SimpleProperty("upper_y", te::dt::DOUBLE_TYPE);
 
-    addProperty(dt->getName(), lowerX);
-    addProperty(dt->getName(), lowerY);
-    addProperty(dt->getName(), upperX);
-    addProperty(dt->getName(), upperY);
+      addProperty(dt->getName(), lowerX);
+      addProperty(dt->getName(), lowerY);
+      addProperty(dt->getName(), upperX);
+      addProperty(dt->getName(), upperY);
+    }
 
     geomProp = te::da::GetFirstGeomProperty(dt);
   }
@@ -1109,7 +1113,10 @@ void te::ado::Transactor::add(const std::string& datasetName,
 
       for(std::size_t i = 0; i < d->getNumProperties(); ++i)
       {
-      
+        
+        if(d->isNull(i))
+          continue;
+
         std::string pname = d->getPropertyName(i);
         int pType = d->getPropertyDataType(i);
 
@@ -1140,8 +1147,15 @@ void te::ado::Transactor::add(const std::string& datasetName,
             break;
 
           case te::dt::DATETIME_TYPE:
-            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)(d->getDateTime(pname.c_str()))->toString().c_str();
+          { 
+            std::auto_ptr<te::dt::DateTime> dtm(d->getDateTime(i));
+
+            std::string dtt = te::ado::GetFormattedDateTime(dtm.get());
+
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)dtt.c_str();
+
             break;
+          }
 
           case te::dt::FLOAT_TYPE:
             recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getFloat(pname.c_str());
