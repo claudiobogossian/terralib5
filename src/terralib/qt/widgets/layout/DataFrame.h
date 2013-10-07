@@ -78,7 +78,7 @@ namespace te
           void sendEventToChildren(bool);
           bool eventFilter(QObject*, QEvent*);
           te::map::AbstractLayer* getData();
-          void setData(te::map::AbstractLayerPtr d, int nsrid = TE_UNKNOWN_SRS);
+          void setData(te::map::AbstractLayerPtr d, int nsrid = TE_UNKNOWN_SRS, QRectF r = QRectF());
           bool transformEnvelope(te::gm::Envelope& e, int oldsrid, int newsrid);
           double getDataUnitToMilimeter();
           void findDataUnitToMilimeter(const te::gm::Envelope& e, int srid);

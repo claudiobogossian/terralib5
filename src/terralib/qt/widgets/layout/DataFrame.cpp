@@ -413,7 +413,7 @@ void te::qt::widgets::DataFrame::getLayerList(te::map::AbstractLayerPtr al, std:
   }
 }
 
-void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid)
+void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid, QRectF dr)
 {
   m_data = al.get();
   if(m_data == 0)
@@ -437,14 +437,16 @@ void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid
   }
 
   m_mapDisplay->setBackgroundColor(Qt::white);
-
-  //m_mapDisplay->setLayerList(m_visibleLayers);
-  m_mapDisplay->refresh();
-
   te::gm::Envelope e = m_mapDisplay->getExtent();
-  m_dataRect = QRectF();
-  QRectF r(e.getLowerLeftX(), e.getLowerLeftY(), e.getWidth(), e.getHeight());
-  setDataRect(r);
+
+  if(dr.isValid())
+    m_mapDisplay->refresh();
+  else
+  {
+    m_dataRect = QRectF();
+    QRectF r(e.getLowerLeftX(), e.getLowerLeftY(), e.getWidth(), e.getHeight());
+    setDataRect(r);
+  }
 
   findDataUnitToMilimeter(e, m_mapDisplay->getSRID());
 
@@ -661,8 +663,8 @@ void te::qt::widgets::DataFrame::drawButtonClicked()
   m_dataChanged = true;
   if(m_dataChanged)
   {
-    setData(0, m_mapDisplay->getSRID());
-    setData(al, m_mapDisplay->getSRID());
+    setData(0, m_mapDisplay->getSRID(), m_dataRect);
+    setData(al, m_mapDisplay->getSRID(), m_dataRect);
   }
 
   draw();

@@ -1193,6 +1193,8 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
       {
         if(m_zrect.isValid() && m_zrect.width() > 2 && m_zrect.height() > 2)
         {
+          insertCopy2Undo(m_zdataFrame);
+
           QRectF zr(m_zrect.left(), m_zrect.top(), m_zrect.width(), m_zrect.height());
 
           // area do zoom em mm
@@ -1218,11 +1220,13 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
             step *= zr.width() / fr.width();
             m_zdataFrame->getGraphicScaleFrame()->findNiceStep(step);
           }
-          createWorkingArea();
+          createWorkingArea(false);
           draw();
         }
         else // zoom in (data frame)
         {
+          insertCopy2Undo(m_zdataFrame);
+
           QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
 
           // centro do zoom em mm
@@ -1250,7 +1254,7 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
             step /= zoomFat;
             m_zdataFrame->getGraphicScaleFrame()->findNiceStep(step);
           }
-          createWorkingArea();
+          createWorkingArea(false);
           draw();
         }
         m_zrect = QRect();
@@ -1258,6 +1262,8 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
       }
       else if(m_zmouseMode == 2) // zoom out (data frame)
       {
+        insertCopy2Undo(m_zdataFrame);
+
         QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
 
         // centro do zoom em mm
@@ -1285,11 +1291,13 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
           step *= zoomFat;
           m_zdataFrame->getGraphicScaleFrame()->findNiceStep(step);
         }
-        createWorkingArea();
+        createWorkingArea(false);
         draw();
       }
       else if(m_zmouseMode == 3) // pan (data frame)
       {
+        insertCopy2Undo(m_zdataFrame);
+
         m_zpanEnd = true;
         QPointF pfrom(m_zpressPoint.x(), m_zpressPoint.y());
         QPointF pto(e->pos().x(), e->pos().y());
@@ -2113,8 +2121,9 @@ void te::qt::widgets::LayoutEditor::keyPressEvent(QKeyEvent* e)
             {
               te::qt::widgets::DataFrame* df = (te::qt::widgets::DataFrame*)undof;
               te::map::AbstractLayerPtr data(df->getData());
-              df->setData(0);
-              df->setData(data);
+              QRectF dr = df->getDataRect();
+              df->setData(0, df->getMapDisplay()->getSRID(), df->getDataRect());
+              df->setData(data, df->getMapDisplay()->getSRID(), df->getDataRect());
               df->draw();
             }
             undof->show();
