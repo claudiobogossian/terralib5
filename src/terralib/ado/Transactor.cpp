@@ -439,13 +439,56 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
     pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
+
+    int pType = p->getType();
+
+    switch(pType)
+    {
+      case te::dt::CHAR_TYPE:
+      case te::dt::UCHAR_TYPE:
+      case te::dt::INT16_TYPE:
+      case te::dt::INT32_TYPE:
+      case te::dt::INT64_TYPE:
+      case te::dt::FLOAT_TYPE:
+      case te::dt::DOUBLE_TYPE:
+      case te::dt::BOOLEAN_TYPE:
+      case te::dt::BYTE_ARRAY_TYPE:
+        pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+        break;
+
+      case te::dt::STRING_TYPE:
+        {
+          te::dt::StringProperty* pStr = (te::dt::StringProperty*)p;
+          pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), pStr->size());
+          break;
+        }
+
+        //case te::dt::NUMERIC_TYPE:
+        case te::dt::DATETIME_TYPE:
+          pTable->Columns->Append(p->getName().c_str(), ADOX::adDate,0);
+          break;
+
+      case te::dt::GEOMETRY_TYPE:
+        pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+        break;
+
+      case te::dt::ARRAY_TYPE:
+        pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+        break;
+
+      default:
+        throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+        break;
+    }
   }
   catch(_com_error& e)
   {
     throw Exception(TR_ADO(e.Description()));
   }
 
-  te::ado::AddAdoPropertyFromTerralib(pTable, p);
+  //te::ado::AddAdoPropertyFromTerralib(pTable, p);
+
+
 }
 
 void te::ado::Transactor::dropProperty(const std::string& datasetName, const std::string& name)
@@ -1109,13 +1152,18 @@ void te::ado::Transactor::add(const std::string& datasetName,
     
     while(d->moveNext())
     {
+      bool isNull = false;
+
       TESTHR(recset->AddNew());
 
       for(std::size_t i = 0; i < d->getNumProperties(); ++i)
       {
         
         if(d->isNull(i))
+        {
+          isNull = true;
           continue;
+        }
 
         std::string pname = d->getPropertyName(i);
         int pType = d->getPropertyDataType(i);
@@ -1210,7 +1258,8 @@ void te::ado::Transactor::add(const std::string& datasetName,
           }
       }
 
-      TESTHR(recset->Update());
+      if(!isNull)
+        TESTHR(recset->Update());
 
     }
   }
@@ -1373,7 +1422,7 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
 
       // Get the columns that has default values
       bool hasDefault = rs->Fields->GetItem("COLUMN_HASDEFAULT")->Value;
-      isRequiredMap[pos] = !hasDefault;
+      hasDefaultMap[pos] = !hasDefault;
 
       // Get the default value
       std::string defaultStr;
