@@ -84,7 +84,8 @@ void te::ogr::Transactor::commit()
   if (!m_ogrDs->getOGRDataSource())
     return;
   
-  m_ogrDs->getOGRDataSource()->SyncToDisk();
+  // we have to reopen datasource so pending data gets synched to disk!
+  m_ogrDs->open();
 }
 
 void te::ogr::Transactor::rollBack()

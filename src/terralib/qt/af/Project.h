@@ -67,6 +67,8 @@ namespace te
 
           std::list<te::map::AbstractLayerPtr>& getLayers();
 
+          void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
+
           void add(const te::map::AbstractLayerPtr& layer);
 
           void remove(const te::map::AbstractLayerPtr& layer);

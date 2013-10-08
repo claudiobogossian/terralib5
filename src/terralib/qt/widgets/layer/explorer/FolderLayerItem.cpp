@@ -130,3 +130,8 @@ te::map::AbstractLayerPtr te::qt::widgets::FolderLayerItem::getLayer() const
 {
   return m_layer;
 }
+
+te::qt::widgets::AbstractTreeItem::TreeItemType te::qt::widgets::FolderLayerItem::getType() const
+{
+  return FOLDERLAYERITEM;
+}

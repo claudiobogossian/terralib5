@@ -107,7 +107,8 @@ namespace te
             \param selected   The new selected items in the layer tree.
             \param deselected The items that were deselected from the layer tree.
           */
-          void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+          //void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+          void onLayerSelectionChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
 
           void onLayerVisibilityChanged(te::map::AbstractLayerPtr layer);
 

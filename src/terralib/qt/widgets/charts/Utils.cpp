@@ -33,13 +33,10 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype.h"
 #include "../../../raster.h"
-#include "../../../raster/RasterSummary.h"
-#include "../../../raster/RasterSummaryManager.h"
 #include "../../../maptools/ExternalGraphicRendererManager.h"
 #include "../../../maptools/MarkRendererManager.h"
 #include "../../../maptools/Utils.h"
 #include "../../../se.h"
-#include "../../../qt/widgets/se/Utils.h"
 #include "../../../qt/widgets/Utils.h"
 #include "Histogram.h"
 #include "Scatter.h"
@@ -50,7 +47,6 @@
 
 //QT
 #include <QPen>
-#include <QPixmap>
 
 //STL
 #include <memory>

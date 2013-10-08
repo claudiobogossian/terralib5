@@ -70,11 +70,56 @@ namespace te
 
           void set(const std::list<te::map::AbstractLayerPtr>& layers);
 
+          /*!
+            \brief It gets all the top level layers in the layer explorer, including the top level folder layers.
+
+            \return List of all the top level layers in the layer explorer, including the top level folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getAllTopLevelLayers() const;
+
+          /*!
+            \brief It gets all the layers in the layer explorer, including the folder layers.
+
+            \return List of all the layers in the layer explorer, including the folder layers.
+          */
           std::list<te::map::AbstractLayerPtr> getAllLayers() const;
 
+          /*!
+            \brief It gets the layers in the layer explorer, not including the folder layers.
+
+            \return List of layers in the layer explorer, not including the folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getLayers() const;
+
+          /*!
+            \brief It gets the layers in the layer explorer that are visible, not including the folder layers.
+
+            \return List of layers in the layer explorer that are visible, not including the folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getVisibleLayers() const;
+
+          /*!
+            \brief It gets all the selected items in the layer explorer.
+
+            \return The list of selected items in the layer explorer.
+          */
+          std::list<AbstractTreeItem*> getSelectedItems() const;
+
+          /*!
+            \brief It gets the selected layers in the layer explorer, not including the selected folder layers.
+
+            \return The list of selected layers in the layer explorer, not including the selected folder layers.
+          */
           std::list<te::map::AbstractLayerPtr> getSelectedLayers() const;
 
-          std::list<te::qt::widgets::AbstractTreeItem*> getSelectedItems() const;
+          /*!
+            \brief It gets the layers in the layer explorer that are selected and visible,
+                   not including the selected and visible folder layers.
+
+            \return List of layers in the view that are selected and visible,
+                    not including selected and visible folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getSelectedAndVisibleLayers() const;
 
         public slots:
 

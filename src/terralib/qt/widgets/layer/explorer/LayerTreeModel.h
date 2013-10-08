@@ -76,13 +76,6 @@ namespace te
           void set(const std::list<te::map::AbstractLayerPtr>& layers);
 
           /*!
-            \brief Returns a list with all layers contained in model.
-
-            \return List of layers in the model.
-          */
-          std::list<te::map::AbstractLayerPtr> getLayers() const;
-
-          /*!
             \brief It fetches more data for the given parent.
 
             \param parent The object used to fetch more data.
@@ -287,6 +280,34 @@ namespace te
 
           /*! \brief It refreshes the model. */
           void refresh();
+
+          /*!
+            \brief It gets all the top level layers in the model, including the top level folder layers.
+
+            \return List of all the top level layers in the model, including the top level folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getAllTopLevelLayers() const;
+
+          /*!
+            \brief It gets all the layers in the model, including the folder layers.
+
+            \return List of all the layers in the model, including the folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getAllLayers() const;
+
+          /*!
+            \brief It gets all the layers in the model, not including the folder layers.
+
+            \return List of all the layers in the model, not including the folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getLayers() const;
+
+          /*!
+            \brief It gets the layers in the model that are visible, not including the folder layers.
+
+            \return List of layers in the model that are visible, not including the folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getVisibleLayers() const;
 
         signals:
 

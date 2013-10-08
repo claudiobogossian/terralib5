@@ -102,6 +102,13 @@ namespace te
         TreeItem* getParent() const;
 
         /*!
+          \brief It returns the children of this tree item.
+
+          \return It returns the children list of this tree item.
+        */
+        const std::list<TreeItemPtr>& getChildren() const;
+
+        /*!
           \brief It returns the n-th child.
 
           \param i The child index.

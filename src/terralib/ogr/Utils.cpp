@@ -472,6 +472,12 @@ std::string te::ogr::GetDriverName(const std::string& path)
   
   if(ext == ".gml" || ext == ".GML")
     return std::string("GML");
+  
+  if(ext == ".dxf" || ext == ".DXF")
+    return std::string("DXF");
+
+  if(ext == ".dgn" || ext == ".DGN")
+    return std::string("DGN");
 
   return "";
 }
