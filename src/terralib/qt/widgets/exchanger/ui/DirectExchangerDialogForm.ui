@@ -150,7 +150,7 @@
                </size>
               </property>
               <property name="text">
-               <string>ADO</string>
+               <string>Access</string>
               </property>
               <property name="iconSize">
                <size>
@@ -190,7 +190,7 @@
                </size>
               </property>
               <property name="text">
-               <string>SHP</string>
+               <string>File</string>
               </property>
               <property name="iconSize">
                <size>
@@ -297,6 +297,16 @@
                 </property>
                </widget>
               </item>
+              <item row="1" column="1">
+               <widget class="QToolButton" name="m_dsToolButton">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
             <item row="3" column="0">
@@ -392,7 +402,7 @@
                </size>
               </property>
               <property name="text">
-               <string>ADO</string>
+               <string>Access</string>
               </property>
               <property name="iconSize">
                <size>
@@ -432,7 +442,7 @@
                </size>
               </property>
               <property name="text">
-               <string>SHP</string>
+               <string>File</string>
               </property>
               <property name="iconSize">
                <size>

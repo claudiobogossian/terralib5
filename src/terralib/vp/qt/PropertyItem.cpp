@@ -136,3 +136,8 @@ bool te::vp::PropertyItem::isSelected()
 {
   return m_selected;
 }
+
+te::qt::widgets::AbstractTreeItem::TreeItemType te::vp::PropertyItem::getType() const
+{
+  return te::qt::widgets::AbstractTreeItem::LEGENDITEM;
+}
