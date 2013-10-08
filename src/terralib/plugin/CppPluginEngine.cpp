@@ -29,6 +29,7 @@
 #include "../common/LibraryManager.h"
 #include "../common/Logger.h"
 #include "../common/Translator.h"
+#include "../common/PlatformUtils.h"
 #include "CppPluginEngine.h"
 #include "CppPluginProxy.h"
 #include "Plugin.h"
@@ -42,6 +43,11 @@
 
 // Boost
 #include <boost/filesystem.hpp>
+
+te::plugin::CppPluginEngine::CppPluginEngine()
+{
+  getDefaultDirs( m_defaultSearchDirs );
+}
 
 te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& pInfo)
 {
@@ -68,14 +74,31 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
   if(slib.get() == 0)
   {
 // if not loaded, load it!
+
+    boost::filesystem::path pluginFile( pInfo.m_folder );
+    pluginFile /= libName;
     
 // the plugin library file may be in a special dir informed by pInfo.m_folder
-    boost::filesystem::path pluginFile(pInfo.m_folder);
-
-    pluginFile /= libName;
-
-// create shared library entry but doesn't load it yet!
-    slib.reset(new te::common::Library(pluginFile.string(), true));
+    if( boost::filesystem::is_regular_file(pluginFile) )
+    {
+      // create shared library entry but doesn't load it yet!
+      slib.reset(new te::common::Library(pluginFile.string(), true));      
+    }
+    else
+    {
+      for( std::vector< std::string >::size_type dirIdx = 0 ; dirIdx <
+        m_defaultSearchDirs.size() ; ++dirIdx )
+      {
+        pluginFile = m_defaultSearchDirs[ dirIdx ];
+        pluginFile /= libName;
+        
+        if(boost::filesystem::is_regular_file(pluginFile))
+        {
+          slib.reset(new te::common::Library(pluginFile.string(), true));
+          break;
+        }
+      }
+    }
   }
   
   if(!slib->isLoaded())
@@ -128,5 +151,63 @@ std::string te::plugin::CppPluginEngine::getPluginFileName(const std::string& li
   nativeName = te::common::Library::getNativeName(nativeName);
 
   return nativeName;
+}
+
+void te::plugin::CppPluginEngine::getDefaultDirs( std::vector< std::string >& dirs )
+{
+  dirs.clear();
+  
+  dirs.push_back( boost::filesystem::system_complete( "." ).string() );
+  
+  {
+    boost::filesystem::path p("./lib");
+    
+    if(boost::filesystem::is_directory(p))
+      dirs.push_back( boost::filesystem::system_complete( p ).string() );   
+  }
+  
+  if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
+  {
+    dirs.push_back( boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string() );
+  }
+
+  {
+    char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
+
+    if(e != 0)
+    {
+      {
+        boost::filesystem::path p(e);
+        p /= "/lib";
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }        
+      
+      {
+        boost::filesystem::path p(e);
+        p /= TE_DEFAULT_PLUGINS_DIR;
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }
+    }
+  }
+  
+  std::vector< std::string > decPath;
+  te::common::GetDecompostedPathEnvVar( decPath );
+  for( std::vector< std::string >::size_type decPathIdx = 0 ; decPathIdx < decPath.size() ;
+    ++decPathIdx )
+  {
+    dirs.push_back( decPath[ decPathIdx ] );
+  }
+  
+  std::vector< std::string > decLDPath;
+  te::common::GetDecompostedLDPathEnvVar( decLDPath );
+  for( std::vector< std::string >::size_type decLDPathIdx = 0 ; decLDPathIdx < decLDPath.size() ;
+    ++decLDPathIdx )
+  {
+    dirs.push_back( decLDPath[ decLDPathIdx ] );
+  }
 }
 
