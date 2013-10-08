@@ -58,12 +58,13 @@ namespace te
         /*!
           \brief It returns the default plugins directories.
 
-          This method will search for a special directory called plugins (defined in the macro TE_DEFAULT_PLUGINS_DIR) in the following order:
+          This method will generate directory paths in the following order:
           <ul>
-          <li>first, in a default plugins dir (TE_DEFAULT_PLUGINS_DIR) under application current dir</li>
-          <li>then in the default plugins dir under an environment variable that specifies the path to the TerraLib dir (TERRALIB_DIR_ENVIRONMENT_VARIABLE)</li>
-          <li> then they will be searched under the directory defined by TE_PLUGINS_INSTALL_PATH
-          <li>if not found returns an empty string</li>
+          <li> The current execution directory.
+          <li> A default plugins dir (defined by a macro named TE_DEFAULT_PLUGINS_DIR) under the execution directory</li>
+          <li> The default plugins dir(defined by a macro named TE_DEFAULT_PLUGINS_DIR) under the directory given by an environment (TERRALIB_DIR_ENVIRONMENT_VARIABLE)</li>
+          <li> Under the directory defined by TE_PLUGINS_INSTALL_PATH
+          <li> Iff not found returns an empty string</li>
           </ul>
 
           \param dirs The default plugin directories (the absolute path) or an empty string if none is found.
