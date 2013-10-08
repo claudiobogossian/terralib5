@@ -79,7 +79,8 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
     pluginFile /= libName;
     
 // the plugin library file may be in a special dir informed by pInfo.m_folder
-    if( boost::filesystem::is_regular_file(pluginFile) )
+    if( boost::filesystem::exists(pluginFile) && 
+      boost::filesystem::is_regular_file(pluginFile) )
     {
       // create shared library entry but doesn't load it yet!
       slib.reset(new te::common::Library(pluginFile.string(), true));      
@@ -92,7 +93,8 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
         pluginFile = m_defaultSearchDirs[ dirIdx ];
         pluginFile /= libName;
         
-        if(boost::filesystem::is_regular_file(pluginFile))
+        if(boost::filesystem::exists(pluginFile) &&
+          boost::filesystem::is_regular_file(pluginFile) )
         {
           slib.reset(new te::common::Library(pluginFile.string(), true));
           break;
@@ -100,6 +102,13 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
       }
     }
   }
+  
+  if(slib.get() == 0)
+  {
+    std::string m  = TR_PLUGIN("Could not find load plugin: ");
+                m += pInfo.m_name;
+    throw te::common::Exception(m);
+  }  
   
   if(!slib->isLoaded())
     slib->load();
