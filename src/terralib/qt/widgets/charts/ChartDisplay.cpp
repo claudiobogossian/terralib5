@@ -130,21 +130,24 @@ void te::qt::widgets::ChartDisplay::setStyle(te::qt::widgets::ChartStyle* newSty
 
 void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oids)
 {
-  const QwtPlotItemList& itmList = itemList(); 
-
-  for ( QwtPlotItemIterator it = itmList.begin();
-      it != itmList.end(); ++it )
+  if(oids)
   {
-    if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
+    const QwtPlotItemList& itmList = itemList(); 
+
+    for ( QwtPlotItemIterator it = itmList.begin();
+        it != itmList.end(); ++it )
+    {
+      if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
       {
         static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( oids);
         break;
       }
-     else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
+      else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
       {
         static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( oids);
         break;
       }
+    }
   }
 }
 
