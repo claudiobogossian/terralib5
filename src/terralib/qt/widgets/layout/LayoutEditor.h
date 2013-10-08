@@ -50,6 +50,7 @@ namespace te
     namespace widgets
     {
       class LayoutObject;
+      class DataFrame;
       class EditorInfo;
       class DraftLayoutEditor;
       /*!
@@ -95,7 +96,8 @@ namespace te
           void pan(const QPointF& p);
           void draw();
           void drawButtonClicked();
-          void drawLayersSelection(QColor selColor);
+          void drawLayersSelection();
+          void setSelectionColor(QColor selColor);
           void setDisplayBackgroundColor(QColor);
           void resetPaperView();
           QMatrix getMatrixPaperViewToVp();
@@ -103,12 +105,19 @@ namespace te
           QPixmap* getDraftPixmap();
           void raiseDraftLayoutEditor();
           void lowerDraftLayoutEditor();
+          void drawRectArea(); 
+          void adjustAspectRatio(QRectF& r, const QRectF& ref); // faz a relacao de aspecto de r igual a do ref
+          void setMouseMode(int); // 0=none, 1=zoomin, 2=zoomout, 3=pan (sobre a area do papel/dado)
+          void hideAllObjects();
+          void showAllObjects();
 
           void mousePressEvent(QMouseEvent* e);
           void mouseMoveEvent(QMouseEvent* e);
           void mouseReleaseEvent(QMouseEvent* e);
           void wheelEvent(QWheelEvent* e);
           void keyPressEvent(QKeyEvent* e);
+          void sendEventToChildren(bool b); // true para os layers objects receberem eventos.
+          bool eventFilter(QObject*, QEvent*); // deixa passar apenas o event de paint quando o filtro é instalado.
 
           void setFrameSelected(te::qt::widgets::LayoutObject*);
           te::qt::widgets::LayoutObject* getFrameSelected();
@@ -127,12 +136,13 @@ namespace te
           bool m_resize; // true indica resize operation
           bool m_move; // true indica move operation
 
+
           // IMPORTANTE IMPORTANTE IMPORTANTE IMPORTANTE IMPORTANTE ////////////////////
           QWidget* m_auxWidget; // support to view port area. Area interna do LayoutEditor que exclui as reguas. Ele é necessario
                                 // para que os widgets de frame nao escondam as reguas.
                                 // Todos os frames sao inicializados com LayoutEditor*, mas, a classe base (LayoutObject) é iniciada com m_auxWidget
           ////////////////////////////////////////////////////////////////////////
-          DraftLayoutEditor* m_draftLayoutEditor; // to edition.
+          DraftLayoutEditor* m_draftLayoutEditor; // to edition. É composta da parte interna (sem as reguas).
           QMatrix m_matrixPaperViewToVp;
           QMatrix m_matrix;
           QRectF m_paperViewRect;
@@ -152,6 +162,18 @@ namespace te
           int m_rulerMedium;
           int m_rulerLarge;
           QPixmap m_rulerGridPixmap;
+
+          int m_zmouseMode; // 0=none, 1=zoomin, 2=zoomout, 3=pan (sobre a area do papel/dado)
+          QPoint m_zpressPoint;
+          QPoint m_zpoint;
+          QRect m_zrect;
+          bool m_zpanEnd;
+          QPixmap m_zpixmap;
+          te::qt::widgets::DataFrame* m_zdataFrame;
+          QPixmap* m_zoomInPixmap;
+          QPixmap* m_zoomOutPixmap;
+          QPixmap* m_panPixmap;
+
       };
     } // end namespace widgets
   }   // end namespace qt

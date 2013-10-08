@@ -24,10 +24,13 @@
 */
 
 // TerraLib
+#include "../../../color/RGBAColor.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Coord2D.h"
+#include "../../../geometry/Geometry.h"
 #include "../../../geometry/Point.h"
+#include "../../../geometry/Utils.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../maptools/Utils.h"
 #include "../../../raster/Grid.h"
@@ -49,7 +52,7 @@
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../canvas/Canvas.h"
 #include "../canvas/EyeBirdMapDisplayWidget.h"
-#include "../canvas/MapDisplay.h"
+#include "../canvas/MultiThreadMapDisplay.h"
 #include "../canvas/ZoomInMapDisplayWidget.h"
 #include "RasterNavigatorWidget.h"
 #include "ui_RasterNavigatorWidgetForm.h"
@@ -68,7 +71,7 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
 
 //build form
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
-  m_mapDisplay = new te::qt::widgets::MapDisplay(m_ui->m_frame->size(), m_ui->m_frame);
+  m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(m_ui->m_frame->size(), m_ui->m_frame);
   displayLayout->addWidget(m_mapDisplay);
   displayLayout->setContentsMargins(0,0,0,0);
 
@@ -118,10 +121,15 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
   m_ui->m_blueLabel->setPixmap(QIcon::fromTheme("bullet-blue").pixmap(16,16));
 
   m_ui->m_previewToolButton->setVisible(false);
+
+  onExtraDisplaysToggled(false);
 }
 
 te::qt::widgets::RasterNavigatorWidget::~RasterNavigatorWidget()
 {
+  if(m_layer.get())
+    m_layer->setVisibility(m_visibility);
+
   delete m_tool;
   delete m_panTool;
   delete m_zoomTool;
@@ -131,8 +139,9 @@ void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer
 {
   m_layer = layer;
 
-  m_zoomInMapDisplay->set(m_layer);
-  m_eyeBirdMapDisplay->set(m_layer);
+  m_visibility = m_layer->getVisibility();
+
+  m_layer->setVisibility(te::map::VISIBLE);
 
   std::list<te::map::AbstractLayerPtr> list;
   list.push_back(m_layer);
@@ -142,7 +151,10 @@ void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer
   m_mapDisplay->setMouseTracking(true);
   m_mapDisplay->setLayerList(list);
   m_mapDisplay->setSRID(m_layer->getSRID(), false);
-  m_mapDisplay->setExtent(e, true);
+  m_mapDisplay->setExtent(e, false);
+
+  m_zoomInMapDisplay->set(m_layer);
+  m_eyeBirdMapDisplay->set(m_layer);
 
 // list bands
   listBands();
@@ -249,7 +261,7 @@ void te::qt::widgets::RasterNavigatorWidget::hideInfoTool(bool hide)
 
 void te::qt::widgets::RasterNavigatorWidget::hideExtraDisplaysTool(bool hide)
 {
-  m_ui->m_extraDisplaysToolButton->setChecked(!hide);
+  m_ui->m_extraDisplaysToolButton->setChecked(false);
 
   m_ui->m_extraLine->setVisible(!hide);
   m_ui->m_extraDisplaysToolButton->setVisible(!hide);
@@ -260,7 +272,28 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
   assert(m_layer.get());
 
   if(m_ui->m_extraDisplaysToolButton->isChecked())
+  {
+    //draw cursor position
     m_zoomInMapDisplay->drawCursorPosition((double) coordinate.rx(), (double)coordinate.ry());
+    
+
+    //draw zoom in rectangle
+    te::gm::Envelope ext = m_zoomInMapDisplay->getCurrentExtent();
+
+    m_mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+    const te::gm::Envelope& mapExt = m_mapDisplay->getExtent();
+    te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
+
+    canvasInstance.setWindow(mapExt.m_llx, mapExt.m_lly, mapExt.m_urx, mapExt.m_ury);
+    canvasInstance.setPolygonContourColor(te::color::RGBAColor(255,0,0,TE_OPAQUE));
+    canvasInstance.setPolygonFillColor(te::color::RGBAColor(0,0,0,TE_TRANSPARENT));
+
+    te::gm::Geometry* geom = te::gm::GetGeomFromEnvelope(&ext, m_layer->getSRID());
+    canvasInstance.draw(geom);
+    delete geom;
+
+    m_mapDisplay->repaint();
+  }
 
   //get input raster
   std::auto_ptr<te::da::DataSet> ds = m_layer->getData();
@@ -316,7 +349,8 @@ void te::qt::widgets::RasterNavigatorWidget::onMapDisplayExtentChanged()
   te::gm::Envelope e = m_mapDisplay->getExtent();
 
   //emit signal
-  emit mapDisplayExtentChanged();
+  if(e.isValid())
+    emit mapDisplayExtentChanged();
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onZoomAreaToggled(bool checked)
@@ -379,6 +413,7 @@ void te::qt::widgets::RasterNavigatorWidget::onReadPixelToggled(bool checked)
 
 void te::qt::widgets::RasterNavigatorWidget::onExtraDisplaysToggled(bool checked)
 {
+  m_ui->m_extraDisplaysFrame->setVisible(checked);
   m_eyeBirdMapDisplay->setEnabled(checked);
   m_zoomInMapDisplay->setEnabled(checked);
 }

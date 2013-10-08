@@ -58,6 +58,8 @@ namespace te
       */
       class TEQTWIDGETSEXPORT DataFrame : public Frame
       {
+        Q_OBJECT
+        
         public:
           DataFrame(const QRectF& frameRect, te::qt::widgets::LayoutEditor* me, Qt::WindowFlags f = Qt::Window);
           DataFrame(const DataFrame& rhs);
@@ -73,8 +75,10 @@ namespace te
           void adjustWidgetToFrameRect(const QRectF& r);
           double getScale();
           void setScale(double v);
+          void sendEventToChildren(bool);
+          bool eventFilter(QObject*, QEvent*);
           te::map::AbstractLayer* getData();
-          void setData(te::map::AbstractLayerPtr d);
+          void setData(te::map::AbstractLayerPtr d, int nsrid = TE_UNKNOWN_SRS, QRectF r = QRectF());
           bool transformEnvelope(te::gm::Envelope& e, int oldsrid, int newsrid);
           double getDataUnitToMilimeter();
           void findDataUnitToMilimeter(const te::gm::Envelope& e, int srid);
@@ -91,8 +95,7 @@ namespace te
           void setDataChanged(bool);
           void drawButtonClicked();
           QPixmap* getLastDisplayContent();
-
-          bool eventFilter(QObject*, QEvent*);
+          QPixmap* getPixmap();
 
           void hide();
           void show();
@@ -103,12 +106,16 @@ namespace te
           void removeGeographicGrid();
           void createGraphicScale();
           void removeGraphicScale();
+          te::qt::widgets::GeographicGridFrame* getGeoGridFrame();
+          te::qt::widgets::UTMGridFrame* getUTMGridFrame();
+          te::qt::widgets::GraphicScaleFrame* getGraphicScaleFrame();
           //void createNorthOrientation();
           //void removeNorthOrientation();
           //void createLegend();
           //void removeLegend();
 
-          void drawLayerSelection(QColor selColor);
+          void setSelectionColor(QColor selColor);
+          void drawLayerSelection();
 
         protected slots:
           void onDrawLayersFinished(const QMap<QString, QString>& errors);
@@ -127,7 +134,8 @@ namespace te
           bool m_dataChanged;
           te::map::AbstractLayer* m_data;
           std::list<te::map::AbstractLayerPtr> m_visibleLayers;
-
+          QColor m_selectionColor;
+          int m_mouseTask; // 0=none, 1=zoomin, 2=zoomout, 3=pan (sobre o dado)
 
           //te::qt::widgets::NorthOrientationFrame* m_northFrame;
 

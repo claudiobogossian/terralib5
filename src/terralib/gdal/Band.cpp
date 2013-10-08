@@ -45,9 +45,14 @@ te::gdal::Band::Band(Raster* rst, std::size_t idx)
     m_rasterBand(0),
     m_getBuff(0)
 {
-  m_rasterBand = rst->getGDALDataset()->GetRasterBand(idx + 1);
+  m_rasterBand = 
+    ( rst->getGDALDataset()->GetRasterBand(1)->GetColorInterpretation() ==
+    GCI_PaletteIndex ) ? rst->getGDALDataset()->GetRasterBand(1) :
+    rst->getGDALDataset()->GetRasterBand( idx + 1 );
+      
   m_gdaltype = m_rasterBand->GetRasterDataType();
-  m_property = GetBandProperty(m_rasterBand);
+  
+  m_property = GetBandProperty(m_rasterBand, idx);
 
   te::rst::SetBlockFunctions(&m_getBuff, &m_getBuffI, &m_setBuff, &m_setBuffI, m_property->getType());
 
@@ -156,11 +161,98 @@ void te::gdal::Band::setIValue(unsigned int c, unsigned int r, const double valu
 void te::gdal::Band::read(int x, int y, void* buffer) const
 {
   m_rasterBand->ReadBlock(x, y, buffer);
+  
+  // If there is a palette, the values must be interpreted as
+  // Palette indexes
+  
+  if( m_rasterBand->GetColorInterpretation() == GCI_PaletteIndex )
+  {
+    const int bufferSize = m_property->m_blkh * m_property->m_blkw;
+    
+    const GDALColorTable& cTable = *( m_rasterBand->GetColorTable() );
+    double value = 0;
+    GDALColorEntry const * cEntryPtr = 0;
+    
+    switch( te::rst::Band::m_idx )
+    {
+      case 0 :
+        for( int bufferIdx = 0 ; bufferIdx < bufferSize ; ++bufferIdx )
+        {
+          m_getBuff( bufferIdx, buffer, &value );
+          
+          cEntryPtr = cTable.GetColorEntry( (int)value );
+          assert(cEntryPtr );
+          
+          value = (double)cEntryPtr->c1;
+          
+          m_setBuff( bufferIdx, buffer, &value );
+        }
+        break;
+      case 1 :
+        for( int bufferIdx = 0 ; bufferIdx < bufferSize ; ++bufferIdx )
+        {
+          m_getBuff( bufferIdx, buffer, &value );
+          
+          cEntryPtr = cTable.GetColorEntry( (int)value );
+          assert(cEntryPtr );
+          
+          value = (double)cEntryPtr->c2;
+          
+          m_setBuff( bufferIdx, buffer, &value );
+        }
+        break;
+      case 2 :
+        for( int bufferIdx = 0 ; bufferIdx < bufferSize ; ++bufferIdx )
+        {
+          m_getBuff( bufferIdx, buffer, &value );
+          
+          cEntryPtr = cTable.GetColorEntry( (int)value );
+          assert(cEntryPtr );
+          
+          value = (double)cEntryPtr->c3;
+          
+          m_setBuff( bufferIdx, buffer, &value );
+        }
+        break;
+      case 3 :
+        for( int bufferIdx = 0 ; bufferIdx < bufferSize ; ++bufferIdx )
+        {
+          m_getBuff( bufferIdx, buffer, &value );
+          
+          cEntryPtr = cTable.GetColorEntry( (int)value );
+          assert(cEntryPtr );
+          
+          value = (double)cEntryPtr->c4;
+          
+          m_setBuff( bufferIdx, buffer, &value );
+        }
+        break;
+      default :
+        throw Exception(TR_GDAL("Invalid band index"));
+        break;          
+    }
+  }   
 }
 
-void* te::gdal::Band::read(int /*x*/, int /*y*/)
+void* te::gdal::Band::read(int x, int y)
 {
-  throw Exception(TR_GDAL("Not implemented yet!"));
+  if( ( x != m_x ) || ( y != m_y ) )
+  {
+    if (m_update_buffer)
+    {
+      m_rasterBand->WriteBlock(m_x, m_y, m_buffer);
+
+      m_rasterBand->FlushCache();
+
+      m_update_buffer = false;
+    }
+        
+    read( x, y, m_buffer );
+    m_x = x;
+    m_y = y;
+  }
+  
+  return m_buffer;
 }
 
 void te::gdal::Band::write(int x, int y, void* buffer)

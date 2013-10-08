@@ -35,7 +35,7 @@
 
 te::qt::widgets::ScatterStyle::ScatterStyle ()
 {
-  //COnfiguring a defulat mark
+  //Configuring a default mark
   te::se::Mark* mark = new te::se::Mark();
   std::string* markName =  new std::string("circle");
   mark->setFill(new te::se::Fill());
@@ -47,6 +47,11 @@ te::qt::widgets::ScatterStyle::ScatterStyle ()
   te::se::ParameterValue* grSize = new te::se::ParameterValue("8");
   m_graphic->add(mark);
   m_graphic->setSize(grSize);
+}
+
+te::qt::widgets::ScatterStyle::ScatterStyle(te::se::Graphic* graphic)
+: m_graphic(graphic)
+{
 }
 
 te::qt::widgets::ScatterStyle::~ScatterStyle()
@@ -70,6 +75,64 @@ void te::qt::widgets::ScatterStyle::setGraphic(te::se::Graphic* newGraphic)
 {
   delete m_graphic;
   m_graphic = newGraphic;
+}
+
+te::se::Fill* te::qt::widgets::ScatterStyle::getFill()
+{
+  if(!m_graphic->getMarks().empty())
+  {
+    return m_graphic->getMarks()[0]->getFill()->clone();
+  }
+  else
+  {
+    return 0;
+  }
+}
+
+void te::qt::widgets::ScatterStyle::setFill(te::se::Fill* newFill)
+{
+  if(!m_graphic->getMarks().empty())
+  {
+  m_graphic->getMarks()[0]->setFill(newFill);
+  }
+  else
+  {
+    delete newFill;
+  }
+}
+
+te::se::Stroke* te::qt::widgets::ScatterStyle::getStroke()
+{
+  if(!m_graphic->getMarks().empty())
+  {
+    return m_graphic->getMarks()[0]->getStroke()->clone();
+  }
+  else
+  {
+    return 0;
+  }
+}
+
+void te::qt::widgets::ScatterStyle::setStroke(te::se::Stroke* newStroke)
+{
+  if(!m_graphic->getMarks().empty())
+  {
+    m_graphic->getMarks()[0]->setStroke(newStroke);
+  }
+  else
+  {
+    delete newStroke;
+  }
+}
+
+te::se::Mark* te::qt::widgets::ScatterStyle::getMark()
+{
+  return m_graphic->getMarks()[0]->clone();
+}
+
+void te::qt::widgets::ScatterStyle::setMark(te::se::Mark* newMark)
+{
+  m_graphic->setMark(0, newMark);
 }
 
 QwtSymbol* te::qt::widgets::ScatterStyle::getSymbol()

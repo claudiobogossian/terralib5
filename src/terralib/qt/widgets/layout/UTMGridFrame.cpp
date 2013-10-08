@@ -36,17 +36,17 @@
 te::qt::widgets::UTMGridFrame::UTMGridFrame(te::qt::widgets::DataFrame* df, Qt::WindowFlags f) :
   te::qt::widgets::GridFrame(df, f)
 {
+  setWindowTitle("UTMGridFrame");
   setMouseTracking(true);
   show();
-  installEventFilter(this);
 }
 
 te::qt::widgets::UTMGridFrame::UTMGridFrame(const UTMGridFrame& rhs) :
   GridFrame(rhs.m_dataFrame, rhs.windowFlags())
 {
+  setWindowTitle("UTMGridFrame");
   setMouseTracking(true);
   show();
-  installEventFilter(this);
 }
 
 te::qt::widgets::UTMGridFrame::~UTMGridFrame()
@@ -59,9 +59,9 @@ te::qt::widgets::UTMGridFrame& te::qt::widgets::UTMGridFrame::operator=(const UT
   if(this != &rhs)
   {
     te::qt::widgets::GridFrame::operator=(rhs);
+    setWindowTitle("UTMGridFrame");
     setMouseTracking(true);
     show();
-    installEventFilter(this);
   }
 
   return *this;
@@ -70,7 +70,6 @@ te::qt::widgets::UTMGridFrame& te::qt::widgets::UTMGridFrame::operator=(const UT
 void te::qt::widgets::UTMGridFrame::adjust()
 {
   te::qt::widgets::GridFrame::adjust();
-//  draw();
 }
 
 void te::qt::widgets::UTMGridFrame::draw()
@@ -119,7 +118,6 @@ void te::qt::widgets::UTMGridFrame::draw()
   copyToDraftMapDisplay();
 
   update();
-//  raise();
 }
 
 void te::qt::widgets::UTMGridFrame::paintEvent(QPaintEvent*)
@@ -128,39 +126,8 @@ void te::qt::widgets::UTMGridFrame::paintEvent(QPaintEvent*)
   painter.drawPixmap(0, 0, m_pixmap);
 }
 
-bool te::qt::widgets::UTMGridFrame::eventFilter(QObject* obj, QEvent* e)
+void te::qt::widgets::UTMGridFrame::mouseMoveEvent(QMouseEvent* mouseEvent)
 {
-  // return true to stop the event; otherwise return false.
-
-  //if(obj == this) 
-  //{
-  //  if(e->type() == QEvent::MouseMove)
-  //  {
-  //    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-  //    if(mouseEvent->buttons() == Qt::NoButton)
-  //    {
-  //      lower();
-  //      m_layoutEditor->setFrameSelected(0);
-  //      return true;
-  //    }
-  //  }
-  //  else if(e->type() == QEvent::Enter)
-  //  {
-  //    lower();
-  //    m_layoutEditor->setFrameSelected(0);
-  //    return true;
-  //  }
-  //}
-  if(obj == this) 
-  {
-    if(e->type() == QEvent::MouseMove)
-    {
-      QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-      if(mouseEvent->buttons() == Qt::NoButton)
-        lower();
-    }
-  }
-
-  // pass the event on to the parent class
-  return QWidget::eventFilter(obj, e);
+  if(mouseEvent->buttons() == Qt::NoButton)
+    lower();
 }

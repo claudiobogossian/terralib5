@@ -33,6 +33,7 @@
       <file>widgets/charts/chart_style.html</file>
       <file>widgets/rp/classifier.html</file>
       <file>widgets/dataset_selector/dataset_selector.html</file>
+      <file>widgets/dataset_selector/*.png</file>	  
       <file>widgets/datasource_selector/datasource_selector.html</file>
       <file>widgets/datasource_selector/*.png</file>
       <file>widgets/table/index.html</file>

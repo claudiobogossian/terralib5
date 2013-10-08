@@ -61,6 +61,9 @@ te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent, Qt::WindowFlags f
 
   m_treeView->setHeaderHidden(true);
   m_treeView->setIndentation(TE_QTWIDGETS_DEFAULT_TREEVIEW_IDENTATION);
+
+  // Signals ans slots
+  connect(m_treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), m_treeView, SLOT(layerSelectionChanged(const QItemSelection&, const QItemSelection&)));
 }
 
 te::qt::widgets::LayerExplorer::~LayerExplorer()
@@ -82,40 +85,39 @@ void te::qt::widgets::LayerExplorer::set(const std::list<te::map::AbstractLayerP
   m_treeModel->set(layers);
 }
 
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getAllTopLevelLayers() const
+{
+  return m_treeModel->getAllTopLevelLayers();
+}
+
 std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getAllLayers() const
+{
+  return m_treeModel->getAllLayers();
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getLayers() const
 {
   return m_treeModel->getLayers();
 }
 
-std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelectedLayers() const
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getVisibleLayers() const
 {
-  std::list<te::map::AbstractLayerPtr> selectedLayers;
-
-  if(m_treeView == 0)
-    return selectedLayers;
-
-  std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = getSelectedItems();
-
-  std::list<te::qt::widgets::AbstractTreeItem*>::iterator it;
-  for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
-  {
-    te::map::AbstractLayerPtr layer = (*it)->getLayer();
-
-    if(layer.get() == 0)
-      continue;
-
-    selectedLayers.push_back(layer);
-  }
-
-  return selectedLayers;
+  return m_treeModel->getVisibleLayers();
 }
 
 std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerExplorer::getSelectedItems() const
 {
-  if(m_treeView == 0)
-    return std::list<te::qt::widgets::AbstractTreeItem*>();
-
   return m_treeView->getSelectedItems();
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelectedLayers() const
+{
+  return m_treeView->getSelectedLayers();
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelectedAndVisibleLayers() const
+{
+  return m_treeView->getSelectedAndVisibleLayers();
 }
 
 void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer)

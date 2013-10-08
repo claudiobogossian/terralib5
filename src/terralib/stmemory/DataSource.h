@@ -36,7 +36,8 @@
 #include <map>
 #include <vector>
 
-namespace te { namespace da { class DataSetType; } }     
+namespace te { namespace da { class DataSetType; } }   
+namespace te { namespace dt { class DateTimePeriod; } }  
 
 namespace te
 {
@@ -182,6 +183,18 @@ namespace te
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
 												                          bool connected = false);
 
+        /*!
+          \brief It returns the temporal extent associated to a DataSet.
+
+          \param name         The DataSet name.
+          
+          \return A pointer to its temporal extent.
+
+          \note The caller will take the ownership of the returned pointer.          
+          \note It can throw an Exception when internal errors occur.
+        */
+        std::auto_ptr<te::dt::DateTimePeriod> getTemporalExtent(const std::string& name);
+
       protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);
@@ -197,8 +210,8 @@ namespace te
       private:
 
         std::map<std::string, std::string>                          m_connInfo;    //!< DataSource information.
-        std::map<std::string, std::auto_ptr<DataSet> >              m_datasets;    //!< The set of datasets stored in memory.
-        std::map<std::string, std::auto_ptr<te::da::DataSetType> >  m_schemas;     //!< The set of dataset schemas.
+        std::map<std::string, DataSet* >                            m_datasets;    //!< The set of datasets stored in memory.
+        std::map<std::string, te::da::DataSetType* >                m_schemas;     //!< The set of dataset schemas.
         std::size_t                                                 m_maxdatasets; //!< The maximum number of datasets to be handled by the data source.
         bool                                                        m_isOpened;    //!< A flag to control the state of the data source.
         bool                                                        m_deepCopy;    //!< If true each dataset is cloned in the getDataSet method.

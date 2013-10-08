@@ -33,11 +33,7 @@
 
 namespace te
 {
-  namespace map
-  {
-    // Forward declarations
-    class AbstractLayer;
-  }
+  namespace map { class AbstractLayer; }
 
   namespace da
   {

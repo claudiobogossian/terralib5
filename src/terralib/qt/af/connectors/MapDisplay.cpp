@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A GIS Application.
 
@@ -34,6 +34,7 @@
 #include "../../../srs/Config.h"
 #include "../../widgets/canvas/Canvas.h"
 #include "../../widgets/canvas/MapDisplay.h"
+#include "../../widgets/layer/explorer/LayerExplorer.h"
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
@@ -45,6 +46,7 @@
 #include "../ApplicationController.h"
 #include "../Project.h"
 #include "../Utils.h"
+#include "LayerExplorer.h"
 #include "MapDisplay.h"
 
 // Qt
@@ -57,9 +59,10 @@
 
 #define EXTENT_STACK_SIZE 5
 
-te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
+te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt::af::LayerExplorer* explorer)
   : QObject(display),
     m_display(display),
+    m_explorer(explorer),
     m_tool(0),
     m_menu(0),
     m_currentExtent(-1)
@@ -94,9 +97,14 @@ te::qt::af::MapDisplay::~MapDisplay()
   delete m_tool;
 }
 
-te::qt::widgets::MapDisplay*  te::qt::af::MapDisplay::getDisplay()
+te::qt::widgets::MapDisplay* te::qt::af::MapDisplay::getDisplay()
 {
   return m_display;
+}
+
+te::qt::af::LayerExplorer* te::qt::af::MapDisplay::getLayerExplorer() const
+{
+  return m_explorer;
 }
 
 bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
@@ -162,7 +170,7 @@ void te::qt::af::MapDisplay::nextExtent()
 
 void te::qt::af::MapDisplay::previousExtent()
 {
-  if(m_currentExtent != 0)
+  if(m_currentExtent > 0)
   {
     m_currentExtent -= 1;
     m_display->setExtent(m_extentStack[m_currentExtent]);
@@ -197,7 +205,8 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
   m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
 
   // Draw the layers selection
-  drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
+  //drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
+  drawLayersSelection(m_explorer->getExplorer()->getSelectedAndVisibleLayers());
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -219,7 +228,8 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.drawPixmap(0, 0, m_lastDisplayContent);
       painter.end();
 
-      drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
+      //drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
+      drawLayersSelection(m_explorer->getExplorer()->getSelectedAndVisibleLayers());
     }
     break;
 
@@ -244,19 +254,47 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 
 void te::qt::af::MapDisplay::drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers)
 {
+  if(layers.empty())
+    return;
+
   std::list<te::map::AbstractLayerPtr>::const_iterator it;
   for(it = layers.begin(); it != layers.end(); ++it)
-    drawLayerSelection(it->get());
+      drawLayerSelection(*it);
 
   m_display->repaint();
 }
+
+//void te::qt::af::MapDisplay::drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers)
+//{
+//  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+//  for(it = layers.begin(); it != layers.end(); ++it)
+//  {
+//    te::map::AbstractLayerPtr layer = it->get();
+//    if(layer->getType() == "FOLDERLAYER")
+//    {
+//      const std::list<te::common::TreeItemPtr>& items = layer->getChildren();
+//
+//      std::list<te::map::AbstractLayerPtr> childrenLayers;
+//
+//      std::list<te::common::TreeItemPtr>::const_iterator layerIt;
+//      for(layerIt = items.begin(); layerIt != items.end(); ++layerIt)
+//        childrenLayers.push_back(static_cast<te::map::AbstractLayer*>(layerIt->get()));
+//
+//      drawLayersSelection(childrenLayers);
+//    }
+//    else
+//      drawLayerSelection(layer);
+//  }
+//
+//  m_display->repaint();
+//}
 
 void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
 {
   assert(layer.get());
 
-  if(layer->getVisibility() != te::map::VISIBLE)
-    return;
+  //if(layer->getVisibility() != te::map::VISIBLE)
+  //  return;
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
   if(oids == 0 || oids->size() == 0)
@@ -267,7 +305,7 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
   if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_display->getSRID()))
     needRemap = true;
 
-  // Try retrieves the layer selection
+  // Try to retrieve the layer selection
   std::auto_ptr<te::da::DataSet> selected;
   try
   {

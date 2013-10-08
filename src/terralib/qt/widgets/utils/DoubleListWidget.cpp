@@ -95,6 +95,17 @@ void te::qt::widgets::DoubleListWidget::setOutputValues(std::vector<std::string>
   }
 }
 
+void te::qt::widgets::DoubleListWidget::setFixedOutputValues(std::vector<std::string> values, std::string iconName)
+{
+  for(size_t i = 0; i < values.size(); ++i)
+  {
+    QListWidgetItem* item = new QListWidgetItem(m_ui->m_rightListWidget);
+    item->setText(values[i].c_str());
+    item->setFlags(Qt::ItemIsEnabled);
+    item->setIcon(QIcon::fromTheme(iconName.c_str()));
+  }
+}
+
 void te::qt::widgets::DoubleListWidget::setLeftLabel(std::string value)
 {
   m_ui->m_leftItemsLabel->setText(value.c_str());
@@ -117,6 +128,16 @@ std::vector<std::string> te::qt::widgets::DoubleListWidget::getOutputValues()
   }
 
   return vec;
+}
+
+void te::qt::widgets::DoubleListWidget::clearInputValues()
+{
+  m_ui->m_leftListWidget->clear();
+}
+
+void te::qt::widgets::DoubleListWidget::clearOutputValues()
+{
+  m_ui->m_rightListWidget->clear();
 }
 
 void te::qt::widgets::DoubleListWidget::onAddToolButtonPressed()

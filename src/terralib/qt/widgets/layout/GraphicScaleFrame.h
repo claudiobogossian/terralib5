@@ -67,11 +67,11 @@ namespace te
 
           void paintEvent(QPaintEvent* event);
 
-          bool eventFilter(QObject*, QEvent*);
-
           void setDataFrame(te::qt::widgets::DataFrame* df);
 
           te::qt::widgets::DataFrame* getDataFrame();
+
+          QPixmap* getPixmap();
 
           void draw();
 
@@ -89,6 +89,11 @@ namespace te
           void drawBar2();
           void drawBar3();
           void drawBar4();
+          void mousePressEvent(QMouseEvent*);
+          void mouseMoveEvent(QMouseEvent*);
+          void mouseReleaseEvent(QMouseEvent*);
+          void enterEvent(QEvent*);
+          void leaveEvent(QEvent*);
           QColor getLabelColor();
           void setLabelColor(const QColor&);
           QColor getBarColor();

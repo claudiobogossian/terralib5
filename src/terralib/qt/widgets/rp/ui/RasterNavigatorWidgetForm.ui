@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>396</width>
+    <width>427</width>
     <height>402</height>
    </rect>
   </property>
@@ -314,7 +314,7 @@
                <bool>true</bool>
               </property>
               <property name="checked">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="autoRaise">
                <bool>true</bool>
@@ -505,22 +505,5 @@
   <tabstop>m_readPixelActionToolButton</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>m_extraDisplaysToolButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>m_extraDisplaysFrame</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>28</x>
-     <y>279</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>343</x>
-     <y>310</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

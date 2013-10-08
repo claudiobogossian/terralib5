@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
@@ -31,6 +32,7 @@
 #include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../datatype/Property.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../Exception.h"
 #include "../Intersection.h"
 #include "IntersectionDialog.h"
@@ -57,10 +59,13 @@ te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags 
 
   connect(m_ui->m_firstLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onFirstLayerComboBoxChanged(int)));
   connect(m_ui->m_secondLayerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSecondLayerComboBoxChanged(int)));
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  //connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
+  m_ui->m_helpPushButton->setPageReference("plugins/vp/vp_intersection.html");
 }
 
 te::vp::IntersectionDialog::~IntersectionDialog()
@@ -174,7 +179,11 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
     return;
   }
-
+  
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+  
   try
   {
     m_layerResult = te::vp::Intersection( m_firstSelectedLayer, 
@@ -185,9 +194,11 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   }
   catch(const std::exception& e)
   {
-    QMessageBox::warning(this, TR_VP("Intersection Operation"), e.what());
+    QMessageBox::warning(this, TR_VP("Intersection"), e.what());
     return;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   accept();
 }

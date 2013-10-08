@@ -73,14 +73,6 @@ namespace te
   {
 
     /*!
-      \brief Add a ADO propert based on the TerraLib property
-
-      \param table Table target
-      \param prop Property to be added
-    */
-    void AddAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
-
-    /*!
       \brief Convert a blob to a variant
 
       \param blob Blob
@@ -242,6 +234,14 @@ namespace te
       \return if is Z property
     */
     bool IsZProperty(te::gm::GeomType type);
+
+    std::string GetSystemDateTimeFormat(std::string& indAM, std::string& indPM, std::string& sepD, std::string& sepT);
+
+    std::auto_ptr<te::dt::DateTime> GetDateTime(std::string& value, std::string& mask, std::string& sepD, std::string& sepT);
+
+    int GetMonth(const std::string& month);
+
+    std::string GetFormattedDateTime(te::dt::DateTime* dateTime);
 
   } // end namespace ado
 }   // end namespace te

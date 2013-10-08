@@ -53,9 +53,13 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
 
   if(rpos != std::string::npos)
     {
-      m_ui->m_slicesSpinBox->hide();
-      m_ui->slicesLabel->hide();
+
+      //Adjusting the widget to work with a raster file.
       size_t size =  dataSet->getRaster(rpos)->getNumberOfBands();
+      m_ui->m_slicesSpinBox->setMaximum(size);
+      m_ui->m_slicesSpinBox->setMinimum(0);
+      m_ui->m_slicesSpinBox->setValue(0);
+
       for (size_t i = 0; i < size; i++)
       {
         item = QString::number(i);
@@ -64,10 +68,14 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
     }
   else
   {
+
     for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
     {
-      item = QString::fromStdString(dataSet->getPropertyName(i));
-      m_ui->m_propertyComboBox->addItem(item);
+      if(dataSet->getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
+      {
+        item = QString::fromStdString(dataSet->getPropertyName(i));
+        m_ui->m_propertyComboBox->addItem(item);
+      }
     }
   }
 
@@ -91,7 +99,7 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 
   if(rpos != std::string::npos)
   {
-    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyComboBox->currentIndex());
+    histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), m_ui->m_propertyComboBox->currentIndex(), m_ui->m_slicesSpinBox->value());
   }
   else
   {
@@ -113,7 +121,7 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
     }
     else
     {
-      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+      histogram = te::qt::widgets::createHistogram(m_dataSet.get(), m_dataType.get(), selectedPropertyIdx, m_ui->m_slicesSpinBox->value());
     }
   }
   return histogram;
@@ -122,11 +130,7 @@ te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram()
 void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QString text)
 {
   std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet.get(), te::dt::RASTER_TYPE);
-  if(rpos != std::string::npos)
-  {
-    m_ui->m_slicesSpinBox->setEnabled(false);
-  }
-  else 
+  if(rpos == std::string::npos)
   {
     int selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet.get(),  m_ui->m_propertyComboBox->currentText().toStdString());
     int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);

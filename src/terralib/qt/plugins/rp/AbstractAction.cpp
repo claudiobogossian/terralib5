@@ -59,15 +59,7 @@ void te::qt::plugins::rp::AbstractAction::createAction(std::string name, std::st
 
 void te::qt::plugins::rp::AbstractAction::addNewLayer(te::map::AbstractLayerPtr layer)
 {
-  // get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  te::qt::af::evt::LayerAdded evt(layer.get());
 
-  if(prj)
-  {
-    prj->add(layer);
-
-    te::qt::af::evt::LayerAdded evt(layer.get());
-
-    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
-  }
+  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
 }

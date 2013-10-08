@@ -29,6 +29,7 @@
 #include "../../../raster/Grid.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Register.h"
+#include "../../../rp/Module.h"
 #include "LayerSearchWidget.h"
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
@@ -53,7 +54,7 @@ te::qt::widgets::RegisterWizard::RegisterWizard(QWidget* parent)
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Register"));
-  this->setFixedSize(640, 480);
+  //this->setFixedSize(640, 480);
 
   addPages();
 }
@@ -182,13 +183,15 @@ bool te::qt::widgets::RegisterWizard::execute()
     
     if(!algorithmInstance.initialize(algoInputParams))
     {
-      QMessageBox::warning(this, tr("Register"), tr("Algorithm initialization error."));
+      QMessageBox::warning(this, tr("Register"), tr("Algorithm initialization error.") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str());
       return false;
     }
     
     if(!algorithmInstance.execute(algoOutputParams))
     {
-      QMessageBox::warning(this, tr("Register"), tr("Register Error!"));
+      QMessageBox::warning(this, tr("Register"), tr("Register Error.") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str());
       return false;
     }
     else
@@ -196,7 +199,7 @@ bool te::qt::widgets::RegisterWizard::execute()
       QMessageBox::warning(this, tr("Register"), tr("Register Done!"));
 
       //set output layer
-      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                    m_rasterInfoPage->getWidget()->getInfo());
     }
   }

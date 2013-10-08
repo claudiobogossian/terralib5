@@ -70,7 +70,13 @@ namespace te
 
           void setOutputValues(std::vector<std::string> values);
 
+          void setFixedOutputValues(std::vector<std::string> values, std::string iconName);
+
           std::vector<std::string> getOutputValues();
+
+          void clearInputValues();
+
+          void clearOutputValues();
 
         protected slots:
 

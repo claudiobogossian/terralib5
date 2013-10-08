@@ -35,6 +35,7 @@
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/Sequence.h"
 #include "../dataaccess/dataset/UniqueKey.h"
+#include "../datatype/DateTimePeriod.h"
 
 #include "DataSet.h"
 #include "DataSource.h"
@@ -62,6 +63,23 @@ te::stmem::DataSource::DataSource()
 
 te::stmem::DataSource::~DataSource()
 {
+  //delete the pointers
+  std::map<std::string, DataSet* >::iterator it = m_datasets.begin();    
+  while(it!=m_datasets.end())
+  {
+    delete(it->second);
+    ++it;
+  }
+  m_datasets.clear();
+
+  //delete the pointers
+  std::map<std::string, te::da::DataSetType* >::iterator it2 = m_schemas.begin();    
+  while(it2!=m_schemas.end())
+  {
+    delete(it2->second);
+    ++it2;
+  }
+  m_schemas.clear();
 }
 
 std::string te::stmem::DataSource::getType() const 
@@ -111,8 +129,22 @@ void te::stmem::DataSource::close()
   if(!m_isOpened)
     return;
 
+  //delete the pointers
+  std::map<std::string, DataSet* >::iterator it = m_datasets.begin();    
+  while(it!=m_datasets.end())
+  {
+    delete(it->second);
+    ++it;
+  }
   m_datasets.clear();
-  
+
+  //delete the pointers
+  std::map<std::string, te::da::DataSetType* >::iterator it2 = m_schemas.begin();    
+  while(it2!=m_schemas.end())
+  {
+    delete(it2->second);
+    ++it2;
+  }
   m_schemas.clear();
 
   m_maxdatasets = TE_STMEMORY_DRIVER_MAX_DATASETS;
@@ -171,6 +203,12 @@ std::auto_ptr<te::da::DataSet> te::stmem::DataSource::getDataSet(const std::stri
   return m_transactor->getDataSet(name, e, sr, dt, tr, travType, connected);
 }
 
+std::auto_ptr<te::dt::DateTimePeriod> 
+te::stmem::DataSource::getTemporalExtent(const std::string& name)
+{
+  return m_transactor->getTemporalExtent(name);
+}
+
 ///protected Methods
 void te::stmem::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/) 
 {
@@ -187,7 +225,7 @@ bool te::stmem::DataSource::exists(const std::map<std::string, std::string>& /*d
   return false;
 }
 
-std::vector<std::string> te::stmem::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/) throw(te::da::Exception)
+std::vector<std::string> te::stmem::DataSource::getDataSourceNames(const std::map<std::string, std::string>& /*dsInfo*/) 
 {
   return std::vector<std::string>();
 }

@@ -209,17 +209,24 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
-  <tabstop>m_datasetLineEdit</tabstop>
-  <tabstop>m_searchDatasetToolButton</tabstop>
   <tabstop>m_fileRadioButton</tabstop>
   <tabstop>m_urlRadioButton</tabstop>
   <tabstop>m_dirRadioButton</tabstop>
+  <tabstop>m_searchDatasetToolButton</tabstop>
+  <tabstop>m_datasetLineEdit</tabstop>
   <tabstop>m_datasourceTitleLineEdit</tabstop>
   <tabstop>m_datasourceDescriptionTextEdit</tabstop>
-  <tabstop>m_testPushButton</tabstop>
   <tabstop>m_openPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
+  <tabstop>m_testPushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
  </tabstops>
  <resources/>
@@ -241,11 +248,4 @@
    </hints>
   </connection>
  </connections>
- <CustomWidgets>
-	<CustomWidget>
-	 <class>te::qt::widgets::HelpPushButton</class> 
-	 <extends>QPushButton</extends> 
-	 <header>terralib/qt/widgets/help/HelpPushButton.h</header>
-	</CustomWidget>
- </CustomWidgets>
 </ui>

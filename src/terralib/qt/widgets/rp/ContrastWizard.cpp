@@ -28,6 +28,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Contrast.h"
+#include "../../../rp/Module.h"
 #include "ContrastWizard.h"
 #include "ContrastWizardPage.h"
 #include "LayerSearchWidget.h"
@@ -49,7 +50,7 @@ te::qt::widgets::ContrastWizard::ContrastWizard(QWidget* parent)
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Contrast"));
-  this->setFixedSize(640, 480);
+  //this->setFixedSize(640, 480);
 
   addPages();
 }
@@ -126,6 +127,7 @@ bool te::qt::widgets::ContrastWizard::execute()
 
   te::rp::Contrast::InputParameters algoInputParams = m_contrastPage->getInputParams();
   algoInputParams.m_inRasterPtr = inputRst.get();
+  algoInputParams.m_enableProgress = true;
 
   te::rp::Contrast::OutputParameters algoOutputParams;
   algoOutputParams.m_createdOutRasterDSType = m_rasterInfoPage->getWidget()->getType();
@@ -139,20 +141,22 @@ bool te::qt::widgets::ContrastWizard::execute()
       algoOutputParams.reset();
 
       //set output layer
-      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+      m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                    m_rasterInfoPage->getWidget()->getInfo());
 
       QMessageBox::information(this, tr("Contrast"), tr("Contrast enhencement ended sucessfully"));
     }
     else
     {
-      QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement execution error"));
+      QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement execution error.") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str());
       return false;
     }
   }
   else
   {
-    QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement initialization error"));
+    QMessageBox::critical(this, tr("Contrast"), tr("Contrast enhencement initialization error.") +
+      ( " " + te::rp::Module::getLastLogStr() ).c_str() );
     return false;
   }
   return true;

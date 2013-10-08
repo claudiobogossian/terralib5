@@ -95,6 +95,8 @@ namespace te
             
             std::string m_strategyName; //!< The segmenter strategy name see each te::rp::SegmenterStrategyFactory inherited classes documentation for reference.
             
+            bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
             InputParameters();
             
             InputParameters( const InputParameters& other );
@@ -196,38 +198,41 @@ namespace te
             //! A pointer to the global segmenter input execution parameters (default:0). */
             Segmenter::OutputParameters* m_outputParametersPtr;
             
-            /*! Pointer to the segments blocks matrix (default:0)*/
+            //! Pointer to the segments blocks matrix (default:0)*/
             SegmentsBlocksMatrixT* m_segsBlocksMatrixPtr;
             
-            /*! Pointer to a general global mutex (default:0)*/
+            //! Pointer to a general global mutex (default:0)*/
             boost::mutex* m_generalMutexPtr;            
             
-            /*! Pointer to the mutex used when accessing the input raster (default:0)*/
+            //! Pointer to the mutex used when accessing the input raster (default:0)*/
             boost::mutex* m_inputRasterIOMutexPtr;
             
-            /*! Pointer to the mutex used when accessing the output raster (default:0)*/
+            //! Pointer to the mutex used when accessing the output raster (default:0)*/
             boost::mutex* m_outputRasterIOMutexPtr;
             
-            /*! Pointer to the mutex used by the block processed signal (default:0)*/
+            //! Pointer to the mutex used by the block processed signal (default:0)*/
             boost::mutex* m_blockProcessedSignalMutexPtr;            
             
-            /*! Pointer to the abort segmentation flag (default:0)*/
+            //! Pointer to the abort segmentation flag (default:0)*/
             bool volatile* m_abortSegmentationFlagPtr;
             
-            /*! Pointer to the segments Ids manager - (default 0) */
+            //! Pointer to the segments Ids manager - (default 0) */
             SegmenterIdsManager* m_segmentsIdsManagerPtr;
             
-            /*! Pointer to a signal to be emited when a segments block was processed (default:0)*/
+            //! Pointer to a signal to be emited when a segments block was processed (default:0)*/
             boost::condition_variable* m_blockProcessedSignalPtr;
             
-            /*! Pointer to the running threads counter - default 0) */
+            //! Pointer to the running threads counter - default 0) */
             unsigned int volatile* m_runningThreadsCounterPtr;        
             
-            /*! Pointer to a vector of input raster bands gain values */
+            //! Pointer to a vector of input raster bands gain values */
             std::vector< double > const * m_inputRasterGainsPtr;
             
-            /*! Pointer to a vector of input raster bands offset values */
+            //! Pointer to a vector of input raster bands offset values */
             std::vector< double > const * m_inputRasterOffsetsPtr;
+            
+            //! Enable/Disable the segmentation strategy to use the progress interface (default:false). */
+            bool m_enableStrategyProgress;
             
             SegmenterThreadEntryParams();
             

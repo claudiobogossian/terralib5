@@ -392,9 +392,10 @@ void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonCli
   std::auto_ptr<te::rst::Raster> inputRstAdj = dsAdj->getRaster(rpos);
 
   te::rp::TiePointsLocator::InputParameters inputParams = m_inputParameters;
+  inputParams.m_enableProgress = true;
 
-  inputParams.m_inRaster1Ptr = inputRstRef.release();
-  inputParams.m_inRaster2Ptr = inputRstAdj.release();
+  inputParams.m_inRaster1Ptr = inputRstRef.get();
+  inputParams.m_inRaster2Ptr = inputRstAdj.get();
 
   te::gm::Envelope auxEnvelope1(m_refNavigator->getCurrentExtent());
   double r1LLX = 0;
@@ -916,7 +917,7 @@ void te::qt::widgets::TiePointLocatorWidget::startUpNavigators()
   QGridLayout* layoutRef = new QGridLayout(m_ui->m_refWidget);
 
   m_refNavigator = new te::qt::widgets::RasterNavigatorWidget(m_ui->m_refWidget);
-  m_refNavigator->setWindowTitle(tr("Referece"));
+  m_refNavigator->setWindowTitle(tr("Reference"));
   m_refNavigator->setMinimumSize(550, 400);
   m_refNavigator->hideGeomTool(true);
   m_refNavigator->hideInfoTool(true);

@@ -86,9 +86,17 @@ void te::map::RasterTransform::setLinearTransfParameters(double vmin, double vma
 {
   m_rstMinValue = rmin;
   m_rstMaxValue = rmax;
-
-  m_gain = (double)(rmax-rmin)/(vmax-vmin);
-  m_offset = -1*m_gain*vmin+rmin;
+  
+  if( vmax == vmin )
+  {
+    m_gain = 0.0;
+    m_offset = 0.0;
+  }
+  else
+  {
+    m_gain = (double)(rmax-rmin)/(vmax-vmin);
+    m_offset = -1*m_gain*vmin+rmin;
+  }
 }
 
 te::map::RasterTransform::RasterTransfFunctions te::map::RasterTransform::getTransfFunction()
@@ -132,6 +140,10 @@ te::map::RasterTransform::RasterTransfFunctions te::map::RasterTransform::getTra
   {
     return INTERPOLATE_TRANSF;
   }
+  else  if (m_transfFuncPtr == &RasterTransform::setBand2Band)
+  {
+    return BAND2BAND_TRANSF;
+  }
   else
   {
     return NO_TRANSF;
@@ -174,6 +186,11 @@ void te::map::RasterTransform::setTransfFunction(RasterTransfFunctions func)
   {
     m_transfFuncPtr = &RasterTransform::setInterpolate;
     m_RGBAFuncPtr = &RasterTransform::getInterpolate;
+  }
+  else if (func == BAND2BAND_TRANSF)
+  {
+    m_transfFuncPtr = &RasterTransform::setBand2Band;
+    m_RGBAFuncPtr = 0;
   }
   else
   {
@@ -454,6 +471,25 @@ te::color::RGBAColor te::map::RasterTransform::getInterpolate(double icol, doubl
   m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
 
   return getInterpolatedColor(val);
+}
+
+void te::map::RasterTransform::setBand2Band(double icol, double ilin, double ocol, double olin)
+{
+ double val;
+
+  for(std::size_t t = 0; t < m_rasterIn->getNumberOfBands(); ++t)
+  {
+    m_rasterIn->getValue((int)icol, (int)ilin, val, t);
+
+    if(checkNoValue(val, t) == false)
+    {
+      val = (val * m_gain + m_offset);
+
+      fixValue(val);
+
+      m_rasterOut->setValue((int)ocol, (int)olin, val, t);
+    }
+  }
 }
 
 void te::map::RasterTransform::fixValue(double& value)

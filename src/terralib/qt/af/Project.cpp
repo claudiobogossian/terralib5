@@ -74,6 +74,12 @@ std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getLayers()
   return m_layers;
 }
 
+void te::qt::af::Project::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
+{
+  m_layers.clear();
+  m_layers = layers;
+}
+
 void te::qt::af::Project::add(const te::map::AbstractLayerPtr& layer)
 {
   m_layers.push_back(layer);

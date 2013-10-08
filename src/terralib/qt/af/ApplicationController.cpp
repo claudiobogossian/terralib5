@@ -486,7 +486,7 @@ void te::qt::af::ApplicationController::initializePlugins()
 
     SplashScreenManager::getInstance().close();
 
-    QString msgErr(tr("Some plugins couldn't be loaded: %1.\n "
+    QString msgErr(tr("Some plugins couldn't be loaded. %1\n\n"
                       "Please, refer to plugin manager to fix the problem."));
 
     msgErr = msgErr.arg(e.what());

@@ -27,6 +27,7 @@
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
+#include "../datatype/DateTimePeriod.h"
 #include "DataSet.h"
 #include "DataSource.h"
 #include "Transactor.h"
@@ -156,7 +157,7 @@ std::string te::stmem::Transactor::escape(const std::string& value)
 
 bool te::stmem::Transactor::isDataSetNameValid(const std::string& datasetName)
 {
-  std::map<std::string, std::auto_ptr<DataSet> >::const_iterator it = m_ds->m_datasets.find(datasetName);
+  std::map<std::string, DataSet*>::const_iterator it = m_ds->m_datasets.find(datasetName);
   if(it==m_ds->m_datasets.end())
     return true;
   return false;
@@ -170,7 +171,7 @@ bool te::stmem::Transactor::isPropertyNameValid(const std::string& /*propertyNam
 std::vector<std::string> te::stmem::Transactor::getDataSetNames()
 {
   std::vector<std::string> result;
-  std::map<std::string, std::auto_ptr<DataSet> >::const_iterator it = m_ds->m_datasets.begin();
+  std::map<std::string, DataSet*>::const_iterator it = m_ds->m_datasets.begin();
   if(it!=m_ds->m_datasets.end())
   {
     result.push_back(it->first);
@@ -462,7 +463,7 @@ bool te::stmem::Transactor::hasDataSets()
          
 bool te::stmem::Transactor::dataSetExists(const std::string& name)
 {
-  std::map<std::string, std::auto_ptr<DataSet> >::const_iterator it = m_ds->m_datasets.find(name);
+  std::map<std::string, DataSet*>::const_iterator it = m_ds->m_datasets.find(name);
   if(it== m_ds->m_datasets.end())
     return false;
   return true; 
@@ -483,14 +484,16 @@ void te::stmem::Transactor::cloneDataSet(const std::string& /*name*/,
 
 void te::stmem::Transactor::dropDataSet(const std::string& name)
 {
-  std::map<std::string, std::auto_ptr<te::da::DataSetType> >::const_iterator itdt =  m_ds->m_schemas.find(name);  
+  std::map<std::string, te::da::DataSetType*>::iterator itdt =  m_ds->m_schemas.find(name);  
   if(itdt==m_ds->m_schemas.end())
     throw Exception("There is not a DataSetType with the given name!");
 
-  std::map<std::string, std::auto_ptr<DataSet> >::const_iterator itds = m_ds->m_datasets.find(name);
+  std::map<std::string, DataSet*>::iterator itds = m_ds->m_datasets.find(name);
   if(itds==m_ds->m_datasets.end())
     throw Exception("There is not a DataSet with the given name!"); 
   
+  delete(itdt->second);
+  delete(itds->second);
   m_ds->m_schemas.erase(itdt);
   m_ds->m_datasets.erase(itds);
   return; 
@@ -501,24 +504,25 @@ void te::stmem::Transactor::renameDataSet(const std::string& name, const std::st
   if(dataSetExists(newName))
     throw Exception("The is already a DataSet with the new name!");
 
-  std::map<std::string, std::auto_ptr<te::da::DataSetType> >::iterator itdt =  m_ds->m_schemas.find(name);  
+  std::map<std::string, te::da::DataSetType*>::iterator itdt =  m_ds->m_schemas.find(name);  
   if(itdt==m_ds->m_schemas.end())
     throw Exception("There is not a DataSetType with the given name!");
 
-  std::map<std::string, std::auto_ptr<DataSet> >::iterator itds = m_ds->m_datasets.find(name);
+  std::map<std::string, DataSet*>::iterator itds = m_ds->m_datasets.find(name);
   if(itds==m_ds->m_datasets.end())
     throw Exception("There is not a DataSet with the given name!"); 
   
-  te::da::DataSetType* dt = itdt->second.release();
+  te::da::DataSetType* dt = itdt->second;
   dt->setName(newName);
-  DataSet* ds = itds->second.release();
+  DataSet* ds = itds->second;
   //ds->setName(newName); => DataSet does not have name!!
 
+  //erase without deleting the pointer.
   m_ds->m_schemas.erase(itdt);
   m_ds->m_datasets.erase(itds);
 
-  m_ds->m_schemas.insert(std::pair<std::string, std::auto_ptr<te::da::DataSetType> >(newName, std::auto_ptr<te::da::DataSetType>(dt)));
-  m_ds->m_datasets.insert(std::pair<std::string, std::auto_ptr<DataSet> >(newName,std::auto_ptr<DataSet>(ds)));
+  m_ds->m_schemas.insert(std::pair<std::string, te::da::DataSetType*>(newName,dt));
+  m_ds->m_datasets.insert(std::pair<std::string, DataSet*>(newName,ds));
 
   return; 
 }
@@ -562,8 +566,8 @@ void te::stmem::Transactor::add(const std::string& name, te::da::DataSetType* t,
   if(dataSetExists(name))
     throw Exception("There is already a DataSet with the new name!");
  
-  m_ds->m_datasets.insert(std::pair<std::string, std::auto_ptr<DataSet> >(name,std::auto_ptr<DataSet>(d)));
-  m_ds->m_schemas.insert(std::pair<std::string, std::auto_ptr<te::da::DataSetType> >(name,std::auto_ptr<te::da::DataSetType>(t)));
+  m_ds->m_datasets.insert(std::pair<std::string, DataSet*>(name,d));
+  m_ds->m_schemas.insert(std::pair<std::string, te::da::DataSetType*>(name,t));
   return;
 }
 
@@ -593,21 +597,28 @@ void te::stmem::Transactor::add(const std::string& name, te::da::DataSetType* t,
    return std::auto_ptr<te::da::DataSet>(ds->filter(e, sr, dt, tr));
  }
 
+ std::auto_ptr<te::dt::DateTimePeriod> 
+ te::stmem::Transactor::getTemporalExtent(const std::string& name)
+ {
+   DataSet* ds = getData(name);
+   return std::auto_ptr<te::dt::DateTimePeriod>(ds->getTemporalExtent());
+ }
+
 // Protected Methods
 te::da::DataSetType* te::stmem::Transactor::getType(const std::string& datasetName) 
 {
-  std::map<std::string, std::auto_ptr<te::da::DataSetType> >::const_iterator it =  m_ds->m_schemas.find(datasetName);  
+  std::map<std::string, te::da::DataSetType*>::const_iterator it =  m_ds->m_schemas.find(datasetName);  
   if(it==m_ds->m_schemas.end())
     throw Exception("There is not a DataSetType with the given name!");
-  return it->second.get(); 
+  return it->second; 
 }
 
 te::stmem::DataSet* te::stmem::Transactor::getData(const std::string& datasetName) 
 {
-  std::map<std::string, std::auto_ptr<DataSet> >::const_iterator it = m_ds->m_datasets.find(datasetName);
+  std::map<std::string, DataSet*>::const_iterator it = m_ds->m_datasets.find(datasetName);
   if(it==m_ds->m_datasets.end())
     throw Exception("There is not a DataSet with the given name!"); 
-  return it->second.get(); 
+  return it->second; 
 }
 
 

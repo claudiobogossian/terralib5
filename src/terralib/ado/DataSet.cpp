@@ -31,8 +31,9 @@
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/Array.h"
 #include "../datatype/ByteArray.h"
-#include "../datatype/DateTime.h"
+#include "../datatype/DateTimeProperty.h"
 #include "../datatype/SimpleData.h"
+#include "../datatype/TimeInstant.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/WKBReader.h"
 #include "Connection.h"
@@ -47,6 +48,7 @@
 
 // Boost
 #include <boost/dynamic_bitset.hpp>
+#include <boost/lexical_cast.hpp>
 
 inline void TESTHR( HRESULT hr )
 {
@@ -380,7 +382,20 @@ std::auto_ptr<te::dt::ByteArray> te::ado::DataSet::getByteArray(std::size_t i) c
 
   try
   {
-    ::Field15Ptr field = m_result->GetFields()->GetItem(vtIndex);
+    ::Field15Ptr field;
+
+    if(m_result->MoveNext() == S_OK)
+      m_result->MovePrevious();
+    else if(m_result->MovePrevious() == S_OK)
+      m_result->MoveNext();
+    else
+    {
+      _RecordsetPtr copy = m_result->Clone(LockTypeEnum::adLockReadOnly);
+
+      field = copy->GetFields()->GetItem(vtIndex);
+    }
+
+    field = m_result->GetFields()->GetItem(vtIndex);
 
     size = field->ActualSize;
     if(size > 0)
@@ -427,7 +442,40 @@ std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(std::size_t i) const
 
 std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) const
 {
-  return std::auto_ptr<te::dt::DateTime>(0); // TODO
+  _variant_t vtIndex;
+  _variant_t value;
+
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  te::dt::DateTime* dateTime = 0;
+
+  std::string strDate;
+  try
+  {
+    value = m_result->GetFields()->GetItem(vtIndex)->Value;
+  }
+  catch(_com_error &e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  if(value.vt == VT_NULL)
+    return std::auto_ptr<te::dt::DateTime>(0);
+
+  strDate = (LPCSTR)(_bstr_t)value;
+
+  // Getting system format
+  std::string indAM;
+  std::string indPM;
+  std::string sepD;
+  std::string sepT;
+
+  std::string mask = te::ado::GetSystemDateTimeFormat(indAM, indPM, sepD, sepT);
+
+  std::auto_ptr<te::dt::DateTime> result = te::ado::GetDateTime(strDate, mask, sepD, sepT);
+
+  return result;
 }
 
 std::auto_ptr<te::dt::Array> te::ado::DataSet::getArray(std::size_t i) const

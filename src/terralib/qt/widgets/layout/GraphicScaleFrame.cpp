@@ -31,8 +31,6 @@
 
 #include <terralib/geometry.h>
 #include <terralib/common.h>
-//#include <terralib/postgis.h>
-//#include <terralib/dataaccess.h>
 #include <terralib/srs.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
 
@@ -90,8 +88,6 @@ te::qt::widgets::GraphicScaleFrame::GraphicScaleFrame(te::qt::widgets::DataFrame
   draw();
   show();
   createMenu();
-
-  installEventFilter(this);
 }
 
 te::qt::widgets::GraphicScaleFrame::GraphicScaleFrame(const GraphicScaleFrame& rhs) :
@@ -130,8 +126,6 @@ te::qt::widgets::GraphicScaleFrame::GraphicScaleFrame(const GraphicScaleFrame& r
   draw();
   show();
   createMenu();
-
-  installEventFilter(this);
 }
 
 te::qt::widgets::GraphicScaleFrame::~GraphicScaleFrame()
@@ -175,8 +169,6 @@ te::qt::widgets::GraphicScaleFrame& te::qt::widgets::GraphicScaleFrame::operator
     draw();
     show();
     createMenu();
-
-    installEventFilter(this);
   }
 
   return *this;
@@ -212,6 +204,11 @@ void te::qt::widgets::GraphicScaleFrame::paintEvent(QPaintEvent*)
 {
   QPainter painter(this);
   painter.drawPixmap(0, 0, m_pixmap);
+}
+
+QPixmap* te::qt::widgets::GraphicScaleFrame::getPixmap()
+{
+  return &m_pixmap;
 }
 
 te::qt::widgets::DataFrame* te::qt::widgets::GraphicScaleFrame::getDataFrame()
@@ -1040,202 +1037,173 @@ void te::qt::widgets::GraphicScaleFrame::setUnit(const QString& s)
   m_unit = s;
 }
 
-
-bool te::qt::widgets::GraphicScaleFrame::eventFilter(QObject* obj, QEvent* e)
+void te::qt::widgets::GraphicScaleFrame::mousePressEvent(QMouseEvent* mouseEvent)
 {
-  // return true to stop the event; otherwise return false.
-
-  int type = e->type();
-
-  if(obj == this) 
+  if(mouseEvent->buttons() == Qt::LeftButton)
   {
-    if(type == QEvent::MouseButtonPress)
+    QPoint p = mouseEvent->pos();
+    m_pressPoint = p;
+    m_undo = false;
+    m_copyAuxFrameRect = QRect();
+    m_layoutEditor->raiseDraftLayoutEditor();
+  }
+  else if(mouseEvent->buttons() == Qt::RightButton)
+  {
+    QPoint gp = mouseEvent->globalPos();
+    if(m_selected == 10)
     {
-      QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-
-      if(mouseEvent->buttons() == Qt::LeftButton)
-      {
-        QPoint p = mouseEvent->pos();
-        m_pressPoint = p;
-        m_undo = false;
-        m_copyAuxFrameRect = QRect();
-        m_layoutEditor->raiseDraftLayoutEditor();
-      }
-      else if(mouseEvent->buttons() == Qt::RightButton)
-      {
-        QPoint gp = mouseEvent->globalPos();
-        if(m_selected == 10)
-        {
-          QAction* action = m_menu->exec(gp);
-          if(action == m_setTypeAction)
-            setTypeAction();
-          else if(action == m_setFamilyAction)
-            setFamilyAction();
-          else if(action == m_setLabelColorAction)
-            setLabelColorAction();
-          else if(action == m_setBarColorAction)
-            setBarColorAction();
-          else if(action == m_setBarHeightAction)
-            setBarHeightAction();
-          else if(action == m_offsetOriginAction)
-            setOffsetOriginAction();
-          else if(action == m_setLabelAboveAction)
-            setLabelAboveAction();
-          else if(action == m_setUnitAboveAction)
-            setUnitAboveAction();
-          else if(action == m_setUnitAction)
-            setUnitAction();
-          else if(action == m_setDivisionsAction)
-            setDivisionsAction();
-          else if(action == m_setSubDivisionsAction)
-            setSubDivisionsAction();
-          else if(action == m_setStepAction)
-            setStepAction();
-          else if(action == m_showTooTipAction)
-            setShowTooTipAction();
-        }
-      }
-      return false;
-    }
-    else if (type == QEvent::MouseMove)
-    {
-      QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-      QPoint p = mouseEvent->pos();
-      QPoint gp = mouseEvent->globalPos();
-
-      if(mouseEvent->buttons() == Qt::NoButton)
-      {
-        setCursor();
-
-        m_dragging = false;
-        getSelectionPoint(p);
-        if(m_selected == 0)
-          return false;
-        else
-        {
-          showSelectionPoints();
-          toolTip(gp, "Selection");
-          if(m_selected == 10 && m_layoutEditor->getFrameSelected() != this)
-            m_layoutEditor->setFrameSelected(this);
-        }
-
-        setCursor();
-      }
-      else if(mouseEvent->buttons() == Qt::LeftButton)
-      {
-        m_dragging = true;
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-        QPoint p = mouseEvent->pos();
-        QPoint d = m_pressPoint - p;
-        QMatrix matrix = m_layoutEditor->getMatrix();
-        m_auxFrameRect = matrix.mapRect(m_frameRect).toRect();
-
-        // mouse drag with left buttom
-        if(m_selected != 0)
-        {
-          if(m_undo == false)
-          {
-            m_layoutEditor->insertCopy2Undo(m_dataFrame);
-            m_undo = true;
-          }
-
-          if(m_selected == 4) // resize right
-            m_auxFrameRect = QRect(m_auxFrameRect.left(), m_auxFrameRect.top(), m_auxFrameRect.width() - d.x(), m_auxFrameRect.height());
-          else if(m_selected == 8) // resize left
-            m_auxFrameRect = QRect(m_auxFrameRect.left() - d.x(), m_auxFrameRect.top(), m_auxFrameRect.width() + d.x(), m_auxFrameRect.height());
-          else // move data frame
-            m_auxFrameRect.moveCenter(m_auxFrameRect.center() - d);
-
-          rubberBand();
-          setCursor();
-        }
-      }
-      return true;
-    }
-    else if(type == QEvent::MouseButtonRelease)
-    {
-      QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-      if(mouseEvent->button() == Qt::LeftButton)
-      {
-        QPoint p = mouseEvent->pos();
-
-        if(m_pressPoint != p && m_selected != 0)
-        {
-          setCursor();
-
-          QPixmap* pixmap = m_layoutEditor->getDraftPixmap();
-          pixmap->fill(Qt::transparent);
-          QMatrix matrix = m_layoutEditor->getMatrix();
-          QRectF r(m_auxFrameRect.left(), m_auxFrameRect.top(), m_auxFrameRect.width(), m_auxFrameRect.height());
-          double w = m_frameRect.width();
-          m_frameRect = matrix.inverted().mapRect(r);
-          double nw = m_frameRect.width();
-          m_layoutEditor->lowerDraftLayoutEditor();
-
-          if(m_selected == 4 || m_selected == 8)
-          {
-            bool fineRound = false;
-            double fat = nw / w;
-            if(fat > .95 && fat < 1.05)
-              fineRound = true;
-
-            double newStep = m_step * fat;
-            findNiceStep(newStep);
-
-            //double v = m_step;
-            //double vv = m_step;
-            //while(m_step == v)
-            //{
-            //  vv *= fat;
-            //  m_step = vv;
-            //  findNiceStep(fineRound, fat);
-            //}
-          }
-
-          adjust();
-          m_layoutEditor->draw();
-
-          if(m_selected != 10)
-          {
-            QPoint c = getCenterSelected();
-            cursor().setPos(mapToGlobal(c));
-            QMouseEvent e1(QEvent::MouseButtonPress, c, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-            QApplication::sendEvent(this, &e1);
-          }
-          showSelectionPoints();
-        }
-      }
-      return true;
-    }
-    else if(type == QEvent::Enter)
-    {
-      if(QApplication::overrideCursor() || m_dragging)
-        return false;
-
-      m_layoutEditor->setFrameSelected(this);
-      raise();
-      m_selected = 0;
-      return true;
-    }
-    else if(type == QEvent::Leave)
-    {
-      if(m_dragging)
-      {
-        if(m_selected != 0)
-          raise();
-        return false;
-      }
-
-      m_selected = 0;
-      m_layoutEditor->setFrameSelected(0);
-      lower();
-      setCursor();
-      return false;
+      QAction* action = m_menu->exec(gp);
+      if(action == m_setTypeAction)
+        setTypeAction();
+      else if(action == m_setFamilyAction)
+        setFamilyAction();
+      else if(action == m_setLabelColorAction)
+        setLabelColorAction();
+      else if(action == m_setBarColorAction)
+        setBarColorAction();
+      else if(action == m_setBarHeightAction)
+        setBarHeightAction();
+      else if(action == m_offsetOriginAction)
+        setOffsetOriginAction();
+      else if(action == m_setLabelAboveAction)
+        setLabelAboveAction();
+      else if(action == m_setUnitAboveAction)
+        setUnitAboveAction();
+      else if(action == m_setUnitAction)
+        setUnitAction();
+      else if(action == m_setDivisionsAction)
+        setDivisionsAction();
+      else if(action == m_setSubDivisionsAction)
+        setSubDivisionsAction();
+      else if(action == m_setStepAction)
+        setStepAction();
+      else if(action == m_showTooTipAction)
+        setShowTooTipAction();
     }
   }
+}
 
-  // pass the event on to the parent class
-  return QWidget::eventFilter(obj, e);
+void te::qt::widgets::GraphicScaleFrame::mouseMoveEvent(QMouseEvent* mouseEvent)
+{
+  QPoint p = mouseEvent->pos();
+  QPoint gp = mouseEvent->globalPos();
+
+  if(mouseEvent->buttons() == Qt::NoButton)
+  {
+    setCursor();
+
+    m_dragging = false;
+    getSelectionPoint(p);
+    if(m_selected == 0)
+      return;
+    else
+    {
+      showSelectionPoints();
+      toolTip(gp, "Selection");
+      if(m_selected == 10 && m_layoutEditor->getFrameSelected() != this)
+        m_layoutEditor->setFrameSelected(this);
+    }
+
+    setCursor();
+  }
+  else if(mouseEvent->buttons() == Qt::LeftButton)
+  {
+    m_dragging = true;
+    QPoint p = mouseEvent->pos();
+    QPoint d = m_pressPoint - p;
+    QMatrix matrix = m_layoutEditor->getMatrix();
+    m_auxFrameRect = matrix.mapRect(m_frameRect).toRect();
+
+    // mouse drag with left buttom
+    if(m_selected != 0)
+    {
+      if(m_undo == false)
+      {
+        m_layoutEditor->insertCopy2Undo(m_dataFrame);
+        m_undo = true;
+      }
+
+      if(m_selected == 4) // resize right
+        m_auxFrameRect = QRect(m_auxFrameRect.left(), m_auxFrameRect.top(), m_auxFrameRect.width() - d.x(), m_auxFrameRect.height());
+      else if(m_selected == 8) // resize left
+        m_auxFrameRect = QRect(m_auxFrameRect.left() - d.x(), m_auxFrameRect.top(), m_auxFrameRect.width() + d.x(), m_auxFrameRect.height());
+      else // move data frame
+        m_auxFrameRect.moveCenter(m_auxFrameRect.center() - d);
+
+      rubberBand();
+      setCursor();
+    }
+  }
+}
+
+void te::qt::widgets::GraphicScaleFrame::mouseReleaseEvent(QMouseEvent* mouseEvent)
+{
+  if(mouseEvent->button() == Qt::LeftButton)
+  {
+    QPoint p = mouseEvent->pos();
+
+    if(m_pressPoint != p && m_selected != 0)
+    {
+      setCursor();
+
+      QPixmap* pixmap = m_layoutEditor->getDraftPixmap();
+      pixmap->fill(Qt::transparent);
+      QMatrix matrix = m_layoutEditor->getMatrix();
+      QRectF r(m_auxFrameRect.left(), m_auxFrameRect.top(), m_auxFrameRect.width(), m_auxFrameRect.height());
+      double w = m_frameRect.width();
+      m_frameRect = matrix.inverted().mapRect(r);
+      double nw = m_frameRect.width();
+      m_layoutEditor->lowerDraftLayoutEditor();
+
+      if(m_selected == 4 || m_selected == 8)
+      {
+        bool fineRound = false;
+        double fat = nw / w;
+        if(fat > .95 && fat < 1.05)
+          fineRound = true;
+
+        double newStep = m_step * fat;
+        findNiceStep(newStep);
+      }
+
+      adjust();
+      m_layoutEditor->draw();
+
+      if(m_selected != 10)
+      {
+        QPoint c = getCenterSelected();
+        cursor().setPos(mapToGlobal(c));
+        QMouseEvent e1(QEvent::MouseButtonPress, c, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+        QApplication::sendEvent(this, &e1);
+      }
+      showSelectionPoints();
+    }
+  }
+}
+
+void te::qt::widgets::GraphicScaleFrame::enterEvent(QEvent*)
+{
+  if(QApplication::overrideCursor() || m_dragging)
+    return;
+
+  m_layoutEditor->setFrameSelected(this);
+  raise();
+  m_selected = 0;
+}
+
+void te::qt::widgets::GraphicScaleFrame::leaveEvent(QEvent*)
+{
+  if(m_dragging)
+  {
+    if(m_selected != 0)
+      raise();
+    return;
+  }
+
+  m_selected = 0;
+  m_layoutEditor->setFrameSelected(0);
+  lower();
+  setCursor();
 }
 
 void te::qt::widgets::GraphicScaleFrame::rubberBand()

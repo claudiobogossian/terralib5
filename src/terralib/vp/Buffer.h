@@ -72,11 +72,16 @@ namespace te
                                         const std::string& outputLayerName,
                                         const int& bufferBoundariesRule,
                                         const bool& copyInputColumns);
-    
-    void SetBuffer(te::mem::DataSet* dataSet,
-                  const std::map<te::gm::Geometry*, double>& distance,
-                  const int& bufferPolygonRule,
-                  const int& levels);
+
+    void BufferMemory(te::mem::DataSet* dataSet,
+                    const std::map<te::gm::Geometry*, double>& distance,
+                    const int& bufferPolygonRule,
+                    const int& levels);
+
+    te::da::DataSet* BufferQuery(const te::map::AbstractLayerPtr& inputLayer,
+                                const std::map<te::gm::Geometry*, double>& distance,
+                                const int& bufferPolygonRule,
+                                const int& levels);
 
     te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
                                             te::mem::DataSet* dataset, 

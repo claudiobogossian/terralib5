@@ -72,9 +72,17 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   // zoom in/out with the wheel
   ( void ) new QwtPlotMagnifier( this->canvas() );
 
+  // Pan on the plotted chart
+  m_panner =  new QwtPlotPanner(this->canvas());
+  m_panner->setMouseButton(Qt::MidButton);
+
   // Selection based on a point
   m_picker = new QwtPlotPicker(this->canvas());
   m_picker->setStateMachine(new QwtPickerClickPointMachine );
+
+  //The default shape of the cursor is a stander arrow, may vary depending on the type of chart being drawn.
+  //Can be updated using the set PickerStyle function.
+  canvas()->setCursor( Qt::ArrowCursor);
 
   connect(m_picker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
 }
@@ -82,6 +90,8 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
 te::qt::widgets::ChartDisplay::~ChartDisplay()
 {
   delete m_chartStyle;
+  delete m_panner;
+  delete m_picker;
   delete m_grid;
 }
 
@@ -94,11 +104,14 @@ void te::qt::widgets::ChartDisplay::setPickerStyle(int chartType)
       m_picker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::RectRubberBand, QwtPicker::AlwaysOff, this->canvas());
       m_picker->setStateMachine(new QwtPickerDragRectMachine );
       connect(m_picker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
+      canvas()->setCursor(Qt::CrossCursor);
+
       break;
     default:
       delete m_picker;
       m_picker = new QwtPlotPicker(this->canvas());
       m_picker->setStateMachine(new QwtPickerClickPointMachine );
+      canvas()->setCursor( Qt::ArrowCursor);
       connect(m_picker, SIGNAL(selected(const QPointF&)), SLOT(onPointPicked(const QPointF&)));
       break;
   }

@@ -29,6 +29,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
+#include "../../../rp/Module.h"
 #include "SegmenterWizard.h"
 #include "SegmenterAdvancedOptionsWizardPage.h"
 #include "SegmenterWizardPage.h"
@@ -52,7 +53,7 @@ te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Segmenter"));
-  this->setFixedSize(640, 580);
+  //this->setFixedSize(640, 580);
 
   addPages();
 }
@@ -127,6 +128,7 @@ bool te::qt::widgets::SegmenterWizard::execute()
 
   te::rp::Segmenter::InputParameters algoInputParams = m_segmenterPage->getInputParams();
 
+  algoInputParams.m_enableProgress = true;
   algoInputParams.m_enableThreadedProcessing = m_segmenterAdvOptPage->getForm()->m_enableThreadedProcessingcheckBox->isChecked();
   algoInputParams.m_maxSegThreads = m_segmenterAdvOptPage->getForm()->m_maximumThreadsNumberLineEdit->text().toUInt();
   algoInputParams.m_enableBlockProcessing = m_segmenterAdvOptPage->getForm()->m_enableBlockProcessingcheckBox->isChecked();
@@ -144,7 +146,7 @@ bool te::qt::widgets::SegmenterWizard::execute()
       if(algorithmInstance.execute(algoOutputParams))
       {
         //set output layer
-        m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getName(), 
+        m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 
                                                      m_rasterInfoPage->getWidget()->getInfo());
 
         QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully"));
@@ -157,7 +159,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
     }
     else
     {
-      QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter initialization error"));
+      QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter initialization error") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str());
       return false;
     }
   }

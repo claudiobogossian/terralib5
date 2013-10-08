@@ -92,8 +92,10 @@ namespace te
     class SQLFunctionEncoder;
     class SQLVisitor;
     class ST_Beyond;
+    class ST_Buffer;
     class ST_Contains;
     class ST_Crosses;
+    class ST_Difference;
     class ST_Disjoint;
     class ST_DistanceBuffer;
     class ST_DWithin;

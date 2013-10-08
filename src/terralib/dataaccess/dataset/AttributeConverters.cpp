@@ -41,6 +41,9 @@ te::dt::AbstractData* te::da::GenericAttributeConverter(DataSet* dataset, const 
 {
   assert(indexes.size() == 1);
 
+  if(dataset->isNull(indexes[0]))
+    return 0;
+
   // Gets the data from input data set
   std::auto_ptr<te::dt::AbstractData> data(dataset->getValue(indexes[0]));
   assert(data.get());

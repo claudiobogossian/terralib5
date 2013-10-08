@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../common/Singleton.h"
+#include "../common/UnitOfMeasure.h"
 #include "Config.h"
 #include "SpatialReferenceSystem.h"
 
@@ -35,6 +36,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -44,7 +46,7 @@
 #include <boost/multi_index/ordered_index.hpp>
 
 namespace te
-{
+{  
   namespace srs
   {
     /*!
@@ -213,6 +215,18 @@ namespace te
       \return a pair of iterators pointing to the first and last coordnate system representation in the manager.
        */     
       std::pair<te::srs::SpatialReferenceSystemManager::iterator,te::srs::SpatialReferenceSystemManager::iterator> getIterators() const;
+  
+      /*!
+       \brief Returns the unit of measure for a SRS with a given id.
+       \return A pointer to the unit of measure or a null pointer if it the SRS could not be founded.
+       */
+      std::auto_ptr<te::common::UnitOfMeasure> getUnit(unsigned int id, const std::string& authName);
+      
+      /*!
+       \brief Checks if a SRS with a given id refers to a geographic spatial reference system.
+       \return True if the SRS with a given id refers to a geographic spatial reference system or false if not or not founded in the Manager.
+       */
+      bool isGeographic(unsigned int id, const std::string& authName);
       
     protected:
       

@@ -92,8 +92,6 @@ te::qt::widgets::TextFrame::TextFrame(const QPointF& p, const QString& txt, cons
 
   show();
   createMenu();
-
-  installEventFilter(this);
 }
 
 te::qt::widgets::TextFrame::TextFrame(const TextFrame& rhs) :
@@ -137,8 +135,6 @@ te::qt::widgets::TextFrame::TextFrame(const TextFrame& rhs) :
 
   show();
   createMenu();
-
-  installEventFilter(this);
 }
 
 te::qt::widgets::TextFrame::~TextFrame()
@@ -158,6 +154,7 @@ te::qt::widgets::TextFrame& te::qt::widgets::TextFrame::operator=(const TextFram
   if(this != &rhs)
   {
     te::qt::widgets::Frame::operator=(rhs);
+    setWindowTitle("TextFrame");
     m_cor = rhs.m_cor;
     m_point = rhs.m_point;
     m_angle = rhs.m_angle;
@@ -179,8 +176,6 @@ te::qt::widgets::TextFrame& te::qt::widgets::TextFrame::operator=(const TextFram
 
     show();
     createMenu();
-
-    installEventFilter(this);
   }
 
   return *this;
@@ -209,6 +204,11 @@ QString te::qt::widgets::TextFrame::getText()
 QRectF te::qt::widgets::TextFrame::getTextRect()
 {
   return m_frameRect;
+}
+
+QPixmap* te::qt::widgets::TextFrame::getPixmap()
+{
+  return &m_pixmap;
 }
 
 void te::qt::widgets::TextFrame::calculateTextRect(QRectF& rt)
@@ -835,206 +835,191 @@ void te::qt::widgets::TextFrame::toolTip(const QPoint& p, const QString& type)
     QToolTip::showText(p, strikeOut, this);
 }
 
-bool te::qt::widgets::TextFrame::eventFilter(QObject* obj, QEvent* e)
+void te::qt::widgets::TextFrame::mousePressEvent(QMouseEvent* mouseEvent)
 {
-  // return true to stop the event; otherwise return false.
-  int type = e->type();
+  QMatrix matrix = m_layoutEditor->getMatrixPaperViewToVp();
 
-  if(obj == this) 
+  if(mouseEvent->buttons() == Qt::LeftButton)
   {
-    QMatrix matrix = m_layoutEditor->getMatrixPaperViewToVp();
+    // start edition
+    QPoint p = mouseEvent->pos();
+    m_pressPoint = p;
+    m_auxFrameRect = matrix.mapRect(m_frameRect);
+    m_copyAuxFrameRect = m_auxFrameRect;
+    m_auxStretch = m_stretch;
+    m_auxPointSize = m_pointSize;
+    m_auxWidth = m_auxFrameRect.width();
+    m_auxHeight = m_auxFrameRect.height();
+    m_iniAngle = m_angle;
+    m_auxAngle = m_angle;
+    m_refAngle = getAngle(p);
+    m_undo = false;
 
-    if(type == QEvent::MouseButtonPress)
+    m_layoutEditor->raiseDraftLayoutEditor();
+  }
+  else if(mouseEvent->buttons() == Qt::RightButton)
+  {
+    QPoint gp = mouseEvent->globalPos();
+    if(m_selected == 10)
     {
-      QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-
-      if(mouseEvent->buttons() == Qt::LeftButton)
-      {
-        // start edition
-        QPoint p = mouseEvent->pos();
-        m_pressPoint = p;
-        m_auxFrameRect = matrix.mapRect(m_frameRect);
-        m_copyAuxFrameRect = m_auxFrameRect;
-        m_auxStretch = m_stretch;
-        m_auxPointSize = m_pointSize;
-        m_auxWidth = m_auxFrameRect.width();
-        m_auxHeight = m_auxFrameRect.height();
-        m_iniAngle = m_angle;
-        m_auxAngle = m_angle;
-        m_refAngle = getAngle(p);
-        m_undo = false;
-
-        m_layoutEditor->raiseDraftLayoutEditor();
-      }
-      else if(mouseEvent->buttons() == Qt::RightButton)
-      {
-        QPoint gp = mouseEvent->globalPos();
-        if(m_selected == 10)
-        {
-          QAction* action = m_menu->exec(gp);
-          if(action == m_setFamilyAction)
-            changeFontFamily();
-          else if(action == m_setColorAction)
-            changeTextColor();
-          else if(action == m_setTextAction)
-            changeText();
-          else if(action == m_showTooTipAction)
-            showToolTip(true);
-          else if(action == m_hideTooTipAction)
-            showToolTip(false);
-        }
-      }
-      return false;
-    }
-    else if (type == QEvent::MouseMove)
-    {
-      QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-      QPoint p = mouseEvent->pos();
-      QPoint gp = mouseEvent->globalPos();
-
-      if(mouseEvent->buttons() == Qt::NoButton)
-      {
-        // only moving the mouse (without press any button)
-        // search selection point
-        m_dragging = false;
-        getSelectionPoint(p);
-        setCursor();
-        toolTip(gp, "Selection");
-
-        if(m_selected == 0)
-        {
-          m_layoutEditor->setFrameSelected(0);
-          if(!(fabs(m_angle) == 0 || fabs(m_angle) == 90 || fabs(m_angle) == 180))
-            lower(); // teste
-          return false;
-        }
-        else
-        {
-          if(m_layoutEditor->getFrameSelected() != this)
-            m_layoutEditor->setFrameSelected(this);
-        }
-
-      }
-      else if(mouseEvent->buttons() == Qt::LeftButton)
-      {
-        // mouse drag with left buttom
-        // edit from selection point
-        m_dragging = true;
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-        QPoint p = mouseEvent->pos();
-        QPoint gp = mouseEvent->globalPos();
-        QPoint d = m_pressPoint - p;
-        int pointSize = m_pointSize;
-
-        if(m_selected != 0)
-        {
-          if(m_undo == false)
-          {
-            m_layoutEditor->insertCopy2Undo(this);
-            m_undo = true;
-          }
-          if(m_selected == 1 || m_selected == 3 || m_selected == 5 || m_selected == 7) // rotate using corners
-          {
-            double beta = getAngle(p);
-            double ang = beta - m_refAngle;
-            adjustAngleRange(ang);
-
-            m_angle = m_iniAngle + ang;
-            adjustAngleRange(m_angle);
-
-            // resolucao angular = 1 grau
-            m_angle = qRound(m_angle);
-            toolTip(gp, "Rotate");
-          }
-          else if(m_selected == 2 || m_selected == 6) // change pointSize
-          {
-            QPoint dif = p - QPoint(width()/2, height()/2);
-            double height = 2 * qSqrt(dif.x() * dif.x() + dif.y() * dif.y());
-
-            int ps = qRound(m_auxPointSize * height / m_auxHeight);
-            setPointSize(ps);
-            QPointF center = m_auxFrameRect.center();
-            calculateTextRect(m_auxFrameRect);
-            m_auxFrameRect.moveCenter(center);
-            toolTip(gp, "PointSize");
-          }
-          else if(m_selected == 4 || m_selected == 8) // stretch
-          {
-            QPoint dif = p - QPoint(width()/2, height()/2);
-            double width = 2 * qSqrt(dif.x() * dif.x() + dif.y() * dif.y());
-
-            int stretch = qRound(m_auxStretch * width / m_auxWidth);
-            setStretch(stretch);
-            QPointF center = m_auxFrameRect.center();
-            calculateTextRect(m_auxFrameRect);
-            m_auxFrameRect.moveCenter(center);
-            toolTip(gp, "Stretch");
-          }
-          else // move frame text
-          {
-            m_auxFrameRect.moveCenter(m_auxFrameRect.center() - d);
-            m_pressPoint = p;
-          }
-
-          rubberBand();
-        }
-      }
-      return true;
-    }
-    else if(type == QEvent::MouseButtonRelease)
-    {
-      // end edition
-      if(m_selected == 0)
-        return true;
-
-      QPixmap* pixmap = m_layoutEditor->getDraftPixmap();
-      pixmap->fill(Qt::transparent);
-      verifyConstraints();
-      QPointF pp = matrix.inverted().map(m_auxFrameRect.bottomLeft());
-      adjustSize(pp);
-
-      showSelectionPoints();
-      m_layoutEditor->lowerDraftLayoutEditor();
-      m_layoutEditor->update();
-
-      if(m_selected != 10)
-      {
-        QPoint c = getCenterSelected();
-        cursor().setPos(mapToGlobal(c));
-        QMouseEvent e1(QEvent::MouseButtonPress, c, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-        QApplication::sendEvent(this, &e1);
-      }
-      return true;
-    }
-    else if(type == QEvent::Enter)
-    {
-      if(QApplication::overrideCursor() || m_dragging)
-        return false;
-
-      m_layoutEditor->setFrameSelected(this);
-      raise();
-      m_selected = 0;
-      return true;
-    }
-    else if(type == QEvent::Leave)
-    {
-      if(m_dragging)
-      {
-        if(m_selected != 0)
-          raise();
-        return false;
-      }
-
-      m_selected = 0;
-      m_layoutEditor->setFrameSelected(0);
-      lower();
-      setCursor();
-      return false;
+      QAction* action = m_menu->exec(gp);
+      if(action == m_setFamilyAction)
+        changeFontFamily();
+      else if(action == m_setColorAction)
+        changeTextColor();
+      else if(action == m_setTextAction)
+        changeText();
+      else if(action == m_showTooTipAction)
+        showToolTip(true);
+      else if(action == m_hideTooTipAction)
+        showToolTip(false);
     }
   }
+}
 
-  // pass the event on to the parent class
-  return QWidget::eventFilter(obj, e);
+void te::qt::widgets::TextFrame::mouseMoveEvent(QMouseEvent* mouseEvent)
+{
+  QMatrix matrix = m_layoutEditor->getMatrixPaperViewToVp();
+  QPoint p = mouseEvent->pos();
+  QPoint gp = mouseEvent->globalPos();
+
+  if(mouseEvent->buttons() == Qt::NoButton)
+  {
+    // only moving the mouse (without press any button)
+    // search selection point
+    m_dragging = false;
+    getSelectionPoint(p);
+    setCursor();
+    toolTip(gp, "Selection");
+
+    if(m_selected == 0)
+    {
+      m_layoutEditor->setFrameSelected(0);
+      if(!(fabs(m_angle) == 0 || fabs(m_angle) == 90 || fabs(m_angle) == 180))
+        lower(); // teste
+      return;
+    }
+    else
+    {
+      if(m_layoutEditor->getFrameSelected() != this)
+        m_layoutEditor->setFrameSelected(this);
+    }
+
+  }
+  else if(mouseEvent->buttons() == Qt::LeftButton)
+  {
+    // mouse drag with left buttom
+    // edit from selection point
+    m_dragging = true;
+    QPoint p = mouseEvent->pos();
+    QPoint gp = mouseEvent->globalPos();
+    QPoint d = m_pressPoint - p;
+    int pointSize = m_pointSize;
+
+    if(m_selected != 0)
+    {
+      if(m_undo == false)
+      {
+        m_layoutEditor->insertCopy2Undo(this);
+        m_undo = true;
+      }
+      if(m_selected == 1 || m_selected == 3 || m_selected == 5 || m_selected == 7) // rotate using corners
+      {
+        double beta = getAngle(p);
+        double ang = beta - m_refAngle;
+        adjustAngleRange(ang);
+
+        m_angle = m_iniAngle + ang;
+        adjustAngleRange(m_angle);
+
+        // resolucao angular = 1 grau
+        m_angle = qRound(m_angle);
+        toolTip(gp, "Rotate");
+      }
+      else if(m_selected == 2 || m_selected == 6) // change pointSize
+      {
+        QPoint dif = p - QPoint(width()/2, height()/2);
+        double height = 2 * qSqrt(dif.x() * dif.x() + dif.y() * dif.y());
+
+        int ps = qRound(m_auxPointSize * height / m_auxHeight);
+        setPointSize(ps);
+        QPointF center = m_auxFrameRect.center();
+        calculateTextRect(m_auxFrameRect);
+        m_auxFrameRect.moveCenter(center);
+        toolTip(gp, "PointSize");
+      }
+      else if(m_selected == 4 || m_selected == 8) // stretch
+      {
+        QPoint dif = p - QPoint(width()/2, height()/2);
+        double width = 2 * qSqrt(dif.x() * dif.x() + dif.y() * dif.y());
+
+        int stretch = qRound(m_auxStretch * width / m_auxWidth);
+        setStretch(stretch);
+        QPointF center = m_auxFrameRect.center();
+        calculateTextRect(m_auxFrameRect);
+        m_auxFrameRect.moveCenter(center);
+        toolTip(gp, "Stretch");
+      }
+      else // move frame text
+      {
+        m_auxFrameRect.moveCenter(m_auxFrameRect.center() - d);
+        m_pressPoint = p;
+      }
+
+      rubberBand();
+    }
+  }
+}
+
+void te::qt::widgets::TextFrame::mouseReleaseEvent(QMouseEvent*)
+{
+  // end edition
+  if(m_selected == 0)
+    return;
+
+  QMatrix matrix = m_layoutEditor->getMatrixPaperViewToVp();
+  QPixmap* pixmap = m_layoutEditor->getDraftPixmap();
+  pixmap->fill(Qt::transparent);
+  verifyConstraints();
+  QPointF pp = matrix.inverted().map(m_auxFrameRect.bottomLeft());
+  adjustSize(pp);
+
+  showSelectionPoints();
+  m_layoutEditor->lowerDraftLayoutEditor();
+  m_layoutEditor->update();
+
+  if(m_selected != 10)
+  {
+    QPoint c = getCenterSelected();
+    cursor().setPos(mapToGlobal(c));
+    QMouseEvent e1(QEvent::MouseButtonPress, c, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    QApplication::sendEvent(this, &e1);
+  }
+}
+
+void te::qt::widgets::TextFrame::enterEvent(QEvent*)
+{
+  if(QApplication::overrideCursor() || m_dragging)
+    return;
+
+  m_layoutEditor->setFrameSelected(this);
+  raise();
+  m_selected = 0;
+}
+
+void te::qt::widgets::TextFrame::leaveEvent(QEvent*)
+{
+  if(m_dragging)
+  {
+    if(m_selected != 0)
+      raise();
+    return;
+  }
+
+  m_selected = 0;
+  m_layoutEditor->setFrameSelected(0);
+  lower();
+  setCursor();
 }
 
 void te::qt::widgets::TextFrame::setCursor()

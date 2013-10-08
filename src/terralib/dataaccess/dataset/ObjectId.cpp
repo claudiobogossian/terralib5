@@ -33,6 +33,12 @@ te::da::ObjectId::ObjectId()
 {
 }
 
+te::da::ObjectId::ObjectId(const ObjectId& rhs)
+{
+  for(std::size_t i = 0; i < rhs.m_data.size(); ++i)
+    m_data.push_back(rhs.m_data[i].clone());
+}
+
 te::da::ObjectId::~ObjectId()
 {
 }
@@ -57,6 +63,11 @@ void te::da::ObjectId::addValue(te::dt::AbstractData* data)
   assert(data);
 
   m_data.push_back(data);
+}
+
+te::da::ObjectId* te::da::ObjectId::clone() const
+{
+  return new ObjectId(*this);
 }
 
 bool te::da::ObjectId::operator<(const ObjectId& rhs) const

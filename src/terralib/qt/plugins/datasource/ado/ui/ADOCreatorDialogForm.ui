@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>267</width>
-    <height>330</height>
+    <width>273</width>
+    <height>339</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -174,7 +174,7 @@
      <item row="4" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,0">
        <item>
-        <widget class="QPushButton" name="m_helpPushButton">
+        <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
          <property name="text">
           <string>&amp;Help</string>
          </property>
@@ -218,9 +218,19 @@
   </layout>
   <zorder></zorder>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
+  <tabstop>m_providerComboBox</tabstop>
   <tabstop>m_fileLineEdit</tabstop>
   <tabstop>m_searchDatabaseToolButton</tabstop>
+  <tabstop>m_passwordLineEdit</tabstop>
+  <tabstop>m_createOGCTablesCheckBox</tabstop>
   <tabstop>m_applyPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>

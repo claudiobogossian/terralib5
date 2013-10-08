@@ -32,6 +32,7 @@
 #include "../raster/Grid.h"
 #include "../datatype/Enums.h"
 #include "../common/StringUtils.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <algorithm>
 #include <cfloat>
@@ -889,11 +890,25 @@ namespace te
           break;
         }
       }      
+      
+      // Progress interface
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( enableProgressInterface )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setTotalSteps( 100 );
+        progressPtr->setMessage( "Segmentation" );
+      }          
+      
+      // Segmentation loop
         
       double similarityThreshold = m_parameters.m_segmentsSimilarityThreshold / 
         (double)( m_parameters.m_segmentsSimIncreaseSteps + 1 );
       unsigned int mergedSegments = 0;
+      unsigned int maxMergedSegments = 0;
       unsigned int noMergeIterations = 0;
+      int currStep = 0;
       
 //      exportSegs2Tif( segmentsIds, true, "merging" + 
 //        te::common::Convert2String( mergetIterations ) + ".tif" );
@@ -905,6 +920,30 @@ namespace te
 //        exportSegs2Tif( segmentsIds, true, "merging" + 
 //          te::common::Convert2String( mergetIterations ) + ".tif" );
 
+        if( enableProgressInterface )
+        {
+          if( maxMergedSegments )
+          {
+              currStep = (int)( 100.0 * ( ( (double)( maxMergedSegments - mergedSegments ) ) / 
+                ((double)maxMergedSegments ) ) / 2.0 );
+            
+            if( currStep > progressPtr->getCurrentStep() )
+            {
+              progressPtr->pulse();
+            }
+          }
+          
+          if( ! progressPtr->isActive() ) 
+          {
+            return false;
+          }   
+          
+          if( maxMergedSegments < mergedSegments )
+          {
+            maxMergedSegments = mergedSegments;
+          }                  
+        }
+        
         if( mergedSegments == 0 )
         {
           ++noMergeIterations;
@@ -927,12 +966,38 @@ namespace te
       
       if( m_parameters.m_minSegmentSize > 1 )
       {
+        maxMergedSegments = 0;
+        
         while( true )
         {
           mergedSegments = mergeSmallSegments( m_parameters.m_minSegmentSize, 
             segmenterIdsManager, *mergerPtr, segmentsIndexer );
 //        exportSegs2Tif( segmentsIds, true, "mergingSmall" + 
 //          te::common::Convert2String( mergetIterations ) + ".tif" );
+
+          if( enableProgressInterface )
+          {
+            if( maxMergedSegments )
+            {
+              currStep = 50 + (int)( 100.0 * ( ( (double)( maxMergedSegments - mergedSegments ) ) / 
+                ((double)maxMergedSegments ) ) / 2.0 );
+              
+              if( currStep > progressPtr->getCurrentStep() )
+              {
+                progressPtr->pulse();
+              }
+            }
+            
+            if( ! progressPtr->isActive() ) 
+            {
+              return false;
+            }          
+            
+            if( maxMergedSegments < mergedSegments )
+            {
+              maxMergedSegments = mergedSegments;
+            }             
+          }
           
           if( mergedSegments == 0 )
           {

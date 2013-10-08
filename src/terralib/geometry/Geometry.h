@@ -39,6 +39,9 @@
 #include <map>
 #include <string>
 
+// Boost
+#include <boost/shared_ptr.hpp>
+
 namespace te
 {
   namespace gm
@@ -862,6 +865,9 @@ namespace te
 
         static std::map<std::string, GeomType> sm_geomTypeMap;  //!< A set of geometry type names (in UPPER CASE).
     };
+	
+	//Typedef 
+    typedef boost::shared_ptr<Geometry>       GeometryShrPtr;
   } // end namespace gm
 }   // end namespace te
 
