@@ -138,7 +138,9 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_mapCursorSize(QSize(20, 20)),
     m_explorer(0),
     m_display(0),
+    m_symbolizerExplorer(0),
     m_project(0),
+    m_progressDockWidget(0),
     m_controller(0)
 {
   m_controller = new ApplicationController;
