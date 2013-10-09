@@ -319,6 +319,10 @@ std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std
     pk->add(type->getProperty(pos));
   }
 
+  int srs = te::ogr::Convert2TerraLibProjection(l->GetSpatialRef());
+
+  te::da::GetFirstGeomProperty(type.get())->setSRID(srs);
+
   m_ogrDs->getOGRDataSource()->ReleaseResultSet(l);
 
   return type;

@@ -26,6 +26,7 @@
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../datatype/SimpleData.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../Exception.h"
 
 // Qt
 #include <QObject>
@@ -137,6 +138,15 @@ void CleanAbstractData(std::multimap<std::vector<te::dt::AbstractData*>, int, Da
   d.clear();
 }
 
+size_t GetRowPosition(const size_t& pos, const std::vector<size_t>& posVec)
+{
+  for(size_t i=0; i<posVec.size(); i++)
+    if(posVec[i] == pos)
+      return i;
+
+  throw te::qt::widgets::Exception("Position not found.");
+}
+
 te::qt::widgets::Promoter::Promoter() 
 {
 }
@@ -174,9 +184,9 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
 
   dset->moveFirst();
 
-  te::common::TaskProgress task(QObject::tr("Executing promotion...").toStdString(), te::common::TaskProgress::UNDEFINED, m_logicalRows.size());
+  te::common::TaskProgress task(QObject::tr("Preprocessing primary keys...").toStdString(), te::common::TaskProgress::UNDEFINED, m_logicalRows.size());
 
-  for(size_t i=0; i<m_logicalRows.size(); i++)
+  for(size_t i=0; i<setSize; i++)
   {
     if(!task.isActive())
     {
@@ -187,6 +197,7 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
     te::da::ObjectId* obj = te::da::GenerateOID(dset, colsNames);
     
     m_PkeysRows[obj] = i;
+
     m_logicalRows[i] = i;
 
     dset->moveNext();
@@ -308,5 +319,8 @@ size_t te::qt::widgets::Promoter::map2Row(te::da::ObjectId* oid)
 {
   std::map<te::da::ObjectId*, size_t, te::common::LessCmp<te::da::ObjectId*> >::iterator it = m_PkeysRows.find(oid);
 
-  return it->second;
+  if(it == m_PkeysRows.end())
+    throw Exception("Fail to get position of Object id");
+
+  return (m_logicalRows.empty()) ? it->second : GetRowPosition(it->second, m_logicalRows);
 }
