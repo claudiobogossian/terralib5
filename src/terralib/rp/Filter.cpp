@@ -215,9 +215,9 @@ bool te::rp::Filter::execute(AlgorithmOutputParameters& outputParams) throw(te::
       return execMedianFilter();
       break;
     }
-    case InputParameters::DilatationFilterT:
+    case InputParameters::DilationFilterT:
     {
-      return execDilatationFilter();
+      return execDilationFilter();
       break;
     }
     case InputParameters::ErosionFilterT:
@@ -509,12 +509,8 @@ bool te::rp::Filter::execMedianFilter()
           for (int c = -(W / 2); c <= (W / 2); c++)
             pixels_in_window.push_back(it.getValue(c, r));
 
-        std::sort (pixels_in_window.begin(), pixels_in_window.end(), order_function);
+        std::sort(pixels_in_window.begin(), pixels_in_window.end(), order_function);
         pixel_median = pixels_in_window[pixels_in_window.size() / 2];
-        
-for (unsigned int i = 0; i < pixels_in_window.size(); i++)
-  std::cout << pixels_in_window[i] << " ";
-std::cout << "-> " << pixel_median << std::endl;
       }
       else
         pixel_median = it.getValue();
@@ -530,12 +526,116 @@ std::cout << "-> " << pixel_median << std::endl;
   return true;
 }
 
-bool te::rp::Filter::execDilatationFilter()
+bool te::rp::Filter::execDilationFilter()
 {
+  assert(m_inputParameters.m_inRasterPtr);
+  assert(m_outputParametersPtr->m_outRasterPtr);
+  
+  te::common::TaskProgress task(TR_RP("Dilation Filter"),
+                                te::common::TaskProgress::UNDEFINED,
+                                m_inputParameters.m_inRasterBands.size());
+
+  int H = m_inputParameters.m_windowH;
+  int W = m_inputParameters.m_windowW;
+
+  unsigned int R;
+  unsigned int C;
+  const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
+  const unsigned int MC = m_inputParameters.m_inRasterPtr->getNumberOfColumns();
+
+  double pixel_dilation;
+  double pixel;
+  for (unsigned int b = 0; b < m_inputParameters.m_inRasterBands.size(); b++)
+  {
+    unsigned int nband = m_inputParameters.m_inRasterBands[b];
+    te::rst::Band* band = m_inputParameters.m_inRasterPtr->getBand(nband);
+    te::rst::BandIteratorWindow<unsigned char> it = te::rst::BandIteratorWindow<unsigned char>::begin(band, W, H);
+    te::rst::BandIteratorWindow<unsigned char> itend = te::rst::BandIteratorWindow<unsigned char>::end(band, W, H);
+
+    while (it != itend)
+    {
+      R = it.getRow();
+      C = it.getColumn();
+
+      if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
+          (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+      {
+        pixel_dilation = -1.0 * std::numeric_limits<double>::max();
+        for (int r = -(H / 2); r <= (H / 2); r++)
+          for (int c = -(W / 2); c <= (W / 2); c++)
+          {
+            pixel = it.getValue(c, r);
+            if (pixel > pixel_dilation)
+              pixel_dilation = pixel;
+          }
+      }
+      else
+        pixel_dilation = it.getValue();
+
+      m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixel_dilation, b);
+      ++it;
+    }
+    task.pulse();
+  }
+  if (m_outputParametersPtr->m_normalizeOutput)
+    NormalizeRaster(*m_outputParametersPtr->m_outRasterPtr);
+
   return true;
 }
 
 bool te::rp::Filter::execErosionFilter()
 {
+  assert(m_inputParameters.m_inRasterPtr);
+  assert(m_outputParametersPtr->m_outRasterPtr);
+  
+  te::common::TaskProgress task(TR_RP("Erosion Filter"),
+                                te::common::TaskProgress::UNDEFINED,
+                                m_inputParameters.m_inRasterBands.size());
+
+  int H = m_inputParameters.m_windowH;
+  int W = m_inputParameters.m_windowW;
+
+  unsigned int R;
+  unsigned int C;
+  const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
+  const unsigned int MC = m_inputParameters.m_inRasterPtr->getNumberOfColumns();
+
+  double pixel_erosion;
+  double pixel;
+  for (unsigned int b = 0; b < m_inputParameters.m_inRasterBands.size(); b++)
+  {
+    unsigned int nband = m_inputParameters.m_inRasterBands[b];
+    te::rst::Band* band = m_inputParameters.m_inRasterPtr->getBand(nband);
+    te::rst::BandIteratorWindow<unsigned char> it = te::rst::BandIteratorWindow<unsigned char>::begin(band, W, H);
+    te::rst::BandIteratorWindow<unsigned char> itend = te::rst::BandIteratorWindow<unsigned char>::end(band, W, H);
+
+    while (it != itend)
+    {
+      R = it.getRow();
+      C = it.getColumn();
+
+      if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
+          (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+      {
+        pixel_erosion = std::numeric_limits<double>::max();
+        for (int r = -(H / 2); r <= (H / 2); r++)
+          for (int c = -(W / 2); c <= (W / 2); c++)
+          {
+            pixel = it.getValue(c, r);
+            if (pixel < pixel_erosion)
+              pixel_erosion = pixel;
+          }
+      }
+      else
+        pixel_erosion = it.getValue();
+
+      m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixel_erosion, b);
+      ++it;
+    }
+    task.pulse();
+  }
+  if (m_outputParametersPtr->m_normalizeOutput)
+    NormalizeRaster(*m_outputParametersPtr->m_outRasterPtr);
+
   return true;
 }
