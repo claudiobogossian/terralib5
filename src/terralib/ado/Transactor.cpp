@@ -151,13 +151,7 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
   _RecordsetPtr result = m_conn->query(*sql, connected);
 
-  FieldsPtr fields = result->GetFields();
-  std::vector<int> types;
-  std::vector<std::string> names;
-
-  te::ado::GetFieldsInfo(m_conn->getConn(), name, fields, types, names);
-
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn));
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
@@ -184,13 +178,7 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
   _RecordsetPtr result = m_conn->query(*query, connected);
 
-  FieldsPtr fields = result->GetFields();
-  std::vector<int> types;
-  std::vector<std::string> names;
-
-  te::ado::GetFieldsInfo(m_conn->getConn(), name, fields, types, names);
-
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn));
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
@@ -254,7 +242,7 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& que
     names.push_back(std::string(fields->GetItem(i)->GetName()));
   }
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn));
 }
 
 void te::ado::Transactor::execute(const te::da::Query& command)
@@ -1486,17 +1474,16 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
       case ::adUnsignedInt:
       case ::adUnsignedSmallInt:
       case ::adUnsignedTinyInt:
-      case ADOX::adLongVarBinary:
+        p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+        break;
+
       case ADOX::adBinary:
+      case ADOX::adLongVarBinary:
       {
         if(te::ado::IsGeomProperty(conn, dsName, colName))
-        {
           p = new te::gm::GeometryProperty(colName, te::ado::GetSRID(conn, dsName, colName), te::ado::GetType(conn, dsName, colName));
-        }
         else
-        {
           p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
-        }
 
         break;
       }
