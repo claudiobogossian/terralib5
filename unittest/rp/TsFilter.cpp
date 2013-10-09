@@ -37,36 +37,59 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsFilter );
 
-void TsFilter::Sobel()
+void TsFilter::Filters()
 {
 // open input raster
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
+// define a vector of filter names and types to reduce lines of code for testing
+  std::vector<std::string> filterNames;
+  filterNames.push_back("sobel");
+  filterNames.push_back("mean");
+  filterNames.push_back("mode");
+  filterNames.push_back("median");
+  filterNames.push_back("dilation");
+  filterNames.push_back("erosion");
+
+  std::vector<te::rp::Filter::InputParameters::FilterType> filterTypes;
+  filterTypes.push_back(te::rp::Filter::InputParameters::SobelFilterT);
+  filterTypes.push_back(te::rp::Filter::InputParameters::MeanFilterT);
+  filterTypes.push_back(te::rp::Filter::InputParameters::ModeFilterT);
+  filterTypes.push_back(te::rp::Filter::InputParameters::MedianFilterT);
+  filterTypes.push_back(te::rp::Filter::InputParameters::DilationFilterT);
+  filterTypes.push_back(te::rp::Filter::InputParameters::ErosionFilterT);
+
+  for (unsigned int f = 0; f < filterNames.size(); f++)
+  {
+    std::cout << "Testing filter " << filterNames[f] << std::endl;
+    
 // create output raster for sobel filter in band 0
-  std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop_sobel_filter.tif";
+    std::map<std::string, std::string> orinfo;
+    orinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop_" + filterNames[f] + "_filter.tif";
 
 // create filter algorithm parameters
-  te::rp::Filter::InputParameters filterInputParameters;
+    te::rp::Filter::InputParameters filterInputParameters;
 // examples of filters include MeanFilterT, ModeFilterT, MedianFilterT, DilationFilterT and ErosionFilterT
-  filterInputParameters.m_type = te::rp::Filter::InputParameters::SobelFilterT;
-  filterInputParameters.m_windowH = 3;
-  filterInputParameters.m_windowW = 3;
-  filterInputParameters.m_enableProgress = true;
-  filterInputParameters.m_inRasterPtr = rin;
-  filterInputParameters.m_inRasterBands.push_back(0);
+    filterInputParameters.m_type = filterTypes[f];
+    filterInputParameters.m_windowH = 3;
+    filterInputParameters.m_windowW = 3;
+    filterInputParameters.m_enableProgress = true;
+    filterInputParameters.m_inRasterPtr = rin;
+    for (unsigned int b = 0; b < rin->getNumberOfBands(); b++)
+      filterInputParameters.m_inRasterBands.push_back(b);
 
-  te::rp::Filter::OutputParameters filterOutputParameters;
-  filterOutputParameters.m_createdOutRasterInfo = orinfo;
-  filterOutputParameters.m_createdOutRasterDSType = "GDAL";
-  filterOutputParameters.m_normalizeOutput = false;
+    te::rp::Filter::OutputParameters filterOutputParameters;
+    filterOutputParameters.m_createdOutRasterInfo = orinfo;
+    filterOutputParameters.m_createdOutRasterDSType = "GDAL";
+    filterOutputParameters.m_normalizeOutput = false;
 
 // execute the algorithm
-  te::rp::Filter filterInstance;
-  CPPUNIT_ASSERT( filterInstance.initialize(filterInputParameters) );
-  CPPUNIT_ASSERT( filterInstance.execute(filterOutputParameters) );
+    te::rp::Filter filterInstance;
+    CPPUNIT_ASSERT(filterInstance.initialize(filterInputParameters));
+    CPPUNIT_ASSERT(filterInstance.execute(filterOutputParameters));
+  }
 
 // clean up
   delete rin;

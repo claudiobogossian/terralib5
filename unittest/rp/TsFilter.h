@@ -43,13 +43,13 @@ class TsFilter : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsFilter );
 
-  CPPUNIT_TEST( Sobel );
+  CPPUNIT_TEST( Filters );
 
   CPPUNIT_TEST_SUITE_END();
 
   protected :
 
-    void Sobel();
+    void Filters();
 
 };
 
