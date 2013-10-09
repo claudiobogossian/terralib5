@@ -14,4 +14,5 @@ add_subdirectory(terralib_unittest_rp_register)
 add_subdirectory(terralib_unittest_rp_edgefilter)
 add_subdirectory(terralib_unittest_rp_skeleton)
 add_subdirectory(terralib_unittest_rp_ihsfusion)
+add_subdirectory(terralib_unittest_rp_filter)
 

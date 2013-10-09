@@ -75,7 +75,7 @@ namespace te
               MeanFilterT = 2,         //!< The resultant pixel will be the mean of pixels in the convolution window.
               ModeFilterT = 3,         //!< The resultant pixel will be the mode of pixels in the convolution window.
               MedianFilterT = 4,       //!< The resultant pixel will be the median of pixels in the convolution window.
-              DilatationFilterT = 5,   //!< The resultant pixel will be the highest pixel value in the convolution window.
+              DilationFilterT = 5,     //!< The resultant pixel will be the highest pixel value in the convolution window.
               ErosionFilterT = 6,      //!< The resultant pixel will be the lowest pixel value in the convolution window.
             };
 
@@ -182,10 +182,10 @@ namespace te
         bool execMedianFilter();
 
         /*!
-          \brief Execute the dilatation filter following the internal parameters.
+          \brief Execute the dilation filter following the internal parameters.
           \return true if OK, false on errors.
         */
-        bool execDilatationFilter();
+        bool execDilationFilter();
 
         /*!
           \brief Execute the erosion filter following the internal parameters.
