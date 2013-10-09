@@ -51,12 +51,14 @@ te::plugin::CppPluginEngine::CppPluginEngine()
 
 te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& pInfo)
 {
+  PluginInfo internalPluginInfo = pInfo;
+  
 // get the plugin's shared library name in the resources list
-  std::vector<PluginInfo::Resource>::const_iterator it = std::find_if(pInfo.m_resources.begin(),
-                                                                      pInfo.m_resources.end(),
+  std::vector<PluginInfo::Resource>::const_iterator it = std::find_if(internalPluginInfo.m_resources.begin(),
+                                                                      internalPluginInfo.m_resources.end(),
                                                                       PluginInfo::Finder1st("SharedLibraryName"));
 
-  if(it == pInfo.m_resources.end())
+  if(it == internalPluginInfo.m_resources.end())
   {
     std::string m  = TR_PLUGIN("Shared library name not informed for plugin: ");
                 m += pInfo.m_name;
@@ -75,10 +77,10 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
   {
 // if not loaded, load it!
 
-    boost::filesystem::path pluginFile( pInfo.m_folder );
+    boost::filesystem::path pluginFile( internalPluginInfo.m_folder );
     pluginFile /= libName;
     
-// the plugin library file may be in a special dir informed by pInfo.m_folder
+// the plugin library file may be in a special dir informed by internalPluginInfo.m_folder
     if( boost::filesystem::exists(pluginFile) && 
       boost::filesystem::is_regular_file(pluginFile) )
     {
@@ -96,6 +98,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
         if(boost::filesystem::exists(pluginFile) &&
           boost::filesystem::is_regular_file(pluginFile) )
         {
+          internalPluginInfo.m_folder = m_defaultSearchDirs[ dirIdx ];
           slib.reset(new te::common::Library(pluginFile.string(), true));
           break;
         }
@@ -106,7 +109,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
   if(slib.get() == 0)
   {
     std::string m  = TR_PLUGIN("Could not find load plugin: ");
-                m += pInfo.m_name;
+                m += internalPluginInfo.m_name;
     throw te::common::Exception(m);
   }  
   
@@ -119,18 +122,18 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
   if(getPluginFptr == NULL)
   {
     std::string m  = TR_PLUGIN("Could not find CppPluginGetInstance function into the plugin's code: ");
-                m += pInfo.m_name;
+                m += internalPluginInfo.m_name;
                 m += "!";
 
     throw te::common::Exception(m);
   }
 
-  std::auto_ptr<Plugin> cppPlugin(getPluginFptr(pInfo));
+  std::auto_ptr<Plugin> cppPlugin(getPluginFptr(internalPluginInfo));
 
   if(cppPlugin.get() == 0)
   {
     std::string m  = TR_PLUGIN("CppPluginGetInstance returned a null plugin instance: ");
-                m += pInfo.m_name;
+                m += internalPluginInfo.m_name;
                 m += "!";
 
     throw te::common::Exception(m);
