@@ -70,13 +70,11 @@ namespace te
         /*!
           \brief It returns the default plugins libraries search directories.
 
-          This method will generate directory paths in the following order:
+          This method will generate directory paths for the sub-directories ".", "lib", "win32", "win64" and the macro TE_DEFAULT_PLUGINS_DIR within:
           <ul>
           <li> The current execution directory.</li>
-          <li> The directory "lib" under the current execution directory.</li>
-          <li> The directory "lib" under the directory given by an environment variable defined by TERRALIB_DIR_ENVIRONMENT_VARIABLE)</li>
-          <li> The directory defined by the macro TE_DEFAULT_PLUGINS_DIR</li>
-          <li> The directory defined by the macro TE_DEFAULT_PLUGINS_DIR unde the directory defined by TERRALIB_DIR_ENVIRONMENT_VARIABLE</li>
+          <li> The enviromental variable with a name defined by the macro TE_DIR_ENVIRONMENT_VARIABLE</li>
+		  <li> The enviromental variable "TERRALIB_DIR"</li>
           <li> Directories listed by the environmental variable LD_LIBRARY_PATH.</li>
           <li> Directories listed by the environmental variable PATH.</li>
           </ul>

@@ -177,6 +177,20 @@ void te::plugin::CppPluginEngine::getDefaultDirs( std::vector< std::string >& di
     if(boost::filesystem::is_directory(p))
       dirs.push_back( boost::filesystem::system_complete( p ).string() );   
   }
+
+  {
+    boost::filesystem::path p("win32");
+    
+    if(boost::filesystem::is_directory(p))
+      dirs.push_back( boost::filesystem::system_complete( p ).string() );   
+  }
+
+  {
+    boost::filesystem::path p("win64");
+    
+    if(boost::filesystem::is_directory(p))
+      dirs.push_back( boost::filesystem::system_complete( p ).string() );   
+  }
   
   if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
   {
@@ -188,7 +202,8 @@ void te::plugin::CppPluginEngine::getDefaultDirs( std::vector< std::string >& di
 
     if(e != 0)
     {
-	  dirs.push_back( boost::filesystem::system_complete( e ).string() );
+	  if(boost::filesystem::is_directory(e))
+        dirs.push_back( boost::filesystem::system_complete(e).string() );
 
       {
         boost::filesystem::path p(e);
@@ -229,7 +244,8 @@ void te::plugin::CppPluginEngine::getDefaultDirs( std::vector< std::string >& di
 
     if(e != 0)
     {
-	  dirs.push_back( boost::filesystem::system_complete( e ).string() );
+	  if(boost::filesystem::is_directory(e))
+        dirs.push_back( boost::filesystem::system_complete(e).string() );
 
       {
         boost::filesystem::path p(e);
@@ -264,30 +280,7 @@ void te::plugin::CppPluginEngine::getDefaultDirs( std::vector< std::string >& di
       }
     }
   }
-
-  {
-    char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
-
-    if(e != 0)
-    {
-      {
-        boost::filesystem::path p(e);
-        p /= "/lib";
-
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }        
-      
-      {
-        boost::filesystem::path p(e);
-        p /= TE_DEFAULT_PLUGINS_DIR;
-
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }
-    }
-  }
-  
+ 
   std::vector< std::string > decPath;
   te::common::GetDecompostedPathEnvVar( decPath );
   for( std::vector< std::string >::size_type decPathIdx = 0 ; decPathIdx < decPath.size() ;
