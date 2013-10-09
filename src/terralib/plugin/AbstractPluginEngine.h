@@ -67,6 +67,8 @@ namespace te
           \return It returns a loaded plugin. The caller will take the ownership of the returned plugin.
 
           \exception Exception It throws an exception if the plugin can not be loaded.
+          
+          \note If the parameter PluginInfo::m_folder does not contains the required plugin it may be searched and loaded using a set of default paths.
         */
         virtual AbstractPlugin* load(const PluginInfo& pInfo) = 0;
 

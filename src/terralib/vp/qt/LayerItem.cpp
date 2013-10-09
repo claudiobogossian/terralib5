@@ -55,7 +55,7 @@ te::vp::LayerItem::LayerItem(te::map::AbstractLayerPtr layer, QObject* parent)
 
       if(layerChild->isValid())
       {
-        te::qt::widgets::AbstractTreeItem* litem =  new LayerItem(layerChild, this);
+        te::qt::widgets::AbstractTreeItem* litem =  new te::vp::LayerItem(layerChild, this);
         m_items.push_back(litem);
       }
     }
@@ -219,4 +219,9 @@ std::vector<te::dt::Property*> te::vp::LayerItem::getSelected()
   }
 
   return selected;
+}
+
+te::qt::widgets::AbstractTreeItem::TreeItemType te::vp::LayerItem::getType() const
+{
+  return te::qt::widgets::AbstractTreeItem::LAYERITEM;
 }

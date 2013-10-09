@@ -185,6 +185,8 @@ namespace te
 
           virtual void openProject(const QString& projectFileName);
 
+          virtual void updateProject();
+
           virtual void checkProjectSave();
 
           virtual void newProject();
@@ -206,6 +208,8 @@ namespace te
           virtual void initStatusBar();
 
           virtual void initSlotsConnections();
+
+        protected:
 
           //! Qt components
           QAction* m_viewLayerExplorer;
@@ -310,14 +314,14 @@ namespace te
           //QToolBar* m_editToolBar;
           QToolBar* m_mapToolBar;
 
-// Well known Widgets
+          // Well known Widgets
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
           SymbolizerExplorer* m_symbolizerExplorer;
 
           std::vector<DataSetTableDockWidget*> m_tableDocks;
 
-// Project
+          // Project
           Project* m_project;
 
           QDockWidget* m_progressDockWidget; //!< Dock widget used to show progress information

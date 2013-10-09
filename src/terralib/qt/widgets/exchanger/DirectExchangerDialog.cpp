@@ -34,6 +34,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
+#include "../../widgets/datasource/selector/DataSourceExplorerDialog.h"
 #include "DirectExchangerDialog.h"
 #include "ui_DirectExchangerDialogForm.h"
 
@@ -64,11 +65,13 @@ te::qt::widgets::DirectExchangerDialog::DirectExchangerDialog(QWidget* parent, Q
   m_ui->m_outputPGISToolButton->setIcon(QIcon::fromTheme("datasource-postgis"));
   m_ui->m_outputADOToolButton->setIcon(QIcon::fromTheme("datasource-ado"));
   m_ui->m_outputSHPToolButton->setIcon(QIcon::fromTheme("datasource-ogr"));
+  m_ui->m_dsToolButton->setIcon(QIcon::fromTheme("datasource"));
 
 //connectors
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_dirToolButton, SIGNAL(clicked()), this, SLOT(onDirToolButtonClicked()));
+  connect(m_ui->m_dsToolButton, SIGNAL(clicked()), this, SLOT(onDataSoruceToolButtonClicked()));
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(QString)), this, SLOT(onInputLayerActivated(QString)));
   connect(m_ui->m_inputPGISToolButton, SIGNAL(clicked(bool)), this, SLOT(onInputPostGISToolButtonClicked(bool)));
   connect(m_ui->m_inputADOToolButton, SIGNAL(clicked(bool)), this, SLOT(onInputADOToolButtonClicked(bool)));
@@ -80,7 +83,6 @@ te::qt::widgets::DirectExchangerDialog::DirectExchangerDialog(QWidget* parent, Q
   //starup interface
   m_inputDataSourceType = "";
   m_outputDataSourceType = "";
-  m_outputDataDriver = "";
   m_exchangeToFile = false;
 }
 
@@ -126,15 +128,15 @@ void te::qt::widgets::DirectExchangerDialog::setInputLayers()
 
     te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
 
-    if(!dsLayer)
-      continue;
+    if(dsLayer)
+    {
+      std::string dsName = dsLayer->getDataSourceId();
 
-    std::string dsName = dsLayer->getDataSourceId();
+      te::da::DataSourcePtr dsPtr = te::da::GetDataSource(dsName);
 
-    te::da::DataSourcePtr dsPtr = te::da::GetDataSource(dsName);
-
-    if(dsPtr->getType() == m_inputDataSourceType)
-      m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+      if(dsPtr->getType() == m_inputDataSourceType)
+        m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+    }
 
     ++it;
   }
@@ -185,8 +187,7 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     //create data source
     std::map<std::string, std::string> connInfo;
     connInfo["URI"] = m_ui->m_dataSetLineEdit->text().toStdString();
-    connInfo["DRIVER"] = m_outputDataDriver;
-  
+
     std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make(m_outputDataSourceType);
     dsOGR->setConnectionInfo(connInfo);
     dsOGR->open();
@@ -399,6 +400,7 @@ void te::qt::widgets::DirectExchangerDialog::onOutputPostGISToolButtonClicked(bo
   m_exchangeToFile = false;
   
   m_ui->m_outputDataSourceComboBox->setEnabled(true);
+  m_ui->m_dsToolButton->setEnabled(true);
   m_ui->m_dataSetLineEdit->setEnabled(true);
   m_ui->m_dirToolButton->setEnabled(false);
   m_ui->m_spatialIndexCheckBox->setEnabled(true);
@@ -417,6 +419,7 @@ void te::qt::widgets::DirectExchangerDialog::onOutputADOToolButtonClicked(bool f
   m_exchangeToFile = false;
 
   m_ui->m_outputDataSourceComboBox->setEnabled(true);
+  m_ui->m_dsToolButton->setEnabled(true);
   m_ui->m_dataSetLineEdit->setEnabled(true);
   m_ui->m_dirToolButton->setEnabled(false);
   m_ui->m_spatialIndexCheckBox->setEnabled(false);
@@ -431,12 +434,12 @@ void te::qt::widgets::DirectExchangerDialog::onOutputSHPToolButtonClicked(bool f
     return;
 
   m_outputDataSourceType = "OGR";
-  m_outputDataDriver = "ESRI Shapefile";
 
   m_exchangeToFile = true;
 
   m_ui->m_outputDataSourceComboBox->clear();
   m_ui->m_outputDataSourceComboBox->setEnabled(false);
+  m_ui->m_dsToolButton->setEnabled(false);
   m_ui->m_dataSetLineEdit->clear();
   m_ui->m_dataSetLineEdit->setEnabled(false);
   m_ui->m_dirToolButton->setEnabled(true);
@@ -453,12 +456,21 @@ void te::qt::widgets::DirectExchangerDialog::onInputLayerActivated(QString value
 void te::qt::widgets::DirectExchangerDialog::onDirToolButtonClicked()
 {
   QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
-                                                        QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
+    QString(), tr("Shapefile (*.shp *.SHP);;Mapinfo File (*.mif *.MIF);;KML (*.kml *.KML);;GeoJSON (*.geojson *.GEOJSON);;GML (*.gml *.GML);;DXF (*.dxf *.DXF);;DGN (*.dgn *.DGN);;"),0, QFileDialog::DontConfirmOverwrite);
   
   if (fileName.isEmpty())
     return;
   
   m_ui->m_dataSetLineEdit->setText(fileName);
+}
+
+void te::qt::widgets::DirectExchangerDialog::onDataSoruceToolButtonClicked()
+{
+  std::auto_ptr<te::qt::widgets::DataSourceExplorerDialog> dExplorer(new te::qt::widgets::DataSourceExplorerDialog(this));
+
+  dExplorer->exec();
+
+  setDataSources();
 }
 
 void te::qt::widgets::DirectExchangerDialog::onHelpPushButtonClicked()

@@ -64,6 +64,8 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
+          TreeItemType getType() const;
+
         private:
 
           te::map::FolderLayerPtr m_layer;

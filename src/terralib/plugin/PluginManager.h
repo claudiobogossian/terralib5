@@ -208,7 +208,7 @@ namespace te
 
           \note If an exception occurs the plugin will be added to the list of broken plugins (except if it is already loaded!).
           
-          \note If no plugin folder was supplied, the interal finders will be used to locate the plugin file.
+          \note If no plugin folder or an invalid folder was supplied the interal finders will be used to locate the plugin file.
         */
         void load(const PluginInfo& pInfo, const bool start = true);
 

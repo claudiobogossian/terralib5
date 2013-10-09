@@ -131,5 +131,7 @@ te::map::AbstractLayerPtr te::qt::widgets::RasterLayerItem::getLayer() const
   return m_layer;
 }
 
-
-
+te::qt::widgets::AbstractTreeItem::TreeItemType te::qt::widgets::RasterLayerItem::getType() const
+{
+  return LAYERITEM;
+}

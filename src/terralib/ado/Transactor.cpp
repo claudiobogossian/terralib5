@@ -51,13 +51,12 @@
 #include "../geometry/Geometry.h"
 #include "../memory/DataSet.h"
 #include "Connection.h"
-#include "DataSource.h"
-#include "Transactor.h"
 #include "DataSet.h"
+#include "DataSource.h"
 #include "Exception.h"
 #include "Globals.h"
-//#include "PreparedQuery.h"
 #include "SQLVisitor.h"
+#include "Transactor.h"
 #include "Utils.h"
 
 // STL
@@ -220,8 +219,8 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& 
 {
   std::string sql;
 
-  //SQLVisitor visitor(*(getDialect()), sql, m_conn->getConn());
-  //q.accept(visitor);
+  SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
+  q.accept(visitor);
 
   return query(sql, travType);
 }
@@ -232,15 +231,27 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& que
 {
   _RecordsetPtr result = m_conn->query(query, connected);
 
-  ::PropertiesPtr props = result->GetProperties();
+  FieldsPtr fields = result->GetFields();
 
   std::vector<int> types;
   std::vector<std::string> names;
 
-  for(long i = 0; i < props->GetCount(); ++i)
+  for(long i = 0; i < fields->GetCount(); ++i)
   {
-    types.push_back(Convert2Terralib(props->GetItem(i)->GetType()));
-    names.push_back(std::string(props->GetItem(i)->GetName()));
+    if(Convert2Terralib(fields->GetItem(i)->GetType()) == te::dt::BYTE_ARRAY_TYPE)
+    {
+      PropertyPtr p = fields->GetItem(i)->GetProperties()->GetItem("BASETABLENAME");
+
+      std::string tableName = (LPCSTR)(_bstr_t)p->GetValue();
+      std::string columnName = fields->GetItem(i)->GetName();
+
+      if(te::ado::IsGeomProperty(m_conn->getConn(), tableName, columnName))
+        types.push_back(te::dt::GEOMETRY_TYPE);
+    }
+    else
+      types.push_back(Convert2Terralib(fields->GetItem(i)->GetType()));
+
+    names.push_back(std::string(fields->GetItem(i)->GetName()));
   }
 
   return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
@@ -250,8 +261,8 @@ void te::ado::Transactor::execute(const te::da::Query& command)
 {
   std::string sql;
 
-  //SQLVisitor visitor(*(getDialect()), sql, m_conn->getConn());
-  //command.accept(visitor);
+  SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
+  command.accept(visitor);
 
   execute(sql);
 }
