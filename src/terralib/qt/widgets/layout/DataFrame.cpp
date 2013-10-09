@@ -278,11 +278,6 @@ QRectF te::qt::widgets::DataFrame::getDataRect()
   m_dataRect = QRectF(e.m_llx, e.m_lly, e.getWidth(), e.getHeight());
   return m_dataRect;
 }
-//
-//QRectF te::qt::widgets::DataFrame::getFrameRect()
-//{
-//  return m_frameRect;
-//}
 
 void te::qt::widgets::DataFrame::adjust()
 {
@@ -413,7 +408,7 @@ void te::qt::widgets::DataFrame::getLayerList(te::map::AbstractLayerPtr al, std:
   }
 }
 
-void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid)
+void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid, QRectF dr)
 {
   m_data = al.get();
   if(m_data == 0)
@@ -437,14 +432,16 @@ void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid
   }
 
   m_mapDisplay->setBackgroundColor(Qt::white);
-
-  //m_mapDisplay->setLayerList(m_visibleLayers);
-  m_mapDisplay->refresh();
-
   te::gm::Envelope e = m_mapDisplay->getExtent();
-  m_dataRect = QRectF();
-  QRectF r(e.getLowerLeftX(), e.getLowerLeftY(), e.getWidth(), e.getHeight());
-  setDataRect(r);
+
+  if(dr.isValid())
+    m_mapDisplay->refresh();
+  else
+  {
+    m_dataRect = QRectF();
+    QRectF r(e.getLowerLeftX(), e.getLowerLeftY(), e.getWidth(), e.getHeight());
+    setDataRect(r);
+  }
 
   findDataUnitToMilimeter(e, m_mapDisplay->getSRID());
 
@@ -568,11 +565,10 @@ void te::qt::widgets::DataFrame::findDataUnitToMilimeter(const te::gm::Envelope&
   // OBS: quero manter a escala do mapa inalterada. Lembre que quando converte,
   // o box, pode aumentar de tamanho e isto muda a escala do mapa.
   // Vamos ver como podemos fazer isto...
-  // primeior vamos descobrir qual o fator de conversao para milimetros... m_dataUnitToMilimeter
-  // NOTA: acho que ser feito usando a informacao de unidade da projecao, mas, como eu nao sei fazer isto.
-  // Vou fazer um codigo quebra galho......
-  // para isto vou converter dataRect para um projetado que deve estar em metros.
-  // Vou usar #define TE_SRS_SAD69_POLYCONIC 29101 que provavelmente tem unidade em metros.
+  // primeior vamos descobrir qual o fator de conversao para milimetros... m_dataUnitToMilimeter.
+  // Vou converter dataRect para um projetado que deve estar em metros.
+  // De preferencia deve ser escolhido uma projecao que mantem as distancias.
+  // Vou usar #define TE_SRS_SAD69_POLYCONIC 29101 (essa projecao tem que ter unidade em metros e manter distancias) Será que ele faz isto???.
 
   std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
   converter->setSourceSRID(srid);
@@ -661,8 +657,8 @@ void te::qt::widgets::DataFrame::drawButtonClicked()
   m_dataChanged = true;
   if(m_dataChanged)
   {
-    setData(0, m_mapDisplay->getSRID());
-    setData(al, m_mapDisplay->getSRID());
+    setData(0, m_mapDisplay->getSRID(), m_dataRect);
+    setData(al, m_mapDisplay->getSRID(), m_dataRect);
   }
 
   draw();
@@ -1252,6 +1248,11 @@ QPixmap* te::qt::widgets::DataFrame::getLastDisplayContent()
   return &m_lastDisplayContent;
 }
 
+QPixmap* te::qt::widgets::DataFrame::getPixmap()
+{
+  return &m_lastDisplayContent;
+}
+
 void te::qt::widgets::DataFrame::onDrawLayersFinished(const QMap<QString, QString>& /*errors*/)
 {
   // Stores the clean pixmap!
@@ -1339,4 +1340,19 @@ void te::qt::widgets::DataFrame::drawLayerSelection()
     }
   }
   m_mapDisplay->repaint();
+}
+
+te::qt::widgets::GeographicGridFrame* te::qt::widgets::DataFrame::getGeoGridFrame()
+{
+  return m_geoGridFrame;
+}
+
+te::qt::widgets::UTMGridFrame* te::qt::widgets::DataFrame::getUTMGridFrame()
+{
+  return m_UTMGridFrame;
+}
+
+te::qt::widgets::GraphicScaleFrame* te::qt::widgets::DataFrame::getGraphicScaleFrame()
+{
+  return m_graphicScaleFrame;
 }

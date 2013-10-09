@@ -26,6 +26,7 @@
 // TerraLib
 #include "Exception.h"
 #include "PlatformUtils.h"
+#include "StringUtils.h"
 
 // STL
 #include <fstream>
@@ -55,6 +56,9 @@
 #else
   #error "Unsuported plataform for physical memory checking"
 #endif
+
+#include <cstdio>
+#include <cstdlib>
 
 namespace te
 {
@@ -214,5 +218,48 @@ namespace te
 
       return procnmb;
     }
+    
+    void GetDecompostedPathEnvVar( std::vector< std::string >& paths )
+    {
+      paths.clear();
+      
+      char* varValuePtr = getenv("PATH");
+      
+      std::string separator;
+      #if (TE_PLATFORM == TE_PLATFORMCODE_FREEBSD) || (TE_PLATFORM == TE_PLATFORMCODE_OPENBSD) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE) || (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
+        separator = ":";
+      #elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+        separator = ";";
+      #else
+        #error "Unsuported plataform for virtual memory checking"
+      #endif
+      
+      if( varValuePtr )
+      {
+        Tokenize( std::string( varValuePtr ), paths, separator );
+      }
+    }
+    
+    void GetDecompostedLDPathEnvVar( std::vector< std::string >& paths )
+    {
+      paths.clear();
+      
+      char* varValuePtr = getenv("LD_LIBRARY_PATH");
+      
+      std::string separator;
+      #if (TE_PLATFORM == TE_PLATFORMCODE_FREEBSD) || (TE_PLATFORM == TE_PLATFORMCODE_OPENBSD) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE) || (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
+        separator = ":";
+      #elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+        separator = ";";
+      #else
+        #error "Unsuported plataform for virtual memory checking"
+      #endif
+      
+      if( varValuePtr )
+      {
+        Tokenize( std::string( varValuePtr ), paths, separator );
+      }
+    }    
+    
   }     // end namespace common
 }       // end namespace te

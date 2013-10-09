@@ -53,57 +53,6 @@ inline void TESTHR( HRESULT hr )
   if( FAILED(hr) ) _com_issue_error( hr );
 }
 
-void te::ado::AddAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop)
-{
-  int pType = prop->getType();
-
-  try
-  {
-    switch(pType)
-    {
-    case te::dt::CHAR_TYPE:
-    case te::dt::UCHAR_TYPE:
-    case te::dt::INT16_TYPE:
-    case te::dt::INT32_TYPE:
-    case te::dt::INT64_TYPE:
-    case te::dt::FLOAT_TYPE:
-    case te::dt::DOUBLE_TYPE:
-    case te::dt::BOOLEAN_TYPE:
-    case te::dt::BYTE_ARRAY_TYPE:
-      table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
-      break;
-
-    case te::dt::STRING_TYPE:
-      {
-        te::dt::StringProperty* p = (te::dt::StringProperty*)prop;
-        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), p->size());
-        break;
-      }
-
-      //case te::dt::NUMERIC_TYPE:
-      case te::dt::DATETIME_TYPE:
-        table->Columns->Append(prop->getName().c_str(), ADOX::adDate,0);
-        break;
-
-    case te::dt::GEOMETRY_TYPE:
-      table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
-      break;
-
-    case te::dt::ARRAY_TYPE:
-      table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
-      break;
-
-    default:
-      throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-      break;
-    }
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-}
-
 void te::ado::Blob2Variant(const char* blob, int size, _variant_t & var)
 {
   try
@@ -1133,29 +1082,29 @@ int te::ado::GetMonth(const std::string& month)
 {
   std::string tempM = te::common::Convert2UCase(month);
   if(tempM=="JAN")
-    return 0;
-  else if(tempM=="FEB")
     return 1;
-  else if(tempM=="MAR")
+  else if(tempM=="FEB")
     return 2;
-  else if(tempM=="APR")
+  else if(tempM=="MAR")
     return 3;
+  else if(tempM=="APR")
+    return 4;
   else if(tempM=="MAY")
-    return 4; 
+    return 5; 
   else if(tempM=="JUN")
-    return 5;
-  else if(tempM=="JUL")
     return 6;
-  else if(tempM=="AUG")
+  else if(tempM=="JUL")
     return 7;
-  else if(tempM=="SEP")
+  else if(tempM=="AUG")
     return 8;
-  else if(tempM=="OCT")
+  else if(tempM=="SEP")
     return 9;
+  else if(tempM=="OCT")
+    return 12;
   else if(tempM=="NOV")
-    return 10;
-  else if(tempM=="DEC")
     return 11;
+  else if(tempM=="DEC")
+    return 12;
 
   return -1;
 }
@@ -1320,4 +1269,93 @@ std::auto_ptr<te::dt::DateTime> te::ado::GetDateTime(std::string& value, std::st
     return std::auto_ptr<te::dt::DateTime>(0);
 
   return std::auto_ptr<te::dt::DateTime>(result);
+}
+
+std::string te::ado::GetFormattedDateTime(te::dt::DateTime* dateTime)
+{
+  std::string result = "";
+
+  te::dt::Date* dtime = dynamic_cast<te::dt::Date*>(dateTime);
+
+  std::string mAM, mPM, sepD, sepT;
+
+  std::string mask = GetSystemDateTimeFormat(mAM, mPM, sepD, sepT);
+
+  if(dtime)
+  {
+    if(mask.find("DDsMMsYYYY") != std::string::npos)
+    {
+      result = boost::lexical_cast<std::string>(dtime->getDay()) + sepD;
+      result += boost::lexical_cast<std::string>(GetMonth(boost::lexical_cast<std::string>(dtime->getMonth()))) + sepD;
+      result += boost::lexical_cast<std::string>(dtime->getYear());
+    }
+    else if(mask.find("MsDsYYYY") != std::string::npos)
+    {
+      result = boost::lexical_cast<std::string>(GetMonth(boost::lexical_cast<std::string>(dtime->getMonth()))) + sepD;
+      result += boost::lexical_cast<std::string>(dtime->getDay()) + sepD;
+      result += boost::lexical_cast<std::string>(dtime->getYear());
+    }
+    else if(mask.find("YYYYsMMsDD") != std::string::npos)
+    {
+      result = boost::lexical_cast<std::string>(dtime->getYear()) + sepD;
+      result += boost::lexical_cast<std::string>(GetMonth(boost::lexical_cast<std::string>(dtime->getMonth()))) + sepD;
+      result += boost::lexical_cast<std::string>(dtime->getDay());
+    }
+  }
+
+  te::dt::TimeDuration* tduration = dynamic_cast<te::dt::TimeDuration*>(dateTime);
+  
+  if(tduration)
+  {
+    if(mask.find("HHsmmsSS") != std::string::npos)
+    {
+      result = boost::lexical_cast<std::string>(tduration->getHours()) + sepT;
+      result += boost::lexical_cast<std::string>(tduration->getMinutes()) + sepT;
+      result += boost::lexical_cast<std::string>(tduration->getSeconds());
+    }
+    else if(mask.find("HsmmsSSsTT") != std::string::npos)
+    {
+      result = boost::lexical_cast<std::string>(tduration->getHours()) + sepT;
+      result += boost::lexical_cast<std::string>(tduration->getMinutes()) + sepT;
+      result += boost::lexical_cast<std::string>(tduration->getSeconds());
+    }
+  }
+
+  te::dt::TimeInstant* tinst = dynamic_cast<te::dt::TimeInstant*>(dateTime);
+
+  if(tinst)
+  {
+    te::dt::Date date = tinst->getDate();
+    te::dt::TimeDuration time = tinst->getTime();
+
+    if(mask == "DDsMMsYYYYsHHsmmsSS")
+    {
+      result = boost::lexical_cast<std::string>(date.getDay()) + sepD;
+      result += boost::lexical_cast<std::string>(GetMonth(boost::lexical_cast<std::string>(date.getMonth()))) + sepD;
+      result += boost::lexical_cast<std::string>(date.getYear()) + " ";
+      result += boost::lexical_cast<std::string>(time.getHours()) + sepT;
+      result += boost::lexical_cast<std::string>(time.getMinutes()) + sepT;
+      result += boost::lexical_cast<std::string>(time.getSeconds());
+    }
+    else if(mask == "MsDsYYYYsHsmmsSSsTT")
+    {
+      result = boost::lexical_cast<std::string>(GetMonth(boost::lexical_cast<std::string>(date.getMonth()))) + sepD;
+      result += boost::lexical_cast<std::string>(date.getDay()) + sepD;
+      result += boost::lexical_cast<std::string>(date.getYear()) + " ";
+      result += boost::lexical_cast<std::string>(time.getHours()) + sepT;
+      result += boost::lexical_cast<std::string>(time.getMinutes()) + sepT;
+      result += boost::lexical_cast<std::string>(time.getSeconds());
+    }
+    else if(mask == "YYYYsMMsDDsHHsmmsSS")
+    {
+      result = boost::lexical_cast<std::string>(date.getYear()) + sepD;
+      result += boost::lexical_cast<std::string>(GetMonth(boost::lexical_cast<std::string>(date.getMonth()))) + sepD;
+      result += boost::lexical_cast<std::string>(date.getDay()) + " ";
+      result += boost::lexical_cast<std::string>(time.getHours()) + sepT;
+      result += boost::lexical_cast<std::string>(time.getMinutes()) + sepT;
+      result += boost::lexical_cast<std::string>(time.getSeconds());
+    }
+  }
+
+  return result;
 }

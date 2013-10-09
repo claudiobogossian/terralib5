@@ -71,6 +71,8 @@ namespace te
 
           te::qt::widgets::DataFrame* getDataFrame();
 
+          QPixmap* getPixmap();
+
           void draw();
 
           void adjust();

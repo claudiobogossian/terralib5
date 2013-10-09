@@ -29,6 +29,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
+#include "../../../rp/Module.h"
 #include "SegmenterWizard.h"
 #include "SegmenterAdvancedOptionsWizardPage.h"
 #include "SegmenterWizardPage.h"
@@ -158,7 +159,8 @@ bool te::qt::widgets::SegmenterWizard::execute()
     }
     else
     {
-      QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter initialization error"));
+      QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter initialization error") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str());
       return false;
     }
   }

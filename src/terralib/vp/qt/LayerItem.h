@@ -85,6 +85,8 @@ namespace te
           \return Vector of Properties.
         */
         std::vector<te::dt::Property*> getSelected();
+      
+        te::qt::widgets::AbstractTreeItem::TreeItemType getType() const;
 
       private:
 

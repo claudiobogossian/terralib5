@@ -131,4 +131,7 @@ te::map::AbstractLayerPtr te::qt::widgets::QueryLayerItem::getLayer() const
   return m_layer;
 }
 
-
+te::qt::widgets::AbstractTreeItem::TreeItemType te::qt::widgets::QueryLayerItem::getType() const
+{
+  return LAYERITEM;
+}

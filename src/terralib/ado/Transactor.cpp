@@ -40,6 +40,7 @@
 #include "../dataaccess/query/SQLDialect.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Array.h"
+#include "../datatype/Date.h"
 #include "../datatype/DateTimeProperty.h"
 #include "../datatype/Property.h"
 #include "../datatype/SimpleData.h"
@@ -50,13 +51,12 @@
 #include "../geometry/Geometry.h"
 #include "../memory/DataSet.h"
 #include "Connection.h"
-#include "DataSource.h"
-#include "Transactor.h"
 #include "DataSet.h"
+#include "DataSource.h"
 #include "Exception.h"
 #include "Globals.h"
-//#include "PreparedQuery.h"
 #include "SQLVisitor.h"
+#include "Transactor.h"
 #include "Utils.h"
 
 // STL
@@ -151,13 +151,7 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
   _RecordsetPtr result = m_conn->query(*sql, connected);
 
-  FieldsPtr fields = result->GetFields();
-  std::vector<int> types;
-  std::vector<std::string> names;
-
-  te::ado::GetFieldsInfo(m_conn->getConn(), name, fields, types, names);
-
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn));
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
@@ -184,13 +178,7 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
   _RecordsetPtr result = m_conn->query(*query, connected);
 
-  FieldsPtr fields = result->GetFields();
-  std::vector<int> types;
-  std::vector<std::string> names;
-
-  te::ado::GetFieldsInfo(m_conn->getConn(), name, fields, types, names);
-
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn));
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
@@ -219,8 +207,8 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& 
 {
   std::string sql;
 
-  //SQLVisitor visitor(*(getDialect()), sql, m_conn->getConn());
-  //q.accept(visitor);
+  SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
+  q.accept(visitor);
 
   return query(sql, travType);
 }
@@ -231,26 +219,38 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& que
 {
   _RecordsetPtr result = m_conn->query(query, connected);
 
-  ::PropertiesPtr props = result->GetProperties();
+  FieldsPtr fields = result->GetFields();
 
   std::vector<int> types;
   std::vector<std::string> names;
 
-  for(long i = 0; i < props->GetCount(); ++i)
+  for(long i = 0; i < fields->GetCount(); ++i)
   {
-    types.push_back(Convert2Terralib(props->GetItem(i)->GetType()));
-    names.push_back(std::string(props->GetItem(i)->GetName()));
+    if(Convert2Terralib(fields->GetItem(i)->GetType()) == te::dt::BYTE_ARRAY_TYPE)
+    {
+      PropertyPtr p = fields->GetItem(i)->GetProperties()->GetItem("BASETABLENAME");
+
+      std::string tableName = (LPCSTR)(_bstr_t)p->GetValue();
+      std::string columnName = fields->GetItem(i)->GetName();
+
+      if(te::ado::IsGeomProperty(m_conn->getConn(), tableName, columnName))
+        types.push_back(te::dt::GEOMETRY_TYPE);
+    }
+    else
+      types.push_back(Convert2Terralib(fields->GetItem(i)->GetType()));
+
+    names.push_back(std::string(fields->GetItem(i)->GetName()));
   }
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn, types, names));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(result, m_conn));
 }
 
 void te::ado::Transactor::execute(const te::da::Query& command)
 {
   std::string sql;
 
-  //SQLVisitor visitor(*(getDialect()), sql, m_conn->getConn());
-  //command.accept(visitor);
+  SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
+  command.accept(visitor);
 
   execute(sql);
 }
@@ -438,13 +438,56 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
     pCatalog->PutActiveConnection(variant_t((IDispatch *)m_conn->getConn()));
 
     pTable = pCatalog->Tables->GetItem(datasetName.c_str());
+
+    int pType = p->getType();
+
+    switch(pType)
+    {
+      case te::dt::CHAR_TYPE:
+      case te::dt::UCHAR_TYPE:
+      case te::dt::INT16_TYPE:
+      case te::dt::INT32_TYPE:
+      case te::dt::INT64_TYPE:
+      case te::dt::FLOAT_TYPE:
+      case te::dt::DOUBLE_TYPE:
+      case te::dt::BOOLEAN_TYPE:
+      case te::dt::BYTE_ARRAY_TYPE:
+        pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+        break;
+
+      case te::dt::STRING_TYPE:
+        {
+          te::dt::StringProperty* pStr = (te::dt::StringProperty*)p;
+          pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), pStr->size());
+          break;
+        }
+
+        //case te::dt::NUMERIC_TYPE:
+        case te::dt::DATETIME_TYPE:
+          pTable->Columns->Append(p->getName().c_str(), ADOX::adDate,0);
+          break;
+
+      case te::dt::GEOMETRY_TYPE:
+        pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+        break;
+
+      case te::dt::ARRAY_TYPE:
+        pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+        break;
+
+      default:
+        throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+        break;
+    }
   }
   catch(_com_error& e)
   {
     throw Exception(TR_ADO(e.Description()));
   }
 
-  te::ado::AddAdoPropertyFromTerralib(pTable, p);
+  //te::ado::AddAdoPropertyFromTerralib(pTable, p);
+
+
 }
 
 void te::ado::Transactor::dropProperty(const std::string& datasetName, const std::string& name)
@@ -1027,20 +1070,23 @@ void te::ado::Transactor::createDataSet(te::da::DataSetType* dt, const std::map<
 
   if(dt->getPrimaryKey())
     addPrimaryKey(dt->getName(), dt->getPrimaryKey());
-  
+
   te::gm::GeometryProperty* geomProp = 0;
 
   if(dt->hasGeom())
   {
-    te::dt::SimpleProperty* lowerX = new te::dt::SimpleProperty("lower_x", te::dt::DOUBLE_TYPE);
-    te::dt::SimpleProperty* lowerY = new te::dt::SimpleProperty("lower_y", te::dt::DOUBLE_TYPE);
-    te::dt::SimpleProperty* upperX = new te::dt::SimpleProperty("upper_x", te::dt::DOUBLE_TYPE);
-    te::dt::SimpleProperty* upperY = new te::dt::SimpleProperty("upper_y", te::dt::DOUBLE_TYPE);
+    if(!propertyExists(dt->getName(), "lower_x"))
+    {
+      te::dt::SimpleProperty* lowerX = new te::dt::SimpleProperty("lower_x", te::dt::DOUBLE_TYPE);
+      te::dt::SimpleProperty* lowerY = new te::dt::SimpleProperty("lower_y", te::dt::DOUBLE_TYPE);
+      te::dt::SimpleProperty* upperX = new te::dt::SimpleProperty("upper_x", te::dt::DOUBLE_TYPE);
+      te::dt::SimpleProperty* upperY = new te::dt::SimpleProperty("upper_y", te::dt::DOUBLE_TYPE);
 
-    addProperty(dt->getName(), lowerX);
-    addProperty(dt->getName(), lowerY);
-    addProperty(dt->getName(), upperX);
-    addProperty(dt->getName(), upperY);
+      addProperty(dt->getName(), lowerX);
+      addProperty(dt->getName(), lowerY);
+      addProperty(dt->getName(), upperX);
+      addProperty(dt->getName(), upperY);
+    }
 
     geomProp = te::da::GetFirstGeomProperty(dt);
   }
@@ -1105,11 +1151,19 @@ void te::ado::Transactor::add(const std::string& datasetName,
     
     while(d->moveNext())
     {
+      bool isNull = false;
+
       TESTHR(recset->AddNew());
 
       for(std::size_t i = 0; i < d->getNumProperties(); ++i)
       {
-      
+        
+        if(d->isNull(i))
+        {
+          isNull = true;
+          continue;
+        }
+
         std::string pname = d->getPropertyName(i);
         int pType = d->getPropertyDataType(i);
 
@@ -1140,8 +1194,15 @@ void te::ado::Transactor::add(const std::string& datasetName,
             break;
 
           case te::dt::DATETIME_TYPE:
-            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)(d->getDateTime(pname.c_str()))->toString().c_str();
+          { 
+            std::auto_ptr<te::dt::DateTime> dtm(d->getDateTime(i));
+
+            std::string dtt = te::ado::GetFormattedDateTime(dtm.get());
+
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)dtt.c_str();
+
             break;
+          }
 
           case te::dt::FLOAT_TYPE:
             recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getFloat(pname.c_str());
@@ -1196,7 +1257,8 @@ void te::ado::Transactor::add(const std::string& datasetName,
           }
       }
 
-      TESTHR(recset->Update());
+      if(!isNull)
+        TESTHR(recset->Update());
 
     }
   }
@@ -1359,7 +1421,7 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
 
       // Get the columns that has default values
       bool hasDefault = rs->Fields->GetItem("COLUMN_HASDEFAULT")->Value;
-      isRequiredMap[pos] = !hasDefault;
+      hasDefaultMap[pos] = !hasDefault;
 
       // Get the default value
       std::string defaultStr;
@@ -1412,17 +1474,16 @@ void te::ado::Transactor::getProperties(te::da::DataSetType* dt)
       case ::adUnsignedInt:
       case ::adUnsignedSmallInt:
       case ::adUnsignedTinyInt:
-      case ADOX::adLongVarBinary:
+        p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+        break;
+
       case ADOX::adBinary:
+      case ADOX::adLongVarBinary:
       {
         if(te::ado::IsGeomProperty(conn, dsName, colName))
-        {
           p = new te::gm::GeometryProperty(colName, te::ado::GetSRID(conn, dsName, colName), te::ado::GetType(conn, dsName, colName));
-        }
         else
-        {
           p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
-        }
 
         break;
       }

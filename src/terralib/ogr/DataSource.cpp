@@ -142,7 +142,9 @@ void te::ogr::DataSource::open()
 
 void te::ogr::DataSource::close()
 {
-  OGRDataSource::DestroyDataSource(m_ogrDS);
+  if (m_ogrDS)
+    OGRDataSource::DestroyDataSource(m_ogrDS);
+  
   m_ogrDS = 0;  
   
   m_isValid = false;

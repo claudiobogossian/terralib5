@@ -120,3 +120,13 @@ bool te::qt::widgets::LayoutObject::isNew()
 void te::qt::widgets::LayoutObject::setNew(bool)
 {
 }
+
+QRectF te::qt::widgets::LayoutObject::getFrameRect()
+{
+  return QRectF();
+}
+
+QPixmap* te::qt::widgets::LayoutObject::getPixmap()
+{
+  return 0;
+}

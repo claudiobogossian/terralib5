@@ -56,17 +56,13 @@ inline void TESTHR( HRESULT hr )
 }
 
 te::ado::DataSet::DataSet(_RecordsetPtr result,
-                          Connection* conn,
-                          const std::vector<int>& ptypes,
-                          const std::vector<std::string>& pnames)
+                          Connection* conn)
   : m_i(-1),
     m_result(result),
     m_conn(conn)
 {
   m_size = m_result->GetRecordCount();
   m_ncols = m_result->GetFields()->GetCount();
-  m_ptypes = ptypes;
-  m_pnames = pnames;
 }
 
 te::ado::DataSet::~DataSet()
@@ -96,12 +92,26 @@ std::size_t te::ado::DataSet::getNumProperties() const
 
 int te::ado::DataSet::getPropertyDataType(std::size_t i) const
 {
-  return m_ptypes[i];
+  FieldsPtr fields = m_result->GetFields();
+  FieldPtr field = fields->GetItem((long)i);
+  int type = te::ado::Convert2Terralib(field->GetType());
+  
+  if(type == te::dt::BYTE_ARRAY_TYPE)
+  {
+    std::string tableName = (LPCSTR)(_bstr_t)field->GetProperties()->GetItem("BASETABLENAME")->GetValue();
+    std::string columnName = field->GetName();
+    if(te::ado::IsGeomProperty(m_conn->getConn(), tableName, columnName))
+      return te::dt::GEOMETRY_TYPE;
+  }
+  return type;
 }
 
 std::string te::ado::DataSet::getPropertyName(std::size_t i) const
 {
-  return m_pnames[i];
+  FieldsPtr fields = m_result->GetFields();
+  FieldPtr field = fields->GetItem((long)i);
+
+  return field->GetName();
 }
 
 std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t i) const
@@ -461,7 +471,7 @@ std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) con
   }
 
   if(value.vt == VT_NULL)
-    std::auto_ptr<te::dt::DateTime>(0);
+    return std::auto_ptr<te::dt::DateTime>(0);
 
   strDate = (LPCSTR)(_bstr_t)value;
 

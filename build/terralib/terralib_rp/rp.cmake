@@ -7,7 +7,7 @@ endif()
 
 #Definitions for windows compiling
 if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTERPDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTERPDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 endif()
 
 list (APPEND TE_DEP_LIBS
@@ -19,8 +19,9 @@ list (APPEND TE_DEP_LIBS
     terralib_geometry
     terralib_raster
     terralib_srs
+    terralib_statistics
     )
-	
+
 # Select the source and header files
 file(GLOB SRCS ${SRCDIR}/*.cpp)
 file(GLOB HDRS ${SRCDIR}/*.h)

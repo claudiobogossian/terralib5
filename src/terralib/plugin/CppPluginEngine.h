@@ -32,6 +32,7 @@
 
 // STL
 #include <string>
+#include <vector>
 
 namespace te
 {
@@ -49,7 +50,7 @@ namespace te
       public:
 
         /*! Default construtor. */
-        CppPluginEngine() { }
+        CppPluginEngine();
 
         /*! \brief Destructor. */
         ~CppPluginEngine() { }
@@ -65,6 +66,26 @@ namespace te
           and also the build mode: DEBUG or RELEASE.
         */
         static std::string getPluginFileName(const std::string& libName);
+        
+        /*!
+          \brief It returns the default plugins libraries search directories.
+
+          This method will generate directory paths for the sub-directories ".", "lib", "win32", "win64" and the macro TE_DEFAULT_PLUGINS_DIR within:
+          <ul>
+          <li> The current execution directory.</li>
+          <li> The enviromental variable with a name defined by the macro TE_DIR_ENVIRONMENT_VARIABLE</li>
+		  <li> The enviromental variable "TERRALIB_DIR"</li>
+          <li> Directories listed by the environmental variable LD_LIBRARY_PATH.</li>
+          <li> Directories listed by the environmental variable PATH.</li>
+          </ul>
+
+          \param dirs The default plugin libraries search directories (the absolute path) or an empty string if none is found.
+        */
+        static void getDefaultDirs( std::vector< std::string >& dirs );  
+        
+      protected :
+        
+        std::vector< std::string > m_defaultSearchDirs; //!< The default plugin libraries search directories.
     };
 
   } // end namespace plugin

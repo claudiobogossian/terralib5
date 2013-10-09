@@ -180,6 +180,9 @@ te::gm::Envelope te::map::GetSelectedExtent(const te::map::AbstractLayerPtr laye
 
     const te::da::ObjectIdSet* objSet = layer->getSelected();
 
+    if(!objSet)
+      return te::gm::Envelope();
+
     std::auto_ptr<te::da::DataSet> ds(layer->getData(objSet));
 
     te::gm::GeometryProperty* geomProp = te::da::GetFirstGeomProperty(dt.get());

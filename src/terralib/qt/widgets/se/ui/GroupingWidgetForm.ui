@@ -58,6 +58,13 @@
           </item>
          </layout>
         </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>* Manual changes can make the property &quot;Count&quot; invalid.</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>

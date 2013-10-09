@@ -22,7 +22,7 @@ find_library(GNU_GETTEXTPO_LIBRARY_DEBUG
              )
 
 find_library(GNU_INTL_LIBRARY_RELEASE
-             NAMES intl.lib
+             NAMES intl.lib libintl_dll
              )
              
 find_library(GNU_INTL_LIBRARY_DEBUG
