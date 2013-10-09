@@ -209,8 +209,10 @@ void te::qt::plugins::ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()
 {
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Feature File"), te::qt::af::GetFilePathFromSettings("vector"), tr("Common Formats (*.shp *.SHP *.kml *.KML *.geojson *.GEOJSON *.gml *.GML);; Shapefile (*.shp *.SHP);; GML (*.gml *.GML);; Web Feature Service - WFS (*.xml *.XML *.wfs *.WFS);; All Files (*.*)"), 
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"), 
       0, QFileDialog::ReadOnly);
+    
+    //  Web Feature Service - WFS (*.xml *.XML *.wfs *.WFS);; => not stable yet!
 
     if(fileName.isEmpty())
       return;

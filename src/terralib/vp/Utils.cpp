@@ -30,6 +30,8 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/MultiPoint.h"
+#include "../geometry/Point.h"
 #include "../memory/DataSet.h"
 #include "Utils.h"
 
@@ -43,7 +45,7 @@
 // Boost
 #include <boost/algorithm/string.hpp>
 
-te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx)
+te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx, te::gm::GeomType outGeoType)
 {
   te::gm::Geometry* resultGeometry = 0; 
 
@@ -75,7 +77,14 @@ te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetIte
     resultGeometry = seedGeometry->Union(teGeomColl);
   }
 
-  return resultGeometry;
+  if (resultGeometry->getGeomTypeId() != outGeoType)
+  {
+    te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(1,outGeoType,resultGeometry->getSRID());
+    gc->setGeometryN(0,resultGeometry);
+    return gc;
+  }
+  else
+    return resultGeometry;
 }
 
 std::string te::vp::GetSimpleTableName(std::string fullName)
@@ -91,55 +100,43 @@ std::string te::vp::GetSimpleTableName(std::string fullName)
   return tableName;
 }
 
-te::gm::GeometryProperty* te::vp::SetOutputGeometryType(const te::gm::GeometryProperty* firstGeom, const te::gm::GeometryProperty* secondGeom)
+te::gm::GeomType te::vp::GeomOpResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom)
 {
-  te::gm::GeometryProperty* fiGeomProp = (te::gm::GeometryProperty*)firstGeom->clone();
+  if( (firstGeom == te::gm::PolygonType && secondGeom == te::gm::PolygonType) ||
+      (firstGeom == te::gm::MultiPolygonType &&  secondGeom == te::gm::MultiPolygonType) ||
+      (firstGeom == te::gm::PolygonType && secondGeom == te::gm::MultiPolygonType) ||
+      (firstGeom == te::gm::MultiPolygonType && secondGeom == te::gm::PolygonType))
+    return te::gm::MultiPolygonType;
+  
+  if((firstGeom == te::gm::PolygonType && secondGeom == te::gm::LineStringType)||
+          (firstGeom == te::gm::PolygonType && secondGeom == te::gm::MultiLineStringType)||
+          (firstGeom == te::gm::MultiPolygonType && secondGeom == te::gm::LineStringType)||
+          (firstGeom == te::gm::MultiPolygonType && secondGeom == te::gm::MultiLineStringType)||
 
-  if( (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::PolygonType) ||
-      (firstGeom->getGeometryType() == te::gm::MultiPolygonType && secondGeom->getGeometryType() == te::gm::MultiPolygonType) ||
-      (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::MultiPolygonType) ||
-      (firstGeom->getGeometryType() == te::gm::MultiPolygonType && secondGeom->getGeometryType() == te::gm::PolygonType))
-  {
-    fiGeomProp->setName("geom");
-    fiGeomProp->setGeometryType(te::gm::MultiPolygonType);
-  }
-  else if((firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::LineStringType)||
-          (firstGeom->getGeometryType() == te::gm::PolygonType && secondGeom->getGeometryType() == te::gm::MultiLineStringType)||
-          (firstGeom->getGeometryType() == te::gm::MultiPolygonType && secondGeom->getGeometryType() == te::gm::LineStringType)||
-          (firstGeom->getGeometryType() == te::gm::MultiPolygonType && secondGeom->getGeometryType() == te::gm::MultiLineStringType)||
+          (firstGeom == te::gm::LineStringType && secondGeom == te::gm::PolygonType)||
+          (firstGeom == te::gm::LineStringType && secondGeom == te::gm::MultiPolygonType)||
+          (firstGeom == te::gm::MultiLineStringType && secondGeom == te::gm::PolygonType)||
+          (firstGeom == te::gm::MultiLineStringType && secondGeom == te::gm::MultiPolygonType)||
 
-          (firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::PolygonType)||
-          (firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::MultiPolygonType)||
-          (firstGeom->getGeometryType() == te::gm::MultiLineStringType && secondGeom->getGeometryType() == te::gm::PolygonType)||
-          (firstGeom->getGeometryType() == te::gm::MultiLineStringType && secondGeom->getGeometryType() == te::gm::MultiPolygonType)||
+          (firstGeom == te::gm::LineStringType && secondGeom == te::gm::LineStringType) ||
+          (firstGeom == te::gm::MultiLineStringType && secondGeom == te::gm::MultiLineStringType) ||
+          (firstGeom == te::gm::LineStringType && secondGeom == te::gm::MultiLineStringType) ||
+          (firstGeom == te::gm::MultiLineStringType && secondGeom == te::gm::LineStringType))
+    return te::gm::MultiLineStringType;
 
-          (firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::LineStringType) ||
-          (firstGeom->getGeometryType() == te::gm::MultiLineStringType && secondGeom->getGeometryType() == te::gm::MultiLineStringType) ||
-          (firstGeom->getGeometryType() == te::gm::LineStringType && secondGeom->getGeometryType() == te::gm::MultiLineStringType) ||
-          (firstGeom->getGeometryType() == te::gm::MultiLineStringType && secondGeom->getGeometryType() == te::gm::LineStringType))
-  {
-    fiGeomProp->setName("geom");
-    fiGeomProp->setGeometryType(te::gm::MultiLineStringType);
-  }
-  else
-  {
-    fiGeomProp->setName("geom");
-    fiGeomProp->setGeometryType(te::gm::MultiPointType);
-  }
-
-  return fiGeomProp;
+  return te::gm::MultiPointType;
 }
 
-void te::vp::Persistence( te::da::DataSetType* dataSetType,
-                          te::mem::DataSet* dataSet,
-                          const te::da::DataSourceInfoPtr& dsInfo,
-                          std::map<std::string, std::string> options)
+te::gm::GeomType te::vp::GeomOpResultType(te::gm::GeomType firstGeom)
 {
-  std::pair<te::da::DataSetType*, te::mem::DataSet*> pair;
-  pair.first = dataSetType;
-  pair.second = dataSet;
-
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
-  pair.second->moveBeforeFirst();
-  te::da::Create(dataSource.get(), pair.first, pair.second, options);
+  if (firstGeom == te::gm::PolygonType)
+    return te::gm::MultiPolygonType;
+  
+  if (firstGeom == te::gm::LineStringType)
+    return te::gm::MultiLineStringType;
+  
+  if (firstGeom == te::gm::PointType)
+    return te::gm::MultiPointType;
+  
+  return firstGeom;
 }
