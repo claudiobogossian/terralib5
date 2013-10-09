@@ -74,7 +74,8 @@ namespace te
           <ul>
           <li> The current execution directory.</li>
           <li> The enviromental variable with a name defined by the macro TE_DIR_ENVIRONMENT_VARIABLE</li>
-		  <li> The enviromental variable "TERRALIB_DIR"</li>
+		      <li> The enviromental variable "TERRALIB_DIR"</li>
+          <li> The macro TE_PLUGINS_PATH.
           <li> Directories listed by the environmental variable LD_LIBRARY_PATH.</li>
           <li> Directories listed by the environmental variable PATH.</li>
           </ul>
