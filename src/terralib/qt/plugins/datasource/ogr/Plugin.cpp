@@ -218,18 +218,15 @@ void te::qt::plugins::ogr::Plugin::showWindow()
     ds->setTitle(fileBaseName);
 
     ds->setType("OGR");
+    
+    boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
+    std::string id = boost::uuids::to_string(u);
+    
+    ds->setId(id);
+    te::da::DataSourceInfoManager::getInstance().add(ds);
 
     GetLayers(ds, layers);
-    
-    if (!layers.empty())
-    {
-      boost::uuids::basic_random_generator<boost::mt19937> gen;
-      boost::uuids::uuid u = gen();
-      std::string id = boost::uuids::to_string(u);
-      
-      ds->setId(id);
-      te::da::DataSourceInfoManager::getInstance().add(ds);
-    }
   }
 
   std::list<te::map::AbstractLayerPtr>::iterator it;
