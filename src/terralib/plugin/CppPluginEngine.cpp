@@ -169,10 +169,10 @@ void te::plugin::CppPluginEngine::getDefaultDirs( std::vector< std::string >& di
 {
   dirs.clear();
   
-  dirs.push_back( boost::filesystem::system_complete( "." ).string() );
+  dirs.push_back( "." );
   
   {
-    boost::filesystem::path p("./lib");
+    boost::filesystem::path p("lib");
     
     if(boost::filesystem::is_directory(p))
       dirs.push_back( boost::filesystem::system_complete( p ).string() );   
@@ -181,6 +181,88 @@ void te::plugin::CppPluginEngine::getDefaultDirs( std::vector< std::string >& di
   if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
   {
     dirs.push_back( boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string() );
+  }
+
+  {
+    char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
+
+    if(e != 0)
+    {
+	  dirs.push_back( boost::filesystem::system_complete( e ).string() );
+
+      {
+        boost::filesystem::path p(e);
+        p /= "lib";
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }  
+
+      {
+        boost::filesystem::path p(e);
+        p /= "bin32";
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }
+
+      {
+        boost::filesystem::path p(e);
+        p /= "bin64";
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }
+      
+      {
+        boost::filesystem::path p(e);
+        p /= TE_DEFAULT_PLUGINS_DIR;
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }
+    }
+  }
+
+  {
+    char* e = getenv("TERRALIB_DIR");
+
+    if(e != 0)
+    {
+	  dirs.push_back( boost::filesystem::system_complete( e ).string() );
+
+      {
+        boost::filesystem::path p(e);
+        p /= "lib";
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }  
+
+      {
+        boost::filesystem::path p(e);
+        p /= "bin32";
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }
+
+      {
+        boost::filesystem::path p(e);
+        p /= "bin64";
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }
+      
+      {
+        boost::filesystem::path p(e);
+        p /= TE_DEFAULT_PLUGINS_DIR;
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }
+    }
   }
 
   {
