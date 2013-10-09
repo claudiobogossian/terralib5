@@ -93,7 +93,14 @@ te::map::AbstractLayerPtr te::vp::Buffer(const te::map::AbstractLayerPtr& inputL
    outputDataSet.reset(dataSetDissolved);*/
   }
 
-  Persistence(outputDataSetType.get(), outputDataSet.get(), dsInfo);
+  
+  std::map<std::string, std::string> options;
+  // create the dataset
+  dataSource->createDataSet(outputDataSetType.get(), options);
+  
+  // copy from memory to output datasource
+  outputDataSet->moveBeforeFirst();
+  dataSource->add(outputDataSetType->getName(),outputDataSet.get(), options);
 
   te::da::DataSourcePtr dataSourceManager = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
 

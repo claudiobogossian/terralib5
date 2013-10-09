@@ -67,8 +67,6 @@ te::da::DataSetType* te::vp::CreateDataSetType(std::string newName,
 {
   te::da::DataSetType* outputDt = new te::da::DataSetType(newName);
 
-//  size_t fiGeomPropPos = firstDt->getPropertyPosition(firstDt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
-
   for(size_t i = 0; i < firstProps.size(); ++i)
   {
     te::dt::Property* prop = firstProps[i]->clone();
@@ -84,9 +82,12 @@ te::da::DataSetType* te::vp::CreateDataSetType(std::string newName,
     outputDt->add(prop);
   }
 
-  te::gm::GeometryProperty* fiGeomProp = te::vp::SetOutputGeometryType(te::da::GetFirstGeomProperty(firstDt), te::da::GetFirstGeomProperty(secondDt));
+  te::gm::GeomType newType = GeomOpResultType(te::da::GetFirstGeomProperty(firstDt)->getGeometryType(), te::da::GetFirstGeomProperty(secondDt)->getGeometryType());
 
-  te::gm::GeometryProperty* newGeomProp = (te::gm::GeometryProperty*)fiGeomProp->clone();
+  te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geomres");
+  newGeomProp->setGeometryType(newType);
+  newGeomProp->setSRID(te::da::GetFirstGeomProperty(firstDt)->getSRID());
+  
   outputDt->add(newGeomProp);
 
   return outputDt;
