@@ -25,6 +25,7 @@ int main()
     Register();
     EdgeFilter();
     IHSFusion();
+    Filter();
 
     te::plugin::PluginManager::getInstance().unloadAll();
 

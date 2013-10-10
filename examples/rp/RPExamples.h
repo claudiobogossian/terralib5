@@ -55,4 +55,7 @@ void EdgeFilter();
 /* \brief IHS Fusion example. */
 void IHSFusion();
 
+/* \brief Filter examples (Sobel, Mean, Median, Low/High-pass). */
+void Filter();
+
 #endif

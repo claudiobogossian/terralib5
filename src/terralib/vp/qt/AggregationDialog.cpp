@@ -32,9 +32,11 @@
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../qt/af/Utils.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
@@ -218,36 +220,6 @@ te::map::AbstractLayerPtr te::vp::AggregationDialog::getLayer()
 
 void te::vp::AggregationDialog::setStatisticalSummary()
 {
-  //te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
-  //te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-  //const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
-
-  //if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
-  //{
-  //  m_ui->m_selectAllComboBox->addItem("");
-  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
-  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
-  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), te::stat::MEAN);
-  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), te::stat::SUM);
-  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), te::stat::COUNT);
-  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), te::stat::VALID_COUNT);
-  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), te::stat::STANDARD_DEVIATION);
-  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), te::stat::VARIANCE);
-  //  m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), te::stat::AMPLITUDE);
-
-  //  m_ui->m_rejectAllComboBox->addItem("");
-  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
-  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
-  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEAN).c_str()), te::stat::MEAN);
-  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::SUM).c_str()), te::stat::SUM);
-  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::COUNT).c_str()), te::stat::COUNT);
-  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VALID_COUNT).c_str()), te::stat::VALID_COUNT);
-  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::STANDARD_DEVIATION).c_str()), te::stat::STANDARD_DEVIATION);
-  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VARIANCE).c_str()), te::stat::VARIANCE);
-  //  m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::AMPLITUDE).c_str()), te::stat::AMPLITUDE);
-  //}
-  //else
-  //{
     m_ui->m_selectAllComboBox->addItem("");
     m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MIN_VALUE).c_str()), te::stat::MIN_VALUE);
     m_ui->m_selectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MAX_VALUE).c_str()), te::stat::MAX_VALUE);
@@ -279,7 +251,6 @@ void te::vp::AggregationDialog::setStatisticalSummary()
     m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MEDIAN).c_str()), te::stat::MEDIAN);
     m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::VAR_COEFF).c_str()), te::stat::VAR_COEFF);
     m_ui->m_rejectAllComboBox->addItem(QString(te::stat::GetStatSummaryFullName(te::stat::MODE).c_str()), te::stat::MODE);
-  //}
 }
 
 void te::vp::AggregationDialog::setStatisticalSummaryMap()
@@ -668,7 +639,7 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     return;
   }
 
-  std::string outputLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
   if(m_ui->m_repositoryLineEdit->text().isEmpty())
   {
@@ -683,7 +654,16 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
 
   try
   {
-    std::string id = "";
+    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+    te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+    if (!inDataSource.get())
+    {
+      QMessageBox::information(this, "Aggregation", "Error: can not find the input datasource.");
+      return;
+    }
+    
+    bool res;
+    
     if (m_toFile)
     {
       boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
@@ -694,30 +674,68 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
         return;
       }
       
-      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+      std::size_t idx = outputdataset.find(".");
+      if (idx != std::string::npos)
+        outputdataset=outputdataset.substr(0,idx);
 
+      std::map<std::string, std::string> dsinfo;
+      dsinfo["URI"] = uri.string();
+      
+      std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
+      dsOGR->setConnectionInfo(dsinfo);
+      dsOGR->open();
+      if (dsOGR->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(this, "Aggregation", "Error: there is already a dataset with the requested output name.");
+        return;
+      }
+      
+      res = te::vp::Aggregation(dsLayer->getDataSetName(),inDataSource.get(), selProperties, outputStatisticalSummary, outputdataset, dsOGR.get());
+      
+      if (!res)
+      {
+        dsOGR->close();
+        QMessageBox::information(this, "Aggregation", "Error: could not generate the aggregation.");
+        reject();
+      }
+      dsOGR->close();
+      
+      // let's include the new datasource in the managers
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string id = boost::uuids::to_string(u);
+      
+      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+      ds->setConnInfo(dsinfo);
+      ds->setTitle(uri.stem().string());
       ds->setAccessDriver("OGR");
       ds->setType("OGR");
       ds->setDescription(uri.string());
-      std::map<std::string, std::string> dsinfo;
-      dsinfo["URI"] = uri.string();
-      ds->setConnInfo(dsinfo);
-      ds->setTitle(uri.stem().string());
-    
-      boost::uuids::basic_random_generator<boost::mt19937> gen;
-      boost::uuids::uuid u = gen();
-      id = boost::uuids::to_string(u);
       ds->setId(id);
       
+      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
+      newds->open();
+      te::da::DataSourceInfoManager::getInstance().add(ds);
       m_outputDatasource = ds;
     }
-
-    m_layer = te::vp::Aggregation(m_selectedLayer, selProperties, outputStatisticalSummary, outputLayerName, m_outputDatasource);
-    
-    if (m_layer.get() == 0)
-      reject();
     else
-      te::da::DataSourceInfoManager::getInstance().add(m_outputDatasource);
+    {
+      te::da::DataSourcePtr aux = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+      res = te::vp::Aggregation(dsLayer->getDataSetName(),inDataSource.get(), selProperties, outputStatisticalSummary, outputdataset, aux.get());
+      if (!res)
+      {
+        QMessageBox::information(this, "Aggregation", "Error: could not generate the aggregation.");
+        reject();
+      }
+    }
+    
+    // creating a layer for the result
+    te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+    
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+      
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    m_layer = converter(dt);
   }
   catch(const std::exception& e)
   {

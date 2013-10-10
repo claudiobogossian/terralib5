@@ -20,7 +20,7 @@
 /*!
   \file terralib/statistics/NumericStatisticsSummary.h
  
-  \brief A struct that can be used to keep the summary of statistics.
+  \brief A structure to hold the set of statistics from a set of numerical values.
 */
 
 #ifndef __TERRALIB_STATISTICAL_CORE_INTERNAL_NUMERICSTATISTICALSUMMARY_H
@@ -40,7 +40,7 @@ namespace te
     /*!
       \struct NumericStatisticalSummary
 
-      \brief A summary of statistics.
+      \brief A structure to hold the set of statistics from a set of numerical values.
     */
     struct TESTATEXPORT NumericStatisticalSummary
     {
@@ -68,7 +68,7 @@ namespace te
         */
         NumericStatisticalSummary& operator=(const NumericStatisticalSummary& rhs);
 
-        /*! \brief Clears all attributes from this class. */
+        /*! \brief Clear the structure. */
         void clear();
 
       public:

@@ -141,13 +141,13 @@ int main(int /*argc*/, char** /*argv*/)
 
     //MemoryExample(); //Ok-cai no add (chamando o copy)
 
-    //OGRExampleRead(); //ok
+    OGRExampleRead(); //ok
 
     //ORGExampleWrite();
 
     //////QueryExample(); //??? tem codigo comentado - cai...
-   
-    CopyingData();
+
+    //CopyingData();
 
     ////////PersistenceExample();
 
@@ -168,7 +168,7 @@ int main(int /*argc*/, char** /*argv*/)
 
     std::cout << "\nPress Enter to exit..." << std::endl;
     std::cin.get();
-    
+
     return EXIT_FAILURE;
   }
   catch(...)
@@ -177,13 +177,13 @@ int main(int /*argc*/, char** /*argv*/)
 
     std::cout << "\nPress Enter to exit..." << std::endl;
     std::cin.get();
-    
+
     return EXIT_FAILURE;
   }
 
   std::cout << "\nPress Enter to exit..." << std::endl;
   std::cin.get();
-  
+
   return EXIT_SUCCESS;
 }
 
