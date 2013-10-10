@@ -523,7 +523,7 @@ void te::stmem::Transactor::renameDataSet(const std::string& name, const std::st
 
   m_ds->m_schemas.insert(std::pair<std::string, te::da::DataSetType*>(newName,dt));
   m_ds->m_datasets.insert(std::pair<std::string, DataSet*>(newName,ds));
-
+  
   return; 
 }
          
