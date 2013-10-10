@@ -53,6 +53,7 @@
 #include <QtGui/QResizeEvent>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QMessageBox>
+#include <QtGui/QInputDialog>
 
 #include <QtCore/QRect>
 #include <QtCore/QCoreApplication>
@@ -96,6 +97,7 @@ te::qt::widgets::DataFrame::DataFrame(const QRectF& frameRect, te::qt::widgets::
   m_createGraphicScaleAction = m_menu->addAction("Create Graphic Scale");
   m_removeGraphicScaleAction = m_menu->addAction("Remove Graphic Scale");
   m_removeGraphicScaleAction->setEnabled(false);
+  m_magneticDeclinationAction = m_menu->addAction("Magnetic Declination...");
 }
 
 te::qt::widgets::DataFrame::DataFrame(const DataFrame& rhs) :
@@ -162,6 +164,7 @@ te::qt::widgets::DataFrame::DataFrame(const DataFrame& rhs) :
   m_removeGeographicGridAction = m_menu->addAction("Remove Geographic Grid");
   m_createGraphicScaleAction = m_menu->addAction("Create Graphic Scale");
   m_removeGraphicScaleAction = m_menu->addAction("Remove Graphic Scale");
+  m_magneticDeclinationAction = m_menu->addAction("Magnetic Declination...");
 
   m_createUTMGridAction->setEnabled(rhs.m_createUTMGridAction->isEnabled());
   m_removeUTMGridAction->setEnabled(rhs.m_removeUTMGridAction->isEnabled());
@@ -236,6 +239,7 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
     m_removeGeographicGridAction = m_menu->addAction("Remove Geographic Grid");
     m_createGraphicScaleAction = m_menu->addAction("Create Graphic Scale");
     m_removeGraphicScaleAction = m_menu->addAction("Remove Graphic Scale");
+    m_magneticDeclinationAction = m_menu->addAction("Magnetic Declination...");
 
     m_createUTMGridAction->setEnabled(rhs.m_createUTMGridAction->isEnabled());
     m_removeUTMGridAction->setEnabled(rhs.m_removeUTMGridAction->isEnabled());
@@ -935,6 +939,8 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
             createGraphicScale();
           else if(action == m_removeGraphicScaleAction)
             removeGraphicScale();
+          else if(action == m_magneticDeclinationAction)
+            magneticDeclination();
         }
       }
       return false;
@@ -1205,6 +1211,21 @@ void te::qt::widgets::DataFrame::removeGraphicScale()
   m_removeGraphicScaleAction->setEnabled(false);
 }
 
+void te::qt::widgets::DataFrame::magneticDeclination()
+{
+  double magDecl = m_mapDisplay->getMagneticDeclination();
+
+  bool ok;
+  double v = QInputDialog::getDouble(this, tr("Set Magnetic Declination"),
+                              tr("Angle:"), magDecl, -70, +70, 1, &ok);
+  if(ok)
+  {
+    m_mapDisplay->setMagneticDeclination(v);
+    m_dataChanged = true;
+    draw();
+  }
+}
+
 void te::qt::widgets::DataFrame::hide()
 {
   if(m_UTMGridFrame)
@@ -1355,4 +1376,14 @@ te::qt::widgets::UTMGridFrame* te::qt::widgets::DataFrame::getUTMGridFrame()
 te::qt::widgets::GraphicScaleFrame* te::qt::widgets::DataFrame::getGraphicScaleFrame()
 {
   return m_graphicScaleFrame;
+}
+
+void te::qt::widgets::DataFrame::setMagneticDeclination(double angle)
+{
+  m_mapDisplay->setMagneticDeclination(angle);
+}
+
+double te::qt::widgets::DataFrame::getMagneticDeclination()
+{
+  return m_mapDisplay->getMagneticDeclination();
 }

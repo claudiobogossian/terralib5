@@ -106,7 +106,6 @@ namespace te
           */
           virtual void setLayerSchema(const te::da::DataSetType* schema);
 
-        public:
 
           /*!
             \brief Highlights the objects identified by \a oids
@@ -200,6 +199,13 @@ namespace te
           */
           void removeColumn(const int& column);
 
+          /*!
+            \brief Enable / disable auto-scroll.
+
+            \param enable True for enable auto-scroll, false for disable it.
+          */
+          void setAutoScrollEnabled(const bool& enable);
+
         signals:
 
           /*!
@@ -217,6 +223,10 @@ namespace te
           TablePopupFilter*  m_popupFilter; //!< The menus popup filter.
           HighlightDelegate* m_delegate;    //!< Delegate used for rendering selected rows.
           const te::map::AbstractLayer* m_layer;  //!< Pointer to the layer being presented.
+          bool m_autoScrollEnabled;         //! Auto scroll enabling.
+          bool m_isSorted;                  //! Previously sorted.
+          bool m_isPromoted;                //! Previously promoted.
+          te::da::DataSet* m_dset;          //! Data set being used.
       };
     }
   }

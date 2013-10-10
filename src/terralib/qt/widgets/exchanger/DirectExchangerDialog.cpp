@@ -35,6 +35,7 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../widgets/datasource/selector/DataSourceExplorerDialog.h"
+#include "../../widgets/srs/SRSManagerDialog.h"
 #include "DirectExchangerDialog.h"
 #include "ui_DirectExchangerDialogForm.h"
 
@@ -43,8 +44,11 @@
 #include <QtGui/QMessageBox>
 
 // Boost
+#include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 Q_DECLARE_METATYPE(te::da::DataSourceInfoPtr);
@@ -66,12 +70,14 @@ te::qt::widgets::DirectExchangerDialog::DirectExchangerDialog(QWidget* parent, Q
   m_ui->m_outputADOToolButton->setIcon(QIcon::fromTheme("datasource-ado"));
   m_ui->m_outputSHPToolButton->setIcon(QIcon::fromTheme("datasource-ogr"));
   m_ui->m_dsToolButton->setIcon(QIcon::fromTheme("datasource"));
+  m_ui->m_sridToolButton->setIcon(QIcon::fromTheme("srs"));
 
 //connectors
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_dirToolButton, SIGNAL(clicked()), this, SLOT(onDirToolButtonClicked()));
   connect(m_ui->m_dsToolButton, SIGNAL(clicked()), this, SLOT(onDataSoruceToolButtonClicked()));
+  connect(m_ui->m_sridToolButton, SIGNAL(clicked()), this, SLOT(onSRIDToolButtonClicked()));
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(QString)), this, SLOT(onInputLayerActivated(QString)));
   connect(m_ui->m_inputPGISToolButton, SIGNAL(clicked(bool)), this, SLOT(onInputPostGISToolButtonClicked(bool)));
   connect(m_ui->m_inputADOToolButton, SIGNAL(clicked(bool)), this, SLOT(onInputADOToolButtonClicked(bool)));
@@ -141,11 +147,11 @@ void te::qt::widgets::DirectExchangerDialog::setInputLayers()
     ++it;
   }
 
-  if(m_ui->m_inputLayerComboBox->count() > 0 && m_ui->m_dataSetLineEdit->isEnabled())
+  if(m_ui->m_inputLayerComboBox->count() > 0)
   {
     QString s = m_ui->m_inputLayerComboBox->currentText();
 
-    m_ui->m_dataSetLineEdit->setText(s);
+    onInputLayerActivated(s);
   }
 }
 
@@ -184,6 +190,15 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
     if(dsType->size() == 0)
       te::da::LoadProperties(dsType.get(), dsLayer->getDataSourceId());
 
+    //set srid
+    if(dsType->hasGeom())
+    {
+      te::gm::GeometryProperty* geomProp = dynamic_cast<te::gm::GeometryProperty*>(dsType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+
+      if(geomProp)
+        geomProp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+    }
+
     //create data source
     std::map<std::string, std::string> connInfo;
     connInfo["URI"] = m_ui->m_dataSetLineEdit->text().toStdString();
@@ -196,7 +211,11 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
 
-    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toStdString());
+    boost::filesystem::path uri(m_ui->m_dataSetLineEdit->text().toStdString());
+
+    std::string val = uri.stem().string();
+
+    dsTypeResult->setName(val);
 
     //exchange
     std::map<std::string,std::string> nopt;
@@ -280,6 +299,15 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
     if(dsType->size() == 0)
       te::da::LoadProperties(dsType.get(), dsLayer->getDataSourceId());
 
+    //set srid
+    if(dsType->hasGeom())
+    {
+      te::gm::GeometryProperty* geomProp = dynamic_cast<te::gm::GeometryProperty*>(dsType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+
+      if(geomProp)
+        geomProp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+    }
+
     te::da::DataSourcePtr targetDSPtr = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo()); 
 
     te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(dsType.get(), targetDSPtr->getCapabilities());
@@ -362,6 +390,7 @@ void te::qt::widgets::DirectExchangerDialog::onInputPostGISToolButtonClicked(boo
   m_inputDataSourceType = "POSTGIS";
 
   m_ui->m_inputLayerComboBox->setEnabled(true);
+  m_ui->m_sridToolButton->setEnabled(true);
 
   setInputLayers();
 }
@@ -374,6 +403,7 @@ void te::qt::widgets::DirectExchangerDialog::onInputADOToolButtonClicked(bool fl
   m_inputDataSourceType = "ADO";
 
   m_ui->m_inputLayerComboBox->setEnabled(true);
+  m_ui->m_sridToolButton->setEnabled(true);
 
   setInputLayers();
 }
@@ -386,6 +416,7 @@ void te::qt::widgets::DirectExchangerDialog::onInputSHPToolButtonClicked(bool fl
   m_inputDataSourceType = "OGR";
 
   m_ui->m_inputLayerComboBox->setEnabled(true);
+  m_ui->m_sridToolButton->setEnabled(true);
 
   setInputLayers();
 }
@@ -451,6 +482,17 @@ void te::qt::widgets::DirectExchangerDialog::onInputLayerActivated(QString value
 {
   if(m_ui->m_dataSetLineEdit->isEnabled())
     m_ui->m_dataSetLineEdit->setText(value);
+
+  int idxLayer = m_ui->m_inputLayerComboBox->currentIndex();
+  QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(idxLayer, Qt::UserRole);
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  if(layer.get())
+  {
+    QString strSRID;
+    strSRID.setNum(layer->getSRID());
+    m_ui->m_sridLineEdit->setText(strSRID);
+  }
 }
 
 void te::qt::widgets::DirectExchangerDialog::onDirToolButtonClicked()
@@ -471,6 +513,21 @@ void te::qt::widgets::DirectExchangerDialog::onDataSoruceToolButtonClicked()
   dExplorer->exec();
 
   setDataSources();
+}
+
+void te::qt::widgets::DirectExchangerDialog::onSRIDToolButtonClicked()
+{
+  te::qt::widgets::SRSManagerDialog srsDialog(this);
+  srsDialog.setWindowTitle(tr("Choose the SRS"));
+  
+  if(srsDialog.exec() == QDialog::Rejected)
+    return;
+  
+  std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
+
+  QString strSRID;
+  strSRID.setNum(srid.first);
+  m_ui->m_sridLineEdit->setText(strSRID);
 }
 
 void te::qt::widgets::DirectExchangerDialog::onHelpPushButtonClicked()

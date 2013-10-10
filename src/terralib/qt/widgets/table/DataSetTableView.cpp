@@ -3,6 +3,7 @@
 #include "DataSetTableModel.h"
 #include "HighlightDelegate.h"
 #include "DataSetTableVerticalHeader.h"
+#include "Promoter.h"
 
 // TerraLib include files
 #include "../../../common/Exception.h"
@@ -28,7 +29,7 @@
 // STL
 #include <vector>
 
-bool IsGeometryColumn(te::da::DataSet* dset, const int& col)
+bool IsGeometryColumn(te::da::DataSet* dset, const size_t& col)
 {
   return dset->getPropertyDataType(col) == te::dt::GEOMETRY_TYPE;
 }
@@ -141,7 +142,8 @@ class TablePopupFilter : public QObject
       m_dset(0),
       m_caps(0),
       m_showOidsColumns(false),
-      m_enabled(true)
+      m_enabled(true),
+      m_autoScrollEnabled(false)
     {
       m_view->horizontalHeader()->installEventFilter(this);
       m_view->verticalHeader()->installEventFilter(this);
@@ -150,6 +152,7 @@ class TablePopupFilter : public QObject
       m_view->connect(this, SIGNAL(hideColumn(const int&)), SLOT(hideColumn(const int&)));
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
       m_view->connect(this, SIGNAL(removeColumn(const int&)), SLOT(removeColumn(const int&)));
+      m_view->connect(this, SIGNAL(enableAutoScroll(const bool&)), SLOT(setAutoScrollEnabled(const bool&)));
     }
 
     /*!
@@ -261,21 +264,36 @@ class TablePopupFilter : public QObject
           }
           else if(watched == vport)
           {
-            delete m_vportMenu;
+          }
+          else if(watched == vHdr)
+          {
+            delete m_vMenu;
 
             QContextMenuEvent* evt = static_cast<QContextMenuEvent*>(event);
             QPoint pos = evt->globalPos();
 
-            m_vportMenu = new QMenu;
+            m_vMenu = new QMenu;
+            QAction* act = new QAction(m_vMenu);
+            act->setText(tr("Enable auto scroll"));
+            act->setToolTip(tr("Goes to the selected row."));
 
-            QAction* act = new QAction(m_vportMenu);
-            act->setText(tr("Promote"));
+            act->setCheckable(true);
+            act->setChecked(m_autoScrollEnabled);
+
+            m_vMenu->addAction(act);
+
+            connect(act, SIGNAL(triggered()), SLOT(setAutoScrollEnabled()));
+
+            m_vMenu->addSeparator();
+
+            act = new QAction(m_vportMenu);
+            act->setText(tr("Promote selected rows"));
             act->setToolTip(tr("Reorder rows"));
-            m_vportMenu->addAction(act);
+            m_vMenu->addAction(act);
 
             m_view->connect(act, SIGNAL(triggered()), SLOT(promote()));
 
-            m_vportMenu->popup(pos);
+            m_vMenu->popup(pos);
           }
         }
         break;
@@ -338,6 +356,13 @@ class TablePopupFilter : public QObject
       emit removeColumn(m_columnPressed);
     }
 
+    void setAutoScrollEnabled()
+    {
+      m_autoScrollEnabled = !m_autoScrollEnabled;
+
+      emit enableAutoScroll(m_autoScrollEnabled);
+    }
+
   signals:
 
     void hideColumn(const int&);
@@ -352,6 +377,8 @@ class TablePopupFilter : public QObject
 
     void removeColumn(const int&);
 
+    void enableAutoScroll(const bool&);
+
   protected:
 
     te::qt::widgets::DataSetTableView* m_view;
@@ -363,11 +390,16 @@ class TablePopupFilter : public QObject
     bool m_showOidsColumns;
     bool m_enabled;
     int m_columnPressed;
+    bool m_autoScrollEnabled;
 };
 
 te::qt::widgets::DataSetTableView::DataSetTableView(QWidget* parent) :
 QTableView(parent),
-m_layer(0)
+m_layer(0),
+m_autoScrollEnabled(false),
+m_isSorted(false),
+m_isPromoted(false),
+m_dset(0)
 {
   m_model = new DataSetTableModel(this);
 
@@ -418,6 +450,7 @@ void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset)
 
   m_popupFilter->setDataSet(dset);
   m_delegate->setDataSet(dset);
+  m_dset = dset;
 }
 
 void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType* schema)
@@ -434,6 +467,13 @@ void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType
 void te::qt::widgets::DataSetTableView::highlightOIds(const te::da::ObjectIdSet* oids)
 {
   m_delegate->setObjectIdSet(oids);
+
+  if(m_autoScrollEnabled && oids != 0 && oids->size() > 0)
+  {
+    size_t row = m_model->getPromoter()->map2Row(*oids->begin());
+
+    scrollTo(m_model->index((int)row, 0));
+  }
 
   viewport()->repaint();
 }
@@ -537,6 +577,9 @@ void te::qt::widgets::DataSetTableView::promote()
   m_model->setEnabled(true);
   setEnabled(true);
 
+  m_isPromoted = true;
+  m_isSorted = false;
+
   viewport()->repaint();
 }
 
@@ -570,6 +613,9 @@ void te::qt::widgets::DataSetTableView::sortByColumns()
   setEnabled(true);
 
   viewport()->repaint();
+
+  m_isPromoted = false;
+  m_isSorted = true;
 }
 
 void te::qt::widgets::DataSetTableView::setOIdsColumnsVisible(const bool& visible)
@@ -591,7 +637,7 @@ void te::qt::widgets::DataSetTableView::addColumn()
     std::auto_ptr<te::da::DataSetType> ds_t = m_layer->getSchema();
 
     std::string dsName = ds_t->getName();
-    int n_prop = ds_t->getProperties().size();
+    size_t n_prop = ds_t->getProperties().size();
     dlg.setTableName(dsName);
 
     if(dlg.exec() == QDialog::Accepted)
@@ -614,7 +660,7 @@ void te::qt::widgets::DataSetTableView::addColumn()
 
       ds->addProperty(dsName, p.get());
 
-      m_model->insertColumns(n_prop-1, 0);
+      m_model->insertColumns((int)n_prop-1, 0);
 
       setLayer(m_layer);
     }
@@ -653,6 +699,34 @@ void te::qt::widgets::DataSetTableView::removeColumn(const int& column)
     QMessageBox::information(this, tr("Removing column failure"), tr("The column could not be removed: ") + e.what());
   }
 }
+
+void te::qt::widgets::DataSetTableView::setAutoScrollEnabled(const bool& enable)
+{
+  if(enable)
+  {
+    ScopedCursor cursor(Qt::WaitCursor);
+
+    setEnabled(false);
+    m_model->setEnabled(false);
+    m_popupFilter->setEnabled(false);
+
+    m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
+
+    m_popupFilter->setEnabled(true);
+    m_model->setEnabled(true);
+    setEnabled(true);
+  }
+  else
+  {
+    if(m_isSorted)
+      m_model->getPromoter()->cleanPreproccessKeys();
+    else if(!m_isPromoted)
+      m_model->getPromoter()->cleanLogRowsAndProcessKeys();
+  }
+
+  m_autoScrollEnabled = enable;
+}
+
 
 void te::qt::widgets::DataSetTableView::removeSelection(const int& initRow, const int& finalRow)
 {
