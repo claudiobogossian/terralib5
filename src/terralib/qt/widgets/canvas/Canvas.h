@@ -298,6 +298,11 @@ namespace te
 
           void setNormalMode();
 
+          void setMagneticDeclination(double angle);
+
+          double getMagneticDeclination();
+
+
 
           //@}
 
@@ -471,6 +476,8 @@ namespace te
           QPainter m_painter;       //!< The painter used to draw geometric objects.
 
           bool m_isDeviceOwner;     //!< Tells if canvas is the owner of the paint device.
+
+          double m_magneticDeclination; //!< Magnetic declination
                     
           QColor m_bgColor;         //!< Canvas background color. Defaults: white fully transparent.
 

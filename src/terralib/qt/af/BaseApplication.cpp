@@ -138,7 +138,9 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_mapCursorSize(QSize(20, 20)),
     m_explorer(0),
     m_display(0),
+    m_symbolizerExplorer(0),
     m_project(0),
+    m_progressDockWidget(0),
     m_controller(0)
 {
   m_controller = new ApplicationController;
@@ -422,7 +424,9 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
     std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
 
-    qlb->setLayerList(m_project->getLayers());
+    std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
+
+    qlb->setLayerList(layers);
 
     int retval = qlb->exec();
 
@@ -650,9 +654,9 @@ void te::qt::af::BaseApplication::onToolsDataExchangerDirectTriggered()
   try
   {
     te::qt::widgets::DirectExchangerDialog dlg(this);
-    
-    if(m_project)
-      dlg.setLayers(m_project->getLayers());
+
+    std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
+    dlg.setLayers(layers);
 
     dlg.exec();
   }

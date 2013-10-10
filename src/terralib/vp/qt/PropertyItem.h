@@ -80,6 +80,8 @@ namespace te
           \return True if the Property is selected.
         */
         bool isSelected();
+      
+        te::qt::widgets::AbstractTreeItem::TreeItemType getType() const;
 
       private:
 

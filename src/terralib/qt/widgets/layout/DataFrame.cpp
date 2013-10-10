@@ -278,11 +278,6 @@ QRectF te::qt::widgets::DataFrame::getDataRect()
   m_dataRect = QRectF(e.m_llx, e.m_lly, e.getWidth(), e.getHeight());
   return m_dataRect;
 }
-//
-//QRectF te::qt::widgets::DataFrame::getFrameRect()
-//{
-//  return m_frameRect;
-//}
 
 void te::qt::widgets::DataFrame::adjust()
 {
@@ -570,11 +565,10 @@ void te::qt::widgets::DataFrame::findDataUnitToMilimeter(const te::gm::Envelope&
   // OBS: quero manter a escala do mapa inalterada. Lembre que quando converte,
   // o box, pode aumentar de tamanho e isto muda a escala do mapa.
   // Vamos ver como podemos fazer isto...
-  // primeior vamos descobrir qual o fator de conversao para milimetros... m_dataUnitToMilimeter
-  // NOTA: acho que ser feito usando a informacao de unidade da projecao, mas, como eu nao sei fazer isto.
-  // Vou fazer um codigo quebra galho......
-  // para isto vou converter dataRect para um projetado que deve estar em metros.
-  // Vou usar #define TE_SRS_SAD69_POLYCONIC 29101 que provavelmente tem unidade em metros.
+  // primeior vamos descobrir qual o fator de conversao para milimetros... m_dataUnitToMilimeter.
+  // Vou converter dataRect para um projetado que deve estar em metros.
+  // De preferencia deve ser escolhido uma projecao que mantem as distancias.
+  // Vou usar #define TE_SRS_SAD69_POLYCONIC 29101 (essa projecao tem que ter unidade em metros e manter distancias) Será que ele faz isto???.
 
   std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
   converter->setSourceSRID(srid);

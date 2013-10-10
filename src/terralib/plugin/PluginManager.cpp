@@ -46,6 +46,7 @@
 #include <boost/graph/exception.hpp>
 #include <boost/graph/topological_sort.hpp>
 #include <boost/format.hpp>
+#include <boost/filesystem.hpp>
 
 void te::plugin::PluginManager::getPlugins(std::vector<std::string>& plugins) const
 {
@@ -212,7 +213,8 @@ void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
   
   // If no folder was supplied, try to find the plugin folder using the finders
   
-  if( internalPInfo.m_folder.empty() )
+  if( internalPInfo.m_folder.empty() ||
+    (!boost::filesystem::is_directory(internalPInfo.m_folder)) )
   {
     boost::ptr_vector<PluginInfo> pluginsInfos;
     

@@ -4,7 +4,7 @@
 #include <terralib/gdal/Utils.h>
 #include <terralib/raster.h>
 #include <terralib/dataaccess.h>
-#include <terralib/dataaccess/dataset/DataSetPersistence.h>
+//#include <terralib/dataaccess/dataset/DataSetPersistence.h>
 #include <terralib/dataaccess/dataset/DataSetType.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
 #include <terralib/geometry/GeometryProperty.h>
@@ -98,15 +98,16 @@ void Segmenter()
     }
 
     std::map<std::string, std::string> osinfo;
-    osinfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_segmentedMean.shp";
-    te::da::DataSource* ds = te::da::DataSource::create("OGR", osinfo);
-    te::da::DataSourceTransactor* trans = ds->getTransactor();
-    te::da::DataSetPersistence* pers = trans->getDataSetPersistence();
-    pers->add(dst->getName(), dset);
+    osinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_segmentedMean.shp";
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSource::create("OGR", osinfo);
+    std::auto_ptr<te::da::DataSourceTransactor> trans = ds->getTransactor();
+    trans->add(dst->getName(), dset, std::map<std::string, std::string> ());
+    //te::da::DataSetPersistence* pers = trans->getDataSetPersistence();
+    //pers->add(dst->getName(), dset);
 
-    delete pers;
-    delete trans;
-    delete ds;
+    //delete pers;
+    //delete trans;
+    //delete ds;
 
 // clean up
     delete rin;
@@ -206,14 +207,15 @@ void Segmenter()
 
     std::map<std::string, std::string> osinfo;
     osinfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_segmentedBaatz.shp";
-    te::da::DataSource* ds = te::da::DataSource::create("OGR", osinfo);
-    te::da::DataSourceTransactor* trans = ds->getTransactor();
-    te::da::DataSetPersistence* pers = trans->getDataSetPersistence();
-    pers->add(dst->getName(), dset);
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSource::create("OGR", osinfo);
+    std::auto_ptr<te::da::DataSourceTransactor> trans = ds->getTransactor();
+    //te::da::DataSetPersistence* pers = trans->getDataSetPersistence();
+    trans->add(dst->getName(), dset,  std::map<std::string, std::string> ());
+    //pers->add(dst->getName(), dset);
 
-    delete pers;
-    delete trans;
-    delete ds;
+    //delete pers;
+    //delete trans;
+    //delete ds;
 
 // clean up
     delete rin;

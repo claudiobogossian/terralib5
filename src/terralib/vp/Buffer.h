@@ -81,11 +81,15 @@ namespace te
     te::da::DataSet* BufferQuery(const te::map::AbstractLayerPtr& inputLayer,
                                 const std::map<te::gm::Geometry*, double>& distance,
                                 const int& bufferPolygonRule,
+                                const int& bufferBoundariesRule,
                                 const int& levels);
 
     te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
                                             te::mem::DataSet* dataset, 
                                             const int& levels);
+
+    te::mem::DataSet* PrepareDataSet(te::da::DataSetType* dataSetType, 
+                                     te::mem::DataSet* dataset);
 
   } // end namespace vp
 }   // end namespace te
