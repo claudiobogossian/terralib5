@@ -41,10 +41,6 @@ Implements a series of well-known filtering algorithms for images, linear and no
 // STL
 #include "float.h"
 
-// Boost
-#include <boost/numeric/ublas/io.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-
 te::rp::Filter::InputParameters::InputParameters()
 {
   reset();
@@ -63,6 +59,7 @@ void te::rp::Filter::InputParameters::reset() throw(te::rp::Exception)
   m_inRasterPtr = 0;
   m_inRasterBands.clear();
   m_enableProgress = false;
+  m_window = boost::numeric::ublas::matrix<double>();
 }
 
 const te::rp::Filter::InputParameters& te::rp::Filter::InputParameters::operator=(const te::rp::Filter::InputParameters& params)
@@ -75,6 +72,7 @@ const te::rp::Filter::InputParameters& te::rp::Filter::InputParameters::operator
   m_inRasterPtr = params.m_inRasterPtr;
   m_inRasterBands = params.m_inRasterBands;
   m_enableProgress = params.m_enableProgress;
+  m_window = params.m_window;
 
   return *this;
 }
@@ -151,14 +149,11 @@ bool te::rp::Filter::execute(AlgorithmOutputParameters& outputParams) throw(te::
     m_outputParametersPtr->m_outRasterBands.clear();
 
     std::vector<te::rst::BandProperty*> bandsProperties;
-    for(unsigned int i = 0 ; i < m_inputParameters.m_inRasterBands.size() ; i++)
+    for(unsigned int i = 0; i < m_inputParameters.m_inRasterBands.size(); i++)
     {
       assert(m_inputParameters.m_inRasterBands[i] < m_inputParameters.m_inRasterPtr->getNumberOfBands());
-
-      bandsProperties.push_back(new te::rst::BandProperty(*(
-        m_inputParameters.m_inRasterPtr->getBand(
-          m_inputParameters.m_inRasterBands[i])->getProperty())));
-
+      te::rst::BandProperty* bprop = new te::rst::BandProperty(i, te::dt::DOUBLE_TYPE, "Filtered band");
+      bandsProperties.push_back(bprop);
       m_outputParametersPtr->m_outRasterBands.push_back(i);
     }
 
@@ -225,6 +220,11 @@ bool te::rp::Filter::execute(AlgorithmOutputParameters& outputParams) throw(te::
       return execErosionFilter();
       break;
     }
+    case InputParameters::UserDefinedWindowT:
+    {
+      return execUserDefinedFilter();
+      break;
+    }
     default :
     {
       TERP_LOG_AND_THROW("Invalid filter type");
@@ -258,14 +258,26 @@ bool te::rp::Filter::initialize(const AlgorithmInputParameters& inputParams) thr
 
 // checking window size
   if (inputParamsPtr->m_type == InputParameters::SobelFilterT)
-    TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_windowH == 3 || inputParamsPtr->m_windowW ==3, 
+  {
+    TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_windowH == 3 || inputParamsPtr->m_windowW ==3,
                               "Invalid window size for Sobel Filter, correct is 3x3.");
+  }
 
-  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_windowH > 0 && inputParamsPtr->m_windowH < inputParamsPtr->m_inRasterPtr->getNumberOfRows() / 2,
+  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_windowH > 0 &&
+                            inputParamsPtr->m_windowH < inputParamsPtr->m_inRasterPtr->getNumberOfRows() / 2,
                             "Window height must be greater than 0, and less than half of the number of rows of the image");
-  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_windowW > 0 && inputParamsPtr->m_windowW < inputParamsPtr->m_inRasterPtr->getNumberOfColumns() / 2,
+                            
+  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_windowW > 0 &&
+                            inputParamsPtr->m_windowW < inputParamsPtr->m_inRasterPtr->getNumberOfColumns() / 2,
                             "Window width must be greater than 0, and less than half of the number of columns of the image");
 
+  if (inputParamsPtr->m_type == InputParameters::UserDefinedWindowT)
+  {
+    TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_window.size1() == inputParamsPtr->m_windowW &&
+                              inputParamsPtr->m_window.size2() == inputParamsPtr->m_windowH,
+                              "The user defined window must be of the same size of parameters m_windowW and m_windowH");
+  }
+  
   m_inputParameters = *inputParamsPtr;
   m_isInitialized = true;
 
@@ -418,8 +430,8 @@ bool te::rp::Filter::execModeFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  int H = m_inputParameters.m_windowH;
-  int W = m_inputParameters.m_windowW;
+  const int H = m_inputParameters.m_windowH;
+  const int W = m_inputParameters.m_windowW;
 
   unsigned int R;
   unsigned int C;
@@ -478,8 +490,8 @@ bool te::rp::Filter::execMedianFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  int H = m_inputParameters.m_windowH;
-  int W = m_inputParameters.m_windowW;
+  const int H = m_inputParameters.m_windowH;
+  const int W = m_inputParameters.m_windowW;
 
   unsigned int R;
   unsigned int C;
@@ -535,8 +547,8 @@ bool te::rp::Filter::execDilationFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  int H = m_inputParameters.m_windowH;
-  int W = m_inputParameters.m_windowW;
+  const int H = m_inputParameters.m_windowH;
+  const int W = m_inputParameters.m_windowW;
 
   unsigned int R;
   unsigned int C;
@@ -592,8 +604,8 @@ bool te::rp::Filter::execErosionFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  int H = m_inputParameters.m_windowH;
-  int W = m_inputParameters.m_windowW;
+  const int H = m_inputParameters.m_windowH;
+  const int W = m_inputParameters.m_windowW;
 
   unsigned int R;
   unsigned int C;
@@ -630,6 +642,56 @@ bool te::rp::Filter::execErosionFilter()
         pixel_erosion = it.getValue();
 
       m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixel_erosion, b);
+      ++it;
+    }
+    task.pulse();
+  }
+  if (m_outputParametersPtr->m_normalizeOutput)
+    NormalizeRaster(*m_outputParametersPtr->m_outRasterPtr);
+
+  return true;
+}
+
+bool te::rp::Filter::execUserDefinedFilter()
+{
+  assert(m_inputParameters.m_inRasterPtr);
+  assert(m_outputParametersPtr->m_outRasterPtr);
+  
+  te::common::TaskProgress task(TR_RP("User define Filter"),
+                                te::common::TaskProgress::UNDEFINED,
+                                m_inputParameters.m_inRasterBands.size());
+
+  const int H = m_inputParameters.m_windowH;
+  const int W = m_inputParameters.m_windowW;
+  unsigned int R;
+  unsigned int C;
+  const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
+  const unsigned int MC = m_inputParameters.m_inRasterPtr->getNumberOfColumns();
+  double pixels_in_window;
+
+  for (unsigned int b = 0; b < m_inputParameters.m_inRasterBands.size(); b++)
+  {
+    unsigned int nband = m_inputParameters.m_inRasterBands[b];
+    te::rst::Band* band = m_inputParameters.m_inRasterPtr->getBand(nband);
+    te::rst::BandIteratorWindow<unsigned char> it = te::rst::BandIteratorWindow<unsigned char>::begin(band, W, H);
+    te::rst::BandIteratorWindow<unsigned char> itend = te::rst::BandIteratorWindow<unsigned char>::end(band, W, H);
+
+    while (it != itend)
+    {
+      R = it.getRow();
+      C = it.getColumn();
+      if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
+          (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+      {
+        pixels_in_window = 0.0;
+        for (int r = -(H / 2), rw = 0; r <= (H / 2); r++, rw++)
+          for (int c = -(W / 2), cw = 0; c <= (W / 2); c++, cw++)
+            pixels_in_window += m_inputParameters.m_window(rw, cw) * it.getValue(c, r);
+      }
+      else
+        pixels_in_window = it.getValue();
+
+      m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixels_in_window, b);
       ++it;
     }
     task.pulse();
