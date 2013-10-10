@@ -34,7 +34,6 @@
 #include "../../../srs/Config.h"
 #include "../../widgets/canvas/Canvas.h"
 #include "../../widgets/canvas/MapDisplay.h"
-#include "../../widgets/layer/explorer/LayerExplorer.h"
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
@@ -46,7 +45,6 @@
 #include "../ApplicationController.h"
 #include "../Project.h"
 #include "../Utils.h"
-#include "LayerExplorer.h"
 #include "MapDisplay.h"
 
 // Qt
@@ -57,15 +55,13 @@
 #include <cassert>
 #include <utility>
 
-#define EXTENT_STACK_SIZE 5
-
-te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display, te::qt::af::LayerExplorer* explorer)
+te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   : QObject(display),
     m_display(display),
-    m_explorer(explorer),
     m_tool(0),
     m_menu(0),
-    m_currentExtent(-1)
+    m_currentExtentIndex(-1),
+    m_extentStackMaxSize(5)
 {
   // CoordTracking tool
   te::qt::widgets::CoordTracking* coordTracking = new te::qt::widgets::CoordTracking(m_display, this);
@@ -100,11 +96,6 @@ te::qt::af::MapDisplay::~MapDisplay()
 te::qt::widgets::MapDisplay* te::qt::af::MapDisplay::getDisplay()
 {
   return m_display;
-}
-
-te::qt::af::LayerExplorer* te::qt::af::MapDisplay::getLayerExplorer() const
-{
-  return m_explorer;
 }
 
 bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
@@ -161,20 +152,32 @@ void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
 
 void te::qt::af::MapDisplay::nextExtent()
 {
-  if(m_currentExtent != EXTENT_STACK_SIZE-1 && m_extentStack.size() != m_currentExtent+1)
+  if(m_extentStack.empty())
+    return;
+
+  if(m_currentExtentIndex < static_cast<int>(m_extentStack.size() - 1))
   {
-    m_currentExtent += 1;
-    m_display->setExtent(m_extentStack[m_currentExtent]);
+    m_currentExtentIndex += 1;
+    m_display->setExtent(m_extentStack[m_currentExtentIndex]);
   }
+
+  emit hasNextExtent(m_currentExtentIndex < static_cast<int>(m_extentStack.size() - 1));
+  emit hasPreviousExtent(m_currentExtentIndex > 0);
 }
 
 void te::qt::af::MapDisplay::previousExtent()
 {
-  if(m_currentExtent > 0)
+  if(m_extentStack.empty())
+    return;
+
+  if(m_currentExtentIndex > 0)
   {
-    m_currentExtent -= 1;
-    m_display->setExtent(m_extentStack[m_currentExtent]);
+    m_currentExtentIndex -= 1;
+    m_display->setExtent(m_extentStack[m_currentExtentIndex]);
   }
+
+  emit hasNextExtent(m_currentExtentIndex < static_cast<int>(m_extentStack.size() - 1));
+  emit hasPreviousExtent(m_currentExtentIndex > 0);
 }
 
 void te::qt::af::MapDisplay::fit(const std::list<te::map::AbstractLayerPtr>& layers)
@@ -205,8 +208,7 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
   m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
 
   // Draw the layers selection
-  //drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
-  drawLayersSelection(m_explorer->getExplorer()->getSelectedAndVisibleLayers());
+  drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -219,8 +221,6 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 
     case te::qt::af::evt::LAYER_SELECTED_OBJECTS_CHANGED:
     {
-      //te::qt::af::evt::LayerSelectedObjectsChanged* LayerSelectedObjectsChanged = static_cast<te::qt::af::evt::LayerSelectedObjectsChanged*>(e);
-
       QPixmap* content = m_display->getDisplayPixmap();
       content->fill(Qt::transparent);
 
@@ -228,8 +228,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.drawPixmap(0, 0, m_lastDisplayContent);
       painter.end();
 
-      //drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
-      drawLayersSelection(m_explorer->getExplorer()->getSelectedAndVisibleLayers());
+      drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
     }
     break;
 
@@ -264,37 +263,12 @@ void te::qt::af::MapDisplay::drawLayersSelection(const std::list<te::map::Abstra
   m_display->repaint();
 }
 
-//void te::qt::af::MapDisplay::drawLayersSelection(const std::list<te::map::AbstractLayerPtr>& layers)
-//{
-//  std::list<te::map::AbstractLayerPtr>::const_iterator it;
-//  for(it = layers.begin(); it != layers.end(); ++it)
-//  {
-//    te::map::AbstractLayerPtr layer = it->get();
-//    if(layer->getType() == "FOLDERLAYER")
-//    {
-//      const std::list<te::common::TreeItemPtr>& items = layer->getChildren();
-//
-//      std::list<te::map::AbstractLayerPtr> childrenLayers;
-//
-//      std::list<te::common::TreeItemPtr>::const_iterator layerIt;
-//      for(layerIt = items.begin(); layerIt != items.end(); ++layerIt)
-//        childrenLayers.push_back(static_cast<te::map::AbstractLayer*>(layerIt->get()));
-//
-//      drawLayersSelection(childrenLayers);
-//    }
-//    else
-//      drawLayerSelection(layer);
-//  }
-//
-//  m_display->repaint();
-//}
-
 void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
 {
   assert(layer.get());
 
-  //if(layer->getVisibility() != te::map::VISIBLE)
-  //  return;
+  if(layer->getVisibility() != te::map::VISIBLE)
+    return;
 
   const te::da::ObjectIdSet* oids = layer->getSelected();
   if(oids == 0 || oids->size() == 0)
@@ -350,46 +324,23 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
 
 void te::qt::af::MapDisplay::onExtentChanged()
 {
-  if(!m_extentStack.empty() && m_display->getExtent().equals(m_extentStack[m_currentExtent]))
+  if(!m_extentStack.empty() && m_display->getExtent().equals(m_extentStack[m_currentExtentIndex]))
     return;
 
-  if(m_currentExtent != EXTENT_STACK_SIZE)
+  if(m_currentExtentIndex != m_extentStackMaxSize)
   {
-    std::vector<te::gm::Envelope> aux;
-
-    if(m_currentExtent == -1)
-    {
-      aux.push_back(m_display->getExtent());
-      m_extentStack = aux;
-      m_currentExtent += 1;
-    }
-    else
-    {
-      for(std::size_t i = 0; i <= m_currentExtent; ++i)
-      {
-        aux.push_back(m_extentStack[i]);
-      }
-      aux.push_back(m_display->getExtent());
-
-      m_extentStack = aux;
-      m_currentExtent += 1;
-    }
+    m_extentStack.push_back(m_display->getExtent());
+    m_currentExtentIndex += 1;
   }
   else
   {
-    std::vector<te::gm::Envelope> aux;
-    for(std::size_t i = 0; i <= m_currentExtent; ++i)
-    {
-      if(i == 0)
-        continue;
-
-      aux.push_back(m_extentStack[i]);
-    }
-    aux.push_back(m_display->getExtent());
-
-    m_extentStack = aux;
-    m_currentExtent = EXTENT_STACK_SIZE;
+    m_extentStack.erase(m_extentStack.begin());
+    m_extentStack.push_back(m_display->getExtent());
+    m_currentExtentIndex = m_extentStackMaxSize;
   }
+
+  emit hasNextExtent(m_currentExtentIndex < static_cast<int>(m_extentStack.size() - 1));
+  emit hasPreviousExtent(m_currentExtentIndex > 0);
 }
 
 void te::qt::af::MapDisplay::configSRS(const std::list<te::map::AbstractLayerPtr>& layers)

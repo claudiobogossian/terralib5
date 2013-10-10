@@ -20,7 +20,7 @@
 /*!
   \file terralib/statistics/StringStatisticsSummary.h
  
-  \brief A struct that can be used to keep the summary of statistics.
+  \brief A structure to hold the set of statistics from a set of categorical (sample) values.
 */
 
 #ifndef __TERRALIB_STATISTICAL_CORE_INTERNAL_STRINGSTATISTICALSUMMARY_H
@@ -40,7 +40,7 @@ namespace te
     /*!
       \struct StringStatisticalSummary
 
-      \brief A summary of statistics.
+      \brief A structure to hold the set of statistics from a set of categorical (sample) values.
     */
     struct TESTATEXPORT StringStatisticalSummary
     {
