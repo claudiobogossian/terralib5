@@ -138,7 +138,9 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_mapCursorSize(QSize(20, 20)),
     m_explorer(0),
     m_display(0),
+    m_symbolizerExplorer(0),
     m_project(0),
+    m_progressDockWidget(0),
     m_controller(0)
 {
   m_controller = new ApplicationController;
@@ -422,7 +424,9 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
     std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
 
-    qlb->setLayerList(m_project->getLayers());
+    std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
+
+    qlb->setLayerList(layers);
 
     int retval = qlb->exec();
 
@@ -630,9 +634,9 @@ void te::qt::af::BaseApplication::onToolsDataExchangerDirectTriggered()
   try
   {
     te::qt::widgets::DirectExchangerDialog dlg(this);
-    
-    if(m_project)
-      dlg.setLayers(m_project->getLayers());
+
+    std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
+    dlg.setLayers(layers);
 
     dlg.exec();
   }
@@ -1548,7 +1552,10 @@ void te::qt::af::BaseApplication::makeDialog()
 // 2. Map Display
   te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512), this);
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
-  m_display = new te::qt::af::MapDisplay(map, m_explorer);
+  m_display = new te::qt::af::MapDisplay(map);
+
+  connect(m_display, SIGNAL(hasPreviousExtent(bool)), m_mapPreviousExtent, SLOT(setEnabled(bool)));
+  connect(m_display, SIGNAL(hasNextExtent(bool)), m_mapNextExtent, SLOT(setEnabled(bool)));
 
 // 3. Symbolizer Explorer
 
@@ -1725,8 +1732,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapZoomOut, "zoom-out", "Map.Zoom Out", tr("Zoom &Out"), tr(""), true, true, true, m_menubar);
   initAction(m_mapPan, "pan", "Map.Pan", tr("&Pan"), tr(""), true, true, true, m_menubar);
   initAction(m_mapZoomExtent, "zoom-extent", "Map.Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, true, m_menubar);
-  initAction(m_mapPreviousExtent, "edit-undo", "Map.Previous Extent", tr("&Previous Extent"), tr(""), true, false, true, m_menubar);
-  initAction(m_mapNextExtent, "edit-redo", "Map.Next Extent", tr("&Next Extent"), tr(""), true, false, true, m_menubar);
+  initAction(m_mapPreviousExtent, "edit-undo", "Map.Previous Extent", tr("&Previous Extent"), tr(""), true, false, false, m_menubar);
+  initAction(m_mapNextExtent, "edit-redo", "Map.Next Extent", tr("&Next Extent"), tr(""), true, false, false, m_menubar);
   initAction(m_mapInfo, "pointer-info", "Map.Info", tr("&Info"), tr(""), true, true, true, m_menubar);
   initAction(m_mapRemoveSelection, "pointer-remove-selection", "Map.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
   initAction(m_mapSelection, "pointer-selection", "Map.Selection", tr("&Selection"), tr(""), true, true, true, m_menubar);  
@@ -1867,7 +1874,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addAction(m_mapZoomIn);
   m_mapMenu->addAction(m_mapZoomOut);
   m_mapMenu->addAction(m_mapPan);
-  m_mapMenu->addAction(m_mapZoomExtent);  
+  m_mapMenu->addAction(m_mapZoomExtent);
   m_mapMenu->addAction(m_mapPreviousExtent);
   m_mapMenu->addAction(m_mapNextExtent);
   m_mapMenu->addSeparator();

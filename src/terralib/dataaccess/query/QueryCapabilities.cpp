@@ -156,6 +156,36 @@ void te::da::QueryCapabilities::addSpatialOperator(const std::string& op)
   m_spatialOperators.insert(op);
 }
 
+const std::set<std::string>& te::da::QueryCapabilities::getSpatialTopologicOperators() const
+{
+  return m_spatialTopologicOperators;
+}
+
+void te::da::QueryCapabilities::addSpatialTopologicOperator(const std::string& op)
+{
+  m_spatialTopologicOperators.insert(op);
+}
+
+const std::set<std::string>& te::da::QueryCapabilities::getSpatialMetricOperators() const
+{
+  return m_spatialMetricOperators;
+}
+
+void te::da::QueryCapabilities::addSpatialMetricOperator(const std::string& op)
+{
+  m_spatialMetricOperators.insert(op);
+}
+
+const std::set<std::string>& te::da::QueryCapabilities::getSpatialNewGeomOperators() const
+{
+  return m_spatialNewGeomOperators;
+}
+
+void te::da::QueryCapabilities::addSpatialNewGeomOperator(const std::string& op)
+{
+  m_spatialNewGeomOperators.insert(op);
+}
+
 const std::set<std::string>& te::da::QueryCapabilities::getLogicalOperators() const
 {
   return m_logicalOperators;

@@ -56,29 +56,25 @@ void te::plugin::DefaultFinder::getDefaultDirs( std::vector< std::string >& dirs
   
   // let's check if there is a directory called TE_DEFAULT_PLUGINS_DIR in the current application dir
   
-  #ifdef TE_DEFAULT_PLUGINS_DIR
-    if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
+  if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
+  {
+    dirs.push_back( boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string() );
+  }
+
+// if the default dir is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
+
+  {
+    char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
+
+    if(e != 0)
     {
-      dirs.push_back( boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string() );
+      boost::filesystem::path p(e);
+      p /= TE_DEFAULT_PLUGINS_DIR;
+
+      if(boost::filesystem::is_directory(p))
+        dirs.push_back( boost::filesystem::system_complete(p).string() );
     }
-
-  // if the default dir is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
-
-    #ifdef TE_DIR_ENVIRONMENT_VARIABLE
-      {
-        char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
-
-        if(e != 0)
-        {
-          boost::filesystem::path p(e);
-          p /= TE_DEFAULT_PLUGINS_DIR;
-
-          if(boost::filesystem::is_directory(p))
-            dirs.push_back( boost::filesystem::system_complete(p).string() );
-        }
-      }
-    #endif
-  #endif
+  }
   
   #ifdef TE_PLUGINS_INSTALL_PATH
     {

@@ -156,3 +156,8 @@ std::vector<te::qt::widgets::AbstractTreeItem*> te::vp::PropertyGroupItem::getIt
 {
   return m_items;
 }
+
+te::qt::widgets::AbstractTreeItem::TreeItemType te::vp::PropertyGroupItem::getType() const
+{
+  return te::qt::widgets::AbstractTreeItem::GROUPINGTREEITEM;
+}

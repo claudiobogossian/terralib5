@@ -59,6 +59,7 @@ option (EXAMPLE_SAM "Build sam example." OFF)
 option (EXAMPLE_SERIALIZATION "Build serialization example." OFF)    
 option (EXAMPLE_SRS "Build srs example." OFF)  
 option (EXAMPLE_ST "Build st example." OFF)  
+option (EXAMPLE_VP "Build vp example." OFF)  
 option (EXAMPLE_MYVIEWER "Build my viewer example." OFF)  
 option (EXAMPLE_URL "Build URL example." OFF)  
 option (EXAMPLE_XERCES "Build xerces example." OFF)  
@@ -162,6 +163,10 @@ endif()
 
 if(EXAMPLE_ST)
   add_subdirectory(terralib_example_st)
+endif()
+
+if(EXAMPLE_VP)
+  add_subdirectory(terralib_example_vp)
 endif()
 
 if(EXAMPLE_MYVIEWER)

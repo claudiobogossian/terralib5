@@ -50,8 +50,6 @@ namespace te
 
     namespace af
     {
-      class LayerExplorer;
-
       namespace evt
       {
         // Forward declaration
@@ -79,14 +77,12 @@ namespace te
 
             \param display te::qt::widgets::MapDisplay to be listened.
           */
-          MapDisplay(te::qt::widgets::MapDisplay* display, te::qt::af::LayerExplorer* explorer);
+          MapDisplay(te::qt::widgets::MapDisplay* display);
 
           /*! \brief destructor. */
           ~MapDisplay();
 
           te::qt::widgets::MapDisplay* getDisplay();
-
-          te::qt::af::LayerExplorer* getLayerExplorer() const;
 
           bool eventFilter(QObject* watched, QEvent* e);
 
@@ -138,15 +134,21 @@ namespace te
 
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
 
+        signals:
+
+          void hasNextExtent(bool value);
+
+          void hasPreviousExtent(bool value);
+
         protected:
 
           te::qt::widgets::MapDisplay* m_display;             //!< Pointer to a component te::qt::widgets::MapDisplay.
-          te::qt::af::LayerExplorer*   m_explorer;            //!< The layer explorer associated to this display.
           te::qt::widgets::AbstractTool* m_tool;              //!< Pointer to the current tool being used.
           QMenu* m_menu;                                      //!< The map display popup menu.
           QPixmap m_lastDisplayContent;                       //!< The last map display content. i.e. a "clean" pixmap.
           std::vector<te::gm::Envelope> m_extentStack;        //!< The stack of MapDisplay extents.
-          int m_currentExtent;                                //!< The current extent index.
+          int m_currentExtentIndex;                           //!< The current extent index.
+          int m_extentStackMaxSize;                           //!< The max size of the extent stack. Used on previousExtent and nextExtent.
       };
     }
   }

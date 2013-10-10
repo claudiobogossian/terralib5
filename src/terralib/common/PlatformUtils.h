@@ -39,6 +39,9 @@
   #error "Platform not supported yet! Please contact terralib-team@dpi.inpe.br"
 #endif
 
+#include <vector>
+#include <string>
+
 namespace te
 {
   namespace common
@@ -77,6 +80,20 @@ namespace te
       \return The number of physical processors.
     */
     TECOMMONEXPORT unsigned int GetPhysProcNumber();
+    
+    /*!
+      \brief Returns the system PATH enviroment variable, decomposed into directory names, or an empty vector if no values were found.
+
+      \param paths The decomposed PATH.
+    */
+    TECOMMONEXPORT void GetDecompostedPathEnvVar( std::vector< std::string >& paths );    
+    
+    /*!
+      \brief Returns the system LD_LIBRARY_PATH enviroment variable, decomposed into directory names, or an empty vector if no values were found.
+
+      \param paths The decomposed PATH.
+    */
+    TECOMMONEXPORT void GetDecompostedLDPathEnvVar( std::vector< std::string >& paths );      
 
   }     // end namespace common
 }       // end namespace te

@@ -97,6 +97,18 @@ namespace te
 
         void addSpatialOperator(const std::string& op);
 
+        const std::set<std::string>& getSpatialTopologicOperators() const;
+
+        void addSpatialTopologicOperator(const std::string& op);
+
+        const std::set<std::string>& getSpatialMetricOperators() const;
+
+        void addSpatialMetricOperator(const std::string& op);
+
+        const std::set<std::string>& getSpatialNewGeomOperators() const;
+
+        void addSpatialNewGeomOperator(const std::string& op);
+
         const std::set<std::string>& getLogicalOperators() const;
 
         void addLogicalOperator(const std::string& op);
@@ -129,7 +141,11 @@ namespace te
         bool m_select;     //!< A flag that indicates if the data source supports the SELECT command.
         bool m_selectInto; //!< A flag that indicates if the data source supports the SELECT INTO command.
 
-        std::set<std::string> m_spatialOperators;    //!< The names of spatial supported operators.
+        std::set<std::string> m_spatialTopologicOperators;  //!< The names of topological supported operators (touches, crosses, etc).
+        std::set<std::string> m_spatialMetricOperators;       //!< The names of spatial metric supported operators (area, lenght, etc).
+        std::set<std::string> m_spatialNewGeomOperators;      //!< The names of spatial supported operators that generate new geometries (centroid, buffer, union, intersection,etc).
+        std::set<std::string> m_spatialOperators;             //!< The names of other spatial supported operators.
+
         std::set<std::string> m_logicalOperators;    //!< The names of logical supported operators.
         std::set<std::string> m_comparsionOperators; //!< The names of comparsion supported operators.
         std::set<std::string> m_arithmeticOperators; //!< The names of arithmetic supported operators.

@@ -98,6 +98,8 @@ namespace te
 
           void onDirToolButtonClicked();
 
+          void onDataSoruceToolButtonClicked();
+
           void onHelpPushButtonClicked();
 
           void onOkPushButtonClicked();
@@ -110,7 +112,6 @@ namespace te
 
           std::string m_inputDataSourceType;
           std::string m_outputDataSourceType;
-          std::string m_outputDataDriver;
 
           bool m_exchangeToFile;
       };
