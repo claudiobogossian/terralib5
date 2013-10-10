@@ -1552,7 +1552,7 @@ void te::qt::af::BaseApplication::makeDialog()
 // 2. Map Display
   te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512), this);
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
-  m_display = new te::qt::af::MapDisplay(map, m_explorer);
+  m_display = new te::qt::af::MapDisplay(map);
 
 // 3. Symbolizer Explorer
 
