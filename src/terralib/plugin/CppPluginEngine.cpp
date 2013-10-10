@@ -177,59 +177,81 @@ void te::plugin::CppPluginEngine::getDefaultDirs( std::vector< std::string >& di
     if(boost::filesystem::is_directory(p))
       dirs.push_back( boost::filesystem::system_complete( p ).string() );   
   }
-  
-  if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
+
   {
-    dirs.push_back( boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string() );
+    boost::filesystem::path p("win32");
+    
+    if(boost::filesystem::is_directory(p))
+      dirs.push_back( boost::filesystem::system_complete( p ).string() );   
   }
 
   {
-    char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
-
-    if(e != 0)
+    boost::filesystem::path p("win64");
+    
+    if(boost::filesystem::is_directory(p))
+      dirs.push_back( boost::filesystem::system_complete( p ).string() );   
+  }
+  
+  #ifdef TE_DEFAULT_PLUGINS_DIR
+    if(boost::filesystem::is_directory(TE_DEFAULT_PLUGINS_DIR))
     {
-	  dirs.push_back( boost::filesystem::system_complete( e ).string() );
+      dirs.push_back( boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string() );
+    }
+  #endif
 
+  #ifdef TE_DIR_ENVIRONMENT_VARIABLE
+    {
+      char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
+
+      if(e != 0)
       {
-        boost::filesystem::path p(e);
-        p /= "lib";
+	      if(boost::filesystem::is_directory(e))
+          dirs.push_back( boost::filesystem::system_complete(e).string() );
 
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }  
+        {
+          boost::filesystem::path p(e);
+          p /= "lib";
 
-      {
-        boost::filesystem::path p(e);
-        p /= "bin32";
+          if(boost::filesystem::is_directory(p))
+            dirs.push_back( boost::filesystem::system_complete(p).string() );
+        }  
 
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }
+        {
+          boost::filesystem::path p(e);
+          p /= "bin32";
 
-      {
-        boost::filesystem::path p(e);
-        p /= "bin64";
+          if(boost::filesystem::is_directory(p))
+            dirs.push_back( boost::filesystem::system_complete(p).string() );
+        }
 
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }
+        {
+          boost::filesystem::path p(e);
+          p /= "bin64";
+
+          if(boost::filesystem::is_directory(p))
+            dirs.push_back( boost::filesystem::system_complete(p).string() );
+        }
       
-      {
-        boost::filesystem::path p(e);
-        p /= TE_DEFAULT_PLUGINS_DIR;
+        #ifdef TE_DEFAULT_PLUGINS_DIR
+          {
+            boost::filesystem::path p(e);
+            p /= TE_DEFAULT_PLUGINS_DIR;
 
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
+            if(boost::filesystem::is_directory(p))
+              dirs.push_back( boost::filesystem::system_complete(p).string() );
+          }
+        #endif
       }
     }
-  }
+  #endif
 
   {
     char* e = getenv("TERRALIB_DIR");
 
     if(e != 0)
     {
-	  dirs.push_back( boost::filesystem::system_complete( e ).string() );
+	    if(boost::filesystem::is_directory(e))
+        dirs.push_back( boost::filesystem::system_complete(e).string() );
 
       {
         boost::filesystem::path p(e);
@@ -255,39 +277,59 @@ void te::plugin::CppPluginEngine::getDefaultDirs( std::vector< std::string >& di
           dirs.push_back( boost::filesystem::system_complete(p).string() );
       }
       
-      {
-        boost::filesystem::path p(e);
-        p /= TE_DEFAULT_PLUGINS_DIR;
+      #ifdef TE_DEFAULT_PLUGINS_DIR
+        {
+          boost::filesystem::path p(e);
+          p /= TE_DEFAULT_PLUGINS_DIR;
 
-        if(boost::filesystem::is_directory(p))
-          dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }
+          if(boost::filesystem::is_directory(p))
+            dirs.push_back( boost::filesystem::system_complete(p).string() );
+        }
+      #endif
     }
   }
 
-  {
-    char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
-
-    if(e != 0)
+  #ifdef TE_PLUGINS_PATH
     {
+	    if(boost::filesystem::is_directory(TE_PLUGINS_PATH))
+        dirs.push_back( boost::filesystem::system_complete(TE_PLUGINS_PATH).string() );
+
       {
-        boost::filesystem::path p(e);
-        p /= "/lib";
+        boost::filesystem::path p(TE_PLUGINS_PATH);
+        p /= "lib";
 
         if(boost::filesystem::is_directory(p))
           dirs.push_back( boost::filesystem::system_complete(p).string() );
-      }        
-      
+      }  
+
       {
-        boost::filesystem::path p(e);
-        p /= TE_DEFAULT_PLUGINS_DIR;
+        boost::filesystem::path p(TE_PLUGINS_PATH);
+        p /= "bin32";
 
         if(boost::filesystem::is_directory(p))
           dirs.push_back( boost::filesystem::system_complete(p).string() );
       }
+
+      {
+        boost::filesystem::path p(TE_PLUGINS_PATH);
+        p /= "bin64";
+
+        if(boost::filesystem::is_directory(p))
+          dirs.push_back( boost::filesystem::system_complete(p).string() );
+      }
+      
+      #ifdef TE_DEFAULT_PLUGINS_DIR
+        {
+          boost::filesystem::path p(TE_PLUGINS_PATH);
+          p /= TE_DEFAULT_PLUGINS_DIR;
+
+          if(boost::filesystem::is_directory(p))
+            dirs.push_back( boost::filesystem::system_complete(p).string() );
+        }
+      #endif
     }
-  }
-  
+  #endif
+ 
   std::vector< std::string > decPath;
   te::common::GetDecompostedPathEnvVar( decPath );
   for( std::vector< std::string >::size_type decPathIdx = 0 ; decPathIdx < decPath.size() ;

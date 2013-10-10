@@ -49,12 +49,27 @@ find_library(
   PATH_SUFFIXES "gdal/lib" "win32/release"
 )
 
-find_library(
-  GDAL_LIBRARY_DEBUG 
-  NAMES gdal_i gdal gdal1 gdal1.6.0
-  PATHS /usr/local/lib /usr/lib 
-  PATH_SUFFIXES "gdal/lib" "win32/debug"
-)
+if(WIN32)
+  if(CMAKE_CL_64)
+    find_library(
+      GDAL_LIBRARY_DEBUG 
+      NAMES gdal_i_d 
+    )
+  else()
+    find_library(
+      GDAL_LIBRARY_DEBUG 
+      NAMES gdal_i
+      PATH_SUFFIXES "gdal/lib" "win32/debug"
+    )
+  endif()
+else()
+  find_library(
+    GDAL_LIBRARY_DEBUG 
+    NAMES gdal_i gdal gdal1 gdal1.6.0
+    PATHS /usr/local/lib /usr/lib 
+    PATH_SUFFIXES "gdal/lib" "win32/debug"
+  )
+endif()
           
 checkLibNames("GDAL")
        

@@ -39,7 +39,7 @@
 te::gdal::DataSet::DataSet(std::auto_ptr<te::da::DataSetType> dt,std::string uri)
   : m_dsType(dt),
     m_uri(uri),
-    m_rwRole(te::common::RWAccess),
+    m_rwRole(te::common::RAccess),
     m_size(1),
     m_i(-1)
 {}

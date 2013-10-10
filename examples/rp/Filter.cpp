@@ -44,15 +44,13 @@ void Filter()
 
 // create filter algorithm parameters
       te::rp::Filter::InputParameters filterInputParameters;
-      filterInputParameters.m_type = te::rp::Filter::InputParameters::MedianFilterT;
-      filterInputParameters.m_windowH = 5;
-      filterInputParameters.m_windowW = 5;
+// examples of filters include MeanFilterT, ModeFilterT, MedianFilterT, DilationFilterT and ErosionFilterT
+      filterInputParameters.m_type = te::rp::Filter::InputParameters::SobelFilterT;
+      filterInputParameters.m_windowH = 3;
+      filterInputParameters.m_windowW = 3;
       filterInputParameters.m_enableProgress = true;
       filterInputParameters.m_inRasterPtr = rin;
       filterInputParameters.m_inRasterBands.push_back(0);
-      
-      filterInputParameters.m_inRasterBands.push_back(1);
-      filterInputParameters.m_inRasterBands.push_back(2);
 
       te::rp::Filter::OutputParameters filterOutputParameters;
       filterOutputParameters.m_createdOutRasterInfo = orinfo;
