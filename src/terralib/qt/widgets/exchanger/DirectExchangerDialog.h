@@ -100,6 +100,8 @@ namespace te
 
           void onDataSoruceToolButtonClicked();
 
+          void onSRIDToolButtonClicked();
+
           void onHelpPushButtonClicked();
 
           void onOkPushButtonClicked();
