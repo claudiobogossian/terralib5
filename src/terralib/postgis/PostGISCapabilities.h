@@ -79,18 +79,6 @@ queryCapabilities.addSpatialOperator("st_isring");
 queryCapabilities.addSpatialOperator("st_issimple");
 queryCapabilities.addSpatialOperator("st_isvalid");
 
-queryCapabilities.addSpatialOperator("st_contains");
-queryCapabilities.addSpatialOperator("st_covers");
-queryCapabilities.addSpatialOperator("st_coveredby");
-queryCapabilities.addSpatialOperator("st_crosses");
-queryCapabilities.addSpatialOperator("st_disjoint");
-queryCapabilities.addSpatialOperator("st_equals");
-queryCapabilities.addSpatialOperator("st_overlaps");
-queryCapabilities.addSpatialOperator("st_relate");
-queryCapabilities.addSpatialOperator("st_touches");
-queryCapabilities.addSpatialOperator("st_intersects");
-queryCapabilities.addSpatialOperator("st_within");
-
 queryCapabilities.addSpatialOperator("st_ndims");
 queryCapabilities.addSpatialOperator("st_nrings");
 queryCapabilities.addSpatialOperator("st_numgeometries");
@@ -104,20 +92,34 @@ queryCapabilities.addSpatialOperator("st_y");
 queryCapabilities.addSpatialOperator("st_z");
 queryCapabilities.addSpatialOperator("st_m");
 queryCapabilities.addSpatialOperator("st_transform");
-queryCapabilities.addSpatialOperator("st_area");
-queryCapabilities.addSpatialOperator("st_centroid");
-queryCapabilities.addSpatialOperator("st_difference");
-queryCapabilities.addSpatialOperator("st_distance");
 queryCapabilities.addSpatialOperator("st_dfullywithin");
 queryCapabilities.addSpatialOperator("st_dwithin");
-queryCapabilities.addSpatialOperator("st_length");
-queryCapabilities.addSpatialOperator("st_perimeter");
-queryCapabilities.addSpatialOperator("st_buffer");
-queryCapabilities.addSpatialOperator("st_convexhull");
-queryCapabilities.addSpatialOperator("st_difference");
-queryCapabilities.addSpatialOperator("st_intersection");
-queryCapabilities.addSpatialOperator("st_symdifference");
-queryCapabilities.addSpatialOperator("st_union");
+
+queryCapabilities.addSpatialTopologicOperator("st_contains");
+queryCapabilities.addSpatialTopologicOperator("st_covers");
+queryCapabilities.addSpatialTopologicOperator("st_coveredby");
+queryCapabilities.addSpatialTopologicOperator("st_crosses");
+queryCapabilities.addSpatialTopologicOperator("st_disjoint");
+queryCapabilities.addSpatialTopologicOperator("st_equals");
+queryCapabilities.addSpatialTopologicOperator("st_overlaps");
+queryCapabilities.addSpatialTopologicOperator("st_relate");
+queryCapabilities.addSpatialTopologicOperator("st_touches");
+queryCapabilities.addSpatialTopologicOperator("st_intersects");
+queryCapabilities.addSpatialTopologicOperator("st_within");
+
+queryCapabilities.addSpatialMetricOperator("st_area");
+queryCapabilities.addSpatialMetricOperator("st_distance");
+queryCapabilities.addSpatialMetricOperator("st_length");
+queryCapabilities.addSpatialMetricOperator("st_perimeter");
+
+queryCapabilities.addSpatialNewGeomOperator("st_centroid");
+queryCapabilities.addSpatialNewGeomOperator("st_difference");
+queryCapabilities.addSpatialNewGeomOperator("st_buffer");
+queryCapabilities.addSpatialNewGeomOperator("st_convexhull");
+queryCapabilities.addSpatialNewGeomOperator("st_difference");
+queryCapabilities.addSpatialNewGeomOperator("st_intersection");
+queryCapabilities.addSpatialNewGeomOperator("st_symdifference");
+queryCapabilities.addSpatialNewGeomOperator("st_union");
 /* - end Spatial Operators */
 
 // DataSouce Capabilities
