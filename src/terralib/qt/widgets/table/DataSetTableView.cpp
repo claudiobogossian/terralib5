@@ -264,21 +264,6 @@ class TablePopupFilter : public QObject
           }
           else if(watched == vport)
           {
-            delete m_vportMenu;
-
-            QContextMenuEvent* evt = static_cast<QContextMenuEvent*>(event);
-            QPoint pos = evt->globalPos();
-
-            m_vportMenu = new QMenu;
-
-            QAction* act = new QAction(m_vportMenu);
-            act->setText(tr("Promote"));
-            act->setToolTip(tr("Reorder rows"));
-            m_vportMenu->addAction(act);
-
-            m_view->connect(act, SIGNAL(triggered()), SLOT(promote()));
-
-            m_vportMenu->popup(pos);
           }
           else if(watched == vHdr)
           {
@@ -298,6 +283,15 @@ class TablePopupFilter : public QObject
             m_vMenu->addAction(act);
 
             connect(act, SIGNAL(triggered()), SLOT(setAutoScrollEnabled()));
+
+            m_vMenu->addSeparator();
+
+            act = new QAction(m_vportMenu);
+            act->setText(tr("Promote selected rows"));
+            act->setToolTip(tr("Reorder rows"));
+            m_vMenu->addAction(act);
+
+            m_view->connect(act, SIGNAL(triggered()), SLOT(promote()));
 
             m_vMenu->popup(pos);
           }
