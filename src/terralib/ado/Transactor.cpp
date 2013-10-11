@@ -1157,12 +1157,6 @@ void te::ado::Transactor::add(const std::string& datasetName,
 
       for(std::size_t i = 0; i < d->getNumProperties(); ++i)
       {
-        
-        if(d->isNull(i))
-        {
-          isNull = true;
-          continue;
-        }
 
         std::string pname = d->getPropertyName(i);
         int pType = d->getPropertyDataType(i);
@@ -1257,8 +1251,7 @@ void te::ado::Transactor::add(const std::string& datasetName,
           }
       }
 
-      if(!isNull)
-        TESTHR(recset->Update());
+      TESTHR(recset->Update());
 
     }
   }

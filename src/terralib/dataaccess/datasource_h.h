@@ -33,7 +33,7 @@
 #include "datasource/DataSourceCapabilities.h"
 //#include "datasource/DataSourceCatalog.h"
 //#include "datasource/DataSourceCatalogLoader.h"
-//#include "datasource/DataSourceFactory.h"
+#include "datasource/DataSourceFactory.h"
 #include "datasource/DataSourceManager.h"
 #include "datasource/DataSourceTransactor.h"
 //#include "datasource/PreparedQuery.h"

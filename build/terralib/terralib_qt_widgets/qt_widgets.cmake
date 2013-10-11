@@ -415,7 +415,6 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/se" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/slider/TimePropertiesDialog.h
-  ${SRCDIR}/widgets/slider/TimeSliderEventFilter.h
   ${SRCDIR}/widgets/slider/TimeSliderWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/slider" MOC)
