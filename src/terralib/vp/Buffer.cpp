@@ -132,8 +132,6 @@ bool te::vp::Buffer(const std::string& inDatasetName,
   else
   {
     res = BufferMemory(inDatasetName, inDataSource, dist, bufferPolygonRule, bufferBoundariesRule, levels, outputDataSet.get(), outputDataSetType.get(), te::gm::MultiPolygonType);
-    //outputDataSet.reset(new te::mem::DataSet(outputDataSetType.get()));
-    //BufferMemory(outputDataSet.get(), distance, bufferPolygonRule, levels);
   }
 
   if (!res)
