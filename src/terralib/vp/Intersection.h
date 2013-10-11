@@ -39,15 +39,13 @@ namespace te
 {
   namespace vp
   {
-
-    bool Intersection(const std::string& inFirstDataSetName,
-                      te::da::DataSource* inFirstDataSource,
-                      const std::string& inSecondDataSetName,
-                      te::da::DataSource* inSecondDataSource,
-                      const bool& copyInputColumns,
-                      const std::string& outDataSetName,
-                      te::da::DataSource* outDataSource);
-
+    TEVPEXPORT bool Intersection(const std::string& inFirstDataSetName,
+                                te::da::DataSource* inFirstDataSource,
+                                const std::string& inSecondDataSetName,
+                                te::da::DataSource* inSecondDataSource,
+                                const bool& copyInputColumns,
+                                const std::string& outDataSetName,
+                                te::da::DataSource* outDataSource);
   }
 }
 
