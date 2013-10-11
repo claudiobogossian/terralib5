@@ -161,10 +161,7 @@ bool te::rp::Filter::execute(AlgorithmOutputParameters& outputParams) throw(te::
       te::rst::RasterFactory::make(
         m_outputParametersPtr->m_createdOutRasterDSType,
         new te::rst::Grid(*(m_inputParameters.m_inRasterPtr->getGrid())),
-        bandsProperties,
-        m_outputParametersPtr->m_createdOutRasterInfo,
-        0,
-        0));
+        bandsProperties, m_outputParametersPtr->m_createdOutRasterInfo, 0, 0));
     TERP_TRUE_OR_RETURN_FALSE(m_outputParametersPtr->m_createdOutRasterPtr.get(), "Output raster creation error");
 
     m_outputParametersPtr->m_outRasterPtr = m_outputParametersPtr->m_createdOutRasterPtr.get();
