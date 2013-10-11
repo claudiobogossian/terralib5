@@ -112,7 +112,8 @@ te::st::CoverageSeriesIterator te::st::CoverageSeries::end() const
 te::st::CoverageSeriesIterator te::st::CoverageSeries::at(te::dt::DateTime* t) const
 {
   boost::shared_ptr<te::dt::DateTime> aux(t);
-  CoverageSeriesIterator it(m_observations.find(aux)); 
+  CoverageSeriesObservationSet::const_iterator itcs = m_observations.find(aux);
+  CoverageSeriesIterator it(itcs); 
   aux.reset();
   return it;
 }
@@ -317,25 +318,25 @@ te::st::CoverageSeries::getPatch(const te::dt::DateTime& dt, te::dt::TemporalRel
   {
     itb = m_observations.upper_bound(shrdt);
   }
-  if(r==(te::dt::AFTER | te::dt::EQUALS)) // 2 OU 8 = 10 
+  else if(r==(te::dt::AFTER | te::dt::EQUALS)) // 2 OU 8 = 10 
   {
     itb = m_observations.find(shrdt);
     if(itb==m_observations.end())
       itb = m_observations.upper_bound(shrdt);
   }
-  if(r==te::dt::BEFORE) // 1
+  else if(r==te::dt::BEFORE) // 1
   {
     itb = m_observations.begin();
     ite = m_observations.find(shrdt);
     if(ite==m_observations.end())
       ite = m_observations.upper_bound(shrdt);
   }
-  if(r==(te::dt::BEFORE | te::dt::EQUALS)) // 1 OU 8 = 9
+  else if(r==(te::dt::BEFORE | te::dt::EQUALS)) // 1 OU 8 = 9
   {
     itb = m_observations.begin();
     ite = m_observations.upper_bound(shrdt); 
   }
-  if(r==te::dt::DURING) //4
+  else if(r==te::dt::DURING) //4
   {
     te::dt::DateTimePeriod* auxt = static_cast<te::dt::DateTimePeriod*>(shrdt.get());
     boost::shared_ptr<te::dt::DateTime> t1(auxt->getInitialInstant());
@@ -345,7 +346,7 @@ te::st::CoverageSeries::getPatch(const te::dt::DateTime& dt, te::dt::TemporalRel
       itb = m_observations.upper_bound(t1);
     ite = m_observations.upper_bound(t2); 
   }
-  if(r==te::dt::EQUALS) //8
+  else if(r==te::dt::EQUALS) //8
   {
     std::pair<CoverageSeriesObservationSet::const_iterator, CoverageSeriesObservationSet::const_iterator> itPair;
     itPair = m_observations.equal_range(shrdt);
