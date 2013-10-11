@@ -95,6 +95,13 @@ namespace te
           /*! \brief This method returns the layer handled by this thread. */
           te::map::AbstractLayer* getLayer() const;
 
+          /*!
+            \brief It sets the magnetic declination angle.
+
+            \param angle The angle.
+          */
+          virtual void setMagneticDeclination(double angle);
+
         protected:
 
           /* \brief Starts the thread. i.e. performs the layer draw. */
@@ -140,6 +147,7 @@ namespace te
           int m_interval;                  //!< Interval used to send feedbacks.
           bool m_finishedWithSuccess;      //!< A flag that indicates if the layer could be drawn.
           QString m_errorMessage;          //!< A string that contains an error message.
+          double m_magneticDeclination;    //!< Magnetic declination.
       };
 
     } // end namespace widgets

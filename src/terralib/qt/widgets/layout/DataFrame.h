@@ -96,6 +96,8 @@ namespace te
           void drawButtonClicked();
           QPixmap* getLastDisplayContent();
           QPixmap* getPixmap();
+          void setMagneticDeclination(double angle);
+          double getMagneticDeclination();
 
           void hide();
           void show();
@@ -106,6 +108,7 @@ namespace te
           void removeGeographicGrid();
           void createGraphicScale();
           void removeGraphicScale();
+          void magneticDeclination();
           te::qt::widgets::GeographicGridFrame* getGeoGridFrame();
           te::qt::widgets::UTMGridFrame* getUTMGridFrame();
           te::qt::widgets::GraphicScaleFrame* getGraphicScaleFrame();
@@ -148,6 +151,7 @@ namespace te
           QAction *m_removeGeographicGridAction;
           QAction *m_createGraphicScaleAction;
           QAction *m_removeGraphicScaleAction;
+          QAction *m_magneticDeclinationAction;
       };
     } // end namespace widgets
   }   // end namespace qt

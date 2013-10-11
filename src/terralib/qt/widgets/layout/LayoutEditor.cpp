@@ -1187,6 +1187,17 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
   // Zoom and Pan on the data frame
   else if(e->modifiers() == Qt::ControlModifier && m_zdataFrame)
   {
+    // data frame em mm
+    QRectF fr = m_zdataFrame->getFrameRect();
+    // data frame em pixels
+    QRectF frp = m_matrixPaperViewToVp.mapRect(fr);
+
+    double magDecl = m_zdataFrame->getMagneticDeclination();
+    QMatrix auxMatrix;
+    auxMatrix.translate(frp.width()/2., frp.height()/2.);
+    auxMatrix.rotate(magDecl);
+    auxMatrix.translate(-frp.width()/2., -frp.height()/2.);
+
     if(e->button() == Qt::LeftButton) // botao que causou o evento
     {
       if(m_zmouseMode == 1) // zoom in area (data frame)
@@ -1195,12 +1206,23 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
         {
           insertCopy2Undo(m_zdataFrame);
 
+          // m_zrect tem posicao em relacao ao layout editor
+          // mova para ser em relacao ao frame
+          QPoint cc = m_zrect.center();
+          cc -= m_zdataFrame->pos();
+          m_zrect.moveCenter(cc);
+
+          // faca a correcao da declinacao magnetica sobre cc
+          cc = auxMatrix.inverted().map(cc);
+
+          // retorne a posicao para ser em relacao ao layout editor
+          cc += m_zdataFrame->pos();
+          m_zrect.moveCenter(cc);
+
           QRectF zr(m_zrect.left(), m_zrect.top(), m_zrect.width(), m_zrect.height());
 
           // area do zoom em mm
           zr = m_matrixPaperViewToVp.inverted().mapRect(zr);         
-          // area do data frame em mm
-          QRectF fr = m_zdataFrame->getFrameRect();
           // ajusta a relacao de aspecto da area do zoom em relacao ao do frame
           adjustAspectRatio(zr, fr);
 
@@ -1227,12 +1249,20 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
         {
           insertCopy2Undo(m_zdataFrame);
 
+          // posicao em relacao ao layout editor
           QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
+
+          // mova para ser em relacao ao frame
+          c -= m_zdataFrame->pos();
+
+          // faca a correcao da declinacao magnetica para c
+          c = auxMatrix.inverted().map(c);
+
+          // retorne a posicao para ser em relacao ao layout editor
+          c += m_zdataFrame->pos();
 
           // centro do zoom em mm
           QPointF cf = m_matrixPaperViewToVp.inverted().map(c);
-          // area do data frame em mm
-          QRectF fr = m_zdataFrame->getFrameRect();
 
           // area do world
           QRectF r = m_zdataFrame->getDataRect();
@@ -1245,7 +1275,7 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
           double w = r.width() / zoomFat;
           double h = r.height() / zoomFat;
           QRectF nr(0, 0, w, h);
-          nr.moveCenter(QPoint(x1, y1));
+          nr.moveCenter(QPointF(x1, y1));
 
           m_zdataFrame->setDataRect(nr);
           if(m_zdataFrame->getGraphicScaleFrame())
@@ -1264,12 +1294,20 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
       {
         insertCopy2Undo(m_zdataFrame);
 
+        // posicao em relacao ao layout editor
         QPointF c(m_zpressPoint.x(), m_zpressPoint.y());
+
+        // mova para ser em relacao ao frame
+        c -= m_zdataFrame->pos();
+
+        // faca a correcao da declinacao magnetica para c
+        c = auxMatrix.inverted().map(c);
+
+        // retorne a posicao para ser em relacao ao layout editor
+        c += m_zdataFrame->pos();
 
         // centro do zoom em mm
         QPointF cf = m_matrixPaperViewToVp.inverted().map(c);
-        // area do data frame em mm
-        QRectF fr = m_zdataFrame->getFrameRect();
 
         // area do world
         QRectF r = m_zdataFrame->getDataRect();
@@ -1282,7 +1320,7 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
         double w = r.width() * zoomFat;
         double h = r.height() * zoomFat;
         QRectF nr(0, 0, w, h);
-        nr.moveCenter(QPoint(x1, y1));
+        nr.moveCenter(QPointF(x1, y1));
 
         m_zdataFrame->setDataRect(nr);
         if(m_zdataFrame->getGraphicScaleFrame())
@@ -1302,26 +1340,30 @@ void te::qt::widgets::LayoutEditor::mouseReleaseEvent(QMouseEvent* e)
         QPointF pfrom(m_zpressPoint.x(), m_zpressPoint.y());
         QPointF pto(e->pos().x(), e->pos().y());
 
-        // from e to em mm
+        // faca a correcao da declinacao magnetica para pfrom e pto
+        pfrom = auxMatrix.inverted().map(pfrom);
+        pto = auxMatrix.inverted().map(pto);
+
+        // converta pfrom e pto para mm
         pfrom =  m_matrixPaperViewToVp.inverted().map(pfrom);
         pto =  m_matrixPaperViewToVp.inverted().map(pto);
+
+        // calcule o deslocamento
         QPointF dif = pto - pfrom;
 
-        // area do data frame em mm
-        QRectF fr = m_zdataFrame->getFrameRect();
         QPointF fc = fr.center();
 
         // new center do frame em mm
         fc -= dif;
 
-        // calcule new world data center
-        // area do world
+        // calcule new world rect
+        // old world rect
         QRectF r = m_zdataFrame->getDataRect();
         double x1 = r.left() + ((fc.x() - fr.left()) / fr.width()) * r.width();
         double y1 = r.top() + ((fc.y() - fr.top()) / fr.height()) * r.height();
 
-        // mova o centro do world data rect
-        r.moveCenter(QPoint(x1, y1));
+        // new world rect
+        r.moveCenter(QPointF(x1, y1));
 
         m_zdataFrame->setDataRect(r);
         draw();
