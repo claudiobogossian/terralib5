@@ -124,6 +124,9 @@ OGREnvelope* te::ogr::Convert2OGR(const te::gm::Envelope* env)
 
 int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
 {
+  if(osrs == 0)
+    return TE_UNKNOWN_SRS;
+
   if(osrs->AutoIdentifyEPSG() != OGRERR_UNSUPPORTED_SRS) 
     return atoi(osrs->GetAuthorityCode(0));
   

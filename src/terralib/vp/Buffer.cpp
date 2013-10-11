@@ -31,7 +31,9 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
-#include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "../dataaccess/datasource/DataSourceFactory.h"
+#include "../dataaccess/dataset/DataSetTypeConverter.h"
+
 #include "../dataaccess/query_h.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
@@ -60,56 +62,110 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-te::map::AbstractLayerPtr te::vp::Buffer(const te::map::AbstractLayerPtr& inputLayer,
-                                        const std::map<te::gm::Geometry*, double>& distance,
-                                        const int& bufferPolygonRule,
-                                        const int& bufferBoundariesRule,
-                                        const bool& copyInputColumns,
-                                        const int& levels,
-                                        const std::string& outputLayerName,
-                                        const te::da::DataSourceInfoPtr& dsInfo)
-{
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(inputLayer.get());
 
-  std::auto_ptr<te::da::DataSetType> outputDataSetType(te::vp::GetDataSetType(inputLayer, outputLayerName, bufferBoundariesRule, copyInputColumns));
+// -- auxiliary functions
+te::da::DataSetType* GetDataSetType(const std::string& inDatasetName,
+                                    te::da::DataSource* inDataSource,
+                                    const std::string& outputLayerName,
+                                    const int& bufferBoundariesRule,
+                                    const bool& copyInputColumns);
+
+bool BufferMemory(const std::string& inDatasetName,
+                  te::da::DataSource* inDataSource,
+                  const double& distance,
+                  const int& bufferPolygonRule,
+                  const int& bufferBoundariesRule,
+                  const int& levels,
+                  te::mem::DataSet* outputDataSet,
+                  te::da::DataSetType* outputDataSetType,
+                  te::gm::GeomType outGeoType);
+
+bool BufferQuery(const std::string& inDatasetName,
+                            te::da::DataSource* inDataSource,
+                            const double& distance,
+                            const int& bufferPolygonRule,
+                            const int& bufferBoundariesRule,
+                            const int& levels,
+                            te::mem::DataSet* outputDataSet,
+                            te::da::DataSetType* outputDataSetType,
+                            te::gm::GeomType outGeoType);
+
+te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
+                                        te::mem::DataSet* dataset, 
+                                        const int& levels);
+
+void PrepareDataSet(te::da::DataSetType* dataSetType, 
+                    te::da::DataSet* dataSetQuery,
+                    te::mem::DataSet* outputDataSet);
+//  ---
+
+
+
+bool te::vp::Buffer(const std::string& inDatasetName,
+                    te::da::DataSource* inDataSource,
+                    const std::map<te::gm::Geometry*, double>& distance,
+                    const int& bufferPolygonRule,
+                    const int& bufferBoundariesRule,
+                    const bool& copyInputColumns,
+                    const int& levels,
+                    const std::string& outDataSetName,
+                    te::da::DataSource* outDataSource)
+{
+  assert(inDataSource);
+  assert(outDataSource);
+
+  double dist;
+
+  // define the schema of the output dataset based on the aggregation parameters for the non-spatial attributes
+  std::auto_ptr<te::da::DataSetType> outputDataSetType(GetDataSetType(inDatasetName, inDataSource, outDataSetName, bufferBoundariesRule, copyInputColumns));
   std::auto_ptr<te::mem::DataSet> outputDataSet;
 
-  te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-
-  const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
-
+  // select a strategy based on the capabilities of the input datasource
+  const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
+  
+  // execute the strategy
+  bool res;
   if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
   {
-    outputDataSet.reset(new te::mem::DataSet(*te::vp::BufferQuery(inputLayer, distance, bufferPolygonRule, bufferBoundariesRule, levels), true));
-    outputDataSet.reset(new te::mem::DataSet(*te::vp::PrepareDataSet(outputDataSetType.get(), outputDataSet.get()), true));
+    res = BufferQuery(inDatasetName, inDataSource, dist, bufferPolygonRule, bufferBoundariesRule, levels, outputDataSet.get(), outputDataSetType.get(), te::gm::MultiPolygonType);
   }
   else
   {
-    outputDataSet.reset(new te::mem::DataSet(outputDataSetType.get()));
-    te::vp::BufferMemory(outputDataSet.get(), distance, bufferPolygonRule, levels);
+    res = BufferMemory(inDatasetName, inDataSource, dist, bufferPolygonRule, bufferBoundariesRule, levels, outputDataSet.get(), outputDataSetType.get(), te::gm::MultiPolygonType);
   }
 
+  if (!res)
+    return false;
 
+  // do any adaptation necessary to persist the output dataset
+  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outputDataSetType.get(), outDataSource->getCapabilities());
+  te::da::DataSetType* dsTypeResult = converter->getResult();
+  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(outputDataSet.get(), converter));
+  
   std::map<std::string, std::string> options;
   // create the dataset
-  dataSource->createDataSet(outputDataSetType.get(), options);
+  outDataSource->createDataSet(dsTypeResult, options);
   
   // copy from memory to output datasource
-  dataSource->add(outputDataSetType->getName(),outputDataSet.get(), options);
-
-  te::da::DataSourcePtr dataSourceManager = te::da::DataSourceManager::getInstance().get(dsInfo->getId(), dsInfo->getType(), dsInfo->getConnInfo());
-
-  te::qt::widgets::DataSet2Layer converter(dataSourceManager->getId());
-  te::da::DataSetTypePtr dt(dataSourceManager->getDataSetType(outputDataSetType->getName()).release());
-  te::map::DataSetLayerPtr newLayer = converter(dt);
-
-  return newLayer;
+  outputDataSet->moveBeforeFirst();
+  outDataSource->add(dsTypeResult->getName(),outputDataSet.get(), options);
+  
+  // create the primary key if it is possible
+  if (outDataSource->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
+  {
+    std::string pk_name = dsTypeResult->getName() + "_pk";
+    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
+    pk->add(dsTypeResult->getProperty(0));
+    outDataSource->addPrimaryKey(outDataSetName,pk);
+  }
+  return true;
 }
 
-te::da::DataSetType* te::vp::GetDataSetType(const te::map::AbstractLayerPtr& inputLayer,
-                                            const std::string& outputLayerName,
-                                            const int& bufferBoundariesRule,
-                                            const bool& copyInputColumns)
+te::da::DataSetType* GetDataSetType(const std::string& inDatasetName,
+                                    te::da::DataSource* inDataSource,
+                                    const std::string& outputLayerName,
+                                    const int& bufferBoundariesRule,
+                                    const bool& copyInputColumns)
 {
   te::da::DataSetType* dsType = new te::da::DataSetType(outputLayerName);
 
@@ -132,35 +188,40 @@ te::da::DataSetType* te::vp::GetDataSetType(const te::map::AbstractLayerPtr& inp
   //  dsType->add(distanceProperty);
   //}
   
-  std::auto_ptr<const te::map::LayerSchema> schema(inputLayer->getSchema());
-
   if(copyInputColumns)
   {
-    const std::vector<te::dt::Property*> props = schema->getProperties();
+    boost::ptr_vector<te::dt::Property> props = inDataSource->getProperties(inDatasetName);
+    boost::ptr_vector<te::dt::Property>::iterator it = props.begin();
 
-    for(std::size_t i=0; i < props.size(); ++i)
+    while(it != props.end())
     {
-      if(props[i]->getType() != te::dt::GEOMETRY_TYPE)
-        dsType->add(props[i]->clone());
+      if(it->getType() != te::dt::GEOMETRY_TYPE)
+        dsType->add(it->clone());
     }
   }
-
-  te::gm::GeometryProperty* p = static_cast<te::gm::GeometryProperty*>(schema->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+  
+  std::auto_ptr<te::da::DataSetType> inputDataSetType = inDataSource->getDataSetType(inDatasetName);
+  te::gm::GeometryProperty* p = static_cast<te::gm::GeometryProperty*>(te::da::GetFirstGeomProperty(inputDataSetType.get()));
 
   te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
   geometry->setGeometryType(te::gm::GeometryType);
-  geometry->setSRID(inputLayer->getSRID());
+  geometry->setSRID(p->getSRID());
   dsType->add(geometry);
 
   return dsType;
 }
 
-void te::vp::BufferMemory(te::mem::DataSet* dataSet,
-                          const std::map<te::gm::Geometry*, double>& distance,
-                          const int& bufferPolygonRule,
-                          const int& levels)
+bool BufferMemory(const std::string& inDatasetName,
+                  te::da::DataSource* inDataSource,
+                  const double& distance,
+                  const int& bufferPolygonRule,
+                  const int& bufferBoundariesRule,
+                  const int& levels,
+                  te::mem::DataSet* outputDataSet,
+                  te::da::DataSetType* outputDataSetType,
+                  te::gm::GeomType outGeoType)
 {
-  std::map<te::gm::Geometry*, double>::const_iterator it = distance.begin();
+  /*std::map<te::gm::Geometry*, double>::const_iterator it = distance.begin();
   dataSet->moveFirst();
   std::size_t pos = te::da::GetFirstSpatialPropertyPos(dataSet);
 
@@ -233,20 +294,22 @@ void te::vp::BufferMemory(te::mem::DataSet* dataSet,
         ++it;
       }
     break;
-  }
+  }*/
+
+  return false;
 }
 
-te::da::DataSet* te::vp::BufferQuery(const te::map::AbstractLayerPtr& inputLayer,
-                                    const std::map<te::gm::Geometry*, double>& distance,
-                                    const int& bufferPolygonRule,
-                                    const int& bufferBoundariesRule,
-                                    const int& levels)
+bool BufferQuery(const std::string& inDatasetName,
+                te::da::DataSource* inDataSource,
+                const double& distance,
+                const int& bufferPolygonRule,
+                const int& bufferBoundariesRule,
+                const int& levels,
+                te::mem::DataSet* outputDataSet,
+                te::da::DataSetType* outputDataSetType,
+                te::gm::GeomType outGeoType)
 {
-  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(inputLayer.get());
-
-  te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
-
-  std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
+  std::auto_ptr<te::da::DataSetType> dsType = inDataSource->getDataSetType(inDatasetName);
 
   te::da::Fields* fields = new te::da::Fields;
 
@@ -322,12 +385,14 @@ te::da::DataSet* te::vp::BufferQuery(const te::map::AbstractLayerPtr& inputLayer
   from->push_back(fromItem);
 
   te::da::Select select(fields, from);
-  std::auto_ptr<te::da::DataSet> dsQuery = dataSource->query(select);
+  std::auto_ptr<te::da::DataSet> dsQuery = inDataSource->query(select);
 
-  return dsQuery.release();
+  PrepareDataSet(outputDataSetType, dsQuery.get(), outputDataSet);
+
+  return true;
 }
 
-te::mem::DataSet* te::vp::SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
+te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
                                                 te::mem::DataSet* dataset,
                                                 const int& levels)
 {
@@ -376,30 +441,29 @@ te::mem::DataSet* te::vp::SetDissolvedBoundaries(te::da::DataSetType* dataSetTyp
   return outputDataSet;
 }
 
-te::mem::DataSet* te::vp::PrepareDataSet(te::da::DataSetType* dataSetType, 
-                                        te::mem::DataSet* dataSet)
+void PrepareDataSet(te::da::DataSetType* dataSetType, 
+                    te::da::DataSet* dataSetQuery,
+                    te::mem::DataSet* outputDataSet)
 {
-  std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(dataSetType));
-
-  std::size_t numProps = dataSet->getNumProperties();
-  std::size_t firstGeomPos = te::da::GetFirstSpatialPropertyPos(dataSet);
+  std::size_t numProps = dataSetQuery->getNumProperties();
+  std::size_t firstGeomPos = te::da::GetFirstSpatialPropertyPos(dataSetQuery);
   int numItems = numProps - firstGeomPos;
 
-  dataSet->moveBeforeFirst();
+  dataSetQuery->moveBeforeFirst();
   
   unsigned int type;
 
-  while(dataSet->moveNext())
+  while(dataSetQuery->moveNext())
   {
     int numCurrentItem = 0;
 
     for(int i = 0; i < numItems; ++i)
     {
-      te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet.get());
+      te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
 
       for(int j = 0; j < numProps; ++j)
       {
-        type = dataSet->getPropertyDataType(j);
+        type = dataSetQuery->getPropertyDataType(j);
 
         if(type != te::dt::GEOMETRY_TYPE)
         {
@@ -407,7 +471,7 @@ te::mem::DataSet* te::vp::PrepareDataSet(te::da::DataSetType* dataSetType,
         }
         else
         {
-          dataSetItem->setGeometry(j, *dataSet->getGeometry(j+numCurrentItem));
+          dataSetItem->setGeometry(j, *dataSetQuery->getGeometry(j+numCurrentItem));
           outputDataSet->add(dataSetItem);
 
           ++numCurrentItem;
@@ -416,6 +480,4 @@ te::mem::DataSet* te::vp::PrepareDataSet(te::da::DataSetType* dataSetType,
       }
     }
   }
-
-  return outputDataSet.release();
 }

@@ -26,6 +26,7 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
+#include <terralib/plugin.h>
 
 
 // STL
@@ -42,11 +43,12 @@ int main(int /*argc*/, char** /*argv*/)
   {
     TerraLib::getInstance().initialize();
 
+    //Load Modules and Plugins
     LoadModules();
 
-    //MovingObjectExamples();
-   
-    CoverageExamples();
+    CoverageSeriesExamples();
+     
+    te::plugin::PluginManager::getInstance().unloadAll();
 
     TerraLib::getInstance().finalize();
   }

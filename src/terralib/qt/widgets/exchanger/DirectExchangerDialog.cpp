@@ -35,6 +35,7 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../widgets/datasource/selector/DataSourceExplorerDialog.h"
+#include "../../widgets/srs/SRSManagerDialog.h"
 #include "DirectExchangerDialog.h"
 #include "ui_DirectExchangerDialogForm.h"
 
@@ -43,8 +44,11 @@
 #include <QtGui/QMessageBox>
 
 // Boost
+#include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 Q_DECLARE_METATYPE(te::da::DataSourceInfoPtr);
@@ -141,11 +145,11 @@ void te::qt::widgets::DirectExchangerDialog::setInputLayers()
     ++it;
   }
 
-  if(m_ui->m_inputLayerComboBox->count() > 0 && m_ui->m_dataSetLineEdit->isEnabled())
+  if(m_ui->m_inputLayerComboBox->count() > 0)
   {
     QString s = m_ui->m_inputLayerComboBox->currentText();
 
-    m_ui->m_dataSetLineEdit->setText(s);
+    onInputLayerActivated(s);
   }
 }
 
@@ -196,7 +200,11 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToFile()
 
     te::da::DataSetType* dsTypeResult = converter->getResult();
 
-    dsTypeResult->setName(m_ui->m_dataSetLineEdit->text().toStdString());
+    boost::filesystem::path uri(m_ui->m_dataSetLineEdit->text().toStdString());
+
+    std::string val = uri.stem().string();
+
+    dsTypeResult->setName(val);
 
     //exchange
     std::map<std::string,std::string> nopt;

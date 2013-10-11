@@ -30,11 +30,14 @@
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Property.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../Exception.h"
 #include "../Intersection.h"
+#include "../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "IntersectionDialog.h"
 #include "LayerTreeModel.h"
 #include "ui_IntersectionDialogForm.h"
@@ -45,6 +48,11 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 #include <QtGui/QTreeWidget>
+
+// BOOST
+#include <boost/filesystem.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::vp::IntersectionDialog::IntersectionDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -166,8 +174,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
 
   bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
 
-  std::string newLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
-  if(newLayerName.empty())
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  if(outputdataset.empty())
   {
     QMessageBox::warning(this, TR_VP("Intersection Operation"), TR_VP("It is necessary a name for the new layer."));
     return;
@@ -186,11 +194,104 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   
   try
   {
-    m_layerResult = te::vp::Intersection( m_firstSelectedLayer, 
-                                          m_secondSelectedLayer, 
-                                          copyInputColumns,
-                                          newLayerName, 
-                                          m_outputDatasource);
+    te::map::DataSetLayer* firstDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_firstSelectedLayer.get());
+    te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDataSetLayer->getDataSourceId(), true);
+
+    te::map::DataSetLayer* secondDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_firstSelectedLayer.get());
+    te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDataSetLayer->getDataSourceId(), true);
+
+    if (!firstDataSource.get() || !secondDataSource)
+    {
+      QMessageBox::information(this, "Intersection", "Error: can not find the input datasource.");
+      return;
+    }
+
+    bool res;
+
+    if (m_toFile)
+    {
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+      
+      if (boost::filesystem::exists(uri))
+      {
+        QMessageBox::information(this, "Intersection", "Output file already exists. Remove it and try again. ");
+        return;
+      }
+
+      std::size_t idx = outputdataset.find(".");
+      if(idx != std::string::npos)
+        outputdataset = outputdataset.substr(0, idx);
+
+      std::map<std::string, std::string> dsinfo;
+      dsinfo["URI"] = uri.string();
+
+      std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
+      dsOGR->setConnectionInfo(dsinfo);
+      dsOGR->open();
+      if(dsOGR->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(this, "Intersection", "Error: there is already a dataset with the requested output name.");
+        return;
+      }
+
+      res = te::vp::Intersection( firstDataSetLayer->getDataSetName(),
+                                  firstDataSource.get(),
+                                  secondDataSetLayer->getDataSetName(),
+                                  secondDataSource.get(),
+                                  copyInputColumns,
+                                  outputdataset, 
+                                  dsOGR.get());
+
+      if(!res)
+      {
+        dsOGR->close();
+        QMessageBox::information(this, "Intersection", "Error: could not generate the intersection.");
+        reject();
+      }
+      dsOGR->close();
+
+      // let's include the new datasource in the managers
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string id = boost::uuids::to_string(u);
+      
+      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+      ds->setConnInfo(dsinfo);
+      ds->setTitle(uri.stem().string());
+      ds->setAccessDriver("OGR");
+      ds->setType("OGR");
+      ds->setDescription(uri.string());
+      ds->setId(id);
+      
+      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
+      newds->open();
+      te::da::DataSourceInfoManager::getInstance().add(ds);
+      m_outputDatasource = ds;
+    }
+    else
+    {
+      te::da::DataSourcePtr aux = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+      res = te::vp::Intersection(firstDataSetLayer->getDataSetName(),
+                                firstDataSource.get(),
+                                secondDataSetLayer->getDataSetName(),
+                                secondDataSource.get(),
+                                copyInputColumns,
+                                outputdataset, 
+                                aux.get());
+      if(!res)
+      {
+        QMessageBox::information(this, "Intersection", "Error: could not generate the intersection.");
+        reject();
+      }
+    }
+
+    // creating a layer for the result
+    te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+    
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+      
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    m_layerResult = converter(dt);
   }
   catch(const std::exception& e)
   {

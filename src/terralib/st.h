@@ -26,22 +26,66 @@
 #ifndef __TERRALIB_ST_INTERNAL_H
 #define __TERRALIB_ST_INTERNAL_H
 
-// ST module
-#include "st/observation/Observation.h"
-#include "st/observation/ObservationSet.h"
-#include "st/observation/SpatioTemporalObservationSet.h"
-#include "st/observation/ObservationSetIterator.h"
-#include "st/timeseries/TimeSeries.h"
-#include "st/timeseries/TimeSeriesIterator.h"
-#include "st/timeseries/LocatedTimeSeries.h"
-#include "st/movingobject/MovingObject.h"
-#include "st/movingobject/Trajectory.h"
-#include "st/movingobject/TrajectoryIterator.h"
-#include "st/movingobject/MovingObjectIterator.h"
-#include "st/interpolator/AbstractInterpolator.h"
-#include "st/interpolator/TemporalNearestNeigInterpolator.h"
-#include "st/coverage/Coverage.h"
-#include "st/coverage/RasterCoverage.h"
+//// ST module
+
+//Coverage
+#include "st/core/coverage/Coverage.h"
+#include "st/core/coverage/PointCoverage.h"
+#include "st/core/coverage/RasterCoverage.h"
+#include "st/core/coverage/CoverageSeries.h"
+#include "st/core/coverage/CoverageSeriesDataSetInfo.h"
+#include "st/core/coverage/CoverageSeriesObservation.h"
+#include "st/core/coverage/CoverageDataSetInfo.h"
+#include "st/core/coverage/PointCoverageDataSetInfo.h"
+#include "st/core/coverage/RasterCoverageDataSetInfo.h"
+#include "st/core/coverage/CoverageSeriesIterator.h"
+#include "st/core/coverage/PointCoverageIterator.h"
+#include "st/core/coverage/PointCoverageObservation.h"
+
+//Event and Object
+#include "st/core/event/Event.h"
+#include "st/core/event/Object.h"
+
+//Interpolators
+#include "st/core/interpolator/AbstractCoverageSeriesInterp.h"
+#include "st/core/interpolator/AbstractPointCoverageInterp.h"
+#include "st/core/interpolator/AbstractTimeSeriesInterp.h"
+#include "st/core/interpolator/AbstractTrajectoryInterp.h"
+#include "st/core/interpolator/IDWInterpolator.h"
+#include "st/core/interpolator/NearestCoverageAtTimeInterp.h"
+#include "st/core/interpolator/NearestGeometryAtTimeInterp.h"
+#include "st/core/interpolator/NearestValueAtTimeInterp.h"
+    
+//Observations
+#include "st/core/observation/Observation.h"
+#include "st/core/observation/ObservationDataSet.h"
+#include "st/core/observation/ObservationDataSetInfo.h"
+#include "st/core/observation/ObservationDataSetType.h"
+
+//Time Series
+#include "st/core/timeseries/TimeSeries.h"
+#include "st/core/timeseries/TimeSeriesDataSet.h"
+#include "st/core/timeseries/TimeSeriesDataSetInfo.h"
+#include "st/core/timeseries/TimeSeriesDataSetType.h"
+#include "st/core/timeseries/TimeSeriesIterator.h"
+#include "st/core/timeseries/TimeSeriesObservation.h"
+
+//Trajectory
+#include "st/core/trajectory/Trajectory.h"
+#include "st/core/trajectory/TrajectoryDataSet.h"
+#include "st/core/trajectory/TrajectoryDataSetInfo.h"
+#include "st/core/trajectory/TrajectoryDataSetType.h"
+#include "st/core/trajectory/TrajectoryIterator.h"
+#include "st/core/trajectory/TrajectoryObservation.h"
+
+//Loader
+#include "st/loader/STDataLoader.h"
+#include "st/loader/STDataLoaderFromDS.h"
+#include "st/loader/STDataLoaderFromDSFactory.h"
+#include "st/loader/STDataLoaderFromMemDS.h"
+#include "st/loader/STDataLoaderFromMemDSFactory.h"
+#include "st/loader/STDataLoaderImpl.h"
+#include "st/loader/STDataLoaderImplFactory.h"  
 
 namespace te
 {
