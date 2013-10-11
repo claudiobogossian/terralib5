@@ -16,7 +16,7 @@ set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_st
 #Definitions for Windows compiling
 if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
-endif()
+endif(WIN32)
 	
 set(DEP_LIBS 
     terralib_common
@@ -25,7 +25,7 @@ set(DEP_LIBS
 		terralib_geometry
 		terralib_plugin
 		terralib_st
-		terralib_stloader
+		terralib_stmemory
     )
 	
 # Select the source and header files
@@ -35,6 +35,7 @@ file(GLOB HDRS ${SRCDIR}/*.h)
 # Select the include directories
 include_directories(
     ${TE_INCLUDE_DIRS}
+    ${DEP_INCLUDES}
     ${Boost_INCLUDE_DIRS}
 )
                         

@@ -55,14 +55,13 @@
 #include <cassert>
 #include <utility>
 
-#define EXTENT_STACK_SIZE 5
-
 te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   : QObject(display),
     m_display(display),
     m_tool(0),
     m_menu(0),
-    m_currentExtent(-1)
+    m_currentExtentIndex(-1),
+    m_extentStackMaxSize(5)
 {
   // CoordTracking tool
   te::qt::widgets::CoordTracking* coordTracking = new te::qt::widgets::CoordTracking(m_display, this);
@@ -153,20 +152,32 @@ void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
 
 void te::qt::af::MapDisplay::nextExtent()
 {
-  if(m_currentExtent != EXTENT_STACK_SIZE-1 && m_extentStack.size() != m_currentExtent+1)
+  if(m_extentStack.empty())
+    return;
+
+  if(m_currentExtentIndex < static_cast<int>(m_extentStack.size() - 1))
   {
-    m_currentExtent += 1;
-    m_display->setExtent(m_extentStack[m_currentExtent]);
+    m_currentExtentIndex += 1;
+    m_display->setExtent(m_extentStack[m_currentExtentIndex]);
   }
+
+  emit hasNextExtent(m_currentExtentIndex < static_cast<int>(m_extentStack.size() - 1));
+  emit hasPreviousExtent(m_currentExtentIndex > 0);
 }
 
 void te::qt::af::MapDisplay::previousExtent()
 {
-  if(m_currentExtent > 0)
+  if(m_extentStack.empty())
+    return;
+
+  if(m_currentExtentIndex > 0)
   {
-    m_currentExtent -= 1;
-    m_display->setExtent(m_extentStack[m_currentExtent]);
+    m_currentExtentIndex -= 1;
+    m_display->setExtent(m_extentStack[m_currentExtentIndex]);
   }
+
+  emit hasNextExtent(m_currentExtentIndex < static_cast<int>(m_extentStack.size() - 1));
+  emit hasPreviousExtent(m_currentExtentIndex > 0);
 }
 
 void te::qt::af::MapDisplay::fit(const std::list<te::map::AbstractLayerPtr>& layers)
@@ -313,46 +324,23 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
 
 void te::qt::af::MapDisplay::onExtentChanged()
 {
-  if(!m_extentStack.empty() && m_display->getExtent().equals(m_extentStack[m_currentExtent]))
+  if(!m_extentStack.empty() && m_display->getExtent().equals(m_extentStack[m_currentExtentIndex]))
     return;
 
-  if(m_currentExtent != EXTENT_STACK_SIZE)
+  if(m_currentExtentIndex != m_extentStackMaxSize)
   {
-    std::vector<te::gm::Envelope> aux;
-
-    if(m_currentExtent == -1)
-    {
-      aux.push_back(m_display->getExtent());
-      m_extentStack = aux;
-      m_currentExtent += 1;
-    }
-    else
-    {
-      for(std::size_t i = 0; i <= m_currentExtent; ++i)
-      {
-        aux.push_back(m_extentStack[i]);
-      }
-      aux.push_back(m_display->getExtent());
-
-      m_extentStack = aux;
-      m_currentExtent += 1;
-    }
+    m_extentStack.push_back(m_display->getExtent());
+    m_currentExtentIndex += 1;
   }
   else
   {
-    std::vector<te::gm::Envelope> aux;
-    for(std::size_t i = 0; i <= m_currentExtent; ++i)
-    {
-      if(i == 0)
-        continue;
-
-      aux.push_back(m_extentStack[i]);
-    }
-    aux.push_back(m_display->getExtent());
-
-    m_extentStack = aux;
-    m_currentExtent = EXTENT_STACK_SIZE;
+    m_extentStack.erase(m_extentStack.begin());
+    m_extentStack.push_back(m_display->getExtent());
+    m_currentExtentIndex = m_extentStackMaxSize;
   }
+
+  emit hasNextExtent(m_currentExtentIndex < static_cast<int>(m_extentStack.size() - 1));
+  emit hasPreviousExtent(m_currentExtentIndex > 0);
 }
 
 void te::qt::af::MapDisplay::configSRS(const std::list<te::map::AbstractLayerPtr>& layers)

@@ -49,6 +49,13 @@ void GetDataSetTypeCapabilities(te::da::DataSourceCapabilities& caps)
   caps.setDataTypeCapabilities(dt_caps);
 }
 
+void GetQueryCapabilities(te::da::DataSourceCapabilities& caps)
+{
+  te::da::QueryCapabilities qy_caps;
+  qy_caps.addSpatialTopologicOperator("st_intersects");
+  caps.setQueryCapabilities(qy_caps);
+}
+
 void GetCapabilities(OGRDataSource* ds, te::da::DataSourceCapabilities& caps)
 {
   // DataSet
@@ -135,6 +142,7 @@ void te::ogr::DataSource::open()
   m_isValid = true;
 
   GetDataSetTypeCapabilities(m_capabilities);
+  GetQueryCapabilities(m_capabilities);
 
   if (m_ogrDS)
     GetCapabilities(m_ogrDS, m_capabilities);

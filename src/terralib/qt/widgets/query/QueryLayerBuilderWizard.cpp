@@ -327,9 +327,9 @@ void te::qt::widgets::QueryLayerBuilderWizard::getQueryCapabilities()
   //Spatial Operators
   std::vector<std::string> vecSpatialOperators;
 
-  it = queryCap.getSpatialOperators().begin();
+  it = queryCap.getSpatialTopologicOperators().begin();
 
-  while(it != queryCap.getSpatialOperators().end())
+  while(it != queryCap.getSpatialTopologicOperators().end())
   {
     vecSpatialOperators.push_back(*it);
 

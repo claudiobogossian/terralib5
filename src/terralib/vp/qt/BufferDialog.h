@@ -124,6 +124,7 @@ namespace te
         te::map::AbstractLayerPtr m_selectedLayer;                                        //!< Layer used for buffer
         te::map::AbstractLayerPtr m_outputLayer;                                          //!< Generated Layer.
         std::vector<te::dt::Property*> m_properties;                                      //!< Properties related to the selected Layer
+        bool m_toFile;
     };
   }   // end namespace vp
 }     // end namespace te
