@@ -295,8 +295,8 @@ bool te::rp::Filter::execSobelFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  const int H = m_inputParameters.m_windowH;
-  const int W = m_inputParameters.m_windowW;
+  const unsigned int H = m_inputParameters.m_windowH;
+  const unsigned int W = m_inputParameters.m_windowW;
 
   // create weight matrices
   boost::numeric::ublas::matrix<double> window_X(W, H);
@@ -370,8 +370,8 @@ bool te::rp::Filter::execMeanFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  int H = m_inputParameters.m_windowH;
-  int W = m_inputParameters.m_windowW;
+  const unsigned int H = m_inputParameters.m_windowH;
+  const unsigned int W = m_inputParameters.m_windowW;
 
   boost::numeric::ublas::matrix<double> window_mean(H, W);
   double pixel_mean;
@@ -427,8 +427,8 @@ bool te::rp::Filter::execModeFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  const int H = m_inputParameters.m_windowH;
-  const int W = m_inputParameters.m_windowW;
+  const unsigned int H = m_inputParameters.m_windowH;
+  const unsigned int W = m_inputParameters.m_windowW;
 
   unsigned int R;
   unsigned int C;
@@ -487,8 +487,8 @@ bool te::rp::Filter::execMedianFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  const int H = m_inputParameters.m_windowH;
-  const int W = m_inputParameters.m_windowW;
+  const unsigned int H = m_inputParameters.m_windowH;
+  const unsigned int W = m_inputParameters.m_windowW;
 
   unsigned int R;
   unsigned int C;
@@ -544,8 +544,8 @@ bool te::rp::Filter::execDilationFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  const int H = m_inputParameters.m_windowH;
-  const int W = m_inputParameters.m_windowW;
+  const unsigned int H = m_inputParameters.m_windowH;
+  const unsigned int W = m_inputParameters.m_windowW;
 
   unsigned int R;
   unsigned int C;
@@ -601,8 +601,8 @@ bool te::rp::Filter::execErosionFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  const int H = m_inputParameters.m_windowH;
-  const int W = m_inputParameters.m_windowW;
+  const unsigned int H = m_inputParameters.m_windowH;
+  const unsigned int W = m_inputParameters.m_windowW;
 
   unsigned int R;
   unsigned int C;
@@ -658,8 +658,9 @@ bool te::rp::Filter::execUserDefinedFilter()
                                 te::common::TaskProgress::UNDEFINED,
                                 m_inputParameters.m_inRasterBands.size());
 
-  const int H = m_inputParameters.m_windowH;
-  const int W = m_inputParameters.m_windowW;
+  const unsigned int H = m_inputParameters.m_windowH;
+  const unsigned int W = m_inputParameters.m_windowW;
+
   unsigned int R;
   unsigned int C;
   const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
