@@ -200,6 +200,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/externalTable/DataPropertiesWidget.h
+  ${SRCDIR}/widgets/externalTable/DataPropertiesDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/externalTable" MOC)
 
