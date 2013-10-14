@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2009-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -42,20 +42,8 @@
 #define TE_SQLITE_BOOL_TRUE 1
 
 #ifdef _MSC_VER 
-    #pragma warning( disable : 4251 )
-    #pragma warning( disable : 4275 )
-#endif
-
-#ifdef WIN32
-  #ifdef TESQLITESTATIC
-    #define TESQLITEEXPORT
-  #elif TESQLITEDLL
-    #define TESQLITEEXPORT __declspec(dllexport)
-  #else
-    #define TESQLITEEXPORT __declspec(dllimport)
-  #endif 
-#else
-  #define TESQLITEEXPORT
+    //#pragma warning( disable : 4251 )
+    //#pragma warning( disable : 4275 )
 #endif
 
 #endif  // __TERRALIB_SQLITE_INTERNAL_CONFIG_H
