@@ -74,11 +74,6 @@ namespace te
     */   
     TESTEXPORT TrajectoryDataSetType GetType(const TrajectoryDataSetInfo& info);
     
-    /*!
-      \brief This function tests if v1 is less than or equal to v2
-    */
-    TESTEXPORT bool LessOrEqual(te::dt::AbstractData* v1, te::dt::AbstractData* v2);
-
     /*! 
       \brief An auxiliary struct to compare two datetime shared pointers 
     */
@@ -89,53 +84,6 @@ namespace te
         return t1->operator<(*t2);
       }
     };   
-            
-    /*!
-      \brief It adjusts a DataSetType (dtTo) and a ObservationSetType (obstTo) 
-          
-      It adjusts a DataSetType (dtTo) and a ObservationSetType (obstTo) with a subset
-      of properties (properties) coming from a DataSetType (dtFrom) that has 
-      an associated ObservationSetType (obstFrom). 
-                    
-      \param dtTo       The DataSetType to be adjusted.
-      \param dtFrom     The DataSetType that provides the information to adjust dtTo. 
-      \param obstTo     The ObservationSetType to be adjusted.
-      \param obstFrom   The ObservationSetType that provides the information to adjust obstTo. 
-      \param properties The subset of DataSetType "dtFrom" properties to be considered. 
-    */
-    //TESTEXPORT void AdjustDataSetType( te::da::DataSetType* dtTo, const te::da::DataSetType* dtFrom, 
-    //                    te::st::ObservationSetType* obstTo, const te::st::ObservationSetType* obstFrom, 
-    //                    const std::vector<te::dt::Property*>& properties);
-    /*!
-      \brief It normalizes a given time series, considering a given date and time resolution.
-          
-      During the normalization, it uses the time series internal interpolator in order to 
-      estimate values to be associated to non-observed date and time.
-          
-      \param ts     The given time series.
-      \param tRes   The date and time resolution to be considered in the normalization.
-
-      \return A new normalized time series.
-         
-      \note The caller WILL take the ownership of the returned pointer.
-    */
-    /*TESTEXPORT*/ te::st::TimeSeries* Normalize(TimeSeries* ts, te::dt::DateTimeResolution tRes);
-
-    /*!
-      \brief It normalizes a given time series, considering a given date and time resolution.
-          
-      During the normalization, it uses a default value, passed by parameter, 
-      to be associated to non-observed date and time.
-          
-      \param ts       The given time series.
-      \param tRes     The date and time resolution to be considered in the normalization.
-      \param defvalue The default value to be used at non-observed date and time.
-
-      \return A new normalized time series.
-         
-      \note The caller WILL take the ownership of the returned pointer.
-    */
-    /*TESTEXPORT*/ te::st::TimeSeries* Normalize(TimeSeries* ts, te::dt::DateTimeResolution tRes, te::dt::AbstractData* defvalue);    
 
   } // end namespace st
 }   // end namespace te

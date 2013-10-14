@@ -35,6 +35,14 @@
 #include "../timeseries/TimeSeriesObservation.h"
 #include "NearestValueAtTimeInterp.h"
 
+te::st::NearestValueAtTimeInterp::NearestValueAtTimeInterp()
+{
+}
+
+te::st::NearestValueAtTimeInterp::~NearestValueAtTimeInterp()
+{
+}  
+
 std::auto_ptr<te::dt::AbstractData> 
 te::st::NearestValueAtTimeInterp::estimate(const te::st::TimeSeries& ts, te::dt::DateTime* time) const
 {

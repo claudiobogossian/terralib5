@@ -24,14 +24,19 @@
 */
 
 // TerraLib
+#include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../dataset/selector/DataSetSelectorDialog.h"
+#include "../../Exception.h"
 #include "../utils/DataSet2Layer.h"
 #include "DataSetLayerSelector.h"
 
 // STL
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
 te::qt::widgets::DataSetLayerSelector::DataSetLayerSelector(QWidget* parent, Qt::WindowFlags f)
   : AbstractLayerSelector(parent, f)
@@ -53,20 +58,45 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::DataSetLayerSelector::getL
 
   for(std::list<te::da::DataSourceInfoPtr>::iterator it = m_datasources.begin(); it != m_datasources.end(); ++it)
   {
-    std::auto_ptr<DataSetSelectorDialog> ldialog(new DataSetSelectorDialog(static_cast<QWidget*>(parent())));
+    te::da::DataSourcePtr datasource = te::da::DataSourceManager::getInstance().find((*it)->getId());
 
-    ldialog->set(*it, true);
+    if(datasource.get() == 0)
+    {
+      datasource = te::da::DataSourceManager::getInstance().get((*it)->getId(), (*it)->getAccessDriver(), (*it)->getConnInfo());
 
-    int retval = ldialog->exec();
+      if(datasource.get() == 0)
+        throw Exception(TR_QT_WIDGETS("Could not retrieve the data source instance!"));
+    }
 
-    if(retval == QDialog::Rejected)
-      continue;
+    if(!datasource->isOpened())
+      datasource->open();
 
-    std::list<te::da::DataSetTypePtr> datasets = ldialog->getCheckedDataSets();
+    std::vector<std::string> datasetNames = datasource->getDataSetNames();
 
-    std::transform(datasets.begin(), datasets.end(), std::back_inserter(layers), DataSet2Layer((*it)->getId()));
+    if(datasetNames.size() == 1) // In this case not show the DataSetSelectorDialog!
+    {
+      DataSet2Layer converter((*it)->getId());
+      std::auto_ptr<te::da::DataSetType> dt = datasource->getDataSetType(datasetNames[0]);
+      te::da::DataSetTypePtr dtpt(dt.release());
+      te::map::DataSetLayerPtr layer = converter(dtpt);
+      layers.push_back(layer);
+    }
+    else
+    {
+      std::auto_ptr<DataSetSelectorDialog> ldialog(new DataSetSelectorDialog(static_cast<QWidget*>(parent())));
+
+      ldialog->set(*it, true);
+
+      int retval = ldialog->exec();
+
+      if(retval == QDialog::Rejected)
+        continue;
+
+      std::list<te::da::DataSetTypePtr> datasets = ldialog->getCheckedDataSets();
+
+      std::transform(datasets.begin(), datasets.end(), std::back_inserter(layers), DataSet2Layer((*it)->getId()));
+    }
   }
 
   return layers;
 }
-

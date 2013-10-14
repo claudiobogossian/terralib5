@@ -33,6 +33,14 @@
 #include "../coverage/CoverageSeries.h"
 #include "NearestCoverageAtTimeInterp.h"
 
+te::st::NearestCoverageAtTimeInterp::NearestCoverageAtTimeInterp()
+{
+}
+
+te::st::NearestCoverageAtTimeInterp::~NearestCoverageAtTimeInterp()
+{
+}  
+
 std::auto_ptr<te::st::Coverage> 
 te::st::NearestCoverageAtTimeInterp::estimate(const CoverageSeries& cvs, te::dt::DateTime* time) const
 {

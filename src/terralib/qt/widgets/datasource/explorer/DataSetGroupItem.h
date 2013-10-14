@@ -31,7 +31,7 @@
 #include "AbstractDataSourceTreeItem.h"
 
 // STL
-#include <Vector>
+#include <vector>
 
 namespace te
 {
@@ -70,6 +70,8 @@ namespace te
           bool isChecked() const;
 
           void checkState();
+
+          const std::vector<DataSetItem*>& getDataSetItems() const;
 
         private:
 

@@ -84,7 +84,8 @@ void te::ogr::Transactor::commit()
   if (!m_ogrDs->getOGRDataSource())
     return;
   
-  m_ogrDs->getOGRDataSource()->SyncToDisk();
+  // we have to reopen datasource so pending data gets synched to disk!
+  m_ogrDs->open();
 }
 
 void te::ogr::Transactor::rollBack()
@@ -317,6 +318,13 @@ std::auto_ptr<te::da::DataSetType> te::ogr::Transactor::getDataSetType(const std
     te::da::PrimaryKey* pk = new te::da::PrimaryKey(colIdName, type.get());
     pk->add(type->getProperty(pos));
   }
+
+  int srs = te::ogr::Convert2TerraLibProjection(l->GetSpatialRef());
+
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(type.get());
+  
+  if(gp != 0)
+    gp->setSRID(srs);
 
   m_ogrDs->getOGRDataSource()->ReleaseResultSet(l);
 

@@ -53,6 +53,7 @@
 #include <QtGui/QResizeEvent>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QMessageBox>
+#include <QtGui/QInputDialog>
 
 #include <QtCore/QRect>
 #include <QtCore/QCoreApplication>
@@ -96,6 +97,7 @@ te::qt::widgets::DataFrame::DataFrame(const QRectF& frameRect, te::qt::widgets::
   m_createGraphicScaleAction = m_menu->addAction("Create Graphic Scale");
   m_removeGraphicScaleAction = m_menu->addAction("Remove Graphic Scale");
   m_removeGraphicScaleAction->setEnabled(false);
+  m_magneticDeclinationAction = m_menu->addAction("Magnetic Declination...");
 }
 
 te::qt::widgets::DataFrame::DataFrame(const DataFrame& rhs) :
@@ -162,6 +164,7 @@ te::qt::widgets::DataFrame::DataFrame(const DataFrame& rhs) :
   m_removeGeographicGridAction = m_menu->addAction("Remove Geographic Grid");
   m_createGraphicScaleAction = m_menu->addAction("Create Graphic Scale");
   m_removeGraphicScaleAction = m_menu->addAction("Remove Graphic Scale");
+  m_magneticDeclinationAction = m_menu->addAction("Magnetic Declination...");
 
   m_createUTMGridAction->setEnabled(rhs.m_createUTMGridAction->isEnabled());
   m_removeUTMGridAction->setEnabled(rhs.m_removeUTMGridAction->isEnabled());
@@ -236,6 +239,7 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
     m_removeGeographicGridAction = m_menu->addAction("Remove Geographic Grid");
     m_createGraphicScaleAction = m_menu->addAction("Create Graphic Scale");
     m_removeGraphicScaleAction = m_menu->addAction("Remove Graphic Scale");
+    m_magneticDeclinationAction = m_menu->addAction("Magnetic Declination...");
 
     m_createUTMGridAction->setEnabled(rhs.m_createUTMGridAction->isEnabled());
     m_removeUTMGridAction->setEnabled(rhs.m_removeUTMGridAction->isEnabled());
@@ -250,7 +254,7 @@ te::qt::widgets::DataFrame& te::qt::widgets::DataFrame::operator=(const DataFram
 te::qt::widgets::DataFrame::~DataFrame()
 {
   hide();
-  m_mapDisplay->removeEventFilter(this);
+  removeEventFilter(this);
   delete m_mapDisplay;
   delete m_UTMGridFrame;
   delete m_geoGridFrame;
@@ -278,11 +282,6 @@ QRectF te::qt::widgets::DataFrame::getDataRect()
   m_dataRect = QRectF(e.m_llx, e.m_lly, e.getWidth(), e.getHeight());
   return m_dataRect;
 }
-//
-//QRectF te::qt::widgets::DataFrame::getFrameRect()
-//{
-//  return m_frameRect;
-//}
 
 void te::qt::widgets::DataFrame::adjust()
 {
@@ -301,6 +300,14 @@ void te::qt::widgets::DataFrame::adjustWidgetToFrameRect(const QRectF& r)
   //  return;
   //setDataChanged(true);
   m_frameRect = r;
+
+  if(m_layoutEditor->getPaperViewRect().intersects(m_frameRect) == false)
+  {
+    hide();
+    return;
+  }
+  show();
+
   QMatrix matrix = m_layoutEditor->getMatrixPaperViewToVp();
   QRect rec = matrix.mapRect(m_frameRect).toRect();
 
@@ -405,7 +412,7 @@ void te::qt::widgets::DataFrame::getLayerList(te::map::AbstractLayerPtr al, std:
   }
 }
 
-void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid)
+void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid, QRectF dr)
 {
   m_data = al.get();
   if(m_data == 0)
@@ -429,14 +436,16 @@ void te::qt::widgets::DataFrame::setData(te::map::AbstractLayerPtr al, int nsrid
   }
 
   m_mapDisplay->setBackgroundColor(Qt::white);
-
-  //m_mapDisplay->setLayerList(m_visibleLayers);
-  m_mapDisplay->refresh();
-
   te::gm::Envelope e = m_mapDisplay->getExtent();
-  m_dataRect = QRectF();
-  QRectF r(e.getLowerLeftX(), e.getLowerLeftY(), e.getWidth(), e.getHeight());
-  setDataRect(r);
+
+  if(dr.isValid())
+    m_mapDisplay->refresh();
+  else
+  {
+    m_dataRect = QRectF();
+    QRectF r(e.getLowerLeftX(), e.getLowerLeftY(), e.getWidth(), e.getHeight());
+    setDataRect(r);
+  }
 
   findDataUnitToMilimeter(e, m_mapDisplay->getSRID());
 
@@ -560,11 +569,10 @@ void te::qt::widgets::DataFrame::findDataUnitToMilimeter(const te::gm::Envelope&
   // OBS: quero manter a escala do mapa inalterada. Lembre que quando converte,
   // o box, pode aumentar de tamanho e isto muda a escala do mapa.
   // Vamos ver como podemos fazer isto...
-  // primeior vamos descobrir qual o fator de conversao para milimetros... m_dataUnitToMilimeter
-  // NOTA: acho que ser feito usando a informacao de unidade da projecao, mas, como eu nao sei fazer isto.
-  // Vou fazer um codigo quebra galho......
-  // para isto vou converter dataRect para um projetado que deve estar em metros.
-  // Vou usar #define TE_SRS_SAD69_POLYCONIC 29101 que provavelmente tem unidade em metros.
+  // primeior vamos descobrir qual o fator de conversao para milimetros... m_dataUnitToMilimeter.
+  // Vou converter dataRect para um projetado que deve estar em metros.
+  // De preferencia deve ser escolhido uma projecao que mantem as distancias.
+  // Vou usar #define TE_SRS_SAD69_POLYCONIC 29101 (essa projecao tem que ter unidade em metros e manter distancias) Será que ele faz isto???.
 
   std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
   converter->setSourceSRID(srid);
@@ -653,8 +661,8 @@ void te::qt::widgets::DataFrame::drawButtonClicked()
   m_dataChanged = true;
   if(m_dataChanged)
   {
-    setData(0, m_mapDisplay->getSRID());
-    setData(al, m_mapDisplay->getSRID());
+    setData(0, m_mapDisplay->getSRID(), m_dataRect);
+    setData(al, m_mapDisplay->getSRID(), m_dataRect);
   }
 
   draw();
@@ -850,6 +858,24 @@ void te::qt::widgets::DataFrame::rubberBand()
   m_layoutEditor->update();
 }
 
+void te::qt::widgets::DataFrame::sendEventToChildren(bool b)
+{
+  if(b)
+  {
+    m_mapDisplay->installEventFilter(this);
+    raise();
+  }
+  else
+    m_mapDisplay->removeEventFilter(this);
+
+  if(m_UTMGridFrame)
+    m_UTMGridFrame->sendEventToChildren(b);
+  if(m_geoGridFrame)
+    m_geoGridFrame->sendEventToChildren(b);
+  if(m_graphicScaleFrame)
+    m_graphicScaleFrame->sendEventToChildren(b);
+}
+
 bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
 {
   // return true to stop the event; otherwise return false.
@@ -913,6 +939,8 @@ bool te::qt::widgets::DataFrame::eventFilter(QObject* obj, QEvent* e)
             createGraphicScale();
           else if(action == m_removeGraphicScaleAction)
             removeGraphicScale();
+          else if(action == m_magneticDeclinationAction)
+            magneticDeclination();
         }
       }
       return false;
@@ -1183,6 +1211,21 @@ void te::qt::widgets::DataFrame::removeGraphicScale()
   m_removeGraphicScaleAction->setEnabled(false);
 }
 
+void te::qt::widgets::DataFrame::magneticDeclination()
+{
+  double magDecl = m_mapDisplay->getMagneticDeclination();
+
+  bool ok;
+  double v = QInputDialog::getDouble(this, tr("Set Magnetic Declination"),
+                              tr("Angle:"), magDecl, -70, +70, 1, &ok);
+  if(ok)
+  {
+    m_mapDisplay->setMagneticDeclination(v);
+    m_dataChanged = true;
+    draw();
+  }
+}
+
 void te::qt::widgets::DataFrame::hide()
 {
   if(m_UTMGridFrame)
@@ -1226,6 +1269,11 @@ QPixmap* te::qt::widgets::DataFrame::getLastDisplayContent()
   return &m_lastDisplayContent;
 }
 
+QPixmap* te::qt::widgets::DataFrame::getPixmap()
+{
+  return &m_lastDisplayContent;
+}
+
 void te::qt::widgets::DataFrame::onDrawLayersFinished(const QMap<QString, QString>& /*errors*/)
 {
   // Stores the clean pixmap!
@@ -1233,10 +1281,15 @@ void te::qt::widgets::DataFrame::onDrawLayersFinished(const QMap<QString, QStrin
 
   // TODO!!!
   if(m_data)
-    drawLayerSelection(Qt::red); // teste........
+    drawLayerSelection();
 }
 
-void te::qt::widgets::DataFrame::drawLayerSelection(QColor selColor)
+void te::qt::widgets::DataFrame::setSelectionColor(QColor selColor)
+{
+  m_selectionColor = selColor;
+}
+
+void te::qt::widgets::DataFrame::drawLayerSelection()
 {
   assert(m_data);
 
@@ -1300,8 +1353,7 @@ void te::qt::widgets::DataFrame::drawLayerSelection(QColor selColor)
         if(currentGeomType != g->getGeomTypeId())
         {
           currentGeomType = g->getGeomTypeId();
-          te::qt::widgets::Config2DrawLayerSelection(&canvas, selColor, currentGeomType);
-          //te::qt::widgets::Config2DrawLayerSelection(&canvas, ApplicationController::getInstance().getSelectionColor(), currentGeomType);
+          te::qt::widgets::Config2DrawLayerSelection(&canvas, m_selectionColor, currentGeomType);
         }
 
         canvas.draw(g.get());
@@ -1309,4 +1361,29 @@ void te::qt::widgets::DataFrame::drawLayerSelection(QColor selColor)
     }
   }
   m_mapDisplay->repaint();
+}
+
+te::qt::widgets::GeographicGridFrame* te::qt::widgets::DataFrame::getGeoGridFrame()
+{
+  return m_geoGridFrame;
+}
+
+te::qt::widgets::UTMGridFrame* te::qt::widgets::DataFrame::getUTMGridFrame()
+{
+  return m_UTMGridFrame;
+}
+
+te::qt::widgets::GraphicScaleFrame* te::qt::widgets::DataFrame::getGraphicScaleFrame()
+{
+  return m_graphicScaleFrame;
+}
+
+void te::qt::widgets::DataFrame::setMagneticDeclination(double angle)
+{
+  m_mapDisplay->setMagneticDeclination(angle);
+}
+
+double te::qt::widgets::DataFrame::getMagneticDeclination()
+{
+  return m_mapDisplay->getMagneticDeclination();
 }

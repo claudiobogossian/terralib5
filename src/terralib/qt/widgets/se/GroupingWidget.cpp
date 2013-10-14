@@ -34,6 +34,7 @@
 #include "../../../maptools/Grouping.h"
 #include "../../../maptools/GroupingAlgorithms.h"
 #include "../../../maptools/GroupingItem.h"
+#include "../../../maptools/Utils.h"
 #include "../../../se/Utils.h"
 #include "../colorbar/ColorBar.h"
 #include "../se/SymbologyPreview.h"
@@ -42,6 +43,9 @@
 
 // STL
 #include <cassert>
+
+// QT
+#include <QtGui/QMessageBox>
 
 #define MAX_SLICES 200
 #define PRECISION 15
@@ -152,11 +156,42 @@ void te::qt::widgets::GroupingWidget::initialize()
   //adjust table
   m_ui->m_tableWidget->resizeColumnsToContents();
   m_ui->m_tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+
+  m_manual = false;
 }
 
 void te::qt::widgets::GroupingWidget::updateUi()
 {
+  disconnect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onTableWidgetItemChanged(QTableWidgetItem*)));
+
   m_ui->m_tableWidget->setRowCount(0);
+
+  int index = m_ui->m_typeComboBox->currentIndex();
+  int type = m_ui->m_typeComboBox->itemData(index).toInt();
+
+  if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL || type == te::map::STD_DEVIATION)
+  {
+    QStringList list;
+    list.append(tr("Symbol"));
+    list.append(tr("Title"));
+    list.append(tr("Min"));
+    list.append(tr("Max"));
+    list.append(tr("Count"));
+
+    m_ui->m_tableWidget->setColumnCount(5);
+    m_ui->m_tableWidget->setHorizontalHeaderLabels(list);
+  }
+  else if(type == te::map::UNIQUE_VALUE)
+  {
+    QStringList list;
+    list.append(tr("Symbol"));
+    list.append(tr("Title"));
+    list.append(tr("Value"));
+    list.append(tr("Count"));
+
+    m_ui->m_tableWidget->setColumnCount(4);
+    m_ui->m_tableWidget->setHorizontalHeaderLabels(list);
+  }
 
   for(std::size_t t = 0; t < m_legend.size(); ++t)
   {
@@ -178,34 +213,55 @@ void te::qt::widgets::GroupingWidget::updateUi()
     //title
     {
       QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getTitle()));
-      item->setFlags(Qt::ItemIsEnabled);
+      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
       m_ui->m_tableWidget->setItem(newrow, 1, item);
     }
 
-    //Min
+    if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL || type == te::map::STD_DEVIATION)
     {
-      QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getLowerLimit()));
-      item->setFlags(Qt::ItemIsEnabled);
-      m_ui->m_tableWidget->setItem(newrow, 2, item);
-    }
+      //Min
+      {
+        QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getLowerLimit()));
+        item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
+        m_ui->m_tableWidget->setItem(newrow, 2, item);
+      }
 
-    //Max
-    {
-      QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getUpperLimit()));
-      item->setFlags(Qt::ItemIsEnabled);
-      m_ui->m_tableWidget->setItem(newrow, 3, item);
-    }
+      //Max
+      {
+        QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getUpperLimit()));
+        item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
+        m_ui->m_tableWidget->setItem(newrow, 3, item);
+      }
 
-    //Count
+      //Count
+      {
+        QTableWidgetItem* item = new QTableWidgetItem(QString::number(gi->getCount()));
+        item->setFlags(Qt::ItemIsEnabled);
+        m_ui->m_tableWidget->setItem(newrow, 4, item);
+      }
+    }
+    else if(type == te::map::UNIQUE_VALUE)
     {
-      QTableWidgetItem* item = new QTableWidgetItem(QString::number(gi->getCount()));
-      item->setFlags(Qt::ItemIsEnabled);
-      m_ui->m_tableWidget->setItem(newrow, 4, item);
+      //Value
+      {
+        QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getValue()));
+        item->setFlags(Qt::ItemIsEnabled);
+        m_ui->m_tableWidget->setItem(newrow, 2, item);
+      }
+
+      //Count
+      {
+        QTableWidgetItem* item = new QTableWidgetItem(QString::number(gi->getCount()));
+        item->setFlags(Qt::ItemIsEnabled);
+        m_ui->m_tableWidget->setItem(newrow, 3, item);
+      }
     }
   }
 
   m_ui->m_tableWidget->resizeColumnsToContents();
   m_ui->m_tableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+
+  connect(m_ui->m_tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(onTableWidgetItemChanged(QTableWidgetItem*)));
 }
 
 void te::qt::widgets::GroupingWidget::setDataSetType()
@@ -275,6 +331,14 @@ void te::qt::widgets::GroupingWidget::setGrouping()
 
 void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
 {
+  if(m_manual)
+  {
+      int reply = QMessageBox::question(this, tr("Grouping"), tr("Manual changes will be lost. Continue?"), QMessageBox::Yes | QMessageBox::Cancel);
+
+      if(reply != QMessageBox::Yes)
+        return;
+  }
+
   int index = m_ui->m_typeComboBox->currentIndex();
 
   int type = m_ui->m_typeComboBox->itemData(index).toInt();
@@ -326,6 +390,8 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
   buildSymbolizer();
 
   updateUi();
+
+  m_manual = false;
 }
 
 void te::qt::widgets::GroupingWidget::onTypeComboBoxActivated(int idx)
@@ -373,6 +439,50 @@ void te::qt::widgets::GroupingWidget::onColorBarChanged()
     buildSymbolizer();
 
     updateUi();
+  }
+}
+
+void  te::qt::widgets::GroupingWidget::onTableWidgetItemChanged(QTableWidgetItem* item)
+{
+  int index = m_ui->m_typeComboBox->currentIndex();
+  int type = m_ui->m_typeComboBox->itemData(index).toInt();
+
+  int curRow = m_ui->m_tableWidget->currentRow();
+  int curCol = m_ui->m_tableWidget->currentColumn();
+
+  QString str = item->text();
+
+  if(curCol == 1) // title
+  {
+    m_legend[curRow]->setTitle(str.toStdString());
+
+    m_manual = true;
+  }
+  else if(curCol == 2 || curCol == 3) // min and max
+  {
+    if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL || type == te::map::STD_DEVIATION)
+    {
+      bool ok = false;
+
+      str.toDouble(&ok);
+
+      if(!ok)
+      {
+        if(curCol == 2)
+          item->setText(m_legend[curRow]->getLowerLimit().c_str());
+        else if(curCol ==3)
+          item->setText(m_legend[curRow]->getUpperLimit().c_str());
+      }
+      else
+      {
+        if(curCol == 2)
+          m_legend[curRow]->setLowerLimit(item->text().toStdString());
+        else if(curCol ==3)
+          m_legend[curRow]->setUpperLimit(item->text().toStdString());
+
+        m_manual = true;
+      }
+    }
   }
 }
 
@@ -458,11 +568,7 @@ int te::qt::widgets::GroupingWidget::getGeometryType()
 {
   assert(m_layer.get());
 
-  std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
-
-  te::gm::GeometryProperty* geometryProperty = te::da::GetFirstGeomProperty(dsType.get());
-
-  return geometryProperty->getGeometryType();
+  return te::map::GetGeomType(m_layer);
 }
 
 void te::qt::widgets::GroupingWidget::buildSymbolizer()

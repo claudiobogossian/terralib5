@@ -124,6 +124,9 @@ OGREnvelope* te::ogr::Convert2OGR(const te::gm::Envelope* env)
 
 int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
 {
+  if(osrs == 0)
+    return TE_UNKNOWN_SRS;
+
   if(osrs->AutoIdentifyEPSG() != OGRERR_UNSUPPORTED_SRS) 
     return atoi(osrs->GetAuthorityCode(0));
   
@@ -472,6 +475,12 @@ std::string te::ogr::GetDriverName(const std::string& path)
   
   if(ext == ".gml" || ext == ".GML")
     return std::string("GML");
+  
+  if(ext == ".dxf" || ext == ".DXF")
+    return std::string("DXF");
+
+  if(ext == ".dgn" || ext == ".DGN")
+    return std::string("DGN");
 
   return "";
 }

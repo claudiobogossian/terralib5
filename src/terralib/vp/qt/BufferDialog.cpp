@@ -24,11 +24,14 @@
 */
 
 // TerraLib
+#include "../../common/progress/ProgressManager.h"
 #include "../../common/Translator.h"
 #include "../../common/STLUtils.h"
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/Enums.h"
 #include "../../datatype/Property.h"
@@ -39,9 +42,11 @@
 #include "../../memory/DataSet.h"
 #include "../../memory/DataSetItem.h"
 #include "../../qt/widgets/datasource/selector/DataSourceSelectorDialog.h"
+#include "../../qt/widgets/progress/ProgressViewerDialog.h"
 #include "../../srs/Config.h"
 #include "../Config.h"
 #include "../Exception.h"
+#include "../qt/widgets/layer/utils/DataSet2Layer.h"
 #include "Buffer.h"
 #include "BufferDialog.h"
 #include "ui_BufferDialogForm.h"
@@ -60,7 +65,11 @@
 #include <map>
 
 // BOOST
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -106,9 +115,12 @@ te::vp::BufferDialog::BufferDialog(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_targetDatasourceToolButton, SIGNAL(pressed()), this, SLOT(onTargetDatasourceToolButtonPressed()));
   connect(m_ui->m_targetFileToolButton, SIGNAL(pressed()), this,  SLOT(onTargetFileToolButtonPressed()));
 
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  //connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
+  
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins"); 
+  m_ui->m_helpPushButton->setPageReference("plugins/vp/vp_buffer.html");
 }
 
 te::vp::BufferDialog::~BufferDialog()
@@ -395,7 +407,7 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   int bufferBoundariesRule = getBoundariesRule();
   bool copyInputColumns = m_ui->m_copyColumnsCheckBox->isChecked();
   int levels = m_ui->m_levelsNumComboBox->currentText().toInt();
-  std::string outputLayerName = m_ui->m_newLayerNameLineEdit->text().toStdString();
+  std::string outputdataset = m_ui->m_newLayerNameLineEdit->text().toStdString();
 
   if(m_ui->m_newLayerNameLineEdit->text().isEmpty())
   {
@@ -411,25 +423,119 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
     return;
   }
 
+  //progress
+  te::qt::widgets::ProgressViewerDialog v(this);
+  int id = te::common::ProgressManager::getInstance().addViewer(&v);
+
   try
   {
-      m_outputLayer = te::vp::Buffer( m_selectedLayer, 
-                                      distance, 
-                                      bufferPolygonRule, 
-                                      bufferBoundariesRule, 
-                                      copyInputColumns, 
-                                      levels,
-                                      outputLayerName,
-                                      m_outputDatasource);
+    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+    te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+
+    if (!inDataSource.get())
+    {
+      QMessageBox::information(this, "Buffer", "Error: can not find the input datasource.");
+      return;
+    }
+
+    bool res;
+
+    if(m_toFile)
+    {
+      boost::filesystem::path uri(m_ui->m_repositoryLineEdit->text().toStdString());
+
+      if(boost::filesystem::exists(uri))
+      {
+        QMessageBox::information(this, "Buffer", "Output file already exists. Remove it and try again. ");
+        return;
+      }
+
+      std::size_t idx = outputdataset.find(".");
+      if(idx != std::string::npos)
+        outputdataset = outputdataset.substr(0,idx);
+
+      std::map<std::string, std::string> dsinfo;
+      dsinfo["URI"] = uri.string();
+
+      std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
+      dsOGR->setConnectionInfo(dsinfo);
+      dsOGR->open();
+
+      if(dsOGR->dataSetExists(outputdataset))
+      {
+        QMessageBox::information(this, "Buffer", "Error: there is already a dataset with the requested output name.");
+        return;
+      }
+
+      res = te::vp::Buffer( dsLayer->getDataSetName(),
+                            inDataSource.get(),
+                            distance, 
+                            bufferPolygonRule, 
+                            bufferBoundariesRule, 
+                            copyInputColumns, 
+                            levels,
+                            outputdataset,
+                            dsOGR.get());
+
+      if(!res)
+      {
+        dsOGR->close();
+        QMessageBox::information(this, "Buffer", "Error: could not generate the buffer.");
+      }
+      dsOGR->close();
+
+      // let's include the new datasource in the managers
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string id = boost::uuids::to_string(u);
+      
+      te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
+      ds->setConnInfo(dsinfo);
+      ds->setTitle(uri.stem().string());
+      ds->setAccessDriver("OGR");
+      ds->setType("OGR");
+      ds->setDescription(uri.string());
+      ds->setId(id);
+      
+      te::da::DataSourcePtr newds = te::da::DataSourceManager::getInstance().get(id, "OGR", ds->getConnInfo());
+      newds->open();
+      te::da::DataSourceInfoManager::getInstance().add(ds);
+      m_outputDatasource = ds;
+    }
+    else
+    {
+      te::da::DataSourcePtr aux = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+      res = te::vp::Buffer( dsLayer->getDataSetName(),
+                            inDataSource.get(),
+                            distance, 
+                            bufferPolygonRule, 
+                            bufferBoundariesRule, 
+                            copyInputColumns, 
+                            levels,
+                            outputdataset,
+                            aux.get());
+      if(!res)
+      {
+        QMessageBox::information(this, "Buffer", "Error: could not generate the buffer.");
+        reject();
+      }
+    }
+
+    // creating a layer for the result
+    te::da::DataSourcePtr outDataSource = te::da::DataSourceManager::getInstance().find(m_outputDatasource->getId());
+    
+    te::qt::widgets::DataSet2Layer converter(m_outputDatasource->getId());
+      
+    te::da::DataSetTypePtr dt(outDataSource->getDataSetType(outputdataset).release());
+    m_outputLayer = converter(dt);
   }
   catch(const std::exception& e)
   {
-    QString errMsg(tr("Error during buffer map . The reported error is: %1"));
-
-    errMsg = errMsg.arg(e.what());
-
-    QMessageBox::information(this, "Buffer", errMsg);
+    QMessageBox::information(this, "Buffer", e.what());
+    return;
   }
+
+  te::common::ProgressManager::getInstance().removeViewer(id);
 
   accept();
 }

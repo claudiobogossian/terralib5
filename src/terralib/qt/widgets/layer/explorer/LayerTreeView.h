@@ -72,37 +72,34 @@ namespace te
             MULTIPLE_LAYERS_SELECTED
           };
 
+          /*! \brief Constructor */
           LayerTreeView(QWidget* parent = 0);
 
+          /*! \brief Destructor */
           ~LayerTreeView();
 
+          /*!
+            \brief It gets all the selected items in the tree view.
+
+            \return The list of selected items in the tree view.
+          */
           std::list<AbstractTreeItem*> getSelectedItems() const;
 
-          void refresh();
+          /*!
+            \brief It gets the selected layers in the view, not including the selected folder layers.
 
-        signals:
+            \return The list of selected layers in the view, not including the selected folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getSelectedLayers() const;
 
-          void activated(te::qt::widgets::AbstractTreeItem* item);
+          /*!
+            \brief It gets the layers in the view that are selected and visible,
+                   not including the selected and visible folder layers.
 
-          void clicked(te::qt::widgets::AbstractTreeItem* item);
-
-          void doubleClicked(te::qt::widgets::AbstractTreeItem* item);
-
-          void entered(te::qt::widgets::AbstractTreeItem* item);
-
-          void pressed(te::qt::widgets::AbstractTreeItem* item);
-
-          void visibilityChanged(te::map::AbstractLayerPtr layer);
-
-          void layerRemoved(te::map::AbstractLayerPtr layer);
-
-        public slots:
-
-          void add(const te::map::AbstractLayerPtr& layer);
-
-          void remove(te::qt::widgets::AbstractTreeItem* item);
-
-        public:
+            \return List of layers in the view that are selected and visible,
+                    not including the selected and visible folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getSelectedAndVisibleLayers() const;
 
           /*!
             \brief It adds the action to a specified menu of a given layer type when a context menu is displayed.
@@ -124,21 +121,37 @@ namespace te
 
             \param action The action to be removed from the context menu.
 
-            \note LayerTreeView will not destroy the action, it will only detach it from widget.
+            \note The LayerTreeView will not destroy the action, it will only detach it from widget.
           */
           void remove(QAction* action);
 
-        protected slots:
+          void refresh();
 
-          void itemActivated(const QModelIndex & index);
+        public slots:
 
-          void itemClicked(const QModelIndex & index);
+          void add(const te::map::AbstractLayerPtr& layer);
 
-          void itemDoubleClicked(const QModelIndex & index);
+          void remove(te::qt::widgets::AbstractTreeItem* item);
 
-          void itemEntered(const QModelIndex & index);
+          void layerSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
-          void itemPressed(const QModelIndex & index);
+        signals:
+
+          void activated(te::qt::widgets::AbstractTreeItem* item);
+
+          void clicked(te::qt::widgets::AbstractTreeItem* item);
+
+          void doubleClicked(te::qt::widgets::AbstractTreeItem* item);
+
+          void entered(te::qt::widgets::AbstractTreeItem* item);
+
+          void pressed(te::qt::widgets::AbstractTreeItem* item);
+
+          void visibilityChanged(te::map::AbstractLayerPtr layer);
+
+          void layerRemoved(te::map::AbstractLayerPtr layer);
+
+          void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
 
         protected:
 
@@ -151,6 +164,18 @@ namespace te
           void dropEvent(QDropEvent* e);
 
           void contextMenuEvent(QContextMenuEvent* e);
+
+        protected slots:
+
+          void itemActivated(const QModelIndex & index);
+
+          void itemClicked(const QModelIndex & index);
+
+          void itemDoubleClicked(const QModelIndex & index);
+
+          void itemEntered(const QModelIndex & index);
+
+          void itemPressed(const QModelIndex & index);
 
         private:
 

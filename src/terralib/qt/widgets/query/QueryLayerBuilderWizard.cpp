@@ -283,9 +283,11 @@ void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
 
   //set values in other pages
   m_fieldPage->getWidget()->setInputValues(inputProperties);
+  m_fieldPage->getWidget()->clearOutputValues();
   m_fieldPage->getWidget()->setFixedOutputValues(geomProperties, "geometry");
   m_groupByPage->getWidget()->setInputValues(inputProperties);
   m_whereClausePage->getWidget()->setAttributeList(inputProperties);
+  m_whereClausePage->getWidget()->setGeomAttributeList(geomProperties);
   m_orderByPage->getWidget()->setAttributeList(inputProperties);
 }
 
@@ -325,9 +327,9 @@ void te::qt::widgets::QueryLayerBuilderWizard::getQueryCapabilities()
   //Spatial Operators
   std::vector<std::string> vecSpatialOperators;
 
-  it = queryCap.getSpatialOperators().begin();
+  it = queryCap.getSpatialTopologicOperators().begin();
 
-  while(it != queryCap.getSpatialOperators().end())
+  while(it != queryCap.getSpatialTopologicOperators().end())
   {
     vecSpatialOperators.push_back(*it);
 

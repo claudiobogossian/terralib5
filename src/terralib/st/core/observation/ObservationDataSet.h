@@ -342,7 +342,7 @@ namespace te
         //@}
         
         /*! \brief Virtual destructor. */
-        virtual ~ObservationDataSet() { }; 
+        virtual ~ObservationDataSet(); 
 
       private:
 

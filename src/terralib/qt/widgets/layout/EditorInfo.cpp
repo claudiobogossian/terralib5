@@ -31,11 +31,13 @@
 te::qt::widgets::EditorInfo::EditorInfo(te::qt::widgets::LayoutEditor* me, Qt::WindowFlags f) :
   LayoutObject(me, f)
 {
+  setWindowTitle("EditorInfo");
 }
 
 te::qt::widgets::EditorInfo::EditorInfo(const EditorInfo& rhs) :
   LayoutObject(rhs.m_layoutEditor, rhs.windowFlags())
 {
+  setWindowTitle("EditorInfo");
   m_rect = rhs.m_rect;
   m_paperViewRect = rhs.m_paperViewRect;
   m_paperSize = rhs.m_paperSize;
@@ -56,7 +58,7 @@ te::qt::widgets::EditorInfo& te::qt::widgets::EditorInfo::operator=(const Editor
   if(this != &rhs)
   {
     te::qt::widgets::LayoutObject::operator=(rhs);
-//    m_layoutEditor = rhs.m_layoutEditor;
+    setWindowTitle("EditorInfo");
 
     m_rect = rhs.m_rect;
     m_paperViewRect = rhs.m_paperViewRect;

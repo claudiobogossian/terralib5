@@ -87,6 +87,14 @@ void te::qt::widgets::LayoutObject::adjust()
 {
 }
 
+void te::qt::widgets::LayoutObject::sendEventToChildren(bool b)
+{
+  if(b == true)
+    removeEventFilter(m_layoutEditor);
+  else
+    installEventFilter(m_layoutEditor);
+}
+
 void te::qt::widgets::LayoutObject::showSelectionPoints()
 {
 }
@@ -111,4 +119,14 @@ bool te::qt::widgets::LayoutObject::isNew()
 
 void te::qt::widgets::LayoutObject::setNew(bool)
 {
+}
+
+QRectF te::qt::widgets::LayoutObject::getFrameRect()
+{
+  return QRectF();
+}
+
+QPixmap* te::qt::widgets::LayoutObject::getPixmap()
+{
+  return 0;
 }

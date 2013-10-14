@@ -804,6 +804,11 @@ void te::qt::widgets::RasterVisualWidget::setContrastVisibility()
 {
   if(m_ui->m_contrastGroupBox->isChecked() == false)
   {
+    m_ui->m_contrastRHorizontalSlider->setValue(100);
+    m_ui->m_contrastGHorizontalSlider->setValue(100);
+    m_ui->m_contrastBHorizontalSlider->setValue(100);
+    m_ui->m_contrastMHorizontalSlider->setValue(100);
+
     return;
   }
 

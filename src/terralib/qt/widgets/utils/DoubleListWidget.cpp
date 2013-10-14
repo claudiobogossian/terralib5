@@ -130,6 +130,16 @@ std::vector<std::string> te::qt::widgets::DoubleListWidget::getOutputValues()
   return vec;
 }
 
+void te::qt::widgets::DoubleListWidget::clearInputValues()
+{
+  m_ui->m_leftListWidget->clear();
+}
+
+void te::qt::widgets::DoubleListWidget::clearOutputValues()
+{
+  m_ui->m_rightListWidget->clear();
+}
+
 void te::qt::widgets::DoubleListWidget::onAddToolButtonPressed()
 {
   QList<QListWidgetItem*> list = m_ui->m_leftListWidget->selectedItems();

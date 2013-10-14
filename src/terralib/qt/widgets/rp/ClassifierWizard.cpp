@@ -28,6 +28,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Classifier.h"
+#include "../../../rp/Module.h"
 #include "ClassifierWizard.h"
 #include "ClassifierWizardPage.h"
 #include "LayerSearchWidget.h"
@@ -136,7 +137,7 @@ bool te::qt::widgets::ClassifierWizard::execute()
   te::rp::Classifier algorithmInstance;
 
   te::rp::Classifier::InputParameters algoInputParams = m_classifierPage->getInputParams();
-  algoInputParams.m_inputRasterPtr = inputRst.release();
+  algoInputParams.m_inputRasterPtr = inputRst.get();
 
   te::rp::Classifier::OutputParameters algoOutputParams = m_classifierPage->getOutputParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
@@ -152,13 +153,15 @@ bool te::qt::widgets::ClassifierWizard::execute()
     }
     else
     {
-      QMessageBox::critical(this, tr("Classifier"), tr("Classifier execution error"));
+      QMessageBox::critical(this, tr("Classifier"), tr("Classifier execution error.") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str());
       return false;
     }
   }
   else
   {
-    QMessageBox::critical(this, tr("Classifier"), tr("Classifier initialization error"));
+    QMessageBox::critical(this, tr("Classifier"), tr("Classifier initialization error.") +
+      ( " " + te::rp::Module::getLastLogStr() ).c_str() );
     return false;
   }
 

@@ -74,6 +74,10 @@ namespace te
 
           std::vector<std::string> getOutputValues();
 
+          void clearInputValues();
+
+          void clearOutputValues();
+
         protected slots:
 
           void onAddToolButtonPressed();

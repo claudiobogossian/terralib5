@@ -98,6 +98,7 @@ namespace te
           void adjustSize(QPointF& p);
           void draw();
           QRectF getTextRect();
+          QPixmap* getPixmap();
           void rubberBand();
           void paintEvent(QPaintEvent* event);
           void getSelectionPoint(const QPoint& p);
@@ -105,7 +106,6 @@ namespace te
           void verifyConstraints();
           void showSelectionPoints();
           void hideSelectionPoints();
-          bool eventFilter(QObject*, QEvent*);
           QMatrix getAuxMatrix();
           double getAngle(QPoint&);
           void adjustAngleRange(double&);
@@ -113,6 +113,11 @@ namespace te
           QPoint getGlobalPositionCenter();
           void setCursor();
           void createMenu();
+          void mousePressEvent(QMouseEvent*);
+          void mouseMoveEvent(QMouseEvent*);
+          void mouseReleaseEvent(QMouseEvent*);
+          void enterEvent(QEvent*);
+          void leaveEvent(QEvent*);
 
         public slots:
           void changeFontFamily();

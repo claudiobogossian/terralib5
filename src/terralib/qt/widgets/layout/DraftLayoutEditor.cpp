@@ -35,8 +35,8 @@ te::qt::widgets::DraftLayoutEditor::DraftLayoutEditor(QWidget* parent, Qt::Windo
   QWidget(parent, f)
 {
   setMouseTracking(true);
+  setAcceptDrops(true);
   show();
-  installEventFilter(this);
 }
 
 te::qt::widgets::DraftLayoutEditor::~DraftLayoutEditor()
@@ -49,9 +49,9 @@ QPixmap* te::qt::widgets::DraftLayoutEditor::getDraftPixmap()
   return &m_draftPixmap;
 }
 
-void te::qt::widgets::DraftLayoutEditor::resizeEvent(QResizeEvent*)
+void te::qt::widgets::DraftLayoutEditor::resizeEvent(QResizeEvent* e)
 {
-  m_draftPixmap = QPixmap(size().width(), size().height());
+  m_draftPixmap = QPixmap(e->size().width(), e->size().height());
   m_draftPixmap.fill(Qt::transparent);
 }
 
@@ -61,21 +61,8 @@ void te::qt::widgets::DraftLayoutEditor::paintEvent(QPaintEvent*)
   painter.drawPixmap(0, 0, m_draftPixmap);
 }
 
-bool te::qt::widgets::DraftLayoutEditor::eventFilter(QObject* obj, QEvent* e)
+void te::qt::widgets::DraftLayoutEditor::mouseMoveEvent(QMouseEvent* mouseEvent)
 {
-  // return true to stop the event; otherwise return false.
-
-  if(obj == this) 
-  {
-    if(e->type() == QEvent::MouseMove)
-    {
-      QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(e);
-      if(mouseEvent->buttons() == Qt::NoButton)
-        lower();
-    }
-    //else if(e->type() == QEvent::MouseButtonPress)
-    //  raise(); // nao sei porque nao passa por aqui quando clico sobre um objeto editavel.
-               // Por isso precisei criar um metodo no layoutEditor para dar raise no draftLayoutEditor.
-  }
-  return false;
+  if(mouseEvent->buttons() == Qt::NoButton)
+    lower();
 }

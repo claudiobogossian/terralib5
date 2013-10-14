@@ -104,5 +104,9 @@ std::auto_ptr<te::dt::DateTime> te::st::PointCoverageDataSetInfo::getTime() cons
   return std::auto_ptr<te::dt::DateTime>(static_cast<te::dt::DateTime*>(m_time->clone())); 
 }
 
+te::st::PointCoverageDataSetInfo::~PointCoverageDataSetInfo()
+{
+}
+
 
 

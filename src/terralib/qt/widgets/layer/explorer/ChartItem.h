@@ -66,6 +66,8 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
+          TreeItemType getType() const;
+
           void setCheckable(bool checkable);
 
           bool getCheckable();

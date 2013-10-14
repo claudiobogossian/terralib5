@@ -189,7 +189,10 @@ set (
   ${SRCDIR}/widgets/exchanger/DataExchangerWizard.h
   ${SRCDIR}/widgets/exchanger/DataExchangeSummaryWizardPage.h
   ${SRCDIR}/widgets/exchanger/DataSetOptionsWizardPage.h
+  ${SRCDIR}/widgets/exchanger/DirectExchangerDialog.h
+  ${SRCDIR}/widgets/exchanger/SHP2ADODialog.h
   ${SRCDIR}/widgets/exchanger/SHP2PostGISDialog.h
+  ${SRCDIR}/widgets/exchanger/PostGIS2SHPDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
 
@@ -412,7 +415,6 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/se" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/slider/TimePropertiesDialog.h
-  ${SRCDIR}/widgets/slider/TimeSliderEventFilter.h
   ${SRCDIR}/widgets/slider/TimeSliderWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/slider" MOC)

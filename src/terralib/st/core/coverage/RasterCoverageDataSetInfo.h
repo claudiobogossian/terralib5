@@ -93,6 +93,16 @@ namespace te
           \note It will take the ownership of the given pointers.
         */
         RasterCoverageDataSetInfo(const ObservationDataSetInfo& info, int rstPropIdx, te::dt::DateTime* time);
+
+        /*! 
+          \brief Copy constructor. 
+        */
+        RasterCoverageDataSetInfo(const RasterCoverageDataSetInfo& rcinfo);
+
+        /*! 
+          \brief Copy assignment operator
+        */
+        RasterCoverageDataSetInfo& operator=(const RasterCoverageDataSetInfo& other);
                 
          /*! \name Inhered methods*/
         //@{        
@@ -120,7 +130,7 @@ namespace te
         std::auto_ptr<te::dt::DateTime> getTime() const;
         
         /*! \brief Virtual destructor. */
-        virtual ~RasterCoverageDataSetInfo() { }; 
+        virtual ~RasterCoverageDataSetInfo(); 
 
       protected:
 

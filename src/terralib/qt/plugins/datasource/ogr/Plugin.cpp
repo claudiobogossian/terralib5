@@ -181,9 +181,10 @@ void te::qt::plugins::ogr::Plugin::shutdown()
 
 void te::qt::plugins::ogr::Plugin::showWindow()
 {
-  QString filter = GetSupportedFiles();
-
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), filter);
+//  QString filter = GetSupportedFiles();
+//  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), filter);
+  
+  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"));
 
   if(fileNames.isEmpty())
     return;
@@ -199,20 +200,17 @@ void te::qt::plugins::ogr::Plugin::showWindow()
     te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
 
     ds->setAccessDriver("OGR");
-
+    
+    std::string fpath = it->toStdString();
     std::map<std::string, std::string> dsinfo;
-    dsinfo["URI"] = it->toStdString();
+    dsinfo["URI"] = fpath;
 
     ds->setConnInfo(dsinfo);
-
-    ds->setDescription("A single vector file");
-
-    boost::uuids::basic_random_generator<boost::mt19937> gen;
-    boost::uuids::uuid u = gen();
-    std::string id = boost::uuids::to_string(u);
-
-    ds->setId(id);
-
+    
+    std::string desc("A single vector file: ");
+    desc += fpath;
+    ds->setDescription(desc);
+    
     boost::filesystem::path mpath(dsinfo["URI"]);
 
     std::string fileBaseName = mpath.leaf().string();
@@ -220,7 +218,12 @@ void te::qt::plugins::ogr::Plugin::showWindow()
     ds->setTitle(fileBaseName);
 
     ds->setType("OGR");
-
+    
+    boost::uuids::basic_random_generator<boost::mt19937> gen;
+    boost::uuids::uuid u = gen();
+    std::string id = boost::uuids::to_string(u);
+    
+    ds->setId(id);
     te::da::DataSourceInfoManager::getInstance().add(ds);
 
     GetLayers(ds, layers);

@@ -104,7 +104,7 @@ namespace te
           ScatterStyle* getScatterStyle();
 
           /*!            
-            \brief It sets the chart's sstyle.   
+            \brief It sets the chart's style.   
 
             \param newStyle The chart's  new style.
             \note It will take the ownership of the pointer "newStyle".

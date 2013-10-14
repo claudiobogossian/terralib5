@@ -28,6 +28,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/MixtureModel.h"
+#include "../../../rp/Module.h"
 #include "MixtureModelWizard.h"
 #include "MixtureModelWizardPage.h"
 #include "LayerSearchWidget.h"
@@ -126,7 +127,14 @@ bool te::qt::widgets::MixtureModelWizard::execute()
   te::rp::MixtureModel algorithmInstance;
 
   te::rp::MixtureModel::InputParameters algoInputParams = m_mixtureModelPage->getInputParams();
-  algoInputParams.m_inputRasterPtr = inputRst.release();
+  
+  if( algoInputParams.m_inputRasterBands.size() != algoInputParams.m_components.size() )
+  {
+    QMessageBox::critical(this, tr("Mixture Model"), tr("The number of components must be the same as the number of selected bands"));
+    return false;
+  }
+  
+  algoInputParams.m_inputRasterPtr = inputRst.get();
 
   te::rp::MixtureModel::OutputParameters algoOutputParams = m_mixtureModelPage->getOutputParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
@@ -143,13 +151,15 @@ bool te::qt::widgets::MixtureModelWizard::execute()
     }
     else
     {
-      QMessageBox::critical(this, tr("Mixture Model"), tr("Mixture Model execution error"));
+      QMessageBox::critical(this, tr("Mixture Model"), tr("Mixture Model execution error.") +
+        ( " " + te::rp::Module::getLastLogStr() ).c_str() );
       return false;
     }
   }
   else
   {
-    QMessageBox::critical(this, tr("Mixture Model"), tr("Mixture Model initialization error"));
+    QMessageBox::critical(this, tr("Mixture Model"), tr( "Mixture Model initialization error." ) +
+      ( " " + te::rp::Module::getLastLogStr() ).c_str() );
     return false;
   }
 

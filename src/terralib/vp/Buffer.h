@@ -46,41 +46,32 @@ namespace te
   namespace vp
   {
     /*!
-    \brief It receives the required parameters to the buffer process.
+    \brief Executes the Buffer Geographical Operation and persists the result as a dataset in a given output datasource.
 
-    \param inputLayer             The input layer witch is used in buffer operation.
+    \param inDatasetName          The name of the  dataset to be used in aggregation operation. It must exists in the input datasource.
+    \param inDatasource           Pointer to the datasource that contains the input dataset. Do not pass null.
     \param distance               The buffer distance for each geometry.
     \param bufferPolygonRule      The buffer rule for all geometries (enum RuleForBuffer)
     \param bufferBoundariesRule   The buffer boundaries rule for all geometries (enum BoundariesBetweenBuffers)
     \param copyInputColumns       If boudaries between geometries was not dissolved, the user has the option to Copy de columns from the InputLayer.
-    \param levels                 
-    \param outputLayerName        The name of output layer.
-    \param dsInfo                 Information of datasource persistence.
+    \param levels                 The number of levels.
+    \param outDatasetName         The name for the resulting datasource. It should not exists in the output datasource.
+    \param outDatasource          Pointer to the datasource to persist the resulting dataset. Do not pass null.
 
-    \return                       The layer result.
+    \return                       True if the it succeeds and false otherwise.
+
+    This algorithm assums that the input dataset exists in the datasource.
+     It generates a new dataset in the ouput datasource, do it can not exists a dataset with the same name prior to the calling of this algorithm.
     */
-    te::map::AbstractLayerPtr Buffer(const te::map::AbstractLayerPtr& inputLayer,
-                                    const std::map<te::gm::Geometry*, double>& distance,
-                                    const int& bufferPolygonRule,
-                                    const int& bufferBoundariesRule,
-                                    const bool& copyInputColumns,
-                                    const int& levels,
-                                    const std::string& outputLayerName,
-                                    const te::da::DataSourceInfoPtr& dsInfo);
-
-    te::da::DataSetType* GetDataSetType(const te::map::AbstractLayerPtr& inputLayer,
-                                        const std::string& outputLayerName,
-                                        const int& bufferBoundariesRule,
-                                        const bool& copyInputColumns);
-    
-    void SetBuffer(te::mem::DataSet* dataSet,
-                  const std::map<te::gm::Geometry*, double>& distance,
-                  const int& bufferPolygonRule,
-                  const int& levels);
-
-    te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
-                                            te::mem::DataSet* dataset, 
-                                            const int& levels);
+    TEVPEXPORT bool Buffer(const std::string& inDataset,
+                          te::da::DataSource* inDatasource,
+                          const std::map<te::gm::Geometry*, double>& distance,
+                          const int& bufferPolygonRule,
+                          const int& bufferBoundariesRule,
+                          const bool& copyInputColumns,
+                          const int& levels,
+                          const std::string& outDataset,
+                          te::da::DataSource* outDatasource);
 
   } // end namespace vp
 }   // end namespace te

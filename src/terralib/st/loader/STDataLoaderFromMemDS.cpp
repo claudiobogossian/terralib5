@@ -26,25 +26,25 @@
 */
 
 //TerraLib
-#include "../../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../../dataaccess/dataset/DataSet.h"
-#include "../../../dataaccess/utils/Utils.h"
-#include "../../../datatype/DateTimePeriod.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/dataset/DataSet.h"
+#include "../../dataaccess/utils/Utils.h"
+#include "../../datatype/DateTimePeriod.h"
 
 //STMEM
-#include "../../../stmemory/DataSource.h"
-#include "../../../stmemory/DataSet.h"
+#include "../../stmemory/DataSource.h"
+#include "../../stmemory/DataSet.h"
 
 //ST
-#include "../../Exception.h"
-#include "../../Utils.h"
+#include "../Exception.h"
+#include "../Utils.h"
 #include "STDataLoaderFromMemDS.h"
-#include "../observation/ObservationDataSetInfo.h"
-#include "../trajectory/TrajectoryDataSetInfo.h"
-#include "../timeseries/TimeSeriesDataSetInfo.h"
-#include "../observation/ObservationDataSet.h"
-#include "../trajectory/TrajectoryDataSet.h"
-#include "../timeseries/TimeSeriesDataSet.h"
+#include "../core/observation/ObservationDataSetInfo.h"
+#include "../core/trajectory/TrajectoryDataSetInfo.h"
+#include "../core/timeseries/TimeSeriesDataSetInfo.h"
+#include "../core/observation/ObservationDataSet.h"
+#include "../core/trajectory/TrajectoryDataSet.h"
+#include "../core/timeseries/TimeSeriesDataSet.h"
 
 //STL
 #include <vector>
@@ -422,6 +422,9 @@ te::st::STDataLoaderFromMemDS::buildDataSet(te::stmem::DataSet* ds, const TimeSe
                                             period.release())); 
 }
 
+te::st::STDataLoaderFromMemDS::~STDataLoaderFromMemDS()
+{
+}
 
 
 

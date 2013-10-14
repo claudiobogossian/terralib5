@@ -248,7 +248,7 @@ te::qt::widgets::LayerTreeView::~LayerTreeView()
 
 std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerTreeView::getSelectedItems() const
 {
-  std::list<AbstractTreeItem*> layers;
+  std::list<AbstractTreeItem*> selectedItems;
 
   QModelIndexList indexes = selectedIndexes();
 
@@ -256,13 +256,50 @@ std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerTreeView::ge
 
   foreach(idx, indexes)
   {
-    AbstractTreeItem* layer = static_cast<AbstractTreeItem*>(idx.internalPointer());
+    AbstractTreeItem* selectedItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
 
-    if(layer != 0)
-      layers.push_back(layer);
+    if(selectedItem)
+      selectedItems.push_back(selectedItem);
   }
 
-  return layers;
+  return selectedItems;
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeView::getSelectedLayers() const
+{
+  std::list<te::map::AbstractLayerPtr> selectedLayers;
+
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = getSelectedItems();
+
+  std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
+  for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
+  {
+    AbstractTreeItem* item = *it;
+    if(item->getType() == te::qt::widgets::AbstractTreeItem::LAYERITEM)
+    {
+      te::map::AbstractLayerPtr layer = (*it)->getLayer();
+      selectedLayers.push_back(layer);
+    }
+  }
+
+  return selectedLayers;
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeView::getSelectedAndVisibleLayers() const
+{
+  std::list<te::map::AbstractLayerPtr> selectedAndVisibleLayers;
+
+  std::list<te::map::AbstractLayerPtr> selectedLayers = getSelectedLayers();
+
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+  for(it = selectedLayers.begin(); it != selectedLayers.end(); ++it)
+  {
+    te::map::AbstractLayerPtr layer = *it;
+    if(layer->getVisibility() == te::map::VISIBLE)
+      selectedAndVisibleLayers.push_back(layer);
+  }
+
+  return selectedAndVisibleLayers;
 }
 
 void te::qt::widgets::LayerTreeView::refresh()
@@ -298,6 +335,26 @@ void te::qt::widgets::LayerTreeView::remove(te::qt::widgets::AbstractTreeItem* i
 
   if(model->remove(item))
     emit layerRemoved(layer);
+}
+
+void te::qt::widgets::LayerTreeView::layerSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+{
+  std::list<te::map::AbstractLayerPtr> selectedLayers;
+
+  QModelIndexList selectedIndexes = selected.indexes();
+
+  QModelIndex idx;
+
+  foreach(idx, selectedIndexes)
+  {
+    AbstractTreeItem* selectedItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+
+    if(selectedItem->getType() == te::qt::widgets::AbstractTreeItem::LAYERITEM)
+      selectedLayers.push_back(selectedItem->getLayer());
+  }
+
+  if(!selectedLayers.empty())
+    emit selectedLayersChanged(selectedLayers);
 }
 
 void te::qt::widgets::LayerTreeView::add(QAction* action,

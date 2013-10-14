@@ -108,6 +108,11 @@ te::map::AbstractLayerPtr te::qt::widgets::GroupingItemTreeItem::getLayer() cons
   return te::map::AbstractLayerPtr(0);
 }
 
+te::qt::widgets::AbstractTreeItem::TreeItemType te::qt::widgets::GroupingItemTreeItem::getType() const
+{
+  return GROUPINGITEMTREEITEM;
+}
+
 void te::qt::widgets::GroupingItemTreeItem::setCheckable(bool checkable)
 {
   m_isCheckable = checkable;

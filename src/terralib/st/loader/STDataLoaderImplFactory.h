@@ -27,8 +27,8 @@
 #define __TERRALIB_ST_INTERNAL_STDATALOADERIMPLFACTORY_H
 
 // TerraLib
-#include "../../../common/AbstractFactory.h"
-#include "../../Config.h"
+#include "../../common/AbstractFactory.h"
+#include "../Config.h"
 #include "STDataLoaderImpl.h"
 
 namespace te
@@ -65,7 +65,7 @@ namespace te
 
           \note It will automatically unregister the factory from the dictionary.
         */
-        virtual ~STDataLoaderImplFactory() {}
+        virtual ~STDataLoaderImplFactory();
 
         /*!
           \brief It returns the type of STDataLoaderImpl that the factory knows how to create.

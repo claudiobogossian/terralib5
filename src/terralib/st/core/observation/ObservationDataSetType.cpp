@@ -165,3 +165,7 @@ void te::st::ObservationDataSetType::setRsTimePropIdx(int idx)
   m_resultTimePropIdx = idx;
 } 
 
+te::st::ObservationDataSetType::~ObservationDataSetType()
+{
+}
+

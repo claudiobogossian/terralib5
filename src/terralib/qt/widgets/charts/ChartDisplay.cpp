@@ -72,6 +72,10 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   // zoom in/out with the wheel
   ( void ) new QwtPlotMagnifier( this->canvas() );
 
+  // Pan on the plotted chart
+  m_panner =  new QwtPlotPanner(this->canvas());
+  m_panner->setMouseButton(Qt::MidButton);
+
   // Selection based on a point
   m_picker = new QwtPlotPicker(this->canvas());
   m_picker->setStateMachine(new QwtPickerClickPointMachine );
@@ -86,6 +90,8 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
 te::qt::widgets::ChartDisplay::~ChartDisplay()
 {
   delete m_chartStyle;
+  delete m_panner;
+  delete m_picker;
   delete m_grid;
 }
 
@@ -124,21 +130,24 @@ void te::qt::widgets::ChartDisplay::setStyle(te::qt::widgets::ChartStyle* newSty
 
 void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oids)
 {
-  const QwtPlotItemList& itmList = itemList(); 
-
-  for ( QwtPlotItemIterator it = itmList.begin();
-      it != itmList.end(); ++it )
+  if(oids)
   {
-    if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
+    const QwtPlotItemList& itmList = itemList(); 
+
+    for ( QwtPlotItemIterator it = itmList.begin();
+        it != itmList.end(); ++it )
+    {
+      if ( ( *it )->rtti() == te::qt::widgets::SCATTER_CHART)
       {
         static_cast<te::qt::widgets::ScatterChart*>(*it)->highlight( oids);
         break;
       }
-     else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
+      else if( ( *it )->rtti() == te::qt::widgets::HISTOGRAM_CHART )
       {
         static_cast<te::qt::widgets::HistogramChart*>(*it)->highlight( oids);
         break;
       }
+    }
   }
 }
 

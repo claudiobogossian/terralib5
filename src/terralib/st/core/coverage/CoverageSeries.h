@@ -465,7 +465,7 @@ namespace te
         //@}
                 
         /*! \brief Virtual destructor. */
-        virtual ~CoverageSeries() { } 
+        virtual ~CoverageSeries();
 
       protected:
 

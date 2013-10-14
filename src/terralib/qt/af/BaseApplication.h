@@ -103,7 +103,7 @@ namespace te
 
           void onToolsDataExchangerTriggered();
 
-          void onToolsDataExchangerSHP2PGISTriggered();
+          void onToolsDataExchangerDirectTriggered();
 
           void onProjectPropertiesTriggered();
 
@@ -185,6 +185,8 @@ namespace te
 
           virtual void openProject(const QString& projectFileName);
 
+          virtual void updateProject();
+
           virtual void checkProjectSave();
 
           virtual void newProject();
@@ -207,6 +209,8 @@ namespace te
 
           virtual void initSlotsConnections();
 
+        protected:
+
           //! Qt components
           QAction* m_viewLayerExplorer;
           QAction* m_viewMapDisplay;
@@ -225,7 +229,7 @@ namespace te
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
           QAction* m_toolsDataExchanger;
-          QAction* m_toolsDataExchangerSHP2PGIS;
+          QAction* m_toolsDataExchangerDirect;
           QAction* m_toolsDataSourceExplorer;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
@@ -310,14 +314,14 @@ namespace te
           //QToolBar* m_editToolBar;
           QToolBar* m_mapToolBar;
 
-// Well known Widgets
+          // Well known Widgets
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
           SymbolizerExplorer* m_symbolizerExplorer;
 
           std::vector<DataSetTableDockWidget*> m_tableDocks;
 
-// Project
+          // Project
           Project* m_project;
 
           QDockWidget* m_progressDockWidget; //!< Dock widget used to show progress information

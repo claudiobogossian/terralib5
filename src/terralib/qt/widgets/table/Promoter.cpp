@@ -20,12 +20,15 @@
 
 // TerraLib
 #include "../../../common/STLUtils.h"
+#include "../../../common/Translator.h"
 #include "../../../common/progress/TaskProgress.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../datatype/SimpleData.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../Exception.h"
+#include "../Config.h"
 
 // Qt
 #include <QObject>
@@ -137,6 +140,15 @@ void CleanAbstractData(std::multimap<std::vector<te::dt::AbstractData*>, int, Da
   d.clear();
 }
 
+size_t GetRowPosition(const size_t& pos, const std::vector<size_t>& posVec)
+{
+  for(size_t i=0; i<posVec.size(); i++)
+    if(posVec[i] == pos)
+      return i;
+
+  throw te::qt::widgets::Exception(TR_QT_WIDGETS("Position not found."));
+}
+
 te::qt::widgets::Promoter::Promoter() 
 {
 }
@@ -174,9 +186,9 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
 
   dset->moveFirst();
 
-  te::common::TaskProgress task(QObject::tr("Executing promotion...").toStdString(), te::common::TaskProgress::UNDEFINED, m_logicalRows.size());
+  te::common::TaskProgress task(QObject::tr("Preprocessing primary keys...").toStdString(), te::common::TaskProgress::UNDEFINED, (int)m_logicalRows.size());
 
-  for(size_t i=0; i<m_logicalRows.size(); i++)
+  for(size_t i=0; i<setSize; i++)
   {
     if(!task.isActive())
     {
@@ -187,6 +199,7 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
     te::da::ObjectId* obj = te::da::GenerateOID(dset, colsNames);
     
     m_PkeysRows[obj] = i;
+
     m_logicalRows[i] = i;
 
     dset->moveNext();
@@ -249,12 +262,10 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
   if(cols.empty())
     return;
 
-  cleanPreproccessKeys();
-
   if(m_logicalRows.empty())
     m_logicalRows.resize(dset->size());
 
-  te::common::TaskProgress task (QObject::tr("Sorting columns...").toStdString(), te::common::TaskProgress::UNDEFINED, m_logicalRows.size());
+  te::common::TaskProgress task (QObject::tr("Sorting columns...").toStdString(), te::common::TaskProgress::UNDEFINED, (int)m_logicalRows.size());
 
   std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator> order;
   std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator>::iterator m_it;
@@ -270,7 +281,7 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
   {
     if(!task.isActive())
     {
-      cleanLogRowsAndProcessKeys();
+      m_logicalRows.clear();
       CleanAbstractData(order);
 
       return;
@@ -291,22 +302,26 @@ void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<in
   {
     if(!task.isActive())
     {
-      cleanLogRowsAndProcessKeys();
+      m_logicalRows.clear();
       CleanAbstractData(order);
 
       return;
     }
 
     m_logicalRows[i++] = m_it->second;
-    te::common::FreeContents(m_it->first);
 
     task.pulse();
   }
+
+  CleanAbstractData(order);
 }
 
 size_t te::qt::widgets::Promoter::map2Row(te::da::ObjectId* oid)
 {
   std::map<te::da::ObjectId*, size_t, te::common::LessCmp<te::da::ObjectId*> >::iterator it = m_PkeysRows.find(oid);
 
-  return it->second;
+  if(it == m_PkeysRows.end())
+    throw Exception(TR_QT_WIDGETS("Fail to get position of Object id"));
+
+  return (m_logicalRows.empty()) ? it->second : GetRowPosition(it->second, m_logicalRows);
 }

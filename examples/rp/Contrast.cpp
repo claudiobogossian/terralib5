@@ -3,7 +3,7 @@
 // TerraLib
 #include <terralib/gdal/Utils.h>
 #include <terralib/dataaccess.h>
-#include <terralib/dataaccess/dataset/DataSetPersistence.h>
+//#include <terralib/dataaccess/dataset/DataSetPersistence.h>
 #include <terralib/dataaccess/dataset/DataSetType.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
 #include <terralib/geometry/GeometryProperty.h>

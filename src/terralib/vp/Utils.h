@@ -47,26 +47,15 @@ namespace te
 
       \return Union of the geometry.
     */
-    te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx);
+    te::gm::Geometry* GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx, te::gm::GeomType outGeoType);
 
     std::string GetSimpleTableName(std::string fullName);
 
     te::gm::GeometryProperty* SetOutputGeometryType(const te::gm::GeometryProperty* firstGeom, const te::gm::GeometryProperty* secondGeom);
-
-    /*!
-      \brief It persists the buffer result.
-
-      \param dataSetType  The output DataSetType.
-      \param dataSet      The output DataSet.
-      \param dsInfo       Information of datasource persistence.
-      \param options      A list of optional modifiers. It is driver specific.
-
-      \return The buffer result persistence.
-    */
-    void Persistence( te::da::DataSetType* dataSetType,
-                            te::mem::DataSet* dataSet,
-                            const te::da::DataSourceInfoPtr& dsInfo,
-                            const std::map<std::string, std::string> options = std::map<std::string, std::string>());
+    
+    te::gm::GeomType GeomOpResultType(te::gm::GeomType firstGeom, te::gm::GeomType secondGeom);
+    
+    te::gm::GeomType GeomOpResultType(te::gm::GeomType firstGeom);
 
   } // end namespace vp
 }   // end namespace te

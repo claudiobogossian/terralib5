@@ -49,6 +49,7 @@ namespace te
     {
       class DataSetDisplay;
       class DataSetItem;
+      class DataSetGroupItem;
       class DataSetTableView;
       class DataSetTreeView;
 
@@ -95,6 +96,8 @@ namespace te
           void onDataSetToggled(DataSetItem* item);
 
           void onDataSetClicked(DataSetItem* item);
+
+          void onDataSetGroupToggled(DataSetGroupItem* item);
 
           void onMapPreviewToggled(bool on);
 

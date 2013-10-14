@@ -57,12 +57,15 @@ namespace te
           virtual void hide();
           virtual void show();
           virtual void adjust();
+          virtual void sendEventToChildren(bool);
           virtual void showSelectionPoints();
           virtual void hideSelectionPoints();
           virtual double getScale();
           virtual void setScale(double v);
           virtual bool isNew();
           virtual void setNew(bool);
+          virtual QRectF getFrameRect();
+          virtual QPixmap* getPixmap();
 
 
         protected:

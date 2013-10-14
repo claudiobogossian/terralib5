@@ -42,7 +42,7 @@ namespace te
         /*!
           \struct ProjectAdded
 
-          \brief It indicates that a new project was createed.
+          \brief It indicates that a new project was created.
 
           \ingroup afevents
         */
@@ -59,7 +59,7 @@ namespace te
           {
           }
 
-          Project* m_proj;    //!< Pointer to the newe project.
+          Project* m_proj;    //!< Pointer to the new project.
         };
 
         /*!

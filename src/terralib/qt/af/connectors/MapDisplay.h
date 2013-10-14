@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of TerraView - A GIS Application.
 
@@ -40,7 +40,6 @@
 
 namespace te
 {
-// Forward declaration
   namespace qt
   {
     namespace widgets
@@ -53,7 +52,7 @@ namespace te
     {
       namespace evt
       {
-      // Forward declaration
+        // Forward declaration
         struct Event;
       }
 
@@ -135,6 +134,12 @@ namespace te
 
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
 
+        signals:
+
+          void hasNextExtent(bool value);
+
+          void hasPreviousExtent(bool value);
+
         protected:
 
           te::qt::widgets::MapDisplay* m_display;             //!< Pointer to a component te::qt::widgets::MapDisplay.
@@ -142,7 +147,8 @@ namespace te
           QMenu* m_menu;                                      //!< The map display popup menu.
           QPixmap m_lastDisplayContent;                       //!< The last map display content. i.e. a "clean" pixmap.
           std::vector<te::gm::Envelope> m_extentStack;        //!< The stack of MapDisplay extents.
-          std::size_t m_currentExtent;                        //!< The current extent index.
+          int m_currentExtentIndex;                           //!< The current extent index.
+          int m_extentStackMaxSize;                           //!< The max size of the extent stack. Used on previousExtent and nextExtent.
       };
     }
   }

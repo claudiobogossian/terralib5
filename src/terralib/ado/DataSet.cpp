@@ -31,8 +31,9 @@
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/Array.h"
 #include "../datatype/ByteArray.h"
-#include "../datatype/DateTime.h"
+#include "../datatype/DateTimeProperty.h"
 #include "../datatype/SimpleData.h"
+#include "../datatype/TimeInstant.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/WKBReader.h"
 #include "Connection.h"
@@ -47,6 +48,7 @@
 
 // Boost
 #include <boost/dynamic_bitset.hpp>
+#include <boost/lexical_cast.hpp>
 
 inline void TESTHR( HRESULT hr )
 {
@@ -54,17 +56,13 @@ inline void TESTHR( HRESULT hr )
 }
 
 te::ado::DataSet::DataSet(_RecordsetPtr result,
-                          Connection* conn,
-                          const std::vector<int>& ptypes,
-                          const std::vector<std::string>& pnames)
+                          Connection* conn)
   : m_i(-1),
     m_result(result),
     m_conn(conn)
 {
   m_size = m_result->GetRecordCount();
   m_ncols = m_result->GetFields()->GetCount();
-  m_ptypes = ptypes;
-  m_pnames = pnames;
 }
 
 te::ado::DataSet::~DataSet()
@@ -94,12 +92,26 @@ std::size_t te::ado::DataSet::getNumProperties() const
 
 int te::ado::DataSet::getPropertyDataType(std::size_t i) const
 {
-  return m_ptypes[i];
+  FieldsPtr fields = m_result->GetFields();
+  FieldPtr field = fields->GetItem((long)i);
+  int type = te::ado::Convert2Terralib(field->GetType());
+  
+  if(type == te::dt::BYTE_ARRAY_TYPE)
+  {
+    std::string tableName = (LPCSTR)(_bstr_t)field->GetProperties()->GetItem("BASETABLENAME")->GetValue();
+    std::string columnName = field->GetName();
+    if(te::ado::IsGeomProperty(m_conn->getConn(), tableName, columnName))
+      return te::dt::GEOMETRY_TYPE;
+  }
+  return type;
 }
 
 std::string te::ado::DataSet::getPropertyName(std::size_t i) const
 {
-  return m_pnames[i];
+  FieldsPtr fields = m_result->GetFields();
+  FieldPtr field = fields->GetItem((long)i);
+
+  return field->GetName();
 }
 
 std::string te::ado::DataSet::getDatasetNameOfProperty(std::size_t i) const
@@ -440,7 +452,40 @@ std::auto_ptr<te::rst::Raster> te::ado::DataSet::getRaster(std::size_t i) const
 
 std::auto_ptr<te::dt::DateTime> te::ado::DataSet::getDateTime(std::size_t i) const
 {
-  return std::auto_ptr<te::dt::DateTime>(0); // TODO
+  _variant_t vtIndex;
+  _variant_t value;
+
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  te::dt::DateTime* dateTime = 0;
+
+  std::string strDate;
+  try
+  {
+    value = m_result->GetFields()->GetItem(vtIndex)->Value;
+  }
+  catch(_com_error &e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  if(value.vt == VT_NULL)
+    return std::auto_ptr<te::dt::DateTime>(0);
+
+  strDate = (LPCSTR)(_bstr_t)value;
+
+  // Getting system format
+  std::string indAM;
+  std::string indPM;
+  std::string sepD;
+  std::string sepT;
+
+  std::string mask = te::ado::GetSystemDateTimeFormat(indAM, indPM, sepD, sepT);
+
+  std::auto_ptr<te::dt::DateTime> result = te::ado::GetDateTime(strDate, mask, sepD, sepT);
+
+  return result;
 }
 
 std::auto_ptr<te::dt::Array> te::ado::DataSet::getArray(std::size_t i) const

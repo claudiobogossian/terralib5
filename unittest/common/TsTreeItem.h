@@ -29,8 +29,8 @@
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
-// Boost
-#include "terralib\common\TreeItem.h"
+// TerraLib
+#include <terralib/common/TreeItem.h>
 
 /*!
   \class TsTreeItem
