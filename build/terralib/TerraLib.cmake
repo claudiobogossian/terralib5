@@ -68,6 +68,7 @@ option (BUILD_STLOADER "Build Spatial-Temporal Loader module?" OFF)
 option (BUILD_STMEMORY "Build Spatial-Temporal Driver In-Memory?" ON)
 option (BUILD_STATISTICS "Build Statistics module?" ON)
 option (BUILD_SYMBOLOGY "Build Symbology module?" ON)
+option (BUILD_TERRALIB4 "Build TerraLib 4.X Data Access Drver?" OFF)
 option (BUILD_VP "Build Vector Processing module?" OFF)
 option (BUILD_XERCES "Build Xerces module?" ON)
 option (BUILD_XLINK "Build XLink module?" ON)
@@ -216,6 +217,10 @@ endif()
 
 IF(BUILD_SYMBOLOGY)
 	add_subdirectory(terralib/terralib_symbology)
+endif()
+
+IF(BUILD_TERRALIB4)
+	add_subdirectory(terralib/terralib_terralib4)
 endif()
 
 IF(BUILD_VP)

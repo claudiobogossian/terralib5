@@ -25,8 +25,8 @@ void PrintTimeSeries(te::st::TimeSeries* ts)
     
   while(it != ts->end())
   {
-    std::cout << "Date/Time: " <<  it.getDateTime()->toString() << std::endl;
-    std::cout << "Value: " <<  it.getObservedValue()->toString()  << std::endl << std::endl;     
+    std::cout << "Date/Time: " <<  it.getTime()->toString() << std::endl;
+    std::cout << "Value: " <<  it.getValue()->toString()  << std::endl << std::endl;     
     ++it;
   }
 }

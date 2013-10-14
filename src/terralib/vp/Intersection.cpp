@@ -33,6 +33,8 @@
 #include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceInfo.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
+#include "../dataaccess/dataset/DataSetTypeConverter.h"
+
 #include "../dataaccess/query_h.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../datatype/Property.h"
@@ -59,183 +61,154 @@
 #include <iostream>
 #include <memory>
 
-te::da::DataSetType* te::vp::CreateDataSetType(std::string newName, 
-                                               te::da::DataSetType* firstDt,
-                                               std::vector<te::dt::Property*> firstProps, 
-                                               te::da::DataSetType* secondDt,
-                                               std::vector<te::dt::Property*> secondProps)
+
+// -- auxiliary function
+struct IntersectionMember
 {
-  te::da::DataSetType* outputDt = new te::da::DataSetType(newName);
-
-  for(size_t i = 0; i < firstProps.size(); ++i)
-  {
-    te::dt::Property* prop = firstProps[i]->clone();
-    if(!firstDt->getTitle().empty())
-      prop->setName(te::vp::GetSimpleTableName(firstDt->getTitle()) + "_" + prop->getName());
-    outputDt->add(prop);
-  }
-
-  for(size_t i = 0; i < secondProps.size(); ++i)
-  {
-    te::dt::Property* prop = secondProps[i]->clone();
-    prop->setName(te::vp::GetSimpleTableName(secondDt->getTitle()) + "_" + prop->getName());
-    outputDt->add(prop);
-  }
-
-  te::gm::GeomType newType = GeomOpResultType(te::da::GetFirstGeomProperty(firstDt)->getGeometryType(), te::da::GetFirstGeomProperty(secondDt)->getGeometryType());
-
-  te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geomres");
-  newGeomProp->setGeometryType(newType);
-  newGeomProp->setSRID(te::da::GetFirstGeomProperty(firstDt)->getSRID());
-  
-  outputDt->add(newGeomProp);
-
-  return outputDt;
-}
-
-te::vp::DataSetRTree te::vp::CreateRTree(te::da::DataSetType* dt, te::da::DataSet* ds)
-{
-  te::vp::DataSetRTree rtree(new te::sam::rtree::Index<size_t, 8>);
-
-  size_t secGeomPropPos = dt->getPropertyPosition(dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
-
-  size_t secondDsCount = 0;
-  while(ds->moveNext())
-  {
-    std::auto_ptr<te::gm::Geometry> g = ds->getGeometry(secGeomPropPos);
-
-    rtree->insert(*g->getMBR(), secondDsCount);
-
-    ++secondDsCount;
-  }
-
-  return rtree;
-}
-
-std::vector<te::dt::Property*> GetPropertiesByPos(te::da::DataSetType* dt, std::vector<size_t> propsPos)
-{
+  te::da::DataSetType* dt;
+  te::da::DataSet* ds;
   std::vector<te::dt::Property*> props;
+};
 
-  for(size_t i = 0; i < propsPos.size(); ++i)
-  {
-    te::dt::Property* prop = dt->getProperty(propsPos[i]);
-    props.push_back(prop);
-  }
+typedef te::sam::rtree::Index<size_t, 8>* DataSetRTree;
 
-  return props;
-}
+bool IntersectionQuery(const std::string& inFirstDataSetName,
+                      const std::string& inSecondDataSetName,
+                      te::da::DataSource* inFirstDataSource,
+                      const std::string& outDataSetName,
+                      te::da::DataSetType* outDataSetType,
+                      te::da::DataSet* outDataSet,
+                      const bool& copyInputColumns,
+                      size_t outputSRID);
 
-te::map::AbstractLayerPtr te::vp::Intersection( const te::map::AbstractLayerPtr& firstLayer,
-                                                const te::map::AbstractLayerPtr& secondLayer,
-                                                const bool& copyInputColumns,
-                                                const std::string& newLayerName,
-                                                const te::da::DataSourceInfoPtr& dsinfo)
+bool IntersectionMemory(const std::string& inFirstDataSetName,
+                        te::da::DataSource* inFirstDataSource,
+                        const std::string& inSecondDataSetName,
+                        te::da::DataSource* inSecondDataSource,
+                        const std::string& outDataSetName,
+                        te::da::DataSetType* outDataSetType,
+                        te::da::DataSet* outDataSet,
+                        const bool& copyInputColumns,
+                        size_t outputSRID);
+
+te::da::DataSetType* CreateDataSetType(std::string newName, 
+                                        te::da::DataSetType* firstDt,
+                                        std::vector<te::dt::Property*> firstProps, 
+                                        te::da::DataSetType* secondDt,
+                                        std::vector<te::dt::Property*> secondProps);
+
+DataSetRTree CreateRTree(te::da::DataSetType* dt, te::da::DataSet* ds);
+
+std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::string newName, 
+                                                                        IntersectionMember firstMember, 
+                                                                        IntersectionMember secondMember,
+                                                                        std::size_t outputSRID = 0);
+
+std::vector<te::dt::Property*> GetTabularProperties(te::da::DataSetType* dsType);
+
+te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet* ds);
+// ---
+
+bool te::vp::Intersection(const std::string& inFirstDataSetName,
+                          te::da::DataSource* inFirstDataSource,
+                          const std::string& inSecondDataSetName,
+                          te::da::DataSource* inSecondDataSource,
+                          const bool& copyInputColumns,
+                          const std::string& outDataSetName,
+                          te::da::DataSource* outDataSource)
 {
+  assert(inFirstDataSource);
+  assert(inSecondDataSource);
+  assert(outDataSource);
+
   std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
   std::size_t outputSRID = 0;
 
-  te::map::DataSetLayer* firstDSLayer = dynamic_cast<te::map::DataSetLayer*>(firstLayer.get());
-  te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDSLayer->getDataSourceId(), true);
-  const te::da::DataSourceCapabilities firstDSCapabilities = firstDataSource->getCapabilities();
+  te::da::DataSetType* outDataSetType = 0;
+  te::da::DataSet* outDataSet = 0;
 
-  te::map::DataSetLayer* secondDSLayer = dynamic_cast<te::map::DataSetLayer*>(secondLayer.get());
-  te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDSLayer->getDataSourceId(), true);
-  const te::da::DataSourceCapabilities secondDSCapabilities = secondDataSource->getCapabilities();
+  const te::da::DataSourceCapabilities firstDSCapabilities = inFirstDataSource->getCapabilities();
+  const te::da::DataSourceCapabilities secondDSCapabilities = inSecondDataSource->getCapabilities();
 
-  if(firstDSCapabilities.supportsSpatialOperators() && secondDSCapabilities.supportsSpatialOperators() && (firstDataSource->getId() == secondDataSource->getId()))
+  bool res;
+  if(firstDSCapabilities.supportsSpatialOperators() && secondDSCapabilities.supportsSpatialOperators() && (inFirstDataSource->getId() == inSecondDataSource->getId()))
   {
-    resultPair = IntersectionQuery(newLayerName, firstLayer, secondLayer, copyInputColumns, outputSRID);
+    res = IntersectionQuery(inFirstDataSetName,
+                            inSecondDataSetName,
+                            inFirstDataSource,
+                            outDataSetName,
+                            outDataSetType,
+                            outDataSet,
+                            copyInputColumns,
+                            outputSRID);
   }
   else
   {
-    resultPair = IntersectionMemory(newLayerName, firstLayer, secondLayer, copyInputColumns, outputSRID);
+    res = IntersectionMemory(inFirstDataSetName,
+                            inFirstDataSource,
+                            inSecondDataSetName,
+                            inSecondDataSource, 
+                            outDataSetName,
+                            outDataSetType,
+                            outDataSet,
+                            copyInputColumns,
+                            outputSRID);
   }
 
-  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().get(dsinfo->getId(), dsinfo->getType(), dsinfo->getConnInfo());
+  if(!res)
+    return false;
 
-  te::da::Create(dataSource.get(), resultPair.first, resultPair.second);
-
-  te::qt::widgets::DataSet2Layer converter(dataSource->getId());
-
-  te::da::DataSetTypePtr dt(dataSource->getDataSetType(resultPair.first->getName()).release());
-
-  te::map::DataSetLayerPtr newLayer = converter(dt);
-
-  delete resultPair.first;
-  delete resultPair.second;
-
-  return newLayer;
+  // do any adaptation necessary to persist the output dataset
+  te::da::DataSetTypeConverter* converter = new te::da::DataSetTypeConverter(outDataSetType, outDataSource->getCapabilities());
+  te::da::DataSetType* dsTypeResult = converter->getResult();
+  std::auto_ptr<te::da::DataSetAdapter> dsAdapter(te::da::CreateAdapter(outDataSet, converter));
+  
+  std::map<std::string, std::string> options;
+  // create the dataset
+  outDataSource->createDataSet(dsTypeResult, options);
+  
+  // copy from memory to output datasource
+  outDataSet->moveBeforeFirst();
+  outDataSource->add(dsTypeResult->getName(),outDataSet, options);
+  
+  // create the primary key if it is possible
+  if (outDataSource->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
+  {
+    std::string pk_name = dsTypeResult->getName() + "_pk";
+    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
+    pk->add(dsTypeResult->getProperty(0));
+    outDataSource->addPrimaryKey(outDataSetName,pk);
+  }
+  return true;
 }
 
-std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionMemory(const std::string& newLayerName,
-                                                                            const te::map::AbstractLayerPtr& firstLayer,
-                                                                            const te::map::AbstractLayerPtr& secondLayer,
-                                                                            const bool& copyInputColumns,
-                                                                            size_t outputSRID)
+bool IntersectionQuery(const std::string& inFirstDataSetName,
+                      const std::string& inSecondDataSetName,
+                      te::da::DataSource* inFirstDataSource,
+                      const std::string& outDataSetName,
+                      te::da::DataSetType* outDataSetType,
+                      te::da::DataSet* outDataSet,
+                      const bool& copyInputColumns,
+                      size_t outputSRID)
 {
   if(outputSRID == 0)
-    outputSRID = firstLayer->getSRID();
+  {
+    std::auto_ptr<te::da::DataSetType> inDataSetType = inFirstDataSource->getDataSetType(inFirstDataSetName);
+    te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(inDataSetType.get());
 
-  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
-
-  te::map::DataSetLayer* firstDSLayer = dynamic_cast<te::map::DataSetLayer*>(firstLayer.get());
-  te::map::DataSetLayer* secondDSLayer = dynamic_cast<te::map::DataSetLayer*>(secondLayer.get());
-
-  std::auto_ptr<te::da::DataSetType> firstDSType(firstDSLayer->getSchema().release());
-  std::auto_ptr<te::da::DataSetType> secondDSType(secondDSLayer->getSchema().release());
-
-  std::vector<te::dt::Property*> firstProps = GetPropertiesWithoutGeom(firstDSType.get());
-
-  IntersectionMember firstMember;
-  firstMember.dt = firstLayer->getSchema().release();
-  firstMember.ds = firstLayer->getData().release();
-  firstMember.props = firstProps;
-
-  std::vector<te::dt::Property*> secondProps = GetPropertiesWithoutGeom(secondDSType.get());
-
-  IntersectionMember secondMember;
-  secondMember.dt = secondLayer->getSchema().release();
-  secondMember.ds = secondLayer->getData().release();
-  if(copyInputColumns)
-    secondMember.props = secondProps;
-
-  resultPair = PairwiseIntersection(newLayerName, firstMember, secondMember, outputSRID);
-
-  if(resultPair.second->size() < 1)
-    throw te::common::Exception(TR_VP("The Layers do not intersect!"));
-
-  return resultPair;
-}
-
-std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(const std::string& newLayerName,
-                                                                            const te::map::AbstractLayerPtr& firstLayer,
-                                                                            const te::map::AbstractLayerPtr& secondLayer,
-                                                                            const bool& copyInputColumns,
-                                                                            size_t outputSRID)
-{
-  if(outputSRID == 0)
-    outputSRID = firstLayer->getSRID();
-
-  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
-
-  te::map::DataSetLayer* firstDSLayer;
-  te::map::DataSetLayer* secondDSLayer;
+    outputSRID = geom->getSRID();
+  }
 
   te::da::Fields* fields = new te::da::Fields;
   te::da::Select* select = new te::da::Select;
 
-  firstDSLayer = dynamic_cast<te::map::DataSetLayer*>(firstLayer.get());
-  secondDSLayer = dynamic_cast<te::map::DataSetLayer*>(secondLayer.get());
+  std::auto_ptr<te::da::DataSetType> firstDSType(inFirstDataSource->getDataSetType(inFirstDataSetName));
+  std::auto_ptr<te::da::DataSetType> secondDSType(inFirstDataSource->getDataSetType(inFirstDataSetName));
 
-  te::da::DataSourcePtr dataSource = te::da::GetDataSource(firstDSLayer->getDataSourceId(), true);
-
-  std::auto_ptr<te::da::DataSetType> firstDSType(firstDSLayer->getSchema().release());
-  std::auto_ptr<te::da::DataSetType> secondDSType(secondDSLayer->getSchema().release());
-
-  std::vector<te::dt::Property*> firstProps = GetPropertiesWithoutGeom(firstDSType.get());
+  std::vector<te::dt::Property*> firstProps = GetTabularProperties(firstDSType.get());
   std::vector<te::dt::Property*> secondProps;
   if(copyInputColumns)
-    secondProps = GetPropertiesWithoutGeom(secondDSType.get());
+    secondProps = GetTabularProperties(secondDSType.get());
 
   te::gm::GeometryProperty* firstGeom;
   te::gm::GeometryProperty* secondGeom;
@@ -276,24 +249,122 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::IntersectionQuery(cons
   select->setFields(fields);
   select->setFrom(from);
 
-  std::auto_ptr<te::da::DataSet> dsQuery = dataSource->query(select);
+  std::auto_ptr<te::da::DataSet> dsQuery = inFirstDataSource->query(select);
   dsQuery->moveFirst();
 
-  te::da::DataSetType* dsType = CreateDataSetType(newLayerName, firstDSType.get(), firstProps, secondDSType.get(), secondProps);
+  outDataSetType = CreateDataSetType(outDataSetName, firstDSType.get(), firstProps, secondDSType.get(), secondProps);
+  outDataSet = UpdateGeometryType(outDataSetType, dsQuery.release());
 
-  resultPair.first = dsType;
+  outDataSet->moveBeforeFirst();
 
-  resultPair.second = UpdateGeometryType(dsType, dsQuery.release());
-
-  resultPair.second->moveBeforeFirst();
-
-  return resultPair;
+  return true;
 }
 
-std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(std::string newName, 
-                                                                               IntersectionMember firstMember, 
-                                                                               IntersectionMember secondMember,
-                                                                               std::size_t outputSRID)
+bool IntersectionMemory(const std::string& inFirstDataSetName,
+                        te::da::DataSource* inFirstDataSource,
+                        const std::string& inSecondDataSetName,
+                        te::da::DataSource* inSecondDataSource,
+                        const std::string& outDataSetName,
+                        te::da::DataSetType* outDataSetType,
+                        te::da::DataSet* outDataSet,
+                        const bool& copyInputColumns,
+                        size_t outputSRID)
+{
+  if(outputSRID == 0)
+  {
+    std::auto_ptr<te::da::DataSetType> inDataSetType = inFirstDataSource->getDataSetType(inFirstDataSetName);
+    te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(inDataSetType.get());
+
+    outputSRID = geom->getSRID();
+  }
+
+  std::auto_ptr<te::da::DataSetType> firstDSType(inFirstDataSource->getDataSetType(inFirstDataSetName));
+  std::auto_ptr<te::da::DataSetType> secondDSType(inSecondDataSource->getDataSetType(inSecondDataSetName));
+
+  std::vector<te::dt::Property*> firstProps = GetTabularProperties(firstDSType.get());
+
+  IntersectionMember firstMember;
+  firstMember.dt = firstDSType.release();
+  firstMember.ds =  inFirstDataSource->getDataSet(inFirstDataSetName).release();
+  firstMember.props = firstProps;
+
+  std::vector<te::dt::Property*> secondProps = GetTabularProperties(secondDSType.get());
+
+  IntersectionMember secondMember;
+  secondMember.dt = secondDSType.release();
+  secondMember.ds = inSecondDataSource->getDataSet(inSecondDataSetName).release();
+  if(copyInputColumns)
+    secondMember.props = secondProps;
+  
+  std::pair<te::da::DataSetType*, te::da::DataSet*> resultPair;
+  resultPair = PairwiseIntersection(outDataSetName, firstMember, secondMember, outputSRID);
+
+  if(resultPair.second->size() < 1)
+    throw te::common::Exception(TR_VP("The Layers do not intersect!"));
+
+  outDataSetType = resultPair.first;
+  outDataSet = resultPair.second;
+
+  return true;
+}
+
+te::da::DataSetType* CreateDataSetType(std::string newName, 
+                                      te::da::DataSetType* firstDt,
+                                      std::vector<te::dt::Property*> firstProps, 
+                                      te::da::DataSetType* secondDt,
+                                      std::vector<te::dt::Property*> secondProps)
+{
+  te::da::DataSetType* outputDt = new te::da::DataSetType(newName);
+
+  for(size_t i = 0; i < firstProps.size(); ++i)
+  {
+    te::dt::Property* prop = firstProps[i]->clone();
+    if(!firstDt->getTitle().empty())
+      prop->setName(te::vp::GetSimpleTableName(firstDt->getTitle()) + "_" + prop->getName());
+    outputDt->add(prop);
+  }
+
+  for(size_t i = 0; i < secondProps.size(); ++i)
+  {
+    te::dt::Property* prop = secondProps[i]->clone();
+    prop->setName(te::vp::GetSimpleTableName(secondDt->getTitle()) + "_" + prop->getName());
+    outputDt->add(prop);
+  }
+
+  te::gm::GeomType newType = te::vp::GeomOpResultType(te::da::GetFirstGeomProperty(firstDt)->getGeometryType(), te::da::GetFirstGeomProperty(secondDt)->getGeometryType());
+
+  te::gm::GeometryProperty* newGeomProp = new te::gm::GeometryProperty("geom");
+  newGeomProp->setGeometryType(newType);
+  newGeomProp->setSRID(te::da::GetFirstGeomProperty(firstDt)->getSRID());
+  
+  outputDt->add(newGeomProp);
+
+  return outputDt;
+}
+
+DataSetRTree CreateRTree(te::da::DataSetType* dt, te::da::DataSet* ds)
+{
+  DataSetRTree rtree(new te::sam::rtree::Index<size_t, 8>);
+
+  size_t secGeomPropPos = dt->getPropertyPosition(dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
+
+  size_t secondDsCount = 0;
+  while(ds->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> g = ds->getGeometry(secGeomPropPos);
+
+    rtree->insert(*g->getMBR(), secondDsCount);
+
+    ++secondDsCount;
+  }
+
+  return rtree;
+}
+
+std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::string newName, 
+                                                                      IntersectionMember firstMember, 
+                                                                      IntersectionMember secondMember,
+                                                                      std::size_t outputSRID)
 {
 
   //Creating the RTree with the secound layer geometries
@@ -429,7 +500,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
       delete outputDt;
       delete outputDs;
 
-      throw Exception(TR_VP("Operation canceled!"));
+      throw te::common::Exception(TR_VP("Operation canceled!"));
     }
 
     task.pulse();
@@ -442,7 +513,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> te::vp::PairwiseIntersection(s
   return resultPair;
 }
 
-std::vector<te::dt::Property*> te::vp::GetPropertiesWithoutGeom(te::da::DataSetType* dsType)
+std::vector<te::dt::Property*> GetTabularProperties(te::da::DataSetType* dsType)
 {
   std::vector<te::dt::Property*> props;
   te::dt::Property* prop;
@@ -460,7 +531,7 @@ std::vector<te::dt::Property*> te::vp::GetPropertiesWithoutGeom(te::da::DataSetT
   return props;
 }
 
-te::da::DataSet* te::vp::UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet* ds)
+te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet* ds)
 {
   te::gm::Geometry* geom = 0;
   te::mem::DataSet* dsMem = new te::mem::DataSet(*ds, true);

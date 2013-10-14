@@ -58,19 +58,19 @@ int main(int argc, char** argv)
     te::plugin::PluginManager::getInstance().loadAll();
     
     std::cout << std::endl << "PostGIS to OGR: " << std::endl;
-    if (PGISToOGR())
+    if (AggregPGISToOGR())
       std::cout << "\tOK!" << std::endl;
     
     std::cout << std::endl << "OGR to PostGIS: " << std::endl;
-    if (OGRToPGIS())
+    if (AggregOGRToPGIS())
       std::cout << "\tOK!" << std::endl;
     
     std::cout << std::endl << "OGR to OGR: " << std::endl;
-    if (OGRToOGR())
+    if (AggregOGRToOGR())
       std::cout << "\tOK!" << std::endl;
     
     std::cout << std::endl << "PostGIS to PostGIS: " << std::endl;
-    if (PGISToPGIS())
+    if (AggregPGISToPGIS())
       std::cout << "\tOK!" << std::endl;
 
     te::plugin::PluginManager::getInstance().unloadAll();

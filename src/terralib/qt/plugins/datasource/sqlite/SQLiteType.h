@@ -45,6 +45,14 @@ namespace te
 
             ~SQLiteType();
 
+            bool hasDatabaseSupport() const { return false; }
+
+            bool hasFileSupport() const { return false; }
+
+            bool hasRasterSupport() const { return false; }
+
+            bool hasVectorialSupport() const { return false; }
+
             std::string getName() const;
 
             std::string getTitle() const;

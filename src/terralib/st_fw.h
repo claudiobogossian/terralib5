@@ -31,21 +31,60 @@ namespace te
 {
   namespace st
   {
-    class Observation;
-    class ObservationSet;
-    class SpatioTemporalObservationSet;
-    class ObservationSetIterator;
-    class TimeSeries;
-    class TimeSeriesIterator;
-    class LocatedTimeSeries;
-    class MovingObject;
-    class MovingObjectIterator;
-    class AbstractInterpolator;
-    class TemporalNearestNeigInterpolator;
-    class Trajectory;
-	  class TrajectoryIterator;
+    //Coverage
     class Coverage;
+    class PointCoverage;
     class RasterCoverage;
+    class CoverageSeries;
+    class CoverageDataSetInfo;
+    class PointCoverageDataSetInfo;
+    class RasterCoverageDataSetInfo;
+    class CoverageSeriesIterator;
+    class PointCoverageIterator;
+
+    //Event and Object
+    class Event;
+    class Object;
+
+    //Interpolators
+    class AbstractCoverageSeriesInterp;
+    class AbstractPointCoverageInterp;
+    class AbstractTimeSeriesInterp;
+    class AbstractTrajectoryInterp;
+    class IDWInterpolator;
+    class NearestCoverageAtTimeInterp;
+    class NearestGeometryAtTimeInterp;
+    class NearestValueAtTimeInterp;
+    
+    //Observations
+    class Observation;
+    class ObservationDataSet;
+    class ObservationDataSetInfo;
+    class ObservationDataSetType;
+
+    //Time Series
+    class TimeSeries;
+    class TimeSeriesDataSet;
+    class TimeSeriesDataSetInfo;
+    class TimeSeriesDataSetType;
+    class TimeSeriesIterator;
+    class TimeSeriesObservation;
+
+    //Trajectory
+    class Trajectory;
+    class TrajectoryDataSet;
+    class TrajectoryDataSetInfo;
+    class TrajectoryDataSetType;
+    class TrajectoryIterator;
+
+    //Loader
+    class STDataLoader;
+    class STDataLoaderFromDS;
+    class STDataLoaderFromDSFactory;
+    class STDataLoaderFromMemDS;
+    class STDataLoaderFromMemDSFactory;
+    class STDataLoaderImpl;
+    class STDataLoaderImplFactory;    
         
   } // end namespace st
 }   // end namespace te
