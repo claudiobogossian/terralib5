@@ -441,6 +441,12 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
 
     int pType = p->getType();
 
+    ADOX::_ColumnPtr newColumn = NULL;
+    TESTHR(newColumn.CreateInstance(__uuidof(ADOX::_ColumnPtr)));
+
+    newColumn->Name = name.c_str();
+    newColumn->Type = te::ado::Convert2Ado(pType);
+
     switch(pType)
     {
       case te::dt::CHAR_TYPE:
@@ -452,42 +458,41 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       case te::dt::DOUBLE_TYPE:
       case te::dt::BOOLEAN_TYPE:
       case te::dt::BYTE_ARRAY_TYPE:
-        pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+      case te::dt::GEOMETRY_TYPE:
+      case te::dt::ARRAY_TYPE:
+      case te::dt::DATETIME_TYPE:
+      {
+        const te::dt::SimpleProperty* simple = static_cast<const te::dt::SimpleProperty*>(p);
+
+        if(simple->isRequired())
+          newColumn->Attributes = ADOX::adColNullable;
+
+        pTable->Columns->Append(newColumn->Name, newColumn->Type, newColumn->DefinedSize);
+
         break;
+      }
 
       case te::dt::STRING_TYPE:
-        {
-          te::dt::StringProperty* pStr = (te::dt::StringProperty*)p;
-          pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), pStr->size());
-          break;
-        }
+      {
+        const te::dt::StringProperty* sp = static_cast<const te::dt::StringProperty*>(p);
 
-        //case te::dt::NUMERIC_TYPE:
-        case te::dt::DATETIME_TYPE:
-          pTable->Columns->Append(p->getName().c_str(), ADOX::adDate,0);
-          break;
+        newColumn->DefinedSize = (long)sp->size();
 
-      case te::dt::GEOMETRY_TYPE:
-        pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), 0);
+        if(sp->isRequired())
+          newColumn->Attributes = ADOX::adColNullable;
+
         break;
-
-      case te::dt::ARRAY_TYPE:
-        pTable->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(pType), 0);
-        break;
+      }
 
       default:
         throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-        break;
+      break;
     }
   }
   catch(_com_error& e)
   {
     throw Exception(TR_ADO(e.Description()));
   }
-
-  //te::ado::AddAdoPropertyFromTerralib(pTable, p);
-
-
 }
 
 void te::ado::Transactor::dropProperty(const std::string& datasetName, const std::string& name)
