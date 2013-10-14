@@ -18,35 +18,51 @@
  */
 
 /*!
-  \file terralib/vp/core/IntersectionDialog.h
+  \file terralib/qt/plugins/TL4LayerSelectionWizardPage.h
 
-  \brief Group of functions to intersection operation
+  \brief ????
 */
 
-#ifndef __TERRALIB_VP_CORE_INTERNAL_INTERSECTION_H
-#define __TERRALIB_VP_CORE_INTERNAL_INTERSECTION_H
+#ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4LAYERSELECTIONWIZARDPAGE_H
+#define __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4LAYERSELECTIONWIZARDPAGE_H
 
 // TerraLib
-#include "../dataaccess/datasource/DataSourceInfo.h"
-#include "../maptools/AbstractLayer.h"
-#include "../sam/rtree.h"
 #include "Config.h"
 
 // STL
 #include <memory>
 
+// Qt
+#include <QtGui/QWizardPage>
+
+// Forward declaration
+namespace Ui { class TL4LayerSelectionWizardPageForm; }
+
 namespace te
 {
-  namespace vp
+  namespace qt
   {
-    TEVPEXPORT bool Intersection(const std::string& inFirstDataSetName,
-                                te::da::DataSource* inFirstDataSource,
-                                const std::string& inSecondDataSetName,
-                                te::da::DataSource* inSecondDataSource,
-                                const bool& copyInputColumns,
-                                const std::string& outDataSetName,
-                                te::da::DataSource* outDataSource);
-  }
-}
+    namespace plugins
+    {
+      namespace terralib4
+      {
+        class TEQTPLUGINTERRALIB4EXPORT TL4LayerSelectionWizardPage : public QWizardPage
+        {
+          Q_OBJECT
 
-#endif // __TERRALIB_VP_CORE_INTERNAL_INTERSECTION_H
+          public:
+
+            TL4LayerSelectionWizardPage(QWidget* parent = 0);
+
+            ~TL4LayerSelectionWizardPage();
+
+          private:
+
+            std::auto_ptr<Ui::TL4LayerSelectionWizardPageForm> m_ui;
+        };
+      } // end namespace terralib4
+    } // end namespace plugins
+  }   // end namespace qt
+}     // end namespace te
+
+#endif  // __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4LAYERSELECTIONWIZARDPAGE_H

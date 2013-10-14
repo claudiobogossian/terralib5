@@ -25,7 +25,7 @@
 
 //Terralib
 #include "TimePropertiesDialog.h"
-#include "TimeSliderEventFilter.h"
+//#include "TimeSliderEventFilter.h"
 #include "TimeSliderWidget.h"
 #include "ui_TimeSliderWidgetForm.h"
 
@@ -53,8 +53,8 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(QWidget* parent,  Qt::Window
   opacityEffect->setOpacity(0.3);
   this->setGraphicsEffect(opacityEffect);
 
-  //An event filter used to know when the mouse is over the widget
-  this->installEventFilter(new te::qt::widgets::TimeSliderEventFilter(this));
+  ////An event filter used to know when the mouse is over the widget
+  //this->installEventFilter(new te::qt::widgets::TimeSliderEventFilter(this));
 
   //Adjusting the icons and the graphic effects
   m_ui->m_exitToolButton->setIcon(QIcon::fromTheme("system-log-out"));
@@ -80,6 +80,16 @@ te::qt::widgets::TimeSliderWidget::TimeSliderWidget(QWidget* parent,  Qt::Window
 
 te::qt::widgets::TimeSliderWidget::~TimeSliderWidget()
 { 
+}
+
+void te::qt::widgets::TimeSliderWidget::enterEvent(QEvent*)
+{
+  graphicsEffect()->setEnabled(false);
+}
+
+void te::qt::widgets::TimeSliderWidget::leaveEvent(QEvent*)
+{
+  graphicsEffect()->setEnabled(true);
 }
 
 void te::qt::widgets::TimeSliderWidget::onExitToolButtonnClicked()

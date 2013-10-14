@@ -52,6 +52,7 @@ void TsFilter::Filters()
   filterNames.push_back("median");
   filterNames.push_back("dilation");
   filterNames.push_back("erosion");
+  filterNames.push_back("user_defined");
 
   std::vector<te::rp::Filter::InputParameters::FilterType> filterTypes;
   filterTypes.push_back(te::rp::Filter::InputParameters::SobelFilterT);
@@ -60,6 +61,7 @@ void TsFilter::Filters()
   filterTypes.push_back(te::rp::Filter::InputParameters::MedianFilterT);
   filterTypes.push_back(te::rp::Filter::InputParameters::DilationFilterT);
   filterTypes.push_back(te::rp::Filter::InputParameters::ErosionFilterT);
+  filterTypes.push_back(te::rp::Filter::InputParameters::UserDefinedWindowT);
 
   for (unsigned int f = 0; f < filterNames.size(); f++)
   {
@@ -79,6 +81,23 @@ void TsFilter::Filters()
     filterInputParameters.m_inRasterPtr = rin;
     for (unsigned int b = 0; b < rin->getNumberOfBands(); b++)
       filterInputParameters.m_inRasterBands.push_back(b);
+      
+    if (filterNames[f] == "user_defined")
+    {
+// example of a user defined window (this example shows the X component of the Sobel filter
+      boost::numeric::ublas::matrix<double> window(3, 3);
+      window(0, 0) = 1;
+      window(0, 1) = 2;
+      window(0, 2) = 1;
+      window(1, 0) = 0;
+      window(1, 1) = 0;
+      window(1, 2) = 0;
+      window(2, 0) = -1;
+      window(2, 1) = -2;
+      window(2, 2) = -1;
+
+      filterInputParameters.m_window = window;
+    }
 
     te::rp::Filter::OutputParameters filterOutputParameters;
     filterOutputParameters.m_createdOutRasterInfo = orinfo;

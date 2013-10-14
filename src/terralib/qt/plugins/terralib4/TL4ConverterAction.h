@@ -18,35 +18,50 @@
  */
 
 /*!
-  \file terralib/vp/core/IntersectionDialog.h
+  \file terralib/qt/plugins/terralib4/TL4ConverterAction.h
 
-  \brief Group of functions to intersection operation
+  \brief This file defines the Aggregation class
 */
 
-#ifndef __TERRALIB_VP_CORE_INTERNAL_INTERSECTION_H
-#define __TERRALIB_VP_CORE_INTERNAL_INTERSECTION_H
+#ifndef __TE_QT_PLUGINS_TERRALIB4_INTERNAL_TL4CONVERTERACTION_H
+#define __TE_QT_PLUGINS_TERRALIB4_INTERNAL_TL4CONVERTERACTION_H
 
 // TerraLib
-#include "../dataaccess/datasource/DataSourceInfo.h"
-#include "../maptools/AbstractLayer.h"
-#include "../sam/rtree.h"
 #include "Config.h"
-
-// STL
-#include <memory>
+#include "AbstractAction.h"
 
 namespace te
 {
-  namespace vp
+  namespace qt
   {
-    TEVPEXPORT bool Intersection(const std::string& inFirstDataSetName,
-                                te::da::DataSource* inFirstDataSource,
-                                const std::string& inSecondDataSetName,
-                                te::da::DataSource* inSecondDataSource,
-                                const bool& copyInputColumns,
-                                const std::string& outDataSetName,
-                                te::da::DataSource* outDataSource);
-  }
-}
+    namespace plugins
+    {
+      namespace terralib4
+      {
+        /*!
+          \class TL4ConverterAction
 
-#endif // __TERRALIB_VP_CORE_INTERNAL_INTERSECTION_H
+          \brief ????
+
+        */
+        class TL4ConverterAction : public te::qt::plugins::terralib4::AbstractAction
+        {
+          Q_OBJECT
+
+          public:
+
+            TL4ConverterAction(QMenu* menu);
+
+            virtual ~TL4ConverterAction();
+
+          protected slots:
+
+            virtual void onActionActivated(bool checked);
+        };
+
+      } // end namespace terralib4
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif //__TE_QT_PLUGINS_TERRALIB4_INTERNAL_TL4CONVERTERACTION_H

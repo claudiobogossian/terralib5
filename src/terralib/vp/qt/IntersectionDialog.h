@@ -93,6 +93,7 @@ namespace te
         te::da::DataSourceInfoPtr m_outputDatasource;     //!< DataSource information.
         std::string m_outputArchive;                      //!< Archive information.
         te::map::AbstractLayerPtr m_layerResult;          //!< Generated Layer.
+        bool m_toFile;
     };
   }   // end namespace vp
 }     // end namespace te
