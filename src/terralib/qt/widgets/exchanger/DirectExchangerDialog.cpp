@@ -72,7 +72,7 @@ te::qt::widgets::DirectExchangerDialog::DirectExchangerDialog(QWidget* parent, Q
   m_ui->m_dsToolButton->setIcon(QIcon::fromTheme("datasource"));
 
 //connectors
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  //connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_dirToolButton, SIGNAL(clicked()), this, SLOT(onDirToolButtonClicked()));
   connect(m_ui->m_dsToolButton, SIGNAL(clicked()), this, SLOT(onDataSoruceToolButtonClicked()));
@@ -83,6 +83,8 @@ te::qt::widgets::DirectExchangerDialog::DirectExchangerDialog(QWidget* parent, Q
   connect(m_ui->m_outputPGISToolButton, SIGNAL(clicked(bool)), this, SLOT(onOutputPostGISToolButtonClicked(bool)));
   connect(m_ui->m_outputADOToolButton, SIGNAL(clicked(bool)), this, SLOT(onOutputADOToolButtonClicked(bool)));
   connect(m_ui->m_outputSHPToolButton, SIGNAL(clicked(bool)), this, SLOT(onOutputSHPToolButtonClicked(bool)));
+
+  m_ui->m_helpPushButton->setPageReference("widgets/dataexchanger/exchanger.html");
 
   //starup interface
   m_inputDataSourceType = "";
