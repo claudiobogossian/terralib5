@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2009-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,34 +18,8 @@
  */
 
 /*!
-  \file terralib/mysql/ScopedLock.cpp
-
-  \brief An utitily class to coordinate table locks.
+  \file terralib/terralib4/GeomReader.cpp
+   
+  \brief An utility class for converting a TerraLib 4.x geometry to a TerraLib 5.
 */
-
-// TerraLib
-#include "DataSourceTransactor.h"
-#include "ScopedLock.h"
-
-te::mysql::ScopedLock::ScopedLock(te::da::DataSourceTransactor& transactor, const std::string& tbls)
-  : m_t(transactor)
-{
-  std::string sql("LOCK TABLES ");
-              sql += tbls;
-              sql += " WRITE";
-
-  m_t.execute(sql);
-}
-
-te::mysql::ScopedLock::~ScopedLock()
-{
-  try
-  {
-    m_t.execute("UNLOCK TABLES");
-  }
-  catch(...)
-  {
-  }
-}
-
 

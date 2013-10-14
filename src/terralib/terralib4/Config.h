@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2009-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,19 @@
  */
 
 /*!
-  \file terralib/mysql/Exception.cpp
+  \file terralib/terralib4/Config.h
 
-  \brief An exception class for MySQL data access driver.
+  \brief Configuration flags for the TerraLib 4 Data Access driver.
 */
 
-// TerraLib
-#include "Exception.h"
+#ifndef __TERRALIB_T4_INTERNAL_CONFIG_H
+#define __TERRALIB_T4_INTERNAL_CONFIG_H
 
-namespace te
-{
-  namespace mysql
-  {
-    TE_DEFINE_EXCEPTION_CLASS(Exception, te::da::Exception, "te::mysql::Exception")
+//! The TerraLib 4 plugin identifier string.
+#define TE_T4_PLUGIN_NAME "te.da.terralib4"
 
-  } // end namespace mysql
-}   // end namespace te
+//! The TerraLib 4 driver identifier string.
+#define TE_T4_DRIVER_IDENTIFIER "T4"
+
+#endif  // __TERRALIB_T4_INTERNAL_CONFIG_H
 

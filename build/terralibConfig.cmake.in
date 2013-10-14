@@ -85,6 +85,7 @@ set (TE_LOGO @TE_LOGO@)
 set (TE_JSON_FILES_LOCATION @TE_JSON_FILES_LOCATION@)
 set (TE_SQL_FILES_LOCATION @TE_SQL_FILES_LOCATION@)
 set (TE_XML_FILES_LOCATION @TE_XML_FILES_LOCATION@)
+set (TERRALIB_DIR @TERRALIB_DIR@)
 
 # Modules compiled 
 # This code is used to verify the compiled components.

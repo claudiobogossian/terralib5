@@ -1,10 +1,9 @@
-          TerraLib 5 - SQLite Data Access Driver
-          ======================================
+          TerraLib 5 - TerraLib 4.X Data Access Driver
+          ============================================
 
-This folder contains an implementation of the Data Access classes
-for the SQLite database engine. It can acccess spatial data
-in an SQLite database. It have support for two types of
-spatial data format: OGR format and SpatiaLite format.
+This folder contains an implementation of the new TerraLib 5
+Data Access classes for the old TerraLib 4.X. It can acccess
+spatial data in a TerraLib 4.X database format.
 
 Driver Dependencies:
 --------------------
@@ -20,20 +19,14 @@ This driver requires the following modules in order to be built:
 8. Data Access
 
 The third-party software needed:
-1. SQLite
-2. SpatiaLite (Optional)
-3. RasterLite (Optional)
-4. Boost.Thread
-5. Boost.DateTime
-6. Boost.FileSystem
-7. Boost.System
+1. TerraLib 4.X
 
 More Information:
 -----------------
 
 The TerraLib 5 wiki contains a complete explanation about
 the internals of this driver:
-http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:drivers:sqlite
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:drivers:terralib4
 
 
       ---------------------------------------------------------
