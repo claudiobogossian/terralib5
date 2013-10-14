@@ -19,28 +19,35 @@ void MemoryExample()
     connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/mem";
     dsMem->setConnectionInfo(connInfo);
 
-    //It creates a data set type in memory
+    //It creates a data set type in memory called "SoilMeasures"
+    std::string named = "SoilMeasures";
     std::map<std::string, std::string> options;
-    te::da::DataSetType* dt1  = CreateDataSetTypeInMemory("memory_test");
+    te::da::DataSetType* dt1  = CreateDataSetTypeInMemory(named);
     dsMem->createDataSet(dt1,options);
-    std::cout << std::endl << "A data set type in memory has been created! " << std::endl;
-    PrintDataSet("memory_test", ds);
+    std::cout << std::endl << "A DATASETTYPE in memory has been created! " << std::endl;    
+    std::auto_ptr<te::da::DataSetType> dt1_ret = dsMem->getDataSetType(named);   
 
+    //It creates a data set in memory giving a datasettype (populate)
     te::da::DataSet* datas = CreatingDataSetInMemoryGivingDt(dt1);
-    dsMem->add("memory_test",datas,options);
+    PrintDataSet(named, datas);
 
-    std::auto_ptr<te::da::DataSet> ds_ret = dsMem->getDataSet("memory_test");
+    //Adds to a datasource fo MEMORY type
+    dsMem->add(named,datas,options);    
+    std::auto_ptr<te::da::DataSet> ds_ret = dsMem->getDataSet(named);
+    PrintDataSet(named, ds_ret.get());
+
     delete ds;
 
-    ////It creates a data set in memory
-    //ds = CreatingDataSetInMemory("memory_test");
-    //std::cout << std::endl << "A data set in memory has been created! " << std::endl;
-    //PrintDataSet("memory_test", ds);
-    //
+    //It creates a data set in memory named memory_test
+    ds = CreatingDataSetInMemory("memory_test");
+    std::cout << std::endl << "A data set in memory has been created! " << std::endl;
+    PrintDataSet("memory_test", ds);
+    
     //std::map<std::string, std::string> options; //API exije esse param
-    //dsMem->add("memory_test", ds,options); //cai
-    //std::auto_ptr<te::da::DataSet> ds_ret = dsMem->getDataSet("marisa_test");
-    //delete ds;
+    dsMem->add("memory_test", ds,options); //cai
+    std::auto_ptr<te::da::DataSet> ds_ret1 = dsMem->getDataSet("memory_test");
+    PrintDataSet("memory_test", ds_ret1.get());
+    delete ds;
   }
   catch(const std::exception& e)
   {
