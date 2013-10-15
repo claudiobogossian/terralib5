@@ -23,3 +23,77 @@
   \brief An utility class for converting a TerraLib 4.x geometry to a TerraLib 5.
 */
 
+// Terralib 5
+#include "../geometry/Curve.h"
+#include "../geometry/LinearRing.h"
+#include "../geometry/LineString.h"
+#include "../geometry/Point.h"
+#include "../geometry/Polygon.h"
+#include "GeomReader.h"
+#include "Utils.h"
+
+// Terralib 4.x
+#include <terralib/kernel/TeGeometry.h>
+
+std::auto_ptr<te::gm::Geometry> terralib4::GeomReader::getGeometry(const char* ewkb, const char** endptr)
+{
+  
+}
+
+std::auto_ptr<te::gm::Point> terralib4::GeomReader::getPoint(const TePoint& pt)
+{
+  std::auto_ptr<te::gm::Point> geom(new te::gm::Point(pt.box().x1(), pt.box().y1(), pt.srid()));
+  return geom;
+}
+
+std::auto_ptr<te::gm::LineString> terralib4::GeomReader::getLineString(const TeLine2D& line)
+{
+  std::auto_ptr<te::gm::LineString> geom(new te::gm::LineString(te::gm::LineStringType, line.srid()));
+
+  TeComposite<TeCoord2D>::iterator it = line.begin();
+
+  int count = 0;
+  while(it != line.end())
+  {
+    geom->setPoint(count, it->x(), it->y());
+
+    ++count;
+    ++it;
+  }
+
+  return geom;
+}
+
+std::auto_ptr<te::gm::LinearRing> terralib4::GeomReader::getLinearRing(const TeLinearRing& ring)
+{
+  std::auto_ptr<te::gm::LinearRing> geom(new te::gm::LinearRing(te::gm::PolygonType, ring.srid());
+
+  TeComposite<TeCoord2D>::iterator it = ring.begin();
+
+  int count = 0;
+  while(it != ring.end())
+  {
+    geom->setPoint(count, it->x(), it->y());
+
+    ++count;
+    ++it;
+  }
+
+  return geom;
+}
+
+std::auto_ptr<te::gm::Polygon> terralib4::GeomReader::getPolygon(const TePolygon& poly)
+{
+  std::auto_ptr<te::gm::Polygon> geom(new te::gm::Polygon(poly.size(), te::gm::PolygonType, poly.srid()));
+
+  TeComposite<TeLinearRing>::iterator it = poly.begin();
+
+  while(it != poly.end())
+  {
+    geom->push_back(getLinearRing(*it).release());
+
+    ++it;
+  }
+
+  return geom;
+}

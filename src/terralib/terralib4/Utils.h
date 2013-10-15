@@ -29,8 +29,11 @@
 // STL
 #include <memory>
 
+// Terralib 5
+#include "../datatype/Property.h"
+
 // TerraLib 4.x
-#include <TeAttribute.h>
+#include <terralib/kernel/TeAttribute.h>
 
 namespace te
 {
@@ -54,7 +57,7 @@ namespace terralib4
     \note The returned PropertyType will not have an identification number, it is the caller
           responsability to set one.
   */
-  std::auto_ptr<te::da::Property> Convert2T5(const TeAttributeRep& attRep);
+  std::auto_ptr<te::dt::Property> Convert2T5(const TeAttributeRep& attRep);
 
 } // end namespace terralib4
 
