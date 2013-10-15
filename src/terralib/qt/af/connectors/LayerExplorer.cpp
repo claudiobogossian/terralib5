@@ -91,11 +91,17 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     }
     break;
 
-    case te::qt::af::evt::LAYER_REMOVED:
+    case te::qt::af::evt::LAYER_ITEM_REMOVED:
     {
-      te::qt::af::evt::LayerRemoved* e = static_cast<te::qt::af::evt::LayerRemoved*>(evt);
+      te::qt::af::evt::LayerItemRemoved* e = static_cast<te::qt::af::evt::LayerItemRemoved*>(evt);
 
-      //ApplicationController::getInstance().getProject()->remove(e->m_layer);
+      te::qt::widgets::AbstractTreeItem* layerItem = e->m_layerItem;
+
+      // Remove the layer from the project
+      ApplicationController::getInstance().getProject()->remove(layerItem->getLayer());
+
+      // Remove the layer from the layer explorer
+      m_explorer->remove(layerItem);
     }
     break;
 
@@ -103,6 +109,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     break;
   }
 }
+
 void te::qt::af::LayerExplorer::onLayerSelectionChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
 {
   //emit selectedLayersChanged(m_explorer->getSelectedLayers());
