@@ -312,6 +312,7 @@ namespace te
         signals:
 
           void visibilityChanged(te::map::AbstractLayerPtr layer);
+          void layerOrderChanged();
 
         protected:
 
