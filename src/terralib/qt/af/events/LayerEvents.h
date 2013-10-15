@@ -28,6 +28,7 @@
 
 #include "../../../maptools/Enums.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../widgets/layer/explorer/AbstractTreeItem.h"
 #include "Event.h"
 #include "Enums.h"
 
@@ -61,6 +62,30 @@ namespace te
 
           te::map::AbstractLayerPtr m_layer;  //!< Layer added.
         };
+
+        /*!
+          \struct LayerItemRemoved
+
+          \brief This event signals that a layer item is to be removed.
+
+          \ingroup afevents
+         */
+        struct LayerItemRemoved : public Event
+        {
+          /*!
+            \brief Constructor.
+
+            \param layerItem Layer item to be removed.
+          */
+          LayerItemRemoved(te::qt::widgets::AbstractTreeItem* layerItem)
+            : Event(LAYER_ITEM_REMOVED),
+              m_layerItem(layerItem)
+          {
+          }
+
+          te::qt::widgets::AbstractTreeItem* m_layerItem;  //!< Layer item to be removed.
+        };
+
 
         /*!
           \struct LayerRemoved
