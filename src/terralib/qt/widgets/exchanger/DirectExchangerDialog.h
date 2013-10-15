@@ -100,7 +100,7 @@ namespace te
 
           void onDataSoruceToolButtonClicked();
 
-          void onHelpPushButtonClicked();
+          //void onHelpPushButtonClicked();
 
           void onOkPushButtonClicked();
 

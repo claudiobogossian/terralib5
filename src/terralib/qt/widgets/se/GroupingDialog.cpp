@@ -51,6 +51,7 @@ te::qt::widgets::GroupingDialog::GroupingDialog(QWidget* parent, Qt::WindowFlags
 
   //connect
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onPushButtonClicked()));
+  m_ui->m_helpPushButton->setPageReference("widgets/grouping/grouping.html");
 }
 
 te::qt::widgets::GroupingDialog::~GroupingDialog()
