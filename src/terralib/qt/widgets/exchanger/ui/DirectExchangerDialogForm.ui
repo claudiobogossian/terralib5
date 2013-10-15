@@ -535,7 +535,7 @@
   <customwidget>
    <class>te::qt::widgets::HelpPushButton</class>
    <extends>QPushButton</extends>
-   <header location="global">terralib/qt/widgets/help/HelpPushButton.h</header>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

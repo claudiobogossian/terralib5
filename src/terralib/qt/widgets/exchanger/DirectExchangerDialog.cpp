@@ -84,7 +84,7 @@ te::qt::widgets::DirectExchangerDialog::DirectExchangerDialog(QWidget* parent, Q
   connect(m_ui->m_outputADOToolButton, SIGNAL(clicked(bool)), this, SLOT(onOutputADOToolButtonClicked(bool)));
   connect(m_ui->m_outputSHPToolButton, SIGNAL(clicked(bool)), this, SLOT(onOutputSHPToolButtonClicked(bool)));
 
-  m_ui->m_helpPushButton->setPageReference("widgets/dataexchanger/exchanger.html");
+  m_ui->m_helpPushButton->setPageReference("widgets/exchanger_direct/exchanger_direct.html");
 
   //starup interface
   m_inputDataSourceType = "";
@@ -483,10 +483,10 @@ void te::qt::widgets::DirectExchangerDialog::onDataSoruceToolButtonClicked()
   setDataSources();
 }
 
-void te::qt::widgets::DirectExchangerDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
-}
+//void te::qt::widgets::DirectExchangerDialog::onHelpPushButtonClicked()
+//{
+//  QMessageBox::information(this, "Help", "Under development");
+//}
 
 void te::qt::widgets::DirectExchangerDialog::onOkPushButtonClicked()
 {

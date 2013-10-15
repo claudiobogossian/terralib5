@@ -45,6 +45,8 @@ te::qt::widgets::ChartLayerDialog::ChartLayerDialog(QWidget* parent, Qt::WindowF
 
   //connect
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onPushButtonClicked()));
+  m_ui->m_helpPushButton->setPageReference("widgets/pie_bar_chart/pie_bar_chart.html");
+
 }
 
 te::qt::widgets::ChartLayerDialog::~ChartLayerDialog()
