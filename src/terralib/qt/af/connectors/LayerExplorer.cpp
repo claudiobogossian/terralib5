@@ -41,6 +41,7 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explore
   connect(explorer->getTreeView(), SIGNAL(layerRemoved(te::map::AbstractLayerPtr)), SLOT(onLayerRemoved(te::map::AbstractLayerPtr)));
   connect(explorer->getTreeView(), SIGNAL(visibilityChanged(te::map::AbstractLayerPtr)), SLOT(onLayerVisibilityChanged(te::map::AbstractLayerPtr)));
   connect(explorer->getTreeModel(), SIGNAL(visibilityChanged(te::map::AbstractLayerPtr)), SLOT(onLayerVisibilityChanged(te::map::AbstractLayerPtr)));
+  connect(explorer->getTreeModel(), SIGNAL(layerOrderChanged()), SLOT(onLayerOrderChanged()));
   //  connect(explorer->getTreeView(), SIGNAL(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)), SLOT(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)));
 }
 
@@ -87,7 +88,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
       m_explorer->add(e->m_layer);
 
-      //ApplicationController::getInstance().getProject()->add(e->m_layer);
+      ApplicationController::getInstance().getProject()->add(e->m_layer);
     }
     break;
 
@@ -112,7 +113,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
 void te::qt::af::LayerExplorer::onLayerSelectionChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
 {
-  //emit selectedLayersChanged(m_explorer->getSelectedLayers());
+  emit selectedLayersChanged(m_explorer->getSelectedLayers());
 
   if(selectedLayers.empty())
     return;
@@ -154,6 +155,11 @@ void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::map::AbstractLayerP
 
   te::qt::af::evt::LayerVisibilityChanged layerVisibilityChangedEvent(layer, layer->getVisibility());
   ApplicationController::getInstance().broadcast(&layerVisibilityChangedEvent);
+}
+
+void te::qt::af::LayerExplorer::onLayerOrderChanged()
+{
+  ApplicationController::getInstance().getProject()->setLayers(m_explorer->getAllTopLevelLayers());
 }
 
 void te::qt::af::LayerExplorer::onLayerRemoved(te::map::AbstractLayerPtr layer)

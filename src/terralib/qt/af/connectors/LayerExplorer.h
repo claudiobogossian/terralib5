@@ -112,6 +112,8 @@ namespace te
 
           void onLayerVisibilityChanged(te::map::AbstractLayerPtr layer);
 
+          void onLayerOrderChanged();
+
           void onLayerRemoved(te::map::AbstractLayerPtr layer);
 
           void layersChanged(const std::vector<te::map::AbstractLayerPtr>& layers);
