@@ -25,8 +25,6 @@ set(DEP_LIBS
     terralib_dataaccess
 		terralib_datatype
 		terralib_geometry
-    #terralib_maptools
-		terralib_postgis
 		terralib_plugin
 		terralib_srs
 		terralib_memory

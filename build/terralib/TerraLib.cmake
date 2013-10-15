@@ -331,6 +331,6 @@ include (${TE_MODULE_PATH}/GenerateDox.cmake)
 # Installing configuration file
 include (${CMAKE_SOURCE_DIR}/installTree.cmake)
 configure_file (terralibConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/toInstall/terralibConfig.cmake @ONLY)
-configure_file (${ROOT}/src/terralib/TerraLibConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/toInstall/TerraLibConfig.h)
+configure_file (${CMAKE_SOURCE_DIR}/../src/terralib/TerraLibConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/toInstall/TerraLibConfig.h)
 
 include (${TE_MODULE_PATH}/Package.cmake)

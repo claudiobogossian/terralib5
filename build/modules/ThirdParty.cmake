@@ -54,17 +54,17 @@ else()
     ${TE_DEPENDENCIES_DIR}/bin/expat.dll
     ${TE_DEPENDENCIES_DIR}/bin/gdal110.dll
     ${TE_DEPENDENCIES_DIR}/bin/geos.dll
-    ${TE_DEPENDENCIES_DIR}/bin/geotiff.dll
+#    ${TE_DEPENDENCIES_DIR}/bin/geotiff.dll
     ${TE_DEPENDENCIES_DIR}/bin/hdf5.dll
-    ${TE_DEPENDENCIES_DIR}/bin/libcurl.dll
+#    ${TE_DEPENDENCIES_DIR}/bin/libcurl.dll
     ${TE_DEPENDENCIES_DIR}/bin/libeay32.dll
     ${TE_DEPENDENCIES_DIR}/bin/libiconv-2.dll
     ${TE_DEPENDENCIES_DIR}/bin/libiconv.dll
     ${TE_DEPENDENCIES_DIR}/bin/libintl-8.dll
     ${TE_DEPENDENCIES_DIR}/bin/libintl.dll
-    ${TE_DEPENDENCIES_DIR}/bin/libpng16.dll
+#    ${TE_DEPENDENCIES_DIR}/bin/libpng16.dll
     ${TE_DEPENDENCIES_DIR}/bin/libpq.dll
-    ${TE_DEPENDENCIES_DIR}/bin/libtiff.dll
+#    ${TE_DEPENDENCIES_DIR}/bin/libtiff.dll
     ${TE_DEPENDENCIES_DIR}/bin/log4cxx.dll
     ${TE_DEPENDENCIES_DIR}/bin/proj.dll
     ${TE_DEPENDENCIES_DIR}/bin/qwt.dll
