@@ -35,11 +35,6 @@
 // Terralib 4.x
 #include <terralib/kernel/TeGeometry.h>
 
-std::auto_ptr<te::gm::Geometry> terralib4::GeomReader::getGeometry(const char* ewkb, const char** endptr)
-{
-  
-}
-
 std::auto_ptr<te::gm::Point> terralib4::GeomReader::getPoint(const TePoint& pt)
 {
   std::auto_ptr<te::gm::Point> geom(new te::gm::Point(pt.box().x1(), pt.box().y1(), pt.srid()));
@@ -66,7 +61,7 @@ std::auto_ptr<te::gm::LineString> terralib4::GeomReader::getLineString(const TeL
 
 std::auto_ptr<te::gm::LinearRing> terralib4::GeomReader::getLinearRing(const TeLinearRing& ring)
 {
-  std::auto_ptr<te::gm::LinearRing> geom(new te::gm::LinearRing(te::gm::PolygonType, ring.srid());
+  std::auto_ptr<te::gm::LinearRing> geom(new te::gm::LinearRing(te::gm::PolygonType, ring.srid()));
 
   TeComposite<TeCoord2D>::iterator it = ring.begin();
 
