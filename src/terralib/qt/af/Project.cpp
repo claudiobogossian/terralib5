@@ -74,6 +74,29 @@ std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getLayers()
   return m_layers;
 }
 
+std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers()
+{
+  std::list<te::map::AbstractLayerPtr> layers;
+
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+
+  for(it = m_layers.begin(); it != m_layers.end(); ++it)
+  {
+    te::map::AbstractLayerPtr topLevelLayer = *it;
+
+    std::vector<te::map::AbstractLayer*> children = topLevelLayer->getDescendants();
+    for(std::size_t i = 0; i < children.size(); ++i)
+    {
+      if(children[i]->getType() == "FOLDERLAYER")
+        continue;
+
+      layers.push_back(te::map::AbstractLayerPtr(children[i]));
+    }
+  }
+
+  return layers;
+}
+
 void te::qt::af::Project::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
 {
   m_layers.clear();
