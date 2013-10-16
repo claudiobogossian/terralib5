@@ -63,9 +63,26 @@ namespace te
 
           const std::string& getAuthor() const;
 
+          /*!
+            \brief It gets all the top level layers in the project, including the folder layers.
+
+            \return The list of all the top level layers in the project, including the folder layers.
+          */
           const std::list<te::map::AbstractLayerPtr>& getLayers() const;
 
+          /*!
+            \brief It gets all the top level layers in the project, including the folder layers.
+
+            \return The list of all the top level layers in the project, including the folder layers.
+          */
           std::list<te::map::AbstractLayerPtr>& getLayers();
+
+          /*!
+            \brief It gets all the layers in the project, not including the folder layers.
+
+            \return List of all the layers in the project, not including the folder layers.
+          */
+          std::list<te::map::AbstractLayerPtr> getAllLayers();
 
           void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
 

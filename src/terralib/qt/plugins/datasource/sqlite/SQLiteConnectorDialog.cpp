@@ -90,107 +90,107 @@ void te::qt::plugins::sqlite::SQLiteConnectorDialog::set(const te::da::DataSourc
 
 void te::qt::plugins::sqlite::SQLiteConnectorDialog::openPushButtonPressed()
 {
-  try
-  {
-// check if driver is loaded
-    if(te::da::DataSourceFactory::find("SQLITE") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for SQLite data sources!"));
-
-// get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
-
-// perform connection
-    m_driver.reset(te::da::DataSourceFactory::open("SQLITE", dsInfo));
-
-    if(m_driver.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open SQLite data source due to an unknown error!"));
-
-    QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
-
-    if(title.isEmpty())
-      title = m_ui->m_fileLineEdit->text().trimmed();
-
-    if(m_datasource.get() == 0)
-    {
-// create a new data source based on form data
-      m_datasource.reset(new te::da::DataSourceInfo);
-
-      m_datasource->setConnInfo(dsInfo);
-
-      boost::uuids::basic_random_generator<boost::mt19937> gen;
-      boost::uuids::uuid u = gen();
-      std::string dsId = boost::uuids::to_string(u);
-
-      m_datasource->setId(dsId);
-      m_driver->setId(dsId);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
-      m_datasource->setAccessDriver("SQLITE");
-      m_datasource->setType("SQLITE");
-    }
-    else
-    {
-      m_driver->setId(m_datasource->getId());
-      m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
-    }
-  }
-  catch(const std::exception& e)
-  {
-    QMessageBox::warning(this,
-                         tr("TerraLib Qt Components"),
-                         tr(e.what()));
-    return;
-  }
-  catch(...)
-  {
-    QMessageBox::warning(this,
-                         tr("TerraLib Qt Components"),
-                         tr("Unknown error while opening SQLite database!"));
-    return;
-  }
-
-  accept();
+//  try
+//  {
+//// check if driver is loaded
+//    if(te::da::DataSourceFactory::find("SQLITE") == 0)
+//      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for SQLite data sources!"));
+//
+//// get data source connection info based on form data
+//    std::map<std::string, std::string> dsInfo;
+//
+//    getConnectionInfo(dsInfo);
+//
+//// perform connection
+//    m_driver.reset(te::da::DataSourceFactory::open("SQLITE", dsInfo));
+//
+//    if(m_driver.get() == 0)
+//      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open SQLite data source due to an unknown error!"));
+//
+//    QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
+//
+//    if(title.isEmpty())
+//      title = m_ui->m_fileLineEdit->text().trimmed();
+//
+//    if(m_datasource.get() == 0)
+//    {
+//// create a new data source based on form data
+//      m_datasource.reset(new te::da::DataSourceInfo);
+//
+//      m_datasource->setConnInfo(dsInfo);
+//
+//      boost::uuids::basic_random_generator<boost::mt19937> gen;
+//      boost::uuids::uuid u = gen();
+//      std::string dsId = boost::uuids::to_string(u);
+//
+//      m_datasource->setId(dsId);
+//      m_driver->setId(dsId);
+//      m_datasource->setTitle(title.toUtf8().data());
+//      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+//      m_datasource->setAccessDriver("SQLITE");
+//      m_datasource->setType("SQLITE");
+//    }
+//    else
+//    {
+//      m_driver->setId(m_datasource->getId());
+//      m_datasource->setConnInfo(dsInfo);
+//      m_datasource->setTitle(title.toUtf8().data());
+//      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+//    }
+//  }
+//  catch(const std::exception& e)
+//  {
+//    QMessageBox::warning(this,
+//                         tr("TerraLib Qt Components"),
+//                         tr(e.what()));
+//    return;
+//  }
+//  catch(...)
+//  {
+//    QMessageBox::warning(this,
+//                         tr("TerraLib Qt Components"),
+//                         tr("Unknown error while opening SQLite database!"));
+//    return;
+//  }
+//
+//  accept();
 }
 
 void te::qt::plugins::sqlite::SQLiteConnectorDialog::testPushButtonPressed()
 {
-  try
-  {
-// check if driver is loaded
-    if(te::da::DataSourceFactory::find("SQLITE") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for SQLite data sources!"));
-
-// get data source connection info based on form data
-    std::map<std::string, std::string> dsInfo;
-
-    getConnectionInfo(dsInfo);
-
-// perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("SQLITE", dsInfo));
-
-    if(ds.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open SQLite database!"));
-
-    QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Data source is ok!"));
-  }
-  catch(const std::exception& e)
-  {
-    QMessageBox::warning(this,
-                         tr("TerraLib Qt Components"),
-                         tr(e.what()));
-  }
-  catch(...)
-  {
-    QMessageBox::warning(this,
-                         tr("TerraLib Qt Components"),
-                         tr("Unknown error while testing SQLite data source!"));
-  }
+//  try
+//  {
+//// check if driver is loaded
+//    if(te::da::DataSourceFactory::find("SQLITE") == 0)
+//      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for SQLite data sources!"));
+//
+//// get data source connection info based on form data
+//    std::map<std::string, std::string> dsInfo;
+//
+//    getConnectionInfo(dsInfo);
+//
+//// perform connection
+//    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("SQLITE", dsInfo));
+//
+//    if(ds.get() == 0)
+//      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open SQLite database!"));
+//
+//    QMessageBox::warning(this,
+//                       tr("TerraLib Qt Components"),
+//                       tr("Data source is ok!"));
+//  }
+//  catch(const std::exception& e)
+//  {
+//    QMessageBox::warning(this,
+//                         tr("TerraLib Qt Components"),
+//                         tr(e.what()));
+//  }
+//  catch(...)
+//  {
+//    QMessageBox::warning(this,
+//                         tr("TerraLib Qt Components"),
+//                         tr("Unknown error while testing SQLite data source!"));
+//  }
 }
 
 void te::qt::plugins::sqlite::SQLiteConnectorDialog::helpPushButtonPressed()

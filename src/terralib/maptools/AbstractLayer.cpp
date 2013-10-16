@@ -105,19 +105,19 @@ std::vector<te::map::AbstractLayer*> te::map::AbstractLayer::getDescendants()
   std::vector<AbstractLayer*> layers;
   std::vector<AbstractLayer*> childrenLayers;
 
-  if(hasChildren())
+  int numChildren = getChildrenCount();
+  for(std::size_t i = 0; i < numChildren; ++i)
   {
-    int numChildren = getChildrenCount();
-    for(int i = 0; i < numChildren; ++i)
+    AbstractLayer* childLayer = static_cast<AbstractLayer*>(getChild(i).get());
+    layers.push_back(childLayer);
+
+    if(childLayer->hasChildren())
     {
-      AbstractLayer* childLayer = static_cast<AbstractLayer*>(getChild(i).get());
-      layers.push_back(childLayer);
       childrenLayers = childLayer->getDescendants();
+      for(std::size_t i = 0; i < childrenLayers.size(); ++i)
+        layers.push_back(childrenLayers[i]);
     }
   }
-
-  for(std::size_t i = 0; i < childrenLayers.size(); ++i)
-    layers.push_back(childrenLayers[i]);
 
   return layers;
 }

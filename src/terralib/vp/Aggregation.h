@@ -60,12 +60,12 @@ namespace te
      This algorithm assums that the input dataset exists in the datasource.
      It generates a new dataset in the ouput datasource, do it can not exists a dataset with the same name prior to the calling of this algorithm.
      */
-    bool Aggregation(const std::string& inDataset,
-                     te::da::DataSource* inDatasource,
-                     const std::vector<te::dt::Property*>& groupingProperties,
-                     const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
-                     const std::string& outDataset,
-                     te::da::DataSource* outDatasource);
+    TEVPEXPORT bool Aggregation(const std::string& inDataset,
+                                te::da::DataSource* inDatasource,
+                                const std::vector<te::dt::Property*>& groupingProperties,
+                                const std::map<te::dt::Property*, std::vector<te::stat::StatisticalSummary> >& statisticalSummary,
+                                const std::string& outDataset,
+                                te::da::DataSource* outDatasource);
   } // end namespace vp
 }   // end namespace te
 

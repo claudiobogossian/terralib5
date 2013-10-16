@@ -63,15 +63,15 @@ namespace te
     This algorithm assums that the input dataset exists in the datasource.
      It generates a new dataset in the ouput datasource, do it can not exists a dataset with the same name prior to the calling of this algorithm.
     */
-    bool Buffer(const std::string& inDataset,
-                te::da::DataSource* inDatasource,
-                const std::map<te::gm::Geometry*, double>& distance,
-                const int& bufferPolygonRule,
-                const int& bufferBoundariesRule,
-                const bool& copyInputColumns,
-                const int& levels,
-                const std::string& outDataset,
-                te::da::DataSource* outDatasource);
+    TEVPEXPORT bool Buffer(const std::string& inDataset,
+                          te::da::DataSource* inDatasource,
+                          const std::map<te::gm::Geometry*, double>& distance,
+                          const int& bufferPolygonRule,
+                          const int& bufferBoundariesRule,
+                          const bool& copyInputColumns,
+                          const int& levels,
+                          const std::string& outDataset,
+                          te::da::DataSource* outDatasource);
 
   } // end namespace vp
 }   // end namespace te

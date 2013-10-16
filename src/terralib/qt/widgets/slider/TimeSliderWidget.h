@@ -70,6 +70,10 @@ namespace te
           */
           ~TimeSliderWidget();
 
+          void enterEvent(QEvent*);
+
+          void leaveEvent(QEvent*);
+
         protected slots:
 
           void onExitToolButtonnClicked();
