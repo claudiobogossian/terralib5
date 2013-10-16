@@ -441,8 +441,8 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
 
     int pType = p->getType();
 
-    ADOX::_ColumnPtr newColumn = NULL;
-    TESTHR(newColumn.CreateInstance(__uuidof(ADOX::_ColumnPtr)));
+    ADOX::_ColumnPtr newColumn = 0;
+    TESTHR(newColumn.CreateInstance(__uuidof(ADOX::Column)));
 
     newColumn->Name = name.c_str();
     newColumn->Type = te::ado::Convert2Ado(pType);
@@ -464,7 +464,7 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       {
         const te::dt::SimpleProperty* simple = static_cast<const te::dt::SimpleProperty*>(p);
 
-        if(simple->isRequired())
+        if(!simple->isRequired())
           newColumn->Attributes = ADOX::adColNullable;
 
         pTable->Columns->Append(newColumn->Name, newColumn->Type, newColumn->DefinedSize);
@@ -476,10 +476,13 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       {
         const te::dt::StringProperty* sp = static_cast<const te::dt::StringProperty*>(p);
 
-        newColumn->DefinedSize = (long)sp->size();
+        if(sp->size() != 0)
+          newColumn->DefinedSize = (long)sp->size();
 
-        if(sp->isRequired())
+        if(!sp->isRequired())
           newColumn->Attributes = ADOX::adColNullable;
+
+        pTable->Columns->Append(newColumn->Name, newColumn->Type, newColumn->DefinedSize);
 
         break;
       }
@@ -1156,8 +1159,6 @@ void te::ado::Transactor::add(const std::string& datasetName,
     
     while(d->moveNext())
     {
-      bool isNull = false;
-
       TESTHR(recset->AddNew());
 
       for(std::size_t i = 0; i < d->getNumProperties(); ++i)

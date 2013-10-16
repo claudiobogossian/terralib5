@@ -620,6 +620,51 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
 
     memcpy(&(qpol[0]), (double*)(ring->getCoordinates()), 16 * nPoints);    
     path.addPolygon(qpol);
+    //te::gm::LinearRing* ring = static_cast<te::gm::LinearRing*>(poly->getRingN(i));
+    //const std::size_t nPoints = ring->getNPoints();
+    //assert(nPoints > 3);
+    //rings.push_back(ring);
+
+    //te::gm::Coord2D* coords = ring->getCoordinates();
+    //std::size_t size = ring->getNPoints();
+    //if(size <= 1)
+    //  continue;
+
+    //QPolygonF qpol;
+    //QPointF p1(coords[0].x, coords[0].y);
+    //qpol.append(p1);
+
+    //double xMax = p1.x();
+    //double yMax = p1.y();
+    //double xMin = p1.x();
+    //double yMin = p1.y();
+    //QPointF p2;
+    //for(register std::size_t i = 1; i != size; ++i)
+    //{    
+    //  p2.setX(coords[i].x);
+    //  p2.setY(coords[i].y);
+
+    //  xMax = qMax(xMax, p2.x());
+    //  yMax = qMax(yMax, p2.y());
+    //  xMin = qMin(xMin, p2.x());
+    //  yMin = qMin(yMin, p2.y());
+
+    //  if(m_matrix.map(p1).toPoint() == m_matrix.map(p2).toPoint())
+    //    continue;
+    //  qpol.append(p2);
+    //  p1 = p2;
+    //}
+
+    //if(qpol.size() < 3)
+    //{
+    //  qpol.clear();
+    //  qpol.append(QPointF(xMin, yMin));
+    //  qpol.append(QPointF(xMax, yMin));
+    //  qpol.append(QPointF(xMax, yMax));
+    //  qpol.append(QPointF(xMin, yMax));
+    //  qpol.append(QPointF(xMin, yMin));
+    //}
+    //path.addPolygon(qpol);
   }
 
   if(m_erase)
@@ -661,19 +706,34 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
       }
 
       m_painter.setBrush(m_polyBrush);
+
+      if(m_polyContourPen.brush().style() == Qt::TexturePattern)
+        m_painter.setPen(Qt::NoPen);
+      else
+        m_painter.setPen(m_polyContourPen);
+
       m_painter.drawPath(path);
     }
     if(m_polyColor.alpha() != 0)
     {
       QBrush brush(m_polyColor);
       m_painter.setBrush(brush);
+
+      if(m_polyContourPen.brush().style() == Qt::TexturePattern)
+        m_painter.setPen(Qt::NoPen);
+      else
+        m_painter.setPen(m_polyContourPen);
+
       m_painter.drawPath(path);
     }
 
     // draw contour
-    std::vector<te::gm::LinearRing*>::iterator it;
-    for(it = rings.begin(); it != rings.end(); ++it)
-      drawContour(*it);
+    if(m_polyContourPen.brush().style() == Qt::TexturePattern)
+    {
+      std::vector<te::gm::LinearRing*>::iterator it;
+      for(it = rings.begin(); it != rings.end(); ++it)
+        drawContour(*it);
+    }
   }
 }
 
@@ -686,7 +746,9 @@ void te::qt::widgets::Canvas::drawContour(const te::gm::LineString* line)
 
   bool drawed = false;
 
+  m_polyContourPen.setColor(m_polyContourColor);
   m_painter.setPen(m_polyContourPen);
+  m_painter.setBrush(Qt::NoBrush);
 
   QPointF p1(coords[0].x, coords[0].y);
   QPointF p2;
@@ -698,10 +760,8 @@ void te::qt::widgets::Canvas::drawContour(const te::gm::LineString* line)
 
     if(m_polyContourPen.brush().style() != Qt::TexturePattern)
     {
-      drawed = true;     
-      m_polyContourPen.setColor(m_polyContourColor);
-      m_painter.setPen(m_polyContourPen);
-      m_painter.drawLine(p1, p2);
+      drawed = true;
+      m_painter.drawLine(p1, p2);   
     }
     else
     {
