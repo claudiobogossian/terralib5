@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>462</width>
-    <height>104</height>
+    <width>464</width>
+    <height>108</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,7 +90,7 @@
           </spacer>
          </item>
          <item row="0" column="0">
-          <widget class="QPushButton" name="m_helpPushButton">
+          <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
            <property name="text">
             <string>Help</string>
            </property>
@@ -114,6 +114,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>m_okPushButton</tabstop>
   <tabstop>m_cancelPushButton</tabstop>

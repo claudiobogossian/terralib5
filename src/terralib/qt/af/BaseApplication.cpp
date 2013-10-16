@@ -499,8 +499,15 @@ void te::qt::af::BaseApplication::onRemoveFolderTriggered()
 
 void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
-  std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
-  std::list<te::qt::widgets::AbstractTreeItem*>::iterator it;
+ std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getTreeView()->getAllSelectedLayerItems();
+
+  if(selectedLayerItems.empty())
+  {
+    QString msg = tr("Select at least one layer to be removed!");
+    QMessageBox::information(this, tr("Remove Layer(s)"), msg);
+
+    return;
+  }
 
   QString msg = tr("Do you really want to remove the selected layer(s)?");
 
@@ -509,11 +516,11 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
   if(reply == QMessageBox::No)
     return;
   
-  for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
+  std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
+  for(it = selectedLayerItems.begin(); it != selectedLayerItems.end(); ++it)
   {
-    te::qt::widgets::AbstractTreeItem* item = *it;
-    if(item->getLayer() != 0)
-      m_explorer->getExplorer()->remove(item);
+    te::qt::af::evt::LayerItemRemoved evt(*it);
+    te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 
   te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
