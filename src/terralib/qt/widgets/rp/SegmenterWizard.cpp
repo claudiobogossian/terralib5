@@ -55,6 +55,11 @@ te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
   this->setWindowTitle(tr("Segmenter"));
   //this->setFixedSize(640, 580);
 
+  this->setOption(QWizard::HaveHelpButton, true);
+  this->setOption(QWizard::HelpButtonOnRight, false);
+
+  connect((QObject*)this->button(QWizard::HelpButton), SIGNAL(clicked()), this, SLOT(onHelpButtonClicked()));
+
   addPages();
 }
 
@@ -176,4 +181,9 @@ bool te::qt::widgets::SegmenterWizard::execute()
   }
 
   return true;
+}
+
+void te::qt::widgets::SegmenterWizard::onHelpButtonClicked()
+{
+
 }

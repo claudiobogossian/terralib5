@@ -64,7 +64,9 @@ te::qt::widgets::ScatterDialog::ScatterDialog(te::da::DataSet* dataSet, te::da::
 
 // connect signal and slots
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  //connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  m_ui->m_helpPushButton->setPageReference("widgets/scatter/scatter.html");
+
 }
 
 te::qt::widgets::ScatterDialog::~ScatterDialog()

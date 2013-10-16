@@ -24,9 +24,12 @@
 */
 
 // TerraLib 5
+#include "../common/Exception.h"
+#include "../common/Translator.h"
 #include "../datatype/NumericProperty.h"
 #include "../datatype/Property.h"
 #include "../datatype/StringProperty.h"
+#include "../geometry/GeometryProperty.h"
 #include "Utils.h"
 
 std::auto_ptr<te::dt::Property> terralib4::Convert2T5(const TeAttributeRep& attRep)
@@ -37,62 +40,62 @@ std::auto_ptr<te::dt::Property> terralib4::Convert2T5(const TeAttributeRep& attR
 
   switch(attRep.type_)
   {
-    //case TeSTRING:
-    //  if(attRep.numChar_ == 0)
-    //    return new te::dt::StringProperty(attRep.name_, te::dt::STRING, 0, isRequired, defaultValue);
-    //  else
-    //    return new te::dt::StringProperty(attRep.name_, te::dt::VAR_STRING, attRep.numChar_, isRequired, defaultValue);
+    case TeSTRING:
+      if(attRep.numChar_ == 0)
+        return std::auto_ptr<te::dt::StringProperty>(new te::dt::StringProperty(attRep.name_, te::dt::STRING, 0, isRequired, defaultValue));
+      else
+        return std::auto_ptr<te::dt::StringProperty>(new te::dt::StringProperty(attRep.name_, te::dt::VAR_STRING, attRep.numChar_, isRequired, defaultValue));
 
-    //case TeCHARACTER:
-    //  return new te::dt::SimpleProperty(attRep.name_, te::dt::PropertyType::CHAR, isRequired, defaultValue);
+    case TeCHARACTER:
+      return std::auto_ptr<te::dt::SimpleProperty>(new te::dt::SimpleProperty(attRep.name_, te::dt::CHAR_TYPE, isRequired, defaultValue));
 
-    //case TeBOOLEAN:
-    //  return new te::dt::SimpleProperty(attRep.name_, te::dt::PropertyType::BOOLEAN, isRequired, defaultValue);
+    case TeBOOLEAN:
+      return std::auto_ptr<te::dt::SimpleProperty>(new te::dt::SimpleProperty(attRep.name_, te::dt::BOOLEAN_TYPE, isRequired, defaultValue));
 
-    //case TeINT:
-    //  return new te::dt::SimpleProperty(attRep.name_, te::dt::PropertyType::INT32, isRequired, defaultValue);
+    case TeINT:
+      return std::auto_ptr<te::dt::SimpleProperty>(new te::dt::SimpleProperty(attRep.name_, te::dt::INT32_TYPE, isRequired, defaultValue));
 
-    //case TeUNSIGNEDINT:
-    //  return new te::dt::SimpleProperty(attRep.name_, te::dt::PropertyType::INT32, isRequired, defaultValue);
+    case TeUNSIGNEDINT:
+      return std::auto_ptr<te::dt::SimpleProperty>(new te::dt::SimpleProperty(attRep.name_, te::dt::UINT32_TYPE, isRequired, defaultValue));
 
-    //case TeREAL:
-    //  return new te::dt::NumericProperty(attRep.name_, 0, 0, isRequired, defaultValue);
+    case TeREAL:
+      return std::auto_ptr<te::dt::NumericProperty>(new te::dt::NumericProperty(attRep.name_, 0, 0, isRequired, defaultValue));
 
-    //case TeDATETIME:
-    //  return new te::dt::SimpleProperty(attRep.name_, te::dt::TIME_STAMP_TZ, isRequired, defaultValue);
+    case TeDATETIME:
+      return std::auto_ptr<te::dt::SimpleProperty>(new te::dt::SimpleProperty(attRep.name_, te::dt::TIME_INSTANT, isRequired, defaultValue));
 
-    //case TeBLOB:
-    //  return new te::dt::SimpleProperty(attRep.name_, te::dt::PropertyType::BYTE_ARRAY, isRequired, defaultValue);
+    case TeBLOB:
+      return std::auto_ptr<te::dt::SimpleProperty>(new te::dt::SimpleProperty(attRep.name_, te::dt::BYTE_ARRAY_TYPE, isRequired, defaultValue));
 
-    //case TePOINTTYPE:
-    //  return new te::dt::GeometryType(attRep.name_, 0, te::gm::PointType, isRequired, defaultValue);
+    case TePOINTTYPE:
+      return std::auto_ptr<te::gm::GeometryProperty>(new te::gm::GeometryProperty(attRep.name_, 0, te::gm::PointType, isRequired, defaultValue));
 
-    //case TeLINE2DTYPE:
-    //  return new te::dt::GeometryType(attRep.name_, 0, te::gm::LineStringType, isRequired, defaultValue);
+    case TeLINE2DTYPE:
+      return std::auto_ptr<te::gm::GeometryProperty>(new te::gm::GeometryProperty(attRep.name_, 0, te::gm::LineStringType, isRequired, defaultValue));
 
-    //case TePOLYGONTYPE:
-    //  return new te::dt::GeometryType(attRep.name_, 0, te::gm::PolygonType, isRequired, defaultValue);
+    case TePOLYGONTYPE:
+      return std::auto_ptr<te::gm::GeometryProperty>(new te::gm::GeometryProperty(attRep.name_, 0, te::gm::PolygonType, isRequired, defaultValue));
 
-    //case TeCELLTYPE:
-    //  return new te::dt::GeometryType(attRep.name_, 0, te::gm::PolygonType, isRequired, defaultValue);
+    case TeCELLTYPE:
+      return std::auto_ptr<te::gm::GeometryProperty>(new te::gm::GeometryProperty(attRep.name_, 0, te::gm::PolygonType, isRequired, defaultValue);
 
-    //case TePOINTSETTYPE:
-    //  return new te::dt::GeometryType(attRep.name_, 0, te::gm::MultiPointType, isRequired, defaultValue);
+    case TePOINTSETTYPE:
+      return std::auto_ptr<te::gm::GeometryProperty>(new te::gm::GeometryProperty(attRep.name_, 0, te::gm::MultiPointType, isRequired, defaultValue);
 
-    //case TeLINESETTYPE:
-    //  return new te::dt::GeometryType(attRep.name_, 0, te::gm::MultiLineStringType, isRequired, defaultValue);
+    case TeLINESETTYPE:
+      return std::auto_ptr<te::gm::GeometryProperty>(new te::gm::GeometryProperty(attRep.name_, 0, te::gm::MultiLineStringType, isRequired, defaultValue);
 
-    //case TePOLYGONSETTYPE:
-    //  return new te::dt::GeometryType(attRep.name_, 0, te::gm::MultiPolygonType, isRequired, defaultValue);
+    case TePOLYGONSETTYPE:
+      return std::auto_ptr<te::gm::GeometryProperty>(new te::gm::GeometryProperty(attRep.name_, 0, te::gm::MultiPolygonType, isRequired, defaultValue);
 
-    //case TeCELLSETTYPE:   
-    //  return new te::dt::GeometryType(attRep.name_, 0, te::gm::MultiPolygonType, isRequired, defaultValue);
-    //
-    //case TeRASTERTYPE:
-    //  {
-    //    std::vector<std::pair<std::string, std::string> > params;
-    //    return new te::dt::CoverageType(attRep.name_, 0, 0, params);
-    //  }
+    case TeCELLSETTYPE:   
+      return std::auto_ptr<te::gm::GeometryProperty>(new te::gm::GeometryProperty(attRep.name_, 0, te::gm::MultiPolygonType, isRequired, defaultValue);
+    
+    case TeRASTERTYPE:
+    {
+      //std::vector<std::pair<std::string, std::string> > params;
+      //return new te::dt::CoverageType(attRep.name_, 0, 0, params);
+    }
 
     case TeNODETYPE:
     case TeNODESETTYPE:
@@ -101,7 +104,7 @@ std::auto_ptr<te::dt::Property> terralib4::Convert2T5(const TeAttributeRep& attR
     case TeOBJECT:
     case TeUNKNOWN:
     default:
-      throw Exception(TR_COMMON("The informed attribute representation is not supported!"));
+      throw te::common::Exception(TR_COMMON("The informed attribute representation is not supported!"));
   }
 }
 

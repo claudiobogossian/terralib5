@@ -413,6 +413,9 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
     }
   }
 
+  if(ret)
+    emit layerOrderChanged();
+
   return ret;
 }
 

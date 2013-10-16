@@ -52,6 +52,11 @@ te::qt::widgets::ContrastWizard::ContrastWizard(QWidget* parent)
   this->setWindowTitle(tr("Contrast"));
   //this->setFixedSize(640, 480);
 
+  this->setOption(QWizard::HaveHelpButton, true);
+  this->setOption(QWizard::HelpButtonOnRight, false);
+
+  connect((QObject*)this->button(QWizard::HelpButton), SIGNAL(clicked()), this, SLOT(onHelpButtonClicked()));
+
   addPages();
 }
 
@@ -160,4 +165,9 @@ bool te::qt::widgets::ContrastWizard::execute()
     return false;
   }
   return true;
+}
+
+void te::qt::widgets::ContrastWizard::onHelpButtonClicked()
+{
+
 }

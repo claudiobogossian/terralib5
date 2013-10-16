@@ -344,9 +344,8 @@ void te::vp::BufferDialog::onWithBoundToggled()
 
 void te::vp::BufferDialog::onTargetDatasourceToolButtonPressed()
 {
-  m_outputDatasource.reset();
-  m_outputArchive = "";
-
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
   te::qt::widgets::DataSourceSelectorDialog dlg(this);
   dlg.exec();
 
@@ -360,23 +359,29 @@ void te::vp::BufferDialog::onTargetDatasourceToolButtonPressed()
   m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
 
   m_outputDatasource = *it;
+
+  m_toFile = false;
 }
 
 void te::vp::BufferDialog::onTargetFileToolButtonPressed()
 {
-  m_outputDatasource.reset();
-  m_outputArchive = "";
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
 
-  QString directoryName = QFileDialog::getExistingDirectory(this, tr("Open Feature File"), QString(""));
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                                      QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
 
-  if(directoryName.isEmpty())
+  if(fileName.isEmpty())
     return;
 
-  QString fullName = directoryName + "\\" + m_ui->m_newLayerNameLineEdit->text() + ".shp";
-
-  m_ui->m_repositoryLineEdit->setText(fullName);
-
-  m_outputArchive = std::string(fullName.toStdString());
+  boost::filesystem::path outfile(fileName.toStdString());
+  std::string aux = outfile.leaf().string();
+  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
+  aux = outfile.string();
+  m_ui->m_repositoryLineEdit->setText(aux.c_str());
+  
+  m_toFile = true;
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }
 
 void te::vp::BufferDialog::onHelpPushButtonClicked()

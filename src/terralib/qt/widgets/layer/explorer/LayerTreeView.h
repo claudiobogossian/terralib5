@@ -86,6 +86,13 @@ namespace te
           std::list<AbstractTreeItem*> getSelectedItems() const;
 
           /*!
+            \brief It gets all the selected layers in the tree view, including the folder layers.
+
+            \return The list of selected layers in the tree view, including folder layers.
+          */
+          std::list<AbstractTreeItem*> getAllSelectedLayerItems() const;
+
+          /*!
             \brief It gets the selected layers in the view, not including the selected folder layers.
 
             \return The list of selected layers in the view, not including the selected folder layers.

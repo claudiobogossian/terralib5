@@ -11,9 +11,15 @@
         <section title="Classifier" ref="./widgets/rp/classifier.html"/>
         <section title="Data set selector" ref="./widgets/dataset_selector/dataset_selector.html"/>
         <section title="Data source selector" ref="./widgets/datasource_selector/datasource_selector.html"/>
+		<section title="Direct Data Exchanger" ref="./widgets/exchanger_direct/exchanger_direct.html"/>
+	    <section title="Data Exchanger All Sources to All Sources" ref="./widgets/exchanger_all/exchanger_all.html"/>
         <section title="Data Table" ref="./widgets/table/index.html">
-          <section title="Add Column" ref="./widgets/table/addColumn.html"/>
+          <section title="Add Column" ref="./widgets/table/addColumn.html"/>  
         </section>
+		<section title="Grouping" ref="./widgets/grouping/grouping.html"/>
+		<section title="Histogram" ref="./widgets/histogram/histogram.html"/>
+		<section title="Pie Bar Chart" ref="./widgets/pie_bar_chart/pie_bar_chart.html"/>
+		<section title="Scatter" ref="./widgets/scatter/scatter.html"/>		
       </section>
     </toc>
     <keywords>
@@ -22,9 +28,14 @@
       <keyword name="Chart" ref="./widgets/charts/chart_style.html"/>
       <keyword name="Classifier" ref="./widgets/rp/classifier.html"/>
       <keyword name="Dataset" ref="./widgets/dataset_selector/dataset_selector.html"/>
-      <keyword name="Data source" ref="./widgets/datasource_selector/datasource_selector.html"/>
+      <keyword name="Direct Data Exchanger" ref="./widgets/exchanger_direct/exchanger_direct.html"/>
+      <keyword name="Data Exchanger" ref="./widgets/exchanger_all/exchanger_all.html"/>	  
       <keyword name="Table" ref="./widgets/table/index.html"/>
       <keyword name="Add Column" ref="./widgets/table/addColumn.html"/>
+      <keyword name="Histogram" ref="./widgets/histogram/histogram.html"/>
+      <keyword name="Grouping" ref="./widgets/grouping/grouping.html"/>
+      <keyword name="Pie Bar Chart" ref="./widgets/pie_bar_chart/pie_bar_chart.html"/>
+      <keyword name="Scatter" ref="./widgets/scatter/scatter.html"/>	  
     </keywords>
      <files>
       <file>widgets/index.html</file>
@@ -36,8 +47,20 @@
       <file>widgets/dataset_selector/*.png</file>	  
       <file>widgets/datasource_selector/datasource_selector.html</file>
       <file>widgets/datasource_selector/*.png</file>
+      <file>widgets/exchanger_direct/exchanger_direct.html</file>
+      <file>widgets/exchanger_direct/*.png</file>
+      <file>widgets/exchanger_all/exchanger_all.html</file>
+      <file>widgets/exchanger_all/*.png</file>	  
       <file>widgets/table/index.html</file>
-      <file>widgets/table/addColumn.html</file>
+      <file>widgets/table/addColumn.html</file>	  
+      <file>widgets/histogram/histogram.html</file>
+      <file>widgets/histogram/*.png</file>		  
+      <file>widgets/grouping/grouping.html</file>	  
+      <file>widgets/grouping/*.png</file>	  
+      <file>widgets/pie_bar_chart/pie_bar_chart.html</file>	  
+      <file>widgets/pie_bar_chart/*.png</file> 	  
+	  <file>widgets/scatter/scatter.html</file>	  
+      <file>widgets/scatter/*.png</file>  	 
     </files>
   </filterSection>
 </QtHelpProject>
