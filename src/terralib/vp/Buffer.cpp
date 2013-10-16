@@ -118,7 +118,7 @@ bool te::vp::Buffer(const std::string& inDatasetName,
 
   // define the schema of the output dataset based on the aggregation parameters for the non-spatial attributes
   std::auto_ptr<te::da::DataSetType> outputDataSetType(GetDataSetType(inDatasetName, inDataSource, outDataSetName, bufferBoundariesRule, copyInputColumns));
-  std::auto_ptr<te::mem::DataSet> outputDataSet;
+  std::auto_ptr<te::mem::DataSet> outputDataSet(new te::mem::DataSet(outputDataSetType.get()));
 
   // select a strategy based on the capabilities of the input datasource
   const te::da::DataSourceCapabilities dsCapabilities = inDataSource->getCapabilities();
@@ -151,13 +151,13 @@ bool te::vp::Buffer(const std::string& inDatasetName,
   outDataSource->add(dsTypeResult->getName(),outputDataSet.get(), options);
   
   // create the primary key if it is possible
-  if (outDataSource->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
-  {
-    std::string pk_name = dsTypeResult->getName() + "_pk";
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-    pk->add(dsTypeResult->getProperty(0));
-    outDataSource->addPrimaryKey(outDataSetName,pk);
-  }
+  //if (outDataSource->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
+  //{
+  //  std::string pk_name = dsTypeResult->getName() + "_pk";
+  //  te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
+  //  pk->add(dsTypeResult->getProperty(0));
+  //  outDataSource->addPrimaryKey(outDataSetName,pk);
+  //}
   return true;
 }
 
