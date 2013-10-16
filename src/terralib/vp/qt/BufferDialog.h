@@ -75,8 +75,6 @@ namespace te
 
         void setAttributesForDistance(std::vector<te::dt::Property*> properties);
 
-        std::map<te::gm::Geometry*, double> getDistante();
-
         int getPolygonRule();
 
         int getBoundariesRule();

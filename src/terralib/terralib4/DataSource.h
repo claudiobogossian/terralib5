@@ -35,6 +35,10 @@ namespace terralib4
   {
     public:
 
+      DataSource();
+
+      ~DataSource();
+
       std::string getType() const;
 
       const std::map<std::string, std::string>& getConnectionInfo() const;
