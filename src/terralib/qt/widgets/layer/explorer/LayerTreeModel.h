@@ -278,9 +278,6 @@ namespace te
           */
           bool remove(AbstractTreeItem* item);
 
-          /*! \brief It refreshes the model. */
-          void refresh();
-
           /*!
             \brief It gets all the top level layers in the model, including the top level folder layers.
 

@@ -323,16 +323,6 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeView::getSelected
   return selectedAndVisibleLayers;
 }
 
-void te::qt::widgets::LayerTreeView::refresh()
-{
-  LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());
-
-  if(model == 0)
-    return;
-
-  model->refresh();
-}
-
 void te::qt::widgets::LayerTreeView::add(const te::map::AbstractLayerPtr& layer)
 {
   LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());
