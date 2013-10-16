@@ -1,6 +1,6 @@
           TerraLib 5 - SQLite Data Access Driver
           ======================================
-          
+
 This folder contains an implementation of the Data Access classes
 for the SQLite database engine. It can acccess spatial data
 in an SQLite database. It have support for two types of
@@ -21,8 +21,8 @@ This driver requires the following modules in order to be built:
 
 The third-party software needed:
 1. SQLite
-2. SpatiaLite
-3. RasterLite
+2. SpatiaLite (Optional)
+3. RasterLite (Optional)
 4. Boost.Thread
 5. Boost.DateTime
 6. Boost.FileSystem
@@ -41,4 +41,3 @@ http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:data
             National Institute For Space Research - INPE
       P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
                             06/26/2012
-							

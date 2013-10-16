@@ -73,6 +73,7 @@ te::qt::widgets::WhereClauseWidget::WhereClauseWidget(QWidget* parent, Qt::Windo
   connect(m_ui->m_valueValueRadioButton, SIGNAL(clicked()), this, SLOT(onValuePropertyRadioButtonClicked()));
 
   m_count = 0;
+  m_srid = 0;
 }
 
 te::qt::widgets::WhereClauseWidget::~WhereClauseWidget()
@@ -177,8 +178,10 @@ void te::qt::widgets::WhereClauseWidget::setAttributeList(const std::vector<std:
   }
 }
 
-void  te::qt::widgets::WhereClauseWidget::setGeomAttributeList(const std::vector<std::string>& vec)
+void  te::qt::widgets::WhereClauseWidget::setGeomAttributeList(const std::vector<std::string>& vec, int srid)
 {
+  m_srid = srid;
+
   m_ui->m_geomAttrComboBox->clear();
 
   for(size_t t = 0; t <vec.size(); ++t)
@@ -222,10 +225,11 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
   std::string restrictValue = "";
   std::string operatorStr = "";
   std::string valueStr = "";
-  int expId = ++m_count;
 
   if(m_ui->m_criteriaTabWidget->currentIndex() == 0) // criteria by attribute restriction
   {
+    int expId = ++m_count;
+
     if(m_ui->m_restrictValueComboBox->currentText().isEmpty())
     {
       QMessageBox::warning(this, tr("Query Builder"), tr("Restrict value not defined."));
@@ -270,14 +274,38 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
       m_mapExp.insert(std::map<int, te::da::Expression*>::value_type(expId, exp));
     }
+
+    //set connector
+    std::string connector = "";
+    if(m_ui->m_connectorCheckBox->isChecked())
+      connector = m_ui->m_connectorComboBox->currentText().toStdString();
+
+    //new entry
+    int newrow = m_ui->m_whereClauseTableWidget->rowCount();
+
+    m_ui->m_whereClauseTableWidget->insertRow(newrow);
+
+    QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromStdString(restrictValue));
+    itemProperty->setFlags(Qt::ItemIsEnabled);
+    m_ui->m_whereClauseTableWidget->setItem(newrow, 0, itemProperty);
+
+    QTableWidgetItem* itemOperator = new QTableWidgetItem(QString::fromStdString(operatorStr));
+    itemOperator->setFlags(Qt::ItemIsEnabled);
+    m_ui->m_whereClauseTableWidget->setItem(newrow, 1, itemOperator);
+
+    QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromStdString(valueStr));
+    itemValue->setFlags(Qt::ItemIsEnabled);
+    itemValue->setData(Qt::UserRole, QVariant(expId));
+    m_ui->m_whereClauseTableWidget->setItem(newrow, 2, itemValue);
+
+    QTableWidgetItem* itemConnector = new QTableWidgetItem(QString::fromStdString(connector));
+    itemConnector->setFlags(Qt::ItemIsEnabled);
+    m_ui->m_whereClauseTableWidget->setItem(newrow, 3, itemConnector);
   }
   else // criteria by spatial restriction
   {
     operatorStr = m_ui->m_SpatialOperatorComboBox->currentText().toStdString();
-
     restrictValue = m_ui->m_geomAttrComboBox->currentText().toStdString();
-
-    valueStr = "geom";
 
     //get layer
     int layerIdx = m_ui->m_layerComboBox->currentIndex();
@@ -313,50 +341,58 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       ds = layer->getData();
     }
 
-    //get all geometries
-    //te::gm::GeometryCollection* geom = new te::gm::GeometryCollection(0, prop->getGeometryType(), layer->getSRID());
-    te::gm::Geometry* geom;
-
     ds->moveBeforeFirst();
 
+    //get all geometries
     while(ds->moveNext())
     {
-      //geom->add(ds->getGeometry(prop->getName()).release());
-      geom = ds->getGeometry(prop->getName()).release();
+      int expId = ++m_count;
+
+      te::gm::Geometry* geom = ds->getGeometry(prop->getName()).release();
+
+      geom->setSRID(layer->getSRID());
+
+      //convert
+      if(layer->getSRID() != m_srid)
+      {
+        geom->transform(m_srid);
+      }
+
+      valueStr = geom->toString();
+
+      //create expression
+      te::da::LiteralGeom* lGeom = new te::da::LiteralGeom(geom);
+
+      m_mapExp.insert(std::map<int, te::da::Expression*>::value_type(expId, lGeom));
+
+      //set connector
+      std::string connector = "";
+      if(ds->isAtEnd() == false)
+        connector = "or";
+
+      //new entry
+      int newrow = m_ui->m_whereClauseTableWidget->rowCount();
+
+      m_ui->m_whereClauseTableWidget->insertRow(newrow);
+
+      QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromStdString(restrictValue));
+      itemProperty->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_whereClauseTableWidget->setItem(newrow, 0, itemProperty);
+
+      QTableWidgetItem* itemOperator = new QTableWidgetItem(QString::fromStdString(operatorStr));
+      itemOperator->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_whereClauseTableWidget->setItem(newrow, 1, itemOperator);
+
+      QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromStdString(valueStr));
+      itemValue->setFlags(Qt::ItemIsEnabled);
+      itemValue->setData(Qt::UserRole, QVariant(expId));
+      m_ui->m_whereClauseTableWidget->setItem(newrow, 2, itemValue);
+
+      QTableWidgetItem* itemConnector = new QTableWidgetItem(QString::fromStdString(connector));
+      itemConnector->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_whereClauseTableWidget->setItem(newrow, 3, itemConnector);
     }
-
-    geom->setSRID(layer->getSRID());
-
-    //convert
-
-    //create expression
-    te::da::LiteralGeom* lGeom = new te::da::LiteralGeom(geom);
-
-    m_mapExp.insert(std::map<int, te::da::Expression*>::value_type(expId, lGeom));
   }
-
-  //set connector
-  std::string connector = "";
-  if(m_ui->m_connectorCheckBox->isChecked())
-    connector = m_ui->m_connectorComboBox->currentText().toStdString();
-
-  //new entry
-  int newrow = m_ui->m_whereClauseTableWidget->rowCount();
-
-  m_ui->m_whereClauseTableWidget->insertRow(newrow);
-
-  QTableWidgetItem* itemProperty = new QTableWidgetItem(QString::fromStdString(restrictValue));
-  m_ui->m_whereClauseTableWidget->setItem(newrow, 0, itemProperty);
-
-  QTableWidgetItem* itemOperator = new QTableWidgetItem(QString::fromStdString(operatorStr));
-  m_ui->m_whereClauseTableWidget->setItem(newrow, 1, itemOperator);
-
-  QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromStdString(valueStr));
-  itemValue->setData(Qt::UserRole, QVariant(expId));
-  m_ui->m_whereClauseTableWidget->setItem(newrow, 2, itemValue);
-
-  QTableWidgetItem* itemConnector = new QTableWidgetItem(QString::fromStdString(connector));
-  m_ui->m_whereClauseTableWidget->setItem(newrow, 3, itemConnector);
 
   m_ui->m_whereClauseTableWidget->resizeColumnsToContents();
 }

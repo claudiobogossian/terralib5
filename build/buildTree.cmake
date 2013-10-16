@@ -8,6 +8,7 @@ set (TE_XML_FILES_LOCATION "${ROOT}/resources/xml" CACHE STRING "Location of the
 set (TE_ABOUT_LOGO "${ROOT}/resources/images/png/terralib.png" CACHE STRING "Location of the about logo image." FORCE)
 set (TE_ICONS_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Location of the theme of icons available in TerraLib." FORCE)
 set (TE_ICONS_THEME "terralib" CACHE STRING "Name of the theme of icons (by default we will use terralib theme)." FORCE)
+set (TERRALIB_DIR "${ROOT}" CACHE STRING "Local of the source code of TerraLib." FORCE)
 
 if(WIN32)
   set (TE_BIN_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")

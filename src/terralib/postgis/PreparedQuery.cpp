@@ -60,6 +60,9 @@ namespace te
   {
     inline void BindValue(te::pgis::PreparedQuery* pq, te::da::DataSet* d, std::size_t i, std::size_t propertyPos)
     {
+      if(d->isNull(propertyPos))
+        return;
+
       const int propertyDataType = d->getPropertyDataType(propertyPos);
 
       switch(propertyDataType)

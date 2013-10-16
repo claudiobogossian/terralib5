@@ -44,6 +44,7 @@ namespace te
           DISPLAY_RESIZED,
           LAYER_ADDED,
           LAYER_REMOVED,
+          LAYER_ITEM_REMOVED,
           LAYER_SELECTED,
           LAYER_VISIBILITY_CHANGED,
           LAYER_SELECTED_OBJECTS_CHANGED,

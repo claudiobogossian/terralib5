@@ -76,17 +76,18 @@ bool IntersectionQuery(const std::string& inFirstDataSetName,
                       const std::string& inSecondDataSetName,
                       te::da::DataSource* inFirstDataSource,
                       const std::string& outDataSetName,
-                      te::da::DataSetType* outDataSetType,
-                      te::da::DataSet* outDataSet,
+                      te::da::DataSetType*& outDataSetType,
+                      te::da::DataSet*& outDataSet,
                       const bool& copyInputColumns,
                       size_t outputSRID);
 
 bool IntersectionMemory(const std::string& inFirstDataSetName,
-                        const std::string& inSecondDataSetName,
                         te::da::DataSource* inFirstDataSource,
+                        const std::string& inSecondDataSetName,
+                        te::da::DataSource* inSecondDataSource,
                         const std::string& outDataSetName,
-                        te::da::DataSetType* outDataSetType,
-                        te::da::DataSet* outDataSet,
+                        te::da::DataSetType*& outDataSetType,
+                        te::da::DataSet*& outDataSet,
                         const bool& copyInputColumns,
                         size_t outputSRID);
 
@@ -144,8 +145,9 @@ bool te::vp::Intersection(const std::string& inFirstDataSetName,
   else
   {
     res = IntersectionMemory(inFirstDataSetName,
+                            inFirstDataSource,
                             inSecondDataSetName,
-                            inFirstDataSource, 
+                            inSecondDataSource, 
                             outDataSetName,
                             outDataSetType,
                             outDataSet,
@@ -184,8 +186,8 @@ bool IntersectionQuery(const std::string& inFirstDataSetName,
                       const std::string& inSecondDataSetName,
                       te::da::DataSource* inFirstDataSource,
                       const std::string& outDataSetName,
-                      te::da::DataSetType* outDataSetType,
-                      te::da::DataSet* outDataSet,
+                      te::da::DataSetType*& outDataSetType,
+                      te::da::DataSet*& outDataSet,
                       const bool& copyInputColumns,
                       size_t outputSRID)
 {
@@ -201,7 +203,7 @@ bool IntersectionQuery(const std::string& inFirstDataSetName,
   te::da::Select* select = new te::da::Select;
 
   std::auto_ptr<te::da::DataSetType> firstDSType(inFirstDataSource->getDataSetType(inFirstDataSetName));
-  std::auto_ptr<te::da::DataSetType> secondDSType(inFirstDataSource->getDataSetType(inFirstDataSetName));
+  std::auto_ptr<te::da::DataSetType> secondDSType(inFirstDataSource->getDataSetType(inSecondDataSetName));
 
   std::vector<te::dt::Property*> firstProps = GetTabularProperties(firstDSType.get());
   std::vector<te::dt::Property*> secondProps;
@@ -259,11 +261,12 @@ bool IntersectionQuery(const std::string& inFirstDataSetName,
 }
 
 bool IntersectionMemory(const std::string& inFirstDataSetName,
-                        const std::string& inSecondDataSetName,
                         te::da::DataSource* inFirstDataSource,
+                        const std::string& inSecondDataSetName,
+                        te::da::DataSource* inSecondDataSource,
                         const std::string& outDataSetName,
-                        te::da::DataSetType* outDataSetType,
-                        te::da::DataSet* outDataSet,
+                        te::da::DataSetType*& outDataSetType,
+                        te::da::DataSet*& outDataSet,
                         const bool& copyInputColumns,
                         size_t outputSRID)
 {
@@ -276,7 +279,7 @@ bool IntersectionMemory(const std::string& inFirstDataSetName,
   }
 
   std::auto_ptr<te::da::DataSetType> firstDSType(inFirstDataSource->getDataSetType(inFirstDataSetName));
-  std::auto_ptr<te::da::DataSetType> secondDSType(inFirstDataSource->getDataSetType(inFirstDataSetName));
+  std::auto_ptr<te::da::DataSetType> secondDSType(inSecondDataSource->getDataSetType(inSecondDataSetName));
 
   std::vector<te::dt::Property*> firstProps = GetTabularProperties(firstDSType.get());
 
@@ -289,7 +292,7 @@ bool IntersectionMemory(const std::string& inFirstDataSetName,
 
   IntersectionMember secondMember;
   secondMember.dt = secondDSType.release();
-  secondMember.ds = inFirstDataSource->getDataSet(inSecondDataSetName).release();
+  secondMember.ds = inSecondDataSource->getDataSet(inSecondDataSetName).release();
   if(copyInputColumns)
     secondMember.props = secondProps;
   
@@ -531,8 +534,10 @@ std::vector<te::dt::Property*> GetTabularProperties(te::da::DataSetType* dsType)
 te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet* ds)
 {
   te::gm::Geometry* geom = 0;
-  te::mem::DataSet* dsMem = new te::mem::DataSet(*ds, true);
 
+  ds->moveBeforeFirst();
+  te::mem::DataSet* dsMem = new te::mem::DataSet(*ds, true);
+  
   std::size_t i = te::da::GetFirstSpatialPropertyPos(ds);
 
   te::gm::GeometryProperty* geomProp = (te::gm::GeometryProperty*)dsType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);

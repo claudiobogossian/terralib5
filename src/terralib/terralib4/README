@@ -1,0 +1,36 @@
+          TerraLib 5 - TerraLib 4.X Data Access Driver
+          ============================================
+
+This folder contains an implementation of the new TerraLib 5
+Data Access classes for the old TerraLib 4.X. It can acccess
+spatial data in a TerraLib 4.X database format.
+
+Driver Dependencies:
+--------------------
+
+This driver requires the following modules in order to be built:
+1. Common Runtime
+2. XML
+3. Plugin
+4. Data Type
+5. SRS
+6. Geometry
+7. Raster
+8. Data Access
+
+The third-party software needed:
+1. TerraLib 4.X
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of this driver:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:drivers:terralib4
+
+
+      ---------------------------------------------------------
+             TerraLib Team <terralib-team@dpi.inpe.br>
+            National Institute For Space Research - INPE
+      P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
+                            06/26/2012
