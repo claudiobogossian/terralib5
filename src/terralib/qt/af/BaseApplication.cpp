@@ -1546,6 +1546,10 @@ void te::qt::af::BaseApplication::makeDialog()
   treeView->add(m_projectNewFolder, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
 
+  QAction* actEnd = new QAction(this);
+  actEnd->setSeparator(true);
+  treeView->add(actEnd, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 
   //lexplorer->getTreeView()->setSelectionMode(QAbstractItemView::MultiSelection);
