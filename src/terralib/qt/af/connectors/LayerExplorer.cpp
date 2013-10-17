@@ -106,6 +106,28 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     }
     break;
 
+    case::te::qt::af::evt::LAYER_POPUP_ADD_ACTION:
+    {
+      te::qt::af::evt::LayerPopUpAddAction* e = static_cast<te::qt::af::evt::LayerPopUpAddAction*>(evt);
+      
+      QAction* act = e->m_action;
+      te::qt::widgets::LayerTreeView::ContextMenuType type = static_cast<te::qt::widgets::LayerTreeView::ContextMenuType>(e->m_menuType);
+
+      m_explorer->getTreeView()->add(act, "", "", type);
+    }
+    break;
+
+    case::te::qt::af::evt::GET_LAYER_SELECTED:
+    {
+      te::qt::af::evt::GetLayerSelected* e = static_cast<te::qt::af::evt::GetLayerSelected*>(evt);
+
+      std::list<te::map::AbstractLayerPtr> list = m_explorer->getSelectedLayers();
+
+      if(list.empty() == false)
+        e->m_layer = list.front();
+    }
+    break;
+
     default:
     break;
   }
@@ -113,7 +135,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
 void te::qt::af::LayerExplorer::onLayerSelectionChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
 {
-  emit selectedLayersChanged(m_explorer->getSelectedLayers());
+  //emit selectedLayersChanged(m_explorer->getSelectedLayers());
 
   if(selectedLayers.empty())
     return;

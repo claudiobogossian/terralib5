@@ -32,6 +32,9 @@
 #include "Event.h"
 #include "Enums.h"
 
+// Qt
+#include <QtGui/QAction>
+
 namespace te
 {
   namespace qt
@@ -223,6 +226,53 @@ namespace te
           }
   
           te::map::AbstractLayerPtr m_layer;  //!< Layer whose style was selected.
+        };
+
+        /*!
+          \struct LayerPopUpAddAction
+
+          \brief This event is used to add a action in a layer tree pop up
+        
+          \ingroup afevents
+        */
+        struct LayerPopUpAddAction : public Event
+        {
+          /*!
+            \brief Construtor.
+
+            \param layer The layer that has the selected style.
+          */
+          LayerPopUpAddAction(QAction* action,
+                              int menuType) :
+            Event(LAYER_POPUP_ADD_ACTION),
+            m_action(action),
+            m_menuType(menuType)
+          {
+          }
+  
+          QAction* m_action;              //!< Action to be added in pop up menu
+          int m_menuType;                 //!< LayerTreeView::ContextMenuType
+        };
+
+        /*!
+          \struct GetLayerSelected
+
+          \brief This event is used to get a single layer selected in layer tree
+        
+          \ingroup afevents
+        */
+        struct GetLayerSelected : public Event
+        {
+          /*!
+            \brief Construtor.
+
+            \param layer The layer that has the selected style.
+          */
+          GetLayerSelected() : Event(GET_LAYER_SELECTED)
+          {
+          }
+  
+          te::map::AbstractLayerPtr m_layer;  //!< Layer selected.
         };
       }
     }

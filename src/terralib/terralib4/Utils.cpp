@@ -36,6 +36,9 @@
 // TerraLib 4.x
 #include <terralib/kernel/TeDatabaseFactoryParams.h>
 
+// Boost
+#include <boost/lexical_cast.hpp>
+
 std::auto_ptr<te::dt::Property> terralib4::Convert2T5(const TeAttributeRep& attRep)
 {
   std::string* defaultValue = attRep.defaultValue_.empty() ? 0 : new std::string(attRep.defaultValue_);
@@ -117,9 +120,11 @@ std::auto_ptr<TeDatabaseFactoryParams> terralib4::Convert2T4DatabaseParams(const
   std::auto_ptr<TeDatabaseFactoryParams> fparams(new TeDatabaseFactoryParams());
 
   fparams->dbms_name_ = dsInfo.at("T4_DRIVER");
-  fparams->database_ = dsInfo.at("T4_DATABASE_NAME");
+  fparams->database_ = dsInfo.at("T4_DB_NAME");
   fparams->host_ = dsInfo.at("T4_HOST");
-  //....
+  fparams->port_ = boost::lexical_cast<int>(dsInfo.at("T4_PORT"));
+  fparams->user_ = dsInfo.at("T4_USER");
+  fparams->password_ = dsInfo.at("T4_PASSWORD");
 
   return fparams;
 }

@@ -98,6 +98,14 @@ bool te::qt::widgets::SegmenterWizard::validateCurrentPage()
 void te::qt::widgets::SegmenterWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
+  m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
+}
+
+void te::qt::widgets::SegmenterWizard::setLayer(te::map::AbstractLayerPtr layer)
+{
+  removePage(m_layerSearchId);
+
+  m_segmenterPage->set(layer);
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::SegmenterWizard::getOutputLayer()
@@ -112,7 +120,7 @@ void te::qt::widgets::SegmenterWizard::addPages()
   m_segmenterAdvOptPage.reset(new te::qt::widgets::SegmenterAdvancedOptionsWizardPage(this));
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
 
-  addPage(m_layerSearchPage.get());
+  m_layerSearchId = addPage(m_layerSearchPage.get());
   addPage(m_segmenterPage.get());
   addPage(m_segmenterAdvOptPage.get());
   addPage(m_rasterInfoPage.get());

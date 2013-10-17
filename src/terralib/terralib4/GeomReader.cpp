@@ -29,6 +29,9 @@
 #include "../geometry/LineString.h"
 #include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
+#include "../geometry/MultiPolygon.h"
+#include "../geometry/MultilineString.h"
+#include "../geometry/MultiPoint.h"
 #include "GeomReader.h"
 #include "Utils.h"
 
@@ -89,6 +92,72 @@ std::auto_ptr<te::gm::Polygon> terralib4::GeomReader::getPolygon(const TePolygon
 
     ++it;
   }
+
+  return geom;
+}
+
+std::auto_ptr<te::gm::MultiPolygon> terralib4::GeomReader::getMultiPolygon(const TePolygonSet& polySet)
+{
+  std::auto_ptr<te::gm::MultiPolygon> geom(new te::gm::MultiPolygon(polySet.size(),te::gm::MultiPolygonType, polySet.srid()));
+
+  TeComposite<TePolygon>::iterator it = polySet.begin();
+
+  while(it != polySet.end())
+  {
+    geom->add(getPolygon(*it).release());
+
+    ++it;
+  }
+
+  return geom;
+}
+
+std::auto_ptr<te::gm::MultiLineString> terralib4::GeomReader::getMultiLineString(const TeLineSet& lineSet)
+{
+  std::auto_ptr<te::gm::MultiLineString> geom(new te::gm::MultiLineString(lineSet.size(), te::gm::MultiLineStringType, lineSet.srid()));
+
+  TeComposite<TeLine2D>::iterator it = lineSet.begin();
+
+  while(it != lineSet.end())
+  {
+    geom->add(getLineString(*it).release());
+
+    ++it;
+  }
+
+  return geom;
+}
+
+std::auto_ptr<te::gm::MultiPoint> terralib4::GeomReader::getMultiPoint(const TePointSet& pointSet)
+{
+  std::auto_ptr<te::gm::MultiPoint> geom(new te::gm::MultiPoint(pointSet.size(), te::gm::MultiPointType, pointSet.srid()));
+
+  TeComposite<TePoint>::iterator it = pointSet.begin();
+
+  while(it != pointSet.end())
+  {
+    geom->add(getPoint(*it).release());
+
+    ++it;
+  }
+
+  return geom;
+}
+
+std::auto_ptr<te::gm::Polygon> terralib4::GeomReader::getPolygon(const TeCell& cell)
+{
+  std::auto_ptr<te::gm::Polygon> geom(new te::gm::Polygon(cell.size(), te::gm::PolygonType, cell.srid()));
+
+  TeBox cellBox = cell.box();
+
+  te::gm::LinearRing* s = new te::gm::LinearRing(5, te::gm::LineStringType);
+  s->setPoint(0, cellBox.x1(), cellBox.y1());
+  s->setPoint(1, cellBox.x2()-cellBox.x1(), cellBox.y1());
+  s->setPoint(2, cellBox.x2(), cellBox.y2());
+  s->setPoint(3, cellBox.x1(), cellBox.y2()-cellBox.y1());
+  s->setPoint(4, cellBox.x1(), cellBox.y1());
+
+  geom->add(s);
 
   return geom;
 }

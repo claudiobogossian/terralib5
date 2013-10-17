@@ -103,6 +103,14 @@ te::map::AbstractLayerPtr te::qt::widgets::MixtureModelWizard::getOutputLayer()
 void te::qt::widgets::MixtureModelWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
+  m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
+}
+
+void te::qt::widgets::MixtureModelWizard::setLayer(te::map::AbstractLayerPtr layer)
+{
+  removePage(m_layerSearchId);
+
+  m_mixtureModelPage->set(layer);
 }
 
 void te::qt::widgets::MixtureModelWizard::addPages()
@@ -111,7 +119,7 @@ void te::qt::widgets::MixtureModelWizard::addPages()
   m_mixtureModelPage.reset(new te::qt::widgets::MixtureModelWizardPage(this));
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
 
-  addPage(m_layerSearchPage.get());
+  m_layerSearchId =  addPage(m_layerSearchPage.get());
   addPage(m_mixtureModelPage.get());
   addPage(m_rasterInfoPage.get());
 
