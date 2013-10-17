@@ -27,6 +27,7 @@
 #include "../../geometry/Geometry.h"
 #include "LiteralDouble.h"
 #include "LiteralGeom.h"
+#include "LiteralString.h"
 #include "PropertyName.h"
 #include "ST_Buffer.h"
 
@@ -47,6 +48,22 @@ te::da::ST_Buffer::ST_Buffer(const PropertyName& prop, const double& d)
 
   m_args.push_back(prop.clone());
   m_args.push_back(dist);
+}
+
+te::da::ST_Buffer::ST_Buffer(const te::gm::Geometry& g, const PropertyName& propDist)
+  : Function("st_buffer")
+{
+  LiteralGeom* geom = new LiteralGeom(g);
+
+  m_args.push_back(geom);
+  m_args.push_back(propDist.clone());
+}
+
+te::da::ST_Buffer::ST_Buffer(const PropertyName& propGeom, const PropertyName& propDist)
+  : Function("st_buffer")
+{
+  m_args.push_back(propGeom.clone());
+  m_args.push_back(propDist.clone());
 }
 
 te::da::ST_Buffer::ST_Buffer(const Expression& e)

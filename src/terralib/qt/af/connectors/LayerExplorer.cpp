@@ -150,16 +150,19 @@ void te::qt::af::LayerExplorer::onLayerSelectionChanged(const std::list<te::map:
 
 void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::map::AbstractLayerPtr layer)
 {
-  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
-
   te::qt::af::evt::LayerVisibilityChanged layerVisibilityChangedEvent(layer, layer->getVisibility());
   ApplicationController::getInstance().broadcast(&layerVisibilityChangedEvent);
+
+  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
 }
 
 void te::qt::af::LayerExplorer::onLayerOrderChanged()
 {
   ApplicationController::getInstance().getProject()->setLayers(m_explorer->getAllTopLevelLayers());
+
+  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
 }
 
 void te::qt::af::LayerExplorer::onLayerRemoved(te::map::AbstractLayerPtr layer)
