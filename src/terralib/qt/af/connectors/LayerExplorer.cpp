@@ -113,7 +113,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
 void te::qt::af::LayerExplorer::onLayerSelectionChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
 {
-  emit selectedLayersChanged(m_explorer->getSelectedLayers());
+  //emit selectedLayersChanged(m_explorer->getSelectedLayers());
 
   if(selectedLayers.empty())
     return;
