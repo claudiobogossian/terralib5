@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,15 @@
  */
 
 /*!
-  \file terralib/mongodb/Exception.cpp
-
-  \brief An exception class for MongoDB driver.
+  \file terralib/terralib4/Globals.cpp
+   
+  \brief An static class with global definitions.
 */
 
 // TerraLib
-#include "Exception.h"
+#include "Globals.h"
 
-namespace te
-{
-  namespace mongodb
-  {
-    TE_DEFINE_EXCEPTION_CLASS(Exception, te::da::Exception, "te::mongodb::Exception")
+const std::string terralib4::Globals::sm_driverIdentifier(TERRALIB4_DRIVER_IDENTIFIER);
 
-  } // end namespace mongodb
-}   // end namespace te
-
+te::da::SQLDialect* terralib4::Globals::sm_queryDialect(0);
+te::da::DataSourceCapabilities* terralib4::Globals::sm_capabilities(0);

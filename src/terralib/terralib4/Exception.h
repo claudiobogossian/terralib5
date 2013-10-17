@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,27 +18,24 @@
  */
 
 /*!
-  \file terralib/yaml/Exception.h
+  \file terralib/terrlib4/Exception.h
 
-  \brief An exception class for the TerraLib YAML module.
+  \brief An exception class for Terralib 4.
 */
 
-#ifndef __TERRALIB_YAML_INTERNAL_EXCEPTION_H
-#define __TERRALIB_YAML_INTERNAL_EXCEPTION_H
+#ifndef __TERRALIB_TERRALIB4_INTERNAL_EXCEPTION_H
+#define __TERRALIB_TERRALIB4_INTERNAL_EXCEPTION_H
 
 // TerraLib
 #include "../dataaccess/Exception.h"
 #include "Config.h"
 
 
-namespace te
+namespace terralib4
 {
-  namespace yaml
-  {
-    TE_DECLARE_EXCEPTION_CLASS(TEYAMLEXPORT, Exception, te::da::Exception)
+    TE_DECLARE_EXCEPTION_CLASS(TETERRALIB4EXPORT, Exception, te::da::Exception)
 
-  } // end namespace yaml
-}   // end namespace te
+} // end namespace terralib4
 
-#endif  // __TERRALIB_YAML_INTERNAL_EXCEPTION_H
+#endif  // __TERRALIB_TERRALIB4_INTERNAL_EXCEPTION_H
 

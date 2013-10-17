@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,18 @@
  */
 
 /*!
-  \file terralib/json/Exception.cpp
+  \file terralib/terralib4/Exception.cpp
 
-  \brief An exception class for the TerraLib JSON module.
+  \brief An exception class for Terralib4.
 */
 
 // TerraLib
 #include "Exception.h"
 
-namespace te
+namespace terralib4
 {
-  namespace json
-  {
-    TE_DEFINE_EXCEPTION_CLASS(Exception, te::da::Exception, "te::json::Exception")
 
-  } // end namespace json
-}   // end namespace te
+  TE_DEFINE_EXCEPTION_CLASS(Exception, te::da::Exception, "te::ado::Exception")
+
+}   // end namespace terralib4
 

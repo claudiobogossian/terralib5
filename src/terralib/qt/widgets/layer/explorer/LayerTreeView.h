@@ -132,8 +132,6 @@ namespace te
           */
           void remove(QAction* action);
 
-          void refresh();
-
         public slots:
 
           void add(const te::map::AbstractLayerPtr& layer);

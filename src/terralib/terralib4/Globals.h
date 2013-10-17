@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/couchdb/Globals.h
-
+  \file terralib/terralib4/Globals.h
+   
   \brief An static class with global definitions.
 */
 
-#ifndef __TERRALIB_COUCHDB_INTERNAL_GLOBALS_H
-#define __TERRALIB_COUCHDB_INTERNAL_GLOBALS_H
+#ifndef __TERRALIB_TERRALIB4_INTERNAL_GLOBALS_H
+#define __TERRALIB_TERRALIB4_INTERNAL_GLOBALS_H
 
 // TerraLib
 #include "../common/Static.h"
@@ -35,22 +35,32 @@
 
 namespace te
 {
-  namespace couchdb
-  {
-    /*!
-      \class Globals
-
-      \brief An static class with global definitions.
-    */
-    class TECOUCHDBEXPORT Globals : public te::common::Static
-    {
-      public:
-
-        static const std::string sm_driverIdentifier;  //!< The CouchDB driver identifier.
-    };
-
-  } // end namespace couchdb
+  // Forward declaration
+  namespace da
+  { 
+    class DataSourceCapabilities;
+    class SQLDialect;
+  }
 }   // end namespace te
 
-#endif  // __TERRALIB_COUCHDB_INTERNAL_GLOBALS_H
+namespace terralib4
+{
+  /*!
+    \class Globals
+
+    \brief An static class with global definitions.
+  */
+  class TETERRALIB4EXPORT Globals : public te::common::Static
+  {
+    public:
+
+      static const std::string sm_driverIdentifier;  //!< The Terralib 4 driver identifier.
+
+      static te::da::SQLDialect* sm_queryDialect;                //!< The query dialect supported by Terralib 4 driver.
+      static te::da::DataSourceCapabilities* sm_capabilities;    //!< The query dialect supported by Terralib 4 driver.
+
+  };
+} // end namespace terralib4
+
+#endif  // __TERRALIB_TERRALIB4_INTERNAL_GLOBALS_H
 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,10 @@
  */
 
 /*!
-  \file terralib/couchdb/Globals.cpp
-   
-  \brief An static class with global definitions.
+  \file terralib/terralib4/DataSourceFactory.cpp
+
+  \brief This is the factory for the Terralib 4 data sources.
 */
 
 // TerraLib
-#include "Globals.h"
-
-const std::string te::couchdb::Globals::sm_driverIdentifier(COUCHDB_DRIVER_IDENTIFIER);
-
+#include "DataSourceFactory.h"

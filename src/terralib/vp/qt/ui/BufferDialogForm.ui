@@ -143,13 +143,6 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="m_fixedDistanceComboBox">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
           <item row="1" column="0">

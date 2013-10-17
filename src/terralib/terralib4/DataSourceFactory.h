@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,23 @@
  */
 
 /*!
-  \file terralib/yaml/Exception.cpp
+  \file terralib/terralib4/DataSourceFactory.h
 
-  \brief An exception class for the TerraLib YAML module.
+  \brief This is the factory for Terralib 4 data sources.
 */
 
+#ifndef __TERRALIB_TERRALIB4_INTERNAL_DATASOURCEFACTORY_H
+#define __TERRALIB_TERRALIB4_INTERNAL_DATASOURCEFACTORY_H
+
 // TerraLib
-#include "Exception.h"
+#include "DataSource.h"
 
-namespace te
+namespace terralib4
 {
-  namespace yaml
+  inline te::da::DataSource* Build()
   {
-    TE_DEFINE_EXCEPTION_CLASS(Exception, te::da::Exception, "te::yaml::Exception")
+    return new DataSource;
+  }
+}   // end namespace terralib4
 
-  } // end namespace yaml
-}   // end namespace te
-
+#endif  // __TERRALIB_TERRALIB4_INTERNAL_DATASOURCEFACTORY_H
