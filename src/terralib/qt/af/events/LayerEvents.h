@@ -185,27 +185,6 @@ namespace te
         };
 
         /*!
-          \struct LayersChanged
-          
-          \brief This event signals that the layout of layers has changed.
-        */
-        struct LayersChanged : public Event
-        {
-          /*!
-            \brief Constructor.
-
-            \param layers The layers.
-          */
-          LayersChanged(const std::vector<te::map::AbstractLayerPtr>& layers)
-            : Event(LAYERS_CHANGED),
-              m_layers(layers)
-          {
-          }
-
-          std::vector<te::map::AbstractLayerPtr> m_layers; //!< Vector of layers.
-        };
-
-        /*!
           \struct LayerStyleSelected
 
           \brief This event indicates that the layer style was selected on the layer explorer.
