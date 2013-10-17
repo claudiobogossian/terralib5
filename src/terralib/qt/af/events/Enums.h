@@ -50,6 +50,8 @@ namespace te
           LAYER_SELECTED_OBJECTS_CHANGED,
           LAYERS_CHANGED,
           LAYER_STYLE_SELECTED,
+          LAYER_POPUP_ADD_ACTION,
+          GET_LAYER_SELECTED,
           TOOL_CHANGED,
           COORDINATE_TRACKED,
           POINT_GEOMETRIES,

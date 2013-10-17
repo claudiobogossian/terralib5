@@ -26,18 +26,20 @@
 // Terralib
 #include "../../../qt/widgets/rp/ContrastWizard.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/Project.h"
 #include "ContrastAction.h"
 
 // Qt
 #include <QtCore/QObject>
+#include <QtGui/QMessageBox>
 
 // STL
 #include <memory>
 
 te::qt::plugins::rp::ContrastAction::ContrastAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
 {
-  createAction(tr("Contrast...").toStdString());
+  createAction(tr("Contrast...").toStdString(), "histogram");
+
+  createPopUpAction(tr("Contrast...").toStdString(), "histogram");
 }
 
 te::qt::plugins::rp::ContrastAction::~ContrastAction()
@@ -48,17 +50,33 @@ void te::qt::plugins::rp::ContrastAction::onActionActivated(bool checked)
 {
   te::qt::widgets::ContrastWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-// get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
-
-  if(prj)
-  {
-    dlg.setList(prj->getLayers());
-  }
+  dlg.setList(getLayers());
 
   if(dlg.exec() == QDialog::Accepted)
   {
     //add new layer
     addNewLayer(dlg.getOutputLayer());
+  }
+}
+
+void te::qt::plugins::rp::ContrastAction::onPopUpActionActivated(bool checked)
+{
+  te::map::AbstractLayerPtr layer = getCurrentLayer();
+
+  if(layer.get())
+  {
+    te::qt::widgets::ContrastWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+
+    dlg.setLayer(layer);
+
+    if(dlg.exec() == QDialog::Accepted)
+    {
+      //add new layer
+      addNewLayer(dlg.getOutputLayer());
+    }
+  }
+  else
+  {
+    QMessageBox::warning(m_menu, tr("Warning"), tr("Invalid Layer."));
   }
 }

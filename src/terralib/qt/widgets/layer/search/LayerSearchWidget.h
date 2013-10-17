@@ -71,6 +71,12 @@ namespace te
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
 
+          void filterOnlyByRaster();
+
+          void filterOnlyByGeom();
+
+          void filterAll();
+
         protected:
 
           void fillTreeView(std::list<te::map::AbstractLayerPtr>& layerList);
@@ -79,7 +85,7 @@ namespace te
 
         private slots:
 
-          void onNameLineEditTextChanged(const QString& text);
+          void onFilter();
 
         private:
 

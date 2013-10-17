@@ -57,6 +57,8 @@ namespace te
           protected slots:
 
             virtual void onActionActivated(bool checked);
+
+            virtual void onPopUpActionActivated(bool checked);
         };
 
       } // end namespace rp
