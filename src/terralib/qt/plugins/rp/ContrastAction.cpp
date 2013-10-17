@@ -26,7 +26,6 @@
 // Terralib
 #include "../../../qt/widgets/rp/ContrastWizard.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/Project.h"
 #include "ContrastAction.h"
 
 // Qt
@@ -51,13 +50,7 @@ void te::qt::plugins::rp::ContrastAction::onActionActivated(bool checked)
 {
   te::qt::widgets::ContrastWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-// get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
-
-  if(prj)
-  {
-    dlg.setList(prj->getLayers());
-  }
+  dlg.setList(getLayers());
 
   if(dlg.exec() == QDialog::Accepted)
   {

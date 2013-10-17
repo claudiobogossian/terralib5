@@ -121,6 +121,9 @@ void te::qt::widgets::RegisterWizard::setList(std::list<te::map::AbstractLayerPt
 {
   m_layerRefPage->getSearchWidget()->setList(layerList);
   m_layerAdjPage->getSearchWidget()->setList(layerList);
+
+  m_layerRefPage->getSearchWidget()->filterOnlyByRaster();
+  m_layerAdjPage->getSearchWidget()->filterOnlyByRaster();
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::RegisterWizard::getOutputLayer()

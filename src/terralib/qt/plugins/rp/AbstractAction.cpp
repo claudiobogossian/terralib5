@@ -41,6 +41,10 @@ te::qt::plugins::rp::AbstractAction::~AbstractAction()
   // do not delete m_action pointer because its son of rp menu... and qt delete automatically
 }
 
+void te::qt::plugins::rp::AbstractAction::onPopUpActionActivated(bool checked)
+{
+}
+
 void te::qt::plugins::rp::AbstractAction::createAction(std::string name, std::string pixmap)
 {
   assert(m_menu);
@@ -102,6 +106,14 @@ te::map::AbstractLayerPtr te::qt::plugins::rp::AbstractAction::getCurrentLayer()
   return layer;
 }
 
-void te::qt::plugins::rp::AbstractAction::onPopUpActionActivated(bool checked)
+std::list<te::map::AbstractLayerPtr> te::qt::plugins::rp::AbstractAction::getLayers()
 {
+  std::list<te::map::AbstractLayerPtr> list;
+
+  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+
+  if(prj)
+    list = prj->getLayers();
+
+  return list;
 }

@@ -26,7 +26,6 @@
 // Terralib
 #include "../../../qt/widgets/rp/ClassifierWizard.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/Project.h"
 #include "ClassifierAction.h"
 
 
@@ -49,13 +48,7 @@ void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
 {
   te::qt::widgets::ClassifierWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-// get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
-
-  if(prj)
-  {
-    dlg.setList(prj->getLayers());
-  }
+  dlg.setList(getLayers());
 
   dlg.exec();
 }

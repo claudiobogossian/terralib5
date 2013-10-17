@@ -119,6 +119,14 @@ namespace te
             */
             te::map::AbstractLayerPtr getCurrentLayer();
 
+            /*!
+              \brief Get the list of layers from app
+
+              \return The list pf layer auto pointers
+
+            */
+            std::list<te::map::AbstractLayerPtr> getLayers();
+
           protected:
 
             QMenu* m_menu;          //!< Parent Menu.
