@@ -31,6 +31,7 @@
 #include "../../../datatype/StringProperty.h"
 #include "../../../datatype/Utils.h"
 #include "../../../geometry/Geometry.h"
+#include "../../../geometry/WKTReader.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
 #include "../../../xml/Writer.h"
@@ -52,6 +53,7 @@
 #include "../../query/Having.h"
 #include "../../query/Literal.h"
 #include "../../query/LiteralDouble.h"
+#include "../../query/LiteralGeom.h"
 #include "../../query/LiteralInt16.h"
 #include "../../query/LiteralInt32.h"
 #include "../../query/LiteralInt64.h"
@@ -1678,6 +1680,13 @@ te::da::Literal* te::serialize::xml::ReadLiteral(te::xml::Reader& reader)
     case te::dt::DOUBLE_TYPE:
     {
       lit = new te::da::LiteralDouble(boost::lexical_cast<double>(value));
+      break;
+    }
+    case te::dt::GEOMETRY_TYPE:
+    {
+      std::auto_ptr<te::gm::Geometry> geom(te::gm::WKTReader::read(value.c_str()));
+
+      lit = new te::da::LiteralGeom(geom.release());
       break;
     }
     default:
