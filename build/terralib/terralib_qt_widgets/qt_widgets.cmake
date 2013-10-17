@@ -353,8 +353,10 @@ set (
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
   ${SRCDIR}/widgets/rp/ClassifierWizardPage.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
+  ${SRCDIR}/widgets/rp/ContrastWizard.h
   ${SRCDIR}/widgets/rp/ContrastWizardPage.h
   ${SRCDIR}/widgets/rp/MixtureModelDialog.h
+  ${SRCDIR}/widgets/rp/MixtureModelWizard.h
   ${SRCDIR}/widgets/rp/MixtureModelWizardPage.h
   ${SRCDIR}/widgets/rp/RasterHistogramDialog.h
   ${SRCDIR}/widgets/rp/RasterHistogramWidget.h
@@ -363,7 +365,9 @@ set (
   ${SRCDIR}/widgets/rp/RasterNavigatorDialog.h
   ${SRCDIR}/widgets/rp/RasterNavigatorWidget.h
   ${SRCDIR}/widgets/rp/RasterNavigatorWizardPage.h
+  ${SRCDIR}/widgets/rp/RegisterWizard.h
   ${SRCDIR}/widgets/rp/SegmenterDialog.h
+  ${SRCDIR}/widgets/rp/SegmenterWizard.h
   ${SRCDIR}/widgets/rp/SegmenterWizardPage.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorAdvancedDialog.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorDialog.h

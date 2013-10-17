@@ -27,7 +27,9 @@
 #define __TERRALIB_T4_INTERNAL_UTILS_H
 
 // STL
+#include <map>
 #include <memory>
+#include <string>
 
 // Terralib 5
 #include "../datatype/Property.h"
@@ -42,6 +44,8 @@ namespace te
     class Property;
   }
 }
+
+class TeDatabaseFactoryParams;
 
 namespace terralib4
 {
@@ -58,6 +62,15 @@ namespace terralib4
           responsability to set one.
   */
   std::auto_ptr<te::dt::Property> Convert2T5(const TeAttributeRep& attRep);
+
+  /*!
+    \brief It converts a data source information to a TerraLib 4.x database params.
+
+    \param dsInfo The data source information to be converted to a TerraLib 4.x database params.
+
+    \return A TerraLib 4.x database params.
+  */
+  std::auto_ptr<TeDatabaseFactoryParams> Convert2T4DatabaseParams(const std::map<std::string, std::string>& dsInfo);
 
 } // end namespace terralib4
 

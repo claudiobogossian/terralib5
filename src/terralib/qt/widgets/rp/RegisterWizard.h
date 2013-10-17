@@ -52,6 +52,7 @@ namespace te
       */
       class TEQTWIDGETSEXPORT RegisterWizard : public QWizard
       {
+        Q_OBJECT
 
         public:
 
@@ -72,6 +73,10 @@ namespace te
           void addPages();
 
           bool execute();
+
+        protected slots:
+
+          void onHelpButtonClicked();
 
         private:
 

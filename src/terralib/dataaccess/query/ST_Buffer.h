@@ -73,6 +73,22 @@ namespace te
         /*!
           \brief Constructor.
 
+          \param g    The geometry literal.
+          \param attName    The property name that will be used to calculate buffer.
+        */
+        ST_Buffer(const te::gm::Geometry& g, const PropertyName& propDist);
+
+        /*!
+          \brief Constructor.
+
+          \param prop The geometry property name.
+          \param attName    The property name that will be used to calculate buffer.
+        */
+        ST_Buffer(const te::da::PropertyName& propGeom, const PropertyName& propDist);
+
+        /*!
+          \brief Constructor.
+
           \param e    The expression.
         */
         ST_Buffer(const Expression& e);

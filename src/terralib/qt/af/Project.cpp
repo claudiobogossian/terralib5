@@ -84,14 +84,19 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers()
   {
     te::map::AbstractLayerPtr topLevelLayer = *it;
 
-    std::vector<te::map::AbstractLayer*> children = topLevelLayer->getDescendants();
-    for(std::size_t i = 0; i < children.size(); ++i)
+    if(topLevelLayer->getType() == "FOLDERLAYER")
     {
-      if(children[i]->getType() == "FOLDERLAYER")
-        continue;
+      std::vector<te::map::AbstractLayer*> children = topLevelLayer->getDescendants();
+      for(std::size_t i = 0; i < children.size(); ++i)
+      {
+        if(children[i]->getType() == "FOLDERLAYER")
+          continue;
 
-      layers.push_back(te::map::AbstractLayerPtr(children[i]));
+        layers.push_back(te::map::AbstractLayerPtr(children[i]));
+      }
     }
+    else
+      layers.push_back(topLevelLayer);
   }
 
   return layers;

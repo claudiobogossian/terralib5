@@ -73,6 +73,11 @@ te::qt::widgets::QueryLayerBuilderWizard::QueryLayerBuilderWizard(QWidget* paren
   //this->setFixedSize(640, 480);
   this->setWindowTitle(tr("Query Layer Builder"));
 
+  this->setOption(QWizard::HaveHelpButton, true);
+  this->setOption(QWizard::HelpButtonOnRight, false);
+
+  connect((QObject*)this->button(QWizard::HelpButton), SIGNAL(clicked()), this, SLOT(onHelpButtonClicked()));
+
   addPages();
 }
 
@@ -248,6 +253,8 @@ void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
   std::vector<std::string> inputProperties;
   std::vector<std::string> geomProperties;
 
+  int srid = 0;
+
   //get properties for each data set
   for(size_t t = 0; t < dataSetSelecteds.size(); ++t)
   {
@@ -274,7 +281,14 @@ void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
         std::string fullName = alias + "." + propName;
 
         if(dsType->getProperty(i)->getType() == te::dt::GEOMETRY_TYPE)
+        {
+          te::gm::GeometryProperty* geomProp = dynamic_cast<te::gm::GeometryProperty*>(dsType->getProperty(i));
+          
+          if(geomProp)
+            srid = geomProp->getSRID();
+
           geomProperties.push_back(fullName);
+        }
         else
           inputProperties.push_back(fullName);
       }
@@ -287,7 +301,7 @@ void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
   m_fieldPage->getWidget()->setFixedOutputValues(geomProperties, "geometry");
   m_groupByPage->getWidget()->setInputValues(inputProperties);
   m_whereClausePage->getWidget()->setAttributeList(inputProperties);
-  m_whereClausePage->getWidget()->setGeomAttributeList(geomProperties);
+  m_whereClausePage->getWidget()->setGeomAttributeList(geomProperties, srid);
   m_orderByPage->getWidget()->setAttributeList(inputProperties);
 }
 
@@ -351,4 +365,9 @@ void te::qt::widgets::QueryLayerBuilderWizard::getQueryCapabilities()
   }
 
   m_whereClausePage->getWidget()->setConnectorsList(vecConnectors);
+}
+
+void te::qt::widgets::QueryLayerBuilderWizard::onHelpButtonClicked()
+{
+
 }

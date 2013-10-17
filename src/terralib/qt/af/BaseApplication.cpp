@@ -946,8 +946,6 @@ void te::qt::af::BaseApplication::onLayerChartTriggered()
       if(chartItem)
         m_explorer->getExplorer()->remove(chartItem);
 
-      m_explorer->getExplorer()->getTreeView()->refresh();
-
       m_explorer->getExplorer()->getTreeView()->expandAll();
 
       m_display->getDisplay()->refresh();
@@ -986,8 +984,6 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
 
       if(groupingItem)
         m_explorer->getExplorer()->remove(groupingItem);
-
-      m_explorer->getExplorer()->getTreeView()->refresh();
 
       m_explorer->getExplorer()->getTreeView()->expandAll();
 

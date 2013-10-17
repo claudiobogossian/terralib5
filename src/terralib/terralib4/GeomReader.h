@@ -54,19 +54,6 @@ namespace terralib4
   {
     public:
 
-      /*!
-        \brief It returns a valid geometry from a given EWKB.
- 
-        \param ewkb A valid EWKB geometry.
-
-        \return A geometry created from reading the EWKB. The caller of this method will take the ownership of the returned geometry.
-      */
-      static std::auto_ptr<te::gm::Geometry> read(const TeGeometry& geom);
-
-    private:
-
-      static std::auto_ptr<te::gm::Geometry> getGeometry(const char* ewkb, const char** endptr);
-
       static std::auto_ptr<te::gm::Point> getPoint(const TePoint& pt);
 
       static std::auto_ptr<te::gm::LineString> getLineString(const TeLine2D& line);
@@ -74,6 +61,8 @@ namespace terralib4
       static std::auto_ptr<te::gm::LinearRing> getLinearRing(const TeLinearRing& ring);
 
       static std::auto_ptr<te::gm::Polygon> getPolygon(const TePolygon& poly);
+
+      // adicionar assinaturas para: polygonset, lineset, pointset, cell
   };
 }  // end namespace terralib4
 

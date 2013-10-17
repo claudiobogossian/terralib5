@@ -624,11 +624,6 @@ bool te::qt::widgets::LayerTreeModel::remove(AbstractTreeItem* item)
   return removeRows(itemRow, 1, parentIndex);
 }
 
-void te::qt::widgets::LayerTreeModel::refresh()
-{
-  emit layoutChanged();
-}
-
 std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeModel::getAllTopLevelLayers() const
 {
   std::list<te::map::AbstractLayerPtr> topLevelLayers;
