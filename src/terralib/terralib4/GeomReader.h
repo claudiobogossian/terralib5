@@ -37,11 +37,15 @@
 // Forward declarations
 #include "../geometry_fw.h"
 
+class TeCell;
 class TeGeometry;
-class TePoint;
 class TeLine2D;
 class TeLinearRing;
+class TeLineSet;
+class TePoint;
 class TePolygon;
+class TePolygonSet;
+class TePointSet;
 
 namespace terralib4
 {
@@ -62,7 +66,13 @@ namespace terralib4
 
       static std::auto_ptr<te::gm::Polygon> getPolygon(const TePolygon& poly);
 
-      // adicionar assinaturas para: polygonset, lineset, pointset, cell
+      static std::auto_ptr<te::gm::MultiPolygon> getMultiPolygon(const TePolygonSet& polySet);
+
+      static std::auto_ptr<te::gm::MultiLineString> getMultiLineString(const TeLineSet& lineSet);
+
+      static std::auto_ptr<te::gm::MultiPoint> getMultiPoint(const TePointSet& pointSet);
+
+      static std::auto_ptr<te::gm::Polygon> getPolygon(const TeCell& cell);
   };
 }  // end namespace terralib4
 

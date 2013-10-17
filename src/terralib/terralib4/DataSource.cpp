@@ -19,6 +19,7 @@
 
 // TerraLib 5
 #include "DataSource.h"
+#include "Config.h"
 #include "Utils.h"
 
 // TerraLib 4.x
@@ -82,7 +83,7 @@ terralib4::DataSource::Impl::~Impl()
 
 std::string terralib4::DataSource::Impl::getType() const
 {
-  throw;
+  return TERRALIB4_DRIVER_IDENTIFIER;
 }
 
 const std::map<std::string, std::string>& terralib4::DataSource::Impl::getConnectionInfo() const
@@ -119,12 +120,12 @@ void terralib4::DataSource::Impl::close()
 
 bool terralib4::DataSource::Impl::isOpened() const
 {
-  throw;
+  return m_db != 0;
 }
 
 bool terralib4::DataSource::Impl::isValid() const
 {
-  throw;
+  return m_db != 0;
 }
 
 const te::da::DataSourceCapabilities& terralib4::DataSource::Impl::getCapabilities() const
@@ -139,7 +140,14 @@ const te::da::SQLDialect* terralib4::DataSource::Impl::getDialect() const
 
 void terralib4::DataSource::Impl::create(const std::map<std::string, std::string>& dsInfo)
 {
-  throw;
+  TeDatabase* db = 0;
+
+  std::auto_ptr<TeDatabaseFactoryParams> params(terralib4::Convert2T4DatabaseParams(dsInfo));
+
+  db = TeDatabaseFactory::make(*params.get());
+  
+  db->newDatabase(params->database_, params->user_, params->password_, params->host_, params->port_);
+
 }
 
 void terralib4::DataSource::Impl::drop(const std::map<std::string, std::string>& dsInfo)
