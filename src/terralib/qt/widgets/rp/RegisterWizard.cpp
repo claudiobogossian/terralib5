@@ -64,7 +64,7 @@ te::qt::widgets::RegisterWizard::RegisterWizard(QWidget* parent)
 
   this->setButton(QWizard::HelpButton, helpButton);
 
-  helpButton->setPageReference("widgets/rp/Register.html");
+  helpButton->setPageReference("plugins/rp/rp_register.html");
 
   addPages();
 }
