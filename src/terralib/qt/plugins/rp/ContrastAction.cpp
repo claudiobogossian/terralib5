@@ -77,6 +77,6 @@ void te::qt::plugins::rp::ContrastAction::onPopUpActionActivated(bool checked)
   }
   else
   {
-    QMessageBox::warning(m_menu, tr("Warning"), tr("Invalid Layer."));
+    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
   }
 }

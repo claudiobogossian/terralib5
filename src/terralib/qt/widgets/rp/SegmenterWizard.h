@@ -54,8 +54,6 @@ namespace te
       */
       class TEQTWIDGETSEXPORT SegmenterWizard : public QWizard
       {
-        Q_OBJECT
-
         public:
 
           SegmenterWizard(QWidget* parent);
@@ -77,10 +75,6 @@ namespace te
           void addPages();
 
           bool execute();
-
-        protected slots:
-
-          void onHelpButtonClicked();
 
         private:
 

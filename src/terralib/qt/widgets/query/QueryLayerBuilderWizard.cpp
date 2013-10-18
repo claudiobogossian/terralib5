@@ -38,6 +38,7 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../maptools/QueryLayer.h"
 #include "../../../se/Utils.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "../datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../datasource/selector/DataSourceSelectorWidget.h"
 #include "../utils/DoubleListWidget.h"
@@ -76,7 +77,11 @@ te::qt::widgets::QueryLayerBuilderWizard::QueryLayerBuilderWizard(QWidget* paren
   this->setOption(QWizard::HaveHelpButton, true);
   this->setOption(QWizard::HelpButtonOnRight, false);
 
-  connect((QObject*)this->button(QWizard::HelpButton), SIGNAL(clicked()), this, SLOT(onHelpButtonClicked()));
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("widgets/query/QueryLayerBuilder.html");
 
   addPages();
 }
@@ -365,9 +370,4 @@ void te::qt::widgets::QueryLayerBuilderWizard::getQueryCapabilities()
   }
 
   m_whereClausePage->getWidget()->setConnectorsList(vecConnectors);
-}
-
-void te::qt::widgets::QueryLayerBuilderWizard::onHelpButtonClicked()
-{
-
 }

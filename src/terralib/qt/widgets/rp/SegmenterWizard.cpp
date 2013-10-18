@@ -30,6 +30,7 @@
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
 #include "../../../rp/Module.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "SegmenterWizard.h"
 #include "SegmenterAdvancedOptionsWizardPage.h"
 #include "SegmenterWizardPage.h"
@@ -58,7 +59,11 @@ te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
   this->setOption(QWizard::HaveHelpButton, true);
   this->setOption(QWizard::HelpButtonOnRight, false);
 
-  connect((QObject*)this->button(QWizard::HelpButton), SIGNAL(clicked()), this, SLOT(onHelpButtonClicked()));
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("widgets/rp/Segmenter.html");
 
   addPages();
 }
@@ -191,7 +196,3 @@ bool te::qt::widgets::SegmenterWizard::execute()
   return true;
 }
 
-void te::qt::widgets::SegmenterWizard::onHelpButtonClicked()
-{
-
-}
