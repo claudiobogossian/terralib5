@@ -996,20 +996,6 @@ namespace te
         */
         virtual void setNormalMode() = 0;
 
-        /*!
-          \brief It sets the magnetic declination angle.
-
-          \param angle The angle.
-        */
-        virtual void setMagneticDeclination(double angle) = 0;
-
-        /*!
-          \brief It returns the magnetic declination angle.
-
-          \return The angle.
-        */
-        virtual double getMagneticDeclination() = 0;
-
         //@}
     };
 
@@ -1017,4 +1003,3 @@ namespace te
 }     // end namespace te
 
 #endif  // __TERRALIB_MAPTOOLS_INTERNAL_CANVAS_H
-

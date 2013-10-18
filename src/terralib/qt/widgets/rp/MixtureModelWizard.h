@@ -53,8 +53,6 @@ namespace te
       */
       class TEQTWIDGETSEXPORT MixtureModelWizard : public QWizard
       {
-        Q_OBJECT
-
         public:
 
           MixtureModelWizard(QWidget* parent);
@@ -76,10 +74,6 @@ namespace te
           void addPages();
 
           bool execute();
-
-        protected slots:
-
-          void onHelpButtonClicked();
 
         private:
 

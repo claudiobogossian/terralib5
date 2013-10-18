@@ -52,8 +52,6 @@ namespace te
       */
       class TEQTWIDGETSEXPORT RegisterWizard : public QWizard
       {
-        Q_OBJECT
-
         public:
 
           RegisterWizard(QWidget* parent);
@@ -73,10 +71,6 @@ namespace te
           void addPages();
 
           bool execute();
-
-        protected slots:
-
-          void onHelpButtonClicked();
 
         private:
 

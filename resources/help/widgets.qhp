@@ -9,8 +9,9 @@
         <section title="Plugins manager" ref="./widgets/pluginmanager/PluginManager.html"/>
         <section title="Chart style" ref="./widgets/charts/chart_style.html"/>
         <section title="Classifier" ref="./widgets/rp/classifier.html"/>
-        <section title="Data set selector" ref="./widgets/dataset_selector/dataset_selector.html"/>
-        <section title="Data source selector" ref="./widgets/datasource_selector/datasource_selector.html"/>
+        <section title="Data Source Selector" ref="./widgets/datasource_selector/datasource_selector.html"/>
+		<section title="Dataset Selector" ref="./widgets/dataset_selector/dataset_selector.html"/>
+		<section title="Spatial Reference System" ref="./widgets/srs/srs.html"/>		
 		<section title="Direct Data Exchanger" ref="./widgets/exchanger_direct/exchanger_direct.html"/>
 	    <section title="Data Exchanger All Sources to All Sources" ref="./widgets/exchanger_all/exchanger_all.html"/>
         <section title="Data Table" ref="./widgets/table/index.html">
@@ -35,18 +36,23 @@
       <keyword name="Histogram" ref="./widgets/histogram/histogram.html"/>
       <keyword name="Grouping" ref="./widgets/grouping/grouping.html"/>
       <keyword name="Pie Bar Chart" ref="./widgets/pie_bar_chart/pie_bar_chart.html"/>
-      <keyword name="Scatter" ref="./widgets/scatter/scatter.html"/>	  
+      <keyword name="Scatter" ref="./widgets/scatter/scatter.html"/>
+      <keyword name="Spatial Reference System" ref="./widgets/srs/srs.html"/>
+      <keyword name="SRID" ref="./widgets/srs/srs.html"/>
+	  
     </keywords>
      <files>
       <file>widgets/index.html</file>
       <file>widgets/pluginmanager/PluginManager.html</file>
       <file>widgets/pluginmanager/*.png</file>
       <file>widgets/charts/chart_style.html</file>
-      <file>widgets/rp/classifier.html</file>
-      <file>widgets/dataset_selector/dataset_selector.html</file>
-      <file>widgets/dataset_selector/*.png</file>	  
+      <file>widgets/rp/classifier.html</file> 
       <file>widgets/datasource_selector/datasource_selector.html</file>
       <file>widgets/datasource_selector/*.png</file>
+      <file>widgets/dataset_selector/dataset_selector.html</file>
+      <file>widgets/dataset_selector/*.png</file>
+      <file>widgets/srs/srs.html</file>
+      <file>widgets/srs/*.png</file>		  
       <file>widgets/exchanger_direct/exchanger_direct.html</file>
       <file>widgets/exchanger_direct/*.png</file>
       <file>widgets/exchanger_all/exchanger_all.html</file>
