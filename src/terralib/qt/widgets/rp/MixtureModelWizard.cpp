@@ -63,7 +63,7 @@ te::qt::widgets::MixtureModelWizard::MixtureModelWizard(QWidget* parent)
 
   this->setButton(QWizard::HelpButton, helpButton);
 
-  helpButton->setPageReference("widgets/rp/MixModel.html");
+  helpButton->setPageReference("plugins/rp/rp_mixture.html");
 
   addPages();
 }
