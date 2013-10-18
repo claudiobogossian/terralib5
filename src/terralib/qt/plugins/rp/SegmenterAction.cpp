@@ -51,7 +51,9 @@ void te::qt::plugins::rp::SegmenterAction::onActionActivated(bool checked)
 {
   te::qt::widgets::SegmenterWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-  dlg.setList(getLayers());
+  std::list<te::map::AbstractLayerPtr> layersList = getLayers();
+
+  dlg.setList( layersList );
 
   if(dlg.exec() == QDialog::Accepted)
   {

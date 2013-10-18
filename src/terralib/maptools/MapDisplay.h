@@ -66,10 +66,6 @@ namespace te
 
         virtual void setSRID(const int& srid, bool doRefresh = true);
 
-        virtual void setMagneticDeclination(double angle) = 0;
-
-        virtual double getMagneticDeclination() = 0;
-
       protected:
 
         te::gm::Envelope m_extent;                          //!< The display extent.

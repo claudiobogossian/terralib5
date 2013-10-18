@@ -29,11 +29,13 @@
 #include "../datatype/NumericProperty.h"
 #include "../datatype/Property.h"
 #include "../datatype/StringProperty.h"
+#include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
 #include "../raster/RasterProperty.h"
 #include "Utils.h"
 
 // TerraLib 4.x
+#include <terralib/kernel/TeBox.h>
 #include <terralib/kernel/TeDatabaseFactoryParams.h>
 
 // Boost
@@ -129,3 +131,73 @@ std::auto_ptr<TeDatabaseFactoryParams> terralib4::Convert2T4DatabaseParams(const
   return fparams;
 }
 
+int terralib4::Convert2T5(TeAttrDataType type)
+{
+  switch(type)
+  {
+    case TeSTRING:
+      return te::dt::STRING_TYPE;
+
+    case TeREAL:
+      return te::dt::DOUBLE_TYPE;
+
+    case TeINT:
+      return te::dt::INT32_TYPE;
+
+    case TeDATETIME:
+      return te::dt::DATETIME_TYPE;
+
+    case TeBLOB:
+      return te::dt::BYTE_ARRAY_TYPE;
+
+    case TeCHARACTER:
+      return te::dt::CHAR_TYPE;
+
+    case TeUNSIGNEDINT:
+      return te::dt::UINT32_TYPE;
+
+    case TePOINTTYPE:
+    case TeNODETYPE:
+      return te::gm::PointType;
+
+    case TeLINE2DTYPE:
+      return te::gm::LineStringType;
+
+    case TePOLYGONTYPE:
+    case TeCELLTYPE:
+      return te::gm::PolygonType;
+
+    case TePOINTSETTYPE:
+    case TeNODESETTYPE:
+      return te::gm::MultiPointType;
+
+    case TeLINESETTYPE:
+      return te::gm::MultiLineStringType;
+
+    case TePOLYGONSETTYPE:
+    case TeCELLSETTYPE:
+      return te::gm::MultiPolygonType;
+
+    case TeTEXTTYPE:
+    case TeTEXTSETTYPE:
+      te::dt::STRING_TYPE;
+
+    case TeRASTERTYPE:
+      te::dt::RASTER_TYPE;
+
+    case TeBOOLEAN:
+      te::dt::BOOLEAN_TYPE;
+
+    case TeUNKNOWN:
+    case TeOBJECT:
+    default:
+      return te::dt::UNKNOWN_TYPE;
+  }
+}
+
+std::auto_ptr<te::gm::Envelope> terralib4::Convert2T5(TeBox box)
+{
+  std::auto_ptr<te::gm::Envelope> env(new te::gm::Envelope(box.x1(), box.y1(), box.x2(), box.y2()));
+
+  return env;
+}

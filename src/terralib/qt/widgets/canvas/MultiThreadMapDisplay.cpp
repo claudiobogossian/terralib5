@@ -100,7 +100,6 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh()
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = m_visibleLayers.begin(); it != m_visibleLayers.end(); ++it) // for each layer.
   {
-    m_threads[i]->setMagneticDeclination(m_magneticDeclination);
     m_threads[i]->draw(it->get(), m_extent, m_srid, size(), i);
     i++;
   }

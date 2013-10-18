@@ -63,7 +63,7 @@ te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
 
   this->setButton(QWizard::HelpButton, helpButton);
 
-  helpButton->setPageReference("widgets/rp/Segmenter.html");
+  helpButton->setPageReference("plugins/rp/rp_segmenter.html");
 
   addPages();
 }

@@ -298,12 +298,6 @@ namespace te
 
           void setNormalMode();
 
-          void setMagneticDeclination(double angle);
-
-          double getMagneticDeclination();
-
-
-
           //@}
 
           /** @name Qt Canvas Specific Methos
@@ -477,8 +471,6 @@ namespace te
 
           bool m_isDeviceOwner;     //!< Tells if canvas is the owner of the paint device.
 
-          double m_magneticDeclination; //!< Magnetic declination
-                    
           QColor m_bgColor;         //!< Canvas background color. Defaults: white fully transparent.
 
           bool m_erase;                             //!< used for erase operation.
