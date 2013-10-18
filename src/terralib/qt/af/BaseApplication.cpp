@@ -56,6 +56,7 @@
 #include "../widgets/progress/ProgressViewerDialog.h"
 #include "../widgets/progress/ProgressViewerWidget.h"
 #include "../widgets/query/QueryLayerBuilderWizard.h"
+#include "../widgets/query/QueryDialog.h"
 #include "../widgets/se/VisualDockWidget.h"
 #include "../widgets/se/GroupingDialog.h"
 #include "../widgets/tools/Info.h"
@@ -1094,6 +1095,19 @@ void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
   display->setExtent(newExtent);
 }
 
+void te::qt::af::BaseApplication::onQueryLayerTriggered()
+{
+  te::qt::widgets::QueryDialog dlg(this);
+
+  if(m_project)
+    dlg.setList(m_project->getLayers());
+
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    //DOGRETE DO IT
+  }
+}
+
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
 {
   if(!checked)
@@ -1517,6 +1531,7 @@ void te::qt::af::BaseApplication::makeDialog()
   //layer
   treeView->add(m_layerSRS, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_queryLayer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   QAction* actLayer = new QAction(this);
   actLayer->setSeparator(true);
@@ -1708,6 +1723,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer on the &Map Display"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Objects on the Map Display", tr("Fit Selected Objects on the Map Display"), tr("Fit the selected objects on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to the Selected Objects on Map Display", tr("Pan to the Selected Objects on the Map Display"), tr("Pan to the selected objects on the Map Display"), true, false, true, m_menubar);
+  initAction(m_queryLayer, "", "Layer.Query", tr("Query"), tr("Query"), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
@@ -1850,6 +1866,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerSRS);
   m_layerMenu->addAction(m_layerProperties);
+  m_layerMenu->addAction(m_queryLayer);
 
   // TODO
   //m_layerMenu->addAction(m_layerRaise);
@@ -2052,6 +2069,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_layerFitOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitOnMapDisplayTriggered()));
   connect(m_layerFitSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerFitSelectedOnMapDisplayTriggered()));
   connect(m_layerPanToSelectedOnMapDisplay, SIGNAL(triggered()), SLOT(onLayerPanToSelectedOnMapDisplayTriggered()));
+  connect(m_queryLayer, SIGNAL(triggered()), SLOT(onQueryLayerTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
   connect(m_mapPreviousExtent, SIGNAL(triggered()), SLOT(onPreviousExtentTriggered()));

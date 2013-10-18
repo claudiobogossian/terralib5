@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
@@ -78,7 +79,7 @@ te::qt::widgets::WhereClauseWidget::WhereClauseWidget(QWidget* parent, Qt::Windo
 
 te::qt::widgets::WhereClauseWidget::~WhereClauseWidget()
 {
-  m_mapExp.clear();
+  clear();
 }
 
 Ui::WhereClauseWidgetForm* te::qt::widgets::WhereClauseWidget::getForm() const
@@ -149,6 +150,8 @@ void te::qt::widgets::WhereClauseWidget::setDataSource(const te::da::DataSourceP
 
 void te::qt::widgets::WhereClauseWidget::setLayerList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
+  m_ui->m_layerComboBox->clear();
+
   std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
 
   while(it != layerList.end())
@@ -218,6 +221,17 @@ void te::qt::widgets::WhereClauseWidget::setConnectorsList(const std::vector<std
   {
     m_ui->m_connectorComboBox->addItem(vec[t].c_str());
   }
+}
+
+void te::qt::widgets::WhereClauseWidget::clear()
+{
+  te::common::FreeContents(m_mapExp);
+
+  m_mapExp.clear();
+
+  m_ui->m_whereClauseTableWidget->setRowCount(0);
+
+  m_count = 0;
 }
 
 void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
@@ -343,9 +357,13 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
     ds->moveBeforeFirst();
 
+    size_t dsSize = ds->size();
+    size_t count = 0;
+
     //get all geometries
     while(ds->moveNext())
     {
+      
       int expId = ++m_count;
 
       te::gm::Geometry* geom = ds->getGeometry(prop->getName()).release();
@@ -367,8 +385,11 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
       //set connector
       std::string connector = "";
-      if(ds->isAtEnd() == false)
+
+      if(count < dsSize - 1)
         connector = "or";
+
+      ++count;
 
       //new entry
       int newrow = m_ui->m_whereClauseTableWidget->rowCount();
