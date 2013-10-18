@@ -39,12 +39,11 @@
 
 namespace te
 {
-  namespace dt
-  {
-    class Property;
-  }
+  namespace dt{ class Property; }
+  namespace gm{ class Envelope; }
 }
 
+class TeBox;
 class TeDatabaseFactoryParams;
 
 namespace terralib4
@@ -62,6 +61,17 @@ namespace terralib4
           responsability to set one.
   */
   std::auto_ptr<te::dt::Property> Convert2T5(const TeAttributeRep& attRep);
+
+  /*!
+    \brief It converts a Terralib 4.x data type to Terralib 5 data type.
+
+    \param type The type to convert.
+
+    \return A TerraLib 5 data type.
+  */
+  int Convert2T5(TeAttrDataType type);
+
+  std::auto_ptr<te::gm::Envelope> Convert2T5(TeBox box);
 
   /*!
     \brief It converts a data source information to a TerraLib 4.x database params.
