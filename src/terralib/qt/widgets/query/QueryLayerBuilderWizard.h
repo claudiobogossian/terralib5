@@ -52,8 +52,6 @@ namespace te
 
       class TEQTWIDGETSEXPORT QueryLayerBuilderWizard : public QWizard
       {
-        Q_OBJECT
-
         public:
 
           QueryLayerBuilderWizard(QWidget* parent);
@@ -79,11 +77,6 @@ namespace te
           void getProperties();
 
           void getQueryCapabilities();
-
-        protected slots:
-
-          void onHelpButtonClicked();
-
 
         private:
 
