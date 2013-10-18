@@ -49,8 +49,10 @@ te::qt::plugins::rp::ContrastAction::~ContrastAction()
 void te::qt::plugins::rp::ContrastAction::onActionActivated(bool checked)
 {
   te::qt::widgets::ContrastWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  
+  std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
-  dlg.setList(getLayers());
+  dlg.setList( layersList );
 
   if(dlg.exec() == QDialog::Accepted)
   {
