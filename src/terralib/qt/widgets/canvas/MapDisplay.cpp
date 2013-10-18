@@ -47,8 +47,7 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
     m_backgroundColor(Qt::white),
     m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
     m_timer(new QTimer(this)),
-    m_interval(200),
-    m_magneticDeclination(0)
+    m_interval(200)
 {
   m_timer->setSingleShot(true);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
@@ -158,7 +157,6 @@ void te::qt::widgets::MapDisplay::setExtent(te::gm::Envelope& e, bool doRefresh)
   for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
   {
     te::qt::widgets::Canvas* canvas = it->second;
-    canvas->setMagneticDeclination(m_magneticDeclination);
     canvas->calcAspectRatio(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury, m_hAlign, m_vAlign);
     canvas->setWindow(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury);
     canvas->clear();
@@ -392,14 +390,4 @@ QColor te::qt::widgets::MapDisplay::getBackgroundColor()
 void te::qt::widgets::MapDisplay::setBackgroundColor(const QColor& color)
 {
   m_backgroundColor = color;
-}
-
-void te::qt::widgets::MapDisplay::setMagneticDeclination(double angle)
-{
-  m_magneticDeclination = angle;
-}
-
-double te::qt::widgets::MapDisplay::getMagneticDeclination()
-{
-  return m_magneticDeclination;
 }

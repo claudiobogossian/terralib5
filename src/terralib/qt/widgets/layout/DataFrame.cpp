@@ -1213,7 +1213,7 @@ void te::qt::widgets::DataFrame::removeGraphicScale()
 
 void te::qt::widgets::DataFrame::magneticDeclination()
 {
-  double magDecl = m_mapDisplay->getMagneticDeclination();
+  /*double magDecl = m_mapDisplay->getMagneticDeclination();
 
   bool ok;
   double v = QInputDialog::getDouble(this, tr("Set Magnetic Declination"),
@@ -1223,7 +1223,7 @@ void te::qt::widgets::DataFrame::magneticDeclination()
     m_mapDisplay->setMagneticDeclination(v);
     m_dataChanged = true;
     draw();
-  }
+  }*/
 }
 
 void te::qt::widgets::DataFrame::hide()
@@ -1380,10 +1380,11 @@ te::qt::widgets::GraphicScaleFrame* te::qt::widgets::DataFrame::getGraphicScaleF
 
 void te::qt::widgets::DataFrame::setMagneticDeclination(double angle)
 {
-  m_mapDisplay->setMagneticDeclination(angle);
+  //m_mapDisplay->setMagneticDeclination(angle);
 }
 
 double te::qt::widgets::DataFrame::getMagneticDeclination()
 {
-  return m_mapDisplay->getMagneticDeclination();
+  return 0.0;
+  //return m_mapDisplay->getMagneticDeclination();
 }
