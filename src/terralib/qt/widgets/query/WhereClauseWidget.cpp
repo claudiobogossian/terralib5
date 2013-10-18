@@ -270,6 +270,12 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     }
 
     restrictValue = m_ui->m_restrictValueComboBox->currentText().toStdString();
+
+    if(m_ui->m_OperatorComboBox->currentText().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Query Builder"), tr("Operator not defined."));
+      return;
+    }
     operatorStr = m_ui->m_OperatorComboBox->currentText().toStdString();
 
     if(m_ui->m_valuePropertyRadioButton->isChecked())
@@ -318,7 +324,13 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
   }
   else // criteria by spatial restriction
   {
+    if(m_ui->m_SpatialOperatorComboBox->currentText().isEmpty())
+    {
+      QMessageBox::warning(this, tr("Query Builder"), tr("Operator not defined."));
+      return;
+    }
     operatorStr = m_ui->m_SpatialOperatorComboBox->currentText().toStdString();
+
     restrictValue = m_ui->m_geomAttrComboBox->currentText().toStdString();
 
     //get layer
