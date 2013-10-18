@@ -321,18 +321,6 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
     }
     break;
 
-    case te::qt::af::evt::LAYERS_CHANGED:
-    {
-      te::qt::af::evt::LayersChanged* e = static_cast<te::qt::af::evt::LayersChanged*>(evt);
-      m_project->clear();
-
-      std::vector<te::map::AbstractLayerPtr>::iterator it;
-
-      for(it=e->m_layers.begin(); it!=e->m_layers.end(); ++it)
-        m_project->add(*it);
-    }
-    break;
-
     default:
       break;
   }
@@ -1203,7 +1191,6 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
   te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_explorer->getExplorer()->getSelectedLayers());
   m_display->setCurrentTool(selection);
 
-  //connect(m_explorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
   connect(m_explorer->getExplorer()->getTreeView(), SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
   connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
 
@@ -1541,6 +1528,10 @@ void te::qt::af::BaseApplication::makeDialog()
   //project
   treeView->add(m_projectNewFolder, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
+
+  QAction* actEnd = new QAction(this);
+  actEnd->setSeparator(true);
+  treeView->add(actEnd, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 

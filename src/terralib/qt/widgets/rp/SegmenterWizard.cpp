@@ -30,6 +30,7 @@
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
 #include "../../../rp/Module.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "SegmenterWizard.h"
 #include "SegmenterAdvancedOptionsWizardPage.h"
 #include "SegmenterWizardPage.h"
@@ -58,7 +59,11 @@ te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
   this->setOption(QWizard::HaveHelpButton, true);
   this->setOption(QWizard::HelpButtonOnRight, false);
 
-  connect((QObject*)this->button(QWizard::HelpButton), SIGNAL(clicked()), this, SLOT(onHelpButtonClicked()));
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("widgets/rp/Segmenter.html");
 
   addPages();
 }
@@ -98,6 +103,14 @@ bool te::qt::widgets::SegmenterWizard::validateCurrentPage()
 void te::qt::widgets::SegmenterWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
+  m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
+}
+
+void te::qt::widgets::SegmenterWizard::setLayer(te::map::AbstractLayerPtr layer)
+{
+  removePage(m_layerSearchId);
+
+  m_segmenterPage->set(layer);
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::SegmenterWizard::getOutputLayer()
@@ -112,7 +125,7 @@ void te::qt::widgets::SegmenterWizard::addPages()
   m_segmenterAdvOptPage.reset(new te::qt::widgets::SegmenterAdvancedOptionsWizardPage(this));
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
 
-  addPage(m_layerSearchPage.get());
+  m_layerSearchId = addPage(m_layerSearchPage.get());
   addPage(m_segmenterPage.get());
   addPage(m_segmenterAdvOptPage.get());
   addPage(m_rasterInfoPage.get());
@@ -183,7 +196,3 @@ bool te::qt::widgets::SegmenterWizard::execute()
   return true;
 }
 
-void te::qt::widgets::SegmenterWizard::onHelpButtonClicked()
-{
-
-}

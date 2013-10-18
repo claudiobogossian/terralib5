@@ -37,7 +37,10 @@ te::qt::widgets::LayerSearchWidget::LayerSearchWidget(QWidget* parent, Qt::Windo
   m_ui->setupUi(this);
 
 //connect
-  connect(m_ui->m_nameLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onNameLineEditTextChanged(const QString&)));
+  connect(m_ui->m_nameLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onFilter()));
+  connect(m_ui->m_repAllRadioButton, SIGNAL(clicked(bool)), SLOT(onFilter()));
+  connect(m_ui->m_repGeomRadioButton, SIGNAL(clicked(bool)), SLOT(onFilter()));
+  connect(m_ui->m_repRstRadioButton, SIGNAL(clicked(bool)), SLOT(onFilter()));
 }
 
 te::qt::widgets::LayerSearchWidget::~LayerSearchWidget()
@@ -92,6 +95,33 @@ void te::qt::widgets::LayerSearchWidget::setList(std::list<te::map::AbstractLaye
   fillTreeView(m_layerList);
 }
 
+void te::qt::widgets::LayerSearchWidget::filterOnlyByRaster()
+{
+  m_ui->m_repRstRadioButton->setChecked(true);
+
+  m_ui->m_filterByRepGroupBox->setEnabled(false);
+
+  onFilter();
+}
+
+void te::qt::widgets::LayerSearchWidget::filterOnlyByGeom()
+{
+  m_ui->m_repGeomRadioButton->setChecked(true);
+
+  m_ui->m_filterByRepGroupBox->setEnabled(false);
+
+  onFilter();
+}
+
+void te::qt::widgets::LayerSearchWidget::filterAll()
+{
+  m_ui->m_repAllRadioButton->setChecked(true);
+
+  m_ui->m_filterByRepGroupBox->setEnabled(false);
+
+  onFilter();
+}
+
 void te::qt::widgets::LayerSearchWidget::fillTreeView(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   std::list<te::map::AbstractLayerPtr>::iterator it = layerList.begin();
@@ -133,9 +163,40 @@ void te::qt::widgets::LayerSearchWidget::filter(const QList<QTreeWidgetItem*>& i
   update();
 }
 
-void te::qt::widgets::LayerSearchWidget::onNameLineEditTextChanged(const QString& text)
+void te::qt::widgets::LayerSearchWidget::onFilter()
 {
-  QList<QTreeWidgetItem*> items = m_ui->m_treeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
+  QString str = m_ui->m_nameLineEdit->text();
 
-  filter(items);
+  QList<QTreeWidgetItem*> items = m_ui->m_treeWidget->findItems(str, Qt::MatchContains | Qt::MatchRecursive, 0);
+
+  QList<QTreeWidgetItem*> result;
+
+  for(int i = 0; i < items.size(); ++i)
+  {
+    QTreeWidgetItem* item = items.at(i);
+
+    QVariant v = item->data(0, Qt::UserRole);
+
+    te::map::AbstractLayerPtr l = v.value<te::map::AbstractLayerPtr>();
+
+    std::auto_ptr<te::da::DataSetType> dsType = l->getSchema();
+
+    if(m_ui->m_repAllRadioButton->isChecked())
+    {
+      result.push_back(item);
+    }
+    else if(m_ui->m_repGeomRadioButton->isChecked())
+    {
+      if(dsType.get() && dsType->hasGeom())
+        result.push_back(item);
+    }
+    else if(m_ui->m_repRstRadioButton->isChecked())
+    {
+      if(dsType.get() && dsType->hasRaster())
+        result.push_back(item);
+    }
+  }
+
+  filter(result);
 }
+

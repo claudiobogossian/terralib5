@@ -29,6 +29,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Contrast.h"
 #include "../../../rp/Module.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "ContrastWizard.h"
 #include "ContrastWizardPage.h"
 #include "LayerSearchWidget.h"
@@ -55,7 +56,11 @@ te::qt::widgets::ContrastWizard::ContrastWizard(QWidget* parent)
   this->setOption(QWizard::HaveHelpButton, true);
   this->setOption(QWizard::HelpButtonOnRight, false);
 
-  connect((QObject*)this->button(QWizard::HelpButton), SIGNAL(clicked()), this, SLOT(onHelpButtonClicked()));
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("widgets/rp/Contrast.html");
 
   addPages();
 }
@@ -95,6 +100,14 @@ bool te::qt::widgets::ContrastWizard::validateCurrentPage()
 void te::qt::widgets::ContrastWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
+  m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
+}
+
+void te::qt::widgets::ContrastWizard::setLayer(te::map::AbstractLayerPtr layer)
+{
+  removePage(m_layerSearchId);
+
+  m_contrastPage->set(layer);
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::ContrastWizard::getOutputLayer()
@@ -108,7 +121,7 @@ void te::qt::widgets::ContrastWizard::addPages()
   m_contrastPage.reset(new te::qt::widgets::ContrastWizardPage(this));
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
 
-  addPage(m_layerSearchPage.get());
+  m_layerSearchId = addPage(m_layerSearchPage.get());
   addPage(m_contrastPage.get());
   addPage(m_rasterInfoPage.get());
 
@@ -165,9 +178,4 @@ bool te::qt::widgets::ContrastWizard::execute()
     return false;
   }
   return true;
-}
-
-void te::qt::widgets::ContrastWizard::onHelpButtonClicked()
-{
-
 }
