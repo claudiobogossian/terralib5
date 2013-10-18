@@ -42,7 +42,6 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explore
   connect(explorer->getTreeView(), SIGNAL(visibilityChanged(te::map::AbstractLayerPtr)), SLOT(onLayerVisibilityChanged(te::map::AbstractLayerPtr)));
   connect(explorer->getTreeModel(), SIGNAL(visibilityChanged(te::map::AbstractLayerPtr)), SLOT(onLayerVisibilityChanged(te::map::AbstractLayerPtr)));
   connect(explorer->getTreeModel(), SIGNAL(layerOrderChanged()), SLOT(onLayerOrderChanged()));
-  //  connect(explorer->getTreeView(), SIGNAL(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)), SLOT(layersChanged(const std::vector<te::map::AbstractLayerPtr>&)));
 }
 
 te::qt::af::LayerExplorer::~LayerExplorer()
@@ -77,7 +76,6 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
       // Signals & slots
       connect(treeView, SIGNAL(doubleClicked(te::qt::widgets::AbstractTreeItem*)), SLOT(onAbstractTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem*)));
-      //connect(layerTreeSelectionModel, SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), SLOT(onSelectionChanged(const QItemSelection&, const QItemSelection&)));
       connect(treeView, SIGNAL(selectedLayersChanged(std::list<te::map::AbstractLayerPtr>)), SLOT(onLayerSelectionChanged(std::list<te::map::AbstractLayerPtr>)));
     }
     break;
@@ -106,6 +104,28 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     }
     break;
 
+    case::te::qt::af::evt::LAYER_POPUP_ADD_ACTION:
+    {
+      te::qt::af::evt::LayerPopUpAddAction* e = static_cast<te::qt::af::evt::LayerPopUpAddAction*>(evt);
+      
+      QAction* act = e->m_action;
+      te::qt::widgets::LayerTreeView::ContextMenuType type = static_cast<te::qt::widgets::LayerTreeView::ContextMenuType>(e->m_menuType);
+
+      m_explorer->getTreeView()->add(act, "", "", type);
+    }
+    break;
+
+    case::te::qt::af::evt::GET_LAYER_SELECTED:
+    {
+      te::qt::af::evt::GetLayerSelected* e = static_cast<te::qt::af::evt::GetLayerSelected*>(evt);
+
+      std::list<te::map::AbstractLayerPtr> list = m_explorer->getSelectedLayers();
+
+      if(list.empty() == false)
+        e->m_layer = list.front();
+    }
+    break;
+
     default:
     break;
   }
@@ -113,8 +133,6 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
 void te::qt::af::LayerExplorer::onLayerSelectionChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
 {
-  emit selectedLayersChanged(m_explorer->getSelectedLayers());
-
   if(selectedLayers.empty())
     return;
 
@@ -125,28 +143,6 @@ void te::qt::af::LayerExplorer::onLayerSelectionChanged(const std::list<te::map:
     ApplicationController::getInstance().broadcast(&ev);
   }
 }
-
-//void te::qt::af::LayerExplorer::onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
-//{
-//  emit selectedLayersChanged(m_explorer->getSelectedLayers());
-//
-//  QModelIndexList lst = selected.indexes();
-//
-//  if(lst.isEmpty())
-//    return;
-//
-//  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>((*lst.begin()).internalPointer());
-//
-//  if(item != 0)
-//  {
-//    te::map::AbstractLayerPtr itemLayer = item->getLayer();
-//    if(itemLayer)
-//    {
-//      te::qt::af::evt::LayerSelected ls_ev(itemLayer);
-//      ApplicationController::getInstance().broadcast(&ls_ev);
-//    }
-//  }
-//}
 
 void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::map::AbstractLayerPtr layer)
 {
@@ -169,12 +165,6 @@ void te::qt::af::LayerExplorer::onLayerRemoved(te::map::AbstractLayerPtr layer)
 {
   te::qt::af::evt::LayerRemoved layerRemovedEvent(layer);
   ApplicationController::getInstance().broadcast(&layerRemovedEvent);
-}
-
-void te::qt::af::LayerExplorer::layersChanged(const std::vector<te::map::AbstractLayerPtr>& layers)
-{
-  te::qt::af::evt::LayersChanged evt(layers);
-  ApplicationController::getInstance().broadcast(&evt);
 }
 
 void te::qt::af::LayerExplorer::onAbstractTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item)

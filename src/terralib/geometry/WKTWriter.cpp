@@ -111,7 +111,7 @@ void te::gm::WKTWriter::visit(const GeometryCollection& visited)
     if(i != 0)
       m_ostream << ",";
 
-    write(visited.getGeometryN(i), m_ostream);
+    write(visited.getGeometryN(i));
   }
 
   m_ostream << ")";
@@ -224,7 +224,8 @@ void te::gm::WKTWriter::visit(const MultiLineString& visited)
   }
 
   m_tagged = false;
-  visit((const GeometryCollection&)visited);
+
+  visit(static_cast<const GeometryCollection&>(visited));
 }
 
 void te::gm::WKTWriter::visit(const MultiPoint& visited)
@@ -259,27 +260,26 @@ void te::gm::WKTWriter::visit(const MultiPoint& visited)
   visit(static_cast<const GeometryCollection&>(visited));
 }
 
-void te::gm::WKTWriter::visit(const MultiPolygon& /*visited*/)
+void te::gm::WKTWriter::visit(const MultiPolygon& visited)
 {
-  /*
-    if(tagged)
+  if(m_tagged)
   {
-    switch(m_gType)
+    switch(visited.getGeomTypeId())
     {
       case MultiPolygonType:
-        o << "multipolygon";
+        m_ostream << "multipolygon";
         break;
 
       case MultiPolygonZType:
-        o << "multipolygon z";
+        m_ostream << "multipolygon z";
         break;
 
       case MultiPolygonMType:
-        o << "multipolygon m";
+        m_ostream << "multipolygon m";
         break;
 
       case MultiPolygonZMType:
-        o << "multipolygon zm";
+        m_ostream << "multipolygon zm";
         break;
 
       default:
@@ -287,8 +287,9 @@ void te::gm::WKTWriter::visit(const MultiPolygon& /*visited*/)
     }
   }
 
-  GeometryCollection::asText(o, false);
-  */
+  m_tagged = false;
+
+  visit(static_cast<const GeometryCollection&>(visited));
 }
 
 void te::gm::WKTWriter::visit(const Point& visited)

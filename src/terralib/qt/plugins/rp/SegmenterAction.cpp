@@ -27,18 +27,20 @@
 #include "../../../qt/widgets/rp/SegmenterWizard.h"
 #include "../../../raster/Raster.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/Project.h"
 #include "SegmenterAction.h"
 
 // Qt
 #include <QtCore/QObject>
+#include <QtGui/QMessageBox>
 
 // STL
 #include <memory>
 
 te::qt::plugins::rp::SegmenterAction::SegmenterAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
 {
-  createAction(tr("Segmenter...").toStdString());
+  createAction(tr("Segmenter...").toStdString(), "segmenter");
+
+  createPopUpAction(tr("Segmenter...").toStdString(), "segmenter");
 }
 
 te::qt::plugins::rp::SegmenterAction::~SegmenterAction()
@@ -49,17 +51,33 @@ void te::qt::plugins::rp::SegmenterAction::onActionActivated(bool checked)
 {
   te::qt::widgets::SegmenterWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-// get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
-
-  if(prj)
-  {
-    dlg.setList(prj->getLayers());
-  }
+  dlg.setList(getLayers());
 
   if(dlg.exec() == QDialog::Accepted)
   {
     //add new layer
     addNewLayer(dlg.getOutputLayer());
+  }
+}
+
+void te::qt::plugins::rp::SegmenterAction::onPopUpActionActivated(bool checked)
+{
+  te::map::AbstractLayerPtr layer = getCurrentLayer();
+
+  if(layer.get())
+  {
+    te::qt::widgets::SegmenterWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+
+    dlg.setLayer(layer);
+
+    if(dlg.exec() == QDialog::Accepted)
+    {
+      //add new layer
+      addNewLayer(dlg.getOutputLayer());
+    }
+  }
+  else
+  {
+    QMessageBox::warning(m_menu, tr("Warning"), tr("Invalid Layer."));
   }
 }

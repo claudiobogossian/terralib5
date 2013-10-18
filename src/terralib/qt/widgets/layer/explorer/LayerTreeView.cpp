@@ -348,17 +348,16 @@ void te::qt::widgets::LayerTreeView::remove(te::qt::widgets::AbstractTreeItem* i
     emit layerRemoved(layer);
 }
 
-void te::qt::widgets::LayerTreeView::layerSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void te::qt::widgets::LayerTreeView::layerSelectionChanged(const QItemSelection& /*selected*/, const QItemSelection& /*deselected*/)
 {
   std::list<te::map::AbstractLayerPtr> selectedLayers;
 
-  QModelIndexList selectedIndexes = selected.indexes();
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = getSelectedItems();
 
-  QModelIndex idx;
-
-  foreach(idx, selectedIndexes)
+  std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
+  for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
   {
-    AbstractTreeItem* selectedItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+    AbstractTreeItem* selectedItem = *it;
 
     if(selectedItem->getType() == te::qt::widgets::AbstractTreeItem::LAYERITEM)
       selectedLayers.push_back(selectedItem->getLayer());
