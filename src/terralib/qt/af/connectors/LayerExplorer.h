@@ -116,8 +116,6 @@ namespace te
 
           void onLayerRemoved(te::map::AbstractLayerPtr layer);
 
-          void layersChanged(const std::vector<te::map::AbstractLayerPtr>& layers);
-
           void onAbstractTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
 
         signals:
