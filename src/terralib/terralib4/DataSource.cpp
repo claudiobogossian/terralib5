@@ -105,7 +105,7 @@ void terralib4::DataSource::Impl::open()
 {
   close();
 
-  std::auto_ptr<TeDatabaseFactoryParams> fdbparams(Convert2T4DatabaseParams(m_dbInfo));
+  std::auto_ptr<TeDatabaseFactoryParams> fdbparams(terralib4::Convert2T4DatabaseParams(m_dbInfo));
 
   m_db = TeDatabaseFactory::make(*fdbparams);
 
