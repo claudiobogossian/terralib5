@@ -73,7 +73,7 @@ namespace te
     {
       m_inputRasterPtr = 0;
       m_inputRasterBands.clear();
-      m_enableThreadedProcessing = false;
+      m_enableThreadedProcessing = true;
       m_maxSegThreads = 0;
       m_enableBlockProcessing = true;
       m_enableBlockMerging = true;
