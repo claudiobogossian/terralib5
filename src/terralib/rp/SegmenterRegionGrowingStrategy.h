@@ -63,9 +63,9 @@ namespace te
               BaatzFeaturesType, //!< The Baatz based features will be used - Reference: Baatz, M.; Schape, A. Multiresolution segmentation: an optimization approach for high quality multi-scale image segmentation. In: XII Angewandte Geographische Informationsverarbeitung, Wichmann-Verlag, Heidelberg, 2000.
             };             
             
-            unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 1).
+            unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 100).
             
-            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Segments with similarity values below this value will be merged; valid values range: [ 0, 1 ]; default:0.05.
+            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Segments with similarity values below this value will be merged; valid values range: [ 0, 1 ]; default:0.1.
             
             SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:InvalidFeaturesType).
             
