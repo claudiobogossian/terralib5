@@ -60,7 +60,7 @@ te::qt::widgets::ContrastWizard::ContrastWizard(QWidget* parent)
 
   this->setButton(QWizard::HelpButton, helpButton);
 
-  helpButton->setPageReference("widgets/rp/Contrast.html");
+  helpButton->setPageReference("plugins/rp/rp_contrast.html");
 
   addPages();
 }
