@@ -74,7 +74,7 @@ void te::sqlite::BatchExecutor::execute(const std::string& uri, const std::map<s
 {
   te::da::ScopedTransaction t(*m_t);
 
-  ExecuteScript(m_t->getLiteDataSource()->getDB(), uri.c_str());
+  ExecuteScript(m_t->getDB(), uri.c_str());
 
   t.commit();
 }
@@ -83,7 +83,7 @@ void te::sqlite::BatchExecutor::execute(std::istream& istr, const std::map<std::
 {
   te::da::ScopedTransaction t(*m_t);
 
-  PerformCommands(m_t->getLiteDataSource()->getDB(), istr);
+  PerformCommands(m_t->getDB(), istr);
 
   t.commit();
 }
