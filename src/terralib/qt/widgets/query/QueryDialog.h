@@ -79,6 +79,13 @@ namespace te
 
           void onInputLayerActivated(QString value);
 
+          void onOkPushButtonClicked();
+
+        signals:
+
+          /*! This signal is emitted when the layer selection changed. */
+          void layerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
+
         private:
 
           std::auto_ptr<Ui::QueryDialogForm> m_ui;

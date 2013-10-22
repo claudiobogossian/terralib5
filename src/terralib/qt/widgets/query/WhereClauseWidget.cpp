@@ -225,8 +225,6 @@ void te::qt::widgets::WhereClauseWidget::setConnectorsList(const std::vector<std
 
 void te::qt::widgets::WhereClauseWidget::clear()
 {
-  te::common::FreeContents(m_mapExp);
-
   m_mapExp.clear();
 
   m_ui->m_whereClauseTableWidget->setRowCount(0);
