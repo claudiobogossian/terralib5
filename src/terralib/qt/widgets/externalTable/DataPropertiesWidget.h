@@ -83,17 +83,9 @@ namespace te
             \brief Returns a pointer to the generated DataSetAdapter
 
             \return A DataSetAdapter pointer.
-            \note The caller will take ownership of the returned pointer. 
+            \note The caller will take ownership of the returned auto pointer. 
           */
           te::da::DataSetAdapter* getAdapter();
-
-          /*!
-            \brief Returns a pointer to the generated DataSource
-
-            \return A DataSource pointer.
-            \note The caller will take ownership of the returned pointer. 
-          */
-          te::da::DataSource* getDataSource();
 
         protected slots:
 

@@ -100,7 +100,7 @@ void fillComboBox(const te::da::DataSetType* dsType, QComboBox* box)
   }
 }
 
-te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std::string defaultValue = 0, bool isRequired = false, bool isAutoNumber = true)
+te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std::string defaultValue = "", bool isRequired = false, bool isAutoNumber = true)
 {
   te::dt::SimpleProperty* newProperty;
 
@@ -154,6 +154,7 @@ te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std
       return false;
     }
   }
+  return newProperty;
 }
 
 te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Qt::WindowFlags f)
@@ -209,17 +210,19 @@ te::da::DataSetAdapter* te::qt::widgets::DatapPropertiesWidget::getAdapter()
       names.push_back(m_ui->m_xAxisComboBox->currentText().toStdString());
       names.push_back(m_ui->m_yAxisComboBox->currentText().toStdString());
       newGeom = new te::gm::GeometryProperty("Point", true, new std::string());
-      m_dsConverter->add(names, newGeom, te::da::XYToPointConverter);
       newGeom->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+      m_dsConverter->add(names, newGeom, te::da::XYToPointConverter);
+    }
+    else if(m_ui->m_wktRadioButton->isChecked())
+    {
+      //std::string name = m_ui->m_wktComboBox->currentText().toStdString();
+      //newGeom = new te::gm::GeometryProperty(name, true, new std::string());
+      //newGeom->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+      //m_dsConverter->add(name, newGeom);
     }
   }
 
   return te::da::CreateAdapter(m_dataSet.release(), m_dsConverter, true);
-}
-
-te::da::DataSource* te::qt::widgets::DatapPropertiesWidget::getDataSource()
-{
-  return m_dataSource.release();
 }
 
 void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
