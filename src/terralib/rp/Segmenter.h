@@ -83,7 +83,7 @@ namespace te
             
             std::vector< unsigned int > m_inputRasterBands; //!< Bands to be processed from the input raster.
             
-            bool m_enableThreadedProcessing; //!< If true, threaded processing will be performed (best with  multi-core or multi-processor systems (default:false).
+            bool m_enableThreadedProcessing; //!< If true, threaded processing will be performed (best with  multi-core or multi-processor systems (default:true).
             
             unsigned int m_maxSegThreads; //!< The maximum number of concurrent segmenter threads (default:0 - automatically found).
             
