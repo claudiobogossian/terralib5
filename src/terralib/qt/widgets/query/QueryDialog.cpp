@@ -24,6 +24,9 @@
 */
 
 // TerraLib
+#include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../dataaccess/query/QueryCapabilities.h"
 #include "../../../dataaccess/utils/Utils.h"
@@ -33,7 +36,12 @@
 #include "ui_QueryDialogForm.h"
 
 // Qt
-#include <QGridLayout>
+#include <QtGui/QGridLayout>
+#include <QtGui/QMessageBox>
+
+// STL
+#include <cassert>
+#include <memory>
 
 Q_DECLARE_METATYPE(te::map::AbstractLayerPtr);
 
@@ -51,6 +59,7 @@ te::qt::widgets::QueryDialog::QueryDialog(QWidget* parent, Qt::WindowFlags f)
 
 //connectors
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(QString)), this, SLOT(onInputLayerActivated(QString)));
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
 }
 
 te::qt::widgets::QueryDialog::~QueryDialog()
@@ -193,3 +202,41 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
   m_whereClauseWidget->setGeomAttributeList(geomProperties, dsLayer->getSRID());
 }
 
+void te::qt::widgets::QueryDialog::onOkPushButtonClicked()
+{
+  // Gets the defined restriction
+  te::da::Where* wh = getWhere();
+  if(wh == 0 || wh->getExp() == 0)
+  {
+    QMessageBox::information(this, tr("TODO"), tr("TODO"));
+    return;
+  }
+
+  // Gets the selected layer
+  int index = m_ui->m_inputLayerComboBox->currentIndex();
+
+  QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(index, Qt::UserRole);
+
+  te::map::AbstractLayerPtr layer = varLayer.value<te::map::AbstractLayerPtr>();
+
+  assert(layer.get());
+
+  // Let's execute the query
+
+  // The filter expression
+  te::da::Expression* e = wh->getExp()->clone();
+
+  // Gets the layer schema
+  std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
+
+  // Gets the dataset
+  std::auto_ptr<te::da::DataSet> dataset = layer->getData(e);
+  assert(dataset.get());
+
+  // Generates the oids
+  te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+
+  layer->select(oids);
+
+  emit layerSelectedObjectsChanged(layer);
+}
