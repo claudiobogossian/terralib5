@@ -1122,10 +1122,9 @@ void te::qt::af::BaseApplication::onQueryLayerTriggered()
   if(m_project)
     dlg.setList(m_project->getLayers());
 
-  if(dlg.exec() == QDialog::Accepted)
-  {
-    //DOGRETE DO IT
-  }
+  connect(&dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
+
+  dlg.exec();
 }
 
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)

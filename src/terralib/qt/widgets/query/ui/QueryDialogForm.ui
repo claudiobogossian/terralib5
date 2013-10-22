@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>567</width>
-    <height>187</height>
+    <height>177</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -164,27 +164,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>516</x>
-     <y>170</y>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>514</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_okPushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>QueryDialogForm</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>412</x>
-     <y>162</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>414</x>
-     <y>190</y>
+     <y>176</y>
     </hint>
    </hints>
   </connection>
