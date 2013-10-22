@@ -26,9 +26,11 @@
 // TerraLib 5
 #include "../common/Exception.h"
 #include "../common/Translator.h"
+#include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/NumericProperty.h"
 #include "../datatype/Property.h"
 #include "../datatype/StringProperty.h"
+#include "../geometry/Enums.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
 #include "../raster/RasterProperty.h"
@@ -37,6 +39,8 @@
 // TerraLib 4.x
 #include <terralib/kernel/TeBox.h>
 #include <terralib/kernel/TeDatabaseFactoryParams.h>
+#include <terralib/kernel/TeTable.h>
+#include <terralib/kernel/TeTable.h>
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -158,6 +162,39 @@ int terralib4::Convert2T5(TeAttrDataType type)
 
     case TePOINTTYPE:
     case TeNODETYPE:
+    case TeLINE2DTYPE:
+    case TePOLYGONTYPE:
+    case TeCELLTYPE:
+    case TePOINTSETTYPE:
+    case TeNODESETTYPE:
+    case TeLINESETTYPE:
+    case TePOLYGONSETTYPE:
+    case TeCELLSETTYPE:
+      return te::dt::GEOMETRY_TYPE;
+
+    case TeTEXTTYPE:
+    case TeTEXTSETTYPE:
+      return te::dt::STRING_TYPE;
+
+    case TeRASTERTYPE:
+      return te::dt::RASTER_TYPE;
+
+    case TeBOOLEAN:
+      return te::dt::BOOLEAN_TYPE;
+
+    case TeUNKNOWN:
+    case TeOBJECT:
+    default:
+      return te::dt::UNKNOWN_TYPE;
+  }
+}
+
+te::gm::GeomType terralib4::Convert2T5GeomType(TeAttrDataType type)
+{
+  switch(type)
+  {
+    case TePOINTTYPE:
+    case TeNODETYPE:
       return te::gm::PointType;
 
     case TeLINE2DTYPE:
@@ -177,21 +214,70 @@ int terralib4::Convert2T5(TeAttrDataType type)
     case TePOLYGONSETTYPE:
     case TeCELLSETTYPE:
       return te::gm::MultiPolygonType;
+  }
+}
 
-    case TeTEXTTYPE:
-    case TeTEXTSETTYPE:
-      te::dt::STRING_TYPE;
+TeAttrDataType terralib4::Convert2T4(int type)
+{
+  switch(type)
+  {
+    case te::dt::STRING_TYPE:
+      return TeSTRING;
 
-    case TeRASTERTYPE:
-      te::dt::RASTER_TYPE;
+    case te::dt::DOUBLE_TYPE:
+      return TeREAL;
 
-    case TeBOOLEAN:
-      te::dt::BOOLEAN_TYPE;
+    case te::dt::INT32_TYPE:
+      return TeINT;
 
-    case TeUNKNOWN:
-    case TeOBJECT:
+    case te::dt::DATETIME_TYPE:
+      return TeDATETIME;
+
+    case te::dt::BYTE_ARRAY_TYPE:
+      return TeBLOB;
+
+    case te::dt::CHAR_TYPE:
+      return TeCHARACTER;
+
+    case te::dt::UINT32_TYPE:
+      return TeUNSIGNEDINT;
+
+    case te::dt::RASTER_TYPE:
+      return TeRASTERTYPE;
+
+    case te::dt::BOOLEAN_TYPE:
+      return TeBOOLEAN;
+
+    case te::dt::UNKNOWN_TYPE:
     default:
-      return te::dt::UNKNOWN_TYPE;
+      return TeUNKNOWN;
+  }
+}
+
+TeAttrDataType terralib4::Convert2T4GeomType(te::gm::GeomType type)
+{
+  switch(type)
+  {
+    case te::gm::PointType:
+      return TePOINTTYPE;
+
+    case te::gm::LineStringType:
+      return TeLINE2DTYPE;
+
+    case te::gm::PolygonType:
+      return TePOLYGONTYPE;
+
+    case te::gm::MultiPointType:
+      return TePOINTSETTYPE;
+
+    case te::gm::MultiLineStringType:
+      return TeLINESETTYPE;
+
+    case te::gm::MultiPolygonType:
+      return TePOLYGONSETTYPE;
+
+    default:
+      return TeUNKNOWN;
   }
 }
 
@@ -200,4 +286,22 @@ std::auto_ptr<te::gm::Envelope> terralib4::Convert2T5(TeBox box)
   std::auto_ptr<te::gm::Envelope> env(new te::gm::Envelope(box.x1(), box.y1(), box.x2(), box.y2()));
 
   return env;
+}
+
+std::auto_ptr<te::da::DataSetType> terralib4::Convert2T5(TeTable table)
+{
+  TeAttributeList attrList = table.attributeList();
+
+  std::auto_ptr<te::da::DataSetType> newDst(new te::da::DataSetType(table.name()));
+
+  for(std::size_t i = 0; i < attrList.size(); ++i)
+  {
+    TeAttributeRep attr = attrList[i].rep_;
+
+    std::auto_ptr<te::dt::Property> prop = terralib4::Convert2T5(attr);
+
+    newDst->add(prop.release());
+  }
+
+  return newDst;
 }
