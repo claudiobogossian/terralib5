@@ -70,6 +70,8 @@ void terralib4::DataSource::open()
   std::auto_ptr<TeDatabaseFactoryParams> fdbparams(terralib4::Convert2T4DatabaseParams(m_dbInfo));
 
   m_db = TeDatabaseFactory::make(*fdbparams);
+
+  m_db->loadLayerSet();
 }
 
 void terralib4::DataSource::close()

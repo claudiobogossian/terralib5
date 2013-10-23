@@ -54,12 +54,13 @@
 #include <boost/dynamic_bitset.hpp>
 #include <boost/lexical_cast.hpp>
 
-terralib4::DataSet::DataSet(TeDatabasePortal* result)
+terralib4::DataSet::DataSet(TeLayer* layer)
   : m_i(-1),
     m_size(-1),
-    m_result(result)
+    m_layer(layer),
+    m_result(0)
 {
-  m_size = m_result->numRows();
+  //m_size = m_result->numRows();
 }
 
 terralib4::DataSet::~DataSet()
