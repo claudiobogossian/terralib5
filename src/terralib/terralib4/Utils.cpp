@@ -115,7 +115,6 @@ std::auto_ptr<te::dt::Property> terralib4::Convert2T5(const TeAttributeRep& attR
     case TeTEXTTYPE:
     case TeTEXTSETTYPE:
     case TeOBJECT:
-    
     default:
       throw te::common::Exception(TR_COMMON("The informed attribute representation is not supported!"));
   }
@@ -143,7 +142,7 @@ int terralib4::Convert2T5(TeAttrDataType type)
       return te::dt::STRING_TYPE;
 
     case TeREAL:
-      return te::dt::DOUBLE_TYPE;
+      return te::dt::NUMERIC_TYPE;
 
     case TeINT:
       return te::dt::INT32_TYPE;
@@ -172,10 +171,6 @@ int terralib4::Convert2T5(TeAttrDataType type)
     case TeCELLSETTYPE:
       return te::dt::GEOMETRY_TYPE;
 
-    case TeTEXTTYPE:
-    case TeTEXTSETTYPE:
-      return te::dt::STRING_TYPE;
-
     case TeRASTERTYPE:
       return te::dt::RASTER_TYPE;
 
@@ -184,6 +179,8 @@ int terralib4::Convert2T5(TeAttrDataType type)
 
     case TeUNKNOWN:
     case TeOBJECT:
+    case TeTEXTTYPE:
+    case TeTEXTSETTYPE:
     default:
       return te::dt::UNKNOWN_TYPE;
   }
@@ -214,6 +211,9 @@ te::gm::GeomType terralib4::Convert2T5GeomType(TeAttrDataType type)
     case TePOLYGONSETTYPE:
     case TeCELLSETTYPE:
       return te::gm::MultiPolygonType;
+
+    default:
+      return te::gm::UnknownGeometryType;
   }
 }
 
@@ -225,9 +225,12 @@ TeAttrDataType terralib4::Convert2T4(int type)
       return TeSTRING;
 
     case te::dt::DOUBLE_TYPE:
+    case te::dt::NUMERIC_TYPE:
       return TeREAL;
 
+    case te::dt::INT16_TYPE:
     case te::dt::INT32_TYPE:
+    case te::dt::INT64_TYPE:
       return TeINT;
 
     case te::dt::DATETIME_TYPE:
@@ -239,7 +242,9 @@ TeAttrDataType terralib4::Convert2T4(int type)
     case te::dt::CHAR_TYPE:
       return TeCHARACTER;
 
+    case te::dt::UINT16_TYPE:
     case te::dt::UINT32_TYPE:
+    case te::dt::UINT64_TYPE:
       return TeUNSIGNEDINT;
 
     case te::dt::RASTER_TYPE:

@@ -34,6 +34,7 @@
 #include "../datatype/DateTimeProperty.h"
 #include "../datatype/SimpleData.h"
 #include "../datatype/TimeInstant.h"
+#include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/WKBReader.h"
 #include "DataSet.h"
