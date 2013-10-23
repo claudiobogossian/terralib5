@@ -29,6 +29,12 @@
 // TerraLib
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 
+extern "C"
+{
+  struct sqlite3;
+  typedef struct sqlite3 sqlite3;
+}
+
 namespace te
 {
   namespace sqlite
@@ -36,6 +42,8 @@ namespace te
     class DataSourceTransactor : public te::da::DataSourceTransactor
     {
       public:
+
+        DataSourceTransactor(DataSource* parent, sqlite3* db);
 
         te::da::DataSource* getDataSource() const;
 
