@@ -19,7 +19,7 @@
 
 /*!
   \file TsFilter.h
-
+ 
   \brief A test suit for the Filter Class.
  */
 
@@ -33,25 +33,33 @@
   \class TsFilter
 
   \brief A test suit for the Filter class interface.
-
-  ....
-  <br>
-  This test suite will check the Filter class
-  </ul>
  */
-class TsFilter : public CPPUNIT_NS::TestFixture
+class TsFilter : public CPPUNIT_NS::TestFixture 
 {
   CPPUNIT_TEST_SUITE( TsFilter );
-
-  CPPUNIT_TEST( Filters );
-
+  
+  CPPUNIT_TEST( SobelFilter );
+  CPPUNIT_TEST( RobertsFilter );
+  CPPUNIT_TEST( MeanFilter );
+  CPPUNIT_TEST( ModeFilter );
+  CPPUNIT_TEST( MedianFilter );
+  CPPUNIT_TEST( DilationFilter );
+  CPPUNIT_TEST( ErosionFilter );
+  CPPUNIT_TEST( UserDefinedWindow );
+  
   CPPUNIT_TEST_SUITE_END();
 
-  protected :
+protected :
 
-    void Filters();
+  void SobelFilter();
+  void RobertsFilter();
+  void MeanFilter();
+  void ModeFilter();
+  void MedianFilter();
+  void DilationFilter();
+  void ErosionFilter();
+  void UserDefinedWindow();
 
 };
 
-#endif  // __TERRALIB_UNITTEST_RP_FILTER_INTERNAL_H
-
+#endif
