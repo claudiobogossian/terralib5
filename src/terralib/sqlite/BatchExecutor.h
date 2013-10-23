@@ -36,16 +36,8 @@ namespace te
 {
   namespace sqlite
   {
-// Forward declaration
     class DataSourceTransactor;
 
-    /*!
-      \class BatchExecutor
-
-      \brief Implementation of the BatchExecutor class for the TerraLib SQLite Data Access driver.
-
-      \sa te::da::BatchExecutor
-    */
     class BatchExecutor : public te::da::BatchExecutor
     {
       public:
@@ -64,9 +56,6 @@ namespace te
 
         te::da::DataSourceTransactor* getTransactor() const;
 
-        /*!
-          \note SQLite driver extended method.
-        */
         void add(std::string* sql);
 
       private:

@@ -47,6 +47,22 @@ namespace te
 
     bool Exists(const std::map<std::string, std::string>& dbInfo);
 
+    void ExecuteScript(sqlite3* db, const char* fileName);
+
+    void PerformCommands(sqlite3* db, std::istream& istr);
+
+    void PerformCommands(sqlite3* db, const char* sql);
+
+    std::streamsize ReadLine(std::istream& istr, char** pbuff, std::size_t& buffsize);
+
+    bool IsAllWhitespace(const char* sqlLine);
+
+    bool IsCommandTerminator(const char* sqlLine);
+
+    bool ContainsSemicolon(const char* sql, std::size_t nbytes);
+
+    bool IsComplete(char** sql, size_t len, std::size_t& buffsize);
+
   } // end namespace sqlite
 }   // end namespace te
 

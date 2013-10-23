@@ -39,6 +39,8 @@ namespace te
 {
   namespace sqlite
   {
+    class DataSource;
+
     class DataSourceTransactor : public te::da::DataSourceTransactor
     {
       public:
@@ -222,6 +224,8 @@ namespace te
                     std::size_t limit = 0);
 
         void optimize(const std::map<std::string, std::string>& opInfo);
+
+        sqlite3* getDB() const;
 
       private:
 
