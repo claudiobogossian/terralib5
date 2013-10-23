@@ -74,6 +74,8 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
+          te::map::AbstractLayerPtr get();
+
           te::rp::Segmenter::InputParameters getInputParams();
 
           te::rp::Segmenter::OutputParameters getOutputParams();

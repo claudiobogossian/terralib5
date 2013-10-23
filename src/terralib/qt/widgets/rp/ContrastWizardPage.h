@@ -75,6 +75,8 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
+          te::map::AbstractLayerPtr get();
+
           te::rp::Contrast::InputParameters getInputParams();
 
           te::rp::Contrast::OutputParameters getOutputParams();
