@@ -217,7 +217,7 @@ te::da::DataSetType* GetDataSetType(const std::string& inDatasetName,
 
     while(it != props.end())
     {
-      if(it->getType() != te::dt::GEOMETRY_TYPE)
+      if(it->getType() != te::dt::GEOMETRY_TYPE && it->getName() != "FID")
         dsType->add(it->clone());
 
       ++it;
@@ -266,25 +266,30 @@ bool BufferMemory(const std::string& inDataSetName,
           switch (type)
           {
             case te::dt::INT32_TYPE:
-              dataSetItem->setInt32(j+3, inputDataSet->getInt32(j));
+              if(inputDataSet->getPropertyName(j) != "FID")
+                dataSetItem->setInt32(j+2, inputDataSet->getInt32(j));
               break;
             case te::dt::INT64_TYPE:
-              dataSetItem->setInt64(j+3, inputDataSet->getInt64(j));
+              dataSetItem->setInt64(j+2, inputDataSet->getInt64(j));
               break;
             case te::dt::DOUBLE_TYPE:
-              dataSetItem->setDouble(j+3, inputDataSet->getDouble(j));
+              dataSetItem->setDouble(j+2, inputDataSet->getDouble(j));
               break;
             case te::dt::STRING_TYPE:
-              dataSetItem->setString(j+3, inputDataSet->getString(j));
+              dataSetItem->setString(j+2, inputDataSet->getString(j));
               break;
             case te::dt::GEOMETRY_TYPE:
               dataSetItem->setInt32(0, pk); //pk
               dataSetItem->setInt32(1, i); //level
               dataSetItem->setDouble(2, distance*(i)); //distance
-            
-              std::auto_ptr<te::gm::Geometry> outGeom(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i));
-              if(outGeom->isValid())
-                dataSetItem->setGeometry(j+3, *outGeom);
+
+              std::auto_ptr<te::gm::Geometry> outGeom;
+
+              if(inputDataSet->getGeometry(j).get()->isValid())
+                outGeom.reset(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i));
+
+              if(outGeom.get() && outGeom->isValid())
+                dataSetItem->setGeometry(j+2, *outGeom);
 
               outputDataSet->add(dataSetItem);
               ++pk;
@@ -297,9 +302,13 @@ bool BufferMemory(const std::string& inDataSetName,
             dataSetItem->setInt32(0, pk); //pk
             dataSetItem->setInt32(1, i); //level
             dataSetItem->setDouble(2, distance*(i)); //distance
-            
-            std::auto_ptr<te::gm::Geometry> outGeom(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i));
-            if(outGeom->isValid())
+
+            std::auto_ptr<te::gm::Geometry> outGeom;
+
+            if(inputDataSet->getGeometry(j).get()->isValid())
+              outGeom.reset(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i));
+
+            if(outGeom.get() && outGeom->isValid())
               dataSetItem->setGeometry(3, *outGeom);
 
             outputDataSet->add(dataSetItem);
@@ -552,16 +561,19 @@ te::gm::Geometry* SetBuffer(te::gm::Geometry* geom,
       outGeom.reset(geom->buffer(distance * level, 16, te::gm::CapButtType));
       inGeom.reset(geom->buffer(-distance * level, 16, te::gm::CapButtType));
       geomResult = outGeom->difference(inGeom.get());
+
       break;
 
     case (te::vp::ONLY_OUTSIDE):
       outGeom.reset(geom->buffer(distance * level, 16, te::gm::CapButtType));
       geomResult = outGeom->difference(geom);
+      
       break;
 
     case (te::vp::ONLY_INSIDE):
       inGeom.reset(geom->buffer(-distance * level, 16, te::gm::CapButtType));
       geomResult = geom->difference(inGeom.get());
+
       break;
   }
   return geomResult;
