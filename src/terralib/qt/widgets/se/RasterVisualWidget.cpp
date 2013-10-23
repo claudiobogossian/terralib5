@@ -363,6 +363,8 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         double v = ce->getGammaValue() * 100.;
         m_ui->m_contrastRHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
+
+        m_ui->m_contrastGroupBox->setChecked(true);
       }
       else
       {
@@ -382,6 +384,8 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         double v = ce->getGammaValue() * 100.;
         m_ui->m_contrastGHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
+
+        m_ui->m_contrastGroupBox->setChecked(true);
       }
       else
       {
@@ -401,6 +405,8 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         double v = ce->getGammaValue() * 100.;
         m_ui->m_contrastBHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
+
+        m_ui->m_contrastGroupBox->setChecked(true);
       }
       else
       {
@@ -420,15 +426,17 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         double v = ce->getGammaValue() * 100.;
         m_ui->m_contrastMHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
+
+        m_ui->m_contrastGroupBox->setChecked(true);
       }
       else
       {
         m_ui->m_contrastMHorizontalSlider->setValue(100.);
       }
-
     }
-
   }
+
+  setContrastVisibility();
 }
 
 void te::qt::widgets::RasterVisualWidget::setComboBoxText(QComboBox* cb, std::string value)
