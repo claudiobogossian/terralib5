@@ -58,8 +58,12 @@ void te::qt::af::ChartDisplayDockWidget::setLayer(te::map::AbstractLayer* layer)
 {
   m_layer = layer;
 
+  //Configuring the default selection color
   te::qt::widgets::ChartConfigurer cc(m_displayWidget);
   cc.config(m_layer);
+
+  //Adjusting the selected objectIdSet
+  m_displayWidget->highlightOIds(m_layer->getSelected());
 
   if(m_layer==0)
     return;
