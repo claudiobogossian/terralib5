@@ -59,7 +59,7 @@ namespace te
           \param w The width of the window to iterate.
           \param h The height of the window to iterate.
         */
-        BandIteratorWindow(Band* b, std::size_t w, const std::size_t h);
+        BandIteratorWindow(Band const * const b, std::size_t w, const std::size_t h);
 
         /*!
           \brief Copy constructor.
@@ -119,7 +119,7 @@ namespace te
           \param w The width of the window to iterate.
           \param h The height of the window to iterate.
         */
-        static BandIteratorWindow begin(Band* b, std::size_t w, const std::size_t h);
+        static BandIteratorWindow begin(Band const * const b, std::size_t w, const std::size_t h);
 
         /*!
           \brief Returns an iterator referring to after the end of the iterator.
@@ -128,7 +128,7 @@ namespace te
           \param w The width of the window to iterate.
           \param h The height of the window to iterate.
         */
-        static BandIteratorWindow end(Band* b, std::size_t w, const std::size_t h);
+        static BandIteratorWindow end(Band const * const b, std::size_t w, const std::size_t h);
 
         /*!
           \brief Differece operator.
@@ -180,10 +180,10 @@ namespace te
         int m_blky;               //!< The position in Y of the current block.
         int m_lastblksize;        //!< The number of pixels inside the last block.
         std::vector<T*> m_blocks; //!< A vector of internal blocks, to provide fast access to window elements.
-        Band* m_band;             //!< The band from where to get the values.
+        Band const * m_band;             //!< The band from where to get the values.
     };
 
-    template<class T> te::rst::BandIteratorWindow<T>::BandIteratorWindow(te::rst::Band* b, std::size_t w, const std::size_t h)
+    template<class T> te::rst::BandIteratorWindow<T>::BandIteratorWindow(te::rst::Band const * const b, std::size_t w, const std::size_t h)
       : m_w(w),
         m_h(h),
         m_blkw(b->getProperty()->m_blkw),
@@ -397,12 +397,12 @@ namespace te
       return (m_blky != rhs.m_blky);
     }
 
-    template<class T> te::rst::BandIteratorWindow<T> te::rst::BandIteratorWindow<T>::begin(te::rst::Band* b, std::size_t w, const std::size_t h)
+    template<class T> te::rst::BandIteratorWindow<T> te::rst::BandIteratorWindow<T>::begin(te::rst::Band const * const b, std::size_t w, const std::size_t h)
     {
       return te::rst::BandIteratorWindow<T>(b, w, h);
     }
 
-    template<class T> te::rst::BandIteratorWindow<T> te::rst::BandIteratorWindow<T>::end(te::rst::Band* b, std::size_t w, const std::size_t h)
+    template<class T> te::rst::BandIteratorWindow<T> te::rst::BandIteratorWindow<T>::end(te::rst::Band const * const b, std::size_t w, const std::size_t h)
     {
       te::rst::BandIteratorWindow<T> it;
 
