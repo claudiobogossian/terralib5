@@ -42,24 +42,23 @@
 
 std::string RemoveSpatialSql(const std::string& sql)
 {
-  // Try find AND
-  std::size_t pos = sql.find("AND Intersection");
-
-  // Try find without AND
-  if(pos == std::string::npos)
-    pos = sql.find("WHERE Intersection");
-
-  if(pos == std::string::npos)
-    return sql;
-
   std::string newQuery;
 
-  std::size_t pos2 = sql.find("))", pos);
-  newQuery = sql.substr(0, pos);
-  newQuery += sql.substr(pos2 + 2);
+  size_t pos = sql.find("AND Intersection");
+
+  if(pos != std::string::npos)
+  {
+    size_t pos2 = sql.find("))", pos);
+
+    newQuery = sql.substr(0, pos);
+    newQuery += sql.substr(pos2+2);
+  }
+  else
+    newQuery = sql;
 
   return newQuery;
 }
+
 
 te::ogr::Transactor::Transactor(DataSource* ds) :
 te::da::DataSourceTransactor(),
@@ -346,7 +345,8 @@ boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std
 
   if(l!=0)
   {
-    std::auto_ptr<te::da::DataSetType> dt(Convert2TerraLib(l->GetLayerDefn()));
+    int srs = te::ogr::Convert2TerraLibProjection(l->GetSpatialRef());
+    std::auto_ptr<te::da::DataSetType> dt(Convert2TerraLib(l->GetLayerDefn(),srs));
     std::vector<te::dt::Property*> props = dt->getProperties();
     std::vector<te::dt::Property*>::iterator it;
 
