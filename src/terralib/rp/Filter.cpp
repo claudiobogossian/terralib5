@@ -19,683 +19,1114 @@
 
 /*!
   \file terralib/rp/Filter.cpp
-Implements a series of well-known filtering algorithms for images, linear and non-linear.
+  \brief A series of well-known filtering algorithms for images, linear and non-linear..
 */
 
-// TerraLib
-#include "../common/progress/TaskProgress.h"
-#include "../raster/Band.h"
-#include "../raster/BandIterator.h"
+#include "Filter.h"
+#include "Macros.h"
+#include "Functions.h"
+#include "../statistics/core/SummaryFunctions.h"
+#include "../raster/RasterFactory.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Grid.h"
-#include "../raster/Raster.h"
+#include "../raster/Band.h"
+#include "../raster/BandIterator.h"
 #include "../raster/BandIteratorWindow.h"
-#include "../raster/RasterFactory.h"
-#include "../raster/RasterProperty.h"
-#include "../raster/RasterSummaryManager.h"
-#include "../statistics/core/SummaryFunctions.h"
-#include "Filter.h"
-#include "Functions.h"
-#include "Macros.h"
+#include "../common/progress/TaskProgress.h"
 
-// STL
-#include "float.h"
+#include <memory>
+#include <cmath>
 
-te::rp::Filter::InputParameters::InputParameters()
+namespace te
 {
-  reset();
-}
-
-te::rp::Filter::InputParameters::~InputParameters()
-{
-  reset();
-}
-
-void te::rp::Filter::InputParameters::reset() throw(te::rp::Exception)
-{
-  m_type = InputParameters::InvalidFilterT;
-  m_windowH = 3;
-  m_windowW = 3;
-  m_inRasterPtr = 0;
-  m_inRasterBands.clear();
-  m_enableProgress = false;
-  m_window = boost::numeric::ublas::matrix<double>();
-}
-
-const te::rp::Filter::InputParameters& te::rp::Filter::InputParameters::operator=(const te::rp::Filter::InputParameters& params)
-{
-  reset();
-
-  m_type = params.m_type;
-  m_windowH = params.m_windowH;
-  m_windowW = params.m_windowW;
-  m_inRasterPtr = params.m_inRasterPtr;
-  m_inRasterBands = params.m_inRasterBands;
-  m_enableProgress = params.m_enableProgress;
-  m_window = params.m_window;
-
-  return *this;
-}
-
-te::common::AbstractParameters* te::rp::Filter::InputParameters::clone() const
-{
-  return new InputParameters(*this);
-}
-
-te::rp::Filter::OutputParameters::OutputParameters()
-{
-  reset();
-}
-
-te::rp::Filter::OutputParameters::OutputParameters(const OutputParameters& other)
-{
-  reset();
-
-  operator=(other);
-}
-
-te::rp::Filter::OutputParameters::~OutputParameters()
-{
-  reset();
-}
-
-void te::rp::Filter::OutputParameters::reset() throw(te::rp::Exception)
-{
-  m_outRasterPtr = 0;
-  m_createdOutRasterPtr.reset();
-  m_outRasterBands.clear();
-  m_createdOutRasterDSType.clear();
-  m_createdOutRasterInfo.clear();
-  m_normalizeOutput = false;
-}
-
-const te::rp::Filter::OutputParameters& te::rp::Filter::OutputParameters::operator=(const te::rp::Filter::OutputParameters& params)
-{
-  reset();
-
-  m_outRasterPtr = params.m_outRasterPtr;
-  m_outRasterBands = params.m_outRasterBands;
-  m_createdOutRasterDSType = params.m_createdOutRasterDSType;
-  m_createdOutRasterInfo = params.m_createdOutRasterInfo;
-  m_normalizeOutput = params.m_normalizeOutput;
-
-  return *this;
-}
-
-te::common::AbstractParameters* te::rp::Filter::OutputParameters::clone() const
-{
-  return new OutputParameters(*this);
-}
-
-te::rp::Filter::Filter()
-{
-  reset();
-}
-
-te::rp::Filter::~Filter()
-{
-}
-
-bool te::rp::Filter::execute(AlgorithmOutputParameters& outputParams) throw(te::rp::Exception)
-{
-  TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, "Algoritm not initialized");
-
-  // Initializing the output raster
-  m_outputParametersPtr = dynamic_cast<te::rp::Filter::OutputParameters* >(&outputParams);
-  TERP_TRUE_OR_RETURN_FALSE(m_outputParametersPtr, "Invalid parameters");
-
-  if(m_outputParametersPtr->m_outRasterPtr == 0)
+  namespace rp
   {
-    m_outputParametersPtr->m_outRasterBands.clear();
 
-    std::vector<te::rst::BandProperty*> bandsProperties;
-    for(unsigned int i = 0; i < m_inputParameters.m_inRasterBands.size(); i++)
+    Filter::InputParameters::InputParameters()
     {
-      assert(m_inputParameters.m_inRasterBands[i] < m_inputParameters.m_inRasterPtr->getNumberOfBands());
-      te::rst::BandProperty* bprop = new te::rst::BandProperty(i, te::dt::DOUBLE_TYPE, "Filtered band");
-      bandsProperties.push_back(bprop);
-      m_outputParametersPtr->m_outRasterBands.push_back(i);
+      reset();
+    }
+    
+    Filter::InputParameters::InputParameters( const InputParameters& other )
+    {
+      reset();
+      operator=( other );
+    }    
+
+    Filter::InputParameters::~InputParameters()
+    {
+      reset();
     }
 
-    m_outputParametersPtr->m_createdOutRasterPtr.reset(
-      te::rst::RasterFactory::make(
-        m_outputParametersPtr->m_createdOutRasterDSType,
-        new te::rst::Grid(*(m_inputParameters.m_inRasterPtr->getGrid())),
-        bandsProperties, m_outputParametersPtr->m_createdOutRasterInfo, 0, 0));
-    TERP_TRUE_OR_RETURN_FALSE(m_outputParametersPtr->m_createdOutRasterPtr.get(), "Output raster creation error");
-
-    m_outputParametersPtr->m_outRasterPtr = m_outputParametersPtr->m_createdOutRasterPtr.get();
-  }
-  else
-  {
-    if ((m_outputParametersPtr->m_outRasterPtr->getAccessPolicy() & te::common::WAccess)
-      && (m_outputParametersPtr->m_outRasterPtr->getNumberOfColumns() == m_inputParameters.m_inRasterPtr->getNumberOfColumns())
-      && (m_outputParametersPtr->m_outRasterPtr->getNumberOfRows() == m_inputParameters.m_inRasterPtr->getNumberOfRows()))
+    void Filter::InputParameters::reset() throw( te::rp::Exception )
     {
-      for(unsigned int i = 0 ; i < m_inputParameters.m_inRasterBands.size() ; i++)
+      m_filterType = InputParameters::InvalidFilterT;
+      m_inRasterPtr = 0;
+      m_inRasterBands.clear();
+      m_iterationsNumber = 1;
+      m_windowH = 3;
+      m_windowW = 3;
+      m_enableProgress = false;
+      m_window.clear();
+    }
+
+    const Filter::InputParameters& Filter::InputParameters::operator=(
+      const Filter::InputParameters& params )
+    {
+      reset();
+      
+      m_filterType = params.m_filterType;
+      m_inRasterPtr = params.m_inRasterPtr;
+      m_inRasterBands = params.m_inRasterBands;
+      m_iterationsNumber = params.m_iterationsNumber;
+      m_windowH = params.m_windowH;
+      m_windowW = params.m_windowW;
+      m_enableProgress = params.m_enableProgress;
+      m_window = params.m_window;
+      
+      return *this;
+    }
+
+    te::common::AbstractParameters* Filter::InputParameters::clone() const
+    {
+      return new InputParameters( *this );
+    }
+
+    Filter::OutputParameters::OutputParameters()
+    {
+      reset();
+    }
+
+    Filter::OutputParameters::OutputParameters( const OutputParameters& other )
+    {
+      reset();
+      operator=( other );
+    }
+
+    Filter::OutputParameters::~OutputParameters()
+    {
+      reset();
+    }
+
+    void Filter::OutputParameters::reset() throw( te::rp::Exception )
+    {
+      m_rType.clear();
+      m_rInfo.clear();
+      m_outputRasterPtr.reset();
+    }
+
+    const Filter::OutputParameters& Filter::OutputParameters::operator=(
+      const Filter::OutputParameters& params )
+    {
+      reset();
+      
+      m_rType = params.m_rType;
+      m_rInfo = params.m_rInfo;
+
+      return *this;
+    }
+
+    te::common::AbstractParameters* Filter::OutputParameters::clone() const
+    {
+      return new OutputParameters( *this );
+    }
+
+    Filter::Filter()
+    {
+      reset();
+    }
+
+    Filter::~Filter()
+    {
+    }
+    
+    bool Filter::execute( AlgorithmOutputParameters& outputParams )
+      throw( te::rp::Exception )
+    {
+      if( ! m_isInitialized ) return false;
+      
+      Filter::OutputParameters* outParamsPtr = dynamic_cast<
+        Filter::OutputParameters* >( &outputParams );
+      TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
+      
+      // Initializing the output rasters
+      
+      std::auto_ptr< te::rst::Raster > bufferRaster1Ptr;
+      std::auto_ptr< te::rst::Raster > bufferRaster2Ptr;
+      
       {
-        TERP_TRUE_OR_RETURN_FALSE(m_outputParametersPtr->m_outRasterBands[i] < m_outputParametersPtr->m_outRasterPtr->getNumberOfBands(),
-          "Invalid output raster band")
-      }
-    }
-    else
-    {
-      TERP_LOG_AND_RETURN_FALSE("Invalid output raster");
-    }
-  }
-
-  // Executing the filter on the selected bands
-  switch(m_inputParameters.m_type)
-  {
-    case InputParameters::SobelFilterT:
-    {
-      return execSobelFilter();
-      break;
-    }
-    case InputParameters::MeanFilterT:
-    {
-      return execMeanFilter();
-      break;
-    }
-    case InputParameters::ModeFilterT:
-    {
-      return execModeFilter();
-      break;
-    }
-    case InputParameters::MedianFilterT:
-    {
-      return execMedianFilter();
-      break;
-    }
-    case InputParameters::DilationFilterT:
-    {
-      return execDilationFilter();
-      break;
-    }
-    case InputParameters::ErosionFilterT:
-    {
-      return execErosionFilter();
-      break;
-    }
-    case InputParameters::UserDefinedWindowT:
-    {
-      return execUserDefinedFilter();
-      break;
-    }
-    default :
-    {
-      TERP_LOG_AND_THROW("Invalid filter type");
-      break;
-    }
-  }
-}
-
-void te::rp::Filter::reset() throw(te::rp::Exception)
-{
-  m_inputParameters.reset();
-  m_outputParametersPtr = 0;
-  m_isInitialized = false;
-}
-
-bool te::rp::Filter::initialize(const AlgorithmInputParameters& inputParams) throw(te::rp::Exception)
-{
-  reset();
-
-  Filter::InputParameters const* inputParamsPtr = dynamic_cast<Filter::InputParameters const*> (&inputParams);
-  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr, "Invalid parameters");
-
-  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inRasterPtr, "Invalid raster pointer");
-  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inRasterPtr->getAccessPolicy() & te::common::RAccess, "Invalid raster");
-
-  for(unsigned int i = 0 ; i < inputParamsPtr->m_inRasterBands.size(); i++)
-  {
-    TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inRasterBands[i] < inputParamsPtr->m_inRasterPtr->getNumberOfBands(), 
-                              "Invalid input raster band");
-  }
-
-// checking window size
-  if (inputParamsPtr->m_type == InputParameters::SobelFilterT)
-  {
-    TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_windowH == 3 || inputParamsPtr->m_windowW ==3,
-                              "Invalid window size for Sobel Filter, correct is 3x3.");
-  }
-
-  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_windowH > 0 &&
-                            inputParamsPtr->m_windowH < inputParamsPtr->m_inRasterPtr->getNumberOfRows() / 2,
-                            "Window height must be greater than 0, and less than half of the number of rows of the image");
-                            
-  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_windowW > 0 &&
-                            inputParamsPtr->m_windowW < inputParamsPtr->m_inRasterPtr->getNumberOfColumns() / 2,
-                            "Window width must be greater than 0, and less than half of the number of columns of the image");
-
-  if (inputParamsPtr->m_type == InputParameters::UserDefinedWindowT)
-  {
-    TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_window.size1() == inputParamsPtr->m_windowW &&
-                              inputParamsPtr->m_window.size2() == inputParamsPtr->m_windowH,
-                              "The user defined window must be of the same size of parameters m_windowW and m_windowH");
-  }
-  
-  m_inputParameters = *inputParamsPtr;
-  m_isInitialized = true;
-
-  return true;
-}
-
-bool te::rp::Filter::isInitialized() const
-{
-  return m_isInitialized;
-}
-
-bool te::rp::Filter::execSobelFilter()
-{
-  assert(m_inputParameters.m_inRasterPtr);
-  assert(m_outputParametersPtr->m_outRasterPtr);
-  
-  te::common::TaskProgress task(TR_RP("Sobel Filter"),
-                                te::common::TaskProgress::UNDEFINED,
-                                m_inputParameters.m_inRasterBands.size());
-
-  const unsigned int H = m_inputParameters.m_windowH;
-  const unsigned int W = m_inputParameters.m_windowW;
-
-  // create weight matrices
-  boost::numeric::ublas::matrix<double> window_X(W, H);
-  boost::numeric::ublas::matrix<double> window_Y(W, H);
-  for (unsigned int i = 0; i < W; i++)
-    for (unsigned int j = 0; j < H; j++)
-    {
-      window_X(i, j) = 0.0;
-      window_Y(i, j) = 0.0;
-    }
-  window_X(0, 0) = 1; window_Y(0, 0) = -1;
-  window_X(0, 1) = 2; window_Y(1, 0) = -2;
-  window_X(0, 2) = 1; window_Y(2, 0) = -1;
-  window_X(2, 0) = -1; window_Y(0, 2) = 1;
-  window_X(2, 1) = -2; window_Y(1, 2) = 2;
-  window_X(2, 2) = -1; window_Y(2, 2) = 1;
-
-  double pixels_X;
-  double pixels_Y;
-  double pixel_sobel;
-
-  unsigned int R;
-  unsigned int C;
-  const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
-  const unsigned int MC = m_inputParameters.m_inRasterPtr->getNumberOfColumns();
-  
-  for (unsigned int b = 0; b < m_inputParameters.m_inRasterBands.size(); b++)
-  {
-    unsigned int nband = m_inputParameters.m_inRasterBands[b];
-    te::rst::Band* band = m_inputParameters.m_inRasterPtr->getBand(nband);
-    te::rst::BandIteratorWindow<unsigned char> it = te::rst::BandIteratorWindow<unsigned char>::begin(band, W, H);
-    te::rst::BandIteratorWindow<unsigned char> itend = te::rst::BandIteratorWindow<unsigned char>::end(band, W, H);
-
-    while (it != itend)
-    {
-      R = it.getRow();
-      C = it.getColumn();
-      if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
-          (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
-      {
-        pixels_X = 0.0;
-        pixels_Y = 0.0;
-        for (int r = -1, rw = 0; r <= 1; r++, rw++)
-          for (int c = -1, cw = 0; c <= 1; c++, cw++)
+        std::vector< te::rst::BandProperty* > outRasterBandsProperties;
+        std::vector< te::rst::BandProperty* > bufferRaster1BandsProperties;
+        std::vector< te::rst::BandProperty* > bufferRaster2BandsProperties;
+        
+        for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
+          m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
+        {
+          const unsigned int& inRasterBandIndex = 
+            m_inputParameters.m_inRasterBands[ inRasterBandsIdx ];
+          
+          assert( inRasterBandIndex <
+            m_inputParameters.m_inRasterPtr->getNumberOfBands() );
+            
+          outRasterBandsProperties.push_back( new te::rst::BandProperty(
+            *( m_inputParameters.m_inRasterPtr->getBand( inRasterBandIndex )->getProperty() ) ) );
+            
+          if( m_inputParameters.m_iterationsNumber > 1 )
           {
-            pixels_X += window_X(rw, cw) * it.getValue(c, r);
-            pixels_Y += window_Y(rw, cw) * it.getValue(c, r);
+            bufferRaster1BandsProperties.push_back( new te::rst::BandProperty(
+              *outRasterBandsProperties[ inRasterBandsIdx ] ) );
+            bufferRaster1BandsProperties[ inRasterBandsIdx ]->m_type =
+              te::dt::DOUBLE_TYPE;
           }
-        pixel_sobel = sqrt(pixels_X * pixels_X + pixels_Y * pixels_Y);
-      }
-      else
-        pixel_sobel = 0.0;
-
-      m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixel_sobel, b);
-      ++it;
-    }
-    task.pulse();
-  }
-  if (m_outputParametersPtr->m_normalizeOutput)
-    NormalizeRaster(*m_outputParametersPtr->m_outRasterPtr);
-
-  return true;
-}
-
-bool te::rp::Filter::execMeanFilter()
-{
-  assert(m_inputParameters.m_inRasterPtr);
-  assert(m_outputParametersPtr->m_outRasterPtr);
-  
-  te::common::TaskProgress task(TR_RP("Mean Filter"),
-                                te::common::TaskProgress::UNDEFINED,
-                                m_inputParameters.m_inRasterBands.size());
-
-  const unsigned int H = m_inputParameters.m_windowH;
-  const unsigned int W = m_inputParameters.m_windowW;
-
-  boost::numeric::ublas::matrix<double> window_mean(H, W);
-  double pixel_mean;
-  for (unsigned int i = 0; i < H; i++)
-    for (unsigned int j = 0; j < W; j++)
-      window_mean(i, j) = 1.0 / (W * H);
-
-  unsigned int R;
-  unsigned int C;
-  const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
-  const unsigned int MC = m_inputParameters.m_inRasterPtr->getNumberOfColumns();
-  
-  for (unsigned int b = 0; b < m_inputParameters.m_inRasterBands.size(); b++)
-  {
-    unsigned int nband = m_inputParameters.m_inRasterBands[b];
-    te::rst::Band* band = m_inputParameters.m_inRasterPtr->getBand(nband);
-    te::rst::BandIteratorWindow<unsigned char> it = te::rst::BandIteratorWindow<unsigned char>::begin(band, W, H);
-    te::rst::BandIteratorWindow<unsigned char> itend = te::rst::BandIteratorWindow<unsigned char>::end(band, W, H);
-
-    while (it != itend)
-    {
-      R = it.getRow();
-      C = it.getColumn();
-
-      if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
-          (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
-      {
-        pixel_mean = 0.0;
-        for (int r = -(H / 2), rw = 0; r <= (H / 2); r++, rw++)
-          for (int c = -(W / 2), cw = 0; c <= (W / 2); c++, cw++)
-            pixel_mean += window_mean(rw, cw) * it.getValue(c, r);
-      }
-      else
-        pixel_mean = it.getValue();
-
-      m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixel_mean, b);
-      ++it;
-    }
-    task.pulse();
-  }
-  if (m_outputParametersPtr->m_normalizeOutput)
-    NormalizeRaster(*m_outputParametersPtr->m_outRasterPtr);
-
-  return true;
-}
-
-bool te::rp::Filter::execModeFilter()
-{
-  assert(m_inputParameters.m_inRasterPtr);
-  assert(m_outputParametersPtr->m_outRasterPtr);
-  
-  te::common::TaskProgress task(TR_RP("Mode Filter"),
-                                te::common::TaskProgress::UNDEFINED,
-                                m_inputParameters.m_inRasterBands.size());
-
-  const unsigned int H = m_inputParameters.m_windowH;
-  const unsigned int W = m_inputParameters.m_windowW;
-
-  unsigned int R;
-  unsigned int C;
-  const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
-  const unsigned int MC = m_inputParameters.m_inRasterPtr->getNumberOfColumns();
-  
-  std::vector<double> pixels_in_window;
-  double pixel_mode;
-  for (unsigned int b = 0; b < m_inputParameters.m_inRasterBands.size(); b++)
-  {
-    unsigned int nband = m_inputParameters.m_inRasterBands[b];
-    te::rst::Band* band = m_inputParameters.m_inRasterPtr->getBand(nband);
-    te::rst::BandIteratorWindow<unsigned char> it = te::rst::BandIteratorWindow<unsigned char>::begin(band, W, H);
-    te::rst::BandIteratorWindow<unsigned char> itend = te::rst::BandIteratorWindow<unsigned char>::end(band, W, H);
-
-    while (it != itend)
-    {
-      R = it.getRow();
-      C = it.getColumn();
-
-      if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
-          (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
-      {
-        pixel_mode = 0.0;
-        pixels_in_window.clear();
-        for (int r = -(H / 2); r <= (H / 2); r++)
-          for (int c = -(W / 2); c <= (W / 2); c++)
-            pixels_in_window.push_back(it.getValue(c, r));
-        pixel_mode = te::stat::Mode(pixels_in_window);
-      }
-      else
-        pixel_mode = it.getValue();
-
-      m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixel_mode, b);
-      ++it;
-    }
-    task.pulse();
-  }
-  if (m_outputParametersPtr->m_normalizeOutput)
-    NormalizeRaster(*m_outputParametersPtr->m_outRasterPtr);
-
-  return true;
-}
-
-bool order_function(double i, double j)
-{
-  return (i < j);
-}
-
-bool te::rp::Filter::execMedianFilter()
-{
-  assert(m_inputParameters.m_inRasterPtr);
-  assert(m_outputParametersPtr->m_outRasterPtr);
-  
-  te::common::TaskProgress task(TR_RP("Median Filter"),
-                                te::common::TaskProgress::UNDEFINED,
-                                m_inputParameters.m_inRasterBands.size());
-
-  const unsigned int H = m_inputParameters.m_windowH;
-  const unsigned int W = m_inputParameters.m_windowW;
-
-  unsigned int R;
-  unsigned int C;
-  const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
-  const unsigned int MC = m_inputParameters.m_inRasterPtr->getNumberOfColumns();
-  
-  std::vector<double> pixels_in_window;
-  double pixel_median;
-  for (unsigned int b = 0; b < m_inputParameters.m_inRasterBands.size(); b++)
-  {
-    unsigned int nband = m_inputParameters.m_inRasterBands[b];
-    te::rst::Band* band = m_inputParameters.m_inRasterPtr->getBand(nband);
-    te::rst::BandIteratorWindow<unsigned char> it = te::rst::BandIteratorWindow<unsigned char>::begin(band, W, H);
-    te::rst::BandIteratorWindow<unsigned char> itend = te::rst::BandIteratorWindow<unsigned char>::end(band, W, H);
-
-    while (it != itend)
-    {
-      R = it.getRow();
-      C = it.getColumn();
-
-      if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
-          (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
-      {
-        pixel_median = 0.0;
-        pixels_in_window.clear();
-        for (int r = -(H / 2); r <= (H / 2); r++)
-          for (int c = -(W / 2); c <= (W / 2); c++)
-            pixels_in_window.push_back(it.getValue(c, r));
-
-        std::sort(pixels_in_window.begin(), pixels_in_window.end(), order_function);
-        pixel_median = pixels_in_window[pixels_in_window.size() / 2];
-      }
-      else
-        pixel_median = it.getValue();
-
-      m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixel_median, b);
-      ++it;
-    }
-    task.pulse();
-  }
-  if (m_outputParametersPtr->m_normalizeOutput)
-    NormalizeRaster(*m_outputParametersPtr->m_outRasterPtr);
-
-  return true;
-}
-
-bool te::rp::Filter::execDilationFilter()
-{
-  assert(m_inputParameters.m_inRasterPtr);
-  assert(m_outputParametersPtr->m_outRasterPtr);
-  
-  te::common::TaskProgress task(TR_RP("Dilation Filter"),
-                                te::common::TaskProgress::UNDEFINED,
-                                m_inputParameters.m_inRasterBands.size());
-
-  const unsigned int H = m_inputParameters.m_windowH;
-  const unsigned int W = m_inputParameters.m_windowW;
-
-  unsigned int R;
-  unsigned int C;
-  const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
-  const unsigned int MC = m_inputParameters.m_inRasterPtr->getNumberOfColumns();
-
-  double pixel_dilation;
-  double pixel;
-  for (unsigned int b = 0; b < m_inputParameters.m_inRasterBands.size(); b++)
-  {
-    unsigned int nband = m_inputParameters.m_inRasterBands[b];
-    te::rst::Band* band = m_inputParameters.m_inRasterPtr->getBand(nband);
-    te::rst::BandIteratorWindow<unsigned char> it = te::rst::BandIteratorWindow<unsigned char>::begin(band, W, H);
-    te::rst::BandIteratorWindow<unsigned char> itend = te::rst::BandIteratorWindow<unsigned char>::end(band, W, H);
-
-    while (it != itend)
-    {
-      R = it.getRow();
-      C = it.getColumn();
-
-      if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
-          (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
-      {
-        pixel_dilation = -1.0 * std::numeric_limits<double>::max();
-        for (int r = -(H / 2); r <= (H / 2); r++)
-          for (int c = -(W / 2); c <= (W / 2); c++)
+            
+          if( m_inputParameters.m_iterationsNumber > 2 )
           {
-            pixel = it.getValue(c, r);
-            if (pixel > pixel_dilation)
-              pixel_dilation = pixel;
+            bufferRaster2BandsProperties.push_back( new te::rst::BandProperty(
+              *outRasterBandsProperties[ inRasterBandsIdx ] ) );             
+            bufferRaster2BandsProperties[ inRasterBandsIdx ]->m_type =
+              te::dt::DOUBLE_TYPE;
           }
-      }
-      else
-        pixel_dilation = it.getValue();
+        }
 
-      m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixel_dilation, b);
-      ++it;
-    }
-    task.pulse();
-  }
-  if (m_outputParametersPtr->m_normalizeOutput)
-    NormalizeRaster(*m_outputParametersPtr->m_outRasterPtr);
+        outParamsPtr->m_outputRasterPtr.reset(
+          te::rst::RasterFactory::make(
+            outParamsPtr->m_rType,
+            new te::rst::Grid( *( m_inputParameters.m_inRasterPtr->getGrid() ) ),
+            outRasterBandsProperties,
+            outParamsPtr->m_rInfo,
+            0,
+            0 ) );
+        TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputRasterPtr.get(),
+          "Output raster creation error" );
+          
+        std::map< std::string, std::string > dummyRInfo;
 
-  return true;
-}
-
-bool te::rp::Filter::execErosionFilter()
-{
-  assert(m_inputParameters.m_inRasterPtr);
-  assert(m_outputParametersPtr->m_outRasterPtr);
-  
-  te::common::TaskProgress task(TR_RP("Erosion Filter"),
-                                te::common::TaskProgress::UNDEFINED,
-                                m_inputParameters.m_inRasterBands.size());
-
-  const unsigned int H = m_inputParameters.m_windowH;
-  const unsigned int W = m_inputParameters.m_windowW;
-
-  unsigned int R;
-  unsigned int C;
-  const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
-  const unsigned int MC = m_inputParameters.m_inRasterPtr->getNumberOfColumns();
-
-  double pixel_erosion;
-  double pixel;
-  for (unsigned int b = 0; b < m_inputParameters.m_inRasterBands.size(); b++)
-  {
-    unsigned int nband = m_inputParameters.m_inRasterBands[b];
-    te::rst::Band* band = m_inputParameters.m_inRasterPtr->getBand(nband);
-    te::rst::BandIteratorWindow<unsigned char> it = te::rst::BandIteratorWindow<unsigned char>::begin(band, W, H);
-    te::rst::BandIteratorWindow<unsigned char> itend = te::rst::BandIteratorWindow<unsigned char>::end(band, W, H);
-
-    while (it != itend)
-    {
-      R = it.getRow();
-      C = it.getColumn();
-
-      if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
-          (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+        if( m_inputParameters.m_iterationsNumber > 1 )
+        {
+          bufferRaster1Ptr.reset(
+            te::rst::RasterFactory::make(
+              "MEM",
+              new te::rst::Grid( *( m_inputParameters.m_inRasterPtr->getGrid() ) ),
+              bufferRaster1BandsProperties,
+              dummyRInfo,
+              0,
+              0 ) );
+          TERP_TRUE_OR_RETURN_FALSE( bufferRaster1Ptr.get(),
+            "Output raster creation error" );
+        }
+        
+        if( m_inputParameters.m_iterationsNumber > 2 )
+        {
+          bufferRaster2Ptr.reset(
+            te::rst::RasterFactory::make(
+              "MEM",
+              new te::rst::Grid( *( m_inputParameters.m_inRasterPtr->getGrid() ) ),
+              bufferRaster2BandsProperties,
+              dummyRInfo,
+              0,
+              0 ) );
+          TERP_TRUE_OR_RETURN_FALSE( bufferRaster2Ptr.get(),
+            "Output raster creation error" );
+        }          
+      }      
+      
+      // Filtering
+      
+      FilterMethodPointerT filterPointer = 0;
+      switch( m_inputParameters.m_filterType )
       {
-        pixel_erosion = std::numeric_limits<double>::max();
-        for (int r = -(H / 2); r <= (H / 2); r++)
-          for (int c = -(W / 2); c <= (W / 2); c++)
+        case InputParameters::RobertsFilterT :
+        {
+          filterPointer = &Filter::RobertsFilter;
+          break;
+        }
+        case InputParameters::SobelFilterT :
+        {
+          filterPointer = &Filter::SobelFilter;
+          break;
+        }
+        case InputParameters::MeanFilterT :
+        {
+          filterPointer = &Filter::MeanFilter;
+          break;
+        }
+        case InputParameters::ModeFilterT :
+        {
+          filterPointer = &Filter::ModeFilter;
+          break;
+        }
+        case InputParameters::MedianFilterT :
+        {
+          filterPointer = &Filter::MedianFilter;
+          break;
+        }
+        case InputParameters::DilationFilterT :
+        {
+          filterPointer = &Filter::DilationFilter;
+          break;
+        }
+        case InputParameters::ErosionFilterT :
+        {
+          filterPointer = &Filter::ErosionFilter;
+          break;
+        }
+        case InputParameters::UserDefinedWindowT :
+        {
+          filterPointer = &Filter::UserDefinedFilter;
+          break;
+        }                                
+        default :
+        {
+          TERP_LOG_AND_THROW( "Invalid filter type" );
+          break;
+        }
+      }
+      
+      const bool useGlobalProgress = ( ( m_inputParameters.m_iterationsNumber * 
+        m_inputParameters.m_inRasterBands.size() ) != 1 );
+      
+      std::auto_ptr< te::common::TaskProgress > task;
+      if( m_inputParameters.m_enableProgress && useGlobalProgress )
+      {
+        task.reset( new te::common::TaskProgress(TR_RP("Filtering"),
+          te::common::TaskProgress::UNDEFINED,
+         ( m_inputParameters.m_iterationsNumber * 
+          m_inputParameters.m_inRasterBands.size() ) ) );
+      }        
+      
+      te::rst::Raster const* srcRasterPtr = 0;
+      te::rst::Raster* dstRasterPtr = 0;
+      te::rst::Raster const* auxRasterPtr = 0;      
+      
+      for( unsigned int iteration = 0 ; iteration < 
+        m_inputParameters.m_iterationsNumber ; ++iteration )
+      {
+        // defining the source raster and
+        // destination raster
+        
+        if( iteration == 0 )
+        {
+          srcRasterPtr = m_inputParameters.m_inRasterPtr;
+          
+          if( m_inputParameters.m_iterationsNumber == 1 )
           {
-            pixel = it.getValue(c, r);
-            if (pixel < pixel_erosion)
-              pixel_erosion = pixel;
+            dstRasterPtr = outParamsPtr->m_outputRasterPtr.get();
           }
+          else
+          {
+            dstRasterPtr = bufferRaster1Ptr.get();
+          }
+        }
+        else if( iteration == ( m_inputParameters.m_iterationsNumber - 1 ) )
+        {
+          srcRasterPtr = dstRasterPtr;
+          
+          dstRasterPtr = outParamsPtr->m_outputRasterPtr.get();
+        }
+        else if( iteration == 1 )
+        {
+          srcRasterPtr = dstRasterPtr;
+          
+          dstRasterPtr = bufferRaster2Ptr.get();
+        }
+        else
+        {
+          auxRasterPtr = srcRasterPtr;
+          srcRasterPtr = dstRasterPtr;
+          dstRasterPtr = (te::rst::Raster*)auxRasterPtr;
+        }
+        
+        for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
+          m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
+        {
+          if( (this->*(filterPointer))( *srcRasterPtr, ( iteration == 0 ) ? 
+            m_inputParameters.m_inRasterBands[ inRasterBandsIdx ] : 
+            inRasterBandsIdx, *dstRasterPtr, inRasterBandsIdx,
+            ( m_inputParameters.m_enableProgress && (!useGlobalProgress) ) ) ==
+            false )
+          {
+            TERP_LOG_AND_RETURN_FALSE( TR_RP( "Filter error" ) );
+          }
+        }
+
       }
-      else
-        pixel_erosion = it.getValue();
-
-      m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixel_erosion, b);
-      ++it;
+      
+      return true;
     }
-    task.pulse();
-  }
-  if (m_outputParametersPtr->m_normalizeOutput)
-    NormalizeRaster(*m_outputParametersPtr->m_outRasterPtr);
-
-  return true;
-}
-
-bool te::rp::Filter::execUserDefinedFilter()
-{
-  assert(m_inputParameters.m_inRasterPtr);
-  assert(m_outputParametersPtr->m_outRasterPtr);
-  
-  te::common::TaskProgress task(TR_RP("User define Filter"),
-                                te::common::TaskProgress::UNDEFINED,
-                                m_inputParameters.m_inRasterBands.size());
-
-  const unsigned int H = m_inputParameters.m_windowH;
-  const unsigned int W = m_inputParameters.m_windowW;
-
-  unsigned int R;
-  unsigned int C;
-  const unsigned int MR = m_inputParameters.m_inRasterPtr->getNumberOfRows();
-  const unsigned int MC = m_inputParameters.m_inRasterPtr->getNumberOfColumns();
-  double pixels_in_window;
-
-  for (unsigned int b = 0; b < m_inputParameters.m_inRasterBands.size(); b++)
-  {
-    unsigned int nband = m_inputParameters.m_inRasterBands[b];
-    te::rst::Band* band = m_inputParameters.m_inRasterPtr->getBand(nband);
-    te::rst::BandIteratorWindow<unsigned char> it = te::rst::BandIteratorWindow<unsigned char>::begin(band, W, H);
-    te::rst::BandIteratorWindow<unsigned char> itend = te::rst::BandIteratorWindow<unsigned char>::end(band, W, H);
-
-    while (it != itend)
+    
+    void Filter::reset() throw( te::rp::Exception )
     {
-      R = it.getRow();
-      C = it.getColumn();
-      if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
-          (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
-      {
-        pixels_in_window = 0.0;
-        for (int r = -(H / 2), rw = 0; r <= (H / 2); r++, rw++)
-          for (int c = -(W / 2), cw = 0; c <= (W / 2); c++, cw++)
-            pixels_in_window += m_inputParameters.m_window(rw, cw) * it.getValue(c, r);
-      }
-      else
-        pixels_in_window = it.getValue();
-
-      m_outputParametersPtr->m_outRasterPtr->setValue(C, R, pixels_in_window, b);
-      ++it;
+      m_isInitialized = false;
+      m_inputParameters.reset();
     }
-    task.pulse();
-  }
-  if (m_outputParametersPtr->m_normalizeOutput)
-    NormalizeRaster(*m_outputParametersPtr->m_outRasterPtr);
+    
+    bool Filter::initialize( const AlgorithmInputParameters& inputParams ) 
+      throw( te::rp::Exception )
+    {
+      reset();
+      
+      Filter::InputParameters const* inputParamsPtr = dynamic_cast< 
+        Filter::InputParameters const* >( &inputParams );
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr, TR_RP( "Invalid parameters" ) );
+      
+      
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_filterType != 
+        InputParameters::InvalidFilterT,
+        TR_RP( "Invalid filter type" ) );
+      
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inRasterPtr, 
+        TR_RP( "Invalid raster pointer" ) );
+      TERP_TRUE_OR_RETURN_FALSE( 
+        inputParamsPtr->m_inRasterPtr->getAccessPolicy() & te::common::RAccess, 
+        TR_RP( "Invalid raster" ) );
+        
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inRasterBands.size() > 0,
+        TR_RP( "Invalid raster bands number" ) );        
+      for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
+        inputParamsPtr->m_inRasterBands.size() ; ++inRasterBandsIdx )
+      {
+        TERP_TRUE_OR_RETURN_FALSE( 
+          inputParamsPtr->m_inRasterBands[ inRasterBandsIdx ] <
+          inputParamsPtr->m_inRasterPtr->getNumberOfBands(), 
+          TR_RP( "Invalid raster bands" ) );
+      }
+      
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_iterationsNumber > 0,
+        TR_RP( "Invalid iterations number" ) );
+        
+      TERP_TRUE_OR_RETURN_FALSE( ( inputParamsPtr->m_windowH > 2 ) && 
+        ( ( inputParamsPtr->m_windowH % 2 ) != 0 ),
+        TR_RP( "Invalid mask window height" ) );        
+        
+      TERP_TRUE_OR_RETURN_FALSE( ( inputParamsPtr->m_windowW > 2 ) && 
+        ( ( inputParamsPtr->m_windowW % 2 ) != 0 ),
+        TR_RP( "Invalid mask window width" ) );         
+        
+      if( inputParamsPtr->m_filterType == InputParameters::UserDefinedWindowT )
+      {
+        TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_window.size1() ==
+          inputParamsPtr->m_window.size2(),
+          TR_RP( "Invalid convolution matrix" ) );
+          
+        TERP_TRUE_OR_RETURN_FALSE( ( ( inputParamsPtr->m_window.size1() % 2 ) != 0 ),
+          TR_RP( "Invalid convolution matrix" ) );             
+      }
+          
+      m_inputParameters = *inputParamsPtr;
+      m_isInitialized = true;
+      
+      return true;
+    }    
 
-  return true;
-}
+    bool Filter::isInitialized() const
+    {
+      return m_isInitialized;
+    }
+
+    bool Filter::RobertsFilter( const te::rst::Raster& srcRaster,
+      const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+      const unsigned int dstBandIdx, const bool useProgress )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfColumns() ==
+        dstRaster.getNumberOfColumns(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfRows() ==
+        dstRaster.getNumberOfRows(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcBandIdx < srcRaster.getNumberOfBands(), 
+        "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(), 
+        "Internal error" );
+        
+      const unsigned int nRows = (unsigned int)( srcRaster.getNumberOfRows() );
+      const unsigned int rowsBound = (unsigned int)( nRows ? 
+        ( nRows - 1 ) : 0 );
+      
+      const unsigned int nCols = (unsigned int)( srcRaster.getNumberOfColumns() );
+      const unsigned int colsBound = (unsigned int)( nCols ? 
+        ( nCols - 1 ) : 0 );
+        
+      std::auto_ptr< te::common::TaskProgress > task;
+      if( useProgress )
+      {
+        task.reset( new te::common::TaskProgress(TR_RP("Mean Filter"),
+          te::common::TaskProgress::UNDEFINED,
+         srcRaster.getNumberOfRows() - 2) );
+      }          
+        
+      const te::rst::Band& srcBand = *srcRaster.getBand( srcBandIdx );
+      te::rst::Band& dstBand = *dstRaster.getBand( dstBandIdx );
+      
+      const double srcNoDataValue = srcBand.getProperty()->m_noDataValue;
+      const double dstNoDataValue = dstBand.getProperty()->m_noDataValue;
+      
+      double dstBandAllowedMin = 0;
+      double dstBandAllowedMax = 0;
+      te::rp::GetDataTypeRange( dstBand.getProperty()->getType(), dstBandAllowedMin,
+        dstBandAllowedMax );
+      
+      unsigned int col = 0;
+      double value1diag = 0;
+      double value2diag = 0;
+      double value1adiag = 0;
+      double value2adiag = 0;      
+      double diagDiff = 0;
+      double adiagDiff = 0;
+      double outValue = 0;
+      
+      for( unsigned int row = 0; row < nRows ; ++row )
+      {
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          if( ( row < rowsBound ) && ( col < colsBound ) )
+          {
+            srcBand.getValue( col, row, value1diag );
+            if( value1diag == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            srcBand.getValue( col + 1, row + 1, value2diag );
+            if( value2diag == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            srcBand.getValue( col, row + 1, value1adiag );
+            if( value1adiag == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            srcBand.getValue( col + 1, row, value2adiag );
+            if( value2adiag == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            diagDiff = value1diag - value2diag;
+            adiagDiff = value1adiag - value2adiag;
+            
+            outValue = std::sqrt( ( diagDiff * diagDiff ) +
+              ( adiagDiff * adiagDiff ) );
+            outValue = std::max( outValue, dstBandAllowedMin );
+            outValue = std::min( outValue, dstBandAllowedMax );
+            
+            dstBand.setValue( col, row, outValue );
+          }
+          else
+          {
+            dstBand.setValue( col, row, dstNoDataValue );
+          }
+        }
+        
+        if( useProgress )
+        {
+          task->pulse();
+          if( !task->isActive() ) return false;
+        }
+      }
+      
+      return true;
+    }
+    
+    bool Filter::SobelFilter( const te::rst::Raster& srcRaster,
+      const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+      const unsigned int dstBandIdx, const bool useProgress )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfColumns() ==
+        dstRaster.getNumberOfColumns(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfRows() ==
+        dstRaster.getNumberOfRows(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcBandIdx < srcRaster.getNumberOfBands(), 
+        "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(), 
+        "Internal error" );
+        
+      const unsigned int nRows = (unsigned int)( srcRaster.getNumberOfRows() );
+      const unsigned int rowsBound = (unsigned int)( nRows ? 
+        ( nRows - 1 ) : 0 );
+      
+      const unsigned int nCols = (unsigned int)( srcRaster.getNumberOfColumns() );
+      const unsigned int colsBound = (unsigned int)( nCols ? 
+        ( nCols - 1 ) : 0 );
+        
+      std::auto_ptr< te::common::TaskProgress > task;
+      if( useProgress )
+      {
+        task.reset( new te::common::TaskProgress(TR_RP("Mean Filter"),
+          te::common::TaskProgress::UNDEFINED,
+         srcRaster.getNumberOfRows() - 2) );
+      }          
+        
+      const te::rst::Band& srcBand = *srcRaster.getBand( srcBandIdx );
+      te::rst::Band& dstBand = *dstRaster.getBand( dstBandIdx );
+      
+      const double srcNoDataValue = srcBand.getProperty()->m_noDataValue;
+      const double dstNoDataValue = dstBand.getProperty()->m_noDataValue;
+      
+      double dstBandAllowedMin = 0;
+      double dstBandAllowedMax = 0;
+      te::rp::GetDataTypeRange( dstBand.getProperty()->getType(), dstBandAllowedMin,
+        dstBandAllowedMax );      
+      
+      unsigned int col = 0;
+      double value1 = 0;
+      double value2 = 0;
+      double value3 = 0;
+      double value4 = 0;
+      double value5 = 0;
+      double value6 = 0;
+      double value7 = 0;
+      double value8 = 0;
+      double gY = 0;
+      double gX = 0;
+      double outValue = 0;
+      
+      for( unsigned int row = 0; row < nRows ; ++row )
+      {
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          if( ( row > 0 ) && ( col > 0 ) && ( row < rowsBound ) && 
+            ( col < colsBound ) )
+          {
+            srcBand.getValue( col - 1, row - 1, value1 );
+            if( value1 == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            srcBand.getValue( col, row - 1, value2 );
+            if( value2 == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+
+            srcBand.getValue( col + 1, row - 1, value3 );
+            if( value3 == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            srcBand.getValue( col - 1, row, value4 );
+            if( value4 == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            srcBand.getValue( col + 1, row, value5 );
+            if( value5 == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            srcBand.getValue( col - 1, row + 1, value6 );
+            if( value6 == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            srcBand.getValue( col, row + 1, value7 );
+            if( value7 == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            srcBand.getValue( col + 1, row + 1, value8 );
+            if( value8 == srcNoDataValue )
+            {
+              dstBand.setValue( col, row, dstNoDataValue );
+              continue;
+            }
+            
+            gY = value6 + ( 2.0 * value7 ) + value8 -
+              ( value1 + ( 2.0 * value2 ) + value3 );
+            gX = value3 + ( 2.0 * value5 ) + value8 -
+              ( value1 + ( 2.0 * value4 ) + value6 );
+              
+            outValue = std::sqrt( ( gY * gY ) +
+              ( gX * gX ) );
+            outValue = std::max( outValue, dstBandAllowedMin );
+            outValue = std::min( outValue, dstBandAllowedMax );              
+            
+            dstBand.setValue( col, row, outValue );
+          }
+          else
+          {
+            dstBand.setValue( col, row, dstNoDataValue );
+          }
+        }
+        
+        if( useProgress )
+        {
+          task->pulse();
+          if( !task->isActive() ) return false;
+        }        
+      }
+      
+      return true;
+    }
+
+    bool Filter::MeanFilter( const te::rst::Raster& srcRaster,
+      const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+      const unsigned int dstBandIdx, const bool useProgress )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfColumns() ==
+        dstRaster.getNumberOfColumns(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfRows() ==
+        dstRaster.getNumberOfRows(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcBandIdx < srcRaster.getNumberOfBands(), 
+        "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(), 
+        "Internal error" );
+
+      const unsigned int H = m_inputParameters.m_windowH;
+      const unsigned int W = m_inputParameters.m_windowW;
+      
+      std::auto_ptr< te::common::TaskProgress > task;
+      if( useProgress )
+      {
+        task.reset( new te::common::TaskProgress(TR_RP("Mean Filter"),
+          te::common::TaskProgress::UNDEFINED, 100 ) );
+      }      
+
+      boost::numeric::ublas::matrix<double> window_mean(H, W);
+      double pixel_mean;
+      for (unsigned int i = 0; i < H; i++)
+        for (unsigned int j = 0; j < W; j++)
+          window_mean(i, j) = 1.0 / (W * H);
+
+      unsigned int R = 0;
+      unsigned int C = 0;
+      const unsigned int MR = srcRaster.getNumberOfRows();
+      const unsigned int MC = srcRaster.getNumberOfColumns();
+      
+      double dstBandAllowedMin = 0;
+      double dstBandAllowedMax = 0;
+      te::rp::GetDataTypeRange( dstRaster.getBand( dstBandIdx )->getProperty()->getType(), dstBandAllowedMin,
+        dstBandAllowedMax );      
+      
+      te::rst::Band const * const band = srcRaster.getBand(srcBandIdx);
+      te::rst::BandIteratorWindow<double> it = te::rst::BandIteratorWindow<double>::begin(band, W, H);
+      te::rst::BandIteratorWindow<double> itend = te::rst::BandIteratorWindow<double>::end(band, W, H);
+
+      while (it != itend)
+      {
+        R = it.getRow();
+        C = it.getColumn();
+
+        if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
+            (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+        {
+          pixel_mean = 0.0;
+          for (int r = -(H / 2), rw = 0; r <= (H / 2); r++, rw++)
+            for (int c = -(W / 2), cw = 0; c <= (W / 2); c++, cw++)
+              pixel_mean += window_mean(rw, cw) * it.getValue(c, r);
+        }
+        else
+          pixel_mean = it.getValue();
+
+        pixel_mean = std::max( pixel_mean, dstBandAllowedMin );
+        pixel_mean = std::min( pixel_mean, dstBandAllowedMax );         
+        dstRaster.setValue(C, R, pixel_mean, dstBandIdx);
+        
+        if( useProgress )
+        {
+          task->setCurrentStep( R / srcRaster.getNumberOfRows() );
+          if( !task->isActive() ) return false;
+        }          
+        
+        ++it;
+      }
+      
+      return true;
+    }
+    
+    bool Filter::ModeFilter( const te::rst::Raster& srcRaster,
+      const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+      const unsigned int dstBandIdx, const bool useProgress )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfColumns() ==
+        dstRaster.getNumberOfColumns(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfRows() ==
+        dstRaster.getNumberOfRows(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcBandIdx < srcRaster.getNumberOfBands(), 
+        "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(), 
+        "Internal error" );  
+        
+      const unsigned int H = m_inputParameters.m_windowH;
+      const unsigned int W = m_inputParameters.m_windowW;
+      
+      std::auto_ptr< te::common::TaskProgress > task;
+      if( useProgress )
+      {
+        task.reset( new te::common::TaskProgress(TR_RP("Mode Filter"),
+          te::common::TaskProgress::UNDEFINED, 100 ) );
+      }       
+
+      unsigned int R = 0;
+      unsigned int C = 0;
+      const unsigned int MR = srcRaster.getNumberOfRows();
+      const unsigned int MC = srcRaster.getNumberOfColumns();
+      
+      double dstBandAllowedMin = 0;
+      double dstBandAllowedMax = 0;
+      te::rp::GetDataTypeRange( dstRaster.getBand( dstBandIdx )->getProperty()->getType(), dstBandAllowedMin,
+        dstBandAllowedMax );       
+      
+      std::vector<double> pixels_in_window;
+      double pixel_mode = 0;
+
+      te::rst::Band const * const band = srcRaster.getBand(srcBandIdx);
+      te::rst::BandIteratorWindow<double> it = te::rst::BandIteratorWindow<double>::begin(band, W, H);
+      te::rst::BandIteratorWindow<double> itend = te::rst::BandIteratorWindow<double>::end(band, W, H);
+
+      while (it != itend)
+      {
+        R = it.getRow();
+        C = it.getColumn();
+
+        if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
+            (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+        {
+          pixel_mode = 0.0;
+          pixels_in_window.clear();
+          for (int r = -(H / 2); r <= (H / 2); r++)
+            for (int c = -(W / 2); c <= (W / 2); c++)
+              pixels_in_window.push_back(it.getValue(c, r));
+          pixel_mode = te::stat::Mode(pixels_in_window);
+        }
+        else
+          pixel_mode = it.getValue();
+
+        pixel_mode = std::max( pixel_mode, dstBandAllowedMin );
+        pixel_mode = std::min( pixel_mode, dstBandAllowedMax );         
+        dstRaster.setValue(C, R, pixel_mode, dstBandIdx);
+        
+        if( useProgress )
+        {
+          task->setCurrentStep( R / srcRaster.getNumberOfRows() );
+          if( !task->isActive() ) return false;
+        }  
+                
+        ++it;
+      }
+        
+      return true;
+    }
+    
+    bool Filter::MedianFilter( const te::rst::Raster& srcRaster,
+      const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+      const unsigned int dstBandIdx, const bool useProgress )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfColumns() ==
+        dstRaster.getNumberOfColumns(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfRows() ==
+        dstRaster.getNumberOfRows(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcBandIdx < srcRaster.getNumberOfBands(), 
+        "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(), 
+        "Internal error" );  
+        
+      const unsigned int H = m_inputParameters.m_windowH;
+      const unsigned int W = m_inputParameters.m_windowW;
+      
+      std::auto_ptr< te::common::TaskProgress > task;
+      if( useProgress )
+      {
+        task.reset( new te::common::TaskProgress(TR_RP("Median Filter"),
+          te::common::TaskProgress::UNDEFINED, 100 ) );
+      }       
+
+      unsigned int R = 0;
+      unsigned int C = 0;
+      const unsigned int MR = srcRaster.getNumberOfRows();
+      const unsigned int MC = srcRaster.getNumberOfColumns();
+      
+      double dstBandAllowedMin = 0;
+      double dstBandAllowedMax = 0;
+      te::rp::GetDataTypeRange( dstRaster.getBand( dstBandIdx )->getProperty()->getType(), dstBandAllowedMin,
+        dstBandAllowedMax );         
+      
+      std::vector<double> pixels_in_window;
+      double pixel_median = 0;
+
+      te::rst::Band const * const band = srcRaster.getBand(srcBandIdx);
+      te::rst::BandIteratorWindow<double> it = te::rst::BandIteratorWindow<double>::begin(band, W, H);
+      te::rst::BandIteratorWindow<double> itend = te::rst::BandIteratorWindow<double>::end(band, W, H);
+
+      while (it != itend)
+      {
+        R = it.getRow();
+        C = it.getColumn();
+
+        if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
+            (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+        {
+          pixel_median = 0.0;
+          pixels_in_window.clear();
+          for (int r = -(H / 2); r <= (H / 2); r++)
+            for (int c = -(W / 2); c <= (W / 2); c++)
+              pixels_in_window.push_back(it.getValue(c, r));
+
+          std::sort(pixels_in_window.begin(), pixels_in_window.end(), OrderFunction);
+          pixel_median = pixels_in_window[pixels_in_window.size() / 2];
+        }
+        else
+          pixel_median = it.getValue();
+
+        pixel_median = std::max( pixel_median, dstBandAllowedMin );
+        pixel_median = std::min( pixel_median, dstBandAllowedMax );         
+        dstRaster.setValue(C, R, pixel_median, dstBandIdx);
+        
+        if( useProgress )
+        {
+          task->setCurrentStep( R / srcRaster.getNumberOfRows() );
+          if( !task->isActive() ) return false;
+        }          
+        
+        ++it;
+      }
+        
+      return true;
+    }
+    
+    bool Filter::DilationFilter( const te::rst::Raster& srcRaster,
+      const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+      const unsigned int dstBandIdx, const bool useProgress )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfColumns() ==
+        dstRaster.getNumberOfColumns(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfRows() ==
+        dstRaster.getNumberOfRows(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcBandIdx < srcRaster.getNumberOfBands(), 
+        "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(), 
+        "Internal error" );   
+        
+      const unsigned int H = m_inputParameters.m_windowH;
+      const unsigned int W = m_inputParameters.m_windowW;
+      
+      std::auto_ptr< te::common::TaskProgress > task;
+      if( useProgress )
+      {
+        task.reset( new te::common::TaskProgress(TR_RP("Dilation Filter"),
+          te::common::TaskProgress::UNDEFINED, 100 ) );
+      }           
+
+      unsigned int R = 0;
+      unsigned int C = 0;
+      const unsigned int MR = srcRaster.getNumberOfRows();
+      const unsigned int MC = srcRaster.getNumberOfColumns();
+      
+      double dstBandAllowedMin = 0;
+      double dstBandAllowedMax = 0;
+      te::rp::GetDataTypeRange( dstRaster.getBand( dstBandIdx )->getProperty()->getType(), dstBandAllowedMin,
+        dstBandAllowedMax );          
+
+      double pixel_dilation = 0;
+      double pixel = 0;
+
+      te::rst::Band const * const band = srcRaster.getBand(srcBandIdx);
+      te::rst::BandIteratorWindow<double> it = te::rst::BandIteratorWindow<double>::begin(band, W, H);
+      te::rst::BandIteratorWindow<double> itend = te::rst::BandIteratorWindow<double>::end(band, W, H);
+
+      while (it != itend)
+      {
+        R = it.getRow();
+        C = it.getColumn();
+
+        if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
+            (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+        {
+          pixel_dilation = -1.0 * std::numeric_limits<double>::max();
+          for (int r = -(H / 2); r <= (H / 2); r++)
+            for (int c = -(W / 2); c <= (W / 2); c++)
+            {
+              pixel = it.getValue(c, r);
+              if (pixel > pixel_dilation)
+                pixel_dilation = pixel;
+            }
+        }
+        else
+          pixel_dilation = it.getValue();
+
+        pixel_dilation = std::max( pixel_dilation, dstBandAllowedMin );
+        pixel_dilation = std::min( pixel_dilation, dstBandAllowedMax );        
+        dstRaster.setValue(C, R, pixel_dilation, dstBandIdx);
+        
+        if( useProgress )
+        {
+          task->setCurrentStep( R / srcRaster.getNumberOfRows() );
+          if( !task->isActive() ) return false;
+        }  
+                
+        ++it;
+      }
+        
+      return true;
+    }
+    
+    bool Filter::ErosionFilter( const te::rst::Raster& srcRaster,
+      const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+      const unsigned int dstBandIdx, const bool useProgress )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfColumns() ==
+        dstRaster.getNumberOfColumns(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfRows() ==
+        dstRaster.getNumberOfRows(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcBandIdx < srcRaster.getNumberOfBands(), 
+        "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(), 
+        "Internal error" );   
+        
+      const unsigned int H = m_inputParameters.m_windowH;
+      const unsigned int W = m_inputParameters.m_windowW;
+      
+      std::auto_ptr< te::common::TaskProgress > task;
+      if( useProgress )
+      {
+        task.reset( new te::common::TaskProgress(TR_RP("Dilation Filter"),
+          te::common::TaskProgress::UNDEFINED, 100 ) );
+      }      
+
+      unsigned int R = 0;
+      unsigned int C = 0;
+      const unsigned int MR = srcRaster.getNumberOfRows();
+      const unsigned int MC = srcRaster.getNumberOfColumns();
+      
+      double dstBandAllowedMin = 0;
+      double dstBandAllowedMax = 0;
+      te::rp::GetDataTypeRange( dstRaster.getBand( dstBandIdx )->getProperty()->getType(), dstBandAllowedMin,
+        dstBandAllowedMax );           
+
+      double pixel_erosion = 0;
+      double pixel = 0;
+      
+      te::rst::Band const * const band = srcRaster.getBand(srcBandIdx);
+      te::rst::BandIteratorWindow<double> it = te::rst::BandIteratorWindow<double>::begin(band, W, H);
+      te::rst::BandIteratorWindow<double> itend = te::rst::BandIteratorWindow<double>::end(band, W, H);
+
+      while (it != itend)
+      {
+        R = it.getRow();
+        C = it.getColumn();
+
+        if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
+            (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+        {
+          pixel_erosion = std::numeric_limits<double>::max();
+          for (int r = -(H / 2); r <= (H / 2); r++)
+            for (int c = -(W / 2); c <= (W / 2); c++)
+            {
+              pixel = it.getValue(c, r);
+              if (pixel < pixel_erosion)
+                pixel_erosion = pixel;
+            }
+        }
+        else
+          pixel_erosion = it.getValue();
+
+        pixel_erosion = std::max( pixel_erosion, dstBandAllowedMin );
+        pixel_erosion = std::min( pixel_erosion, dstBandAllowedMax );        
+        dstRaster.setValue(C, R, pixel_erosion, dstBandIdx);
+          
+        if( useProgress )
+        {
+          task->setCurrentStep( R / srcRaster.getNumberOfRows() );
+          if( !task->isActive() ) return false;
+        }           
+          
+        ++it;
+      }
+        
+      return true;
+    }
+    
+    bool Filter::UserDefinedFilter( const te::rst::Raster& srcRaster,
+      const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+      const unsigned int dstBandIdx, const bool useProgress )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfColumns() ==
+        dstRaster.getNumberOfColumns(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfRows() ==
+        dstRaster.getNumberOfRows(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcBandIdx < srcRaster.getNumberOfBands(), 
+        "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(), 
+        "Internal error" ); 
+        
+      const unsigned int H = m_inputParameters.m_windowH;
+      const unsigned int W = m_inputParameters.m_windowW;
+      
+      std::auto_ptr< te::common::TaskProgress > task;
+      if( useProgress )
+      {
+        task.reset( new te::common::TaskProgress(TR_RP("Dilation Filter"),
+          te::common::TaskProgress::UNDEFINED, 100 ) );
+      }           
+
+      unsigned int R = 0;
+      unsigned int C = 0;
+      const unsigned int MR = srcRaster.getNumberOfRows();
+      const unsigned int MC = srcRaster.getNumberOfColumns();
+      double pixels_in_window = 0;
+      
+      double dstBandAllowedMin = 0;
+      double dstBandAllowedMax = 0;
+      te::rp::GetDataTypeRange( dstRaster.getBand( dstBandIdx )->getProperty()->getType(), dstBandAllowedMin,
+        dstBandAllowedMax );         
+
+      te::rst::Band const * const band = srcRaster.getBand(srcBandIdx);
+      te::rst::BandIteratorWindow<double> it = te::rst::BandIteratorWindow<double>::begin(band, W, H);
+      te::rst::BandIteratorWindow<double> itend = te::rst::BandIteratorWindow<double>::end(band, W, H);
+
+      while (it != itend)
+      {
+        R = it.getRow();
+        C = it.getColumn();
+        if ((R >= (unsigned)(H / 2) && R < MR - (H / 2)) &&
+            (C >= (unsigned)(W / 2) && C < MC - (W / 2)))
+        {
+          pixels_in_window = 0.0;
+          for (int r = -(H / 2), rw = 0; r <= (H / 2); r++, rw++)
+            for (int c = -(W / 2), cw = 0; c <= (W / 2); c++, cw++)
+              pixels_in_window += m_inputParameters.m_window(rw, cw) * it.getValue(c, r);
+        }
+        else
+          pixels_in_window = it.getValue();
+
+        pixels_in_window = std::max( pixels_in_window, dstBandAllowedMin );
+        pixels_in_window = std::min( pixels_in_window, dstBandAllowedMax );         
+        dstRaster.setValue(C, R, pixels_in_window, dstBandIdx);
+        
+        if( useProgress )
+        {
+          task->setCurrentStep( R / srcRaster.getNumberOfRows() );
+          if( !task->isActive() ) return false;
+        }           
+                
+        ++it;
+      }
+        
+      return true;
+    }
+    
+    bool Filter::OrderFunction(double i, double j)
+    {
+      return (i < j);
+    }    
+    
+  } // end namespace rp
+}   // end namespace te
+
