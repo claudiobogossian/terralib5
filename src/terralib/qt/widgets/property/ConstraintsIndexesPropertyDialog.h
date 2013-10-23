@@ -70,10 +70,10 @@ namespace te
 
         public slots:
 
-          void on_pkRadioButtonToggled(bool status);
-          void on_ukRadioButtonToggled(bool status);
-          void on_idxRadioButtonToggled(bool status);
-          void on_okPushButtonClicked();
+          void onpkRadioButtonToggled(bool status);
+          void onukRadioButtonToggled(bool status);
+          void onidxRadioButtonToggled(bool status);
+          void onokPushButtonClicked();
 
         protected:
 
