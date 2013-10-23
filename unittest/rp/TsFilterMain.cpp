@@ -17,9 +17,6 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-// TerraLib
-#include <terralib/rp_fw.h>
-
 // cppUnit
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
@@ -31,6 +28,7 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
+
 
 // Unit-Test TerraLib includes by platform
 #include "LoadModules.h"
@@ -46,13 +44,13 @@ int main(int /*argc*/, char** /*argv*/)
   #if TE_USE_GDAL
     // initialize Terralib platform
     TerraLib::getInstance().initialize();
-
+    
     LoadModules();
 
     // it creates the event manager and test controller
     CPPUNIT_NS::TestResult controller;
 
-    // it adds a listener that collects test result
+    // it adds a listener that collects test result 
     CPPUNIT_NS::TestResultCollector result;
 
     controller.addListener(&result);
@@ -89,11 +87,11 @@ int main(int /*argc*/, char** /*argv*/)
     // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test.
     CPPUNIT_NS::OFileStream file2(TE_OUTPUT_REPORT_DIR "/" TS_TEST_NAME ".xml");
     CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-    xml.setStyleSheet( "report.xsl" );
+    xml.setStyleSheet(  "report.xsl" ); 
     xml.write();
     file2.close();
 
-// Print formated testResult in a txt
+// Print formated testResult in a txt 
     CPPUNIT_NS::OFileStream file3(TE_OUTPUT_REPORT_DIR "/" TS_TEST_NAME ".txt" );
     CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
     outputter3.write();
@@ -101,10 +99,11 @@ int main(int /*argc*/, char** /*argv*/)
 
     bool resultStatus = result.wasSuccessful();
 
-// finalize TerraLib Plataform
-    te::plugin::PluginManager::getInstance().unloadAll();
-    TerraLib::getInstance().finalize();
+    // finalize defined drivers test suit
 
+    // finalize TerraLib Plataform
+    TerraLib::getInstance().finalize();
+    
     return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
   #endif
 
