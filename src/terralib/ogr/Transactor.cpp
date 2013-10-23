@@ -42,23 +42,24 @@
 
 std::string RemoveSpatialSql(const std::string& sql)
 {
+  // Try find AND
+  std::size_t pos = sql.find("AND Intersection");
+
+  // Try find without AND
+  if(pos == std::string::npos)
+    pos = sql.find("WHERE Intersection");
+
+  if(pos == std::string::npos)
+    return sql;
+
   std::string newQuery;
 
-  size_t pos = sql.find("AND Intersection");
-
-  if(pos != std::string::npos)
-  {
-    size_t pos2 = sql.find("))", pos);
-
-    newQuery = sql.substr(0, pos);
-    newQuery += sql.substr(pos2+2);
-  }
-  else
-    newQuery = sql;
+  std::size_t pos2 = sql.find("))", pos);
+  newQuery = sql.substr(0, pos);
+  newQuery += sql.substr(pos2 + 2);
 
   return newQuery;
 }
-
 
 te::ogr::Transactor::Transactor(DataSource* ds) :
 te::da::DataSourceTransactor(),

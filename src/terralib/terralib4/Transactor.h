@@ -57,7 +57,7 @@ namespace terralib4
   {
     public:
 
-      Transactor();
+      Transactor(DataSource* ds, TeDatabase* db);
 
       ~Transactor();
 
@@ -246,7 +246,7 @@ namespace terralib4
     private:
 
       DataSource* m_ds;
-      //Connection* m_conn;
+      TeDatabase* m_db;
       bool m_isInTransaction;
 
   };

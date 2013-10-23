@@ -127,6 +127,12 @@ namespace te
          */
         const std::vector<te::color::RGBAColor>& getSlices(const int& n);
 
+        const te::color::RGBAColor& getMeanSlice();
+
+        const std::vector<te::color::RGBAColor>& getLowerMeanSlices(const int& n);
+
+        const std::vector<te::color::RGBAColor>& getUpperMeanSlices(const int& n);
+
         /*!
           \brief It sets number of colors in the color bar.
 
