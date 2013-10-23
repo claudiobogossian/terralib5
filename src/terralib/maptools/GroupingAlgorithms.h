@@ -194,7 +194,7 @@ namespace te
     */
     template<class iterator>
     void GroupingByStdDeviation(iterator begin, iterator end, double nDevs, std::vector<te::map::GroupingItem*>& legend,
-                                std::string& rmean, int precision = 0, bool countElements = true)
+                                std::string& meanTitle, int precision = 0, bool countElements = true)
     {
       // Compute min, max and mean
       double min = std::numeric_limits<double>::max();
@@ -221,7 +221,7 @@ namespace te
 
       std::vector<te::map::GroupingItem*> aux;
 
-      rmean = te::common::Convert2String(mean, precision);
+      std::string strMean = te::common::Convert2String(mean, precision);
 
       double val = mean;
       while(val - slice > min - slice)
@@ -240,10 +240,13 @@ namespace te
       for(sit = aux.rbegin(); sit != aux.rend(); ++sit)
         legend.push_back(*sit);
 
-      //std::string media = "mean = " + rmean;
+      meanTitle = "Mean - " + strMean;
 
-      //te::map::GroupingItem* legendItemMean = new te::map::GroupingItem;
-      //legend.push_back(legendItemMean);
+      te::map::GroupingItem* legendItemMean = new te::map::GroupingItem;
+      legendItemMean->setLowerLimit(te::common::Convert2String(mean, precision));
+      legendItemMean->setUpperLimit(te::common::Convert2String(mean, precision));
+      legendItemMean->setTitle(meanTitle);
+      legend.push_back(legendItemMean);
 
       val = mean;
       while(val + slice < max + slice)
@@ -259,12 +262,13 @@ namespace te
         val = v;
       }
 
-      //if(legend.size() > 2)
+      //adjust first and last values
+      //if(legend.size() >= 3)
       //{
-      //  if(legend[0]->getLowerLimit().find("mean") == std::string::npos)
+      //  if(legend[0]->getTitle() != meanTitle)
       //    legend[0]->setLowerLimit(te::common::Convert2String(min, precision));
-
-      //  if (legend[legend.size()-1]->getLowerLimit().find("mean") == std::string::npos)
+      //  
+      //  if(legend[legend.size()-1]->getTitle() != meanTitle)
       //    legend[legend.size()-1]->setUpperLimit(te::common::Convert2String(max, precision));
       //}
 

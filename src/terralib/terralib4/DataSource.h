@@ -29,6 +29,8 @@
 // TerraLib
 #include "../dataaccess/datasource/DataSource.h"
 
+class TeDatabase;
+
 namespace terralib4
 {
   class DataSource : public te::da::DataSource
@@ -59,6 +61,8 @@ namespace terralib4
 
       const te::da::SQLDialect* getDialect() const;
 
+      TeDatabase* getTerralib4Db();
+
     protected:
 
       void create(const std::map<std::string, std::string>& dsInfo);
@@ -73,9 +77,8 @@ namespace terralib4
 
     private:
 
-      class Impl;
-
-      Impl* m_pImpl;
+      TeDatabase* m_db;
+      std::map<std::string, std::string> m_dbInfo;
   };
 
 }

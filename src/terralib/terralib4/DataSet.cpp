@@ -53,10 +53,10 @@
 #include <boost/dynamic_bitset.hpp>
 #include <boost/lexical_cast.hpp>
 
-terralib4::DataSet::DataSet()
+terralib4::DataSet::DataSet(TeDatabasePortal* result)
   : m_i(-1),
     m_size(-1),
-    m_result(0)
+    m_result(result)
 {
   m_size = m_result->numRows();
 }
@@ -79,7 +79,7 @@ std::auto_ptr<te::gm::Envelope> terralib4::DataSet::getExtent(std::size_t i)
 {
   TeLayer lay;
   m_result->getLayer(lay);
-  
+
   return terralib4::Convert2T5(lay.box());
 }
 
