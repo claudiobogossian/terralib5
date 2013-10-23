@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "../srs/Config.h"
 
 // OGR
 #include <ogr_core.h>
@@ -134,18 +135,20 @@ namespace te
      
      \param featDef A valid OGR Feature Definition.
      \param dt      Pointer to a TerraLib dataset type previously created. Do not pass NULL.
+     \param srs    Optional parameter to set the SRS of geometry fields.
      
      \exception Exception It throws an exception if the feature definition can not be converted.
      
      \note It uses the method that converts a OGR Field Definition to TerraLib Property Type. 
      \note It uses the method that converts a OGR Geometry Type to TerraLib Geometry Type.
      */
-    TEOGREXPORT void Convert2TerraLib(OGRFeatureDefn* featDef, te::da::DataSetType* dt);
+    TEOGREXPORT void Convert2TerraLib(OGRFeatureDefn* featDef, te::da::DataSetType* dt, int srs=TE_UNKNOWN_SRS);
 
     /*!
       \brief It converts the OGR Feature Definition to TerraLib DataSet Type
 
       \param featDef A valid OGR Feature Definition.
+      \param srs    Optional parameter to set the SRS of geometry fields.
 
       \return A valid TerraLib DataSet Type.
 
@@ -155,7 +158,7 @@ namespace te
       \note It uses the method that converts a OGR Geometry Type to TerraLib Geometry Type.
       \note The caller of this function will take the ownership of the returned TerraLib DataSet Type.
     */
-    TEOGREXPORT te::da::DataSetType* Convert2TerraLib(OGRFeatureDefn* featDef);
+    TEOGREXPORT te::da::DataSetType* Convert2TerraLib(OGRFeatureDefn* featDef, int srs=TE_UNKNOWN_SRS);
 
     /*!
       \brief It converts the TerraLib DataSet Type to OGR Feature Definition
