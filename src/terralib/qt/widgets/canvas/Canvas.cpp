@@ -421,6 +421,19 @@ void te::qt::widgets::Canvas::draw(const te::gm::MultiPoint* mpoint)
 
 void te::qt::widgets::Canvas::draw(const te::gm::LineString* line)
 {
+  if(m_lnPen.brush().style() != Qt::TexturePattern)
+  {
+    const std::size_t nPoints = line->getNPoints();
+    QPolygonF qpol(nPoints);
+    memcpy(&(qpol[0]), (double*)(line->getCoordinates()), 16 * nPoints);
+    QPen pen(m_lnPen);
+    pen.setColor(m_lnColor);
+    m_painter.setPen(pen);
+    m_painter.setBrush(Qt::NoBrush);
+    m_painter.drawPolyline(qpol);
+    return;
+  }
+
   QPointF p1;
   QPointF p2;
   bool drawed = false;
@@ -447,15 +460,16 @@ void te::qt::widgets::Canvas::draw(const te::gm::LineString* line)
         m_painter.drawLine(p1, p2);
         drawed = true;
 	  }
-    else if(m_lnPen.brush().style() != Qt::TexturePattern)
-    {
-      QPen pen(m_lnPen);
-      pen.setColor(m_lnColor);
-      m_painter.setPen(pen);
-      m_painter.drawLine(p1, p2);
-      drawed = true;
-    }
-    else
+    //else if(m_lnPen.brush().style() != Qt::TexturePattern)
+    //{
+    //  QPen pen(m_lnPen);
+    //  pen.setColor(m_lnColor);
+    //  m_painter.setPen(pen);
+    //  m_painter.drawLine(p1, p2);
+    //  drawed = true;
+    //}
+    //else
+    if(m_lnPen.brush().style() == Qt::TexturePattern)
     {
 	    int minPixels = 20; // dx and dy is greater than minPixels, then, draw the segment using pattern
       double alfa;
