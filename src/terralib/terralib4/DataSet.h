@@ -59,7 +59,7 @@ namespace terralib4
   {
     public:
 
-      DataSet(TeDatabasePortal* result);
+      DataSet(TeLayer* layer);
 
       ~DataSet();
 
@@ -137,10 +137,10 @@ namespace terralib4
 
     protected:
 
-      int m_i;                            //!< The index of the current row.
+      int m_i;
       int m_size;
       TeLayer* m_layer;
-      TeDatabasePortal* m_result;             //!< The internal buffer with the result query.
+      TeDatabasePortal* m_result;
   };
 
 }   // end namespace te

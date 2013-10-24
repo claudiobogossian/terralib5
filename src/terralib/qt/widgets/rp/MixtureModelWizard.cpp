@@ -135,8 +135,7 @@ void te::qt::widgets::MixtureModelWizard::addPages()
 bool te::qt::widgets::MixtureModelWizard::execute()
 {
   //get layer
-  std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
-  te::map::AbstractLayerPtr l = *list.begin();
+  te::map::AbstractLayerPtr l = m_mixtureModelPage->get();
   std::auto_ptr<te::da::DataSet> ds(l->getData());
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);

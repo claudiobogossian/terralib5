@@ -92,6 +92,11 @@ void te::qt::widgets::SegmenterWizardPage::set(te::map::AbstractLayerPtr layer)
   listBands();
 }
 
+te::map::AbstractLayerPtr te::qt::widgets::SegmenterWizardPage::get()
+{
+  return m_layer;
+}
+
 te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInputParams()
 {
   te::rp::Segmenter::InputParameters algoInputParams;

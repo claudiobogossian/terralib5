@@ -23,7 +23,6 @@ int main()
     MixtureModel();
     Mosaic();
     Register();
-    EdgeFilter();
     IHSFusion();
     Filter();
 

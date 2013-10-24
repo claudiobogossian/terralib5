@@ -137,8 +137,7 @@ void te::qt::widgets::SegmenterWizard::addPages()
 bool te::qt::widgets::SegmenterWizard::execute()
 {
   //get layer
-  std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
-  te::map::AbstractLayerPtr l = *list.begin();
+  te::map::AbstractLayerPtr l = m_segmenterPage->get();
   std::auto_ptr<te::da::DataSet> ds(l->getData());
 
   //run contrast

@@ -18,8 +18,10 @@
  */
 
 // TerraLib 5
-#include "DataSource.h"
+#include "../common/Translator.h"
 #include "Config.h"
+#include "DataSource.h"
+#include "Exception.h"
 #include "Transactor.h"
 #include "Utils.h"
 
@@ -27,6 +29,9 @@
 #include <terralib/kernel/TeDatabase.h>
 #include <terralib/kernel/TeDatabaseFactory.h>
 #include <terralib/kernel/TeDatabaseFactoryParams.h>
+
+te::da::DataSourceCapabilities terralib4::DataSource::sm_capabilities;
+te::da::SQLDialect* terralib4::DataSource::sm_dialect(0);
 
 terralib4::DataSource::DataSource()
   : m_db(0)
@@ -65,6 +70,8 @@ void terralib4::DataSource::open()
   std::auto_ptr<TeDatabaseFactoryParams> fdbparams(terralib4::Convert2T4DatabaseParams(m_dbInfo));
 
   m_db = TeDatabaseFactory::make(*fdbparams);
+
+  m_db->loadLayerSet();
 }
 
 void terralib4::DataSource::close()
@@ -86,43 +93,55 @@ bool terralib4::DataSource::isValid() const
 
 const te::da::DataSourceCapabilities& terralib4::DataSource::getCapabilities() const
 {
-  throw;
+  return sm_capabilities;
 }
 
 const te::da::SQLDialect* terralib4::DataSource::getDialect() const
 {
-  throw;
+  return sm_dialect;
 }
 
 void terralib4::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  TeDatabase* db = 0;
-
-  std::auto_ptr<TeDatabaseFactoryParams> params(terralib4::Convert2T4DatabaseParams(dsInfo));
-
-  db = TeDatabaseFactory::make(*params.get());
-  
-  db->newDatabase(params->database_, params->user_, params->password_, params->host_, params->port_);
+  throw Exception(TR_TERRALIB4("This driver is read-only!"));
 }
 
 void terralib4::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
-  throw;
+  throw Exception(TR_TERRALIB4("This driver is read-only!"));
 }
 
 bool terralib4::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
 {
-  throw;
+  std::vector<string> dbnames = getDataSourceNames(dsInfo);
+
+  return std::find(dbnames.begin(), dbnames.end(), dsInfo.at("T4_DB_NAME")) != dbnames.end();
 }
 
 std::vector<std::string> terralib4::DataSource::getDataSourceNames(const std::map<std::string, std::string>& dsInfo)
 {
-  throw;
+  std::auto_ptr<TeDatabaseFactoryParams> params(terralib4::Convert2T4DatabaseParams(dsInfo));
+
+  std::auto_ptr<TeDatabase> db(TeDatabaseFactory::make(*params.get()));
+
+  std::vector<std::string> dbnames;
+
+  db->showDatabases(params->host_, params->user_, params->password_, dbnames, params->port_);
+
+  return dbnames;
 }
 
 std::vector<std::string> terralib4::DataSource::getEncodings(const std::map<std::string, std::string>& dsInfo)
 {
-  throw;
+  std::auto_ptr<TeDatabaseFactoryParams> params(terralib4::Convert2T4DatabaseParams(dsInfo));
+
+  std::auto_ptr<TeDatabase> db(TeDatabaseFactory::make(*params.get()));
+
+  std::vector<std::string> encodings;
+
+  db->getEncodingList(encodings);
+
+  return encodings;
 }
 
 TeDatabase* terralib4::DataSource::getTerralib4Db()

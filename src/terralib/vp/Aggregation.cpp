@@ -542,6 +542,26 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
               }
             }
           }
+          if(dsPropType == te::dt::INT32_TYPE)
+          {
+            std::string propName = dsQuery->getPropertyName(i);
+            std::size_t index = te::da::GetPropertyPos(outputDataSetItem->getParent(), propName);
+            
+            if(index < outputDataSetItem->getNumProperties())
+            {
+              int type = outputDataSetItem->getPropertyDataType(index);
+              if(type == te::dt::DOUBLE_TYPE)
+              {
+                double value = boost::lexical_cast<double>(dsQuery->getAsString(i));
+                outputDataSetItem->setDouble(index, value);
+              }
+              if(type == te::dt::STRING_TYPE)
+              {
+                std::string value = dsQuery->getAsString(i);
+                outputDataSetItem->setString(index, value);
+              }
+            }
+          }
         }
       }
     }

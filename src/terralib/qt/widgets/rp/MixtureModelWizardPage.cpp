@@ -129,6 +129,11 @@ void te::qt::widgets::MixtureModelWizardPage::set(te::map::AbstractLayerPtr laye
   listBands();
 }
 
+te::map::AbstractLayerPtr te::qt::widgets::MixtureModelWizardPage::get()
+{
+  return m_layer;
+}
+
 te::rp::MixtureModel::InputParameters te::qt::widgets::MixtureModelWizardPage::getInputParams()
 {
   int idx = m_ui->m_typeComboBox->currentIndex();
