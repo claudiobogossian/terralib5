@@ -144,7 +144,7 @@ namespace te
 
       private:
         /*!
-          \brief Returns the correct block where relative value is.
+          \brief Returns the correct block where relative value is used.
 
           \param r The row relative to the center pixel.
           \param c The column relative to the center pixel.
@@ -173,14 +173,18 @@ namespace te
         int m_nblocksx;           //!< The number of blocks in X direction.
         int m_nblocksy;           //!< The number of blocks in Y direction.
         int m_nvblocksx;          //!< The amount of blocks in direction X in vector of internal blocks.
-        int m_nvblocksy;          //!< The amount of blocks in direction X in vector of internal blocks.
+        int m_nvblocksy;          //!< The amount of blocks in direction Y in vector of internal blocks.
         int m_cblock;             //!< The index of the central block;
         int m_i;                  //!< The actual position inside the block.
         int m_blkx;               //!< The position in X of the current block.
         int m_blky;               //!< The position in Y of the current block.
         int m_lastblksize;        //!< The number of pixels inside the last block.
         std::vector<T*> m_blocks; //!< A vector of internal blocks, to provide fast access to window elements.
-        Band const * m_band;             //!< The band from where to get the values.
+        Band const * m_band;      //!< The band from where to get the values.
+        te::rst::GetBufferValueFPtr m_getBuff;   //!< A pointer to a function that helps to extract a double or complex value from a specific buffer data type (char, int16, int32, float, ...).
+        te::rst::GetBufferValueFPtr m_getBuffI;  //!< A pointer to a function that helps to extract the imaginary part value from a specific buffer data type (cint16, cint32, cfloat, cdouble).
+        te::rst::SetBufferValueFPtr m_setBuff;   //!< A pointer to a function that helps to insert a double or complex value into a specific buffer data type (char, int16, int32, float, ...).
+        te::rst::SetBufferValueFPtr m_setBuffI;  //!< A pointer to a function that helps to insert the imaginary part value into a specific buffer data type (cint16, cint32, cfloat, cdouble).
     };
 
     template<class T> te::rst::BandIteratorWindow<T>::BandIteratorWindow(te::rst::Band const * const b, std::size_t w, const std::size_t h)
@@ -197,7 +201,11 @@ namespace te
         m_i(0),
         m_blkx(0),
         m_blky(0),
-        m_band(b)
+        m_band(b),
+        m_getBuff(0),
+        m_getBuffI(0),
+        m_setBuff(0),
+        m_setBuffI(0)
     {
       m_lastblksize = m_npxlsblk - ((m_npxlsblk * m_nblocksx * m_nblocksy) -
                                     (b->getRaster()->getNumberOfColumns() * b->getRaster()->getNumberOfRows()));
@@ -220,12 +228,21 @@ namespace te
           m_nvblocksy = 3;
       }
       else
+      {
         m_nvblocksy = 1 + (m_h + m_blkh - 2) / m_blkh;
+// apply a special case, create three blocks instead of two
+        if (m_nvblocksx == 1 && m_nvblocksy == 2)
+          m_nvblocksy++;
+        else if (m_nvblocksx == 2 && m_nvblocksy == 1)
+          m_nvblocksx++;
+      }
 
       for (int i = 0; i < (m_nvblocksx * m_nvblocksy); i++)
         m_blocks.push_back(new T[m_band->getBlockSize()]);
 
       m_cblock = (int) m_blocks.size() / 2;
+
+      te::rst::SetBlockFunctions(&m_getBuff, &m_getBuffI, &m_setBuff, &m_setBuffI, b->getProperty()->getType());
 
       replaceBlocks();
     }
@@ -245,7 +262,11 @@ namespace te
         m_blkx(rhs.m_blkx),
         m_blky(rhs.m_blky),
         m_lastblksize(rhs.m_lastblksize),
-        m_band(rhs.m_band)
+        m_band(rhs.m_band),
+        m_getBuff(rhs.m_getBuff),
+        m_getBuffI(rhs.m_getBuffI),
+        m_setBuff(rhs.m_setBuff),
+        m_setBuffI(rhs.m_setBuffI)
     {
       if (m_band)
       {
@@ -295,12 +316,22 @@ namespace te
 
     template<class T> T te::rst::BandIteratorWindow<T>::getValue() const
     {
-      return ((T*)m_blocks[m_cblock])[m_i];
+      //return ((T*)m_blocks[m_cblock])[m_i];
+      double value;
+
+      this->m_getBuff(this->m_i, this->m_blocks[m_cblock], &value);
+
+      return (T) value;
     }
 
     template<class T> T te::rst::BandIteratorWindow<T>::getValue(int c, int r) const
     {
-      return ((T*)getBlock(c, r))[getRelativeIndex(c, r)];
+      //return ((T*)getBlock(c, r))[getRelativeIndex(c, r)];
+      double value;
+
+      this->m_getBuff(this->getRelativeIndex(c, r), this->getBlock(c, r), &value);
+
+      return (T) value;
     }
 
     template<class T> void te::rst::BandIteratorWindow<T>::operator++()
@@ -383,7 +414,7 @@ namespace te
         m_band = rhs.m_band;
 
         te::common::FreeContents(m_blocks);
-        for (unsigned i = 0; i < (m_nvblocksx * m_nvblocksy); i++)
+        for (int i = 0; i < (m_nvblocksx * m_nvblocksy); i++)
           m_blocks.push_back(new T[m_band->getBlockSize()]);
 
         replaceBlocks();
@@ -420,9 +451,12 @@ namespace te
         {
           if ((x >= 0) && (x < m_nblocksx))
             if ((y >= 0) && (y < m_nblocksy))
+            {
               m_band->read(x, y, m_blocks[blk]);
+              blk++;
+            }
 
-          blk++;
+          // blk++;
         }
     }
 
