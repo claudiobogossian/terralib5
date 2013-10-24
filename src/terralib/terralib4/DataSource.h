@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 
 class TeDatabase;
 
@@ -79,6 +80,9 @@ namespace terralib4
 
       TeDatabase* m_db;
       std::map<std::string, std::string> m_dbInfo;
+
+      static te::da::DataSourceCapabilities sm_capabilities;
+      static te::da::SQLDialect* sm_dialect;
   };
 
 }

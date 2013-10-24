@@ -27,7 +27,7 @@
 #define __TE_QT_PLUGINS_TERRALIB4_INTERNAL_PLUGIN_H
 
 // TerraLib
-#include "../../../plugin/Plugin.h"
+#include "../../../../plugin/Plugin.h"
 #include "Config.h"
 
 // Qt

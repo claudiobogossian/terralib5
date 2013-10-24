@@ -29,13 +29,23 @@
 // TerraLib
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 
+extern "C"
+{
+  struct sqlite3;
+  typedef struct sqlite3 sqlite3;
+}
+
 namespace te
 {
   namespace sqlite
   {
+    class DataSource;
+
     class DataSourceTransactor : public te::da::DataSourceTransactor
     {
       public:
+
+        DataSourceTransactor(DataSource* parent, sqlite3* db);
 
         te::da::DataSource* getDataSource() const;
 
@@ -214,6 +224,8 @@ namespace te
                     std::size_t limit = 0);
 
         void optimize(const std::map<std::string, std::string>& opInfo);
+
+        sqlite3* getDB() const;
 
       private:
 

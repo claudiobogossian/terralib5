@@ -34,6 +34,7 @@
 #include "../datatype/DateTimeProperty.h"
 #include "../datatype/SimpleData.h"
 #include "../datatype/TimeInstant.h"
+#include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/WKBReader.h"
 #include "DataSet.h"
@@ -53,12 +54,13 @@
 #include <boost/dynamic_bitset.hpp>
 #include <boost/lexical_cast.hpp>
 
-terralib4::DataSet::DataSet(TeDatabasePortal* result)
+terralib4::DataSet::DataSet(TeLayer* layer)
   : m_i(-1),
     m_size(-1),
-    m_result(result)
+    m_layer(layer),
+    m_result(0)
 {
-  m_size = m_result->numRows();
+  //m_size = m_result->numRows();
 }
 
 terralib4::DataSet::~DataSet()

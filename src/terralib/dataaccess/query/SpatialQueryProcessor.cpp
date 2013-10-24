@@ -143,7 +143,7 @@ std::auto_ptr<te::da::DataSet> te::da::SpatialQueryProcessor::getDataSet(DataSou
     dataset->moveBeforeFirst();
 
     // Create the filtered data set with the found positions
-    std::auto_ptr<FilteredDataSet> filtered(new FilteredDataSet(dataset.release(), positions, true));
+    std::auto_ptr<DataSet> filtered(new FilteredDataSet(dataset.release(), positions, true));
 
     // TODO: For while considering the first spatial restriction!
     return filtered;
