@@ -20,7 +20,7 @@
 /*!
   \file terralib/terralib4/Transactor.cpp
 
-  \brief ????
+  \brief DataSourceTransactor implementation for TerraLib 4.x API.
 */
 
 // TerraLib
@@ -113,15 +113,27 @@ bool terralib4::Transactor::isInTransaction() const
 }
 
 std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string& name,
-                                                                te::common::TraverseType travType,
-                                                                bool connected)
+                                                                 te::common::TraverseType /*travType*/,
+                                                                 bool /*connected*/)
 {
-  TeDatabasePortal* portal = m_db->getPortal();
+  TeLayerMap map = m_db->layerMap();
 
-  if(portal->query("SELECT * FROM " + name))
-    return std::auto_ptr<te::da::DataSet>(new terralib4::DataSet(portal));
+  std::map<int, TeLayer*>::iterator it = map.begin();
 
-  return std::auto_ptr<te::da::DataSet>(0);
+  TeLayer* layer = 0;
+
+  while(it != map.end())
+  {
+    if(it->second->name() == name)
+    {
+      layer = it->second;
+      break;
+    }
+
+    ++it;
+  }
+
+  return std::auto_ptr<te::da::DataSet>(new DataSet(layer));
 }
 
 std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string& name,
@@ -154,43 +166,38 @@ std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::stri
 
 
 
-std::auto_ptr<te::da::DataSet> terralib4::Transactor::query(const te::da::Select& q,
-                                      te::common::TraverseType travType,
-                                      bool connected)
+std::auto_ptr<te::da::DataSet> terralib4::Transactor::query(const te::da::Select& /*q*/,
+                                                            te::common::TraverseType /*travType*/,
+                                                            bool /*connected*/)
 {
-  throw;
+  throw Exception(TR_TERRALIB4("TerraLib 4.x driver doesn't support queries!"));
 }
 
-std::auto_ptr<te::da::DataSet> terralib4::Transactor::query(const std::string& query,
-                                      te::common::TraverseType travType,
-                                      bool connected)
+std::auto_ptr<te::da::DataSet> terralib4::Transactor::query(const std::string& /*query*/,
+                                                            te::common::TraverseType /*travType*/,
+                                                            bool /*connected*/)
 {
-  TeDatabasePortal* portal = m_db->getPortal();
-
-  if(portal->query(query))
-    return std::auto_ptr<te::da::DataSet>(new terralib4::DataSet(portal));
-
-  std::auto_ptr<te::da::DataSet>(0);
+  throw Exception(TR_TERRALIB4("TerraLib 4.x driver doesn't support queries!"));
 }
 
-void terralib4::Transactor::execute(const te::da::Query& command)
+void terralib4::Transactor::execute(const te::da::Query& /*command*/)
 {
-  throw;
+  throw Exception(TR_TERRALIB4("TerraLib 4.x driver doesn't support command execution!"));
 }
 
-void terralib4::Transactor::execute(const std::string& command)
+void terralib4::Transactor::execute(const std::string& /*command*/)
 {
-  m_db->execute(command);
+  throw Exception(TR_TERRALIB4("TerraLib 4.x driver doesn't support command execution!"));
 }
 
 std::auto_ptr<te::da::PreparedQuery> terralib4::Transactor::getPrepared(const std::string& qName)
 {
-  throw;
+  throw Exception(TR_TERRALIB4("TerraLib 4.x driver doesn't support prepared queries!"));
 }
 
 std::auto_ptr<te::da::BatchExecutor> terralib4::Transactor::getBatchExecutor()
 {
-  throw;
+  throw Exception(TR_TERRALIB4("TerraLib 4.x driver doesn't support prepared batch executors!"));
 }
 
 void terralib4::Transactor::cancel()
@@ -199,7 +206,7 @@ void terralib4::Transactor::cancel()
 
 boost::int64_t terralib4::Transactor::getLastGeneratedId()
 {
-  throw;
+  throw Exception(TR_TERRALIB4("TerraLib 4.x driver is read-only!"));
 }
 
 std::string terralib4::Transactor::escape(const std::string& value)
@@ -207,14 +214,14 @@ std::string terralib4::Transactor::escape(const std::string& value)
   throw;
 }
 
-bool terralib4::Transactor::isDataSetNameValid(const std::string& datasetName)
+bool terralib4::Transactor::isDataSetNameValid(const std::string& /*datasetName*/)
 {
-  return true;
+  throw Exception(TR_TERRALIB4("TerraLib 4.x driver is read-only!"));
 }
 
-bool terralib4::Transactor::isPropertyNameValid(const std::string& propertyName)
+bool terralib4::Transactor::isPropertyNameValid(const std::string& /*propertyName*/)
 {
-  return true;
+  throw Exception(TR_TERRALIB4("TerraLib 4.x driver is read-only!"));
 }
 
 std::vector<std::string> terralib4::Transactor::getDataSetNames()

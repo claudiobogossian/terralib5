@@ -98,6 +98,8 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
+          te::map::AbstractLayerPtr get();
+
           te::rp::MixtureModel::InputParameters getInputParams();
 
           te::rp::MixtureModel::OutputParameters getOutputParams();

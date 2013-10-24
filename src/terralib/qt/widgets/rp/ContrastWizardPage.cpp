@@ -96,6 +96,11 @@ void te::qt::widgets::ContrastWizardPage::set(te::map::AbstractLayerPtr layer)
   listBands();
 }
 
+te::map::AbstractLayerPtr te::qt::widgets::ContrastWizardPage::get()
+{
+  return m_layer;
+}
+
 te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputParams()
 {
   //get contrast type
