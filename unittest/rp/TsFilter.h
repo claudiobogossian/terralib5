@@ -19,7 +19,7 @@
 
 /*!
   \file TsFilter.h
- 
+
   \brief A test suit for the Filter Class.
  */
 
@@ -34,10 +34,10 @@
 
   \brief A test suit for the Filter class interface.
  */
-class TsFilter : public CPPUNIT_NS::TestFixture 
+class TsFilter : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsFilter );
-  
+
   CPPUNIT_TEST( SobelFilter );
   CPPUNIT_TEST( RobertsFilter );
   CPPUNIT_TEST( MeanFilter );
@@ -46,7 +46,7 @@ class TsFilter : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( DilationFilter );
   CPPUNIT_TEST( ErosionFilter );
   CPPUNIT_TEST( UserDefinedWindow );
-  
+
   CPPUNIT_TEST_SUITE_END();
 
 protected :

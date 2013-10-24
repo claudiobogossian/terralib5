@@ -35,7 +35,7 @@
 // STL
 #include <memory>
 
-te::qt::plugins::rp::ContrastAction::ContrastAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
+te::qt::plugins::rp::ContrastAction::ContrastAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Contrast...").toStdString(), "histogram");
 
