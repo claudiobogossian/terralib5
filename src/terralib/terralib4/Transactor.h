@@ -20,7 +20,7 @@
 /*!
   \file terralib/terralib4/Transactor.h
 
-  \brief ????
+  \brief DataSourceTransactor implementation for TerraLib 4.x API.
 */
 
 #ifndef __TERRALIB_TERRALIB4_INTERNAL_DATASOURCETRANSACTOR_H
@@ -38,26 +38,24 @@
 
 namespace te
 {
-// Forward declarations
-  namespace dt { class Property; }//
-  namespace gm { class Envelope; class Geometry; }//
+  namespace dt { class Property; }
+  namespace gm { class Envelope; class Geometry; }
 }
 
 namespace terralib4
 {
-  // Forward declarations
-  class BatchExecutor;//
-  class DataSet;//
+  class BatchExecutor;
+  class DataSet;
   class Connection;
   class ObjectIdSet;
-  class PreparedQuery;//
-  class Query;//
+  class PreparedQuery;
+  class Query;
 
   class TETERRALIB4EXPORT Transactor : public te::da::DataSourceTransactor
   {
     public:
 
-      Transactor();
+      Transactor(DataSource* ds, TeDatabase* db);
 
       ~Transactor();
 
@@ -246,7 +244,7 @@ namespace terralib4
     private:
 
       DataSource* m_ds;
-      //Connection* m_conn;
+      TeDatabase* m_db;
       bool m_isInTransaction;
 
   };

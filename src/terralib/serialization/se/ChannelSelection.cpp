@@ -102,11 +102,23 @@ void te::serialize::Save(const te::se::ChannelSelection* cs, te::xml::Writer& wr
 
   writer.writeStartElement("se:ChannelSelection");
 
-  if(cs->getGrayChannel())
+  if(cs->getColorCompositionType() == te::se::GRAY_COMPOSITION)
   {
     WriteSelectedChannelHelper("se:GrayChannel", cs->getGrayChannel(), writer);
   }
-  else
+  else if(cs->getColorCompositionType() == te::se::RED_COMPOSITION)
+  {
+    WriteSelectedChannelHelper("se:RedChannel", cs->getRedChannel(), writer);
+  }
+  else if(cs->getColorCompositionType() == te::se::GREEN_COMPOSITION)
+  {
+    WriteSelectedChannelHelper("se:GreenChannel", cs->getGreenChannel(), writer);
+  }
+  else if(cs->getColorCompositionType() == te::se::BLUE_COMPOSITION)
+  {
+    WriteSelectedChannelHelper("se:BlueChannel", cs->getBlueChannel(), writer);
+  }
+  else if(cs->getColorCompositionType() == te::se::RGB_COMPOSITION)
   {
     WriteSelectedChannelHelper("se:RedChannel", cs->getRedChannel(), writer);
     WriteSelectedChannelHelper("se:GreenChannel", cs->getGreenChannel(), writer);

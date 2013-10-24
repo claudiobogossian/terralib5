@@ -32,19 +32,25 @@
 #include <string>
 
 // Terralib 5
+#include "../common/Enums.h"
+#include "../datatype/Enums.h"
 #include "../datatype/Property.h"
+#include "../geometry/Enums.h"
 
 // TerraLib 4.x
 #include <terralib/kernel/TeAttribute.h>
+#include <terralib/kernel/TeDatabase.h>
 
 namespace te
 {
+  namespace da{ class DataSetType; }
   namespace dt{ class Property; }
   namespace gm{ class Envelope; }
 }
 
-class TeBox;
+struct TeBox;
 class TeDatabaseFactoryParams;
+class TeTable;
 
 namespace terralib4
 {
@@ -62,6 +68,8 @@ namespace terralib4
   */
   std::auto_ptr<te::dt::Property> Convert2T5(const TeAttributeRep& attRep);
 
+  te::gm::GeomType Convert2T5GeomType(TeAttrDataType type);
+
   /*!
     \brief It converts a Terralib 4.x data type to Terralib 5 data type.
 
@@ -71,7 +79,20 @@ namespace terralib4
   */
   int Convert2T5(TeAttrDataType type);
 
+  /*!
+    \brief It converts a Terralib 5 data type to Terralib 4.x data type.
+
+    \param type The type to convert.
+
+    \return A TerraLib 4.x data type.
+  */
+  TeAttrDataType Convert2T4(int type);
+
+  TeAttrDataType Convert2T4GeomType(te::gm::GeomType type);
+
   std::auto_ptr<te::gm::Envelope> Convert2T5(TeBox box);
+
+  std::auto_ptr<te::da::DataSetType> Convert2T5(TeTable table);
 
   /*!
     \brief It converts a data source information to a TerraLib 4.x database params.

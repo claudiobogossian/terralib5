@@ -345,7 +345,8 @@ boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std
 
   if(l!=0)
   {
-    std::auto_ptr<te::da::DataSetType> dt(Convert2TerraLib(l->GetLayerDefn()));
+    int srs = te::ogr::Convert2TerraLibProjection(l->GetSpatialRef());
+    std::auto_ptr<te::da::DataSetType> dt(Convert2TerraLib(l->GetLayerDefn(),srs));
     std::vector<te::dt::Property*> props = dt->getProperties();
     std::vector<te::dt::Property*>::iterator it;
 

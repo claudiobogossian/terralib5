@@ -4,11 +4,11 @@
 cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
-set(SRCDIR ${ROOT}/terralib4)                		# directory where the source files of the terralib4 qt plugin are located
+set(SRCDIR ${ROOT}/datasource/terralib4)                		# directory where the source files of the terralib4 qt plugin are located
 set(INCLDIR ${SRCDIR})                      # directory where the header files of the terralib4 qt plugin are located
 
 # Set the project name
-set(PROJ_NAME "terralib_qt_plugin_terralib4")
+set(PROJ_NAME "terralib_qt_plugin_datasource_terralib4")
 project(${PROJ_NAME})         # the project name is terralib_qt_plugin_terralib4
 set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_qt_plugin_terralib4
 
@@ -44,7 +44,7 @@ file(
 )
 
 
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/terralib4" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/terralib4" MOC)
 
 qt4_wrap_ui(UI ${FORMS})
 
@@ -76,17 +76,21 @@ set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
 
 #Exporting plug-in file
-set (TE_PLUGIN_NAME "te.qt.terralib4")
+set (TE_PLUGIN_NAME "te.qt.datasource.terralib4")
 set (TE_PLUGIN_DISPLAYNAME "Terralib 4")
-set (TE_PLUGIN_DESCRIPTION "This plugin enables the terralib 4 operations.")
-set (TE_PLUGIN_LIBRARY "terralib_qt_plugin_terralib4")
-set (TE_PLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation")
+set (TE_PLUGIN_DESCRIPTION "This plugin enables widgets to create or open data managed by Terralib 4 driver.")
+set (TE_PLUGIN_LIBRARY "terralib_qt_plugin_datasource_terralib4")
+set (TE_PLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:terralib4")
 set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TE_PLUGIN_NAME}.teplg")
 getPluginResources("SharedLibraryName" "${TE_PLUGIN_LIBRARY}" RSC_LINK)
 getPluginResources("LangFile" "pt.br" RSC_LINK2)
 set (TE_PLUGIN_RESOURCES 
   "  <Resources>${RSC_LINK}  ${RSC_LINK2}\n  </Resources>\n"
 )
+#getPluginRequirements("te.da.terralib4" REQ)
+#set (TE_PLUGIN_REQUIREMENTS 
+#  "\n  <RequiredPlugins>${REQ}  </RequiredPlugins>\n"
+#)
 
 #Exporting plugin information for the configuration file
 set (TE_SCHEMA_LOCATION "${CMAKE_SOURCE_DIR}/../schemas/terralib")

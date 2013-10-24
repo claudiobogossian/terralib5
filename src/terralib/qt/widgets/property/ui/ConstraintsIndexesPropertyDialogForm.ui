@@ -116,17 +116,20 @@
            </property>
           </spacer>
          </item>
-         <item row="0" column="2">
-          <widget class="QPushButton" name="m_okPushButton">
-           <property name="text">
-            <string>Ok</string>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="3">
           <widget class="QPushButton" name="m_cancelPushButton">
            <property name="text">
             <string>Cancel</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="m_okPushButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Ok</string>
            </property>
           </widget>
          </item>
@@ -139,5 +142,70 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_cancelPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ConstraintsIndexesPropertyDialogForm</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>369</x>
+     <y>307</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>371</x>
+     <y>326</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_pkRadioButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>m_okPushButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>71</x>
+     <y>86</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>287</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_ukRadioButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>m_okPushButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>222</x>
+     <y>86</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>310</x>
+     <y>310</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_idxRadioButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>m_okPushButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>331</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>323</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

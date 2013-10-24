@@ -114,7 +114,7 @@ namespace te
 
           int getGeometryType();
 
-          void buildSymbolizer();
+          void buildSymbolizer(std::string meanTitle = "");
 
           void listAttributes();
 

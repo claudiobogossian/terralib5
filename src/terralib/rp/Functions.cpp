@@ -300,47 +300,47 @@ namespace te
           max = 1;
           break;
         case te::dt::CHAR_TYPE :
-          min = (double)std::numeric_limits<char>::min();
-          max = (double)std::numeric_limits<char>::max();
+          min = -128;
+          max = 128;
           break;
         case te::dt::UCHAR_TYPE :
-          min = (double)std::numeric_limits<unsigned char>::min();
-          max = (double)std::numeric_limits<unsigned char>::max();
+          min = 0;
+          max = 255;
           break;
         case te::dt::INT16_TYPE :
         case te::dt::CINT16_TYPE :
-          min = (double)std::numeric_limits<short int>::min();
+          min = -1.0 * (double)std::numeric_limits<short int>::max();
           max = (double)std::numeric_limits<short int>::max();
           break;
         case te::dt::UINT16_TYPE :
-          min = (double)std::numeric_limits<unsigned short int>::min();
+          min = 0;
           max = (double)std::numeric_limits<unsigned short int>::max();
           break;
         case te::dt::INT32_TYPE :
         case te::dt::CINT32_TYPE :
-          min = (double)std::numeric_limits<int>::min();
+          min = -1.0 * (double)std::numeric_limits<int>::max();
           max = (double)std::numeric_limits<int>::max();
           break;
         case te::dt::UINT32_TYPE :
-          min = (double)std::numeric_limits<unsigned int>::min();
+          min = 0;
           max = (double)std::numeric_limits<unsigned int>::max();
           break;
         case te::dt::INT64_TYPE :
-          min = (double)std::numeric_limits<long int>::min();
+          min = -1.0 * (double)std::numeric_limits<long int>::max();
           max = (double)std::numeric_limits<long int>::max();
           break;
         case te::dt::UINT64_TYPE :
-          min = (double)std::numeric_limits<unsigned long int>::min();
+          min = 0;
           max = (double)std::numeric_limits<unsigned long int>::max();
           break;
         case te::dt::FLOAT_TYPE :
         case te::dt::CFLOAT_TYPE :
-          min = (double)std::numeric_limits<float>::min();
+          min = -1.0 * (double)std::numeric_limits<float>::max();
           max = (double)std::numeric_limits<float>::max();
           break;
         case te::dt::DOUBLE_TYPE :
         case te::dt::CDOUBLE_TYPE :
-          min = (double)std::numeric_limits<double>::min();
+          min = -1.0 * (double)std::numeric_limits<double>::max();
           max = (double)std::numeric_limits<double>::max();
           break;
         default :

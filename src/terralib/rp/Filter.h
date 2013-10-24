@@ -19,89 +19,84 @@
 
 /*!
   \file terralib/rp/Filter.h
-  \brief Implements a series of well-known filtering algorithms for images, linear and non-linear.
+  \brief A series of well-known filtering algorithms for images, linear and non-linear.
  */
 
 #ifndef __TERRALIB_RP_INTERNAL_FILTER_H
 #define __TERRALIB_RP_INTERNAL_FILTER_H
 
-// TerraLib
 #include "Algorithm.h"
-
-// STL
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
+#include "../raster/Raster.h"
 
 // Boost
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 
+// STL
+#include <vector>
+
 namespace te
 {
-  namespace da
-  {
-    class DataSource;
-  };
-
-  namespace rst
-  {
-    class Raster;
-    class Band;
-  };
-
   namespace rp
   {
     /*!
       \class Filter
-      \brief Implements a series of well-known filtering algorithms for images, linear and non-linear.
+      \brief A series of well-known filtering algorithms for images, linear and non-linear..
       \ingroup RPAlgorithms
      */
     class TERPEXPORT Filter : public Algorithm
     {
       public:
-        
+
         /*!
           \class InputParameters
           \brief Filter input parameters
-         */        
+         */
         class TERPEXPORT InputParameters : public AlgorithmInputParameters
         {
           public:
-            
-            /*!
-              \enum Allowed filter types.
-            */
+
+            /*! \enum The edge filter type.*/
             enum FilterType
             {
-              InvalidFilterT = 0,      //!< Invalid filter.
-              SobelFilterT = 1,        //!< Sobel filter is an edge detector.
-              MeanFilterT = 2,         //!< The resultant pixel will be the mean of pixels in the convolution window.
-              ModeFilterT = 3,         //!< The resultant pixel will be the mode of pixels in the convolution window.
-              MedianFilterT = 4,       //!< The resultant pixel will be the median of pixels in the convolution window.
-              DilationFilterT = 5,     //!< The resultant pixel will be the highest pixel value in the convolution window.
-              ErosionFilterT = 6,      //!< The resultant pixel will be the lowest pixel value in the convolution window.
-              UserDefinedWindowT = 7,  //!< The user will define the weights of a convolution window.
+              InvalidFilterT = 0,     //!< Invalid strategy.
+              SobelFilterT = 1,       //!< Sobel filter type.
+              RobertsFilterT = 2,     //!< Roberts filter type.
+              MeanFilterT = 3,        //!< The resultant pixel will be the mean of pixels in the convolution window.
+              ModeFilterT = 4,        //!< The resultant pixel will be the mode of pixels in the convolution window.
+              MedianFilterT = 5,      //!< The resultant pixel will be the median of pixels in the convolution window.
+              DilationFilterT = 6,    //!< The resultant pixel will be the highest pixel value in the convolution window.
+              ErosionFilterT = 7,     //!< The resultant pixel will be the lowest pixel value in the convolution window.
+              UserDefinedWindowT = 8, //!< The user will define the weights of a convolution window.
             };
 
-            FilterType m_type;                                  //!< The filter type to be applied.
-            unsigned int m_windowH;                             //!< The height of the convolution window. (commonly 3, with W=3 to make a 3x3 window, and so on)
-            unsigned int m_windowW;                             //!< The width of the convolution window.
-            te::rst::Raster* m_inRasterPtr;                     //!< Input raster.
-            std::vector<unsigned int> m_inRasterBands;          //!< Bands to be processed from the input raster.
-            bool m_enableProgress;                              //!< Enable/Disable the progress interface (default:false).
-            boost::numeric::ublas::matrix<double> m_window;     //!< User defined convolution window. (The size must be equal to m_windowH x m_windowW)
+            FilterType m_filterType; //!< The edge filter type.
+
+            te::rst::Raster const* m_inRasterPtr; //!< Input raster.
+
+            std::vector< unsigned int > m_inRasterBands; //!< Bands to be used from the input raster 1.
+
+            unsigned int m_iterationsNumber; //!< The number of iterations to perform (default:1).
+
+            unsigned int m_windowH; //!< The height of the convolution window. (commonly 3, with W=3 to make a 3x3 window, and so on)
+
+            unsigned int m_windowW; //!< The width of the convolution window.
+
+            bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+
+            boost::numeric::ublas::matrix<double> m_window; //!< User defined convolution window. (The size must be equal to m_windowH x m_windowW)
 
             InputParameters();
+
+            InputParameters( const InputParameters& );
 
             ~InputParameters();
 
             //overload
-            void reset() throw(te::rp::Exception);
+            void reset() throw( te::rp::Exception );
 
             //overload
-            const  InputParameters& operator=(const InputParameters& params);
+            const  InputParameters& operator=( const InputParameters& params );
 
             //overload
             AbstractParameters* clone() const;
@@ -110,34 +105,28 @@ namespace te
         /*!
           \class OutputParameters
           \brief Filter output parameters
-          \details The result will be written to the raster instance pointed 
-          by m_outRasterPtr (in this case the output bands must also be 
-          passed by m_outRasterBands); or written to a new raster instance 
-          created inside the given data source pointed by m_outDataSourcePtr 
-          (in this case the data set name must be supplied - m_outDataSetName ).
-         */        
+         */
         class TERPEXPORT OutputParameters : public AlgorithmOutputParameters
         {
           public:
-            
-            te::rst::Raster* m_outRasterPtr;                              //!< A pointer to a valid initiated raster instance where the result must be written, leave NULL to create a new instance(in this case the other output parameters must be used).
-            std::auto_ptr<te::rst::Raster> m_createdOutRasterPtr;         //!< A pointer to the created output raster instance, or an empty pointer empty if the result must be written to the raster pointed m_outRasterPtr.
-            std::vector<unsigned int> m_outRasterBands;                   //!< Bands to be processed from the output raster.
-            std::string m_createdOutRasterDSType;                         //!< Output raster data source type (as described in te::raster::RasterFactory ), leave empty if the result must be written to the raster pointed m_outRasterPtr.
-            std::map<std::string, std::string> m_createdOutRasterInfo;    //!< The necessary information to create the raster (as described in te::raster::RasterFactory), leave empty if the result must be written to the raster pointed m_outRasterPtr.
-            bool m_normalizeOutput;                                       //!< A flag to indicate that output raster will be normalized, by default [0, 255].
+
+            std::string m_rType; //!< Output raster data source type (as described in te::raster::RasterFactory ).
+
+            std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the raster (as described in te::raster::RasterFactory).
+
+            std::auto_ptr< te::rst::Raster > m_outputRasterPtr; //!< A pointer the ge generated output raster (label image).
 
             OutputParameters();
 
-            OutputParameters(const OutputParameters&);
+            OutputParameters( const OutputParameters& );
 
             ~OutputParameters();
 
             //overload
-            void reset() throw(te::rp::Exception);
+            void reset() throw( te::rp::Exception );
 
             //overload
-            const  OutputParameters& operator=(const OutputParameters& params);
+            const  OutputParameters& operator=( const OutputParameters& params );
 
             //overload
             AbstractParameters* clone() const;
@@ -148,65 +137,141 @@ namespace te
         ~Filter();
 
         //overload
-        bool execute(AlgorithmOutputParameters& outputParams) throw(te::rp::Exception);
+        bool execute( AlgorithmOutputParameters& outputParams ) throw( te::rp::Exception );
 
         //overload
-        void reset() throw(te::rp::Exception);
+        void reset() throw( te::rp::Exception );
 
         //overload
-        bool initialize(const AlgorithmInputParameters& inputParams) throw(te::rp::Exception);
+        bool initialize( const AlgorithmInputParameters& inputParams ) throw( te::rp::Exception );
 
+        //overload
         bool isInitialized() const;
 
       protected:
 
-        Filter::InputParameters m_inputParameters;         //!< Filter input execution parameters.
-        Filter::OutputParameters* m_outputParametersPtr;   //!< Filter input execution parameters.
-        bool m_isInitialized;                              //!< Tells if this instance is initialized.
-
         /*!
-          \brief Execute the Sobel filter following the internal parameters.
-          \return true if OK, false on errors.
+          \brief Type definition for a filter method pointer.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.
+          \param useProgress if true, the progress interface must be used.
+          \return true if ok, false on errors.
          */
-        bool execSobelFilter();
+        typedef bool (Filter::*FilterMethodPointerT)( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx, const bool useProgress );
+
+        bool m_isInitialized; //!< Is this instance already initialized?
+
+        Filter::InputParameters m_inputParameters; //!< Input parameters.
 
         /*!
-          \brief Execute the mean filter following the internal parameters.
-          \return true if OK, false on errors.
-        */
-        bool execMeanFilter();
+          \brief Applay the Roberts filter over the source raster band.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.
+          \param useProgress if true, the progress interface must be used.
+         */
+        bool RobertsFilter( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx, const bool useProgress  );
 
         /*!
-          \brief Execute the mode filter following the internal parameters.
-          \return true if OK, false on errors.
-        */
-        bool execModeFilter();
+          \brief Applay the Sobel filter over the source raster band.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.
+          \param useProgress if true, the progress interface must be used.
+         */
+        bool SobelFilter( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx, const bool useProgress  );
 
         /*!
-          \brief Execute the median filter following the internal parameters.
-          \return true if OK, false on errors.
-        */
-        bool execMedianFilter();
+          \brief Applay the mean filter over the source raster band.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.
+          \param useProgress if true, the progress interface must be used.
+         */
+        bool MeanFilter( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx, const bool useProgress  );
 
         /*!
-          \brief Execute the dilation filter following the internal parameters.
-          \return true if OK, false on errors.
-        */
-        bool execDilationFilter();
+          \brief Applay the mode filter over the source raster band.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.
+          \param useProgress if true, the progress interface must be used.
+         */
+        bool ModeFilter( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx, const bool useProgress  );
 
         /*!
-          \brief Execute the erosion filter following the internal parameters.
-          \return true if OK, false on errors.
-        */
-        bool execErosionFilter();
+          \brief Applay the median filter over the source raster band.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.
+          \param useProgress if true, the progress interface must be used.
+         */
+        bool MedianFilter( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx, const bool useProgress  );
 
         /*!
-          \brief Execute the convolution using some user defined window.
-          \return true if OK, false on errors.
-        */
-        bool execUserDefinedFilter();
+          \brief Applay the dilation filter over the source raster band.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.
+          \param useProgress if true, the progress interface must be used.
+         */
+        bool DilationFilter( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx, const bool useProgress  );
+
+        /*!
+          \brief Applay the erosion filter over the source raster band.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.
+          \param useProgress if true, the progress interface must be used.
+         */
+        bool ErosionFilter( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx, const bool useProgress  );
+
+        /*!
+          \brief Applay the user defined filter over the source raster band.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.
+          \param useProgress if true, the progress interface must be used.
+         */
+        bool UserDefinedFilter( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx, const bool useProgress  );
+
+        /*!
+          \brief Returns true if i < j.
+          \return Returns true if i < j.
+         */
+        static bool OrderFunction(double i, double j);
     };
+
   } // end namespace rp
 }   // end namespace te
 
-#endif // __TERRALIB_RP_INTERNAL_FILTER_H
+#endif
+

@@ -511,6 +511,9 @@
 				<xsd:element ref="se:BlueChannel"/>
 			</xsd:sequence>
 			<xsd:element ref="se:GrayChannel"/>
+			<xsd:element ref="se:RedChannel"/>
+			<xsd:element ref="se:GreenChannel"/>
+			<xsd:element ref="se:BlueChannel"/>
 		</xsd:choice>
 	</xsd:complexType>
 	<xsd:element name="RedChannel" type="se:SelectedChannelType"/>

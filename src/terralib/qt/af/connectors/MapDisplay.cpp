@@ -117,7 +117,10 @@ bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
 void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& layers)
 {
   if(layers.empty())
+  {
+    clear();
     return;
+  }
 
   std::list<te::map::AbstractLayerPtr> visibleLayers;
   te::map::GetVisibleLayers(layers, visibleLayers);

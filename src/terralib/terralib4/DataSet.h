@@ -43,6 +43,7 @@ namespace te
   }
 }
 
+class TeLayer;
 class TeDatabasePortal;
 
 namespace terralib4
@@ -58,16 +59,8 @@ namespace terralib4
   {
     public:
 
-      /*!
-        \brief Constructor.
+      DataSet(TeLayer* layer);
 
-        \param result     The internal ADO _RecordsetPtr.
-        \param transactor The transactor associated to this DataSet.
-        \param sql        The sql command that generated the dataset.
-      */
-      DataSet();
-
-      /*! \brief The destructor will clear the internal ADO _RecordsetPtr. */
       ~DataSet();
 
       te::common::TraverseType getTraverseType() const;
@@ -144,9 +137,10 @@ namespace terralib4
 
     protected:
 
-      int m_i;                            //!< The index of the current row.
+      int m_i;
       int m_size;
-      TeDatabasePortal* m_result;             //!< The internal buffer with the result query.
+      TeLayer* m_layer;
+      TeDatabasePortal* m_result;
   };
 
 }   // end namespace te

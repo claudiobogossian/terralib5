@@ -50,7 +50,7 @@ namespace te
 
           public:
 
-            SegmenterAction(QMenu* menu);
+            SegmenterAction(QMenu* menu, QMenu* popupMenu);
 
             virtual ~SegmenterAction();
 
