@@ -188,6 +188,62 @@ const std::vector<te::color::RGBAColor>& te::color::ColorBar::getSlices(const in
   return m_colorSliceVec;
 }
 
+const te::color::RGBAColor& te::color::ColorBar::getMeanSlice()
+{
+  if(m_colorBarVec.empty())
+    generateColorBar();
+
+  int size = m_colorBarVec.size();
+  int mean = (int)((double)size / 2. + .5);
+
+  return m_colorBarVec[mean];
+}
+
+const std::vector<te::color::RGBAColor>& te::color::ColorBar::getLowerMeanSlices(const int& n)
+{
+  if(m_colorBarVec.empty())
+    generateColorBar();
+
+  int i, j;
+  RGBAColor c;
+  double d = ((double)(m_barSize-1) / (double)(n-1)) / 2.;
+
+  m_colorSliceVec.clear();
+
+  for(i = 0; i < n; ++i)
+  {
+    j = (int)((double)i * d + .5);
+    c = m_colorBarVec[j];
+    m_colorSliceVec.push_back(c);
+  }
+
+  return m_colorSliceVec;
+}
+
+const std::vector<te::color::RGBAColor>& te::color::ColorBar::getUpperMeanSlices(const int& n)
+{
+  if(m_colorBarVec.empty())
+    generateColorBar();
+
+  int i, j;
+  RGBAColor c;
+  double d = ((double)(m_barSize-1) / (double)(n-1)) / 2.;
+
+  m_colorSliceVec.clear();
+
+  double halfsize = (double)(m_barSize-1) / 2.;
+  int shift = (int)halfsize;
+
+  for(i = 0; i < n; ++i)
+  {
+    j = ((int)((double)i * d + .5)) + shift;
+    c = m_colorBarVec[j];
+    m_colorSliceVec.push_back(c);
+  }
+
+  return m_colorSliceVec;
+}
+
 void te::color::ColorBar::setBarSize(const int& size)
 {
   m_colorBarVec.clear();

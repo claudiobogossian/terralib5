@@ -1,4 +1,4 @@
-/*  Copyright (C) 2009-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/terralib4/DataSourceTransactor.h
+  \file terralib/terralib4/Transactor.h
 
-  \brief An implementation of DataSourceTransactor class for the TerraLib SQLite Data Access Driver.
+  \brief DataSourceTransactor implementation for TerraLib 4.x API.
 */
 
 #ifndef __TERRALIB_TERRALIB4_INTERNAL_DATASOURCETRANSACTOR_H
@@ -28,12 +28,36 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "Config.h"
+#include "DataSource.h"
+
+// STL
+#include <memory>
+#include <map>
+#include <string>
+
+namespace te
+{
+  namespace dt { class Property; }
+  namespace gm { class Envelope; class Geometry; }
+}
 
 namespace terralib4
 {
-  class DataSourceTransactor : public te::da::DataSourceTransactor
+  class BatchExecutor;
+  class DataSet;
+  class Connection;
+  class ObjectIdSet;
+  class PreparedQuery;
+  class Query;
+
+  class TETERRALIB4EXPORT Transactor : public te::da::DataSourceTransactor
   {
     public:
+
+      Transactor(DataSource* ds, TeDatabase* db);
+
+      ~Transactor();
 
       te::da::DataSource* getDataSource() const;
 
@@ -63,16 +87,21 @@ namespace terralib4
                                                 te::common::TraverseType travType = te::common::FORWARDONLY, 
                                                 bool connected = false);
 
+      std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
+                                                const ObjectIdSet* oids, 
+                                                te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                                bool connected = false);
+
       std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
-                                           te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                           bool connected = false);
+                                            te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                            bool connected = false);
 
       std::auto_ptr<te::da::DataSet> query(const std::string& query,
-                                           te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                           bool connected = false);
+                                            te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                            bool connected = false);
 
       void execute(const te::da::Query& command);
-
+        
       void execute(const std::string& command);
 
       std::auto_ptr<te::da::PreparedQuery> getPrepared(const std::string& qName = std::string(""));
@@ -159,8 +188,7 @@ namespace terralib4
 
       bool indexExists(const std::string& datasetName, const std::string& name);
 
-      void addIndex(const std::string& datasetName,
-                    te::da::Index* idx,
+      void addIndex(const std::string& datasetName, te::da::Index* idx,
                     const std::map<std::string, std::string>& options); 
 
       void dropIndex(const std::string& datasetName, const std::string& idxName);
@@ -215,10 +243,14 @@ namespace terralib4
 
     private:
 
-      class Impl;
+      DataSource* m_ds;
+      TeDatabase* m_db;
+      bool m_isInTransaction;
 
-      Impl* m_pImpl;
   };
-}
+
+}   // end namespace terralib4
 
 #endif  // __TERRALIB_TERRALIB4_INTERNAL_DATASOURCETRANSACTOR_H
+
+

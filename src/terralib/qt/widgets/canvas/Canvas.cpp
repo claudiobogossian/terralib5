@@ -50,7 +50,6 @@
 
 te::qt::widgets::Canvas::Canvas(int w, int h, int devType)
   : m_isDeviceOwner(true),
-    m_magneticDeclination(0),
     m_bgColor(Qt::transparent),
     m_erase(false),
     m_ptWidth(1),
@@ -98,7 +97,6 @@ te::qt::widgets::Canvas::Canvas(int w, int h, int devType)
 
 te::qt::widgets::Canvas::Canvas(QPaintDevice* device)
   : m_isDeviceOwner(false),
-    m_magneticDeclination(0),
     m_bgColor(Qt::transparent),
     m_erase(false),
     m_ptWidth(1),
@@ -149,39 +147,14 @@ te::qt::widgets::Canvas::~Canvas()
 void te::qt::widgets::Canvas::setWindow(const double& llx, const double& lly,
                                         const double& urx, const double& ury)
 {
-  double w = (double)getWidth();
-  double h = (double)getHeight();
+  double xScale = static_cast<double>(getWidth()) / (urx - llx);
+  double yScale = static_cast<double>(getHeight()) / (ury - lly);
 
   m_matrix.reset();
-
-  if(m_magneticDeclination != 0)
-  {
-    QMatrix auxMatrix;
-    auxMatrix.rotate(m_magneticDeclination);
-    QPointF c(w/2., h/2.);
-    QPointF dif = auxMatrix.map(c) - c;
-    double dx = -dif.x();
-    double dy = -dif.y();
-
-    m_matrix.translate(dx, dy);
-    m_matrix.rotate(m_magneticDeclination);
-  }
-
-  double xScale = w / (urx - llx);
-  double yScale = h / (ury - lly);
   m_matrix.scale(xScale, -yScale);
   m_matrix.translate(-llx, -ury);
 
   m_painter.setMatrix(m_matrix);
-
-  //double xScale = static_cast<double>(getWidth()) / (urx - llx);
-  //double yScale = static_cast<double>(getHeight()) / (ury - lly);
-
-  //m_matrix.reset();
-  //m_matrix.scale(xScale, -yScale);
-  //m_matrix.translate(-llx, -ury);
-
-  //m_painter.setMatrix(m_matrix);
 }
 
 void te::qt::widgets::Canvas::calcAspectRatio(double& llx, double& lly, double& urx, double& ury, 
@@ -2244,14 +2217,4 @@ void te::qt::widgets::Canvas::setNormalMode()
 {
   m_painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
   m_erase = false;
-}
-
-void te::qt::widgets::Canvas::setMagneticDeclination(double angle)
-{
-  m_magneticDeclination = angle;
-}
-
-double te::qt::widgets::Canvas::getMagneticDeclination()
-{
-  return m_magneticDeclination;
 }

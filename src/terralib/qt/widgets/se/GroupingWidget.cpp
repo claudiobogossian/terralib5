@@ -353,6 +353,8 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
   te::common::FreeContents(m_legend);
   m_legend.clear();
 
+  std::string mean = "";
+
   if(type == te::map::EQUAL_STEPS)
   {
     std::vector<double> vec;
@@ -372,7 +374,6 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
   else if(type == te::map::STD_DEVIATION) 
   {
     std::vector<double> vec;
-    std::string mean = "0";
 
     getDataAsDouble(vec, attr, attrType);
 
@@ -387,7 +388,7 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
     te::map::GroupingByUniqueValues(vec, attrType, m_legend, prec);
   }
 
-  buildSymbolizer();
+  buildSymbolizer(mean);
 
   updateUi();
 
@@ -571,11 +572,51 @@ int te::qt::widgets::GroupingWidget::getGeometryType()
   return te::map::GetGeomType(m_layer);
 }
 
-void te::qt::widgets::GroupingWidget::buildSymbolizer()
+void te::qt::widgets::GroupingWidget::buildSymbolizer(std::string meanTitle)
 {
   int legendSize = m_legend.size();
 
-  std::vector<te::color::RGBAColor> colorVec = m_cb->getSlices(legendSize);
+  std::vector<te::color::RGBAColor> colorVec;
+  
+  if(meanTitle.empty())
+  {
+    colorVec = m_cb->getSlices(legendSize);
+  }
+  else
+  {
+    int beforeMean = 0;
+    int afterMean = 0;
+    int meanIdx = 0;
+
+    for(size_t t = 0; t < m_legend.size(); ++t)
+    {
+      if(m_legend[t]->getTitle() != meanTitle)
+      {
+        beforeMean++;
+      }
+      else
+      {
+        meanIdx = t;
+        afterMean = m_legend.size() - t - 1;
+        break;
+      }
+    }
+
+    std::vector<te::color::RGBAColor> lowerColorVec = m_cb->getLowerMeanSlices(beforeMean);
+    te::color::RGBAColor meanColor = m_cb->getMeanSlice();
+    std::vector<te::color::RGBAColor> upperColorVec = m_cb->getUpperMeanSlices(afterMean);
+
+    for(size_t t = 0; t < lowerColorVec.size(); ++t)
+      colorVec.push_back(lowerColorVec[t]);
+
+    colorVec.push_back(meanColor);
+
+    for(size_t t = 0; t < upperColorVec.size(); ++t)
+      colorVec.push_back(upperColorVec[t]);
+  }
+
+  if(colorVec.size() != m_legend.size())
+    return;
 
   int geomType = getGeometryType();
 
@@ -593,6 +634,8 @@ void te::qt::widgets::GroupingWidget::buildSymbolizer()
 
 void te::qt::widgets::GroupingWidget::listAttributes()
 {
+  QString curValue = m_ui->m_attrComboBox->currentText();
+
   m_ui->m_attrComboBox->clear();
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
@@ -647,5 +690,13 @@ void te::qt::widgets::GroupingWidget::listAttributes()
           continue;
       }
     }
+  }
+
+  if(curValue.isEmpty() == false)
+  {
+    int idx = m_ui->m_attrComboBox->findText(curValue);
+
+    if(idx != -1)
+      m_ui->m_attrComboBox->setCurrentIndex(idx);
   }
 }

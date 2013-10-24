@@ -52,10 +52,12 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   connect(m_ui->m_SRSTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onSRSTreeWidgetItemClicked(QTreeWidgetItem* , int)));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));   
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked())); 
+  //connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked())); 
   connect(m_ui->m_searchedSRSLineEdit, SIGNAL(textChanged(const QString&)),SLOT(onSearchLineEditTextChanged(const QString&)));
   connect(m_ui->m_SRSRecentTableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), SLOT(onSRSRecentTableWidgetItemClicked(QTableWidgetItem*)));
-  
+ 
+  m_ui->m_helpPushButton->setPageReference("widgets/srs/srs.html");
+
   // Builds the table with the recently used SRS ids  
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
   QString value = sett.value("SRSRecentlyUsed", "").toString();

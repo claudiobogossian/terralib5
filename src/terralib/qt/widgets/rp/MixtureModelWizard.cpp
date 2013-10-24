@@ -29,6 +29,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/MixtureModel.h"
 #include "../../../rp/Module.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "MixtureModelWizard.h"
 #include "MixtureModelWizardPage.h"
 #include "LayerSearchWidget.h"
@@ -58,7 +59,11 @@ te::qt::widgets::MixtureModelWizard::MixtureModelWizard(QWidget* parent)
   this->setOption(QWizard::HaveHelpButton, true);
   this->setOption(QWizard::HelpButtonOnRight, false);
 
-  connect((QObject*)this->button(QWizard::HelpButton), SIGNAL(clicked()), this, SLOT(onHelpButtonClicked()));
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("plugins/rp/rp_mixture.html");
 
   addPages();
 }
@@ -130,8 +135,7 @@ void te::qt::widgets::MixtureModelWizard::addPages()
 bool te::qt::widgets::MixtureModelWizard::execute()
 {
   //get layer
-  std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
-  te::map::AbstractLayerPtr l = *list.begin();
+  te::map::AbstractLayerPtr l = m_mixtureModelPage->get();
   std::auto_ptr<te::da::DataSet> ds(l->getData());
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
@@ -179,7 +183,3 @@ bool te::qt::widgets::MixtureModelWizard::execute()
   return true;
 }
 
-void te::qt::widgets::MixtureModelWizard::onHelpButtonClicked()
-{
-
-}

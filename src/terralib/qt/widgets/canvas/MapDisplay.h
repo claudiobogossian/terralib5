@@ -176,20 +176,6 @@ namespace te
           */
           virtual void setBackgroundColor(const QColor& color);
 
-          /*!
-            \brief It sets the magnetic declination angle.
-
-            \param angle The angle.
-          */
-          virtual void setMagneticDeclination(double angle);
-
-          /*!
-            \brief It returns the magnetic declination angle.
-
-            \return The angle.
-          */
-          virtual double getMagneticDeclination();
-
         protected:
 
           /*!
@@ -284,7 +270,6 @@ namespace te
           QSize m_oldSize;             //!< Stores the last size of map display on start resize event.
           QTimer* m_timer;             //!< Timer to execute redraw on resize action.
           int m_interval;              //!< Timeout interval in milliseconds to redraw.
-          double m_magneticDeclination;//!< Magnetic declination.
           std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*> m_layerCanvasMap; //!< A map that associates a layer to a canvas.
       };
 

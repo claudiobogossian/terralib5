@@ -63,6 +63,12 @@ te::qt::widgets::SegmenterWizardPage::SegmenterWizardPage(QWidget* parent)
 //configure page
   this->setTitle(tr("Segmenter"));
   this->setSubTitle(tr("Select the type of segmenter and set their specific parameters."));
+  
+  te::rp::SegmenterRegionGrowingStrategy::Parameters regGrowStrategyParameters;
+  m_ui->m_minimumSegmentSizeRGLineEdit->setText( QString::number( regGrowStrategyParameters.m_minSegmentSize ) );
+  m_ui->m_thresholdRGDoubleSpinBox->setValue( regGrowStrategyParameters.m_segmentsSimilarityThreshold );
+  m_ui->m_colorWeightBaatzDoubleSpinBox->setValue( regGrowStrategyParameters.m_colorWeight );
+  m_ui->m_compactnessWeightBaatzDoubleSpinBox->setValue( regGrowStrategyParameters.m_compactnessWeight );
 
 //connects
   connect(m_ui->m_strategyTypeComboBox, SIGNAL(activated(int)), this, SLOT(onStrategyTypeComboBoxActivated(int)));
@@ -84,6 +90,11 @@ void te::qt::widgets::SegmenterWizardPage::set(te::map::AbstractLayerPtr layer)
   m_navigator->set(m_layer);
 
   listBands();
+}
+
+te::map::AbstractLayerPtr te::qt::widgets::SegmenterWizardPage::get()
+{
+  return m_layer;
 }
 
 te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInputParams()
@@ -275,6 +286,7 @@ void te::qt::widgets::SegmenterWizardPage::listBands()
           bName.append(QString::number(b));
         
           QCheckBox* bandCheckBox = new QCheckBox(bName, this);
+          bandCheckBox->setChecked( true );
 
           m_ui->m_bandTableWidget->setCellWidget(newrow, 0, bandCheckBox);
         }

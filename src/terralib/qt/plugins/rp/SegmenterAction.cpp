@@ -51,7 +51,9 @@ void te::qt::plugins::rp::SegmenterAction::onActionActivated(bool checked)
 {
   te::qt::widgets::SegmenterWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-  dlg.setList(getLayers());
+  std::list<te::map::AbstractLayerPtr> layersList = getLayers();
+
+  dlg.setList( layersList );
 
   if(dlg.exec() == QDialog::Accepted)
   {
@@ -78,6 +80,6 @@ void te::qt::plugins::rp::SegmenterAction::onPopUpActionActivated(bool checked)
   }
   else
   {
-    QMessageBox::warning(m_menu, tr("Warning"), tr("Invalid Layer."));
+    QMessageBox::warning(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Warning"), tr("The layer selected is invalid or does not have an raster representation."));
   }
 }
