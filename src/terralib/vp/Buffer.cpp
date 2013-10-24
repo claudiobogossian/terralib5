@@ -117,7 +117,8 @@ bool BufferQuery(const std::string& inDatasetName,
 te::gm::Geometry* SetBuffer(te::gm::Geometry* geom, 
                             const int& bufferPolygonRule, 
                             const double& distance, 
-                            const int& level);
+                            const int& level,
+                            te::gm::Geometry*& auxGeom);
 
 te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
                                         te::mem::DataSet* dataset, 
@@ -255,6 +256,8 @@ bool BufferMemory(const std::string& inDataSetName,
   inputDataSet->moveBeforeFirst();
   while(inputDataSet->moveNext())
   {
+    te::gm::Geometry* auxGeom = 0;
+
     for(int i = 1; i <= levels; ++i)
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
@@ -286,7 +289,7 @@ bool BufferMemory(const std::string& inDataSetName,
               std::auto_ptr<te::gm::Geometry> outGeom;
 
               if(inputDataSet->getGeometry(j).get()->isValid())
-                outGeom.reset(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i));
+                outGeom.reset(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i, auxGeom));
 
               if(outGeom.get() && outGeom->isValid())
                 dataSetItem->setGeometry(j+2, *outGeom);
@@ -306,7 +309,7 @@ bool BufferMemory(const std::string& inDataSetName,
             std::auto_ptr<te::gm::Geometry> outGeom;
 
             if(inputDataSet->getGeometry(j).get()->isValid())
-              outGeom.reset(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i));
+              outGeom.reset(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i, auxGeom));
 
             if(outGeom.get() && outGeom->isValid())
               dataSetItem->setGeometry(3, *outGeom);
@@ -317,8 +320,9 @@ bool BufferMemory(const std::string& inDataSetName,
         }
       }
     }
+    delete auxGeom;
   }
-  
+
   return true;
 }
 
@@ -550,7 +554,8 @@ bool BufferQuery(const std::string& inDatasetName,
 te::gm::Geometry* SetBuffer(te::gm::Geometry* geom, 
                             const int& bufferPolygonRule, 
                             const double& distance, 
-                            const int& level)
+                            const int& level,
+                            te::gm::Geometry*& auxGeom)
 {
   te::gm::Geometry* geomResult = 0;
   std::auto_ptr<te::gm::Geometry> outGeom;
@@ -561,6 +566,12 @@ te::gm::Geometry* SetBuffer(te::gm::Geometry* geom,
       outGeom.reset(geom->buffer(distance * level, 16, te::gm::CapButtType));
       inGeom.reset(geom->buffer(-distance * level, 16, te::gm::CapButtType));
       geomResult = outGeom->difference(inGeom.get());
+      
+      outGeom.reset(geomResult);
+      if(auxGeom && auxGeom->isValid())
+        geomResult = geomResult->difference(auxGeom);
+
+      auxGeom = outGeom.release();
 
       break;
 

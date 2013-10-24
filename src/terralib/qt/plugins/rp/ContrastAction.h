@@ -50,7 +50,7 @@ namespace te
 
           public:
 
-            ContrastAction(QMenu* menu);
+            ContrastAction(QMenu* menu, QMenu* popupMenu);
 
             virtual ~ContrastAction();
 
