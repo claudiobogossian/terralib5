@@ -50,7 +50,7 @@ namespace te
 
           public:
 
-            MixtureModelAction(QMenu* menu);
+            MixtureModelAction(QMenu* menu, QMenu* popupMenu);
 
             virtual ~MixtureModelAction();
 

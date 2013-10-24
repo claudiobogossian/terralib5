@@ -31,6 +31,7 @@
 #include "Config.h"
 
 // Qt
+#include <QtGui/QAction>
 #include <QtGui/QMenu>
 
 namespace te
@@ -76,6 +77,8 @@ namespace te
           protected:
 
             QMenu* m_rpMenu;                                        //!< RP Main Menu registered.
+            QMenu* m_rpPopupMenu;                                   //!< RP Main Menu registered.
+            QAction* m_popupAction;                                 //!< RP pop up action registered.
 
             te::qt::plugins::rp::ClassifierAction* m_classifier;    //!< Classifier Process Action
             te::qt::plugins::rp::ContrastAction* m_contrast;        //!< Contrast Process Action

@@ -60,7 +60,7 @@ namespace te
 
               \param menu The parent menu object.
             */
-            AbstractAction(QMenu* menu);
+            AbstractAction(QMenu* menu, QMenu* popupMenu);
 
             /*! 
               \brief Destructor. 
@@ -130,6 +130,7 @@ namespace te
           protected:
 
             QMenu* m_menu;          //!< Parent Menu.
+            QMenu* m_popupMenu;     //!< Parent popMenu.
             QAction* m_action;      //!< Action used to call the process.
             QAction* m_popupAction; //!< Action used to call the process from pop up layer.
         };

@@ -34,7 +34,7 @@
 // STL
 #include <memory>
 
-te::qt::plugins::rp::RegisterAction::RegisterAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
+te::qt::plugins::rp::RegisterAction::RegisterAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Register...").toStdString(), "register");
 }
