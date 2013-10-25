@@ -44,8 +44,7 @@ te::rst::BandProperty::BandProperty(std::size_t idx, int t, const std::string& d
     m_blkw(0),
     m_blkh(0),
     m_nblocksx(0),
-    m_nblocksy(0),
-    m_unit(0)
+    m_nblocksy(0)
 {
 }
 
