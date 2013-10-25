@@ -79,3 +79,7 @@ std::string te::dt::TimeDuration::toString() const
   //return boost::posix_time::to_iso_string(m_timeDuration); 
 }
 
+te::dt::TimeDuration::~TimeDuration()
+{
+}
+

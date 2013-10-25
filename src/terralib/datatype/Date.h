@@ -176,6 +176,11 @@ namespace te
         */
         DateTimeType getDateTimeType() const { return DATE; }
 
+        /*!
+          \brief Destructor.
+        */
+        virtual ~Date();
+
       protected:
 
         boost::gregorian::date m_date;  //!< Internal date information.

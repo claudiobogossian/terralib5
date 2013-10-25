@@ -143,6 +143,9 @@ namespace te
         */
         DateTimeType getDateTimeType() const { return TIME_INSTANT_TZ; }
 
+        /*! \brief Constructor. */
+        virtual ~TimeInstantTZ();
+
       protected:
 
         boost::local_time::local_date_time m_timeInstantTZ; //!< Time instant with time zone information.
