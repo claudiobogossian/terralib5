@@ -101,5 +101,7 @@ std::string te::dt::TimePeriodTZ::toString() const
   return begin + "/" + end;
 }
 
-
+te::dt::TimePeriodTZ::~TimePeriodTZ()
+{
+}
 

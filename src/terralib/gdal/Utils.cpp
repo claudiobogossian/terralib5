@@ -282,9 +282,7 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
 
   std::string unitName = gband->GetUnitType();
   if (!unitName.empty())
-    bprop->setUnitOfMeasure(te::common::UnitsOfMeasureManager::getInstance().findByName(unitName));
-  else
-    bprop->setUnitOfMeasure(0);
+    bprop->setUnitOfMeasure(te::common::UnitsOfMeasureManager::getInstance().find(unitName));
   bprop->m_valuesOffset = gband->GetOffset(0);
   bprop->m_valuesScale = gband->GetScale(0);
 

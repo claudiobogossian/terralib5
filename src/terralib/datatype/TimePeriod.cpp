@@ -102,4 +102,8 @@ std::string te::dt::TimePeriod::toString() const
   return std::string(begin + "/" + end);
 }
 
+te::dt::TimePeriod::~TimePeriod()
+{
+}
+
 

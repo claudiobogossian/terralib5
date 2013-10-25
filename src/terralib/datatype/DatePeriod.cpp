@@ -103,5 +103,9 @@ std::string te::dt::DatePeriod::toString() const
   //return boost::gregorian::to_iso_string(m_datePeriod);
 }
 
+te::dt::DatePeriod::~DatePeriod()
+{
+}
+
 
 

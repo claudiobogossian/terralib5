@@ -28,6 +28,8 @@
 #include "SegmenterStrategyFactory.h"
 #include "SegmenterStrategy.h"
 #include "SegmenterStrategyParameters.h"
+#include "SegmenterSegment.h"
+#include "SegmenterSegmentsPool.h"
 #include "SegmenterSegmentsBlock.h"
 #include "Matrix.h"
 #include "Config.h"
@@ -167,9 +169,9 @@ namespace te
             */              
             unsigned int m_yBound;            
             
-            SegmentFeatures() {};
+            SegmentFeatures();
             
-            virtual ~SegmentFeatures() {};
+            virtual ~SegmentFeatures();
             
             /*!
               \brief Creat a clone of this object.
@@ -198,7 +200,7 @@ namespace te
           \class Segment
           \brief Segment base class
          */        
-        class TERPEXPORT Segment
+        class TERPEXPORT Segment : public SegmenterSegment
         {
           public:
             
@@ -207,7 +209,7 @@ namespace te
             */             
             std::list< Segment* > m_neighborSegments;             
             
-            virtual ~Segment() {};
+            virtual ~Segment();
             
             /*!
               \brief Returns the current segment internal features
@@ -223,7 +225,7 @@ namespace te
             
           protected :
             
-            Segment() {};
+            Segment();
             
           private :
           
@@ -233,20 +235,8 @@ namespace te
         };
         
         /*!
-          \brief Segments pool.
-         */        
-        class SegmentsPool : public std::list< Segment* >
-        {
-          public :
-            
-            ~SegmentsPool();
-            
-            //overload
-            void clear();
-        };         
-        
-        /*!
           \brief Internal segments indexer.
+          \note The indexer takes the ownership of the given segments.
           \note All segment objects will be given back to the segments pool at this instance destruction time.
          */        
         class SegmentsIndexer : public std::map< 
@@ -254,7 +244,7 @@ namespace te
         {
           public :
             
-            SegmentsIndexer( SegmentsPool& segmentsPool );
+            SegmentsIndexer( SegmenterSegmentsPool& segmentsPool );
             
             ~SegmentsIndexer();
             
@@ -263,7 +253,7 @@ namespace te
             
           protected :
             
-            SegmentsPool& m_segmentsPool;
+            SegmenterSegmentsPool& m_segmentsPool;
         };          
         
         /*!
@@ -284,9 +274,9 @@ namespace te
                 
                 std::vector< double > m_means; //!< Segment mean values (for each band), normalized between 0 and 1.
                 
-                SegmentFeatures() {};
+                SegmentFeatures();
                 
-                ~SegmentFeatures() {};
+                ~SegmentFeatures();
                 
                 //overload
                 SegmenterRegionGrowingStrategy::SegmentFeatures* clone() const;
@@ -303,9 +293,9 @@ namespace te
             
             MeanBasedSegment::SegmentFeatures m_features;
             
-            MeanBasedSegment() {};
+            MeanBasedSegment();
             
-            ~MeanBasedSegment() {};
+            ~MeanBasedSegment();
             
             //overload
             inline SegmenterRegionGrowingStrategy::SegmentFeatures* getFeatures()
@@ -348,9 +338,9 @@ namespace te
                 
                 double m_smoothness; //!< Smoothness of the current segment.
                 
-                SegmentFeatures() {};
+                SegmentFeatures();
                 
-                ~SegmentFeatures() {};
+                ~SegmentFeatures();
                 
                 //overload
                 SegmenterRegionGrowingStrategy::SegmentFeatures* clone() const;
@@ -367,9 +357,9 @@ namespace te
             
             BaatzBasedSegment::SegmentFeatures m_features;
             
-            BaatzBasedSegment() {};
+            BaatzBasedSegment();
             
-            ~BaatzBasedSegment() {};
+            ~BaatzBasedSegment();
             
             //overload
             inline SegmenterRegionGrowingStrategy::SegmentFeatures* getFeatures()
@@ -393,7 +383,7 @@ namespace te
         {
           public:
             
-            virtual ~Merger() {};
+            virtual ~Merger();
             
             /*!
               \brief Returns a dissimilarity index between this and the
@@ -426,7 +416,7 @@ namespace te
             
           protected :
             
-            Merger() {};
+            Merger();
             
           private :
           
@@ -523,8 +513,6 @@ namespace te
             
             const SegmenterRegionGrowingStrategy::SegmentsIndexer& m_segments; //!< A reference to an external valid structure where each all segments are indexed.
         };          
-                
-        
         
         /*!
           \brief true if this instance is initialized.
@@ -537,7 +525,7 @@ namespace te
         SegmenterRegionGrowingStrategy::Parameters m_parameters;
         
         /*! \brief A pool of segments that can be reused on each strategy execution. */
-        SegmentsPool m_segmentsPool;
+        SegmenterSegmentsPool m_segmentsPool;
         
         /*! \brief A internal segments IDs matrix that can be reused  on each strategy execution. */
         SegmentsIdsMatrixT m_segmentsIdsMatrix;

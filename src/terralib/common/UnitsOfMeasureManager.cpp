@@ -36,197 +36,125 @@
 #include <cassert>
 
 // Boost
+#include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-void te::common::UnitsOfMeasureManager::insert(UnitOfMeasure* uom)
-{
-  assert(uom);
-
-  std::vector<UnitOfMeasure*>::const_iterator it = std::find(m_uoms.begin(),m_uoms.end(),uom);
-
-  if(it != m_uoms.end())
-    throw Exception(TR_COMMON("Unit already exists in the manager."));
-
-  m_uoms.push_back(uom);
-
-  m_uomsIdxByName.insert(std::map<std::string, UnitOfMeasure*>::value_type(uom->getName(), uom));
-}
-
-void te::common::UnitsOfMeasureManager::insert(UnitOfMeasure* uom,
-                                               const std::vector<std::string>& alternativeNames)
-{
-  assert(uom);
-
-  std::vector<UnitOfMeasure*>::const_iterator it = std::find(m_uoms.begin(),m_uoms.end(),uom);
-
-  if(it != m_uoms.end())
-    throw Exception(TR_COMMON("Unit already exists in the manager."));
-
-  m_uoms.push_back(uom);
-
-  m_uomsIdxByName.insert(std::map<std::string, UnitOfMeasure*>::value_type(uom->getName(), uom));
-
-  std::size_t size = alternativeNames.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-  {
-    std::string upName = te::common::Convert2UCase(alternativeNames[i]);
-    m_uomsIdxByAlternativeName.insert(std::map<std::string, UnitOfMeasure*>::value_type(upName, uom));
-  }
-}
-
-void te::common::UnitsOfMeasureManager::remove(UnitOfMeasure* uom)
-{
-  assert(uom);
-
-// remove m_uomsIdxByName index entry
-  std::map<std::string, UnitOfMeasure*>::iterator itIdxByName = m_uomsIdxByName.find(uom->getName());
-
-  if(itIdxByName == m_uomsIdxByName.end())
-    throw Exception(TR_COMMON("Could not find the informed unit of measure searching by its name."));
-
-  m_uomsIdxByName.erase(itIdxByName);
-
-// remove m_uomsIdxByAlternativeName index entry(ies)
-  std::map<std::string, UnitOfMeasure*>::iterator itIdxByAlternativeName = m_uomsIdxByAlternativeName.begin();
-
-  while(itIdxByAlternativeName != m_uomsIdxByAlternativeName.end())
-  {
-    if(itIdxByAlternativeName->second->getId() == uom->getId())
-    {
-      std::map<std::string, UnitOfMeasure*>::iterator auxIt = itIdxByAlternativeName;
-
-      ++itIdxByAlternativeName;
-
-      m_uomsIdxByAlternativeName.erase(itIdxByAlternativeName);
-    }
-    else
-    {
-      ++itIdxByAlternativeName;
-    }
-  }
-
-// remove from the list and free its resources
-
-  std::size_t size = m_uoms.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    if(uom->getId() == m_uoms[i]->getId())
-    {
-      delete m_uoms[i];
-      m_uoms.erase(m_uoms.begin() + i);
-      return;
-    }
-
-  throw Exception(TR_COMMON("Could not find the informed unit of measure."));
-}
-
-te::common::UnitOfMeasure*
-te::common::UnitsOfMeasureManager::findById(unsigned int id) const
-{
-  assert(id < m_uoms.size());
-
-  return m_uoms[id];
-}
-
-te::common::UnitOfMeasure*
-te::common::UnitsOfMeasureManager::findByName(const std::string& name) const
-{
-  assert(name.empty() == false);
-
-  std::string upName = te::common::Convert2UCase(name);
-
-  std::map<std::string, UnitOfMeasure*>::const_iterator itIdxByName = m_uomsIdxByName.find(upName);
-
-  if(itIdxByName != m_uomsIdxByName.end())
-    return itIdxByName->second;
-
-  return 0;
-}
-
-te::common::UnitOfMeasure*
-te::common::UnitsOfMeasureManager::findByAlternativeName(const std::string& name) const
-{
-  assert(name.empty() == false);
-
-  std::string upName = te::common::Convert2UCase(name);
-
-  std::map<std::string, UnitOfMeasure*>::const_iterator itIdxByAlternativeName = m_uomsIdxByAlternativeName.find(upName);
-
-  if(itIdxByAlternativeName != m_uomsIdxByAlternativeName.end())
-    return itIdxByAlternativeName->second;
-
-  return 0;
-}
-
-te::common::UnitOfMeasure*
-te::common::UnitsOfMeasureManager::find(const std::string& name) const
-{
-  assert(name.empty() == false);
-
-  std::string upName = te::common::Convert2UCase(name);
-
-  UnitOfMeasure* uom = findByName(upName);
-
-  if(uom)
-    return uom;
-
-  uom = findByAlternativeName(name);
-
-  return uom;
-}
-
-std::pair<std::vector<te::common::UnitOfMeasure*>::const_iterator,
-          std::vector<te::common::UnitOfMeasure*>::const_iterator>
-te::common::UnitsOfMeasureManager::getIterator() const
-{
-  return std::pair<std::vector<te::common::UnitOfMeasure*>::const_iterator,
-                   std::vector<te::common::UnitOfMeasure*>::const_iterator>(m_uoms.begin(), m_uoms.end());
-}
-
-void te::common::UnitsOfMeasureManager::clear()
-{
-  m_uomsIdxByName.clear();
-  m_uomsIdxByAlternativeName.clear();
-
-  FreeContents(m_uoms);
-
-  m_uoms.clear();
-}
+te::common::UnitsOfMeasureManager::UnitsOfMeasureManager()
+{}
 
 te::common::UnitsOfMeasureManager::~UnitsOfMeasureManager()
 {
   clear();
 }
 
-te::common::UnitsOfMeasureManager::UnitsOfMeasureManager()
+void te::common::UnitsOfMeasureManager::clear()
 {
+  m_uoms.clear();
+  m_uomsIdxByName.clear();
 }
 
-void te::common::UnitsOfMeasureManager::getAlternativeNames(UnitOfMeasure* uom,
-                                        std::vector<std::string>& altNames) const
+void te::common::UnitsOfMeasureManager::insert(UnitOfMeasurePtr& uom)
 {
-  assert(uom);
-  std::map<std::string, UnitOfMeasure*>::const_iterator it = m_uomsIdxByAlternativeName.begin();
-  while (it != m_uomsIdxByAlternativeName.end()) 
+  assert(uom.get());
+
+  const_iterator it = m_uoms.find(uom->getId());
+  if(it != m_uoms.end())
+    return;
+  
+  m_uoms.insert(std::pair<unsigned int, UnitOfMeasurePtr>(uom->getId(),uom));
+
+  std::string upstr = boost::to_upper_copy(uom->getName());
+  m_uomsIdxByName.insert(std::pair<std::string, unsigned int>(upstr,uom->getId()));
+}
+
+void te::common::UnitsOfMeasureManager::insert(UnitOfMeasurePtr& uom, const std::vector<std::string>& alternativeNames)
+{
+  insert(uom);
+  
+  for(std::size_t i=0; i<alternativeNames.size(); ++i)
   {
-    if (it->second == uom) 
-      altNames.push_back(it->first);
+    std::string upstr = boost::to_upper_copy(alternativeNames[i]);
+    m_uomsIdxByName.insert(std::pair<std::string, unsigned int>(upstr,uom->getId()));
+  }
+}
+
+void te::common::UnitsOfMeasureManager::remove(UnitOfMeasurePtr& uom)
+{
+  assert(uom.get());
+
+  iterator it = m_uoms.find(uom->getId());
+  if (it == m_uoms.end())
+    return;
+  
+  m_uoms.erase(it);
+  
+  for (std::map<std::string, unsigned int>::iterator itn = m_uomsIdxByName.begin(); itn != m_uomsIdxByName.end();)
+  {
+    if (itn->second == uom->getId())
+      m_uomsIdxByName.erase(itn++);
+    else
+      ++itn;
+  }
+}
+
+te::common::UnitOfMeasurePtr
+te::common::UnitsOfMeasureManager::find(unsigned int id) const
+{ 
+  const_iterator it = m_uoms.find(id);
+  if (it == m_uoms.end())
+    return UnitOfMeasurePtr();
+  
+  return it->second;
+}
+
+te::common::UnitOfMeasurePtr
+te::common::UnitsOfMeasureManager::find(const std::string& name) const
+{
+  std::string upstr = boost::to_upper_copy(name);
+  
+  std::map<std::string, unsigned int>::const_iterator it = m_uomsIdxByName.find(upstr);
+  
+  if(it != m_uomsIdxByName.end())
+  {
+    const_iterator it2 = m_uoms.find(it->second);
+    if (it2 != m_uoms.end())
+      return it2->second;
+  }
+  
+  return UnitOfMeasurePtr();
+}
+
+te::common::UnitOfMeasurePtr
+te::common::UnitsOfMeasureManager::findBySymbol(const std::string& symbol) const
+{
+  const_iterator it = m_uoms.begin();
+  while (it != m_uoms.end())
+  {
+    if (it->second->getSymbol() == symbol)
+      return it->second;
+    ++it;
+  }
+  return UnitOfMeasurePtr();
+}
+
+void te::common::UnitsOfMeasureManager::getNames(UnitOfMeasurePtr& uom, std::vector<std::string>& names) const
+{
+  std::map<std::string, unsigned int>::const_iterator it = m_uomsIdxByName.begin();
+  while (it != m_uomsIdxByName.end()) 
+  {
+    if (it->second == uom->getId())
+      names.push_back(it->first);
     ++it;
   }
 }
 
-double te::common::UnitsOfMeasureManager::getConversion(const std::string& unitFromName, 
-                                                        const std::string& unitToName) const
+double te::common::UnitsOfMeasureManager::getConversion(const std::string& unitFromName, const std::string& unitToName) const
 {
-  assert(unitFromName.empty() == false);
-  assert(unitToName.empty() == false);
-
-  UnitOfMeasure* uFrom = this->find(unitFromName);
-  UnitOfMeasure* uTo = this->find(unitToName);
+  UnitOfMeasurePtr uFrom = this->find(unitFromName);
+  UnitOfMeasurePtr uTo = this->find(unitToName);
 
   if (uFrom->getType() != uTo->getType())
     throw Exception(TR_COMMON("There is not conversion between units for different types of measures."));
@@ -296,7 +224,7 @@ void te::common::UnitsOfMeasureManager::init()
       throw Exception((boost::format(TR_COMMON("Invalid unit of measure type: %1%!")) % stype).str());
     }
 
-    UnitOfMeasure* uom = new UnitOfMeasure(id, name, symbol, t, targetUOM, a, b, c, d, description);
+    UnitOfMeasurePtr uom(new UnitOfMeasure(id, name, symbol, t, targetUOM, a, b, c, d, description));
 
     insert(uom);
   }

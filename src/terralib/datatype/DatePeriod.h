@@ -181,6 +181,11 @@ namespace te
         */
         DateTimeType getDateTimeType() const { return DATE_PERIOD; }
 
+        /*!
+          \brief Destructor.
+        */
+        virtual ~DatePeriod();
+
       protected:
           
         boost::gregorian::date_period m_datePeriod;  //!< The internal date period information.    

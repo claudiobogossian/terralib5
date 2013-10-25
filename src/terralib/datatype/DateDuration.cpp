@@ -78,4 +78,8 @@ std::string te::dt::DateDuration::toString() const
   return te::common::Convert2String(days);
 }
 
+te::dt::DateDuration::~DateDuration()
+{
+}
+
 
