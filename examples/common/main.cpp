@@ -40,7 +40,8 @@ int main(int /*argc*/, char** /*argv*/)
   {
     TerraLib::getInstance().initialize();
     
-    UOMManage();
+    //UOMManage();
+    UnitSRS();
 
     TerraLib::getInstance().finalize();
   }

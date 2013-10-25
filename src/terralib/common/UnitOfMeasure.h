@@ -34,6 +34,9 @@
 #include <vector>
 #include <string>
 
+// Boost
+#include <boost/shared_ptr.hpp>
+
 namespace te
 {
   namespace common
@@ -205,6 +208,7 @@ namespace te
 
     }; // end class
 
+    typedef boost::shared_ptr<UnitOfMeasure> UnitOfMeasurePtr;
   }    // end namespace common
 }      // end namespace te
 

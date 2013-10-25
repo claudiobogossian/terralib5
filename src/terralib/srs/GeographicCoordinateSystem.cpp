@@ -91,8 +91,8 @@ std::string te::srs::GeographicCoordinateSystem::getWKT() const
   sstr << m_primem;
 	wkt += sstr.str();
 	wkt += "]";
-  te::common::UnitOfMeasure* unit = te::common::UnitsOfMeasureManager::getInstance().findByName(m_unitName);
-  if (unit)
+  te::common::UnitOfMeasurePtr unit = te::common::UnitsOfMeasureManager::getInstance().find(m_unitName);
+  if (unit.get())
   {
 	  wkt += ", ";
 	  wkt += unit->getWKT();
