@@ -20,16 +20,15 @@
 /*!
   \file terralib/stmemory/Module.h
    
-  \brief  The TerraLib st memory module is a plugin. This module is a driver
-          for in-memory spatiotemporal data.  
+  \brief This singleton defines the TerraLib st memory module entry.
+         This module is a driver for in-memory spatiotemporal data.  
 */
 
 #ifndef __TERRALIB_STMEMORY_INTERNAL_MODULE_H
 #define __TERRALIB_STMEMORY_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../plugin/Plugin.h"
-#include "Config.h"
+#include "../common/Singleton.h"
 
 namespace te
 {
@@ -38,63 +37,44 @@ namespace te
     /*!
       \class Module
 
-      \brief The TerraLib ST memory module is a plugin.    
+      \brief This singleton defines the TerraLib st memory module entry.
     */
-    class Module : public te::plugin::Plugin
+    class Module : public te::common::Singleton<Module>
     {
-      public:
+      friend class te::common::Singleton<Module>;
+   
+      protected:
 
-        /*!
-          \brief Plugin constructor.
-            
-          \param pInfo Basic information provided to initialize this module through the plugin API.
-        */
-        Module(const te::plugin::PluginInfo& pInfo);
-        
+        /*! \brief The singleton constructor is not callable outside the class. */
+        Module();
+
         /* \brief Destructor. */
         ~Module();
+    
+       private:
 
-         /*!
-          \brief It initializes the TerraLib st memory module support.       
-           
+        /*!
+          \brief This is the startup function for the TerraLib st memory module support.  
+
           The initialization includes:
           <ul>
           <li>Multilanguage support</li>
           </ul>
-           
-          \exception Exception It may throws an exception.
-         
-          \note This function must be called at least once in your program. The best
-                place to call it is inside the main routine of your application.
 
-          \warning Not thread safe!
-
-          \warning If this method throws an exception we recommend you to
-                    quit the program, don't try to resume it because you can have intermittent errors!
         */
-        void startup();
+        static void initialize();
 
         /*!
-          \brief It finalizes the TerraLib st memory module support.    
-           
-          \exception Exception It may throws an exception.
-           
-          \note This function must be called in your program at least the same times you have called
-                initialize. In general this must be the last call to TerraLib API. As in case of the initialize method,
-                this routine can be called at the end of the main routine of your application.
-
-          \warning Not thread safe!
-
-          \warning If this method throws an exception we recommend you to
-                   quit the program, don't try to resume it because you can have intermittent errors!
+          \brief This is the cleanup function for the TerraLib st memory module support.  
         */
-        void shutdown();     
-    };
+        static void finalize();
 
+      private:
+
+        static const Module& sm_module; //!< Just to make a static initialization.
+    };
   } // end namespace st
 }   // end namespace te
-
-PLUGIN_CALL_BACK_DECLARATION(TESTMEMORYEXPORT);
 
 #endif  // __TERRALIB_STMEMORY_INTERNAL_MODULE_H
 

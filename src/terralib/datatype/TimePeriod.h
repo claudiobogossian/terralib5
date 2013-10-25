@@ -180,6 +180,11 @@ namespace te
           \return The subtype of the date and time type. 
         */
         DateTimeType getDateTimeType() const { return TIME_PERIOD; }
+
+        /*!
+          \brief Destructor
+        */
+        virtual ~TimePeriod();
                   
       protected:
 

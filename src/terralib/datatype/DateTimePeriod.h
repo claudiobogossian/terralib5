@@ -71,7 +71,7 @@ namespace te
         virtual DateTimeInstant* getFinalInstant() const = 0;  
         
         /*! \brief Virtual destructor. */
-        virtual ~DateTimePeriod() {}     
+        virtual ~DateTimePeriod() { }     
     };    
 
   } // end namespace dt
