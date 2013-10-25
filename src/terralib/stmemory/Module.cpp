@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/stmemory/Module.cpp
-   
-  \brief It defines the TerraLib ST module as a plugin. 
+  \file terralib/memory/Module.cpp
+
+  \brief This singleton defines the TerraLib ST module entry.
 */
 
 // TerraLib
@@ -31,46 +31,45 @@
 
 #include "Config.h"
 #include "DataSourceFactory.h"
+#include "DataSource.h"
 #include "Module.h"
 
+const te::stmem::Module& sm_module = te::stmem::Module::getInstance();
 
-te::stmem::Module::Module(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+te::stmem::Module::Module()
 {
+  TerraLib::Module m = { TE_STMEMORY_MODULE_NAME,
+                         te::stmem::Module::initialize,
+                         te::stmem::Module::finalize
+                       };
+
+// initialize TerraLib singleton
+  TerraLib::getInstance().add(m);
+
+// it initializes the Translator support for the TerraLib ST support
+  TE_ADD_TEXT_DOMAIN(TE_STMEMORY_TEXT_DOMAIN, TE_STMEMORY_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::stmem::Module::~Module()
 {
+  TerraLib::getInstance().remove(TE_STMEMORY_MODULE_NAME);
 }
 
-void te::stmem::Module::startup()
+void te::stmem::Module::initialize()
 {
-  if(m_initialized)
-    return;
-
   // register data source factory
   te::da::DataSourceFactory::add(TE_STMEMORY_DRIVER_IDENTIFIER, te::stmem::Build);
-    
-  // it initializes the Translator support for the TerraLib ST support
-  TE_ADD_TEXT_DOMAIN(TE_STMEMORY_TEXT_DOMAIN, TE_STMEMORY_TEXT_DOMAIN_DIR, "UTF-8");
-
-  TE_LOG_TRACE(TR_STMEMORY("TerraLib ST memory module startup!"));
-
-  m_initialized = true;
+  
+  TE_LOG_TRACE(TR_STMEMORY("TerraLib ST memory driver initialized!"));
 }
 
-void te::stmem::Module::shutdown()
+void te::stmem::Module::finalize()
 {
-  if(!m_initialized)
-    return;
+  // Unregister the data source factory
+  te::da::DataSourceFactory::remove(TE_STMEMORY_DRIVER_IDENTIFIER);
 
-  TE_LOG_TRACE(TR_STMEMORY("TerraLib ST module shutdown!"));
-
-  m_initialized = false;
+  TE_LOG_TRACE(TR_STMEMORY("TerraLib ST memory driver finalized!"));
 }
 
-PLUGIN_CALL_BACK_IMPL(te::stmem::Module)
 
-
-/* TE_ST_MODULE_NAME */
 

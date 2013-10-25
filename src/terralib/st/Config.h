@@ -49,6 +49,13 @@
 */
 #define TE_ST_DATALOADER_FROM_MEMDS "STDATALOADERFROMMEMDS"
 
+/*!
+  \def TE_STMEMORY_DATASOURCE_ID
+
+  \brief The global id of the st memory data source
+*/
+#define TE_STMEMORY_DATASOURCE_ID "STMEMORYDS"
+
 /** @name Internationalization Defines
  *  Flags for TerraLib code internationalization.
  */

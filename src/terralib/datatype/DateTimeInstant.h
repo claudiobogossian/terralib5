@@ -45,10 +45,10 @@ namespace te
       public:
          
         /*! \brief Default constructor. */
-        DateTimeInstant() {}
+        DateTimeInstant() { }
 
         /*! \brief Virtual destructor. */
-        virtual ~DateTimeInstant() {}           
+        virtual ~DateTimeInstant() { }           
     };    
 
   } // end namespace dt

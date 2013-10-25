@@ -364,7 +364,7 @@ bool AggregationMemory(const std::string& inDataset,
       }
     }
     
-    outputDataSetItem->setGeometry("geom", *geometry);
+    outputDataSetItem->setGeometry("geom", geometry);
     
     outputDataSet->add(outputDataSetItem);
     
@@ -483,11 +483,11 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
             if (geometry->getGeomTypeId() != outGeoType)
             {
               te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(1,te::vp::GeomOpResultType(geometry->getGeomTypeId()),geometry->getSRID());
-              gc->setGeometryN(0, geometry.get());
-              outputDataSetItem->setGeometry("geom", *gc);
+              gc->setGeometryN(0, geometry.release());
+              outputDataSetItem->setGeometry("geom", gc);
             }
             else
-              outputDataSetItem->setGeometry("geom", *geometry.get());
+              outputDataSetItem->setGeometry("geom", geometry.release());
           }
           if(dsPropType == te::dt::STRING_TYPE)
           {

@@ -409,12 +409,12 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
         continue;
 
       te::mem::DataSetItem* item = new te::mem::DataSetItem(outputDs);
-      te::gm::Geometry* resultGeom = 0;
+      std::auto_ptr<te::gm::Geometry> resultGeom; 
 
       if(currGeom->isValid() && secGeom->isValid())
-        resultGeom = currGeom->intersection(secGeom.get());
+        resultGeom.reset(currGeom->intersection(secGeom.get()));
       
-      if(resultGeom && resultGeom->isValid())
+      if(resultGeom.get()!=0 && resultGeom->isValid())
       {
         te::gm::GeometryProperty* fiGeomProp = (te::gm::GeometryProperty*)outputDt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
 
@@ -422,39 +422,39 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
         {
           if(resultGeom->getGeomTypeId() == te::gm::MultiPolygonType)
           {
-            item->setGeometry("geom", *resultGeom);
+            item->setGeometry("geom", resultGeom.release());
           }
           else if(resultGeom->getGeomTypeId() == te::gm::PolygonType)
           {
             te::gm::MultiPolygon* newGeom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, resultGeom->getSRID());
-            newGeom->add(resultGeom);
-            item->setGeometry("geom", *newGeom);
+            newGeom->add(resultGeom.release());
+            item->setGeometry("geom", newGeom);
           }
         }
         else if(fiGeomProp->getGeometryType() == te::gm::MultiLineStringType)
         {
           if(resultGeom->getGeomTypeId() == te::gm::MultiLineStringType)
           {
-            item->setGeometry("geom", *resultGeom);
+            item->setGeometry("geom", resultGeom.release());
           }
           else if(resultGeom->getGeomTypeId() == te::gm::LineStringType)
           {
             te::gm::MultiLineString* newGeom = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, resultGeom->getSRID());
-            newGeom->add(resultGeom);
-            item->setGeometry("geom", *newGeom);
+            newGeom->add(resultGeom.release());
+            item->setGeometry("geom", newGeom);
           }
         }
         else if(fiGeomProp->getGeometryType() == te::gm::MultiPointType)
         {
           if(resultGeom->getGeomTypeId() == te::gm::MultiPointType)
           {
-            item->setGeometry("geom", *resultGeom);
+            item->setGeometry("geom", resultGeom.release());
           }
           else if(resultGeom->getGeomTypeId() == te::gm::PointType)
           {
             te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::MultiPointType, resultGeom->getSRID());
-            newGeom->add(resultGeom);
-            item->setGeometry("geom", *newGeom);
+            newGeom->add(resultGeom.release());
+            item->setGeometry("geom", newGeom);
           }
         }
       }
@@ -555,7 +555,7 @@ te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet
       {
         te::gm::MultiPolygon* newGeom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, dsMem->getGeometry(i)->getSRID());
         newGeom->add(dsMem->getGeometry(i).release());
-        dsMem->setGeometry(i, *newGeom);
+        dsMem->setGeometry(i, newGeom);
       }
     }
   }
@@ -571,7 +571,7 @@ te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet
       {
         te::gm::MultiLineString* newGeom = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, dsMem->getGeometry(i)->getSRID());
         newGeom->add(dsMem->getGeometry(i).release());
-        dsMem->setGeometry(i, *newGeom);
+        dsMem->setGeometry(i, newGeom);
       }
     }
   }
@@ -587,7 +587,7 @@ te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet
       {
         te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::MultiPointType, dsMem->getGeometry(i)->getSRID());
         newGeom->add(dsMem->getGeometry(i).release());
-        dsMem->setGeometry(i, *newGeom);
+        dsMem->setGeometry(i, newGeom);
       }
     }
   }

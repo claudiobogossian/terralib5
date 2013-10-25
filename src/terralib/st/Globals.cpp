@@ -28,4 +28,5 @@
 
 const std::string te::st::Globals::sm_loaderFromDSIdentifier(TE_ST_DATALOADER_FROM_DS);  //!< The st data loader from data source.
 const std::string te::st::Globals::sm_loaderFromMemDSIdentifier(TE_ST_DATALOADER_FROM_MEMDS); //!< The st data loader from in-mem data source.
+const std::string te::st::Globals::sm_STMemoryDataSourceId(TE_STMEMORY_DATASOURCE_ID); 
 

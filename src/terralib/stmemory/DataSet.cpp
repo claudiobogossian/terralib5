@@ -178,7 +178,7 @@ te::stmem::DataSet::DataSet(const DataSet& rhs, const bool deepCopy)
   {
     if(deepCopy)
       //clone the DataSetItem
-      add(it->second->clone()); //add to m_items and m_RTree
+      add(it->second->clone().release()); //add to m_items and m_RTree
     else
       add(*it); //add to m_items and m_RTree
 
@@ -247,22 +247,20 @@ void te::stmem::DataSet::copy(te::da::DataSet* src, const std::vector<std::size_
   do
   {
     std::auto_ptr<te::mem::DataSetItem> item(new te::mem::DataSetItem(this));
-    
+       
     for(std::size_t c = 0; c < properties.size(); ++c)
     {
       if(!src->isNull(properties[c]))
-        item->setValue(properties[c], src->getValue(properties[c]).get());
+        item->setValue(properties[c], src->getValue(properties[c]).release());
       else
         item->setValue(properties[c], 0);
     }
 
-    //Verificar o comportamento do auto_ptr com o shared_ptr!!!!
-    //Se o item nao for adicionado no map, o que acontece? Ele é deletado aqui?
     add(item.release()); 
-
+    
     ++i;
    //TODO: Verificar se ele está decrementando o apontador para "item" quando sai do escopo!!!
-  }while(src->moveNext() && (i < limit));
+  } while(src->moveNext() && (i < limit));
 
   if(!unlimited & (i < limit))
     throw Exception("The source dataset has few items than requested copy limit!");
@@ -309,15 +307,15 @@ void te::stmem::DataSet::add(const std::pair<te::dt::DateTime*, DateSetItemShrPt
 void te::stmem::DataSet::add(te::mem::DataSetItem* dsItem)
 {
   DateSetItemShrPtr item(dsItem);
- 
+
   //Get the phenomemon properties
   std::auto_ptr<te::dt::DateTime> phBegTime;
   if(m_begTimePropIdx>=0)
-    phBegTime.reset(dsItem->getDateTime(m_begTimePropIdx));
+    phBegTime = item->getDateTime(m_begTimePropIdx);
 
   std::auto_ptr<te::dt::DateTime> phEndTime;
   if(m_endTimePropIdx>=0)
-    phEndTime.reset(dsItem->getDateTime(m_endTimePropIdx));
+    phEndTime = item->getDateTime(m_endTimePropIdx);
   
   //the phenomenon time is an instant
   if(phBegTime.get()!=0 && phEndTime.get()==0)
@@ -360,7 +358,7 @@ std::auto_ptr<te::stmem::DataSet> te::stmem::DataSet::filter(const te::gm::Envel
   std::auto_ptr<te::stmem::DataSet> result(new DataSet(m_pnames, m_ptypes, m_begTimePropIdx, m_endTimePropIdx, m_geomPropIdx));
 
   for(unsigned int i=0; i<report.size(); ++i)
-    result->add(report[i]->clone());
+    result->add(report[i]->clone().release());
     
   return result;
 }
@@ -379,7 +377,7 @@ std::auto_ptr<te::stmem::DataSet> te::stmem::DataSet::filter(const te::gm::Geome
   {
     std::auto_ptr<te::gm::Geometry> geom(report[i]->getGeometry(m_geomPropIdx));
     if(geom->intersects(g))
-      result->add(report[i]->clone());
+      result->add(report[i]->clone().release());
   }
   return result;
 }
@@ -783,69 +781,69 @@ std::auto_ptr<te::dt::ByteArray> te::stmem::DataSet::getByteArray(std::size_t i)
   return std::auto_ptr<te::dt::ByteArray>(m_iterator->second->getByteArray(i));
 }
 
-void te::stmem::DataSet::setByteArray(std::size_t i, const te::dt::ByteArray& value)
+void te::stmem::DataSet::setByteArray(std::size_t i, te::dt::ByteArray* value)
 {
   m_iterator->second->setByteArray(i, value);
 }
 
-void te::stmem::DataSet::setByteArray(const std::string& name, const te::dt::ByteArray& value) 
+void te::stmem::DataSet::setByteArray(const std::string& name, te::dt::ByteArray* value) 
 {
   m_iterator->second->setByteArray(name, value);
 }
 
 std::auto_ptr<te::gm::Geometry> te::stmem::DataSet::getGeometry(std::size_t i) const
 {
-  return std::auto_ptr<te::gm::Geometry>(m_iterator->second->getGeometry(i));
+  return m_iterator->second->getGeometry(i);
 }
 
-void te::stmem::DataSet::setGeometry(std::size_t i, const te::gm::Geometry& value)
+void te::stmem::DataSet::setGeometry(std::size_t i, te::gm::Geometry* value)
 {
   m_iterator->second->setGeometry(i, value);
 }
 
-void te::stmem::DataSet::setGeometry(const std::string& name, const te::gm::Geometry& value) 
+void te::stmem::DataSet::setGeometry(const std::string& name, te::gm::Geometry* value) 
 {
   m_iterator->second->setGeometry(name, value);
 }
 
 std::auto_ptr<te::rst::Raster> te::stmem::DataSet::getRaster(std::size_t i) const
 {
-  return std::auto_ptr<te::rst::Raster>(m_iterator->second->getRaster(i));
+  return m_iterator->second->getRaster(i);
 }
 
-void te::stmem::DataSet::setRaster(std::size_t i, const te::rst::Raster& value)
+void te::stmem::DataSet::setRaster(std::size_t i, te::rst::Raster* value)
 {
   m_iterator->second->setRaster(i, value);
 }
 
-void te::stmem::DataSet::setRaster(const std::string& name, const te::rst::Raster& value)
+void te::stmem::DataSet::setRaster(const std::string& name, te::rst::Raster* value)
 {
   m_iterator->second->setRaster(name, value);
 }
 
 std::auto_ptr<te::dt::DateTime> te::stmem::DataSet::getDateTime(std::size_t i) const
 {
-  return std::auto_ptr<te::dt::DateTime>(m_iterator->second->getDateTime(i));
+  return m_iterator->second->getDateTime(i);
 }
 
-void te::stmem::DataSet::setDateTime(std::size_t i, const te::dt::DateTime& value) 
+void te::stmem::DataSet::setDateTime(std::size_t i, te::dt::DateTime* value) 
 {
   m_iterator->second->setDateTime(i, value);
 }
 
-void te::stmem::DataSet::setDateTime(const std::string& name, const te::dt::DateTime& value) 
+void te::stmem::DataSet::setDateTime(const std::string& name, te::dt::DateTime* value) 
 {
   m_iterator->second->setDateTime(name, value);
 }
 
 std::auto_ptr<te::dt::Array> te::stmem::DataSet::getArray(std::size_t i) const
 {
-  return std::auto_ptr<te::dt::Array>(m_iterator->second->getArray(i));
+  return std::auto_ptr<te::dt::Array>(0);
 }
 
 std::auto_ptr<te::dt::AbstractData> te::stmem::DataSet::getValue(std::size_t i) const
 {
-  return std::auto_ptr<te::dt::AbstractData>(m_iterator->second->getValue(i));
+  return m_iterator->second->getValue(i);
 }
 
 void te::stmem::DataSet::setValue(std::size_t i, te::dt::AbstractData* ad)
