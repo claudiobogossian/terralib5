@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/st/Module.cpp
+  \file Module.cpp
    
-  \brief It defines the TerraLib ST module as a plugin. 
+  \brief This singleton defines the TerraLib ST module entry.  
 */
 
 // TerraLib
@@ -33,48 +33,42 @@
 #include "Config.h"
 #include "Module.h"
 
-te::st::Module::Module(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo)
+const te::st::Module& sm_module = te::st::Module::getInstance();
+
+te::st::Module::Module()
 {
+  TerraLib::Module m = { TE_ST_MODULE_NAME,
+                         te::st::Module::initialize,
+                         te::st::Module::finalize
+                       };
+
+// initialize TerraLib singleton
+  TerraLib::getInstance().add(m);
+
+// it initializes the Translator support for the TerraLib ST support
+  TE_ADD_TEXT_DOMAIN(TE_ST_TEXT_DOMAIN, TE_ST_TEXT_DOMAIN_DIR, "UTF-8");
 }
 
 te::st::Module::~Module()
 {
+  TerraLib::getInstance().remove(TE_ST_MODULE_NAME);
 }
 
-void te::st::Module::startup()
+void te::st::Module::initialize()
 {
-  if(m_initialized)
-    return;
-
-// it initializes the Translator support for the TerraLib ST support
-  TE_ADD_TEXT_DOMAIN(TE_ST_TEXT_DOMAIN, TE_ST_TEXT_DOMAIN_DIR, "UTF-8");
-
-// it initializes the st data loader factories
+  // it initializes the st data loader factories
   te::st::STDataLoaderFromDSFactory::initialize();
   te::st::STDataLoaderFromMemDSFactory::initialize();
 
-  TE_LOG_TRACE(TR_ST("TerraLib ST module startup!"));
-
-  m_initialized = true;
+  TE_LOG_TRACE(TR_ST("TerraLib ST module initialized!"));
 }
 
-void te::st::Module::shutdown()
+void te::st::Module::finalize()
 {
-  if(!m_initialized)
-    return;
-
-// it finalizes the st data loader factory support.
+  // it finalizes the st data loader factory support.
   te::st::STDataLoaderFromDSFactory::finalize();
   te::st::STDataLoaderFromMemDSFactory::finalize();
 
-  TE_LOG_TRACE(TR_ST("TerraLib ST module shutdown!"));
-
-  m_initialized = false;
+  TE_LOG_TRACE(TR_ST("TerraLib ST module finalized!"));
 }
-
-PLUGIN_CALL_BACK_IMPL(te::st::Module)
-
-
-/* TE_ST_MODULE_NAME */
 

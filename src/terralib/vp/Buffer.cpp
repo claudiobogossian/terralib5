@@ -289,7 +289,7 @@ bool BufferMemory(const std::string& inDataSetName,
                 outGeom.reset(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i));
 
               if(outGeom.get() && outGeom->isValid())
-                dataSetItem->setGeometry(j+2, *outGeom);
+                dataSetItem->setGeometry(j+2, outGeom.release());
 
               outputDataSet->add(dataSetItem);
               ++pk;
@@ -309,7 +309,7 @@ bool BufferMemory(const std::string& inDataSetName,
               outGeom.reset(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i));
 
             if(outGeom.get() && outGeom->isValid())
-              dataSetItem->setGeometry(3, *outGeom);
+              dataSetItem->setGeometry(3, outGeom.release());
 
             outputDataSet->add(dataSetItem);
             ++pk;
@@ -618,7 +618,7 @@ te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType,
         te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
         dataSetItem->setInt32(posPK, i);
         dataSetItem->setInt32(posLevel, level);
-        dataSetItem->setGeometry(pos, *geomCollection->getGeometryN(i));
+        dataSetItem->setGeometry(pos, geomCollection->getGeometryN(i));
         outputDataSet->add(dataSetItem);
       }
     }
@@ -670,7 +670,7 @@ void PrepareDataSet(te::da::DataSetType* dataSetType,
             dataSetItem->setInt32(0, pk); //pk
             dataSetItem->setInt32(1, i+1); //level
             dataSetItem->setDouble(2, distance*(i+1)); //distance
-            dataSetItem->setGeometry(j+3, *dataSetQuery->getGeometry(j+numCurrentItem));
+            dataSetItem->setGeometry(j+3, dataSetQuery->getGeometry(j+numCurrentItem).release());
             outputDataSet->add(dataSetItem);
 
             ++numCurrentItem;
