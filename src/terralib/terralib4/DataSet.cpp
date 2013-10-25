@@ -46,6 +46,7 @@
 #include <terralib/kernel/TeDatabase.h>
 #include <terralib/kernel/TeLayer.h>
 
+#include <terralib/kernel/TeQuerierParams.h>
 
 // STL
 #include <memory>
@@ -55,16 +56,22 @@
 #include <boost/lexical_cast.hpp>
 
 terralib4::DataSet::DataSet(TeLayer* layer)
-  : m_i(-1),
+  : m_querier(0),
+    m_i(-1),
     m_size(-1),
     m_layer(layer),
     m_result(0)
 {
-  //m_size = m_result->numRows();
+  TeQuerierParams params(true, true);
+  params.setParams(m_layer);
+
+  m_querier = new TeQuerier(params);
+
 }
 
 terralib4::DataSet::~DataSet()
 {
+  delete m_querier;
 }
 
 te::common::TraverseType terralib4::DataSet::getTraverseType() const
@@ -122,69 +129,100 @@ std::size_t terralib4::DataSet::size() const
 
 bool terralib4::DataSet::moveNext()
 {
-  if(m_i < 0)
+  /*if(m_i < 0)
     return true;
 
-  return m_result->fetchRow();
+  return m_result->fetchRow();*/
+
+  m_querier->fetchInstance(m_instance);
+  return false;
 }
 
 bool terralib4::DataSet::movePrevious()
 {
-  if(m_i == -1)
+  /*if(m_i == -1)
     return false;
 
   if(m_i == 0)
     return true;
 
-  return m_result->fetchRow(m_i);
+  return m_result->fetchRow(m_i);*/
+  return false;
 }
 
 bool terralib4::DataSet::moveBeforeFirst()
 {
-  m_i = -1;
+  /*m_i = -1;
   return m_result->fetchRow(0);
+  */
+  return false;
 }
 
 bool terralib4::DataSet::moveFirst()
 {
+  /*
   m_i = 0;
   return m_result->fetchRow(0);
+  */
+  return false;
 }
 
 bool terralib4::DataSet::moveLast()
 {
+  /*
   m_i = m_result->numRows()-1;
   return m_result->fetchRow(m_result->numRows()-1);
+  */
+  return false;
 }
 
 bool terralib4::DataSet::move(std::size_t i)
 {
+  /*
   m_i = i;
   return m_result->fetchRow(i);
+  */
+  return false;
 }
 
 bool terralib4::DataSet::isAtBegin() const
 {
+  /*
   return m_i == 0;
+  */
+  return false;
 }
 
 bool terralib4::DataSet::isBeforeBegin() const
 {
+  /*
   return m_i == -1;
+  */
+  return false;
 }
 
 bool terralib4::DataSet::isAtEnd() const
 {
+  /*
   return m_i == m_result->numRows()-1;
+  */
+  return false;
 }
 
 bool terralib4::DataSet::isAfterEnd() const
 {
+  /*
   return m_i == m_result->numRows();
+  */
+  return false;
 }
 
 char terralib4::DataSet::getChar(std::size_t i) const
 {
+//  m_instance.getPropertyVector();
+  /*
+  return *m_result->getData(i);
+  */
   return *m_result->getData(i);
 }
 
