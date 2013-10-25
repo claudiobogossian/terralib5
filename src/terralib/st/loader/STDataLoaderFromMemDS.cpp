@@ -386,7 +386,7 @@ void te::st::STDataLoaderFromMemDS::loadDataSet(const te::da::DataSourceInfo& in
 
   //Before creating a stmem DataSet, we need to put it in a right place to be copied.
   dset->moveNext();
-  te::stmem::DataSet* inMemdset = new te::stmem::DataSet(dset.get(), begTimePropIdx, endTimePropIdx, gmPropIdx);
+  te::stmem::DataSet* inMemdset = new te::stmem::DataSet(dset.get(), begTimePropIdx, endTimePropIdx, gmPropIdx, 0);
   
   //Add them into the in-mem data source
   te::stmem::DataSource* memDS = static_cast<te::stmem::DataSource*>(m_ds.get());
