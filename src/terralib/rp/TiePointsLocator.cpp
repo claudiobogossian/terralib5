@@ -686,7 +686,7 @@ namespace te
               
             tiePointWeight = 
               (
-                ( 2.0 * itB->m_feature )
+                ( 2.0f * itB->m_feature )
                 +
                 std::min(
                   ( 
@@ -1571,7 +1571,7 @@ namespace te
             
             for( outCol = 0 ; outCol < rescaledNCols ; ++outCol ) 
             {          
-              floatLinePtr[ outCol ] = ( ( doubleLinePtr[ outCol ] - bandMin ) * gain );
+              floatLinePtr[ outCol ] = (float)( ( doubleLinePtr[ outCol ] - bandMin ) * gain );
             }
           }
         }
@@ -2412,7 +2412,7 @@ namespace te
                     dXY /= (float)( filterWidth * filterWidth );
                       
                     currScaleBufferPtr[ lastBuffersLineIdx ][ filterCenterBufCol ] = 
-                      ( dXX * dYY ) - ( 0.81 * dXY * dXY );
+                      ( dXX * dYY ) - ( 0.81f * dXY * dXY );
                     currLaplacianSignBufferPtr[ lastBuffersLineIdx ][ filterCenterBufCol ] = 
                       ( ( dXX + dYY ) >= 0.0 ) ? 1 : 0;                      
                   }
@@ -2898,7 +2898,7 @@ namespace te
                   + internalInputMatrix( nextLine, prevCol )
                   + internalInputMatrix( nextLine, currCol )
                   + internalInputMatrix( nextLine, nextCol )
-                ) / 8.0;
+                ) / 8.0f;
             }
           }
         }
@@ -3187,7 +3187,7 @@ namespace te
         if( featureElementMaxValue == featureElementMinValue )
           featureElementsNormalizeFactor = 0.0;
         else
-          featureElementsNormalizeFactor = 1.0 / ( featureElementMaxValue -
+          featureElementsNormalizeFactor = 1.0f / ( featureElementMaxValue -
             featureElementMinValue );
         
         featurePtr = features[ validInteresPointsIndex ];
@@ -3229,7 +3229,7 @@ namespace te
         
           const unsigned int& currIPointCenterX = iPointsIt->m_x;
           const unsigned int& currIPointCenterY = iPointsIt->m_y;
-          const float currIPointScale = 1.2 * iPointsIt->m_feature2 / 9.0;
+          const float currIPointScale = 1.2f * iPointsIt->m_feature2 / 9.0f;
           
           unsigned int featureWindowWidth = (unsigned int)( 20.0 * currIPointScale );
           featureWindowWidth += ( ( featureWindowWidth % 2 ) ? 0 : 1 );
@@ -3291,7 +3291,7 @@ namespace te
       
         const unsigned int& currIPointCenterX = iPointsIt->m_x;
         const unsigned int& currIPointCenterY = iPointsIt->m_y;
-        const float currIPointScale = 1.2 * iPointsIt->m_feature2 / 9.0;
+        const float currIPointScale = 1.2f * iPointsIt->m_feature2 / 9.0f;
         
         unsigned int featureWindowWidth = (unsigned int)( 20.0 * currIPointScale );
         featureWindowWidth += ( ( featureWindowWidth % 2 ) ? 0 : 1 );
@@ -3496,7 +3496,7 @@ namespace te
         
         if( featureElementsNormalizeFactor != 0.0 )
         {
-          featureElementsNormalizeFactor = 1.0 / featureElementsNormalizeFactor;
+          featureElementsNormalizeFactor = 1.0f / featureElementsNormalizeFactor;
         }
         
         for( currentFeaturePtrStartIdx = 0 ; currentFeaturePtrStartIdx < 64 ; 
@@ -3515,7 +3515,7 @@ namespace te
         // distinguishes bright blobs 
         // on dark backgrounds from the reverse situation.
         
-        currentFeaturePtr[ 64 ] = ( iPointsIt->m_feature3 * 64.0 );
+        currentFeaturePtr[ 64 ] = ( iPointsIt->m_feature3 * 64.0f );
         
         ++interestPointIdx;
         ++iPointsIt;
