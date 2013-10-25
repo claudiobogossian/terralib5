@@ -96,6 +96,14 @@ namespace te
     }
     
     //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::SegmentFeatures::SegmentFeatures()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::SegmentFeatures::~SegmentFeatures()
+    {
+    }
     
     const SegmenterRegionGrowingStrategy::SegmentFeatures& 
       SegmenterRegionGrowingStrategy::SegmentFeatures::operator=(
@@ -111,17 +119,32 @@ namespace te
       return other;
     }
     
-     //-------------------------------------------------------------------------
-     
+    //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::Segment::Segment()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::Segment::~Segment()
+    {
+    }  
+
+    //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::SegmentsPool::SegmentsPool()
+    : std::list< Segment* >()
+    {
+    }
+
     SegmenterRegionGrowingStrategy::SegmentsPool::~SegmentsPool()
     {
-      clear();
+      SegmentsPool::clear();
     }   
     
     void SegmenterRegionGrowingStrategy::SegmentsPool::clear()
     {
-      iterator segmentsIt = begin();
-      iterator segmentsItEnd = end();
+      SegmentsPool::iterator segmentsIt = SegmentsPool::begin();
+      SegmentsPool::iterator segmentsItEnd = SegmentsPool::end();
       
       while( segmentsIt != segmentsItEnd )
       {
@@ -163,6 +186,14 @@ namespace te
     
     //-------------------------------------------------------------------------
     
+    SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures::SegmentFeatures()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures::~SegmentFeatures()
+    {
+    }
+
     SegmenterRegionGrowingStrategy::SegmentFeatures*
       SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures::clone()
       const
@@ -191,6 +222,24 @@ namespace te
     };
     
     //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::MeanBasedSegment::MeanBasedSegment()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::MeanBasedSegment::~MeanBasedSegment()
+    {
+    }
+
+    //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures::SegmentFeatures()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures::~SegmentFeatures()
+    {
+    }
     
     SegmenterRegionGrowingStrategy::SegmentFeatures*
       SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures::clone()
@@ -224,6 +273,26 @@ namespace te
       SegmenterRegionGrowingStrategy::SegmentFeatures::operator=( *otherPtr );
     };    
     
+    //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::BaatzBasedSegment()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::~BaatzBasedSegment()
+    {
+    }
+
+    //-------------------------------------------------------------------------
+    
+    SegmenterRegionGrowingStrategy::Merger::Merger()
+    {
+    }
+    
+    SegmenterRegionGrowingStrategy::Merger::~Merger()
+    {
+    } 
+
     //-------------------------------------------------------------------------
     
     SegmenterRegionGrowingStrategy::MeanMerger::MeanMerger()

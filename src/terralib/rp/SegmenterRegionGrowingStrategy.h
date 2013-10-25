@@ -167,9 +167,9 @@ namespace te
             */              
             unsigned int m_yBound;            
             
-            SegmentFeatures() {};
+            SegmentFeatures();
             
-            virtual ~SegmentFeatures() {};
+            virtual ~SegmentFeatures();
             
             /*!
               \brief Creat a clone of this object.
@@ -207,7 +207,7 @@ namespace te
             */             
             std::list< Segment* > m_neighborSegments;             
             
-            virtual ~Segment() {};
+            virtual ~Segment();
             
             /*!
               \brief Returns the current segment internal features
@@ -223,7 +223,7 @@ namespace te
             
           protected :
             
-            Segment() {};
+            Segment();
             
           private :
           
@@ -239,6 +239,8 @@ namespace te
         {
           public :
             
+            SegmentsPool();
+
             ~SegmentsPool();
             
             //overload
@@ -284,9 +286,9 @@ namespace te
                 
                 std::vector< double > m_means; //!< Segment mean values (for each band), normalized between 0 and 1.
                 
-                SegmentFeatures() {};
+                SegmentFeatures();
                 
-                ~SegmentFeatures() {};
+                ~SegmentFeatures();
                 
                 //overload
                 SegmenterRegionGrowingStrategy::SegmentFeatures* clone() const;
@@ -303,9 +305,9 @@ namespace te
             
             MeanBasedSegment::SegmentFeatures m_features;
             
-            MeanBasedSegment() {};
+            MeanBasedSegment();
             
-            ~MeanBasedSegment() {};
+            ~MeanBasedSegment();
             
             //overload
             inline SegmenterRegionGrowingStrategy::SegmentFeatures* getFeatures()
@@ -348,9 +350,9 @@ namespace te
                 
                 double m_smoothness; //!< Smoothness of the current segment.
                 
-                SegmentFeatures() {};
+                SegmentFeatures();
                 
-                ~SegmentFeatures() {};
+                ~SegmentFeatures();
                 
                 //overload
                 SegmenterRegionGrowingStrategy::SegmentFeatures* clone() const;
@@ -367,9 +369,9 @@ namespace te
             
             BaatzBasedSegment::SegmentFeatures m_features;
             
-            BaatzBasedSegment() {};
+            BaatzBasedSegment();
             
-            ~BaatzBasedSegment() {};
+            ~BaatzBasedSegment();
             
             //overload
             inline SegmenterRegionGrowingStrategy::SegmentFeatures* getFeatures()
@@ -393,7 +395,7 @@ namespace te
         {
           public:
             
-            virtual ~Merger() {};
+            virtual ~Merger();
             
             /*!
               \brief Returns a dissimilarity index between this and the
@@ -426,7 +428,7 @@ namespace te
             
           protected :
             
-            Merger() {};
+            Merger();
             
           private :
           
@@ -523,8 +525,6 @@ namespace te
             
             const SegmenterRegionGrowingStrategy::SegmentsIndexer& m_segments; //!< A reference to an external valid structure where each all segments are indexed.
         };          
-                
-        
         
         /*!
           \brief true if this instance is initialized.
