@@ -117,7 +117,8 @@ bool BufferQuery(const std::string& inDatasetName,
 te::gm::Geometry* SetBuffer(te::gm::Geometry* geom, 
                             const int& bufferPolygonRule, 
                             const double& distance, 
-                            const int& level);
+                            const int& level,
+                            te::gm::Geometry*& auxGeom);
 
 te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
                                         te::mem::DataSet* dataset, 
@@ -255,6 +256,8 @@ bool BufferMemory(const std::string& inDataSetName,
   inputDataSet->moveBeforeFirst();
   while(inputDataSet->moveNext())
   {
+    te::gm::Geometry* auxGeom = 0;
+
     for(int i = 1; i <= levels; ++i)
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
@@ -283,10 +286,11 @@ bool BufferMemory(const std::string& inDataSetName,
               dataSetItem->setInt32(1, i); //level
               dataSetItem->setDouble(2, distance*(i)); //distance
 
+              std::auto_ptr<te::gm::Geometry> currentGeom = inputDataSet->getGeometry(j);
               std::auto_ptr<te::gm::Geometry> outGeom;
 
-              if(inputDataSet->getGeometry(j).get()->isValid())
-                outGeom.reset(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i));
+              if(currentGeom->isValid())
+                outGeom.reset(SetBuffer(currentGeom.get(), bufferPolygonRule, distance, i, auxGeom));
 
               if(outGeom.get() && outGeom->isValid())
                 dataSetItem->setGeometry(j+2, outGeom.release());
@@ -303,10 +307,11 @@ bool BufferMemory(const std::string& inDataSetName,
             dataSetItem->setInt32(1, i); //level
             dataSetItem->setDouble(2, distance*(i)); //distance
 
+            std::auto_ptr<te::gm::Geometry> currentGeom = inputDataSet->getGeometry(j);
             std::auto_ptr<te::gm::Geometry> outGeom;
 
-            if(inputDataSet->getGeometry(j).get()->isValid())
-              outGeom.reset(SetBuffer(inputDataSet->getGeometry(j).get(), bufferPolygonRule, distance, i));
+            if(currentGeom->isValid())
+              outGeom.reset(SetBuffer(currentGeom.get(), bufferPolygonRule, distance, i, auxGeom));
 
             if(outGeom.get() && outGeom->isValid())
               dataSetItem->setGeometry(3, outGeom.release());
@@ -317,8 +322,9 @@ bool BufferMemory(const std::string& inDataSetName,
         }
       }
     }
+    delete auxGeom;
   }
-  
+
   return true;
 }
 
@@ -550,9 +556,11 @@ bool BufferQuery(const std::string& inDatasetName,
 te::gm::Geometry* SetBuffer(te::gm::Geometry* geom, 
                             const int& bufferPolygonRule, 
                             const double& distance, 
-                            const int& level)
+                            const int& level,
+                            te::gm::Geometry*& auxGeom)
 {
   te::gm::Geometry* geomResult = 0;
+  te::gm::Geometry* geomTemp = 0;
   std::auto_ptr<te::gm::Geometry> outGeom;
   std::auto_ptr<te::gm::Geometry> inGeom;
   switch(bufferPolygonRule)
@@ -561,18 +569,39 @@ te::gm::Geometry* SetBuffer(te::gm::Geometry* geom,
       outGeom.reset(geom->buffer(distance * level, 16, te::gm::CapButtType));
       inGeom.reset(geom->buffer(-distance * level, 16, te::gm::CapButtType));
       geomResult = outGeom->difference(inGeom.get());
+      
+      geomTemp = (te::gm::Geometry*)geomResult->clone();
+      if(auxGeom && auxGeom->isValid())
+        geomResult = geomResult->difference(auxGeom);
+
+      delete auxGeom;
+      auxGeom = geomTemp;
 
       break;
 
     case (te::vp::ONLY_OUTSIDE):
       outGeom.reset(geom->buffer(distance * level, 16, te::gm::CapButtType));
       geomResult = outGeom->difference(geom);
-      
+
+      geomTemp = (te::gm::Geometry*)geomResult->clone();
+      if(auxGeom && auxGeom->isValid())
+        geomResult = geomResult->difference(auxGeom);
+
+      delete auxGeom;
+      auxGeom = geomTemp;
+
       break;
 
     case (te::vp::ONLY_INSIDE):
       inGeom.reset(geom->buffer(-distance * level, 16, te::gm::CapButtType));
       geomResult = geom->difference(inGeom.get());
+
+      geomTemp = (te::gm::Geometry*)geomResult->clone();
+      if(auxGeom && auxGeom->isValid())
+        geomResult = geomResult->difference(auxGeom);
+
+      delete auxGeom;
+      auxGeom = geomTemp;
 
       break;
   }

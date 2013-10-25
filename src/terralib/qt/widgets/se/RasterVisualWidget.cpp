@@ -363,6 +363,8 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         double v = ce->getGammaValue() * 100.;
         m_ui->m_contrastRHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
+
+        m_ui->m_contrastGroupBox->setChecked(true);
       }
       else
       {
@@ -382,6 +384,8 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         double v = ce->getGammaValue() * 100.;
         m_ui->m_contrastGHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
+
+        m_ui->m_contrastGroupBox->setChecked(true);
       }
       else
       {
@@ -401,6 +405,8 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         double v = ce->getGammaValue() * 100.;
         m_ui->m_contrastBHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
+
+        m_ui->m_contrastGroupBox->setChecked(true);
       }
       else
       {
@@ -420,15 +426,17 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         double v = ce->getGammaValue() * 100.;
         m_ui->m_contrastMHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
+
+        m_ui->m_contrastGroupBox->setChecked(true);
       }
       else
       {
         m_ui->m_contrastMHorizontalSlider->setValue(100.);
       }
-
     }
-
   }
+
+  setContrastVisibility();
 }
 
 void te::qt::widgets::RasterVisualWidget::setComboBoxText(QComboBox* cb, std::string value)
@@ -477,6 +485,7 @@ void te::qt::widgets::RasterVisualWidget::onMonoChannelSelectionClicked()
   if(m_scMono == 0)
   {
     m_scMono = new te::se::SelectedChannel();
+    m_scMono->setSourceChannelName(m_ui->m_composeMComboBox->currentText().toStdString());
     m_cs->setGrayChannel(m_scMono);
   }
 
@@ -497,6 +506,7 @@ void te::qt::widgets::RasterVisualWidget::onRedChannelSelectionClicked()
   if(m_scRed == 0)
   {
     m_scRed = new te::se::SelectedChannel();
+    m_scRed->setSourceChannelName(m_ui->m_composeRComboBox->currentText().toStdString());
     m_cs->setRedChannel(m_scRed);
   }
 
@@ -517,6 +527,7 @@ void te::qt::widgets::RasterVisualWidget::onGreenChannelSelectionClicked()
   if(m_scGreen== 0)
   {
     m_scGreen = new te::se::SelectedChannel();
+    m_scGreen->setSourceChannelName(m_ui->m_composeGComboBox->currentText().toStdString());
     m_cs->setGreenChannel(m_scGreen);
   }
 
@@ -537,6 +548,7 @@ void te::qt::widgets::RasterVisualWidget::onBlueChannelSelectionClicked()
   if(m_scBlue== 0)
   {
     m_scBlue = new te::se::SelectedChannel();
+    m_scBlue->setSourceChannelName(m_ui->m_composeBComboBox->currentText().toStdString());
     m_cs->setBlueChannel(m_scBlue);
   }
 
@@ -557,18 +569,21 @@ void te::qt::widgets::RasterVisualWidget::onCompositionChannelSelectionClicked()
   if(m_scRed == 0)
   {
     m_scRed = new te::se::SelectedChannel();
+    m_scRed->setSourceChannelName(m_ui->m_composeRComboBox->currentText().toStdString());
     m_cs->setRedChannel(m_scRed);
   }
 
   if(m_scGreen== 0)
   {
     m_scGreen = new te::se::SelectedChannel();
+    m_scGreen->setSourceChannelName(m_ui->m_composeGComboBox->currentText().toStdString());
     m_cs->setGreenChannel(m_scGreen);
   }
 
   if(m_scBlue== 0)
   {
     m_scBlue = new te::se::SelectedChannel();
+    m_scBlue->setSourceChannelName(m_ui->m_composeBComboBox->currentText().toStdString());
     m_cs->setBlueChannel(m_scBlue);
   }
 

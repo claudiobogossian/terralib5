@@ -35,7 +35,7 @@
 // STL
 #include <memory>
 
-te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
+te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Classifier...").toStdString());
 }

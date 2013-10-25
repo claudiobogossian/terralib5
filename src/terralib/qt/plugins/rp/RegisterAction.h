@@ -50,7 +50,7 @@ namespace te
 
           public:
 
-            RegisterAction(QMenu* menu);
+            RegisterAction(QMenu* menu, QMenu* popupMenu);
 
             virtual ~RegisterAction();
 

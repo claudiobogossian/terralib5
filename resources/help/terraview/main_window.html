@@ -1,0 +1,415 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+  
+  
+  
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+
+
+
+  
+  
+  
+  <title>main_window_utf8</title>
+</head>
+
+
+<body>
+
+
+
+
+<div style="text-align: center;">
+<h2><font face="Calibri Light" size="3"><strong><span style="font-family: 'Arial','sans-serif';"></span></strong></font> TerraView</h2>
+
+<font face="Calibri Light" size="3"><strong><span style="font-family: 'Arial','sans-serif';">
+
+
+</span></strong></font><font face="Calibri Light"><br>
+
+
+
+
+</font>
+<div style="text-align: left;"><font face="Calibri Light"><span style="font-family: Calibri Light;"> The</span><span style="font-weight: bold; font-family: Calibri Light;">
+TerraView Main Window </span><span style="font-family: Calibri Light;">is
+composed by <span style="font-weight: bold;">Menubar</span>,
+<span style="font-weight: bold;">Toolbar</span>, <span style="font-weight: bold;">Layer Explorer</span>, <span style="font-weight: bold;">Map Display</span>, <span style="font-weight: bold;">Grade </span>(to show
+the alphanumeric attributes), &nbsp;and the <span style="font-weight: bold;">Style Explorer</span>.
+Usually the Style Explorer is closed after changing the layer visual
+presentation
+(color, basic fill, etc of polygons, lines, points and raster). <br>
+<br>
+</span></font>
+
+
+
+
+<span style="font-weight: bold;"><img style="width: 1090px; height: 868px;" alt="" src="main_window.png"></span><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-weight: bold;"></span></span></font><br>
+
+<h3><font><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;"><span style="font-weight: bold;">Starting TerraView</span></span></span></font></font></h3>
+
+<font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;">Once you launch </span><span style="font-weight: bold; font-family: Calibri Light;">TerraView</span><span style="font-family: Calibri Light;">, it starts with an
+empty project named&nbsp; </span><span style="font-weight: bold; font-family: Calibri Light;">default_project</span><span style="font-family: Calibri Light;">&nbsp;that can be
+saved at the end with another name. Note the TerraView top header
+showing the project title and the corresponding xml file where&nbsp; project information will be saved. </span><span style="font-weight: bold; font-family: Calibri Light;">&nbsp;TerraView
+-&nbsp; Project: Default Title- default_project.xml</span><span style="font-family: Calibri Light;">. </span></span></font>&nbsp;To start viewing something go directly to the Project Menu and add some layers to be visualized at the map display.&nbsp; <br>
+<font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;"></span></span></font><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;"></span><span style="font-weight: bold;"><br>
+
+</span></span></font>
+<h3><font><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;"><span style="font-weight: bold;">Project Menu</span></span></span></font></font></h3>
+
+<font face="Calibri Light"><span style="font-family: Calibri Light;">Click on <span style="font-weight: bold;">Project</span> &gt; <span style="font-weight: bold;">Add Layer...</span>
+&nbsp;to add layers to the project </span></font><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-weight: bold;"></span></span>and
+choose the layer type: <span style="font-family: Calibri Light;"><span style="font-weight: bold;"><br>
+
+
+
+
+&nbsp;&nbsp;&nbsp; Vector...</span> &nbsp;to</span><span style="font-family: Calibri Light;"> choose one&nbsp;
+file of&nbsp;Esri shapefile&nbsp;, MapInfo, GeoJSON, GML, or
+KML format.<br>
+
+
+
+
+<span style="font-weight: bold;">&nbsp; &nbsp;
+Raster... &nbsp;</span></span></font>to <font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-weight: bold;"></span></span> choose <span style="font-family: Calibri Light;"> one file of
+image format. To choose more than one click on &nbsp;Ctrl+ filename.</span><span style="font-family: Calibri Light;"><br>
+
+
+
+
+&nbsp; &nbsp; &nbsp;<span style="font-weight: bold;">All
+Sources... </span></span></font>to<font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-weight: bold;"></span></span> select a datasource&nbsp; from where to pick up
+the data. See the Data Source Selector Interface.<br>
+
+
+
+<br>
+
+
+
+The&nbsp;&nbsp;</font><font face="Calibri Light"><a href="../widgets/datasource_selector/datasource_selector.html" target="_blank"><span style="font-weight: bold;">Data
+Source Selector</span></a> interface&nbsp;</font><font face="Calibri Light"><span style="font-family: Calibri Light;">allows to define </span></font><font face="Calibri Light"><span style="font-family: Calibri Light;">a </span>directory of vector files, a directory
+of
+raster files, a PostGIS database or a Microsoft Access database as a
+data source from where to pick up some data.&nbsp;</font><font face="Calibri Light">
+<br>
+
+
+
+<br>
+
+
+
+
+Also it is possible to &nbsp;use <span style="font-weight: bold;">Project &gt;&nbsp;Add
+Folder...</span> and drag some layers into this folder to
+organize better the Layer Explorer. Note the <span style="font-style: italic;">mexico</span> folder at
+the example showed above. If a folder is removed, all&nbsp; layers inside are
+also removed.
+<br>
+
+<br>
+
+Click on <b>Project &gt; Properties...</b> to change the </font><font face="Calibri Light"><i> Default Title</i></font><font face="Calibri Light"> that appear at the TerraView top header. &nbsp;To save the project go to <a href="#File_Menu" target="_top">File Menu</a>.<br>
+</font>
+<h3><a name="File_Menu"></a><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;"><span style="font-weight: bold;"><a name="FileMenu"></a>File Menu</span></span></span></font></h3>
+
+<font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;">
+
+
+Click on <b>File</b> menu to </span><span style="font-weight: bold; font-family: Calibri Light;">Save Project</span><span style="font-family: Calibri Light;">, </span><span style="font-weight: bold; font-family: Calibri Light;">Save
+Project as</span><span style="font-family: Calibri Light;">,
+</span></span></font><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;">create </span><span style="font-family: Calibri Light;">a </span><span style="font-weight: bold; font-family: Calibri Light;">New
+Project</span><span style="font-family: Calibri Light;">,</span><span style="font-weight: bold; font-family: Calibri Light;"> </span></span></font>or<font face="Calibri Light"> <span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;">view the </span><span style="font-weight: bold; font-family: Calibri Light;">Recent
+Projects</span><span style="font-family: Calibri Light;">
+&nbsp;opened before. &nbsp;The project name informed here is the name of the xml file which keep information about the project. </span></span></font><br>
+
+<h3><font><font><font><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;"><span style="font-weight: bold;">Layer Explorer</span></span></span></font></font></font></font></h3>
+
+<font face="Calibri Light"><span style="font-weight: bold;">
+
+
+<span style="font-weight: bold;"></span></span>The
+Layer Explorer shows all layers selected by the menu Project &gt;
+Add
+Layer.... Check the box of one or more layer and press (pincel) to view then at the
+Map Display. In our example only <span style="font-style: italic;">MG_cities </span>is
+checked. The Spatial Reference System of the <i>Map Display</i> will be
+the first valid&nbsp;SRID among the layers checked. It is also possible
+to set the <i>Map Display</i> SRID by right-clicking over the map display area
+as explained <a href="../widgets/srs/srs.html" target="_blank">here</a>. To find out the layer SRID, &nbsp;</font><font face="Calibri Light"> right-click over a layer name and choose Properties.... More actions over a layer are explained below.</font><br>
+<font face="Calibri Light">
+
+
+
+<br>
+
+
+
+
+<strong><span style="font-weight: bold;">Layer
+Explorer - </span><span style="font-weight: bold;">Selecting
+one or more layers</span></strong><br>
+
+
+
+
+&nbsp;<br>
+
+<b>Clicking</b> over a layer name makes it selected and the actions available
+from the context menu can be executed. &nbsp;Note that is does not need
+to be checked.<br>
+
+
+
+
+<br>
+<b>
+
+
+
+Right-clicking</b> over a layer name makes it selected and shows a context
+menu of actions that can be executed over a layer. <br>
+
+
+
+
+<br>
+<b>
+
+
+
+Shift+clicking</b>allows to select a consecutive set of
+layers by clicking over the first and the last&nbsp; layer names in the
+tree.&nbsp; A highlighted area appear in the tree and<b> r</b></font><font face="Calibri Light"><b>ight-clicking</b> over this area sh</font><font face="Calibri Light">ows a
+<i>context
+menu of actions</i> that can be executed over more than one layer, for example <i>Remove Layer(s)</i>.<br>
+
+
+
+
+<br>
+<b>
+
+
+
+Ctrl+clicking</b>
+allows to select a non-consecutive set of&nbsp;layer by </font><font face="Calibri Light">clicking over layer names in the tree.&nbsp;</font><font face="Calibri Light"> All layer names will became highlighted and right-clicking over one of then shows a context menu of actions that
+can be executed over all selected layer.<br>
+
+
+
+
+<br>
+
+
+
+
+<span style="font-weight: bold;"></span></font><font face="Calibri Light"><strong><span style="font-weight: bold;">Layer
+Explorer - </span></strong></font><font face="Calibri Light"><span style="font-weight: bold;">Actions over one layer<br>
+
+</span><span style="font-weight: bold;"></span><br>
+
+&nbsp;&nbsp;&nbsp; Remove Selection &gt;&nbsp;remove any selection at
+the map display and show all the objects displayed with the original <i>Style (color, mark, etc).</i><br>
+
+
+
+
+&nbsp;&nbsp;&nbsp; <br>
+</font>&nbsp;&nbsp;&nbsp; <font face="Calibri Light"><a href="../widgets/grouping/grouping.html" target="_blank">Grouping...</a> &nbsp;<br>
+
+
+
+
+&nbsp;&nbsp;&nbsp; <a href="../widgets/histogram/histogram.html" target="_blank">Histogram...</a>&nbsp;<br>
+
+
+
+
+&nbsp; &nbsp; <a target="_blank" href="../widgets/scatter/scatter.html">Scatter...</a><br>
+
+
+
+
+&nbsp; &nbsp; <a href="../widgets/pie_bar_chart/pie_bar_chart.html" target="_blank">Pie/Bar Chart...</a><br>
+<br>
+
+
+
+
+</font><font face="Calibri Light">
+
+
+&nbsp; &nbsp; <a href="../widgets/table/index.html" target="_blank">Show table</a><br>
+
+
+
+
+&nbsp; &nbsp; Styler Explorer<br>
+</font><font face="Calibri Light"><br>
+&nbsp;&nbsp;&nbsp; Fit Layer on the Map Display<br>
+</font><font face="Calibri Light">&nbsp; &nbsp; Fit Selected objects on the Map Display</font><br>
+<font face="Calibri Light">
+
+
+
+&nbsp;&nbsp;&nbsp; Pan to the Selected objects on the Map
+Display<br>
+
+
+
+
+&nbsp;&nbsp;&nbsp; Remove Layer(s)</font><br>
+<font face="Calibri Light">
+
+
+
+<br>
+
+&nbsp;&nbsp;&nbsp; <a href="../widgets/srs/srs.html" target="_blank">Inform SRS...</a><br>
+&nbsp;&nbsp;&nbsp; Properties... <br>
+&nbsp;&nbsp;&nbsp; Query<br>
+<br>
+
+
+
+
+&nbsp; &nbsp; Remove Layer(s)<br>
+
+
+
+
+<br>
+
+
+
+
+&nbsp; &nbsp;<a href="../plugins/rp/rp_contrast.html" target="_blank">Contrast...</a><br>
+
+
+
+
+&nbsp; &nbsp;<a href="../plugins/rp/rp_mixture.html" target="_blank">Mixture Model...</a><br>
+
+
+
+
+&nbsp; &nbsp;<a href="../plugins/rp/rp_segmenter.html" target="_blank">Segmenter...<br>
+
+</a>
+
+
+<br>
+
+
+
+
+<br>
+
+
+
+
+<span style="font-weight: bold;"></span></font><font face="Calibri Light"><strong><span style="font-weight: bold;">Layer
+Explorer - </span></strong></font><font face="Calibri Light"><span style="font-weight: bold;">Actions over more than
+one layer<br>
+<br>
+</span>
+
+
+
+&nbsp; &nbsp; Fit Selected objects on the Map Display<br>
+
+
+
+
+&nbsp;&nbsp;&nbsp; Pan to the Selected objects on the Map
+Display<br>
+<br>
+
+
+
+
+&nbsp;&nbsp;&nbsp; Remove Layer(s)<br>
+
+
+
+
+<br>
+
+
+
+
+</font>
+<h3><font><font><font><font><font><font><font><font><font><font><font><font><font><font><font><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;"><span style="font-weight: bold;">Map Display</span></span></span></font></font></font></font></font></font></font></font></font></font></font></font></font></font></font></font></h3>
+
+<br>
+
+
+
+
+<h3><font><font><font><font><font><font><font><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;"><span style="font-weight: bold;">Style Explorer (color, mark, etc of polygons, lines, points, text)</span></span></span></font></font></font></font></font></font></font></font></h3>
+
+<br>
+
+<h3><font><font><font><font><font><font><font><font><font><font><font><font><font><font><font><font face="Calibri Light"><span style="font-family: Calibri Light;"><span style="font-family: Calibri Light;"><span style="font-weight: bold;">Grade (numeric attributes)</span></span></span></font></font></font></font></font></font></font></font></font></font></font></font></font></font></font></font></h3>
+
+<br>
+
+<br>
+
+<br>
+
+
+
+
+<br>
+
+
+
+
+<span style="font-weight: bold;"><span style="font-weight: bold;"></span><br>
+
+
+
+
+</span><br>
+
+
+
+
+<br>
+
+
+
+
+<span style="font-family: Calibri Light;"><span style="font-weight: bold;"></span><br>
+
+
+
+
+</span><br>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</body>
+</html>

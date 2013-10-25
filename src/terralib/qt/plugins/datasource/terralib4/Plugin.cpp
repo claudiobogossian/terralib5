@@ -24,10 +24,10 @@
 */
 
 // TerraLib
-#include "../../../common/Config.h"
-#include "../../../common/Translator.h"
-#include "../../../common/Logger.h"
-#include "../../af/ApplicationController.h"
+#include "../../../../common/Config.h"
+#include "../../../../common/Translator.h"
+#include "../../../../common/Logger.h"
+#include "../../../af/ApplicationController.h"
 #include "TL4ConverterAction.h"
 #include "Plugin.h"
 

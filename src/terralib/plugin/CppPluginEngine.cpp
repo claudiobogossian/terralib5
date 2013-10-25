@@ -85,7 +85,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
       boost::filesystem::is_regular_file(pluginFile) )
     {
       // create shared library entry but doesn't load it yet!
-      slib.reset(new te::common::Library(pluginFile.string(), true));      
+      slib.reset(new te::common::Library(pluginFile.string(), true));
     }
     else
     {
