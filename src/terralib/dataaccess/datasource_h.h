@@ -30,6 +30,7 @@
 //#include "datasource/AbstractConnectionPool.h"
 //#include "datasource/BatchExecutor.h"
 #include "datasource/DataSource.h"
+#include "datasource/DataSourceInfo.h"
 #include "datasource/DataSourceCapabilities.h"
 //#include "datasource/DataSourceCatalog.h"
 //#include "datasource/DataSourceCatalogLoader.h"

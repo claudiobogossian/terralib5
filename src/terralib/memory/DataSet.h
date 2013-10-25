@@ -216,6 +216,8 @@ namespace te
         */
         void update(te::dt::Property* prop);
 
+        /*! \name DataSet inherited methods */
+        //@{
         te::common::TraverseType getTraverseType() const;
 
         te::common::AccessPolicy getAccessPolicy() const;
@@ -264,98 +266,105 @@ namespace te
 
         char getChar(std::size_t i) const;
 
-        void setChar(std::size_t i, char value);
-
-        void setChar(const std::string& name, char value);
-
         unsigned char getUChar(std::size_t i) const;
-
-        void setUChar(std::size_t i, unsigned char value);
-
-        void setUChar(const std::string& name, unsigned char value);
 
         boost::int16_t getInt16(std::size_t i) const;
 
-        void setInt16(std::size_t i, boost::int16_t value);
-
-        void setInt16(const std::string& name, boost::int16_t value);
-
         boost::int32_t getInt32(std::size_t i) const;
-
-        void setInt32(std::size_t i, boost::int32_t value);
-
-        void setInt32(const std::string& name, boost::int32_t value);
 
         boost::int64_t getInt64(std::size_t i) const;
 
-        void setInt64(std::size_t i, boost::int64_t value);
-
-        void setInt64(const std::string& name, boost::int64_t value);
-
         bool getBool(std::size_t i) const;
-
-        void setBool(std::size_t i, bool value);
-
-        void setBool(const std::string& name, bool value);
 
         float getFloat(std::size_t i) const;
 
-        void setFloat(std::size_t i, float value);
-
-        void setFloat(const std::string& name, float value);
-
         double getDouble(std::size_t i) const;
-
-        void setDouble(std::size_t i, double value);
-
-        void setDouble(const std::string& name, double value);
 
         std::string getNumeric(std::size_t i) const;
 
-        void setNumeric(std::size_t i, const std::string& value);
-
-        void setNumeric(const std::string& name, const std::string& value);
-
         std::string getString(std::size_t i) const;
-
-        void setString(std::size_t i, const std::string& value);
-
-        void setString(const std::string& name, const std::string& value);
 
         std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const;
 
-        void setByteArray(std::size_t i, const te::dt::ByteArray& value);
-
-        void setByteArray(const std::string& name, const te::dt::ByteArray& value);
-
         std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const;
-
-        void setGeometry(std::size_t i, const te::gm::Geometry& value);
-
-        void setGeometry(const std::string& name, const te::gm::Geometry& value);
 
         std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
 
-        void setRaster(std::size_t i, const te::rst::Raster& value);
-
-        void setRaster(const std::string& name, const  te::rst::Raster& value);
-
         std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const;
-
-        void setDateTime(std::size_t i, const te::dt::DateTime& value);
-
-        void setDateTime(const std::string& name, const te::dt::DateTime& value);
 
         std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
         std::auto_ptr<te::dt::AbstractData> getValue(std::size_t i) const;
 
+        bool isNull(std::size_t i) const;
+        //@}
+
+        /*! \name Methods to set values to the DataSet 
+
+            \Note These methods will take the ownership of the given pointers.
+        */
+        //@{
+        void setChar(std::size_t i, char value);
+
+        void setChar(const std::string& name, char value);
+
+        void setUChar(std::size_t i, unsigned char value);
+
+        void setUChar(const std::string& name, unsigned char value);
+
+        void setInt16(std::size_t i, boost::int16_t value);
+
+        void setInt16(const std::string& name, boost::int16_t value);
+
+        void setInt32(std::size_t i, boost::int32_t value);
+
+        void setInt32(const std::string& name, boost::int32_t value);
+
+        void setInt64(std::size_t i, boost::int64_t value);
+
+        void setInt64(const std::string& name, boost::int64_t value);
+
+        void setBool(std::size_t i, bool value);
+
+        void setBool(const std::string& name, bool value);
+
+        void setFloat(std::size_t i, float value);
+
+        void setFloat(const std::string& name, float value);
+
+        void setDouble(std::size_t i, double value);
+
+        void setDouble(const std::string& name, double value);
+
+        void setNumeric(std::size_t i, const std::string& value);
+
+        void setNumeric(const std::string& name, const std::string& value);
+
+        void setString(std::size_t i, const std::string& value);
+
+        void setString(const std::string& name, const std::string& value);
+
+        void setByteArray(std::size_t i, te::dt::ByteArray* value);
+
+        void setByteArray(const std::string& name, te::dt::ByteArray* value);
+
+        void setGeometry(std::size_t i, te::gm::Geometry* value);
+
+        void setGeometry(const std::string& name, te::gm::Geometry* value);
+
+        void setRaster(std::size_t i, te::rst::Raster* value);
+
+        void setRaster(const std::string& name, te::rst::Raster* value);
+
+        void setDateTime(std::size_t i, te::dt::DateTime* value);
+
+        void setDateTime(const std::string& name, te::dt::DateTime* value);
+
         void setValue(std::size_t i, te::dt::AbstractData* value);
 
         void setValue(const std::string& name, te::dt::AbstractData* ad);
-
-        bool isNull(std::size_t i) const;
-
+        //@}
+        
       protected:
 
         boost::shared_ptr<boost::ptr_vector<DataSetItem> > m_items;   //!< The list of dataset items.

@@ -86,4 +86,8 @@ std::string te::dt::Date::toString() const
   //return boost::gregorian::to_iso_string(m_date); 
 }
 
+te::dt::Date::~Date()
+{
+}
+
 

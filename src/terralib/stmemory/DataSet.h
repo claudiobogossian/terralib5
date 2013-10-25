@@ -454,7 +454,10 @@ namespace te
         std::auto_ptr<te::dt::AbstractData> getValue(std::size_t i) const;
         //@}
 
-        /*! \name Methods to set values to the DataSet */
+        /*! \name Methods to set values to the DataSet 
+
+            \note These methods will take the ownership of the given pointers.
+        */
         //@{
         void setChar(std::size_t i, char value);
 
@@ -496,21 +499,21 @@ namespace te
 
         void setString(const std::string& name, const std::string& value);
 
-        void setByteArray(std::size_t i, const te::dt::ByteArray& value);
+        void setByteArray(std::size_t i, te::dt::ByteArray* value);
 
-        void setByteArray(const std::string& name, const te::dt::ByteArray& value);
+        void setByteArray(const std::string& name, te::dt::ByteArray* value);
 
-        void setGeometry(std::size_t i, const te::gm::Geometry& value);
+        void setGeometry(std::size_t i, te::gm::Geometry* value);
 
-        void setGeometry(const std::string& name, const te::gm::Geometry& value);
+        void setGeometry(const std::string& name, te::gm::Geometry* value);
 
-        void setRaster(std::size_t i, const te::rst::Raster& value);
+        void setRaster(std::size_t i, te::rst::Raster* value);
 
-        void setRaster(const std::string& name, const  te::rst::Raster& value);
+        void setRaster(const std::string& name, te::rst::Raster* value);
 
-        void setDateTime(std::size_t i, const te::dt::DateTime& value);
+        void setDateTime(std::size_t i, te::dt::DateTime* value);
 
-        void setDateTime(const std::string& name, const te::dt::DateTime& value);
+        void setDateTime(const std::string& name, te::dt::DateTime* value);
 
         void setValue(std::size_t i, te::dt::AbstractData* value);
 
