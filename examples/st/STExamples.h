@@ -39,18 +39,36 @@
 //ST examples
 #include "Config.h"
 
+/*! \brief It loads the TerraLib modules. */
+void LoadModules();
+
 /*! 
   \brief It contains examples about coverage
 */
 void CoverageSeriesExamples();
 
 /*! 
+  \brief It contains examples about trajectory from a KML file
+*/
+void TrajectoryExamplesFromKML();
+
+/*! 
+  \brief It contains examples about trajectory from a KML file
+*/
+void TrajectoryExamplesFromPostGIS();
+
+/*! 
   \brief It prints a time series
 */
 void PrintTimeSeries(te::st::TimeSeries* ts);
 
-/*! \brief It loads the TerraLib modules. */
-void LoadModules();
+/*! 
+  \brief It prints a trajectory data set
+  
+  It prints the spatial and temporal extents as well as the observations of a
+  given TrajectoryDataSet.
+*/
+void PrintTrajectoryDataSet(te::st::TrajectoryDataSet* output);
 
 #endif  // __TERRALIB_EXAMPLES_STEXAMPLES_INTERNAL_STEXAMPLES_H
 

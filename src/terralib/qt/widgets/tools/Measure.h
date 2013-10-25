@@ -142,6 +142,7 @@ namespace te
           QPen m_pen;                             //!< The pen used to draw the path.
           QBrush m_brush;                         //!< The brush used to draw the path.
           bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
+          std::string m_unit;                     //!< The unit symbol for the measure.
       };
 
     } // end namespace widgets

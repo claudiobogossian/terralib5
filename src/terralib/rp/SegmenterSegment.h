@@ -18,21 +18,33 @@
  */
 
 /*!
-  \file UOM.h
-
-  \brief Exemplify Unit Of Measure handling in TerraLib.
+  \file terralib/rp/SegmenterSegment.h
+  \brief Segmenter segment base class.
  */
 
-#ifndef __TERRALIB_EXAMPLES_SRS_INTERNAL_UOM_H
-#define __TERRALIB_EXAMPLES_SRS_INTERNAL_UOM_H
+#ifndef __TERRALIB_RP_INTERNAL_SEGMENTERSEGMENT_H
+#define __TERRALIB_RP_INTERNAL_SEGMENTERSEGMENT_H
 
-#include "Config.h"
+  #include "Config.h"
+  
+  namespace te
+  {
+    namespace rp
+    {  
+      /*!
+          \class SegmenterSegment
+          \brief Segmenter segment base class.
+          \ingroup SegmentationAlgorithms
+      */
+      class TERPEXPORT SegmenterSegment
+      {
+        public :
+          
+          SegmenterSegment();
 
-/*! \brief This example shows TerraLib handles Units of Measure. */
-void UOMManage();
+          virtual ~SegmenterSegment();
+      };
+    } // namespace rp
+  } // namespace te
 
-/*! \brief This example test how to retrieve a SRS unit of measure. */
-void UnitSRS();
-
-#endif  // __TERRALIB_EXAMPLES_SRS_INTERNAL_UOM_H
-
+#endif

@@ -110,7 +110,7 @@ namespace te
         virtual DateTimeType getDateTimeType() const = 0;
 
         /*! \brief Virtual destructor. */
-        virtual ~DateTime() {}
+        virtual ~DateTime() { }
     };
 
     /*! \brief An auxiliary struct to compare two datetime pointers */
