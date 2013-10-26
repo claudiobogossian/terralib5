@@ -78,13 +78,27 @@ namespace te
           std::list<te::map::AbstractLayerPtr>& getLayers();
 
           /*!
-            \brief It gets all the layers in the project, not including the folder layers.
+            \brief It gets all the layers (single and folders) of the project.
 
-            \return List of all the layers in the project, not including the folder layers.
+            \return The list of all the layers (single and folders) of the project.
           */
           std::list<te::map::AbstractLayerPtr> getAllLayers();
 
-          void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
+          /*!
+            \brief It gets all the single layers of the project.
+
+            \return The list of all the single layers of the project.
+          */
+          std::list<te::map::AbstractLayerPtr> getSingleLayers();
+
+          /*!
+            \brief It gets all the single layers that are visible.
+
+            \return The list of all the single layers that are visible.
+          */
+          std::list<te::map::AbstractLayerPtr> getVisibleSingleLayers();
+
+          void setTopLayers(const std::list<te::map::AbstractLayerPtr>& layers);
 
           void add(const te::map::AbstractLayerPtr& layer);
 

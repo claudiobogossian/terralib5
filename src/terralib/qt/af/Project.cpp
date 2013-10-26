@@ -83,26 +83,87 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers()
   for(it = m_layers.begin(); it != m_layers.end(); ++it)
   {
     te::map::AbstractLayerPtr topLevelLayer = *it;
+    layers.push_back(topLevelLayer);
 
     if(topLevelLayer->getType() == "FOLDERLAYER")
     {
       std::vector<te::map::AbstractLayer*> children = topLevelLayer->getDescendants();
       for(std::size_t i = 0; i < children.size(); ++i)
-      {
-        if(children[i]->getType() == "FOLDERLAYER")
-          continue;
-
         layers.push_back(te::map::AbstractLayerPtr(children[i]));
-      }
     }
-    else
-      layers.push_back(topLevelLayer);
   }
 
   return layers;
 }
 
-void te::qt::af::Project::setLayers(const std::list<te::map::AbstractLayerPtr>& layers)
+std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getSingleLayers()
+{
+  std::list<te::map::AbstractLayerPtr> singleLayers;
+
+  std::list<te::map::AbstractLayerPtr> allLayers = getAllLayers();
+
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+
+  for(it = allLayers.begin(); it != allLayers.end(); ++it)
+  {
+    te::map::AbstractLayerPtr layer = *it;
+
+    if(layer->getType() == "FOLDERLAYER")
+      continue;
+
+    singleLayers.push_back(te::map::AbstractLayerPtr(layer));
+  }
+
+  return singleLayers;
+}
+
+//std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getSingleLayers()
+//{
+//  std::list<te::map::AbstractLayerPtr> layers;
+//
+//  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+//
+//  for(it = m_layers.begin(); it != m_layers.end(); ++it)
+//  {
+//    te::map::AbstractLayerPtr topLevelLayer = *it;
+//
+//    if(topLevelLayer->getType() == "FOLDERLAYER")
+//    {
+//      std::vector<te::map::AbstractLayer*> children = topLevelLayer->getDescendants();
+//      for(std::size_t i = 0; i < children.size(); ++i)
+//      {
+//        if(children[i]->getType() == "FOLDERLAYER")
+//          continue;
+//
+//        layers.push_back(te::map::AbstractLayerPtr(children[i]));
+//      }
+//    }
+//    else
+//      layers.push_back(topLevelLayer);
+//  }
+//
+//  return layers;
+//}
+
+std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getVisibleSingleLayers()
+{
+  std::list<te::map::AbstractLayerPtr> visibleSingleLayers;
+
+  std::list<te::map::AbstractLayerPtr> singleLayers = getSingleLayers();
+
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+  for(it = singleLayers.begin(); it != singleLayers.end(); ++it)
+  {
+    te::map::AbstractLayerPtr singleLayer = *it;
+
+    if(singleLayer->getVisibility() == te::map::VISIBLE)
+      visibleSingleLayers.push_back(singleLayer);
+  }
+
+   return visibleSingleLayers;
+}
+
+void te::qt::af::Project::setTopLayers(const std::list<te::map::AbstractLayerPtr>& layers)
 {
   m_layers.clear();
   m_layers = layers;
