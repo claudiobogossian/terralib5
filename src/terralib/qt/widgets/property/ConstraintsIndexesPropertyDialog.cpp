@@ -47,17 +47,17 @@ te::qt::widgets::ConstraintsIndexesPropertyDialog::ConstraintsIndexesPropertyDia
   m_widgetLayout = new QGridLayout(m_ui->m_widget);
 
   //connects
-  connect(m_ui->m_pkRadioButton, SIGNAL(toggled(bool)), this, SLOT(on_pkRadioButtonToggled(bool)));
-  connect(m_ui->m_ukRadioButton, SIGNAL(toggled(bool)), this, SLOT(on_ukRadioButtonToggled(bool)));
-  connect(m_ui->m_idxRadioButton, SIGNAL(toggled(bool)), this, SLOT(on_idxRadioButtonToggled(bool)));
-  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(on_okPushButtonClicked()));
+  connect(m_ui->m_pkRadioButton, SIGNAL(toggled(bool)), this, SLOT(onpkRadioButtonToggled(bool)));
+  connect(m_ui->m_ukRadioButton, SIGNAL(toggled(bool)), this, SLOT(onukRadioButtonToggled(bool)));
+  connect(m_ui->m_idxRadioButton, SIGNAL(toggled(bool)), this, SLOT(onidxRadioButtonToggled(bool)));
+  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onokPushButtonClicked()));
 }
 
 te::qt::widgets::ConstraintsIndexesPropertyDialog::~ConstraintsIndexesPropertyDialog()
 {
 }
 
-void te::qt::widgets::ConstraintsIndexesPropertyDialog::on_pkRadioButtonToggled(bool status)
+void te::qt::widgets::ConstraintsIndexesPropertyDialog::onpkRadioButtonToggled(bool status)
 {
   if(status == false)
     return;
@@ -69,7 +69,7 @@ void te::qt::widgets::ConstraintsIndexesPropertyDialog::on_pkRadioButtonToggled(
   m_widgetLayout->addWidget(m_pkConstraintWidget);
 }
 
-void te::qt::widgets::ConstraintsIndexesPropertyDialog::on_ukRadioButtonToggled(bool status)
+void te::qt::widgets::ConstraintsIndexesPropertyDialog::onukRadioButtonToggled(bool status)
 {
   if(status == false)
     return;
@@ -81,7 +81,7 @@ void te::qt::widgets::ConstraintsIndexesPropertyDialog::on_ukRadioButtonToggled(
   m_widgetLayout->addWidget(m_ukConstraintWidget);
 }
 
-void te::qt::widgets::ConstraintsIndexesPropertyDialog::on_idxRadioButtonToggled(bool status)
+void te::qt::widgets::ConstraintsIndexesPropertyDialog::onidxRadioButtonToggled(bool status)
 {
   if(status == false)
     return;
@@ -93,7 +93,7 @@ void te::qt::widgets::ConstraintsIndexesPropertyDialog::on_idxRadioButtonToggled
   m_widgetLayout->addWidget(m_indexWidget);
 }
 
-void te::qt::widgets::ConstraintsIndexesPropertyDialog::on_okPushButtonClicked()
+void te::qt::widgets::ConstraintsIndexesPropertyDialog::onokPushButtonClicked()
 {
   if(m_ui->m_pkRadioButton->isChecked())
   {

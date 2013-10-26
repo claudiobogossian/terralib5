@@ -179,6 +179,11 @@ namespace te
         */
         DateTimeType getDateTimeType() const { return TIME_DURATION; }
 
+        /*!
+          \brief Destructor.
+        */
+        virtual ~TimeDuration();
+
       protected:
 
         boost::posix_time::time_duration m_timeDuration;  //!< The internal time duration information. 

@@ -4,90 +4,73 @@
 
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <title>Segmenter</title>
-
-
 </head>
 
-
 <body>
-
-<p></p>
-
-<div style="text-align: center;"> <font face="Arial, Helvetica, sans-serif" size="3"> <strong>
-<span style="font-family: 'Arial','sans-serif';">Segmenter<br>
+<p><font face="Calibri Light"></font></p>
+<div style="text-align: center;">
+<font face="Calibri Light" size="3">
+<strong><span style="font-family: 'Arial','sans-serif';">Segmenter<br>
 
 </span></strong></font></div>
-
-<br>
-
+<font face="Calibri Light"><br>
+</font>
 <div style="text-align: justify;">
 <div style="text-align: left;">
-<p>Image segmentation covers techniques for splitting one image
-into its components as homogeneous regions.
+<div class="level1">
+<p><font face="Calibri Light">Image segmentation covers techniques for splitting one image
+into its components as homogeneous regions. See <a href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:rp:segmenter" class="wikilink1" title="designimplementation:rp:segmenter">Segmenter</a></font>
 </p>
-
-<p>
-Input:
-</p>
-
+<p><font face="Calibri Light">Input:
+</font></p>
 <ul>
-
   <li class="level1">
-    <div class="li"> One Raster<span style="text-decoration: underline;"></span></div>
+    <div class="li"><font face="Calibri Light">One
+    <a href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:raster" class="wikilink1" title="wiki:designimplementation:raster">Raster</a></font></div>
 
   </li>
-
   <li class="level1">
-    <div class="li"> A vector of band indices used to
-perform segmentation.</div>
+    <div class="li"><font face="Calibri Light">A
+vector of band indexes used to perform segmentation.</font></div>
 
   </li>
-
 </ul>
-
-<p>Output:
-</p>
-
+<p><font face="Calibri Light">Output:
+</font></p>
 <ul>
-
   <li class="level1">
-    <div class="li"> One Raster with a single band, where
-the pixel value stands for the index of the region to which it belongs.
-It can be transformed to a vector of Polygond using the method <em>te::gdal::Vectorize</em>.</div>
+    <div class="li"><font face="Calibri Light">One
+    <a href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:raster" class="wikilink1" title="wiki:designimplementation:raster">Raster</a>
+with a single band, where the pixel value stands for the index of the
+region to which it belongs. It can be transformed to a vector of <a href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:geom#polygon" class="wikilink1" title="wiki:designimplementation:geom">Polygons</a>
+using the method <em>te::gdal::Vectorize</em>.</font></div>
 
   </li>
-
 </ul>
-
-<p>The available method in TerraLib is:
-</p>
-
+<p><font face="Calibri Light">The available method in TerraLib is:
+</font></p>
 <ul>
+  <li class="level1">
+    <div class="li"><font face="Calibri Light"><a href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:rp:segmenter#region_growing" title="wiki:designimplementation:rp:segmenter &crarr;" class="wikilink1">Region Growing</a></font></div>
 
-  <li class="level1">Region Growing </li>
+  </li>
+  <li class="level1">
+    <div class="li"><font face="Calibri Light"><a href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:rp:segmenter#based_on_baatz_and_shape_2000" title="wiki:designimplementation:rp:segmenter &crarr;" class="wikilink1">Based on Baatz and Shape, 2000</a></font></div>
 
+  </li>
 </ul>
-
-<p>
-The following methods will be implemented in TerraLib:
-<span style="text-decoration: underline;"></span></p>
-
+<p><font face="Calibri Light">The following methods will be
+implemented in TerraLib:
+</font></p>
 <ul>
-
-  <li class="level1">Based on Baatz and Shape, 2000</li>
-
-  <li class="level1">Based on Self Organizing Maps</li>
-
+  <li class="level1">
+    <div class="li"><font face="Calibri Light"><a href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:rp:segmenter#based_on_self_organizing_maps" title="wiki:designimplementation:rp:segmenter &crarr;" class="wikilink1">Based on Self Organizing Maps</a></font></div>
+  </li>
 </ul>
-
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-&nbsp; &nbsp; &nbsp; &nbsp;..............
 </div>
-
-<br>
-
 </div>
-
+<font face="Calibri Light"><br>
+</font>
+</div>
 </body>
 </html>

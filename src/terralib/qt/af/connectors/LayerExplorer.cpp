@@ -104,6 +104,14 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     }
     break;
 
+    case::te::qt::af::evt::LAYER_POPUP_REMOVE_ACTION:
+    {
+      te::qt::af::evt::LayerPopUpRemoveAction* e = static_cast<te::qt::af::evt::LayerPopUpRemoveAction*>(evt);
+
+      m_explorer->getTreeView()->remove(e->m_action);
+    }
+    break;
+
     case::te::qt::af::evt::GET_LAYER_SELECTED:
     {
       te::qt::af::evt::GetLayerSelected* e = static_cast<te::qt::af::evt::GetLayerSelected*>(evt);

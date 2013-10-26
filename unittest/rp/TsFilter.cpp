@@ -23,93 +23,330 @@
   \brief A test suit for the Filter interface.
  */
 
-// TerraLib
-#include "../Config.h"
-#include <terralib/gdal.h>
-#include <terralib/gdal/Utils.h>
-#include <terralib/geometry.h>
-#include <terralib/raster.h>
-#include <terralib/rp/Filter.h>
 #include "TsFilter.h"
+#include "../Config.h"
 
-// STL
-//#include <vector>
+#include <terralib/rp/Filter.h>
+#include <terralib/raster/Grid.h>
+#include <terralib/raster/Raster.h>
+#include <terralib/raster/RasterFactory.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsFilter );
 
-void TsFilter::Filters()
+void TsFilter::SobelFilter()
 {
-// open input raster
-  std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
-  te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
+  // openning input raster
 
-// define a vector of filter names and types to reduce lines of code for testing
-  std::vector<std::string> filterNames;
-  filterNames.push_back("sobel");
-  filterNames.push_back("mean");
-  filterNames.push_back("mode");
-  filterNames.push_back("median");
-  filterNames.push_back("dilation");
-  filterNames.push_back("erosion");
-  filterNames.push_back("user_defined");
+  std::map<std::string, std::string> auxRasterInfo;
 
-  std::vector<te::rp::Filter::InputParameters::FilterType> filterTypes;
-  filterTypes.push_back(te::rp::Filter::InputParameters::SobelFilterT);
-  filterTypes.push_back(te::rp::Filter::InputParameters::MeanFilterT);
-  filterTypes.push_back(te::rp::Filter::InputParameters::ModeFilterT);
-  filterTypes.push_back(te::rp::Filter::InputParameters::MedianFilterT);
-  filterTypes.push_back(te::rp::Filter::InputParameters::DilationFilterT);
-  filterTypes.push_back(te::rp::Filter::InputParameters::ErosionFilterT);
-  filterTypes.push_back(te::rp::Filter::InputParameters::UserDefinedWindowT);
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );
 
-  for (unsigned int f = 0; f < filterNames.size(); f++)
-  {
-    std::cout << "Testing filter " << filterNames[f] << std::endl;
-    
-// create output raster for sobel filter in band 0
-    std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop_" + filterNames[f] + "_filter.tif";
+  // Creating the algorithm parameters
 
-// create filter algorithm parameters
-    te::rp::Filter::InputParameters filterInputParameters;
-// examples of filters include MeanFilterT, ModeFilterT, MedianFilterT, DilationFilterT and ErosionFilterT
-    filterInputParameters.m_type = filterTypes[f];
-    filterInputParameters.m_windowH = 3;
-    filterInputParameters.m_windowW = 3;
-    filterInputParameters.m_enableProgress = true;
-    filterInputParameters.m_inRasterPtr = rin;
-    for (unsigned int b = 0; b < rin->getNumberOfBands(); b++)
-      filterInputParameters.m_inRasterBands.push_back(b);
-      
-    if (filterNames[f] == "user_defined")
-    {
-// example of a user defined window (this example shows the X component of the Sobel filter
-      boost::numeric::ublas::matrix<double> window(3, 3);
-      window(0, 0) = 1;
-      window(0, 1) = 2;
-      window(0, 2) = 1;
-      window(1, 0) = 0;
-      window(1, 1) = 0;
-      window(1, 2) = 0;
-      window(2, 0) = -1;
-      window(2, 1) = -2;
-      window(2, 2) = -1;
+  te::rp::Filter::InputParameters algoInputParams;
 
-      filterInputParameters.m_window = window;
-    }
+  algoInputParams.m_filterType = te::rp::Filter::InputParameters::SobelFilterT;
 
-    te::rp::Filter::OutputParameters filterOutputParameters;
-    filterOutputParameters.m_createdOutRasterInfo = orinfo;
-    filterOutputParameters.m_createdOutRasterDSType = "GDAL";
-    filterOutputParameters.m_normalizeOutput = false;
+  algoInputParams.m_inRasterPtr = inputRasterPtrPointer.get();
 
-// execute the algorithm
-    te::rp::Filter filterInstance;
-    CPPUNIT_ASSERT(filterInstance.initialize(filterInputParameters));
-    CPPUNIT_ASSERT(filterInstance.execute(filterOutputParameters));
-  }
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
 
-// clean up
-  delete rin;
+  algoInputParams.m_iterationsNumber = 4;
+
+  te::rp::Filter::OutputParameters algoOutputParams;
+
+  algoOutputParams.m_rInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_Filter_SobelFilter.tif";
+  algoOutputParams.m_rType = "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Filter algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
+
+void TsFilter::RobertsFilter()
+{
+  // openning input raster
+
+  std::map<std::string, std::string> auxRasterInfo;
+
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );
+
+  // Creating the algorithm parameters
+
+  te::rp::Filter::InputParameters algoInputParams;
+
+  algoInputParams.m_filterType = te::rp::Filter::InputParameters::RobertsFilterT;
+
+  algoInputParams.m_inRasterPtr = inputRasterPtrPointer.get();
+
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+
+  algoInputParams.m_iterationsNumber = 4;
+
+  te::rp::Filter::OutputParameters algoOutputParams;
+
+  algoOutputParams.m_rInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_Filter_RobertsFilter.tif";
+  algoOutputParams.m_rType = "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Filter algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+void TsFilter::MeanFilter()
+{
+  // openning input raster
+
+  std::map<std::string, std::string> auxRasterInfo;
+
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );
+
+  // Creating the algorithm parameters
+
+  te::rp::Filter::InputParameters algoInputParams;
+
+  algoInputParams.m_filterType = te::rp::Filter::InputParameters::MeanFilterT;
+
+  algoInputParams.m_inRasterPtr = inputRasterPtrPointer.get();
+
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+
+  algoInputParams.m_iterationsNumber = 4;
+
+  te::rp::Filter::OutputParameters algoOutputParams;
+
+  algoOutputParams.m_rInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_Filter_MeanFilter.tif";
+  algoOutputParams.m_rType = "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Filter algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+void TsFilter::ModeFilter()
+{
+  // openning input raster
+
+  std::map<std::string, std::string> auxRasterInfo;
+
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );
+
+  // Creating the algorithm parameters
+
+  te::rp::Filter::InputParameters algoInputParams;
+
+  algoInputParams.m_filterType = te::rp::Filter::InputParameters::ModeFilterT;
+
+  algoInputParams.m_inRasterPtr = inputRasterPtrPointer.get();
+
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+
+  algoInputParams.m_iterationsNumber = 4;
+
+  te::rp::Filter::OutputParameters algoOutputParams;
+
+  algoOutputParams.m_rInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_Filter_ModeFilter.tif";
+  algoOutputParams.m_rType = "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Filter algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+void TsFilter::MedianFilter()
+{
+  // openning input raster
+
+  std::map<std::string, std::string> auxRasterInfo;
+
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );
+
+  // Creating the algorithm parameters
+
+  te::rp::Filter::InputParameters algoInputParams;
+
+  algoInputParams.m_filterType = te::rp::Filter::InputParameters::MedianFilterT;
+
+  algoInputParams.m_inRasterPtr = inputRasterPtrPointer.get();
+
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+
+  algoInputParams.m_iterationsNumber = 4;
+
+  te::rp::Filter::OutputParameters algoOutputParams;
+
+  algoOutputParams.m_rInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_Filter_MedianFilter.tif";
+  algoOutputParams.m_rType = "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Filter algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+void TsFilter::DilationFilter()
+{
+  // openning input raster
+
+  std::map<std::string, std::string> auxRasterInfo;
+
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );
+
+  // Creating the algorithm parameters
+
+  te::rp::Filter::InputParameters algoInputParams;
+
+  algoInputParams.m_filterType = te::rp::Filter::InputParameters::DilationFilterT;
+
+  algoInputParams.m_inRasterPtr = inputRasterPtrPointer.get();
+
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+
+  algoInputParams.m_iterationsNumber = 4;
+
+  te::rp::Filter::OutputParameters algoOutputParams;
+
+  algoOutputParams.m_rInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_Filter_DilationFilter.tif";
+  algoOutputParams.m_rType = "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Filter algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+void TsFilter::ErosionFilter()
+{
+  // openning input raster
+
+  std::map<std::string, std::string> auxRasterInfo;
+
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );
+
+  // Creating the algorithm parameters
+
+  te::rp::Filter::InputParameters algoInputParams;
+
+  algoInputParams.m_filterType = te::rp::Filter::InputParameters::ErosionFilterT;
+
+  algoInputParams.m_inRasterPtr = inputRasterPtrPointer.get();
+
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+
+  algoInputParams.m_iterationsNumber = 4;
+
+  te::rp::Filter::OutputParameters algoOutputParams;
+
+  algoOutputParams.m_rInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_Filter_ErosionFilter.tif";
+  algoOutputParams.m_rType = "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Filter algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+void TsFilter::UserDefinedWindow()
+{
+  // openning input raster
+
+  std::map<std::string, std::string> auxRasterInfo;
+
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
+  boost::shared_ptr< te::rst::Raster > inputRasterPtrPointer ( te::rst::RasterFactory::open(
+    auxRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPtrPointer.get() );
+
+  // Creating the algorithm parameters
+
+  boost::numeric::ublas::matrix<double> window(3, 3);
+  window(0, 0) = 1;
+  window(0, 1) = 2;
+  window(0, 2) = 1;
+  window(1, 0) = 0;
+  window(1, 1) = 0;
+  window(1, 2) = 0;
+  window(2, 0) = -1;
+  window(2, 1) = -2;
+  window(2, 2) = -1;
+
+  te::rp::Filter::InputParameters algoInputParams;
+
+  algoInputParams.m_filterType = te::rp::Filter::InputParameters::UserDefinedWindowT;
+
+  algoInputParams.m_inRasterPtr = inputRasterPtrPointer.get();
+
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+
+  algoInputParams.m_iterationsNumber = 1;
+
+  algoInputParams.m_window = window;
+
+  te::rp::Filter::OutputParameters algoOutputParams;
+
+  algoOutputParams.m_rInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_Filter_UserDefinedWindow.tif";
+  algoOutputParams.m_rType = "GDAL";
+
+  // Executing the algorithm
+
+  te::rp::Filter algorithmInstance;
+
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+

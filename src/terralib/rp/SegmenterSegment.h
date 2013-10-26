@@ -18,38 +18,33 @@
  */
 
 /*!
-  \file TsEdgeFilter.h
- 
-  \brief A test suit for the EdgeFilter Class.
+  \file terralib/rp/SegmenterSegment.h
+  \brief Segmenter segment base class.
  */
 
-#ifndef __TERRALIB_UNITTEST_RP_EDGEFILTER_INTERNAL_H
-#define __TERRALIB_UNITTEST_RP_EDGEFILTER_INTERNAL_H
+#ifndef __TERRALIB_RP_INTERNAL_SEGMENTERSEGMENT_H
+#define __TERRALIB_RP_INTERNAL_SEGMENTERSEGMENT_H
 
-// cppUnit
-#include <cppunit/extensions/HelperMacros.h>
-
-/*!
-  \class TsEdgeFilter
-
-  \brief A test suit for the EdgeFilter class interface.
- */
-class TsEdgeFilter : public CPPUNIT_NS::TestFixture 
-{
-  CPPUNIT_TEST_SUITE( TsEdgeFilter );
+  #include "Config.h"
   
-  CPPUNIT_TEST( SobelFilter );
-  
-  CPPUNIT_TEST( RobertsFilter );
-  
-  CPPUNIT_TEST_SUITE_END();
+  namespace te
+  {
+    namespace rp
+    {  
+      /*!
+          \class SegmenterSegment
+          \brief Segmenter segment base class.
+          \ingroup SegmentationAlgorithms
+      */
+      class TERPEXPORT SegmenterSegment
+      {
+        public :
+          
+          SegmenterSegment();
 
-protected :
-
-  void SobelFilter();
-  
-  void RobertsFilter();
-
-};
+          virtual ~SegmenterSegment();
+      };
+    } // namespace rp
+  } // namespace te
 
 #endif

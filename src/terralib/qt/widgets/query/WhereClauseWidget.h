@@ -88,6 +88,8 @@ namespace te
 
           void setConnectorsList(const std::vector<std::string>& vec);
 
+          void clear();
+
 
         public slots:
 

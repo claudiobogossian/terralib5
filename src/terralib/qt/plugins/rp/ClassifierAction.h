@@ -50,7 +50,7 @@ namespace te
 
           public:
 
-            ClassifierAction(QMenu* menu);
+            ClassifierAction(QMenu* menu, QMenu* popupMenu);
 
             virtual ~ClassifierAction();
 

@@ -25,6 +25,8 @@
 
 // TerraLib
 #include "../../../common/STLUtils.h"
+#include "../../../common/UnitOfMeasure.h"
+#include "../../../common/UnitsOfMeasureManager.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Geometry.h"
 #include "../../../geometry/LinearRing.h"
@@ -46,13 +48,20 @@
 te::qt::widgets::Measure::Measure(te::qt::widgets::MapDisplay* display, const MeasureType& measureType, QObject* parent) 
   : AbstractTool(display, parent),
     m_measureType(measureType),
-    m_isFinished(false)
+    m_isFinished(false),
+    m_unit("")
 {
   // Setups the path style
   m_pen.setColor(QColor(100, 177, 216));
   m_pen.setWidth(3);
   m_brush = QColor(100, 177, 216, 80);
-
+  
+  if (m_display->getSRID()!= TE_UNKNOWN_SRS)
+  {
+    te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_display->getSRID());
+    if (unit.get())
+      m_unit = unit->getSymbol();
+  }
   // Signals & slots
   connect(m_display, SIGNAL(extentChanged()), SLOT(onExtentChanged()));
 }
@@ -169,11 +178,13 @@ void te::qt::widgets::Measure::drawLine(Canvas& canvas)
 
   // Measuring and feedback...
   if(m_measureType == Distance)
-    drawText(canvas, (tr("Distance: ") + QString::number(calculateLength(line))).toStdString(), line->getEndPoint());
+  {
+    drawText(canvas, (tr("Distance: ") + QString::number(calculateLength(line)) + " " + m_unit.c_str()).toStdString(), line->getEndPoint());
+  }
   else if(m_measureType == Angle)
   {
     if(line->getNPoints() >= 3)
-      drawText(canvas, (tr("Angle: ") + QString::number(calculateAngle(line))).toStdString(), line->getPointN(1));
+      drawText(canvas, (tr("Angle: ") + QString::number(calculateAngle(line)) + " deg").toStdString(), line->getPointN(1));
   }
 
   delete line;
@@ -204,7 +215,7 @@ void te::qt::widgets::Measure::drawPolygon(Canvas& canvas)
   // Measuring and feedback...
   const te::gm::Envelope* env = polygon->getMBR();
   te::gm::Point p(env->getCenter().x, env->getCenter().y);
-  drawText(canvas, (tr("Area: ") + QString::number(polygon->getArea())).toStdString(), &p);
+  drawText(canvas, (tr("Area: ") + QString::number(polygon->getArea()) + (m_unit.empty() ? "" : (" " + m_unit + "^2").c_str())).toStdString(), &p);
 
   delete polygon;
 }
@@ -259,6 +270,17 @@ double te::qt::widgets::Measure::calculateAngle(te::gm::LineString* line) const
 
 void te::qt::widgets::Measure::onExtentChanged()
 {
+  if (m_display->getSRID()!= TE_UNKNOWN_SRS)
+  {
+    te::common::UnitOfMeasurePtr unit = te::srs::SpatialReferenceSystemManager::getInstance().getUnit(m_display->getSRID());
+    if (unit.get())
+      m_unit = unit->getSymbol();
+    else
+      m_unit = "";
+  }
+  else
+    m_unit = "";
+  
   if(m_coords.empty())
     return;
 

@@ -47,22 +47,22 @@
 
 te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetItem*>& items, size_t geomIdx, te::gm::GeomType outGeoType)
 {
-  te::gm::Geometry* resultGeometry = 0; 
+  te::gm::Geometry* resultGeometry(0); 
 
-  te::gm::Geometry* seedGeometry = items[0]->getGeometry(geomIdx);
+  std::auto_ptr<te::gm::Geometry> seedGeometry = items[0]->getGeometry(geomIdx);
   
   if(items.size() < 2)
   {
-      resultGeometry = seedGeometry;
+      resultGeometry = seedGeometry.get();
   }
   if(items.size() == 2)
   {
-    te::gm::Geometry* teGeom = items[1]->getGeometry(geomIdx);
+    std::auto_ptr<te::gm::Geometry> teGeom = items[1]->getGeometry(geomIdx);
 
-    if(items[1]->getGeometry(geomIdx)->isValid())
-      resultGeometry = seedGeometry->Union(teGeom);
+    if(teGeom->isValid())
+      resultGeometry = seedGeometry->Union(teGeom.get());
     else
-      resultGeometry = seedGeometry;
+      resultGeometry = seedGeometry.get();
   }
   if(items.size() > 2)
   {
@@ -71,7 +71,7 @@ te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetIte
     for(std::size_t i = 1; i < items.size(); ++i)
     {
       if(items[i]->getGeometry(geomIdx)->isValid())
-        teGeomColl->add(items[i]->getGeometry(geomIdx));
+        teGeomColl->add(items[i]->getGeometry(geomIdx).release());
     }
 
     resultGeometry = seedGeometry->Union(teGeomColl);

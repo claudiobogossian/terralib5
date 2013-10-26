@@ -60,7 +60,7 @@ te::qt::widgets::ContrastWizard::ContrastWizard(QWidget* parent)
 
   this->setButton(QWizard::HelpButton, helpButton);
 
-  helpButton->setPageReference("widgets/rp/Contrast.html");
+  helpButton->setPageReference("plugins/rp/rp_contrast.html");
 
   addPages();
 }
@@ -132,8 +132,7 @@ void te::qt::widgets::ContrastWizard::addPages()
 bool te::qt::widgets::ContrastWizard::execute()
 {
   //get layer
-  std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
-  te::map::AbstractLayerPtr l = *list.begin();
+  te::map::AbstractLayerPtr l = m_contrastPage->get();
   std::auto_ptr<te::da::DataSet> ds = l->getData();
 
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);

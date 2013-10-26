@@ -234,6 +234,29 @@ namespace te
         };
 
         /*!
+          \struct LayerPopUpRemoveAction
+
+          \brief This event is used to remove a action in a layer tree pop up
+        
+          \ingroup afevents
+        */
+        struct LayerPopUpRemoveAction : public Event
+        {
+          /*!
+            \brief Construtor.
+
+            \param layer The layer that has the selected style.
+          */
+          LayerPopUpRemoveAction(QAction* action) :
+            Event(LAYER_POPUP_REMOVE_ACTION),
+            m_action(action)
+          {
+          }
+  
+          QAction* m_action;              //!< Action to be removed in pop up menu
+        };
+
+        /*!
           \struct GetLayerSelected
 
           \brief This event is used to get a single layer selected in layer tree

@@ -32,7 +32,11 @@
 // STL
 #include <cassert>
 
-te::qt::plugins::rp::AbstractAction::AbstractAction(QMenu* menu): m_menu(menu), m_action(0)
+te::qt::plugins::rp::AbstractAction::AbstractAction(QMenu* menu, QMenu* popupMenu):
+  m_menu(menu), 
+  m_popupMenu(popupMenu), 
+  m_action(0),
+  m_popupAction(0)
 {
 }
 
@@ -63,9 +67,9 @@ void te::qt::plugins::rp::AbstractAction::createAction(std::string name, std::st
 
 void  te::qt::plugins::rp::AbstractAction::createPopUpAction(std::string name, std::string pixmap)
 {
-  assert(m_menu);
+  assert(m_popupMenu);
 
-  m_popupAction = new QAction(m_menu);
+  m_popupAction = new QAction(m_popupMenu);
 
   m_popupAction->setText(name.c_str());
 
@@ -74,10 +78,7 @@ void  te::qt::plugins::rp::AbstractAction::createPopUpAction(std::string name, s
 
   connect(m_popupAction, SIGNAL(triggered(bool)), this, SLOT(onPopUpActionActivated(bool)));
 
-  //add to application layer tree pop up menu
-  te::qt::af::evt::LayerPopUpAddAction evt(m_popupAction, 2 /*SINGLE_LAYER_SELECTED*/);
-
-  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  m_popupMenu->addAction(m_popupAction);
 }
 
 void te::qt::plugins::rp::AbstractAction::addNewLayer(te::map::AbstractLayerPtr layer)

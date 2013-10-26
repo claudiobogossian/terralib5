@@ -34,7 +34,7 @@
 // STL
 #include <memory>
 
-te::qt::plugins::rp::RegisterAction::RegisterAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
+te::qt::plugins::rp::RegisterAction::RegisterAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Register...").toStdString(), "register");
 }
@@ -46,8 +46,10 @@ te::qt::plugins::rp::RegisterAction::~RegisterAction()
 void te::qt::plugins::rp::RegisterAction::onActionActivated(bool checked)
 {
   te::qt::widgets::RegisterWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
+  
+  std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
-  dlg.setList(getLayers());
+  dlg.setList( layersList );
 
   if(dlg.exec() == QDialog::Accepted)
   {

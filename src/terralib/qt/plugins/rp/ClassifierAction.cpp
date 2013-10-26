@@ -35,7 +35,7 @@
 // STL
 #include <memory>
 
-te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
+te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Classifier...").toStdString());
 }
@@ -48,7 +48,9 @@ void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
 {
   te::qt::widgets::ClassifierWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-  dlg.setList(getLayers());
+  std::list<te::map::AbstractLayerPtr> layersList = getLayers();
+
+  dlg.setList( layersList );
 
   dlg.exec();
 }

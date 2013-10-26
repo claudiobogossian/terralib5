@@ -974,7 +974,7 @@ namespace te
               ( centerY - lobeWidth - lobeRadius ),
               ( centerX + lobeWidth - 1 ),
               ( centerY + lobeWidth + lobeRadius ) )
-            - ( 3.0 *
+            - ( 3.0f *
             getIntegralBoxSum(
               bufferPtr,
               ( centerX + 1 - lobeWidth ),
@@ -1007,7 +1007,7 @@ namespace te
               ( centerY + 1 - lobeWidth ),
               ( centerX + lobeWidth + lobeRadius ),
               ( centerY + lobeWidth - 1 ) )
-            - 3.0 *
+            - 3.0f *
             getIntegralBoxSum(
               bufferPtr,
               ( centerX - lobeRadius ),

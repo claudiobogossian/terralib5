@@ -480,6 +480,7 @@ set (
   ${SRCDIR}/widgets/query/OrderByWidget.h
   ${SRCDIR}/widgets/query/OrderByWizardPage.h
   ${SRCDIR}/widgets/query/QueryBuilderWizard.h
+  ${SRCDIR}/widgets/query/QueryDialog.h
   ${SRCDIR}/widgets/query/WhereClauseWidget.h
   ${SRCDIR}/widgets/query/WhereClauseWizardPage.h
 )

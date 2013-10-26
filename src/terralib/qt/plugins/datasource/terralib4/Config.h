@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_PLUGINS_TERRALIB4_INTERNAL_CONFIG_H
 
 // TerraLib
-#include "../../../Config.h"
+#include "../../../../Config.h"
 
 /*!
   \def TE_QT_PLUGIN_TERRALIB4_PLUGIN_NAME
