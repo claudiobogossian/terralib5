@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -79,34 +79,32 @@ namespace te
           ~LayerTreeView();
 
           /*!
-            \brief It gets all the selected items in the tree view.
+            \brief It gets the items that are selected in the tree view.
 
-            \return The list of selected items in the tree view.
+            \return The list of items that are selected in the tree view.
           */
           std::list<AbstractTreeItem*> getSelectedItems() const;
 
           /*!
-            \brief It gets all the selected layers in the tree view, including the folder layers.
+            \brief It gets the single and folder layer items that are selected in the tree view.
 
-            \return The list of selected layers in the tree view, including folder layers.
+            \return The list of single and folder layer items that are selected in the tree view.
           */
-          std::list<AbstractTreeItem*> getAllSelectedLayerItems() const;
+          std::list<AbstractTreeItem*> getSelectedLayerItems() const;
 
           /*!
-            \brief It gets the selected layers in the view, not including the selected folder layers.
+            \brief It gets the single layers that are selected in the view.
 
-            \return The list of selected layers in the view, not including the selected folder layers.
+            \return The list of single layers that are selected in the view.
           */
-          std::list<te::map::AbstractLayerPtr> getSelectedLayers() const;
+          std::list<te::map::AbstractLayerPtr> getSelectedSingleLayers() const;
 
           /*!
-            \brief It gets the layers in the view that are selected and visible,
-                   not including the selected and visible folder layers.
+            \brief It gets the single layers that are selected and visible in the tree view.
 
-            \return List of layers in the view that are selected and visible,
-                    not including the selected and visible folder layers.
+            \return The list of single layers that are selected and visible in the tree view.
           */
-          std::list<te::map::AbstractLayerPtr> getSelectedAndVisibleLayers() const;
+          std::list<te::map::AbstractLayerPtr> getSelectedAndVisibleSingleLayers() const;
 
           /*!
             \brief It adds the action to a specified menu of a given layer type when a context menu is displayed.
@@ -128,17 +126,13 @@ namespace te
 
             \param action The action to be removed from the context menu.
 
-            \note The LayerTreeView will not destroy the action, it will only detach it from widget.
+            \note The LayerTreeView will not destroy the action, it will only detach it from the widget.
           */
           void remove(QAction* action);
 
         public slots:
 
-          void add(const te::map::AbstractLayerPtr& layer);
-
-          void remove(te::qt::widgets::AbstractTreeItem* item);
-
-          void layerSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+          void onSelectedLayersChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
         signals:
 
@@ -152,9 +146,7 @@ namespace te
 
           void pressed(te::qt::widgets::AbstractTreeItem* item);
 
-          void visibilityChanged(te::map::AbstractLayerPtr layer);
-
-          void layerRemoved(te::map::AbstractLayerPtr layer);
+          void visibilityChanged(const te::map::AbstractLayerPtr& layer);
 
           void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
 
@@ -172,15 +164,15 @@ namespace te
 
         protected slots:
 
-          void itemActivated(const QModelIndex & index);
+          void onItemActivated(const QModelIndex& index);
 
-          void itemClicked(const QModelIndex & index);
+          void onItemClicked(const QModelIndex& index);
 
-          void itemDoubleClicked(const QModelIndex & index);
+          void onItemDoubleClicked(const QModelIndex& index);
 
-          void itemEntered(const QModelIndex & index);
+          void onItemEntered(const QModelIndex& index);
 
-          void itemPressed(const QModelIndex & index);
+          void onItemPressed(const QModelIndex& index);
 
         private:
 

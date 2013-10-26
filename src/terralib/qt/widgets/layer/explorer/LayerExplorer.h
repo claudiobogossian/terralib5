@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../Config.h"
+#include "LayerTreeView.h"
 
 // STL
 #include <list>
@@ -45,7 +46,6 @@ namespace te
     {
       class AbstractTreeItem;
       class LayerTreeModel;
-      class LayerTreeView;
 
       /*!
         \class LayerExplorer
@@ -71,32 +71,11 @@ namespace te
           void set(const std::list<te::map::AbstractLayerPtr>& layers);
 
           /*!
-            \brief It gets all the top level layers in the layer explorer, including the top level folder layers.
+            \brief It gets the top level layers in the tree model associated to the layer explorer.
 
-            \return List of all the top level layers in the layer explorer, including the top level folder layers.
+            \return The list of the top level layers in the tree model associated to the layer explorer.
           */
-          std::list<te::map::AbstractLayerPtr> getAllTopLevelLayers() const;
-
-          /*!
-            \brief It gets all the layers in the layer explorer, including the folder layers.
-
-            \return List of all the layers in the layer explorer, including the folder layers.
-          */
-          std::list<te::map::AbstractLayerPtr> getAllLayers() const;
-
-          /*!
-            \brief It gets the layers in the layer explorer, not including the folder layers.
-
-            \return List of layers in the layer explorer, not including the folder layers.
-          */
-          std::list<te::map::AbstractLayerPtr> getLayers() const;
-
-          /*!
-            \brief It gets the layers in the layer explorer that are visible, not including the folder layers.
-
-            \return List of layers in the layer explorer that are visible, not including the folder layers.
-          */
-          std::list<te::map::AbstractLayerPtr> getVisibleLayers() const;
+          std::list<te::map::AbstractLayerPtr> getTopLayers() const;
 
           /*!
             \brief It gets all the selected items in the layer explorer.
@@ -106,41 +85,87 @@ namespace te
           std::list<AbstractTreeItem*> getSelectedItems() const;
 
           /*!
-            \brief It gets the selected layers in the layer explorer, not including the selected folder layers.
+            \brief It gets all the selected layers(single and folders) in the layer explorer.
 
-            \return The list of selected layers in the layer explorer, not including the selected folder layers.
+            \return The list of all the selected layers(single and folders) in the layer explorer.
           */
-          std::list<te::map::AbstractLayerPtr> getSelectedLayers() const;
+          std::list<AbstractTreeItem*> getSelectedLayerItems() const;
 
           /*!
-            \brief It gets the layers in the layer explorer that are selected and visible,
-                   not including the selected and visible folder layers.
+            \brief It gets the single layers that are selected.
 
-            \return List of layers in the view that are selected and visible,
-                    not including selected and visible folder layers.
+            \return The list of single layers that are selected.
           */
-          std::list<te::map::AbstractLayerPtr> getSelectedAndVisibleLayers() const;
+          std::list<te::map::AbstractLayerPtr> getSelectedSingleLayers() const;
 
-        public slots:
+          /*!
+            \brief It gets the single layers that are selected and visible.
+
+            \return The list of single layers that are selected and visible.
+          */
+          std::list<te::map::AbstractLayerPtr> getSelectedAndVisibleSingleLayers() const;
 
           void add(const te::map::AbstractLayerPtr& layer);
 
           void remove(AbstractTreeItem* item);
 
-        //protected:
+          te::qt::widgets::LayerTreeView::ContextMenuType getMenuType(int menuType) const;
 
-        //  void dragEnterEvent(QDragEnterEvent* e);
+          /*!
+            \brief It calls the action to a specified menu of a given layer type when a context menu is displayed.
 
-        //  void dragMoveEvent(QDragMoveEvent* e);
+            \param action    The action to be associated to the context menu.
+            \param menu      The name of a submenu, using a dot separator notation. If omitted the action will be set on a top menu item.
+            \param layerType If omitted the action will be set to all type of layers.
+            \param menuType  The type of selection to what this action will be displayed.
 
-        //  void dragLeaveEvent(QDragLeaveEvent* e);
+            \note The associated LayerTreeView will not take the action ownership.
+          */
+          void add(QAction* action,
+                   const QString& menu = QString(""),
+                   const QString& layerType = QString(""),
+                   te::qt::widgets::LayerTreeView::ContextMenuType menuType = te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
-        //  void dropEvent(QDropEvent* e);
+          signals:
+
+            void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
+
+            void visibilityChanged(const te::map::AbstractLayerPtr& layer);
+
+            void layerOrderChanged();
+
+            void doubleClicked(te::qt::widgets::AbstractTreeItem* item);
+
+          public slots:
+
+          /*!
+            \brief It sends out a signal indicating that there were changes in the selection of layers in the tree view.
+
+            \param selectedLayers  The new list of selected layers.
+          */
+          void onSelectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
+
+          /*!
+            \brief It sends out a signal indicating that the visibility of the given single layer was changed in the tree view.
+          */
+          void onVisibilityChanged(const te::map::AbstractLayerPtr& layer);
+
+          /*!
+            \brief It sends out a signal indicating that there was a drag and operation on the tree view.
+          */
+          void onLayerOrderChanged();
+
+          /*!
+            \brief It sends out a signal indicating that the given item was double clicked.
+
+            \param item The tree item that was double clicked.
+          */
+          void onItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
 
         private:
 
-          LayerTreeView* m_treeView;
-          LayerTreeModel* m_treeModel;
+          LayerTreeView*  m_treeView;    //!< The tree view for the layers
+          LayerTreeModel* m_treeModel;   //!< the tree model for the layers
       }; 
     } // end namespace widgets
   }   // end namespace qt
