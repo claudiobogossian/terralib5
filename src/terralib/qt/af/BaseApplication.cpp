@@ -283,7 +283,7 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
       // Add the unsave asterisk
       setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), true));
 
-      m_project->projectChanged(true);
+      m_project->setProjectAsChanged(true);
     }
     break;
 
@@ -559,7 +559,7 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
   te::qt::af::Save(*m_project, m_project->getFileName());
 
-  m_project->projectChanged(false);
+  m_project->setProjectAsChanged(false);
 
   setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
 
@@ -587,7 +587,7 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
 
   te::qt::af::Save(*m_project, fName);
 
-  m_project->projectChanged(false);
+  m_project->setProjectAsChanged(false);
 
   setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
 
@@ -892,38 +892,53 @@ void te::qt::af::BaseApplication::onLayerChartTriggered()
 {
  try
   {
-    std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedSingleLayerItems();
 
-    if(selectedItems.empty())
+    if(selectedLayerItems.empty())
     {
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                           tr("Select a layer in the layer explorer!"));
+                           tr("Select a single layer in the layer explorer!"));
       return;
     }
 
-    // The chart will be accomplished only on the first layer selected
-    te::qt::widgets::AbstractTreeItem* selectedItem = *(selectedItems.begin());
-    te::map::AbstractLayerPtr selectedLayer = selectedItem->getLayer();
+    // The chart will be accomplished only on the first single layer selected
+    te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
+    te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
 
     te::qt::widgets::ChartLayerDialog dlg(this);
     dlg.setLayer(selectedLayer);
 
+    // If the selected layer has a chart associated to it, set the chart layer
+    // dialog for initializing with this chart.
     te::map::Chart* chart = selectedLayer->getChart();
 
     if(chart)
       dlg.setChart(chart);
 
+    // Check if the selected layer item has a chart item; in positive case, remove it from the layer item.
+    te::qt::widgets::ChartItem* chartItem = selectedLayerItem->findChild<te::qt::widgets::ChartItem*>();
+
+    if(chartItem)
+      m_explorer->getExplorer()->remove(chartItem);
+
+    // Collapse the selected layer item to allow the new chart item to be generated
+    // in the next time the selected layer item is expanded.
+    m_explorer->getExplorer()->collapse(selectedLayerItem);
+
     if(dlg.exec() == QDialog::Accepted)
     {
-      std::list<te::qt::widgets::AbstractTreeItem*> layerItems = m_explorer->getExplorer()->getSelectedItems();
-      te::qt::widgets::ChartItem* chartItem = selectedItem->findChild<te::qt::widgets::ChartItem*>();
+      // Expand the selected layer item and the chart item
+      m_explorer->getExplorer()->expand(selectedLayerItem);
 
+      te::qt::widgets::ChartItem* chartItem = selectedLayerItem->findChild<te::qt::widgets::ChartItem*>();
       if(chartItem)
-        m_explorer->getExplorer()->remove(chartItem);
-
-      m_explorer->getExplorer()->getTreeView()->expandAll();
+        m_explorer->getExplorer()->expand(chartItem);
 
       m_display->getDisplay()->refresh();
+
+      // Send out an event informing that the project is not saved
+      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
     }
   }
   catch(const std::exception& e)
@@ -1106,7 +1121,7 @@ void te::qt::af::BaseApplication::onQueryLayerTriggered()
   te::qt::widgets::QueryDialog dlg(this);
 
   if(m_project)
-    dlg.setList(m_project->getLayers());
+    dlg.setList(m_project->getTopLayers());
 
   connect(&dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
 
@@ -1165,7 +1180,7 @@ void te::qt::af::BaseApplication::onPanToggled(bool checked)
 
 void te::qt::af::BaseApplication::onZoomExtentTriggered()
 {
-  if(!m_project && m_project->getLayers().empty())
+  if(!m_project && m_project->getTopLayers().empty())
     return;
 
   //m_display->fit(m_explorer->getExplorer()->getAllLayers());
@@ -1459,7 +1474,7 @@ void te::qt::af::BaseApplication::newProject()
 
   te::qt::af::ApplicationController::getInstance().set(m_project);
 
-  m_project->projectChanged(false);
+  m_project->setProjectAsChanged(false);
 
   te::qt::af::evt::ProjectAdded evt(m_project);
 
