@@ -140,7 +140,7 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   assert((reader.getNodeType() == te::xml::END_ELEMENT) || (reader.getNodeType() == te::xml::END_DOCUMENT));
   assert(reader.getElementLocalName() == "Project");
 
-  project->projectChanged(false);
+  project->setProjectAsChanged(false);
 
   return project.release();
 }
@@ -197,8 +197,8 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
 
   const te::serialize::Layer& lserial = te::serialize::Layer::getInstance();
 
-  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = project.getLayers().begin();
-      it != project.getLayers().end();
+  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = project.getTopLayers().begin();
+      it != project.getTopLayers().end();
       ++it)
     lserial.write(it->get(), writer);
 

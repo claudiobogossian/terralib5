@@ -64,7 +64,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       if(projectAdded == 0 || projectAdded->m_proj == 0)
         return;
 
-      m_explorer->set(projectAdded->m_proj->getLayers());
+      m_explorer->set(projectAdded->m_proj->getTopLayers());
     }
     break;
 
