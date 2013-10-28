@@ -291,6 +291,24 @@ std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerTreeView::ge
   return selectedLayerItems;
 }
 
+std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerTreeView::getSelectedSingleLayerItems() const
+{
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = getSelectedLayerItems();
+
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedSingleLayerItems;
+
+  std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
+  for(it = selectedLayerItems.begin(); it != selectedLayerItems.end(); ++it)
+  {
+    te::qt::widgets::AbstractTreeItem* selectedLayerItem = *it;
+
+    if(selectedLayerItem->getType() == te::qt::widgets::AbstractTreeItem::LAYERITEM)
+      selectedSingleLayerItems.push_back(selectedLayerItem);
+  }
+
+  return selectedSingleLayerItems;
+}
+
 std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeView::getSelectedSingleLayers() const
 {
   std::list<te::map::AbstractLayerPtr> selectedSingleLayers;

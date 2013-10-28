@@ -93,6 +93,13 @@ namespace te
           std::list<AbstractTreeItem*> getSelectedLayerItems() const;
 
           /*!
+            \brief It gets the single layer items that are selected in the tree view.
+
+            \return The list of single layer items that are selected in the tree view.
+          */
+          std::list<AbstractTreeItem*> getSelectedSingleLayerItems() const;
+
+          /*!
             \brief It gets the single layers that are selected in the view.
 
             \return The list of single layers that are selected in the view.
