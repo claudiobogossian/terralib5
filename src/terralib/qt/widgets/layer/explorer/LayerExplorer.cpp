@@ -111,6 +111,11 @@ std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerExplorer::ge
   return m_treeView->getSelectedLayerItems();
 }
 
+std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerExplorer::getSelectedSingleLayerItems() const
+{
+  return m_treeView->getSelectedSingleLayerItems();
+}
+
 std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelectedSingleLayers() const
 {
   return m_treeView->getSelectedSingleLayers();
@@ -123,7 +128,7 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelected
 
 void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer)
 {
-  if(m_treeModel == 0)
+  if(!m_treeModel)
     return;
 
   m_treeModel->add(layer);
@@ -131,7 +136,7 @@ void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer)
 
 void te::qt::widgets::LayerExplorer::remove(AbstractTreeItem* item)
 {
-  if(m_treeModel == 0)
+  if(!m_treeModel)
     return;
 
   m_treeModel->remove(item);
@@ -147,7 +152,7 @@ void te::qt::widgets::LayerExplorer::add(QAction* action,
                                          const QString& layerType,
                                          te::qt::widgets::LayerTreeView::ContextMenuType menuType)
 {
-  if(m_treeView == 0)
+  if(!m_treeView)
     return;
 
   m_treeView->add(action, menu, layerType, menuType);
@@ -171,4 +176,24 @@ void te::qt::widgets::LayerExplorer::onLayerOrderChanged()
 void te::qt::widgets::LayerExplorer::onItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item)
 {
   emit doubleClicked(item);
+}
+
+void te::qt::widgets::LayerExplorer::expand(te::qt::widgets::AbstractTreeItem* item)
+{
+  if(!m_treeView || !m_treeModel)
+    return;
+
+  QModelIndex index = m_treeModel->getIndex(item);
+
+  m_treeView->expand(index);
+}
+
+void te::qt::widgets::LayerExplorer::collapse(te::qt::widgets::AbstractTreeItem* item)
+{
+  if(!m_treeView || !m_treeModel)
+    return;
+
+  QModelIndex index = m_treeModel->getIndex(item);
+
+  m_treeView->collapse(index);
 }

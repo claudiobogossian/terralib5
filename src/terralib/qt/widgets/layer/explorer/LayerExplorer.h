@@ -92,6 +92,13 @@ namespace te
           std::list<AbstractTreeItem*> getSelectedLayerItems() const;
 
           /*!
+            \brief It gets the single layer items that are selected in the tree view.
+
+            \return The list of single layer items that are selected in the tree view.
+          */
+          std::list<AbstractTreeItem*> getSelectedSingleLayerItems() const;
+
+          /*!
             \brief It gets the single layers that are selected.
 
             \return The list of single layers that are selected.
@@ -161,6 +168,20 @@ namespace te
             \param item The tree item that was double clicked.
           */
           void onItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
+
+          /*!
+            \brief It expands the specified model item.
+
+            \param item The model item to be expanded.
+          */
+          void expand(te::qt::widgets::AbstractTreeItem* item);
+
+          /*!
+            \brief It collapses the specified model item.
+
+            \param item The model item to be collapsed.
+          */
+          void collapse(te::qt::widgets::AbstractTreeItem* item);
 
         private:
 
