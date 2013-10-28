@@ -358,6 +358,8 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
   int insertingRow;
   QModelIndex insertingItemParentIndex;
 
+  removeLayerFromParentChildrenList(draggedLayers);
+
   // Check if the drop item is a folder item and if it has no children; in that case,
   // the dragged items will be made children of this folder item
   if(row < 0 && dropItem && dropLayer.get() &&
@@ -502,7 +504,6 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
       delete m_items[i];
 
     m_items.erase(m_items.begin() + row, m_items.begin() + row + count);
-    m_layers.erase(m_layers.begin() + row, m_layers.begin() + row + count);
   }
   else
   {
@@ -511,8 +512,6 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
 
     // Get the parent layer associated to the items to be removed
     te::map::AbstractLayerPtr parentLayer = parentItem->getLayer();
-
-    parentLayer->remove(row, count);
 
     // Finally, remove the item from the tree
     const QList<QObject*>& childrenList = parentItem->children();
@@ -555,6 +554,34 @@ bool te::qt::widgets::LayerTreeModel::isCheckable() const
   return m_checkable;
 }
 
+QModelIndex te::qt::widgets::LayerTreeModel::getIndex(AbstractTreeItem* item)
+{
+  if(!item)
+    return QModelIndex();
+
+  int itemRow;              // The item row
+  QModelIndex parentIndex;  // The parent index of the item
+
+  AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(item->parent());
+
+  if(!parentItem)
+  {
+    // The item is a top level item; get its row
+    for(std::size_t i = 0; i < m_items.size(); ++i)
+    {
+      if(m_items[i] == item)
+      {
+        itemRow = i;
+        break;
+      }
+    }
+  }
+  else
+    itemRow = parentItem->children().indexOf(item);
+
+  return createIndex(itemRow, 0, item);
+}
+
 void te::qt::widgets::LayerTreeModel::add(const te::map::AbstractLayerPtr& layer)
 {
   std::size_t row = m_layers.size();
@@ -565,32 +592,61 @@ void te::qt::widgets::LayerTreeModel::add(const te::map::AbstractLayerPtr& layer
 
 bool te::qt::widgets::LayerTreeModel::remove(AbstractTreeItem* item)
 {
-  int itemRow;              // The item row
-  QModelIndex parentIndex;  // The parent index of the item
+  QModelIndex itemIndex = getIndex(item);
 
-  AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(item->parent());
-  if(!parentItem)
+  int itemRow = itemIndex.row();
+  QModelIndex parentIndex = parent(itemIndex);
+
+    AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(item->parent());
+
+  if(item->getType() == te::qt::widgets::AbstractTreeItem::LAYERITEM ||
+     item->getType() == te::qt::widgets::AbstractTreeItem::FOLDERLAYERITEM)
   {
-    // The item is a top level item; get its row
-    for(std::size_t i = 0; i < m_items.size(); ++i)
+    // If the item is a single layer item or a folder layer item, remove the layer associated to the item.
+
+    if(!parentItem)
     {
-      if(m_items[i] == item)
+      // The item is a top level item; get its row
+      for(std::size_t i = 0; i < m_items.size(); ++i)
       {
-        itemRow = i;
-        //m_layers.erase(m_layers.begin() + i);
-        break;
+        if(m_items[i] == item)
+        {
+          m_layers.erase(m_layers.begin() + i);
+          break;
+        }
       }
     }
+    else
+      parentItem->getLayer()->remove(itemRow);
   }
-  else
+  else if(item->getType() == te::qt::widgets::AbstractTreeItem::CHARTITEM)
   {
-    itemRow = parentItem->children().indexOf(item);
-
-    QModelIndex itemIndex = createIndex(itemRow, 0, item);
-    parentIndex = parent(itemIndex);
+    // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
+    parentItem->getLayer()->setChart(0);
   }
 
   return removeRows(itemRow, 1, parentIndex);
+}
+
+void te::qt::widgets::LayerTreeModel::removeLayerFromParentChildrenList(std::vector<te::map::AbstractLayerPtr>& layers)
+{
+  for(std::size_t i = 0; i < layers.size(); ++i)
+  {
+    te::map::AbstractLayerPtr layer = layers[i];
+
+    te::map::AbstractLayerPtr parentLayer = static_cast<te::map::AbstractLayer*>(layer->getParent());
+
+    if(!parentLayer)
+    {
+      for(std::size_t j = 0; j < m_layers.size(); ++j)
+      {
+        if(m_layers[j] == layer)
+          m_layers.erase(m_layers.begin() + j);
+      }
+    }
+    else
+      parentLayer->remove(layer->getIndex());
+  }
 }
 
 void te::qt::widgets::LayerTreeModel::emitDataChangedForDescendants(const QModelIndex& parent)

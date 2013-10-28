@@ -259,6 +259,15 @@ namespace te
           bool isCheckable() const;
 
           /*!
+            \brief It gets the index to be associated to the given item.
+
+            \param item The item whose index will be returned.
+
+            \return The index that is associated to the item.
+          */
+          QModelIndex getIndex(AbstractTreeItem* item);
+
+          /*!
             \brief It adds a layer to the model.
 
             \param layer The layer to be added to the model.
@@ -280,6 +289,13 @@ namespace te
           void layerOrderChanged();
 
         protected:
+
+          /*!
+            \brief It removes the given layers from the list of children of their parents.
+
+            \param layers The layers that will be removed from the list of children of their parents.
+          */
+          void removeLayerFromParentChildrenList(std::vector<te::map::AbstractLayerPtr>& layers);
 
           /*!
             \brief It emits the dataChanged signal for the descendants indexes of the given index.
