@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,7 +32,7 @@
 te::qt::af::Project::Project()
   : m_title(""),
     m_author(""),
-    m_layers(),
+    m_topLayers(),
     m_changed(false)
 {
 }
@@ -64,14 +64,14 @@ const std::string& te::qt::af::Project::getAuthor() const
   return m_author;
 }
 
-const std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getLayers() const
+const std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getTopLayers() const
 {
-  return m_layers;
+  return m_topLayers;
 }
 
-std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getLayers()
+std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getTopLayers()
 {
-  return m_layers;
+  return m_topLayers;
 }
 
 std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers()
@@ -80,7 +80,7 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getAllLayers()
 
   std::list<te::map::AbstractLayerPtr>::const_iterator it;
 
-  for(it = m_layers.begin(); it != m_layers.end(); ++it)
+  for(it = m_topLayers.begin(); it != m_topLayers.end(); ++it)
   {
     te::map::AbstractLayerPtr topLevelLayer = *it;
     layers.push_back(topLevelLayer);
@@ -117,34 +117,6 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getSingleLayers()
   return singleLayers;
 }
 
-//std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getSingleLayers()
-//{
-//  std::list<te::map::AbstractLayerPtr> layers;
-//
-//  std::list<te::map::AbstractLayerPtr>::const_iterator it;
-//
-//  for(it = m_layers.begin(); it != m_layers.end(); ++it)
-//  {
-//    te::map::AbstractLayerPtr topLevelLayer = *it;
-//
-//    if(topLevelLayer->getType() == "FOLDERLAYER")
-//    {
-//      std::vector<te::map::AbstractLayer*> children = topLevelLayer->getDescendants();
-//      for(std::size_t i = 0; i < children.size(); ++i)
-//      {
-//        if(children[i]->getType() == "FOLDERLAYER")
-//          continue;
-//
-//        layers.push_back(te::map::AbstractLayerPtr(children[i]));
-//      }
-//    }
-//    else
-//      layers.push_back(topLevelLayer);
-//  }
-//
-//  return layers;
-//}
-
 std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getVisibleSingleLayers()
 {
   std::list<te::map::AbstractLayerPtr> visibleSingleLayers;
@@ -165,21 +137,21 @@ std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getVisibleSingleLayers
 
 void te::qt::af::Project::setTopLayers(const std::list<te::map::AbstractLayerPtr>& layers)
 {
-  m_layers.clear();
-  m_layers = layers;
+  m_topLayers.clear();
+  m_topLayers = layers;
 }
 
 void te::qt::af::Project::add(const te::map::AbstractLayerPtr& layer)
 {
-  m_layers.push_back(layer);
+  m_topLayers.push_back(layer);
 
   m_changed = true;
 }
 
 void te::qt::af::Project::remove(const te::map::AbstractLayerPtr& layer)
 {
-  std::list<te::map::AbstractLayerPtr>::iterator newEnd = std::remove(m_layers.begin(), m_layers.end(), layer);
-  m_layers.erase(newEnd, m_layers.end());
+  std::list<te::map::AbstractLayerPtr>::iterator newEnd = std::remove(m_topLayers.begin(), m_topLayers.end(), layer);
+  m_topLayers.erase(newEnd, m_topLayers.end());
   m_changed = true;
 }
 
@@ -198,13 +170,13 @@ const std::string& te::qt::af::Project::getFileName() const
   return m_fileName;
 }
 
-void te::qt::af::Project::projectChanged(const bool& changed)
+void te::qt::af::Project::setProjectAsChanged(const bool& changed)
 {
   m_changed = changed;
 }
 
 void te::qt::af::Project::clear()
 {
-  m_layers.clear();
-  projectChanged(true);
+  m_topLayers.clear();
+  setProjectAsChanged(true);
 }
