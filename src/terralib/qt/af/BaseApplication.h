@@ -327,7 +327,9 @@ namespace te
           // Project
           Project* m_project;
 
-          QDockWidget* m_progressDockWidget; //!< Dock widget used to show progress information
+          QDockWidget* m_progressDockWidget;       //!< Dock widget used to show progress information
+          QDockWidget* m_zoomInDisplaysDockWidget; //!< Dock widget used to show zoom in display
+          QDockWidget* m_eyeBirdDisplaysDockWidget; //!< Dock widget used to show eye bird display
 
           te::qt::af::ApplicationController* m_controller;
       };
