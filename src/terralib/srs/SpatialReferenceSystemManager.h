@@ -220,7 +220,7 @@ namespace te
        \brief Returns the unit of measure for a SRS with a given id.
        \return A pointer to the unit of measure or a null pointer if it the SRS could not be founded.
        */
-      std::auto_ptr<te::common::UnitOfMeasure> getUnit(unsigned int id, const std::string& authName);
+      te::common::UnitOfMeasurePtr getUnit(unsigned int id, const std::string& authName="EPSG");
       
       /*!
        \brief Checks if a SRS with a given id refers to a geographic spatial reference system.

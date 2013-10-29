@@ -96,6 +96,14 @@ namespace te
     }
     
     //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::SegmentFeatures::SegmentFeatures()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::SegmentFeatures::~SegmentFeatures()
+    {
+    }
     
     const SegmenterRegionGrowingStrategy::SegmentFeatures& 
       SegmenterRegionGrowingStrategy::SegmentFeatures::operator=(
@@ -111,31 +119,20 @@ namespace te
       return other;
     }
     
-     //-------------------------------------------------------------------------
-     
-    SegmenterRegionGrowingStrategy::SegmentsPool::~SegmentsPool()
+    //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::Segment::Segment()
     {
-      clear();
-    }   
-    
-    void SegmenterRegionGrowingStrategy::SegmentsPool::clear()
+    }
+
+    SegmenterRegionGrowingStrategy::Segment::~Segment()
     {
-      iterator segmentsIt = begin();
-      iterator segmentsItEnd = end();
-      
-      while( segmentsIt != segmentsItEnd )
-      {
-        delete( *segmentsIt );
-        ++segmentsIt;
-      }
-      
-      std::list< Segment* >::clear();
-    }    
-    
+    }  
+
      //-------------------------------------------------------------------------
      
     SegmenterRegionGrowingStrategy::SegmentsIndexer::SegmentsIndexer( 
-      SegmentsPool& segmentsPool )
+      SegmenterSegmentsPool& segmentsPool )
       : std::map< SegmenterSegmentsBlock::SegmentIdDataType, Segment* >(),
         m_segmentsPool( segmentsPool )
     {
@@ -153,7 +150,7 @@ namespace te
       
       while( segmentsIt != segmentsItEnd )
       {
-        m_segmentsPool.push_back(segmentsIt->second);
+        m_segmentsPool.store(segmentsIt->second);
         
         ++segmentsIt;
       }
@@ -163,6 +160,14 @@ namespace te
     
     //-------------------------------------------------------------------------
     
+    SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures::SegmentFeatures()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures::~SegmentFeatures()
+    {
+    }
+
     SegmenterRegionGrowingStrategy::SegmentFeatures*
       SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures::clone()
       const
@@ -191,6 +196,24 @@ namespace te
     };
     
     //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::MeanBasedSegment::MeanBasedSegment()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::MeanBasedSegment::~MeanBasedSegment()
+    {
+    }
+
+    //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures::SegmentFeatures()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures::~SegmentFeatures()
+    {
+    }
     
     SegmenterRegionGrowingStrategy::SegmentFeatures*
       SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures::clone()
@@ -224,6 +247,26 @@ namespace te
       SegmenterRegionGrowingStrategy::SegmentFeatures::operator=( *otherPtr );
     };    
     
+    //-------------------------------------------------------------------------
+
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::BaatzBasedSegment()
+    {
+    }
+
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::~BaatzBasedSegment()
+    {
+    }
+
+    //-------------------------------------------------------------------------
+    
+    SegmenterRegionGrowingStrategy::Merger::Merger()
+    {
+    }
+    
+    SegmenterRegionGrowingStrategy::Merger::~Merger()
+    {
+    } 
+
     //-------------------------------------------------------------------------
     
     SegmenterRegionGrowingStrategy::MeanMerger::MeanMerger()
@@ -1180,14 +1223,11 @@ namespace te
             {
               case Parameters::MeanFeaturesType :
               {
-                if( m_segmentsPool.empty() )
+                segmentPtr = (MeanBasedSegment*)m_segmentsPool.retrive();
+                
+                if( segmentPtr == 0 )
                 {
                   segmentPtr = new MeanBasedSegment();
-                }
-                else
-                {
-                  segmentPtr = m_segmentsPool.back();
-                  m_segmentsPool.pop_back();
                 }
                 
                 ((MeanBasedSegment*)segmentPtr)->m_features.m_means = rasterValues;
@@ -1195,14 +1235,11 @@ namespace te
               }
               case Parameters::BaatzFeaturesType :
               {
-                if( m_segmentsPool.empty() )
-                {                
+                segmentPtr = (BaatzBasedSegment*)m_segmentsPool.retrive();
+                
+                if( segmentPtr == 0 )
+                {               
                   segmentPtr = new BaatzBasedSegment();
-                }                
-                else
-                {
-                  segmentPtr = m_segmentsPool.back();
-                  m_segmentsPool.pop_back();
                 }
                 
                 ((BaatzBasedSegment*)segmentPtr)->m_features.m_sums = rasterValues;
@@ -1504,7 +1541,7 @@ namespace te
           // segments container
           // The merged segment id will be given back to ids manager
           
-          m_segmentsPool.push_back( *minForwardDissimilaritySegmentIt );
+          m_segmentsPool.store( *minForwardDissimilaritySegmentIt );
           
           segsIt->second->m_neighborSegments.erase( 
             minForwardDissimilaritySegmentIt );
@@ -1699,7 +1736,7 @@ namespace te
             (*minForwardDissimilaritySegmentIt)->m_neighborSegments.remove( 
               segsIt->second );
 
-            m_segmentsPool.push_back( segsIt->second );
+            m_segmentsPool.store( segsIt->second );
             
             ++segsIt;
               

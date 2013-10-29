@@ -86,9 +86,9 @@ te::mem::DataSetItem& te::mem::DataSetItem::operator=(const DataSetItem& rhs)
   return *this;
 }
 
-te::mem::DataSetItem* te::mem::DataSetItem::clone() const
+std::auto_ptr<te::mem::DataSetItem> te::mem::DataSetItem::clone() const
 {
-  return new DataSetItem(*this);
+  return std::auto_ptr<te::mem::DataSetItem>(new DataSetItem(*this));
 }
 
 te::da::DataSet* te::mem::DataSetItem::getParent() const
@@ -271,133 +271,128 @@ void te::mem::DataSetItem::setString(const std::string& name, const std::string&
   setString(pos, value);
 }
 
-te::dt::ByteArray* te::mem::DataSetItem::getByteArray(std::size_t i) const
+std::auto_ptr<te::dt::ByteArray> te::mem::DataSetItem::getByteArray(std::size_t i) const
 {
   te::dt::ByteArray* b = new te::dt::ByteArray(*static_cast<const te::dt::ByteArray*>(&m_data[i]));
-  return b;
+  return std::auto_ptr<te::dt::ByteArray>(b);
 }
 
-void te::mem::DataSetItem::setByteArray(std::size_t i, const te::dt::ByteArray& value) 
+void te::mem::DataSetItem::setByteArray(std::size_t i, te::dt::ByteArray* value) 
 {
-  m_data.replace(i, new te::dt::ByteArray(value));
+  m_data.replace(i, value);
 }
 
-void te::mem::DataSetItem::setByteArray(const std::string& name, const te::dt::ByteArray& value) 
+void te::mem::DataSetItem::setByteArray(const std::string& name, te::dt::ByteArray* value) 
 {
   std::size_t pos = te::da::GetPropertyPos(m_parent, name);
   setByteArray(pos, value);
 }
 
-te::gm::Geometry* te::mem::DataSetItem::getGeometry(std::size_t i) const
+std::auto_ptr<te::gm::Geometry> te::mem::DataSetItem::getGeometry(std::size_t i) const
 {
-  return static_cast<te::gm::Geometry*>(m_data[i].clone());
+  return std::auto_ptr<te::gm::Geometry>(static_cast<te::gm::Geometry*>(m_data[i].clone()));
 }
 
-void te::mem::DataSetItem::setGeometry(std::size_t i, const te::gm::Geometry& value)
+void te::mem::DataSetItem::setGeometry(std::size_t i, te::gm::Geometry* value)
 {
-  m_data.replace(i, value.clone());
+  m_data.replace(i, value);
 }
 
-void te::mem::DataSetItem::setGeometry(const std::string& name, const te::gm::Geometry& value)
+void te::mem::DataSetItem::setGeometry(const std::string& name, te::gm::Geometry* value)
 {
   std::size_t pos = te::da::GetPropertyPos(m_parent, name);
   setGeometry(pos, value);
 }
 
-te::rst::Raster* te::mem::DataSetItem::getRaster(std::size_t i) const
+std::auto_ptr<te::rst::Raster> te::mem::DataSetItem::getRaster(std::size_t i) const
 {
-  return static_cast<te::rst::Raster*>(m_data[i].clone());
+  return  std::auto_ptr<te::rst::Raster>(static_cast<te::rst::Raster*>(m_data[i].clone()));
 }
 
-void te::mem::DataSetItem::setRaster(std::size_t i, const te::rst::Raster& value)
+void te::mem::DataSetItem::setRaster(std::size_t i, te::rst::Raster* value)
 {
-  m_data.replace(i, value.clone());
+  m_data.replace(i, value);
 }
 
-void te::mem::DataSetItem::setRaster(const std::string& name, const  te::rst::Raster& value)
+void te::mem::DataSetItem::setRaster(const std::string& name, te::rst::Raster* value)
 {
   std::size_t pos = te::da::GetPropertyPos(m_parent, name);
   setRaster(pos, value);
 }
 
-te::dt::DateTime* te::mem::DataSetItem::getDateTime(std::size_t i) const
+std::auto_ptr<te::dt::DateTime> te::mem::DataSetItem::getDateTime(std::size_t i) const
 {
-  return static_cast<te::dt::DateTime*>(m_data[i].clone());
+  return std::auto_ptr<te::dt::DateTime>(static_cast<te::dt::DateTime*>(m_data[i].clone()));
 }
 
-void te::mem::DataSetItem::setDateTime(std::size_t i, const te::dt::DateTime& value) 
+void te::mem::DataSetItem::setDateTime(std::size_t i, te::dt::DateTime* value) 
 {
-  m_data.replace(i, value.clone());
+  m_data.replace(i, value);
 }
 
-void te::mem::DataSetItem::setDateTime(const std::string& name, const te::dt::DateTime& value)
+void te::mem::DataSetItem::setDateTime(const std::string& name, te::dt::DateTime* value)
 {
   std::size_t pos = te::da::GetPropertyPos(m_parent, name);
   setDateTime(pos, value);
 }
 
-te::dt::Array* te::mem::DataSetItem::getArray(std::size_t /*i*/) const
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-te::dt::AbstractData* te::mem::DataSetItem::getValue(std::size_t i) const
+std::auto_ptr<te::dt::AbstractData> te::mem::DataSetItem::getValue(std::size_t i) const
 {
   switch(getPropertyDataType(i))
   {
     case te::dt::CHAR_TYPE:
-      return new te::dt::Char(getChar(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Char(getChar(i)));
 
     case te::dt::UCHAR_TYPE:
-      return new te::dt::UChar(getUChar(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::UChar(getUChar(i)));
 
     case te::dt::INT16_TYPE:
-      return new te::dt::Int16(getInt16(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int16(getInt16(i)));
 
     case te::dt::UINT16_TYPE:
-      return new te::dt::UInt16(getInt16(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::UInt16(getInt16(i)));
 
     case te::dt::INT32_TYPE:
-      return new te::dt::Int32(getInt32(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int32(getInt32(i)));
 
     case te::dt::UINT32_TYPE:
-      return new te::dt::UInt32(getInt32(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::UInt32(getInt32(i)));
 
     case te::dt::INT64_TYPE:
-      return new te::dt::Int64(getInt64(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Int64(getInt64(i)));
 
     case te::dt::UINT64_TYPE:
-      return new te::dt::UInt64(getInt64(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::UInt64(getInt64(i)));
 
     case te::dt::BOOLEAN_TYPE:
-      return new te::dt::Boolean(getBool(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Boolean(getBool(i)));
 
     case te::dt::FLOAT_TYPE:
-      return new te::dt::Float(getFloat(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Float(getFloat(i)));
 
     case te::dt::DOUBLE_TYPE:
-      return new te::dt::Double(getDouble(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Double(getDouble(i)));
 
     case te::dt::NUMERIC_TYPE:
-      return new te::dt::Numeric(getNumeric(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::Numeric(getNumeric(i)));
 
     case te::dt::STRING_TYPE:
-      return new te::dt::String(getString(i));
+      return std::auto_ptr<te::dt::AbstractData>(new te::dt::String(getString(i)));
 
     case te::dt::BYTE_ARRAY_TYPE:
-       return getByteArray(i);
+      return std::auto_ptr<te::dt::AbstractData>(getByteArray(i).release());
 
     case te::dt::GEOMETRY_TYPE:
-      return getGeometry(i);
+      return std::auto_ptr<te::dt::AbstractData>(getGeometry(i).release());
 
     case te::dt::DATETIME_TYPE:
-      return getDateTime(i);
+      return std::auto_ptr<te::dt::AbstractData>(getDateTime(i).release());
 
     case te::dt::RASTER_TYPE:
-      return getRaster(i);
+      return std::auto_ptr<te::dt::AbstractData>(getRaster(i).release());
 
     default:
-      return 0;
+      return std::auto_ptr<te::dt::AbstractData>(0);
   }
 }
 

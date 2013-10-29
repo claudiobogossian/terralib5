@@ -128,7 +128,7 @@ namespace te
           /*!
             \brief Highlights the intervals contained by \a rectangle
 
-            \param rect The rectangle containing the intervanls to be highlighted.
+            \param rect The rectangle containing the intervals to be highlighted.
           */
           te::da::ObjectIdSet* highlight(QRectF rect);
 

@@ -140,6 +140,11 @@ namespace te
         */
         DateTimeType getDateTimeType() const { return DATE_DURATION; }
 
+        /*!
+          \brief Destructor
+        */
+        virtual ~DateDuration();
+
       protected:
 
         boost::gregorian::date_duration m_dateDuration;  //!< Date duration information.      

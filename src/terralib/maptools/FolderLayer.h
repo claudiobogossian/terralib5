@@ -100,9 +100,9 @@ namespace te
         void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
         /*!
-          \brief It returns the layer type: FOLDER_LAYER.
+          \brief It returns the layer type: FOLDERLAYER.
 
-          \return The layer type: FOLDER_LAYER.
+          \return The layer type: FOLDERLAYER.
         */
         const std::string& getType() const;
 

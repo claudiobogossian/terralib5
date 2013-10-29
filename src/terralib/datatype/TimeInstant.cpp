@@ -96,3 +96,7 @@ std::string te::dt::TimeInstant::toString() const
   //return boost::posix_time::to_iso_extended_string(m_timeInstant); 
 }
 
+te::dt::TimeInstant::~TimeInstant()
+{
+}
+

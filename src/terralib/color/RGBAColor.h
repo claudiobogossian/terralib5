@@ -341,7 +341,7 @@ namespace te
       unsigned char lowB = te::common::GetDecimalFromHexNotCS(hexColor[6]);
       int b = int((highB << 4) + lowB);
 
-      m_rgba = (r << 16) + (g << 8) + b;
+      setColor(r, g, b, TE_OPAQUE);
     }
 
     inline std::string RGBAColor::getColor() const
