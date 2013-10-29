@@ -34,9 +34,6 @@
 #include "HistogramDataWidget.h"
 #include "ui_HistogramDataWidgetForm.h"
 
-//QT
-#include <QtGui/QWidget>
-
 #include <iostream>
 
 te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataSet, te::da::DataSetType* dataType, QWidget* parent, Qt::WindowFlags f)
@@ -49,16 +46,30 @@ te::qt::widgets::HistogramDataWidget::HistogramDataWidget(te::da::DataSet* dataS
 
   QString item;
 
-  std::size_t rpos = te::da::GetFirstPropertyPos(dataSet, te::dt::RASTER_TYPE);
+  std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet.get(), te::dt::RASTER_TYPE);
 
   if(rpos != std::string::npos)
     {
-
       //Adjusting the widget to work with a raster file.
-      size_t size =  dataSet->getRaster(rpos)->getNumberOfBands();
-      m_ui->m_slicesSpinBox->setMaximum(size);
+      std::auto_ptr<te::rst::Raster> raster =  m_dataSet->getRaster(rpos);
+
+      const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MIN);
+      const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MAX);
+
+      const std::complex<double>* cmin = rsMin->at(0).m_minVal;
+      const std::complex<double>* cmax = rsMax->at(0).m_maxVal;
+
+      double min = cmin->real();
+      double max = cmax->real();
+
+      size_t size = raster->getNumberOfBands();
       m_ui->m_slicesSpinBox->setMinimum(0);
       m_ui->m_slicesSpinBox->setValue(0);
+
+      if (min >= 0 && max <= 255)
+        m_ui->m_slicesSpinBox->setMaximum(255);
+      else
+        m_ui->m_slicesSpinBox->setMaximum(max);
 
       for (size_t i = 0; i < size; i++)
       {
@@ -143,5 +154,25 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
     {
     m_ui->m_slicesSpinBox->setEnabled(true);
     }
+  }
+  else
+  {
+    std::auto_ptr<te::rst::Raster> raster =  m_dataSet->getRaster(rpos);
+
+    const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MIN);
+    const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(raster.get(), te::rst::SUMMARY_MAX);
+
+    const std::complex<double>* cmin = rsMin->at(m_ui->m_propertyComboBox->currentIndex()).m_minVal;
+    const std::complex<double>* cmax = rsMax->at(m_ui->m_propertyComboBox->currentIndex()).m_maxVal;
+
+    double min = cmin->real();
+    double max = cmax->real();
+
+    if (min >= 0 && max <= 255)
+      m_ui->m_slicesSpinBox->setMaximum(255);
+    else
+      m_ui->m_slicesSpinBox->setMaximum(max);
+
+    m_ui->m_slicesSpinBox->setValue(0);
   }
 }

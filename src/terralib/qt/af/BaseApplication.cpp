@@ -42,6 +42,7 @@
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/exchanger/DataExchangerWizard.h"
 #include "../widgets/exchanger/DirectExchangerDialog.h"
+#include "../widgets/externalTable/DataPropertiesDialog.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/ChartItem.h"
 #include "../widgets/layer/explorer/GroupingTreeItem.h"
@@ -433,6 +434,26 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
     te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
     ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to add a layer from a queried dataset!"));
+  }
+}
+
+void te::qt::af::BaseApplication::onAddTextualLayerTriggered()
+{
+   try
+  {
+    if(m_project == 0)
+      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+
   }
   catch(const std::exception& e)
   {
@@ -1742,6 +1763,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectAddLayerDataset, "datasource", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
   initAction(m_projectNewFolder, "folder-new", "Project.New Folder", tr("&New Folder..."), tr("Add a new folder"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
+  initAction(m_projectAddLayerTextualDataSet, "", "Project.Add Layer.Textual File", tr("&Textual File..."), tr("Add a new layer from a textual file"), true, false, false, m_menubar);
   initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, this);
   initAction(m_projectRemoveFolder, "folder-remove", "Project.Remove Folder", tr("Remove &Folder(s)"), tr("Remove folder from the project"), true, false, true, this);
   initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
@@ -1875,6 +1897,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectAddLayerMenu->setIcon(QIcon::fromTheme("layer-add"));
 
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
+  m_projectAddLayerMenu->addAction(m_projectAddLayerTextualDataSet);
   m_projectAddLayerMenu->addSeparator();
   m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
   m_projectMenu->addAction(m_projectNewFolder);
@@ -2078,6 +2101,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
   connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
+  connect(m_projectAddLayerTextualDataSet, SIGNAL(triggered()), SLOT(onAddTextualLayerTriggered()));
   connect(m_projectRemoveFolder, SIGNAL(triggered()), SLOT(onRemoveFolderTriggered()));
   connect(m_projectRemoveLayer, SIGNAL(triggered()), SLOT(onRemoveLayerTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));

@@ -83,6 +83,8 @@ namespace te
 
           void onAddQueryLayerTriggered();
 
+          void onAddTextualLayerTriggered();
+
           void onRemoveFolderTriggered();
 
           void onRemoveLayerTriggered();
@@ -243,6 +245,7 @@ namespace te
           QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;
+          QAction *m_projectAddLayerTextualDataSet;
           QAction* m_projectAddLayerGraph;
           QAction* m_projectNewFolder;
           QAction* m_layerEdit;
