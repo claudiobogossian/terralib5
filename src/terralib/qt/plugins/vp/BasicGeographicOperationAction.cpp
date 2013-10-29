@@ -54,7 +54,7 @@ void te::qt::plugins::vp::BasicGeographicOperationAction::onActionActivated(bool
 
   if(prj)
   {
-    dlg.setLayers(prj->getLayers());
+    dlg.setLayers(prj->getSingleLayers());
   }
 
   dlg.exec();
