@@ -32,7 +32,7 @@
 
 te::qt::widgets::DataPropertiesDialog::DataPropertiesDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::dataPropertiesDialogForm)
+    m_ui(new Ui::DataPropertiesDialogForm)
 {
   m_ui->setupUi(this);
 

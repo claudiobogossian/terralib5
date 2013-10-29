@@ -159,7 +159,7 @@ te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std
 
 te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_ui(new Ui::dataPropertiesWidgetForm)
+    m_ui(new Ui::DataPropertiesWidgetForm)
 {
   m_ui->setupUi(this);
 
