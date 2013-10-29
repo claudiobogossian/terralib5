@@ -183,10 +183,10 @@ void te::srs::Converter::setTargetPJ4txt(const std::string& pj4txt)
   assert(!pj4txt.empty());
   
 #ifdef TE_USE_PROJ4 
-  if (m_sourcePj4Handler)
+  if (m_targetPj4Handler)
   {
-    pj_free(m_sourcePj4Handler);
-    m_sourcePj4Handler = 0;
+    pj_free(m_targetPj4Handler);
+    m_targetPj4Handler = 0;
   }
   
   m_targetPj4Handler = pj_init_plus(pj4txt.c_str());
