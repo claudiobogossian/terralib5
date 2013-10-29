@@ -192,7 +192,8 @@ te::qt::widgets::DatapPropertiesWidget::~DatapPropertiesWidget()
 
 te::da::DataSetAdapter* te::qt::widgets::DatapPropertiesWidget::getAdapter()
 {
-  for (size_t i = 0; i < m_ui->m_datapropertiesTableWidget->rowCount(); ++i)
+  //Searching for properties that the user selected to adapt
+  for (int i = 0; i < m_ui->m_datapropertiesTableWidget->rowCount(); ++i)
   {
     if(m_typeMap[m_dataType->getProperty(i)->getType()].c_str() != dynamic_cast<QComboBox*>(m_ui->m_datapropertiesTableWidget->cellWidget(i, 1))->currentText().toStdString())
     {
@@ -200,6 +201,7 @@ te::da::DataSetAdapter* te::qt::widgets::DatapPropertiesWidget::getAdapter()
     }
   }
 
+  //Configuring a new geometry if the user requested it.
   if(m_ui->m_geometryGroupBox->isChecked())
   {
     te::gm::GeometryProperty* newGeom;
@@ -227,7 +229,7 @@ te::da::DataSetAdapter* te::qt::widgets::DatapPropertiesWidget::getAdapter()
 
 void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 {
-  QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), "", tr("Comma Separated Value (*.csv *.CSV);;Text File (*.txt *.TXT);; dBASE (*.dbf *.dbf)"), 
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), "", tr("Comma Separated Value (*.csv *.CSV);; dBASE (*.dbf *.dbf)"), 
     0, QFileDialog::ReadOnly);
 
   if(fileName.isEmpty())
@@ -266,6 +268,8 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 
   m_tblView->setDataSet(memFeature.release());
   m_tblView->show();
+  m_tblView->resizeColumnsToContents();
+  m_tblView->resizeRowsToContents();
 
   m_ui->m_datapropertiesTableWidget->setRowCount(0);
 
@@ -286,6 +290,9 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 
     m_ui->m_datapropertiesTableWidget->setCellWidget(newrow, 1, typeCB);
   }
+
+  m_ui->m_datapropertiesTableWidget->resizeColumnsToContents();
+  m_ui->m_datapropertiesTableWidget->resizeRowsToContents();
 
   //Filling the ComboBoxes that will be used to configure the resulting geometries
   fillComboBox(m_dataType.get(), m_ui->m_xAxisComboBox);
