@@ -99,7 +99,7 @@ void te::qt::widgets::FolderLayerItem::fetchMore()
 
   for(te::map::AbstractLayer::const_iterator it = m_layer->begin(); it != m_layer->end(); ++it)
   {
-    /*AbstractTreeItem* litem = */AbstractTreeItemFactory::make(boost::dynamic_pointer_cast<te::map::AbstractLayer>(*it), this);
+    AbstractTreeItemFactory::make(boost::dynamic_pointer_cast<te::map::AbstractLayer>(*it), this);
   }
 }
 

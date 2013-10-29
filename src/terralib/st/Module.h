@@ -20,15 +20,14 @@
 /*!
   \file terralib/st/Module.h
    
-  \brief The TerraLib ST module is a plugin.
+  \brief This singleton defines the TerraLib ST module entry.  
 */
 
 #ifndef __TERRALIB_ST_INTERNAL_MODULE_H
 #define __TERRALIB_ST_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../plugin/Plugin.h"
-#include "Config.h"
+#include "../common/Singleton.h"
 
 namespace te
 {
@@ -37,64 +36,50 @@ namespace te
     /*!
       \class Module
 
-      \brief The TerraLib ST module is a plugin.    
+      \brief This singleton defines the TerraLib ST module entry.    
     */
-    class Module : public te::plugin::Plugin
+    class Module : public te::common::Singleton<Module>
     {
-      public:
+      
+      friend class te::common::Singleton<Module>;
 
-        /*!
-          \brief Plugin constructor.
-            
-          \param pInfo Basic information provided to initialize this module through the plugin API.
-        */
-        Module(const te::plugin::PluginInfo& pInfo);
-        
+      protected:
+
+        /*! \brief The singleton constructor is not callable outside the class. */
+        Module();
+
         /* \brief Destructor. */
         ~Module();
 
-         /*!
-          \brief It initializes the TerraLib st module support.       
-           
+      private:
+
+        /*!
+          \brief This is the startup function for the TerraLib ST module.
+
           The initialization includes:
           <ul>
           <li>Multilanguage support</li>
           <li>STDataLoader factory</li>
           </ul>
-           
-          \exception Exception It may throws an exception.
-         
-          \note This function must be called at least once in your program. The best
-                place to call it is inside the main routine of your application.
 
-          \warning Not thread safe!
-
-          \warning If this method throws an exception we recommend you to
-                    quit the program, don't try to resume it because you can have intermittent errors!
+          \note This method doesn't perform operations for this module.
         */
-        void startup();
+        static void initialize();
 
         /*!
-          \brief It finalizes the TerraLib st module support.    
-           
-          \exception Exception It may throws an exception.
-           
-          \note This function must be called in your program at least the same times you have called
-                initialize. In general this must be the last call to TerraLib API. As in case of the initialize method,
-                this routine can be called at the end of the main routine of your application.
+          \brief This is the cleanup function for the TerraLib Geometry module.
 
-          \warning Not thread safe!
-
-          \warning If this method throws an exception we recommend you to
-                   quit the program, don't try to resume it because you can have intermittent errors!
+          \note This method doesn't perform operations for this module.
         */
-        void shutdown();     
+        static void finalize();
+
+      private:
+
+        static const Module& sm_module; //!< Just to make a static initialization.         
     };
 
   } // end namespace st
 }   // end namespace te
-
-PLUGIN_CALL_BACK_DECLARATION(TESTEXPORT);
 
 #endif  // __TERRALIB_ST_INTERNAL_MODULE_H
 

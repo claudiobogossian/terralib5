@@ -71,3 +71,6 @@ std::string te::dt::TimeInstantTZ::toString() const
   return t;
 }
 
+te::dt::TimeInstantTZ::~TimeInstantTZ()
+{
+}

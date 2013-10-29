@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -82,6 +82,8 @@ namespace te
           void onAddDataSetLayerTriggered();
 
           void onAddQueryLayerTriggered();
+
+          void onAddTextualLayerTriggered();
 
           void onRemoveFolderTriggered();
 
@@ -243,6 +245,7 @@ namespace te
           QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;
+          QAction *m_projectAddLayerTextualDataSet;
           QAction* m_projectAddLayerGraph;
           QAction* m_projectNewFolder;
           QAction* m_layerEdit;

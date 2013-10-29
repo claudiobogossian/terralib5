@@ -1,4 +1,4 @@
-# This script builds the srs example
+# This script builds the common example
 # The variable ROOT contains the root directory where terralib is installed (ex: terralib5/trunk)
 
 cmake_minimum_required(VERSION 2.8)
@@ -20,7 +20,7 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
 endif()
 
-set(DEP_LIBS terralib_common ${Boost_LIBRARIES})
+set(DEP_LIBS terralib_common terralib_srs ${Boost_LIBRARIES})
     
 # Select the source and header files
 file(GLOB SRCS ${SRCDIR}/*.cpp)

@@ -31,5 +31,8 @@
 /*! \brief This example shows TerraLib handles Units of Measure. */
 void UOMManage();
 
+/*! \brief This example test how to retrieve a SRS unit of measure. */
+void UnitSRS();
+
 #endif  // __TERRALIB_EXAMPLES_SRS_INTERNAL_UOM_H
 

@@ -294,7 +294,7 @@ bool BufferMemory(const std::string& inDataSetName,
                 outGeom.reset(SetBuffer(currentGeom.get(), bufferPolygonRule, distance, i, auxGeom));
 
               if(outGeom.get() && outGeom->isValid())
-                dataSetItem->setGeometry(j+2, *outGeom);
+                dataSetItem->setGeometry(j+2, outGeom.release());
 
               outputDataSet->add(dataSetItem);
               ++pk;

@@ -63,11 +63,15 @@ te::qt::widgets::Selection::Selection(te::qt::widgets::MapDisplay* display, cons
   m_pen.setWidth(2);
   m_brush = QColor(255, 255, 100, 80);
 
+  // To listen keyboard events
   m_display->setFocusPolicy(Qt::ClickFocus);
+  m_display->setFocus(Qt::OtherFocusReason);
+  m_display->grabKeyboard();
 }
 
 te::qt::widgets::Selection::~Selection()
 {
+  m_display->releaseKeyboard();
 }
 
 bool te::qt::widgets::Selection::eventFilter(QObject* watched, QEvent* e)
@@ -75,11 +79,18 @@ bool te::qt::widgets::Selection::eventFilter(QObject* watched, QEvent* e)
   switch(e->type())
   {
     case QEvent::KeyPress:
+    {
+      QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
+      if(keyEvent->key() == Qt::Key_Control || keyEvent->key() == Qt::Key_Shift)
+        m_keepPreviousSelection = true;
+    }
+    break;
+
     case QEvent::KeyRelease:
     {
       QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
-      if(keyEvent->key() == Qt::Key_Control)
-        m_keepPreviousSelection = !m_keepPreviousSelection;
+      if(keyEvent->key() == Qt::Key_Control || keyEvent->key() == Qt::Key_Shift)
+        m_keepPreviousSelection = false;
     }
     break;
 

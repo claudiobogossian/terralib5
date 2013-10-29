@@ -55,6 +55,10 @@
 #include "terralib/gml.h"
 #endif
 
+#ifdef TE_COMPILE_LAYOUT_MODULE
+#include "terralib/layout.h"
+#endif
+
 #ifdef TE_COMPILE_MAPTOOLS_MODULE
 #include "terralib/maptools.h"
 #endif

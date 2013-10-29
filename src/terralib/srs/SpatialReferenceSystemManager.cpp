@@ -262,25 +262,30 @@ size_t te::srs::SpatialReferenceSystemManager::size() const
   return m_set.size();
 }
 
-std::auto_ptr<te::common::UnitOfMeasure> te::srs::SpatialReferenceSystemManager::getUnit(unsigned int id, const std::string& authName)
+te::common::UnitOfMeasurePtr te::srs::SpatialReferenceSystemManager::getUnit(unsigned int id, const std::string& authName)
 {
-  std::auto_ptr<te::srs::SpatialReferenceSystem> srs = getSpatialReferenceSystem(id,authName);
-  if (!srs.get())
-    return std::auto_ptr<te::common::UnitOfMeasure>();
+  std::string unitName= "metre";
+  if (isGeographic(id,authName))
+    unitName = "degree";
   
-  std::string unitName = srs->getUnitName();
+  std::string pjstr = getP4Txt(id,authName);
+  if (pjstr.empty())
+    return te::common::UnitOfMeasurePtr();
   
-  std::auto_ptr<te::common::UnitOfMeasure> unit(te::common::UnitsOfMeasureManager::getInstance().findByName(unitName));
+  std::size_t found = pjstr.find("+units=");
+  if (found!=std::string::npos)
+  {
+    std::size_t aux = pjstr.find(" ", found);
+    std::string unitsymbol = pjstr.substr(found+7,aux-(found+7));
+    return te::common::UnitsOfMeasureManager::getInstance().findBySymbol(unitsymbol);
+  }
   
-  return unit;
+  return te::common::UnitsOfMeasureManager::getInstance().find(unitName);
 }
 
 
 bool te::srs::SpatialReferenceSystemManager::isGeographic(unsigned int id, const std::string& authName)
 {
-  std::auto_ptr<te::srs::SpatialReferenceSystem> srs = getSpatialReferenceSystem(id,authName);
-  if (!srs.get())
-    return false;
-  
-  return srs->isGeographic();
+  std::string pjstr = getP4Txt(id,authName);
+  return (pjstr.find("+proj=longlat")!=std::string::npos); 
 }

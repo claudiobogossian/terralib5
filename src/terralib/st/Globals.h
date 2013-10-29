@@ -46,8 +46,9 @@ namespace te
     {
       public:
 
-        static const std::string sm_loaderFromDSIdentifier;  //!< The st data loader from data source.
+        static const std::string sm_loaderFromDSIdentifier;     //!< The st data loader from data source.
         static const std::string sm_loaderFromMemDSIdentifier; //!< The st data loader from in-mem data source.
+        static const std::string sm_STMemoryDataSourceId;       //!< The global id of the st memory data source
     };
 
   } // end namespace st

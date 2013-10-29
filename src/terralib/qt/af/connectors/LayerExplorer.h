@@ -97,30 +97,21 @@ namespace te
           void onApplicationTriggered(te::qt::af::evt::Event* evt);
 
           /*!
-            \brief Perform changes whenever the selection over the layer tree changes.
+            \brief It indicates whenever there are changes in the selection of layers in the layer explorer.
 
-            It will update well known components like:
-            <ul>
-            <li>data tables: if the selected item has one;</li>
-            </ul>
-
-            \param selected   The new selected items in the layer tree.
-            \param deselected The items that were deselected from the layer tree.
+            \param selectedLayers  The new list of selected layers.
           */
-          //void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-          void onLayerSelectionChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
+          void onSelectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
 
           void onLayerVisibilityChanged(te::map::AbstractLayerPtr layer);
 
           void onLayerOrderChanged();
 
-          void onLayerRemoved(te::map::AbstractLayerPtr layer);
+          void onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
 
-          void onAbstractTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item);
+        //signals:
 
-        signals:
-
-          void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
+          //void selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
 
         protected:
 

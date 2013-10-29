@@ -174,7 +174,7 @@ te::da::DataSet* create_ds_memory(const std::string& datasetName, te::da::DataSe
 {
   te::mem::DataSet* ds = new te::mem::DataSet(datasettype);
   
-  te::gm::Point auxPoint1( 23.5, 78.6, 4326);
+  te::gm::Point* auxPoint1 = new te::gm::Point( 23.5, 78.6, 4326);
   te::mem::DataSetItem* dsItem01 = new te::mem::DataSetItem(ds);
   dsItem01->setInt32(0, 1); //id
   dsItem01->setInt32(1, 233); //sensor_id
@@ -183,77 +183,77 @@ te::da::DataSet* create_ds_memory(const std::string& datasetName, te::da::DataSe
   boost::gregorian::date d1(boost::gregorian::greg_year(2010),boost::gregorian::greg_month(1),15);
   te::dt::DateTime* datetime1 = new te::dt::Date(d1);
   
-  dsItem01->setDateTime(3,*datetime1); //measure_date
+  dsItem01->setDateTime(3, datetime1); //measure_date
   dsItem01->setNumeric(4, "65.89"); //measure_value
   
-  te::gm::Point auxPoint2( 25.7, 80.5, 4326 );
+  te::gm::Point* auxPoint2 = new te::gm::Point( 25.7, 80.5, 4326 );
   te::mem::DataSetItem* dsItem02 = new te::mem::DataSetItem(ds);
   dsItem02->setInt32(0, 2); //id
   dsItem02->setInt32(1, 245); //sensor_id
   dsItem02->setGeometry(2, auxPoint2); //location
-  dsItem02->setDateTime(3, *datetime1); //measure_date
+  dsItem02->setDateTime(3, static_cast<te::dt::DateTime*>(datetime1->clone())); //measure_date
   dsItem02->setNumeric(4, "80.90"); //measure_value
   
-  te::gm::Point auxPoint3( 24.6, 83.5, 4326 );
+  te::gm::Point* auxPoint3 = new te::gm::Point( 24.6, 83.5, 4326 );
   te::mem::DataSetItem* dsItem03 = new te::mem::DataSetItem(ds);
   dsItem03->setInt32(0, 3); //id
   dsItem03->setInt32(1, 255); //sensor_id
   dsItem03->setGeometry(2, auxPoint3); //location
-  dsItem03->setDateTime(3, *datetime1); //measure_date
+  dsItem03->setDateTime(3, static_cast<te::dt::DateTime*>(datetime1->clone())); //measure_date
   dsItem03->setNumeric(4, "87.90"); //measure_value
   
   boost::gregorian::date d2(boost::gregorian::greg_year(2010),boost::gregorian::greg_month(2),15);
   te::dt::DateTime* datetime2 = new te::dt::Date(d2);
   
-  te::gm::Point auxPoint4( 23.5, 78.6, 4326 );
+  te::gm::Point* auxPoint4 = new te::gm::Point( 23.5, 78.6, 4326 );
   te::mem::DataSetItem* dsItem04 = new te::mem::DataSetItem(ds);
   dsItem04->setInt32(0, 4); //id
   dsItem04->setInt32(1, 233); //sensor_id
   dsItem04->setGeometry(2, auxPoint4); //location
-  dsItem04->setDateTime(3, *datetime2); //measure_date
+  dsItem04->setDateTime(3, datetime2); //measure_date
   dsItem04->setNumeric(4, "90.89"); //measure_value
   
-  te::gm::Point auxPoint5( 25.7, 80.5, 4326 );
+  te::gm::Point* auxPoint5 = new te::gm::Point( 25.7, 80.5, 4326 );
   te::mem::DataSetItem* dsItem05 = new te::mem::DataSetItem(ds);
   dsItem05->setInt32(0, 5); //id
   dsItem05->setInt32(1, 245); //sensor_id
   dsItem05->setGeometry(2, auxPoint5); //location
-  dsItem05->setDateTime(3, *datetime2); //measure_date
+  dsItem05->setDateTime(3, static_cast<te::dt::DateTime*>(datetime2->clone())); //measure_date
   dsItem05->setNumeric(4, "73.90"); //measure_value
   
-  te::gm::Point auxPoint6( 24.6, 83.5, 4326 );
+  te::gm::Point* auxPoint6 = new te::gm::Point( 24.6, 83.5, 4326 );
   te::mem::DataSetItem* dsItem06 = new te::mem::DataSetItem(ds);
   dsItem06->setInt32(0, 6); //id
   dsItem06->setInt32(1, 255); //sensor_id
   dsItem06->setGeometry(2, auxPoint6); //location
-  dsItem06->setDateTime(3, *datetime2); //measure_date
+  dsItem06->setDateTime(3, static_cast<te::dt::DateTime*>(datetime2->clone())); //measure_date
   dsItem06->setNumeric(4, "45.90"); //measure_value
   
   boost::gregorian::date d3(boost::gregorian::greg_year(2010),boost::gregorian::greg_month(3),15);
   te::dt::DateTime* datetime3 = new te::dt::Date(d3);
   
-  te::gm::Point auxPoint7( 23.5, 78.6, 4326 );
+  te::gm::Point* auxPoint7 = new te::gm::Point( 23.5, 78.6, 4326 );
   te::mem::DataSetItem* dsItem07 = new te::mem::DataSetItem(ds);
   dsItem07->setInt32(0, 7); //id
   dsItem07->setInt32(1, 233); //sensor_id
   dsItem07->setGeometry(2, auxPoint7); //location
-  dsItem07->setDateTime(3, *datetime3); //measure_date
+  dsItem07->setDateTime(3, datetime3); //measure_date
   dsItem07->setNumeric(4, "76.89"); //measure_value
   
-  te::gm::Point auxPoint8( 25.7, 80.5, 4326 );
+  te::gm::Point* auxPoint8 = new te::gm::Point( 25.7, 80.5, 4326 );
   te::mem::DataSetItem* dsItem08 = new te::mem::DataSetItem(ds);
   dsItem08->setInt32(0, 8); //id
   dsItem08->setInt32(1, 245); //sensor_id
   dsItem08->setGeometry(2, auxPoint8); //location
-  dsItem08->setDateTime(3,*datetime3); //measure_date
+  dsItem08->setDateTime(3, static_cast<te::dt::DateTime*>(datetime3->clone())); //measure_date
   dsItem08->setNumeric(4, "78.15"); //measure_value
   
-  te::gm::Point auxPoint9( 24.6, 83.5, 4326 );
+  te::gm::Point* auxPoint9 = new te::gm::Point( 24.6, 83.5, 4326 );
   te::mem::DataSetItem* dsItem09 = new te::mem::DataSetItem(ds);
   dsItem09->setInt32(0, 9); //id
   dsItem09->setInt32(1, 255); //sensor_id
   dsItem09->setGeometry(2, auxPoint9); //location
-  dsItem09->setDateTime(3, *datetime3); //measure_date
+  dsItem09->setDateTime(3, static_cast<te::dt::DateTime*>(datetime3->clone())); //measure_date
   dsItem09->setNumeric(4, "50.32"); //measure_value
   
   //acrescentar esse metodo no data set em memoria!!!!

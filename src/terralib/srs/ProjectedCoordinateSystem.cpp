@@ -118,7 +118,7 @@ te::srs::ProjectedCoordinateSystem::getWKT() const
 			++it;
 		}while (it !=  m_params.end()); 
 	}
-  te::common::UnitOfMeasure* unit = te::common::UnitsOfMeasureManager::getInstance().findByName(m_unitName);
+  te::common::UnitOfMeasurePtr unit = te::common::UnitsOfMeasureManager::getInstance().find(m_unitName);
   if (unit)
   {
 	  wkt += ", ";

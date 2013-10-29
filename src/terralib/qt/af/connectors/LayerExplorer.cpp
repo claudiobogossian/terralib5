@@ -35,13 +35,11 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explore
     m_explorer(explorer)
 {
   assert(m_explorer);
-  assert(m_explorer->getTreeView());
-  assert(m_explorer->getTreeModel());
-  
-  connect(explorer->getTreeView(), SIGNAL(layerRemoved(te::map::AbstractLayerPtr)), SLOT(onLayerRemoved(te::map::AbstractLayerPtr)));
-  connect(explorer->getTreeView(), SIGNAL(visibilityChanged(te::map::AbstractLayerPtr)), SLOT(onLayerVisibilityChanged(te::map::AbstractLayerPtr)));
-  connect(explorer->getTreeModel(), SIGNAL(visibilityChanged(te::map::AbstractLayerPtr)), SLOT(onLayerVisibilityChanged(te::map::AbstractLayerPtr)));
-  connect(explorer->getTreeModel(), SIGNAL(layerOrderChanged()), SLOT(onLayerOrderChanged()));
+
+  connect(m_explorer, SIGNAL(selectedLayersChanged(std::list<te::map::AbstractLayerPtr>)), SLOT(onSelectedLayersChanged(std::list<te::map::AbstractLayerPtr>)));
+  connect(m_explorer, SIGNAL(visibilityChanged(te::map::AbstractLayerPtr)), SLOT(onLayerVisibilityChanged(te::map::AbstractLayerPtr)));
+  connect(m_explorer, SIGNAL(layerOrderChanged()), SLOT(onLayerOrderChanged()));
+  connect(m_explorer, SIGNAL(doubleClicked(te::qt::widgets::AbstractTreeItem*)), SLOT(onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem*)));
 }
 
 te::qt::af::LayerExplorer::~LayerExplorer()
@@ -66,17 +64,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       if(projectAdded == 0 || projectAdded->m_proj == 0)
         return;
 
-      m_explorer->set(projectAdded->m_proj->getLayers());
-
-      te::qt::widgets::LayerTreeView* treeView = m_explorer->getTreeView();
-      assert(treeView);
-
-      QItemSelectionModel* layerTreeSelectionModel = treeView->selectionModel();
-      assert(layerTreeSelectionModel);
-
-      // Signals & slots
-      connect(treeView, SIGNAL(doubleClicked(te::qt::widgets::AbstractTreeItem*)), SLOT(onAbstractTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem*)));
-      connect(treeView, SIGNAL(selectedLayersChanged(std::list<te::map::AbstractLayerPtr>)), SLOT(onLayerSelectionChanged(std::list<te::map::AbstractLayerPtr>)));
+      m_explorer->set(projectAdded->m_proj->getTopLayers());
     }
     break;
 
@@ -96,11 +84,13 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
       te::qt::widgets::AbstractTreeItem* layerItem = e->m_layerItem;
 
-      // Remove the layer from the project
-      ApplicationController::getInstance().getProject()->remove(layerItem->getLayer());
+      te::map::AbstractLayerPtr layer = layerItem->getLayer();
 
       // Remove the layer from the layer explorer
       m_explorer->remove(layerItem);
+
+      // Remove the layer from the project
+      ApplicationController::getInstance().getProject()->remove(layer);
     }
     break;
 
@@ -108,10 +98,9 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     {
       te::qt::af::evt::LayerPopUpAddAction* e = static_cast<te::qt::af::evt::LayerPopUpAddAction*>(evt);
       
-      QAction* act = e->m_action;
-      te::qt::widgets::LayerTreeView::ContextMenuType type = static_cast<te::qt::widgets::LayerTreeView::ContextMenuType>(e->m_menuType);
+      QAction* action = e->m_action;
 
-      m_explorer->getTreeView()->add(act, "", "", type);
+      m_explorer->add(action, "", "", m_explorer->getMenuType(e->m_menuType));
     }
     break;
 
@@ -127,7 +116,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     {
       te::qt::af::evt::GetLayerSelected* e = static_cast<te::qt::af::evt::GetLayerSelected*>(evt);
 
-      std::list<te::map::AbstractLayerPtr> list = m_explorer->getSelectedLayers();
+      std::list<te::map::AbstractLayerPtr> list = m_explorer->getSelectedSingleLayers();
 
       if(list.empty() == false)
         e->m_layer = list.front();
@@ -139,7 +128,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
   }
 }
 
-void te::qt::af::LayerExplorer::onLayerSelectionChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
+void te::qt::af::LayerExplorer::onSelectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
 {
   if(selectedLayers.empty())
     return;
@@ -163,19 +152,13 @@ void te::qt::af::LayerExplorer::onLayerVisibilityChanged(te::map::AbstractLayerP
 
 void te::qt::af::LayerExplorer::onLayerOrderChanged()
 {
-  ApplicationController::getInstance().getProject()->setLayers(m_explorer->getAllTopLevelLayers());
+  ApplicationController::getInstance().getProject()->setTopLayers(m_explorer->getTopLayers());
 
   te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
   ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
 }
 
-void te::qt::af::LayerExplorer::onLayerRemoved(te::map::AbstractLayerPtr layer)
-{
-  te::qt::af::evt::LayerRemoved layerRemovedEvent(layer);
-  ApplicationController::getInstance().broadcast(&layerRemovedEvent);
-}
-
-void te::qt::af::LayerExplorer::onAbstractTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item)
+void te::qt::af::LayerExplorer::onTreeItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item)
 {
   te::qt::widgets::LegendItem* legendItem = dynamic_cast<te::qt::widgets::LegendItem*>(item);
   if(legendItem == 0)
