@@ -33,8 +33,10 @@
 // Qt
 #include <QtGui/QDialog>
 
+//STL
+#include <memory>
 
-namespace Ui { class dataPropertiesDialogForm; }
+namespace Ui { class DataPropertiesDialogForm; }
 
 namespace te
 {
@@ -78,7 +80,7 @@ namespace te
       
       private:
 
-        std::auto_ptr<Ui::dataPropertiesDialogForm>  m_ui;                    //!< The dialog form.
+        std::auto_ptr<Ui::DataPropertiesDialogForm>  m_ui;                    //!< The dialog form.
         DatapPropertiesWidget*                       m_dataPropertiesWidget;  //!< The widget used to import and configure a textual file.
 
       };

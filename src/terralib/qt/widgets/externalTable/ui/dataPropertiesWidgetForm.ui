@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>dataPropertiesWidgetForm</class>
- <widget class="QWidget" name="dataPropertiesWidgetForm">
+ <class>DataPropertiesWidgetForm</class>
+ <widget class="QWidget" name="DataPropertiesWidgetForm">
   <property name="geometry">
    <rect>
     <x>0</x>
