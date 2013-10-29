@@ -152,7 +152,7 @@ std::list<te::common::TreeItemPtr> te::common::TreeItem::remove(std::size_t i, s
   {
     TreeItemPtr childItem = *it;
 
-    childItem->disconnect();
+    //childItem->disconnect();
 
     removedItems.push_back(childItem);
   }
