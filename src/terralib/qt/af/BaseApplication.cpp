@@ -930,7 +930,7 @@ void te::qt::af::BaseApplication::onLayerChartTriggered()
       // Expand the selected layer item and the chart item
       m_explorer->getExplorer()->expand(selectedLayerItem);
 
-      te::qt::widgets::ChartItem* chartItem = selectedLayerItem->findChild<te::qt::widgets::ChartItem*>();
+      chartItem = selectedLayerItem->findChild<te::qt::widgets::ChartItem*>();
       if(chartItem)
         m_explorer->getExplorer()->expand(chartItem);
 
@@ -951,33 +951,46 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
 {
   try
   {
-    std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedSingleLayerItems();
 
-    if(selectedItems.empty())
+    if(selectedLayerItems.empty())
     {
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                           tr("Select a layer in the layer explorer!"));
+                           tr("Select a single layer in the layer explorer!"));
       return;
     }
 
     // The object grouping will be accomplished only on the first layer selected
-    te::qt::widgets::AbstractTreeItem* selectedItem = *(selectedItems.begin());
-    te::map::AbstractLayerPtr selectedLayer = selectedItem->getLayer();
+    te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
+    te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
 
     te::qt::widgets::GroupingDialog dlg(this);
-
     dlg.setLayer(selectedLayer);
+
+    // Check if the selected layer item has a grouping item; in positive case, remove it from the layer item.
+    te::qt::widgets::GroupingTreeItem* groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingTreeItem*>();
+
+    if(groupingItem)
+      m_explorer->getExplorer()->remove(groupingItem);
+
+    // Collapse the selected layer item to allow the new grouping item to be generated
+    // in the next time the selected layer item is expanded.
+    m_explorer->getExplorer()->collapse(selectedLayerItem);
 
     if(dlg.exec() == QDialog::Accepted)
     {
-      te::qt::widgets::GroupingTreeItem* groupingItem = selectedItem->findChild<te::qt::widgets::GroupingTreeItem*>();
+      // Expand the selected layer item and the grouping item
+      m_explorer->getExplorer()->expand(selectedLayerItem);
 
+      groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingTreeItem*>();
       if(groupingItem)
-        m_explorer->getExplorer()->remove(groupingItem);
-
-      m_explorer->getExplorer()->getTreeView()->expandAll();
+        m_explorer->getExplorer()->expand(groupingItem);
 
       m_display->getDisplay()->refresh();
+
+      // Send out an event informing that the project is not saved
+      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
     }
   }
   catch(const std::exception& e)
