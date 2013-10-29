@@ -46,6 +46,7 @@
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
 #include "../qt/widgets/layer/utils/DataSet2Layer.h"
+#include "../sam/rtree.h"
 #include "Buffer.h"
 #include "BufferDialog.h"
 #include "Config.h"
@@ -120,9 +121,8 @@ te::gm::Geometry* SetBuffer(te::gm::Geometry* geom,
                             const int& level,
                             te::gm::Geometry*& auxGeom);
 
-te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
-                                        te::mem::DataSet* dataset, 
-                                        const int& levels);
+void SetDissolvedBoundaries(te::mem::DataSet* outputDataSet,
+                            const int& levels);
 
 void PrepareDataSet(te::da::DataSetType* dataSetType, 
                     te::da::DataSet* dataSetQuery,
@@ -261,6 +261,7 @@ bool BufferMemory(const std::string& inDataSetName,
     for(int i = 1; i <= levels; ++i)
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
+
       for(int j = 0; j < inputDataSet->getNumProperties(); ++j)
       {
         type = inputDataSet->getPropertyDataType(j);
@@ -314,15 +315,21 @@ bool BufferMemory(const std::string& inDataSetName,
               outGeom.reset(SetBuffer(currentGeom.get(), bufferPolygonRule, distance, i, auxGeom));
 
             if(outGeom.get() && outGeom->isValid())
+            {
               dataSetItem->setGeometry(3, *outGeom);
-
-            outputDataSet->add(dataSetItem);
-            ++pk;
+              outputDataSet->add(dataSetItem);
+              ++pk;
+            }
           }
         }
       }
     }
     delete auxGeom;
+  }
+
+  if(bufferBoundariesRule == te::vp::DISSOLVE)
+  {
+    SetDissolvedBoundaries(outputDataSet, levels);
   }
 
   return true;
@@ -608,53 +615,84 @@ te::gm::Geometry* SetBuffer(te::gm::Geometry* geom,
   return geomResult;
 }
 
-te::mem::DataSet* SetDissolvedBoundaries(te::da::DataSetType* dataSetType, 
-                                                te::mem::DataSet* dataset,
-                                                const int& levels)
+void SetDissolvedBoundaries(te::mem::DataSet* outputDataSet, const int& levels)
 {
-  te::mem::DataSet* outputDataSet = new te::mem::DataSet(dataSetType);
-  outputDataSet->moveFirst();
+  te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
+  std::map<int, std::vector<te::gm::Geometry*> > mapGeom;
 
-  int posPK = 0;
-  int posLevel = 0;
+  int levelPos;
+  int geomPos;
+  int level;
 
-  dataset->moveFirst();
-  std::size_t pos = te::da::GetFirstSpatialPropertyPos(dataset);
+  levelPos = te::da::GetPropertyPos(outputDataSet, "level");
+  geomPos = te::da::GetPropertyPos(outputDataSet, "geom");
 
-  if(dataset->size() > 1)
+  for(int i = 1; i <= levels; ++i)
   {
-    std::auto_ptr<te::gm::Geometry> seedGeometry = dataset->getGeometry(pos);
+    //std::vector<te::gm::Geometry*> geomVec;
+    te::sam::rtree::Index<te::gm::Geometry*, 4> rtree;
 
-    te::gm::Geometry* currentGeometry;
-
-    for(std::size_t level = 1; level <= levels; ++level)
+    outputDataSet->moveBeforeFirst();
+    while(outputDataSet->moveNext())
     {
-      dataset->moveBeforeFirst();
-
-      while(dataset->moveNext())
+      level = outputDataSet->getInt32(levelPos);
+      if(level == i)
       {
-        if(dataset->getGeometry(pos)->isValid() && dataset->getInt32(posLevel) == level)
+        te::gm::Geometry* geom = outputDataSet->getGeometry(geomPos).release();
+        //geomVec.push_back(geom);
+
+        std::vector<te::gm::Geometry*> vec;
+
+        rtree.search(*(geom->getMBR()), vec);
+
+        if(!vec.empty())
         {
-          currentGeometry = seedGeometry->Union(dataset->getGeometry(pos).get());
-          seedGeometry.reset(currentGeometry);
-        }
-      }
-
-      te::gm::GeometryCollection* geomCollection = (te::gm::GeometryCollection*)seedGeometry.release();
-
-      for(std::size_t i = 0; i < geomCollection->getNumGeometries(); ++i)
-      {
-        te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
-        dataSetItem->setInt32(posPK, i);
-        dataSetItem->setInt32(posLevel, level);
-        dataSetItem->setGeometry(pos, *geomCollection->getGeometryN(i));
-        outputDataSet->add(dataSetItem);
+          for(std::size_t t = 0; t < vec.size(); ++t)
+          {
+            if(geom->intersects(vec[t]))
+            {
+              geom = geom->Union(vec[t]);
+              rtree.remove(*(vec[t]->getMBR()), vec[t]);
+            }
+          }
+        } 
+        rtree.insert(*(geom->getMBR()), geom);
       }
     }
 
-    delete currentGeometry;
+    std::vector<te::gm::Geometry*> geomVec;
+
+    std::auto_ptr<te::gm::Envelope> e = outputDataSet->getExtent(geomPos);
+
+    rtree.search(*(e.get()), geomVec);
+
+    mapGeom.insert(std::pair<int, std::vector<te::gm::Geometry*> >(i, geomVec));
+
+    rtree.clear();
   }
-  return outputDataSet;
+
+  outputDataSet->clear();
+  outputDataSet->moveBeforeFirst();
+  
+  int pk = 0;
+  std::map<int, std::vector<te::gm::Geometry*> >::iterator it = mapGeom.begin();
+  while(it != mapGeom.end())
+  {
+    for(std::size_t i = 0; i < it->second.size(); ++i)
+    {
+      te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
+      dataSetItem->setInt32(0, pk); //pk
+      dataSetItem->setInt32(1, it->first); //level
+      dataSetItem->setDouble(2, 0/*distance*(i)*/); //distance
+      dataSetItem->setGeometry(3, *it->second[i]);
+      
+      outputDataSet->add(dataSetItem);
+      ++pk;
+
+      delete it->second[i];
+    }
+    ++it;
+  }
 }
 
 void PrepareDataSet(te::da::DataSetType* dataSetType, 
