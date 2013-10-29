@@ -619,6 +619,11 @@ bool te::qt::widgets::LayerTreeModel::remove(AbstractTreeItem* item)
     else
       parentItem->getLayer()->remove(itemRow);
   }
+  else if(item->getType() == te::qt::widgets::AbstractTreeItem::GROUPINGTREEITEM)
+  {
+    // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
+    parentItem->getLayer()->setGrouping(0);
+  }
   else if(item->getType() == te::qt::widgets::AbstractTreeItem::CHARTITEM)
   {
     // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
