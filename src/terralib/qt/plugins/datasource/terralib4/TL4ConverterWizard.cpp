@@ -57,6 +57,8 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   m_layerSelectionPage->setTitle(tr("Data Source Selection"));
   m_layerSelectionPage->setSubTitle(tr("Please, select the data source where the data is stored"));
 
+  m_layerSelectionPage->setFinalPage(true);
+
   setPage(0, m_connectorPage.get());
   setPage(1, m_layerSelectionPage.get());
 
@@ -94,8 +96,12 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::next()
     std::vector<std::string> datasets = ds->getDataSetNames();
 
     m_layerSelectionPage->setDatasets(datasets);
-      
   }
+  else
+  {
+    
+  }
+  QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
