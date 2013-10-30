@@ -124,16 +124,30 @@ namespace te
       }
 
       // Creating a data set instance
+      
+      if( transactorPtr->dataSetExists( outDataSetName ) )
+      {
+        transactorPtr->dropDataSet( outDataSetName );
+      }
 
       std::auto_ptr< te::da::DataSetType > dataSetTypePtr(
         new te::da::DataSetType( outDataSetName ) );
       dataSetTypePtr->add( rasterPropertyPtr.release() );
 
-      transactorPtr->createDataSet( dataSetTypePtr.get(),
-        std::map< std::string, std::string >() );
+      try
+      {
+        transactorPtr->createDataSet( dataSetTypePtr.get(),
+          std::map< std::string, std::string >() );
+      }
+      catch( ... )
+      {
+        return false;
+      }
+      
+       if( ! transactorPtr->dataSetExists( outDataSetName ) ) return false;
 
       std::auto_ptr< te::da::DataSet > dataSetPtr( transactorPtr->getDataSet(
-        outDataSetName, te::common::FORWARDONLY, te::common::RAccess ) );
+        outDataSetName, te::common::FORWARDONLY, true ) );
 
       if( dataSetPtr.get() == 0 )
       {
@@ -142,9 +156,7 @@ namespace te
 
       // Creating a raster instance
 
-      std::size_t rpos = te::da::GetFirstPropertyPos(dataSetPtr.get(), te::dt::RASTER_TYPE);
-
-      std::auto_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster(rpos) );
+      std::auto_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster( 0 ) );
 
       if( rasterPtr.get() )
       {
