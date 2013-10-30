@@ -94,8 +94,8 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::next()
     std::vector<std::string> datasets = ds->getDataSetNames();
 
     m_layerSelectionPage->setDatasets(datasets);
-      
   }
+  QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::commit()

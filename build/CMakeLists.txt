@@ -48,7 +48,7 @@ if(WIN32)
   
   # Release settings
   set (TE_GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/release)
-  set (TE_TERRALIB4_BIN ${TE_DEPENDENCIES_DIR}/terralib4/dir)
+  set (TE_TERRALIB4_BIN ${TE_DEPENDENCIES_DIR}/terralib4/bin)
   generateRunningBatch(${TE_MODULE_PATH}/runme.bat.in runme.bat)
 
   include (${TE_MODULE_PATH}/ThirdParty.cmake)
