@@ -90,6 +90,11 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::next()
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("TERRALIB4"));
     ds->setConnectionInfo(connInfo);
     ds->open();
+
+    std::vector<std::string> datasets = ds->getDataSetNames();
+
+    m_layerSelectionPage->setDatasets(datasets);
+      
   }
 }
 

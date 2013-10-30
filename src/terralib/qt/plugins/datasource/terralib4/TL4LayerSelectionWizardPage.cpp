@@ -39,3 +39,9 @@ te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::TL4LayerSelectionWizard
 te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::~TL4LayerSelectionWizardPage()
 {
 }
+
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::vector<std::string> datasets)
+{
+  for(std::size_t i = 0; i < datasets.size(); ++i)
+    m_ui->m_layersListWidget->addItem(datasets[i].c_str());
+}
