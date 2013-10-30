@@ -1789,7 +1789,7 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Layer- actions
   initAction(m_layerRemoveSelection, "pointer-remove-selection", "Map.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
-  initAction(m_layerGrouping, "grouping", "Layer.Grouping", tr("&Grouping..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerGrouping, "grouping", "Layer.Grouping", tr("&Classification..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
   initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
