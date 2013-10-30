@@ -63,6 +63,22 @@ namespace te
     /** \addtogroup RPFunctions 
      *  @{
      */    
+    
+    /*!
+      \brief Create a new raster into the givem data source.
+      \param rasterGrid The template grid used to create the output raster.
+      \param bandsProperties The template band properties used to create the output raster.
+      \param outDataSetName The data set name to give to the created data set.
+      \param dataSourceType The data source type string (i.e. GDAL, MEM.).
+      \param outRasterHandler The created raster handler.
+      \return true if OK, false on errors.
+      \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
+     */
+    bool TERPEXPORT CreateNewRaster( const te::rst::Grid& rasterGrid,
+      const std::vector< te::rst::BandProperty* >& bandsProperties,
+      const std::string& outDataSetName,
+      const std::string& dataSourceType,
+      RasterHandler& outRasterHandler );    
 
     /*!
       \brief Create a new raster into the givem data source.
@@ -80,7 +96,6 @@ namespace te
       te::da::DataSource& outDataSource,
       RasterHandler& outRasterHandler );
 
-
     /*!
       \brief Create a new raster into a new memory datasource.
       \param rasterGrid The template grid used to create the output raster.
@@ -94,7 +109,7 @@ namespace te
       RasterHandler& outRasterHandler );
 
     /*!
-      \brief Create a new geotiff raster.
+      \brief Create a new raster into a GDAL datasource.
       \param rasterGrid The template grid used to create the output raster.
       \param bandsProperties The template band properties used to create the output raster.
       \param fileName The output tif file name.
@@ -102,7 +117,7 @@ namespace te
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
-    bool TERPEXPORT CreateNewGeotifRaster( const te::rst::Grid& rasterGrid,
+    bool TERPEXPORT CreateNewGdalRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
       const std::string& fileName,
       RasterHandler& outRasterHandler );

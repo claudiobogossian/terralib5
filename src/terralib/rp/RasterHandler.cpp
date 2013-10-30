@@ -31,55 +31,25 @@ namespace te
     RasterHandler::RasterHandler()
     {
     };
-
-    RasterHandler::RasterHandler(
-      const boost::shared_ptr< te::da::DataSource >& dataSourcePtr,
-      //const boost::shared_ptr< te::da::DataSourceTransactor >& transactorPtr,
-      //const boost::shared_ptr< te::da::DataSetTypePersistence >& persistencePtr,
-      const boost::shared_ptr< te::da::DataSet >& dataSetPtr,
-      const boost::shared_ptr< te::rst::Raster >& rasterPtr )
-    {
-      m_dataSourcePtr = dataSourcePtr;
-      //m_transactorPtr = transactorPtr;
-      //m_persistencePtr = persistencePtr;
-      m_dataSetPtr = dataSetPtr;
-      m_rasterPtr = rasterPtr;
-    };
-    
-    RasterHandler::RasterHandler(
-      //const boost::shared_ptr< te::da::DataSourceTransactor >& transactorPtr,
-      //const boost::shared_ptr< te::da::DataSetTypePersistence >& persistencePtr,
-      const boost::shared_ptr< te::da::DataSet >& dataSetPtr,
-      const boost::shared_ptr< te::rst::Raster >& rasterPtr )
-    {
-      //m_transactorPtr = transactorPtr;
-      //m_persistencePtr = persistencePtr;
-      m_dataSetPtr = dataSetPtr;
-      m_rasterPtr = rasterPtr;
-    };
     
     RasterHandler::RasterHandler(
       te::da::DataSource* dataSourcePtr,
-      //te::da::DataSourceTransactor* transactorPtr,
-      //te::da::DataSetTypePersistence* persistencePtr,
+      te::da::DataSourceTransactor* transactorPtr,
       te::da::DataSet* dataSetPtr,
       te::rst::Raster* rasterPtr )
     {
       m_dataSourcePtr.reset( dataSourcePtr );
-      //m_transactorPtr.reset( transactorPtr );
-     // m_persistencePtr.reset( persistencePtr );
+      m_transactorPtr.reset( transactorPtr );
       m_dataSetPtr.reset( dataSetPtr );
       m_rasterPtr.reset( rasterPtr );
     };    
     
     RasterHandler::RasterHandler(
-      //te::da::DataSourceTransactor* transactorPtr,
-      //te::da::DataSetTypePersistence* persistencePtr,
+      te::da::DataSourceTransactor* transactorPtr,
       te::da::DataSet* dataSetPtr,
       te::rst::Raster* rasterPtr )
     {
-      //m_transactorPtr.reset( transactorPtr );
-      //m_persistencePtr.reset( persistencePtr );
+      m_transactorPtr.reset( transactorPtr );
       m_dataSetPtr.reset( dataSetPtr );
       m_rasterPtr.reset( rasterPtr );
     };    
@@ -95,86 +65,37 @@ namespace te
       reset();
     };
     
-    const RasterHandler& RasterHandler::operator=( const RasterHandler& ext )
-    {
-      reset();
-      
-      m_rasterPtr = ext.m_rasterPtr;     
-      m_dataSetPtr = ext.m_dataSetPtr;
-     // m_persistencePtr = ext.m_persistencePtr;
-      //m_transactorPtr = ext.m_transactorPtr;  
-      m_dataSourcePtr = ext.m_dataSourcePtr;
-      
-      return *this;
-    }
-    
     void RasterHandler::reset()
     {
       // Inverse order is requred
       m_rasterPtr.reset();
       m_dataSetPtr.reset();
-      //m_persistencePtr.reset();
-      //m_transactorPtr.reset();
+      m_transactorPtr.reset();
       m_dataSourcePtr.reset();
     };    
     
     void RasterHandler::reset( 
-      const boost::shared_ptr< te::da::DataSource >& dataSourcePtr,
-      //const boost::shared_ptr< te::da::DataSourceTransactor >& transactorPtr,
-      //const boost::shared_ptr< te::da::DataSetTypePersistence >& persistencePtr,
-      const boost::shared_ptr< te::da::DataSet >& dataSetPtr,
-      const boost::shared_ptr< te::rst::Raster >& rasterPtr )
-    {
-      reset();
-      
-      m_rasterPtr = rasterPtr;
-      m_dataSetPtr = dataSetPtr;
-      //m_persistencePtr = persistencePtr;
-      // m_transactorPtr = transactorPtr;
-      m_dataSourcePtr = dataSourcePtr;
-    }    
-    
-    void RasterHandler::reset( 
-      //const boost::shared_ptr< te::da::DataSourceTransactor >& transactorPtr,
-      //const boost::shared_ptr< te::da::DataSetTypePersistence >& persistencePtr,
-      const boost::shared_ptr< te::da::DataSet >& dataSetPtr,
-      const boost::shared_ptr< te::rst::Raster >& rasterPtr )
-    {
-      reset();
-
-      //m_transactorPtr = transactorPtr;
-      //m_persistencePtr = persistencePtr;
-      m_dataSetPtr = dataSetPtr;
-      m_rasterPtr = rasterPtr;
-      m_dataSourcePtr.reset();
-    }
-    
-    void RasterHandler::reset( 
       te::da::DataSource* dataSourcePtr,
-      //te::da::DataSourceTransactor* transactorPtr,
-      //te::da::DataSetTypePersistence* persistencePtr,
+      te::da::DataSourceTransactor* transactorPtr,
       te::da::DataSet* dataSetPtr,
       te::rst::Raster* rasterPtr )
     {
       reset();
       
       m_dataSourcePtr.reset( dataSourcePtr );
-      //m_transactorPtr.reset( transactorPtr );
-      //m_persistencePtr.reset( persistencePtr );
+      m_transactorPtr.reset( transactorPtr );
       m_dataSetPtr.reset( dataSetPtr );
       m_rasterPtr.reset( rasterPtr );
     }     
     
     void RasterHandler::reset( 
-      //te::da::DataSourceTransactor* transactorPtr,
-      //te::da::DataSetTypePersistence* persistencePtr,
+      te::da::DataSourceTransactor* transactorPtr,
       te::da::DataSet* dataSetPtr,
       te::rst::Raster* rasterPtr )
     {
       reset();
       
-      //m_transactorPtr.reset( transactorPtr );
-      //m_persistencePtr.reset( persistencePtr );
+      m_transactorPtr.reset( transactorPtr );
       m_dataSetPtr.reset( dataSetPtr );
       m_rasterPtr.reset( rasterPtr );
     }      
@@ -189,6 +110,26 @@ namespace te
     {
       return m_rasterPtr.get();
     }
+    
+    void RasterHandler::release( 
+      std::auto_ptr< te::da::DataSource >& dataSourcePtr,
+      std::auto_ptr< te::da::DataSourceTransactor >& transactorPtr,
+      std::auto_ptr< te::da::DataSet >& dataSetPtr,
+      std::auto_ptr< te::rst::Raster >& rasterPtr )
+    {
+      rasterPtr.reset( m_rasterPtr.release() );
+      dataSetPtr.reset( m_dataSetPtr.release() );
+      transactorPtr.reset( m_transactorPtr.release() );
+      dataSourcePtr.reset( m_dataSourcePtr.release() );      
+    }
+    
+    void RasterHandler::release( RasterHandler& other )
+    {
+      other.m_rasterPtr.reset( m_rasterPtr.release() );
+      other.m_dataSetPtr.reset( m_dataSetPtr.release() );
+      other.m_transactorPtr.reset( m_transactorPtr.release() );
+      other.m_dataSourcePtr.reset( m_dataSourcePtr.release() );      
+    }    
     
   } // end namespace rp
 }   // end namespace te    
