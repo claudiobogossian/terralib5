@@ -316,7 +316,7 @@ bool BufferMemory(const std::string& inDataSetName,
 
             if(outGeom.get() && outGeom->isValid())
             {
-              dataSetItem->setGeometry(3, *outGeom);
+              dataSetItem->setGeometry(3, outGeom.release());
               outputDataSet->add(dataSetItem);
               ++pk;
             }
@@ -684,12 +684,12 @@ void SetDissolvedBoundaries(te::mem::DataSet* outputDataSet, const int& levels)
       dataSetItem->setInt32(0, pk); //pk
       dataSetItem->setInt32(1, it->first); //level
       dataSetItem->setDouble(2, 0/*distance*(i)*/); //distance
-      dataSetItem->setGeometry(3, *it->second[i]);
+      dataSetItem->setGeometry(3, it->second[i]);
       
       outputDataSet->add(dataSetItem);
       ++pk;
 
-      delete it->second[i];
+      //delete it->second[i];
     }
     ++it;
   }
@@ -737,7 +737,7 @@ void PrepareDataSet(te::da::DataSetType* dataSetType,
             dataSetItem->setInt32(0, pk); //pk
             dataSetItem->setInt32(1, i+1); //level
             dataSetItem->setDouble(2, distance*(i+1)); //distance
-            dataSetItem->setGeometry(j+3, *dataSetQuery->getGeometry(j+numCurrentItem));
+            dataSetItem->setGeometry(j+3, dataSetQuery->getGeometry(j+numCurrentItem).release());
             outputDataSet->add(dataSetItem);
 
             ++numCurrentItem;
