@@ -112,7 +112,7 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram, te::qt::wi
 
     while (it != values.end())
     {
-      QwtInterval qwtInterval(LabelInterval, LabelInterval+5);
+      QwtInterval qwtInterval(LabelInterval, LabelInterval+1);
       qwtInterval.setBorderFlags(QwtInterval::ExcludeMaximum);
       samples[LabelInterval] = QwtIntervalSample(it->second, qwtInterval);
       LabelInterval++;
@@ -250,12 +250,20 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
     m_histogram->getType() == te::dt::NUMERIC_TYPE)
   {
 
-    std::vector<double> highlightedIntervals;
+    std::map<double, unsigned int> highlightedIntervals;
 
+    //Acquiring the slected intervals
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
       double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
-      highlightedIntervals.push_back(interval);
+      highlightedIntervals.insert(std::make_pair(interval, 0));
+    }
+
+    //Acquiring the selected values' frequency
+    for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
+    {
+      double interval = static_cast< const te::dt::Double*>(m_histogram->find((*itObjSet)))->getValue();
+      ++highlightedIntervals.at(interval);
     }
 
     QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
@@ -263,11 +271,14 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
     //Acquiring all selected samples:
     for(size_t i = 0; i < values->size(); ++i)
     {
-      for (size_t j = 0; j < highlightedIntervals.size();++j)
+      for (std::map<double, unsigned int>::iterator it = highlightedIntervals.begin(); it !=  highlightedIntervals.end(); ++it)
       {
         //Comparing with the minimum value. Our histogram is created based on the exclude maximum policy.
-        if(values->sample(i).interval.minValue() == highlightedIntervals.at(j))
-          highlightedSamples.push_back(values->sample(i));
+        if(values->sample(i).interval.minValue() == it->first)
+        {
+          QwtInterval qwtInterval(values->sample(i).interval.minValue(), values->sample(i).interval.maxValue());
+          highlightedSamples.push_back(QwtIntervalSample(it->second, qwtInterval));
+        }
       }
     }
     m_selection->setData(new QwtIntervalSeriesData(highlightedSamples));
@@ -277,13 +288,22 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
   {
 
     //A vector that will contain the selected strings
-    std::vector<std::string> highlightedIntervals;
+    std::map<std::string, unsigned int> highlightedIntervals;
 
+    //Acquiring the slected intervals
     for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
     {
       std::string interval = m_histogram->find((*itObjSet))->toString();
-      highlightedIntervals.push_back(interval);
+      highlightedIntervals.insert(std::make_pair(interval,0));
     }
+
+    //Acquiring the selected values' frequency
+    for(itObjSet = oids->begin(); itObjSet != oids->end(); ++itObjSet)
+    {
+      std::string interval = m_histogram->find((*itObjSet))->toString();
+      ++highlightedIntervals.at(interval);
+    }
+
 
     //A vector containing that will be populated with the samples that match the selected strings
     QVector<QwtIntervalSample> highlightedSamples(highlightedIntervals.size());
@@ -291,11 +311,14 @@ void te::qt::widgets::HistogramChart::highlight(const te::da::ObjectIdSet* oids)
     //Acquiring all selected samples:
     for(size_t i = 0; i < values->size(); ++i)
     {
-      for (size_t j = 0; j < highlightedIntervals.size();++j)
+      for (std::map<std::string, unsigned int>::iterator it = highlightedIntervals.begin();  it !=  highlightedIntervals.end(); ++it)
       {
         //Comparing label by label.
-        if(m_histogramScaleDraw->label(i).text().toStdString() == highlightedIntervals.at(j))
-          highlightedSamples.push_back(values->sample(i));
+        if(m_histogramScaleDraw->label(i).text().toStdString() == it->first)
+        {
+          QwtInterval qwtInterval(values->sample(i).interval.minValue(), values->sample(i).interval.maxValue());
+          highlightedSamples.push_back(QwtIntervalSample(it->second, qwtInterval));
+        }
       }
     }
     m_selection->setData(new QwtIntervalSeriesData(highlightedSamples));

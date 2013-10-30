@@ -47,7 +47,8 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
     m_backgroundColor(Qt::white),
     m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
     m_timer(new QTimer(this)),
-    m_interval(200)
+    m_interval(200),
+    m_isDrawing(false)
 {
   m_timer->setSingleShot(true);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
@@ -173,6 +174,8 @@ void te::qt::widgets::MapDisplay::refresh()
 {
   ScopedCursor cursor(Qt::WaitCursor);
 
+  m_isDrawing = true;
+
   // Cleaning...
   m_displayPixmap->fill(m_backgroundColor);
 
@@ -182,6 +185,8 @@ void te::qt::widgets::MapDisplay::refresh()
 
   for(it = m_layerList.begin(); it != m_layerList.end(); ++it) // for each layer
     draw(it->get(), painter);
+
+  m_isDrawing = false;
 
   update();
 }
@@ -312,6 +317,21 @@ QPointF te::qt::widgets::MapDisplay::transform(const QPointF& p)
   return canvas->getMatrix().inverted().map(p);
 }
 
+QColor te::qt::widgets::MapDisplay::getBackgroundColor()
+{
+  return m_backgroundColor;
+}
+
+void te::qt::widgets::MapDisplay::setBackgroundColor(const QColor& color)
+{
+  m_backgroundColor = color;
+}
+
+bool te::qt::widgets::MapDisplay::isDrawing() const
+{
+  return m_isDrawing;
+}
+
 void te::qt::widgets::MapDisplay::onResizeTimeout()
 {
   // Rebulding the map display pixmaps
@@ -380,14 +400,4 @@ void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize
   }
 
   setExtent(e);
-}
-
-QColor te::qt::widgets::MapDisplay::getBackgroundColor()
-{
-  return m_backgroundColor;
-}
-
-void te::qt::widgets::MapDisplay::setBackgroundColor(const QColor& color)
-{
-  m_backgroundColor = color;
 }

@@ -503,9 +503,14 @@ te::gm::GeometryProperty* te::da::GetFirstGeomProperty(const DataSetType* dt)
 {
   te::dt::Property* p = dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
 
-  assert(p);
-
-  return static_cast<te::gm::GeometryProperty*>(p);
+  if(p)
+  {
+    return static_cast<te::gm::GeometryProperty*>(p);
+  }
+  else
+  {
+    return 0;
+  }
 }
 
 te::rst::RasterProperty* te::da::GetFirstRasterProperty(const DataSetType* dt)
