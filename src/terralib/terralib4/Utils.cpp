@@ -37,10 +37,10 @@
 #include "Utils.h"
 
 // TerraLib 4.x
-#include <terralib/kernel/TeBox.h>
-#include <terralib/kernel/TeDatabaseFactoryParams.h>
-#include <terralib/kernel/TeTable.h>
-#include <terralib/kernel/TeTable.h>
+#include <TeBox.h>
+#include <TeDatabaseFactoryParams.h>
+#include <TeTable.h>
+#include <TeTable.h>
 
 // Boost
 #include <boost/lexical_cast.hpp>

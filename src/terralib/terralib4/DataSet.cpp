@@ -43,10 +43,10 @@
 #include "Utils.h"
 
 // Terralib 4.x
-#include <terralib/kernel/TeDatabase.h>
-#include <terralib/kernel/TeLayer.h>
+#include <TeDatabase.h>
+#include <TeLayer.h>
 
-#include <terralib/kernel/TeQuerierParams.h>
+#include <TeQuerierParams.h>
 
 // STL
 #include <memory>
