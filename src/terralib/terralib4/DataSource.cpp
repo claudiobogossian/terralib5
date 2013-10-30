@@ -26,10 +26,10 @@
 #include "Utils.h"
 
 // TerraLib 4.x
-#include <terralib/kernel/TeDatabase.h>
-#include <terralib/kernel/TeDatabaseFactory.h>
-#include <terralib/kernel/TeDatabaseFactoryParams.h>
-#include <terralib/kernel/TeDBConnectionsPool.h>
+#include <TeDatabase.h>
+#include <TeDatabaseFactory.h>
+#include <TeDatabaseFactoryParams.h>
+#include <TeDBConnectionsPool.h>
 
 te::da::DataSourceCapabilities terralib4::DataSource::sm_capabilities;
 te::da::SQLDialect* terralib4::DataSource::sm_dialect(0);
@@ -74,6 +74,7 @@ void terralib4::DataSource::open()
   std::string userName = "";
   std::string password = "";
   int portNumber = -1;
+
 
   m_db = TeDBConnectionsPool::instance().getDatabase(dbInfo, auxDbName, hostName, userName, 
                                                           password, portNumber);
