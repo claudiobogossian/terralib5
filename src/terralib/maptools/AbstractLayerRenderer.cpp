@@ -26,6 +26,7 @@
 // TerraLib
 #include "../color/RGBAColor.h"
 #include "../common/progress/TaskProgress.h"
+#include "../common/Globals.h"
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
@@ -72,6 +73,8 @@
 #include <cstdlib>
 #include <memory>
 #include <utility>
+
+
 
 te::map::AbstractLayerRenderer::AbstractLayerRenderer()
   : m_index(0)
@@ -566,7 +569,12 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
     std::vector<te::se::Symbolizer*> symbolizers;
 
     // Finds the current data set item on group map
-    std::string value = dataset->getAsString(propertyPos, precision);
+    std::string value;
+    
+    if(dataset->isNull(propertyPos))
+      value = te::common::Globals::sm_nanStr;
+    else
+      value = dataset->getAsString(propertyPos, precision);
 
     if(type == UNIQUE_VALUE)
     {
@@ -581,7 +589,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
       std::map<std::pair< double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
       for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
       {
-        if(dvalue > it->first.first && dvalue <= it->first.second)
+        if(dvalue >= it->first.first && dvalue <= it->first.second)
           break;
       }
       
