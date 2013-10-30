@@ -24,6 +24,8 @@
 */
 
 // TerraLib
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "TL4ConverterWizard.h"
 #include "TL4ConnectorWizardPage.h"
 #include "TL4LayerSelectionWizardPage.h"
@@ -55,8 +57,15 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   m_layerSelectionPage->setTitle(tr("Data Source Selection"));
   m_layerSelectionPage->setSubTitle(tr("Please, select the data source where the data is stored"));
 
+  m_layerSelectionPage->setFinalPage(true);
+
   setPage(0, m_connectorPage.get());
   setPage(1, m_layerSelectionPage.get());
+
+  connect(this->button(QWizard::NextButton), SIGNAL(pressed()), this, SLOT(next()));
+  connect(this->button(QWizard::BackButton), SIGNAL(pressed()), this, SLOT(back()));
+  connect(this->button(QWizard::CommitButton), SIGNAL(pressed()), this, SLOT(commit()));
+  connect(this->button(QWizard::HelpButton), SIGNAL(pressed()), this, SLOT(help()));
 
 }
 
@@ -76,7 +85,23 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::back()
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::next()
 {
+  if(currentId() == 0)
+  {
+    std::map<std::string, std::string> connInfo = m_connectorPage->getConnInfo();
 
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("TERRALIB4"));
+    ds->setConnectionInfo(connInfo);
+    ds->open();
+
+    std::vector<std::string> datasets = ds->getDataSetNames();
+
+    m_layerSelectionPage->setDatasets(datasets);
+  }
+  else
+  {
+    
+  }
+  QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::commit()

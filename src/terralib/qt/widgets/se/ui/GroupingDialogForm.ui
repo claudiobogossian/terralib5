@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Grouping</string>
+   <string>Classification</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_5">
    <property name="sizeConstraint">
@@ -41,7 +41,7 @@
            </font>
           </property>
           <property name="text">
-           <string>This operation creates a grouping representation in a selected layer</string>
+           <string>This operation creates a classification by group in a selected layer</string>
           </property>
          </widget>
         </item>

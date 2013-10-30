@@ -52,6 +52,7 @@ namespace te
 
         static const MachineByteOrder sm_machineByteOrder;  //!< A flag that indicates the machine byte order (Big Endian or Little Endian).
         static const std::string sm_dummyStr;               //!< A dummy string value.
+        static const std::string sm_nanStr;                 //!< Not a number string value.
     };
 
   } // end namespace common
