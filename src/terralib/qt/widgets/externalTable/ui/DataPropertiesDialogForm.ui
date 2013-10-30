@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>dataPropertiesDialogForm</class>
- <widget class="QDialog" name="dataPropertiesDialogForm">
+ <class>DataPropertiesDialogForm</class>
+ <widget class="QDialog" name="DataPropertiesDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -94,7 +94,7 @@
   <connection>
    <sender>m_cancelPushButton</sender>
    <signal>clicked()</signal>
-   <receiver>dataPropertiesDialogForm</receiver>
+   <receiver>DataPropertiesDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

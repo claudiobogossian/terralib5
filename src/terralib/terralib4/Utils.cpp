@@ -127,7 +127,7 @@ std::auto_ptr<TeDatabaseFactoryParams> terralib4::Convert2T4DatabaseParams(const
   fparams->dbms_name_ = dsInfo.at("T4_DRIVER");
   fparams->database_ = dsInfo.at("T4_DB_NAME");
   fparams->host_ = dsInfo.at("T4_HOST");
-  fparams->port_ = boost::lexical_cast<int>(dsInfo.at("T4_PORT"));
+  //fparams->port_ = boost::lexical_cast<int>(dsInfo.at("T4_PORT"));
   fparams->user_ = dsInfo.at("T4_USER");
   fparams->password_ = dsInfo.at("T4_PASSWORD");
 
