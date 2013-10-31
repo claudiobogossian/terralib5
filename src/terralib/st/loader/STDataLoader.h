@@ -575,6 +575,26 @@ namespace te
         */
         //static te::gm::Envelope getSpatialExtent(const CoverageSeriesDataSetInfo& info);
         //@}
+
+        /*!
+          \brief It initialize the STDataLoader
+
+          It creates a ST Memory data source and adds it into the DataSourceManager.
+
+          \note The user must use this method before using the other methods.
+          \note It can throw an Exception when internal errors occur.
+        */
+        static void initialize();
+
+        /*!
+          \brief It finalize the STDataLoader
+
+          It closes (cleans its iternal DataSets) ST Memory data source in the DataSourceManager.
+
+          \note The user must use this method after using the STDataLoader.
+          \note It can throw an Exception when internal errors occur.
+        */
+        static void finalize();
         
         /*! \brief Virtual destructor. */
         virtual ~STDataLoader();
