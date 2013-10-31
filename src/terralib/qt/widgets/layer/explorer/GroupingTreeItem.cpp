@@ -56,7 +56,7 @@ QVariant te::qt::widgets::GroupingTreeItem::data(int /*column*/, int role) const
 
   if(role == Qt::DisplayRole)
   {
-    QString text = tr("Grouping of") + " " + m_grouping->getPropertyName().c_str();
+    QString text = tr("Classification by") + " " + m_grouping->getPropertyName().c_str();
     return QVariant(text);
   }
 
