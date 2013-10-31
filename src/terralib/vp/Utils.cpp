@@ -31,6 +31,8 @@
 #include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/MultiPoint.h"
+#include "../geometry/MultiLineString.h"
+#include "../geometry/MultiPolygon.h"
 #include "../geometry/Point.h"
 #include "../memory/DataSet.h"
 #include "Utils.h"
@@ -79,9 +81,22 @@ te::gm::Geometry* te::vp::GetGeometryUnion(const std::vector<te::mem::DataSetIte
 
   if (resultGeometry->getGeomTypeId() != outGeoType)
   {
-    te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(1,outGeoType,resultGeometry->getSRID());
-    gc->setGeometryN(0,resultGeometry);
-    return gc;
+    if(resultGeometry->getGeomTypeId() == te::gm::GeometryCollectionType)
+    {
+      te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(0, outGeoType, resultGeometry->getSRID());
+      std::vector<te::gm::Geometry*> geomVec = ((te::gm::GeometryCollection*)resultGeometry)->getGeometries();
+      for(std::size_t i = 0; i < geomVec.size(); ++i)
+      {
+        gc->add(geomVec[i]);
+      }
+      return gc;
+    }
+    else
+    {
+      te::gm::GeometryCollection* gc = new te::gm::GeometryCollection(1, outGeoType, resultGeometry->getSRID());
+      gc->setGeometryN(0,resultGeometry);
+      return gc;
+    }
   }
   else
     return resultGeometry;
