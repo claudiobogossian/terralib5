@@ -569,7 +569,7 @@ void SetOutputDatasetQuery( const std::vector<te::dt::Property*>& groupingProper
     outputDataSet->add(outputDataSetItem);
   }
   
-  outputDataSet->moveFirst();
+  outputDataSet->moveBeforeFirst();
 }
 
 std::map<std::string, std::vector<te::mem::DataSetItem*> > GetGroups( te::da::DataSet* inputDataSet,
