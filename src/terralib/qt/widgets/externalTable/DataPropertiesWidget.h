@@ -88,7 +88,7 @@ namespace te
             \return A DataSetAdapter pointer.
             \note The caller will take ownership of the returned auto pointer. 
           */
-          te::da::DataSetAdapter* getAdapter();
+          std::auto_ptr<te::da::DataSetAdapter> getAdapter();
 
         protected slots:
 

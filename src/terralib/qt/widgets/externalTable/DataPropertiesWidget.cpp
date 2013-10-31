@@ -24,22 +24,22 @@
 */
 
 //Terralib
-#include "../../../../dataaccess/dataset/DataSetAdapter.h"
-#include "../../../../dataaccess/dataset/DataSetType.h"
-#include "../../../../dataaccess/dataset/DataSetTypeConverter.h"
-#include "../../../../dataaccess/datasource/DataSource.h"
-#include "../../../../dataaccess/datasource/DataSourceFactory.h"
-#include "../../../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../../dataaccess/utils/Utils.h"
-#include "../../../../memory/DataSet.h"
+#include "../../../dataaccess/dataset/DataSetAdapter.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype/Property.h"
 #include "../../../datatype/DateTimeProperty.h"
 #include "../../../datatype/NumericProperty.h"
 #include "../../../datatype/SimpleProperty.h"
 #include "../../../datatype/StringProperty.h"
 #include "../../../geometry/GeometryProperty.h"
-#include "../../table/DataSetTableView.h"
+#include "../../../memory/DataSet.h"
+#include "../table/DataSetTableView.h"
 #include "SRSManagerDialog.h"
 #include "DataPropertiesWidget.h"
 #include "DataSetAdapterWidget.h"
@@ -65,7 +65,7 @@ void buidTypeMap(std::map<int, std::string>& typeMap)
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::BYTE_ARRAY_TYPE, QObject::tr("Byte Array").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::CHAR_TYPE, QObject::tr("Char").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::COMPOSITE_TYPE, QObject::tr("Composite").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATASET_TYPE, QObject::tr("Data Set").toStdString()));
+   //typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATASET_TYPE, QObject::tr("Data Set").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATETIME_TYPE, QObject::tr("Date and Time").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, QObject::tr("Double").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::FLOAT_TYPE, QObject::tr("Float").toStdString()));
@@ -74,7 +74,7 @@ void buidTypeMap(std::map<int, std::string>& typeMap)
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, QObject::tr("Int 32").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, QObject::tr("Int 64").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, QObject::tr("Numeric").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::RASTER_TYPE, QObject::tr("Raster").toStdString()));
+   //typeMap.insert(std::map<int, std::string>::value_type(te::dt::RASTER_TYPE, QObject::tr("Raster").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, QObject::tr("String").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::UCHAR_TYPE, QObject::tr("U Char").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT16_TYPE, QObject::tr("U Int 16").toStdString()));
@@ -170,15 +170,13 @@ te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Q
   m_tblView.reset(new DataSetTableView(m_ui->m_dataPreviewFrame));
   QGridLayout* dataPreviewLayout = new QGridLayout(m_ui->m_dataPreviewFrame);
   dataPreviewLayout->addWidget(m_tblView.get());
-
-  QFont font;
-  font.setPointSize(8);
-
-  m_tblView->setFont(font);
+  dataPreviewLayout->setContentsMargins(0, 0, 0, 0);
 
   m_tblView->setAlternatingRowColors(true);
   m_tblView->verticalHeader()->setVisible(false);
   m_tblView->setSelectionMode(QAbstractItemView::NoSelection);
+
+  m_ui->m_datapropertiesTableWidget->setSelectionMode(QAbstractItemView::NoSelection);
 
   //Connecting signals and slots
   connect(m_ui->m_inputDataToolButton, SIGNAL(clicked()), this, SLOT(onInputDataToolButtonTriggered()));
@@ -190,7 +188,7 @@ te::qt::widgets::DatapPropertiesWidget::~DatapPropertiesWidget()
   m_typeMap.clear();
 }
 
-te::da::DataSetAdapter* te::qt::widgets::DatapPropertiesWidget::getAdapter()
+std::auto_ptr<te::da::DataSetAdapter> te::qt::widgets::DatapPropertiesWidget::getAdapter()
 {
   //Searching for properties that the user selected to adapt
   for (int i = 0; i < m_ui->m_datapropertiesTableWidget->rowCount(); ++i)
@@ -224,7 +222,8 @@ te::da::DataSetAdapter* te::qt::widgets::DatapPropertiesWidget::getAdapter()
     }
   }
 
-  return te::da::CreateAdapter(m_dataSet.release(), m_dsConverter, true);
+  std::auto_ptr<te::da::DataSetAdapter> adapter(te::da::CreateAdapter(m_dataSet.release(), m_dsConverter, true));
+  return adapter;
 }
 
 void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
@@ -267,32 +266,36 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
   std::auto_ptr<te::mem::DataSet> memFeature((new te::mem::DataSet(*m_dataSet.get(), properties, 5)));
 
   m_tblView->setDataSet(memFeature.release());
-  m_tblView->show();
   m_tblView->resizeColumnsToContents();
-  m_tblView->resizeRowsToContents();
+  m_tblView->show();
 
   m_ui->m_datapropertiesTableWidget->setRowCount(0);
 
   //Filling the properties table widget
   for(size_t t = 0; t < m_dataType->size(); ++t)
   {
-    QComboBox* typeCB = new QComboBox();
-    fillComboBox(m_typeMap, typeCB);
-    typeCB->setCurrentIndex(typeCB->findText(m_typeMap[m_dataType->getProperty(t)->getType()].c_str()));
-
-    std::string propName = m_dataType->getProperty(t)->getName();
-
     int newrow = m_ui->m_datapropertiesTableWidget->rowCount();
     m_ui->m_datapropertiesTableWidget->insertRow(newrow);
 
+    //The Property name item
+    std::string propName = m_dataType->getProperty(t)->getName();
+
     QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(propName));
+    itemName->setFlags(Qt::ItemIsEnabled);
+
     m_ui->m_datapropertiesTableWidget->setItem(newrow, 0, itemName);
+
+    //The property type item
+    QComboBox* typeCB = new QComboBox();
+    fillComboBox(m_typeMap, typeCB);
+    typeCB->setCurrentIndex(typeCB->findText(m_typeMap[m_dataType->getProperty(t)->getType()].c_str()));
 
     m_ui->m_datapropertiesTableWidget->setCellWidget(newrow, 1, typeCB);
   }
 
   m_ui->m_datapropertiesTableWidget->resizeColumnsToContents();
   m_ui->m_datapropertiesTableWidget->resizeRowsToContents();
+  m_ui->m_datapropertiesTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
   //Filling the ComboBoxes that will be used to configure the resulting geometries
   fillComboBox(m_dataType.get(), m_ui->m_xAxisComboBox);
