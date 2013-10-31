@@ -36,10 +36,11 @@
 #include <cassert>
 #include <memory>
 
-te::gdal::DataSet::DataSet(std::auto_ptr<te::da::DataSetType> dt,std::string uri)
+te::gdal::DataSet::DataSet(std::auto_ptr<te::da::DataSetType> dt,
+  te::common::AccessPolicy rwRole, std::string uri)
   : m_dsType(dt),
     m_uri(uri),
-    m_rwRole(te::common::RAccess),
+    m_rwRole(rwRole),
     m_size(1),
     m_i(-1)
 {}
