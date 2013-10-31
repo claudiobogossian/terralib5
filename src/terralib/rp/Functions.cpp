@@ -147,7 +147,7 @@ namespace te
        if( ! transactorPtr->dataSetExists( outDataSetName ) ) return false;
 
       std::auto_ptr< te::da::DataSet > dataSetPtr( transactorPtr->getDataSet(
-        outDataSetName, te::common::FORWARDONLY, true ) );
+        outDataSetName, te::common::FORWARDONLY, true, te::common::RWAccess ) );
 
       if( dataSetPtr.get() == 0 )
       {

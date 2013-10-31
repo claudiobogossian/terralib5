@@ -90,8 +90,12 @@ void te::srs::SpatialReferenceSystemManager::init()
     boost::property_tree::json_parser::read_json(f,pt);
     BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("SRSs"))
     {
-      add(v.second.get<std::string>("name"), v.second.get<std::string>("pj4txt"), 
-          v.second.get<std::string>("wkt"), v.second.get<unsigned int>("srid"));
+      if (v.second.get<unsigned int>("srid") > 100000)
+        add(v.second.get<std::string>("name"), v.second.get<std::string>("pj4txt"),
+            v.second.get<std::string>("wkt"), v.second.get<unsigned int>("srid"), "USER");
+      else
+        add(v.second.get<std::string>("name"), v.second.get<std::string>("pj4txt"),
+            v.second.get<std::string>("wkt"), v.second.get<unsigned int>("srid"));
     }
     f.close();
   }
@@ -110,9 +114,6 @@ void te::srs::SpatialReferenceSystemManager::init()
 
 void te::srs::SpatialReferenceSystemManager::add(const std::string& name, const std::string& p4Txt, const std::string& wkt, unsigned int id, const std::string& authName)
 {
-  assert(id > 0);
-  assert(!p4Txt.empty());
-  
   std::string key = authName;
   key += ":";
   key += boost::lexical_cast<std::string>(id);
@@ -132,13 +133,20 @@ bool te::srs::SpatialReferenceSystemManager::recognizes(unsigned int id, const s
   key += boost::lexical_cast<std::string>(id);
   
   boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
-  return (it != boost::multi_index::get<0>(m_set).end());
+  if (it == boost::multi_index::get<0>(m_set).end())
+  {
+    key = "USER";
+    key += ":";
+    key += boost::lexical_cast<std::string>(id);
+    it = boost::multi_index::get<0>(m_set).find(key);
+    return (it != boost::multi_index::get<0>(m_set).end());
+  }
+  else
+    return true;
 }
 
 std::auto_ptr<te::srs::SpatialReferenceSystem> te::srs::SpatialReferenceSystemManager::getSpatialReferenceSystem(unsigned int id, const std::string& authName) const
 {
-  assert(id > 0);
-  
   std::string wkt = getWkt(id,authName);
   if (wkt.empty())
     return std::auto_ptr<te::srs::SpatialReferenceSystem>();
@@ -157,51 +165,72 @@ std::auto_ptr<te::srs::SpatialReferenceSystem> te::srs::SpatialReferenceSystemMa
 
 std::string te::srs::SpatialReferenceSystemManager::getName(unsigned int id, const std::string& authName) const
 {
-  assert(id > 0);
-
   std::string key = authName;
   key += ":";
   key += boost::lexical_cast<std::string>(id);
   
   boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
-  if (it!=boost::multi_index::get<0>(m_set).end()) 
+  if (it == boost::multi_index::get<0>(m_set).end())
+  {
+    key = "USER";
+    key += ":";
+    key += boost::lexical_cast<std::string>(id);
+    it = boost::multi_index::get<0>(m_set).find(key);
+    if (it!=boost::multi_index::get<0>(m_set).end())
+      return it->m_name;
+  }
+  else
     return it->m_name;
+  
   return "";
 }
 
-std::string te::srs::SpatialReferenceSystemManager::getWkt (unsigned int id, const std::string& authName) const
+std::string te::srs::SpatialReferenceSystemManager::getWkt(unsigned int id, const std::string& authName) const
 {
-  assert(id > 0);
-  
   std::string key = authName;
   key += ":";
   key += boost::lexical_cast<std::string>(id);
   
   boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
-  if (it!=boost::multi_index::get<0>(m_set).end()) 
+  if (it==boost::multi_index::get<0>(m_set).end())
+  {
+    key = "USER";
+    key += ":";
+    key += boost::lexical_cast<std::string>(id);
+    it = boost::multi_index::get<0>(m_set).find(key);
+    if (it!=boost::multi_index::get<0>(m_set).end())
+      return it->m_wkt;
+  }
+  else
     return it->m_wkt;
+  
   return "";
 }
 
 std::string te::srs::SpatialReferenceSystemManager::getP4Txt(unsigned int id, const std::string& authName) const
 {
-  assert(id > 0);
-  
   std::string key = authName;
   key += ":";
   key += boost::lexical_cast<std::string>(id);
   
   boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
-  if (it!=boost::multi_index::get<0>(m_set).end()) 
+  if (it==boost::multi_index::get<0>(m_set).end())
+  {
+    key = "USER";
+    key += ":";
+    key += boost::lexical_cast<std::string>(id);
+    it = boost::multi_index::get<0>(m_set).find(key);
+    if (it!=boost::multi_index::get<0>(m_set).end())
+      return it->m_p4txt;
+  }
+  else
     return it->m_p4txt;
+  
   return "";
-
 }
 
 std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getIdFromName(const std::string& name) const
-{
-  assert(!name.empty());
-  
+{ 
   boost::multi_index::nth_index<srs_set,1>::type::iterator it = boost::multi_index::get<1>(m_set).find(name);
   if (it==boost::multi_index::get<1>(m_set).end()) 
     throw te::srs::Exception(TR_SRS("CS name not recognized."));
@@ -211,9 +240,7 @@ std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getI
 
 
 std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getIdFromP4Txt(const std::string& p4Txt) const
-{
-  assert(!p4Txt.empty());
-  
+{  
   boost::multi_index::nth_index<srs_set,2>::type::iterator it = boost::multi_index::get<2>(m_set).find(p4Txt);
   if (it==boost::multi_index::get<2>(m_set).end()) 
     throw te::srs::Exception(TR_SRS("CS name not recognized."));
@@ -222,9 +249,7 @@ std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getI
 }
 
 std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getIdFromWkt(const std::string& wkt) const
-{
-  assert(!wkt.empty());
-  
+{ 
   boost::multi_index::nth_index<srs_set,3>::type::iterator it = boost::multi_index::get<3>(m_set).find(wkt);
   if (it==boost::multi_index::get<3>(m_set).end()) 
     throw te::srs::Exception(TR_SRS("CS name not recognized."));
@@ -233,15 +258,22 @@ std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getI
 }
 
 void te::srs::SpatialReferenceSystemManager::remove(unsigned int id, const std::string& authName)
-{
-  assert(id > 0);
-  
+{ 
   std::string key = authName;
   key += ":";
   key += boost::lexical_cast<std::string>(id);
   
   boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
-  if (it!=boost::multi_index::get<0>(m_set).end())
+  if (it==boost::multi_index::get<0>(m_set).end())
+  {
+    key = "USER";
+    key += ":";
+    key += boost::lexical_cast<std::string>(id);
+    it = boost::multi_index::get<0>(m_set).find(key);
+    if (it!=boost::multi_index::get<0>(m_set).end())
+      m_set.erase(it); 
+  }
+  else
     m_set.erase(it);
 }
 
