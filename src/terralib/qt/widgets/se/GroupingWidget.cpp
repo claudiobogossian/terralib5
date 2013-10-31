@@ -605,7 +605,7 @@ void te::qt::widgets::GroupingWidget::createDoubleNullGroupingItem(int count)
 
   int geomType = getGeometryType();
   std::vector<te::se::Symbolizer*> symbVec;
-  te::se::Symbolizer* s = te::se::CreateSymbolizer((te::gm::GeomType)geomType, "#ffffff");
+  te::se::Symbolizer* s = te::se::CreateSymbolizer((te::gm::GeomType)geomType, "#dddddd");
   symbVec.push_back(s);
   legendItem->setSymbolizers(symbVec);
 
@@ -624,7 +624,7 @@ void te::qt::widgets::GroupingWidget::createStringNullGroupingItem(int count)
 
   int geomType = getGeometryType();
   std::vector<te::se::Symbolizer*> symbVec;
-  te::se::Symbolizer* s = te::se::CreateSymbolizer((te::gm::GeomType)geomType, "#ffffff");
+  te::se::Symbolizer* s = te::se::CreateSymbolizer((te::gm::GeomType)geomType, "#dddddd");
   symbVec.push_back(s);
   legendItem->setSymbolizers(symbVec);
 

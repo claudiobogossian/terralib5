@@ -32,7 +32,9 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../raster/Raster.h"
 
-#include <boost/shared_ptr.hpp>
+#include <boost/noncopyable.hpp>
+
+#include <memory>
 
 namespace te
 {
@@ -43,7 +45,7 @@ namespace te
       \brief RasterHandler
       \ingroup RPModule
      */
-    class TERPEXPORT RasterHandler
+    class TERPEXPORT RasterHandler : private boost::noncopyable
     {
       public :
         
@@ -52,59 +54,28 @@ namespace te
         ~RasterHandler();
         
         /*!
-          \brief Build a instance using the given pointers.
-          \param dataSourcePtr Data source pointer.
-          \param transactorPtr A pointer to a transactor instance related to the data source pointed by dataSourcePtr.
-          \param persistencePtr A pointer to a persistence instance related to the instance pointed by transactorPtr.
-          \param dataSetPtr A pointer to a data set instance related to the instance pointed by persistencePtr.
-          \param rasterPtr A pointer to a raster instance related to the instance pointed by rasterPtr.
-         */        
-        RasterHandler(
-          const boost::shared_ptr< te::da::DataSource >& dataSourcePtr,
-          //const boost::shared_ptr< te::da::DataSourceTransactor >& transactorPtr,
-          const boost::shared_ptr< te::da::DataSet >& dataSetPtr,
-          const boost::shared_ptr< te::rst::Raster >& rasterPtr );        
-        
-        /*!
-          \brief Build a instance using the given pointers.
-          \param transactorPtr Transactor pointer.
-          \param persistencePtr A pointer to a persistence instance related to the instance pointed by transactorPtr.
-          \param dataSetPtr A pointer to a data set instance related to the instance pointed by persistencePtr.
-          \param rasterPtr A pointer to a raster instance related to the instance pointed by rasterPtr.
-         */        
-        RasterHandler(
-          //const boost::shared_ptr< te::da::DataSourceTransactor >& transactorPtr,
-          //const boost::shared_ptr< te::da::DataSetTypePersistence >& persistencePtr,
-          const boost::shared_ptr< te::da::DataSet >& dataSetPtr,
-          const boost::shared_ptr< te::rst::Raster >& rasterPtr );
-          
-        /*!
           \brief Build a instance using the given naked pointers.
           \param dataSourcePtr Data source pointer.
           \param transactorPtr A pointer to a transactor instance related to the data source pointed by dataSourcePtr.
-          \param persistencePtr A pointer to a persistence instance related to the instance pointed by transactorPtr.
           \param dataSetPtr A pointer to a data set instance related to the instance pointed by persistencePtr.
           \param rasterPtr A pointer to a raster instance related to the instance pointed by rasterPtr.
           \note All given pionters will be acquired and their respective objects will be deleted at desctruction time.
          */                  
         RasterHandler(
           te::da::DataSource* dataSourcePtr,
-          //te::da::DataSourceTransactor* transactorPtr,
-          //te::da::DataSetTypePersistence* persistencePtr,
+          te::da::DataSourceTransactor* transactorPtr,
           te::da::DataSet* dataSetPtr,
           te::rst::Raster* rasterPtr );            
           
         /*!
           \brief Build a instance using the given naked pointers.
           \param transactorPtr Transactor pointer.
-          \param persistencePtr A pointer to a persistence instance related to the instance pointed by transactorPtr.
           \param dataSetPtr A pointer to a data set instance related to the instance pointed by persistencePtr.
           \param rasterPtr A pointer to a raster instance related to the instance pointed by rasterPtr.
           \note All given pionters will be acquired and their respective objects will be deleted at desctruction time.
          */                  
         RasterHandler(
-          //te::da::DataSourceTransactor* transactorPtr,
-          //te::da::DataSetTypePersistence* persistencePtr,
+          te::da::DataSourceTransactor* transactorPtr,
           te::da::DataSet* dataSetPtr,
           te::rst::Raster* rasterPtr );    
           
@@ -114,9 +85,6 @@ namespace te
           \note All given pionters will be acquired and their respective objects will be deleted at desctruction time.
          */                  
         RasterHandler( te::rst::Raster* rasterPtr );           
-
-        //overload
-        const RasterHandler& operator=( const RasterHandler& ext );
         
         /*!
           \brief Reset the internal state (all internal pointed objects are deleted).
@@ -127,56 +95,25 @@ namespace te
           \brief Reset the internal state (all pointed objects are deleted).
           \param dataSourcePtr Data source pointer.
           \param transactorPtr A pointer to a transactor instance related to the data source pointed by dataSourcePtr.
-          \param persistencePtr A pointer to a persistence instance related to the instance pointed by transactorPtr.
-          \param dataSetPtr A pointer to a data set instance related to the instance pointed by persistencePtr.
-          \param rasterPtr A pointer to a raster instance related to the instance pointed by rasterPtr.
-         */        
-        void reset( 
-          const boost::shared_ptr< te::da::DataSource >& dataSourcePtr,
-          //const boost::shared_ptr< te::da::DataSourceTransactor >& transactorPtr,
-          //const boost::shared_ptr< te::da::DataSetTypePersistence >& persistencePtr,
-          const boost::shared_ptr< te::da::DataSet >& dataSetPtr,
-          const boost::shared_ptr< te::rst::Raster >& rasterPtr );         
-        
-        /*!
-          \brief Reset the internal state (all pointed objects are deleted).
-          \param transactorPtr Transactor pointer.
-          \param persistencePtr A pointer to a persistence instance related to the instance pointed by transactorPtr.
-          \param dataSetPtr A pointer to a data set instance related to the instance pointed by persistencePtr.
-          \param rasterPtr A pointer to a raster instance related to the instance pointed by rasterPtr.          
-         */        
-        void reset( //const boost::shared_ptr< te::da::DataSourceTransactor >& transactorPtr,
-          //const boost::shared_ptr< te::da::DataSetTypePersistence >& persistencePtr,
-          const boost::shared_ptr< te::da::DataSet >& dataSetPtr,
-          const boost::shared_ptr< te::rst::Raster >& rasterPtr );   
-          
-        /*!
-          \brief Reset the internal state (all pointed objects are deleted).
-          \param dataSourcePtr Data source pointer.
-          \param transactorPtr A pointer to a transactor instance related to the data source pointed by dataSourcePtr.
-          \param persistencePtr A pointer to a persistence instance related to the instance pointed by transactorPtr.
           \param dataSetPtr A pointer to a data set instance related to the instance pointed by persistencePtr.
           \param rasterPtr A pointer to a raster instance related to the instance pointed by rasterPtr.
           \note All given pionters will be acquired and their respective objects will be deleted at desctruction time.
          */        
         void reset( 
           te::da::DataSource* dataSourcePtr,
-          //te::da::DataSourceTransactor* transactorPtr,
-          //te::da::DataSetTypePersistence* persistencePtr,
+          te::da::DataSourceTransactor* transactorPtr,
           te::da::DataSet* dataSetPtr,
           te::rst::Raster* rasterPtr ); 
           
         /*!
           \brief Reset the internal state (all pointed objects are deleted).
           \param transactorPtr A pointer to a transactor instance related to the data source pointed by dataSourcePtr.
-          \param persistencePtr A pointer to a persistence instance related to the instance pointed by transactorPtr.
           \param dataSetPtr A pointer to a data set instance related to the instance pointed by persistencePtr.
           \param rasterPtr A pointer to a raster instance related to the instance pointed by rasterPtr.
           \note All given pionters will be acquired and their respective objects will be deleted at desctruction time.
          */        
         void reset( 
-          //te::da::DataSourceTransactor* transactorPtr,
-          //te::da::DataSetTypePersistence* persistencePtr,
+          te::da::DataSourceTransactor* transactorPtr,
           te::da::DataSet* dataSetPtr,
           te::rst::Raster* rasterPtr );        
           
@@ -193,17 +130,34 @@ namespace te
          */                  
         te::rst::Raster* getRasterPtr();
         
+        /*!
+          \brief Relase the internal state and give the ownership to the given pointers.
+          \param dataSourcePtr Data source pointer.
+          \param transactorPtr A pointer to a transactor instance related to the data source pointed by dataSourcePtr.
+          \param dataSetPtr A pointer to a data set instance related to the instance pointed by persistencePtr.
+          \param rasterPtr A pointer to a raster instance related to the instance pointed by rasterPtr.
+         */        
+        void release( 
+          std::auto_ptr< te::da::DataSource >& dataSourcePtr,
+          std::auto_ptr< te::da::DataSourceTransactor >& transactorPtr,
+          std::auto_ptr< te::da::DataSet >& dataSetPtr,
+          std::auto_ptr< te::rst::Raster >& rasterPtr );
+          
+        /*!
+          \brief Relase the internal state and give the ownership to the given external handler instance.
+          \param other The external handler instance.
+         */        
+        void release( RasterHandler& other );          
+        
       protected :
         
-        mutable boost::shared_ptr< te::da::DataSource > m_dataSourcePtr; //!< A pointer to a datasource instance.
+        mutable std::auto_ptr< te::da::DataSource > m_dataSourcePtr; //!< A pointer to a datasource instance.
         
-        //mutable boost::shared_ptr< te::da::DataSourceTransactor > m_transactorPtr; //!< A pointer to a transactor instance that may or may not be related to data source instance pointed by m_dataSourcePtr.
+        mutable std::auto_ptr< te::da::DataSourceTransactor > m_transactorPtr; //!< A pointer to a transactor instance that may or may not be related to data source instance pointed by m_dataSourcePtr.
         
-        //mutable boost::shared_ptr< te::da::DataSetTypePersistence > m_persistencePtr; //!< A pointer to a persistence instance related to the transactor pointed by m_transactorPtr.
+        mutable std::auto_ptr< te::da::DataSet > m_dataSetPtr; //!< A pointer to a data set instance related to the transactor instance pointed by m_transactorPtr.
         
-        mutable boost::shared_ptr< te::da::DataSet > m_dataSetPtr; //!< A pointer to a data set instance related to the transactor instance pointed by m_transactorPtr.
-        
-        mutable boost::shared_ptr< te::rst::Raster > m_rasterPtr; //!< A pointer to a raster instance related to the data set instance pointed by m_dataSetPtr.        
+        mutable std::auto_ptr< te::rst::Raster > m_rasterPtr; //!< A pointer to a raster instance related to the data set instance pointed by m_dataSetPtr.        
     };
   } // end namespace rp
 }   // end namespace te

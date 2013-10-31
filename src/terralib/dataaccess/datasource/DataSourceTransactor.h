@@ -148,6 +148,7 @@ namespace te
                  released to the data source.
 
           \param name      The dataset name.
+          \param accessPolicy Access policy.
           \param travType  The traverse type associated to the returned dataset. 
           \param connected A flag to indicate if the returned dataset is connected or not.
 
@@ -161,7 +162,8 @@ namespace te
         */
         virtual std::auto_ptr<DataSet> getDataSet(const std::string& name, 
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                  bool connected = false) = 0;
+                                                  bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess) = 0;
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the specified property.
@@ -175,6 +177,7 @@ namespace te
           \param propertyName  The name of the spatial property that will be used to apply the spatial filter.
           \param e             A rectangle to be used as a spatial filter when retrieving datasets.
           \param r             The spatial relation to be used during the filter.
+          \param accessPolicy  Access policy.
           \param travType      The traversal type associated to the returned dataset.
           \param connected     A flag to indicate if the returned dataset is connected or not.
 
@@ -193,7 +196,8 @@ namespace te
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                  bool connected = false) = 0;
+                                                  bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess) = 0;
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the given geometric property.
@@ -207,6 +211,7 @@ namespace te
           \param propertyName  The name of the spatial property that will be used to apply the spatial filter.
           \param g             The geometry that will be used as a spatial filter when retrieving the dataset.
           \param r             The spatial relation that will be used during the filtering.
+          \param accessPolicy  Access policy.
           \param travType      The traverse type associated to the returned dataset.
           \param connected     A flag to indicate if the returned dataset is connected or not.
 
@@ -225,7 +230,8 @@ namespace te
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                  bool connected = false) = 0;
+                                                  bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess) = 0;
 
         /*!
           \brief It gets the dataset identified by the given name using the set of objects identification.
@@ -237,6 +243,7 @@ namespace te
 
           \param name       The dataset name of the dataset.
           \param oids       A pointer for the set of objects. Do not pass null, nor an empty set.
+          \param accessPolicy  Access policy.
           \param travType   The traverse type associated to the returned dataset.
           \param connected  A flag to indicate if the returned dataset is connected or not.
 
@@ -249,7 +256,8 @@ namespace te
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const ObjectIdSet* oids, 
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                  bool connected = false);
+                                                  bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         /*!
           \brief It executes a query that may return some data using a generic query.
