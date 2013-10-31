@@ -27,15 +27,41 @@
 #include "ui_TL4LayerSelectionWizardPageForm.h"
 #include "TL4LayerSelectionWizardPage.h"
 
+// Qt
+#include<QtGui/QListWidgetItem>
+
 te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::TL4LayerSelectionWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::TL4LayerSelectionWizardPageForm)
 {
 // setup controls
   m_ui->setupUi(this);
-
 }
 
 te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::~TL4LayerSelectionWizardPage()
 {
+}
+
+void te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::setDatasets(std::vector<std::string> datasets)
+{
+  m_ui->m_layersListWidget->clear();
+
+  for(std::size_t i = 0; i < datasets.size(); ++i)
+  {
+    QListWidgetItem* item = new QListWidgetItem(datasets[i].c_str(), m_ui->m_layersListWidget);
+    item->setCheckState(Qt::Checked);
+    m_ui->m_layersListWidget->addItem(item);
+  }
+}
+
+std::vector<std::string> te::qt::plugins::terralib4::TL4LayerSelectionWizardPage::getChecked()
+{
+  std::vector<std::string> checked;
+  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  {
+    if(m_ui->m_layersListWidget->itemAt(0, i)->checkState() == Qt::Checked)
+      checked.push_back(m_ui->m_layersListWidget->itemAt(0, i)->text().toStdString());
+  }
+
+  return checked;
 }

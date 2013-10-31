@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../geometry/Envelope.h"
+#include "../../../maptools/Utils.h"
 #include "../canvas/MultiThreadMapDisplay.h"
 #include "../tools/PanExtent.h"
 #include "EyeBirdMapDisplayWidget.h"
@@ -57,40 +58,31 @@ te::qt::widgets::EyeBirdMapDisplayWidget::~EyeBirdMapDisplayWidget()
   delete m_panExtent;
 }
 
-void te::qt::widgets::EyeBirdMapDisplayWidget::set(te::map::AbstractLayerPtr layer)
+void te::qt::widgets::EyeBirdMapDisplayWidget::setList(std::list<te::map::AbstractLayerPtr>& layerList, int srid)
 {
-  m_layer = layer;
+  te::gm::Envelope inputExt = te::map::GetExtent(layerList, srid, true);
 
-  std::list<te::map::AbstractLayerPtr> list;
-
-  list.push_back(m_layer);
-
-  te::gm::Envelope inputExt = m_layer->getExtent();
+  m_inputExt = inputExt;
 
   m_mapDisplay->setMouseTracking(true);
-  m_mapDisplay->setLayerList(list);
-  m_mapDisplay->setSRID(m_layer->getSRID(), false);
+  m_mapDisplay->setLayerList(layerList);
+  m_mapDisplay->setSRID(srid, false);
 
   m_itsMe = true;
-  m_mapDisplay->setExtent(inputExt, false);
+  m_mapDisplay->setExtent(m_inputExt, true);
   m_itsMe = false;
 }
 
 void te::qt::widgets::EyeBirdMapDisplayWidget::recompose()
 {
-  if(!m_layer.get())
-    return;
-
   if(!m_isEnabled)
     return;
 
-  te::gm::Envelope inputExt = m_layer->getExtent();
-
   m_itsMe = true;
-  m_mapDisplay->setExtent(inputExt, true);
+  m_mapDisplay->setExtent(m_inputExt, true);
   m_itsMe = false;
 
-  m_panExtent->setCurrentExtent(inputExt);
+  m_panExtent->setCurrentExtent(m_inputExt);
 }
 
 void te::qt::widgets::EyeBirdMapDisplayWidget::setEnabled(bool status)

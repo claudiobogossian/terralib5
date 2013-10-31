@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -83,6 +83,8 @@ namespace te
 
           void onAddQueryLayerTriggered();
 
+          void onAddTextualLayerTriggered();
+
           void onRemoveFolderTriggered();
 
           void onRemoveLayerTriggered();
@@ -104,6 +106,8 @@ namespace te
           void onToolsDataExchangerTriggered();
 
           void onToolsDataExchangerDirectTriggered();
+
+          void onToolsDataExchangerDirectPopUpTriggered();
 
           void onProjectPropertiesTriggered();
 
@@ -232,6 +236,7 @@ namespace te
           QAction* m_toolsCustomize;
           QAction* m_toolsDataExchanger;
           QAction* m_toolsDataExchangerDirect;
+          QAction* m_toolsDataExchangerDirectPopUp;
           QAction* m_toolsDataSourceExplorer;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
@@ -243,6 +248,7 @@ namespace te
           QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;
+          QAction *m_projectAddLayerTextualDataSet;
           QAction* m_projectAddLayerGraph;
           QAction* m_projectNewFolder;
           QAction* m_layerEdit;
@@ -327,7 +333,9 @@ namespace te
           // Project
           Project* m_project;
 
-          QDockWidget* m_progressDockWidget; //!< Dock widget used to show progress information
+          QDockWidget* m_progressDockWidget;       //!< Dock widget used to show progress information
+          QDockWidget* m_zoomInDisplaysDockWidget; //!< Dock widget used to show zoom in display
+          QDockWidget* m_eyeBirdDisplaysDockWidget; //!< Dock widget used to show eye bird display
 
           te::qt::af::ApplicationController* m_controller;
       };

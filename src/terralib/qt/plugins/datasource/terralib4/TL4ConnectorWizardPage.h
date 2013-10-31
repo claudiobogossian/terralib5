@@ -30,6 +30,7 @@
 #include "Config.h"
 
 // STL
+#include <map>
 #include <memory>
 
 // Qt
@@ -55,6 +56,12 @@ namespace te
             TL4ConnectorWizardPage(QWidget* parent = 0);
 
             ~TL4ConnectorWizardPage();
+
+            std::map<std::string, std::string> getConnInfo();
+
+          private:
+
+            std::string getDriverName(std::string displayName);
 
           protected slots:
 

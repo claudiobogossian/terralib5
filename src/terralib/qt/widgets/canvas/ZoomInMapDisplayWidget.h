@@ -35,6 +35,7 @@
 #include <memory>
 
 // Qt
+#include <QtGui/QSlider>
 #include <QtGui/QWidget>
 
 namespace te
@@ -74,7 +75,7 @@ namespace te
 
             \note This layer MUST HAVE a valid raster object.
           */
-          void set(te::map::AbstractLayerPtr layer);
+          void setList(std::list<te::map::AbstractLayerPtr>& layerList, int srid);
 
           te::gm::Envelope getCurrentExtent();
 
@@ -88,13 +89,13 @@ namespace te
 
           void onParentMapDisplayExtentChanged();
 
+          void onZoomFactorChanged();
+
         protected:
 
           te::gm::Envelope calculateExtent(te::gm::Envelope& e);
 
         private:
-
-          te::map::AbstractLayerPtr m_layer;
 
           te::qt::widgets::MapDisplay* m_mapDisplay;
 
@@ -105,6 +106,8 @@ namespace te
 
           bool m_itsMe;
           bool m_isEnabled;
+
+          QSlider* m_sliderZoomFactor;
       };
 
     } // end namespace widgets

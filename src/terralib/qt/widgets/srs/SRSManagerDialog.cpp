@@ -73,9 +73,12 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
     for (it = m_recentSRS.constBegin(); it != m_recentSRS.constEnd(); ++it)
     {
       srid = (*it).toInt();
-      m_ui->m_SRSRecentTableWidget->setItem(aux, 0, new QTableWidgetItem(te::srs::SpatialReferenceSystemManager::getInstance().getName(srid).c_str()));
-      m_ui->m_SRSRecentTableWidget->setItem(aux, 1, new QTableWidgetItem(QString::number(srid)));    
-      m_ui->m_SRSRecentTableWidget->setItem(aux, 2, new QTableWidgetItem("EPSG"));
+      std::string auth("EPSG");
+      if (srid >= 100000)
+        auth = "USER";
+      m_ui->m_SRSRecentTableWidget->setItem(aux, 0, new QTableWidgetItem(te::srs::SpatialReferenceSystemManager::getInstance().getName(srid,auth).c_str()));
+      m_ui->m_SRSRecentTableWidget->setItem(aux, 1, new QTableWidgetItem(QString::number(srid)));
+      m_ui->m_SRSRecentTableWidget->setItem(aux, 2, new QTableWidgetItem(auth.c_str()));
       ++aux;
     }
   }
@@ -102,24 +105,24 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   
   while (its.first != its.second) 
   {
-      if (its.first->m_auth_name == "EPSG")
+    if (its.first->m_auth_name == "EPSG")
+    {
+      if (its.first->m_auth_id < 5000)
       {
-        if (its.first->m_auth_id < 5000)
-        {
-          QTreeWidgetItem *geog = new QTreeWidgetItem(items[0]);
-          geog->setText(0, its.first->m_name.c_str());
-          geog->setText(1, QString("%1").arg(its.first->m_auth_id));
-          geog->setText(2, "EPSG");
-        }
-        else 
-        {
-          QTreeWidgetItem *proj = new QTreeWidgetItem(items[1]);
-          proj->setText(0, its.first->m_name.c_str());
-          proj->setText(1, QString("%1").arg(its.first->m_auth_id));
-          proj->setText(2, "EPSG");
-        }
+        QTreeWidgetItem *geog = new QTreeWidgetItem(items[0]);
+        geog->setText(0, its.first->m_name.c_str());
+        geog->setText(1, QString("%1").arg(its.first->m_auth_id));
+        geog->setText(2, "EPSG");
       }
-    else 
+      else
+      {
+        QTreeWidgetItem *proj = new QTreeWidgetItem(items[1]);
+        proj->setText(0, its.first->m_name.c_str());
+        proj->setText(1, QString("%1").arg(its.first->m_auth_id));
+        proj->setText(2, "EPSG");
+      }
+    }
+    else
     {
       QTreeWidgetItem *userd = new QTreeWidgetItem(items[2]);
       userd->setText(0, its.first->m_name.c_str());
@@ -127,7 +130,7 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
       userd->setText(2, its.first->m_auth_name.c_str());
     }
     ++its.first;
-  }  
+  }
   
   unsigned int ntl =  m_ui->m_SRSTreeWidget->topLevelItemCount();
   for(unsigned int i = 0; i < ntl; ++i)
@@ -231,7 +234,7 @@ void te::qt::widgets::SRSManagerDialog::onOkPushButtonClicked()
   {
     QStringList aux;
     aux << QString::number(m_selSrsId.first);    
-    for (size_t i=0; (i<3 && i<m_recentSRS.size()); ++i)
+    for (size_t i=0; (i<=3 && i<m_recentSRS.size()); ++i)
       if (QString::number(m_selSrsId.first) != m_recentSRS[i])
         aux << m_recentSRS[i];
     

@@ -44,8 +44,10 @@ namespace te
   {
     namespace widgets
     {
-      class MapDisplay;
       class AbstractTool;
+      class EyeBirdMapDisplayWidget;
+      class MapDisplay;
+      class ZoomInMapDisplayWidget;
     }
 
     namespace af
@@ -83,6 +85,10 @@ namespace te
           ~MapDisplay();
 
           te::qt::widgets::MapDisplay* getDisplay();
+
+          void setZoomInDisplay(te::qt::widgets::ZoomInMapDisplayWidget* display);
+
+          void setEyeBirdDisplay(te::qt::widgets::EyeBirdMapDisplayWidget* display);
 
           bool eventFilter(QObject* watched, QEvent* e);
 
@@ -149,6 +155,9 @@ namespace te
           std::vector<te::gm::Envelope> m_extentStack;        //!< The stack of MapDisplay extents.
           int m_currentExtentIndex;                           //!< The current extent index.
           int m_extentStackMaxSize;                           //!< The max size of the extent stack. Used on previousExtent and nextExtent.
+
+          te::qt::widgets::ZoomInMapDisplayWidget* m_zoomInDisplay;       //!< Pointer to a component that represents a zoom in display.
+          te::qt::widgets::EyeBirdMapDisplayWidget* m_eyeBirdDisplay;      //!< Pointer to a component that represents a eye bird display.
       };
     }
   }

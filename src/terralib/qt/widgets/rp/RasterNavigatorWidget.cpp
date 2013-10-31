@@ -153,8 +153,8 @@ void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer
   m_mapDisplay->setSRID(m_layer->getSRID(), false);
   m_mapDisplay->setExtent(e, false);
 
-  m_zoomInMapDisplay->set(m_layer);
-  m_eyeBirdMapDisplay->set(m_layer);
+  m_zoomInMapDisplay->setList(list, m_layer->getSRID());
+  m_eyeBirdMapDisplay->setList(list, m_layer->getSRID());
 
 // list bands
   listBands();

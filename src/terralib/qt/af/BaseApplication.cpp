@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -32,7 +32,9 @@
 #include "../../common/UserApplicationSettings.h"
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
+#include "../widgets/canvas/EyeBirdMapDisplayWidget.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
+#include "../widgets/canvas/ZoomInMapDisplayWidget.h"
 #include "../widgets/charts/ChartLayerDialog.h"
 #include "../widgets/charts/HistogramDialog.h"
 #include "../widgets/charts/ScatterDialog.h"
@@ -42,6 +44,7 @@
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/exchanger/DataExchangerWizard.h"
 #include "../widgets/exchanger/DirectExchangerDialog.h"
+#include "../widgets/externalTable/DataPropertiesDialog.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/ChartItem.h"
 #include "../widgets/layer/explorer/GroupingTreeItem.h"
@@ -142,6 +145,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_symbolizerExplorer(0),
     m_project(0),
     m_progressDockWidget(0),
+    m_zoomInDisplaysDockWidget(0),
+    m_eyeBirdDisplaysDockWidget(0),
     m_controller(0)
 {
   m_controller = new ApplicationController;
@@ -192,6 +197,8 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_symbolizerExplorer;
   delete m_project;
   delete m_progressDockWidget;
+  delete m_zoomInDisplaysDockWidget;
+  delete m_eyeBirdDisplaysDockWidget;
 
   while(!m_tableDocks.empty())
     delete *m_tableDocks.begin();
@@ -283,7 +290,7 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
       // Add the unsave asterisk
       setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), true));
 
-      m_project->projectChanged(true);
+      m_project->setProjectAsChanged(true);
     }
     break;
 
@@ -381,7 +388,7 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
       if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
       {
         te::qt::af::evt::LayerAdded evt(*it);
-        te::qt::af::ApplicationController::getInstance().broadcast(&evt);        
+        te::qt::af::ApplicationController::getInstance().broadcast(&evt);
       }
 
       ++it;
@@ -413,7 +420,8 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
     std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
 
-    std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
+    //std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
+    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
 
     qlb->setLayerList(layers);
 
@@ -432,6 +440,26 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
     te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
     ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to add a layer from a queried dataset!"));
+  }
+}
+
+void te::qt::af::BaseApplication::onAddTextualLayerTriggered()
+{
+   try
+  {
+    if(m_project == 0)
+      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+
   }
   catch(const std::exception& e)
   {
@@ -468,7 +496,7 @@ void te::qt::af::BaseApplication::onRemoveFolderTriggered()
 
 void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 {
- std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getTreeView()->getAllSelectedLayerItems();
+ std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
 
   if(selectedLayerItems.empty())
   {
@@ -484,11 +512,11 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 
   if(reply == QMessageBox::No)
     return;
-  
+
   std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
-  for(it = selectedLayerItems.begin(); it != selectedLayerItems.end(); ++it)
+  for(it = selectedLayerItems.begin();  it != selectedLayerItems.end(); ++it)
   {
-    te::qt::af::evt::LayerItemRemoved evt(*it);
+    te::qt::af::evt::LayerItemRemoved evt((*it));
     te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 
@@ -558,7 +586,7 @@ void te::qt::af::BaseApplication::onSaveProjectTriggered()
 
   te::qt::af::Save(*m_project, m_project->getFileName());
 
-  m_project->projectChanged(false);
+  m_project->setProjectAsChanged(false);
 
   setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
 
@@ -586,7 +614,7 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
 
   te::qt::af::Save(*m_project, fName);
 
-  m_project->projectChanged(false);
+  m_project->setProjectAsChanged(false);
 
   setWindowTitle(te::qt::af::UnsavedStar(windowTitle(), m_project->hasChanged()));
 
@@ -631,7 +659,38 @@ void te::qt::af::BaseApplication::onToolsDataExchangerDirectTriggered()
   {
     te::qt::widgets::DirectExchangerDialog dlg(this);
 
-    std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
+    std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
+    dlg.setLayers(layers);
+
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void  te::qt::af::BaseApplication::onToolsDataExchangerDirectPopUpTriggered()
+{
+  try
+  {
+    te::qt::widgets::DirectExchangerDialog dlg(this);
+
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedSingleLayerItems();
+
+    if(selectedLayerItems.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("Select a single layer in the layer explorer!"));
+      return;
+    }
+
+    te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
+    te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
+
+    std::list<te::map::AbstractLayerPtr> layers;
+    layers.push_back(selectedLayer);
+
     dlg.setLayers(layers);
 
     dlg.exec();
@@ -681,16 +740,20 @@ void te::qt::af::BaseApplication::onNewFolderTriggered()
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
 
-  te::map::AbstractLayerPtr folder(new te::map::FolderLayer);
-  folder->setTitle(text.toStdString());
-  folder->setId(id);
+  te::map::AbstractLayerPtr folderLayer(new te::map::FolderLayer);
+  folderLayer->setTitle(text.toStdString());
+  folderLayer->setId(id);
 
-  m_explorer->getExplorer()->add(folder);
+  te::qt::af::evt::LayerAdded evt(folderLayer);
+  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+
+  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
 }
 
 void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 {
-  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getSelectedItems();
 
   if(layers.empty())
   {
@@ -712,7 +775,7 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
 
 void te::qt::af::BaseApplication::onLayerRemoveSelectionTriggered()
 {
-  std::list<te::map::AbstractLayerPtr> layers =  m_explorer->getExplorer()->getSelectedLayers();
+  std::list<te::map::AbstractLayerPtr> layers =  m_explorer->getExplorer()->getSelectedSingleLayers();
 
   if(layers.empty())
   {
@@ -736,7 +799,7 @@ void te::qt::af::BaseApplication::onLayerRemoveSelectionTriggered()
 
 void te::qt::af::BaseApplication::onLayerSRSTriggered()
 {
-  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getSelectedItems();
   
   if(layers.empty())
   {
@@ -758,7 +821,7 @@ void te::qt::af::BaseApplication::onLayerSRSTriggered()
 
 void te::qt::af::BaseApplication::onLayerShowTableTriggered()
 {
-  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+  std::list<te::qt::widgets::AbstractTreeItem*> layers = m_explorer->getExplorer()->getSelectedItems();
 
   if(layers.empty())
   {
@@ -800,7 +863,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
 {
   try
   {
-    std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedLayers();
+    std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
 
     if(selectedLayers.empty())
     {
@@ -843,7 +906,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
 {
   try
   {
-    std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedLayers();
+    std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
 
     if(selectedLayers.empty())
     {
@@ -886,38 +949,53 @@ void te::qt::af::BaseApplication::onLayerChartTriggered()
 {
  try
   {
-    std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedSingleLayerItems();
 
-    if(selectedItems.empty())
+    if(selectedLayerItems.empty())
     {
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                           tr("Select a layer in the layer explorer!"));
+                           tr("Select a single layer in the layer explorer!"));
       return;
     }
 
-    // The chart will be accomplished only on the first layer selected
-    te::qt::widgets::AbstractTreeItem* selectedItem = *(selectedItems.begin());
-    te::map::AbstractLayerPtr selectedLayer = selectedItem->getLayer();
+    // The chart will be accomplished only on the first single layer selected
+    te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
+    te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
 
     te::qt::widgets::ChartLayerDialog dlg(this);
     dlg.setLayer(selectedLayer);
 
+    // If the selected layer has a chart associated to it, set the chart layer
+    // dialog for initializing with this chart.
     te::map::Chart* chart = selectedLayer->getChart();
 
     if(chart)
       dlg.setChart(chart);
 
+    // Check if the selected layer item has a chart item; in positive case, remove it from the layer item.
+    te::qt::widgets::ChartItem* chartItem = selectedLayerItem->findChild<te::qt::widgets::ChartItem*>();
+
+    if(chartItem)
+      m_explorer->getExplorer()->remove(chartItem);
+
+    // Collapse the selected layer item to allow the new chart item to be generated
+    // in the next time the selected layer item is expanded.
+    m_explorer->getExplorer()->collapse(selectedLayerItem);
+
     if(dlg.exec() == QDialog::Accepted)
     {
-      std::list<te::qt::widgets::AbstractTreeItem*> layerItems = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
-      te::qt::widgets::ChartItem* chartItem = selectedItem->findChild<te::qt::widgets::ChartItem*>();
+      // Expand the selected layer item and the chart item
+      m_explorer->getExplorer()->expand(selectedLayerItem);
 
+      chartItem = selectedLayerItem->findChild<te::qt::widgets::ChartItem*>();
       if(chartItem)
-        m_explorer->getExplorer()->remove(chartItem);
-
-      m_explorer->getExplorer()->getTreeView()->expandAll();
+        m_explorer->getExplorer()->expand(chartItem);
 
       m_display->getDisplay()->refresh();
+
+      // Send out an event informing that the project is not saved
+      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
     }
   }
   catch(const std::exception& e)
@@ -930,33 +1008,46 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
 {
   try
   {
-    std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedSingleLayerItems();
 
-    if(selectedItems.empty())
+    if(selectedLayerItems.empty())
     {
       QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
-                           tr("Select a layer in the layer explorer!"));
+                           tr("Select a single layer in the layer explorer!"));
       return;
     }
 
     // The object grouping will be accomplished only on the first layer selected
-    te::qt::widgets::AbstractTreeItem* selectedItem = *(selectedItems.begin());
-    te::map::AbstractLayerPtr selectedLayer = selectedItem->getLayer();
+    te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
+    te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
 
     te::qt::widgets::GroupingDialog dlg(this);
-
     dlg.setLayer(selectedLayer);
+
+    // Check if the selected layer item has a grouping item; in positive case, remove it from the layer item.
+    te::qt::widgets::GroupingTreeItem* groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingTreeItem*>();
+
+    if(groupingItem)
+      m_explorer->getExplorer()->remove(groupingItem);
+
+    // Collapse the selected layer item to allow the new grouping item to be generated
+    // in the next time the selected layer item is expanded.
+    m_explorer->getExplorer()->collapse(selectedLayerItem);
 
     if(dlg.exec() == QDialog::Accepted)
     {
-      te::qt::widgets::GroupingTreeItem* groupingItem = selectedItem->findChild<te::qt::widgets::GroupingTreeItem*>();
+      // Expand the selected layer item and the grouping item
+      m_explorer->getExplorer()->expand(selectedLayerItem);
 
+      groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingTreeItem*>();
       if(groupingItem)
-        m_explorer->getExplorer()->remove(groupingItem);
-
-      m_explorer->getExplorer()->getTreeView()->expandAll();
+        m_explorer->getExplorer()->expand(groupingItem);
 
       m_display->getDisplay()->refresh();
+
+      // Send out an event informing that the project is not saved
+      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
     }
   }
   catch(const std::exception& e)
@@ -995,14 +1086,14 @@ void te::qt::af::BaseApplication::onDrawTriggered()
   te::qt::af::evt::DrawButtonClicked drawClicked;
   ApplicationController::getInstance().broadcast(&drawClicked);
 
-  m_display->draw(m_explorer->getExplorer()->getVisibleLayers());
+  m_display->draw(ApplicationController::getInstance().getProject()->getVisibleSingleLayers());
 }
 
 void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
 {
   try
   {
-    std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedLayers();
+    std::list<te::map::AbstractLayerPtr> selectedLayers = m_explorer->getExplorer()->getSelectedSingleLayers();
 
     if(selectedLayers.empty())
     {
@@ -1044,7 +1135,7 @@ void te::qt::af::BaseApplication::onLayerFitOnMapDisplayTriggered()
 
 void te::qt::af::BaseApplication::onLayerFitSelectedOnMapDisplayTriggered()
 {
-  std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getSelectedLayers();
+  std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getSelectedSingleLayers();
   if(layers.empty())
   {
     QString msg = tr("Select at least a layer to accomplish this operation!");
@@ -1066,7 +1157,7 @@ void te::qt::af::BaseApplication::onLayerFitSelectedOnMapDisplayTriggered()
 
 void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
 {
-  std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getSelectedLayers();
+  std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getSelectedSingleLayers();
   if(layers.empty())
   {
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
@@ -1100,7 +1191,7 @@ void te::qt::af::BaseApplication::onQueryLayerTriggered()
   te::qt::widgets::QueryDialog dlg(this);
 
   if(m_project)
-    dlg.setList(m_project->getLayers());
+    dlg.setList(m_project->getTopLayers());
 
   connect(&dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
 
@@ -1159,10 +1250,12 @@ void te::qt::af::BaseApplication::onPanToggled(bool checked)
 
 void te::qt::af::BaseApplication::onZoomExtentTriggered()
 {
-  if(!m_project && m_project->getLayers().empty())
+  if(!m_project && m_project->getTopLayers().empty())
     return;
 
-  m_display->fit(m_explorer->getExplorer()->getAllLayers());
+  //m_display->fit(m_explorer->getExplorer()->getAllLayers());
+  m_display->fit(te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers());
+
 }
 
 void te::qt::af::BaseApplication::onInfoToggled(bool checked)
@@ -1173,15 +1266,16 @@ void te::qt::af::BaseApplication::onInfoToggled(bool checked)
   QPixmap pxmap = QIcon::fromTheme("pointer-info").pixmap(m_mapCursorSize);
   QCursor infoCursor(pxmap, 5, 5);
 
-  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_explorer->getExplorer()->getSelectedLayers());
+  te::qt::widgets::Info* info = new te::qt::widgets::Info(m_display->getDisplay(), infoCursor, m_explorer->getExplorer()->getSelectedSingleLayers());
   m_display->setCurrentTool(info);
 
-  connect(m_explorer, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), info, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
+  connect(m_explorer->getExplorer(), SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), info, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
 }
 
 void te::qt::af::BaseApplication::onMapRemoveSelectionTriggered()
 {
-  std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
+  //std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
+  std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
   std::list<te::map::AbstractLayerPtr>::iterator it = layers.begin();
   
   while(it != layers.end())
@@ -1201,10 +1295,10 @@ void te::qt::af::BaseApplication::onSelectionToggled(bool checked)
   if(!checked)
     return;
 
-  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_explorer->getExplorer()->getSelectedLayers());
+  te::qt::widgets::Selection* selection = new te::qt::widgets::Selection(m_display->getDisplay(), Qt::ArrowCursor, m_explorer->getExplorer()->getSelectedSingleLayers());
   m_display->setCurrentTool(selection);
 
-  connect(m_explorer->getExplorer()->getTreeView(), SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
+  connect(m_explorer->getExplorer(), SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), selection, SLOT(setLayers(const std::list<te::map::AbstractLayerPtr>&)));
   connect(selection, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
 
   te::qt::af::evt::SelectionButtonToggled esel;
@@ -1405,8 +1499,8 @@ void te::qt::af::BaseApplication::updateProject()
 {
   if(m_project)
   {
-    std::list<te::map::AbstractLayerPtr> topLevelLayers = m_explorer->getExplorer()->getAllTopLevelLayers();
-    m_project->setLayers(topLevelLayers);
+    std::list<te::map::AbstractLayerPtr> topLevelLayers = m_explorer->getExplorer()->getTopLayers();
+    m_project->setTopLayers(topLevelLayers);
   }
 }
 
@@ -1450,7 +1544,7 @@ void te::qt::af::BaseApplication::newProject()
 
   te::qt::af::ApplicationController::getInstance().set(m_project);
 
-  m_project->projectChanged(false);
+  m_project->setProjectAsChanged(false);
 
   te::qt::af::evt::ProjectAdded evt(m_project);
 
@@ -1505,6 +1599,8 @@ void te::qt::af::BaseApplication::makeDialog()
   treeView->add(m_layerChartsHistogram, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerChartsScatter, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerChart, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_toolsDataExchangerDirectPopUp, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_queryLayer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   QAction* actTools = new QAction(this);
   actTools->setSeparator(true);
@@ -1530,7 +1626,6 @@ void te::qt::af::BaseApplication::makeDialog()
   //layer
   treeView->add(m_layerSRS, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  treeView->add(m_queryLayer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   QAction* actLayer = new QAction(this);
   actLayer->setSeparator(true);
@@ -1624,11 +1719,36 @@ void te::qt::af::BaseApplication::makeDialog()
 
   m_progressDockWidget = new QDockWidget(this);
   m_progressDockWidget->setWidget(pvw);
-  m_progressDockWidget->setMinimumWidth(220);
+  m_progressDockWidget->setMinimumHeight(300);
   m_progressDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
   m_progressDockWidget->setWindowTitle(tr("Tasks Progress"));
   addDockWidget(Qt::RightDockWidgetArea, m_progressDockWidget);
   m_progressDockWidget->setVisible(false);
+
+
+////zoom in display
+//  te::qt::widgets::ZoomInMapDisplayWidget* zmd = new te::qt::widgets::ZoomInMapDisplayWidget(map, this);
+//  m_display->setZoomInDisplay(zmd);
+//
+//  m_zoomInDisplaysDockWidget = new QDockWidget(this);
+//  m_zoomInDisplaysDockWidget->setWidget(zmd);
+//  m_zoomInDisplaysDockWidget->setMinimumWidth(220);
+//  m_zoomInDisplaysDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea);
+//  m_zoomInDisplaysDockWidget->setWindowTitle(tr("Zoom In Display"));
+//  addDockWidget(Qt::LeftDockWidgetArea, m_zoomInDisplaysDockWidget);
+//  m_zoomInDisplaysDockWidget->setVisible(true);
+//
+////eye bird display
+//  te::qt::widgets::EyeBirdMapDisplayWidget* emd = new te::qt::widgets::EyeBirdMapDisplayWidget(map, this);
+//  m_display->setEyeBirdDisplay(emd);
+//
+//  m_eyeBirdDisplaysDockWidget = new QDockWidget(this);
+//  m_eyeBirdDisplaysDockWidget->setWidget(emd);
+//  m_eyeBirdDisplaysDockWidget->setMinimumWidth(220);
+//  m_eyeBirdDisplaysDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea);
+//  m_eyeBirdDisplaysDockWidget->setWindowTitle(tr("Eye Bird Display"));
+//  addDockWidget(Qt::LeftDockWidgetArea, m_eyeBirdDisplaysDockWidget);
+//  m_eyeBirdDisplaysDockWidget->setVisible(true);
 }
 
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
@@ -1678,7 +1798,8 @@ void te::qt::af::BaseApplication::initActions()
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
   initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Exchanger.All to All", tr("&All to All..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
-  initAction(m_toolsDataExchangerDirect, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Direct Exchanger..."), tr("Exchange data sets between SHP / ADO / PostGIS"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchangerDirect, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Direct Exchanger..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchangerDirectPopUp, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Exchange..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceExplorer, "datasource-explorer", "Tools.Data Source Explorer", tr("&Data Source Explorer..."), tr("Show or hide the data source explorer"), 
     true, false, true, m_menubar);
 
@@ -1704,7 +1825,8 @@ void te::qt::af::BaseApplication::initActions()
 // Menu -Project- actions
   initAction(m_projectAddLayerDataset, "datasource", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
   initAction(m_projectNewFolder, "folder-new", "Project.New Folder", tr("&New Folder..."), tr("Add a new folder"), true, false, true, m_menubar);
-  initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
+  initAction(m_projectAddLayerQueryDataSet, "view-filter", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
+  initAction(m_projectAddLayerTextualDataSet, "view-data-table", "Project.Add Layer.Textual File", tr("&Textual File..."), tr("Add a new layer from a textual file"), true, false, false, m_menubar);
   initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, this);
   initAction(m_projectRemoveFolder, "folder-remove", "Project.Remove Folder", tr("Remove &Folder(s)"), tr("Remove folder from the project"), true, false, true, this);
   initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
@@ -1712,7 +1834,7 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Layer- actions
   initAction(m_layerRemoveSelection, "pointer-remove-selection", "Map.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
-  initAction(m_layerGrouping, "grouping", "Layer.Grouping", tr("&Grouping..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerGrouping, "grouping", "Layer.Grouping", tr("&Classification..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
   initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);
@@ -1722,7 +1844,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer on the &Map Display"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Objects on the Map Display", tr("Fit Selected Objects on the Map Display"), tr("Fit the selected objects on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to the Selected Objects on Map Display", tr("Pan to the Selected Objects on the Map Display"), tr("Pan to the selected objects on the Map Display"), true, false, true, m_menubar);
-  initAction(m_queryLayer, "", "Layer.Query", tr("Query"), tr("Query"), true, false, true, m_menubar);
+  initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query"), tr("Query"), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
@@ -1838,6 +1960,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectAddLayerMenu->setIcon(QIcon::fromTheme("layer-add"));
 
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
+  m_projectAddLayerMenu->addAction(m_projectAddLayerTextualDataSet);
   m_projectAddLayerMenu->addSeparator();
   m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
   m_projectMenu->addAction(m_projectNewFolder);
@@ -2041,6 +2164,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
   connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
+  connect(m_projectAddLayerTextualDataSet, SIGNAL(triggered()), SLOT(onAddTextualLayerTriggered()));
   connect(m_projectRemoveFolder, SIGNAL(triggered()), SLOT(onRemoveFolderTriggered()));
   connect(m_projectRemoveLayer, SIGNAL(triggered()), SLOT(onRemoveLayerTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
@@ -2052,6 +2176,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
   connect(m_toolsDataExchangerDirect, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectTriggered()));
+  connect(m_toolsDataExchangerDirectPopUp, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectPopUpTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));

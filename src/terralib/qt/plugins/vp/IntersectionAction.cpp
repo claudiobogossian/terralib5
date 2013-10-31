@@ -58,7 +58,7 @@ void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
 
   if(prj)
   {
-    dlg.setLayers(prj->getLayers());
+    dlg.setLayers(prj->getSingleLayers());
   }
 
   if(dlg.exec() != QDialog::Accepted)
