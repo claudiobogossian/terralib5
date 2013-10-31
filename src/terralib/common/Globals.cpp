@@ -34,3 +34,5 @@ const te::common::MachineByteOrder te::common::Globals::sm_machineByteOrder(te::
 
 const std::string te::common::Globals::sm_dummyStr("");
 
+const std::string te::common::Globals::sm_nanStr("1234567890987654321");
+

@@ -32,7 +32,9 @@
 #include "../../common/UserApplicationSettings.h"
 #include "../../maptools/Utils.h"
 #include "../../srs/Config.h"
+#include "../widgets/canvas/EyeBirdMapDisplayWidget.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
+#include "../widgets/canvas/ZoomInMapDisplayWidget.h"
 #include "../widgets/charts/ChartLayerDialog.h"
 #include "../widgets/charts/HistogramDialog.h"
 #include "../widgets/charts/ScatterDialog.h"
@@ -143,6 +145,8 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_symbolizerExplorer(0),
     m_project(0),
     m_progressDockWidget(0),
+    m_zoomInDisplaysDockWidget(0),
+    m_eyeBirdDisplaysDockWidget(0),
     m_controller(0)
 {
   m_controller = new ApplicationController;
@@ -193,6 +197,8 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_symbolizerExplorer;
   delete m_project;
   delete m_progressDockWidget;
+  delete m_zoomInDisplaysDockWidget;
+  delete m_eyeBirdDisplaysDockWidget;
 
   while(!m_tableDocks.empty())
     delete *m_tableDocks.begin();
@@ -1682,11 +1688,36 @@ void te::qt::af::BaseApplication::makeDialog()
 
   m_progressDockWidget = new QDockWidget(this);
   m_progressDockWidget->setWidget(pvw);
-  m_progressDockWidget->setMinimumWidth(220);
+  m_progressDockWidget->setMinimumHeight(300);
   m_progressDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
   m_progressDockWidget->setWindowTitle(tr("Tasks Progress"));
   addDockWidget(Qt::RightDockWidgetArea, m_progressDockWidget);
   m_progressDockWidget->setVisible(false);
+
+
+////zoom in display
+//  te::qt::widgets::ZoomInMapDisplayWidget* zmd = new te::qt::widgets::ZoomInMapDisplayWidget(map, this);
+//  m_display->setZoomInDisplay(zmd);
+//
+//  m_zoomInDisplaysDockWidget = new QDockWidget(this);
+//  m_zoomInDisplaysDockWidget->setWidget(zmd);
+//  m_zoomInDisplaysDockWidget->setMinimumWidth(220);
+//  m_zoomInDisplaysDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea);
+//  m_zoomInDisplaysDockWidget->setWindowTitle(tr("Zoom In Display"));
+//  addDockWidget(Qt::LeftDockWidgetArea, m_zoomInDisplaysDockWidget);
+//  m_zoomInDisplaysDockWidget->setVisible(true);
+//
+////eye bird display
+//  te::qt::widgets::EyeBirdMapDisplayWidget* emd = new te::qt::widgets::EyeBirdMapDisplayWidget(map, this);
+//  m_display->setEyeBirdDisplay(emd);
+//
+//  m_eyeBirdDisplaysDockWidget = new QDockWidget(this);
+//  m_eyeBirdDisplaysDockWidget->setWidget(emd);
+//  m_eyeBirdDisplaysDockWidget->setMinimumWidth(220);
+//  m_eyeBirdDisplaysDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea);
+//  m_eyeBirdDisplaysDockWidget->setWindowTitle(tr("Eye Bird Display"));
+//  addDockWidget(Qt::LeftDockWidgetArea, m_eyeBirdDisplaysDockWidget);
+//  m_eyeBirdDisplaysDockWidget->setVisible(true);
 }
 
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
@@ -1771,7 +1802,7 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Layer- actions
   initAction(m_layerRemoveSelection, "pointer-remove-selection", "Map.Remove Selection", tr("&Remove Selection"), tr(""), true, false, true, m_menubar);
-  initAction(m_layerGrouping, "grouping", "Layer.Grouping", tr("&Grouping..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerGrouping, "grouping", "Layer.Grouping", tr("&Classification..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerProperties, "layer-info", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerSRS, "layer-srs", "Layer.SRS", tr("&Inform SRS..."), tr(""), true, false, true, m_menubar);  
   initAction(m_layerShowTable, "view-data-table", "Layer.Show Table", tr("S&how Table"), tr(""), true, false, true, m_menubar);

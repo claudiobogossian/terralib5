@@ -22,7 +22,7 @@
      <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox_3">
        <property name="title">
-        <string>Grouping</string>
+        <string>Classification</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_13">
         <item row="0" column="0">
@@ -71,7 +71,7 @@
      <item row="0" column="0">
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
-        <string>Grouping Parameters</string>
+        <string>Classification Parameters</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_14">
         <item row="0" column="0">

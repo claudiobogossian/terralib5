@@ -58,8 +58,8 @@
 #include "Utils.h"
 
 // Terralib 4.x
-#include <terralib/kernel/TeDatabase.h>
-#include <terralib/kernel/TeLayer.h>
+#include <TeDatabase.h>
+#include <TeLayer.h>
 
 // STL
 #include <cassert>
@@ -226,6 +226,8 @@ bool terralib4::Transactor::isPropertyNameValid(const std::string& /*propertyNam
 
 std::vector<std::string> terralib4::Transactor::getDataSetNames()
 {
+  m_db->loadLayerSet(true);
+
   TeLayerMap map = m_db->layerMap();
 
   std::map<int, TeLayer*>::iterator it = map.begin();

@@ -72,7 +72,7 @@ namespace te
 
             \note This layer MUST HAVE a valid raster object.
           */
-          void set(te::map::AbstractLayerPtr layer);
+          void setList(std::list<te::map::AbstractLayerPtr>& layerList, int srid);
 
           void recompose();
 
@@ -86,7 +86,7 @@ namespace te
 
         private:
 
-          te::map::AbstractLayerPtr m_layer;
+          te::gm::Envelope m_inputExt;
 
           te::qt::widgets::MapDisplay* m_mapDisplay;
 
