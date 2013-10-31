@@ -144,7 +144,8 @@ bool te::ado::Transactor::isInTransaction() const
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
                                                                 te::common::TraverseType travType,
-                                                                bool connected)
+                                                                bool connected,
+                                                                const te::common::AccessPolicy)
 {
   std::auto_ptr<std::string> sql(new std::string("SELECT * FROM "));
   *sql += name;
@@ -159,7 +160,8 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
                                                                const te::gm::Envelope* e,
                                                                te::gm::SpatialRelation r,
                                                                te::common::TraverseType travType,
-                                                               bool connected)
+                                                               bool connected,
+                                                               const te::common::AccessPolicy accessPolicy)
 {
   if(e == 0)
     throw Exception(TR_ADO("The envelope is missing!"));
@@ -186,7 +188,8 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
                                                                const te::gm::Geometry* g,
                                                                te::gm::SpatialRelation r,
                                                                te::common::TraverseType travType,
-                                                               bool connected)
+                                                               bool connected,
+                                                               const te::common::AccessPolicy accessPolicy)
 {
   return std::auto_ptr<te::da::DataSet>(0); // TODO
 }
@@ -194,7 +197,8 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
                                                                const ObjectIdSet* oids, 
                                                                te::common::TraverseType travType, 
-                                                               bool connected)
+                                                               bool connected,
+                                                               const te::common::AccessPolicy accessPolicy)
 {
   return std::auto_ptr<te::da::DataSet>(0); // TODO
 }

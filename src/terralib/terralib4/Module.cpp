@@ -29,6 +29,9 @@
 #include "Globals.h"
 #include "Module.h"
 
+// Terralib 4.x
+#include <TeAdoDB.h>
+
 // Boost
 #include <boost/filesystem.hpp>
 

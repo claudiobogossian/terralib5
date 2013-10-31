@@ -165,3 +165,43 @@ void te::qt::plugins::terralib4::TL4ConnectorWizardPage::onDatabaseTypeComboBoxA
     }
   }
 }
+
+std::map<std::string, std::string> te::qt::plugins::terralib4::TL4ConnectorWizardPage::getConnInfo()
+{
+  std::map<std::string, std::string> connInfo;
+
+  connInfo["T4_DRIVER"] = getDriverName(m_ui->m_databaseTypeComboBox->currentText().toStdString());
+  connInfo["T4_DB_NAME"] = m_ui->m_dbComboBox->currentText().toStdString();
+  connInfo["T4_HOST"] = m_ui->m_hostLineEdit->text().toStdString();
+  connInfo["T4_PORT"] = m_ui->m_portLineEdit->text().toStdString();
+  connInfo["T4_USER"] = m_ui->m_userLineEdit->text().toStdString();
+  connInfo["T4_PASSWORD"] = m_ui->m_passwordLineEdit->text().toStdString();
+
+  return connInfo;
+}
+
+std::string te::qt::plugins::terralib4::TL4ConnectorWizardPage::getDriverName(std::string displayName)
+{
+  if("Access")
+    return "Ado";
+  else if("SQL Server")
+    return "";
+  else if("SQL Server Spatial")
+    return "";
+  else if("Oracle")
+    return "";
+  else if("Oracle OCI")
+    return "";
+  else if("Oracle Spatial")
+    return "";
+  else if("MySQL")
+    return "MySQL";
+  else if("PostgreSQL")
+    return "PostgreSQL";
+  else if("PostGIS")
+    return "PostGIS";
+  else if("Firebird")
+    return "Firebird";
+  else
+    return "";
+}

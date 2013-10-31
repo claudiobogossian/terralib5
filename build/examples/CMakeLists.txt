@@ -51,6 +51,7 @@ option (EXAMPLE_LAYEREXPLORER "Build layer explorer example." OFF)
 option (EXAMPLE_LEGEND "Build legend example." OFF)  
 option (EXAMPLE_MAPTOOLS "Build map tools example." OFF)  
 option (EXAMPLE_METADATA "Build map tools example." OFF)  
+option (EXAMPLE_MODIS "Build MODIS tools example." OFF)  
 option (EXAMPLE_PROGRESS "Build task progress example." OFF)  
 option (EXAMPLE_PROPERTYMANAGEMENT "Build property management example." OFF)  
 option (EXAMPLE_RASTER "Build raster example." OFF)  
@@ -131,6 +132,10 @@ endif()
 
 if(EXAMPLE_METADATA)
   add_subdirectory(terralib_example_metadata)
+endif()
+
+if(EXAMPLE_MODIS)
+  add_subdirectory(terralib_example_modis)
 endif()
 
 if(EXAMPLE_PROGRESS)

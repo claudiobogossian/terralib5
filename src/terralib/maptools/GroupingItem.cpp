@@ -109,7 +109,7 @@ std::string te::map::GroupingItem::getTitle()
     else if(!m_from.empty() && !m_to.empty())
       m_title = m_from + " - " + m_to;
     else 
-      m_title = "";
+      m_title = "No Value";
   }
 
   return m_title;
