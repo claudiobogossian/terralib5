@@ -57,38 +57,43 @@ void te::da::DataSource::setId(const std::string& id)
   m_id = id;
 }
 
-std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name, te::common::TraverseType travType)
+std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name, 
+                                                              te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->getDataSet(name, travType, false);
+  return t->getDataSet(name, travType, false, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name,
                                                               const std::string& propertyName,
                                                               const te::gm::Envelope* e,
                                                               te::gm::SpatialRelation r,
-                                                              te::common::TraverseType travType)
+                                                              te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->getDataSet(name, propertyName, e, r, travType, false);
+  return t->getDataSet(name, propertyName, e, r, travType, false, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name,
                                                               const std::string& propertyName,
                                                               const te::gm::Geometry* g,
                                                               te::gm::SpatialRelation r,
-                                                              te::common::TraverseType travType)
+                                                              te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->getDataSet(name, propertyName, g, r, travType, false);
+  return t->getDataSet(name, propertyName, g, r, travType, false, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string& name,
                                                               const te::da::ObjectIdSet* oids,
-                                                              te::common::TraverseType travType)
+                                                              te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->getDataSet(name, oids, travType, false);
+  return t->getDataSet(name, oids, travType, false, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::da::DataSource::query(const Select& q, te::common::TraverseType travType)

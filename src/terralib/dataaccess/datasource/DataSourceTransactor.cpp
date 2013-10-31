@@ -49,7 +49,8 @@ te::da::DataSourceTransactor::~DataSourceTransactor()
 std::auto_ptr<te::da::DataSet> te::da::DataSourceTransactor::getDataSet(const std::string& name,
                                                                         const te::da::ObjectIdSet* oids,
                                                                         te::common::TraverseType travType, 
-                                                                        bool connected)
+                                                                        bool connected,
+                                                                        const te::common::AccessPolicy accessPolicy)
 {
   assert(!name.empty());
   assert(oids);
