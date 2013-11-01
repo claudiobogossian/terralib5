@@ -100,14 +100,14 @@ void Mosaic()
     }
     else
     {
-      std::cout << "Algorithm execution OK." << std::endl;
+      std::cout << "Algorithm execution OK." << << std::endl << std::endl;
     }
 
     // clean up
     
     delete inputRaster1Pointer;
     delete inputRaster2Pointer;
-    delete inputRaster2Pointer;
+    delete inputRaster3Pointer;
   }
   catch(const std::exception& e)
   {
