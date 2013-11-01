@@ -20,6 +20,8 @@ if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTETERRALIB4DLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
+remove_definitions ( /MP )
+
 list(APPEND TE_DEP_LIBS  terralib_dataaccess
                          terralib_geometry
                          terralib_raster

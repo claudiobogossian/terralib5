@@ -54,6 +54,7 @@
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
     m_hasRaster(true),
+    m_hasOnlyRaster(true),
     m_ui(new Ui::TL4ConverterWizardForm)
 {
 // setup controls
@@ -109,6 +110,11 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::back()
   if(currentId() == PAGE_FINALPAGE)
   {
     if(!m_hasRaster)
+      QWizard::back();
+  }
+  if(currentId() == PAGE_RASTERFOLDER_SELECTOR)
+  {
+    if(m_hasOnlyRaster)
       QWizard::back();
   }
   QWizard::back();
@@ -181,9 +187,16 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::layerSelectionPageNext()
     std::auto_ptr<te::da::DataSetType> dst(tl4Ds->getDataSetType(layersNames[i]));
     selectedDatasets.push_back(dst.get());
 
-    if(!hasRaster)
-      hasRaster = dst->hasRaster();
+    bool hasRaster = dst->hasRaster();
+
+    if(hasRaster)
+      m_hasRaster = true;
+    else
+      m_hasOnlyRaster = false;
   }*/
+
+  if(m_hasOnlyRaster)
+    QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext()
