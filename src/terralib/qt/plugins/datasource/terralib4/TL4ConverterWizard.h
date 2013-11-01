@@ -98,6 +98,7 @@ namespace te
             };
 
             bool m_hasRaster;
+            bool m_hasOnlyRaster;
             std::string m_rasterFolderPath;
             std::auto_ptr<te::da::DataSource> m_tl4Database;
             te::da::DataSourceInfoPtr m_targetDataSource;
