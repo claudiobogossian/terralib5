@@ -10,8 +10,15 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
-#include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../../dataaccess/query/DataSetName.h"
+#include "../../../dataaccess/query/Field.h"
+#include "../../../dataaccess/query/From.h"
+#include "../../../dataaccess/query/OrderBy.h"
+#include "../../../dataaccess/query/OrderByItem.h"
+#include "../../../dataaccess/query/Select.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../statistics/qt/StatisticsDialog.h"
@@ -120,6 +127,45 @@ const te::da::DataSourceCapabilities* GetCapabilities(const te::map::AbstractLay
   return 0;
 }
 
+std::auto_ptr<te::da::Select> GetSelectExpression(const std::string& tableName, const te::da::DataSet* set, const std::vector<int>& cols, const bool& asc)
+{
+  te::da::Fields fields;
+
+  fields.push_back(std::auto_ptr<te::da::Field>(new te::da::Field("*")));
+
+  te::da::From from;
+
+  from.push_back(std::auto_ptr<te::da::DataSetName>(new te::da::DataSetName(tableName)));
+
+  te::da::OrderBy or;
+
+  for(size_t i=0; i<cols.size(); i++)
+    or.push_back(std::auto_ptr<te::da::OrderByItem>(new te::da::OrderByItem(set->getPropertyName(cols[(int)i]), (asc) ? te::da::ASC : te::da::DESC)));
+
+  return std::auto_ptr<te::da::Select>(new te::da::Select(fields, from, or));
+}
+
+std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, const te::da::DataSet* set, const std::vector<int>& cols, const bool& asc)
+{
+  std::auto_ptr<te::da::Select> query = GetSelectExpression(layer->getSchema()->getName(), set, cols, asc);
+
+  try
+  {
+    if(query.get() == 0)
+      throw std::string("Fail to generate query.");
+
+    te::da::DataSourcePtr dsc = GetDataSource(layer);
+
+    if(dsc.get() == 0)
+      throw std::string("Fail to get data source.");
+
+    return dsc->getTransactor()->query(query.get());
+  }
+  catch(...)
+  {
+    return std::auto_ptr<te::da::DataSet>();
+  }
+}
 
 /*!
   \class Filter for popup menus
@@ -153,6 +199,7 @@ class TablePopupFilter : public QObject
       m_view->connect(this, SIGNAL(showColumn(const int&)), SLOT(showColumn(const int&)));
       m_view->connect(this, SIGNAL(removeColumn(const int&)), SLOT(removeColumn(const int&)));
       m_view->connect(this, SIGNAL(enableAutoScroll(const bool&)), SLOT(setAutoScrollEnabled(const bool&)));
+      m_view->connect(this, SIGNAL(sortData(const bool&)), SLOT(sortByColumns(const bool&)));
     }
 
     /*!
@@ -220,9 +267,14 @@ class TablePopupFilter : public QObject
             act4->setChecked(m_showOidsColumns);
 
             QAction* act5 = new QAction(m_hMenu);
-            act5->setText(tr("Sort data"));
-            act5->setToolTip(tr("Sort data using selected columns."));
+            act5->setText(tr("Sort data ASC"));
+            act5->setToolTip(tr("Sort data in ascendent order using selected columns."));
             m_hMenu->addAction(act5);
+
+            QAction* act9 = new QAction(m_hMenu);
+            act9->setText(tr("Sort data DESC"));
+            act9->setToolTip(tr("Sort data in descendent order using selected columns."));
+            m_hMenu->addAction(act9);
 
             m_hMenu->addSeparator();
             
@@ -254,11 +306,13 @@ class TablePopupFilter : public QObject
 
             m_view->connect(act2, SIGNAL(triggered()), SLOT(showAllColumns()));
             m_view->connect(act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
-            m_view->connect(act5, SIGNAL(triggered()), SLOT(sortByColumns()));
+//            m_view->connect(act5, SIGNAL(triggered()), SLOT(sortByColumns()));
             m_view->connect(act7, SIGNAL(triggered()), SLOT(addColumn()));
             
             connect(act4, SIGNAL(triggered()), SLOT(showOIdsColumns()));
             connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
+            connect (act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
+            connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
 
             m_hMenu->popup(pos);
           }
@@ -363,6 +417,16 @@ class TablePopupFilter : public QObject
       emit enableAutoScroll(m_autoScrollEnabled);
     }
 
+    void sortDataAsc()
+    {
+      emit sortData(true);
+    }
+
+    void sortDataDesc()
+    {
+      emit sortData(false);
+    }
+
   signals:
 
     void hideColumn(const int&);
@@ -378,6 +442,8 @@ class TablePopupFilter : public QObject
     void removeColumn(const int&);
 
     void enableAutoScroll(const bool&);
+
+    void sortData(const bool&);
 
   protected:
 
@@ -435,6 +501,14 @@ void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* l
   setLayerSchema(m_layer->getSchema().get());
 
   m_popupFilter->setDataSourceCapabilities(GetCapabilities(m_layer));
+
+  te::da::DataSourcePtr dsc = GetDataSource(m_layer);
+
+  if(dsc.get() != 0)
+  {
+    setSelectionMode((dsc->getType().compare("OGR") == 0) ? SingleSelection : MultiSelection);
+    setSelectionBehavior((dsc->getType().compare("OGR") == 0) ? QAbstractItemView::SelectColumns : QAbstractItemView::SelectItems);
+  }
 }
 
 void te::qt::widgets::DataSetTableView::setDataSet(te::da::DataSet* dset)
@@ -581,10 +655,15 @@ void te::qt::widgets::DataSetTableView::promote()
   m_isSorted = false;
 
   viewport()->repaint();
+
+  scrollToTop();
 }
 
-void te::qt::widgets::DataSetTableView::sortByColumns()
+void te::qt::widgets::DataSetTableView::sortByColumns(const bool& asc)
 {
+  //*********************
+  // Sort by query
+  //*********************
   ScopedCursor cursor(Qt::WaitCursor);
 
   std::vector<int> selCols;
@@ -602,20 +681,18 @@ void te::qt::widgets::DataSetTableView::sortByColumns()
   if(selCols.empty())
     return;
 
-  setEnabled(false);
-  m_model->setEnabled(false);
-  m_popupFilter->setEnabled(false);
+  m_model->getPromoter()->cleanLogRowsAndProcessKeys();
 
-  m_model->orderByColumns(selCols);
-
-  m_popupFilter->setEnabled(true);
-  m_model->setEnabled(true);
-  setEnabled(true);
+  setDataSet(GetDataSet(m_layer, m_dset, selCols, asc).release());
 
   viewport()->repaint();
 
-  m_isPromoted = false;
-  m_isSorted = true;
+  setUpdatesEnabled(false);
+
+  if(m_autoScrollEnabled)
+    m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
+
+  setUpdatesEnabled(true);
 }
 
 void te::qt::widgets::DataSetTableView::setOIdsColumnsVisible(const bool& visible)

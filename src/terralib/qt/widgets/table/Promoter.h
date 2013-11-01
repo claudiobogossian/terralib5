@@ -43,6 +43,12 @@ namespace te
   }
 }
 
+
+struct ObjectIdComparator
+{
+  bool operator () (te::da::ObjectId* lhs, te::da::ObjectId* rhs);
+};
+
 namespace te
 {
   namespace qt
@@ -133,7 +139,7 @@ namespace te
 
         protected:
 
-          std::map<te::da::ObjectId*, size_t, te::common::LessCmp<te::da::ObjectId*> > m_PkeysRows; //!< Map object id to its position in DataSet.
+          std::map<te::da::ObjectId*, size_t, ObjectIdComparator> m_PkeysRows; //!< Map object id to its position in DataSet.
 
           std::vector<size_t> m_logicalRows;                                                        //!< Map original row to logical postion.
       };

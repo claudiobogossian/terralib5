@@ -203,7 +203,7 @@ te::da::ObjectIdSet* te::qt::widgets::DataSetTableModel::getObjectIdSet (const i
 
   for(int i=initRow; i<=finalRow; i++)
   {
-    row = (m_promoter == 0) ? i : m_promoter->getLogicalRow(i);
+    row = (m_promoter == 0) ? i : (int)m_promoter->getLogicalRow(i);
     m_dataset->move(row);
 
     oids->add(te::da::GenerateOID(m_dataset, oids->getPropertyNames()));

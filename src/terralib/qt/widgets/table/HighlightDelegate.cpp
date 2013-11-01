@@ -62,7 +62,7 @@ void te::qt::widgets::HighlightDelegate::paint(QPainter* painter, const QStyleOp
 
   QStyleOptionViewItem opt = option;
 
-  if(toHighlight(m_dset, m_objs, m_promoter->getLogicalRow(index.row())))
+  if(toHighlight(m_dset, m_objs, (int)m_promoter->getLogicalRow(index.row())))
   {
     opt.showDecorationSelected = true;
     opt.state |= QStyle::State_Selected;
