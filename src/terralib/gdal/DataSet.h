@@ -56,7 +56,7 @@ namespace te
        \param dt     The dataset type. DataSet will take its ownership.
        \param rwRole The access policy of the dataset.
        */
-      DataSet(std::auto_ptr<te::da::DataSetType> dt, std::string uri="");
+      DataSet(std::auto_ptr<te::da::DataSetType> dt, te::common::AccessPolicy rwRole, std::string uri="");
       
       /*! \brief Destructor. */
       ~DataSet();

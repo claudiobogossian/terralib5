@@ -13,10 +13,12 @@
        <files>
            <file>terraview/index.html</file>
            <file>terraview/main_window.html</file>
-           <file>terraview/*.png</file>		   
+           <file>terraview/*.png</file>
+           <file>terraview/main_concepts.html</file>		   
        </files>
 	   <keywords>
 		   <keyword name="Main Window" ref="./terraview/main_window.html"/>
+		   <keyword name="Main Concepts" ref="./terraview/main_concepts.html"/>		   
 	   </keywords>
    </filterSection>
 </QtHelpProject>

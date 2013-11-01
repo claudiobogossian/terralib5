@@ -43,10 +43,10 @@
 #include "Utils.h"
 
 // Terralib 4.x
-#include <terralib/kernel/TeDatabase.h>
-#include <terralib/kernel/TeLayer.h>
+#include <TeDatabase.h>
+#include <TeLayer.h>
 
-#include <terralib/kernel/TeQuerierParams.h>
+#include <TeQuerierParams.h>
 
 // STL
 #include <memory>
@@ -67,6 +67,8 @@ terralib4::DataSet::DataSet(TeLayer* layer)
 
   m_querier = new TeQuerier(params);
 
+  m_querier->loadInstances();
+
 }
 
 terralib4::DataSet::~DataSet()
@@ -86,10 +88,7 @@ te::common::AccessPolicy terralib4::DataSet::getAccessPolicy() const
 
 std::auto_ptr<te::gm::Envelope> terralib4::DataSet::getExtent(std::size_t i)
 {
-  TeLayer lay;
-  m_result->getLayer(lay);
-
-  return terralib4::Convert2T5(lay.box());
+  return terralib4::Convert2T5(m_layer->box());
 }
 
 std::size_t terralib4::DataSet::getNumProperties() const
@@ -99,7 +98,7 @@ std::size_t terralib4::DataSet::getNumProperties() const
 
 int terralib4::DataSet::getPropertyDataType(std::size_t i) const
 {
-  return terralib4::Convert2T5(m_result->getAttribute(i).rep_.type_);
+  return terralib4::Convert2T5(m_querier->getAttrList()[i].rep_.type_);
 }
 
 std::string terralib4::DataSet::getPropertyName(std::size_t i) const
@@ -129,59 +128,31 @@ std::size_t terralib4::DataSet::size() const
 
 bool terralib4::DataSet::moveNext()
 {
-  /*if(m_i < 0)
-    return true;
-
-  return m_result->fetchRow();*/
-
-  m_querier->fetchInstance(m_instance);
-  return false;
+  return m_querier->fetchInstance(m_instance);
 }
 
 bool terralib4::DataSet::movePrevious()
 {
-  /*if(m_i == -1)
-    return false;
-
-  if(m_i == 0)
-    return true;
-
-  return m_result->fetchRow(m_i);*/
   return false;
 }
 
 bool terralib4::DataSet::moveBeforeFirst()
 {
-  /*m_i = -1;
-  return m_result->fetchRow(0);
-  */
   return false;
 }
 
 bool terralib4::DataSet::moveFirst()
 {
-  /*
-  m_i = 0;
-  return m_result->fetchRow(0);
-  */
   return false;
 }
 
 bool terralib4::DataSet::moveLast()
 {
-  /*
-  m_i = m_result->numRows()-1;
-  return m_result->fetchRow(m_result->numRows()-1);
-  */
   return false;
 }
 
-bool terralib4::DataSet::move(std::size_t i)
+bool terralib4::DataSet::move(std::size_t /*i*/)
 {
-  /*
-  m_i = i;
-  return m_result->fetchRow(i);
-  */
   return false;
 }
 
@@ -263,12 +234,22 @@ double terralib4::DataSet::getDouble(std::size_t i) const
 
 std::string terralib4::DataSet::getNumeric(std::size_t i) const
 {
-  return m_result->getData(i);
+  std::string val;
+  int ii = static_cast<int>(i);
+
+  m_instance.getPropertyValue(val, ii);
+
+  return val;
 }
 
 std::string terralib4::DataSet::getString(std::size_t i) const
 {
-  return m_result->getData(i);
+  std::string val;
+  int ii = static_cast<int>(i);
+
+  m_instance.getPropertyValue(val, ii);
+
+  return val;
 }
 
 std::auto_ptr<te::dt::ByteArray> terralib4::DataSet::getByteArray(std::size_t i) const
@@ -311,7 +292,7 @@ std::auto_ptr<te::dt::Array> terralib4::DataSet::getArray(std::size_t i) const
   return std::auto_ptr<te::dt::Array>(0);
 }
 
-bool terralib4::DataSet::isNull(std::size_t i) const
+bool terralib4::DataSet::isNull(std::size_t /*i*/) const
 {
-  throw;
+  return false;
 }

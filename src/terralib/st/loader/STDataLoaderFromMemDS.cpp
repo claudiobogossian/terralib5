@@ -55,8 +55,10 @@ te::st::STDataLoaderFromMemDS::STDataLoaderFromMemDS()
 {
   //use the DataSourceManager to get the DataSource 
   m_ds = te::da::DataSourceManager::getInstance().find(te::st::Globals::sm_STMemoryDataSourceId);
+  
   if(m_ds.get()==0)
-    m_ds = te::da::DataSourceManager::getInstance().make(te::st::Globals::sm_STMemoryDataSourceId, "STMEMORY");
+    throw Exception("The STDataLoader is not inialized! Please, use the method STDataLoader::initialize"); 
+
   if(!m_ds->isOpened())
     m_ds->open();
 }

@@ -10,9 +10,17 @@ if(TERRALIB4_FOUND)
   set (TE_DEP_INCLUDES ${TE_DEP_INCLUDES} ${TERRALIB4_INCLUDE_DIR})
 endif()
 
+find_package(ADOTL4 REQUIRED)
+if(ADO_FOUND)
+  set (TE_DEP_LIBS ${TE_DEP_LIBS} ${ADO_LIBRARIES})
+  set (TE_DEP_INCLUDES ${TE_DEP_INCLUDES} ${ADO_INCLUDE_DIR})
+endif()
+
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTETERRALIB4DLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
+
+remove_definitions ( /MP )
 
 list(APPEND TE_DEP_LIBS  terralib_dataaccess
                          terralib_geometry

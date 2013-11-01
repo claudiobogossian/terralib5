@@ -56,6 +56,10 @@ namespace te
 
             ~TL4LayerSelectionWizardPage();
 
+            void setDatasets(std::vector<std::string> datasets);
+
+            std::vector<std::string> getChecked();
+
           private:
 
             std::auto_ptr<Ui::TL4LayerSelectionWizardPageForm> m_ui;

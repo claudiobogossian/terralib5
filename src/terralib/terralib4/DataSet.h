@@ -31,7 +31,7 @@
 #include "Config.h"
 
 // Terralib 4.x
-#include <terralib/kernel/TeQuerier.h>
+#include <TeQuerier.h>
 
 // STL
 #include <memory>
@@ -141,7 +141,7 @@ namespace terralib4
     protected:
 
       TeQuerier* m_querier;
-      TeSTInstance m_instance;
+      mutable TeSTInstance m_instance;
       int m_i;
       int m_size;
       TeLayer* m_layer;
