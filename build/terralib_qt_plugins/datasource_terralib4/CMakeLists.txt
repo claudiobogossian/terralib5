@@ -35,6 +35,8 @@ set (
   ${SRCDIR}/TL4ConnectorWizardPage.h
   ${SRCDIR}/TL4ConverterWizard.h
   ${SRCDIR}/TL4LayerSelectionWizardPage.h
+  ${SRCDIR}/TL4RasterFolderSelectionWizardPage.h
+  ${SRCDIR}/TL4FinalPageWizardPage.h
 )
 
 # Select the FORMS widgets
@@ -56,6 +58,7 @@ list (APPEND
   terralib_maptools
   terralib_plugin
   terralib_qt_af
+  terralib_qt_widgets
 )
 
 file(GLOB SRCS ${SRCDIR}/*.cpp)

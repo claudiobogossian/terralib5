@@ -114,7 +114,8 @@ bool terralib4::Transactor::isInTransaction() const
 
 std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string& name,
                                                                  te::common::TraverseType /*travType*/,
-                                                                 bool /*connected*/)
+                                                                 bool /*connected*/,
+                                                                 const te::common::AccessPolicy /*accessPolicy*/)
 {
   TeLayerMap map = m_db->layerMap();
 
@@ -141,25 +142,28 @@ std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::stri
                                                                  const te::gm::Envelope* e,
                                                                  te::gm::SpatialRelation r,
                                                                  te::common::TraverseType travType,
-                                                                 bool connected)
+                                                                 bool /*connected*/,
+                                                                 const te::common::AccessPolicy /*accessPolicy*/)
 {
   throw;
 }
 
 std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string& name,
-                                                               const std::string& propertyName,
-                                                               const te::gm::Geometry* g,
-                                                               te::gm::SpatialRelation r,
-                                                               te::common::TraverseType travType,
-                                                               bool connected)
+                                                                 const std::string& propertyName,
+                                                                 const te::gm::Geometry* g,
+                                                                 te::gm::SpatialRelation r,
+                                                                 te::common::TraverseType travType,
+                                                                 bool /*connected*/,
+                                                                 const te::common::AccessPolicy /*accessPolicy*/)
 {
   throw;
 }
 
 std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::string& name,
-                                                               const ObjectIdSet* oids, 
-                                                               te::common::TraverseType travType, 
-                                                               bool connected)
+                                                                 const ObjectIdSet* oids, 
+                                                                 te::common::TraverseType travType, 
+                                                                 bool /*connected*/,
+                                                                 const te::common::AccessPolicy /*accessPolicy*/)
 {
   throw;
 }

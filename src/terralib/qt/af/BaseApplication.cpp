@@ -453,13 +453,25 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
   }
 }
 
-void te::qt::af::BaseApplication::onAddTextualLayerTriggered()
+void te::qt::af::BaseApplication::onAddTabularLayerTriggered()
 {
    try
   {
     if(m_project == 0)
       throw Exception(TR_QT_AF("Error: there is no opened project!"));
+    te::qt::widgets::DataPropertiesDialog dlg (this);
+    int res = dlg.exec();
+    if (res == QDialog::Accepted)
+    {
+      if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
+      {
+        //te::qt::af::evt::LayerAdded evt(dlg.getTabularLayer());
+        //te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+      }
 
+      //te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      //ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+  }
   }
   catch(const std::exception& e)
   {
@@ -687,8 +699,38 @@ void te::qt::af::BaseApplication::onToolsDataExchangerDirectTriggered()
   {
     te::qt::widgets::DirectExchangerDialog dlg(this);
 
-    //std::list<te::map::AbstractLayerPtr> layers = m_explorer->getExplorer()->getAllLayers();
     std::list<te::map::AbstractLayerPtr> layers = te::qt::af::ApplicationController::getInstance().getProject()->getAllLayers();
+    dlg.setLayers(layers);
+
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void  te::qt::af::BaseApplication::onToolsDataExchangerDirectPopUpTriggered()
+{
+  try
+  {
+    te::qt::widgets::DirectExchangerDialog dlg(this);
+
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedSingleLayerItems();
+
+    if(selectedLayerItems.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                           tr("Select a single layer in the layer explorer!"));
+      return;
+    }
+
+    te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
+    te::map::AbstractLayerPtr selectedLayer = selectedLayerItem->getLayer();
+
+    std::list<te::map::AbstractLayerPtr> layers;
+    layers.push_back(selectedLayer);
+
     dlg.setLayers(layers);
 
     dlg.exec();
@@ -1626,7 +1668,6 @@ void te::qt::af::BaseApplication::makeDialog()
   //layer
   treeView->add(m_layerSRS, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  treeView->add(m_queryLayer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   QAction* actLayer = new QAction(this);
   actLayer->setSeparator(true);
@@ -1799,7 +1840,8 @@ void te::qt::af::BaseApplication::initActions()
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
   initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Exchanger.All to All", tr("&All to All..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
-  initAction(m_toolsDataExchangerDirect, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Direct Exchanger..."), tr("Exchange data sets between SHP / ADO / PostGIS"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchangerDirect, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Direct Exchanger..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchangerDirectPopUp, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Exchange..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceExplorer, "datasource-explorer", "Tools.Data Source Explorer", tr("&Data Source Explorer..."), tr("Show or hide the data source explorer"), 
     true, false, true, m_menubar);
 
@@ -1825,8 +1867,8 @@ void te::qt::af::BaseApplication::initActions()
 // Menu -Project- actions
   initAction(m_projectAddLayerDataset, "datasource", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
   initAction(m_projectNewFolder, "folder-new", "Project.New Folder", tr("&New Folder..."), tr("Add a new folder"), true, false, true, m_menubar);
-  initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
-  initAction(m_projectAddLayerTextualDataSet, "", "Project.Add Layer.Textual File", tr("&Textual File..."), tr("Add a new layer from a textual file"), true, false, false, m_menubar);
+  initAction(m_projectAddLayerQueryDataSet, "view-filter", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
+  initAction(m_projectAddLayerTabularDataSet, "view-data-table", "Project.Add Layer.Tabular File", tr("&Tabular File..."), tr("Add a new layer from a Tabular file"), true, false, false, m_menubar);
   initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, this);
   initAction(m_projectRemoveFolder, "folder-remove", "Project.Remove Folder", tr("Remove &Folder(s)"), tr("Remove folder from the project"), true, false, true, this);
   initAction(m_projectRemoveChart, "chart-pie-remove", "Project.Remove Chart", tr("Remove Chart"), tr("Remove chart from the project"), true, false, true, this);
@@ -1846,7 +1888,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer on the &Map Display"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Objects on the Map Display", tr("Fit Selected Objects on the Map Display"), tr("Fit the selected objects on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to the Selected Objects on Map Display", tr("Pan to the Selected Objects on the Map Display"), tr("Pan to the selected objects on the Map Display"), true, false, true, m_menubar);
-  initAction(m_queryLayer, "", "Layer.Query", tr("Query"), tr("Query"), true, false, true, m_menubar);
+  initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query"), tr("Query"), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
@@ -1962,7 +2004,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectAddLayerMenu->setIcon(QIcon::fromTheme("layer-add"));
 
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
-  m_projectAddLayerMenu->addAction(m_projectAddLayerTextualDataSet);
+  m_projectAddLayerMenu->addAction(m_projectAddLayerTabularDataSet);
   m_projectAddLayerMenu->addSeparator();
   m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
   m_projectMenu->addAction(m_projectNewFolder);
@@ -2166,7 +2208,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
   connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
-  connect(m_projectAddLayerTextualDataSet, SIGNAL(triggered()), SLOT(onAddTextualLayerTriggered()));
+  connect(m_projectAddLayerTabularDataSet, SIGNAL(triggered()), SLOT(onAddTabularLayerTriggered()));
   connect(m_projectRemoveChart, SIGNAL(triggered()), SLOT(onRemoveChartTriggered()));
   connect(m_projectRemoveClassification, SIGNAL(triggered()), SLOT(onRemoveClassificationTriggered()));
   connect(m_projectRemoveFolder, SIGNAL(triggered()), SLOT(onRemoveFolderTriggered()));
@@ -2180,6 +2222,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_toolsDataExchanger, SIGNAL(triggered()), SLOT(onToolsDataExchangerTriggered()));
   connect(m_toolsDataExchangerDirect, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectTriggered()));
+  connect(m_toolsDataExchangerDirectPopUp, SIGNAL(triggered()), SLOT(onToolsDataExchangerDirectPopUpTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));

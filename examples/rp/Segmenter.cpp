@@ -93,7 +93,7 @@ void Segmenter()
     for (unsigned i = 0; i < geometries.size(); i++)
     {
       te::mem::DataSetItem* dsitem = new te::mem::DataSetItem(dset);
-      dsitem->setGeometry("objects", *geometries[i]);
+      dsitem->setGeometry(obj_prop->getName(),geometries[i]);
       dset->add(dsitem);
     }
 
@@ -102,12 +102,6 @@ void Segmenter()
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSource::create("OGR", osinfo);
     std::auto_ptr<te::da::DataSourceTransactor> trans = ds->getTransactor();
     trans->add(dst->getName(), dset, std::map<std::string, std::string> ());
-    //te::da::DataSetPersistence* pers = trans->getDataSetPersistence();
-    //pers->add(dst->getName(), dset);
-
-    //delete pers;
-    //delete trans;
-    //delete ds;
 
 // clean up
     delete rin;
@@ -156,7 +150,7 @@ void Segmenter()
     segparameters.m_segmentsSimilarityThreshold = 0.3;
     segparameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
     segparameters.m_bandsWeights.resize( 3, 0.333333);
-	segparameters.m_bandsWeights[2] = 1 - segparameters.m_bandsWeights[0] - segparameters.m_bandsWeights[1];
+	  segparameters.m_bandsWeights[2] = 1 - segparameters.m_bandsWeights[0] - segparameters.m_bandsWeights[1];
     segparameters.m_colorWeight = 0.5;
     segparameters.m_compactnessWeight = 0.5;
 
@@ -201,7 +195,8 @@ void Segmenter()
     for (unsigned i = 0; i < geometries.size(); i++)
     {
       te::mem::DataSetItem* dsitem = new te::mem::DataSetItem(dset);
-      dsitem->setGeometry("objects", *geometries[i]);
+      dsitem->setGeometry("objects", geometries[i]);
+      //dsitem->setGeometry("objects", *geometries[i]);
       dset->add(dsitem);
     }
 
@@ -209,13 +204,7 @@ void Segmenter()
     osinfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_segmentedBaatz.shp";
     std::auto_ptr<te::da::DataSource> ds = te::da::DataSource::create("OGR", osinfo);
     std::auto_ptr<te::da::DataSourceTransactor> trans = ds->getTransactor();
-    //te::da::DataSetPersistence* pers = trans->getDataSetPersistence();
     trans->add(dst->getName(), dset,  std::map<std::string, std::string> ());
-    //pers->add(dst->getName(), dset);
-
-    //delete pers;
-    //delete trans;
-    //delete ds;
 
 // clean up
     delete rin;
