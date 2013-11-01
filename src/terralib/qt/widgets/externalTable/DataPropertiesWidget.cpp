@@ -143,8 +143,7 @@ void fillComboBox(std::map<int, std::string> typeMap, QComboBox* box)
 {
   for(std::map<int, std::string>::iterator it = typeMap.begin(); it !=  typeMap.end(); ++it)
   {
-    std::string propName = it->second;
-    box->addItem(QString::fromStdString(propName));
+    box->addItem(QString::fromStdString(it->second), QVariant(it->first));
   }
 }
 
@@ -169,7 +168,7 @@ te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Q
   m_tblView->verticalHeader()->setVisible(false);
   m_tblView->setSelectionMode(QAbstractItemView::NoSelection);
 
-  m_ui->m_datapropertiesTableWidget->setSelectionMode(QAbstractItemView::NoSelection);
+  m_ui->m_dataPropertiesTableWidget->setSelectionMode(QAbstractItemView::NoSelection);
 
   //Connecting signals and slots
   connect(m_ui->m_inputDataToolButton, SIGNAL(clicked()), this, SLOT(onInputDataToolButtonTriggered()));
@@ -185,9 +184,9 @@ te::qt::widgets::DatapPropertiesWidget::~DatapPropertiesWidget()
 std::auto_ptr<te::da::DataSetAdapter> te::qt::widgets::DatapPropertiesWidget::getAdapter()
 {
   //Searching for properties that the user selected to adapt
-  for (int i = 0; i < m_ui->m_datapropertiesTableWidget->rowCount(); ++i)
+  for (int i = 0; i < m_ui->m_dataPropertiesTableWidget->rowCount(); ++i)
   {
-    if(m_typeMap[m_dataType->getProperty(i)->getType()].c_str() != dynamic_cast<QComboBox*>(m_ui->m_datapropertiesTableWidget->cellWidget(i, 1))->currentText().toStdString())
+    if(m_typeMap[m_dataType->getProperty(i)->getType()].c_str() != dynamic_cast<QComboBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(i, 1))->currentText().toStdString())
     {
       m_dsConverter->add(m_dataType->getProperty(i)->getName(), getConvertedproperty(m_dataType->getProperty(i)->getName(), m_dataType->getProperty(i)->getType()));
     }
@@ -264,13 +263,13 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
   m_tblView->resizeColumnsToContents();
   m_tblView->show();
 
-  m_ui->m_datapropertiesTableWidget->setRowCount(0);
+  m_ui->m_dataPropertiesTableWidget->setRowCount(0);
 
   //Filling the properties table widget
   for(size_t t = 0; t < m_dataType->size(); ++t)
   {
-    int newrow = m_ui->m_datapropertiesTableWidget->rowCount();
-    m_ui->m_datapropertiesTableWidget->insertRow(newrow);
+    int newrow = m_ui->m_dataPropertiesTableWidget->rowCount();
+    m_ui->m_dataPropertiesTableWidget->insertRow(newrow);
 
     //The Property name item
     std::string propName = m_dataType->getProperty(t)->getName();
@@ -278,7 +277,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(propName));
     itemName->setFlags(Qt::ItemIsEnabled);
 
-    m_ui->m_datapropertiesTableWidget->setItem(newrow, 0, itemName);
+    m_ui->m_dataPropertiesTableWidget->setItem(newrow, 0, itemName);
 
     //The property type item
     QComboBox* typeCB = new QComboBox();
@@ -288,12 +287,12 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     m_mapper->setMapping(typeCB, newrow);
     connect(typeCB, SIGNAL(currentIndexChanged (int)), m_mapper, SLOT(map()));
 
-    m_ui->m_datapropertiesTableWidget->setCellWidget(newrow, 1, typeCB);
+    m_ui->m_dataPropertiesTableWidget->setCellWidget(newrow, 1, typeCB);
   }
 
-  m_ui->m_datapropertiesTableWidget->resizeColumnsToContents();
-  m_ui->m_datapropertiesTableWidget->resizeRowsToContents();
-  m_ui->m_datapropertiesTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+  m_ui->m_dataPropertiesTableWidget->resizeColumnsToContents();
+  m_ui->m_dataPropertiesTableWidget->resizeRowsToContents();
+  m_ui->m_dataPropertiesTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
   //Clearing the Comboxes if they aren't empty
   m_ui->m_wktComboBox->clear();
@@ -330,5 +329,50 @@ void te::qt::widgets::DatapPropertiesWidget::onSridPushButtonCLicked()
 
 void te::qt::widgets::DatapPropertiesWidget:: onPropertyTypeChanged(int row)
 {
-  int test = row;
+  //Acquiring the name of the cconfigured property and it's new type.
+  std::string propName = m_ui->m_dataPropertiesTableWidget->item(row, 0)->text().toStdString();;
+  QComboBox* box = dynamic_cast<QComboBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(row, 1));
+  int type = box->itemData(box->currentIndex()).toInt();
+
+  //Searching the property to see if it is already in the comboBoxes
+  int wkt, xAxis, yAxis;
+  wkt = m_ui->m_wktComboBox->findText(QString::fromStdString(propName));
+  xAxis = m_ui->m_xAxisComboBox->findText(QString::fromStdString(propName));
+  yAxis = m_ui->m_yAxisComboBox->findText(QString::fromStdString(propName));
+
+  //Checking wheather the property needs to be added to or removed from wktComboBox
+  if(wkt == -1)
+  {
+    if(type == te::dt::STRING_TYPE)
+      m_ui->m_wktComboBox->addItem(QString::fromStdString(propName));
+  }
+  else
+  {
+    if(type != te::dt::STRING_TYPE)
+      m_ui->m_wktComboBox->removeItem(wkt);
+  }
+
+  //Checking wheather the property needs to be added to or removed from xAxisoOmboBox
+  if(xAxis == -1)
+  {
+    if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
+      m_ui->m_xAxisComboBox->addItem(QString::fromStdString(propName));
+  }
+  else
+  {
+    if((type <= te::dt::INT16_TYPE && type >= te::dt::UINT64_TYPE) || type != te::dt::FLOAT_TYPE || type != te::dt::DOUBLE_TYPE)
+      m_ui->m_xAxisComboBox->removeItem(xAxis);
+  }
+
+  //Checking wheather the property needs to be added to or removed from yxisoOmboBox
+  if(yAxis == -1)
+  {
+    if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
+      m_ui->m_yAxisComboBox->addItem(QString::fromStdString(propName));
+  }
+  else
+  {
+    if((type <= te::dt::INT16_TYPE && type >= te::dt::UINT64_TYPE) || type != te::dt::FLOAT_TYPE || type != te::dt::DOUBLE_TYPE)
+      m_ui->m_yAxisComboBox->removeItem(yAxis);
+  }
 }
