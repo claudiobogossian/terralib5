@@ -82,6 +82,8 @@ namespace te
 
             void back();
 
+            void finish();
+
             void next();
 
             void help();

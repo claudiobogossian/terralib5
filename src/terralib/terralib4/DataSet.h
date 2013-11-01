@@ -141,7 +141,7 @@ namespace terralib4
     protected:
 
       TeQuerier* m_querier;
-      TeSTInstance m_instance;
+      mutable TeSTInstance m_instance;
       int m_i;
       int m_size;
       TeLayer* m_layer;

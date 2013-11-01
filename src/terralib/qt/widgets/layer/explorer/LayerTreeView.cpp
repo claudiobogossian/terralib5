@@ -135,6 +135,18 @@ class te::qt::widgets::LayerTreeView::Impl
           {
             menu.addAction(action);
           }
+
+          if(menuType == te::qt::widgets::LayerTreeView::SINGLE_LAYER_GROUPING_SELECTED &&
+            layer->getGrouping())
+          {
+            menu.addAction(action);
+          }
+
+          if(menuType == te::qt::widgets::LayerTreeView::SINGLE_LAYER_CHART_SELECTED &&
+            layer->getChart())
+          {
+            menu.addAction(action);
+          }
         }
       }
       else
