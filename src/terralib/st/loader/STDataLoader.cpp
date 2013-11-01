@@ -27,6 +27,7 @@
 //TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../dataaccess/utils/Utils.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
 
 //ST
 #include "STDataLoader.h"
@@ -45,6 +46,7 @@
 #include "../core/coverage/RasterCoverageDataSetInfo.h"
 #include "../core/coverage/PointCoverageDataSetInfo.h"
 #include "../Exception.h"
+#include "../Globals.h"
 
 te::st::STDataLoader::STDataLoader()
 {
@@ -305,6 +307,18 @@ te::st::STDataLoader::getSpatialExtent(const te::st::TrajectoryDataSetInfo& info
 {
   std::auto_ptr<STDataLoaderImpl> impl(STDataLoaderImplFactory::make(info.getDataSourceInfo().getType()));
   return impl->getSpatialExtent(info);
+}
+
+void te::st::STDataLoader::initialize()
+{
+  te::da::DataSourceManager::getInstance().make(te::st::Globals::sm_STMemoryDataSourceId, "STMEMORY");
+}
+
+void te::st::STDataLoader::finalize()
+{
+  te::da::DataSourcePtr p = te::da::DataSourceManager::getInstance().find(te::st::Globals::sm_STMemoryDataSourceId);
+  if(p.get()!=0)
+    p->close();
 }
 
 te::st::STDataLoader::~STDataLoader()

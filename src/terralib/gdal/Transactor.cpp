@@ -276,14 +276,15 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const bo
 
 std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::string& name, 
                                                                 te::common::TraverseType travType, 
-                                                                bool /*connected*/) 
+                                                                bool /*connected*/,
+                                                                const te::common::AccessPolicy accessPolicy) 
 {
   std::string uri;
   std::auto_ptr<te::da::DataSetType> dsty = getDataSetType(m_path,name,uri);
   if (!dsty.get())
     return std::auto_ptr<te::da::DataSet>();
 
-  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,uri)); 
+  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,accessPolicy, uri)); 
 }
 
 std::auto_ptr<te::da::DataSet>  te::gdal::Transactor::getDataSet(const std::string& name,
@@ -291,9 +292,10 @@ std::auto_ptr<te::da::DataSet>  te::gdal::Transactor::getDataSet(const std::stri
                                           const te::gm::Envelope* /*e*/,
                                           te::gm::SpatialRelation /*r*/,
                                           te::common::TraverseType travType, 
-                                          bool /*connected*/)
+                                          bool /*connected*/,
+                                          const te::common::AccessPolicy accessPolicy)
 {
-  return getDataSet(name,travType);
+  return getDataSet(name,travType,accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::string& name,
@@ -301,17 +303,19 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::strin
                                                                 const te::gm::Geometry* /*g*/,
                                                                 te::gm::SpatialRelation /*r*/,
                                                                 te::common::TraverseType travType, 
-                                                                bool /*connected*/)
+                                                                bool /*connected*/,
+                                                                const te::common::AccessPolicy accessPolicy)
 {
-  return getDataSet(name,travType);
+  return getDataSet(name,travType,accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::Transactor::getDataSet(const std::string& name,
                                                                 const te::da::ObjectIdSet* /*oids*/, 
                                                                 te::common::TraverseType travType, 
-                                                                bool /*connected*/)
+                                                                bool /*connected*/,
+                                                                const te::common::AccessPolicy accessPolicy)
 {
-  return getDataSet(name,travType);
+  return getDataSet(name,travType,accessPolicy);
 }
 
 
@@ -430,7 +434,7 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const te::da::Select&
     throw Exception(TR_GDAL("Can not process the Select object: dataset not found."));
 
   std::string uri = dsty->getTitle();
-  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,uri)); 
+  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,te::common::RAccess,uri)); 
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const std::string& query,
@@ -459,7 +463,7 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const std::string& qu
     throw Exception(TR_GDAL("Can not process the Select object: dataset not found."));
   
   std::string uri = dsty->getTitle();
-  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,uri));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,common::RAccess,uri));
 }
 
 bool te::gdal::Transactor::dataSetExists(const std::string& name)

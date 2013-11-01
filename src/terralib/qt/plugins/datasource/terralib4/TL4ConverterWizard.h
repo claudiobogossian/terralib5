@@ -27,6 +27,7 @@
 #define __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4CONVERTERWIZARD_H
 
 // TerraLib
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "Config.h"
 
 // STL
@@ -40,14 +41,20 @@ namespace Ui { class TL4ConverterWizardForm; }
 
 namespace te
 {
+  namespace da { class DataSource; }
+
   namespace qt
   {
+    namespace widgets{class DataSourceSelectorWizardPage;}
+
     namespace plugins
     {
       namespace terralib4
       {
         class TL4ConnectorWizardPage;
         class TL4LayerSelectionWizardPage;
+        class TL4RasterFolderSelectionWizardPage;
+        class TL4FinalPageWizardPage;
 
         class TEQTPLUGINTERRALIB4EXPORT TL4ConverterWizard : public QWizard
         {
@@ -61,21 +68,45 @@ namespace te
 
             int nextId() const;
 
+          private:
+
+            void terralib4ConnectorPageNext();
+
+            void layerSelectionPageNext();
+
+            void datasourceSelectionPageNext();
+
+            void rasterFolderSelectionPageNext();
+
           protected slots:
 
             void back();
 
             void next();
 
-            void commit();
-
             void help();
 
           private:
 
+            enum
+            {
+              PAGE_TERRALIB4_CONNECTOR,
+              PAGE_LAYER_SELECTION,
+              PAGE_DATASOURCE_SELECTOR,
+              PAGE_RASTERFOLDER_SELECTOR,
+              PAGE_FINALPAGE
+            };
+
+            bool m_hasRaster;
+            std::string m_rasterFolderPath;
+            std::auto_ptr<te::da::DataSource> m_tl4Database;
+            te::da::DataSourceInfoPtr m_targetDataSource;
             std::auto_ptr<Ui::TL4ConverterWizardForm> m_ui;
             std::auto_ptr<TL4ConnectorWizardPage> m_connectorPage;
+            std::auto_ptr<te::qt::widgets::DataSourceSelectorWizardPage>m_datasourceSelectorPage;
             std::auto_ptr<TL4LayerSelectionWizardPage> m_layerSelectionPage;
+            std::auto_ptr<TL4RasterFolderSelectionWizardPage> m_rasterFolderSelectionPage;
+            std::auto_ptr<TL4FinalPageWizardPage> m_finalPage;
         };
       } // end namespace terralib4
     } // end namespace plugins

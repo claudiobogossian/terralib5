@@ -13,13 +13,14 @@ set(PROJ_NAME "terralib_example_modis")
 project(${PROJ_NAME})         # the project name is terralib_example_modis
 set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_modis
 
-find_package(Boost ${_Boost_VERSION} COMPONENTS system filesystem date_time REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS system filesystem date_time timer chrono REQUIRED)
 
 #Definitions for Windows compiling
 if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB -DBOOST_ALL_DYN_LINK)
 endif()
-	
+
+
 set(DEP_LIBS  
     terralib_common
     terralib_srs
