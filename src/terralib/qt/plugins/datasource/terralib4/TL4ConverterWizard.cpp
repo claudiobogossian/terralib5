@@ -53,7 +53,8 @@
 
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
-    m_hasRaster(true),
+    m_hasRaster(false),
+    m_hasOnlyRaster(false),
     m_ui(new Ui::TL4ConverterWizardForm)
 {
 // setup controls
@@ -92,6 +93,7 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
   connect(this->button(QWizard::NextButton), SIGNAL(pressed()), this, SLOT(next()));
   connect(this->button(QWizard::BackButton), SIGNAL(pressed()), this, SLOT(back()));
   connect(this->button(QWizard::HelpButton), SIGNAL(pressed()), this, SLOT(help()));
+  connect(this->button(QWizard::FinishButton), SIGNAL(pressed()), this, SLOT(finish()));
 
 }
 
@@ -109,6 +111,11 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::back()
   if(currentId() == PAGE_FINALPAGE)
   {
     if(!m_hasRaster)
+      QWizard::back();
+  }
+  if(currentId() == PAGE_RASTERFOLDER_SELECTOR)
+  {
+    if(m_hasOnlyRaster)
       QWizard::back();
   }
   QWizard::back();
@@ -176,14 +183,20 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::layerSelectionPageNext()
     return;
   }
 
-  /*for(std::size_t i = 0; i < layersNames.size(); ++i)
+  for(std::size_t i = 0; i < layersNames.size(); ++i)
   {
-    std::auto_ptr<te::da::DataSetType> dst(tl4Ds->getDataSetType(layersNames[i]));
-    selectedDatasets.push_back(dst.get());
+    std::auto_ptr<te::da::DataSetType> dst(m_tl4Database->getDataSetType(layersNames[i]));
 
-    if(!hasRaster)
-      hasRaster = dst->hasRaster();
-  }*/
+    bool hasRaster = dst->hasRaster();
+
+    if(hasRaster)
+      m_hasRaster = true;
+    else
+      m_hasOnlyRaster = false;
+  }
+
+  if(m_hasOnlyRaster)
+    QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext()
@@ -198,3 +211,9 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNe
 {
   m_rasterFolderPath = m_rasterFolderSelectionPage->getPath();
 }
+
+void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
+{
+
+}
+
