@@ -82,24 +82,6 @@ void buidTypeMap(std::map<int, std::string>& typeMap)
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT64_TYPE, QObject::tr("U Int 64").toStdString()));
 }
 
-void fillComboBox(std::map<int, std::string> typeMap, QComboBox* box)
-{
-  for(std::map<int, std::string>::iterator it = typeMap.begin(); it !=  typeMap.end(); ++it)
-  {
-    std::string propName = it->second;
-    box->addItem(QString::fromStdString(propName));
-  }
-}
-
-void fillComboBox(const te::da::DataSetType* dsType, QComboBox* box)
-{
-  for(size_t t = 0; t < dsType->size(); ++t)
-  {
-    std::string propName = dsType->getProperty(t)->getName();
-    box->addItem(QString::fromStdString(propName));
-  }
-}
-
 te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std::string defaultValue = "", bool isRequired = false, bool isAutoNumber = true)
 {
   te::dt::SimpleProperty* newProperty;
@@ -157,6 +139,15 @@ te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std
   return newProperty;
 }
 
+void fillComboBox(std::map<int, std::string> typeMap, QComboBox* box)
+{
+  for(std::map<int, std::string>::iterator it = typeMap.begin(); it !=  typeMap.end(); ++it)
+  {
+    std::string propName = it->second;
+    box->addItem(QString::fromStdString(propName));
+  }
+}
+
 te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::DataPropertiesWidgetForm)
@@ -165,6 +156,8 @@ te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Q
 
   //preparing the Type Map
   buidTypeMap(m_typeMap);
+
+  m_mapper = new QSignalMapper(this);
 
   //Adjusting the dataSetTableView that will be used to display the dataset's data
   m_tblView.reset(new DataSetTableView(m_ui->m_dataPreviewFrame));
@@ -181,6 +174,7 @@ te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Q
   //Connecting signals and slots
   connect(m_ui->m_inputDataToolButton, SIGNAL(clicked()), this, SLOT(onInputDataToolButtonTriggered()));
   connect(m_ui->m_sridPushButton, SIGNAL(clicked()), this, SLOT(onSridPushButtonCLicked()));
+  connect(m_mapper, SIGNAL(mapped(int)), this, SLOT(onPropertyTypeChanged(int)));
 }
 
 te::qt::widgets::DatapPropertiesWidget::~DatapPropertiesWidget()
@@ -236,6 +230,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 
   m_ui->m_inputDataLineEdit->setText(fileName);
 
+
   //Getting the connection info
   std::string ogrInfo("connection_string=" + fileName.toStdString());
   std::map<std::string, std::string> connInfo;
@@ -290,6 +285,9 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     fillComboBox(m_typeMap, typeCB);
     typeCB->setCurrentIndex(typeCB->findText(m_typeMap[m_dataType->getProperty(t)->getType()].c_str()));
 
+    m_mapper->setMapping(typeCB, newrow);
+    connect(typeCB, SIGNAL(currentIndexChanged (int)), m_mapper, SLOT(map()));
+
     m_ui->m_datapropertiesTableWidget->setCellWidget(newrow, 1, typeCB);
   }
 
@@ -297,10 +295,25 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
   m_ui->m_datapropertiesTableWidget->resizeRowsToContents();
   m_ui->m_datapropertiesTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
+  //Clearing the Comboxes if they aren't empty
+  m_ui->m_wktComboBox->clear();
+  m_ui->m_xAxisComboBox->clear();
+  m_ui->m_yAxisComboBox->clear();
+
   //Filling the ComboBoxes that will be used to configure the resulting geometries
-  fillComboBox(m_dataType.get(), m_ui->m_xAxisComboBox);
-  fillComboBox(m_dataType.get(), m_ui->m_yAxisComboBox);
-  fillComboBox(m_dataType.get(), m_ui->m_wktComboBox);
+  for(size_t t = 0; t < m_dataType->size(); ++t)
+  {
+    std::string propName = m_dataType->getProperty(t)->getName();
+    int type = m_dataType->getProperty(t)->getType();
+    if(type == te::dt::STRING_TYPE)
+      m_ui->m_wktComboBox->addItem(QString::fromStdString(propName));
+    else if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || 
+             type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
+    {
+      m_ui->m_xAxisComboBox->addItem(QString::fromStdString(propName));
+      m_ui->m_yAxisComboBox->addItem(QString::fromStdString(propName));
+    }
+  }
 }
 
 void te::qt::widgets::DatapPropertiesWidget::onSridPushButtonCLicked()
@@ -313,4 +326,9 @@ void te::qt::widgets::DatapPropertiesWidget::onSridPushButtonCLicked()
     std::pair<int, std::string> srid = srsDialog.getSelectedSRS();
     m_ui->m_sridLineEdit->setText(QString::number(srid.first));
   }
+}
+
+void te::qt::widgets::DatapPropertiesWidget:: onPropertyTypeChanged(int row)
+{
+  int test = row;
 }
