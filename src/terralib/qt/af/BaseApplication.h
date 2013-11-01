@@ -85,6 +85,10 @@ namespace te
 
           void onAddTextualLayerTriggered();
 
+          void onRemoveChartTriggered();
+
+          void onRemoveClassificationTriggered();
+
           void onRemoveFolderTriggered();
 
           void onRemoveLayerTriggered();
@@ -242,6 +246,8 @@ namespace te
           QAction* m_viewGrid;
           QAction* m_projectRemoveLayer;
           QAction* m_projectRemoveFolder;
+          QAction* m_projectRemoveChart;
+          QAction* m_projectRemoveClassification;
           QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;

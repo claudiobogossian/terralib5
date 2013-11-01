@@ -69,6 +69,8 @@ namespace te
             ALL_SELECTION_TYPES,
             NO_LAYER_SELECTED,
             SINGLE_LAYER_SELECTED,
+            SINGLE_LAYER_GROUPING_SELECTED,
+            SINGLE_LAYER_CHART_SELECTED,
             MULTIPLE_LAYERS_SELECTED
           };
 
