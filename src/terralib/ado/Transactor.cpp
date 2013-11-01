@@ -465,6 +465,7 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       case te::dt::GEOMETRY_TYPE:
       case te::dt::ARRAY_TYPE:
       case te::dt::DATETIME_TYPE:
+      case te::dt::NUMERIC_TYPE:
       {
         const te::dt::SimpleProperty* simple = static_cast<const te::dt::SimpleProperty*>(p);
 
