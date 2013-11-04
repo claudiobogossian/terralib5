@@ -24,14 +24,24 @@
 */
 
 // TerraLib
+#include "../../../../dataaccess/dataset/DataSetType.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
+#include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "TL4ConverterWizard.h"
 #include "TL4ConnectorWizardPage.h"
 #include "TL4LayerSelectionWizardPage.h"
+#include "TL4RasterFolderSelectionWizardPage.h"
+#include "TL4FinalPageWizardPage.h"
 #include "ui_TL4ConverterWizardForm.h"
 #include "ui_TL4ConnectorWizardPageForm.h"
 #include "ui_TL4LayerSelectionWizardPageForm.h"
+#include "ui_TL4RasterFolderSelectionWizardPageForm.h"
+#include "ui_TL4FinalPageWizardPageForm.h"
+
+// Terralib 4.x
+
 
 // STL
 #include <cassert>
@@ -43,6 +53,8 @@
 
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
+    m_hasRaster(false),
+    m_hasOnlyRaster(false),
     m_ui(new Ui::TL4ConverterWizardForm)
 {
 // setup controls
@@ -50,22 +62,38 @@ te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* pare
 
 // add pages
   m_connectorPage.reset(new TL4ConnectorWizardPage(this));
-  m_connectorPage->setTitle(tr("Data Source Selection"));
-  m_connectorPage->setSubTitle(tr("Please, select the data source where the data is stored"));
+  m_connectorPage->setTitle(tr("TerraLib 4.x Database"));
+  m_connectorPage->setSubTitle(tr("Please, connect to a TerraLib 4.x database."));
 
   m_layerSelectionPage.reset(new TL4LayerSelectionWizardPage(this));
-  m_layerSelectionPage->setTitle(tr("Data Source Selection"));
-  m_layerSelectionPage->setSubTitle(tr("Please, select the data source where the data is stored"));
+  m_layerSelectionPage->setTitle(tr("Layer Selection"));
+  m_layerSelectionPage->setSubTitle(tr("Please, select the layers to be added to the project"));
 
-  m_layerSelectionPage->setFinalPage(true);
+  m_datasourceSelectorPage.reset(new te::qt::widgets::DataSourceSelectorWizardPage(this));
+  m_datasourceSelectorPage->setTitle(tr("Target Data Source"));
+  m_datasourceSelectorPage->setSubTitle(tr("Please, select a data source to store the converted data"));
+  m_datasourceSelectorPage->getSelectorWidget()->setSelectionMode(QAbstractItemView::SingleSelection);
+  m_datasourceSelectorPage->getSelectorWidget()->showDataSourceWithRasterSupport(false);
 
-  setPage(0, m_connectorPage.get());
-  setPage(1, m_layerSelectionPage.get());
+  m_rasterFolderSelectionPage.reset(new TL4RasterFolderSelectionWizardPage(this));
+  m_rasterFolderSelectionPage->setTitle(tr("Raster Folder"));
+  m_rasterFolderSelectionPage->setSubTitle(tr("Please, select folder to store raster data"));
+
+  m_finalPage.reset(new TL4FinalPageWizardPage(this));
+  m_finalPage->setTitle(tr("Final Page"));
+  m_finalPage->setSubTitle(tr("Final Page"));
+  m_finalPage->setFinalPage(true);
+
+  setPage(PAGE_TERRALIB4_CONNECTOR, m_connectorPage.get());
+  setPage(PAGE_LAYER_SELECTION, m_layerSelectionPage.get());
+  setPage(PAGE_DATASOURCE_SELECTOR, m_datasourceSelectorPage.get());
+  setPage(PAGE_RASTERFOLDER_SELECTOR, m_rasterFolderSelectionPage.get());
+  setPage(PAGE_FINALPAGE, m_finalPage.get());
 
   connect(this->button(QWizard::NextButton), SIGNAL(pressed()), this, SLOT(next()));
   connect(this->button(QWizard::BackButton), SIGNAL(pressed()), this, SLOT(back()));
-  connect(this->button(QWizard::CommitButton), SIGNAL(pressed()), this, SLOT(commit()));
   connect(this->button(QWizard::HelpButton), SIGNAL(pressed()), this, SLOT(help()));
+  connect(this->button(QWizard::FinishButton), SIGNAL(pressed()), this, SLOT(finish()));
 
 }
 
@@ -80,33 +108,41 @@ int te::qt::plugins::terralib4::TL4ConverterWizard::nextId() const
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::back()
 {
-
+  if(currentId() == PAGE_FINALPAGE)
+  {
+    if(!m_hasRaster)
+      QWizard::back();
+  }
+  if(currentId() == PAGE_RASTERFOLDER_SELECTOR)
+  {
+    if(m_hasOnlyRaster)
+      QWizard::back();
+  }
+  QWizard::back();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::next()
 {
-  if(currentId() == 0)
+  switch(currentId())
   {
-    std::map<std::string, std::string> connInfo = m_connectorPage->getConnInfo();
+    case PAGE_TERRALIB4_CONNECTOR:
+      terralib4ConnectorPageNext();
+      break;
 
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("TERRALIB4"));
-    ds->setConnectionInfo(connInfo);
-    ds->open();
+    case PAGE_LAYER_SELECTION:
+      layerSelectionPageNext();
+      break;
 
-    std::vector<std::string> datasets = ds->getDataSetNames();
+    case PAGE_DATASOURCE_SELECTOR:
+      datasourceSelectionPageNext();
+      break;
 
-    m_layerSelectionPage->setDatasets(datasets);
+    case PAGE_RASTERFOLDER_SELECTOR:
+      rasterFolderSelectionPageNext();
+      break;
   }
-  else
-  {
-    
-  }
+
   QWizard::next();
-}
-
-void te::qt::plugins::terralib4::TL4ConverterWizard::commit()
-{
-
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::help()
@@ -116,4 +152,68 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::help()
                        tr("This option is not implemented yet!\nWe will provide it soon!"));
 }
 
+void te::qt::plugins::terralib4::TL4ConverterWizard::terralib4ConnectorPageNext()
+{
+  std::map<std::string, std::string> connInfo = m_connectorPage->getConnInfo();
+
+  try
+  {
+    m_tl4Database = te::da::DataSourceFactory::make("TERRALIB4");
+    m_tl4Database->setConnectionInfo(connInfo);
+    m_tl4Database->open();
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("The Terralib 4.x database connection could not be established."));
+  }
+
+  std::vector<std::string> datasets = m_tl4Database->getDataSetNames();
+
+  m_layerSelectionPage->setDatasets(datasets);
+}
+
+void te::qt::plugins::terralib4::TL4ConverterWizard::layerSelectionPageNext()
+{
+  std::vector<std::string> layersNames;
+  layersNames = m_layerSelectionPage->getChecked();
+
+  if(layersNames.size() == 0)
+  {
+    QMessageBox::warning(this, tr("Warning"), tr("No Layer selected!"));
+    return;
+  }
+
+  for(std::size_t i = 0; i < layersNames.size(); ++i)
+  {
+    std::auto_ptr<te::da::DataSetType> dst(m_tl4Database->getDataSetType(layersNames[i]));
+
+    bool hasRaster = dst->hasRaster();
+
+    if(hasRaster)
+      m_hasRaster = true;
+    else
+      m_hasOnlyRaster = false;
+  }
+
+  if(m_hasOnlyRaster)
+    QWizard::next();
+}
+
+void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext()
+{
+  m_targetDataSource = *m_datasourceSelectorPage->getSelectorWidget()->getSelecteds().begin();
+
+  if(!m_hasRaster)
+    QWizard::next();
+}
+
+void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNext()
+{
+  m_rasterFolderPath = m_rasterFolderSelectionPage->getPath();
+}
+
+void te::qt::plugins::terralib4::TL4ConverterWizard::finish()
+{
+
+}
 

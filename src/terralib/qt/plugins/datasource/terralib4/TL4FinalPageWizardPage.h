@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/plugins/TL4LayerSelectionWizardPage.h
+  \file terralib/qt/plugins/TL4RasterFolderSelectionWizardPage.h
 
   \brief ????
 */
 
-#ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4LAYERSELECTIONWIZARDPAGE_H
-#define __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4LAYERSELECTIONWIZARDPAGE_H
+#ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4FINALPAGEWIZARDPAGE_H
+#define __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4FINALPAGEWIZARDPAGE_H
 
 // TerraLib
 #include "Config.h"
@@ -36,7 +36,7 @@
 #include <QtGui/QWizardPage>
 
 // Forward declaration
-namespace Ui { class TL4LayerSelectionWizardPageForm; }
+namespace Ui { class TL4FinalPageWizardPageForm; }
 
 namespace te
 {
@@ -46,27 +46,23 @@ namespace te
     {
       namespace terralib4
       {
-        class TEQTPLUGINTERRALIB4EXPORT TL4LayerSelectionWizardPage : public QWizardPage
+        class TEQTPLUGINTERRALIB4EXPORT TL4FinalPageWizardPage : public QWizardPage
         {
           Q_OBJECT
 
           public:
 
-            TL4LayerSelectionWizardPage(QWidget* parent = 0);
+            TL4FinalPageWizardPage(QWidget* parent = 0);
 
-            ~TL4LayerSelectionWizardPage();
-
-            void setDatasets(std::vector<std::string> datasets);
-
-            std::vector<std::string> getChecked();
+            ~TL4FinalPageWizardPage();
 
           private:
 
-            std::auto_ptr<Ui::TL4LayerSelectionWizardPageForm> m_ui;
+            std::auto_ptr<Ui::TL4FinalPageWizardPageForm> m_ui;
         };
       } // end namespace terralib4
     } // end namespace plugins
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4LAYERSELECTIONWIZARDPAGE_H
+#endif  // __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4FINALPAGEWIZARDPAGE_H

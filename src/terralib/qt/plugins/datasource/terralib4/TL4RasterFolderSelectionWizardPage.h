@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/plugins/TL4LayerSelectionWizardPage.h
+  \file terralib/qt/plugins/TL4RasterFolderSelectionWizardPage.h
 
   \brief ????
 */
 
-#ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4LAYERSELECTIONWIZARDPAGE_H
-#define __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4LAYERSELECTIONWIZARDPAGE_H
+#ifndef __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4RASTERFOLDERSELECTIONWIZARDPAGE_H
+#define __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4RASTERFOLDERSELECTIONWIZARDPAGE_H
 
 // TerraLib
 #include "Config.h"
@@ -36,37 +36,42 @@
 #include <QtGui/QWizardPage>
 
 // Forward declaration
-namespace Ui { class TL4LayerSelectionWizardPageForm; }
+namespace Ui { class TL4RasterFolderSelectionWizardPageForm; }
 
 namespace te
 {
   namespace qt
   {
+    namespace widgets { class FileChooser; }
+
     namespace plugins
     {
       namespace terralib4
       {
-        class TEQTPLUGINTERRALIB4EXPORT TL4LayerSelectionWizardPage : public QWizardPage
+        class TEQTPLUGINTERRALIB4EXPORT TL4RasterFolderSelectionWizardPage : public QWizardPage
         {
           Q_OBJECT
 
           public:
 
-            TL4LayerSelectionWizardPage(QWidget* parent = 0);
+            TL4RasterFolderSelectionWizardPage(QWidget* parent = 0);
 
-            ~TL4LayerSelectionWizardPage();
+            ~TL4RasterFolderSelectionWizardPage();
 
-            void setDatasets(std::vector<std::string> datasets);
+            std::string getPath();
 
-            std::vector<std::string> getChecked();
+          protected slots:
+
+            void onChooseToolButtonClicked();
 
           private:
 
-            std::auto_ptr<Ui::TL4LayerSelectionWizardPageForm> m_ui;
+            std::auto_ptr<te::qt::widgets::FileChooser> m_fileChooser;
+            std::auto_ptr<Ui::TL4RasterFolderSelectionWizardPageForm> m_ui;
         };
       } // end namespace terralib4
     } // end namespace plugins
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4LAYERSELECTIONWIZARDPAGE_H
+#endif  // __TERRALIB_PLUGINS_TERRALIB4_INTERNAL_TL4RASTERFOLDERSELECTIONWIZARDPAGE_H

@@ -1,7 +1,7 @@
 // TerraLib
 #include <terralib/dataaccess.h>
+#include <terralib/stmemory.h>
 #include <terralib/st.h>
-#include <terralib/stloader.h>
 #include <terralib/datatype.h>
 
 // Boost
@@ -35,11 +35,13 @@ void TrajectoryExamplesFromKML()
 
     //Create the data source and put it into the manager
     te::da::DataSourceManager::getInstance().open(dsinfo.getId(), dsinfo.getType(), dsinfo.getConnInfo());
-
-
+    
     //Indicates how the trajectories are stored in the data source -> This structure is fixed for OGR driver
     int phTimeIdx = 3;  /* property name: timestamp */
     int geomIdx = 12;    /* property name: geom */
+
+    //It initializes the st data loader support
+    te::st::STDataLoader::initialize();
 
     //Use the STDataLoader to create a TrajectoryDataSet with all observations
     te::st::TrajectoryDataSetInfo tjinfo40(dsinfo, "40: locations", phTimeIdx, geomIdx, -1, "40");
@@ -55,7 +57,7 @@ void TrajectoryExamplesFromKML()
 
     //Use the STDataLoader to create a TrajectoryDataSet with the observations during a given period
     te::dt::TimeInstant time1(te::dt::Date(2008,01,01), te::dt::TimeDuration(0,0,0));
-    te::dt::TimeInstant time2(te::dt::TimeInstant(te::dt::Date(2008,12,31), te::dt::TimeDuration(23,59,59)));
+    te::dt::TimeInstant time2(te::dt::Date(2008,03,31), te::dt::TimeDuration(23,59,59));
     te::dt::TimePeriod period(time1, time2); 
 
     std::auto_ptr<te::st::TrajectoryDataSet> tjDS40period = te::st::STDataLoader::getDataSet(tjinfo40, period, te::dt::DURING);
@@ -63,7 +65,10 @@ void TrajectoryExamplesFromKML()
 
     //Print the spatial and temporal extent as well as the observations of the loaded trajectories
     PrintTrajectoryDataSet(tjDS40period.get());
-    PrintTrajectoryDataSet(tjDS41period.get());        
+    PrintTrajectoryDataSet(tjDS41period.get());   
+
+    //It finalizes the st data loader support
+    te::st::STDataLoader::finalize();
   }
   catch(const std::exception& e)
   {

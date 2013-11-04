@@ -465,6 +465,7 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       case te::dt::GEOMETRY_TYPE:
       case te::dt::ARRAY_TYPE:
       case te::dt::DATETIME_TYPE:
+      case te::dt::NUMERIC_TYPE:
       {
         const te::dt::SimpleProperty* simple = static_cast<const te::dt::SimpleProperty*>(p);
 
@@ -1194,7 +1195,14 @@ void te::ado::Transactor::add(const std::string& datasetName,
             break;
 
           case te::dt::NUMERIC_TYPE:
-            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)d->getNumeric(pname.c_str()).c_str();
+            {
+              std::string sval = d->getNumeric(pname);
+              if(sval.empty())
+                sval = "0.0";
+
+              double dval = boost::lexical_cast<double>(sval);
+              recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)(dval);
+            }
             break;
 
           case te::dt::DATETIME_TYPE:

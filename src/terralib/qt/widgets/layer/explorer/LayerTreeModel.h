@@ -76,11 +76,18 @@ namespace te
           void set(const std::list<te::map::AbstractLayerPtr>& layers);
 
           /*!
-            \brief It gets the top level layers that are associated to the top level items of the model.
+            \brief It gets the top level layers of the model.
 
-            \param layers The top level layers that are associated to the top level items of the model.
+            \param layers The top level layers of the model.
           */
           const std::vector<te::map::AbstractLayerPtr>& getTopLayers() const;
+
+          /*!
+            \brief It gets the top level layer items of the model.
+
+            \param layers The top level layer items of the model.
+          */
+          const std::vector<te::qt::widgets::AbstractTreeItem*>& getTopLayerItems() const;
 
           /*!
             \brief It fetches more data for the given parent.
@@ -286,6 +293,7 @@ namespace te
         signals:
 
           void visibilityChanged(const te::map::AbstractLayerPtr& layer);
+          //void expandItem(te::qt::widgets::AbstractTreeItem* item);
           void layerOrderChanged();
 
         protected:
@@ -313,9 +321,10 @@ namespace te
 
         private:
 
-          std::vector<AbstractTreeItem*> m_items;           //!< The list of top level items of this model.
-          std::vector<te::map::AbstractLayerPtr> m_layers;  //!< The list of top level layers associated to the items of this model.
-          bool m_checkable;                                 //!< It informs if the model is checkable.
+          std::vector<AbstractTreeItem*> m_items;                    //!< The list of top level items.
+          std::vector<te::map::AbstractLayerPtr> m_layers;           //!< The list of top level layers.
+          std::vector<te::map::AbstractLayerPtr> m_insertingLayers;  //!< The list of layers to be inserted.
+          bool m_checkable;                                          //!< It informs if the model is checkable.
       };
 
     } // end namespace widgets
