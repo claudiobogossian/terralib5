@@ -266,7 +266,7 @@ namespace te
      \param rout The new output raster. Do not pass a null pointer.
      \return true If the reprojection was done or false otherwise.
      */
-    bool ReprojectRaster(te::rst::Raster* rin, te::rst::Raster* rout);
+    bool ReprojectRaster(te::rst::Raster const * const rin, te::rst::Raster* rout);
     
     /*!
      \brief It returns the GDAL driver name associated to a data source name.

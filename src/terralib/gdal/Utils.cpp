@@ -580,12 +580,12 @@ bool te::gdal::RecognizesSRID(unsigned int srid)
 }
 
 /* This function is based on the WARP tutorial in http://www.gdal.org */
-bool te::gdal::ReprojectRaster(te::rst::Raster* rin, te::rst::Raster* rout)
+bool te::gdal::ReprojectRaster(te::rst::Raster const * const rin, te::rst::Raster* rout)
 {
   assert(rin);
   assert(rout);
 
-  te::gdal::Raster* grin  = static_cast<te::gdal::Raster*>(rin);
+  te::gdal::Raster const* grin  = static_cast<te::gdal::Raster const *>(rin);
   te::gdal::Raster* grout = static_cast<te::gdal::Raster*>(rout);
 
   GDALDatasetH hSrcDS = grin->getGDALDataset();

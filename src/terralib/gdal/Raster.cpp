@@ -227,7 +227,7 @@ te::rst::Band& te::gdal::Raster::operator[](std::size_t i)
   return *m_bands[i];
 }
 
-GDALDataset* te::gdal::Raster::getGDALDataset()
+GDALDataset* te::gdal::Raster::getGDALDataset() const
 {
   return m_gdataset;
 }
@@ -307,7 +307,7 @@ te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::ma
   return rout;
 }
 
-te::rst::Raster* te::gdal::Raster::transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m)
+te::rst::Raster* te::gdal::Raster::transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m) const
 {
 // if raster out is forced to be on memory, use other implementation
   std::map<std::string, std::string>::const_iterator it = rinfo.find("USE_TERRALIB_REPROJECTION");

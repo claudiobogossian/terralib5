@@ -512,7 +512,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual Raster* transform(int srid, const std::map<std::string, std::string>& rinfo, int m = 1);
+        virtual Raster* transform(int srid, const std::map<std::string, std::string>& rinfo, int m = 1) const;
 
         /*!
           \brief Reprojects a squared portion of this raster to a distinct SRS.
@@ -532,7 +532,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual Raster* transform(int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& rinfo, int m = 1);
+        virtual Raster* transform(int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& rinfo, int m = 1) const;
 
         /*!
           \brief Reprojects a squared portion of this raster to another SRS with a desired resolution.
@@ -554,7 +554,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual Raster* transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m = 1);
+        virtual Raster* transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m = 1) const;
 
         /*!
           \brief Vectorizes a given raster band, using GDALPolygonize function.

@@ -547,17 +547,17 @@ double te::rst::Raster::applyScale(int i, const double& v)
   return (v * -i);
 }
 
-te::rst::Raster* te::rst::Raster::transform(int srid, const std::map<std::string, std::string>& rinfo, int m)
+te::rst::Raster* te::rst::Raster::transform(int srid, const std::map<std::string, std::string>& rinfo, int m) const
 {
   return this->transform(srid, 1, 1, -1, -1, 0, 0, rinfo, m);
 }
 
-te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& rinfo, int m)
+te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& rinfo, int m) const
 {
   return this->transform(srid, llx, lly, urx, ury, 0, 0, rinfo, m);
 }
 
-te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m)
+te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m) const
 {
   return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, rinfo, m);
 }
