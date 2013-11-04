@@ -61,7 +61,7 @@ namespace te
       const std::vector< double >& pixelScales2,
       te::gm::Polygon const * const r1ValidDataPolygonPtr,
       te::gm::Polygon const * const r2ValidDataPolygonPtr,
-      te::gm::GeometricTransformation const * const geomTransformationPtr,
+      const te::gm::GeometricTransformation& geomTransformation,
       const bool raster1HasPrecedence )
     {
       TERP_TRUE_OR_RETURN_FALSE( 
@@ -86,8 +86,7 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( ( r2ValidDataPolygonPtr ?
         ( r2ValidDataPolygonPtr->getNumRings() > 0 ) : true ),
         "Invalid polygon 2" )
-      TERP_TRUE_OR_RETURN_FALSE( ( geomTransformationPtr ? 
-        geomTransformationPtr->isValid() : true ),
+      TERP_TRUE_OR_RETURN_FALSE( geomTransformation.isValid(),
         "Invalid transformation" );
         
       clear();
@@ -116,9 +115,6 @@ namespace te
         
       m_raster1Ptr = &raster1;
       m_raster2Ptr = &raster2;
-      
-      m_grid1Ptr = raster1.getGrid();
-      m_grid2Ptr = raster2.getGrid();
       
       // converting polygons from world cooods to indexed ones
       
@@ -224,8 +220,7 @@ namespace te
         
       // defining the geometric transformation  
         
-      if( geomTransformationPtr )
-        m_geomTransformationPtr = geomTransformationPtr->clone();
+      m_geomTransformationPtr = geomTransformation.clone();
       
       // defining the interpolators
       
@@ -275,24 +270,6 @@ namespace te
       m_pixelOffsets2 = pixelOffsets2;
       m_pixelScales2 = pixelScales2;
       
-      // reprojection issues
-      
-      if( geomTransformationPtr == 0 )
-      {
-        TERP_TRUE_OR_RETURN_FALSE( raster1.getSRID() >= 0,
-          "Invalid raster 1 SRID" )
-        
-        TERP_TRUE_OR_RETURN_FALSE( raster2.getSRID() >= 0,
-          "Invalid raster 2 SRID" )
-          
-        if( raster1.getSRID() != raster2.getSRID() )
-        {
-          m_rastersHaveDifSRS = true;
-          m_convInstance.setSourceSRID( raster1.getSRID() );
-          m_convInstance.setTargetSRID( raster2.getSRID() );
-        }
-      }
-      
       return true;
     }
     
@@ -302,15 +279,12 @@ namespace te
       m_blendFuncPtr = 0;
       m_raster1Ptr = 0;
       m_raster2Ptr = 0;
-      m_grid1Ptr = 0;
-      m_grid2Ptr = 0;
       m_r1ValidDataPolygonPtr = 0;
       m_r2ValidDataPolygonPtr = 0;
       m_geomTransformationPtr = 0;
       m_interpMethod1 = te::rst::Interpolator::NearestNeighbor;
       m_interpMethod2 = te::rst::Interpolator::NearestNeighbor;
       m_outputNoDataValue = 0;
-      m_rastersHaveDifSRS = false;
       m_interp1 = 0;
       m_interp2 = 0;      
     };    
@@ -337,39 +311,12 @@ namespace te
     void Blender::noBlendMethodImp( const double& line, const double& col,
       std::vector< double >& values )
     {
-      TERP_DEBUG_TRUE_OR_THROW( m_r1ValidDataPolygonPtr, "Invalid m_r1ValidDataPolygonPtr pointer" );
-      TERP_DEBUG_TRUE_OR_THROW( m_r2ValidDataPolygonPtr, "Invalid m_r2ValidDataPolygonPtr pointer" );
       TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
       
       // Finding the point over the second raster
       
-      if( m_geomTransformationPtr )
-      {
-        m_geomTransformationPtr->directMap( col, line, m_noBlendMethodImp_Point2Col,
-          m_noBlendMethodImp_Point2Line );
-      }
-      else
-      {
-        m_grid1Ptr->gridToGeo( col, line, m_noBlendMethodImp_Point1XProj1,
-            m_noBlendMethodImp_Point1YProj1 );
-          
-        if( m_rastersHaveDifSRS )
-        {
-          m_convInstance.convert( m_noBlendMethodImp_Point1XProj1,
-            m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point1XProj2,
-            m_noBlendMethodImp_Point1YProj2 );
-            
-          m_grid2Ptr->geoToGrid( m_noBlendMethodImp_Point1XProj2,
-            m_noBlendMethodImp_Point1YProj2, m_noBlendMethodImp_Point2Col,
-            m_noBlendMethodImp_Point2Line );
-        }
-        else
-        {
-          m_raster2Ptr->getGrid()->geoToGrid(m_noBlendMethodImp_Point1XProj1,
-            m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point2Col,
-            m_noBlendMethodImp_Point2Line );
-        }
-      }
+      m_geomTransformationPtr->directMap( col, line, m_noBlendMethodImp_Point2Col,
+        m_noBlendMethodImp_Point2Line );
       
       // Blending values
       
