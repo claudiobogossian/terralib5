@@ -796,7 +796,7 @@ namespace te
                 currentRasterBandsScales,
                 mosaicBBoxesUnionElementPtr,
                 0,
-                eachRasterPixelToMosaicRasterPixelGeomTransfms[ inputRasterIdx - 1 ].get(),
+                *( eachRasterPixelToMosaicRasterPixelGeomTransfms[ inputRasterIdx - 1 ] ),
                 true ), 
                 "Blender initiazing error" );
                   
