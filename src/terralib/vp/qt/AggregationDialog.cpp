@@ -114,8 +114,10 @@ void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
   while(it != m_layers.end())
-  {  
-    m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+    if(dsType->hasGeom())
+      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
 }
