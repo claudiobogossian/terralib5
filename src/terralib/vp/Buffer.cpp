@@ -25,6 +25,7 @@
 
 //Terralib
 #include "../common/Translator.h"
+#include "../common/progress/TaskProgress.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -253,6 +254,10 @@ bool BufferMemory(const std::string& inDataSetName,
   int type;
   int pk = 0;
 
+  te::common::TaskProgress task("Processing buffer...");
+  task.setTotalSteps(inputDataSet->size());
+  task.useTimer(true);
+
   inputDataSet->moveBeforeFirst();
   while(inputDataSet->moveNext())
   {
@@ -325,6 +330,8 @@ bool BufferMemory(const std::string& inDataSetName,
       }
     }
     delete auxGeom;
+
+    task.pulse();
   }
 
   if(bufferBoundariesRule == te::vp::DISSOLVE)
