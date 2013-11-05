@@ -450,7 +450,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
   }
 
   capabilities.setDataTypeCapabilities(dtc);
-    
+
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // DataTypeCapabilities
 
   xmlReader->next();
@@ -458,16 +458,26 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
   assert(xmlReader->getElementLocalName() == "QueryCapabilities");
 
   te::da::QueryCapabilities qc;
-  
+
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
   assert(xmlReader->getElementLocalName() == "SQLDialect");
   
   xmlReader->next();
   qc.setSupportSQLDialect(xmlReader->getElementValueAsBoolean());  
-  
+
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SQLDialect
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader->getElementLocalName() == "SpatialSQLDialect");
+
+  xmlReader->next();
+  qc.setSupportSpatialSQLDialect(xmlReader->getElementValueAsBoolean());  
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SpatialSQLDialect
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
@@ -1111,42 +1121,6 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // EfficientSize
 
   xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
-  assert(xmlReader->getElementLocalName() == "Insertion");
-
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::VALUE);
-
-  //dsetc.setSupportInsertion(xmlReader->getElementValueAsBoolean());
-
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // Insertion
-
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
-  assert(xmlReader->getElementLocalName() == "Update");
-
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::VALUE);
-
-  //dsetc.setSupportUpdate(xmlReader->getElementValueAsBoolean());
-
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // Update
-
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
-  assert(xmlReader->getElementLocalName() == "Deletion");
-
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::VALUE);
-
-  //dsetc.setSupportDeletion(xmlReader->getElementValueAsBoolean());
-
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // Deletion
-
-  xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // DataSetCapabilities
 
   capabilities.setDataSetCapabilities(dsetc);
@@ -1262,18 +1236,6 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SupportBatchExecutorAPI
-  
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
-  assert(xmlReader->getElementLocalName() == "SupportSpatialOperators");
-
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::VALUE);
-
-  //capabilities.setSupportSpatialOperators(xmlReader->getElementValueAsBoolean());
-
-  xmlReader->next();
-  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SupportSpatialOperators
 
   xmlReader->next();
   
