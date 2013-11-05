@@ -31,6 +31,7 @@
 #include "Config.h"
 
 // Qt
+#include <QObject>
 #include <QtGui/QMenu>
 
 namespace te
@@ -43,8 +44,10 @@ namespace te
       {
         class TL4ConverterAction;
 
-        class Plugin : public te::plugin::Plugin
+        class Plugin : public QObject, public te::plugin::Plugin
         {
+          Q_OBJECT
+
           public:
 
             Plugin(const te::plugin::PluginInfo& pluginInfo);
@@ -55,25 +58,13 @@ namespace te
 
             void shutdown();
 
-          protected:
+          protected slots:
 
-            /*!
-              \brief ????
-
-            */
-            void registerActions();
-
-            /*!
-              \brief F::::
-
-            */
-            void unRegisterActions();
+            void showWindow();
 
           protected:
 
-            QMenu* m_terralib4Menu;                                    //!< TERRALIB4 Main Menu registered.
-
-            te::qt::plugins::terralib4::TL4ConverterAction* m_converter;    //!< 
+            QAction* m_showWindow;
 
         };
 
