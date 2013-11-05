@@ -53,7 +53,7 @@
 
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
-    m_hasRaster(false),
+    m_hasRaster(true),
     m_hasOnlyRaster(false),
     m_ui(new Ui::TL4ConverterWizardForm)
 {

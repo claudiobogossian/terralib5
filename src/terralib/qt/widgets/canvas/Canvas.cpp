@@ -701,8 +701,8 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
 
       m_painter.drawPath(path);
     }
-    if(m_polyColor.alpha() != 0)
-    {
+   // if(m_polyColor.alpha() != 0)
+   // {
       QBrush brush(m_polyColor);
       m_painter.setBrush(brush);
 
@@ -712,7 +712,7 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
         m_painter.setPen(m_polyContourPen);
 
       m_painter.drawPath(path);
-    }
+   // }
 
     // draw contour
     if(m_polyContourPen.brush().style() == Qt::TexturePattern)
