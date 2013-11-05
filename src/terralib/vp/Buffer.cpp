@@ -230,7 +230,7 @@ te::da::DataSetType* GetDataSetType(const std::string& inDatasetName,
   te::gm::GeometryProperty* p = static_cast<te::gm::GeometryProperty*>(te::da::GetFirstGeomProperty(inputDataSetType.get()));
 
   te::gm::GeometryProperty* geometry = new te::gm::GeometryProperty("geom");
-  geometry->setGeometryType(te::gm::GeometryType);
+  geometry->setGeometryType(te::gm::MultiPolygonType);
   geometry->setSRID(p->getSRID());
   dsType->add(geometry);
 

@@ -67,6 +67,7 @@ te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent, Qt::WindowFlags f
   connect(m_treeView, SIGNAL(visibilityChanged(const te::map::AbstractLayerPtr&)), SLOT(onVisibilityChanged(const te::map::AbstractLayerPtr&)));
   connect(m_treeView, SIGNAL(doubleClicked(te::qt::widgets::AbstractTreeItem*)), SLOT(onItemDoubleClicked(te::qt::widgets::AbstractTreeItem*)));
   connect(m_treeModel, SIGNAL(visibilityChanged(const te::map::AbstractLayerPtr&)), SLOT(onVisibilityChanged(const te::map::AbstractLayerPtr&)));
+  //connect(m_treeModel, SIGNAL(expandItem(te::qt::widgets::AbstractTreeItem*)), SLOT(expand(te::qt::widgets::AbstractTreeItem*)));
   connect(m_treeModel, SIGNAL(layerOrderChanged()), SLOT(onLayerOrderChanged()));
 }
 

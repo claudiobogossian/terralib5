@@ -24,6 +24,7 @@
 */
 
 //Terralib
+#include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "DataPropertiesDialog.h"
 #include "DataPropertiesWidget.h"
 #include "ui_DataPropertiesDialogForm.h"
@@ -58,6 +59,11 @@ void te::qt::widgets::DataPropertiesDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::DataPropertiesDialog::onOkPushButtonClicked()
 {
-  m_dataPropertiesWidget->getAdapter();
+  m_datasetAdapter = m_dataPropertiesWidget->getAdapter();
   this->accept();
 }
+
+//te::map::DataSetAdapterLayerPtr te::qt::widgets::DataPropertiesDialog::getTextualLayer()
+//{
+//  return m_dataSetLayer;
+//}

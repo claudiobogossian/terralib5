@@ -87,8 +87,10 @@ void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
   while(it != m_layers.end())
-  {  
-    m_ui->m_firstLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+    if(dsType->hasGeom())
+      m_ui->m_firstLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
 }
@@ -108,7 +110,9 @@ void te::vp::IntersectionDialog::onFirstLayerComboBoxChanged(int index)
   {
     if(layerID != it->get()->getId().c_str())
     {
-      m_ui->m_secondLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+      if(dsType->hasGeom())
+        m_ui->m_secondLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     }
     else
     {

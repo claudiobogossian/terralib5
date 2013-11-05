@@ -25,15 +25,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4.5356598"
-     inkscape:cx="26.24147"
+     inkscape:cx="-42.546758"
      inkscape:cy="22.222757"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:grid-bbox="true"
      inkscape:document-units="px"
-     inkscape:window-width="1360"
-     inkscape:window-height="706"
-     inkscape:window-x="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     inkscape:window-x="1358"
      inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
@@ -53,7 +53,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
     <rect
-       style="fill:#ff0000;fill-opacity:0.21164018;fill-rule:nonzero;stroke:#000000;stroke-width:0.88833767;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#99b7d5;fill-opacity:0.7019608;fill-rule:nonzero;stroke:#000000;stroke-width:0.88833766999999986;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect4196"
        width="68.010307"
        height="26.430061"
@@ -62,7 +62,7 @@
        rx="14.199171"
        ry="12.823922" />
     <path
-       style="fill:#ff0000;fill-opacity:0.21176471;fill-rule:nonzero;stroke:#000000;stroke-width:0.77464694;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#99b7d5;fill-opacity:0.7019608;fill-rule:nonzero;stroke:#000000;stroke-width:0.77464694000000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        d="M 71.71875,0.15625 C 70.881004,0.1385441 70.0159,0.1924674 69.15625,0.34375 L 40.1875,5.46875 C 37.991278,5.5230409 35.77757,6.1220931 33.75,7.375 L 6.96875,23.90625 C 1.028495,27.576942 -0.879682,35.196004 2.6875,40.96875 6.254682,46.741496 13.903495,48.420692 19.84375,44.75 l 24.5625,-15.15625 29,-5.09375 C 80.283449,23.289739 84.863633,16.93327 83.6875,10.25 82.658383,4.4021386 77.582973,0.28019148 71.71875,0.15625 z"
        id="rect3018"
        inkscape:connector-curvature="0" />

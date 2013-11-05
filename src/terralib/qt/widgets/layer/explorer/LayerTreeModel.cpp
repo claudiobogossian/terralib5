@@ -85,6 +85,11 @@ const std::vector<te::map::AbstractLayerPtr>& te::qt::widgets::LayerTreeModel::g
   return m_layers;
 }
 
+const std::vector<te::qt::widgets::AbstractTreeItem*>& te::qt::widgets::LayerTreeModel::getTopLayerItems() const
+{
+  return m_items;
+}
+
 bool te::qt::widgets::LayerTreeModel::canFetchMore(const QModelIndex& parent) const
 {
   if(!parent.isValid())
@@ -330,13 +335,12 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
   qulonglong dataValue = sitem.toULongLong();
 
   // Get the layer items that were dragged
-  std::vector<te::map::AbstractLayerPtr> draggedLayers;
-
   std::vector<AbstractTreeItem*>* draggedItems = reinterpret_cast<std::vector<AbstractTreeItem*>*>(dataValue);
   int count = draggedItems->size();
 
+  m_insertingLayers.clear();
   for(int i = 0; i < count; ++i)
-    draggedLayers.push_back(draggedItems->operator[](i)->getLayer());
+    m_insertingLayers.push_back(draggedItems->operator[](i)->getLayer());
 
   // Get the drop item and its associated layer
   QModelIndex dropIndex = parent; 
@@ -358,10 +362,12 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
   int insertingRow;
   QModelIndex insertingItemParentIndex;
 
-  removeLayerFromParentChildrenList(draggedLayers);
+  removeLayerFromParentChildrenList(m_insertingLayers);
 
   // Check if the drop item is a folder item and if it has no children; in that case,
   // the dragged items will be made children of this folder item
+  //bool folderItemWasEmpty = false;
+
   if(row < 0 && dropItem && dropLayer.get() &&
      dropLayer->getType() == "FOLDERLAYER" &&
      dropLayer->hasChildren() == false)
@@ -371,7 +377,9 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
 
     // Insert the dragged layers into its new parent
     for(int i = 0; i < count; ++i)
-      dropLayer->insert(i, draggedLayers[i]);
+      dropLayer->insert(i, m_insertingLayers[i]);
+
+    //folderItemWasEmpty = true;
   }
   else
   {
@@ -390,8 +398,16 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
           insertingRow = dropIndex.row();  // The item was dropped exactly on a top level item
 
         // Insert the dragged layers into its new parent
-        for(int i = 0; i < count; ++i)
-          m_layers.insert(m_layers.begin() + insertingRow + i, draggedLayers[i]);
+        if(insertingRow >= (int)m_layers.size())
+        {
+          for(int i = 0; i < count; ++i)
+            m_layers.push_back(m_insertingLayers[i]);
+        }
+        else
+        {
+          for(int i = 0; i < count; ++i)
+            m_layers.insert(m_layers.begin() + insertingRow + i, m_insertingLayers[i]);
+        }
       }
       else
       {
@@ -402,7 +418,7 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
         // Insert the dragged layers into its new parent
         int k = insertingRow;
         for(int i = 0; i < count; ++i, ++k)
-          dropParentLayer->insert(k, draggedLayers[i]);
+          dropParentLayer->insert(k, m_insertingLayers[i]);
       }
     }   //end of row < 0
     else
@@ -414,11 +430,15 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
 
       // Insert the dragged layers into its new parent
       for(int i = 0; i < count; ++i)
-        m_layers.insert(m_layers.begin() + insertingRow + i, draggedLayers[i]);
+        m_layers.insert(m_layers.begin() + insertingRow + i, m_insertingLayers[i]);
     } // end of row >= 0
   }
 
   bool ret = insertRows(insertingRow, count, insertingItemParentIndex);
+
+  // If the dropped item is a folder item that was empty emit a signal for expand it.
+  //if(folderItemWasEmpty)
+  //  emit expandItem(dropItem);
 
   // Emit a signal to indicate that the order of the layers were changed inside the tree
   if(ret)
@@ -430,36 +450,27 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
 bool te::qt::widgets::LayerTreeModel::insertRows(int row, int count, const QModelIndex& parent)
 {
   AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(parent.internalPointer());
-  std::vector<AbstractTreeItem*> insertingItems;
-
-  // Get the layers that will be associated to the items that will be inserted
-  std::vector<te::map::AbstractLayerPtr> layers;
-
-  if(!parentItem)
-  {
-    for(int i = row; i < row + count; ++i)
-      layers.push_back(m_layers[i]);
-  }
-  else
-  {
-    te::map::AbstractLayerPtr parentLayer = parentItem->getLayer();
-
-    for(int i = row; i < row + count; ++i)
-    {
-      te::map::AbstractLayerPtr layer = static_cast<te::map::AbstractLayer*>(parentLayer->getChild(i).get());
-      layers.push_back(layer);
-    }
-  }
 
   beginInsertRows(parent, row, row + count - 1);
 
-  int k = 0;
   if(!parentItem)
   {
-    for(int i = row; i < row + count; ++i, ++k)
+    if(row == m_items.size())
     {
-      AbstractTreeItem* newItem = AbstractTreeItemFactory::make(layers[k], 0);
-      m_items.insert(m_items.begin() + i, newItem);
+      for(int i = 0; i < count; ++i)
+      {
+        AbstractTreeItem* newItem = AbstractTreeItemFactory::make(m_insertingLayers[i], 0);
+        m_items.push_back(newItem);
+      }
+    }
+    else
+    {
+      int k = 0;
+      for(int i = row; i < row + count; ++i, ++k)
+      {
+        AbstractTreeItem* newItem = AbstractTreeItemFactory::make(m_insertingLayers[k], 0);
+        m_items.insert(m_items.begin() + i, newItem);
+      }
     }
   }
   else
@@ -472,9 +483,10 @@ bool te::qt::widgets::LayerTreeModel::insertRows(int row, int count, const QMode
      savedItemsList.at(i)->setParent(0);
 
     // Insert the items into the list
+    int k = 0;
     for(int i = row; i < row + count; ++i, ++k)
     {
-      AbstractTreeItem* newItem = AbstractTreeItemFactory::make(layers[k], 0);
+      AbstractTreeItem* newItem = AbstractTreeItemFactory::make(m_insertingLayers[k], 0);
       savedItemsList.insert(i, newItem);
     }
 
@@ -486,7 +498,7 @@ bool te::qt::widgets::LayerTreeModel::insertRows(int row, int count, const QMode
   endInsertRows();
 
   // Adjust the visibility of the ancestors that are folder layers of the inserted items
-  layers[0]->updateVisibilityOfAncestors();
+  m_insertingLayers[0]->updateVisibilityOfAncestors();
   emitDataChangedForAncestors(parent);
 
   return true;
@@ -587,6 +599,9 @@ void te::qt::widgets::LayerTreeModel::add(const te::map::AbstractLayerPtr& layer
   std::size_t row = m_layers.size();
   m_layers.push_back(layer);
 
+  m_insertingLayers.clear();
+  m_insertingLayers.push_back(layer);
+
   insertRows(row, 1, QModelIndex());
 }
 
@@ -621,7 +636,7 @@ bool te::qt::widgets::LayerTreeModel::remove(AbstractTreeItem* item)
   }
   else if(item->getType() == te::qt::widgets::AbstractTreeItem::GROUPINGTREEITEM)
   {
-    // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
+    // If the item is a group item, remove the grouping from the layer associated to the parent of this group item.
     parentItem->getLayer()->setGrouping(0);
   }
   else if(item->getType() == te::qt::widgets::AbstractTreeItem::CHARTITEM)
