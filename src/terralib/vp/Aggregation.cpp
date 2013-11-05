@@ -131,7 +131,7 @@ bool te::vp::Aggregation(const std::string& inDataset,
   
   // execute the strategy
   bool res;
-  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
+  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
   {
     res = AggregationQuery(inDataset, inDatasource, groupingProperties, statisticalSummary, memDataset.get(),outGeoType);
   }

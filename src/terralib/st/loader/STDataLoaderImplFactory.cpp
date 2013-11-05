@@ -46,20 +46,11 @@ te::st::STDataLoaderImpl* te::st::STDataLoaderImplFactory::make(const std::strin
   
   std::string loaderType = te::st::Globals::sm_loaderFromMemDSIdentifier; 
 
-  const te::da::DataSourceCapabilities& cpb = ds->getCapabilities();
-  if(cpb.supportsSpatialOperators())
+  //TO DO: olhar o capabilities do Query - spatial and temporal.
+  const te::da::QueryCapabilities& qcpb = ds->getCapabilities().getQueryCapabilities(); 
+  if(qcpb.supportsSpatialSQLDialect())
     loaderType = te::st::Globals::sm_loaderFromDSIdentifier;
-    
-  //TO DO:olhar o capabilities do Query - spatial and temporal.
-  /*
-  const te::da::QueryCapabilities& cpb = ds->getCapabilities().getQueryCapabilities(); 
-  
-  //Rever esse capabilites!!!!! Ter um flag pra indicar
-  //se o data source aceita spatial SQL também
-  if(cpb.supportsSQLDialect())
-    loaderType = "DATASOURCELOADER";
-  */
-
+      
   return te::common::AbstractFactory<STDataLoaderImpl, std::string>::make(loaderType);
 }
 
