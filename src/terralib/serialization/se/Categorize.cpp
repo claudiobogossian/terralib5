@@ -65,7 +65,7 @@ te::se::Categorize* te::serialize::ReadCategorize(te::xml::Reader& reader)
   // Value
   assert(reader.getElementLocalName() == "Value");
   reader.next();
-  c->setValue(ReadParameterValue(reader));
+  c->addValue(ReadParameterValue(reader));
 
   // Threshold + Value
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
