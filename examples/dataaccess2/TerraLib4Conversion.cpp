@@ -2,7 +2,6 @@
 #include "DataAccessExamples.h"
 
 #include <terralib/dataaccess.h>
-#include <terralib/dataaccess/dataset/DataSetTypeConverter.h>
 
 void TerraLib4Converter()
 {

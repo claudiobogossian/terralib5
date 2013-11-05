@@ -21,6 +21,7 @@
   </DataTypeCapabilities>
   <QueryCapabilities>
     <SQLDialect>true</SQLDialect>
+	<SpatialSQLDialect>false</SpatialSQLDialect>
     <Insert>true</Insert>
     <Update>true</Update>
     <Delete>true</Delete>
@@ -127,9 +128,6 @@
     <EfficientMoveAfterLast>false</EfficientMoveAfterLast>
     <EfficientMove>false</EfficientMove>
     <EfficientSize>false</EfficientSize>
-    <Insertion>true</Insertion>
-    <Update>true</Update>
-    <Deletion>true</Deletion>
   </DataSetCapabilities>
   <SpecificCapabilities>  
   </SpecificCapabilities>
@@ -139,5 +137,4 @@
   <SupportDataSetTypePesistenceAPI>true</SupportDataSetTypePesistenceAPI>
   <SupportPreparedQueryAPI>true</SupportPreparedQueryAPI>
   <SupportBatchExecutorAPI>true</SupportBatchExecutorAPI>
-  <SupportSpatialOperators>false</SupportSpatialOperators>
 </DataSourceCapabilities>

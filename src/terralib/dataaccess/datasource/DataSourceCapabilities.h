@@ -82,10 +82,6 @@ namespace te
 
         void setSupportPreparedQueryAPI(const bool& support);
 
-        bool supportsSpatialOperators() const;
-
-        void setSupportSpatialOperators(const bool& support);
-
         bool supportsBatchExecutorAPI() const;
 
         void setSupportBatchExecutorAPI(const bool& support);
@@ -120,8 +116,7 @@ namespace te
         bool m_supportDataSetTypePesistenceAPI;  //!< A flag that indicates if the data source supports the DataSetTypePersistence API.
         bool m_supportPreparedQueryAPI;          //!< A flag that indicates if the data source supports the PreparedQuery API.
         bool m_supportBatchExecutorAPI;          //!< A flag that indicates if the data source supports the BatchExecutor API.
-        bool m_supportSpatialOperators;          //!< A flag that indicates if the data source supports the SpatialOperators.
-
+        
         DataTypeCapabilities m_dataTypeCapabilities;       //!< The DataType Capabilities.
         DataSetTypeCapabilities m_dataSetTypeCapabilities; //!< The DataSetType Capabilities.
         DataSetCapabilities m_dataSetCapabilities;         //!< The DataSet Capabilities.

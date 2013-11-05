@@ -131,7 +131,9 @@ bool te::vp::Intersection(const std::string& inFirstDataSetName,
   const te::da::DataSourceCapabilities secondDSCapabilities = inSecondDataSource->getCapabilities();
 
   bool res;
-  if(firstDSCapabilities.supportsSpatialOperators() && secondDSCapabilities.supportsSpatialOperators() && (inFirstDataSource->getId() == inSecondDataSource->getId()))
+  if( firstDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+      secondDSCapabilities.getQueryCapabilities().supportsSpatialSQLDialect() && 
+      (inFirstDataSource->getId() == inSecondDataSource->getId()))
   {
     res = IntersectionQuery(inFirstDataSetName,
                             inSecondDataSetName,
