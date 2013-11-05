@@ -207,19 +207,21 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& q,
                                       te::common::TraverseType travType,
-                                      bool connected)
+                                      bool connected,
+                                      const te::common::AccessPolicy accessPolicy)
 {
   std::string sql;
 
   SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
   q.accept(visitor);
 
-  return query(sql, travType);
+  return query(sql, travType,connected,accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& query,
                                       te::common::TraverseType travType,
-                                      bool connected)
+                                      bool connected,
+                                      const te::common::AccessPolicy)
 {
   _RecordsetPtr result = m_conn->query(query, connected);
 
