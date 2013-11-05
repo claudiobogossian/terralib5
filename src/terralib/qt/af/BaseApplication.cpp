@@ -564,6 +564,29 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
   ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
 }
 
+void te::qt::af::BaseApplication::onRenameItemTriggered()
+{
+  bool ok;
+  QString text = QInputDialog::getText(this, ApplicationController::getInstance().getAppTitle(),
+                                      tr("Rename Item:"), QLineEdit::Normal,
+                                      tr("Insert name"), &ok);
+
+  if (!ok)
+    return;
+
+  if(text.isEmpty())
+  {
+    QMessageBox::warning(this, ApplicationController::getInstance().getAppTitle(), tr("Enter the new name!"));
+    return;
+  }
+
+  std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedItems();
+  te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
+  te::map::AbstractLayerPtr layer = selectedLayerItem->getLayer();
+  layer->setTitle(text.toStdString());
+
+}
+
 void te::qt::af::BaseApplication::onPluginsManagerTriggered()
 {
   try
@@ -1679,6 +1702,7 @@ void te::qt::af::BaseApplication::makeDialog()
   //project
   treeView->add(m_projectNewFolder, "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
   treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED);
+  treeView->add(m_projectRenameItem, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   QAction* actEnd = new QAction(this);
   actEnd->setSeparator(true);
@@ -1873,6 +1897,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectRemoveFolder, "folder-remove", "Project.Remove Folder", tr("Remove &Folder(s)"), tr("Remove folder from the project"), true, false, true, this);
   initAction(m_projectRemoveChart, "chart-pie-remove", "Project.Remove Chart", tr("Remove Chart"), tr("Remove chart from the project"), true, false, true, this);
   initAction(m_projectRemoveClassification, "grouping-remove", "Project.Remove Classification", tr("Remove Classification"), tr("Remove classification from the project"), true, false, true, this);
+  initAction(m_projectRenameItem, "item-rename", "Project.Rename Item", tr("Rename..."), tr("Rename item"), true, false, true, this);
   initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
@@ -2213,6 +2238,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_projectRemoveClassification, SIGNAL(triggered()), SLOT(onRemoveClassificationTriggered()));
   connect(m_projectRemoveFolder, SIGNAL(triggered()), SLOT(onRemoveFolderTriggered()));
   connect(m_projectRemoveLayer, SIGNAL(triggered()), SLOT(onRemoveLayerTriggered()));
+  connect(m_projectRenameItem, SIGNAL(triggered()), SLOT(onRenameItemTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
   connect(m_fileNewProject, SIGNAL(triggered()), SLOT(onNewProjectTriggered()));
