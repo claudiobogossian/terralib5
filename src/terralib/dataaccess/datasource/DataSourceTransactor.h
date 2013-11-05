@@ -279,12 +279,14 @@ namespace te
           \param q          A valid query object.
           \param travType   The traverse type associated to the returned dataset. 
           \param connected  A flag to indicate if the returned dataset is connected or not.
+          \param accessPolicy  Access policy.
 
           \note Not thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const Select& q,
                                              te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                             bool connected = false) = 0;
+                                             bool connected = false,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess) = 0;
 
         /*!
           \brief It executes a query that may return some data using the data source native language.
@@ -297,6 +299,7 @@ namespace te
           \param query     A query string in the data source native language.
           \param travType  The traverse type associated to the returned dataset.
           \param connected  A flag to indicate if the returned dataset is connected or not.
+          \param accessPolicy  Access policy.
 
           \exception Exception It can throw an exception if:
                      <ul>
@@ -310,7 +313,8 @@ namespace te
         */
         virtual std::auto_ptr<DataSet> query(const std::string& query,
                                              te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                             bool connected = false) = 0;
+                                             bool connected = false,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess) = 0;
         //@}
     
         /** @name Command Execution Methods

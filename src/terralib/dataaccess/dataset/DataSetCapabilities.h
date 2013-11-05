@@ -86,18 +86,6 @@ namespace te
 
         void setSupportEfficientDataSetSize(const bool& support);
 
-        bool supportsInsertion() const;
-
-        void setSupportInsertion(const bool& support);
-
-        bool supportsUpdate() const;
-
-        void setSupportUpdate(const bool& support);
-
-        bool supportsDeletion() const;
-
-        void setSupportDeletion(const bool& support);
-
         void setSupportAll();
 
       private:
@@ -111,10 +99,7 @@ namespace te
         bool m_efficientMoveAfterLast;   //!< A flag that indicates if the performance of move after last operation has no penality.
         bool m_efficientMove;            //!< A flag that indicates if the performance of move operation has no penality.
         bool m_efficientSize;            //!< A flag that indicates if the performance of getting data set size operation has no penality.
-        bool m_insertion;                //!< A flag that indicates if the data set API allows one to add new items.
-        bool m_update;                   //!< A flag that indicates if the data set API allows one to update items.
-        bool m_deletion;                 //!< A flag that indicates if the data set API allows one to erase items.
-    };
+     };
 
   } // end namespace da
 }   // end namespace te
