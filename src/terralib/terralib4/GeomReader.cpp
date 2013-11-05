@@ -44,13 +44,15 @@
 
 std::auto_ptr<te::gm::Point> terralib4::GeomReader::getPoint(const TePoint& pt)
 {
-  std::auto_ptr<te::gm::Point> geom(new te::gm::Point(pt.box().x1(), pt.box().y1(), pt.srid()));
+  std::auto_ptr<te::gm::Point> geom(new te::gm::Point(pt.srid()));
+  geom->setX(pt.box().x1());
+  geom->setY(pt.box().y1());
   return geom;
 }
 
 std::auto_ptr<te::gm::LineString> terralib4::GeomReader::getLineString(const TeLine2D& line)
 {
-  std::auto_ptr<te::gm::LineString> geom(new te::gm::LineString(te::gm::LineStringType, line.srid()));
+  std::auto_ptr<te::gm::LineString> geom(new te::gm::LineString(line.size(), te::gm::LineStringType, line.srid()));
 
   TeComposite<TeCoord2D>::iterator it = line.begin();
 

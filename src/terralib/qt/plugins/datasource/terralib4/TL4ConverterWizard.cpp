@@ -24,6 +24,8 @@
 */
 
 // TerraLib
+#include "../../../../common/Translator.h"
+#include "../../../../common/progress/TaskProgress.h"
 #include "../../../../dataaccess.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
@@ -46,6 +48,7 @@
 
 // Qt
 #include <QtGui/QAbstractButton>
+#include <QtGui/QCursor>
 #include <QtGui/QMessageBox>
 #include <QtGui/QVBoxLayout>
 
@@ -203,11 +206,19 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext
 
   if(!m_hasRaster)
   {
+    QWizard::next();
+
     std::auto_ptr<te::da::DataSource> tl5Database(te::da::DataSourceFactory::make(m_targetDataSource->getType()));
     tl5Database->setConnectionInfo(m_targetDataSource->getConnInfo());
     tl5Database->open();
 
     std::vector<std::string> dsNames = m_layerSelectionPage->getChecked();
+
+    te::common::TaskProgress task(TR_COMMON("Converting..."));
+    task.setTotalSteps(dsNames.size());
+
+    Qt::CursorShape shp = this->cursor().shape();
+    this->setCursor(Qt::WaitCursor);
 
     for(std::size_t i = 0; i < dsNames.size(); ++i)
     {
@@ -222,9 +233,12 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext
       std::map<std::string, std::string> op;
 
       te::da::Create(tl5Database.get(), dt_adapter->getResult(), ds_adapter.get(), op);
+
+      task.pulse();
     }
 
-    QWizard::next();
+    this->setCursor(shp);
+
   }
 }
 

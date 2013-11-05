@@ -59,8 +59,8 @@ std::vector<std::string> te::qt::plugins::terralib4::TL4LayerSelectionWizardPage
   std::vector<std::string> checked;
   for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
   {
-    if(m_ui->m_layersListWidget->itemAt(0, i)->checkState() == Qt::Checked)
-      checked.push_back(m_ui->m_layersListWidget->itemAt(0, i)->text().toStdString());
+    if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
+      checked.push_back(m_ui->m_layersListWidget->item(i)->text().toStdString());
   }
 
   return checked;
