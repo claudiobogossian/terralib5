@@ -170,7 +170,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
 
 std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& q,
                                       te::common::TraverseType /*travType*/, 
-                                      bool /*connected*/)
+                                      bool /*connected*/,
+                                      const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
@@ -200,7 +201,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& 
 
 std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& query,
                                       te::common::TraverseType /*travType*/, 
-                                      bool /*connected*/)
+                                      bool /*connected*/,
+                                      const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();

@@ -385,6 +385,7 @@ namespace te
 
           \param q         A valid query object.
           \param travType  The traverse type associated to the returned dataset. 
+          \param accessPolicy Access policy.
 
           \exception Exception It can throw an exception if:
                      <ul>
@@ -395,7 +396,8 @@ namespace te
           \note Thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         /*!
           \brief It executes a query that may return some data using the data source native language.
@@ -405,6 +407,7 @@ namespace te
 
           \param query    A query string in the data source native language.
           \param travType The traverse type associated to the returned dataset.
+          \param accessPolicy Access policy.
 
          \exception Exception It can throw an exception if:
                      <ul>
@@ -416,7 +419,8 @@ namespace te
           \note Thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const std::string& query, 
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
         //@}
 
         /** @name Command Execution Methods

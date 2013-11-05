@@ -96,16 +96,18 @@ std::auto_ptr<te::da::DataSet> te::da::DataSource::getDataSet(const std::string&
   return t->getDataSet(name, oids, travType, false, accessPolicy);
 }
 
-std::auto_ptr<te::da::DataSet> te::da::DataSource::query(const Select& q, te::common::TraverseType travType)
+std::auto_ptr<te::da::DataSet> te::da::DataSource::query(const Select& q, te::common::TraverseType travType,
+                                                         const te::common::AccessPolicy accessPolicy)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->query(q, travType, false);
+  return t->query(q, travType, false,accessPolicy);
 }
 
-std::auto_ptr<te::da::DataSet> te::da::DataSource::query(const std::string& query, te::common::TraverseType travType)
+std::auto_ptr<te::da::DataSet> te::da::DataSource::query(const std::string& query, te::common::TraverseType travType,
+                                                         const te::common::AccessPolicy accessPolicy)
 {
   std::auto_ptr<DataSourceTransactor> t = getTransactor();
-  return t->query(query, travType, false);
+  return t->query(query, travType, false,accessPolicy);
 }
 
 void te::da::DataSource::execute(const Query& command)
