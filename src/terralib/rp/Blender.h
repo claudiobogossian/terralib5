@@ -58,7 +58,8 @@ namespace te
         enum BlendMethod 
         {
           InvalidBlendMethod = 0, //!< Invalid blending method.
-          NoBlendMethod = 1 //!< No blending performed.
+          NoBlendMethod = 1, //!< No blending performed.
+          EuclideanDistanceMethod = 2 //!< Euclidean distance method.
         };        
         
         /*! Default constructor. */
@@ -85,7 +86,6 @@ namespace te
           \param r1ValidDataPolygonPtr A pointer to a polygon (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
           \param r2ValidDataPolygon A pointer to a polygon (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
           \param geomTransformation A transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 pixels ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns).
-          \param raster1HasPrecedence If true, raster 1 valid pixel values will have precedence over raster2  valid pixel values.
           \return true if ok, false on errors
         */
         bool initialize( 
@@ -104,8 +104,7 @@ namespace te
           const std::vector< double >& pixelScales2,
           te::gm::Polygon const * const r1ValidDataPolygonPtr,
           te::gm::Polygon const * const r2ValidDataPolygonPtr,
-          const te::gm::GeometricTransformation& geomTransformation,
-          const bool raster1HasPrecedence );
+          const te::gm::GeometricTransformation& geomTransformation );
         
         
         /*!
@@ -114,6 +113,7 @@ namespace te
           \param col Column (raster 1 reference).
           \param values Blended values for each band.
           \note The caller of this method must be aware that the returned blended value may be outside the original input rasters valid values range.
+          \note Raster 1 values have precedence over raster 2 values (when applicable).
         */
         inline void getBlendedValues( const double& line, const double& col, 
           std::vector< double >& values )
@@ -145,7 +145,6 @@ namespace te
         double m_outputNoDataValue; //!< The output raster no-data value.
         te::rst::Interpolator* m_interp1; //!< Raster 1 interpolator instance pointer.
         te::rst::Interpolator* m_interp2; //!< Raster 2 interpolator instance pointer.        
-        bool m_raster1HasPrecedence; //!< If true, raster 1 valid pixel values will have precedence over raster2  valid pixel values.
         std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
         std::vector< unsigned int > m_raster2Bands; //!< Input raster 2 band indexes to use.
         std::vector< double > m_pixelOffsets1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
@@ -166,6 +165,21 @@ namespace te
         double m_noBlendMethodImp_Value;
         unsigned int m_noBlendMethodImp_BandIdx;
         
+        // variables used by the euclideanDistanceMethodImp method
+        double m_euclideanDistanceMethodImp_Point1XProj1;
+        double m_euclideanDistanceMethodImp_Point1YProj1;
+        double m_euclideanDistanceMethodImpPoint1XProj2;
+        double m_euclideanDistanceMethodImp_Point1YProj2;
+        double m_euclideanDistanceMethodImp_Point2Line;
+        double m_euclideanDistanceMethodImp_Point2Col;        
+        std::complex< double > m_euclideanDistanceMethodImp_cValue1;
+        std::complex< double > m_euclideanDistanceMethodImp_cValue2;
+        unsigned int m_euclideanDistanceMethodImp_BandIdx;   
+        double m_euclideanDistanceMethodImp_dist1;
+        double m_euclideanDistanceMethodImp_dist2;
+        te::gm::Point m_euclideanDistanceMethodImp_point1;
+        te::gm::Point m_euclideanDistanceMethodImp_point2;
+        
         /*! \brief Reset the instance to its initial default state. */
         void initState();
         
@@ -181,6 +195,14 @@ namespace te
         void noBlendMethodImp( const double& line1, const double& col1,
           std::vector< double >& values );        
 
+        /*!
+          \brief Implementation for EuclideanDistanceMethod.
+          \param line Raster 1 Line.
+          \param col Raster 1 Column.
+          \param values Blended values for each band.
+        */
+        void euclideanDistanceMethodImp( const double& line1, const double& col1,
+          std::vector< double >& values );              
     };
 
   } // end namespace rp

@@ -61,8 +61,7 @@ namespace te
       const std::vector< double >& pixelScales2,
       te::gm::Polygon const * const r1ValidDataPolygonPtr,
       te::gm::Polygon const * const r2ValidDataPolygonPtr,
-      const te::gm::GeometricTransformation& geomTransformation,
-      const bool raster1HasPrecedence )
+      const te::gm::GeometricTransformation& geomTransformation )
     {
       TERP_TRUE_OR_RETURN_FALSE( 
         raster1.getAccessPolicy() & te::common::RAccess, 
@@ -102,6 +101,11 @@ namespace te
           m_blendFuncPtr = &te::rp::Blender::noBlendMethodImp;
           break;
         }
+        case EuclideanDistanceMethod :
+        {
+          m_blendFuncPtr = &te::rp::Blender::euclideanDistanceMethodImp;
+          break;
+        }        
         default :
         {
           return false;
@@ -111,8 +115,6 @@ namespace te
       
       // defining the input rasters
       
-      m_raster1HasPrecedence = raster1HasPrecedence;
-        
       m_raster1Ptr = &raster1;
       m_raster2Ptr = &raster2;
       
@@ -319,78 +321,147 @@ namespace te
         m_noBlendMethodImp_Point2Line );
       
       // Blending values
-      
-      if( m_raster1HasPrecedence )
+
+      for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
+        m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
       {
-        for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
-          m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
-        {
-          m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
-            m_raster1Bands[ m_noBlendMethodImp_BandIdx ] ); 
-          m_noBlendMethodImp_Value = m_noBlendMethodImp_cValue.real();      
-      
-          if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
-          {
-            m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
-              m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
-              m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );
-            m_noBlendMethodImp_Value =  m_noBlendMethodImp_cValue.real();          
-            
-            if( m_noBlendMethodImp_Value == m_raster2NoDataValues[ m_noBlendMethodImp_BandIdx ] )
-            {
-              values[ m_noBlendMethodImp_BandIdx ] = m_outputNoDataValue;
-            }
-            else
-            {
-              m_noBlendMethodImp_Value *= m_pixelScales2[ m_noBlendMethodImp_BandIdx ];
-              values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value + 
-                m_pixelOffsets2[ m_noBlendMethodImp_BandIdx ]; 
-            }
-          }
-          else
-          {
-            m_noBlendMethodImp_Value *= m_pixelScales1[ m_noBlendMethodImp_BandIdx ];
-            values[ m_noBlendMethodImp_BandIdx ] =  m_noBlendMethodImp_Value + 
-              m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
-          }      
-        }
-      }
-      else
-      {
-        for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
-          m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
+        m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
+          m_raster1Bands[ m_noBlendMethodImp_BandIdx ] ); 
+        m_noBlendMethodImp_Value = m_noBlendMethodImp_cValue.real();      
+    
+        if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
         {
           m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
             m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
-            m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );          
-          m_noBlendMethodImp_Value = m_noBlendMethodImp_cValue.real();      
-      
+            m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );
+          m_noBlendMethodImp_Value =  m_noBlendMethodImp_cValue.real();          
+          
           if( m_noBlendMethodImp_Value == m_raster2NoDataValues[ m_noBlendMethodImp_BandIdx ] )
           {
-            m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
-              m_raster1Bands[ m_noBlendMethodImp_BandIdx ] ); 
-            m_noBlendMethodImp_Value =  m_noBlendMethodImp_cValue.real();          
-            
-            if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
-            {
-              values[ m_noBlendMethodImp_BandIdx ] = m_outputNoDataValue;
-            }
-            else
-            {
-              m_noBlendMethodImp_Value *= m_pixelScales1[ m_noBlendMethodImp_BandIdx ];
-              values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value + 
-                m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
-            }
+            values[ m_noBlendMethodImp_BandIdx ] = m_outputNoDataValue;
           }
           else
           {
             m_noBlendMethodImp_Value *= m_pixelScales2[ m_noBlendMethodImp_BandIdx ];
-            values[ m_noBlendMethodImp_BandIdx ] =  m_noBlendMethodImp_Value + 
+            values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value + 
               m_pixelOffsets2[ m_noBlendMethodImp_BandIdx ]; 
-          }      
+          }
         }
+        else
+        {
+          m_noBlendMethodImp_Value *= m_pixelScales1[ m_noBlendMethodImp_BandIdx ];
+          values[ m_noBlendMethodImp_BandIdx ] =  m_noBlendMethodImp_Value + 
+            m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
+        }      
       }
     }
+    
+    void Blender::euclideanDistanceMethodImp( const double& line, const double& col,
+      std::vector< double >& values )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
+      
+      // Finding the point over the second raster
+      
+      m_geomTransformationPtr->directMap( col, line, m_euclideanDistanceMethodImp_Point2Col,
+        m_euclideanDistanceMethodImp_Point2Line );
+        
+      m_euclideanDistanceMethodImp_point1.setX( col );
+      m_euclideanDistanceMethodImp_point1.setY( line );            
+      m_euclideanDistanceMethodImp_dist1 = m_r1ValidDataPolygonPtr->distance( 
+        &m_euclideanDistanceMethodImp_point1 );
+        
+      m_euclideanDistanceMethodImp_point2.setX( m_euclideanDistanceMethodImp_Point2Col );
+      m_euclideanDistanceMethodImp_point2.setY( m_euclideanDistanceMethodImp_Point2Line );            
+      m_euclideanDistanceMethodImp_dist2 = m_r2ValidDataPolygonPtr->distance( 
+        &m_euclideanDistanceMethodImp_point2 );          
+      
+      // Blending values
+
+      for( m_euclideanDistanceMethodImp_BandIdx = 0 ; m_euclideanDistanceMethodImp_BandIdx <
+        m_raster1Bands.size() ; ++m_euclideanDistanceMethodImp_BandIdx )
+      {
+        m_interp1->getValue( col, line, m_euclideanDistanceMethodImp_cValue1, 
+          m_raster1Bands[ m_euclideanDistanceMethodImp_BandIdx ] ); 
+        m_interp2->getValue( m_euclideanDistanceMethodImp_Point2Col, 
+          m_euclideanDistanceMethodImp_Point2Line, m_euclideanDistanceMethodImp_cValue2, 
+          m_raster2Bands[ m_euclideanDistanceMethodImp_BandIdx ] );
+    
+        if( m_euclideanDistanceMethodImp_cValue1.real() == m_raster1NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
+        {
+          if( m_euclideanDistanceMethodImp_cValue2.real() == m_raster2NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
+          {
+            values[ m_euclideanDistanceMethodImp_BandIdx ] = m_outputNoDataValue;
+          }
+          else
+          {
+            values[ m_euclideanDistanceMethodImp_BandIdx ] = 
+              ( m_euclideanDistanceMethodImp_cValue2.real() * 
+              m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] ) + 
+              m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]; 
+          }
+        }
+        else
+        {
+          if( m_euclideanDistanceMethodImp_cValue2.real() == m_raster2NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
+          {
+            values[ m_euclideanDistanceMethodImp_BandIdx ] =  
+              ( m_euclideanDistanceMethodImp_cValue1.real()  * 
+              m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] ) +
+              m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]; 
+          }
+          else
+          {
+            if( m_euclideanDistanceMethodImp_dist1 == 0.0 )
+            {
+              values[ m_euclideanDistanceMethodImp_BandIdx ] =  
+                ( m_euclideanDistanceMethodImp_cValue1.real()  * 
+                m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] ) +
+                m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]; 
+            }
+            else
+            {
+              values[ m_euclideanDistanceMethodImp_BandIdx ] =
+                (
+                  (
+                    (
+                      ( 
+                        m_euclideanDistanceMethodImp_cValue1.real()  
+                        * 
+                        m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] 
+                      ) 
+                      +
+                      m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]
+                    )
+                    *
+                    m_euclideanDistanceMethodImp_dist2
+                  )
+                  +
+                  (
+                    (
+                      ( 
+                        m_euclideanDistanceMethodImp_cValue2.real() 
+                        * 
+                        m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] 
+                      ) 
+                      + 
+                      m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]
+                    )
+                    *
+                    m_euclideanDistanceMethodImp_dist1
+                  )
+                )
+                /
+                ( 
+                  m_euclideanDistanceMethodImp_dist1 
+                  +
+                  m_euclideanDistanceMethodImp_dist2
+                );                  
+            }
+          }          
+        }      
+      }
+    }    
 
   } // end namespace rp
 }   // end namespace te    
