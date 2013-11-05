@@ -154,12 +154,20 @@ void te::qt::widgets::ColorMapWidget::updateUi()
 
   if(m_cm->getCategorize())
   {
+    for(int i = 0; i < m_ui->m_transformComboBox->count(); ++i)
+    {
+      if(m_ui->m_transformComboBox->itemData(i).toInt() == te::se::CATEGORIZE_TRANSFORMATION)
+        m_ui->m_transformComboBox->setCurrentIndex(i);
+    }
+
     std::vector<te::se::ParameterValue*> t = m_cm->getCategorize()->getThresholds();
     std::vector<te::se::ParameterValue*> tV = m_cm->getCategorize()->getThresholdValues();
 
-    m_ui->m_tableWidget->setRowCount(tV.size());
+    m_ui->m_slicesSpinBox->setValue(tV.size() - 2);
 
-    for(size_t i = 0; i < tV.size(); ++i)
+    m_ui->m_tableWidget->setRowCount(tV.size() - 2);
+
+    for(size_t i = 1; i < tV.size() - 1; ++i)
     {
       QColor color;
       std::string lowerLimit = "";
@@ -188,40 +196,54 @@ void te::qt::widgets::ColorMapWidget::updateUi()
       QTableWidgetItem* item = new QTableWidgetItem();
       item->setBackgroundColor(color);
       item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-      m_ui->m_tableWidget->setItem(i, 1, item);
+      m_ui->m_tableWidget->setItem(i - 1, 1, item);
 
       //value
       std::string range = lowerLimit + " - " + upperLimit;
       QTableWidgetItem* itemRange = new QTableWidgetItem();
       itemRange->setText(range.c_str());
       itemRange->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-      m_ui->m_tableWidget->setItem(i, 0, itemRange);
+      m_ui->m_tableWidget->setItem(i - 1, 0, itemRange);
 
       //label
       std::string rangeStr = lowerLimit + " to " + upperLimit;
       QTableWidgetItem* itemRangeStr = new QTableWidgetItem();
       itemRangeStr->setText(rangeStr.c_str());
       itemRangeStr->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-      m_ui->m_tableWidget->setItem(i, 2, itemRangeStr);
+      m_ui->m_tableWidget->setItem(i - 1, 2, itemRangeStr);
     }
   }
   else if(m_cm->getInterpolate())
   {
+    for(int i = 0; i < m_ui->m_transformComboBox->count(); ++i)
+    {
+      if(m_ui->m_transformComboBox->itemData(i).toInt() == te::se::INTERPOLATE_TRANSFORMATION)
+        m_ui->m_transformComboBox->setCurrentIndex(i);
+    }
+
     std::vector<te::se::InterpolationPoint*> ip = m_cm->getInterpolate()->getInterpolationPoints();
 
-    m_ui->m_tableWidget->setRowCount(ip.size());
+    m_ui->m_slicesSpinBox->setValue(ip.size() - 1);
 
-    for(size_t i = 0; i < ip.size(); ++i)
+    m_ui->m_tableWidget->setRowCount(ip.size() - 1);
+
+    for(size_t i = 0; i < ip.size() - 1; ++i)
     {
       QColor color;
-      QString valStr;
+      QString valStrBegin;
+      QString valStrEnd;
 
       te::se::InterpolationPoint* ipItem = ip[i];
             
       color.setNamedColor(te::map::GetString(ipItem->getValue()).c_str());
 
-      valStr.setNum(ipItem->getData());
+      valStrBegin.setNum(ipItem->getData());
+      valStrEnd.setNum(ip[i+1]->getData());
 
+      QString valStr;
+      valStr.append(valStrBegin);
+      valStr.append(" - ");
+      valStr.append(valStrEnd);
 
     //color
       QTableWidgetItem* item = new QTableWidgetItem();

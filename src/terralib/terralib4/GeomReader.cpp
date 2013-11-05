@@ -24,6 +24,7 @@
 */
 
 // Terralib 5
+#include "../common/Translator.h"
 #include "../geometry/Curve.h"
 #include "../geometry/LinearRing.h"
 #include "../geometry/LineString.h"
@@ -32,11 +33,14 @@
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/MultilineString.h"
 #include "../geometry/MultiPoint.h"
+#include "Config.h"
+#include "Exception.h"
 #include "GeomReader.h"
 #include "Utils.h"
 
 // Terralib 4.x
 #include <TeGeometry.h>
+#include <TeRepresentation.h>
 
 std::auto_ptr<te::gm::Point> terralib4::GeomReader::getPoint(const TePoint& pt)
 {
@@ -64,7 +68,7 @@ std::auto_ptr<te::gm::LineString> terralib4::GeomReader::getLineString(const TeL
 
 std::auto_ptr<te::gm::LinearRing> terralib4::GeomReader::getLinearRing(const TeLinearRing& ring)
 {
-  std::auto_ptr<te::gm::LinearRing> geom(new te::gm::LinearRing(te::gm::PolygonType, ring.srid()));
+  std::auto_ptr<te::gm::LinearRing> geom(new te::gm::LinearRing(ring.size(),te::gm::LineStringType, ring.srid()));
 
   TeComposite<TeCoord2D>::iterator it = ring.begin();
 
@@ -86,10 +90,12 @@ std::auto_ptr<te::gm::Polygon> terralib4::GeomReader::getPolygon(const TePolygon
 
   TeComposite<TeLinearRing>::iterator it = poly.begin();
 
+  std::size_t count = 0;
   while(it != poly.end())
   {
-    geom->push_back(getLinearRing(*it).release());
+    geom->setRingN(count, getLinearRing(*it).release());
 
+    ++count;
     ++it;
   }
 
@@ -160,4 +166,49 @@ std::auto_ptr<te::gm::Polygon> terralib4::GeomReader::getPolygon(const TeCell& c
   geom->add(s);
 
   return geom;
+}
+
+std::auto_ptr<te::gm::Geometry> terralib4::GeomReader::getGeometry(const TeGeometry& geom)
+{
+  TeGeomRep rep = geom.elemType();
+
+  switch(rep)
+  {
+    case TePOLYGONS:
+    {
+      TePolygon p = dynamic_cast<const TePolygon&>(geom);
+      return getPolygon(p);
+    }
+
+    case TePOINTS:
+    {
+      TePoint p = dynamic_cast<const TePoint&>(geom);
+      return getPoint(p);
+    }
+
+    case TeLINES:
+    {
+      TeLine2D p = dynamic_cast<const TeLine2D&>(geom);
+      return getLineString(p);
+    }
+
+    case TeCELLS:
+    {
+      TePolygon p = dynamic_cast<const TePolygon&>(geom);
+      return getPolygon(p);
+    }
+
+    case TeNODES:
+    {
+      TePoint p = dynamic_cast<const TePoint&>(geom);
+      return getPoint(p);
+    }
+
+    default:
+      throw Exception(TR_TERRALIB4("Geometry Type Not supported!"));
+    
+  }
+
+
+  return std::auto_ptr<te::gm::Geometry>(0);
 }

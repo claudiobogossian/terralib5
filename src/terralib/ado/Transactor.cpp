@@ -206,8 +206,9 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& q,
-                                      te::common::TraverseType travType,
-                                      bool connected)
+                                                          te::common::TraverseType travType,
+                                                          bool connected,
+                                                          const te::common::AccessPolicy accessPolicy)
 {
   std::string sql;
 
@@ -218,8 +219,9 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& 
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& query,
-                                      te::common::TraverseType travType,
-                                      bool connected)
+                                                          te::common::TraverseType travType,
+                                                          bool connected,
+                                                          const te::common::AccessPolicy accessPolicy)
 {
   _RecordsetPtr result = m_conn->query(query, connected);
 
@@ -1256,7 +1258,7 @@ void te::ado::Transactor::add(const std::string& datasetName,
             recset->GetFields()->GetItem("upper_y")->Value = (_variant_t)env->m_ury;
 
             _variant_t var;
-            Convert2Ado(d->getGeometry(pname).get(), var);
+            Convert2Ado(geometry.get(), var);
 
             recset->Fields->GetItem(pname.c_str())->AppendChunk (var);
             

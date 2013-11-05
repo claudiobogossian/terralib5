@@ -109,14 +109,16 @@ std::auto_ptr<te::da::DataSet> te::stmem::Transactor::getDataSet(const std::stri
 }
 
 std::auto_ptr<te::da::DataSet> te::stmem::Transactor::query(const te::da::Select& /*q*/,
-                                    te::common::TraverseType /*travType*/, bool /*connected*/)
+                                    te::common::TraverseType /*travType*/, bool /*connected*/,
+                                    const te::common::AccessPolicy)
 {
   return std::auto_ptr<te::da::DataSet>(0);
 }
 
 std::auto_ptr<te::da::DataSet> te::stmem::Transactor::query(const std::string& /*query*/, 
                                     te::common::TraverseType /*travType*/, 
-											              bool /*connected*/)
+											              bool /*connected*/,
+                                    const te::common::AccessPolicy)
 {
   return std::auto_ptr<te::da::DataSet>(0);    
 }

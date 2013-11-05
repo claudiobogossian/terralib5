@@ -72,7 +72,7 @@ namespace te
         Transactor(DataSource* ds, Connection* conn);
 
         /*! \brief The destructor will automatically release the connection to the pool. */
-          ~Transactor();
+        ~Transactor();
 
         te::da::DataSource* getDataSource() const;
 
@@ -116,12 +116,14 @@ namespace te
 
         std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
                                              te::common::TraverseType travType = te::common::FORWARDONLY,
-                                             bool connected = false);
+                                             bool connected = false,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
 
         std::auto_ptr<te::da::DataSet> query(const std::string& query, 
                                              te::common::TraverseType travType = te::common::FORWARDONLY,
-                                             bool connected = false);
+                                             bool connected = false,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         void execute(const te::da::Query& command);
 

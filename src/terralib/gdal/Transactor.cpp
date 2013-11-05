@@ -414,7 +414,8 @@ bool te::gdal::Transactor::propertyExists(const std::string& datasetName, size_t
 
 std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const te::da::Select& q,
                                      te::common::TraverseType , 
-                                     bool)
+                                     bool,
+                                     const te::common::AccessPolicy accessPolicy)
 {
   const te::da::From& from = q.from();
   
@@ -434,12 +435,13 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const te::da::Select&
     throw Exception(TR_GDAL("Can not process the Select object: dataset not found."));
 
   std::string uri = dsty->getTitle();
-  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,te::common::RAccess,uri)); 
+  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,accessPolicy,uri)); 
 }
 
 std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const std::string& query,
                              te::common::TraverseType, 
-                             bool)
+                             bool,
+                             const te::common::AccessPolicy accessPolicy)
 {
   std::vector<std::string> words;
   std::string s;
@@ -463,7 +465,7 @@ std::auto_ptr<te::da::DataSet> te::gdal::Transactor::query(const std::string& qu
     throw Exception(TR_GDAL("Can not process the Select object: dataset not found."));
   
   std::string uri = dsty->getTitle();
-  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,common::RAccess,uri));
+  return std::auto_ptr<te::da::DataSet>(new DataSet(dsty,accessPolicy,uri));
 }
 
 bool te::gdal::Transactor::dataSetExists(const std::string& name)

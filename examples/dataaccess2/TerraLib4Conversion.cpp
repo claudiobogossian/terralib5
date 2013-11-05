@@ -2,7 +2,6 @@
 #include "DataAccessExamples.h"
 
 #include <terralib/dataaccess.h>
-#include <terralib/dataaccess/dataset/DataSetTypeConverter.h>
 
 void TerraLib4Converter()
 {
@@ -19,6 +18,12 @@ void TerraLib4Converter()
     std::map<std::string, std::string> adoConnInfo;
     adoConnInfo["PROVIDER"] = "Microsoft.Jet.OLEDB.4.0";
     adoConnInfo["DB_NAME"] = "C:/temp/ExampleTerralib4.mdb";
+    adoConnInfo["CREATE_OGC_METADATA_TABLES"] = "TRUE";
+
+    if(te::da::DataSource::exists("ADO", adoConnInfo))
+    {
+      te::da::DataSource::drop("ADO", adoConnInfo);
+    }
 
     std::auto_ptr<te::da::DataSource> tl5Database(te::da::DataSource::create("ADO", adoConnInfo));
     tl5Database->open();
@@ -39,7 +44,6 @@ void TerraLib4Converter()
 
       te::da::Create(tl5Database.get(), dt_adapter->getResult(), ds_adapter.get(), op);
     }
-
   }
   catch(const std::exception& e)
   {

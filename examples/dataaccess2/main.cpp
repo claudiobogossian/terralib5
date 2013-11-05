@@ -159,7 +159,6 @@ int main(int /*argc*/, char** /*argv*/)
 
     //////SQLiteExample();
 
-
     te::plugin::PluginManager::getInstance().unloadAll();
 
     TerraLib::getInstance().finalize();

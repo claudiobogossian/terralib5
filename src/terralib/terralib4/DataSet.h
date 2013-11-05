@@ -144,8 +144,9 @@ namespace terralib4
       mutable TeSTInstance m_instance;
       int m_i;
       int m_size;
+      int m_nCols;
+      bool m_hasGeometry;
       TeLayer* m_layer;
-      TeDatabasePortal* m_result;
   };
 
 }   // end namespace te

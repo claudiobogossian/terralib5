@@ -172,14 +172,16 @@ std::auto_ptr<te::da::DataSet> terralib4::Transactor::getDataSet(const std::stri
 
 std::auto_ptr<te::da::DataSet> terralib4::Transactor::query(const te::da::Select& /*q*/,
                                                             te::common::TraverseType /*travType*/,
-                                                            bool /*connected*/)
+                                                            bool /*connected*/,
+                                                            const te::common::AccessPolicy /*accessPolicy*/)
 {
   throw Exception(TR_TERRALIB4("TerraLib 4.x driver doesn't support queries!"));
 }
 
 std::auto_ptr<te::da::DataSet> terralib4::Transactor::query(const std::string& /*query*/,
                                                             te::common::TraverseType /*travType*/,
-                                                            bool /*connected*/)
+                                                            bool /*connected*/,
+                                                            const te::common::AccessPolicy /*accessPolicy*/)
 {
   throw Exception(TR_TERRALIB4("TerraLib 4.x driver doesn't support queries!"));
 }
@@ -282,6 +284,17 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
   TeTable table = tables[0];
 
   std::auto_ptr<te::da::DataSetType> dst(terralib4::Convert2T5(table));
+
+  TeRepresPointerVector vec = layer->vectRepres();
+
+  if(!vec.empty())
+  {
+    TeGeomRep geomRep = vec[0]->geomRep_;
+
+    te::gm::GeometryProperty* geomProp = new te::gm::GeometryProperty("spatial_data", 
+      layer->projection()->epsgCode(), terralib4::Convert2T5GeomType(geomRep));
+    dst->add(geomProp);
+  }
 
   return dst;
 }

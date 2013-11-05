@@ -1663,9 +1663,11 @@ void te::qt::af::BaseApplication::makeDialog()
 
   //tools
   treeView->add(m_layerGrouping, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_toolsDataExchangerDirectPopUp, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerChartsHistogram, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
-  treeView->add(m_layerChartsScatter, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
   treeView->add(m_layerChart, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_queryLayer, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+  treeView->add(m_layerChartsScatter, "", "", te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
 
   QAction* actTools = new QAction(this);
   actTools->setSeparator(true);
