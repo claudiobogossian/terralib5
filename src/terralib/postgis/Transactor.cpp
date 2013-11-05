@@ -197,19 +197,21 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::query(const te::da::Select& q,
                                                            te::common::TraverseType travType,
-                                                           bool isConnected)
+                                                           bool isConnected,
+                                                           const te::common::AccessPolicy accessPolicy)
 {
   std::string sql;
 
   SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
   q.accept(visitor);
 
-  return query(sql, travType, isConnected);
+  return query(sql, travType, isConnected,accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::query(const std::string& query,
                                                            te::common::TraverseType travType,
-                                                           bool isConnected)
+                                                           bool isConnected,
+                                                           const te::common::AccessPolicy)
 {
   PGresult* result = m_conn->query(query);
 

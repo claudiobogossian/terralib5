@@ -33,12 +33,12 @@
 #include "../geometry/GeometricTransformation.h"
 #include "../geometry/Polygon.h"
 #include "../geometry/Point.h"
-#include "../srs/Converter.h"
 
 #include <boost/noncopyable.hpp>
 
 #include <vector>
 #include <complex>
+#include <memory>
 
 namespace te
 {
@@ -84,7 +84,7 @@ namespace te
           \param pixelScales2 The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param r1ValidDataPolygonPtr A pointer to a polygon (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
           \param r2ValidDataPolygon A pointer to a polygon (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
-          \param geomTransformation A pointer transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 pixels ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns), or a null value if only the spatial reference systems must be used.
+          \param geomTransformation A transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 pixels ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns).
           \param raster1HasPrecedence If true, raster 1 valid pixel values will have precedence over raster2  valid pixel values.
           \return true if ok, false on errors
         */
@@ -104,7 +104,7 @@ namespace te
           const std::vector< double >& pixelScales2,
           te::gm::Polygon const * const r1ValidDataPolygonPtr,
           te::gm::Polygon const * const r2ValidDataPolygonPtr,
-          te::gm::GeometricTransformation const * const geomTransformationPtr,
+          const te::gm::GeometricTransformation& geomTransformation,
           const bool raster1HasPrecedence );
         
         
@@ -137,15 +137,12 @@ namespace te
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
         te::rst::Raster const* m_raster1Ptr; //!< Input raster 1.
         te::rst::Raster const* m_raster2Ptr; //!< Input raster 2.
-        te::rst::Grid const* m_grid1Ptr; //!< Raster 1 Grid. 
-        te::rst::Grid const* m_grid2Ptr; //!< Raster 2 Grid.
         te::gm::Polygon* m_r1ValidDataPolygonPtr; //!< null or a polygon (raster 1 indexed coords).
         te::gm::Polygon* m_r2ValidDataPolygonPtr; //!< null or a polygon (raster 2 indexed coords).
         te::gm::GeometricTransformation* m_geomTransformationPtr; //!< A transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns).
         te::rst::Interpolator::Method m_interpMethod1; //!< The interpolation method to use when reading raster 1 data.
         te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
         double m_outputNoDataValue; //!< The output raster no-data value.
-        bool m_rastersHaveDifSRS; //!< True if the input rasters are under distinct SRSs.
         te::rst::Interpolator* m_interp1; //!< Raster 1 interpolator instance pointer.
         te::rst::Interpolator* m_interp2; //!< Raster 2 interpolator instance pointer.        
         bool m_raster1HasPrecedence; //!< If true, raster 1 valid pixel values will have precedence over raster2  valid pixel values.
@@ -157,7 +154,6 @@ namespace te
         std::vector< double > m_pixelScales2; //!< The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
         std::vector< double > m_raster1NoDataValues; //! Raster 1 no-data values (on value per band).
         std::vector< double > m_raster2NoDataValues; //! Raster 2 no-data values (on value per band).
-        te::srs::Converter m_convInstance; //!< A SRS converter instance to be used when the rasters SRIDs are not the same.
         
         // variables used by the noBlendMethodImp method
         double m_noBlendMethodImp_Point1XProj1;

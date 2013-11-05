@@ -156,8 +156,14 @@
         </item>
         <item row="1" column="0">
          <widget class="QRadioButton" name="m_fromAttRadioButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>From an attribute</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

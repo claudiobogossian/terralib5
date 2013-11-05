@@ -41,7 +41,7 @@
 te::qt::plugins::vp::IntersectionAction::IntersectionAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Intersection...").toStdString());
+  createAction(tr("Intersection...").toStdString(), "vector-processing-intersection");
 }
 
 te::qt::plugins::vp::IntersectionAction::~IntersectionAction()

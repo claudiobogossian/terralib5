@@ -43,19 +43,19 @@
 
 bool IsPointOnLine(te::gm::Coord2D& p, te::gm::Coord2D& q, te::gm::Coord2D& t, double tol);
 
-bool InterpolateIn(te::rst::Raster* rin, te::rst::Raster* rout, te::gm::Envelope* box, te::srs::Converter* conv, int m = te::rst::Interpolator::NearestNeighbor);
+bool InterpolateIn(te::rst::Raster const * const rin, te::rst::Raster* rout, te::gm::Envelope* box, te::srs::Converter* conv, int m = te::rst::Interpolator::NearestNeighbor);
 
-te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, const std::map<std::string, std::string>& routinfo, int m)
+te::rst::Raster* te::rst::Reproject(te::rst::Raster const * const rin, int srid, const std::map<std::string, std::string>& routinfo, int m)
 {
   return te::rst::Reproject(rin, srid, 1, 1, -1, -1, 0, 0, routinfo, m);
 }
 
-te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& routinfo, int m)
+te::rst::Raster* te::rst::Reproject(te::rst::Raster const * const rin, int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& routinfo, int m)
 {
   return te::rst::Reproject(rin, srid, llx, lly, urx, ury, 0, 0, routinfo, m);
 }
 
-te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& routinfo, int m)
+te::rst::Raster* te::rst::Reproject(te::rst::Raster const * const rin, int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& routinfo, int m)
 {
   if (srid == rin->getSRID())
     return 0;
@@ -125,7 +125,7 @@ te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, double llx, 
   return rout;
 }
 
-bool InterpolateIn(te::rst::Raster* rin, te::rst::Raster* rout, te::gm::Envelope* box, te::srs::Converter* conv, int m)
+bool InterpolateIn(te::rst::Raster const * const rin, te::rst::Raster* rout, te::gm::Envelope* box, te::srs::Converter* conv, int m)
 {
   te::gm::Coord2D poll = box->getLowerLeft();
   te::gm::Coord2D pour = box->getUpperRight();

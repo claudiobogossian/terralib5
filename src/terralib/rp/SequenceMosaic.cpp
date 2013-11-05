@@ -841,7 +841,7 @@ namespace te
                 currentRasterBandsScales,
                 &mosaicValidDataPol,
                 0,
-                geoTransPtr.get(),
+                *geoTransPtr,
                 false ), 
                 "Blender initiazing error" );      
                 

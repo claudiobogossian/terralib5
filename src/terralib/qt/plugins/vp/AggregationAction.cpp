@@ -40,7 +40,7 @@
 te::qt::plugins::vp::AggregationAction::AggregationAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Aggregation...").toStdString());
+  createAction(tr("Aggregation...").toStdString(), "vector-processing-aggregation");
 }
 
 te::qt::plugins::vp::AggregationAction::~AggregationAction()

@@ -132,8 +132,10 @@ void te::vp::BufferDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
   while(it != m_layers.end())
-  {  
-    m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+    if(dsType->hasGeom())
+      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
 }
@@ -167,67 +169,12 @@ void te::vp::BufferDialog::setAttributesForDistance(std::vector<te::dt::Property
   }
 
   if(m_ui->m_fromAttDistanceComboBox->count() > 0)
-    m_ui->m_fromAttRadioButton->setEnabled(true);
+  {
+    //m_ui->m_fromAttRadioButton->setEnabled(true);
+  }
   else
     m_ui->m_fromAttRadioButton->setEnabled(false);
 }
-
-//std::map<te::gm::Geometry*, double> te::vp::BufferDialog::getDistante()
-//{
-//  std::map<te::gm::Geometry*, double> distance;
-//  
-//  te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
-//  
-//  std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
-//
-//  std::size_t geomIdx;
-//  std::string geomName = "";
-//
-//  te::gm::GeometryProperty* geom = te::da::GetFirstGeomProperty(dsType.get());
-//  geomName = geom->getName();
-//  geomIdx = dsType->getPropertyPosition(geomName);
-//
-//  std::auto_ptr<te::da::DataSet> inputDataSet = dsLayer->getData();
-//  inputDataSet->moveBeforeFirst();
-//  
-//  if(m_ui->m_fixedRadioButton->isChecked())
-//  {
-//    double dist = m_ui->m_fixedDistanceLineEdit->text().toDouble();
-//    while(inputDataSet->moveNext())
-//    {
-//      std::auto_ptr<te::gm::Geometry> g = inputDataSet->getGeometry(geomIdx);
-//      distance.insert(std::map<te::gm::Geometry*, double>::value_type(g.release(), dist));
-//    }
-//  }
-//  else if(m_ui->m_fromAttRadioButton->isChecked())
-//  {
-//    while(inputDataSet->moveNext())
-//    {
-//      std::auto_ptr<te::gm::Geometry> g = inputDataSet->getGeometry(geomIdx);
-//      double dist = 0.0;
-//      
-//      if(inputDataSet->getPropertyDataType(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())) == te::dt::INT32_TYPE)
-//      {
-//        dist = boost::lexical_cast<double>(inputDataSet->getInt32(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())));
-//      }
-//      else if(inputDataSet->getPropertyDataType(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())) == te::dt::DOUBLE_TYPE)
-//      {
-//        dist = inputDataSet->getDouble(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString()));
-//      }
-//      else if(inputDataSet->getPropertyDataType(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())) == te::dt::NUMERIC_TYPE)
-//      {
-//        dist = boost::lexical_cast<double>(inputDataSet->getNumeric(te::da::GetPropertyPos(inputDataSet.get(), m_ui->m_fromAttDistanceComboBox->currentText().toStdString())));
-//      }
-//      else 
-//      {
-//        continue;
-//      }
-//      distance.insert(std::map<te::gm::Geometry*, double>::value_type(g.release(), dist));
-//    }
-//  }
-//
-//  return distance;
-//}
 
 int te::vp::BufferDialog::getPolygonRule()
 {
