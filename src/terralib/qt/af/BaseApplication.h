@@ -93,6 +93,8 @@ namespace te
 
           void onRemoveLayerTriggered();
 
+          void onRenameItemTriggered();
+
           void onPluginsManagerTriggered();
 
           void onRecentProjectsTriggered(QAction* proj);
@@ -251,6 +253,7 @@ namespace te
           QAction* m_projectRemoveFolder;
           QAction* m_projectRemoveChart;
           QAction* m_projectRemoveClassification;
+          QAction* m_projectRenameItem;
           QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;
