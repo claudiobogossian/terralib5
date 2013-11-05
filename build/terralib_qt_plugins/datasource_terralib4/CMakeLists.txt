@@ -37,6 +37,7 @@ set (
   ${SRCDIR}/TL4LayerSelectionWizardPage.h
   ${SRCDIR}/TL4RasterFolderSelectionWizardPage.h
   ${SRCDIR}/TL4FinalPageWizardPage.h
+  ${INCLDIR}/Plugin.h
 )
 
 # Select the FORMS widgets

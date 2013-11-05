@@ -1117,7 +1117,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::VALUE);
 
-  dsetc.setSupportInsertion(xmlReader->getElementValueAsBoolean());
+  //dsetc.setSupportInsertion(xmlReader->getElementValueAsBoolean());
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // Insertion
@@ -1129,7 +1129,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::VALUE);
 
-  dsetc.setSupportUpdate(xmlReader->getElementValueAsBoolean());
+  //dsetc.setSupportUpdate(xmlReader->getElementValueAsBoolean());
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // Update
@@ -1141,7 +1141,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::VALUE);
 
-  dsetc.setSupportDeletion(xmlReader->getElementValueAsBoolean());
+  //dsetc.setSupportDeletion(xmlReader->getElementValueAsBoolean());
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // Deletion
@@ -1270,7 +1270,7 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::VALUE);
 
-  capabilities.setSupportSpatialOperators(xmlReader->getElementValueAsBoolean());
+  //capabilities.setSupportSpatialOperators(xmlReader->getElementValueAsBoolean());
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SupportSpatialOperators

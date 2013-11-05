@@ -59,6 +59,10 @@ namespace te
 
         void setSupportSQLDialect(const bool& support);
 
+        bool supportsSpatialSQLDialect() const;
+
+        void setSupportSpatialSQLDialect(const bool& support);
+
         bool supportsInsert() const;
 
         void setSupportInsert(const bool& support);
@@ -131,17 +135,18 @@ namespace te
 
       private:
 
-        bool m_sqlDialect; //!< A flag that indicates if the data source supports Query API.
-        bool m_insert;     //!< A flag that indicates if the data source supports the INSERT command.
-        bool m_update;     //!< A flag that indicates if the data source supports the UPDATE command.
-        bool m_delete;     //!< A flag that indicates if the data source supports the DELETE command.
-        bool m_create;     //!< A flag that indicates if the data source supports the CREATE command.
-        bool m_drop;       //!< A flag that indicates if the data source supports the DROP command.
-        bool m_alter;      //!< A flag that indicates if the data source supports the ALTER command.
-        bool m_select;     //!< A flag that indicates if the data source supports the SELECT command.
-        bool m_selectInto; //!< A flag that indicates if the data source supports the SELECT INTO command.
+        bool m_sqlDialect;        //!< A flag that indicates if the data source supports Query API.
+        bool m_spatialSQLDialect;  //!< A flag that indicates if the data source supports spatial Query API.
+        bool m_insert;            //!< A flag that indicates if the data source supports the INSERT command.
+        bool m_update;            //!< A flag that indicates if the data source supports the UPDATE command.
+        bool m_delete;            //!< A flag that indicates if the data source supports the DELETE command.
+        bool m_create;            //!< A flag that indicates if the data source supports the CREATE command.
+        bool m_drop;              //!< A flag that indicates if the data source supports the DROP command.
+        bool m_alter;             //!< A flag that indicates if the data source supports the ALTER command.
+        bool m_select;            //!< A flag that indicates if the data source supports the SELECT command.
+        bool m_selectInto;        //!< A flag that indicates if the data source supports the SELECT INTO command.
 
-        std::set<std::string> m_spatialTopologicOperators;  //!< The names of topological supported operators (touches, crosses, etc).
+        std::set<std::string> m_spatialTopologicOperators;    //!< The names of topological supported operators (touches, crosses, etc).
         std::set<std::string> m_spatialMetricOperators;       //!< The names of spatial metric supported operators (area, lenght, etc).
         std::set<std::string> m_spatialNewGeomOperators;      //!< The names of spatial supported operators that generate new geometries (centroid, buffer, union, intersection,etc).
         std::set<std::string> m_spatialOperators;             //!< The names of other spatial supported operators.

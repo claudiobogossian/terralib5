@@ -28,6 +28,7 @@
 
 te::da::QueryCapabilities::QueryCapabilities()
   : m_sqlDialect(false),
+    m_spatialSQLDialect(false),
     m_insert(false),
     m_update(false),
     m_delete(false),
@@ -51,6 +52,16 @@ bool te::da::QueryCapabilities::supportsSQLDialect() const
 void te::da::QueryCapabilities::setSupportSQLDialect(const bool& support)
 {
   m_sqlDialect = support;
+}
+
+bool te::da::QueryCapabilities::supportsSpatialSQLDialect() const
+{
+  return m_spatialSQLDialect;
+}
+
+void te::da::QueryCapabilities::setSupportSpatialSQLDialect(const bool& support)
+{
+  m_spatialSQLDialect = support;
 }
 
 bool te::da::QueryCapabilities::supportsInsert() const
@@ -136,6 +147,7 @@ void te::da::QueryCapabilities::setSupportSelectInto(const bool& support)
 void te::da::QueryCapabilities::setSupportAll()
 {
   m_sqlDialect = true;
+  m_spatialSQLDialect = true;
   m_insert = true;
   m_update = true;
   m_delete = true;

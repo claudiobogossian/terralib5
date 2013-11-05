@@ -29,14 +29,16 @@
 #include "../../../../common/Logger.h"
 #include "../../../af/ApplicationController.h"
 #include "TL4ConverterAction.h"
+#include "TL4ConverterWizard.h"
 #include "Plugin.h"
 
 // QT
+#include <QtGui/QAction>
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 
 te::qt::plugins::terralib4::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo), m_terralib4Menu(0)
+  : QObject(), te::plugin::Plugin(pluginInfo)
 {
 }
 
@@ -55,10 +57,22 @@ void te::qt::plugins::terralib4::Plugin::startup()
   TE_LOG_TRACE(TE_QT_PLUGIN_TERRALIB4("TerraLib Qt TERRALIB4 Plugin startup!"));
 
 // add plugin menu
-  m_terralib4Menu = te::qt::af::ApplicationController::getInstance().getMenu("Terralib4");
+  //m_terralib4Menu = te::qt::af::ApplicationController::getInstance().getMenu("Terralib4");
 
 // register actions
-  registerActions();
+  //registerActions();
+  QMenu* mnu = te::qt::af::ApplicationController::getInstance().findMenu("Tools");
+  QAction* act = te::qt::af::ApplicationController::getInstance().findAction("Tools.Customize");
+
+  if(act)
+  {
+    m_showWindow = new QAction(QIcon::fromTheme("file-vector"), "TerraLib 4 Converter...", mnu);
+    m_showWindow->setObjectName("Tools.TerraLib 4 Converter");
+    mnu->insertAction(act, m_showWindow);
+    mnu->addSeparator();
+
+    connect(m_showWindow, SIGNAL(triggered()), SLOT(showWindow()));
+  }
 
   m_initialized = true;
 }
@@ -68,25 +82,20 @@ void te::qt::plugins::terralib4::Plugin::shutdown()
   if(!m_initialized)
     return;
 
-// remove menu
-  delete m_terralib4Menu;
-
-// unregister actions
-  unRegisterActions();
+  delete m_showWindow;
 
   TE_LOG_TRACE(TE_QT_PLUGIN_TERRALIB4("TerraLib Qt TERRALIB4 Plugin shutdown!"));
 
   m_initialized = false;
 }
 
-void te::qt::plugins::terralib4::Plugin::registerActions()
+void te::qt::plugins::terralib4::Plugin::showWindow()
 {
-  m_converter = new te::qt::plugins::terralib4::TL4ConverterAction(m_terralib4Menu);
-}
+  QWidget* parent = te::qt::af::ApplicationController::getInstance().getMainWindow();
+  te::qt::plugins::terralib4::TL4ConverterWizard dlg(parent);
 
-void  te::qt::plugins::terralib4::Plugin::unRegisterActions()
-{
-  delete m_converter;
+  if(dlg.exec() != QDialog::Accepted)
+    return;
 }
 
 PLUGIN_CALL_BACK_IMPL(te::qt::plugins::terralib4::Plugin)

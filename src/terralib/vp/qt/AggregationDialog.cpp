@@ -286,7 +286,7 @@ void te::vp::AggregationDialog::setFunctionsByLayer(std::vector<te::dt::Property
   te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
   const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
 
-  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
+  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
   {
     for(size_t i=0; i < properties.size(); ++i)
     {

@@ -24,9 +24,7 @@
 */
 
 // TerraLib
-#include "../../../../dataaccess/dataset/DataSetType.h"
-#include "../../../../dataaccess/datasource/DataSource.h"
-#include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "TL4ConverterWizard.h"
@@ -53,7 +51,7 @@
 
 te::qt::plugins::terralib4::TL4ConverterWizard::TL4ConverterWizard(QWidget* parent, Qt::WindowFlags f)
   : QWizard(parent, f),
-    m_hasRaster(true),
+    m_hasRaster(false),
     m_hasOnlyRaster(false),
     m_ui(new Ui::TL4ConverterWizardForm)
 {
@@ -204,7 +202,30 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::datasourceSelectionPageNext
   m_targetDataSource = *m_datasourceSelectorPage->getSelectorWidget()->getSelecteds().begin();
 
   if(!m_hasRaster)
+  {
+    std::auto_ptr<te::da::DataSource> tl5Database(te::da::DataSourceFactory::make(m_targetDataSource->getType()));
+    tl5Database->setConnectionInfo(m_targetDataSource->getConnInfo());
+    tl5Database->open();
+
+    std::vector<std::string> dsNames = m_layerSelectionPage->getChecked();
+
+    for(std::size_t i = 0; i < dsNames.size(); ++i)
+    {
+      std::auto_ptr<te::da::DataSetType> dst = m_tl4Database->getDataSetType(dsNames[i]);
+
+      std::auto_ptr<te::da::DataSetTypeConverter> dt_adapter(new te::da::DataSetTypeConverter(dst.get(), tl5Database->getCapabilities()));
+
+      std::auto_ptr<te::da::DataSet> ds(m_tl4Database->getDataSet(dsNames[i]));
+
+      std::auto_ptr<te::da::DataSetAdapter> ds_adapter(te::da::CreateAdapter(ds.get(), dt_adapter.get()));
+
+      std::map<std::string, std::string> op;
+
+      te::da::Create(tl5Database.get(), dt_adapter->getResult(), ds_adapter.get(), op);
+    }
+
     QWizard::next();
+  }
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNext()
