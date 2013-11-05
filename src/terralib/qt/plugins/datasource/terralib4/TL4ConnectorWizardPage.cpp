@@ -51,6 +51,8 @@ te::qt::plugins::terralib4::TL4ConnectorWizardPage::TL4ConnectorWizardPage(QWidg
   m_ui->m_databaseTypeComboBox->addItem("PostGIS");
   m_ui->m_databaseTypeComboBox->addItem("Firebird");
 
+  onDatabaseTypeComboBoxActivated(0);
+
   connect(m_ui->m_databaseTypeComboBox, SIGNAL(activated(int)), SLOT(onDatabaseTypeComboBoxActivated(int)));
   connect(m_ui->m_directoryPushButton, SIGNAL(clicked()), SLOT(onDirectoryPushButtonClicked()));
 }

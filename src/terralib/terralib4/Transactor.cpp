@@ -283,6 +283,17 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
 
   std::auto_ptr<te::da::DataSetType> dst(terralib4::Convert2T5(table));
 
+  TeRepresPointerVector vec = layer->vectRepres();
+
+  if(!vec.empty())
+  {
+    TeGeomRep geomRep = vec[0]->geomRep_;
+
+    te::gm::GeometryProperty* geomProp = new te::gm::GeometryProperty("spatial_data", 
+      layer->projection()->epsgCode(), terralib4::Convert2T5GeomType(geomRep));
+    dst->add(geomProp);
+  }
+
   return dst;
 }
 
