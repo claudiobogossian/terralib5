@@ -25,9 +25,6 @@ dataSetTypeCapabilities.setSupportQuadTreeIndex(false);
 // DataSet Capabilities
 te::da::DataSetCapabilities dataSetCapabilities;
 dataSetCapabilities.setSupportAll();
-dataSetCapabilities.setSupportInsertion(false);
-dataSetCapabilities.setSupportUpdate(false);
-dataSetCapabilities.setSupportDeletion(false);
 
 // Query Capabilities
 te::da::QueryCapabilities queryCapabilities;

@@ -72,7 +72,7 @@ namespace te
         Transactor(DataSource* ds, Connection* conn);
 
         /*! \brief The destructor will automatically release the connection to the pool. */
-          ~Transactor();
+        ~Transactor();
 
         te::da::DataSource* getDataSource() const;
 

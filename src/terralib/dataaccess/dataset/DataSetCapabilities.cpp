@@ -35,10 +35,7 @@ te::da::DataSetCapabilities::DataSetCapabilities()
     m_efficientMoveLast(false),
     m_efficientMoveAfterLast(false),
     m_efficientMove(false),
-    m_efficientSize(false),
-    m_insertion(false),
-    m_update(false),
-    m_deletion(false)
+    m_efficientSize(false)
 {
 }
 
@@ -136,36 +133,6 @@ void te::da::DataSetCapabilities::setSupportEfficientDataSetSize(const bool& sup
   m_efficientSize = support;
 }
 
-bool te::da::DataSetCapabilities::supportsInsertion() const
-{
-  return m_insertion;
-}
-
-void te::da::DataSetCapabilities::setSupportInsertion(const bool& support)
-{
-  m_insertion = support;
-}
-
-bool te::da::DataSetCapabilities::supportsUpdate() const
-{
-  return m_update;
-}
-
-void te::da::DataSetCapabilities::setSupportUpdate(const bool& support)
-{
-  m_update = support;
-}
-
-bool te::da::DataSetCapabilities::supportsDeletion() const
-{
-  return m_deletion;
-}
-
-void te::da::DataSetCapabilities::setSupportDeletion(const bool& support)
-{
-  m_deletion = support;
-}
-
 void te::da::DataSetCapabilities::setSupportAll()
 {
   m_bidirectional = true;
@@ -177,7 +144,4 @@ void te::da::DataSetCapabilities::setSupportAll()
   m_efficientMoveAfterLast = true;
   m_efficientMove = true;
   m_efficientSize = true;
-  m_insertion = true;
-  m_update = true;
-  m_deletion = true;
 }

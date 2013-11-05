@@ -156,7 +156,7 @@ bool te::vp::Buffer(const std::string& inDatasetName,
   
   // execute the strategy
   bool res;
-  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
+  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
   {
     if(fromAttDistance == "")
       res = BufferQuery(inDatasetName, inDataSource, fixedDistance, bufferPolygonRule, bufferBoundariesRule, copyInputColumns, levels, outputDataSet.get(), outputDataSetType.get(), te::gm::MultiPolygonType);
