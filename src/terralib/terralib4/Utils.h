@@ -80,6 +80,15 @@ namespace terralib4
   int Convert2T5(TeAttrDataType type);
 
   /*!
+    \brief It converts a Terralib 4.x data type to Terralib 5 data type.
+
+    \param type The type to convert.
+
+    \return A TerraLib 5 data type.
+  */
+  te::gm::GeomType Convert2T5GeomType(TeGeomRep type);
+
+  /*!
     \brief It converts a Terralib 5 data type to Terralib 4.x data type.
 
     \param type The type to convert.

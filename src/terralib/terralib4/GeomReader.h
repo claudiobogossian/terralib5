@@ -73,6 +73,8 @@ namespace terralib4
       static std::auto_ptr<te::gm::MultiPoint> getMultiPoint(const TePointSet& pointSet);
 
       static std::auto_ptr<te::gm::Polygon> getPolygon(const TeCell& cell);
+
+      static std::auto_ptr<te::gm::Geometry> getGeometry(const TeGeometry& geom);
   };
 }  // end namespace terralib4
 

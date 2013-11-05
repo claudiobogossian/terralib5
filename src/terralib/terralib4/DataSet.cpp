@@ -40,9 +40,11 @@
 #include "DataSet.h"
 #include "DataSource.h"
 #include "Exception.h"
+#include "GeomReader.h"
 #include "Utils.h"
 
 // Terralib 4.x
+#include <TeAttribute.h>
 #include <TeDatabase.h>
 #include <TeLayer.h>
 
@@ -59,8 +61,9 @@ terralib4::DataSet::DataSet(TeLayer* layer)
   : m_querier(0),
     m_i(-1),
     m_size(-1),
-    m_layer(layer),
-    m_result(0)
+    m_nCols(-1),
+    m_hasGeometry(false),
+    m_layer(layer)
 {
   TeQuerierParams params(true, true);
   params.setParams(m_layer);
@@ -68,6 +71,8 @@ terralib4::DataSet::DataSet(TeLayer* layer)
   m_querier = new TeQuerier(params);
 
   m_querier->loadInstances();
+
+  m_nCols = m_querier->getAttrList().size();
 
 }
 
@@ -93,22 +98,33 @@ std::auto_ptr<te::gm::Envelope> terralib4::DataSet::getExtent(std::size_t i)
 
 std::size_t terralib4::DataSet::getNumProperties() const
 {
-  return m_result->numFields();
+  return m_nCols;
 }
 
 int terralib4::DataSet::getPropertyDataType(std::size_t i) const
 {
+  if(i >= m_nCols && (m_layer->hasGeometry(TePOLYGONS) || 
+    m_layer->hasGeometry(TeLINES) ||
+    m_layer->hasGeometry(TePOINTS) ||
+    m_layer->hasGeometry(TeNODES) ||
+    m_layer->hasGeometry(TeCELLS)))
+  {
+    return te::dt::GEOMETRY_TYPE;
+  }
+
   return terralib4::Convert2T5(m_querier->getAttrList()[i].rep_.type_);
 }
 
 std::string terralib4::DataSet::getPropertyName(std::size_t i) const
 {
-  return m_result->getAttribute(i).rep_.name_;
+  /*TeAttributeList list = m_querier->getAttrList();
+  return list[i].rep_.name_();*/
+  throw;
 }
 
 std::string terralib4::DataSet::getDatasetNameOfProperty(std::size_t i) const
 {
-  return m_result->getAttribute(i).origin_;
+  throw;
 }
 
 bool terralib4::DataSet::isEmpty() const
@@ -158,78 +174,82 @@ bool terralib4::DataSet::move(std::size_t /*i*/)
 
 bool terralib4::DataSet::isAtBegin() const
 {
-  /*
-  return m_i == 0;
-  */
   return false;
 }
 
 bool terralib4::DataSet::isBeforeBegin() const
 {
-  /*
-  return m_i == -1;
-  */
   return false;
 }
 
 bool terralib4::DataSet::isAtEnd() const
 {
-  /*
-  return m_i == m_result->numRows()-1;
-  */
   return false;
 }
 
 bool terralib4::DataSet::isAfterEnd() const
 {
-  /*
-  return m_i == m_result->numRows();
-  */
   return false;
 }
 
 char terralib4::DataSet::getChar(std::size_t i) const
 {
-//  m_instance.getPropertyVector();
-  /*
-  return *m_result->getData(i);
-  */
-  return *m_result->getData(i);
+  return '\0';
 }
 
 unsigned char terralib4::DataSet::getUChar(std::size_t i) const
 {
-  return getChar(i);
+  return '\0';
 }
 
 boost::int16_t terralib4::DataSet::getInt16(std::size_t i) const
 {
-  return m_result->getInt(i);
+  std::string val;
+  int ii = static_cast<int>(i);
+  m_instance.getPropertyValue(val, ii);
+
+  return boost::lexical_cast<boost::int16_t>(val);
 }
 
 boost::int32_t terralib4::DataSet::getInt32(std::size_t i) const
 {
-  return getInt16(i);
+  std::string val;
+  int ii = static_cast<int>(i);
+  m_instance.getPropertyValue(val, ii);
+
+  return boost::lexical_cast<boost::int32_t>(val);
 }
 
 boost::int64_t terralib4::DataSet::getInt64(std::size_t i) const
 {
-  return getInt16(i);
+  std::string val;
+  int ii = static_cast<int>(i);
+  m_instance.getPropertyValue(val, ii);
+
+  return boost::lexical_cast<boost::int64_t>(val);
 }
 
 bool terralib4::DataSet::getBool(std::size_t i) const
 {
-  return m_result->getBool(i);
+  std::string val;
+  int ii = static_cast<int>(i);
+  m_instance.getPropertyValue(val, ii);
+
+  return boost::lexical_cast<bool>(val);
 }
 
 float terralib4::DataSet::getFloat(std::size_t i) const
 {
-  return (float)m_result->getDouble(i);
+  return (float)getDouble(i);
 }
 
 double terralib4::DataSet::getDouble(std::size_t i) const
 {
-  return m_result->getDouble(i);
+  std::string val;
+  int ii = static_cast<int>(i);
+  m_instance.getPropertyValue(val, ii);
+
+  return boost::lexical_cast<double>(val);
 }
 
 std::string terralib4::DataSet::getNumeric(std::size_t i) const
@@ -254,25 +274,24 @@ std::string terralib4::DataSet::getString(std::size_t i) const
 
 std::auto_ptr<te::dt::ByteArray> terralib4::DataSet::getByteArray(std::size_t i) const
 {
-  unsigned char * data;
+  /*unsigned char * data;
   long size;
   m_result->getBlob(m_result->getAttribute(i).rep_.name_, data, size);
 
-  return std::auto_ptr<te::dt::ByteArray>(new te::dt::ByteArray((char*)data, size));
+  return std::auto_ptr<te::dt::ByteArray>(new te::dt::ByteArray((char*)data, size));*/
+  throw;
 }
 
 std::auto_ptr<te::gm::Geometry> terralib4::DataSet::getGeometry(std::size_t i) const
 {
-  std::auto_ptr<te::dt::ByteArray> ba(getByteArray(i));
+  std::string val;
+  int ii = static_cast<int>(i);
 
-  std::auto_ptr<te::gm::Geometry> geom(te::gm::WKBReader::read(ba->getData()));
+  std::vector<TeGeometry*> geoms;
+  m_instance.getGeometry(geoms);
 
-  std::size_t wkb_size = geom->getWkbSize();
 
-  if(ba->bytesUsed() - wkb_size >= 4)
-    geom->setSRID(*((int*)(ba->getData() + wkb_size)));
-
-  return geom;
+  return terralib4::GeomReader::getGeometry(*geoms[0]);
 }
 
 std::auto_ptr<te::rst::Raster> terralib4::DataSet::getRaster(std::size_t i) const

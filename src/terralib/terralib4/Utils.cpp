@@ -217,6 +217,26 @@ te::gm::GeomType terralib4::Convert2T5GeomType(TeAttrDataType type)
   }
 }
 
+te::gm::GeomType terralib4::Convert2T5GeomType(TeGeomRep type)
+{
+  switch(type)
+  {
+    case TePOINTS:
+    case TeNODES:
+      return te::gm::PointType;
+
+    case TeLINES:
+      return te::gm::LineStringType;
+
+    case TePOLYGONS:
+    case TeCELLS:
+      return te::gm::PolygonType;
+
+    default:
+      return te::gm::UnknownGeometryType;
+  }
+}
+
 TeAttrDataType terralib4::Convert2T4(int type)
 {
   switch(type)

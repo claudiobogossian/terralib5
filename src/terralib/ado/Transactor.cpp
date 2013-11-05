@@ -1256,7 +1256,7 @@ void te::ado::Transactor::add(const std::string& datasetName,
             recset->GetFields()->GetItem("upper_y")->Value = (_variant_t)env->m_ury;
 
             _variant_t var;
-            Convert2Ado(d->getGeometry(pname).get(), var);
+            Convert2Ado(geometry.get(), var);
 
             recset->Fields->GetItem(pname.c_str())->AppendChunk (var);
             
