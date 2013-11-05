@@ -139,7 +139,7 @@ int main(int /*argc*/, char** /*argv*/)
 
     //QueryExample_2(); //ok
 
-    //MemoryExample(); //Ok-cai no add (chamando o copy)
+    MemoryExample(); //Ok-cai no add (chamando o copy)
 
     //ExportingOGR();  //ok
 
@@ -158,8 +158,6 @@ int main(int /*argc*/, char** /*argv*/)
     //////MySQLExample();
 
     //////SQLiteExample();
-
-    TerraLib4Converter();
 
     te::plugin::PluginManager::getInstance().unloadAll();
 
