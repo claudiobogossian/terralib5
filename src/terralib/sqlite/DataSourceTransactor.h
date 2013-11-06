@@ -47,6 +47,8 @@ namespace te
 
         DataSourceTransactor(DataSource* parent, sqlite3* db);
 
+        ~DataSourceTransactor();
+
         te::da::DataSource* getDataSource() const;
 
         void begin();
@@ -59,29 +61,34 @@ namespace te
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                  bool connected = false);
+                                                  bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                  bool connected = false);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                  bool connected = false);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                             bool connected = false);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
+                                             bool connected = false,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         std::auto_ptr<te::da::DataSet> query(const std::string& query,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                             bool connected = false);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
+                                             bool connected = false,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         void execute(const te::da::Query& command);
 
