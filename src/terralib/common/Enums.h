@@ -123,8 +123,20 @@ namespace te
       UTF16
     };
 
+    /*! \brief Common TerraLib Exception Codes. */
+    enum
+    {
+      UNKNOWN_EXCEPTION = 0,
+      NO_CONNECTION_AVAILABLE = 1
+    };
+
+    /*! \brief An anonymous union that marks the last common TerraLib Exception Code. */
+    enum
+    {
+      LAST_COMMON_EXCEPTION_CODE = NO_CONNECTION_AVAILABLE
+    };
+
   } // end namespace common
 }   // end namespace te
 
 #endif  // __TERRALIB_COMMON_INTERNAL_ENUMS_H
-

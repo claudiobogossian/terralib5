@@ -111,13 +111,13 @@ void te::da::SpatialRestrictionVisitor::initialize()
 {
   // Initializes the map of spatial restriction functions
   m_spatialFunctions[FunctionNames::sm_ST_Intersects] = te::gm::INTERSECTS;
-  m_spatialFunctions[FunctionNames::sm_Disjoint     ] = te::gm::DISJOINT;
-  m_spatialFunctions[FunctionNames::sm_Touches      ] = te::gm::TOUCHES;
-  m_spatialFunctions[FunctionNames::sm_Overlaps     ] = te::gm::OVERLAPS;
-  m_spatialFunctions[FunctionNames::sm_Crosses      ] = te::gm::CROSSES;
-  m_spatialFunctions[FunctionNames::sm_Within       ] = te::gm::WITHIN;
-  m_spatialFunctions[FunctionNames::sm_Contains     ] = te::gm::CONTAINS;
-  m_spatialFunctions[FunctionNames::sm_Equals       ] = te::gm::EQUALS;
+  m_spatialFunctions[FunctionNames::sm_ST_Disjoint  ] = te::gm::DISJOINT;
+  m_spatialFunctions[FunctionNames::sm_ST_Touches   ] = te::gm::TOUCHES;
+  m_spatialFunctions[FunctionNames::sm_ST_Overlaps  ] = te::gm::OVERLAPS;
+  m_spatialFunctions[FunctionNames::sm_ST_Crosses   ] = te::gm::CROSSES;
+  m_spatialFunctions[FunctionNames::sm_ST_Within    ] = te::gm::WITHIN;
+  m_spatialFunctions[FunctionNames::sm_ST_Contains  ] = te::gm::CONTAINS;
+  m_spatialFunctions[FunctionNames::sm_ST_Equals    ] = te::gm::EQUALS;
 
   /* TODO: not mapped values - UNKNOWN_SPATIAL_RELATION = 0, COVERS = 128, COVEREDBY = 256 */
 }

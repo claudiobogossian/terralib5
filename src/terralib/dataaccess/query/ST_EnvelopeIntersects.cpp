@@ -18,38 +18,28 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Beyond.cpp
+  \file terralib/dataaccess/query/ST_EnvelopeIntersects.cpp
 
-  \brief Spatial Distance Buffer Beyond operator.
+  \brief  This operator EnvelopeIntersects considers the intersection among approximations or
+          envelopes of geometries.
 */
 
 // TerraLib
-#include "FunctionNames.h"
-#include "ST_Beyond.h"
+#include "ST_EnvelopeIntersects.h"
 
-te::da::ST_Beyond::ST_Beyond(te::da::Expression* e, te::gm::Geometry* g, te::common::Distance* d)
-   : ST_DistanceBuffer(FunctionNames::sm_ST_Beyond, e, g, d)
+te::da::ST_EnvelopeIntersects::ST_EnvelopeIntersects(const ST_EnvelopeIntersects& rhs)
+  : BinaryFunction(rhs)
 {
 }
 
-te::da::ST_Beyond::ST_Beyond(const te::da::Expression& e, const te::gm::Geometry& g, const te::common::Distance& d)
-   : ST_DistanceBuffer(FunctionNames::sm_ST_Beyond, e, g, d)
+te::da::ST_EnvelopeIntersects& te::da::ST_EnvelopeIntersects::operator=(const ST_EnvelopeIntersects& rhs)
 {
-}
-
-te::da::ST_Beyond::ST_Beyond(const ST_Beyond& rhs)
-  : ST_DistanceBuffer(rhs)
-{
-}
-
-te::da::ST_Beyond& te::da::ST_Beyond::operator=(const ST_Beyond& rhs)
-{
-  ST_DistanceBuffer::operator=(rhs);
+  BinaryFunction::operator=(rhs);
   return *this;
 }
 
-te::da::Expression* te::da::ST_Beyond::clone() const
+te::da::Expression* te::da::ST_EnvelopeIntersects::clone() const
 {
-  return new ST_Beyond(*this);
+  return new ST_EnvelopeIntersects(*this);
 }
 

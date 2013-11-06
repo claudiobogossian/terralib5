@@ -30,21 +30,29 @@
 #include <ostream>
 
 te::common::Exception::Exception() throw()
+  : m_code(UNKNOWN_EXCEPTION)
 {
 }
 
-te::common::Exception::Exception(const std::string& what) throw()
-  : m_msg(what)
+te::common::Exception::Exception(const std::string& what, int code) throw()
+  : m_code(code),
+    m_msg(what)
 {
 }
 
-te::common::Exception::Exception(const char* const what) throw()
-  : m_msg(what)
+te::common::Exception::Exception(const char* const what, int code) throw()
+  : m_code(code),
+    m_msg(what)
 {
 }
 
 te::common::Exception::~Exception() throw()
 {
+}
+
+int te::common::Exception::code() const throw()
+{
+  return m_code;
 }
 
 const char* te::common::Exception::what() const throw()

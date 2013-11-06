@@ -57,7 +57,7 @@ namespace te
 
           \note The operator will take the ownership of the given arguments.
         */
-        ST_Equals(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_Equals, arg1, arg2) {}
+        ST_Equals(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_ST_Equals, arg1, arg2) {}
 
         /*!
           \brief Constructor.
@@ -65,7 +65,7 @@ namespace te
           \param arg1 The first argument.
           \param arg2 The second argument.
         */
-        ST_Equals(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_Equals, arg1, arg2) {}
+        ST_Equals(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_ST_Equals, arg1, arg2) {}
 
         /*! \brief Copy constructor. */
         ST_Equals(const ST_Equals& rhs);

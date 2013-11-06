@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../dataaccess/Exception.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "DrawLayerThread.h"
@@ -94,15 +95,30 @@ void te::qt::widgets::DrawLayerThread::run()
   canvas.setWindow(m_env.m_llx, m_env.m_lly, m_env.m_urx, m_env.m_ury);
   canvas.clear();
 
-  // Let's draw!
-  try
+  while(true)
   {
-    m_layer->draw(&canvas, m_env, m_srid);
-  }
-  catch(const std::exception& e)
-  {
-    m_finishedWithSuccess = false;
-    m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
+    // Let's draw!
+    try
+    {
+      m_layer->draw(&canvas, m_env, m_srid);
+      break;
+    }
+    catch(const te::da::Exception& e)
+    {
+      if(e.code() != te::common::NO_CONNECTION_AVAILABLE)
+      {
+        m_finishedWithSuccess = false;
+        m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
+        break;
+      }
+      msleep(100);
+    }
+    catch(const std::exception& e)
+    {
+      m_finishedWithSuccess = false;
+      m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
+      break;
+    }
   }
 }
 
