@@ -18,13 +18,14 @@
  */
 
 /*!
-  \file terralib/dataaccess/query/ST_Touches.h
+  \file terralib/dataaccess/query/ST_EnvelopeIntersects.h
 
-  \brief Spatial touches operator.
+  \brief  This operator EnvelopeIntersects considers the intersection among approximations or
+          envelopes of geometries.
 */
 
-#ifndef __TERRALIB_DATAACCESS_INTERNAL_ST_TOUCHES_H
-#define __TERRALIB_DATAACCESS_INTERNAL_ST_TOUCHES_H
+#ifndef __TERRALIB_DATAACCESS_INTERNAL_ST_ENVELOPEINTERSECTS_H
+#define __TERRALIB_DATAACCESS_INTERNAL_ST_ENVELOPEINTERSECTS_H
 
 // TerraLib
 #include "BinaryFunction.h"
@@ -35,15 +36,14 @@ namespace te
   namespace da
   {
     /*!
-      \class ST_Touches
+      \class ST_EnvelopeIntersects
       
-      \brief Spatial touches operator.
-
-      This function is just a syntatic-suggar.
+      \brief  An operator that considers the intersection among approximations 
+              or envelopes of geometries.
 
       \sa BinaryFunction
     */
-    class TEDATAACCESSEXPORT ST_Touches : public BinaryFunction
+    class TEDATAACCESSEXPORT ST_EnvelopeIntersects : public BinaryFunction
     {
       public:
 
@@ -57,7 +57,7 @@ namespace te
 
           \note The operator will take the ownership of the given arguments.
         */
-        ST_Touches(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_ST_Touches, arg1, arg2) {}
+        ST_EnvelopeIntersects(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_ST_EnvelopeIntersects, arg1, arg2) {}
 
         /*!
           \brief Constructor.
@@ -65,16 +65,16 @@ namespace te
           \param arg1 The first argument.
           \param arg2 The second argument.
         */
-        ST_Touches(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_ST_Touches, arg1, arg2) {}
+        ST_EnvelopeIntersects(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_ST_EnvelopeIntersects, arg1, arg2) {}
 
         /*! \brief Copy constructor. */
-        ST_Touches(const ST_Touches& rhs);
+        ST_EnvelopeIntersects(const ST_EnvelopeIntersects& rhs);
 
         /*! \brief Destructor. */
-        ~ST_Touches() {}
+        ~ST_EnvelopeIntersects() {}
 
         /*! Assignment operator.  */
-        ST_Touches& operator=(const ST_Touches& rhs);
+        ST_EnvelopeIntersects& operator=(const ST_EnvelopeIntersects& rhs);
 
         /*! \brief It creates a new copy of this expression. */
         Expression* clone() const;
@@ -83,5 +83,5 @@ namespace te
   } // end namespace da
 }   // end namespace te
 
-#endif  // __TERRALIB_DATAACCESS_INTERNAL_ST_TOUCHES_H
+#endif  // __TERRALIB_DATAACCESS_INTERNAL_ST_ENVELOPEINTERSECTS_H
 

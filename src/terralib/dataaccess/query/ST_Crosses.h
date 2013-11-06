@@ -57,7 +57,7 @@ namespace te
 
           \note The operator will take the ownership of the given arguments.
         */
-        ST_Crosses(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_Crosses, arg1, arg2) {}
+        ST_Crosses(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_ST_Crosses, arg1, arg2) {}
 
         /*!
           \brief Constructor.
@@ -65,7 +65,7 @@ namespace te
           \param arg1 The first argument.
           \param arg2 The second argument.
         */
-        ST_Crosses(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_Crosses, arg1, arg2) {}
+        ST_Crosses(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_ST_Crosses, arg1, arg2) {}
 
         /*! \brief Copy constructor. */
         ST_Crosses(const ST_Crosses& rhs);

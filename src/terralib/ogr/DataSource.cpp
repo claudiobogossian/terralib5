@@ -52,7 +52,7 @@ void GetDataSetTypeCapabilities(te::da::DataSourceCapabilities& caps)
 void GetQueryCapabilities(te::da::DataSourceCapabilities& caps)
 {
   te::da::QueryCapabilities qy_caps;
-  qy_caps.addSpatialTopologicOperator("st_intersects");
+  qy_caps.addSpatialTopologicOperator("st_envelopeintersects");
   caps.setQueryCapabilities(qy_caps);
 }
 
