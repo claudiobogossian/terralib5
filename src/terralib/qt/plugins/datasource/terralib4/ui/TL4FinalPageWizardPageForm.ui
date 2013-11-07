@@ -15,13 +15,15 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <widget class="QFrame" name="m_frame">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Layers List</string>
      </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QListWidget" name="m_layersListWidget"/>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
