@@ -650,6 +650,8 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     return;
   }
 
+  this->setCursor(Qt::WaitCursor);
+
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -742,11 +744,13 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   catch(const std::exception& e)
   {
     QMessageBox::information(this, "Aggregation", e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    this->setCursor(Qt::ArrowCursor);
     return;
   }
 
   te::common::ProgressManager::getInstance().removeViewer(id);
-
+  this->setCursor(Qt::ArrowCursor);
   accept();
 }
 

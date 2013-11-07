@@ -794,7 +794,7 @@ namespace te
                 dummyRasterScales,
                 currentRasterBandsOffsets,
                 currentRasterBandsScales,
-                dynamic_cast< te::gm::LinearRing const * >( mosaicBBoxesUnionElementPtr->getExteriorRing() ),
+                mosaicBBoxesUnionElementPtr,
                 0,
                 *( eachRasterPixelToMosaicRasterPixelGeomTransfms[ inputRasterIdx - 1 ] ) ), 
                 "Blender initiazing error" );
