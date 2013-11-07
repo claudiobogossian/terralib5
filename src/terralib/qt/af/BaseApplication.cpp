@@ -1899,7 +1899,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectRemoveFolder, "folder-remove", "Project.Remove Folder", tr("Remove &Folder(s)"), tr("Remove folder from the project"), true, false, true, this);
   initAction(m_projectRemoveChart, "chart-pie-remove", "Project.Remove Chart", tr("Remove Chart"), tr("Remove chart from the project"), true, false, true, this);
   initAction(m_projectRemoveClassification, "grouping-remove", "Project.Remove Classification", tr("Remove Classification"), tr("Remove classification from the project"), true, false, true, this);
-  initAction(m_projectRenameItem, "item-rename", "Project.Rename Item", tr("Rename..."), tr("Rename item"), true, false, true, this);
+  initAction(m_projectRenameItem, "layer-rename", "Project.Rename Item", tr("Rename..."), tr("Rename item"), true, false, true, this);
   initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
