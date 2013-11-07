@@ -29,7 +29,7 @@
 namespace terralib4
 {
 
-  TE_DEFINE_EXCEPTION_CLASS(Exception, te::da::Exception, "te::ado::Exception")
+  TE_DEFINE_EXCEPTION_CLASS(Exception, te::da::Exception, "terralib4::Exception")
 
 }   // end namespace terralib4
 
