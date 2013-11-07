@@ -32,6 +32,28 @@
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
 
+#include <complex>
+
+// Get the perpendicular distance from a point P(pX,pY) from a line defined
+// by the points A(lineAX,lineAY) and B(lineBX,lineBY)
+// Requires two previously declared variables aux1 and aux2
+#define getPerpendicularDistance( pX, pY, lineAX, lineAY, lineBX, lineBY, aux1, aux2, perpDist ) \
+  aux1 = lineAX - lineBX; \
+  aux2 = lineAY - lineBY; \
+  if( aux1 == 0 ) \
+  { \
+    perpDist = std::abs( pX - lineAX ); \
+  } \
+  else if( aux2 == 0 ) \
+  { \
+    perpDist = std::abs( pY - lineAY ); \
+  } \
+  else \
+  { \
+    perpDist = std::abs( ( aux2 * pX ) - ( aux1 * pY ) + ( lineAX * lineBY ) - ( lineBX * lineAY ) ) / \
+      ( ( aux1 * aux1 ) + ( aux2 * aux2 ) ); \
+  }
+
 namespace te
 {
   namespace rp
@@ -59,10 +81,9 @@ namespace te
       const std::vector< double >& pixelScales1,
       const std::vector< double >& pixelOffsets2,
       const std::vector< double >& pixelScales2,
-      te::gm::Polygon const * const r1ValidDataPolygonPtr,
-      te::gm::Polygon const * const r2ValidDataPolygonPtr,
-      const te::gm::GeometricTransformation& geomTransformation,
-      const bool raster1HasPrecedence )
+      te::gm::LinearRing const * const r1ValidDataDelimiterPtr,
+      te::gm::LinearRing const * const r2ValidDataDelimiterPtr,
+      const te::gm::GeometricTransformation& geomTransformation )
     {
       TERP_TRUE_OR_RETURN_FALSE( 
         raster1.getAccessPolicy() & te::common::RAccess, 
@@ -80,16 +101,16 @@ namespace te
         raster2Bands.size(), "Invalid pixel offsets" );
       TERP_TRUE_OR_RETURN_FALSE( pixelScales2.size() ==  
         raster2Bands.size(), "Invalid pixel scales" );        
-      TERP_TRUE_OR_RETURN_FALSE( ( r1ValidDataPolygonPtr ?
-        ( r1ValidDataPolygonPtr->getNumRings() > 0 ) : true ),
+      TERP_TRUE_OR_RETURN_FALSE( ( r1ValidDataDelimiterPtr ?
+        ( r1ValidDataDelimiterPtr->getNPoints() > 1 ) : true ),
         "Invalid polygon 1" )
-      TERP_TRUE_OR_RETURN_FALSE( ( r2ValidDataPolygonPtr ?
-        ( r2ValidDataPolygonPtr->getNumRings() > 0 ) : true ),
+      TERP_TRUE_OR_RETURN_FALSE( ( r2ValidDataDelimiterPtr ?
+        ( r2ValidDataDelimiterPtr->getNPoints() > 1 ) : true ),
         "Invalid polygon 2" )
       TERP_TRUE_OR_RETURN_FALSE( geomTransformation.isValid(),
         "Invalid transformation" );
         
-      clear();
+      initState();
       
       // defining the blending method
       
@@ -102,6 +123,11 @@ namespace te
           m_blendFuncPtr = &te::rp::Blender::noBlendMethodImp;
           break;
         }
+        case EuclideanDistanceMethod :
+        {
+          m_blendFuncPtr = &te::rp::Blender::euclideanDistanceMethodImp;
+          break;
+        }        
         default :
         {
           return false;
@@ -111,112 +137,78 @@ namespace te
       
       // defining the input rasters
       
-      m_raster1HasPrecedence = raster1HasPrecedence;
-        
       m_raster1Ptr = &raster1;
       m_raster2Ptr = &raster2;
       
-      // converting polygons from world cooods to indexed ones
+      // Generating the valid data area points
       
-      if( r1ValidDataPolygonPtr )
+      if( r1ValidDataDelimiterPtr )
       {
-        m_r1ValidDataPolygonPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );
-        
-        const std::size_t nRings = r1ValidDataPolygonPtr->getNumRings();
-        te::gm::LinearRing const* oldRingPtr = 0;
-        std::auto_ptr< te::gm::LinearRing > newRingPtr;
-        std::size_t pointIdx = 0;
-        std::size_t ringElementsBound = 0;
+        const std::size_t nPoints = r1ValidDataDelimiterPtr->getNPoints();
         const te::rst::Grid& grid = (*raster1.getGrid());
-        double newXCoord = 0;
-        double newYCoord = 0;
+        te::gm::Coord2D const * inCoordsPtr = r1ValidDataDelimiterPtr->getCoordinates();
+        te::gm::Coord2D auxCoord;        
         
-        for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
+        for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
         {
-          oldRingPtr = dynamic_cast< te::gm::LinearRing const* >( r1ValidDataPolygonPtr->operator[]( ringIdx ) );
-          TERP_DEBUG_TRUE_OR_THROW( oldRingPtr != 0, "Invalid ring" )
-          
-          TERP_DEBUG_TRUE_OR_THROW( oldRingPtr->getNPoints(), "Invalid ring size" );
-          ringElementsBound = oldRingPtr->getNPoints() - 1;
-          
-          newRingPtr.reset( new te::gm::LinearRing( oldRingPtr->getNPoints(), te::gm::LineStringType, 0, 0 ) );
-          
-          for( pointIdx = 0 ; pointIdx < ringElementsBound ; ++pointIdx )
-          {
-            grid.geoToGrid( oldRingPtr->getX( pointIdx ), oldRingPtr->getY( pointIdx ), 
-              newXCoord, newYCoord );
-            newRingPtr->setX( pointIdx, newXCoord );
-            newRingPtr->setY( pointIdx, newYCoord );
-          }
-          newRingPtr->setX( ringElementsBound, newRingPtr->getX( 0 ) );
-          newRingPtr->setY( ringElementsBound, newRingPtr->getY( 0 ) );          
-          
-          m_r1ValidDataPolygonPtr->add( newRingPtr.release() );
+          grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
+            auxCoord.x, auxCoord.y );          
+          m_r1ValidDataDelimiterPoints.push_back( auxCoord );
         }
       }
       else
       {
-        te::gm::LinearRing* auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-        auxLinearRingPtr->setPoint( 0, -0.5, -0.5 );
-        auxLinearRingPtr->setPoint( 1, ((double)raster1.getNumberOfColumns()) - 0.5, -0.5 );
-        auxLinearRingPtr->setPoint( 2, ((double)raster1.getNumberOfColumns()) - 0.5, 
-          ((double)raster1.getNumberOfRows()) - 0.5 );
-        auxLinearRingPtr->setPoint( 3, -0.5, ((double)raster1.getNumberOfRows()) - 0.5 );
-        auxLinearRingPtr->setPoint( 4, -0.5, -0.5 );
-        
-        m_r1ValidDataPolygonPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );
-        m_r1ValidDataPolygonPtr->push_back( auxLinearRingPtr );        
+        m_r1ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
+          -0.5,
+          -0.5 ) );
+        m_r1ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
+          ((double)raster1.getNumberOfColumns()) - 0.5, 
+          -0.5 ) );
+        m_r1ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
+          ((double)raster1.getNumberOfColumns()) - 0.5, 
+          ((double)raster1.getNumberOfRows()) - 0.5 ) );
+        m_r1ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
+          -0.5, 
+          ((double)raster1.getNumberOfRows()) - 0.5 ) );
+        m_r1ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
+          -0.5, 
+          -0.5 ) );
       }
+      m_r1ValidDataDelimiterPointsSize = m_r1ValidDataDelimiterPoints.size();
       
-      if( r2ValidDataPolygonPtr )
+      if( r2ValidDataDelimiterPtr )
       {
-        m_r2ValidDataPolygonPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );
-        
-        const std::size_t nRings = r2ValidDataPolygonPtr->getNumRings();
-        te::gm::LinearRing const* oldRingPtr = 0;
-        std::auto_ptr< te::gm::LinearRing > newRingPtr;
-        std::size_t pointIdx = 0;
-        std::size_t ringElementsBound = 0;
+        const std::size_t nPoints = r2ValidDataDelimiterPtr->getNPoints();
         const te::rst::Grid& grid = (*raster2.getGrid());
-        double newXCoord = 0;
-        double newYCoord = 0;        
+        te::gm::Coord2D const * inCoordsPtr = r2ValidDataDelimiterPtr->getCoordinates();
+        te::gm::Coord2D auxCoord;        
         
-        for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
+        for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
         {
-          oldRingPtr = dynamic_cast< te::gm::LinearRing* >( r2ValidDataPolygonPtr->operator[]( ringIdx ) );
-          TERP_DEBUG_TRUE_OR_THROW( oldRingPtr != 0, "Invalid ring" )
-          
-          TERP_DEBUG_TRUE_OR_THROW( oldRingPtr->getNPoints(), "Invalid ring size" );
-          ringElementsBound = oldRingPtr->getNPoints() - 1;
-          
-          newRingPtr.reset( new te::gm::LinearRing( oldRingPtr->getNPoints(), te::gm::LineStringType, 0, 0 ) );
-          
-          for( pointIdx = 0 ; pointIdx < ringElementsBound ; ++pointIdx )
-          {
-            grid.geoToGrid(  oldRingPtr->getX( pointIdx ), oldRingPtr->getY( pointIdx ), 
-              newXCoord, newYCoord );
-            newRingPtr->setX( pointIdx, newXCoord );
-            newRingPtr->setY( pointIdx, newYCoord );              
-          }
-          newRingPtr->setX( ringElementsBound, newRingPtr->getX( 0 ) );
-          newRingPtr->setY( ringElementsBound, newRingPtr->getY( 0 ) ); 
-          
-          m_r2ValidDataPolygonPtr->add( newRingPtr.release() );
+          grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
+            auxCoord.x, auxCoord.y );          
+          m_r2ValidDataDelimiterPoints.push_back( auxCoord );
         }
       }
       else
       {
-        te::gm::LinearRing* auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-        auxLinearRingPtr->setPoint( 0, -0.5, -0.5 );
-        auxLinearRingPtr->setPoint( 1, ((double)raster2.getNumberOfColumns()) - 0.5, -0.5 );
-        auxLinearRingPtr->setPoint( 2, ((double)raster2.getNumberOfColumns()) - 0.5, 
-          ((double)raster2.getNumberOfRows()) - 0.5 );
-        auxLinearRingPtr->setPoint( 3, -0.5, ((double)raster2.getNumberOfRows()) - 0.5 );
-        auxLinearRingPtr->setPoint( 4, -0.5, -0.5 );       
-        
-        m_r2ValidDataPolygonPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );
-        m_r2ValidDataPolygonPtr->push_back( auxLinearRingPtr );        
-      }      
+        m_r2ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
+          -0.5,
+          -0.5 ) );
+        m_r2ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
+          ((double)raster2.getNumberOfColumns()) - 0.5, 
+          -0.5 ) );
+        m_r2ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
+          ((double)raster2.getNumberOfColumns()) - 0.5, 
+          ((double)raster2.getNumberOfRows()) - 0.5 ) );
+        m_r2ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
+          -0.5, 
+          ((double)raster2.getNumberOfRows()) - 0.5 ) );
+        m_r2ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
+          -0.5, 
+          -0.5 ) );
+      }     
+      m_r2ValidDataDelimiterPointsSize = m_r2ValidDataDelimiterPoints.size();
         
       // defining the geometric transformation  
         
@@ -279,8 +271,6 @@ namespace te
       m_blendFuncPtr = 0;
       m_raster1Ptr = 0;
       m_raster2Ptr = 0;
-      m_r1ValidDataPolygonPtr = 0;
-      m_r2ValidDataPolygonPtr = 0;
       m_geomTransformationPtr = 0;
       m_interpMethod1 = te::rst::Interpolator::NearestNeighbor;
       m_interpMethod2 = te::rst::Interpolator::NearestNeighbor;
@@ -291,8 +281,8 @@ namespace te
     
     void Blender::clear()
     {
-      if( m_r1ValidDataPolygonPtr ) delete m_r1ValidDataPolygonPtr;
-      if( m_r2ValidDataPolygonPtr ) delete m_r2ValidDataPolygonPtr;
+      m_r1ValidDataDelimiterPoints.clear();
+      m_r2ValidDataDelimiterPoints.clear();
       if( m_geomTransformationPtr ) delete m_geomTransformationPtr;
       if( m_interp1 ) delete m_interp1;
       if( m_interp2 ) delete m_interp2;
@@ -319,78 +309,183 @@ namespace te
         m_noBlendMethodImp_Point2Line );
       
       // Blending values
-      
-      if( m_raster1HasPrecedence )
+
+      for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
+        m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
       {
-        for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
-          m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
-        {
-          m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
-            m_raster1Bands[ m_noBlendMethodImp_BandIdx ] ); 
-          m_noBlendMethodImp_Value = m_noBlendMethodImp_cValue.real();      
-      
-          if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
-          {
-            m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
-              m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
-              m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );
-            m_noBlendMethodImp_Value =  m_noBlendMethodImp_cValue.real();          
-            
-            if( m_noBlendMethodImp_Value == m_raster2NoDataValues[ m_noBlendMethodImp_BandIdx ] )
-            {
-              values[ m_noBlendMethodImp_BandIdx ] = m_outputNoDataValue;
-            }
-            else
-            {
-              m_noBlendMethodImp_Value *= m_pixelScales2[ m_noBlendMethodImp_BandIdx ];
-              values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value + 
-                m_pixelOffsets2[ m_noBlendMethodImp_BandIdx ]; 
-            }
-          }
-          else
-          {
-            m_noBlendMethodImp_Value *= m_pixelScales1[ m_noBlendMethodImp_BandIdx ];
-            values[ m_noBlendMethodImp_BandIdx ] =  m_noBlendMethodImp_Value + 
-              m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
-          }      
-        }
-      }
-      else
-      {
-        for( m_noBlendMethodImp_BandIdx = 0 ; m_noBlendMethodImp_BandIdx <
-          m_raster1Bands.size() ; ++m_noBlendMethodImp_BandIdx )
+        m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
+          m_raster1Bands[ m_noBlendMethodImp_BandIdx ] ); 
+        m_noBlendMethodImp_Value = m_noBlendMethodImp_cValue.real();      
+    
+        if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
         {
           m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
             m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
-            m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );          
-          m_noBlendMethodImp_Value = m_noBlendMethodImp_cValue.real();      
-      
+            m_raster2Bands[ m_noBlendMethodImp_BandIdx ] );
+          m_noBlendMethodImp_Value =  m_noBlendMethodImp_cValue.real();          
+          
           if( m_noBlendMethodImp_Value == m_raster2NoDataValues[ m_noBlendMethodImp_BandIdx ] )
           {
-            m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
-              m_raster1Bands[ m_noBlendMethodImp_BandIdx ] ); 
-            m_noBlendMethodImp_Value =  m_noBlendMethodImp_cValue.real();          
-            
-            if( m_noBlendMethodImp_Value == m_raster1NoDataValues[ m_noBlendMethodImp_BandIdx ] )
-            {
-              values[ m_noBlendMethodImp_BandIdx ] = m_outputNoDataValue;
-            }
-            else
-            {
-              m_noBlendMethodImp_Value *= m_pixelScales1[ m_noBlendMethodImp_BandIdx ];
-              values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value + 
-                m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
-            }
+            values[ m_noBlendMethodImp_BandIdx ] = m_outputNoDataValue;
           }
           else
           {
             m_noBlendMethodImp_Value *= m_pixelScales2[ m_noBlendMethodImp_BandIdx ];
-            values[ m_noBlendMethodImp_BandIdx ] =  m_noBlendMethodImp_Value + 
+            values[ m_noBlendMethodImp_BandIdx ] = m_noBlendMethodImp_Value + 
               m_pixelOffsets2[ m_noBlendMethodImp_BandIdx ]; 
-          }      
+          }
         }
+        else
+        {
+          m_noBlendMethodImp_Value *= m_pixelScales1[ m_noBlendMethodImp_BandIdx ];
+          values[ m_noBlendMethodImp_BandIdx ] =  m_noBlendMethodImp_Value + 
+            m_pixelOffsets1[ m_noBlendMethodImp_BandIdx ]; 
+        }      
       }
     }
+    
+    void Blender::euclideanDistanceMethodImp( const double& line, const double& col,
+      std::vector< double >& values )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
+      
+      // Finding the point over the second raster
+      
+      m_geomTransformationPtr->directMap( col, line, m_euclideanDistanceMethodImp_Point2Col,
+        m_euclideanDistanceMethodImp_Point2Line );
+        
+      // Finding distances to both rasters valid area delimiters
+            
+      m_euclideanDistanceMethodImp_dist1 = DBL_MAX;
+      for( m_euclideanDistanceMethodImp_vecIdx = m_r1ValidDataDelimiterPointsSize - 1 ; 
+        m_euclideanDistanceMethodImp_vecIdx > 1 ; --m_euclideanDistanceMethodImp_vecIdx )
+      {
+        
+        getPerpendicularDistance( 
+          col,
+          line,
+          m_r1ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx ].x,
+          m_r1ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx ].y, 
+          m_r1ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].x,
+          m_r1ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].y,           
+          m_euclideanDistanceMethodImp_aux1,
+          m_euclideanDistanceMethodImp_aux2,
+          m_euclideanDistanceMethodImp_currDist );
+          
+        if( m_euclideanDistanceMethodImp_currDist < m_euclideanDistanceMethodImp_dist1 )
+        {
+          m_euclideanDistanceMethodImp_dist1 = m_euclideanDistanceMethodImp_currDist;
+        }
+      }     
+  
+      m_euclideanDistanceMethodImp_dist2 = DBL_MAX;
+      for( m_euclideanDistanceMethodImp_vecIdx = m_r2ValidDataDelimiterPointsSize - 1 ; 
+        m_euclideanDistanceMethodImp_vecIdx > 1 ; --m_euclideanDistanceMethodImp_vecIdx )
+      {
+        
+        getPerpendicularDistance( 
+          m_euclideanDistanceMethodImp_Point2Col,
+          m_euclideanDistanceMethodImp_Point2Line,
+          m_r2ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx ].x,
+          m_r2ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx ].y, 
+          m_r2ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].x,
+          m_r2ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].y,           
+          m_euclideanDistanceMethodImp_aux1,
+          m_euclideanDistanceMethodImp_aux2,
+          m_euclideanDistanceMethodImp_currDist );
+          
+        if( m_euclideanDistanceMethodImp_currDist < m_euclideanDistanceMethodImp_dist2 )
+        {
+          m_euclideanDistanceMethodImp_dist2 = m_euclideanDistanceMethodImp_currDist;
+        }
+      } 
+      
+      // Blending values
+
+      for( m_euclideanDistanceMethodImp_BandIdx = 0 ; m_euclideanDistanceMethodImp_BandIdx <
+        m_raster1Bands.size() ; ++m_euclideanDistanceMethodImp_BandIdx )
+      {
+        m_interp1->getValue( col, line, m_euclideanDistanceMethodImp_cValue1, 
+          m_raster1Bands[ m_euclideanDistanceMethodImp_BandIdx ] ); 
+        m_interp2->getValue( m_euclideanDistanceMethodImp_Point2Col, 
+          m_euclideanDistanceMethodImp_Point2Line, m_euclideanDistanceMethodImp_cValue2, 
+          m_raster2Bands[ m_euclideanDistanceMethodImp_BandIdx ] );
+    
+        if( m_euclideanDistanceMethodImp_cValue1.real() == m_raster1NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
+        {
+          if( m_euclideanDistanceMethodImp_cValue2.real() == m_raster2NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
+          {
+            values[ m_euclideanDistanceMethodImp_BandIdx ] = m_outputNoDataValue;
+          }
+          else
+          {
+            values[ m_euclideanDistanceMethodImp_BandIdx ] = 
+              ( m_euclideanDistanceMethodImp_cValue2.real() * 
+              m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] ) + 
+              m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]; 
+          }
+        }
+        else
+        {
+          if( m_euclideanDistanceMethodImp_cValue2.real() == m_raster2NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
+          {
+            values[ m_euclideanDistanceMethodImp_BandIdx ] =  
+              ( m_euclideanDistanceMethodImp_cValue1.real()  * 
+              m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] ) +
+              m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]; 
+          }
+          else
+          {
+            if( m_euclideanDistanceMethodImp_dist1 == 0.0 )
+            {
+              values[ m_euclideanDistanceMethodImp_BandIdx ] =  
+                ( m_euclideanDistanceMethodImp_cValue1.real()  * 
+                m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] ) +
+                m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]; 
+            }
+            else
+            {
+              values[ m_euclideanDistanceMethodImp_BandIdx ] =
+                (
+                  (
+                    (
+                      ( 
+                        m_euclideanDistanceMethodImp_cValue1.real()  
+                        * 
+                        m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] 
+                      ) 
+                      +
+                      m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]
+                    )
+                    *
+                    m_euclideanDistanceMethodImp_dist1
+                  )
+                  +
+                  (
+                    (
+                      ( 
+                        m_euclideanDistanceMethodImp_cValue2.real() 
+                        * 
+                        m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] 
+                      ) 
+                      + 
+                      m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]
+                    )
+                    *
+                    m_euclideanDistanceMethodImp_dist2
+                  )
+                )
+                /
+                ( 
+                  m_euclideanDistanceMethodImp_dist1 
+                  +
+                  m_euclideanDistanceMethodImp_dist2
+                );                  
+            }
+          }          
+        }      
+      }
+    }    
 
   } // end namespace rp
 }   // end namespace te    

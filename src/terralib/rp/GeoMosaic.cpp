@@ -698,10 +698,10 @@ namespace te
               dummyRasterScales,
               currentRasterBandsOffsets,
               currentRasterBandsScales,
-              mosaicBBoxesUnionElementPtr,
+              ( mosaicBBoxesUnionElementPtr->getNumRings() > 0 ) ?
+                dynamic_cast< te::gm::LinearRing const * >( mosaicBBoxesUnionElementPtr->getExteriorRing() ) : 0,
               0,
-              *transPtr,
-              true ), "Blender initiazing error" );            
+              *transPtr ), "Blender initiazing error" );            
             
             for( unsigned int overlappedResultIdx = 0 ; overlappedResultIdx <
               overlappedResult->getNumGeometries() ; ++overlappedResultIdx )

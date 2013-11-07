@@ -66,19 +66,19 @@ namespace te
         static const std::string sm_Div;
 
 // topological operators
-        static const std::string sm_Equals;
-        static const std::string sm_Disjoint;
-        static const std::string sm_DWithin;
-        static const std::string sm_Beyond;
-        static const std::string sm_Touches;
-        static const std::string sm_Within;
-        static const std::string sm_Overlaps;
-        static const std::string sm_Crosses;
-        static const std::string sm_Intersects;
-        static const std::string sm_Contains;
+        static const std::string sm_ST_Equals;
+        static const std::string sm_ST_Disjoint;
+        static const std::string sm_ST_DWithin;
+        static const std::string sm_ST_Beyond;
+        static const std::string sm_ST_Touches;
+        static const std::string sm_ST_Within;
+        static const std::string sm_ST_Overlaps;
+        static const std::string sm_ST_Crosses;
+        static const std::string sm_ST_Contains;
         static const std::string sm_ST_Difference;
         static const std::string sm_ST_Intersection;
         static const std::string sm_ST_Intersects;
+        static const std::string sm_ST_EnvelopeIntersects;
         static const std::string sm_ST_Relate;
         static const std::string sm_ST_Union;
 

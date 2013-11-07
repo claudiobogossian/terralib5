@@ -57,7 +57,7 @@ namespace te
 
           \note The operator will take the ownership of the given arguments.
         */
-        ST_Overlaps(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_Overlaps, arg1, arg2) {}
+        ST_Overlaps(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_ST_Overlaps, arg1, arg2) {}
 
         /*!
           \brief Constructor.
@@ -65,7 +65,7 @@ namespace te
           \param arg1 The first argument.
           \param arg2 The second argument.
         */
-        ST_Overlaps(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_Overlaps, arg1, arg2) {}
+        ST_Overlaps(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_ST_Overlaps, arg1, arg2) {}
 
         /*! \brief Copy constructor. */
         ST_Overlaps(const ST_Overlaps& rhs);

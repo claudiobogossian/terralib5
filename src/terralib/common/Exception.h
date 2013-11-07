@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "Enums.h"
 
 // STL
 #include <exception>
@@ -66,17 +67,24 @@ namespace te
 
           \param what A brief description of what has raised the exception.
         */
-        explicit Exception(const std::string& what) throw();
+        explicit Exception(const std::string& what, int code = UNKNOWN_EXCEPTION) throw();
 
         /*!
           \brief It initializes a new Exception.
 
           \param what A brief description of what has raised the exception.
         */
-        explicit Exception(const char* const what) throw();
+        explicit Exception(const char* const what, int code = UNKNOWN_EXCEPTION) throw();
 
         /*! \brief Destructor. */
         virtual ~Exception() throw();
+
+        /*!
+          \brief It gets the exception code.
+
+          \return The exception code.
+        */
+        virtual int code() const throw();
 
         /*!
           \brief It outputs the exception message.
@@ -94,7 +102,8 @@ namespace te
 
       protected:
 
-        std::string m_msg;  //!< The internal exception message.
+        int m_code;        //!< The internal exception code.
+        std::string m_msg; //!< The internal exception message.
     };
 
     /*!
@@ -113,46 +122,47 @@ namespace te
 /*!
   \brief This define can be used to add new exception classes to the system.
 */
-#define TE_DECLARE_EXCEPTION_CLASS(API_DECL, ClassName, BaseExceptionClass) \
-  class API_DECL ClassName : public virtual BaseExceptionClass      \
-  {                                                                 \
-    public:                                                         \
-                                                                    \
-      ClassName() throw() { }                                       \
-                                                                    \
-      explicit ClassName(const std::string& what) throw();          \
-                                                                    \
-      explicit ClassName(const char* const what) throw();           \
-                                                                    \
-      virtual ~ClassName() throw();                                 \
-                                                                    \
-      virtual const char* getClassName() const throw();             \
+#define TE_DECLARE_EXCEPTION_CLASS(API_DECL, ClassName, BaseExceptionClass)                           \
+  class API_DECL ClassName : public virtual BaseExceptionClass                                        \
+  {                                                                                                   \
+    public:                                                                                           \
+                                                                                                      \
+      ClassName() throw() { }                                                                         \
+                                                                                                      \
+      explicit ClassName(const std::string& what, int code = te::common::UNKNOWN_EXCEPTION) throw();  \
+                                                                                                      \
+      explicit ClassName(const char* const what, int code = te::common::UNKNOWN_EXCEPTION) throw();   \
+                                                                                                      \
+      virtual ~ClassName() throw();                                                                   \
+                                                                                                      \
+      virtual const char* getClassName() const throw();                                               \
   };
-      
 
 /*!
   \brief This define can be used to add new exception classes to the system.
 */
 #define TE_DEFINE_EXCEPTION_CLASS(ClassName, BaseExceptionClass, ClassNameAsLiteral) \
-    ClassName::ClassName(const std::string& what) throw()       \
-      : BaseExceptionClass(what)                                \
-    {                                                           \
-      m_msg = what;                                             \
-    }                                                           \
-                                                                \
-    ClassName::ClassName(const char* const what) throw()        \
-      : BaseExceptionClass(what)                                \
-    {                                                           \
-      m_msg = what;                                             \
-    }                                                           \
-                                                                \
-    ClassName::~ClassName() throw()                             \
-    {                                                           \
-    }                                                           \
-                                                                \
-    const char* ClassName::getClassName() const throw()         \
-    {                                                           \
-      return ClassNameAsLiteral;                                \
+    ClassName::ClassName(const std::string& what, int code) throw()                  \
+      : BaseExceptionClass(what, code)                                               \
+    {                                                                                \
+      m_code = code;                                                                 \
+      m_msg = what;                                                                  \
+    }                                                                                \
+                                                                                     \
+    ClassName::ClassName(const char* const what, int code) throw()                   \
+      : BaseExceptionClass(what, code)                                               \
+    {                                                                                \
+      m_code = code;                                                                 \
+      m_msg = what;                                                                  \
+    }                                                                                \
+                                                                                     \
+    ClassName::~ClassName() throw()                                                  \
+    {                                                                                \
+    }                                                                                \
+                                                                                     \
+    const char* ClassName::getClassName() const throw()                              \
+    {                                                                                \
+      return ClassNameAsLiteral;                                                     \
     }
 
 #endif  // __TERRALIB_COMMON_INTERNAL_EXCEPTION_H
