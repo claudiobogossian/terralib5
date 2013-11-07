@@ -76,6 +76,7 @@ void TerraView::makeDialog()
   QAction* helpAbout = hmenu->addAction(tr("&About..."));
 
   helpAbout->setObjectName("Help.About");
+  helpAbout->setIcon(QIcon::fromTheme("help-about-browser"));
 
   connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
 

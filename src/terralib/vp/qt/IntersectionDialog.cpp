@@ -192,6 +192,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     return;
   }
   
+  this->setCursor(Qt::WaitCursor);
+
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -300,11 +302,13 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   catch(const std::exception& e)
   {
     QMessageBox::warning(this, TR_VP("Intersection"), e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    this->setCursor(Qt::ArrowCursor);
     return;
   }
 
   te::common::ProgressManager::getInstance().removeViewer(id);
-
+  this->setCursor(Qt::ArrowCursor);
   accept();
 }
 
