@@ -38,3 +38,27 @@ te::qt::plugins::terralib4::TL4FinalPageWizardPage::TL4FinalPageWizardPage(QWidg
 te::qt::plugins::terralib4::TL4FinalPageWizardPage::~TL4FinalPageWizardPage()
 {
 }
+
+void te::qt::plugins::terralib4::TL4FinalPageWizardPage::setDataSets(std::vector<std::string> datasets)
+{
+  m_ui->m_layersListWidget->clear();
+
+  for(std::size_t i = 0; i < datasets.size(); ++i)
+  {
+    QListWidgetItem* item = new QListWidgetItem(datasets[i].c_str(), m_ui->m_layersListWidget);
+    item->setCheckState(Qt::Checked);
+    m_ui->m_layersListWidget->addItem(item);
+  }
+}
+
+std::vector<std::string> te::qt::plugins::terralib4::TL4FinalPageWizardPage::getSelected()
+{
+  std::vector<std::string> checked;
+  for(std::size_t i = 0; i < m_ui->m_layersListWidget->count(); ++i)
+  {
+    if(m_ui->m_layersListWidget->item(i)->checkState() == Qt::Checked)
+      checked.push_back(m_ui->m_layersListWidget->item(i)->text().toStdString());
+  }
+
+  return checked;
+}

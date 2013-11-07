@@ -18,18 +18,37 @@
  */
 
 /*!
-  \file terralib/terralib4/Exception.cpp
+  \file TsBlender.h
+ 
+  \brief A test suit for the Blender Class.
+ */
 
-  \brief An exception class for Terralib4.
-*/
+#ifndef __TERRALIB_UNITTEST_RP_BLENDER_INTERNAL_H
+#define __TERRALIB_UNITTEST_RP_BLENDER_INTERNAL_H
 
-// TerraLib
-#include "Exception.h"
+// cppUnit
+#include <cppunit/extensions/HelperMacros.h>
 
-namespace terralib4
+/*!
+  \class TsBlender
+
+  \brief A test suit for the Blender class interface.
+ */
+class TsBlender : public CPPUNIT_NS::TestFixture 
 {
+  CPPUNIT_TEST_SUITE( TsBlender );
+  
+  CPPUNIT_TEST( EucBlendTest );
+  
+  CPPUNIT_TEST( NoBlendTest );
+  
+  CPPUNIT_TEST_SUITE_END();
 
-  TE_DEFINE_EXCEPTION_CLASS(Exception, te::da::Exception, "terralib4::Exception")
+protected :
+  
+  void NoBlendTest();
+  
+  void EucBlendTest();
+};
 
-}   // end namespace terralib4
-
+#endif

@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/Enums.h"
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/ConnectionPoolManager.h"
@@ -319,7 +320,7 @@ te::pgis::Connection* te::pgis::ConnectionPool::getConnection()
     return newConn;
   }
 
-  throw Exception(TR_PGIS("The connection pool has reached its maximum size!"));
+  throw Exception(TR_PGIS("The connection pool has reached its maximum size!"), te::common::NO_CONNECTION_AVAILABLE);
 }
 
 void te::pgis::ConnectionPool::release(Connection* conn)
