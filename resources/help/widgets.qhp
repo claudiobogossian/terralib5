@@ -44,29 +44,29 @@
      <files>
       <file>widgets/index.html</file>
       <file>widgets/pluginmanager/PluginManager.html</file>
-      <file>widgets/pluginmanager/*.png</file>
+      <file>./helpimages/widgets/pluginmanager/*.png</file>
       <file>widgets/charts/chart_style.html</file>
       <file>widgets/rp/classifier.html</file> 
       <file>widgets/datasource_selector/datasource_selector.html</file>
-      <file>widgets/datasource_selector/*.png</file>
+      <file>./helpimages/widgets/datasource_selector/*.png</file>
       <file>widgets/dataset_selector/dataset_selector.html</file>
-      <file>widgets/dataset_selector/*.png</file>
+      <file>./helpimages/widgets/dataset_selector/*.png</file>
       <file>widgets/srs/srs.html</file>
-      <file>widgets/srs/*.png</file>		  
+      <file>./helpimages/widgets/srs/*.png</file>		  
       <file>widgets/exchanger_direct/exchanger_direct.html</file>
-      <file>widgets/exchanger_direct/*.png</file>
+      <file>./helpimages/widgets/exchanger_direct/*.png</file>
       <file>widgets/exchanger_all/exchanger_all.html</file>
-      <file>widgets/exchanger_all/*.png</file>	  
+      <file>./helpimages/widgets/exchanger_all/*.png</file>	  
       <file>widgets/table/index.html</file>
       <file>widgets/table/addColumn.html</file>	  
       <file>widgets/histogram/histogram.html</file>
-      <file>widgets/histogram/*.png</file>		  
+      <file>./helpimages/widgets/histogram/*.png</file>		  
       <file>widgets/grouping/grouping.html</file>	  
-      <file>widgets/grouping/*.png</file>	  
+      <file>./helpimages/widgets/grouping/*.png</file>	  
       <file>widgets/pie_bar_chart/pie_bar_chart.html</file>	  
-      <file>widgets/pie_bar_chart/*.png</file> 	  
+      <file>./helpimages/widgets/pie_bar_chart/*.png</file> 	  
 	  <file>widgets/scatter/scatter.html</file>	  
-      <file>widgets/scatter/*.png</file>  	 
+      <file>./helpimages/widgets/scatter/*.png</file>  	 
     </files>
   </filterSection>
 </QtHelpProject>
