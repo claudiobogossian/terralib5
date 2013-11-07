@@ -173,7 +173,6 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   m_projectMenu = new QMenu(m_menubar);
   m_projectAddLayerMenu = new QMenu(m_projectMenu);
   m_menubar->addAction(m_projectMenu->menuAction());
-  m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
   m_layerMenu = new QMenu(m_menubar);
   m_menubar->addAction(m_layerMenu->menuAction());
   m_mapMenu = new QMenu(m_menubar);
@@ -1865,8 +1864,8 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
-  initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Exchanger.All to All", tr("&All to All..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
-  initAction(m_toolsDataExchangerDirect, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Direct Exchanger..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Exchanger.All to All", tr("&Data Source Exchanger..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchangerDirect, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Layer Exchanger..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
   initAction(m_toolsDataExchangerDirectPopUp, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Exchange..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceExplorer, "datasource-explorer", "Tools.Data Source Explorer", tr("&Data Source Explorer..."), tr("Show or hide the data source explorer"), 
     true, false, true, m_menubar);
@@ -1883,12 +1882,12 @@ void te::qt::af::BaseApplication::initActions()
   //initAction(m_editReplace, "edit-find-replace", "Replace", tr("R&eplace..."), tr(""), true, true, false);
 
 // Menu -Plugins- actions
-  initAction(m_pluginsManager, "", "Plugins.Management", tr("&Manage Plugins..."), tr("Manage the application plugins"), true, false, true, m_menubar);
+  initAction(m_pluginsManager, "plugin", "Plugins.Management", tr("&Manage Plugins..."), tr("Manage the application plugins"), true, false, true, m_menubar);
 
 // Menu -Help- actions
   initAction(m_helpContents, "help-browser", "Help.View Help", tr("&View Help..."), tr("Shows help dialog"), true, false, true, m_menubar);
   //initAction(m_helpUpdate, "system-software-update", "Help.Update", tr("&Update..."), tr(""), true, false, false, m_menubar); TODO
-  initAction(m_helpAbout, "", "Help.About", tr("&About..."), tr(""), true, false, false, m_menubar);
+  initAction(m_helpAbout, "help-about-browser", "Help.About", tr("&About..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Project- actions
   initAction(m_projectAddLayerDataset, "datasource", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
@@ -1915,11 +1914,11 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer on the &Map Display"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Objects on the Map Display", tr("Fit Selected Objects on the Map Display"), tr("Fit the selected objects on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to the Selected Objects on Map Display", tr("Pan to the Selected Objects on the Map Display"), tr("Pan to the selected objects on the Map Display"), true, false, true, m_menubar);
-  initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query"), tr("Query"), true, false, true, m_menubar);
+  initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions
-  initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
-  initAction(m_fileSaveProject, "document-save", "File.Save Project", tr("&Save Project"), tr(""), true, false, true, m_menubar);
+  initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project..."), tr(""), true, false, true, m_menubar);
+  initAction(m_fileSaveProject, "document-save", "File.Save Project", tr("&Save Project..."), tr(""), true, false, true, m_menubar);
   initAction(m_fileSaveProjectAs, "document-save-as", "File.Save Project As", tr("Save Project &As..."), tr(""), true, false, false, m_menubar);
   initAction(m_fileOpenProject, "document-open", "File.Open Project", tr("&Open Project..."), tr(""), true, false, true, m_menubar);
   initAction(m_fileExit, "system-log-out", "File.Exit", tr("E&xit"), tr(""), true, false, true, m_menubar);
@@ -1942,7 +1941,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, true, m_menubar);
   initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, true, m_menubar);
-  initAction(m_mapStopDrawing, "process-stop", "Map.Stop Drawing", tr("&Stop Drawing"), tr("Stop all drawing tasks"), true, false, true, m_menubar);
+  initAction(m_mapStopDrawing, "map-draw-cancel", "Map.Stop Drawing", tr("&Stop Drawing"), tr("Stop all drawing tasks"), true, false, true, m_menubar);
 
 // Group the map tools
   QActionGroup* mapToolsGroup = new QActionGroup(this);
@@ -2008,35 +2007,36 @@ void te::qt::af::BaseApplication::initMenus()
 
   m_viewToolBarsMenu->setObjectName("View.Toolbars");
   m_viewToolBarsMenu->setTitle(tr("&Toolbars"));
-  m_viewMenu->addMenu(m_viewToolBarsMenu);
 
   //m_viewMenu->addAction(m_viewToolBars);
-  m_viewMenu->addSeparator();
+  m_viewMenu->addAction(m_viewDataTable);
   m_viewMenu->addAction(m_viewLayerExplorer);
   m_viewMenu->addAction(m_viewMapDisplay);
-  m_viewMenu->addAction(m_viewDataTable);
   m_viewMenu->addAction(m_viewStyleExplorer);
   //m_viewMenu->addAction(m_viewGrid); TODO
   m_viewMenu->addSeparator();
   m_viewMenu->addAction(m_viewFullScreen);
   m_viewMenu->addSeparator();
+  m_viewMenu->addMenu(m_viewToolBarsMenu);
   //m_viewMenu->addAction(m_viewRefresh); TODO
 
 // Project menu
   m_projectMenu->setObjectName("Project");
   m_projectMenu->setTitle(tr("&Project"));
 
+  m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
   m_projectAddLayerMenu->setObjectName("Project.Add Layer");
   m_projectAddLayerMenu->setTitle(tr("&Add Layer"));
   m_projectAddLayerMenu->setIcon(QIcon::fromTheme("layer-add"));
-
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
-  m_projectAddLayerMenu->addAction(m_projectAddLayerTabularDataSet);
   m_projectAddLayerMenu->addSeparator();
+  m_projectAddLayerMenu->addAction(m_projectAddLayerTabularDataSet);
   m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
+  m_projectAddLayerMenu->addSeparator();
   m_projectMenu->addAction(m_projectNewFolder);
-  m_projectMenu->addAction(m_projectRemoveLayer);
+  m_projectMenu->addSeparator();
   m_projectMenu->addAction(m_projectRemoveFolder);
+  m_projectMenu->addAction(m_projectRemoveLayer);
   m_projectMenu->addSeparator();
   m_projectMenu->addAction(m_projectProperties);
 
@@ -2047,8 +2047,9 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerGrouping);
   m_layerMenu->addAction(m_layerChartsHistogram);
-  m_layerMenu->addAction(m_layerChartsScatter);
   m_layerMenu->addAction(m_layerChart);
+  m_layerMenu->addAction(m_queryLayer);
+  m_layerMenu->addAction(m_layerChartsScatter);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerFitOnMapDisplay);
   m_layerMenu->addAction(m_layerFitSelectedOnMapDisplay);
@@ -2059,7 +2060,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerSRS);
   m_layerMenu->addAction(m_layerProperties);
-  m_layerMenu->addAction(m_queryLayer);
 
   // TODO
   //m_layerMenu->addAction(m_layerRaise);
@@ -2071,23 +2071,24 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->setObjectName("Map");
   m_mapMenu->setTitle(tr("&Map"));
 
-  m_mapMenu->addAction(m_mapSelection);
-  m_mapMenu->addAction(m_mapRemoveSelection);
-  m_mapMenu->addAction(m_mapInfo);
-  m_mapMenu->addSeparator();
-  m_mapMenu->addAction(m_mapZoomIn);
-  m_mapMenu->addAction(m_mapZoomOut);
-  m_mapMenu->addAction(m_mapPan);
-  m_mapMenu->addAction(m_mapZoomExtent);
-  m_mapMenu->addAction(m_mapPreviousExtent);
-  m_mapMenu->addAction(m_mapNextExtent);
-  m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapDraw);
   m_mapMenu->addAction(m_mapStopDrawing);
   m_mapMenu->addSeparator();
-  m_mapMenu->addAction(m_mapMeasureDistance);
-  m_mapMenu->addAction(m_mapMeasureArea);
+  m_mapMenu->addAction(m_mapInfo);
+  m_mapMenu->addAction(m_mapRemoveSelection);
+  m_mapMenu->addAction(m_mapSelection);
+  m_mapMenu->addSeparator();
+  m_mapMenu->addAction(m_mapPan);
+  m_mapMenu->addAction(m_mapZoomExtent);
+  m_mapMenu->addAction(m_mapZoomIn);
+  m_mapMenu->addAction(m_mapZoomOut);
+  m_mapMenu->addSeparator();
+  m_mapMenu->addAction(m_mapNextExtent);
+  m_mapMenu->addAction(m_mapPreviousExtent);
+  m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapMeasureAngle);
+  m_mapMenu->addAction(m_mapMeasureArea);
+  m_mapMenu->addAction(m_mapMeasureDistance);
   m_mapMenu->addSeparator();
   m_mapMenu->addAction(m_mapSRID);
   m_mapMenu->addAction(m_mapUnknownSRID);
@@ -2101,7 +2102,7 @@ void te::qt::af::BaseApplication::initMenus()
 //  m_toolsMenu->addAction(m_toolbarsManagement);
 //  m_toolsMenu->addSeparator();
   m_toolsExchangerMenu->setObjectName("Tools.Exchanger");
-  m_toolsExchangerMenu->setTitle(tr("&Data Source Exchanger"));
+  m_toolsExchangerMenu->setTitle(tr("&Data Exchanger"));
   m_toolsExchangerMenu->setIcon(QIcon::fromTheme("datasource-exchanger"));
   m_toolsExchangerMenu->addAction(m_toolsDataExchangerDirect);
   m_toolsExchangerMenu->addAction(m_toolsDataExchanger);

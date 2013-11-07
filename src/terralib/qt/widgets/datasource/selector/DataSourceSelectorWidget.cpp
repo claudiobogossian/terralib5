@@ -56,7 +56,7 @@ te::qt::widgets::DataSourceSelectorWidget::DataSourceSelectorWidget(QWidget* par
   m_ui->m_addDataSourceToolButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_removeDataSourceToolButton->setIcon(QIcon::fromTheme("list-remove"));
   m_ui->m_editDataSourceToolButton->setIcon(QIcon::fromTheme("preferences-system"));
-  m_ui->m_createDataSourceToolButton->setIcon(QIcon::fromTheme("folder-new"));
+  m_ui->m_createDataSourceToolButton->setIcon(QIcon::fromTheme("datasource-new"));
 
 // add the list of data sources available in the system
   std::map<std::string, DataSourceType*>::const_iterator it = DataSourceTypeManager::getInstance().begin();
