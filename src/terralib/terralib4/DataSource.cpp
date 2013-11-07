@@ -26,10 +26,13 @@
 #include "Utils.h"
 
 // TerraLib 4.x
-#include <TeDatabase.h>
-#include <TeDatabaseFactory.h>
-#include <TeDatabaseFactoryParams.h>
-#include <TeDBConnectionsPool.h>
+#include <terralib/kernel/TeDatabase.h>
+#include <terralib/kernel/TeDatabaseFactory.h>
+#include <terralib/kernel/TeDatabaseFactoryParams.h>
+#include <terralib/kernel/TeDBConnectionsPool.h>
+#include <terralib/kernel/TeDefines.h>
+#include <terralib/utils/TeUpdateDBVersion.h>
+
 
 te::da::DataSourceCapabilities terralib4::DataSource::sm_capabilities;
 te::da::SQLDialect* terralib4::DataSource::sm_dialect(0);
@@ -82,12 +85,28 @@ void terralib4::DataSource::open()
   if(!m_db->isConnected())
      m_db->connect(hostName, userName, password, auxDbName, portNumber);
 
+  string DBver;
+  if(needUpdateDB(m_db, DBver))
+  {
+    std::string dbVersion = TeDBVERSION;
+
+    if(isLowerVersion(dbVersion, DBver))
+    {
+      close();
+
+      throw te::da::Exception(TR_TERRALIB4("Cannot connect to database because the version of Terraview is lower than the version of the database!"));
+    }
+
+    close();
+
+    throw te::da::Exception(TR_TERRALIB4("The database must be converted to the model ") + dbVersion + "! \n");
+  }
+
 }
 
 void terralib4::DataSource::close()
 {
   delete m_db;
-
   m_db = 0;
 }
 

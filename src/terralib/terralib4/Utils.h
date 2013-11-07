@@ -38,8 +38,8 @@
 #include "../geometry/Enums.h"
 
 // TerraLib 4.x
-#include <TeAttribute.h>
-#include <TeDatabase.h>
+#include <terralib/kernel/TeAttribute.h>
+#include <terralib/kernel/TeDatabase.h>
 
 namespace te
 {

@@ -56,6 +56,10 @@ namespace te
 
             ~TL4FinalPageWizardPage();
 
+            void setDataSets(std::vector<std::string> datasets);
+
+            std::vector<std::string> getSelected();
+
           private:
 
             std::auto_ptr<Ui::TL4FinalPageWizardPageForm> m_ui;

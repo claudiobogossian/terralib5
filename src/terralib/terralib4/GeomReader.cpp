@@ -39,8 +39,8 @@
 #include "Utils.h"
 
 // Terralib 4.x
-#include <TeGeometry.h>
-#include <TeRepresentation.h>
+#include <terralib/kernel/TeGeometry.h>
+#include <terralib/kernel/TeRepresentation.h>
 
 std::auto_ptr<te::gm::Point> terralib4::GeomReader::getPoint(const TePoint& pt)
 {

@@ -39,6 +39,7 @@
 #include "../geometry/LinearRing.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/MultiPoint.h"
+#include "../geometry/Point.h"
 #include "../common/progress/TaskProgress.h"
 
 #include <boost/lexical_cast.hpp>
@@ -840,7 +841,7 @@ namespace te
                 dummyRasterOffsets,
                 dummyRasterScales,
                 0,
-                &mosaicValidDataPol,
+                dynamic_cast< te::gm::LinearRing const* >( mosaicValidDataPol.getExteriorRing() ),
                 *inverseTransPtr ), 
                 "Blender initiazing error" );                    
 
