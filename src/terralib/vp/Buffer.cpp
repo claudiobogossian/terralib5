@@ -43,6 +43,7 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryCollection.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/MultiPolygon.h"
 #include "../maptools/AbstractLayer.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
@@ -267,7 +268,7 @@ bool BufferMemory(const std::string& inDataSetName,
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
 
-      for(int j = 0; j < inputDataSet->getNumProperties(); ++j)
+      for(std::size_t j = 0; j < inputDataSet->getNumProperties(); ++j)
       {
         type = inputDataSet->getPropertyDataType(j);
         if(copyInputColumns)
@@ -297,12 +298,25 @@ bool BufferMemory(const std::string& inDataSetName,
 
               if(currentGeom->isValid())
                 outGeom.reset(SetBuffer(currentGeom.get(), bufferPolygonRule, distance, i, auxGeom));
-
+              
               if(outGeom.get() && outGeom->isValid())
-                dataSetItem->setGeometry(j+2, outGeom.release());
+              {
+                if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
+                {
+                  dataSetItem->setGeometry(j+2, outGeom.release());
+                }
+                else
+                {
+                  std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
+                  mPolygon->add(outGeom.release());
+                  dataSetItem->setGeometry(j+2, mPolygon.release());
+                }
 
-              outputDataSet->add(dataSetItem);
-              ++pk;
+                outputDataSet->add(dataSetItem);
+                ++pk;
+              }
+
+
           }
         }
         else
@@ -321,7 +335,17 @@ bool BufferMemory(const std::string& inDataSetName,
 
             if(outGeom.get() && outGeom->isValid())
             {
-              dataSetItem->setGeometry(3, outGeom.release());
+              if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
+              {
+                dataSetItem->setGeometry(3, outGeom.release());
+              }
+              else
+              {
+                std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
+                mPolygon->add(outGeom.release());
+                dataSetItem->setGeometry(3, mPolygon.release());
+              }
+
               outputDataSet->add(dataSetItem);
               ++pk;
             }
@@ -723,7 +747,7 @@ void PrepareDataSet(te::da::DataSetType* dataSetType,
     {
       te::mem::DataSetItem* dataSetItem = new te::mem::DataSetItem(outputDataSet);
 
-      for(int j = 0; j < numProps; ++j)
+      for(std::size_t j = 0; j < numProps; ++j)
       {
         type = dataSetQuery->getPropertyDataType(j);
 
@@ -744,7 +768,19 @@ void PrepareDataSet(te::da::DataSetType* dataSetType,
             dataSetItem->setInt32(0, pk); //pk
             dataSetItem->setInt32(1, i+1); //level
             dataSetItem->setDouble(2, distance*(i+1)); //distance
-            dataSetItem->setGeometry(j+3, dataSetQuery->getGeometry(j+numCurrentItem).release());
+            
+            std::auto_ptr<te::gm::Geometry> geom = dataSetQuery->getGeometry(j+numCurrentItem);
+            if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+            {
+              dataSetItem->setGeometry(j+3, geom.release());
+            }
+            else
+            {
+              std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, geom->getSRID()));
+              mPolygon->add(geom.release());
+              dataSetItem->setGeometry(j+3, mPolygon.release());
+            }
+
             outputDataSet->add(dataSetItem);
 
             ++numCurrentItem;
