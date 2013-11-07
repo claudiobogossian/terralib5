@@ -110,17 +110,6 @@ int te::qt::plugins::terralib4::TL4ConverterWizard::nextId() const
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::back()
 {
-  if(currentId() == PAGE_FINALPAGE)
-  {
-    if(!m_hasRaster)
-      QWizard::back();
-  }
-  if(currentId() == PAGE_RASTERFOLDER_SELECTOR)
-  {
-    if(m_hasOnlyRaster)
-      QWizard::back();
-  }
-  QWizard::back();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::next()
@@ -144,7 +133,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::next()
       break;
   }
 
-  QWizard::next();
+//  QWizard::next();
 }
 
 void te::qt::plugins::terralib4::TL4ConverterWizard::help()
@@ -164,9 +153,15 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::terralib4ConnectorPageNext(
     m_tl4Database->setConnectionInfo(connInfo);
     m_tl4Database->open();
   }
+  catch(te::da::Exception e)
+  {
+    QMessageBox::warning(this, tr("Warning"), e.what());
+    return;
+  }
   catch(...)
   {
     QMessageBox::warning(this, tr("Warning"), tr("The Terralib 4.x database connection could not be established."));
+    return;
   }
 
   std::vector<std::string> datasets = m_tl4Database->getDataSetNames();
