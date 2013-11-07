@@ -47,6 +47,7 @@ namespace te
 // Forward declarations
     class DataSetType;
     class DataSourceTransactor;
+    class QueryCapabilities;
     class Select;
     struct SpatialRestriction;
 
@@ -68,18 +69,28 @@ namespace te
         virtual std::auto_ptr<DataSet> getDataSet(const DataSourcePtr& ds, const Select& q,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY);
 
-        virtual std::auto_ptr<DataSet> getDataSet(DataSourceTransactor* t, const Select& q,
+        virtual std::auto_ptr<DataSet> getDataSet(DataSourceTransactor* t, const QueryCapabilities& capabilities,
+                                                  const Select& q,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY,
                                                   bool connected = false);
 
         virtual std::auto_ptr<ObjectIdSet> getOIDSet(const DataSourcePtr& ds, const Select& q);
 
-        virtual std::auto_ptr<ObjectIdSet> getOIDSet(DataSourceTransactor* t, const Select& q);
+        virtual std::auto_ptr<ObjectIdSet> getOIDSet(DataSourceTransactor* t, const QueryCapabilities& capabilities, const Select& q);
 
       protected:
 
+        virtual std::auto_ptr<ObjectIdSet> getOIDSet(DataSourceTransactor* t, const Select& q);
+
         virtual ObjectIdSet* getOIDSet(DataSourceTransactor* t, Select& baseSelect,
                                        SpatialRestriction* restriction, const DataSetType* type);
+
+      private:
+
+        bool supportsSpatialTopologicOperatos(const QueryCapabilities& capabilities,
+                                              const std::vector<SpatialRestriction*>& restrictions) const;
+
+        std::string getDataSetName(const Select& q) const;
 
       private:
 
