@@ -110,7 +110,8 @@ void te::qt::plugins::gdal::Plugin::startup()
     QWidget* parent = act->parentWidget();
     m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), parent);
     m_openFile->setObjectName("Project.Add Layer.Raster File");
-    mnu->insertAction(act, m_openFile);
+    //mnu->insertAction(act, m_openFile);
+    mnu->addAction(m_openFile);
 
     te::qt::af::AddActionToCustomToolbars(m_openFile);
 

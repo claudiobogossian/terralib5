@@ -13,7 +13,7 @@
        <files>
            <file>terraview/index.html</file>
            <file>terraview/main_window.html</file>
-           <file>terraview/*.png</file>
+           <file>./helpimages/terraview/*.png</file>
            <file>terraview/main_concepts.html</file>		   
        </files>
 	   <keywords>
