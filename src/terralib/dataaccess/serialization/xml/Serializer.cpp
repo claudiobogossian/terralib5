@@ -567,6 +567,178 @@ void te::serialize::xml::Read(const std::string& dialectFileName, te::da::DataSo
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SelectInto
 
+  //----------------------------
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader->getElementLocalName() == "SpatialTopologicOperators");
+
+  while(xmlReader->next() &&
+        (xmlReader->getNodeType() == te::xml::START_ELEMENT) &&
+        (xmlReader->getElementLocalName() == "Function"))
+  {
+    te::da::SQLFunctionEncoder* sfe = 0;
+
+    std::string fname = xmlReader->getAttr("name");
+
+    qc.addSpatialTopologicOperator(fname);
+
+    xmlReader->next();
+    assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+
+    std::string encoderType = xmlReader->getElementLocalName();
+
+    if(encoderType == "FunctionEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      sfe = new te::da::FunctionEncoder(alias);
+    }
+    else if(encoderType == "BinaryOpEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      sfe = new te::da::BinaryOpEncoder(alias);
+    }
+    else if(encoderType == "UnaryOpEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      sfe = new te::da::UnaryOpEncoder(alias);
+    }
+    else if(encoderType == "TemplateEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      std::string temp = xmlReader->getAttr(1);
+      sfe = new te::da::TemplateEncoder(alias, temp);
+    }
+    else
+    {
+      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+    }
+
+    dialect.insert(fname, sfe);
+    
+    xmlReader->next();
+    
+    assert(xmlReader->getNodeType() == te::xml::END_ELEMENT);
+   
+    xmlReader->next();
+  }
+
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SpatialTopologicOperators
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader->getElementLocalName() == "SpatialMetricOperators");
+
+  while(xmlReader->next() &&
+        (xmlReader->getNodeType() == te::xml::START_ELEMENT) &&
+        (xmlReader->getElementLocalName() == "Function"))
+  {
+    te::da::SQLFunctionEncoder* sfe = 0;
+
+    std::string fname = xmlReader->getAttr("name");
+
+    qc.addSpatialMetricOperator(fname);
+
+    xmlReader->next();
+    assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+
+    std::string encoderType = xmlReader->getElementLocalName();
+
+    if(encoderType == "FunctionEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      sfe = new te::da::FunctionEncoder(alias);
+    }
+    else if(encoderType == "BinaryOpEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      sfe = new te::da::BinaryOpEncoder(alias);
+    }
+    else if(encoderType == "UnaryOpEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      sfe = new te::da::UnaryOpEncoder(alias);
+    }
+    else if(encoderType == "TemplateEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      std::string temp = xmlReader->getAttr(1);
+      sfe = new te::da::TemplateEncoder(alias, temp);
+    }
+    else
+    {
+      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+    }
+
+    dialect.insert(fname, sfe);
+    
+    xmlReader->next();
+    
+    assert(xmlReader->getNodeType() == te::xml::END_ELEMENT);
+   
+    xmlReader->next();
+  }
+
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SpatialMetricOperators
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader->getElementLocalName() == "SpatialNewGeomOperators");
+
+  while(xmlReader->next() &&
+        (xmlReader->getNodeType() == te::xml::START_ELEMENT) &&
+        (xmlReader->getElementLocalName() == "Function"))
+  {
+    te::da::SQLFunctionEncoder* sfe = 0;
+
+    std::string fname = xmlReader->getAttr("name");
+
+    qc.addSpatialNewGeomOperator(fname);
+
+    xmlReader->next();
+    assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+
+    std::string encoderType = xmlReader->getElementLocalName();
+
+    if(encoderType == "FunctionEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      sfe = new te::da::FunctionEncoder(alias);
+    }
+    else if(encoderType == "BinaryOpEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      sfe = new te::da::BinaryOpEncoder(alias);
+    }
+    else if(encoderType == "UnaryOpEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      sfe = new te::da::UnaryOpEncoder(alias);
+    }
+    else if(encoderType == "TemplateEncoder")
+    {
+      std::string alias = xmlReader->getAttr(0);
+      std::string temp = xmlReader->getAttr(1);
+      sfe = new te::da::TemplateEncoder(alias, temp);
+    }
+    else
+    {
+      throw te::da::Exception(TR_DATAACCESS("Unsupported encoder type!"));
+    }
+
+    dialect.insert(fname, sfe);
+    
+    xmlReader->next();
+    
+    assert(xmlReader->getNodeType() == te::xml::END_ELEMENT);
+   
+    xmlReader->next();
+  }
+
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SpatialNewGeomOperators
+
+  //----------------------------
+
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
   assert(xmlReader->getElementLocalName() == "SpatialOperators");   

@@ -147,28 +147,6 @@ namespace te
         */
         ConnectionPool* getConnPool() const;
 
-        /*!
-          \brief It sets the SQL dialect used by the PostGIS driver.
-
-          \param myDialect The PostGIS SQL dialect to be used when translating a query.
-
-          \note The PostGIS data source will take the ownership of the given dialect.
-
-          \note PostGIS driver extended method.
-        */
-        static void setDialect(te::da::SQLDialect* myDialect);
-
-        /*!
-          \brief It sets the capabilities document.
-          
-          \param capabilities The PostGIS data source capabilities.
-
-          \note The PostGIS data source will take the ownership of the given capabilities object.
-
-          \note PostGIS driver extended method.
-        */
-        static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
-
       protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);

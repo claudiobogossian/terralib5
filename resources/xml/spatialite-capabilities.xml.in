@@ -26,7 +26,12 @@
     <Alter>true</Alter>
     <Select>true</Select>
     <SelectInto>true</SelectInto>
-	
+	<SpatialTopologicOperators>
+    </SpatialTopologicOperators> 
+	<SpatialMetricOperators>
+    </SpatialMetricOperators> 
+	<SpatialNewGeomOperators>
+    </SpatialNewGeomOperators>	
     <SpatialOperators>
 	
 		<Function name="st_transform">
