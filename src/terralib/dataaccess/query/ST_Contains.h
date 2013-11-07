@@ -57,7 +57,7 @@ namespace te
 
           \note The operator will take the ownership of the given arguments.
         */
-        ST_Contains(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_Contains, arg1, arg2) {}
+        ST_Contains(Expression* arg1, Expression* arg2) : BinaryFunction(FunctionNames::sm_ST_Contains, arg1, arg2) {}
 
         /*!
           \brief Constructor.
@@ -67,7 +67,7 @@ namespace te
 
           \note The addition operator will take the ownership of the given arguments.
         */
-        ST_Contains(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_Contains, arg1, arg2) {}
+        ST_Contains(const Expression& arg1, const Expression& arg2) : BinaryFunction(FunctionNames::sm_ST_Contains, arg1, arg2) {}
 
         /*! \brief Copy constructor. */
         ST_Contains(const ST_Contains& rhs);

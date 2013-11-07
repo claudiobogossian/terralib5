@@ -66,7 +66,7 @@ void te::qt::plugins::terralib4::Plugin::startup()
 
   if(act)
   {
-    m_showWindow = new QAction(QIcon::fromTheme("file-vector"), "TerraLib 4 Converter...", mnu);
+    m_showWindow = new QAction(QIcon::fromTheme("tools-terralib4converter"), "TerraLib 4 Converter...", mnu);
     m_showWindow->setObjectName("Tools.TerraLib 4 Converter");
     mnu->insertAction(act, m_showWindow);
     mnu->addSeparator();

@@ -63,6 +63,8 @@ te::qt::plugins::terralib4::TL4ConnectorWizardPage::~TL4ConnectorWizardPage()
 
 void te::qt::plugins::terralib4::TL4ConnectorWizardPage::onDirectoryPushButtonClicked()
 {
+  m_ui->m_dbComboBox->clear();
+  
   QString fileName = QFileDialog::getOpenFileName(this, tr("Open Database"), QString(""), tr("Database files (*.accdb *.mdb);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
   if(fileName.isEmpty())

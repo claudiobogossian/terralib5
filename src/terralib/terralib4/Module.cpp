@@ -29,8 +29,10 @@
 #include "Globals.h"
 #include "Module.h"
 
-// Terralib 4.x
-#include <TeAdoDB.h>
+#ifdef WIN32
+  // Terralib 4.x
+  #include <terralib/drivers/ado/TeAdoDB.h>
+#endif
 
 // Boost
 #include <boost/filesystem.hpp>
