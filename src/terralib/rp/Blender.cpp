@@ -26,13 +26,17 @@
 
 #include "Macros.h"
 #include "../geometry/LinearRing.h"
+#include "../geometry/MultiPoint.h"
+#include "../geometry/Point.h"
 #include "../geometry/Envelope.h"
+#include "../geometry/Enums.h"
 #include "../raster/Raster.h"
 #include "../raster/Grid.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
 
 #include <complex>
+#include <limits>
 
 // Get the perpendicular distance from a point P(pX,pY) from a line defined
 // by the points A(lineAX,lineAY) and B(lineBX,lineBY)
@@ -112,7 +116,152 @@ namespace te
         
       initState();
       
-      // defining the blending method
+      // defining the input rasters
+      
+      m_raster1Ptr = &raster1;
+      m_raster2Ptr = &raster2;
+      
+      // Generating the valid data area points
+      
+      std::auto_ptr< te::gm::LinearRing > indexedRing1Ptr; // indexed under raster 1 lines/cols
+      
+      if( r1ValidDataDelimiterPtr )
+      {
+        const std::size_t nPoints = r1ValidDataDelimiterPtr->getNPoints();
+        const te::rst::Grid& grid = (*raster1.getGrid());
+        te::gm::Coord2D const * inCoordsPtr = r1ValidDataDelimiterPtr->getCoordinates();
+        te::gm::Coord2D auxCoord;        
+        
+        indexedRing1Ptr.reset( new te::gm::LinearRing( nPoints, 
+           te::gm::LineStringType, 0, 0 ) );
+        
+        for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+        {
+          grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
+            auxCoord.x, auxCoord.y ); 
+          indexedRing1Ptr->setPoint( pIdx, auxCoord.x, auxCoord.y );
+        }
+      }
+      else
+      {
+        indexedRing1Ptr.reset( new te::gm::LinearRing( 5, 
+           te::gm::LineStringType, 0, 0 ) );
+        
+        indexedRing1Ptr->setPoint( 0, 
+           -0.5, 
+           -0.5 );
+        indexedRing1Ptr->setPoint( 1, 
+           ((double)raster1.getNumberOfColumns()) - 0.5, 
+           -0.5 );
+        indexedRing1Ptr->setPoint( 2, 
+           ((double)raster1.getNumberOfColumns()) - 0.5, 
+           ((double)raster1.getNumberOfRows()) - 0.5 );
+        indexedRing1Ptr->setPoint( 3, 
+           -0.5, 
+           ((double)raster1.getNumberOfRows()) - 0.5 );
+        indexedRing1Ptr->setPoint( 4, 
+           -0.5, 
+           -0.5 );
+      }
+      
+      std::auto_ptr< te::gm::LinearRing > indexedRing2Ptr; // indexed under raster 1 lines/cols
+      
+      if( r2ValidDataDelimiterPtr )
+      {
+        const std::size_t nPoints = r2ValidDataDelimiterPtr->getNPoints();
+        const te::rst::Grid& grid = (*raster2.getGrid());
+        te::gm::Coord2D const * inCoordsPtr = r2ValidDataDelimiterPtr->getCoordinates();
+        te::gm::Coord2D auxCoord;
+        te::gm::Coord2D auxCoord2;        
+        
+        indexedRing2Ptr.reset( new te::gm::LinearRing( nPoints, 
+           te::gm::LineStringType, 0, 0 ) );
+        
+        for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+        {
+          grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
+            auxCoord.x, auxCoord.y ); 
+          geomTransformation.inverseMap( auxCoord.x, auxCoord.y, auxCoord2.x, auxCoord2.y );
+          indexedRing2Ptr->setPoint( pIdx, auxCoord2.x, auxCoord2.y );
+        }
+      }
+      else
+      {
+        indexedRing2Ptr.reset( new te::gm::LinearRing( 5, 
+           te::gm::LineStringType, 0, 0 ) );
+        
+        te::gm::Coord2D auxCoord;
+        
+        geomTransformation.inverseMap( 
+          -0.5,
+          -0.5,
+          auxCoord.x, auxCoord.y );
+        indexedRing2Ptr->setPoint( 0, auxCoord.x, auxCoord.y );
+        
+        geomTransformation.inverseMap( 
+          ((double)raster2.getNumberOfColumns()) - 0.5, 
+           -0.5,
+          auxCoord.x, auxCoord.y );
+        indexedRing2Ptr->setPoint( 1, auxCoord.x, auxCoord.y );
+        
+        geomTransformation.inverseMap( 
+          ((double)raster2.getNumberOfColumns()) - 0.5, 
+          ((double)raster2.getNumberOfRows()) - 0.5,
+          auxCoord.x, auxCoord.y );
+        indexedRing2Ptr->setPoint( 2, auxCoord.x, auxCoord.y );
+        
+        geomTransformation.inverseMap( 
+          -0.5, 
+         ((double)raster2.getNumberOfRows()) - 0.5,
+          auxCoord.x, auxCoord.y );
+        indexedRing2Ptr->setPoint( 3, auxCoord.x, auxCoord.y );
+        
+        geomTransformation.inverseMap( 
+          -0.5,
+          -0.5,
+          auxCoord.x, auxCoord.y );
+        indexedRing2Ptr->setPoint( 4, auxCoord.x, auxCoord.y );        
+      }
+      
+      std::auto_ptr< te::gm::Geometry > intersectionIndexedPtr; // indexed under raster1 lines/cols
+      intersectionIndexedPtr.reset( indexedRing1Ptr->intersection( indexedRing2Ptr.get() ) );
+      
+      if( ( intersectionIndexedPtr.get() != 0 ) &&
+        ( intersectionIndexedPtr->getGeomTypeId() == te::gm::LineStringType) )
+      {
+        te::gm::LineString* intersectionIndexedNPtr = dynamic_cast< te::gm::LineString* >(
+          intersectionIndexedPtr.get() );
+        TERP_DEBUG_TRUE_OR_THROW( intersectionIndexedNPtr, "Invalid pointer" );        
+        
+        std::size_t nPoints = intersectionIndexedNPtr->getNPoints();
+        std::size_t pIdx = 0;
+        for( pIdx = 0 ; pIdx < nPoints ; ++pIdx )
+        {
+          std::auto_ptr< te::gm::Point > pointPtr( intersectionIndexedNPtr->getPointN( pIdx ) );
+          
+          if( pointPtr->within( indexedRing1Ptr.get() ) ||
+            pointPtr->touches( indexedRing1Ptr.get() ) )
+          {
+            m_r2IntersectionSegmentsPoints.push_back( te::gm::Coord2D(
+               pointPtr->getX(), pointPtr->getY() ) );
+          }
+          else if( pointPtr->within( indexedRing2Ptr.get() ) ||
+            pointPtr->touches( indexedRing2Ptr.get() ) )
+          {
+            m_r1IntersectionSegmentsPoints.push_back( te::gm::Coord2D(
+               pointPtr->getX(), pointPtr->getY() ) );
+          }
+        }
+          
+        m_r2IntersectionSegmentsPointsSize = (unsigned int)m_r2IntersectionSegmentsPoints.size();
+        m_r1IntersectionSegmentsPointsSize = (unsigned int)m_r1IntersectionSegmentsPoints.size();
+      }
+      else
+      {
+        intersectionIndexedPtr.reset();
+      }
+      
+      // defining the blending function
       
       m_blendMethod = blendMethod;
         
@@ -125,7 +274,15 @@ namespace te
         }
         case EuclideanDistanceMethod :
         {
-          m_blendFuncPtr = &te::rp::Blender::euclideanDistanceMethodImp;
+          if( ( m_r1IntersectionSegmentsPointsSize > 0 ) &&
+            ( m_r2IntersectionSegmentsPointsSize > 0 ) )
+          {
+            m_blendFuncPtr = &te::rp::Blender::euclideanDistanceMethodImp;
+          }
+          else
+          {
+            m_blendFuncPtr = &te::rp::Blender::noBlendMethodImp;
+          }
           break;
         }        
         default :
@@ -133,83 +290,8 @@ namespace te
           return false;
           break;
         }
-      }        
-      
-      // defining the input rasters
-      
-      m_raster1Ptr = &raster1;
-      m_raster2Ptr = &raster2;
-      
-      // Generating the valid data area points
-      
-      if( r1ValidDataDelimiterPtr )
-      {
-        const std::size_t nPoints = r1ValidDataDelimiterPtr->getNPoints();
-        const te::rst::Grid& grid = (*raster1.getGrid());
-        te::gm::Coord2D const * inCoordsPtr = r1ValidDataDelimiterPtr->getCoordinates();
-        te::gm::Coord2D auxCoord;        
-        
-        for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
-        {
-          grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
-            auxCoord.x, auxCoord.y );          
-          m_r1ValidDataDelimiterPoints.push_back( auxCoord );
-        }
-      }
-      else
-      {
-        m_r1ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
-          -0.5,
-          -0.5 ) );
-        m_r1ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
-          ((double)raster1.getNumberOfColumns()) - 0.5, 
-          -0.5 ) );
-        m_r1ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
-          ((double)raster1.getNumberOfColumns()) - 0.5, 
-          ((double)raster1.getNumberOfRows()) - 0.5 ) );
-        m_r1ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
-          -0.5, 
-          ((double)raster1.getNumberOfRows()) - 0.5 ) );
-        m_r1ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
-          -0.5, 
-          -0.5 ) );
-      }
-      m_r1ValidDataDelimiterPointsSize = m_r1ValidDataDelimiterPoints.size();
-      
-      if( r2ValidDataDelimiterPtr )
-      {
-        const std::size_t nPoints = r2ValidDataDelimiterPtr->getNPoints();
-        const te::rst::Grid& grid = (*raster2.getGrid());
-        te::gm::Coord2D const * inCoordsPtr = r2ValidDataDelimiterPtr->getCoordinates();
-        te::gm::Coord2D auxCoord;        
-        
-        for( std::size_t pIdx = 0 ; pIdx < nPoints ; ++pIdx )
-        {
-          grid.geoToGrid( inCoordsPtr[ pIdx ].x, inCoordsPtr[ pIdx ].y, 
-            auxCoord.x, auxCoord.y );          
-          m_r2ValidDataDelimiterPoints.push_back( auxCoord );
-        }
-      }
-      else
-      {
-        m_r2ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
-          -0.5,
-          -0.5 ) );
-        m_r2ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
-          ((double)raster2.getNumberOfColumns()) - 0.5, 
-          -0.5 ) );
-        m_r2ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
-          ((double)raster2.getNumberOfColumns()) - 0.5, 
-          ((double)raster2.getNumberOfRows()) - 0.5 ) );
-        m_r2ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
-          -0.5, 
-          ((double)raster2.getNumberOfRows()) - 0.5 ) );
-        m_r2ValidDataDelimiterPoints.push_back( te::gm::Coord2D( 
-          -0.5, 
-          -0.5 ) );
-      }     
-      m_r2ValidDataDelimiterPointsSize = m_r2ValidDataDelimiterPoints.size();
-        
+      }         
+              
       // defining the geometric transformation  
         
       m_geomTransformationPtr = geomTransformation.clone();
@@ -271,6 +353,8 @@ namespace te
       m_blendFuncPtr = 0;
       m_raster1Ptr = 0;
       m_raster2Ptr = 0;
+      m_r1IntersectionSegmentsPointsSize = 0;
+      m_r2IntersectionSegmentsPointsSize = 0;
       m_geomTransformationPtr = 0;
       m_interpMethod1 = te::rst::Interpolator::NearestNeighbor;
       m_interpMethod2 = te::rst::Interpolator::NearestNeighbor;
@@ -281,8 +365,8 @@ namespace te
     
     void Blender::clear()
     {
-      m_r1ValidDataDelimiterPoints.clear();
-      m_r2ValidDataDelimiterPoints.clear();
+      m_r1IntersectionSegmentsPoints.clear();
+      m_r2IntersectionSegmentsPoints.clear();
       if( m_geomTransformationPtr ) delete m_geomTransformationPtr;
       if( m_interp1 ) delete m_interp1;
       if( m_interp2 ) delete m_interp2;
@@ -356,18 +440,18 @@ namespace te
         
       // Finding distances to both rasters valid area delimiters
             
-      m_euclideanDistanceMethodImp_dist1 = DBL_MAX;
-      for( m_euclideanDistanceMethodImp_vecIdx = m_r1ValidDataDelimiterPointsSize - 1 ; 
+      m_euclideanDistanceMethodImp_dist1 = std::numeric_limits<double>::max();
+      for( m_euclideanDistanceMethodImp_vecIdx = m_r1IntersectionSegmentsPointsSize - 1 ; 
         m_euclideanDistanceMethodImp_vecIdx > 1 ; --m_euclideanDistanceMethodImp_vecIdx )
       {
         
         getPerpendicularDistance( 
           col,
           line,
-          m_r1ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx ].x,
-          m_r1ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx ].y, 
-          m_r1ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].x,
-          m_r1ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].y,           
+          m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].x,
+          m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].y, 
+          m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].x,
+          m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].y,           
           m_euclideanDistanceMethodImp_aux1,
           m_euclideanDistanceMethodImp_aux2,
           m_euclideanDistanceMethodImp_currDist );
@@ -378,18 +462,18 @@ namespace te
         }
       }     
   
-      m_euclideanDistanceMethodImp_dist2 = DBL_MAX;
-      for( m_euclideanDistanceMethodImp_vecIdx = m_r2ValidDataDelimiterPointsSize - 1 ; 
+      m_euclideanDistanceMethodImp_dist2 = std::numeric_limits<double>::max();
+      for( m_euclideanDistanceMethodImp_vecIdx = m_r2IntersectionSegmentsPointsSize - 1 ; 
         m_euclideanDistanceMethodImp_vecIdx > 1 ; --m_euclideanDistanceMethodImp_vecIdx )
       {
         
         getPerpendicularDistance( 
           m_euclideanDistanceMethodImp_Point2Col,
           m_euclideanDistanceMethodImp_Point2Line,
-          m_r2ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx ].x,
-          m_r2ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx ].y, 
-          m_r2ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].x,
-          m_r2ValidDataDelimiterPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].y,           
+          m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].x,
+          m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].y, 
+          m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].x,
+          m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx - 1 ].y,           
           m_euclideanDistanceMethodImp_aux1,
           m_euclideanDistanceMethodImp_aux2,
           m_euclideanDistanceMethodImp_currDist );
