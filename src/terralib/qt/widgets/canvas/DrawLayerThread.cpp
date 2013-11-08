@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../dataaccess/Exception.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "DrawLayerThread.h"
@@ -31,8 +32,7 @@
 
 te::qt::widgets::DrawLayerThread::DrawLayerThread(QObject* parent)
   : QThread(parent),
-    m_interval(100),
-    m_magneticDeclination(0)
+    m_interval(100)
 {
   // Signals & slots
   connect(&m_feedback, SIGNAL(timeout()), SLOT(sendFeedback()));
@@ -91,20 +91,34 @@ void te::qt::widgets::DrawLayerThread::run()
   // Prepares the canvas
   Canvas canvas(&m_image);
   //canvas.setRenderHint(QPainter::Antialiasing);
-  canvas.setMagneticDeclination(m_magneticDeclination);
   canvas.calcAspectRatio(m_env.m_llx, m_env.m_lly, m_env.m_urx, m_env.m_ury);
   canvas.setWindow(m_env.m_llx, m_env.m_lly, m_env.m_urx, m_env.m_ury);
   canvas.clear();
 
-  // Let's draw!
-  try
+  while(true)
   {
-    m_layer->draw(&canvas, m_env, m_srid);
-  }
-  catch(const std::exception& e)
-  {
-    m_finishedWithSuccess = false;
-    m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
+    // Let's draw!
+    try
+    {
+      m_layer->draw(&canvas, m_env, m_srid);
+      break;
+    }
+    catch(const te::da::Exception& e)
+    {
+      if(e.code() != te::common::NO_CONNECTION_AVAILABLE)
+      {
+        m_finishedWithSuccess = false;
+        m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
+        break;
+      }
+      msleep(100);
+    }
+    catch(const std::exception& e)
+    {
+      m_finishedWithSuccess = false;
+      m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
+      break;
+    }
   }
 }
 
@@ -123,9 +137,4 @@ void te::qt::widgets::DrawLayerThread::onFinished()
   emit drawLayerFinished(m_index, m_image);
   m_image.fill(qRgba(0, 0, 0, 0));
   m_feedback.stop();
-}
-
-void te::qt::widgets::DrawLayerThread::setMagneticDeclination(double angle)
-{
-  m_magneticDeclination = angle;
 }

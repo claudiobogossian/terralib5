@@ -60,7 +60,7 @@ namespace te
 
               \param menu The parent menu object.
             */
-            AbstractAction(QMenu* menu);
+            AbstractAction(QMenu* menu, QMenu* popupMenu);
 
             /*! 
               \brief Destructor. 
@@ -76,6 +76,13 @@ namespace te
             */
             virtual void onActionActivated(bool checked) = 0;
 
+            /*!
+              \brief Slot function used when a action was selected from layer pop up.
+
+              \param checked Flag used in case a toggle action.
+            */
+            virtual void onPopUpActionActivated(bool checked);
+
           protected:
 
             /*!
@@ -86,6 +93,15 @@ namespace te
               \param pixmap The action pixmap name.
             */
             void createAction(std::string name, std::string pixmap = "");
+            
+            /*!
+              \brief Create and set the actions parameters.
+
+              \param name The action name.
+
+              \param pixmap The action pixmap name.
+            */
+            void createPopUpAction(std::string name, std::string pixmap = "");
 
             /*!
               \brief Add a new layer into layer explorer widget
@@ -95,10 +111,28 @@ namespace te
             */
             void addNewLayer(te::map::AbstractLayerPtr layer);
 
+            /*!
+              \brief Get the selected layer from layer explorer in app
+
+              \return The layer auto pointer
+
+            */
+            te::map::AbstractLayerPtr getCurrentLayer();
+
+            /*!
+              \brief Get the list of layers from app
+
+              \return The list pf layer auto pointers
+
+            */
+            std::list<te::map::AbstractLayerPtr> getLayers();
+
           protected:
 
-            QMenu* m_menu;        //!< Parent Menu.
-            QAction* m_action;    //!< Action used to call the process.
+            QMenu* m_menu;          //!< Parent Menu.
+            QMenu* m_popupMenu;     //!< Parent popMenu.
+            QAction* m_action;      //!< Action used to call the process.
+            QAction* m_popupAction; //!< Action used to call the process from pop up layer.
         };
 
       } // end namespace rp

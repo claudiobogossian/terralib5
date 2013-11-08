@@ -80,13 +80,15 @@ namespace te
 
           void setAttributeList(const std::vector<std::string>& vec);
 
-          void setGeomAttributeList(const std::vector<std::string>& vec);
+          void setGeomAttributeList(const std::vector<std::string>& vec, int srid);
 
           void setOperatorsList(const std::vector<std::string>& vec);
 
           void setSpatialOperatorsList(const std::vector<std::string>& vec);
 
           void setConnectorsList(const std::vector<std::string>& vec);
+
+          void clear();
 
 
         public slots:
@@ -113,6 +115,7 @@ namespace te
           std::map<int, te::da::Expression*> m_mapExp;
 
           int m_count;
+          int m_srid;
       }; 
 
     } // end namespace widgets

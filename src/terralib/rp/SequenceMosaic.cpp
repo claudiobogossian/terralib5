@@ -39,6 +39,7 @@
 #include "../geometry/LinearRing.h"
 #include "../geometry/MultiPolygon.h"
 #include "../geometry/MultiPoint.h"
+#include "../geometry/Point.h"
 #include "../common/progress/TaskProgress.h"
 
 #include <boost/lexical_cast.hpp>
@@ -228,20 +229,15 @@ namespace te
       }
       
       std::auto_ptr< te::mem::ExpansibleRaster > mosaicRasterHandler;
-      std::vector< te::rst::BandProperty > mosaicBandProperties;
-      
-      double mosaicXResolution = 0;
-      double mosaicYResolution = 0;
-      int mosaicSRID = 0;
       std::vector< double > mosaicTargetMeans;
       std::vector< double > mosaicTargetVariances;
       te::gm::Polygon mosaicValidDataPol(  0, te::gm::PolygonType, 0 ); // the polygon delimiting the valid data inside the mosaic (mosaic world coods)
       std::vector< double > mosaicBandsRangeMin;
       std::vector< double > mosaicBandsRangeMax;        
-      unsigned int lastInputRasterBBoxLLXIndexed = 0;
-      unsigned int lastInputRasterBBoxLLYIndexed = 0;
-      unsigned int lastInputRasterBBoxURXIndexed = 0;
-      unsigned int lastInputRasterBBoxURYIndexed = 0;     
+      unsigned int lastInputRasterBBoxLLXIndexed = 0; // The last raster added to the mosaic position
+      unsigned int lastInputRasterBBoxLLYIndexed = 0; // The last raster added to the mosaic position
+      unsigned int lastInputRasterBBoxURXIndexed = 0; // The last raster added to the mosaic position
+      unsigned int lastInputRasterBBoxURYIndexed = 0; // The last raster added to the mosaic position
       MosaicSequenceInfo currentMosaicSquenceInfo;
       
       m_inputParameters.m_feederRasterPtr->reset();
@@ -278,10 +274,6 @@ namespace te
         
         if( mosaicRasterHandler.get() == 0 )
         {
-          mosaicXResolution = inputRasterPtr->getGrid()->getResolutionX();
-          mosaicYResolution = inputRasterPtr->getGrid()->getResolutionY();
-          mosaicSRID = inputRasterPtr->getGrid()->getSRID();          
-          
           const double& mosaicLLX = inputRasterPtr->getGrid()->getExtent()->m_llx;
           const double& mosaicLLY = inputRasterPtr->getGrid()->getExtent()->m_lly;
           const double& mosaicURX = inputRasterPtr->getGrid()->getExtent()->m_urx;
@@ -295,14 +287,12 @@ namespace te
           auxLinearRingPtr->setPoint( 4, mosaicLLX, mosaicURY );
           mosaicValidDataPol.clear();
           mosaicValidDataPol.push_back( auxLinearRingPtr );
-          mosaicValidDataPol.setSRID( mosaicSRID );
+          mosaicValidDataPol.setSRID( inputRasterPtr->getGrid()->getSRID() );
           
           lastInputRasterBBoxLLXIndexed = 0;
           lastInputRasterBBoxLLYIndexed = inputRasterPtr->getNumberOfRows() - 1;
           lastInputRasterBBoxURXIndexed = inputRasterPtr->getNumberOfColumns() - 1;
           lastInputRasterBBoxURYIndexed = 0;
-          
-          mosaicBandProperties.clear();
           
           mosaicBandsRangeMin.resize( 
             m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size(), 0 );
@@ -332,8 +322,6 @@ namespace te
             bandsProperties[ inputRastersBandsIdx ]->m_nblocksy = (unsigned int)
               std::ceil( ((double)inputRasterPtr->getNumberOfRows()) /
               ((double)bandsProperties[ inputRastersBandsIdx ]->m_blkh ) );              
-            
-            mosaicBandProperties.push_back( *bandsProperties[ inputRastersBandsIdx ] );
             
             te::rst::GetDataTypeRanges( bandsProperties[ inputRastersBandsIdx ]->m_type,
               mosaicBandsRangeMin[ inputRastersBandsIdx ],
@@ -439,41 +427,6 @@ namespace te
         }
         else
         {
-          // Generating the offset and gain info for eath band from the current raster
-
-          std::vector< double > currentRasterBandsOffsets;
-          std::vector< double > currentRasterBandsScales;
-
-          if( m_inputParameters.m_autoEqualize )
-          {
-            double currentRasterVariance = 0;
-            double currentRasterMean = 0;
-
-            for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
-              m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ;
-              ++inputRastersBandsIdx )
-            {
-              const unsigned int inputBandIdx = m_inputParameters.m_inputRastersBands[ inputRasterIdx ][
-                inputRastersBandsIdx ];
-
-              calcBandStatistics( (*inputRasterPtr->getBand( inputBandIdx ) ),
-                m_inputParameters.m_forceInputNoDataValue,
-                m_inputParameters.m_noDataValue,
-                currentRasterMean,
-                currentRasterVariance );
-
-              currentRasterBandsScales.push_back( std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] /
-                currentRasterVariance ) );
-              currentRasterBandsOffsets.push_back( mosaicTargetMeans[ inputRastersBandsIdx ] -
-                ( currentRasterBandsScales[ inputRastersBandsIdx ] * currentRasterMean ) );
-            }
-          }
-          else
-          {
-            currentRasterBandsOffsets = dummyRasterOffsets;
-            currentRasterBandsScales = dummyRasterScales;
-          } 
-          
           // Locating the tie points where te::gm::GTParameters::TiePoint::first
           // are :mosaic indexed coods and te::gm::GTParameters::TiePoint::second are
           // indexed coords from the current raster
@@ -590,6 +543,41 @@ namespace te
           }
           else
           {
+            // Generating the offset and gain info for eath band from the current raster
+
+            std::vector< double > currentRasterBandsOffsets;
+            std::vector< double > currentRasterBandsScales;
+
+            if( m_inputParameters.m_autoEqualize )
+            {
+              double currentRasterVariance = 0;
+              double currentRasterMean = 0;
+
+              for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
+                m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ;
+                ++inputRastersBandsIdx )
+              {
+                const unsigned int inputBandIdx = m_inputParameters.m_inputRastersBands[ inputRasterIdx ][
+                  inputRastersBandsIdx ];
+
+                calcBandStatistics( (*inputRasterPtr->getBand( inputBandIdx ) ),
+                  m_inputParameters.m_forceInputNoDataValue,
+                  m_inputParameters.m_noDataValue,
+                  currentRasterMean,
+                  currentRasterVariance );
+
+                currentRasterBandsScales.push_back( std::sqrt( mosaicTargetVariances[ inputRastersBandsIdx ] /
+                  currentRasterVariance ) );
+                currentRasterBandsOffsets.push_back( mosaicTargetMeans[ inputRastersBandsIdx ] -
+                  ( currentRasterBandsScales[ inputRastersBandsIdx ] * currentRasterMean ) );
+              }
+            }
+            else
+            {
+              currentRasterBandsOffsets = dummyRasterOffsets;
+              currentRasterBandsScales = dummyRasterScales;
+            }
+            
             // Updating the mosaic sequence info
             
             currentMosaicSquenceInfo.m_tiePoints.push_back( 
@@ -823,34 +811,49 @@ namespace te
             // Blending the current raster into the mosaic
         
             {
+              te::gm::GTParameters inverseTransParams;
+              inverseTransParams.m_directParameters = 
+                geoTransPtr->getParameters().m_inverseParameters;
+              inverseTransParams.m_inverseParameters = 
+                geoTransPtr->getParameters().m_directParameters;
+              
+              std::auto_ptr< te::gm::GeometricTransformation > inverseTransPtr;
+              inverseTransPtr.reset( geoTransPtr->clone() );
+              TERP_TRUE_OR_RETURN_FALSE( inverseTransPtr.get(), 
+                 "Invalid transformation pointer" );
+              TERP_TRUE_OR_RETURN_FALSE( inverseTransPtr->initialize( 
+                inverseTransParams ), "Inverse transformation init error" );              
+              
               te::rp::Blender blenderInstance;
-
+              
               TERP_TRUE_OR_RETURN_FALSE( blenderInstance.initialize(
+                *inputRasterPtr,
+                m_inputParameters.m_inputRastersBands[ inputRasterIdx ],              
                 *( mosaicRasterHandler.get() ),
                 dummyRasterBandsIndexes,
-                *inputRasterPtr,
-                m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
                 m_inputParameters.m_blendMethod,
-                te::rst::Interpolator::NearestNeighbor,
                 m_inputParameters.m_interpMethod,
+                te::rst::Interpolator::NearestNeighbor,
                 m_inputParameters.m_noDataValue,
                 m_inputParameters.m_forceInputNoDataValue,
+                currentRasterBandsOffsets,
+                currentRasterBandsScales,                                                                    
                 dummyRasterOffsets,
                 dummyRasterScales,
-                currentRasterBandsOffsets,
-                currentRasterBandsScales,
-                &mosaicValidDataPol,
                 0,
-                geoTransPtr.get(),
-                false ), 
-                "Blender initiazing error" );      
-                
+                &mosaicValidDataPol,
+                *inverseTransPtr ), 
+                "Blender initiazing error" );                    
+
               std::vector< double > blendedValues( mosaicRasterHandler->getNumberOfBands() );
               unsigned int outputRow = 0;
               unsigned int outputCol = 0;
+              double inputRow = 0;
+              double inputCol = 0;
               const unsigned int nBands = mosaicRasterHandler->getNumberOfBands();
               unsigned int outBandIdx = 0;
               te::rst::Raster& outputRaster = *mosaicRasterHandler;
+              const te::gm::GeometricTransformation& inverseTrans = *inverseTransPtr;
               
               for( outputRow = lastInputRasterBBoxURYIndexed ; outputRow <= lastInputRasterBBoxLLYIndexed ;
                 ++outputRow )
@@ -858,8 +861,11 @@ namespace te
                 for( outputCol = lastInputRasterBBoxLLXIndexed ; outputCol <= lastInputRasterBBoxURXIndexed ;
                   ++outputCol )
                 {
-                  blenderInstance.getBlendedValues( (double)outputRow, 
-                    (double)outputCol, blendedValues );
+                  inverseTrans.inverseMap( (double)outputCol, (double)outputRow, 
+                    inputCol, inputRow );
+                    
+                  blenderInstance.getBlendedValues( inputRow, inputCol,
+                    blendedValues );
                     
                   for( outBandIdx = 0 ; outBandIdx < nBands ; ++outBandIdx )
                   {
@@ -915,7 +921,7 @@ namespace te
               auxLinearRingPtr->setPoint( 4, inputRasterMappedULX, inputRasterMappedULY );
               te::gm::Polygon lastMosaicAddedRasterPol(  0, te::gm::PolygonType, 0 ); //the polygon of the last added raster (mosaic world coords)
               lastMosaicAddedRasterPol.push_back( auxLinearRingPtr );
-              lastMosaicAddedRasterPol.setSRID( mosaicSRID );
+              lastMosaicAddedRasterPol.setSRID( mosaicRasterHandler->getSRID() );
               
               // current mosaic area in a multi-polygon form
               std::auto_ptr< te::gm::MultiPolygon > mosaicValidDataPolMultiPolPtr(
@@ -928,7 +934,7 @@ namespace te
               unionMultiPolPtr.reset( mosaicValidDataPolMultiPolPtr->Union(
                 &lastMosaicAddedRasterPol ) );
               TERP_TRUE_OR_THROW( unionMultiPolPtr.get(), "Invalid pointer" );
-              unionMultiPolPtr->setSRID( mosaicSRID );
+              unionMultiPolPtr->setSRID( mosaicRasterHandler->getSRID() );
               
               TERP_TRUE_OR_THROW( unionMultiPolPtr->getGeomTypeId() == te::gm::PolygonType,
                 "Invalid geometry type")

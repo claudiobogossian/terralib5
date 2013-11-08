@@ -50,13 +50,15 @@ namespace te
 
           public:
 
-            MixtureModelAction(QMenu* menu);
+            MixtureModelAction(QMenu* menu, QMenu* popupMenu);
 
             virtual ~MixtureModelAction();
 
           protected slots:
 
             virtual void onActionActivated(bool checked);
+
+            virtual void onPopUpActionActivated(bool checked);
         };
 
       } // end namespace rp

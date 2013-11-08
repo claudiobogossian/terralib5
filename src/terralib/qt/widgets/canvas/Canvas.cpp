@@ -50,7 +50,6 @@
 
 te::qt::widgets::Canvas::Canvas(int w, int h, int devType)
   : m_isDeviceOwner(true),
-    m_magneticDeclination(0),
     m_bgColor(Qt::transparent),
     m_erase(false),
     m_ptWidth(1),
@@ -98,7 +97,6 @@ te::qt::widgets::Canvas::Canvas(int w, int h, int devType)
 
 te::qt::widgets::Canvas::Canvas(QPaintDevice* device)
   : m_isDeviceOwner(false),
-    m_magneticDeclination(0),
     m_bgColor(Qt::transparent),
     m_erase(false),
     m_ptWidth(1),
@@ -149,39 +147,14 @@ te::qt::widgets::Canvas::~Canvas()
 void te::qt::widgets::Canvas::setWindow(const double& llx, const double& lly,
                                         const double& urx, const double& ury)
 {
-  double w = (double)getWidth();
-  double h = (double)getHeight();
+  double xScale = static_cast<double>(getWidth()) / (urx - llx);
+  double yScale = static_cast<double>(getHeight()) / (ury - lly);
 
   m_matrix.reset();
-
-  if(m_magneticDeclination != 0)
-  {
-    QMatrix auxMatrix;
-    auxMatrix.rotate(m_magneticDeclination);
-    QPointF c(w/2., h/2.);
-    QPointF dif = auxMatrix.map(c) - c;
-    double dx = -dif.x();
-    double dy = -dif.y();
-
-    m_matrix.translate(dx, dy);
-    m_matrix.rotate(m_magneticDeclination);
-  }
-
-  double xScale = w / (urx - llx);
-  double yScale = h / (ury - lly);
   m_matrix.scale(xScale, -yScale);
   m_matrix.translate(-llx, -ury);
 
   m_painter.setMatrix(m_matrix);
-
-  //double xScale = static_cast<double>(getWidth()) / (urx - llx);
-  //double yScale = static_cast<double>(getHeight()) / (ury - lly);
-
-  //m_matrix.reset();
-  //m_matrix.scale(xScale, -yScale);
-  //m_matrix.translate(-llx, -ury);
-
-  //m_painter.setMatrix(m_matrix);
 }
 
 void te::qt::widgets::Canvas::calcAspectRatio(double& llx, double& lly, double& urx, double& ury, 
@@ -421,6 +394,19 @@ void te::qt::widgets::Canvas::draw(const te::gm::MultiPoint* mpoint)
 
 void te::qt::widgets::Canvas::draw(const te::gm::LineString* line)
 {
+  if(m_lnPen.brush().style() != Qt::TexturePattern)
+  {
+    const std::size_t nPoints = line->getNPoints();
+    QPolygonF qpol(nPoints);
+    memcpy(&(qpol[0]), (double*)(line->getCoordinates()), 16 * nPoints);
+    QPen pen(m_lnPen);
+    pen.setColor(m_lnColor);
+    m_painter.setPen(pen);
+    m_painter.setBrush(Qt::NoBrush);
+    m_painter.drawPolyline(qpol);
+    return;
+  }
+
   QPointF p1;
   QPointF p2;
   bool drawed = false;
@@ -447,15 +433,16 @@ void te::qt::widgets::Canvas::draw(const te::gm::LineString* line)
         m_painter.drawLine(p1, p2);
         drawed = true;
 	  }
-    else if(m_lnPen.brush().style() != Qt::TexturePattern)
-    {
-      QPen pen(m_lnPen);
-      pen.setColor(m_lnColor);
-      m_painter.setPen(pen);
-      m_painter.drawLine(p1, p2);
-      drawed = true;
-    }
-    else
+    //else if(m_lnPen.brush().style() != Qt::TexturePattern)
+    //{
+    //  QPen pen(m_lnPen);
+    //  pen.setColor(m_lnColor);
+    //  m_painter.setPen(pen);
+    //  m_painter.drawLine(p1, p2);
+    //  drawed = true;
+    //}
+    //else
+    if(m_lnPen.brush().style() == Qt::TexturePattern)
     {
 	    int minPixels = 20; // dx and dy is greater than minPixels, then, draw the segment using pattern
       double alfa;
@@ -620,6 +607,51 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
 
     memcpy(&(qpol[0]), (double*)(ring->getCoordinates()), 16 * nPoints);    
     path.addPolygon(qpol);
+    //te::gm::LinearRing* ring = static_cast<te::gm::LinearRing*>(poly->getRingN(i));
+    //const std::size_t nPoints = ring->getNPoints();
+    //assert(nPoints > 3);
+    //rings.push_back(ring);
+
+    //te::gm::Coord2D* coords = ring->getCoordinates();
+    //std::size_t size = ring->getNPoints();
+    //if(size <= 1)
+    //  continue;
+
+    //QPolygonF qpol;
+    //QPointF p1(coords[0].x, coords[0].y);
+    //qpol.append(p1);
+
+    //double xMax = p1.x();
+    //double yMax = p1.y();
+    //double xMin = p1.x();
+    //double yMin = p1.y();
+    //QPointF p2;
+    //for(register std::size_t i = 1; i != size; ++i)
+    //{    
+    //  p2.setX(coords[i].x);
+    //  p2.setY(coords[i].y);
+
+    //  xMax = qMax(xMax, p2.x());
+    //  yMax = qMax(yMax, p2.y());
+    //  xMin = qMin(xMin, p2.x());
+    //  yMin = qMin(yMin, p2.y());
+
+    //  if(m_matrix.map(p1).toPoint() == m_matrix.map(p2).toPoint())
+    //    continue;
+    //  qpol.append(p2);
+    //  p1 = p2;
+    //}
+
+    //if(qpol.size() < 3)
+    //{
+    //  qpol.clear();
+    //  qpol.append(QPointF(xMin, yMin));
+    //  qpol.append(QPointF(xMax, yMin));
+    //  qpol.append(QPointF(xMax, yMax));
+    //  qpol.append(QPointF(xMin, yMax));
+    //  qpol.append(QPointF(xMin, yMin));
+    //}
+    //path.addPolygon(qpol);
   }
 
   if(m_erase)
@@ -661,19 +693,34 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
       }
 
       m_painter.setBrush(m_polyBrush);
+
+      if(m_polyContourPen.brush().style() == Qt::TexturePattern)
+        m_painter.setPen(Qt::NoPen);
+      else
+        m_painter.setPen(m_polyContourPen);
+
       m_painter.drawPath(path);
     }
-    if(m_polyColor.alpha() != 0)
-    {
+   // if(m_polyColor.alpha() != 0)
+   // {
       QBrush brush(m_polyColor);
       m_painter.setBrush(brush);
+
+      if(m_polyContourPen.brush().style() == Qt::TexturePattern)
+        m_painter.setPen(Qt::NoPen);
+      else
+        m_painter.setPen(m_polyContourPen);
+
       m_painter.drawPath(path);
-    }
+   // }
 
     // draw contour
-    std::vector<te::gm::LinearRing*>::iterator it;
-    for(it = rings.begin(); it != rings.end(); ++it)
-      drawContour(*it);
+    if(m_polyContourPen.brush().style() == Qt::TexturePattern)
+    {
+      std::vector<te::gm::LinearRing*>::iterator it;
+      for(it = rings.begin(); it != rings.end(); ++it)
+        drawContour(*it);
+    }
   }
 }
 
@@ -686,7 +733,9 @@ void te::qt::widgets::Canvas::drawContour(const te::gm::LineString* line)
 
   bool drawed = false;
 
+  m_polyContourPen.setColor(m_polyContourColor);
   m_painter.setPen(m_polyContourPen);
+  m_painter.setBrush(Qt::NoBrush);
 
   QPointF p1(coords[0].x, coords[0].y);
   QPointF p2;
@@ -698,10 +747,8 @@ void te::qt::widgets::Canvas::drawContour(const te::gm::LineString* line)
 
     if(m_polyContourPen.brush().style() != Qt::TexturePattern)
     {
-      drawed = true;     
-      m_polyContourPen.setColor(m_polyContourColor);
-      m_painter.setPen(m_polyContourPen);
-      m_painter.drawLine(p1, p2);
+      drawed = true;
+      m_painter.drawLine(p1, p2);   
     }
     else
     {
@@ -2170,14 +2217,4 @@ void te::qt::widgets::Canvas::setNormalMode()
 {
   m_painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
   m_erase = false;
-}
-
-void te::qt::widgets::Canvas::setMagneticDeclination(double angle)
-{
-  m_magneticDeclination = angle;
-}
-
-double te::qt::widgets::Canvas::getMagneticDeclination()
-{
-  return m_magneticDeclination;
 }

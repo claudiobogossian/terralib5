@@ -28,8 +28,12 @@
 
 #include "../../../maptools/Enums.h"
 #include "../../../maptools/AbstractLayer.h"
+#include "../../widgets/layer/explorer/AbstractTreeItem.h"
 #include "Event.h"
 #include "Enums.h"
+
+// Qt
+#include <QtGui/QAction>
 
 namespace te
 {
@@ -61,6 +65,30 @@ namespace te
 
           te::map::AbstractLayerPtr m_layer;  //!< Layer added.
         };
+
+        /*!
+          \struct LayerItemRemoved
+
+          \brief This event signals that a layer item is to be removed.
+
+          \ingroup afevents
+         */
+        struct LayerItemRemoved : public Event
+        {
+          /*!
+            \brief Constructor.
+
+            \param layerItem Layer item to be removed.
+          */
+          LayerItemRemoved(te::qt::widgets::AbstractTreeItem* layerItem)
+            : Event(LAYER_ITEM_REMOVED),
+              m_layerItem(layerItem)
+          {
+          }
+
+          te::qt::widgets::AbstractTreeItem* m_layerItem;  //!< Layer item to be removed.
+        };
+
 
         /*!
           \struct LayerRemoved
@@ -157,27 +185,6 @@ namespace te
         };
 
         /*!
-          \struct LayersChanged
-          
-          \brief This event signals that the layout of layers has changed.
-        */
-        struct LayersChanged : public Event
-        {
-          /*!
-            \brief Constructor.
-
-            \param layers The layers.
-          */
-          LayersChanged(const std::vector<te::map::AbstractLayerPtr>& layers)
-            : Event(LAYERS_CHANGED),
-              m_layers(layers)
-          {
-          }
-
-          std::vector<te::map::AbstractLayerPtr> m_layers; //!< Vector of layers.
-        };
-
-        /*!
           \struct LayerStyleSelected
 
           \brief This event indicates that the layer style was selected on the layer explorer.
@@ -198,6 +205,76 @@ namespace te
           }
   
           te::map::AbstractLayerPtr m_layer;  //!< Layer whose style was selected.
+        };
+
+        /*!
+          \struct LayerPopUpAddAction
+
+          \brief This event is used to add a action in a layer tree pop up
+        
+          \ingroup afevents
+        */
+        struct LayerPopUpAddAction : public Event
+        {
+          /*!
+            \brief Construtor.
+
+            \param layer The layer that has the selected style.
+          */
+          LayerPopUpAddAction(QAction* action,
+                              int menuType) :
+            Event(LAYER_POPUP_ADD_ACTION),
+            m_action(action),
+            m_menuType(menuType)
+          {
+          }
+  
+          QAction* m_action;              //!< Action to be added in pop up menu
+          int m_menuType;                 //!< LayerTreeView::ContextMenuType
+        };
+
+        /*!
+          \struct LayerPopUpRemoveAction
+
+          \brief This event is used to remove a action in a layer tree pop up
+        
+          \ingroup afevents
+        */
+        struct LayerPopUpRemoveAction : public Event
+        {
+          /*!
+            \brief Construtor.
+
+            \param layer The layer that has the selected style.
+          */
+          LayerPopUpRemoveAction(QAction* action) :
+            Event(LAYER_POPUP_REMOVE_ACTION),
+            m_action(action)
+          {
+          }
+  
+          QAction* m_action;              //!< Action to be removed in pop up menu
+        };
+
+        /*!
+          \struct GetLayerSelected
+
+          \brief This event is used to get a single layer selected in layer tree
+        
+          \ingroup afevents
+        */
+        struct GetLayerSelected : public Event
+        {
+          /*!
+            \brief Construtor.
+
+            \param layer The layer that has the selected style.
+          */
+          GetLayerSelected() : Event(GET_LAYER_SELECTED)
+          {
+          }
+  
+          te::map::AbstractLayerPtr m_layer;  //!< Layer selected.
         };
       }
     }

@@ -178,6 +178,9 @@ namespace te
         */
         DateTimeType getDateTimeType() const { return TIME_INSTANT; }
 
+        /*! \brief Constructor. */
+        virtual ~TimeInstant();
+
       protected:
 
         boost::posix_time::ptime m_timeInstant;  //!< The internal time instant information. 

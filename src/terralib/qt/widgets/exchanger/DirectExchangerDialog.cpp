@@ -62,32 +62,22 @@ te::qt::widgets::DirectExchangerDialog::DirectExchangerDialog(QWidget* parent, Q
 
 // add icons
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("data-exchange-direct-hint").pixmap(112,48));
-
-  m_ui->m_inputPGISToolButton->setIcon(QIcon::fromTheme("datasource-postgis"));
-  m_ui->m_inputADOToolButton->setIcon(QIcon::fromTheme("datasource-ado"));
-  m_ui->m_inputSHPToolButton->setIcon(QIcon::fromTheme("datasource-ogr"));
-  m_ui->m_outputPGISToolButton->setIcon(QIcon::fromTheme("datasource-postgis"));
-  m_ui->m_outputADOToolButton->setIcon(QIcon::fromTheme("datasource-ado"));
-  m_ui->m_outputSHPToolButton->setIcon(QIcon::fromTheme("datasource-ogr"));
   m_ui->m_dsToolButton->setIcon(QIcon::fromTheme("datasource"));
 
 //connectors
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_dirToolButton, SIGNAL(clicked()), this, SLOT(onDirToolButtonClicked()));
   connect(m_ui->m_dsToolButton, SIGNAL(clicked()), this, SLOT(onDataSoruceToolButtonClicked()));
+  connect(m_ui->m_dsTypeComboBox, SIGNAL(activated(int)), this, SLOT(onDataSourceTypeActivated(int)));
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(QString)), this, SLOT(onInputLayerActivated(QString)));
-  connect(m_ui->m_inputPGISToolButton, SIGNAL(clicked(bool)), this, SLOT(onInputPostGISToolButtonClicked(bool)));
-  connect(m_ui->m_inputADOToolButton, SIGNAL(clicked(bool)), this, SLOT(onInputADOToolButtonClicked(bool)));
-  connect(m_ui->m_inputSHPToolButton, SIGNAL(clicked(bool)), this, SLOT(onInputSHPToolButtonClicked(bool)));
-  connect(m_ui->m_outputPGISToolButton, SIGNAL(clicked(bool)), this, SLOT(onOutputPostGISToolButtonClicked(bool)));
-  connect(m_ui->m_outputADOToolButton, SIGNAL(clicked(bool)), this, SLOT(onOutputADOToolButtonClicked(bool)));
-  connect(m_ui->m_outputSHPToolButton, SIGNAL(clicked(bool)), this, SLOT(onOutputSHPToolButtonClicked(bool)));
+
+  m_ui->m_helpPushButton->setPageReference("widgets/exchanger_direct/exchanger_direct.html");
 
   //starup interface
-  m_inputDataSourceType = "";
   m_outputDataSourceType = "";
   m_exchangeToFile = false;
+
+  setOutputDataSources();
 }
 
 te::qt::widgets::DirectExchangerDialog::~DirectExchangerDialog()
@@ -97,6 +87,29 @@ te::qt::widgets::DirectExchangerDialog::~DirectExchangerDialog()
 void te::qt::widgets::DirectExchangerDialog::setLayers(std::list<te::map::AbstractLayerPtr> layers)
 {
   m_layers = layers;
+
+  m_ui->m_inputLayerComboBox->clear();
+
+  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
+
+  while(it != m_layers.end())
+  {
+    te::map::AbstractLayerPtr l = *it;
+
+    m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
+
+    ++it;
+  }
+
+  if(m_ui->m_inputLayerComboBox->count() > 0)
+  {
+    QString s = m_ui->m_inputLayerComboBox->currentText();
+
+    onInputLayerActivated(s);
+  }
+  
+  if(m_ui->m_inputLayerComboBox->count() > 1)
+    m_ui->m_inputLayerComboBox->setEnabled(true);
 }
 
 void te::qt::widgets::DirectExchangerDialog::setDataSources()
@@ -117,39 +130,6 @@ void te::qt::widgets::DirectExchangerDialog::setDataSources()
     const std::string& title = datasource->getTitle();
 
     m_ui->m_outputDataSourceComboBox->addItem(title.c_str(), QVariant::fromValue(datasource));
-  }
-}
-
-void te::qt::widgets::DirectExchangerDialog::setInputLayers()
-{
-  m_ui->m_inputLayerComboBox->clear();
-
-  std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
-
-  while(it != m_layers.end())
-  {
-    te::map::AbstractLayerPtr l = *it;
-
-    te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(l.get());
-
-    if(dsLayer)
-    {
-      std::string dsName = dsLayer->getDataSourceId();
-
-      te::da::DataSourcePtr dsPtr = te::da::GetDataSource(dsName);
-
-      if(dsPtr->getType() == m_inputDataSourceType)
-        m_ui->m_inputLayerComboBox->addItem(l->getTitle().c_str(), QVariant::fromValue(l));
-    }
-
-    ++it;
-  }
-
-  if(m_ui->m_inputLayerComboBox->count() > 0)
-  {
-    QString s = m_ui->m_inputLayerComboBox->currentText();
-
-    onInputLayerActivated(s);
   }
 }
 
@@ -362,101 +342,57 @@ bool te::qt::widgets::DirectExchangerDialog::exchangeToDatabase()
   return true;
 }
 
-void te::qt::widgets::DirectExchangerDialog::onInputPostGISToolButtonClicked(bool flag)
+void te::qt::widgets::DirectExchangerDialog::onDataSourceTypeActivated(int index)
 {
-  if(!flag)
-    return;
+  QString value = m_ui->m_dsTypeComboBox->itemData(index).toString();
 
-  m_inputDataSourceType = "POSTGIS";
+  m_outputDataSourceType = value.toStdString();
 
-  m_ui->m_inputLayerComboBox->setEnabled(true);
-
-  setInputLayers();
-}
-
-void te::qt::widgets::DirectExchangerDialog::onInputADOToolButtonClicked(bool flag)
-{
-  if(!flag)
-    return;
-
-  m_inputDataSourceType = "ADO";
-
-  m_ui->m_inputLayerComboBox->setEnabled(true);
-
-  setInputLayers();
-}
-
-void te::qt::widgets::DirectExchangerDialog::onInputSHPToolButtonClicked(bool flag)
-{
-  if(!flag)
-    return;
-
-  m_inputDataSourceType = "OGR";
-
-  m_ui->m_inputLayerComboBox->setEnabled(true);
-
-  setInputLayers();
-}
-
-void te::qt::widgets::DirectExchangerDialog::onOutputPostGISToolButtonClicked(bool flag)
-{
-  if(!flag)
-    return;
-
-  m_outputDataSourceType = "POSTGIS";
-
-  m_exchangeToFile = false;
+  if(m_outputDataSourceType == "POSTGIS")
+  {
+    m_exchangeToFile = false;
   
-  m_ui->m_outputDataSourceComboBox->setEnabled(true);
-  m_ui->m_dsToolButton->setEnabled(true);
-  m_ui->m_dataSetLineEdit->setEnabled(true);
-  m_ui->m_dirToolButton->setEnabled(false);
-  m_ui->m_spatialIndexCheckBox->setEnabled(true);
-  m_ui->m_spatialIndexCheckBox->setChecked(true);
+    m_ui->m_outputDataSourceComboBox->setEnabled(true);
+    m_ui->m_dsToolButton->setEnabled(true);
+    m_ui->m_dataSetLineEdit->setEnabled(true);
+    m_ui->m_dirToolButton->setEnabled(false);
+    m_ui->m_spatialIndexCheckBox->setEnabled(true);
+    m_ui->m_spatialIndexCheckBox->setChecked(true);
 
-  setDataSources();
-}
+    setDataSources();
+  }
+  else if(m_outputDataSourceType == "ADO")
+  {
+    m_exchangeToFile = false;
 
-void te::qt::widgets::DirectExchangerDialog::onOutputADOToolButtonClicked(bool flag)
-{
-  if(!flag)
-    return;
+    m_ui->m_outputDataSourceComboBox->setEnabled(true);
+    m_ui->m_dsToolButton->setEnabled(true);
+    m_ui->m_dataSetLineEdit->setEnabled(true);
+    m_ui->m_dirToolButton->setEnabled(false);
+    m_ui->m_spatialIndexCheckBox->setEnabled(false);
+    m_ui->m_spatialIndexCheckBox->setChecked(false);
 
-  m_outputDataSourceType = "ADO";
+    setDataSources();
+  }
+  else if(m_outputDataSourceType == "OGR")
+  {
+    m_exchangeToFile = true;
 
-  m_exchangeToFile = false;
-
-  m_ui->m_outputDataSourceComboBox->setEnabled(true);
-  m_ui->m_dsToolButton->setEnabled(true);
-  m_ui->m_dataSetLineEdit->setEnabled(true);
-  m_ui->m_dirToolButton->setEnabled(false);
-  m_ui->m_spatialIndexCheckBox->setEnabled(false);
-  m_ui->m_spatialIndexCheckBox->setChecked(false);
-
-  setDataSources();
-}
-
-void te::qt::widgets::DirectExchangerDialog::onOutputSHPToolButtonClicked(bool flag)
-{
-  if(!flag)
-    return;
-
-  m_outputDataSourceType = "OGR";
-
-  m_exchangeToFile = true;
-
-  m_ui->m_outputDataSourceComboBox->clear();
-  m_ui->m_outputDataSourceComboBox->setEnabled(false);
-  m_ui->m_dsToolButton->setEnabled(false);
-  m_ui->m_dataSetLineEdit->clear();
-  m_ui->m_dataSetLineEdit->setEnabled(false);
-  m_ui->m_dirToolButton->setEnabled(true);
-  m_ui->m_spatialIndexCheckBox->setEnabled(false);
-  m_ui->m_spatialIndexCheckBox->setChecked(false);
+    m_ui->m_outputDataSourceComboBox->clear();
+    m_ui->m_outputDataSourceComboBox->setEnabled(false);
+    m_ui->m_dsToolButton->setEnabled(false);
+    m_ui->m_dataSetLineEdit->clear();
+    m_ui->m_dataSetLineEdit->setEnabled(false);
+    m_ui->m_dirToolButton->setEnabled(true);
+    m_ui->m_spatialIndexCheckBox->setEnabled(false);
+    m_ui->m_spatialIndexCheckBox->setChecked(false);
+  }
 }
 
 void te::qt::widgets::DirectExchangerDialog::onInputLayerActivated(QString value)
 {
+  onDataSourceTypeActivated(m_ui->m_dsTypeComboBox->currentIndex());
+
   if(m_ui->m_dataSetLineEdit->isEnabled())
     m_ui->m_dataSetLineEdit->setText(value);
 }
@@ -481,11 +417,6 @@ void te::qt::widgets::DirectExchangerDialog::onDataSoruceToolButtonClicked()
   setDataSources();
 }
 
-void te::qt::widgets::DirectExchangerDialog::onHelpPushButtonClicked()
-{
-  QMessageBox::information(this, "Help", "Under development");
-}
-
 void te::qt::widgets::DirectExchangerDialog::onOkPushButtonClicked()
 {
   bool res = false;
@@ -497,4 +428,13 @@ void te::qt::widgets::DirectExchangerDialog::onOkPushButtonClicked()
 
   if(res)
     accept();
+}
+
+void te::qt::widgets::DirectExchangerDialog::setOutputDataSources()
+{
+  m_ui->m_dsTypeComboBox->clear();
+
+  m_ui->m_dsTypeComboBox->addItem(QIcon::fromTheme("datasource-postgis"), tr("PostGIS"), QVariant("POSTGIS"));
+  m_ui->m_dsTypeComboBox->addItem(QIcon::fromTheme("datasource-ado"), tr("Microsoft Access"), QVariant("ADO"));
+  m_ui->m_dsTypeComboBox->addItem(QIcon::fromTheme("datasource-ogr"), tr("File - OGR Formats"), QVariant("OGR"));
 }

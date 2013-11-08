@@ -78,23 +78,28 @@ namespace te
 
         std::auto_ptr<LayerSchema> getSchema() const;
 
-        std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY) const;
+        std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
                                                const te::gm::Envelope* e,
                                                te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
                                                const te::gm::Geometry* g,
                                                te::gm::SpatialRelation r,
-                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
-                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* oids,
-                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         bool isValid() const;
 
@@ -154,7 +159,8 @@ namespace te
       private:
 
          std::auto_ptr<te::da::DataSet> getData(te::da::Select* query,
-                                                te::common::TraverseType travType = te::common::FORWARDONLY) const;
+                                                te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
       private:
 

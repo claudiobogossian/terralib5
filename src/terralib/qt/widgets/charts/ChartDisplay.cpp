@@ -79,7 +79,7 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent, QString title, Char
   // Selection based on a point
   m_picker = new QwtPlotPicker(this->canvas());
   m_picker->setStateMachine(new QwtPickerClickPointMachine );
-
+  
   //The default shape of the cursor is a stander arrow, may vary depending on the type of chart being drawn.
   //Can be updated using the set PickerStyle function.
   canvas()->setCursor( Qt::ArrowCursor);
@@ -105,8 +105,8 @@ void te::qt::widgets::ChartDisplay::setPickerStyle(int chartType)
       m_picker->setStateMachine(new QwtPickerDragRectMachine );
       connect(m_picker, SIGNAL(selected(const QRectF&)), SLOT(onRectPicked(const QRectF&)));
       canvas()->setCursor(Qt::CrossCursor);
-
       break;
+
     default:
       delete m_picker;
       m_picker = new QwtPlotPicker(this->canvas());

@@ -46,10 +46,12 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/random.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
+#include <boost/lexical_cast.hpp>
 
 
 // STL
 #include <cstring>
+#include <string>
 #include <limits>
 #include <map>
 #include <memory>
@@ -65,6 +67,42 @@ namespace te
     bool CreateNewRaster( const te::rst::Grid& rasterGrid,
       const std::vector< te::rst::BandProperty* >& bandsProperties,
       const std::string& outDataSetName,
+      const std::string& dataSourceType,
+      RasterHandler& outRasterHandler )
+    {
+      // Creating a new datasource
+
+      std::auto_ptr< te::da::DataSource > dataSourcePtr(
+        te::da::DataSourceFactory::make( dataSourceType ) );
+      if( dataSourcePtr.get() == 0 ) return false;      
+      
+      RasterHandler internalRasterHandler;
+      
+      if( CreateNewRaster( rasterGrid, bandsProperties, 
+        outDataSetName, *dataSourcePtr, internalRasterHandler ) )
+      {
+        std::auto_ptr< te::da::DataSource > dummyDataSourcePtr;
+        std::auto_ptr< te::da::DataSourceTransactor > transactorPtr;
+        std::auto_ptr< te::da::DataSet > dataSetPtr;
+        std::auto_ptr< te::rst::Raster > rasterPtr;
+        
+        internalRasterHandler.release( dummyDataSourcePtr, transactorPtr,
+          dataSetPtr, rasterPtr );
+          
+        outRasterHandler.reset( dataSourcePtr.release(), transactorPtr.release(), 
+          dataSetPtr.release(), rasterPtr.release() );
+        
+        return true;
+      }
+      else
+      {
+        return false;
+      }      
+    }
+        
+    bool CreateNewRaster( const te::rst::Grid& rasterGrid,
+      const std::vector< te::rst::BandProperty* >& bandsProperties,
+      const std::string& outDataSetName,
       te::da::DataSource& outDataSource,
       RasterHandler& outRasterHandler )
     {
@@ -77,35 +115,39 @@ namespace te
 
       // acquiring a transactor instance
 
-      //std::auto_ptr< te::da::DataSourceTransactor > transactorPtr(
-      //  outDataSource.getTransactor() );
+      std::auto_ptr< te::da::DataSourceTransactor > transactorPtr(
+       outDataSource.getTransactor() );
 
-      //if( transactorPtr.get() == 0 )
-      //{
-      //  return false;
-      //}
-
-      // acquiring a persistence instance
-
-      //std::auto_ptr< te::da::DataSetTypePersistence > persistencePtr(
-      //  transactorPtr->getDataSetTypePersistence() );
-
-      //if( persistencePtr.get() == 0 )
-      //{
-      //  return false;
-      //}
+      if( transactorPtr.get() == 0 )
+      {
+       return false;
+      }
 
       // Creating a data set instance
+      
+      if( transactorPtr->dataSetExists( outDataSetName ) )
+      {
+        transactorPtr->dropDataSet( outDataSetName );
+      }
 
       std::auto_ptr< te::da::DataSetType > dataSetTypePtr(
         new te::da::DataSetType( outDataSetName ) );
       dataSetTypePtr->add( rasterPropertyPtr.release() );
 
-      //persistencePtr->create( dataSetTypePtr.release() );
+      try
+      {
+        transactorPtr->createDataSet( dataSetTypePtr.get(),
+          std::map< std::string, std::string >() );
+      }
+      catch( ... )
+      {
+        return false;
+      }
+      
+       if( ! transactorPtr->dataSetExists( outDataSetName ) ) return false;
 
-      //std::auto_ptr< te::da::DataSet > dataSetPtr( transactorPtr->getDataSet(
-      std::auto_ptr< te::da::DataSet > dataSetPtr( outDataSource.getDataSet(
-        outDataSetName, te::common::FORWARDONLY) );
+      std::auto_ptr< te::da::DataSet > dataSetPtr( transactorPtr->getDataSet(
+        outDataSetName, te::common::FORWARDONLY, true, te::common::RWAccess ) );
 
       if( dataSetPtr.get() == 0 )
       {
@@ -114,16 +156,11 @@ namespace te
 
       // Creating a raster instance
 
-      std::size_t rpos = te::da::GetFirstPropertyPos(dataSetPtr.get(), te::dt::RASTER_TYPE);
-
-      std::auto_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster(rpos) );
+      std::auto_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster( 0 ) );
 
       if( rasterPtr.get() )
       {
-        //outRasterHandler.reset( transactorPtr.release(),
-          //persistencePtr.release(), dataSetPtr.release(),
-          //rasterPtr.release() );
-        outRasterHandler.reset( dataSetPtr.release(), rasterPtr.release() );
+        outRasterHandler.reset( transactorPtr.release(), dataSetPtr.release(), rasterPtr.release() );
         return true;
       }
       else
@@ -136,153 +173,50 @@ namespace te
       std::vector< te::rst::BandProperty* > bandsProperties,
       RasterHandler& outRasterHandler )
     {
-      // Creating a new memory datasource
-
-      boost::shared_ptr< te::da::DataSource > dataSourcePtr(
-        te::da::DataSourceFactory::make( "MEM" ) );
-      TERP_TRUE_OR_THROW( dataSourcePtr.get(), "Data source creation error" );
-
-      // Defining the raster properties
-
-      std::auto_ptr< te::rst::RasterProperty > rasterPropertyPtr(
-        new te::rst::RasterProperty( new te::rst::Grid( rasterGrid ),
-        bandsProperties, std::map< std::string, std::string >(),
-        false, 0, 0 ) );
-
-      // acquiring a transactor instance
-
-      // boost::shared_ptr< te::da::DataSourceTransactor > transactorPtr(
-      //  dataSourcePtr->getTransactor() );
-
-      //if( transactorPtr.get() == 0 )
-      //{
-      //  return false;
-      //}
-
-      // acquiring a persistence instance
-
-      //boost::shared_ptr< te::da::DataSetTypePersistence > persistencePtr(
-      //  transactorPtr->getDataSetTypePersistence() );
-
-      //if( persistencePtr.get() == 0 )
-      //{
-      //  return false;
-      //}
-
-      // Creating a data set instance
-
-      std::auto_ptr< te::da::DataSetType > dataSetTypePtr(
-        new te::da::DataSetType( "createNewMemRaster" ) );
-      dataSetTypePtr->add( rasterPropertyPtr.release() );
-
-      //persistencePtr->create( dataSetTypePtr.release() );
-
-      //boost::shared_ptr< te::da::DataSet > dataSetPtr( transactorPtr->getDataSet(
-      //  "createNewMemRaster", te::common::FORWARDONLY, te::common::RWAccess) );
-
-      boost::shared_ptr< te::da::DataSet > dataSetPtr( dataSourcePtr->getDataSet(
-        "createNewMemRaster", te::common::FORWARDONLY) );
-
-      if( dataSetPtr.get() == 0 )
-      {
-        return false;
-      }
-
-      // Creating a raster instance
-      std::size_t rpos = te::da::GetFirstPropertyPos(dataSetPtr.get(), te::dt::RASTER_TYPE);
-
-      boost::shared_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster(rpos) );
-
-      if( rasterPtr.get() )
-      {
-        //outRasterHandler.reset( dataSourcePtr, transactorPtr,
-        //  persistencePtr, dataSetPtr, rasterPtr );
-
-        outRasterHandler.reset( dataSourcePtr, dataSetPtr, rasterPtr );
-
-        return true;
-      }
-      else
-      {
-        return false;
-      }
+      std::string dataSetName = std::string( "createNewMemRaster" ) +
+        boost::lexical_cast< std::string >( &outRasterHandler );
+        
+      return CreateNewRaster( rasterGrid, bandsProperties, dataSetName, 
+        "MEM", outRasterHandler );
     }
 
-    bool CreateNewGeotifRaster( const te::rst::Grid& rasterGrid,
+    bool CreateNewGdalRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
       const std::string& fileName,
       RasterHandler& outRasterHandler )
     {
+      
       boost::filesystem::path pathInfo( fileName );
 
-      // Creating a new memory datasource
+      // Creating a new datasource
 
-      boost::shared_ptr< te::da::DataSource > dataSourcePtr(
+      std::auto_ptr< te::da::DataSource > dataSourcePtr(
         te::da::DataSourceFactory::make( "GDAL" ) );
       if( dataSourcePtr.get() == 0 ) return false;
 
       std::map<std::string, std::string> outputRasterInfo;
-      outputRasterInfo["URI"] = pathInfo.parent_path().string();
+      outputRasterInfo["SOURCE"] = pathInfo.parent_path().string();
 
       dataSourcePtr->setConnectionInfo(outputRasterInfo);
       dataSourcePtr->open();
       if( ! dataSourcePtr->isOpened() ) return false;
-
-      // Defining the raster properties
-
-      std::auto_ptr< te::rst::RasterProperty > rasterPropertyPtr(
-        new te::rst::RasterProperty( new te::rst::Grid( rasterGrid ),
-        bandsProperties, std::map< std::string, std::string >(),
-        false, 0, 0 ) );
-
-      // acquiring a transactor instance
-
-      // boost::shared_ptr< te::da::DataSourceTransactor > transactorPtr(
-      //  dataSourcePtr->getTransactor() );
-
-      //if( transactorPtr.get() == 0 )
-      //{
-      //  return false;
-      //}
-
-      // acquiring a persistence instance
-
-      //boost::shared_ptr< te::da::DataSetTypePersistence > persistencePtr(
-      //  transactorPtr->getDataSetTypePersistence() );
-
-      //if( persistencePtr.get() == 0 )
-      //{
-      //  return false;
-      //}
-
-      // Creating a data set instance
-
-      std::auto_ptr< te::da::DataSetType > dataSetTypePtr(
-        new te::da::DataSetType( pathInfo.filename().string() ) );
-      dataSetTypePtr->add( rasterPropertyPtr.release() );
-
-      //persistencePtr->create( dataSetTypePtr.release() );
-
-      boost::shared_ptr< te::da::DataSet > dataSetPtr( dataSourcePtr->getDataSet(
-        pathInfo.filename().string(), te::common::FORWARDONLY) );
-
-      if( dataSetPtr.get() == 0 )
+      
+      RasterHandler internalRasterHandler;
+      
+      if( CreateNewRaster( rasterGrid, bandsProperties, 
+        pathInfo.filename().string(), *dataSourcePtr, internalRasterHandler ) )
       {
-        return false;
-      }
-
-      // Creating a raster instance
-      std::size_t rpos = te::da::GetFirstPropertyPos(dataSetPtr.get(), te::dt::RASTER_TYPE);
-
-      boost::shared_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster(rpos) );
-
-      if( rasterPtr.get() )
-      {
-        //outRasterHandler.reset( dataSourcePtr, transactorPtr,
-        //  persistencePtr, dataSetPtr, rasterPtr );
-
-        outRasterHandler.reset( dataSourcePtr, dataSetPtr, rasterPtr );
-
+        std::auto_ptr< te::da::DataSource > dummyDataSourcePtr;
+        std::auto_ptr< te::da::DataSourceTransactor > transactorPtr;
+        std::auto_ptr< te::da::DataSet > dataSetPtr;
+        std::auto_ptr< te::rst::Raster > rasterPtr;
+        
+        internalRasterHandler.release( dummyDataSourcePtr, transactorPtr,
+          dataSetPtr, rasterPtr );
+          
+        outRasterHandler.reset( dataSourcePtr.release(), transactorPtr.release(), 
+          dataSetPtr.release(), rasterPtr.release() );
+        
         return true;
       }
       else
@@ -300,47 +234,47 @@ namespace te
           max = 1;
           break;
         case te::dt::CHAR_TYPE :
-          min = (double)std::numeric_limits<char>::min();
-          max = (double)std::numeric_limits<char>::max();
+          min = -128;
+          max = 128;
           break;
         case te::dt::UCHAR_TYPE :
-          min = (double)std::numeric_limits<unsigned char>::min();
-          max = (double)std::numeric_limits<unsigned char>::max();
+          min = 0;
+          max = 255;
           break;
         case te::dt::INT16_TYPE :
         case te::dt::CINT16_TYPE :
-          min = (double)std::numeric_limits<short int>::min();
+          min = -1.0 * (double)std::numeric_limits<short int>::max();
           max = (double)std::numeric_limits<short int>::max();
           break;
         case te::dt::UINT16_TYPE :
-          min = (double)std::numeric_limits<unsigned short int>::min();
+          min = 0;
           max = (double)std::numeric_limits<unsigned short int>::max();
           break;
         case te::dt::INT32_TYPE :
         case te::dt::CINT32_TYPE :
-          min = (double)std::numeric_limits<int>::min();
+          min = -1.0 * (double)std::numeric_limits<int>::max();
           max = (double)std::numeric_limits<int>::max();
           break;
         case te::dt::UINT32_TYPE :
-          min = (double)std::numeric_limits<unsigned int>::min();
+          min = 0;
           max = (double)std::numeric_limits<unsigned int>::max();
           break;
         case te::dt::INT64_TYPE :
-          min = (double)std::numeric_limits<long int>::min();
+          min = -1.0 * (double)std::numeric_limits<long int>::max();
           max = (double)std::numeric_limits<long int>::max();
           break;
         case te::dt::UINT64_TYPE :
-          min = (double)std::numeric_limits<unsigned long int>::min();
+          min = 0;
           max = (double)std::numeric_limits<unsigned long int>::max();
           break;
         case te::dt::FLOAT_TYPE :
         case te::dt::CFLOAT_TYPE :
-          min = (double)std::numeric_limits<float>::min();
+          min = -1.0 * (double)std::numeric_limits<float>::max();
           max = (double)std::numeric_limits<float>::max();
           break;
         case te::dt::DOUBLE_TYPE :
         case te::dt::CDOUBLE_TYPE :
-          min = (double)std::numeric_limits<double>::min();
+          min = -1.0 * (double)std::numeric_limits<double>::max();
           max = (double)std::numeric_limits<double>::max();
           break;
         default :

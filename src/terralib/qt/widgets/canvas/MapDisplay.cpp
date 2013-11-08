@@ -48,7 +48,7 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
     m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
     m_timer(new QTimer(this)),
     m_interval(200),
-    m_magneticDeclination(0)
+    m_isDrawing(false)
 {
   m_timer->setSingleShot(true);
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
@@ -158,7 +158,6 @@ void te::qt::widgets::MapDisplay::setExtent(te::gm::Envelope& e, bool doRefresh)
   for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
   {
     te::qt::widgets::Canvas* canvas = it->second;
-    canvas->setMagneticDeclination(m_magneticDeclination);
     canvas->calcAspectRatio(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury, m_hAlign, m_vAlign);
     canvas->setWindow(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury);
     canvas->clear();
@@ -175,6 +174,8 @@ void te::qt::widgets::MapDisplay::refresh()
 {
   ScopedCursor cursor(Qt::WaitCursor);
 
+  m_isDrawing = true;
+
   // Cleaning...
   m_displayPixmap->fill(m_backgroundColor);
 
@@ -184,6 +185,8 @@ void te::qt::widgets::MapDisplay::refresh()
 
   for(it = m_layerList.begin(); it != m_layerList.end(); ++it) // for each layer
     draw(it->get(), painter);
+
+  m_isDrawing = false;
 
   update();
 }
@@ -314,6 +317,21 @@ QPointF te::qt::widgets::MapDisplay::transform(const QPointF& p)
   return canvas->getMatrix().inverted().map(p);
 }
 
+QColor te::qt::widgets::MapDisplay::getBackgroundColor()
+{
+  return m_backgroundColor;
+}
+
+void te::qt::widgets::MapDisplay::setBackgroundColor(const QColor& color)
+{
+  m_backgroundColor = color;
+}
+
+bool te::qt::widgets::MapDisplay::isDrawing() const
+{
+  return m_isDrawing;
+}
+
 void te::qt::widgets::MapDisplay::onResizeTimeout()
 {
   // Rebulding the map display pixmaps
@@ -382,24 +400,4 @@ void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize
   }
 
   setExtent(e);
-}
-
-QColor te::qt::widgets::MapDisplay::getBackgroundColor()
-{
-  return m_backgroundColor;
-}
-
-void te::qt::widgets::MapDisplay::setBackgroundColor(const QColor& color)
-{
-  m_backgroundColor = color;
-}
-
-void te::qt::widgets::MapDisplay::setMagneticDeclination(double angle)
-{
-  m_magneticDeclination = angle;
-}
-
-double te::qt::widgets::MapDisplay::getMagneticDeclination()
-{
-  return m_magneticDeclination;
 }

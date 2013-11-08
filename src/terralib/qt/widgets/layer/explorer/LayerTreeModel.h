@@ -69,11 +69,25 @@ namespace te
           ~LayerTreeModel();
 
           /*!
-            \brief It sets the list of layers associated to the items of the model.
+            \brief It resets the model and associates the new top level items to the given top level layers.
 
-            \param layers The layers that will be associated to the items of the model.
+            \param layers The list of top level layers that will be associated to the new top level items.
           */
           void set(const std::list<te::map::AbstractLayerPtr>& layers);
+
+          /*!
+            \brief It gets the top level layers of the model.
+
+            \param layers The top level layers of the model.
+          */
+          const std::vector<te::map::AbstractLayerPtr>& getTopLayers() const;
+
+          /*!
+            \brief It gets the top level layer items of the model.
+
+            \param layers The top level layer items of the model.
+          */
+          const std::vector<te::qt::widgets::AbstractTreeItem*>& getTopLayerItems() const;
 
           /*!
             \brief It fetches more data for the given parent.
@@ -252,22 +266,20 @@ namespace te
           bool isCheckable() const;
 
           /*!
+            \brief It gets the index to be associated to the given item.
+
+            \param item The item whose index will be returned.
+
+            \return The index that is associated to the item.
+          */
+          QModelIndex getIndex(AbstractTreeItem* item);
+
+          /*!
             \brief It adds a layer to the model.
 
             \param layer The layer to be added to the model.
           */
           void add(const te::map::AbstractLayerPtr& layer);
-
-          /*!
-            \brief It inserts a layer to the model into the row of the given parent.
-
-            \param layer  The layer to be associated to the item to be inserted.
-            \param row    The row where the layer item will be inserted.
-            \param parent The parent index of the row where the layer item will be inserted.
-
-            \return True, if the layer item was successfully inserted; otherwise, it returns false.
-          */
-          bool insert(const te::map::AbstractLayerPtr& layer, int row, const QModelIndex& parent);
 
           /*!
             \brief It removes a item from the model.
@@ -278,42 +290,20 @@ namespace te
           */
           bool remove(AbstractTreeItem* item);
 
-          /*! \brief It refreshes the model. */
-          void refresh();
-
-          /*!
-            \brief It gets all the top level layers in the model, including the top level folder layers.
-
-            \return List of all the top level layers in the model, including the top level folder layers.
-          */
-          std::list<te::map::AbstractLayerPtr> getAllTopLevelLayers() const;
-
-          /*!
-            \brief It gets all the layers in the model, including the folder layers.
-
-            \return List of all the layers in the model, including the folder layers.
-          */
-          std::list<te::map::AbstractLayerPtr> getAllLayers() const;
-
-          /*!
-            \brief It gets all the layers in the model, not including the folder layers.
-
-            \return List of all the layers in the model, not including the folder layers.
-          */
-          std::list<te::map::AbstractLayerPtr> getLayers() const;
-
-          /*!
-            \brief It gets the layers in the model that are visible, not including the folder layers.
-
-            \return List of layers in the model that are visible, not including the folder layers.
-          */
-          std::list<te::map::AbstractLayerPtr> getVisibleLayers() const;
-
         signals:
 
-          void visibilityChanged(te::map::AbstractLayerPtr layer);
+          void visibilityChanged(const te::map::AbstractLayerPtr& layer);
+          //void expandItem(te::qt::widgets::AbstractTreeItem* item);
+          void layerOrderChanged();
 
         protected:
+
+          /*!
+            \brief It removes the given layers from the list of children of their parents.
+
+            \param layers The layers that will be removed from the list of children of their parents.
+          */
+          void removeLayerFromParentChildrenList(std::vector<te::map::AbstractLayerPtr>& layers);
 
           /*!
             \brief It emits the dataChanged signal for the descendants indexes of the given index.
@@ -331,8 +321,10 @@ namespace te
 
         private:
 
-          std::vector<AbstractTreeItem*> m_items;                  //!< The list of layers of this model.
-          bool m_checkable;                                        //!< It informs if the model is checkable.
+          std::vector<AbstractTreeItem*> m_items;                    //!< The list of top level items.
+          std::vector<te::map::AbstractLayerPtr> m_layers;           //!< The list of top level layers.
+          std::vector<te::map::AbstractLayerPtr> m_insertingLayers;  //!< The list of layers to be inserted.
+          bool m_checkable;                                          //!< It informs if the model is checkable.
       };
 
     } // end namespace widgets

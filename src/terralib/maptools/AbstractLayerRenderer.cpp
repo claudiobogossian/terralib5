@@ -26,6 +26,7 @@
 // TerraLib
 #include "../color/RGBAColor.h"
 #include "../common/progress/TaskProgress.h"
+#include "../common/Globals.h"
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
@@ -72,6 +73,8 @@
 #include <cstdlib>
 #include <memory>
 #include <utility>
+
+
 
 te::map::AbstractLayerRenderer::AbstractLayerRenderer()
   : m_index(0)
@@ -501,7 +504,7 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
   std::map<std::string, std::vector<te::se::Symbolizer*> > uniqueGroupsMap;
 
   // case (NOT) UNIQUE_VALUE: for each GroupingItem, builds a map [item upper limit] -> [symbolizers]
-  std::map<double, std::vector<te::se::Symbolizer*> > othersGroupsMap;
+  std::map<std::pair< double, double>, std::vector<te::se::Symbolizer*> > othersGroupsMap;
 
   for(std::size_t i = 0; i < nGroupItems; ++i)
   {
@@ -515,8 +518,11 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
     }
     else
     {
-      double uppperLimit = atof(item->getUpperLimit().c_str());
-      othersGroupsMap[uppperLimit] = item->getSymbolizers();
+      double lowerLimit = atof(item->getLowerLimit().c_str());
+      double upperLimit = atof(item->getUpperLimit().c_str());
+      std::pair<double, double> range(lowerLimit, upperLimit);
+
+      othersGroupsMap[range] = item->getSymbolizers();
     }
   }
 
@@ -563,7 +569,12 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
     std::vector<te::se::Symbolizer*> symbolizers;
 
     // Finds the current data set item on group map
-    std::string value = dataset->getAsString(propertyPos, precision);
+    std::string value;
+    
+    if(dataset->isNull(propertyPos))
+      value = te::common::Globals::sm_nanStr;
+    else
+      value = dataset->getAsString(propertyPos, precision);
 
     if(type == UNIQUE_VALUE)
     {
@@ -575,16 +586,33 @@ void te::map::AbstractLayerRenderer::drawLayerGroupingMem(AbstractLayer* layer,
     else
     {
       double dvalue = atof(value.c_str());
-      std::map<double, std::vector<te::se::Symbolizer*> >::const_iterator it;
+      std::map<std::pair< double, double>, std::vector<te::se::Symbolizer*> >::const_iterator it;
       for(it = othersGroupsMap.begin(); it != othersGroupsMap.end(); ++it)
       {
-        if(dvalue < it->first)
+        if(dvalue >= it->first.first && dvalue <= it->first.second)
           break;
       }
       
       if(it == othersGroupsMap.end())
+      {
+        te::se::Style* style = layer->getStyle();
+        if(style)
+        {
+          if(!style->getRules().empty())
+          {
+            te::se::Rule* rule = style->getRule(0);
+
+            symbolizers = rule->getSymbolizers();
+          }
+        }
+      }
+      else
+      {
+        symbolizers = it->second;
+      }
+
+      if(symbolizers.empty())
         continue;
-      symbolizers = it->second;
     }
 
     std::auto_ptr<te::gm::Geometry> geom;

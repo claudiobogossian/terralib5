@@ -45,6 +45,7 @@
 #include <cfloat>
 #include <cmath>
 #include <memory>
+#include <cstdio>
 
 namespace te
 {
@@ -174,7 +175,6 @@ namespace te
       std::vector< double > mosaicBandsRangeMax;       
       te::rst::BandProperty mosaicBaseBandProperties( 0, 0, "" );
       std::vector< te::gm::Polygon > rastersBBoxes; // all rasters bounding boxes (under the first raster world coords.
-      std::vector< te::rst::Grid > rastersGrids; //all rasters original grids under their original SRSs
 
       {
         te::gm::Polygon auxPolygon( 0, te::gm::PolygonType, 0 );
@@ -195,8 +195,6 @@ namespace te
             inputRasterPtr->getAccessPolicy() & te::common::RAccess,
             "Invalid raster" );
             
-          rastersGrids.push_back( (*inputRasterPtr->getGrid()) );
-
           // Defining the base mosaic info
 
           if( inputRasterIdx == 0 )
@@ -497,7 +495,7 @@ namespace te
 
       // iterating over the other rasters
       
-      te::rst::Raster const* nonCachedInputRasterPtr = 0;
+      te::rst::Raster const* originalInputRasterPtr = 0;
 
       std::vector< unsigned int > outputRasterBands;
       std::vector< double > dummyRasterOffsets;
@@ -510,35 +508,90 @@ namespace te
         dummyRasterScales.push_back( 1.0 );
       }      
 
-      while( ( nonCachedInputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
+      while( ( originalInputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
       {
         const unsigned int inputRasterIdx = m_inputParameters.m_feederRasterPtr->getCurrentOffset();
 
         TERP_DEBUG_TRUE_OR_THROW( rastersBBoxes[ inputRasterIdx ].getSRID() == outputRaster.getSRID(),
           "Invalid boxes SRID" );
           
-        te::rst::Raster const* inputRasterPtr = nonCachedInputRasterPtr;
+        te::rst::Raster const* inputRasterPtr = originalInputRasterPtr;
 
+        // reprojection issues
+        
+        std::auto_ptr< te::rst::Raster > reprojectedInputRasterPtr;
+        std::string reprojectedRasterFileName;
+
+        if( outputRaster.getSRID() != inputRasterPtr->getSRID() )
+        {
+          char fileNameBuffer[L_tmpnam];
+          tmpnam(fileNameBuffer);
+          
+          reprojectedRasterFileName = fileNameBuffer;
+          reprojectedRasterFileName += ".tif";
+          
+          std::map< std::string, std::string > rInfo;
+          rInfo[ "URI" ] = reprojectedRasterFileName;
+          
+          reprojectedInputRasterPtr.reset( inputRasterPtr->transform( 
+            outputRaster.getSRID(), rInfo,
+            m_inputParameters.m_interpMethod) );
+          inputRasterPtr = reprojectedInputRasterPtr.get();
+          TERP_TRUE_OR_RETURN_FALSE( inputRasterPtr, "Reprojection error" );
+        }
+        
+        // Caching issues
+        
         std::auto_ptr< te::mem::CachedRaster > cachedInputRasterPtr;
         if( m_inputParameters.m_useRasterCache )
         {
           cachedInputRasterPtr.reset( new te::mem::CachedRaster(
-            *nonCachedInputRasterPtr, 25, 0 ) );
+            *inputRasterPtr, 25, 0 ) );
           inputRasterPtr = cachedInputRasterPtr.get();
-        }        
-
-        const te::rst::Grid& inputGrid = (*inputRasterPtr->getGrid());
-
-        // reprojection issues
-
-        bool mustReproject = false;
-        te::srs::Converter convInstance;
-
-        if( outputRaster.getSRID() != inputRasterPtr->getSRID() )
+        }         
+        
+        // The transformation mapping outputRaster pixels 
+        // ( te::gm::GTParameters::TiePoint::first ) to input pixels 
+        // ( te::gm::GTParameters::TiePoint::second ) 
+        // (Note: all coords are indexed by lines/columns).
+        
+        std::auto_ptr< te::gm::GeometricTransformation > transPtr;
+        
         {
-          mustReproject = true;
-          convInstance.setSourceSRID( outputRaster.getSRID() );
-          convInstance.setTargetSRID( inputRasterPtr->getSRID() );
+          te::gm::GTParameters transParams;
+          double auxX;
+          double auxY;
+          te::gm::GTParameters::TiePoint auxTP;
+          
+          auxTP.first.x = 0;
+          auxTP.first.y = 0;
+          outputRaster.getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
+          inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );
+          transParams.m_tiePoints.push_back( auxTP );
+          
+          auxTP.first.x = 0;
+          auxTP.first.y = (double)outputRaster.getNumberOfRows();
+          outputRaster.getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
+          inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );          
+          transParams.m_tiePoints.push_back( auxTP );
+          
+          auxTP.first.x = (double)outputRaster.getNumberOfColumns();
+          auxTP.first.y = 0;
+          outputRaster.getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
+          inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );
+          transParams.m_tiePoints.push_back( auxTP );
+          
+          auxTP.first.x = (double)outputRaster.getNumberOfColumns();
+          auxTP.first.y = (double)outputRaster.getNumberOfRows();
+          outputRaster.getGrid()->gridToGeo( auxTP.first.x, auxTP.first.y, auxX, auxY );
+          inputRasterPtr->getGrid()->geoToGrid( auxX, auxY, auxTP.second.x, auxTP.second.y );                    
+          transParams.m_tiePoints.push_back( auxTP );
+          
+          transPtr.reset( te::gm::GTFactory::make( "RST" ) );
+          TERP_TRUE_OR_RETURN_FALSE( transPtr.get(), "Could not instantiate a geometric transformation" );
+          
+          TERP_TRUE_OR_RETURN_FALSE( transPtr->initialize( transParams ),
+            "Could not initialize a geometric transformation" );
         }
 
         // Generating the offset and gain info for eath band from the current raster
@@ -623,9 +676,6 @@ namespace te
           {
             overlappedResultUnderCurrentSRID.reset( (te::gm::MultiPolygon*)
               overlappedResult->clone() );
-
-            if( mustReproject )
-              overlappedResultUnderCurrentSRID->transform( inputRasterPtr->getSRID() );
           }
 
           // blending
@@ -650,8 +700,7 @@ namespace te
               currentRasterBandsScales,
               mosaicBBoxesUnionElementPtr,
               0,
-              0,
-              true ), "Blender initiazing error" );            
+              *transPtr ), "Blender initiazing error" );            
             
             for( unsigned int overlappedResultIdx = 0 ; overlappedResultIdx <
               overlappedResult->getNumGeometries() ; ++overlappedResultIdx )
@@ -788,8 +837,7 @@ namespace te
               double inputCol = 0;
               double outputX = 0;
               double outputY = 0;
-              double inputX = 0;
-              double inputY = 0;
+              const te::rst::Grid& inputGrid = (*inputRasterPtr->getGrid());
               const te::rst::Grid& outputGrid = (*outputRaster.getGrid());
               std::complex< double > pixelCValue = 0;
               double pixelValue = 0;
@@ -799,68 +847,32 @@ namespace te
               const te::rst::PolygonIterator< double > itE = te::rst::PolygonIterator< double >::end( &outputRaster,
                 nonOverlappednResultElementPtr );
 
-              if( mustReproject )
+              while( itB != itE )
               {
-                while( itB != itE )
+                outputRow = itB.getRow();
+                outputCol = itB.getColumn();
+
+                outputGrid.gridToGeo( (double)outputCol, (double)outputRow, outputX, outputY );
+                inputGrid.geoToGrid( outputX, outputY, inputCol, inputRow );
+
+                interpInstance.getValue( inputCol, inputRow, pixelCValue, inputBandIdx );
+
+                if( pixelCValue.real() == inputBandNoDataValue )
                 {
-                  outputRow = itB.getRow();
-                  outputCol = itB.getColumn();
-
-                  outputGrid.gridToGeo( (double)outputCol, (double)outputRow, outputX, outputY );
-
-                  convInstance.convert( outputX, outputY, inputX, inputY );
-
-                  inputGrid.geoToGrid( inputX, inputY, inputCol, inputRow );
-
-                  interpInstance.getValue( inputCol, inputRow, pixelCValue, inputBandIdx );
-
-                  if( pixelCValue.real() == inputBandNoDataValue )
-                  {
-                    outputBand.setValue( outputCol, outputRow, outputBandNoDataValue );
-                  }
-                  else
-                  {
-                    pixelValue = pixelCValue.real() * currentRasterBandsScales[
-                      inputRastersBandsIdx ] + currentRasterBandsOffsets[
-                      inputRastersBandsIdx ];
-                    pixelValue = std::max( pixelValue, outputBandRangeMin );
-                    pixelValue = std::min( pixelValue, outputBandRangeMax );
-
-                    outputBand.setValue( outputCol, outputRow, pixelValue );
-                  }
-
-                  ++itB;
+                  outputBand.setValue( outputCol, outputRow, outputBandNoDataValue );
                 }
-              }
-              else
-              {
-                while( itB != itE )
+                else
                 {
-                  outputRow = itB.getRow();
-                  outputCol = itB.getColumn();
+                  pixelValue = pixelCValue.real() * currentRasterBandsScales[
+                    inputRastersBandsIdx ] + currentRasterBandsOffsets[
+                    inputRastersBandsIdx ];
+                  pixelValue = std::max( pixelValue, outputBandRangeMin );
+                  pixelValue = std::min( pixelValue, outputBandRangeMax );
 
-                  outputGrid.gridToGeo( (double)outputCol, (double)outputRow, outputX, outputY );
-                  inputGrid.geoToGrid( outputX, outputY, inputCol, inputRow );
-
-                  interpInstance.getValue( inputCol, inputRow, pixelCValue, inputBandIdx );
-
-                  if( pixelCValue.real() == inputBandNoDataValue )
-                  {
-                    outputBand.setValue( outputCol, outputRow, outputBandNoDataValue );
-                  }
-                  else
-                  {
-                    pixelValue = pixelCValue.real() * currentRasterBandsScales[
-                      inputRastersBandsIdx ] + currentRasterBandsOffsets[
-                      inputRastersBandsIdx ];
-                    pixelValue = std::max( pixelValue, outputBandRangeMin );
-                    pixelValue = std::min( pixelValue, outputBandRangeMax );
-
-                    outputBand.setValue( outputCol, outputRow, pixelValue );
-                  }
-
-                  ++itB;
+                  outputBand.setValue( outputCol, outputRow, pixelValue );
                 }
+
+                ++itB;
               }
             }
           }
@@ -891,11 +903,27 @@ namespace te
         {
           TERP_LOG_AND_THROW( "Invalid union geometry type" );
         }
+        
+        // Reseting the input cache
+        
+        if( cachedInputRasterPtr.get() ) cachedInputRasterPtr.reset();
+        
+        // deleting the reprojected raster
+        
+        if( reprojectedInputRasterPtr.get() )
+        {
+          reprojectedInputRasterPtr.reset();
+          remove( reprojectedRasterFileName.c_str() );
+        }
 
         // moving to the next raster
 
         m_inputParameters.m_feederRasterPtr->moveNext();
       }
+      
+      // reseting the output cache
+      
+      if( cachedRasterInstancePtr.get() ) cachedRasterInstancePtr.reset();
       
       return true;
     }

@@ -282,9 +282,7 @@ te::rst::BandProperty* te::gdal::GetBandProperty(GDALRasterBand* gband,
 
   std::string unitName = gband->GetUnitType();
   if (!unitName.empty())
-    bprop->setUnitOfMeasure(te::common::UnitsOfMeasureManager::getInstance().findByName(unitName));
-  else
-    bprop->setUnitOfMeasure(0);
+    bprop->setUnitOfMeasure(te::common::UnitsOfMeasureManager::getInstance().find(unitName));
   bprop->m_valuesOffset = gband->GetOffset(0);
   bprop->m_valuesScale = gband->GetScale(0);
 
@@ -582,12 +580,12 @@ bool te::gdal::RecognizesSRID(unsigned int srid)
 }
 
 /* This function is based on the WARP tutorial in http://www.gdal.org */
-bool te::gdal::ReprojectRaster(te::rst::Raster* rin, te::rst::Raster* rout)
+bool te::gdal::ReprojectRaster(te::rst::Raster const * const rin, te::rst::Raster* rout)
 {
   assert(rin);
   assert(rout);
 
-  te::gdal::Raster* grin  = static_cast<te::gdal::Raster*>(rin);
+  te::gdal::Raster const* grin  = static_cast<te::gdal::Raster const *>(rin);
   te::gdal::Raster* grout = static_cast<te::gdal::Raster*>(rout);
 
   GDALDatasetH hSrcDS = grin->getGDALDataset();

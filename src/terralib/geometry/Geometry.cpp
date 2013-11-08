@@ -112,6 +112,8 @@ std::string te::gm::Geometry::asText() const throw()
 {
   std::stringstream stream(std::ios_base::in | std::ios_base::out);
 
+  stream.precision(18);
+
   WKTWriter::write(this, stream);
 
   return stream.str();

@@ -77,6 +77,7 @@ set (
   widgets/datasource/selector
   widgets/datasource/connector
   widgets/exchanger
+  widgets/externalTable
   widgets/layer/explorer
   widgets/layer/search
   widgets/layer/selector
@@ -195,6 +196,13 @@ set (
   ${SRCDIR}/widgets/exchanger/PostGIS2SHPDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/externalTable/DataPropertiesWidget.h
+  ${SRCDIR}/widgets/externalTable/DataPropertiesDialog.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/externalTable" MOC)
 
 set (
   HDRS_TO_MOC
@@ -480,7 +488,7 @@ set (
   ${SRCDIR}/widgets/query/OrderByWidget.h
   ${SRCDIR}/widgets/query/OrderByWizardPage.h
   ${SRCDIR}/widgets/query/QueryBuilderWizard.h
-  ${SRCDIR}/widgets/query/QueryLayerBuilderWizard.h
+  ${SRCDIR}/widgets/query/QueryDialog.h
   ${SRCDIR}/widgets/query/WhereClauseWidget.h
   ${SRCDIR}/widgets/query/WhereClauseWizardPage.h
 )
@@ -497,6 +505,7 @@ file(
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui
   ${SRCDIR}/widgets/exchanger/ui/*.ui
+  ${SRCDIR}/widgets/externalTable/ui/*.ui
   ${SRCDIR}/widgets/layer/search/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
   ${SRCDIR}/widgets/property/ui/*.ui

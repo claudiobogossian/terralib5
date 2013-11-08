@@ -410,6 +410,11 @@ namespace te
 
         const te::rst::Band* iband = m_inputParameters.m_inRasterPtr->getBand(niband);
         te::rst::Band* oband = m_outputParametersPtr->m_outRasterPtr->getBand(noband);
+        
+        double outRangeMin = 0.0;
+        double outRangeMax = 0.0;
+        GetDataTypeRange( oband->getProperty()->getType(),
+          outRangeMin, outRangeMax );        
 
         te::rst::ConstBandIterator<double> ibandit =
           te::rst::ConstBandIterator<double>::begin(iband);
@@ -429,8 +434,10 @@ namespace te
 
         while (ibandit != ibanditend)
         {
-          value = *ibandit;
-          oband->setValue(ibandit.getColumn(), ibandit.getRow(), lut[value]);
+          value = lut[ *ibandit ];
+          value = std::max( outRangeMin, value );
+          value = std::min( outRangeMax, value );          
+          oband->setValue(ibandit.getColumn(), ibandit.getRow(), value);
           ++ibandit;
         }
         
@@ -470,6 +477,11 @@ namespace te
 
         const te::rst::Band* iband = m_inputParameters.m_inRasterPtr->getBand(niband);
         te::rst::Band* oband = m_outputParametersPtr->m_outRasterPtr->getBand(noband);
+        
+        double outRangeMin = 0.0;
+        double outRangeMax = 0.0;
+        GetDataTypeRange( oband->getProperty()->getType(),
+          outRangeMin, outRangeMax );
 
         te::rst::ConstBandIterator<double> ibandit =
           te::rst::ConstBandIterator<double>::begin(iband);
@@ -492,6 +504,8 @@ namespace te
           {
             iband->getValue(c, r, value);
             newvalue = (value - meanp) * c1 + c2;
+            newvalue = std::max( outRangeMin, newvalue );
+            newvalue = std::min( outRangeMax, newvalue );
             oband->setValue(c, r, newvalue);
           }
           

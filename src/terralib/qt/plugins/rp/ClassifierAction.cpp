@@ -26,7 +26,6 @@
 // Terralib
 #include "../../../qt/widgets/rp/ClassifierWizard.h"
 #include "../../af/ApplicationController.h"
-#include "../../af/Project.h"
 #include "ClassifierAction.h"
 
 
@@ -36,7 +35,7 @@
 // STL
 #include <memory>
 
-te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
+te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu, QMenu* popupMenu):te::qt::plugins::rp::AbstractAction(menu, popupMenu)
 {
   createAction(tr("Classifier...").toStdString());
 }
@@ -49,13 +48,9 @@ void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
 {
   te::qt::widgets::ClassifierWizard dlg(te::qt::af::ApplicationController::getInstance().getMainWindow());
 
-// get the list of layers from current project
-  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+  std::list<te::map::AbstractLayerPtr> layersList = getLayers();
 
-  if(prj)
-  {
-    dlg.setList(prj->getLayers());
-  }
+  dlg.setList( layersList );
 
   dlg.exec();
 }

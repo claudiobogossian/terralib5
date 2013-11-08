@@ -17,6 +17,7 @@
 
   <QueryCapabilities>
     <SQLDialect>true</SQLDialect>
+	<SpatialSQLDialect>true</SpatialSQLDialect>
     <Insert>true</Insert>
     <Update>true</Update>
     <Delete>true</Delete>
@@ -25,7 +26,12 @@
     <Alter>true</Alter>
     <Select>true</Select>
     <SelectInto>true</SelectInto>
-	
+	<SpatialTopologicOperators>
+    </SpatialTopologicOperators> 
+	<SpatialMetricOperators>
+    </SpatialMetricOperators> 
+	<SpatialNewGeomOperators>
+    </SpatialNewGeomOperators>	
     <SpatialOperators>
 	
 		<Function name="st_transform">
@@ -434,9 +440,6 @@
     <EfficientMoveAfterLast>false</EfficientMoveAfterLast>
     <EfficientMove>false</EfficientMove>
     <EfficientSize>false</EfficientSize>
-    <Insertion>false</Insertion>
-    <Update>false</Update>
-    <Deletion>false</Deletion>
   </DataSetCapabilities>
   <SpecificCapabilities>
 
@@ -447,5 +450,4 @@
   <SupportDataSetTypePesistenceAPI>true</SupportDataSetTypePesistenceAPI>
   <SupportPreparedQueryAPI>true</SupportPreparedQueryAPI>
   <SupportBatchExecutorAPI>true</SupportBatchExecutorAPI>
-  <SupportSpatialOperators>true</SupportSpatialOperators>
 </DataSourceCapabilities>

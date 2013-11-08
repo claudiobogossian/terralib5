@@ -34,8 +34,7 @@
 
 te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size, const bool& showFeedback, QWidget* parent, Qt::WindowFlags f)
   : te::qt::widgets::MapDisplay(size, parent, f),
-    m_showFeedback(showFeedback),
-    m_isDrawing(false)
+    m_showFeedback(showFeedback)
 {
   setAttribute(Qt::WA_OpaquePaintEvent, true);
 }
@@ -52,7 +51,7 @@ void te::qt::widgets::MultiThreadMapDisplay::setExtent(te::gm::Envelope& e, bool
 
   te::map::MapDisplay::setExtent(e);
 
-  updateTransform(); /*  For while... I need the class CoordTransform! */
+  updateTransform();
 
   e = m_extent;
 
@@ -100,7 +99,6 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh()
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = m_visibleLayers.begin(); it != m_visibleLayers.end(); ++it) // for each layer.
   {
-    m_threads[i]->setMagneticDeclination(m_magneticDeclination);
     m_threads[i]->draw(it->get(), m_extent, m_srid, size(), i);
     i++;
   }
@@ -119,8 +117,6 @@ void te::qt::widgets::MultiThreadMapDisplay::updateTransform()
   if(!m_extent.isValid())
     return;
 
-  /*  Note: For while... I need the class CoordTransform! */
-  
   // Compute aspect ratio
   double ww = m_extent.m_urx - m_extent.m_llx;
   double wh = m_extent.m_ury - m_extent.m_lly;
@@ -148,8 +144,6 @@ void te::qt::widgets::MultiThreadMapDisplay::updateTransform()
   m_matrix.reset();
   m_matrix.scale(xScale, -yScale);
   m_matrix.translate(-m_extent.m_llx, -m_extent.m_ury);
-
-  /* end note */
 }
 
 void te::qt::widgets::MultiThreadMapDisplay::showFeedback(const QImage& image)

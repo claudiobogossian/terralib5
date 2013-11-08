@@ -8,6 +8,7 @@ bool AggregOGRToPGIS();
 bool AggregOGRToOGR();
 bool AggregPGISToPGIS();
 
-bool IntersectionPGISToOGR;
+bool IntersectionPGISToOGR();
+bool IntersectionPGISToPGIS();
 
 #endif

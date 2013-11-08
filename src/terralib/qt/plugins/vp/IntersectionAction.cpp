@@ -41,7 +41,7 @@
 te::qt::plugins::vp::IntersectionAction::IntersectionAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Intersection...").toStdString());
+  createAction(tr("Intersection...").toStdString(), "vector-processing-intersection");
 }
 
 te::qt::plugins::vp::IntersectionAction::~IntersectionAction()
@@ -58,7 +58,7 @@ void te::qt::plugins::vp::IntersectionAction::onActionActivated(bool checked)
 
   if(prj)
   {
-    dlg.setLayers(prj->getLayers());
+    dlg.setLayers(prj->getSingleLayers());
   }
 
   if(dlg.exec() != QDialog::Accepted)

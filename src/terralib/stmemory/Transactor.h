@@ -77,29 +77,34 @@ namespace te
          
          std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
-												                          bool connected = false);
+												                          bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
          std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
-												                          bool connected = false);
+												                          bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
          
          std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const std::string& propertyName,
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
-												                          bool connected = false);
+												                          bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
          std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
                                              te::common::TraverseType travType = te::common::FORWARDONLY, 
-											                       bool connected = false);
+											                       bool connected = false,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
          std::auto_ptr<te::da::DataSet> query(const std::string& query, 
                                              te::common::TraverseType travType = te::common::FORWARDONLY, 
-											                       bool connected = false);
+											                       bool connected = false,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
          
          void execute(const te::da::Query& command);
 
@@ -281,7 +286,8 @@ namespace te
          std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                    const te::dt::DateTime* dt, te::dt::TemporalRelation r = te::dt::DURING,
                                                    te::common::TraverseType travType = te::common::FORWARDONLY, 
-												                           bool connected = false);
+												                           bool connected = false,
+                                                   const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
          /*!
           \brief It returns a data set with observations whose observed geometries satisfy a
@@ -310,7 +316,8 @@ namespace te
                                                   const te::gm::Geometry* geom, te::gm::SpatialRelation sr,
                                                   const te::dt::DateTime* dt, te::dt::TemporalRelation tr = te::dt::DURING,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
-												                          bool connected = false);
+												                          bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         /*!
           \brief It returns a data set with observations whose observed geometries satisfy a
@@ -339,7 +346,8 @@ namespace te
                                                   const te::gm::Envelope* e, te::gm::SpatialRelation sr,
                                                   const te::dt::DateTime* dt, te::dt::TemporalRelation tr = te::dt::DURING,
                                                   te::common::TraverseType travType = te::common::FORWARDONLY, 
-												                          bool connected = false);
+												                          bool connected = false,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
          /*!
           \brief It returns the temporal extent associated to a DataSet.
 

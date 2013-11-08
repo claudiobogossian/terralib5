@@ -29,6 +29,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/MixtureModel.h"
 #include "../../../rp/Module.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "MixtureModelWizard.h"
 #include "MixtureModelWizardPage.h"
 #include "LayerSearchWidget.h"
@@ -54,6 +55,15 @@ te::qt::widgets::MixtureModelWizard::MixtureModelWizard(QWidget* parent)
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Mixture Model"));
   //this->setFixedSize(640, 480);
+
+  this->setOption(QWizard::HaveHelpButton, true);
+  this->setOption(QWizard::HelpButtonOnRight, false);
+
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("plugins/rp/rp_mixture.html");
 
   addPages();
 }
@@ -98,6 +108,14 @@ te::map::AbstractLayerPtr te::qt::widgets::MixtureModelWizard::getOutputLayer()
 void te::qt::widgets::MixtureModelWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
+  m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
+}
+
+void te::qt::widgets::MixtureModelWizard::setLayer(te::map::AbstractLayerPtr layer)
+{
+  removePage(m_layerSearchId);
+
+  m_mixtureModelPage->set(layer);
 }
 
 void te::qt::widgets::MixtureModelWizard::addPages()
@@ -106,7 +124,7 @@ void te::qt::widgets::MixtureModelWizard::addPages()
   m_mixtureModelPage.reset(new te::qt::widgets::MixtureModelWizardPage(this));
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
 
-  addPage(m_layerSearchPage.get());
+  m_layerSearchId =  addPage(m_layerSearchPage.get());
   addPage(m_mixtureModelPage.get());
   addPage(m_rasterInfoPage.get());
 
@@ -117,8 +135,7 @@ void te::qt::widgets::MixtureModelWizard::addPages()
 bool te::qt::widgets::MixtureModelWizard::execute()
 {
   //get layer
-  std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
-  te::map::AbstractLayerPtr l = *list.begin();
+  te::map::AbstractLayerPtr l = m_mixtureModelPage->get();
   std::auto_ptr<te::da::DataSet> ds(l->getData());
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
   std::auto_ptr<te::rst::Raster> inputRst = ds->getRaster(rpos);
@@ -165,3 +182,4 @@ bool te::qt::widgets::MixtureModelWizard::execute()
 
   return true;
 }
+

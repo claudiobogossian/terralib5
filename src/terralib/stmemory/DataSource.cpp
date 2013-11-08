@@ -182,25 +182,28 @@ void te::stmem::DataSource::add(const std::string& name, te::da::DataSetType* t,
 }
 
 std::auto_ptr<te::da::DataSet> te::stmem::DataSource::getDataSet(const std::string& name, const te::dt::DateTime* dt, te::dt::TemporalRelation r,
-                                          te::common::TraverseType travType, bool connected)
+                                          te::common::TraverseType travType, bool connected,
+                                          const te::common::AccessPolicy accessPolicy)
 {
-  return m_transactor->getDataSet(name, dt, r, travType, connected);
+  return m_transactor->getDataSet(name, dt, r, travType, connected, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::stmem::DataSource::getDataSet(const std::string& name, 
                                                   const te::gm::Geometry* geom, te::gm::SpatialRelation sr,
                                                   const te::dt::DateTime* dt, te::dt::TemporalRelation tr,
-                                                  te::common::TraverseType travType, bool connected)
+                                                  te::common::TraverseType travType, bool connected,
+                                                  const te::common::AccessPolicy accessPolicy)
 {
-  return m_transactor->getDataSet(name, geom, sr, dt, tr, travType, connected);
+  return m_transactor->getDataSet(name, geom, sr, dt, tr, travType, connected, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::stmem::DataSource::getDataSet(const std::string& name, 
                                                   const te::gm::Envelope* e, te::gm::SpatialRelation sr,
                                                   const te::dt::DateTime* dt, te::dt::TemporalRelation tr,
-                                                  te::common::TraverseType travType, bool connected)
+                                                  te::common::TraverseType travType, bool connected,
+                                                  const te::common::AccessPolicy accessPolicy)
 {
-  return m_transactor->getDataSet(name, e, sr, dt, tr, travType, connected);
+  return m_transactor->getDataSet(name, e, sr, dt, tr, travType, connected, accessPolicy);
 }
 
 std::auto_ptr<te::dt::DateTimePeriod> 

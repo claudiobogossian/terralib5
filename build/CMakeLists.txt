@@ -21,6 +21,8 @@ set (ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 option (BUILD_TERRAVIEW "Build TerraView application?" ON)
 
+set (TE_HELP_DIR "" CACHE STRING "Location of TerraView HELP FILES.")
+
 if(BUILD_TERRAVIEW)
   include (${CMAKE_CURRENT_SOURCE_DIR}/buildTree.cmake)
 
@@ -34,7 +36,9 @@ if(BUILD_TERRAVIEW)
   
   add_subdirectory (./terraview)
 
-  include (${TE_MODULE_PATH}/GenerateQHelp.cmake)
+  if (NOT "${TE_HELP_DIR}" STREQUAL "") 
+	include (${TE_MODULE_PATH}/GenerateQHelp.cmake)
+  endif()
   
   add_dependencies (terraview "Generate QHelp")
 
@@ -48,6 +52,7 @@ if(WIN32)
   
   # Release settings
   set (TE_GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/release)
+  set (TE_TERRALIB4_BIN ${TE_DEPENDENCIES_DIR}/terralib4/bin)
   generateRunningBatch(${TE_MODULE_PATH}/runme.bat.in runme.bat)
 
   include (${TE_MODULE_PATH}/ThirdParty.cmake)

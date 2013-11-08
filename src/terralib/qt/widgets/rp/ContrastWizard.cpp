@@ -29,6 +29,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Contrast.h"
 #include "../../../rp/Module.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "ContrastWizard.h"
 #include "ContrastWizardPage.h"
 #include "LayerSearchWidget.h"
@@ -51,6 +52,15 @@ te::qt::widgets::ContrastWizard::ContrastWizard(QWidget* parent)
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Contrast"));
   //this->setFixedSize(640, 480);
+
+  this->setOption(QWizard::HaveHelpButton, true);
+  this->setOption(QWizard::HelpButtonOnRight, false);
+
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("plugins/rp/rp_contrast.html");
 
   addPages();
 }
@@ -90,6 +100,14 @@ bool te::qt::widgets::ContrastWizard::validateCurrentPage()
 void te::qt::widgets::ContrastWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
+  m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
+}
+
+void te::qt::widgets::ContrastWizard::setLayer(te::map::AbstractLayerPtr layer)
+{
+  removePage(m_layerSearchId);
+
+  m_contrastPage->set(layer);
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::ContrastWizard::getOutputLayer()
@@ -103,7 +121,7 @@ void te::qt::widgets::ContrastWizard::addPages()
   m_contrastPage.reset(new te::qt::widgets::ContrastWizardPage(this));
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
 
-  addPage(m_layerSearchPage.get());
+  m_layerSearchId = addPage(m_layerSearchPage.get());
   addPage(m_contrastPage.get());
   addPage(m_rasterInfoPage.get());
 
@@ -114,8 +132,7 @@ void te::qt::widgets::ContrastWizard::addPages()
 bool te::qt::widgets::ContrastWizard::execute()
 {
   //get layer
-  std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
-  te::map::AbstractLayerPtr l = *list.begin();
+  te::map::AbstractLayerPtr l = m_contrastPage->get();
   std::auto_ptr<te::da::DataSet> ds = l->getData();
 
   std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);

@@ -8,13 +8,13 @@ option (BUILD_QT_PLUGIN_DATASOURCE_MYSQL "Build PostGIS datasource plugin for Qt
 option (BUILD_QT_PLUGIN_DATASOURCE_OGR "Build OGR datasource plugin for Qt." ON)
 option (BUILD_QT_PLUGIN_DATASOURCE_PGIS "Build PostGIS datasource plugin for Qt." ON)
 option (BUILD_QT_PLUGIN_DATASOURCE_SQLITE "Build SQLite datasource plugin for Qt." OFF)
+option (BUILD_QT_PLUGIN_DATASOURCE_TERRALIB4 "Build Terralib 4 datasource plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_DATASOURCE_WCS "Build WCS datasource plugin for Qt." OFF)  
 option (BUILD_QT_PLUGIN_DATASOURCE_WFS "Build WFS datasource plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_DATASOURCE_WMS "Build WMS datasource plugin for Qt." OFF)  
-option (BUILD_QT_PLUGIN_LAYOUT "Build LAYOUT plugin for Qt." ON)
-option (BUILD_QT_PLUGIN_RP "Build RP plugin for Qt." OFF)
-option (BUILD_QT_PLUGIN_TERRALIB4 "Build Terralib4 plugin for Qt." OFF)
-option (BUILD_QT_PLUGIN_VP "Build VP plugin for Qt." OFF) 
+option (BUILD_QT_PLUGIN_LAYOUT "Build LAYOUT plugin for Qt." OFF)
+option (BUILD_QT_PLUGIN_RP "Build RP plugin for Qt." ON)
+option (BUILD_QT_PLUGIN_VP "Build VP plugin for Qt." ON) 
 
 set (
   TE_INCLUDE_DIRS
@@ -55,8 +55,8 @@ if(BUILD_QT_PLUGIN_DATASOURCE_SQLITE)
   add_subdirectory(terralib_qt_plugins/datasource_sqlite)
 endif()
 
-if(BUILD_QT_PLUGIN_TERRALIB4)
-  add_subdirectory(terralib_qt_plugins/terralib4)
+if(BUILD_QT_PLUGIN_DATASOURCE_TERRALIB4)
+  add_subdirectory(terralib_qt_plugins/datasource_terralib4)
 endif()
 
 if(BUILD_QT_PLUGIN_DATASOURCE_WCS)

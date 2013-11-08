@@ -52,7 +52,6 @@ namespace te
 
       class TEQTWIDGETSEXPORT QueryLayerBuilderWizard : public QWizard
       {
-
         public:
 
           QueryLayerBuilderWizard(QWidget* parent);
@@ -78,7 +77,6 @@ namespace te
           void getProperties();
 
           void getQueryCapabilities();
-
 
         private:
 

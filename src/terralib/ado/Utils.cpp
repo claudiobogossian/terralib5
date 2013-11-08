@@ -146,12 +146,12 @@ ADOX::DataTypeEnum te::ado::Convert2Ado(int terralib)
     return ADOX::adInteger;
     break;
 
-    //case te::dt::NUMERIC_TYPE:
   case te::dt::DATETIME_TYPE:
     return ADOX::adDate;
 
   case te::dt::FLOAT_TYPE:
   case te::dt::DOUBLE_TYPE:
+  case te::dt::NUMERIC_TYPE:
     return ADOX::adDouble;
     break;
 

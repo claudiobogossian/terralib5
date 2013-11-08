@@ -52,7 +52,7 @@ void GetDataSetTypeCapabilities(te::da::DataSourceCapabilities& caps)
 void GetQueryCapabilities(te::da::DataSourceCapabilities& caps)
 {
   te::da::QueryCapabilities qy_caps;
-  qy_caps.addSpatialTopologicOperator("st_intersects");
+  qy_caps.addSpatialTopologicOperator("st_envelopeintersects");
   caps.setQueryCapabilities(qy_caps);
 }
 
@@ -69,9 +69,6 @@ void GetCapabilities(OGRDataSource* ds, te::da::DataSourceCapabilities& caps)
   ds_caps.setSupportEfficientMove((l->TestCapability(OLCFastSetNextByIndex)) ? true : false);
   ds_caps.setSupportRandomTraversing((l->TestCapability(OLCRandomRead)) ? true : false);
   ds_caps.setSupportBidirectionalTraversing((l->TestCapability(OLCRandomRead)) ? true : false);
-  ds_caps.setSupportInsertion(l->TestCapability((OLCSequentialWrite)) ? true : false);
-  ds_caps.setSupportUpdate(l->TestCapability((OLCRandomWrite)) ? true : false);
-  ds_caps.setSupportDeletion(l->TestCapability((OLCDeleteFeature)) ? true : false);
   ds_caps.setSupportEfficientDataSetSize((l->TestCapability(OLCFastGetExtent)) ? true : false);
 
   caps.setDataSetCapabilities(ds_caps);

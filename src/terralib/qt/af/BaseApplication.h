@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -75,6 +75,8 @@ namespace te
 
           virtual void init(const std::string& configFile);
 
+          virtual void resetState();
+
         protected slots:
 
           void onApplicationTriggered(te::qt::af::evt::Event* evt);
@@ -83,9 +85,17 @@ namespace te
 
           void onAddQueryLayerTriggered();
 
+          void onAddTabularLayerTriggered();
+
+          void onRemoveChartTriggered();
+
+          void onRemoveClassificationTriggered();
+
           void onRemoveFolderTriggered();
 
           void onRemoveLayerTriggered();
+
+          void onRenameItemTriggered();
 
           void onPluginsManagerTriggered();
 
@@ -104,6 +114,8 @@ namespace te
           void onToolsDataExchangerTriggered();
 
           void onToolsDataExchangerDirectTriggered();
+
+          void onToolsDataExchangerDirectPopUpTriggered();
 
           void onProjectPropertiesTriggered();
 
@@ -130,6 +142,8 @@ namespace te
           void onLayerFitSelectedOnMapDisplayTriggered();
 
           void onLayerPanToSelectedOnMapDisplayTriggered();
+
+          void onQueryLayerTriggered();
 
           void onMapSRIDTriggered();
 
@@ -230,6 +244,7 @@ namespace te
           QAction* m_toolsCustomize;
           QAction* m_toolsDataExchanger;
           QAction* m_toolsDataExchangerDirect;
+          QAction* m_toolsDataExchangerDirectPopUp;
           QAction* m_toolsDataSourceExplorer;
           QAction* m_pluginsManager;
           QAction* m_helpContents;
@@ -238,9 +253,13 @@ namespace te
           QAction* m_viewGrid;
           QAction* m_projectRemoveLayer;
           QAction* m_projectRemoveFolder;
+          QAction* m_projectRemoveChart;
+          QAction* m_projectRemoveClassification;
+          QAction* m_projectRenameItem;
           QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;
+          QAction *m_projectAddLayerTabularDataSet;
           QAction* m_projectAddLayerGraph;
           QAction* m_projectNewFolder;
           QAction* m_layerEdit;
@@ -261,6 +280,7 @@ namespace te
           QAction* m_layerFitOnMapDisplay;
           QAction* m_layerFitSelectedOnMapDisplay;
           QAction* m_layerPanToSelectedOnMapDisplay;
+          QAction* m_queryLayer;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
@@ -324,7 +344,9 @@ namespace te
           // Project
           Project* m_project;
 
-          QDockWidget* m_progressDockWidget; //!< Dock widget used to show progress information
+          QDockWidget* m_progressDockWidget;       //!< Dock widget used to show progress information
+          QDockWidget* m_zoomInDisplaysDockWidget; //!< Dock widget used to show zoom in display
+          QDockWidget* m_eyeBirdDisplaysDockWidget; //!< Dock widget used to show eye bird display
 
           te::qt::af::ApplicationController* m_controller;
       };

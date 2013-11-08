@@ -290,14 +290,18 @@ class TablePopupFilter : public QObject
             act7->setToolTip(tr("Adds a column to the table."));
             m_hMenu->addAction(act7);
 
-            act7->setEnabled(m_caps->getDataSetCapabilities().supportsInsertion());
+            bool updatePermition = false;
+            if(m_dset->getAccessPolicy()==te::common::RWAccess)
+              updatePermition = true;
+
+            act7->setEnabled(updatePermition);
 
             QAction* act8 = new QAction(m_hMenu);
             act8->setText(tr("Remove column"));
             act8->setToolTip(tr("Removes a column from the table."));
             m_hMenu->addAction(act8);
 
-            act8->setEnabled(m_caps->getDataSetCapabilities().supportsDeletion());
+            act8->setEnabled(updatePermition);
 
              // Signal / Slot connections
             connect(act, SIGNAL(triggered()), SLOT(hideColumn()));

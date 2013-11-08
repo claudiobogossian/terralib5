@@ -28,7 +28,6 @@
 #include "AbstractTreeItem.h"
 #include "LayerExplorer.h"
 #include "LayerTreeModel.h"
-#include "LayerTreeView.h"
 
 // Qt
 //#include <QtCore/QMimeData>
@@ -62,8 +61,14 @@ te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent, Qt::WindowFlags f
   m_treeView->setHeaderHidden(true);
   m_treeView->setIndentation(TE_QTWIDGETS_DEFAULT_TREEVIEW_IDENTATION);
 
-  // Signals ans slots
-  connect(m_treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), m_treeView, SLOT(layerSelectionChanged(const QItemSelection&, const QItemSelection&)));
+  // Signals and slots
+  connect(m_treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), m_treeView, SLOT(onSelectedLayersChanged(const QItemSelection&, const QItemSelection&)));
+  connect(m_treeView, SIGNAL(selectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)), SLOT(onSelectedLayersChanged(const std::list<te::map::AbstractLayerPtr>&)));
+  connect(m_treeView, SIGNAL(visibilityChanged(const te::map::AbstractLayerPtr&)), SLOT(onVisibilityChanged(const te::map::AbstractLayerPtr&)));
+  connect(m_treeView, SIGNAL(doubleClicked(te::qt::widgets::AbstractTreeItem*)), SLOT(onItemDoubleClicked(te::qt::widgets::AbstractTreeItem*)));
+  connect(m_treeModel, SIGNAL(visibilityChanged(const te::map::AbstractLayerPtr&)), SLOT(onVisibilityChanged(const te::map::AbstractLayerPtr&)));
+  //connect(m_treeModel, SIGNAL(expandItem(te::qt::widgets::AbstractTreeItem*)), SLOT(expand(te::qt::widgets::AbstractTreeItem*)));
+  connect(m_treeModel, SIGNAL(layerOrderChanged()), SLOT(onLayerOrderChanged()));
 }
 
 te::qt::widgets::LayerExplorer::~LayerExplorer()
@@ -85,24 +90,16 @@ void te::qt::widgets::LayerExplorer::set(const std::list<te::map::AbstractLayerP
   m_treeModel->set(layers);
 }
 
-std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getAllTopLevelLayers() const
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getTopLayers() const
 {
-  return m_treeModel->getAllTopLevelLayers();
-}
+  std::list<te::map::AbstractLayerPtr> topLayers;
 
-std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getAllLayers() const
-{
-  return m_treeModel->getAllLayers();
-}
+  std::vector<te::map::AbstractLayerPtr> modelTopLayers = m_treeModel->getTopLayers();
 
-std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getLayers() const
-{
-  return m_treeModel->getLayers();
-}
+  for(std::size_t i = 0; i < modelTopLayers.size(); ++i)
+    topLayers.push_back(modelTopLayers[i]);
 
-std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getVisibleLayers() const
-{
-  return m_treeModel->getVisibleLayers();
+  return topLayers;
 }
 
 std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerExplorer::getSelectedItems() const
@@ -110,69 +107,94 @@ std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerExplorer::ge
   return m_treeView->getSelectedItems();
 }
 
-std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelectedLayers() const
+std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerExplorer::getSelectedLayerItems() const
 {
-  return m_treeView->getSelectedLayers();
+  return m_treeView->getSelectedLayerItems();
 }
 
-std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelectedAndVisibleLayers() const
+std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerExplorer::getSelectedSingleLayerItems() const
 {
-  return m_treeView->getSelectedAndVisibleLayers();
+  return m_treeView->getSelectedSingleLayerItems();
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelectedSingleLayers() const
+{
+  return m_treeView->getSelectedSingleLayers();
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelectedAndVisibleSingleLayers() const
+{
+  return m_treeView->getSelectedAndVisibleSingleLayers();
 }
 
 void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer)
 {
-  if(m_treeView == 0)
+  if(!m_treeModel)
     return;
 
-  m_treeView->add(layer);
+  m_treeModel->add(layer);
 }
 
 void te::qt::widgets::LayerExplorer::remove(AbstractTreeItem* item)
 {
-  if(m_treeView == 0)
+  if(!m_treeModel)
     return;
 
-  m_treeView->remove(item);
+  m_treeModel->remove(item);
 }
 
-//void te::qt::widgets::LayerExplorer::dragEnterEvent(QDragEnterEvent* e)
-//{
-//  //setBackgroundRole(QPalette::Highlight);
-//  setStyleSheet("background-color: yellow");
-//  e->acceptProposedAction();
-//}
-//
-//void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent* e)
-//{
-//  e->acceptProposedAction();
-//}
-//
-//void te::qt::widgets::LayerExplorer::dragLeaveEvent(QDragLeaveEvent* e)
-//{
-//  setBackgroundRole(QPalette::Window);
-//  e->accept();
-//}
-//
-//void te::qt::widgets::LayerExplorer::dropEvent(QDropEvent* e)
-//{
-//  const QMimeData* mimeData = e->mimeData();
-//
-//  if(mimeData->hasUrls())
-//  {
-//    QList<QUrl> urlList = mimeData->urls();
-//
-//    QString text;
-//
-//    for(QList<QUrl>::Iterator it = urlList.begin(); it != urlList.end(); ++it)
-//    {
-//      QString url = it->path();
-//
-//      QMessageBox::warning(this,
-//                         tr("TerraLib Qt Components"),
-//                         url);
-//    }
-//  }
-//
-//  //setBackgroundRole(QPalette::Window);
-//}
+te::qt::widgets::LayerTreeView::ContextMenuType te::qt::widgets::LayerExplorer::getMenuType(int menuType) const
+{
+  return static_cast<te::qt::widgets::LayerTreeView::ContextMenuType>(menuType);
+}
+
+void te::qt::widgets::LayerExplorer::add(QAction* action,
+                                         const QString& menu,
+                                         const QString& layerType,
+                                         te::qt::widgets::LayerTreeView::ContextMenuType menuType)
+{
+  if(!m_treeView)
+    return;
+
+  m_treeView->add(action, menu, layerType, menuType);
+}
+
+void te::qt::widgets::LayerExplorer::onSelectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
+{
+  emit selectedLayersChanged(selectedLayers);
+}
+
+void te::qt::widgets::LayerExplorer::onVisibilityChanged(const te::map::AbstractLayerPtr& layer)
+{
+  emit visibilityChanged(layer);
+}
+
+void te::qt::widgets::LayerExplorer::onLayerOrderChanged()
+{
+  emit layerOrderChanged();
+}
+
+void te::qt::widgets::LayerExplorer::onItemDoubleClicked(te::qt::widgets::AbstractTreeItem* item)
+{
+  emit doubleClicked(item);
+}
+
+void te::qt::widgets::LayerExplorer::expand(te::qt::widgets::AbstractTreeItem* item)
+{
+  if(!m_treeView || !m_treeModel)
+    return;
+
+  QModelIndex index = m_treeModel->getIndex(item);
+
+  m_treeView->expand(index);
+}
+
+void te::qt::widgets::LayerExplorer::collapse(te::qt::widgets::AbstractTreeItem* item)
+{
+  if(!m_treeView || !m_treeModel)
+    return;
+
+  QModelIndex index = m_treeModel->getIndex(item);
+
+  m_treeView->collapse(index);
+}

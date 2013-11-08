@@ -163,32 +163,21 @@ namespace te
           virtual QPointF transform(const QPointF& p);
 
           /*!
-            \brief Get the display Background Color
+            \brief Gets the map display background color
 
-            \return The display Background Color.
+            \return The map display background color.
           */
           virtual QColor getBackgroundColor();
 
           /*!
-            \brief Set the display Background Color
+            \brief Sets the map display background color
 
             \param color The color.
           */
           virtual void setBackgroundColor(const QColor& color);
 
-          /*!
-            \brief It sets the magnetic declination angle.
-
-            \param angle The angle.
-          */
-          virtual void setMagneticDeclination(double angle);
-
-          /*!
-            \brief It returns the magnetic declination angle.
-
-            \return The angle.
-          */
-          virtual double getMagneticDeclination();
+          /*! \brief Returns if the map display is drawing. */
+          bool isDrawing() const;
 
         protected:
 
@@ -284,7 +273,8 @@ namespace te
           QSize m_oldSize;             //!< Stores the last size of map display on start resize event.
           QTimer* m_timer;             //!< Timer to execute redraw on resize action.
           int m_interval;              //!< Timeout interval in milliseconds to redraw.
-          double m_magneticDeclination;//!< Magnetic declination.
+          bool m_isDrawing;            //!< A flag that indicates if the map display is drawing.
+
           std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*> m_layerCanvasMap; //!< A map that associates a layer to a canvas.
       };
 

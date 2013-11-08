@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../color/ColorBar.h"
+#include "../../../common/Globals.h"
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
@@ -49,6 +50,8 @@
 
 #define MAX_SLICES 200
 #define PRECISION 15
+#define NO_TITLE "No Value"
+
 
 te::qt::widgets::GroupingWidget::GroupingWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -217,44 +220,47 @@ void te::qt::widgets::GroupingWidget::updateUi()
       m_ui->m_tableWidget->setItem(newrow, 1, item);
     }
 
+
     if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL || type == te::map::STD_DEVIATION)
     {
-      //Min
+      if(gi->getTitle() != NO_TITLE)
       {
-        QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getLowerLimit()));
-        item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
-        m_ui->m_tableWidget->setItem(newrow, 2, item);
-      }
+        //Min
+        {
+          QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getLowerLimit()));
+          item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
+          m_ui->m_tableWidget->setItem(newrow, 2, item);
+        }
 
-      //Max
-      {
-        QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getUpperLimit()));
-        item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
-        m_ui->m_tableWidget->setItem(newrow, 3, item);
+        //Max
+        {
+          QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getUpperLimit()));
+          item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
+          m_ui->m_tableWidget->setItem(newrow, 3, item);
+        }
       }
 
       //Count
-      {
-        QTableWidgetItem* item = new QTableWidgetItem(QString::number(gi->getCount()));
-        item->setFlags(Qt::ItemIsEnabled);
-        m_ui->m_tableWidget->setItem(newrow, 4, item);
-      }
+      QTableWidgetItem* item = new QTableWidgetItem(QString::number(gi->getCount()));
+      item->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_tableWidget->setItem(newrow, 4, item);
+
     }
     else if(type == te::map::UNIQUE_VALUE)
     {
-      //Value
+      if(gi->getTitle() != NO_TITLE)
       {
+        //Value
         QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(gi->getValue()));
         item->setFlags(Qt::ItemIsEnabled);
         m_ui->m_tableWidget->setItem(newrow, 2, item);
       }
 
       //Count
-      {
-        QTableWidgetItem* item = new QTableWidgetItem(QString::number(gi->getCount()));
-        item->setFlags(Qt::ItemIsEnabled);
-        m_ui->m_tableWidget->setItem(newrow, 3, item);
-      }
+      QTableWidgetItem* item = new QTableWidgetItem(QString::number(gi->getCount()));
+      item->setFlags(Qt::ItemIsEnabled);
+      m_ui->m_tableWidget->setItem(newrow, 3, item);
+
     }
   }
 
@@ -333,7 +339,7 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
 {
   if(m_manual)
   {
-      int reply = QMessageBox::question(this, tr("Grouping"), tr("Manual changes will be lost. Continue?"), QMessageBox::Yes | QMessageBox::Cancel);
+      int reply = QMessageBox::question(this, tr("Classification"), tr("Manual changes will be lost. Continue?"), QMessageBox::Yes | QMessageBox::Cancel);
 
       if(reply != QMessageBox::Yes)
         return;
@@ -353,41 +359,58 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
   te::common::FreeContents(m_legend);
   m_legend.clear();
 
+  std::string mean = "";
+
+  int nullValues = 0;
+
   if(type == te::map::EQUAL_STEPS)
   {
     std::vector<double> vec;
 
-    getDataAsDouble(vec, attr, attrType);
+    getDataAsDouble(vec, attr, attrType, nullValues);
 
     te::map::GroupingByEqualSteps(vec.begin(), vec.end(), slices, m_legend, prec);
+
+    buildSymbolizer(mean);
+
+    createDoubleNullGroupingItem(nullValues);
   }
   else if(type == te::map::QUANTIL) 
   {
     std::vector<double> vec;
 
-    getDataAsDouble(vec, attr, attrType);
+    getDataAsDouble(vec, attr, attrType, nullValues);
 
     te::map::GroupingByQuantil(vec.begin(), vec.end(), slices, m_legend, prec);
+
+    buildSymbolizer(mean);
+
+    createDoubleNullGroupingItem(nullValues);
   }
   else if(type == te::map::STD_DEVIATION) 
   {
     std::vector<double> vec;
-    std::string mean = "0";
 
-    getDataAsDouble(vec, attr, attrType);
+    getDataAsDouble(vec, attr, attrType, nullValues);
 
     te::map::GroupingByStdDeviation(vec.begin(), vec.end(), stdDev, m_legend, mean, prec);
+
+    buildSymbolizer(mean);
+
+    createDoubleNullGroupingItem(nullValues);
   }
   else if(type == te::map::UNIQUE_VALUE) 
   {
     std::vector<std::string> vec;
 
-    getDataAsString(vec, attr);
+    getDataAsString(vec, attr, nullValues);
 
     te::map::GroupingByUniqueValues(vec, attrType, m_legend, prec);
-  }
 
-  buildSymbolizer();
+    buildSymbolizer(mean);
+
+    createStringNullGroupingItem(nullValues);
+  }
 
   updateUi();
 
@@ -486,7 +509,7 @@ void  te::qt::widgets::GroupingWidget::onTableWidgetItemChanged(QTableWidgetItem
   }
 }
 
-void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType)
+void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType, int& nullValues)
 {
   assert(m_layer.get());
 
@@ -510,7 +533,10 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
   while(ds->moveNext())
   {
     if(ds->isNull(idx))
+    {
+      ++nullValues;
       continue;
+    }
 
     if(dataType == te::dt::INT16_TYPE)
       vec.push_back((double)ds->getInt16(idx));
@@ -536,7 +562,7 @@ void te::qt::widgets::GroupingWidget::getDataAsDouble(std::vector<double>& vec, 
   }
 }
 
-void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& vec, const std::string& attrName)
+void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues)
 {
   assert(m_layer.get());
 
@@ -561,7 +587,48 @@ void te::qt::widgets::GroupingWidget::getDataAsString(std::vector<std::string>& 
   {
     if(!ds->isNull(idx))
       vec.push_back(ds->getAsString(idx));
+    else
+      ++nullValues;
   }
+}
+
+void te::qt::widgets::GroupingWidget::createDoubleNullGroupingItem(int count)
+{
+  if(count == 0)
+    return;
+
+  te::map::GroupingItem* legendItem = new te::map::GroupingItem;
+  legendItem->setLowerLimit(te::common::Globals::sm_nanStr);
+  legendItem->setUpperLimit(te::common::Globals::sm_nanStr);
+  legendItem->setTitle(NO_TITLE);
+  legendItem->setCount(count);
+
+  int geomType = getGeometryType();
+  std::vector<te::se::Symbolizer*> symbVec;
+  te::se::Symbolizer* s = te::se::CreateSymbolizer((te::gm::GeomType)geomType, "#dddddd");
+  symbVec.push_back(s);
+  legendItem->setSymbolizers(symbVec);
+
+  m_legend.push_back(legendItem);
+}
+
+void te::qt::widgets::GroupingWidget::createStringNullGroupingItem(int count)
+{
+  if(count == 0)
+    return;
+
+  te::map::GroupingItem* legendItem = new te::map::GroupingItem;
+  legendItem->setValue(te::common::Globals::sm_nanStr);
+  legendItem->setTitle(NO_TITLE);
+  legendItem->setCount(count);
+
+  int geomType = getGeometryType();
+  std::vector<te::se::Symbolizer*> symbVec;
+  te::se::Symbolizer* s = te::se::CreateSymbolizer((te::gm::GeomType)geomType, "#dddddd");
+  symbVec.push_back(s);
+  legendItem->setSymbolizers(symbVec);
+
+  m_legend.push_back(legendItem);
 }
 
 int te::qt::widgets::GroupingWidget::getGeometryType()
@@ -571,11 +638,51 @@ int te::qt::widgets::GroupingWidget::getGeometryType()
   return te::map::GetGeomType(m_layer);
 }
 
-void te::qt::widgets::GroupingWidget::buildSymbolizer()
+void te::qt::widgets::GroupingWidget::buildSymbolizer(std::string meanTitle)
 {
   int legendSize = m_legend.size();
 
-  std::vector<te::color::RGBAColor> colorVec = m_cb->getSlices(legendSize);
+  std::vector<te::color::RGBAColor> colorVec;
+  
+  if(meanTitle.empty())
+  {
+    colorVec = m_cb->getSlices(legendSize);
+  }
+  else
+  {
+    int beforeMean = 0;
+    int afterMean = 0;
+    int meanIdx = 0;
+
+    for(size_t t = 0; t < m_legend.size(); ++t)
+    {
+      if(m_legend[t]->getTitle() != meanTitle)
+      {
+        beforeMean++;
+      }
+      else
+      {
+        meanIdx = t;
+        afterMean = m_legend.size() - t - 1;
+        break;
+      }
+    }
+
+    std::vector<te::color::RGBAColor> lowerColorVec = m_cb->getLowerMeanSlices(beforeMean);
+    te::color::RGBAColor meanColor = m_cb->getMeanSlice();
+    std::vector<te::color::RGBAColor> upperColorVec = m_cb->getUpperMeanSlices(afterMean);
+
+    for(size_t t = 0; t < lowerColorVec.size(); ++t)
+      colorVec.push_back(lowerColorVec[t]);
+
+    colorVec.push_back(meanColor);
+
+    for(size_t t = 0; t < upperColorVec.size(); ++t)
+      colorVec.push_back(upperColorVec[t]);
+  }
+
+  if(colorVec.size() != m_legend.size())
+    return;
 
   int geomType = getGeometryType();
 
@@ -593,6 +700,8 @@ void te::qt::widgets::GroupingWidget::buildSymbolizer()
 
 void te::qt::widgets::GroupingWidget::listAttributes()
 {
+  QString curValue = m_ui->m_attrComboBox->currentText();
+
   m_ui->m_attrComboBox->clear();
 
   std::auto_ptr<te::map::LayerSchema> dsType(m_layer->getSchema());
@@ -647,5 +756,13 @@ void te::qt::widgets::GroupingWidget::listAttributes()
           continue;
       }
     }
+  }
+
+  if(curValue.isEmpty() == false)
+  {
+    int idx = m_ui->m_attrComboBox->findText(curValue);
+
+    if(idx != -1)
+      m_ui->m_attrComboBox->setCurrentIndex(idx);
   }
 }

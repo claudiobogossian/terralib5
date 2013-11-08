@@ -50,13 +50,15 @@ namespace te
 
           public:
 
-            SegmenterAction(QMenu* menu);
+            SegmenterAction(QMenu* menu, QMenu* popupMenu);
 
             virtual ~SegmenterAction();
 
           protected slots:
 
             virtual void onActionActivated(bool checked);
+
+            virtual void onPopUpActionActivated(bool checked);
         };
 
       } // end namespace rp

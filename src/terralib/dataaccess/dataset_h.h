@@ -33,6 +33,7 @@
 #include "dataset/DataSetAdapter.h"
 //#include "dataset/DataSetPersistence.h"
 #include "dataset/DataSetType.h"
+#include "dataset/DataSetTypeConverter.h"
 //#include "dataset/DataSetTypePersistence.h"
 #include "dataset/ForeignKey.h"
 #include "dataset/Index.h"

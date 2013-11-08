@@ -33,7 +33,9 @@
 #include "../../../maptools/Utils.h"
 #include "../../../srs/Config.h"
 #include "../../widgets/canvas/Canvas.h"
+#include "../../widgets/canvas/EyeBirdMapDisplayWidget.h"
 #include "../../widgets/canvas/MapDisplay.h"
+#include "../../widgets/canvas/ZoomInMapDisplayWidget.h"
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
@@ -61,7 +63,9 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
     m_tool(0),
     m_menu(0),
     m_currentExtentIndex(-1),
-    m_extentStackMaxSize(5)
+    m_extentStackMaxSize(5),
+    m_zoomInDisplay(0),
+    m_eyeBirdDisplay(0)
 {
   // CoordTracking tool
   te::qt::widgets::CoordTracking* coordTracking = new te::qt::widgets::CoordTracking(m_display, this);
@@ -98,6 +102,16 @@ te::qt::widgets::MapDisplay* te::qt::af::MapDisplay::getDisplay()
   return m_display;
 }
 
+void te::qt::af::MapDisplay::setZoomInDisplay(te::qt::widgets::ZoomInMapDisplayWidget* display)
+{
+  m_zoomInDisplay = display;
+}
+
+void te::qt::af::MapDisplay::setEyeBirdDisplay(te::qt::widgets::EyeBirdMapDisplayWidget* display)
+{
+  m_eyeBirdDisplay = display;
+}
+
 bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
 {
   switch(e->type())
@@ -117,7 +131,10 @@ bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
 void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& layers)
 {
   if(layers.empty())
+  {
+    clear();
     return;
+  }
 
   std::list<te::map::AbstractLayerPtr> visibleLayers;
   te::map::GetVisibleLayers(layers, visibleLayers);
@@ -133,6 +150,13 @@ void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& la
   m_display->setLayerList(layers);
 
   m_display->refresh();
+
+  if(m_zoomInDisplay)
+    m_zoomInDisplay->setList(visibleLayers, m_display->getSRID());
+
+  if(m_eyeBirdDisplay)
+    m_eyeBirdDisplay->setList(visibleLayers, m_display->getSRID());
+  
 }
 
 void te::qt::af::MapDisplay::clear()
@@ -194,12 +218,21 @@ void te::qt::af::MapDisplay::fit(const std::list<te::map::AbstractLayerPtr>& lay
   m_display->setLayerList(layers);
 
   m_display->refresh();
+
+  if(m_zoomInDisplay)
+    m_zoomInDisplay->setList(visibleLayers, m_display->getSRID());
+
+  if(m_eyeBirdDisplay)
+    m_eyeBirdDisplay->setList(visibleLayers, m_display->getSRID());
 }
 
 void te::qt::af::MapDisplay::onCoordTracked(QPointF& coordinate)
 {
   te::qt::af::evt::CoordinateTracked e(coordinate.x(), coordinate.y());
   ApplicationController::getInstance().broadcast(&e);
+
+  if(m_zoomInDisplay)
+    m_zoomInDisplay->drawCursorPosition((double) coordinate.rx(), (double)coordinate.ry());
 }
 
 void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& /*errors*/)
@@ -208,7 +241,7 @@ void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& 
   m_lastDisplayContent = QPixmap(*m_display->getDisplayPixmap());
 
   // Draw the layers selection
-  drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
+  drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers());
 }
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
@@ -228,7 +261,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.drawPixmap(0, 0, m_lastDisplayContent);
       painter.end();
 
-      drawLayersSelection(ApplicationController::getInstance().getProject()->getLayers());
+      drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers());
     }
     break;
 

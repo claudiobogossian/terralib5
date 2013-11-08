@@ -17,7 +17,7 @@ if(QT_FOUND)
   
   add_custom_command (
     OUTPUT copy_dir
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${ROOT}/resources/help ${CMAKE_BINARY_DIR}/help
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${TE_HELP_DIR}/help ${CMAKE_BINARY_DIR}/help
     DEPENDS del_dir
     COMMENT "Copying help directory..."
   )

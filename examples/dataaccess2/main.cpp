@@ -58,7 +58,7 @@ void PrintDataSetPropertyNames(te::da::DataSource* ds, const std::string& datase
 void PrintDataSetConstraints(te::da::DataSource* ds, const std::string& datasetName);
 
 //const te::da::DataSetTypePtr& PrintSchema(te::da::DataSource* ds, const std::string& datasetName);
-
+void ExportingOGR();
 void LoadModules();
 
 int main(int /*argc*/, char** /*argv*/)
@@ -139,9 +139,11 @@ int main(int /*argc*/, char** /*argv*/)
 
     //QueryExample_2(); //ok
 
-    //MemoryExample(); //Ok-cai no add (chamando o copy)
+    MemoryExample(); //Ok-cai no add (chamando o copy)
 
-    OGRExampleRead(); //ok
+    //ExportingOGR();  //ok
+
+    //OGRExampleRead(); //ok
 
     //ORGExampleWrite();
 
@@ -151,12 +153,11 @@ int main(int /*argc*/, char** /*argv*/)
 
     ////////PersistenceExample();
 
-    //////DataSetAdapter();
+    ////////DataSetAdapter();
 
     //////MySQLExample();
 
     //////SQLiteExample();
-
 
     te::plugin::PluginManager::getInstance().unloadAll();
 

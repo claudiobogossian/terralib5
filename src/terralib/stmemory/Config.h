@@ -33,7 +33,7 @@
 
   \brief The st memory module identifier string.
 */
-#define TE_STMEMORY_MODULE_NAME "te.da.stmemory"
+#define TE_STMEMORY_MODULE_NAME "te.stmemory"
 
 /*!
   \def TE_STMEMORY_DRIVER_IDENTIFIER

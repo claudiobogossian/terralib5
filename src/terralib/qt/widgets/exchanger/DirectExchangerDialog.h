@@ -71,28 +71,13 @@ namespace te
           */
           void setDataSources();
 
-          /*!
-            \brief Set the list of input layers that can be used
-          */
-          void setInputLayers();
-
           bool exchangeToFile();
 
           bool exchangeToDatabase();
 
         protected slots:
 
-          void onInputPostGISToolButtonClicked(bool flag);
-
-          void onInputADOToolButtonClicked(bool flag);
-
-          void onInputSHPToolButtonClicked(bool flag);
-
-          void onOutputPostGISToolButtonClicked(bool flag);
-
-          void onOutputADOToolButtonClicked(bool flag);
-
-          void onOutputSHPToolButtonClicked(bool flag);
+          void onDataSourceTypeActivated(int index);
 
           void onInputLayerActivated(QString value);
 
@@ -100,9 +85,9 @@ namespace te
 
           void onDataSoruceToolButtonClicked();
 
-          void onHelpPushButtonClicked();
-
           void onOkPushButtonClicked();
+
+          void setOutputDataSources();
 
         private:
 
@@ -110,7 +95,6 @@ namespace te
 
           std::list<te::map::AbstractLayerPtr> m_layers;
 
-          std::string m_inputDataSourceType;
           std::string m_outputDataSourceType;
 
           bool m_exchangeToFile;

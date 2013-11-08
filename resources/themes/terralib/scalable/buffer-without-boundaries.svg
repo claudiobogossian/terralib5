@@ -14,7 +14,7 @@
    id="svg3793"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="buffer-with-boundaries.svg">
+   sodipodi:docname="buffer-without-boundaries.svg">
   <defs
      id="defs3795" />
   <sodipodi:namedview
@@ -25,15 +25,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4.5356598"
-     inkscape:cx="26.24147"
+     inkscape:cx="-42.546758"
      inkscape:cy="22.222757"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:grid-bbox="true"
      inkscape:document-units="px"
-     inkscape:window-width="1360"
-     inkscape:window-height="706"
-     inkscape:window-x="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     inkscape:window-x="1358"
      inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -53,7 +53,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
     <path
-       style="fill:#ff0000;fill-opacity:0.21164018;fill-rule:nonzero;stroke:#000000;stroke-width:0.88833767;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#99b7d5;fill-opacity:0.7019608;fill-rule:nonzero;stroke:#000000;stroke-width:0.88833766999999986;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        d="M 71.71875 0.15625 C 70.881004 0.1385441 70.0159 0.1924674 69.15625 0.34375 L 40.1875 5.46875 C 37.991278 5.5230409 35.77757 6.1220931 33.75 7.375 L 6.96875 23.90625 C 1.028495 27.576942 -0.879682 35.196004 2.6875 40.96875 C 6.254682 46.741496 13.903495 48.420692 19.84375 44.75 L 28.3125 39.53125 C 30.640879 43.727805 35.429888 46.59375 41 46.59375 L 80.59375 46.59375 C 88.460091 46.59375 94.8125 40.885703 94.8125 33.78125 L 94.8125 33 C 94.8125 26.009112 88.659897 20.36634 80.96875 20.1875 C 83.227211 17.511569 84.334134 13.92444 83.6875 10.25 C 82.658383 4.4021386 77.582973 0.28019148 71.71875 0.15625 z "
        id="rect4196" />
   </g>

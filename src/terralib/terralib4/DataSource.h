@@ -28,12 +28,19 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
+
+class TeDatabase;
 
 namespace terralib4
 {
   class DataSource : public te::da::DataSource
   {
     public:
+
+      DataSource();
+
+      ~DataSource();
 
       std::string getType() const;
 
@@ -55,6 +62,8 @@ namespace terralib4
 
       const te::da::SQLDialect* getDialect() const;
 
+      TeDatabase* getTerralib4Db();
+
     protected:
 
       void create(const std::map<std::string, std::string>& dsInfo);
@@ -69,9 +78,11 @@ namespace terralib4
 
     private:
 
-      class Impl;
+      TeDatabase* m_db;
+      std::map<std::string, std::string> m_dbInfo;
 
-      Impl* m_pImpl;
+      static te::da::DataSourceCapabilities sm_capabilities;
+      static te::da::SQLDialect* sm_dialect;
   };
 
 }

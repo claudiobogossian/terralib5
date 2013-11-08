@@ -29,9 +29,14 @@
 #include "../dataaccess/query/SQLFunctionEncoder.h"
 #include "../dataaccess/query/TemplateEncoder.h"
 #include "../dataaccess/query/UnaryOpEncoder.h"
+#include "../dataaccess/serialization/xml/Serializer.h"
 #include "DataSource.h"
 #include "DataSourceFactory.h"
+#include "Globals.h"
 #include "Module.h"
+
+// Boost
+#include <boost/filesystem.hpp>
 
 te::pgis::Module::Module(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo)
@@ -54,9 +59,16 @@ void te::pgis::Module::startup()
   te::da::DataSourceFactory::add("POSTGIS", te::pgis::Build);
 
   //DataSourceFactory::initialize();
+  
+  // retrieve the Capabilities
+  boost::filesystem::path driverpath(m_pluginInfo.m_folder);
 
-  #include "PostGISCapabilities.h"
-  #include "PostGISDialect.h"
+  boost::filesystem::path capabilitiesFile = driverpath / "postgis-capabilities.xml";
+
+  te::pgis::Globals::sm_capabilities = new te::da::DataSourceCapabilities();
+  te::pgis::Globals::sm_queryDialect = new te::da::SQLDialect();
+
+  te::serialize::xml::Read(capabilitiesFile.string(), *te::pgis::Globals::sm_capabilities, *te::pgis::Globals::sm_queryDialect);
 
   TE_LOG_TRACE(TR_PGIS("TerraLib PostGIS driver support initialized!"));
 
@@ -70,9 +82,6 @@ void te::pgis::Module::shutdown()
 
   // Unregister the PostGIS factory support.
   te::da::DataSourceFactory::remove("POSTGIS");
-
-  //te::pgis::DataSourceFactory::finalize();
-  DataSource::setDialect(0);
 
   // Free the PostGIS registered drivers
   te::da::DataSourceManager::getInstance().detachAll(PGIS_DRIVER_IDENTIFIER);

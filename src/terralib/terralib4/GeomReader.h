@@ -31,11 +31,21 @@
 #include "../geometry/Enums.h"
 #include "Config.h"
 
-// TerraLib 4.x
-#include <TeGeometry.h>
+// STL
+#include <memory>
 
 // Forward declarations
 #include "../geometry_fw.h"
+
+class TeCell;
+class TeGeometry;
+class TeLine2D;
+class TeLinearRing;
+class TeLineSet;
+class TePoint;
+class TePolygon;
+class TePolygonSet;
+class TePointSet;
 
 namespace terralib4
 {
@@ -48,29 +58,24 @@ namespace terralib4
   {
     public:
 
-      /*!
-        \brief It returns a valid geometry from a given EWKB.
- 
-        \param ewkb A valid EWKB geometry.
+      static std::auto_ptr<te::gm::Point> getPoint(const TePoint& pt);
 
-        \return A geometry created from reading the EWKB. The caller of this method will take the ownership of the returned geometry.
-      */
-      static te::gm::Geometry* read(const TeGeometry& geom);
+      static std::auto_ptr<te::gm::LineString> getLineString(const TeLine2D& line);
 
-    private:
+      static std::auto_ptr<te::gm::LinearRing> getLinearRing(const TeLinearRing& ring);
 
-      static te::gm::Geometry* getGeometry(const char* ewkb, const char** endptr);
+      static std::auto_ptr<te::gm::Polygon> getPolygon(const TePolygon& poly);
 
-      static te::gm::Point* getPoint(const TePoint& pt);
+      static std::auto_ptr<te::gm::MultiPolygon> getMultiPolygon(const TePolygonSet& polySet);
 
-      static te::gm::LineString* getLineString(const TeLine2D& line);
+      static std::auto_ptr<te::gm::MultiLineString> getMultiLineString(const TeLineSet& lineSet);
 
-      static te::gm::LinearRing* getLinearRing(const TeLinearRing& ring);
+      static std::auto_ptr<te::gm::MultiPoint> getMultiPoint(const TePointSet& pointSet);
 
-      static te::gm::Polygon* getPolygon(const TePolygon& poly);
+      static std::auto_ptr<te::gm::Polygon> getPolygon(const TeCell& cell);
+
+      static std::auto_ptr<te::gm::Geometry> getGeometry(const TeGeometry& geom);
   };
-
-  } // end namespace pgis
-}   // end namespace te
+}  // end namespace terralib4
 
 #endif  // __TERRALIB_TERRALIB4_INTERNAL_GEOMREADER_H

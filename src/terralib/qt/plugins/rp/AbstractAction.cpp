@@ -32,13 +32,21 @@
 // STL
 #include <cassert>
 
-te::qt::plugins::rp::AbstractAction::AbstractAction(QMenu* menu): m_menu(menu), m_action(0)
+te::qt::plugins::rp::AbstractAction::AbstractAction(QMenu* menu, QMenu* popupMenu):
+  m_menu(menu), 
+  m_popupMenu(popupMenu), 
+  m_action(0),
+  m_popupAction(0)
 {
 }
 
 te::qt::plugins::rp::AbstractAction::~AbstractAction()
 {
   // do not delete m_action pointer because its son of rp menu... and qt delete automatically
+}
+
+void te::qt::plugins::rp::AbstractAction::onPopUpActionActivated(bool checked)
+{
 }
 
 void te::qt::plugins::rp::AbstractAction::createAction(std::string name, std::string pixmap)
@@ -57,9 +65,56 @@ void te::qt::plugins::rp::AbstractAction::createAction(std::string name, std::st
   m_menu->addAction(m_action);
 }
 
+void  te::qt::plugins::rp::AbstractAction::createPopUpAction(std::string name, std::string pixmap)
+{
+  assert(m_popupMenu);
+
+  m_popupAction = new QAction(m_popupMenu);
+
+  m_popupAction->setText(name.c_str());
+
+  if(pixmap.empty() == false)
+    m_popupAction->setIcon(QIcon::fromTheme(pixmap.c_str()));
+
+  connect(m_popupAction, SIGNAL(triggered(bool)), this, SLOT(onPopUpActionActivated(bool)));
+
+  m_popupMenu->addAction(m_popupAction);
+}
+
 void te::qt::plugins::rp::AbstractAction::addNewLayer(te::map::AbstractLayerPtr layer)
 {
   te::qt::af::evt::LayerAdded evt(layer.get());
 
   te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+}
+
+te::map::AbstractLayerPtr te::qt::plugins::rp::AbstractAction::getCurrentLayer()
+{
+  te::map::AbstractLayerPtr layer;
+
+  te::qt::af::evt::GetLayerSelected evt;
+
+  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+
+  if(evt.m_layer.get())
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = evt.m_layer->getSchema();
+
+    if(dsType.get() && dsType->hasRaster())
+      layer = evt.m_layer;
+  }
+
+  return layer;
+}
+
+std::list<te::map::AbstractLayerPtr> te::qt::plugins::rp::AbstractAction::getLayers()
+{
+  std::list<te::map::AbstractLayerPtr> list;
+
+  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().getProject();
+
+  if(prj)
+    list = prj->getAllLayers();
+
+  return list;
 }

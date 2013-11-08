@@ -108,13 +108,17 @@ namespace te
 
           void setGrouping();
 
-          void getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType);
+          void getDataAsDouble(std::vector<double>& vec, const std::string& attrName, const int& dataType, int& nullValues);
 
-          void getDataAsString(std::vector<std::string>& vec, const std::string& attrName);
+          void getDataAsString(std::vector<std::string>& vec, const std::string& attrName, int& nullValues);
+
+          void createDoubleNullGroupingItem(int count);
+
+          void createStringNullGroupingItem(int count);
 
           int getGeometryType();
 
-          void buildSymbolizer();
+          void buildSymbolizer(std::string meanTitle = "");
 
           void listAttributes();
 

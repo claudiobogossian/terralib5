@@ -16,10 +16,12 @@
     <DataType>STRING_TYPE</DataType>
     <DataType>BYTE_ARRAY_TYPE</DataType>
     <DataType>DATETIME_TYPE</DataType>
+    <DataType>NUMERIC_TYPE</DataType>
 	<DataType>GEOMETRY_TYPE</DataType>
   </DataTypeCapabilities>
   <QueryCapabilities>
     <SQLDialect>true</SQLDialect>
+	<SpatialSQLDialect>false</SpatialSQLDialect>
     <Insert>true</Insert>
     <Update>true</Update>
     <Delete>true</Delete>
@@ -27,7 +29,13 @@
     <Drop>true</Drop>
     <Alter>true</Alter>
     <Select>true</Select>
-    <SelectInto>true</SelectInto>
+    <SelectInto>true</SelectInto>	
+	<SpatialTopologicOperators>
+    </SpatialTopologicOperators> 
+	<SpatialMetricOperators>
+    </SpatialMetricOperators> 
+	<SpatialNewGeomOperators>
+    </SpatialNewGeomOperators>	
     <SpatialOperators>
     </SpatialOperators>    
     <LogicalOperators>
@@ -126,9 +134,6 @@
     <EfficientMoveAfterLast>false</EfficientMoveAfterLast>
     <EfficientMove>false</EfficientMove>
     <EfficientSize>false</EfficientSize>
-    <Insertion>true</Insertion>
-    <Update>true</Update>
-    <Deletion>true</Deletion>
   </DataSetCapabilities>
   <SpecificCapabilities>  
   </SpecificCapabilities>
@@ -138,5 +143,4 @@
   <SupportDataSetTypePesistenceAPI>true</SupportDataSetTypePesistenceAPI>
   <SupportPreparedQueryAPI>true</SupportPreparedQueryAPI>
   <SupportBatchExecutorAPI>true</SupportBatchExecutorAPI>
-  <SupportSpatialOperators>false</SupportSpatialOperators>
 </DataSourceCapabilities>

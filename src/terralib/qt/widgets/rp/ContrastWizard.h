@@ -53,7 +53,6 @@ namespace te
       */
       class TEQTWIDGETSEXPORT ContrastWizard : public QWizard
       {
-
         public:
 
           ContrastWizard(QWidget* parent);
@@ -65,6 +64,8 @@ namespace te
           virtual bool validateCurrentPage();
 
           void setList(std::list<te::map::AbstractLayerPtr>& layerList);
+
+          void setLayer(te::map::AbstractLayerPtr layer);
 
           te::map::AbstractLayerPtr getOutputLayer();
 
@@ -81,6 +82,8 @@ namespace te
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
 
           te::map::AbstractLayerPtr m_outputLayer;
+
+          int m_layerSearchId;
       };
     }   // end namespace widgets
   }     // end namespace qt

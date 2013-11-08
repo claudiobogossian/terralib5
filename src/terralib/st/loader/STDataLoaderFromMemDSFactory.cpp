@@ -23,7 +23,7 @@
   \brief This is the concrete factory for a STDataLoaderFromMemDS.    
 */
 
-// TerraLib
+// ST
 #include "STDataLoaderFromMemDSFactory.h"
 #include "STDataLoaderFromMemDS.h"
 #include "../Globals.h"
@@ -37,13 +37,14 @@ te::st::STDataLoaderFromMemDSFactory::~STDataLoaderFromMemDSFactory()
 void te::st::STDataLoaderFromMemDSFactory::initialize()
 {
   finalize();
-  sm_factory = new STDataLoaderFromMemDSFactory;
+  sm_factory = new STDataLoaderFromMemDSFactory;  
 }
 
 void te::st::STDataLoaderFromMemDSFactory::finalize()
 {
   delete sm_factory;
   sm_factory = 0;
+
 }
 
 const std::string& te::st::STDataLoaderFromMemDSFactory::getType() const

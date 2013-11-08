@@ -30,6 +30,7 @@
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
 #include "../../../rp/Module.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "SegmenterWizard.h"
 #include "SegmenterAdvancedOptionsWizardPage.h"
 #include "SegmenterWizardPage.h"
@@ -54,6 +55,15 @@ te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Segmenter"));
   //this->setFixedSize(640, 580);
+
+  this->setOption(QWizard::HaveHelpButton, true);
+  this->setOption(QWizard::HelpButtonOnRight, false);
+
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("plugins/rp/rp_segmenter.html");
 
   addPages();
 }
@@ -93,6 +103,14 @@ bool te::qt::widgets::SegmenterWizard::validateCurrentPage()
 void te::qt::widgets::SegmenterWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
+  m_layerSearchPage->getSearchWidget()->filterOnlyByRaster();
+}
+
+void te::qt::widgets::SegmenterWizard::setLayer(te::map::AbstractLayerPtr layer)
+{
+  removePage(m_layerSearchId);
+
+  m_segmenterPage->set(layer);
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::SegmenterWizard::getOutputLayer()
@@ -107,7 +125,7 @@ void te::qt::widgets::SegmenterWizard::addPages()
   m_segmenterAdvOptPage.reset(new te::qt::widgets::SegmenterAdvancedOptionsWizardPage(this));
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
 
-  addPage(m_layerSearchPage.get());
+  m_layerSearchId = addPage(m_layerSearchPage.get());
   addPage(m_segmenterPage.get());
   addPage(m_segmenterAdvOptPage.get());
   addPage(m_rasterInfoPage.get());
@@ -119,8 +137,7 @@ void te::qt::widgets::SegmenterWizard::addPages()
 bool te::qt::widgets::SegmenterWizard::execute()
 {
   //get layer
-  std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
-  te::map::AbstractLayerPtr l = *list.begin();
+  te::map::AbstractLayerPtr l = m_segmenterPage->get();
   std::auto_ptr<te::da::DataSet> ds(l->getData());
 
   //run contrast
@@ -177,3 +194,4 @@ bool te::qt::widgets::SegmenterWizard::execute()
 
   return true;
 }
+

@@ -28,6 +28,7 @@
 #include "../../../common/Translator.h"
 #include "../../../common/Logger.h"
 #include "../../af/ApplicationController.h"
+#include "../../af/events/LayerEvents.h"
 #include "Plugin.h"
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
@@ -78,6 +79,17 @@ void te::qt::plugins::rp::Plugin::startup()
 
   m_rpMenu->setTitle(TE_QT_PLUGIN_RP("Raster Processing"));
 
+// add pop up menu
+  m_popupAction = new QAction(m_rpMenu);
+  m_popupAction->setText(TE_QT_PLUGIN_RP("Raster Processing"));
+
+  //add to application layer tree pop up menu
+  te::qt::af::evt::LayerPopUpAddAction evt(m_popupAction, 2 /*SINGLE_LAYER_SELECTED*/);
+  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+
+  m_rpPopupMenu = new QMenu(m_rpMenu);
+  m_popupAction->setMenu(m_rpPopupMenu);
+
 // register actions
   registerActions();
 
@@ -88,6 +100,10 @@ void te::qt::plugins::rp::Plugin::shutdown()
 {
   if(!m_initialized)
     return;
+
+//remove from application layer tree pop up menu
+  te::qt::af::evt::LayerPopUpRemoveAction evt(m_popupAction);
+  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
 
 // remove menu
   delete m_rpMenu;
@@ -103,23 +119,23 @@ void te::qt::plugins::rp::Plugin::shutdown()
 void te::qt::plugins::rp::Plugin::registerActions()
 {
 #ifdef TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
-    m_classifier = new te::qt::plugins::rp::ClassifierAction(m_rpMenu);
+    m_classifier = new te::qt::plugins::rp::ClassifierAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
-    m_contrast = new te::qt::plugins::rp::ContrastAction(m_rpMenu);
+    m_contrast = new te::qt::plugins::rp::ContrastAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
-  m_mixtureModel = new te::qt::plugins::rp::MixtureModelAction(m_rpMenu);
+  m_mixtureModel = new te::qt::plugins::rp::MixtureModelAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
-    m_segmenter = new te::qt::plugins::rp::SegmenterAction(m_rpMenu);
+    m_segmenter = new te::qt::plugins::rp::SegmenterAction(m_rpMenu, m_rpPopupMenu);
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_REGISTER
-  m_register = new te::qt::plugins::rp::RegisterAction(m_rpMenu);
+  m_register = new te::qt::plugins::rp::RegisterAction(m_rpMenu, m_rpPopupMenu);
 #endif
 }
 

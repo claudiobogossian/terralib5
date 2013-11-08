@@ -25,11 +25,13 @@
 
 // TerraLib
 #include "../../dataaccess/datasource/DataSource.h"
+#include "../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../dataaccess/query/QueryCapabilities.h"
-#include "../../dataaccess/utils/Utils.h"
 
 // ST
+#include "../Exception.h"
+#include "../Globals.h"
 #include "STDataLoaderImplFactory.h"
 
 // STL
@@ -37,25 +39,18 @@
 
 te::st::STDataLoaderImpl* te::st::STDataLoaderImplFactory::make(const std::string& dsType)
 {
-  //use the DataSourceManager to get the DataSource and get its capabilites
-  te::da::DataSourcePtr ds = te::da::GetDataSource(dsType, false);
+  //use the factory only to create a data source
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make(dsType);
+  if(ds.get()==0)
+    throw Exception(TR_ST("ST Loader: Could not find a data source!"));
   
-  std::string loaderType = "STDATALOADERFROMMEMDS";
+  std::string loaderType = te::st::Globals::sm_loaderFromMemDSIdentifier; 
 
-  const te::da::DataSourceCapabilities& cpb = ds->getCapabilities();
-  if(cpb.supportsSpatialOperators())
-    loaderType = "STDATALOADERFROMDS";
-    
-  //TO DO:olhar o capabilities do Query - spatial and temporal.
-  /*
-  const te::da::QueryCapabilities& cpb = ds->getCapabilities().getQueryCapabilities(); 
-  
-  //Rever esse capabilites!!!!! Ter um flag pra indicar
-  //se o data source aceita spatial SQL também
-  if(cpb.supportsSQLDialect())
-    loaderType = "DATASOURCELOADER";
-  */
-
+  //TO DO: olhar o capabilities do Query - spatial and temporal.
+  const te::da::QueryCapabilities& qcpb = ds->getCapabilities().getQueryCapabilities(); 
+  if(qcpb.supportsSpatialSQLDialect())
+    loaderType = te::st::Globals::sm_loaderFromDSIdentifier;
+      
   return te::common::AbstractFactory<STDataLoaderImpl, std::string>::make(loaderType);
 }
 

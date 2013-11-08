@@ -30,6 +30,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../rp/Register.h"
 #include "../../../rp/Module.h"
+#include "../../widgets/help/HelpPushButton.h"
 #include "LayerSearchWidget.h"
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
@@ -55,6 +56,15 @@ te::qt::widgets::RegisterWizard::RegisterWizard(QWidget* parent)
   this->setWizardStyle(QWizard::ModernStyle);
   this->setWindowTitle(tr("Register"));
   //this->setFixedSize(640, 480);
+
+  this->setOption(QWizard::HaveHelpButton, true);
+  this->setOption(QWizard::HelpButtonOnRight, false);
+
+  te::qt::widgets::HelpPushButton* helpButton = new te::qt::widgets::HelpPushButton(this);
+
+  this->setButton(QWizard::HelpButton, helpButton);
+
+  helpButton->setPageReference("plugins/rp/rp_register.html");
 
   addPages();
 }
@@ -116,6 +126,9 @@ void te::qt::widgets::RegisterWizard::setList(std::list<te::map::AbstractLayerPt
 {
   m_layerRefPage->getSearchWidget()->setList(layerList);
   m_layerAdjPage->getSearchWidget()->setList(layerList);
+
+  m_layerRefPage->getSearchWidget()->filterOnlyByRaster();
+  m_layerAdjPage->getSearchWidget()->filterOnlyByRaster();
 }
 
 te::map::AbstractLayerPtr te::qt::widgets::RegisterWizard::getOutputLayer()
@@ -216,3 +229,4 @@ bool te::qt::widgets::RegisterWizard::execute()
 
   return true;
 }
+

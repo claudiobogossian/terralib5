@@ -26,6 +26,9 @@
 // TerraLib
 #include "Globals.h"
 
+te::da::SQLDialect* te::pgis::Globals::sm_queryDialect(0);
+te::da::DataSourceCapabilities* te::pgis::Globals::sm_capabilities(0);
+
 const std::string te::pgis::Globals::sm_unknownTypeName("UNKNOWN");
 const std::string te::pgis::Globals::sm_charTypeName("\"char\"");
 const std::string te::pgis::Globals::sm_int2TypeName("INT2");

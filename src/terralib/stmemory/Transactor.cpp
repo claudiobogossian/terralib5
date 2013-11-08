@@ -70,7 +70,8 @@ bool te::stmem::Transactor::isInTransaction() const
          
 std::auto_ptr<te::da::DataSet> te::stmem::Transactor::getDataSet(const std::string& name, 
                                                         te::common::TraverseType /*travType*/ , 
-												                                bool /*connected*/)
+												                                bool /*connected*/,
+                                                        const te::common::AccessPolicy)
 {
   //It creates a new DataSet that shares the internal observations. 
   DataSet* ds = new DataSet(*getData(name), false);
@@ -82,7 +83,8 @@ std::auto_ptr<te::da::DataSet> te::stmem::Transactor::getDataSet(const std::stri
                                                                  const te::gm::Envelope* e,
                                                                  te::gm::SpatialRelation r,
                                                                  te::common::TraverseType /*travType*/, 
-												                                         bool /*connected*/)
+												                                         bool /*connected*/,
+                                                                 const te::common::AccessPolicy)
 {
   te::da::DataSetType* type = getType(name);
   DataSet* ds = getData(name);
@@ -96,7 +98,8 @@ std::auto_ptr<te::da::DataSet> te::stmem::Transactor::getDataSet(const std::stri
                                                                  const te::gm::Geometry* g,
                                                                  te::gm::SpatialRelation r,
                                                                  te::common::TraverseType /*travType*/, 
-												                                         bool /*connected*/)
+												                                         bool /*connected*/,
+                                                                 const te::common::AccessPolicy)
 {
   te::da::DataSetType* type = getType(name);
   DataSet* ds = getData(name);
@@ -106,14 +109,16 @@ std::auto_ptr<te::da::DataSet> te::stmem::Transactor::getDataSet(const std::stri
 }
 
 std::auto_ptr<te::da::DataSet> te::stmem::Transactor::query(const te::da::Select& /*q*/,
-                                    te::common::TraverseType /*travType*/, bool /*connected*/)
+                                    te::common::TraverseType /*travType*/, bool /*connected*/,
+                                    const te::common::AccessPolicy)
 {
   return std::auto_ptr<te::da::DataSet>(0);
 }
 
 std::auto_ptr<te::da::DataSet> te::stmem::Transactor::query(const std::string& /*query*/, 
                                     te::common::TraverseType /*travType*/, 
-											              bool /*connected*/)
+											              bool /*connected*/,
+                                    const te::common::AccessPolicy)
 {
   return std::auto_ptr<te::da::DataSet>(0);    
 }
@@ -573,7 +578,8 @@ void te::stmem::Transactor::add(const std::string& name, te::da::DataSetType* t,
 
  std::auto_ptr<te::da::DataSet> te::stmem::Transactor::getDataSet(const std::string& name,
                                                    const te::dt::DateTime* dt, te::dt::TemporalRelation r,
-                                                   te::common::TraverseType /*travType*/, bool /*connected*/)
+                                                   te::common::TraverseType /*travType*/, bool /*connected*/,
+                                                   const te::common::AccessPolicy)
  {
     DataSet* ds = getData(name);
     return std::auto_ptr<te::da::DataSet>(ds->filter(dt, r));
@@ -582,7 +588,8 @@ void te::stmem::Transactor::add(const std::string& name, te::da::DataSetType* t,
  std::auto_ptr<te::da::DataSet> te::stmem::Transactor::getDataSet(const std::string& name, 
                                                   const te::gm::Geometry* g, te::gm::SpatialRelation sr,
                                                   const te::dt::DateTime* dt, te::dt::TemporalRelation tr,
-                                                  te::common::TraverseType /*travType*/, bool /*connected*/)
+                                                  te::common::TraverseType /*travType*/, bool /*connected*/,
+                                                  const te::common::AccessPolicy)
  {
    DataSet* ds = getData(name);
    return std::auto_ptr<te::da::DataSet>(ds->filter(g, sr, dt, tr));
@@ -591,7 +598,8 @@ void te::stmem::Transactor::add(const std::string& name, te::da::DataSetType* t,
  std::auto_ptr<te::da::DataSet> te::stmem::Transactor::getDataSet(const std::string& name, 
                                                   const te::gm::Envelope* e, te::gm::SpatialRelation sr,
                                                   const te::dt::DateTime* dt, te::dt::TemporalRelation tr,
-                                                  te::common::TraverseType /*travType*/, bool /*connected*/)
+                                                  te::common::TraverseType /*travType*/, bool /*connected*/,
+                                                  const te::common::AccessPolicy)
  {
    DataSet* ds = getData(name);
    return std::auto_ptr<te::da::DataSet>(ds->filter(e, sr, dt, tr));

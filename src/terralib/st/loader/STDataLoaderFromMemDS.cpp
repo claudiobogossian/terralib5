@@ -27,6 +27,7 @@
 
 //TerraLib
 #include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/dataset/DataSet.h"
 #include "../../dataaccess/utils/Utils.h"
 #include "../../datatype/DateTimePeriod.h"
@@ -38,6 +39,7 @@
 //ST
 #include "../Exception.h"
 #include "../Utils.h"
+#include "../Globals.h"
 #include "STDataLoaderFromMemDS.h"
 #include "../core/observation/ObservationDataSetInfo.h"
 #include "../core/trajectory/TrajectoryDataSetInfo.h"
@@ -52,7 +54,13 @@
 te::st::STDataLoaderFromMemDS::STDataLoaderFromMemDS()
 {
   //use the DataSourceManager to get the DataSource 
-  m_ds = te::da::GetDataSource("STMEMORY", false);
+  m_ds = te::da::DataSourceManager::getInstance().find(te::st::Globals::sm_STMemoryDataSourceId);
+  
+  if(m_ds.get()==0)
+    throw Exception("The STDataLoader is not inialized! Please, use the method STDataLoader::initialize"); 
+
+  if(!m_ds->isOpened())
+    m_ds->open();
 }
 
 std::auto_ptr<te::st::ObservationDataSet> 
@@ -378,7 +386,9 @@ void te::st::STDataLoaderFromMemDS::loadDataSet(const te::da::DataSourceInfo& in
   if(!dsettype.get())
     throw Exception("The DataSetType was not loaded correctly!"); 
 
-  te::stmem::DataSet* inMemdset = new te::stmem::DataSet(dset.get(), begTimePropIdx, endTimePropIdx, gmPropIdx);
+  //Before creating a stmem DataSet, we need to put it in a right place to be copied.
+  dset->moveNext();
+  te::stmem::DataSet* inMemdset = new te::stmem::DataSet(dset.get(), begTimePropIdx, endTimePropIdx, gmPropIdx, 0);
   
   //Add them into the in-mem data source
   te::stmem::DataSource* memDS = static_cast<te::stmem::DataSource*>(m_ds.get());

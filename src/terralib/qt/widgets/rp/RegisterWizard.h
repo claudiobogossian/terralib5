@@ -52,7 +52,6 @@ namespace te
       */
       class TEQTWIDGETSEXPORT RegisterWizard : public QWizard
       {
-
         public:
 
           RegisterWizard(QWidget* parent);

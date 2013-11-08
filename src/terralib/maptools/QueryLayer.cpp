@@ -112,15 +112,17 @@ std::auto_ptr<te::map::LayerSchema> te::map::QueryLayer::getSchema() const
   return output;
 }
 
-std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::common::TraverseType travType) const
+std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::common::TraverseType travType,
+                                                            const te::common::AccessPolicy accessPolicy) const
 {
-  return getData(m_query, travType);
+  return getData(m_query, travType, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& propertyName,
                                                             const te::gm::Envelope* e,
                                                             te::gm::SpatialRelation r,
-                                                            te::common::TraverseType travType) const
+                                                            te::common::TraverseType travType,
+                                                            const te::common::AccessPolicy accessPolicy) const
 {
   te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(*e, m_srid);
 
@@ -142,19 +144,21 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& p
   te::da::And* andop = new te::da::And(exp, intersects);
   wh->setExp(andop);
 
-  return getData(select.get(), travType);
+  return getData(select.get(), travType, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const std::string& propertyName,
                                                             const te::gm::Geometry* /*g*/,
                                                             te::gm::SpatialRelation /*r*/,
-                                                            te::common::TraverseType /*travType*/) const
+                                                            te::common::TraverseType /*travType*/,
+                                                            const te::common::AccessPolicy) const
 {
   throw Exception("Not implemented yet!");
 }
 
 std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::da::Expression* restriction,
-                                                            te::common::TraverseType travType) const
+                                                            te::common::TraverseType travType,
+                                                            const te::common::AccessPolicy accessPolicy) const
 {
   // The final select
   std::auto_ptr<te::da::Select> select(static_cast<te::da::Select*>(m_query->clone()));
@@ -169,11 +173,12 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::da::Expression* 
   te::da::And* andop = new te::da::And(exp, restriction);
   wh->setExp(andop);
 
-  return getData(select.get(), travType);
+  return getData(select.get(), travType, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const te::da::ObjectIdSet* oids,
-                                                            te::common::TraverseType travType) const
+                                                            te::common::TraverseType travType,
+                                                            const te::common::AccessPolicy accessPolicy) const
 {
   // The final select
   std::auto_ptr<te::da::Select> select(static_cast<te::da::Select*>(m_query->clone()));
@@ -188,7 +193,7 @@ std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(const te::da::Object
   te::da::And* andop = new te::da::And(exp, oids->getExpression());
   wh->setExp(andop);
 
-  return getData(select.get(), travType);
+  return getData(select.get(), travType, accessPolicy);
 }
 
 bool te::map::QueryLayer::isValid() const
@@ -263,9 +268,10 @@ void te::map::QueryLayer::computeExtent()
 }
 
 std::auto_ptr<te::da::DataSet> te::map::QueryLayer::getData(te::da::Select* query,
-                                                            te::common::TraverseType travType) const
+                                                            te::common::TraverseType travType,
+                                                            const te::common::AccessPolicy accessPolicy) const
 {
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
   
-  return ds->query(query, travType);
+  return ds->query(query, travType, accessPolicy);
 }

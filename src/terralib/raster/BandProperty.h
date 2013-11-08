@@ -27,6 +27,7 @@
 #define __TERRALIB_RASTER_INTERNAL_BANDPROPERTY_H
 
 // TerraLib
+#include "../common/UnitOfMeasure.h"
 #include "Config.h"
 #include "Enums.h"
 
@@ -40,9 +41,6 @@
 
 namespace te
 {
-// Forward declaration
-  namespace common { class UnitOfMeasure; }
-
   namespace rst
   {
     /*!
@@ -113,7 +111,7 @@ namespace te
         int getType() const { return m_type; }
 
         /*! \brief It returns the unit of measure of the values. */
-        const te::common::UnitOfMeasure* getUnitOfMeasure() const { return m_unit; }
+        const te::common::UnitOfMeasurePtr& getUnitOfMeasure() const { return m_unit; }
 
         /*!
           \brief Sets the unit of measure of the values;
@@ -122,7 +120,7 @@ namespace te
 
           \note The object does not take the ownership of the unit.
         */
-        void setUnitOfMeasure(const te::common::UnitOfMeasure* u) { m_unit = u; }
+        void setUnitOfMeasure(te::common::UnitOfMeasurePtr u) { m_unit = u; }
 
         /* \brief Returns if the band is complex (true) or not (false). */
         bool isComplex() const;
@@ -147,7 +145,7 @@ namespace te
 
     protected:
 
-      const te::common::UnitOfMeasure* m_unit;                       //!< The unit of values.
+      te::common::UnitOfMeasurePtr m_unit;                       //!< The unit of values.
     };
 
     typedef boost::shared_ptr<BandProperty> BandPropertyPtr;

@@ -106,34 +106,40 @@ namespace te
       
       std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name, 
                                                 te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                bool connected = false);
+                                                bool connected = false,
+                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess);
       
       std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                 const std::string& propertyName,
                                                 const te::gm::Envelope* e,
                                                 te::gm::SpatialRelation r,
                                                 te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                bool connected = false);
+                                                bool connected = false,
+                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess);
       
       std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                 const std::string& propertyName,
                                                 const te::gm::Geometry* g,
                                                 te::gm::SpatialRelation r,
                                                 te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                bool connected = false);
+                                                bool connected = false,
+                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess);
       
       std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                 const te::da::ObjectIdSet* oids, 
                                                 te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                                bool connected = false);
+                                                bool connected = false,
+                                                const te::common::AccessPolicy accessPolicy = te::common::RAccess);
       
       std::auto_ptr<te::da::DataSet> query(const te::da::Select& q,
                                            te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                           bool connected = false);
+                                           bool connected = false,
+                                           const te::common::AccessPolicy accessPolicy = te::common::RAccess);
       
       std::auto_ptr<te::da::DataSet> query(const std::string& query,
                                    te::common::TraverseType travType = te::common::FORWARDONLY, 
-                                   bool connected = false);
+                                   bool connected = false,
+                                   const te::common::AccessPolicy accessPolicy = te::common::RAccess);
       
       std::size_t getNumberOfItems(const std::string& datasetName) { return 1; }
       

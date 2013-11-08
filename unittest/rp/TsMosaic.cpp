@@ -396,9 +396,12 @@ void TsMosaic::SequenceMosaicTest()
   te::rp::SequenceMosaic::OutputParameters algoOutputParams;
   
   std::map<std::string, std::string> connInfoRaster;
-  connInfoRaster["URI"] = ".";
+  connInfoRaster["SOURCE"] = ".";
   std::auto_ptr< te::da::DataSource > dsPtr( te::da::DataSourceFactory::make("GDAL") );
-  dsPtr->open( connInfoRaster );
+  CPPUNIT_ASSERT( dsPtr.get() );
+  dsPtr->setConnectionInfo( connInfoRaster );
+  dsPtr->open();
+  CPPUNIT_ASSERT( dsPtr->isOpened() );
   algoOutputParams.m_outputDSPtr = dsPtr.get();
   
   // Executing the algorithm

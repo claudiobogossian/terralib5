@@ -29,6 +29,7 @@
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Point.h"
 #include "../../../maptools/MarkRendererManager.h"
+#include "../../../maptools/Utils.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Mark.h"
 #include "../../../se/Stroke.h"
@@ -50,8 +51,19 @@ te::qt::widgets::ZoomInMapDisplayWidget::ZoomInMapDisplayWidget(te::qt::widgets:
 
 //build form
   QGridLayout* displayLayout = new QGridLayout(this);
+
   m_mapDisplay = new te::qt::widgets::MultiThreadMapDisplay(this->size(), this);
-  displayLayout->addWidget(m_mapDisplay);
+
+  displayLayout->addWidget(m_mapDisplay, 0,0);
+
+
+  m_sliderZoomFactor = new QSlider(Qt::Horizontal, this);
+  m_sliderZoomFactor->setRange(1, 100);
+  m_sliderZoomFactor->setValue(50);
+  m_sliderZoomFactor->setInvertedAppearance(true);
+
+  displayLayout->addWidget(m_sliderZoomFactor, 1,0);
+
   displayLayout->setContentsMargins(0,0,0,0);
 
 //define mark
@@ -68,6 +80,7 @@ te::qt::widgets::ZoomInMapDisplayWidget::ZoomInMapDisplayWidget(te::qt::widgets:
 // signals & slots
   connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(onMapDisplayExtentChanged()));
   connect(m_parentMapDisplay, SIGNAL(extentChanged()), this, SLOT(onParentMapDisplayExtentChanged()));
+  connect(m_sliderZoomFactor, SIGNAL(sliderReleased()), this, SLOT(onZoomFactorChanged()));
 }
 
 te::qt::widgets::ZoomInMapDisplayWidget::~ZoomInMapDisplayWidget()
@@ -76,26 +89,19 @@ te::qt::widgets::ZoomInMapDisplayWidget::~ZoomInMapDisplayWidget()
   delete m_mark;
 }
 
-void te::qt::widgets::ZoomInMapDisplayWidget::set(te::map::AbstractLayerPtr layer)
+void te::qt::widgets::ZoomInMapDisplayWidget::setList(std::list<te::map::AbstractLayerPtr>& layerList, int srid)
 {
-  m_layer = layer;
+  te::gm::Envelope e = m_parentMapDisplay->getExtent();
 
-  std::list<te::map::AbstractLayerPtr> list;
-
-  list.push_back(m_layer);
-
-  te::gm::Envelope inputExt = m_layer->getExtent();
-
-  te::gm::Envelope ext = calculateExtent(inputExt);
+  te::gm::Envelope ext = calculateExtent(e);
 
   m_mapDisplay->setMouseTracking(true);
-  m_mapDisplay->setLayerList(list);
-  m_mapDisplay->setSRID(m_layer->getSRID(), false);
+  m_mapDisplay->setLayerList(layerList);
+  m_mapDisplay->setSRID(srid, false);
 
   m_itsMe = true;
-  m_mapDisplay->setExtent(ext, false);
+  m_mapDisplay->setExtent(ext, true);
   m_itsMe = false;
-
 }
 
 te::gm::Envelope te::qt::widgets::ZoomInMapDisplayWidget::getCurrentExtent()
@@ -172,16 +178,31 @@ void te::qt::widgets::ZoomInMapDisplayWidget::onParentMapDisplayExtentChanged()
   m_itsMe = true;
   m_mapDisplay->setExtent(ext, true);
   m_itsMe = false;
+}
 
+void te::qt::widgets::ZoomInMapDisplayWidget::onZoomFactorChanged()
+{
+  te::gm::Envelope e = m_parentMapDisplay->getExtent();
+
+  te::gm::Envelope ext = calculateExtent(e);
+
+  m_itsMe = true;
+  m_mapDisplay->setExtent(ext, true);
+  m_itsMe = false;
 }
 
 te::gm::Envelope te::qt::widgets::ZoomInMapDisplayWidget::calculateExtent(te::gm::Envelope& e)
 {
+  double value = (double)m_sliderZoomFactor->value() / 100.;
+  double hScale = (double)m_mapDisplay->getHeight() / (double)m_parentMapDisplay->getHeight();
+  double wScale = (double)m_mapDisplay->getWidth() / (double)m_parentMapDisplay->getWidth();
+  double scale = (hScale + wScale) / 2.;
+
   te::gm::Coord2D center = e.getCenter();
 
   // Bulding the zoom extent based on zoom factor value and the given point
-  double w = e.getWidth() *  0.5 * 0.2;
-  double h = e.getHeight() *  0.5 * 0.2;
+  double w = e.getWidth() *  scale * value;
+  double h = e.getHeight() *  scale * value;
 
   te::gm::Envelope ext(center.x - w, center.y - h, center.x + w, center.y + h);
 

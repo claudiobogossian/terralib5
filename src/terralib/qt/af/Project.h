@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 20008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -55,41 +55,130 @@ namespace te
           /*! \brief Destructor. */
           ~Project();
 
+          /*!
+            \brief It sets the title of the project.
+
+            \param title The title of the project to be set.
+          */
           void setTitle(const std::string& title);
 
+          /*!
+            \brief It gets the title of the project.
+
+            \return The title of the project.
+          */
           const std::string& getTitle() const;
 
+          /*!
+            \brief It sets the author of the project.
+
+            \param title The author of the project to be set.
+          */
           void setAuthor(const std::string& author);
 
+          /*!
+            \brief It gets the author of the project.
+
+            \return The author of the project.
+          */
           const std::string& getAuthor() const;
 
-          const std::list<te::map::AbstractLayerPtr>& getLayers() const;
+          /*!
+            \brief It gets all the top layers of the project (folder and single layers).
 
-          std::list<te::map::AbstractLayerPtr>& getLayers();
+            \return The list of all the top layers of the project (folder and single layers).
+          */
+          const std::list<te::map::AbstractLayerPtr>& getTopLayers() const;
 
-          void setLayers(const std::list<te::map::AbstractLayerPtr>& layers);
+          /*!
+            \brief It gets all the top layers of the project (folder and single layers).
 
+            \return The list of all the top layers of the project (folder and single layers).
+          */
+          std::list<te::map::AbstractLayerPtr>& getTopLayers();
+
+          /*!
+            \brief It gets all the layers (single and folder layers) of the project.
+
+            \return The list of all the layers (single and folder layers) of the project.
+          */
+          std::list<te::map::AbstractLayerPtr> getAllLayers();
+
+          /*!
+            \brief It gets all the single layers of the project.
+
+            \return The list of all the single layers of the project.
+          */
+          std::list<te::map::AbstractLayerPtr> getSingleLayers();
+
+          /*!
+            \brief It gets all the single layers that are visible.
+
+            \return The list of all the single layers that are visible.
+          */
+          std::list<te::map::AbstractLayerPtr> getVisibleSingleLayers();
+
+          /*!
+            \brief It sets the top layers of the project.
+
+            \param layers The layers that will be set as the top layers of the project.
+          */
+          void setTopLayers(const std::list<te::map::AbstractLayerPtr>& layers);
+
+          /*!
+            \brief It adds the specified layer to the list of top layers of the project.
+
+            \param layer The layer that will be added to the list of top layers of the project.
+          */
           void add(const te::map::AbstractLayerPtr& layer);
 
+          /*!
+            \brief It removes the specified layer from the project.
+
+            \param layer The layer to be removed from the project.
+          */
           void remove(const te::map::AbstractLayerPtr& layer);
 
+          /*!
+            \brief It informs if the project has changed.
+
+            \return True, if the project has changed; otherwise, it returns false.
+          */
           bool hasChanged();
 
+          /*!
+            \brief It sets the filename where the project will be saved.
+
+            \param fName The file name where the project will be saved.
+          */
           void setFileName(const std::string& fName);
 
+          /*!
+            \brief It gets the filename where the project is saved.
+
+            \return The file name where the project is saved.
+          */
           const std::string& getFileName() const;
 
-          void projectChanged(const bool& changed);
+          /*!
+            \brief It sets the project status as changed or not.
 
+            \param changed The flag that specifies if the project is to be set as changed or not.
+          */
+          void setProjectAsChanged(const bool& changed);
+
+          /*!
+            \brief It clears the project, setting it as having no layers.
+          */
           void clear();
 
         private:
 
-          std::string m_title;                            //!< Project title.
-          std::string m_author;                           //!< Project author.
-          std::list<te::map::AbstractLayerPtr> m_layers;  //!< Project layers.
-          bool m_changed;                                 //!< Flag indicating that the project need to be saved.
-          std::string m_fileName;                         //!< Project file.
+          std::string m_title;                               //!< The title of the project.
+          std::string m_author;                              //!< The author of the project.
+          std::list<te::map::AbstractLayerPtr> m_topLayers;  //!< The top layers of the project.
+          bool m_changed;                                    //!< Flag indicating that the project needs to be saved.
+          std::string m_fileName;                            //!< The project file.
       };
 
     } // end namespace af

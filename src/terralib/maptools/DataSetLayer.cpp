@@ -75,41 +75,45 @@ std::auto_ptr<te::map::LayerSchema> te::map::DataSetLayer::getSchema() const
   return ds->getDataSetType(m_datasetName);
 }
 
-std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(te::common::TraverseType travType) const
+std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy) const
 {
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  return ds->getDataSet(m_datasetName, travType);
+  return ds->getDataSet(m_datasetName, travType, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const std::string& propertyName,
                                                               const te::gm::Envelope* e,
                                                               te::gm::SpatialRelation r,
-                                                              te::common::TraverseType travType) const
+                                                              te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy) const
 {
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  return ds->getDataSet(m_datasetName, propertyName, e, r, travType);
+  return ds->getDataSet(m_datasetName, propertyName, e, r, travType, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const std::string& propertyName,
                                                               const te::gm::Geometry* g,
                                                               te::gm::SpatialRelation r,
-                                                              te::common::TraverseType travType) const
+                                                              te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy) const
 {
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  return ds->getDataSet(m_datasetName, propertyName, g, r, travType);
+  return ds->getDataSet(m_datasetName, propertyName, g, r, travType, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(te::da::Expression* restriction,
-                                                              te::common::TraverseType travType) const
+                                                              te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy) const
 {
   assert(restriction);
   assert(!m_datasetName.empty());
@@ -131,17 +135,18 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(te::da::Expression
   // The final Select
   std::auto_ptr<te::da::Select> select(new te::da::Select(all, from, filter));
 
-  return ds->query(select.get(), travType);
+  return ds->query(select.get(), travType, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const te::da::ObjectIdSet* oids,
-                                                              te::common::TraverseType travType) const
+                                                              te::common::TraverseType travType,
+                                                              const te::common::AccessPolicy accessPolicy) const
 {
   assert(oids);
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
-  return ds->getDataSet(m_datasetName, oids, travType);
+  return ds->getDataSet(m_datasetName, oids, travType, accessPolicy);
 }
 
 bool te::map::DataSetLayer::isValid() const

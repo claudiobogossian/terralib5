@@ -280,6 +280,7 @@ namespace te
                  dataset continues to live after the connection given by the data source has been released.
 
           \param name     The dataset name.
+          \param accessPolicy Access policy.
           \param travType The traverse type associated to the returned dataset. 
 
           \exception Exception It can throw an exception if:
@@ -291,7 +292,8 @@ namespace te
         \note Thread-safe!
         */
         virtual std::auto_ptr<DataSet> getDataSet(const std::string& name, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the specified property.
@@ -303,6 +305,7 @@ namespace te
           \param propertyName  The name of the spatial property used to apply the spatial filter.
           \param e             A rectangle used as a spatial filter when retrieving the dataset.
           \param r             The spatial relation used during the filtering.
+          \param accessPolicy  Access policy.
           \param travType      The traversal type associated to the returned dataset.
 
           \exception Exception It can throw an exception if:
@@ -319,7 +322,8 @@ namespace te
                                                   const std::string& propertyName,
                                                   const te::gm::Envelope* e,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         /*!
           \brief It gets the dataset identified by the given name using a spatial filter over the given geometric property.
@@ -331,6 +335,7 @@ namespace te
           \param propertyName  The name of the spatial property used to apply the spatial filter.
           \param g             The geometry used as a spatial filter when retrieving the dataset.
           \param r             The spatial relation used during the filtering.
+          \param accessPolicy  Access policy.
           \param travType      The traverse type associated to the returned dataset.
 
           \note The geometry coordinates should be in the same coordinate system as the dataset.
@@ -341,7 +346,8 @@ namespace te
                                                   const std::string& propertyName,
                                                   const te::gm::Geometry* g,
                                                   te::gm::SpatialRelation r,
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         /*!
           \brief It gets the dataset identified by the given name using the identification of the objects.
@@ -351,6 +357,7 @@ namespace te
 
           \param name     The dataset name.
           \param oids     A pointer to the set of objects. Do not pass a null pointer nor an empty set.
+          \param accessPolicy Access policy.
           \param travType The traverse type associated to the returned dataset.
 
           \exception Exception It can throw an exception if:
@@ -363,7 +370,8 @@ namespace te
         */
         std::auto_ptr<te::da::DataSet> getDataSet(const std::string& name,
                                                   const te::da::ObjectIdSet* oids, 
-                                                  te::common::TraverseType travType = te::common::FORWARDONLY);
+                                                  te::common::TraverseType travType = te::common::FORWARDONLY,
+                                                  const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         /*!
           \brief It executes a query that may return some data using a generic query.
@@ -377,6 +385,7 @@ namespace te
 
           \param q         A valid query object.
           \param travType  The traverse type associated to the returned dataset. 
+          \param accessPolicy Access policy.
 
           \exception Exception It can throw an exception if:
                      <ul>
@@ -387,7 +396,8 @@ namespace te
           \note Thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const Select& q,
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
 
         /*!
           \brief It executes a query that may return some data using the data source native language.
@@ -397,6 +407,7 @@ namespace te
 
           \param query    A query string in the data source native language.
           \param travType The traverse type associated to the returned dataset.
+          \param accessPolicy Access policy.
 
          \exception Exception It can throw an exception if:
                      <ul>
@@ -408,7 +419,8 @@ namespace te
           \note Thread-safe!
         */
         virtual std::auto_ptr<DataSet> query(const std::string& query, 
-                                             te::common::TraverseType travType = te::common::FORWARDONLY);
+                                             te::common::TraverseType travType = te::common::FORWARDONLY,
+                                             const te::common::AccessPolicy accessPolicy = te::common::RAccess);
         //@}
 
         /** @name Command Execution Methods

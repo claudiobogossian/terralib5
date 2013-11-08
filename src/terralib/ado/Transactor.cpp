@@ -144,7 +144,8 @@ bool te::ado::Transactor::isInTransaction() const
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
                                                                 te::common::TraverseType travType,
-                                                                bool connected)
+                                                                bool connected,
+                                                                const te::common::AccessPolicy)
 {
   std::auto_ptr<std::string> sql(new std::string("SELECT * FROM "));
   *sql += name;
@@ -159,7 +160,8 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
                                                                const te::gm::Envelope* e,
                                                                te::gm::SpatialRelation r,
                                                                te::common::TraverseType travType,
-                                                               bool connected)
+                                                               bool connected,
+                                                               const te::common::AccessPolicy accessPolicy)
 {
   if(e == 0)
     throw Exception(TR_ADO("The envelope is missing!"));
@@ -186,7 +188,8 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
                                                                const te::gm::Geometry* g,
                                                                te::gm::SpatialRelation r,
                                                                te::common::TraverseType travType,
-                                                               bool connected)
+                                                               bool connected,
+                                                               const te::common::AccessPolicy accessPolicy)
 {
   return std::auto_ptr<te::da::DataSet>(0); // TODO
 }
@@ -194,7 +197,8 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string& name,
                                                                const ObjectIdSet* oids, 
                                                                te::common::TraverseType travType, 
-                                                               bool connected)
+                                                               bool connected,
+                                                               const te::common::AccessPolicy accessPolicy)
 {
   return std::auto_ptr<te::da::DataSet>(0); // TODO
 }
@@ -202,8 +206,9 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::getDataSet(const std::string
 
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& q,
-                                      te::common::TraverseType travType,
-                                      bool connected)
+                                                          te::common::TraverseType travType,
+                                                          bool connected,
+                                                          const te::common::AccessPolicy accessPolicy)
 {
   std::string sql;
 
@@ -214,8 +219,9 @@ std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const te::da::Select& 
 }
 
 std::auto_ptr<te::da::DataSet> te::ado::Transactor::query(const std::string& query,
-                                      te::common::TraverseType travType,
-                                      bool connected)
+                                                          te::common::TraverseType travType,
+                                                          bool connected,
+                                                          const te::common::AccessPolicy accessPolicy)
 {
   _RecordsetPtr result = m_conn->query(query, connected);
 
@@ -441,8 +447,8 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
 
     int pType = p->getType();
 
-    ADOX::_ColumnPtr newColumn = NULL;
-    TESTHR(newColumn.CreateInstance(__uuidof(ADOX::_ColumnPtr)));
+    ADOX::_ColumnPtr newColumn = 0;
+    TESTHR(newColumn.CreateInstance(__uuidof(ADOX::Column)));
 
     newColumn->Name = name.c_str();
     newColumn->Type = te::ado::Convert2Ado(pType);
@@ -461,10 +467,11 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       case te::dt::GEOMETRY_TYPE:
       case te::dt::ARRAY_TYPE:
       case te::dt::DATETIME_TYPE:
+      case te::dt::NUMERIC_TYPE:
       {
         const te::dt::SimpleProperty* simple = static_cast<const te::dt::SimpleProperty*>(p);
 
-        if(simple->isRequired())
+        if(!simple->isRequired())
           newColumn->Attributes = ADOX::adColNullable;
 
         pTable->Columns->Append(newColumn->Name, newColumn->Type, newColumn->DefinedSize);
@@ -476,10 +483,13 @@ void te::ado::Transactor::addProperty(const std::string& datasetName, te::dt::Pr
       {
         const te::dt::StringProperty* sp = static_cast<const te::dt::StringProperty*>(p);
 
-        newColumn->DefinedSize = (long)sp->size();
+        if(sp->size() != 0)
+          newColumn->DefinedSize = (long)sp->size();
 
-        if(sp->isRequired())
+        if(!sp->isRequired())
           newColumn->Attributes = ADOX::adColNullable;
+
+        pTable->Columns->Append(newColumn->Name, newColumn->Type, newColumn->DefinedSize);
 
         break;
       }
@@ -1156,8 +1166,6 @@ void te::ado::Transactor::add(const std::string& datasetName,
     
     while(d->moveNext())
     {
-      bool isNull = false;
-
       TESTHR(recset->AddNew());
 
       for(std::size_t i = 0; i < d->getNumProperties(); ++i)
@@ -1189,7 +1197,14 @@ void te::ado::Transactor::add(const std::string& datasetName,
             break;
 
           case te::dt::NUMERIC_TYPE:
-            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)d->getNumeric(pname.c_str()).c_str();
+            {
+              std::string sval = d->getNumeric(pname);
+              if(sval.empty())
+                sval = "0.0";
+
+              double dval = boost::lexical_cast<double>(sval);
+              recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)(dval);
+            }
             break;
 
           case te::dt::DATETIME_TYPE:
@@ -1243,7 +1258,7 @@ void te::ado::Transactor::add(const std::string& datasetName,
             recset->GetFields()->GetItem("upper_y")->Value = (_variant_t)env->m_ury;
 
             _variant_t var;
-            Convert2Ado(d->getGeometry(pname).get(), var);
+            Convert2Ado(geometry.get(), var);
 
             recset->Fields->GetItem(pname.c_str())->AppendChunk (var);
             

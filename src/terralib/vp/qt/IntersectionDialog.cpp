@@ -87,8 +87,10 @@ void te::vp::IntersectionDialog::setLayers(std::list<te::map::AbstractLayerPtr> 
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
   while(it != m_layers.end())
-  {  
-    m_ui->m_firstLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+    if(dsType->hasGeom())
+      m_ui->m_firstLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
 }
@@ -108,7 +110,9 @@ void te::vp::IntersectionDialog::onFirstLayerComboBoxChanged(int index)
   {
     if(layerID != it->get()->getId().c_str())
     {
-      m_ui->m_secondLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+      std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+      if(dsType->hasGeom())
+        m_ui->m_secondLayerComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     }
     else
     {
@@ -188,6 +192,8 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     return;
   }
   
+  this->setCursor(Qt::WaitCursor);
+
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -197,7 +203,7 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
     te::map::DataSetLayer* firstDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_firstSelectedLayer.get());
     te::da::DataSourcePtr firstDataSource = te::da::GetDataSource(firstDataSetLayer->getDataSourceId(), true);
 
-    te::map::DataSetLayer* secondDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_firstSelectedLayer.get());
+    te::map::DataSetLayer* secondDataSetLayer = dynamic_cast<te::map::DataSetLayer*>(m_secondSelectedLayer.get());
     te::da::DataSourcePtr secondDataSource = te::da::GetDataSource(secondDataSetLayer->getDataSourceId(), true);
 
     if (!firstDataSource.get() || !secondDataSource)
@@ -296,19 +302,20 @@ void te::vp::IntersectionDialog::onOkPushButtonClicked()
   catch(const std::exception& e)
   {
     QMessageBox::warning(this, TR_VP("Intersection"), e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    this->setCursor(Qt::ArrowCursor);
     return;
   }
 
   te::common::ProgressManager::getInstance().removeViewer(id);
-
+  this->setCursor(Qt::ArrowCursor);
   accept();
 }
 
 void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
 {
-  m_outputDatasource.reset();
-  m_outputArchive = "";
-
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_newLayerNameLineEdit->setEnabled(true);
   te::qt::widgets::DataSourceSelectorDialog dlg(this);
   dlg.exec();
 
@@ -322,21 +329,27 @@ void te::vp::IntersectionDialog::onTargetDatasourceToolButtonPressed()
   m_ui->m_repositoryLineEdit->setText(QString(it->get()->getTitle().c_str()));
 
   m_outputDatasource = *it;
+
+  m_toFile = false;
 }
 
 void te::vp::IntersectionDialog::onTargetFileToolButtonPressed()
 {
-  m_outputDatasource.reset();
-  m_outputArchive = "";
+  m_ui->m_newLayerNameLineEdit->clear();
+  m_ui->m_repositoryLineEdit->clear();
 
-  QString directoryName = QFileDialog::getExistingDirectory(this, tr("Open Feature File"), QString(""));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                                        QString(), tr("Shapefile (*.shp *.SHP);;"),0, QFileDialog::DontConfirmOverwrite);
 
-  if(directoryName.isEmpty())
+  if (fileName.isEmpty())
     return;
 
-  QString fullName = directoryName + "\\" + m_ui->m_newLayerNameLineEdit->text() + ".shp";
-
-  m_ui->m_repositoryLineEdit->setText(fullName);
-
-  m_outputArchive = std::string(fullName.toStdString());
+  boost::filesystem::path outfile(fileName.toStdString());
+  std::string aux = outfile.leaf().string();
+  m_ui->m_newLayerNameLineEdit->setText(aux.c_str());
+  aux = outfile.string();
+  m_ui->m_repositoryLineEdit->setText(aux.c_str());
+  
+  m_toFile = true;
+  m_ui->m_newLayerNameLineEdit->setEnabled(false);
 }

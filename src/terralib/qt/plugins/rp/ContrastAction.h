@@ -50,13 +50,15 @@ namespace te
 
           public:
 
-            ContrastAction(QMenu* menu);
+            ContrastAction(QMenu* menu, QMenu* popupMenu);
 
             virtual ~ContrastAction();
 
           protected slots:
 
             virtual void onActionActivated(bool checked);
+
+            virtual void onPopUpActionActivated(bool checked);
         };
 
       } // end namespace rp

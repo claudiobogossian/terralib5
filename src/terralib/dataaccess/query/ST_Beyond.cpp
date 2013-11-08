@@ -28,12 +28,12 @@
 #include "ST_Beyond.h"
 
 te::da::ST_Beyond::ST_Beyond(te::da::Expression* e, te::gm::Geometry* g, te::common::Distance* d)
-   : ST_DistanceBuffer(FunctionNames::sm_Beyond, e, g, d)
+   : ST_DistanceBuffer(FunctionNames::sm_ST_Beyond, e, g, d)
 {
 }
 
 te::da::ST_Beyond::ST_Beyond(const te::da::Expression& e, const te::gm::Geometry& g, const te::common::Distance& d)
-   : ST_DistanceBuffer(FunctionNames::sm_Beyond, e, g, d)
+   : ST_DistanceBuffer(FunctionNames::sm_ST_Beyond, e, g, d)
 {
 }
 

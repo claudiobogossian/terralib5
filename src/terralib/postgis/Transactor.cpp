@@ -115,7 +115,8 @@ bool te::pgis::Transactor::isInTransaction() const
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::string& name,
                                                                 te::common::TraverseType travType,
-                                                                bool /*isConnected*/)
+                                                                bool /*isConnected*/,
+                                                                const te::common::AccessPolicy)
 {
    std::auto_ptr<std::string> sql(new std::string("SELECT * FROM "));
    *sql += name;
@@ -133,7 +134,8 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
                                                                 const te::gm::Envelope* e,
                                                                 te::gm::SpatialRelation r,
                                                                 te::common::TraverseType travType,
-                                                                bool /*isConnected*/)
+                                                                bool /*isConnected*/,
+                                                                const te::common::AccessPolicy)
 {
   if(e == 0)
     throw Exception(TR_PGIS("The envelope is missing!"));
@@ -165,7 +167,8 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
                                                                 const te::gm::Geometry* g,
                                                                 te::gm::SpatialRelation r,
                                                                 te::common::TraverseType travType,
-                                                                bool /*isConnected*/)
+                                                                bool /*isConnected*/,
+                                                                const te::common::AccessPolicy)
 {
  if(g == 0)
     throw Exception(TR_PGIS("The geometry is missing!"));
@@ -194,19 +197,21 @@ std::auto_ptr<te::da::DataSet> te::pgis::Transactor::getDataSet(const std::strin
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::query(const te::da::Select& q,
                                                            te::common::TraverseType travType,
-                                                           bool isConnected)
+                                                           bool isConnected,
+                                                           const te::common::AccessPolicy accessPolicy)
 {
   std::string sql;
 
   SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn->getConn());
   q.accept(visitor);
 
-  return query(sql, travType, isConnected);
+  return query(sql, travType, isConnected,accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet> te::pgis::Transactor::query(const std::string& query,
                                                            te::common::TraverseType travType,
-                                                           bool isConnected)
+                                                           bool isConnected,
+                                                           const te::common::AccessPolicy)
 {
   PGresult* result = m_conn->query(query);
 

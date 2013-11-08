@@ -84,16 +84,16 @@ namespace te
           \brief Constructor.
 
           \param type A pointer to the DataSetType that will be converted.
-          \param capabilities A data source capabilities of data source that the user intend use.
+          \param capabilities A data source capabilities of the data source that the user intend use.
                  e.g. the data source where the given data set type will be saved.
 
-          \note This method will try create automatic property conversions based on given capabilities.
+          \note This method will try to create automatic property conversions based on the given capabilities.
                 Here we will look up the data type support of DataSourceCapabilities.
-                Case there is not support for a given data type, the method "getHint" will be used to try retrieves an appropriate data type.
+                If there is not support for a given data type, the method "getHint" will be used in attempt to retrieve an appropriate data type.
 
-          \note Case the method "getHint" no informs any hint, the specific property will not have a conversion.
+          \note If the method "getHint" does not inform any hint, the specific property will not have a conversion.
           \note The method "add" can be used to do manual conversions.
-          \note The method "getNonConvertedProperties" can be used to retrieve that properties that no have defined conversion.
+          \note The method "getNonConvertedProperties" can be used to retrieve that properties that have no defined conversion.
           
           \sa DataSetType, DataSourceCapabilities DataTypeCapabilities
         */

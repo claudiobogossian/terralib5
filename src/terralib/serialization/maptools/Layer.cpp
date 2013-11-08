@@ -407,6 +407,25 @@ std::auto_ptr<te::map::Chart> ReadLayerChart(te::xml::Reader& reader)
 
   reader.next();
 
+  double maxValue = 0;
+  if(type == te::map::Bar)
+  {
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "MaxValue");
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    maxValue = reader.getElementValueAsDouble();
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // MaxValue
+
+    reader.next();
+  }
+
   std::vector<std::string> properties;
   std::vector<te::color::RGBAColor> colors;
 
@@ -463,6 +482,8 @@ std::auto_ptr<te::map::Chart> ReadLayerChart(te::xml::Reader& reader)
   chart->setVisibility(isVisible);
   if(barWidth != -1)
     chart->setBarWidth(barWidth);
+  if(type == te::map::Bar)
+    chart->setMaxValue(maxValue);
 
   return chart;
 }
@@ -485,6 +506,9 @@ void WriteLayerChart(te::map::Chart* chart, te::xml::Writer& writer)
     writer.writeElement("te_map:BarWidth", boost::lexical_cast<int>(chart->getBarWidth()));
 
   writer.writeElement("te_map:IsVisible", (chart->isVisible() ? "true" : "false"));
+
+  if(chart->getType() == te::map::Bar)
+    writer.writeElement("te_map:MaxValue", chart->getMaxValue());
 
   std::vector<std::string> properties = chart->getProperties();
 

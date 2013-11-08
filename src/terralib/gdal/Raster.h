@@ -106,7 +106,7 @@ namespace te
       te::rst::Band& operator[](std::size_t i);
       
       /*! \brief Returns the raster GDAL handler. */
-      GDALDataset* getGDALDataset();
+      GDALDataset* getGDALDataset() const;
       
       te::dt::AbstractData* clone() const;
       
@@ -119,7 +119,7 @@ namespace te
        Otherwise this method will call the GDAL reprojection method. The rinfo must define a GDAL compatible raster.
        The parameter m (interpolation method) is not used in GDAL implementation.
        */
-      te::rst::Raster* transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m = 0);
+      te::rst::Raster* transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m = 0) const;
       
       void transform(te::rst::Raster* outRaster);
       

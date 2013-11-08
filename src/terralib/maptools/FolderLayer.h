@@ -77,32 +77,37 @@ namespace te
 
         std::auto_ptr<LayerSchema> getSchema() const;
 
-        std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY) const;
+        std::auto_ptr<te::da::DataSet> getData(te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
                                                const te::gm::Envelope* e,
                                                te::gm::SpatialRelation r = te::gm::INTERSECTS,
-                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         std::auto_ptr<te::da::DataSet> getData(const std::string& propertyName,
                                                const te::gm::Geometry* g,
                                                te::gm::SpatialRelation r,
-                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         std::auto_ptr<te::da::DataSet> getData(te::da::Expression* restriction,
-                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         std::auto_ptr<te::da::DataSet> getData(const te::da::ObjectIdSet* oids,
-                                               te::common::TraverseType travType = te::common::FORWARDONLY) const;
+                                               te::common::TraverseType travType = te::common::FORWARDONLY,
+                                               const te::common::AccessPolicy accessPolicy = te::common::RAccess) const;
 
         bool isValid() const;
 
         void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
         /*!
-          \brief It returns the layer type: FOLDER_LAYER.
+          \brief It returns the layer type: FOLDERLAYER.
 
-          \return The layer type: FOLDER_LAYER.
+          \return The layer type: FOLDERLAYER.
         */
         const std::string& getType() const;
 

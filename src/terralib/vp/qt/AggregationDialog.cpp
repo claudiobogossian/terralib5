@@ -114,8 +114,10 @@ void te::vp::AggregationDialog::setLayers(std::list<te::map::AbstractLayerPtr> l
   std::list<te::map::AbstractLayerPtr>::iterator it = m_layers.begin();
 
   while(it != m_layers.end())
-  {  
-    m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
+  {
+    std::auto_ptr<te::da::DataSetType> dsType = it->get()->getSchema();
+    if(dsType->hasGeom())
+      m_ui->m_layersComboBox->addItem(QString(it->get()->getTitle().c_str()), QVariant(it->get()->getId().c_str()));
     ++it;
   }
 }
@@ -284,7 +286,7 @@ void te::vp::AggregationDialog::setFunctionsByLayer(std::vector<te::dt::Property
   te::da::DataSourcePtr dataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
   const te::da::DataSourceCapabilities dsCapabilities = dataSource->getCapabilities();
 
-  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.supportsSpatialOperators())
+  if(dsCapabilities.supportsPreparedQueryAPI() && dsCapabilities.getQueryCapabilities().supportsSpatialSQLDialect())
   {
     for(size_t i=0; i < properties.size(); ++i)
     {
@@ -648,6 +650,8 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
     return;
   }
 
+  this->setCursor(Qt::WaitCursor);
+
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -740,11 +744,13 @@ void te::vp::AggregationDialog::onOkPushButtonClicked()
   catch(const std::exception& e)
   {
     QMessageBox::information(this, "Aggregation", e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    this->setCursor(Qt::ArrowCursor);
     return;
   }
 
   te::common::ProgressManager::getInstance().removeViewer(id);
-
+  this->setCursor(Qt::ArrowCursor);
   accept();
 }
 

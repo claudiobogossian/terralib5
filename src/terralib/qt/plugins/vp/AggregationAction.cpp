@@ -40,7 +40,7 @@
 te::qt::plugins::vp::AggregationAction::AggregationAction(QMenu* menu)
   : te::qt::plugins::vp::AbstractAction(menu)
 {
-  createAction(tr("Aggregation...").toStdString());
+  createAction(tr("Aggregation...").toStdString(), "vector-processing-aggregation");
 }
 
 te::qt::plugins::vp::AggregationAction::~AggregationAction()
@@ -57,7 +57,7 @@ void te::qt::plugins::vp::AggregationAction::onActionActivated(bool checked)
 
   if(prj)
   {
-    dlg.setLayers(prj->getLayers());
+    dlg.setLayers(prj->getSingleLayers());
   }
 
   if(dlg.exec() != QDialog::Accepted)

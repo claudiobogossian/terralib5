@@ -99,7 +99,8 @@ bool te::ogr::Transactor::isInTransaction() const
 
 std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string& name, 
                                           te::common::TraverseType /*travType*/, 
-                                          bool /*connected*/)
+                                          bool /*connected*/,
+                                          const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
@@ -120,7 +121,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
                                           const te::gm::Envelope* e,
                                           te::gm::SpatialRelation /*r*/,
                                           te::common::TraverseType /*travType*/, 
-                                          bool /*connected*/)
+                                          bool /*connected*/,
+                                          const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
@@ -143,7 +145,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
                                           const te::gm::Geometry* g,
                                           te::gm::SpatialRelation /*r*/,
                                           te::common::TraverseType /*travType*/, 
-                                          bool /*connected*/)
+                                          bool /*connected*/,
+                                          const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
@@ -167,7 +170,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::getDataSet(const std::string
 
 std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& q,
                                       te::common::TraverseType /*travType*/, 
-                                      bool /*connected*/)
+                                      bool /*connected*/,
+                                      const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
@@ -197,7 +201,8 @@ std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const te::da::Select& 
 
 std::auto_ptr<te::da::DataSet> te::ogr::Transactor::query(const std::string& query,
                                       te::common::TraverseType /*travType*/, 
-                                      bool /*connected*/)
+                                      bool /*connected*/,
+                                      const te::common::AccessPolicy)
 {
   if (!m_ogrDs->getOGRDataSource())
     return std::auto_ptr<te::da::DataSet>();
@@ -345,7 +350,8 @@ boost::ptr_vector<te::dt::Property> te::ogr::Transactor::getProperties(const std
 
   if(l!=0)
   {
-    std::auto_ptr<te::da::DataSetType> dt(Convert2TerraLib(l->GetLayerDefn()));
+    int srs = te::ogr::Convert2TerraLibProjection(l->GetSpatialRef());
+    std::auto_ptr<te::da::DataSetType> dt(Convert2TerraLib(l->GetLayerDefn(),srs));
     std::vector<te::dt::Property*> props = dt->getProperties();
     std::vector<te::dt::Property*>::iterator it;
 
