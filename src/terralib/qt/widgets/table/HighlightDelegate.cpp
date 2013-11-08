@@ -26,7 +26,7 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 
-bool toHighlight(te::da::DataSet* dset, const te::da::ObjectIdSet* objs, const int& row)
+bool ToHighlight(te::da::DataSet* dset, const te::da::ObjectIdSet* objs, const int& row)
 {
   if(objs == 0)
     return false;
@@ -39,6 +39,46 @@ bool toHighlight(te::da::DataSet* dset, const te::da::ObjectIdSet* objs, const i
   bool res = objs->contains(oId);
 
   delete oId;
+
+  return res;
+}
+
+bool ToHighlight(te::da::DataSet* dset, const std::vector<size_t>& cols, const std::set<std::string>& data, const int& row)
+{
+  dset->move(row);
+
+  std::string pkey;
+
+  for(size_t i=0; i<cols.size(); i++)
+    pkey += dset->getAsString(cols[i]) + ";";
+
+  return (data.find(pkey) != data.end());
+}
+
+std::string GetOidAsString(const te::da::ObjectId* oid)
+{
+  boost::ptr_vector<te::dt::AbstractData> data = oid->getValue();
+  boost::ptr_vector<te::dt::AbstractData>::iterator it;
+
+  std::string pkey;
+
+  for(it=data.begin(); it!=data.end(); ++it)
+    pkey += it->toString() + ";";
+
+  return pkey;
+}
+
+std::set<std::string> GetOidsAsString(const te::da::ObjectIdSet* objs)
+{
+  std::set<std::string> res;
+
+  if(objs != 0)
+  {
+    std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
+
+    for(it=objs->begin(); it!=objs->end(); ++it)
+      res.insert(GetOidAsString(*it));
+  }
 
   return res;
 }
@@ -62,13 +102,14 @@ void te::qt::widgets::HighlightDelegate::paint(QPainter* painter, const QStyleOp
 
   QStyleOptionViewItem opt = option;
 
-  if(toHighlight(m_dset, m_objs, (int)m_promoter->getLogicalRow(index.row())))
-  {
-    opt.showDecorationSelected = true;
-    opt.state |= QStyle::State_Selected;
-    opt.palette.setColor(QPalette::Highlight, m_color);
-    opt.palette.setColor(QPalette::HighlightedText, Qt::black);
-  }
+  if(m_objs != 0)
+    if(ToHighlight(m_dset, m_objs->getPropertyPos(), m_oids, (int)m_promoter->getLogicalRow(index.row())))
+    {
+      opt.showDecorationSelected = true;
+      opt.state |= QStyle::State_Selected;
+      opt.palette.setColor(QPalette::Highlight, m_color);
+      opt.palette.setColor(QPalette::HighlightedText, Qt::black);
+    }
 
   QItemDelegate::paint(painter, opt, index);
 }
@@ -92,6 +133,8 @@ void te::qt::widgets::HighlightDelegate::setDataSet(te::da::DataSet* dset)
 void te::qt::widgets::HighlightDelegate::setObjectIdSet(const te::da::ObjectIdSet* objs)
 {
   m_objs = objs;
+
+  m_oids = GetOidsAsString(objs);
 }
 
 const te::da::ObjectIdSet* te::qt::widgets::HighlightDelegate::getSelected() const

@@ -496,6 +496,8 @@ te::qt::widgets::DataSetTableView::~DataSetTableView()
 
 void te::qt::widgets::DataSetTableView::setLayer(const te::map::AbstractLayer* layer)
 {
+  ScopedCursor cursor(Qt::WaitCursor);
+
   m_layer = layer;
   setDataSet(m_layer->getData().release());
   setLayerSchema(m_layer->getSchema().get());
@@ -536,6 +538,8 @@ void te::qt::widgets::DataSetTableView::setLayerSchema(const te::da::DataSetType
   m_delegate->setObjectIdSet(objs);
 
   m_model->setPkeysColumns(objs->getPropertyPos());
+
+  m_model->getPromoter()->preProcessKeys(m_dset, objs->getPropertyPos());
 }
 
 void te::qt::widgets::DataSetTableView::highlightOIds(const te::da::ObjectIdSet* oids)
@@ -681,16 +685,13 @@ void te::qt::widgets::DataSetTableView::sortByColumns(const bool& asc)
   if(selCols.empty())
     return;
 
-  m_model->getPromoter()->cleanLogRowsAndProcessKeys();
-
   setDataSet(GetDataSet(m_layer, m_dset, selCols, asc).release());
 
   viewport()->repaint();
 
   setUpdatesEnabled(false);
 
-  if(m_autoScrollEnabled)
-    m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
+   m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
 
   setUpdatesEnabled(true);
 }
@@ -779,28 +780,6 @@ void te::qt::widgets::DataSetTableView::removeColumn(const int& column)
 
 void te::qt::widgets::DataSetTableView::setAutoScrollEnabled(const bool& enable)
 {
-  if(enable)
-  {
-    ScopedCursor cursor(Qt::WaitCursor);
-
-    setEnabled(false);
-    m_model->setEnabled(false);
-    m_popupFilter->setEnabled(false);
-
-    m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
-
-    m_popupFilter->setEnabled(true);
-    m_model->setEnabled(true);
-    setEnabled(true);
-  }
-  else
-  {
-    if(m_isSorted)
-      m_model->getPromoter()->cleanPreproccessKeys();
-    else if(!m_isPromoted)
-      m_model->getPromoter()->cleanLogRowsAndProcessKeys();
-  }
-
   m_autoScrollEnabled = enable;
 }
 
