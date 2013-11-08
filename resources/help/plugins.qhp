@@ -57,19 +57,19 @@
      <files>
       <file>./plugins/index.html</file>
       <file>./plugins/pgis/*.html</file>
-      <file>./plugins/pgis/*.png</file>	  
+      <file>./helpimages/plugins/pgis/*.png</file>	  
       <file>./plugins/ogr/ogr.html</file>
-      <file>./plugins/ogr/*.png</file>	  
+      <file>./helpimages/plugins/ogr/*.png</file>	  
       <file>./plugins/gdal/gdal.html</file>
-      <file>./plugins/gdal/*.png</file>	
+      <file>./helpimages/plugins/gdal/*.png</file>	
       <file>./plugins/ado/*.html</file>
-      <file>./plugins/ado/*.png</file>
+      <file>./helpimages/plugins/ado/*.png</file>
       <file>./plugins/vp/*.html</file>
-      <file>./plugins/vp/*.png</file>
+      <file>./helpimages/plugins/vp/*.png</file>
       <file>./plugins/rp/*.html</file>
-      <file>./plugins/rp/*.png</file>	  
+      <file>./helpimages/plugins/rp/*.png</file>	  
       <file>./plugins/layout/layout.html</file>
-      <file>./plugins/layout/*.png</file>	  
+      <file>./helpimages/plugins/layout/*.png</file>	  
     </files>
   </filterSection>
 </QtHelpProject>

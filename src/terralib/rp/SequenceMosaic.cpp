@@ -841,7 +841,7 @@ namespace te
                 dummyRasterOffsets,
                 dummyRasterScales,
                 0,
-                dynamic_cast< te::gm::LinearRing const* >( mosaicValidDataPol.getExteriorRing() ),
+                &mosaicValidDataPol,
                 *inverseTransPtr ), 
                 "Blender initiazing error" );                    
 

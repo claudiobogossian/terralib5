@@ -197,7 +197,7 @@ te::da::DataSetType* GetDataSetType(const std::string& inDatasetName,
   te::da::DataSetType* dsType = new te::da::DataSetType(outputLayerName);
 
   //Primary key
-  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty("id", te::dt::INT32_TYPE);
+  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(outputLayerName + "_pk", te::dt::INT32_TYPE);
   pkProperty->setAutoNumber(true);
   dsType->add(pkProperty);
 
@@ -315,8 +315,6 @@ bool BufferMemory(const std::string& inDataSetName,
                 outputDataSet->add(dataSetItem);
                 ++pk;
               }
-
-
           }
         }
         else
@@ -335,17 +333,7 @@ bool BufferMemory(const std::string& inDataSetName,
 
             if(outGeom.get() && outGeom->isValid())
             {
-              if(outGeom->getGeomTypeId() == te::gm::MultiPolygonType)
-              {
-                dataSetItem->setGeometry(3, outGeom.release());
-              }
-              else
-              {
-                std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, outGeom->getSRID()));
-                mPolygon->add(outGeom.release());
-                dataSetItem->setGeometry(3, mPolygon.release());
-              }
-
+              dataSetItem->setGeometry(3, outGeom.release());
               outputDataSet->add(dataSetItem);
               ++pk;
             }
@@ -660,7 +648,6 @@ void SetDissolvedBoundaries(te::mem::DataSet* outputDataSet, const int& levels)
 
   for(int i = 1; i <= levels; ++i)
   {
-    //std::vector<te::gm::Geometry*> geomVec;
     te::sam::rtree::Index<te::gm::Geometry*, 4> rtree;
 
     outputDataSet->moveBeforeFirst();
@@ -670,7 +657,6 @@ void SetDissolvedBoundaries(te::mem::DataSet* outputDataSet, const int& levels)
       if(level == i)
       {
         te::gm::Geometry* geom = outputDataSet->getGeometry(geomPos).release();
-        //geomVec.push_back(geom);
 
         std::vector<te::gm::Geometry*> vec;
 
@@ -715,12 +701,20 @@ void SetDissolvedBoundaries(te::mem::DataSet* outputDataSet, const int& levels)
       dataSetItem->setInt32(0, pk); //pk
       dataSetItem->setInt32(1, it->first); //level
       dataSetItem->setDouble(2, 0/*distance*(i)*/); //distance
-      dataSetItem->setGeometry(3, it->second[i]);
-      
+
+      if(it->second[i]->getGeomTypeId() == te::gm::MultiPolygonType)
+      {
+        dataSetItem->setGeometry(3, it->second[i]);
+      }
+      else
+      {
+        std::auto_ptr<te::gm::GeometryCollection> mPolygon(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, it->second[i]->getSRID()));
+        mPolygon->add(it->second[i]);
+        dataSetItem->setGeometry(3, mPolygon.release());
+      }
+
       outputDataSet->add(dataSetItem);
       ++pk;
-
-      //delete it->second[i];
     }
     ++it;
   }

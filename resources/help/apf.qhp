@@ -25,13 +25,13 @@
       <file>./apf/index.html</file>
       <file>./apf/settings/SettingsConfigurations.html</file>
       <file>./apf/settings/display/DisplayConfig.html</file>
-      <file>./apf/settings/display/*.png</file>	  
+      <file>./helpimages/apf/settings/display/*.png</file>	  
       <file>./apf/settings/project/ProjectConfig.html</file>
-	  <file>./apf/settings/project/*.png</file>
+	  <file>./helpimages/apf/settings/project/*.png</file>
       <file>./apf/settings/table/TableConfig.html</file>
-	  <file>./apf/settings/table/*.png</file>
+	  <file>./helpimages/apf/settings/table/*.png</file>
       <file>./apf/settings/toolbar/ToolbarConfig.html</file>
-	  <file>./apf/settings/toolbar/*.png</file>
+	  <file>./helpimages/apf/settings/toolbar/*.png</file>
     </files>
   </filterSection>
 </QtHelpProject>
