@@ -72,9 +72,18 @@ void TsBlender::NoBlendTest()
   
   te::gm::GTParameters transParams;
   transParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
-     te::gm::Coord2D( 777, 748 ), te::gm::Coord2D( 485, 210 ) ) );
-  transParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
-     te::gm::Coord2D( 677, 648 ), te::gm::Coord2D( 385, 110 ) ) );     
+     te::gm::Coord2D( 292, 538 ), te::gm::Coord2D( 0, 0 ) ) );
+  transParams.m_tiePoints.push_back( 
+    te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 
+        transParams.m_tiePoints[ 0 ].first.x + inputRaster2Pointer->getNumberOfColumns() - 1, 
+        transParams.m_tiePoints[ 0 ].first.y + inputRaster2Pointer->getNumberOfRows() - 1
+      ), 
+      te::gm::Coord2D( 
+        inputRaster2Pointer->getNumberOfColumns() - 1,
+        inputRaster2Pointer->getNumberOfRows() - 1 ) 
+      ) 
+    );        
   std::auto_ptr< te::gm::GeometricTransformation > transPtr( 
     te::gm::GTFactory::make( "RST" ) );
   CPPUNIT_ASSERT( transPtr->initialize( transParams ) );    
@@ -178,9 +187,18 @@ void TsBlender::EucBlendTest()
   
   te::gm::GTParameters transParams;
   transParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
-     te::gm::Coord2D( 777, 748 ), te::gm::Coord2D( 485, 210 ) ) );
-  transParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
-     te::gm::Coord2D( 677, 648 ), te::gm::Coord2D( 385, 110 ) ) );     
+     te::gm::Coord2D( 292, 538 ), te::gm::Coord2D( 0, 0 ) ) );
+  transParams.m_tiePoints.push_back( 
+    te::gm::GTParameters::TiePoint( 
+      te::gm::Coord2D( 
+        transParams.m_tiePoints[ 0 ].first.x + inputRaster2Pointer->getNumberOfColumns() - 1, 
+        transParams.m_tiePoints[ 0 ].first.y + inputRaster2Pointer->getNumberOfRows() - 1
+      ), 
+      te::gm::Coord2D( 
+        inputRaster2Pointer->getNumberOfColumns() - 1,
+        inputRaster2Pointer->getNumberOfRows() - 1 ) 
+      ) 
+    );     
   std::auto_ptr< te::gm::GeometricTransformation > transPtr( 
     te::gm::GTFactory::make( "RST" ) );
   CPPUNIT_ASSERT( transPtr->initialize( transParams ) );    
