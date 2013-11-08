@@ -35,7 +35,8 @@
 #include <QtGui/QColor>
     
 // Forward declarations
-class QAction;    
+class QAction;
+class QMainWindow;
 class QStringList;
 class QToolBar;
 class QWidget;
@@ -145,6 +146,20 @@ namespace te
         \param barsParent
       */
       TEQTAFEXPORT std::vector<QToolBar*> ReadToolBarsFromSettings(QWidget* barsParent=0);
+
+      /*
+        \brief
+
+        \param
+      */
+      TEQTAFEXPORT void SaveState(QMainWindow* mainWindow);
+
+      /*
+        \brief
+
+        \param
+      */
+      TEQTAFEXPORT void RestoreState(QMainWindow* mainWindow);
 
       /*
         \brief

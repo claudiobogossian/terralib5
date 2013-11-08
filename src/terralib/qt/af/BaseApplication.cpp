@@ -280,6 +280,11 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
   m_mapSelection->setChecked(true);
 }
 
+void  te::qt::af::BaseApplication::resetState()
+{
+  te::qt::af::RestoreState(this);
+}
+
 void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event* evt)
 {
   switch(evt->m_id)
@@ -1646,6 +1651,7 @@ void te::qt::af::BaseApplication::makeDialog()
   act->setSeparator(true);
 
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
+  lexplorer->setObjectName("LayerExplorerDockWidget");
   te::qt::widgets::LayerTreeView* treeView = lexplorer->getTreeView();
   treeView->setAnimated(true);
 
@@ -1730,6 +1736,7 @@ void te::qt::af::BaseApplication::makeDialog()
 // 3. Symbolizer Explorer
 
   te::qt::widgets::VisualDockWidget* visualDock = new te::qt::widgets::VisualDockWidget(tr("Style Explorer"), this);
+  visualDock->setObjectName("VisualDockWidget");
   QMainWindow::addDockWidget(Qt::RightDockWidgetArea, visualDock);
   visualDock->connect(m_viewStyleExplorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewStyleExplorer->setChecked(false);
@@ -1785,6 +1792,7 @@ void te::qt::af::BaseApplication::makeDialog()
   connect(pvb, SIGNAL(clicked()), this, SLOT(showProgressDockWidget()));
 
   m_progressDockWidget = new QDockWidget(this);
+  m_progressDockWidget->setObjectName("ProgressDockWidget");
   m_progressDockWidget->setWidget(pvw);
   m_progressDockWidget->setMinimumHeight(300);
   m_progressDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
@@ -1821,6 +1829,8 @@ void te::qt::af::BaseApplication::makeDialog()
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
 {
   checkProjectSave();
+
+  te::qt::af::SaveState(this);
 
   //AppClose aclose;
 
