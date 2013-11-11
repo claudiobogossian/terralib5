@@ -54,6 +54,7 @@
 #include <QtCore/QSettings>
 #include <QtGui/QApplication>
 #include <QtGui/QAction>
+#include <QtGui/QMainWindow>
 #include <QtGui/QToolBar>
 
 te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
@@ -383,10 +384,18 @@ std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(QWidget* barsParent)
     {
       sett.setArrayIndex(i);
       QString act = sett.value("action").toString();
-      QAction* a = ApplicationController::getInstance().findAction(act);
+
+      if(act == "")
+      {
+        toolbar->addSeparator();
+      }
+      else
+      {
+        QAction* a = ApplicationController::getInstance().findAction(act);
       
-      if(a != 0)
-        toolbar->addAction(a);
+        if(a != 0)
+          toolbar->addAction(a);
+      }
     }
 
     sett.endArray();
@@ -398,6 +407,26 @@ std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(QWidget* barsParent)
   sett.endGroup();
 
   return bars;
+}
+
+void te::qt::af::SaveState(QMainWindow* mainWindow)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  
+  sett.beginGroup("mainWindow");
+  sett.setValue("geometry", mainWindow->saveGeometry());
+  sett.setValue("windowState", mainWindow->saveState());
+  sett.endGroup();
+}
+
+void te::qt::af::RestoreState(QMainWindow* mainWindow)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("mainWindow");
+  mainWindow->restoreGeometry(sett.value("geometry").toByteArray());
+  mainWindow->restoreState(sett.value("windowState").toByteArray());
+  sett.endGroup();
 }
 
 void te::qt::af::GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved)
@@ -469,6 +498,12 @@ void te::qt::af::CreateDefaultSettings()
   sett.setValue("action", "File.Open Project");
   sett.setArrayIndex(2);
   sett.setValue("action", "File.Save Project");
+  sett.setArrayIndex(3);
+  sett.setValue("action", "");
+  sett.setArrayIndex(4);
+  sett.setValue("action", "Project.New Folder");
+  sett.setArrayIndex(5);
+  sett.setValue("action", "Project.Add Layer.All Sources");
   sett.endArray();
   sett.endGroup();
 
@@ -490,23 +525,27 @@ void te::qt::af::CreateDefaultSettings()
   sett.setValue("name", "Map Tool Bar");
   sett.beginWriteArray("Actions");  
   sett.setArrayIndex(0);
-  sett.setValue("action", "Map.Selection");
-  sett.setArrayIndex(1);
-  sett.setValue("action", "Map.Zoom In");
-  sett.setArrayIndex(2);
-  sett.setValue("action", "Map.Zoom Out");
-  sett.setArrayIndex(3);
-  sett.setValue("action", "Map.Pan");
-  sett.setArrayIndex(4);
-  sett.setValue("action", "Map.Info");
-  sett.setArrayIndex(5);
   sett.setValue("action", "Map.Draw");
-  sett.setArrayIndex(6);
+  sett.setArrayIndex(1);
   sett.setValue("action", "Map.Previous Extent");
-  sett.setArrayIndex(7);
+  sett.setArrayIndex(2);
   sett.setValue("action", "Map.Next Extent");
-  sett.setArrayIndex(8);
+  sett.setArrayIndex(3);
   sett.setValue("action", "Map.Zoom Extent");
+  sett.setArrayIndex(4);
+  sett.setValue("action", "");
+  sett.setArrayIndex(5);
+  sett.setValue("action", "Map.Zoom In");
+  sett.setArrayIndex(6);
+  sett.setValue("action", "Map.Zoom Out");
+  sett.setArrayIndex(7);
+  sett.setValue("action", "Map.Pan");
+  sett.setArrayIndex(8);
+  sett.setValue("action", "");
+  sett.setArrayIndex(9);
+  sett.setValue("action", "Map.Info");
+  sett.setArrayIndex(10);
+  sett.setValue("action", "Map.Selection");
   sett.endArray();
   sett.endGroup();
 

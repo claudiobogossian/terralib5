@@ -75,6 +75,8 @@ namespace te
 
           virtual void init(const std::string& configFile);
 
+          virtual void resetState();
+
         protected slots:
 
           void onApplicationTriggered(te::qt::af::evt::Event* evt);

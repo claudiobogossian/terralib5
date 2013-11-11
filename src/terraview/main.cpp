@@ -87,6 +87,8 @@ int main(int argc, char** argv)
 
     tview.showMaximized();
 
+    tview.resetState();
+
     waitVal = app.exec();
   }
   catch(const std::exception& /*e*/)
