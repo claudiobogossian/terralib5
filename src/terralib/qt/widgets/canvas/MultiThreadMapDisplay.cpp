@@ -96,8 +96,8 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh()
   m_isDrawing = true;
 
   std::size_t i = 0;
-  std::list<te::map::AbstractLayerPtr>::iterator it;
-  for(it = m_visibleLayers.begin(); it != m_visibleLayers.end(); ++it) // for each layer.
+  std::list<te::map::AbstractLayerPtr>::reverse_iterator it;
+  for(it = m_visibleLayers.rbegin(); it != m_visibleLayers.rend(); ++it) // for each layer
   {
     m_threads[i]->draw(it->get(), m_extent, m_srid, size(), i);
     i++;
