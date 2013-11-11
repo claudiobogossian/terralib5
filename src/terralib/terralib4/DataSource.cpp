@@ -26,12 +26,12 @@
 #include "Utils.h"
 
 // TerraLib 4.x
-#include <TeDatabase.h>
-#include <TeDatabaseFactory.h>
-#include <TeDatabaseFactoryParams.h>
-#include <TeDBConnectionsPool.h>
-#include <TeDefines.h>
-#include <TeUpdateDBVersion.h>
+#include <terralib/kernel/TeDatabase.h>
+#include <terralib/kernel/TeDatabaseFactory.h>
+#include <terralib/kernel/TeDatabaseFactoryParams.h>
+#include <terralib/kernel/TeDBConnectionsPool.h>
+#include <terralib/kernel/TeDefines.h>
+#include <terralib/utils/TeUpdateDBVersion.h>
 
 
 te::da::DataSourceCapabilities terralib4::DataSource::sm_capabilities;

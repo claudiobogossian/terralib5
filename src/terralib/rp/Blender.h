@@ -30,8 +30,8 @@
 #include "../raster/Grid.h"
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
+#include "../geometry/Polygon.h"
 #include "../geometry/GeometricTransformation.h"
-#include "../geometry/LinearRing.h"
 
 #include <boost/noncopyable.hpp>
 
@@ -101,8 +101,8 @@ namespace te
           const std::vector< double >& pixelScales1,
           const std::vector< double >& pixelOffsets2,
           const std::vector< double >& pixelScales2,
-          te::gm::LinearRing const * const r1ValidDataDelimiterPtr,
-          te::gm::LinearRing const * const r2ValidDataDelimiterPtr,
+          te::gm::Polygon const * const r1ValidDataDelimiterPtr,
+          te::gm::Polygon const * const r2ValidDataDelimiterPtr,
           const te::gm::GeometricTransformation& geomTransformation );
         
         
@@ -136,10 +136,10 @@ namespace te
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
         te::rst::Raster const* m_raster1Ptr; //!< Input raster 1.
         te::rst::Raster const* m_raster2Ptr; //!< Input raster 2.
-        std::vector< te::gm::Coord2D > m_r1ValidDataDelimiterPoints; //!< A set of coords delimiting the raster 1 valid data area (raster 1 indexed coods).
-        std::vector< te::gm::Coord2D >::size_type m_r1ValidDataDelimiterPointsSize; //!< Size of m_r1ValidDataDelimiterPoints;
-        std::vector< te::gm::Coord2D > m_r2ValidDataDelimiterPoints; //!< A set of coords delimiting the raster 1 valid data area (raster 2 indexed coods).
-        std::vector< te::gm::Coord2D >::size_type m_r2ValidDataDelimiterPointsSize; //!< Size of m_r2ValidDataDelimiterPoints;
+        std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r1IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 1 valid data polygon ( raster 1 indexed coods).
+        std::size_t m_r1IntersectionSegmentsPointsSize; //!< Size of m_r1IntersectionSegmentsPoints;
+        std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r2IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 2 valid data polygon ( raster 1 indexed coods).
+        std::size_t m_r2IntersectionSegmentsPointsSize; //!< Size of m_r2IntersectionSegmentsPoints;
         te::gm::GeometricTransformation* m_geomTransformationPtr; //!< A transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns).
         te::rst::Interpolator::Method m_interpMethod1; //!< The interpolation method to use when reading raster 1 data.
         te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.

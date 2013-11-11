@@ -223,6 +223,26 @@ void te::vp::BufferDialog::onLayerComboBoxChanged(int index)
 
       setAttributesForDistance(m_properties);
 
+      te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(m_selectedLayer.get());
+      te::da::DataSourcePtr inDataSource = te::da::GetDataSource(dsLayer->getDataSourceId(), true);
+      te::da::DataSetType* dsType = te::da::GetDataSetType(dsLayer->getDataSetName(), inDataSource->getId());
+      std::auto_ptr<te::gm::GeometryProperty>geomProp(te::da::GetFirstGeomProperty(dsType));
+
+      te::gm::GeomType gmType = geomProp->getGeometryType();
+      if(gmType == te::gm::PointType || gmType == te::gm::MultiPointType ||
+        gmType == te::gm::LineStringType || gmType == te::gm::MultiLineStringType)
+      {
+        m_ui->m_ruleInOutRadioButton->setDisabled(true);
+        m_ui->m_ruleOnlyInRadioButton->setDisabled(true);
+        m_ui->m_ruleOnlyOutRadioButton->setChecked(true);
+      }
+      else
+      {
+        m_ui->m_ruleInOutRadioButton->setEnabled(true);
+        m_ui->m_ruleOnlyInRadioButton->setEnabled(true);
+        m_ui->m_ruleInOutRadioButton->setChecked(true);
+      }
+
       return;
     }
     ++it;
@@ -384,6 +404,8 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
     return;
   }
 
+  this->setCursor(Qt::WaitCursor);
+  
   //progress
   te::qt::widgets::ProgressViewerDialog v(this);
   int id = te::common::ProgressManager::getInstance().addViewer(&v);
@@ -495,11 +517,13 @@ void te::vp::BufferDialog::onOkPushButtonClicked()
   catch(const std::exception& e)
   {
     QMessageBox::information(this, "Buffer", e.what());
+    te::common::ProgressManager::getInstance().removeViewer(id);
+    this->setCursor(Qt::ArrowCursor);
     return;
   }
 
   te::common::ProgressManager::getInstance().removeViewer(id);
-
+  this->setCursor(Qt::ArrowCursor);
   accept();
 }
 

@@ -15,8 +15,8 @@
    height="24.032194"
    id="svg3915"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
-   sodipodi:docname="srs.svg">
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="srs-unknown.svg">
   <defs
      id="defs3917">
     <linearGradient
@@ -2728,9 +2728,9 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:window-width="1920"
-     inkscape:window-height="945"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-height="1178"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true" />
@@ -2742,7 +2742,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <dc:creator>
           <cc:Agent>
             <dc:title />
@@ -3000,12 +3000,28 @@
           </g>
         </g>
       </g>
-      <path
-         style="fill:#ff0000;stroke:#fd0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
-         d="M 0.04094225,0.04003474 C 24.114986,24.073136 24.074044,24.032194 24.074044,24.032194"
-         id="path3540"
-         inkscape:connector-curvature="0"
-         transform="matrix(-1,0,0,1.0020793,26.67704,244.55605)" />
+      <g
+         transform="matrix(-1.4843259,0,0,1.4874124,1459.4783,-7.510807)"
+         id="g5771">
+        <path
+           inkscape:connector-curvature="0"
+           id="path8011"
+           d="m 972,171 1,-1 7,0 1,1 0,7 -1,1 -7,0 -1,-1 0,-7 z"
+           style="fill:#aa0000;fill-opacity:1;fill-rule:evenodd;stroke:#aa0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           sodipodi:nodetypes="ccccccccc" />
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:none;stroke:#ffffff;stroke-width:1.70000005;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           d="m 974,171.85 5,5"
+           id="path8023"
+           sodipodi:nodetypes="cc" />
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:none;stroke:#ffffff;stroke-width:1.79999995;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           d="m 979,171.85 -5,5"
+           id="path8025"
+           sodipodi:nodetypes="cc" />
+      </g>
     </g>
   </g>
 </svg>

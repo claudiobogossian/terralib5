@@ -126,7 +126,8 @@ std::auto_ptr<te::map::LayerSchema> te::map::FolderLayer::getSchema() const
   return std::auto_ptr<LayerSchema>(0);
 }
 
-std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(te::common::TraverseType /*travType*/) const
+std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(te::common::TraverseType /*travType*/,
+                                                             const te::common::AccessPolicy) const
 {
   return std::auto_ptr<te::da::DataSet>(0);
 }
@@ -134,7 +135,8 @@ std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(te::common::Travers
 std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(const std::string& /*propertyName*/,
                                                              const te::gm::Envelope* /*e*/,
                                                              te::gm::SpatialRelation /*r*/,
-                                                             te::common::TraverseType /*travType*/) const
+                                                             te::common::TraverseType /*travType*/,
+                                                             const te::common::AccessPolicy) const
 {
   return std::auto_ptr<te::da::DataSet>(0);
 }
@@ -142,19 +144,22 @@ std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(const std::string& 
 std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(const std::string& /*propertyName*/,
                                                              const te::gm::Geometry* /*g*/,
                                                              te::gm::SpatialRelation /*r*/,
-                                                             te::common::TraverseType /*travType*/) const
+                                                             te::common::TraverseType /*travType*/,
+                                                             const te::common::AccessPolicy) const
 {
   return std::auto_ptr<te::da::DataSet>(0);
 }
 
 std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(te::da::Expression* /*restriction*/,
-                                                             te::common::TraverseType /*travType*/) const
+                                                             te::common::TraverseType /*travType*/,
+                                                             const te::common::AccessPolicy accessPolicy) const
 {
   return std::auto_ptr<te::da::DataSet>(0);
 }
 
 std::auto_ptr<te::da::DataSet> te::map::FolderLayer::getData(const te::da::ObjectIdSet* oids,
-                                                             te::common::TraverseType travType) const
+                                                             te::common::TraverseType /*travType*/,
+                                                             const te::common::AccessPolicy) const
 {
   return std::auto_ptr<te::da::DataSet>(0);
 }

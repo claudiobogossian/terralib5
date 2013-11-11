@@ -71,11 +71,6 @@
 // libpq
 #include <libpq-fe.h>
 
-
-te::da::DataSourceCapabilities te::pgis::DataSource::sm_capabilities;
-te::da::SQLDialect* te::pgis::DataSource::sm_dialect(0);
-
-
 te::pgis::DataSource::DataSource()
   : m_pool(0),
     m_geomTypeOid(0),
@@ -167,12 +162,12 @@ bool te::pgis::DataSource::isValid() const
 
 const te::da::DataSourceCapabilities& te::pgis::DataSource::getCapabilities() const
 {
-  return sm_capabilities;
+  return *te::pgis::Globals::sm_capabilities;
 }
 
 const te::da::SQLDialect* te::pgis::DataSource::getDialect() const
 {
-  return sm_dialect;
+  return te::pgis::Globals::sm_queryDialect;
 }
 
 unsigned int te::pgis::DataSource::getGeomTypeId() const
@@ -193,16 +188,6 @@ const std::string& te::pgis::DataSource::getCurrentSchema() const
 te::pgis::ConnectionPool* te::pgis::DataSource::getConnPool() const
 {
   return m_pool;
-}
-
-void te::pgis::DataSource::setDialect(te::da::SQLDialect* myDialect)
-{
-  sm_dialect = myDialect;
-}
-
-void te::pgis::DataSource::setCapabilities(const te::da::DataSourceCapabilities& capabilities)
-{
-  sm_capabilities = capabilities;
 }
 
 void te::pgis::DataSource::create(const std::map<std::string, std::string>& dsInfo)

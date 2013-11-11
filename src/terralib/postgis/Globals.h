@@ -35,6 +35,13 @@
 
 namespace te
 {
+  // Forward declaration
+  namespace da
+  { 
+    class DataSourceCapabilities;
+    class SQLDialect;
+  }
+
   namespace pgis
   {
     /*!
@@ -83,6 +90,9 @@ namespace te
         static const std::string sm_geometryTypeName;             //!< The string literal representation for PostGIS base geometry type
 
         static const std::string sm_driverIdentifier;  //!< The PostGIS driver identifier.
+
+        static te::da::SQLDialect* sm_queryDialect;                //!< The query dialect supported by PostGIS driver.
+        static te::da::DataSourceCapabilities* sm_capabilities;    //!< The query dialect supported by PostGIS driver.
     };
 
   } // end namespace pgis

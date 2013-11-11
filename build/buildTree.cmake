@@ -1,5 +1,5 @@
 set (TE_ROOT_INC "${ROOT}/src")
-set (TE_DEFAULT_LOGCONF_FILE "${ROOT}/log/te-log.conf" CACHE STRING "Location of the plugin_info.xsd file."FORCE)
+set (TE_DEFAULT_LOGCONF_FILE "${ROOT}/log/te-log.conf" CACHE STRING "Location of the plugin_info.xsd file." FORCE)
 set (TE_SCHEMA_LOCATION "${ROOT}/schemas/terralib" CACHE STRING "Location of the plugin_info.xsd file." FORCE)
 set (TE_LOGO "${ROOT}/resources/images/png/terralib-globe.png" CACHE STRING "Location of the TerraLib logo image." FORCE)
 set (TE_JSON_FILES_LOCATION "${ROOT}/resources/json" CACHE STRING "Location of the TerraLib   files." FORCE)

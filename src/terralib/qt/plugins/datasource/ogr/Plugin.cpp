@@ -156,7 +156,8 @@ void te::qt::plugins::ogr::Plugin::startup()
     QWidget* parent = act->parentWidget();
     m_showWindow = new QAction(QIcon::fromTheme("file-vector"), tr("Vector File..."), parent);
     m_showWindow->setObjectName("Project.Add Layer.Vector File");
-    mnu->insertAction(act, m_showWindow);
+    //mnu->insertAction(act, m_showWindow);
+    mnu->addAction(m_showWindow);
 
     te::qt::af::AddActionToCustomToolbars(m_showWindow);
 
