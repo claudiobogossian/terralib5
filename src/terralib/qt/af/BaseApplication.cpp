@@ -464,13 +464,13 @@ void te::qt::af::BaseApplication::onAddTabularLayerTriggered()
     {
       if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
       {
-        //te::qt::af::evt::LayerAdded evt(dlg.getTabularLayer());
-        //te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+        te::qt::af::evt::LayerAdded evt(dlg.getDataSetAdapterLayer());
+        te::qt::af::ApplicationController::getInstance().broadcast(&evt);
       }
 
       //te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
       //ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
-  }
+    }
   }
   catch(const std::exception& e)
   {
@@ -1893,7 +1893,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectAddLayerDataset, "datasource", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
   initAction(m_projectNewFolder, "folder-new", "Project.New Folder", tr("&New Folder..."), tr("Add a new folder"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "view-filter", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
-  initAction(m_projectAddLayerTabularDataSet, "view-data-table", "Project.Add Layer.Tabular File", tr("&Tabular File..."), tr("Add a new layer from a Tabular file"), true, false, false, m_menubar);
+  initAction(m_projectAddLayerTabularDataSet, "view-data-table", "Project.Add Layer.Tabular File", tr("&Tabular File..."), tr("Add a new layer from a Tabular file"), true, false, true, m_menubar);
   initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer from the project"), true, false, true, this);
   initAction(m_projectRemoveFolder, "folder-remove", "Project.Remove Folder", tr("Remove &Folder(s)"), tr("Remove folder from the project"), true, false, true, this);
   initAction(m_projectRemoveChart, "chart-pie-remove", "Project.Remove Chart", tr("Remove Chart"), tr("Remove chart from the project"), true, false, true, this);
