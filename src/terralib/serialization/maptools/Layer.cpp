@@ -738,23 +738,26 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   reader.next();
 
   te::da::DataSourcePtr dsc = te::da::GetDataSource(datasourceId);
-
-  std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer(id, title, 0));
-  layer->setSRID(srid);
-  layer->setExtent(*mbr.get());
-  layer->setVisibility(GetVisibility(visible));
-  layer->setDataSetName(dataset);
-  layer->setDataSourceId(datasourceId);
-  layer->setRendererType(rendererId);
-  layer->setStyle(style.release());
-
-  if(grouping)
-    layer->setGrouping(grouping);
-
-  if(chart.get())
-    layer->setChart(chart.release());
-
-  return layer.release();
+  if (dsc.get())
+  {
+    std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer(id, title, 0));
+    layer->setSRID(srid);
+    layer->setExtent(*mbr.get());
+    layer->setVisibility(GetVisibility(visible));
+    layer->setDataSetName(dataset);
+    layer->setDataSourceId(datasourceId);
+    layer->setRendererType(rendererId);
+    layer->setStyle(style.release());
+    
+    if(grouping)
+      layer->setGrouping(grouping);
+    
+    if(chart.get())
+      layer->setChart(chart.release());
+    
+    return layer.release();
+  }
+  return 0;
 }
 
 te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
