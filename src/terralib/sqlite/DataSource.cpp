@@ -48,6 +48,11 @@ class te::sqlite::DataSource::Impl
 {
   public:
 
+    Impl()
+      : m_db(0)
+    {
+    }
+
     ~Impl()
     {
       int ret = SQLITE_OK;

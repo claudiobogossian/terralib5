@@ -68,6 +68,7 @@ namespace te
          */
         //@{
 
+        void visit(const te::da::Function& visited);
         void visit(const te::da::LiteralByteArray& visited);
         void visit(const te::da::LiteralDateTime& visited);
         void visit(const te::da::LiteralEnvelope& visited);
