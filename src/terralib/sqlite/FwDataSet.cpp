@@ -25,41 +25,79 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "Config.h"
+#include "DataSourceTransactor.h"
 #include "FwDataSet.h"
+#include "Utils.h"
 
-te::sqlite::FwDataSet::FwDataSet()
+// SQLite
+#include <sqlite3.h>
+
+class te::sqlite::FwDataSet::Impl
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  public:
+
+    Impl(sqlite3_stmt* stmt, DataSourceTransactor* t);
+    
+    ~Impl();
+
+    sqlite3_stmt* m_stmt;
+    DataSourceTransactor* m_parent;
+    te::da::DataSetType* m_dt;
+};
+
+te::sqlite::FwDataSet::Impl::Impl(sqlite3_stmt* stmt, DataSourceTransactor* t)
+  : m_stmt(stmt), m_parent(t), m_dt(0)
+{
+}
+
+te::sqlite::FwDataSet::Impl::~Impl()
+{
+  delete m_dt;
+
+  int ret = SQLITE_OK;
+
+  ret = sqlite3_finalize(m_stmt);
+
+  assert(ret == SQLITE_OK);
+}
+
+te::sqlite::FwDataSet::FwDataSet(sqlite3_stmt* stmt, DataSourceTransactor* t)
+  : m_pImpl(0)
+{
+  m_pImpl= new Impl(stmt, t);
+
+  m_pImpl->m_dt = Convert2TerraLib(m_pImpl->m_stmt);
 }
 
 te::sqlite::FwDataSet::~FwDataSet()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  delete m_pImpl;
 }
 
 te::common::TraverseType te::sqlite::FwDataSet::getTraverseType() const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return te::common::FORWARDONLY;
 }
 
 te::common::AccessPolicy te::sqlite::FwDataSet::getAccessPolicy() const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return te::common::RAccess;
 }
 
 std::size_t te::sqlite::FwDataSet::getNumProperties() const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return m_pImpl->m_dt->size();
 }
 
 int te::sqlite::FwDataSet::getPropertyDataType(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return m_pImpl->m_dt->getProperty(i)->getType();
 }
 
 std::string te::sqlite::FwDataSet::getPropertyName(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return m_pImpl->m_dt->getProperty(i)->getName();
 }
 
 std::string te::sqlite::FwDataSet::getDatasetNameOfProperty(std::size_t i) const
@@ -89,7 +127,7 @@ std::auto_ptr<te::gm::Envelope> te::sqlite::FwDataSet::getExtent(std::size_t i)
 
 bool te::sqlite::FwDataSet::moveNext()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return (sqlite3_step(m_pImpl->m_stmt) == SQLITE_ROW);
 }
 
 bool te::sqlite::FwDataSet::movePrevious()
@@ -104,7 +142,12 @@ bool te::sqlite::FwDataSet::moveBeforeFirst()
 
 bool te::sqlite::FwDataSet::moveFirst()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  int ret = sqlite3_reset(m_pImpl->m_stmt);
+
+  if(ret != SQLITE_OK)
+    return false;
+
+  return (sqlite3_step(m_pImpl->m_stmt) == SQLITE_ROW);
 }
 
 bool te::sqlite::FwDataSet::moveLast()
@@ -139,52 +182,58 @@ bool te::sqlite::FwDataSet::isAfterEnd() const
 
 char te::sqlite::FwDataSet::getChar(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  int value = sqlite3_column_int(m_pImpl->m_stmt, i);
+
+  return static_cast<char>(value);
 }
 
 unsigned char te::sqlite::FwDataSet::getUChar(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  int value = sqlite3_column_int(m_pImpl->m_stmt, i);
+
+  return static_cast<unsigned char>(value);
 }
 
 boost::int16_t te::sqlite::FwDataSet::getInt16(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return static_cast<boost::int16_t>(sqlite3_column_int(m_pImpl->m_stmt, i));
 }
 
 boost::int32_t te::sqlite::FwDataSet::getInt32(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return sqlite3_column_int(m_pImpl->m_stmt, i);
 }
 
 boost::int64_t te::sqlite::FwDataSet::getInt64(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return sqlite3_column_int64(m_pImpl->m_stmt, i);
 }
 
 bool te::sqlite::FwDataSet::getBool(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return sqlite3_column_int(m_pImpl->m_stmt, i) == TE_SQLITE_BOOL_TRUE;
 }
 
 float te::sqlite::FwDataSet::getFloat(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return static_cast<float>(sqlite3_column_double(m_pImpl->m_stmt, i));
 }
 
 double te::sqlite::FwDataSet::getDouble(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return sqlite3_column_double(m_pImpl->m_stmt, i);
 }
 
 std::string te::sqlite::FwDataSet::getNumeric(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  std::string value((const char*)(sqlite3_column_text(m_pImpl->m_stmt, i)));
+
+  return value; 
 }
 
 std::string te::sqlite::FwDataSet::getString(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return (const char*)(sqlite3_column_text(m_pImpl->m_stmt, i));
 }
 
 std::auto_ptr<te::dt::ByteArray> te::sqlite::FwDataSet::getByteArray(std::size_t i) const
@@ -214,6 +263,6 @@ std::auto_ptr<te::dt::Array> te::sqlite::FwDataSet::getArray(std::size_t i) cons
 
 bool te::sqlite::FwDataSet::isNull(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return sqlite3_column_type(m_pImpl->m_stmt, i) == SQLITE_NULL;
 }
 

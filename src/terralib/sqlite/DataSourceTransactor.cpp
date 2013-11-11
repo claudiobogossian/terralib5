@@ -25,50 +25,110 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../dataaccess/query/Select.h"
+#include "../memory/DataSet.h"
+#include "BatchExecutor.h"
+#include "DataSource.h"
+#include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
+#include "FwDataSet.h"
+#include "SQLVisitor.h"
+
+// Boost
+#include <boost/format.hpp>
+
+// SQLite
+#include <sqlite3.h>
+
+class te::sqlite::DataSourceTransactor::Impl
+{
+  public:
+
+    Impl(DataSource* parent, sqlite3* db);
+
+    sqlite3_stmt* queryLite(const std::string& query);
+
+    DataSource* m_parent;
+    sqlite3* m_db;
+    bool m_isInTransaction;
+};
+
+te::sqlite::DataSourceTransactor::Impl::Impl(DataSource* parent, sqlite3* db)
+  : m_parent(parent),
+    m_db(db),
+    m_isInTransaction(false)
+{
+}
+
+sqlite3_stmt* te::sqlite::DataSourceTransactor::Impl::queryLite(const std::string& query)
+{
+  sqlite3_stmt* stmt = 0;
+
+  int ret = sqlite3_prepare_v2(m_db, query.c_str(), -1, &stmt, 0);
+
+  if(ret != SQLITE_OK)
+  {
+    if(stmt)
+      sqlite3_finalize(stmt);
+
+    throw te::common::Exception((boost::format(TR_COMMON("Could not excute the given query due to the following error: %1%.")) % sqlite3_errmsg(m_db)).str());
+  }
+
+  return stmt;
+}
 
 te::sqlite::DataSourceTransactor::DataSourceTransactor(DataSource* parent, sqlite3* db)
+  : m_pImpl(0)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  m_pImpl = new Impl(parent, db);
 }
 
 te::sqlite::DataSourceTransactor::~DataSourceTransactor()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  delete m_pImpl;
 }
 
 te::da::DataSource* te::sqlite::DataSourceTransactor::getDataSource() const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return m_pImpl->m_parent;
 }
 
 void te::sqlite::DataSourceTransactor::begin()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  execute("BEGIN TRANSACTION");
+  m_pImpl->m_isInTransaction = true;
 }
 
 void te::sqlite::DataSourceTransactor::commit()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  m_pImpl->m_isInTransaction = false;
+  execute("COMMIT TRANSACTION");
 }
 
 void te::sqlite::DataSourceTransactor::rollBack()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  m_pImpl->m_isInTransaction = false;
+
+  char* errmsg = 0;
+
+  sqlite3_exec(m_pImpl->m_db, "ROLLBACK TRANSACTION", 0, 0, &errmsg);
 }
 
 bool te::sqlite::DataSourceTransactor::isInTransaction() const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return m_pImpl->m_isInTransaction;
 }
 
 std::auto_ptr<te::da::DataSet>
-te::sqlite::DataSourceTransactor::getDataSet(const std::string& name, 
-                                             te::common::TraverseType travType, 
+te::sqlite::DataSourceTransactor::getDataSet(const std::string& name,
+                                             te::common::TraverseType travType,
                                              bool connected,
-                                             const te::common::AccessPolicy accessPolicy)
+                                             const te::common::AccessPolicy /*accessPolicy*/)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  std::string sql("SELECT * FROM ");
+              sql += name;
+
+  return query(sql, travType, connected);
 }
 
 std::auto_ptr<te::da::DataSet>
@@ -99,18 +159,32 @@ std::auto_ptr<te::da::DataSet>
 te::sqlite::DataSourceTransactor::query(const te::da::Select& q,
                                         te::common::TraverseType travType,
                                         bool connected,
-                                        const te::common::AccessPolicy accessPolicy)
+                                        const te::common::AccessPolicy /*accessPolicy*/)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  std::string sql;
+
+  SQLVisitor visitor(*(m_pImpl->m_parent->getDialect()), sql);
+  q.accept(visitor);
+ 
+  return query(sql, travType, connected);
 }
 
 std::auto_ptr<te::da::DataSet>
 te::sqlite::DataSourceTransactor::query(const std::string& query,
                                         te::common::TraverseType travType,
                                         bool connected,
-                                        const te::common::AccessPolicy accessPolicy)
+                                        const te::common::AccessPolicy /*accessPolicy*/)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  sqlite3_stmt* result = m_pImpl->queryLite(query);
+
+  std::auto_ptr<te::da::DataSet> litedataset(new FwDataSet(result, this));
+
+  if(travType == te::common::FORWARDONLY)
+    return litedataset;
+
+  std::auto_ptr<te::da::DataSet> fatdataset(new te::mem::DataSet(*litedataset, true));
+
+  return fatdataset;
 }
 
 void te::sqlite::DataSourceTransactor::execute(const te::da::Query& command)
@@ -120,7 +194,20 @@ void te::sqlite::DataSourceTransactor::execute(const te::da::Query& command)
 
 void te::sqlite::DataSourceTransactor::execute(const std::string& command)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  char* errmsg = 0;
+
+  int rc = sqlite3_exec(m_pImpl->m_db, command.c_str(), 0, 0, &errmsg);
+
+  if(rc != SQLITE_OK)
+  {
+    boost::format msg(TR_COMMON("Could not execute the SQL command due to the following error: %1%."));
+    
+    msg = msg % errmsg;
+
+    sqlite3_free(errmsg);
+
+    throw te::common::Exception(msg.str());
+  }
 }
 
 std::auto_ptr<te::da::PreparedQuery>
@@ -131,12 +218,12 @@ te::sqlite::DataSourceTransactor::getPrepared(const std::string& qName)
 
 std::auto_ptr<te::da::BatchExecutor> te::sqlite::DataSourceTransactor::getBatchExecutor()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return std::auto_ptr<te::da::BatchExecutor>(new BatchExecutor(this));
 }
 
 void te::sqlite::DataSourceTransactor::cancel()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  sqlite3_interrupt(m_pImpl->m_db);
 }
 
 boost::int64_t te::sqlite::DataSourceTransactor::getLastGeneratedId()
@@ -162,7 +249,9 @@ bool te::sqlite::DataSourceTransactor::isPropertyNameValid(const std::string& pr
 std::vector<std::string>
 te::sqlite::DataSourceTransactor::getDataSetNames()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  return cloader.getDataSetNames();
 }
 
 std::size_t te::sqlite::DataSourceTransactor::getNumberOfDataSets()
@@ -173,13 +262,17 @@ std::size_t te::sqlite::DataSourceTransactor::getNumberOfDataSets()
 std::auto_ptr<te::da::DataSetType>
 te::sqlite::DataSourceTransactor::getDataSetType(const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  return std::auto_ptr<te::da::DataSetType>(cloader.getDataSetType(name));
 }
 
 boost::ptr_vector<te::dt::Property>
 te::sqlite::DataSourceTransactor::getProperties(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  return cloader.getProperties(datasetName);
 }
 
 std::auto_ptr<te::dt::Property>
@@ -392,7 +485,9 @@ std::size_t te::sqlite::DataSourceTransactor::getNumberOfItems(const std::string
 
 bool te::sqlite::DataSourceTransactor::hasDataSets()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  return cloader.hasDataSets();
 }
 
 bool te::sqlite::DataSourceTransactor::dataSetExists(const std::string& name)

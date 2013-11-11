@@ -29,15 +29,23 @@
 // TerraLib
 #include "../dataaccess/dataset/DataSet.h"
 
+extern "C"
+{
+  struct sqlite3_stmt;
+  typedef struct sqlite3_stmt sqlite3_stmt;
+}
+
 namespace te
 {
   namespace sqlite
   {
+    class DataSourceTransactor;
+
     class FwDataSet : public te::da::DataSet
     {
       public:
 
-        FwDataSet();
+        FwDataSet(sqlite3_stmt* stmt, DataSourceTransactor* t);
 
         ~FwDataSet();
 
@@ -112,6 +120,10 @@ namespace te
         std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
         bool isNull(std::size_t i) const;
+
+        class Impl;
+
+        Impl* m_pImpl;
     };
 
   } // end namespace sqlite

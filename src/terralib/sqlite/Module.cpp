@@ -24,6 +24,8 @@
 */
 
 // TerraLib
+#include "../dataaccess/datasource/DataSourceFactory.h"
+#include "DataSourceFactory.h"
 #include "Module.h"
 
 // Boost
@@ -57,6 +59,8 @@ void te::sqlite::Module::startup()
 #ifdef TE_ENABLE_SPATIALITE
   spatialite_init(0);
 #endif
+
+  te::da::DataSourceFactory::add("SQLITE", Build);
 
   m_initialized = true;
 }
