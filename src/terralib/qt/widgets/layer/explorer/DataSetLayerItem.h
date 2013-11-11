@@ -30,6 +30,9 @@
 #include "../../../../maptools/DataSetLayer.h"
 #include "AbstractTreeItem.h"
 
+// Qt
+#include <QtCore/QString>
+
 namespace te
 {
   namespace qt
@@ -71,6 +74,8 @@ namespace te
           bool hasGroupingItem() const;
 
           bool hasChartItem() const;
+
+          QString buildToolTip() const;
 
         private:
 
