@@ -24,27 +24,59 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
+#include "Band.h"
+#include "Exception.h"
 #include "Raster.h"
+#include "Utils.h"
 
-terralib4::Raster::Raster()
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
+
+// TerraLib 4.x
+#include <terralib/kernel/TeRaster.h>
+
+class terralib4::Raster::Impl
 {
-  throw;
+  public:
+
+    Impl(TeRaster* iraster);
+
+    TeRaster* m_raster;
+
+    boost::ptr_vector<Band> m_bands;
+};
+
+terralib4::Raster::Impl::Impl(TeRaster* iraster)
+  : m_raster(iraster)
+{
 }
 
-terralib4::Raster::Raster(te::rst::Grid* grid, te::common::AccessPolicy p)
+terralib4::Raster::Raster(TeRaster* iraster)
+  : m_pImpl(0)
 {
-  throw;
+  m_pImpl = new Impl(iraster);
+
+  for(std::size_t i = 0; i != getNumberOfBands(); ++i)
+  {
+    m_pImpl->m_bands.push_back(new Band(this, iraster, i));
+  }
+}
+
+terralib4::Raster::Raster(te::rst::Grid* /*grid*/, te::common::AccessPolicy /*p*/)
+{
+  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
 }
 
 terralib4::Raster::~Raster()
 {
-  throw;
+  delete m_pImpl;
 }
 
-void terralib4::Raster::open(const std::map<std::string, std::string>& rinfo,
-                             te::common::AccessPolicy p)
+void terralib4::Raster::open(const std::map<std::string, std::string>& /*rinfo*/,
+                             te::common::AccessPolicy /*p*/)
 {
-  throw;
+  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
 }
 
 std::map<std::string, std::string> terralib4::Raster::getInfo() const
@@ -54,35 +86,37 @@ std::map<std::string, std::string> terralib4::Raster::getInfo() const
 
 std::size_t terralib4::Raster::getNumberOfBands() const
 {
-  throw;
+  return m_pImpl->m_raster->nBands();
 }
 
 int terralib4::Raster::getBandDataType(std::size_t i) const
 {
-  throw;
+  TeDataType dt = m_pImpl->m_raster->params().dataType_[i];
+
+  return Convert2T5(dt);
 }
 
 const te::rst::Band* terralib4::Raster::getBand(std::size_t i) const
 {
-  throw;
+  return &m_pImpl->m_bands[i];
 }
 
 te::rst::Band* terralib4::Raster::getBand(std::size_t i)
 {
-  throw;
+  return &m_pImpl->m_bands[i];
 }
 
 const te::rst::Band& terralib4::Raster::operator[](std::size_t i) const
 {
-  throw;
+  return m_pImpl->m_bands[i];
 }
 
 te::rst::Band& terralib4::Raster::operator[](std::size_t i)
 {
-  throw;
+  return m_pImpl->m_bands[i];
 }
 
 te::dt::AbstractData* terralib4::Raster::clone() const
 {
-  throw;
+  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
 }

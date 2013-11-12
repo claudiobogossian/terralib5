@@ -236,6 +236,45 @@ te::gm::GeomType terralib4::Convert2T5GeomType(TeGeomRep type)
   }
 }
 
+int terralib4::Convert2T5(TeDataType dt)
+{
+  switch(dt)
+  {
+    case TeBIT:
+      return te::dt::BIT_TYPE;
+
+    case TeUNSIGNEDCHAR:
+      return te::dt::UCHAR_TYPE;
+
+    case TeCHAR:
+      return te::dt::CHAR_TYPE;
+
+    case TeUNSIGNEDSHORT:
+      return te::dt::UINT16_TYPE;
+
+    case TeSHORT:
+      return te::dt::INT16_TYPE;
+
+    case TeINTEGER:
+      return te::dt::INT32_TYPE;
+
+    case TeUNSIGNEDLONG:
+      return te::dt::UINT32_TYPE;
+
+    case TeLONG:
+      return te::dt::INT32_TYPE;  // see TerraLib 4.x => TeRasterParams.cpp elementSize method => sizeof(long) => 4bytes!
+
+    case TeFLOAT:
+      return te::dt::FLOAT_TYPE;
+
+    case TeDOUBLE:
+      return te::dt::DOUBLE_TYPE;
+
+    default:
+      return te::dt::UNKNOWN_TYPE;
+  }
+}
+
 TeAttrDataType terralib4::Convert2T4(int type)
 {
   switch(type)

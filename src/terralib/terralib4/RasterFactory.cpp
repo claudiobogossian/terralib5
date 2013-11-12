@@ -24,7 +24,9 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 #include "Config.h"
+#include "Exception.h"
 #include "Raster.h"
 #include "RasterFactory.h"
 
@@ -61,13 +63,9 @@ terralib4::RasterFactory::RasterFactory()
 {
 }
 
-te::rst::Raster* terralib4::RasterFactory::create(te::rst::Grid* g, const std::vector<te::rst::BandProperty*> bands, const std::map<std::string, std::string>& rinfo, void* h, void (*deleter)(void*))
+te::rst::Raster* terralib4::RasterFactory::create(te::rst::Grid* g, const std::vector<te::rst::BandProperty*> bands, const std::map<std::string, std::string>& /*rinfo*/, void* h, void (*deleter)(void*))
 {
-  std::auto_ptr<Raster> raster(new Raster);
-
-  //raster->create(g, bands, rinfo, h, deleter);
-
-  return raster.release();
+  throw Exception(TR_TERRALIB4("This driver doesn't support raster creation!"));
 }
 
 te::rst::Raster* terralib4::RasterFactory::build()
@@ -79,7 +77,7 @@ std::map<std::string, std::string> terralib4::RasterFactory::getCapabilities() c
 {
   std::map<std::string, std::string> capabilities;
 
-  capabilities["supported_formats"] = "tif,jpg,png,hdf";
+  capabilities["supported_formats"] = "tiff,jpeg";
 
   return capabilities;
 }

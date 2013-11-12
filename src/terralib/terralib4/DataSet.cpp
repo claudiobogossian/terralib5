@@ -103,11 +103,12 @@ std::size_t terralib4::DataSet::getNumProperties() const
 
 int terralib4::DataSet::getPropertyDataType(std::size_t i) const
 {
-  if(i >= m_nCols && (m_layer->hasGeometry(TePOLYGONS) || 
-    m_layer->hasGeometry(TeLINES) ||
-    m_layer->hasGeometry(TePOINTS) ||
-    m_layer->hasGeometry(TeNODES) ||
-    m_layer->hasGeometry(TeCELLS)))
+  if((i >= static_cast<std::size_t>(m_nCols)) &&
+     (m_layer->hasGeometry(TePOLYGONS) || 
+      m_layer->hasGeometry(TeLINES) ||
+      m_layer->hasGeometry(TePOINTS) ||
+      m_layer->hasGeometry(TeNODES) ||
+      m_layer->hasGeometry(TeCELLS)))
   {
     return te::dt::GEOMETRY_TYPE;
   }
