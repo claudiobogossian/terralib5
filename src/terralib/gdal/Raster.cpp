@@ -41,6 +41,7 @@
 #include "Exception.h"
 #include "Raster.h"
 #include "Utils.h"
+#include "DataSetsManager.h"
 
 // STL
 #include <cassert>
@@ -68,6 +69,13 @@ te::gdal::Raster::Raster(const std::string& rinfo, te::common::AccessPolicy p)
     m_deleter( 0 )
 {
   GDALAllRegister();
+  
+  m_myURI = rinfo;
+  
+  if( !DataSetsManager::getInstance().incrementUseCounter( m_myURI ) )
+  {
+    throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
+  }  
 
   m_gdataset = te::gdal::GetRasterHandle(rinfo, m_policy);
 
@@ -89,16 +97,16 @@ te::gdal::Raster::Raster(te::rst::Grid* grid,
   create(grid, bprops, optParams, 0, 0);
 }
 
-te::gdal::Raster::Raster(GDALDataset* gdataset, te::common::AccessPolicy p)
-  : te::rst::Raster(0, p),
-    m_gdataset(gdataset)
-{
-  m_grid = GetGrid(m_gdataset);
-
-  GetBands(this, m_bands);
-
-  m_name = m_gdataset->GetDescription();
-}
+// te::gdal::Raster::Raster(GDALDataset* gdataset, te::common::AccessPolicy p)
+//   : te::rst::Raster(0, p),
+//     m_gdataset(gdataset)
+// {
+//   m_grid = GetGrid(m_gdataset);
+// 
+//   GetBands(this, m_bands);
+// 
+//   m_name = m_gdataset->GetDescription();
+// }
 
 te::gdal::Raster::Raster(const Raster& rhs)
   : te::rst::Raster(rhs),
@@ -107,6 +115,13 @@ te::gdal::Raster::Raster(const Raster& rhs)
 {
   if(rhs.m_gdataset)
   {
+    m_myURI = rhs.m_gdataset->GetDescription();
+    
+    if( !DataSetsManager::getInstance().incrementUseCounter( m_myURI ) )
+    {
+      throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
+    }    
+    
     GDALDriver* driverPtr = rhs.m_gdataset->GetDriver();
 
     char** papszOptions = 0;
@@ -153,6 +168,8 @@ te::gdal::Raster::~Raster()
     // deleting who?
     m_deleter = 0;
   }
+  
+  DataSetsManager::getInstance().decrementUseCounter( m_myURI );
 }
 
 void te::gdal::Raster::open(const std::map<std::string, std::string>& rinfo, te::common::AccessPolicy p)
@@ -167,6 +184,13 @@ void te::gdal::Raster::open(const std::map<std::string, std::string>& rinfo, te:
     if(it == rinfo.end())
       throw Exception(TR_GDAL("At least the URI or SOURCE parameter must be informed!"));
   }
+  
+  m_myURI = it->second;
+  
+  if( !DataSetsManager::getInstance().incrementUseCounter( m_myURI ) )
+  {
+    throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
+  }    
 
   m_gdataset = GetRasterHandle(it->second, p);
 
@@ -424,6 +448,22 @@ void te::gdal::Raster::create(te::rst::Grid* g,
   }
   else
   {
+    std::map<std::string, std::string>::const_iterator it = rinfo.find("URI");
+    if(it == rinfo.end())
+    {
+      it = rinfo.find("SOURCE");
+
+      if(it == rinfo.end())
+        throw Exception(TR_GDAL("At least the URI or SOURCE parameter must be informed!"));
+    }    
+    
+    m_myURI = it->second;
+    
+    if( !DataSetsManager::getInstance().incrementUseCounter( m_myURI ) )
+    {
+      throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
+    }      
+    
     m_gdataset = te::gdal::CreateRaster(g, bands, rinfo);
 
     te::common::FreeContents(bands);

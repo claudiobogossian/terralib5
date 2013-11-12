@@ -28,6 +28,7 @@
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../../../dataaccess/query/FunctionNames.h"
 #include "../../../dataaccess/query/QueryCapabilities.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/DataSetLayer.h"
@@ -158,6 +159,20 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
   {
     vecSpatialOperators.push_back(*it);
     ++it;
+  }
+
+  // For while! TODO: Revision!!!
+  if(vecSpatialOperators.size() == 1 && vecSpatialOperators[0] == te::da::FunctionNames::sm_ST_EnvelopeIntersects)
+  {
+    vecSpatialOperators.clear();
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Intersects);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Disjoint);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Touches);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Overlaps);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Crosses);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Within);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Contains);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Equals);
   }
 
   m_whereClauseWidget->setSpatialOperatorsList(vecSpatialOperators);
