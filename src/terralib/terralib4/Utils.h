@@ -99,6 +99,8 @@ namespace terralib4
 
   TeAttrDataType Convert2T4GeomType(te::gm::GeomType type);
 
+  int Convert2T5(TeDataType dt);
+
   std::auto_ptr<te::gm::Envelope> Convert2T5(TeBox box);
 
   std::auto_ptr<te::da::DataSetType> Convert2T5(TeTable table);

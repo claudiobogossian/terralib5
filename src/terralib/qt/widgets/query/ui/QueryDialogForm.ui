@@ -127,9 +127,9 @@
           </spacer>
          </item>
          <item row="0" column="2">
-          <widget class="QPushButton" name="m_okPushButton">
+          <widget class="QPushButton" name="m_applyPushButton">
            <property name="text">
-            <string>Ok</string>
+            <string>Apply</string>
            </property>
           </widget>
          </item>
@@ -150,7 +150,7 @@
  </widget>
  <tabstops>
   <tabstop>m_inputLayerComboBox</tabstop>
-  <tabstop>m_okPushButton</tabstop>
+  <tabstop>m_applyPushButton</tabstop>
   <tabstop>m_cancelPushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
  </tabstops>

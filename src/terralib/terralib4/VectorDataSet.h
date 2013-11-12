@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/terralib4/DataSet.h
+  \file terralib/terralib4/VectorDataSet.h
 
   \brief ????
 */
 
-#ifndef __TERRALIB_TERRALIB4_INTERNAL_DATASET_H
-#define __TERRALIB_TERRALIB4_INTERNAL_DATASET_H
+#ifndef __TERRALIB_TERRALIB4_INTERNAL_VECTORDATASET_H
+#define __TERRALIB_TERRALIB4_INTERNAL_VECTORDATASET_H
 
 // TerraLib
 #include "../dataaccess/dataset/DataSet.h"
@@ -52,19 +52,19 @@ class TeDatabasePortal;
 namespace terralib4
 {
   /*!
-    \class DataSet
+    \class VectorDataSet
 
-    \brief Implementation of a dataset for the ADO driver.
+    \brief Implementation of a dataset for the TerraLib 4 driver.
 
     \sa te::da::DataSet
   */
-  class TETERRALIB4EXPORT DataSet : public te::da::DataSet
+  class TETERRALIB4EXPORT VectorDataSet : public te::da::DataSet
   {
     public:
 
-      DataSet(TeLayer* layer);
+      VectorDataSet(TeLayer* layer);
 
-      ~DataSet();
+      ~VectorDataSet();
 
       te::common::TraverseType getTraverseType() const;
 
@@ -152,7 +152,7 @@ namespace terralib4
 }   // end namespace te
 
 
-#endif  // __TERRALIB_TERRALIB4_INTERNAL_DATASET_H
+#endif  // __TERRALIB_TERRALIB4_INTERNAL_VECTORDATASET_H
 
 
 

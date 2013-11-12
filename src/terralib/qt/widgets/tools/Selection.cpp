@@ -66,12 +66,12 @@ te::qt::widgets::Selection::Selection(te::qt::widgets::MapDisplay* display, cons
   // To listen keyboard events
   m_display->setFocusPolicy(Qt::ClickFocus);
   m_display->setFocus(Qt::OtherFocusReason);
-  m_display->grabKeyboard();
+  //m_display->grabKeyboard();
 }
 
 te::qt::widgets::Selection::~Selection()
 {
-  m_display->releaseKeyboard();
+  //m_display->releaseKeyboard();
 }
 
 bool te::qt::widgets::Selection::eventFilter(QObject* watched, QEvent* e)

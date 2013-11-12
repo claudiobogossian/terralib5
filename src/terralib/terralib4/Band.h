@@ -29,13 +29,17 @@
 // TerraLib
 #include "../raster/Band.h"
 
+class TeRaster;
+
 namespace terralib4
 {
+  class Raster;
+
   class Band : public te::rst::Band
   {
     public:
 
-      Band(te::rst::BandProperty* p, std::size_t idx);
+      Band(Raster* parent, TeRaster* iraster, std::size_t idx);
 
       ~Band();
 
@@ -54,6 +58,12 @@ namespace terralib4
       void* read(int x, int y);
 
       void write(int x, int y, void* buffer);
+
+    private:
+
+      class Impl;
+
+      Impl* m_pImpl;
   };
 
 }   // end namespace terralib4

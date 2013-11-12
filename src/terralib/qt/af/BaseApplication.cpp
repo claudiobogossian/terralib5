@@ -625,7 +625,17 @@ void te::qt::af::BaseApplication::onOpenProjectTriggered()
   if(file.isEmpty())
     return;
 
-  openProject(file);
+  try
+  {
+    openProject(file);
+  }
+  catch(const te::common::Exception& e)
+  {
+    QString msg = tr("Fail to open project.");
+    msg += " ";
+    msg += e.what();
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
+  }
 }
 
 void te::qt::af::BaseApplication::onSaveProjectTriggered()
@@ -1255,14 +1265,15 @@ void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
 
 void te::qt::af::BaseApplication::onQueryLayerTriggered()
 {
-  te::qt::widgets::QueryDialog dlg(this);
+  te::qt::widgets::QueryDialog* dlg = new te::qt::widgets::QueryDialog(this);
+  dlg->setAttribute(Qt::WA_DeleteOnClose, true);
 
   if(m_project)
-    dlg.setList(m_project->getTopLayers());
+    dlg->setList(m_project->getTopLayers());
 
-  connect(&dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
+  connect(dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
 
-  dlg.exec();
+  dlg->show();
 }
 
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)

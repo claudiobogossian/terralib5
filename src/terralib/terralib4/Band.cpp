@@ -24,32 +24,53 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 #include "Band.h"
+#include "Exception.h"
+#include "Raster.h"
 
-terralib4::Band::Band(te::rst::BandProperty* p, std::size_t idx)
-  : te::rst::Band(p, idx)
+// TerraLib 4.x
+#include <terralib/kernel/TeRaster.h>
+
+class terralib4::Band::Impl
 {
-  throw;
+  public:
+
+    Impl(Raster* parent, TeRaster* iraster);
+
+    Raster* m_parent;
+    TeRaster* m_raster;
+};
+
+terralib4::Band::Impl::Impl(Raster* parent, TeRaster* iraster)
+  : m_parent(parent), m_raster(iraster)
+{
+}
+
+terralib4::Band::Band(Raster* parent, TeRaster* iraster, std::size_t idx)
+  : te::rst::Band(0, idx), m_pImpl(0)
+{
+  m_pImpl = new Impl(parent, iraster);
 }
 
 terralib4::Band::~Band()
 {
-  throw;
+  delete m_pImpl;
 }
 
 te::rst::Raster* terralib4::Band::getRaster() const
 {
-  throw;
+  return m_pImpl->m_parent;
 }
 
 void terralib4::Band::getValue(unsigned int c, unsigned int r, double& value) const
 {
-  throw;
+  m_pImpl->m_raster->getElement(c, r, value, m_idx);
 }
 
-void terralib4::Band::setValue(unsigned int c, unsigned int r, const double value)
+void terralib4::Band::setValue(unsigned int /*c*/, unsigned int /*r*/, const double /*value*/)
 {
-  throw;
+  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
 }
 
 void terralib4::Band::getIValue(unsigned int c, unsigned int r, double& value) const
@@ -57,9 +78,9 @@ void terralib4::Band::getIValue(unsigned int c, unsigned int r, double& value) c
   throw;
 }
 
-void terralib4::Band::setIValue(unsigned int c, unsigned int r, const double value)
+void terralib4::Band::setIValue(unsigned int /*c*/, unsigned int /*r*/, const double /*value*/)
 {
-  throw;
+  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
 }
 
 void terralib4::Band::read(int x, int y, void* buffer) const
@@ -72,8 +93,8 @@ void* terralib4::Band::read(int x, int y)
   throw;
 }
 
-void terralib4::Band::write(int x, int y, void* buffer)
+void terralib4::Band::write(int /*x*/, int /*y*/, void* /*buffer*/)
 {
-  throw;
+  throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
 }
 

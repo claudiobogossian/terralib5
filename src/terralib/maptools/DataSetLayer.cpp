@@ -31,6 +31,7 @@
 #include "../dataaccess/query/From.h"
 #include "../dataaccess/query/FromItem.h"
 #include "../dataaccess/query/Select.h"
+#include "../dataaccess/query/SpatialQueryProcessor.h"
 #include "../dataaccess/query/Where.h"
 #include "../dataaccess/utils/Utils.h"
 #include "DataSetLayer.h"
@@ -135,7 +136,8 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(te::da::Expression
   // The final Select
   std::auto_ptr<te::da::Select> select(new te::da::Select(all, from, filter));
 
-  return ds->query(select.get(), travType, accessPolicy);
+  te::da::SpatialQueryProcessor sqp;
+  return sqp.getDataSet(ds, select.get(), travType);
 }
 
 std::auto_ptr<te::da::DataSet> te::map::DataSetLayer::getData(const te::da::ObjectIdSet* oids,
