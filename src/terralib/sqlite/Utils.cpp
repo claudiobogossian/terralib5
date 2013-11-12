@@ -24,9 +24,21 @@
 */
 
 // TerraLib
+#include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/Exception.h"
+#include "../datatype/ByteArray.h"
+#include "../datatype/DateTimeProperty.h"
+#include "../datatype/Enums.h"
+#include "../datatype/NumericProperty.h"
+#include "../datatype/Property.h"
+#include "../datatype/SimpleProperty.h"
+#include "../datatype/StringProperty.h"
+#include "../geometry/Envelope.h"
+#include "../geometry/Geometry.h"
+#include "../geometry/GeometryProperty.h"
 #include "Config.h"
+#include "DataSource.h"
 #include "Utils.h"
 
 // STL
@@ -41,6 +53,11 @@
 
 // SQLite
 #include <sqlite3.h>
+
+#ifdef TE_ENABLE_SPATIALITE
+// SpatiaLite
+#include <spatialite/gaiageo.h>
+#endif
 
 int te::sqlite::GetConnectionFlags(const std::map<std::string, std::string>& connInfo)
 {
@@ -370,3 +387,205 @@ bool te::sqlite::IsComplete(char** sql, size_t len, std::size_t& buffsize)
 
   return rc != 0;
 }
+
+void te::sqlite::GetHiddenTables(const te::da::DataSource* ds, std::vector<std::string>& tables)
+{
+  const std::map<std::string, std::string>& connInfo = ds->getConnectionInfo();
+
+  std::map<std::string, std::string>::const_iterator it = connInfo.find("SQLITE_HIDE_SPATIAL_METADATA_TABLES");
+  std::map<std::string, std::string>::const_iterator itend = connInfo.end();
+
+  if((it != itend) && (te::common::Convert2UCase(it->second) == "TRUE"))
+  {
+    tables.push_back("geom_cols_ref_sys");
+    tables.push_back("geometry_columns");
+    tables.push_back("geometry_columns_auth");
+    tables.push_back("spatial_ref_sys");
+    tables.push_back("views_geometry_columns");
+    tables.push_back("virts_geometry_columns");
+    tables.push_back("geometry_columns_statistics");
+    tables.push_back("SpatialIndex");
+    tables.push_back("geometry_columns_field_infos");
+    tables.push_back("geometry_columns_time");
+    tables.push_back("vector_layers_auth");
+    tables.push_back("vector_layers_field_infos");
+    tables.push_back("vector_layers_statistics");
+    tables.push_back("views_geometry_columns_auth");
+    tables.push_back("views_geometry_columns_field_infos");
+    tables.push_back("views_geometry_columns_statistics");
+  }
+
+  it = connInfo.find("SQLITE_HIDE_TABLES");
+
+  if((it != itend) && (it->second.empty() == false))
+    te::common::Tokenize(it->second, tables, ",");
+
+  return;
+}
+
+te::da::DataSetType* te::sqlite::Convert2TerraLib(sqlite3_stmt* pStmt)
+{
+  te::da::DataSetType* dt = new te::da::DataSetType("", 0);
+
+  const int ncols = sqlite3_column_count(pStmt);
+
+  for(int i = 0; i < ncols; ++i)
+  {
+    const char* t = sqlite3_column_decltype(pStmt, i);
+    const char* name = sqlite3_column_name(pStmt, i);
+
+    te::dt::Property* p = Convert2TerraLib(i, name, t != 0 ? t : "", false);
+
+    dt->add(p);
+  }
+
+  return dt;
+}
+
+te::dt::Property* te::sqlite::Convert2TerraLib(int colId,
+                                               const std::string& colName,
+                                               const std::string& colType,
+                                               bool required,
+                                               std::string* defaultValue)
+{
+  te::dt::Property* p = 0;
+
+  std::string uColType = te::common::Convert2UCase(colType);
+
+  if((uColType == "INT") ||
+     (uColType == "INTEGER") ||
+     (uColType == "TINYINT") ||
+     (uColType == "SMALLINT") ||
+     (uColType == "MEDIUMINT") ||
+     (uColType == "BIGINT") ||
+     (uColType == "UNSIGNED BIG INT") ||
+     (uColType == "INT2") ||
+     (uColType == "INT8"))
+  {
+    p = new te::dt::SimpleProperty(colName, te::dt::INT64_TYPE, required, defaultValue, colId);
+  }
+  else if((uColType == "FLOAT")  ||
+          (uColType == "DOUBLE") ||
+          (uColType == "REAL") ||
+          (uColType == "DOUBLE PRECISION"))
+  {
+    p = new te::dt::SimpleProperty(colName, te::dt::DOUBLE_TYPE, required, defaultValue, colId);
+  }
+  else if((uColType == "NUMERIC") ||
+          (uColType.substr(0, 7) == "DECIMAL"))
+  {
+    p = new te::dt::NumericProperty(colName, 0, 0, required, defaultValue, colId);
+  }
+  else if((uColType == "TEXT") ||
+          (uColType == "CLOB") ||
+          (uColType.substr(0, 4) == "CHAR") ||
+          (uColType.substr(0, 7) == "VARCHAR"))
+  {
+    p = new te::dt::StringProperty(colName, te::dt::STRING, 0, required, defaultValue, colId);
+  }
+  else if(uColType == "BLOB")
+  {
+    p = new te::dt::SimpleProperty(colName, te::dt::BYTE_ARRAY_TYPE, required, defaultValue, colId);
+  }
+  else if(te::gm::Geometry::isGeomType(uColType))
+  {
+    p = new te::gm::GeometryProperty(colName, -1, te::gm::GeometryType, required, defaultValue, colId, 0);
+  }
+  else if(uColType == "DATE")
+  {
+    p = new te::dt::DateTimeProperty(colName, te::dt::DATE, te::dt::UNKNOWN, required, defaultValue, colId);
+  }
+  else if(uColType == "DATETIME")
+  {
+    p = new te::dt::DateTimeProperty(colName, te::dt::TIME_INSTANT, te::dt::UNKNOWN, required, defaultValue, colId);
+  }
+  else if((uColType == "BOOL") ||
+     (uColType == "BOOLEAN"))
+  {
+    p = new te::dt::SimpleProperty(colName, te::dt::BOOLEAN_TYPE, required, defaultValue, colId);
+  }
+  else// if(uColType == "NULL")
+  {
+    p = new te::dt::SimpleProperty(colName, te::dt::UNKNOWN_TYPE, required, defaultValue, colId);
+  }
+
+  return p;
+}
+
+int te::sqlite::Convert2TerraLibCategory(const std::string& category)
+{
+  if(category == "table")
+    return te::da::TABLE_TYPE;
+  else if(category == "view")
+    return te::da::VIEW_TYPE;
+  else if(category == "index")
+    return te::da::INDEX_TYPE;
+  else if(category == "trigger")
+    return te::da::TRIGGER_TYPE;
+  else
+    return te::da::UNKNOWN_DATASET_TYPE;
+}
+
+te::gm::GeomType te::sqlite::Convert2TerraLibGeomType(const std::string& geomType, const std::string& dimension)
+{
+  int gtype = 0;
+
+#ifdef TE_ENABLE_SPATIALITE
+  if(geomType == "MULTIPOLYGON")
+  {
+    gtype = GAIA_MULTIPOLYGON;
+  }
+  else if(geomType == "POINT")
+  {
+    gtype = GAIA_POINT;
+  }
+  else if(geomType == "LINESTRING")
+  {
+    gtype = GAIA_LINESTRING;
+  }
+  else if(geomType == "POLYGON")
+  {
+    gtype = GAIA_POLYGON;
+  }
+  else if(geomType == "MULTILINESTRING")
+  {
+    gtype = GAIA_MULTILINESTRING;
+  }
+  else if(geomType == "MULTIPOINT")
+  {
+    gtype = GAIA_MULTIPOINT;
+  }
+  else if(geomType == "GEOMETRYCOLLECTION")
+  {
+    gtype = GAIA_GEOMETRYCOLLECTION;
+  }
+  else if(geomType == "GEOMETRY")
+  {
+    gtype = te::gm::GeometryType;
+  }
+  else
+    throw te::common::Exception(TR_COMMON("TerraLib SpatiaLite driver doesn't support this geometric type!"));
+
+  if(dimension == "XY" || dimension == "2")
+  {
+    return static_cast<te::gm::GeomType>(gtype);
+  }
+  else if(dimension == "XYZ" || dimension == "3")
+  {
+    return static_cast<te::gm::GeomType>(gtype + 1000);
+  }
+  else if(dimension == "XYM")
+  {
+    return static_cast<te::gm::GeomType>(gtype + 2000);
+  }
+  else if(dimension == "XYZM")
+  {
+    return static_cast<te::gm::GeomType>(gtype + 3000);
+  }
+  else
+    throw te::common::Exception(TR_COMMON("TerraLib SpatiaLite driver doesn't support this dimension!"));
+#else
+  return static_cast<te::gm::GeomType>(gtype);
+#endif  // TE_ENABLE_SPATIALITE
+}
+

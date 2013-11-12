@@ -46,18 +46,22 @@
 #define getPerpendicularDistance( pX, pY, lineAX, lineAY, lineBX, lineBY, aux1, aux2, perpDist ) \
   aux1 = lineAX - lineBX; \
   aux2 = lineAY - lineBY; \
-  if( aux1 == 0 ) \
+  if( aux1 == 0.0 ) \
   { \
     perpDist = std::abs( pX - lineAX ); \
   } \
-  else if( aux2 == 0 ) \
+  else if( aux2 == 0.0 ) \
   { \
     perpDist = std::abs( pY - lineAY ); \
   } \
   else \
   { \
-    perpDist = std::abs( ( aux2 * pX ) - ( aux1 * pY ) + ( lineAX * lineBY ) - ( lineBX * lineAY ) ) / \
-      ( ( aux1 * aux1 ) + ( aux2 * aux2 ) ); \
+    perpDist = \
+      std::abs( \
+        ( aux2 * pX ) - ( aux1 * pY ) + ( lineAX * lineBY ) - ( lineBX * lineAY ) \
+      ) \
+      / \
+      std::sqrt( ( aux1 * aux1 ) + ( aux2 * aux2 ) ); \
   }
 
 namespace te
@@ -231,6 +235,7 @@ namespace te
           -0.5,
           auxCoord.x, auxCoord.y );
         outRingPtr->setPoint( 0, auxCoord.x, auxCoord.y );
+        outRingPtr->setPoint( 4, auxCoord.x, auxCoord.y ); 
         
         geomTransformation.inverseMap( 
           ((double)raster2.getNumberOfColumns()) - 0.5, 
@@ -250,44 +255,46 @@ namespace te
           auxCoord.x, auxCoord.y );
         outRingPtr->setPoint( 3, auxCoord.x, auxCoord.y );
         
-        geomTransformation.inverseMap( 
-          -0.5,
-          -0.5,
-          auxCoord.x, auxCoord.y );
-        outRingPtr->setPoint( 4, auxCoord.x, auxCoord.y );       
-        
         indexedDelimiter2Ptr->add( outRingPtr );
       }
       
-      std::auto_ptr< te::gm::Geometry > intersectionIndexedPtr; // indexed under raster1 lines/cols
-      intersectionIndexedPtr.reset( indexedDelimiter1Ptr->intersection( indexedDelimiter2Ptr.get() ) );
-      
-      if( ( intersectionIndexedPtr.get() != 0 ) &&
-        ( intersectionIndexedPtr->getGeomTypeId() == te::gm::PolygonType) )
       {
-        te::gm::Polygon const * intersectionIndexedNPtr = dynamic_cast< te::gm::Polygon const * >(
-          intersectionIndexedPtr.get() );
-        assert( intersectionIndexedNPtr );        
-        
         std::auto_ptr< te::gm::Geometry > segs1IndexedPtr;
-        segs1IndexedPtr.reset( indexedDelimiter1Ptr->intersection( intersectionIndexedNPtr->getRingN( 0 ) ) );
+        segs1IndexedPtr.reset( indexedDelimiter1Ptr->intersection( indexedDelimiter2Ptr->getRingN( 0 ) ) );
         
-        if( ( segs1IndexedPtr.get() != 0 ) &&
-          ( segs1IndexedPtr->getGeomTypeId() == te::gm::MultiLineStringType ) )
+        if( segs1IndexedPtr.get() != 0 ) 
         {
-          te::gm::MultiLineString const* segsIndexedNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-            segs1IndexedPtr.get() );
-          assert( segsIndexedNPtr );
-          
-          std::size_t numGeoms = segsIndexedNPtr->getNumGeometries();
-          
-          for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+          if( segs1IndexedPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+          {
+            te::gm::MultiLineString const* segsIndexedNPtr = dynamic_cast< te::gm::MultiLineString const * >(
+              segs1IndexedPtr.get() );
+            assert( segsIndexedNPtr );
+            
+            std::size_t numGeoms = segsIndexedNPtr->getNumGeometries();
+            
+            for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+            {
+              te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
+                segsIndexedNPtr->getGeometryN( gIdx ) );
+              assert( segIndexedNPtr );
+              
+              std::size_t nPoints = segIndexedNPtr->size();
+              te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
+              
+              for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
+              {
+                m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
+                  coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+              }
+            }
+          }
+          else if( segs1IndexedPtr->getGeomTypeId() == te::gm::LineStringType )
           {
             te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-              segsIndexedNPtr->getGeometryN( gIdx ) );
+              segs1IndexedPtr.get() );
             assert( segIndexedNPtr );
             
-            std::size_t nPoints = segIndexedNPtr->getNPoints();
+            std::size_t nPoints = segIndexedNPtr->size();
             te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
             
             for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
@@ -296,27 +303,53 @@ namespace te
                 coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
             }
           }
-        }    
+        }
+        
+/*        for( unsigned int idx = 0 ; idx < m_r2IntersectionSegmentsPoints.size() ; ++idx )
+        {
+          std::cout << std::endl << "m_r2IntersectionSegmentsPoints[" << idx << "]=" 
+            << m_r2IntersectionSegmentsPoints[ idx ].first.x
+            << " " << m_r2IntersectionSegmentsPoints[ idx ].first.y
+            << " " << m_r2IntersectionSegmentsPoints[ idx ].second.x
+            << " " << m_r2IntersectionSegmentsPoints[ idx ].second.y;            
+        } */       
         
         std::auto_ptr< te::gm::Geometry > segs2IndexedPtr;
-        segs2IndexedPtr.reset( indexedDelimiter2Ptr->intersection( intersectionIndexedNPtr->getRingN( 0 ) ) );
+        segs2IndexedPtr.reset( indexedDelimiter2Ptr->intersection( indexedDelimiter1Ptr->getRingN( 0 ) ) );
         
-        if( ( segs2IndexedPtr.get() != 0 ) &&
-          ( segs2IndexedPtr->getGeomTypeId() == te::gm::MultiLineStringType ) )
+        if( segs2IndexedPtr.get() != 0 )
         {
-          te::gm::MultiLineString const* segsIndexedNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-            segs2IndexedPtr.get() );
-          assert( segsIndexedNPtr );
-          
-          std::size_t numGeoms = segsIndexedNPtr->getNumGeometries();
-          
-          for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+          if( segs2IndexedPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+          {
+            te::gm::MultiLineString const* segsIndexedNPtr = dynamic_cast< te::gm::MultiLineString const * >(
+              segs2IndexedPtr.get() );
+            assert( segsIndexedNPtr );
+            
+            std::size_t numGeoms = segsIndexedNPtr->getNumGeometries();
+            
+            for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+            {
+              te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
+                segsIndexedNPtr->getGeometryN( gIdx ) );
+              assert( segIndexedNPtr );
+              
+              std::size_t nPoints = segIndexedNPtr->size();
+              te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
+              
+              for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
+              {
+                m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
+                  coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+              }
+            }
+          }
+          else if( segs2IndexedPtr->getGeomTypeId() == te::gm::LineStringType )
           {
             te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-              segsIndexedNPtr->getGeometryN( gIdx ) );
+              segs2IndexedPtr.get() );
             assert( segIndexedNPtr );
             
-            std::size_t nPoints = segIndexedNPtr->getNPoints();
+            std::size_t nPoints = segIndexedNPtr->size();
             te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
             
             for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
@@ -324,15 +357,20 @@ namespace te
               m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
                 coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
             }
-          }
-        }            
+          }          
+        }
+        
+/*        for( unsigned int idx = 0 ; idx < m_r1IntersectionSegmentsPoints.size() ; ++idx )
+        {
+          std::cout << std::endl << "m_r1IntersectionSegmentsPoints[" << idx << "]=" 
+            << m_r1IntersectionSegmentsPoints[ idx ].first.x
+            << " " << m_r1IntersectionSegmentsPoints[ idx ].first.y
+            << " " << m_r1IntersectionSegmentsPoints[ idx ].second.x
+            << " " << m_r1IntersectionSegmentsPoints[ idx ].second.y;            
+        }  */         
           
         m_r2IntersectionSegmentsPointsSize = (unsigned int)m_r2IntersectionSegmentsPoints.size();
         m_r1IntersectionSegmentsPointsSize = (unsigned int)m_r1IntersectionSegmentsPoints.size();
-      }
-      else
-      {
-        intersectionIndexedPtr.reset();
       }
       
       // defining the blending function
@@ -506,11 +544,6 @@ namespace te
       std::vector< double >& values )
     {
       TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
-      
-      // Finding the point over the second raster
-      
-      m_geomTransformationPtr->directMap( col, line, m_euclideanDistanceMethodImp_Point2Col,
-        m_euclideanDistanceMethodImp_Point2Line );
         
       // Finding distances to both rasters valid area delimiters
             
@@ -544,8 +577,8 @@ namespace te
       {
         
         getPerpendicularDistance( 
-          m_euclideanDistanceMethodImp_Point2Col,
-          m_euclideanDistanceMethodImp_Point2Line,
+          col,
+          line,
           m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].first.x,
           m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].first.y, 
           m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].second.x,
@@ -559,6 +592,11 @@ namespace te
           m_euclideanDistanceMethodImp_dist2 = m_euclideanDistanceMethodImp_currDist;
         }
       } 
+      
+      // Finding the point over the second raster
+      
+      m_geomTransformationPtr->directMap( col, line, m_euclideanDistanceMethodImp_Point2Col,
+        m_euclideanDistanceMethodImp_Point2Line );      
       
       // Blending values
 
@@ -625,7 +663,7 @@ namespace te
                       m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]
                     )
                     *
-                    m_euclideanDistanceMethodImp_dist2
+                    m_euclideanDistanceMethodImp_dist1
                   )
                   +
                   (
@@ -639,7 +677,7 @@ namespace te
                       m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]
                     )
                     *
-                    m_euclideanDistanceMethodImp_dist1
+                    m_euclideanDistanceMethodImp_dist2
                   )
                 )
                 /

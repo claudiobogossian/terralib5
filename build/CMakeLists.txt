@@ -21,6 +21,8 @@ set (ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 option (BUILD_TERRAVIEW "Build TerraView application?" ON)
 
+set (TE_HELP_DIR "" CACHE STRING "Location of TerraView HELP FILES.")
+
 if(BUILD_TERRAVIEW)
   include (${CMAKE_CURRENT_SOURCE_DIR}/buildTree.cmake)
 
@@ -34,7 +36,9 @@ if(BUILD_TERRAVIEW)
   
   add_subdirectory (./terraview)
 
-  include (${TE_MODULE_PATH}/GenerateQHelp.cmake)
+  if (NOT "${TE_HELP_DIR}" STREQUAL "") 
+	include (${TE_MODULE_PATH}/GenerateQHelp.cmake)
+  endif()
   
   add_dependencies (terraview "Generate QHelp")
 

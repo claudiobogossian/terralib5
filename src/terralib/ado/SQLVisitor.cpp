@@ -28,6 +28,7 @@
 #include "../dataaccess/query/LiteralDateTime.h"
 #include "../dataaccess/query/LiteralEnvelope.h"
 #include "../dataaccess/query/LiteralGeom.h"
+#include "../dataaccess/query/ST_EnvelopeIntersects.h"
 #include "../geometry/Envelope.h"
 #include "SQLVisitor.h"
 #include "Utils.h"
@@ -71,4 +72,42 @@ void te::ado::SQLVisitor::visit(const te::da::LiteralGeom& visited)
 {
   assert(visited.getValue() != 0);
   //Convert2PostGIS(m_conn, static_cast<te::gm::Geometry*>(visited.getValue()), m_sql);
+}
+
+void te::ado::SQLVisitor::visit(const te::da::Function& visited)
+{
+  const te::da::ST_EnvelopeIntersects* envIntersects = dynamic_cast<const te::da::ST_EnvelopeIntersects*>(&visited);
+
+  if(envIntersects == 0)
+  {
+    te::da::SQLVisitor::visit(visited);
+    return;
+  }
+  
+  te::da::LiteralEnvelope* lenv = dynamic_cast<te::da::LiteralEnvelope*>(envIntersects->getFirst());
+  if(lenv == 0)
+  {
+    lenv = dynamic_cast<te::da::LiteralEnvelope*>(envIntersects->getSecond());
+    if(lenv == 0)
+    {
+      te::da::SQLVisitor::visit(visited);
+      return;
+    }
+  }
+
+  // Here, we have a LiteralEnvelope
+  assert(lenv);
+
+  te::gm::Envelope* e = lenv->getValue();
+  assert(e);
+
+  std::string lowerX = "lower_x";
+  std::string upperX = "upper_x";
+  std::string lowerY = "lower_y";
+  std::string upperY = "upper_y";
+
+  m_sql += "NOT("+ lowerX +" > " + boost::lexical_cast<std::string>(e->m_urx) + " OR ";
+  m_sql += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
+  m_sql += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
+  m_sql += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
 }
