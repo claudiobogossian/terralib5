@@ -43,13 +43,15 @@
 
 namespace te
 {
-  namespace da{ class DataSetType; }
-  namespace dt{ class Property; }
-  namespace gm{ class Envelope; }
+  namespace da { class DataSetType; }
+  namespace dt { class Property; }
+  namespace gm { class Envelope; }
+  namespace rst { class RasterProperty; }
 }
 
 struct TeBox;
 class TeDatabaseFactoryParams;
+class TeRasterParams;
 class TeTable;
 
 namespace terralib4
@@ -113,6 +115,8 @@ namespace terralib4
     \return A TerraLib 4.x database params.
   */
   std::auto_ptr<TeDatabaseFactoryParams> Convert2T4DatabaseParams(const std::map<std::string, std::string>& dsInfo);
+
+  te::rst::RasterProperty* Convert2T5(TeRasterParams& rparams);
 
 } // end namespace terralib4
 

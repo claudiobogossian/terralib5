@@ -134,6 +134,7 @@ namespace terralib4
     protected:
 
       TeRaster* m_raster;
+      int m_i;
   };
 
 }   // end namespace te
