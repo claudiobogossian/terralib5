@@ -17,12 +17,7 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-#include "DataSource.h"
-#include "DataSet.h"
-#include "SQLVisitor.h"
-#include "Transactor.h"
-#include "Utils.h"
-
+// TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/ObjectId.h"
 #include "../dataaccess/dataset/ObjectIdSet.h"
@@ -36,45 +31,51 @@
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
 #include "../srs/Config.h"
+#include "DataSource.h"
+#include "DataSet.h"
+#include "SQLVisitor.h"
+#include "Transactor.h"
+#include "Utils.h"
 
 // OGR
 #include <ogrsf_frmts.h>
 
 std::string RemoveSpatialSql(const std::string& sql)
 {
+  // Try find AND
+  std::size_t pos = sql.find("AND Intersection");
+
+  // Try find without AND
+  if(pos == std::string::npos)
+    pos = sql.find("WHERE Intersection");
+
+  if(pos == std::string::npos)
+    return sql;
+
   std::string newQuery;
 
-  size_t pos = sql.find("AND Intersection");
-
-  if(pos != std::string::npos)
-  {
-    size_t pos2 = sql.find("))", pos);
-
-    newQuery = sql.substr(0, pos);
-    newQuery += sql.substr(pos2+2);
-  }
-  else
-    newQuery = sql;
+  std::size_t pos2 = sql.find("))", pos);
+  newQuery = sql.substr(0, pos);
+  newQuery += sql.substr(pos2 + 2);
 
   return newQuery;
 }
 
-
-te::ogr::Transactor::Transactor(DataSource* ds) :
-te::da::DataSourceTransactor(),
-m_ogrDs(ds)
+te::ogr::Transactor::Transactor(DataSource* ds)
+  : te::da::DataSourceTransactor(),
+    m_ogrDs(ds)
 {
 }
 
 te::ogr::Transactor::~Transactor()
 {
 }
-    
+
 te::da::DataSource* te::ogr::Transactor::getDataSource() const
 {
   return 0;
 }
-    
+
 void te::ogr::Transactor::begin()
 {
 }
@@ -83,7 +84,7 @@ void te::ogr::Transactor::commit()
 {
   if (!m_ogrDs->getOGRDataSource())
     return;
-  
+
   // we have to reopen datasource so pending data gets synched to disk!
   m_ogrDs->open();
 }
