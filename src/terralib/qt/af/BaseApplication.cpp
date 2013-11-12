@@ -625,7 +625,17 @@ void te::qt::af::BaseApplication::onOpenProjectTriggered()
   if(file.isEmpty())
     return;
 
-  openProject(file);
+  try
+  {
+    openProject(file);
+  }
+  catch(const te::common::Exception& e)
+  {
+    QString msg = tr("Fail to open project.");
+    msg += " ";
+    msg += e.what();
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
+  }
 }
 
 void te::qt::af::BaseApplication::onSaveProjectTriggered()
