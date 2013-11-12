@@ -41,6 +41,17 @@ extern "C"
 
 namespace te
 {
+  namespace da
+  {
+    class DataSource;
+    class DataSetType;
+  }
+
+  namespace dt
+  {
+    class Property;
+  }
+
   namespace sqlite
   {
     int GetConnectionFlags(const std::map<std::string, std::string>& connInfo);
@@ -62,6 +73,20 @@ namespace te
     bool ContainsSemicolon(const char* sql, std::size_t nbytes);
 
     bool IsComplete(char** sql, size_t len, std::size_t& buffsize);
+
+    void GetHiddenTables(const te::da::DataSource* ds, std::vector<std::string>& tables);
+
+    te::da::DataSetType* Convert2TerraLib(sqlite3_stmt* pStmt);
+
+    te::dt::Property* Convert2TerraLib(int colId,
+                                       const std::string& colName,
+                                       const std::string& colType,
+                                       bool required,
+                                       std::string* defaultValue = 0);
+
+    int Convert2TerraLibCategory(const std::string& category);
+
+    te::gm::GeomType Convert2TerraLibGeomType(const std::string& geomType, const std::string& dimension);
 
   } // end namespace sqlite
 }   // end namespace te

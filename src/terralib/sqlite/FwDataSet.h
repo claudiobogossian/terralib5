@@ -29,7 +29,6 @@
 // TerraLib
 #include "../dataaccess/dataset/DataSet.h"
 
-// Forward declarations
 extern "C"
 {
   struct sqlite3_stmt;
@@ -40,22 +39,19 @@ namespace te
 {
   namespace sqlite
   {
-// Forward declaration
     class DataSourceTransactor;
 
     class FwDataSet : public te::da::DataSet
     {
       public:
 
-        FwDataSet(sqlite3_stmt* stmt, DataSourceTransactor* t, const bool releaseStmt = true);
+        FwDataSet(sqlite3_stmt* stmt, DataSourceTransactor* t);
 
         ~FwDataSet();
 
         te::common::TraverseType getTraverseType() const;
 
         te::common::AccessPolicy getAccessPolicy() const;
-
-        te::gm::Envelope* getExtent(std::size_t i);
 
         std::size_t getNumProperties() const;
 
@@ -67,15 +63,19 @@ namespace te
 
         bool isEmpty() const;
 
+        bool isConnected() const;
+
         std::size_t size() const;
+
+        std::auto_ptr<te::gm::Envelope> getExtent(std::size_t i);
 
         bool moveNext();
 
         bool movePrevious();
-        
-        bool moveFirst();
 
         bool moveBeforeFirst();
+
+        bool moveFirst();
 
         bool moveLast();
 
@@ -109,28 +109,21 @@ namespace te
 
         std::string getString(std::size_t i) const;
 
-        te::dt::ByteArray* getByteArray(std::size_t i) const;
+        std::auto_ptr<te::dt::ByteArray> getByteArray(std::size_t i) const;
 
-        te::gm::Geometry* getGeometry(std::size_t i) const;
+        std::auto_ptr<te::gm::Geometry> getGeometry(std::size_t i) const;
 
-        te::rst::Raster* getRaster(std::size_t i) const;
+        std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const;
 
-        te::dt::DateTime* getDateTime(std::size_t i) const; 
+        std::auto_ptr<te::dt::DateTime> getDateTime(std::size_t i) const; 
 
-        te::dt::Array* getArray(std::size_t i) const;
+        std::auto_ptr<te::dt::Array> getArray(std::size_t i) const;
 
         bool isNull(std::size_t i) const;
 
-        int getBlobSize(int i) const;
+        class Impl;
 
-        void getBlob(int i, void* buff) const;
-
-      private:
-
-        sqlite3_stmt* m_stmt;
-        DataSourceTransactor* m_t;
-        mutable te::da::DataSetType* m_dt;
-        bool m_releaseStmt;
+        Impl* m_pImpl;
     };
 
   } // end namespace sqlite

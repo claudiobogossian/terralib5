@@ -73,7 +73,7 @@ set (TE_PLUGIN_DISPLAYNAME "SQLite Data Source Qt-Widgets")
 set (TE_PLUGIN_DESCRIPTION "This plugin enables widgets to create or open data managed by SQLite driver.")
 set (TE_PLUGIN_LIBRARY "terralib_qt_plugin_datasource_sqlite")
 set (TE_PLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:sqlite")
-set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_sqlite.xml")
+set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TE_PLUGIN_NAME}.teplg")
 getPluginResources("SharedLibraryName" "${TE_PLUGIN_LIBRARY}" RSC_LINK)
 getPluginResources("LangFile" "pt.br" RSC_LINK2)
 set (TE_PLUGIN_RESOURCES 
