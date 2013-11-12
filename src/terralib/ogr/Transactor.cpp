@@ -919,6 +919,11 @@ void te::ogr::Transactor::add(const std::string& datasetName,
 
         switch(d->getPropertyDataType(i))
         {
+          case te::dt::INT16_TYPE:
+            feat->SetField(currfield, d->getInt16(i));
+            ++currfield;
+          break;
+
           case te::dt::INT32_TYPE:
             feat->SetField(currfield, d->getInt32(i));
             ++currfield;
