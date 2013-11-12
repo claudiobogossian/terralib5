@@ -26,10 +26,9 @@
 #ifndef __TERRALIB_OGR_INTERNAL_SQLVISITOR_H
 #define __TERRALIB_OGR_INTERNAL_SQLVISITOR_H
 
-#include "Config.h"
-
 // TerraLib
 #include "../dataaccess/query/SQLVisitor.h"
+#include "Config.h"
 
 namespace te
 {
@@ -54,7 +53,11 @@ namespace te
 
         void visit(const te::da::LiteralEnvelope& visited);
 
+        void visit(const te::da::PropertyName& visited);
+
         void visit(const te::da::Select& visited);
+
+        void visitDistinct(const te::da::Distinct& visited);
 
         te::gm::Envelope* getMBR();
 
