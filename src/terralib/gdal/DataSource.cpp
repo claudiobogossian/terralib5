@@ -36,7 +36,7 @@
 #include "Exception.h"
 #include "Transactor.h"
 #include "Utils.h"
-#include "DataSetsManager.h"
+#include "DataSetUseCounter.h"
 
 // GDAL
 #include <gdal_priv.h>
@@ -123,10 +123,7 @@ bool te::gdal::DataSource::isValid() const
     if(it == m_connectionInfo.end())
       return false;
     
-    if( !DataSetsManager::getInstance().incrementUseCounter( it->second ) )
-    {
-      throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
-    }     
+    DataSetUseCounter dsUseCounter( it->second );
     
     GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
     
@@ -134,13 +131,7 @@ bool te::gdal::DataSource::isValid() const
     {
       GDALClose(gds);
       
-      DataSetsManager::getInstance().decrementUseCounter( it->second );
-      
       return true;
-    }
-    else
-    {
-      DataSetsManager::getInstance().decrementUseCounter( it->second );
     }
   }
   return false;
@@ -203,10 +194,7 @@ bool te::gdal::DataSource::exists(const std::map<std::string, std::string>& dsIn
   it = dsInfo.find("URI"); // expects a file?
   if(it != dsInfo.end())   
   {  
-    if( !DataSetsManager::getInstance().incrementUseCounter( it->second ) )
-    {
-      throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
-    }      
+    DataSetUseCounter dsUseCounter( it->second );
     
     GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
   
@@ -214,13 +202,7 @@ bool te::gdal::DataSource::exists(const std::map<std::string, std::string>& dsIn
     {
       GDALClose(gds);
       
-      DataSetsManager::getInstance().decrementUseCounter( it->second );
-      
       return true;
-    }
-    else
-    {
-      DataSetsManager::getInstance().decrementUseCounter( it->second );
     }
   }
   

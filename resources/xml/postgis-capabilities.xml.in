@@ -37,163 +37,163 @@
     <SelectInto>true</SelectInto>    
 	<SpatialTopologicOperators>	
 	  <Function name="st_contains">
-        <BinaryOpEncoder alias="st_contains"/>
+        <FunctionEncoder alias="st_contains"/>
       </Function>
 	  <Function name="st_covers">
-        <BinaryOpEncoder alias="st_covers"/>
+        <FunctionEncoder alias="st_covers"/>
       </Function>
 	  <Function name="st_coveredby">
-        <BinaryOpEncoder alias="st_coveredby"/>
+        <FunctionEncoder alias="st_coveredby"/>
       </Function>
 	  <Function name="st_crosses">
-        <BinaryOpEncoder alias="st_crosses"/>
+        <FunctionEncoder alias="st_crosses"/>
       </Function>
 	  <Function name="st_disjoint">
-        <BinaryOpEncoder alias="st_disjoint"/>
+        <FunctionEncoder alias="st_disjoint"/>
       </Function>
 	  <Function name="st_equals">
-        <BinaryOpEncoder alias="st_equals"/>
+        <FunctionEncoder alias="st_equals"/>
       </Function>
 	  <Function name="st_overlaps">
-        <BinaryOpEncoder alias="st_overlaps"/>
+        <FunctionEncoder alias="st_overlaps"/>
       </Function>
 	  <Function name="st_relate">
-        <BinaryOpEncoder alias="st_relate"/>
+        <FunctionEncoder alias="st_relate"/>
       </Function>
 	  <Function name="st_touches">
-        <BinaryOpEncoder alias="st_touches"/>
+        <FunctionEncoder alias="st_touches"/>
       </Function>
 	  <Function name="st_intersects">
-        <BinaryOpEncoder alias="st_intersects"/>
+        <FunctionEncoder alias="st_intersects"/>
       </Function>
 	  <Function name="st_within">
-        <BinaryOpEncoder alias="st_within"/>
+        <FunctionEncoder alias="st_within"/>
       </Function>	
     </SpatialTopologicOperators> 
 	<SpatialMetricOperators>    
 	  <Function name="st_area">
-        <BinaryOpEncoder alias="st_area"/>
+        <FunctionEncoder alias="st_area"/>
       </Function>
 	  <Function name="st_distance">
-        <BinaryOpEncoder alias="st_distance"/>
+        <FunctionEncoder alias="st_distance"/>
       </Function>
 	  <Function name="st_length">
-        <BinaryOpEncoder alias="st_length"/>
+        <FunctionEncoder alias="st_length"/>
       </Function>
 	  <Function name="st_perimeter">
-        <BinaryOpEncoder alias="st_perimeter"/>
+        <FunctionEncoder alias="st_perimeter"/>
       </Function>	
 	</SpatialMetricOperators>	
 	<SpatialNewGeomOperators>
 	  <Function name="st_centroid">
-        <BinaryOpEncoder alias="st_centroid"/>
+        <FunctionEncoder alias="st_centroid"/>
       </Function>
 	  <Function name="st_difference">
-        <BinaryOpEncoder alias="st_difference"/>
+        <FunctionEncoder alias="st_difference"/>
       </Function>
 	  <Function name="st_buffer">
-        <BinaryOpEncoder alias="st_buffer"/>
+        <FunctionEncoder alias="st_buffer"/>
       </Function>
 	  <Function name="st_convexhull">
-        <BinaryOpEncoder alias="st_convexhull"/>
+        <FunctionEncoder alias="st_convexhull"/>
       </Function>
 	  <Function name="st_intersection">
-        <BinaryOpEncoder alias="st_intersection"/>
+        <FunctionEncoder alias="st_intersection"/>
       </Function>
 	  <Function name="st_symdifference">
-        <BinaryOpEncoder alias="st_symdifference"/>
+        <FunctionEncoder alias="st_symdifference"/>
       </Function>
 	  <Function name="st_union">
-        <BinaryOpEncoder alias="st_union"/>
+        <FunctionEncoder alias="st_union"/>
       </Function>
     </SpatialNewGeomOperators>	
 	<SpatialOperators>
 	  <Function name="st_boundary">
-        <BinaryOpEncoder alias="st_boundary"/>
+        <FunctionEncoder alias="st_boundary"/>
       </Function>
 	  <Function name="st_coorddim">
-        <BinaryOpEncoder alias="st_coorddim"/>
+        <FunctionEncoder alias="st_coorddim"/>
       </Function>
 	  <Function name="st_dimension">
-        <BinaryOpEncoder alias="st_coorddim"/>
+        <FunctionEncoder alias="st_coorddim"/>
       </Function>
 	  <Function name="st_endpoint">
-        <BinaryOpEncoder alias="st_endpoint"/>
+        <FunctionEncoder alias="st_endpoint"/>
       </Function>	  
 	  <Function name="st_envelope">
-        <BinaryOpEncoder alias="st_envelope"/>
+        <FunctionEncoder alias="st_envelope"/>
       </Function>
 	  <Function name="st_exteriorring">
-        <BinaryOpEncoder alias="st_exteriorring"/>
+        <FunctionEncoder alias="st_exteriorring"/>
       </Function>
 	  <Function name="st_geometryn">
-        <BinaryOpEncoder alias="st_geometryn"/>
+        <FunctionEncoder alias="st_geometryn"/>
       </Function>
 	  <Function name="st_geometrytype">
-        <BinaryOpEncoder alias="st_geometrytype"/>
+        <FunctionEncoder alias="st_geometrytype"/>
       </Function>
 	  <Function name="st_interiorringn">
-        <BinaryOpEncoder alias="st_interiorringn"/>
+        <FunctionEncoder alias="st_interiorringn"/>
       </Function>
 	  <Function name="st_isclosed">
-        <BinaryOpEncoder alias="st_isclosed"/>
+        <FunctionEncoder alias="st_isclosed"/>
       </Function>
 	  <Function name="st_isempty">
-        <BinaryOpEncoder alias="st_isempty"/>
+        <FunctionEncoder alias="st_isempty"/>
       </Function>
 	  <Function name="st_isring">
-        <BinaryOpEncoder alias="st_isring"/>
+        <FunctionEncoder alias="st_isring"/>
       </Function>
 	  <Function name="st_issimple">
-        <BinaryOpEncoder alias="st_issimple"/>
+        <FunctionEncoder alias="st_issimple"/>
       </Function>
 	  <Function name="st_isvalid">
-        <BinaryOpEncoder alias="st_isvalid"/>
+        <FunctionEncoder alias="st_isvalid"/>
       </Function>	  
 	  <Function name="st_ndims">
-        <BinaryOpEncoder alias="st_ndims"/>
+        <FunctionEncoder alias="st_ndims"/>
       </Function>
 	  <Function name="st_nrings">
-        <BinaryOpEncoder alias="st_nrings"/>
+        <FunctionEncoder alias="st_nrings"/>
       </Function>
 	  <Function name="st_numgeometries">
-        <BinaryOpEncoder alias="st_numgeometries"/>
+        <FunctionEncoder alias="st_numgeometries"/>
       </Function>
 	  <Function name="st_numinteriorrings">
-        <BinaryOpEncoder alias="st_numinteriorrings"/>
+        <FunctionEncoder alias="st_numinteriorrings"/>
       </Function>
 	  <Function name="st_numpoints">
-        <BinaryOpEncoder alias="st_numinteriorrings"/>
+        <FunctionEncoder alias="st_numinteriorrings"/>
       </Function>
 	  <Function name="st_pointn">
-        <BinaryOpEncoder alias="st_pointn"/>
+        <FunctionEncoder alias="st_pointn"/>
       </Function>
 	  <Function name="st_srid">
-        <BinaryOpEncoder alias="st_srid"/>
+        <FunctionEncoder alias="st_srid"/>
       </Function>
 	  <Function name="st_startpoint">
-        <BinaryOpEncoder alias="st_startpoint"/>
+        <FunctionEncoder alias="st_startpoint"/>
       </Function>
 	  <Function name="st_x">
-        <BinaryOpEncoder alias="st_x"/>
+        <FunctionEncoder alias="st_x"/>
       </Function>
 	  <Function name="st_y">
-        <BinaryOpEncoder alias="st_y"/>
+        <FunctionEncoder alias="st_y"/>
       </Function>
 	  <Function name="st_z">
-        <BinaryOpEncoder alias="st_z"/>
+        <FunctionEncoder alias="st_z"/>
       </Function>
 	  <Function name="st_m">
-        <BinaryOpEncoder alias="st_m"/>
+        <FunctionEncoder alias="st_m"/>
       </Function>
 	  <Function name="st_transform">
-        <BinaryOpEncoder alias="st_transform"/>
+        <FunctionEncoder alias="st_transform"/>
       </Function>
 	  <Function name="st_dfullywithin">
-        <BinaryOpEncoder alias="st_dfullywithin"/>
+        <FunctionEncoder alias="st_dfullywithin"/>
       </Function>
 	  <Function name="st_dwithin">
-        <BinaryOpEncoder alias="st_dwithin"/>
+        <FunctionEncoder alias="st_dwithin"/>
       </Function>
     </SpatialOperators>
     <LogicalOperators>
