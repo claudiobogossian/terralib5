@@ -50,6 +50,7 @@
 // Boost
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
 
 // SQLite
 #include <sqlite3.h>
@@ -397,22 +398,28 @@ void te::sqlite::GetHiddenTables(const te::da::DataSource* ds, std::vector<std::
 
   if((it != itend) && (te::common::Convert2UCase(it->second) == "TRUE"))
   {
+    tables.push_back("SpatialIndex");
     tables.push_back("geom_cols_ref_sys");
     tables.push_back("geometry_columns");
     tables.push_back("geometry_columns_auth");
-    tables.push_back("spatial_ref_sys");
-    tables.push_back("views_geometry_columns");
-    tables.push_back("virts_geometry_columns");
-    tables.push_back("geometry_columns_statistics");
-    tables.push_back("SpatialIndex");
     tables.push_back("geometry_columns_field_infos");
+    tables.push_back("geometry_columns_statistics");
     tables.push_back("geometry_columns_time");
+    tables.push_back("spatial_ref_sys");
+    tables.push_back("spatialite_history");
+    tables.push_back("sql_statements_log");
+    tables.push_back("vector_layers");
     tables.push_back("vector_layers_auth");
     tables.push_back("vector_layers_field_infos");
     tables.push_back("vector_layers_statistics");
+    tables.push_back("views_geometry_columns");
     tables.push_back("views_geometry_columns_auth");
     tables.push_back("views_geometry_columns_field_infos");
     tables.push_back("views_geometry_columns_statistics");
+    tables.push_back("virts_geometry_columns");
+    tables.push_back("virts_geometry_columns_auth");
+    tables.push_back("virts_geometry_columns_field_infos");
+    tables.push_back("virts_geometry_columns_statistics");
   }
 
   it = connInfo.find("SQLITE_HIDE_TABLES");
@@ -526,66 +533,89 @@ int te::sqlite::Convert2TerraLibCategory(const std::string& category)
     return te::da::UNKNOWN_DATASET_TYPE;
 }
 
-te::gm::GeomType te::sqlite::Convert2TerraLibGeomType(const std::string& geomType, const std::string& dimension)
+std::string te::sqlite::GetRtreeFilter(const te::gm::Envelope* e, const te::gm::SpatialRelation r)
 {
-  int gtype = 0;
+  std::string filter;
 
-#ifdef TE_ENABLE_SPATIALITE
-  if(geomType == "MULTIPOLYGON")
+  switch(r)
   {
-    gtype = GAIA_MULTIPOLYGON;
-  }
-  else if(geomType == "POINT")
-  {
-    gtype = GAIA_POINT;
-  }
-  else if(geomType == "LINESTRING")
-  {
-    gtype = GAIA_LINESTRING;
-  }
-  else if(geomType == "POLYGON")
-  {
-    gtype = GAIA_POLYGON;
-  }
-  else if(geomType == "MULTILINESTRING")
-  {
-    gtype = GAIA_MULTILINESTRING;
-  }
-  else if(geomType == "MULTIPOINT")
-  {
-    gtype = GAIA_MULTIPOINT;
-  }
-  else if(geomType == "GEOMETRYCOLLECTION")
-  {
-    gtype = GAIA_GEOMETRYCOLLECTION;
-  }
-  else if(geomType == "GEOMETRY")
-  {
-    gtype = te::gm::GeometryType;
-  }
-  else
-    throw te::common::Exception(TR_COMMON("TerraLib SpatiaLite driver doesn't support this geometric type!"));
+    case te::gm::INTERSECTS :
+    case te::gm::TOUCHES :
+    case te::gm::OVERLAPS :
+    case te::gm::CROSSES :
+    case te::gm::EQUALS :
+      filter = "RTreeIntersects(";
+    break;
 
-  if(dimension == "XY" || dimension == "2")
-  {
-    return static_cast<te::gm::GeomType>(gtype);
+    case te::gm::WITHIN :
+      filter = "RTreeWithin(";
+    break;
+
+    case te::gm::CONTAINS :
+      filter = "RTreeContains(";
+    break;
+
+    default:
+      throw te::common::Exception(TR_COMMON("Invalid rectangle relation for SQLite driver!"));
   }
-  else if(dimension == "XYZ" || dimension == "3")
-  {
-    return static_cast<te::gm::GeomType>(gtype + 1000);
-  }
-  else if(dimension == "XYM")
-  {
-    return static_cast<te::gm::GeomType>(gtype + 2000);
-  }
-  else if(dimension == "XYZM")
-  {
-    return static_cast<te::gm::GeomType>(gtype + 3000);
-  }
-  else
-    throw te::common::Exception(TR_COMMON("TerraLib SpatiaLite driver doesn't support this dimension!"));
-#else
-  return static_cast<te::gm::GeomType>(gtype);
-#endif  // TE_ENABLE_SPATIALITE
+
+  filter += boost::lexical_cast<std::string>(e->m_llx);
+  filter += ", ";
+  filter += boost::lexical_cast<std::string>(e->m_lly);
+  filter += ", ";
+  filter += boost::lexical_cast<std::string>(e->m_urx);
+  filter += ", ";
+  filter += boost::lexical_cast<std::string>(e->m_ury);
+  filter += ")";
+
+  return filter;
 }
 
+std::string te::sqlite::GetBindableSpatialRelation(const std::string& colName, const te::gm::SpatialRelation r)
+{
+  std::string filter;
+
+  switch(r)
+  {
+    case te::gm::INTERSECTS :
+      filter = "Intersects(";
+    break;
+
+    case te::gm::WITHIN :
+      filter = "Within(";
+    break;
+
+    case te::gm::CONTAINS :
+      filter = "Contains(";
+    break;
+
+    case te::gm::TOUCHES :
+      filter = "Touches(";
+    break;
+
+    case te::gm::EQUALS :
+      filter = "Equals(";
+    break;
+
+    case te::gm::OVERLAPS :
+      filter = "Overlaps(";
+    break;
+
+    case te::gm::CROSSES :
+      filter = "Crosses(";
+    break;
+
+    case te::gm::DISJOINT :
+      filter = "Disjoint(";
+    break;
+
+    default:
+      throw te::common::Exception(TR_COMMON("Invalid rectangle relation for SQLite driver!"));
+  }
+
+  filter += colName;
+
+  filter += ", ?)";
+
+  return filter;
+}

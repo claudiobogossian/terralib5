@@ -41,8 +41,10 @@
 // TerraLib 4.x
 #include <terralib/kernel/TeBox.h>
 #include <terralib/kernel/TeDatabaseFactoryParams.h>
+#include <terralib/kernel/TeDecoderDatabase.h>
 #include <terralib/kernel/TeProjection.h>
 #include <terralib/kernel/TeTable.h>
+#include <terralib/kernel/TeRasterParams.h>
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -384,6 +386,21 @@ te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
 
   rproperty->set(grid.release());
 
+  std::vector<te::rst::BandProperty::ColorEntry> palette;
+  if(rparams.photometric_[0] == TeRasterParams::TeRasterPhotometricInterpretation::TePallete)
+  {
+    std::size_t size = rparams.lutr_.size();
+
+    for(std::size_t j = 0; j < size; ++j)
+    {
+      te::rst::BandProperty::ColorEntry c;
+      c.c1 = rparams.lutr_[j];
+      c.c2 = rparams.lutg_[j];
+      c.c3 = rparams.lutb_[j];
+      palette.push_back(c);
+    }
+  }
+
   for(int i = 0; i != rparams.nBands(); ++i)
   {
     te::rst::BandProperty* bp = new te::rst::BandProperty(i, Convert2T5(rparams.dataType_[i]));
@@ -391,8 +408,18 @@ te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
     bp->m_blkh = rparams.blockHeight_;
     bp->m_blkw = rparams.blockWidth_;
     bp->m_noDataValue = rparams.dummy_[i];
+    bp->m_valuesOffset = rparams.offset_;
 
-    // TODO: faltam varios parametros -> num-blocos serao importantes, ...
+    if(!palette.empty())
+      bp->m_palette.assign(palette.begin(), palette.end());
+
+    int col, lin, band, res, subb;
+
+    TeDecoderDatabase decDb;
+    decDb.decodifyId(rparams.blockId_, col, lin, band, res, subb);
+
+    bp->m_nblocksx = col;
+    bp->m_nblocksy = lin;
 
     rproperty->add(bp);
   }
