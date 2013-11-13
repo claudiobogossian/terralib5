@@ -55,8 +55,10 @@ void te::sqlite::Module::startup()
   if(m_initialized)
     return;
 
+  sqlite3_config(SQLITE_CONFIG_SERIALIZED);
+
   sqlite3_initialize();
-  
+
 #ifdef TE_ENABLE_SPATIALITE
   spatialite_init(0);
 #endif
