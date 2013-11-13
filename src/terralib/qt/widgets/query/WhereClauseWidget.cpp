@@ -67,11 +67,14 @@ te::qt::widgets::WhereClauseWidget::WhereClauseWidget(QWidget* parent, Qt::Windo
   // set icons
   m_ui->m_addWhereClausePushButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_removeWhereClausePushButton->setIcon(QIcon::fromTheme("list-remove"));
+  m_ui->m_clearAllPushButton->setIcon(QIcon::fromTheme("edit-clear"));
 
   //connects
   connect(m_ui->m_addWhereClausePushButton, SIGNAL(clicked()), this, SLOT(onAddWhereClausePushButtonClicked()));
   connect(m_ui->m_removeWhereClausePushButton, SIGNAL(clicked()), this, SLOT(onRemoveWhereClausePushButtonClicked()));
+  connect(m_ui->m_clearAllPushButton, SIGNAL(clicked()), this, SLOT(onClearAllPushButtonClicked()));
   connect(m_ui->m_valueValueRadioButton, SIGNAL(clicked()), this, SLOT(onValuePropertyRadioButtonClicked()));
+  
 
   m_count = 0;
   m_srid = 0;
@@ -503,6 +506,12 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
       m_ui->m_valueValueComboBox->addItem(value.c_str());
     }
   }
+}
+
+void te::qt::widgets::WhereClauseWidget::onClearAllPushButtonClicked()
+{
+  m_ui->m_whereClauseTableWidget->setRowCount(0);
+  m_ui->m_whereClauseTableWidget->resizeColumnsToContents();
 }
 
 te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QString& value, const std::string& propName)
