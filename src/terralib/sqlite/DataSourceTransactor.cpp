@@ -37,6 +37,7 @@
 #include "EWKBSize.h"
 #include "EWKBWriter.h"
 #include "FwDataSet.h"
+#include "PreparedQuery.h"
 #include "SQLVisitor.h"
 #include "Utils.h"
 
@@ -287,7 +288,7 @@ void te::sqlite::DataSourceTransactor::execute(const std::string& command)
 std::auto_ptr<te::da::PreparedQuery>
 te::sqlite::DataSourceTransactor::getPrepared(const std::string& qName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return std::auto_ptr<te::da::PreparedQuery>(new PreparedQuery(this, m_pImpl->m_db));
 }
 
 std::auto_ptr<te::da::BatchExecutor> te::sqlite::DataSourceTransactor::getBatchExecutor()
@@ -302,22 +303,22 @@ void te::sqlite::DataSourceTransactor::cancel()
 
 boost::int64_t te::sqlite::DataSourceTransactor::getLastGeneratedId()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::string te::sqlite::DataSourceTransactor::escape(const std::string& value)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 bool te::sqlite::DataSourceTransactor::isDataSetNameValid(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 bool te::sqlite::DataSourceTransactor::isPropertyNameValid(const std::string& propertyName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::vector<std::string>
@@ -407,19 +408,19 @@ bool te::sqlite::DataSourceTransactor::propertyExists(const std::string& dataset
 
 void te::sqlite::DataSourceTransactor::addProperty(const std::string& datasetName, te::dt::Property* p)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::dropProperty(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::renameProperty(const std::string& datasetName,
                                                       const std::string& propertyName,
                                                       const std::string& newPropertyName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::auto_ptr<te::da::PrimaryKey> te::sqlite::DataSourceTransactor::getPrimaryKey(const std::string& datasetName)
@@ -433,144 +434,144 @@ std::auto_ptr<te::da::PrimaryKey> te::sqlite::DataSourceTransactor::getPrimaryKe
 
 bool te::sqlite::DataSourceTransactor::primaryKeyExists(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::addPrimaryKey(const std::string& datasetName, te::da::PrimaryKey* pk)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::dropPrimaryKey(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::auto_ptr<te::da::ForeignKey> te::sqlite::DataSourceTransactor::getForeignKey(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::vector<std::string> te::sqlite::DataSourceTransactor::getForeignKeyNames(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 bool te::sqlite::DataSourceTransactor::foreignKeyExists(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::addForeignKey(const std::string& datasetName, te::da::ForeignKey* fk)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::dropForeignKey(const std::string& datasetName, const std::string& fkName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::auto_ptr<te::da::UniqueKey> te::sqlite::DataSourceTransactor::getUniqueKey(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::vector<std::string> te::sqlite::DataSourceTransactor::getUniqueKeyNames(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 bool te::sqlite::DataSourceTransactor::uniqueKeyExists(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::addUniqueKey(const std::string& datasetName, te::da::UniqueKey* uk)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::dropUniqueKey(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::auto_ptr<te::da::CheckConstraint> te::sqlite::DataSourceTransactor::getCheckConstraint(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::vector<std::string> te::sqlite::DataSourceTransactor::getCheckConstraintNames(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 bool te::sqlite::DataSourceTransactor::checkConstraintExists(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::addCheckConstraint(const std::string& datasetName, te::da::CheckConstraint* cc)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::dropCheckConstraint(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::auto_ptr<te::da::Index> te::sqlite::DataSourceTransactor::getIndex(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::vector<std::string> te::sqlite::DataSourceTransactor::getIndexNames(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 bool te::sqlite::DataSourceTransactor::indexExists(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::addIndex(const std::string& datasetName,
               te::da::Index* idx,
               const std::map<std::string, std::string>& options)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::dropIndex(const std::string& datasetName, const std::string& idxName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::auto_ptr<te::da::Sequence> te::sqlite::DataSourceTransactor::getSequence(const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::vector<std::string> te::sqlite::DataSourceTransactor::getSequenceNames()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 bool te::sqlite::DataSourceTransactor::sequenceExists(const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::addSequence(te::da::Sequence* sequence)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::dropSequence(const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 std::auto_ptr<te::gm::Envelope> te::sqlite::DataSourceTransactor::getExtent(const std::string& datasetName,
@@ -593,7 +594,7 @@ std::auto_ptr<te::gm::Envelope> te::sqlite::DataSourceTransactor::getExtent(cons
 
 std::size_t te::sqlite::DataSourceTransactor::getNumberOfItems(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 bool te::sqlite::DataSourceTransactor::hasDataSets()
@@ -605,30 +606,30 @@ bool te::sqlite::DataSourceTransactor::hasDataSets()
 
 bool te::sqlite::DataSourceTransactor::dataSetExists(const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::createDataSet(te::da::DataSetType* dt,
                                                      const std::map<std::string, std::string>& options)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::cloneDataSet(const std::string& name,
                                                     const std::string& cloneName,
                                                     const std::map<std::string, std::string>& options)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::dropDataSet(const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::renameDataSet(const std::string& name, const std::string& newName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::add(const std::string& datasetName,
@@ -636,12 +637,12 @@ void te::sqlite::DataSourceTransactor::add(const std::string& datasetName,
                                            const std::map<std::string, std::string>& options,
                                            std::size_t limit)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::remove(const std::string& datasetName, const te::da::ObjectIdSet* oids)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::update(const std::string& datasetName,
@@ -651,14 +652,14 @@ void te::sqlite::DataSourceTransactor::update(const std::string& datasetName,
                                               const std::map<std::string, std::string>& options,
                                               std::size_t limit)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 
 void te::sqlite::DataSourceTransactor::optimize(const std::map<std::string, std::string>& opInfo)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
 sqlite3* te::sqlite::DataSourceTransactor::getDB() const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  throw te::common::Exception(TR_COMMON("SQLITE: Not implemented yet!"));
 }
