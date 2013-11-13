@@ -148,11 +148,11 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
     {
-    m_ui->m_slicesSpinBox->setEnabled(false);
+      m_ui->m_slicesSpinBox->setEnabled(false);
     }
     else
     {
-    m_ui->m_slicesSpinBox->setEnabled(true);
+      m_ui->m_slicesSpinBox->setEnabled(true);
     }
   }
   else

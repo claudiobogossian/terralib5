@@ -58,7 +58,7 @@ void te::qt::af::SymbolizerExplorer::onApplicationTriggered(te::qt::af::evt::Eve
       te::map::AbstractLayerPtr layer = e->m_layer;
       assert(layer);
 
-      if(layer->getType() != "FOLDERLAYER")
+      if(layer->getType() != "FOLDERLAYER" && layer->getType() != "DATASETADAPTERLAYER" )
         m_explorer->setStyle(layer->getStyle(), layer.get());
     }
     break;

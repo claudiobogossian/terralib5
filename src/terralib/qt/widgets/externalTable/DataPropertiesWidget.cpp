@@ -27,7 +27,6 @@
 #include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/DataSetTypeConverter.h"
-#include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
@@ -46,6 +45,8 @@
 #include "ui_DataPropertiesWidgetForm.h"
 
 // Qt
+#include <QCheckBox>
+#include <QtGui/QComboBox>
 #include <QtCore/QFileInfo>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
@@ -53,6 +54,8 @@
 // Boost
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 //Utility functions used mianly to pupulate ui elements.
 void buidTypeMap(std::map<int, std::string>& typeMap)
@@ -65,7 +68,6 @@ void buidTypeMap(std::map<int, std::string>& typeMap)
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::BYTE_ARRAY_TYPE, QObject::tr("Byte Array").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::CHAR_TYPE, QObject::tr("Char").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::COMPOSITE_TYPE, QObject::tr("Composite").toStdString()));
-   //typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATASET_TYPE, QObject::tr("Data Set").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATETIME_TYPE, QObject::tr("Date and Time").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, QObject::tr("Double").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::FLOAT_TYPE, QObject::tr("Float").toStdString()));
@@ -74,7 +76,6 @@ void buidTypeMap(std::map<int, std::string>& typeMap)
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, QObject::tr("Int 32").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, QObject::tr("Int 64").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, QObject::tr("Numeric").toStdString()));
-   //typeMap.insert(std::map<int, std::string>::value_type(te::dt::RASTER_TYPE, QObject::tr("Raster").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, QObject::tr("String").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::UCHAR_TYPE, QObject::tr("U Char").toStdString()));
    typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT16_TYPE, QObject::tr("U Int 16").toStdString()));
@@ -170,9 +171,14 @@ te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Q
 
   m_ui->m_dataPropertiesTableWidget->setSelectionMode(QAbstractItemView::NoSelection);
 
+  //add icon
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("tabular-import-hint").pixmap(112,48));
+
   //Connecting signals and slots
   connect(m_ui->m_inputDataToolButton, SIGNAL(clicked()), this, SLOT(onInputDataToolButtonTriggered()));
   connect(m_ui->m_sridPushButton, SIGNAL(clicked()), this, SLOT(onSridPushButtonCLicked()));
+  connect(m_ui->m_xAxisComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onPointPropertyChanged(const QString&)));
+  connect(m_ui->m_yAxisComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onPointPropertyChanged(const QString&)));
   connect(m_mapper, SIGNAL(mapped(int)), this, SLOT(onPropertyTypeChanged(int)));
 }
 
@@ -181,17 +187,8 @@ te::qt::widgets::DatapPropertiesWidget::~DatapPropertiesWidget()
   m_typeMap.clear();
 }
 
-std::auto_ptr<te::da::DataSetAdapter> te::qt::widgets::DatapPropertiesWidget::getAdapter()
+std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidget::getConverter()
 {
-  //Searching for properties that the user selected to adapt
-  for (int i = 0; i < m_ui->m_dataPropertiesTableWidget->rowCount(); ++i)
-  {
-    if(m_typeMap[m_dataType->getProperty(i)->getType()].c_str() != dynamic_cast<QComboBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(i, 1))->currentText().toStdString())
-    {
-      m_dsConverter->add(m_dataType->getProperty(i)->getName(), getConvertedproperty(m_dataType->getProperty(i)->getName(), m_dataType->getProperty(i)->getType()));
-    }
-  }
-
   //Configuring a new geometry if the user requested it.
   if(m_ui->m_geometryGroupBox->isChecked())
   {
@@ -203,7 +200,11 @@ std::auto_ptr<te::da::DataSetAdapter> te::qt::widgets::DatapPropertiesWidget::ge
       names.push_back(m_ui->m_xAxisComboBox->currentText().toStdString());
       names.push_back(m_ui->m_yAxisComboBox->currentText().toStdString());
       newGeom = new te::gm::GeometryProperty("Point", true, new std::string());
-      newGeom->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+      newGeom->setGeometryType(te::gm::PointType);
+
+      if(!m_ui->m_sridLineEdit->text().isEmpty())
+        newGeom->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+
       m_dsConverter->add(names, newGeom, te::da::XYToPointConverter);
     }
     else if(m_ui->m_wktRadioButton->isChecked())
@@ -215,8 +216,34 @@ std::auto_ptr<te::da::DataSetAdapter> te::qt::widgets::DatapPropertiesWidget::ge
     }
   }
 
-  std::auto_ptr<te::da::DataSetAdapter> adapter(te::da::CreateAdapter(m_dataSet.release(), m_dsConverter, true));
-  return adapter;
+  //Searching for properties that the user selected to adapt
+  for (int i = 0; i < m_ui->m_dataPropertiesTableWidget->rowCount(); ++i)
+  {
+    if(dynamic_cast<QCheckBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(i, 0))->isChecked())
+    {
+      QComboBox* box = dynamic_cast<QComboBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(i, 1));
+      int type = box->itemData(box->currentIndex()).toInt();
+      m_dsConverter->add(m_dataType->getProperty(i)->getName(), getConvertedproperty(m_dataType->getProperty(i)->getName(), type));
+    }
+  }
+
+  te::da::DataSourceManager::getInstance().insert(m_dataSource);
+  return m_dsConverter;
+}
+
+te::da::DataSet* te::qt::widgets::DatapPropertiesWidget::getDataSet()
+{
+  return m_dataSet.get();
+}
+
+te::da::DataSetType* te::qt::widgets::DatapPropertiesWidget::getDataSetType()
+{
+  return m_dataType.get();
+}
+
+te::da::DataSource* te::qt::widgets::DatapPropertiesWidget::getDataSource()
+{
+  return m_dataSource.get();
 }
 
 void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
@@ -241,6 +268,10 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
   //Creating a DataSource
   m_dataSource = te::da::DataSourceFactory::make("OGR");
   m_dataSource->setConnectionInfo(connInfo);
+
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  m_dataSource->setId(boost::uuids::to_string(u));
   m_dataSource->open();
 
   //Creating the DataSet and DataType
@@ -249,7 +280,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
   m_dataType = m_dataSource->getDataSetType(datasetNames[0]);
 
   //Creating the DataSetConverter 
-  m_dsConverter = new te::da::DataSetTypeConverter(m_dataType.get(), m_dataSource->getCapabilities());
+  m_dsConverter.reset(new te::da::DataSetTypeConverter(m_dataType.get()));
 
   //Filling the data preview table
   std::vector<std::size_t> properties;
@@ -274,10 +305,12 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     //The Property name item
     std::string propName = m_dataType->getProperty(t)->getName();
 
-    QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(propName));
-    itemName->setFlags(Qt::ItemIsEnabled);
+    //A checkbox used to know if the user wants to import that row's property
+    QCheckBox* impCheck = new QCheckBox();
+    impCheck->setText(QString::fromStdString(propName));
+    impCheck->setCheckState(Qt::Checked);
 
-    m_ui->m_dataPropertiesTableWidget->setItem(newrow, 0, itemName);
+    m_ui->m_dataPropertiesTableWidget->setCellWidget(newrow, 0, impCheck);
 
     //The property type item
     QComboBox* typeCB = new QComboBox();
@@ -299,19 +332,32 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
   m_ui->m_xAxisComboBox->clear();
   m_ui->m_yAxisComboBox->clear();
 
-  //Filling the ComboBoxes that will be used to configure the resulting geometries
-  for(size_t t = 0; t < m_dataType->size(); ++t)
+
+  if(!m_dataType->hasGeom())
   {
-    std::string propName = m_dataType->getProperty(t)->getName();
-    int type = m_dataType->getProperty(t)->getType();
-    if(type == te::dt::STRING_TYPE)
-      m_ui->m_wktComboBox->addItem(QString::fromStdString(propName));
-    else if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || 
-             type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
+
+    m_ui->m_geometryGroupBox->setEnabled(true);
+    m_ui->m_geometryGroupBox->setChecked(false);
+
+    //Filling the ComboBoxes that will be used to configure the resulting geometries
+    for(size_t t = 0; t < m_dataType->size(); ++t)
     {
-      m_ui->m_xAxisComboBox->addItem(QString::fromStdString(propName));
-      m_ui->m_yAxisComboBox->addItem(QString::fromStdString(propName));
+      std::string propName = m_dataType->getProperty(t)->getName();
+      int type = m_dataType->getProperty(t)->getType();
+      if(type == te::dt::STRING_TYPE)
+        m_ui->m_wktComboBox->addItem(QString::fromStdString(propName));
+      else if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || 
+               type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
+      {
+        m_ui->m_xAxisComboBox->addItem(QString::fromStdString(propName));
+        m_ui->m_yAxisComboBox->addItem(QString::fromStdString(propName));
+      }
     }
+  }
+  else
+  {
+    m_ui->m_geometryGroupBox->setEnabled(false);
+    m_ui->m_geometryGroupBox->setChecked(false);
   }
 }
 
@@ -327,18 +373,18 @@ void te::qt::widgets::DatapPropertiesWidget::onSridPushButtonCLicked()
   }
 }
 
-void te::qt::widgets::DatapPropertiesWidget:: onPropertyTypeChanged(int row)
+void te::qt::widgets::DatapPropertiesWidget::onPropertyTypeChanged(int row)
 {
   //Acquiring the name of the cconfigured property and it's new type.
-  std::string propName = m_ui->m_dataPropertiesTableWidget->item(row, 0)->text().toStdString();;
+  QCheckBox* check = dynamic_cast<QCheckBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(row, 0));
   QComboBox* box = dynamic_cast<QComboBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(row, 1));
+  std::string propName = check->text().toStdString();
   int type = box->itemData(box->currentIndex()).toInt();
 
   //Searching the property to see if it is already in the comboBoxes
-  int wkt, xAxis, yAxis;
+  int wkt, xyAxis;
   wkt = m_ui->m_wktComboBox->findText(QString::fromStdString(propName));
-  xAxis = m_ui->m_xAxisComboBox->findText(QString::fromStdString(propName));
-  yAxis = m_ui->m_yAxisComboBox->findText(QString::fromStdString(propName));
+  xyAxis = m_ui->m_xAxisComboBox->findText(QString::fromStdString(propName));
 
   //Checking wheather the property needs to be added to or removed from wktComboBox
   if(wkt == -1)
@@ -352,27 +398,26 @@ void te::qt::widgets::DatapPropertiesWidget:: onPropertyTypeChanged(int row)
       m_ui->m_wktComboBox->removeItem(wkt);
   }
 
-  //Checking wheather the property needs to be added to or removed from xAxisoOmboBox
-  if(xAxis == -1)
+  //Checking wheather the property needs to be added to or removed from the xAxisoOmboBox and yAxisoCOmboBox.
+  //Their values will always be the same.
+  if(xyAxis == -1)
   {
     if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
+    {
       m_ui->m_xAxisComboBox->addItem(QString::fromStdString(propName));
-  }
-  else
-  {
-    if((type <= te::dt::INT16_TYPE && type >= te::dt::UINT64_TYPE) || type != te::dt::FLOAT_TYPE || type != te::dt::DOUBLE_TYPE)
-      m_ui->m_xAxisComboBox->removeItem(xAxis);
-  }
-
-  //Checking wheather the property needs to be added to or removed from yxisoOmboBox
-  if(yAxis == -1)
-  {
-    if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
       m_ui->m_yAxisComboBox->addItem(QString::fromStdString(propName));
+    }
   }
   else
   {
     if((type <= te::dt::INT16_TYPE && type >= te::dt::UINT64_TYPE) || type != te::dt::FLOAT_TYPE || type != te::dt::DOUBLE_TYPE)
-      m_ui->m_yAxisComboBox->removeItem(yAxis);
+    {
+      m_ui->m_xAxisComboBox->removeItem(xyAxis);
+      m_ui->m_yAxisComboBox->removeItem(xyAxis);
+    }
   }
+}
+
+void te::qt::widgets::DatapPropertiesWidget::onPointPropertyChanged(const QString& text)
+{
 }

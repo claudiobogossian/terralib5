@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>361</width>
+    <width>362</width>
     <height>432</height>
    </rect>
   </property>
@@ -16,6 +16,48 @@
   <layout class="QGridLayout" name="gridLayout_8">
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QFrame" name="m_titleFrame">
+       <property name="styleSheet">
+        <string notr="true">QWidget { background: white }</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_11">
+        <item row="0" column="0">
+         <widget class="QLabel" name="m_titleLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Imports a tabular file</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="m_imgLabel">
+          <property name="text">
+           <string>Hint</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item>
       <widget class="QGroupBox" name="m_inputDataGroupBox">
        <property name="title">
