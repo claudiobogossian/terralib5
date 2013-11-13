@@ -79,8 +79,6 @@ void TerraView::makeDialog()
   helpAbout->setIcon(QIcon::fromTheme("help-about-browser"));
 
   connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
-
-  connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
 }
 
 void TerraView::showAboutDialog()

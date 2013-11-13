@@ -121,7 +121,7 @@ te::qt::widgets::DataSetTableModel::DataSetTableModel (QObject* parent)
   : QAbstractTableModel(parent),
     m_dataset(0),
     m_currentRow(-1),
-    m_OIdsVisible(false),
+    m_OIdsVisible(true),
     m_enabled(true)
 {
   m_promoter = new Promoter;

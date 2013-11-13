@@ -156,7 +156,7 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
 {
   size_t setSize = dset->size();
 
-  m_PkeysRows.clear();
+  cleanPreproccessKeys();
 
   if(m_logicalRows.empty())
     m_logicalRows.resize(setSize);
@@ -180,7 +180,7 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
 
 size_t te::qt::widgets::Promoter::getLogicalRow(const size_t& visualRow)
 {
-  return m_logicalRows[visualRow];
+  return m_logicalRows.empty() ? visualRow : m_logicalRows[visualRow];
 }
 
 void te::qt::widgets::Promoter::cleanPreproccessKeys()

@@ -35,6 +35,7 @@
 
 // STL
 #include <vector>
+#include <memory>
 
 bool IsGeometryColumn(te::da::DataSet* dset, const size_t& col)
 {
@@ -137,12 +138,12 @@ std::auto_ptr<te::da::Select> GetSelectExpression(const std::string& tableName, 
 
   from.push_back(std::auto_ptr<te::da::DataSetName>(new te::da::DataSetName(tableName)));
 
-  te::da::OrderBy or;
+  te::da::OrderBy order_by;
 
   for(size_t i=0; i<cols.size(); i++)
-    or.push_back(std::auto_ptr<te::da::OrderByItem>(new te::da::OrderByItem(set->getPropertyName(cols[(int)i]), (asc) ? te::da::ASC : te::da::DESC)));
+    order_by.push_back(std::auto_ptr<te::da::OrderByItem>(new te::da::OrderByItem(set->getPropertyName(cols[(int)i]), (asc) ? te::da::ASC : te::da::DESC)));
 
-  return std::auto_ptr<te::da::Select>(new te::da::Select(fields, from, or));
+  return std::auto_ptr<te::da::Select>(new te::da::Select(fields, from, order_by));
 }
 
 std::auto_ptr<te::da::DataSet> GetDataSet(const te::map::AbstractLayer* layer, const te::da::DataSet* set, const std::vector<int>& cols, const bool& asc)
@@ -259,13 +260,6 @@ class TablePopupFilter : public QObject
 
             m_hMenu->addSeparator();
 
-            QAction* act4 = new QAction(m_hMenu);
-            act4->setText(tr("Show identifiers columns"));
-            act4->setToolTip(tr("Shows an icon on identifiers columns."));
-            m_hMenu->addAction(act4);
-            act4->setCheckable(true);
-            act4->setChecked(m_showOidsColumns);
-
             QAction* act5 = new QAction(m_hMenu);
             act5->setText(tr("Sort data ASC"));
             act5->setToolTip(tr("Sort data in ascendent order using selected columns."));
@@ -310,10 +304,8 @@ class TablePopupFilter : public QObject
 
             m_view->connect(act2, SIGNAL(triggered()), SLOT(showAllColumns()));
             m_view->connect(act3, SIGNAL(triggered()), SLOT(resetColumnsOrder()));
-//            m_view->connect(act5, SIGNAL(triggered()), SLOT(sortByColumns()));
             m_view->connect(act7, SIGNAL(triggered()), SLOT(addColumn()));
             
-            connect(act4, SIGNAL(triggered()), SLOT(showOIdsColumns()));
             connect(act6, SIGNAL(triggered()), SLOT(showStatistics()));
             connect (act5, SIGNAL(triggered()), SLOT(sortDataAsc()));
             connect (act9, SIGNAL(triggered()), SLOT(sortDataDesc()));
@@ -392,13 +384,6 @@ class TablePopupFilter : public QObject
       int column = act->data().toInt();
 
       emit showColumn(column);
-    }
-
-    void showOIdsColumns()
-    {
-      m_showOidsColumns = !m_showOidsColumns;
-
-      m_view->setOIdsColumnsVisible(m_showOidsColumns);
     }
 
     void showStatistics()

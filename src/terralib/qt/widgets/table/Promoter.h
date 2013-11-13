@@ -31,6 +31,7 @@
 // STL
 #include <map>
 #include <vector>
+#include <string>
 
 // Forward declarations
 namespace te
