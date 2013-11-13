@@ -24,18 +24,26 @@
 */
 
 // TerraLib
+#include "../common/Globals.h"
 #include "../common/Translator.h"
+#include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/query/Select.h"
+#include "../geometry/Envelope.h"
 #include "../memory/DataSet.h"
 #include "BatchExecutor.h"
 #include "DataSource.h"
 #include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
+#include "EWKBSize.h"
+#include "EWKBWriter.h"
 #include "FwDataSet.h"
 #include "SQLVisitor.h"
+#include "Utils.h"
 
 // Boost
+#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
 
 // SQLite
 #include <sqlite3.h>
@@ -123,24 +131,42 @@ std::auto_ptr<te::da::DataSet>
 te::sqlite::DataSourceTransactor::getDataSet(const std::string& name,
                                              te::common::TraverseType travType,
                                              bool connected,
-                                             const te::common::AccessPolicy /*accessPolicy*/)
+                                             const te::common::AccessPolicy accessPolicy)
 {
   std::string sql("SELECT * FROM ");
               sql += name;
 
-  return query(sql, travType, connected);
+  return query(sql, travType, connected, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet>
 te::sqlite::DataSourceTransactor::getDataSet(const std::string& name,
-                                            const std::string& propertyName,
-                                            const te::gm::Envelope* e,
-                                            te::gm::SpatialRelation r,
-                                            te::common::TraverseType travType,
-                                            bool connected,
-                                            const te::common::AccessPolicy accessPolicy)
+                                             const std::string& propertyName,
+                                             const te::gm::Envelope* e,
+                                             te::gm::SpatialRelation r,
+                                             te::common::TraverseType travType,
+                                             bool connected,
+                                             const te::common::AccessPolicy accessPolicy)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  if(e == 0)
+    throw te::common::Exception(TR_COMMON("The envelope is missing!"));
+
+  if(propertyName.empty())
+    throw te::common::Exception(TR_COMMON("The property is missing!"));
+
+// TODO: we need to check if table has an spatial index before using this code!
+  std::string sql ("SELECT * FROM ");
+              sql += name;
+              sql += " WHERE ROWID IN (SELECT rowid FROM SpatialIndex WHERE f_table_name = '";
+              sql += boost::to_lower_copy(name) + "' AND f_geometry_column = '";
+              sql += boost::to_lower_copy(propertyName) + "' AND ";
+              sql += "search_frame = BuildMbr(" + boost::lexical_cast<std::string>(e->m_llx);
+              sql += ", " + boost::lexical_cast<std::string>(e->m_lly);
+              sql += ", " + boost::lexical_cast<std::string>(e->m_urx);
+              sql += ", " + boost::lexical_cast<std::string>(e->m_ury);
+              sql += "))";
+
+  return query(sql, travType, connected, accessPolicy);
 }
 
 std::auto_ptr<te::da::DataSet>
@@ -149,10 +175,53 @@ te::sqlite::DataSourceTransactor::getDataSet(const std::string& name,
                                              const te::gm::Geometry* g,
                                              te::gm::SpatialRelation r,
                                              te::common::TraverseType travType,
-                                             bool connected,
-                                             const te::common::AccessPolicy accessPolicy)
+                                             bool /*connected*/,
+                                             const te::common::AccessPolicy /*accessPolicy*/)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  if(g == 0)
+    throw te::common::Exception(TR_COMMON("The geometry is missing!"));
+
+  if(propertyName.empty())
+    throw te::common::Exception(TR_COMMON("The property is missing!"));
+
+// TODO: we need to check if table has an spatial index before using this code!
+  std::string sql ("SELECT * FROM ");
+              sql += name;
+              sql += " WHERE ";
+              sql += GetBindableSpatialRelation(propertyName, r);
+              sql += " AND ROWID IN (SELECT pkid FROM ";
+              sql += "idx_" + name + "_" + propertyName;
+              sql += " WHERE pkid MATCH ";
+              sql += GetRtreeFilter(g->getMBR(), r);
+              sql += ")";
+
+  sqlite3_stmt* stmt = m_pImpl->queryLite(sql);
+
+  std::size_t ewkbSize = EWKBSize::getEWKBSize(g);
+
+  unsigned char* ewkb = new unsigned char[ewkbSize];
+
+  EWKBWriter::write(g, ewkb, te::common::Globals::sm_machineByteOrder);
+
+  int retval = sqlite3_bind_blob(stmt, 1, ewkb, ewkbSize, SQLITE_TRANSIENT);
+
+  delete [] ewkb;
+
+  if(retval != SQLITE_OK)
+  {
+    sqlite3_finalize(stmt);
+
+    throw te::common::Exception(TR_COMMON("Could not bind geometry in the spatial filter!"));
+  }
+
+  std::auto_ptr<te::da::DataSet> litedataset(new FwDataSet(stmt, this));
+
+  if(travType == te::common::FORWARDONLY)
+    return litedataset;
+
+  std::auto_ptr<te::da::DataSet> fatdataset(new te::mem::DataSet(*litedataset, true));
+
+  return fatdataset;
 }
 
 std::auto_ptr<te::da::DataSet>
@@ -189,7 +258,12 @@ te::sqlite::DataSourceTransactor::query(const std::string& query,
 
 void te::sqlite::DataSourceTransactor::execute(const te::da::Query& command)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  std::string sql;
+
+  SQLVisitor visitor(*(m_pImpl->m_parent->getDialect()), sql);
+  command.accept(visitor);
+
+  execute(sql);
 }
 
 void te::sqlite::DataSourceTransactor::execute(const std::string& command)
@@ -256,7 +330,7 @@ te::sqlite::DataSourceTransactor::getDataSetNames()
 
 std::size_t te::sqlite::DataSourceTransactor::getNumberOfDataSets()
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  return getDataSetNames().size();
 }
 
 std::auto_ptr<te::da::DataSetType>
@@ -279,27 +353,56 @@ std::auto_ptr<te::dt::Property>
 te::sqlite::DataSourceTransactor::getProperty(const std::string& datasetName,
                                               const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  std::auto_ptr<te::da::DataSetType> dt(cloader.getDataSetType(datasetName));
+
+  te::dt::Property* p = dt->getProperty(name);
+
+  return std::auto_ptr<te::dt::Property>(p->clone());
 }
 
 std::auto_ptr<te::dt::Property> te::sqlite::DataSourceTransactor::getProperty(const std::string& datasetName, std::size_t propertyPos)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  std::auto_ptr<te::da::DataSetType> dt(cloader.getDataSetType(datasetName));
+
+  te::dt::Property* p = dt->getProperty(propertyPos);
+
+  return std::auto_ptr<te::dt::Property>(p->clone());
 }
 
 std::vector<std::string> te::sqlite::DataSourceTransactor::getPropertyNames(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  std::auto_ptr<te::da::DataSetType> dt(cloader.getDataSetType(datasetName));
+
+  std::vector<std::string> pnames;
+
+  for(std::size_t i = 0; i != dt->size(); ++i)
+    pnames.push_back(dt->getProperty(i)->getName());
+
+  return pnames;
 }
 
 std::size_t te::sqlite::DataSourceTransactor::getNumberOfProperties(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  std::auto_ptr<te::da::DataSetType> dt(cloader.getDataSetType(datasetName));
+
+  return dt->size();
 }
 
 bool te::sqlite::DataSourceTransactor::propertyExists(const std::string& datasetName, const std::string& name)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  std::auto_ptr<te::da::DataSetType> dt(cloader.getDataSetType(datasetName));
+
+  return dt->getProperty(name) != 0;
 }
 
 void te::sqlite::DataSourceTransactor::addProperty(const std::string& datasetName, te::dt::Property* p)
@@ -321,7 +424,11 @@ void te::sqlite::DataSourceTransactor::renameProperty(const std::string& dataset
 
 std::auto_ptr<te::da::PrimaryKey> te::sqlite::DataSourceTransactor::getPrimaryKey(const std::string& datasetName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  std::auto_ptr<te::da::DataSetType> dt(cloader.getDataSetType(datasetName));
+
+  return std::auto_ptr<te::da::PrimaryKey>(static_cast<te::da::PrimaryKey*>(dt->getPrimaryKey()->clone()));
 }
 
 bool te::sqlite::DataSourceTransactor::primaryKeyExists(const std::string& datasetName, const std::string& name)
@@ -469,13 +576,19 @@ void te::sqlite::DataSourceTransactor::dropSequence(const std::string& name)
 std::auto_ptr<te::gm::Envelope> te::sqlite::DataSourceTransactor::getExtent(const std::string& datasetName,
                                                                             const std::string& propertyName)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  return std::auto_ptr<te::gm::Envelope>(cloader.getExtent(datasetName, propertyName));
 }
 
 std::auto_ptr<te::gm::Envelope> te::sqlite::DataSourceTransactor::getExtent(const std::string& datasetName,
                                                                             std::size_t propertyPos)
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  DataSourceCatalogLoader cloader(this);
+
+  std::auto_ptr<te::da::DataSetType> dt(cloader.getDataSetType(datasetName));
+
+  return std::auto_ptr<te::gm::Envelope>(cloader.getExtent(datasetName, dt->getProperty(propertyPos)->getName()));
 }
 
 std::size_t te::sqlite::DataSourceTransactor::getNumberOfItems(const std::string& datasetName)

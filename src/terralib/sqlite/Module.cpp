@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSourceFactory.h"
+#include "../dataaccess/datasource/DataSourceManager.h"
 #include "DataSourceFactory.h"
 #include "Module.h"
 
@@ -69,6 +70,10 @@ void te::sqlite::Module::shutdown()
 {
   if(!m_initialized)
     return;
+
+  te::da::DataSourceManager::getInstance().detachAll("SQLITE");
+
+  te::da::DataSourceFactory::remove("SQLITE");
 
   sqlite3_shutdown();
 

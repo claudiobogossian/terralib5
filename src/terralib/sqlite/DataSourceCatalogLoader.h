@@ -71,6 +71,25 @@ namespace te
 
         boost::ptr_vector<te::dt::Property> getProperties(const std::string& datasetName);
 
+        void getPrimaryKey(te::da::DataSetType* dt);
+
+        void getUniqueKeys(te::da::DataSetType* dt);
+
+        void getUniqueKey(te::da::DataSetType* dt,
+                          int idxId,
+                          const std::string& idxName);
+
+        void getIndexes(te::da::DataSetType* dt);
+
+        void getSpatialIndexes(te::da::DataSetType* dt);
+
+        void getIndex(te::da::DataSetType* dt,
+                      int idxId,
+                      const std::string& idxName,
+                      bool isUnique);
+
+        te::gm::Envelope* getExtent(const std::string& tableName, const std::string& geomColName);
+
       private:
 
         class Impl;
