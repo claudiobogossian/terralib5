@@ -99,6 +99,8 @@ namespace te
 
           void onValuePropertyRadioButtonClicked();
 
+          void onClearAllPushButtonClicked();
+
         protected:
 
           te::da::Expression* getExpression(const QString& value, const std::string& propName);

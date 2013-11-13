@@ -535,6 +535,13 @@ namespace te
           \param i The attribute index.
 
           \return The raster attribute value in the given position.
+          
+
+          \exception Exception It can throw an exception if:
+                     <ul>
+                     <li>something goes wrong during the data retrieval</li>
+                     <li>the maximum number of simultaneous accesses has been reached</li>
+                     </ul>          
         */
         virtual std::auto_ptr<te::rst::Raster> getRaster(std::size_t i) const = 0;
 
@@ -544,6 +551,12 @@ namespace te
           \param name The attribute name.
 
           \return The raster attribute value with the given name.
+          
+          \exception Exception It can throw an exception if:
+                     <ul>
+                     <li>something goes wrong during the data retrieval</li>
+                     <li>the maximum number of simultaneous accesses has been reached</li>
+                     </ul>            
         */
         virtual std::auto_ptr<te::rst::Raster> getRaster(const std::string& name) const;
 

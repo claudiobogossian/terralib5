@@ -1,29 +1,29 @@
 /*  Copyright (C) 2001-2010 National Institute For Space Research (INPE) - Brazil.
-
-    This file is part of the TerraLib - a Framework for building GIS enabled applications.
-
-    TerraLib is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License,
-    or (at your option) any later version.
-
-    TerraLib is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with TerraLib. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@terralib.org>.
+ 
+ This file is part of the TerraLib - a Framework for building GIS enabled applications.
+ 
+ TerraLib is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License,
+ or (at your option) any later version.
+ 
+ TerraLib is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with TerraLib. See COPYING. If not, write to
+ TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*! 
-  \file Ellipsoid.h
+/*!
+ \file Ellipsoid.h
+ 
+ \brief This file contains the structs necessary to model an Ellipsoid.
+ */
 
-  \brief This file contains the structs necessary to model an Ellipsoid.
-*/
-
-#ifndef __TERRALIB_SRS_INTERNAL_ELLIPSOID_H 
+#ifndef __TERRALIB_SRS_INTERNAL_ELLIPSOID_H
 #define __TERRALIB_SRS_INTERNAL_ELLIPSOID_H
 
 // TerraLib
@@ -41,60 +41,50 @@ namespace te
      \brief A reference ellipsoid is an approximation of the Earth's surface as a squashed sphere.
      \note The terms "spheroid" and "ellipsoid" are synonymous.
      \todo Verify if it is necessary to keep an <Id,Authority> to this object.
-    */
+     */
     class TESRSEXPORT Ellipsoid
     {
-    
+      
     public:
-
+      
+      //! Constructor with parameters
       /*!
-        \brief Constructor.
-
-        \param name Ellipsoid name (default empty string).
-        \param rad  Semi-major axis (default 0.0);
-        \param invflat Inverse flattening (default 0.0).
-      */
-      Ellipsoid(const std::string& name = "", double rad = 0.0, double invflat = 0.0);
-
-      /*!
-        \brief Returns the Ellipsoid name.
-        \return  Ellipsoid name.
+       \param name Ellipsoid name (default empty string).
+       \param rad  Semi-major axis (default 0.0);
+       \param invflat Inverse flattening (default 0.0).
        */
+      Ellipsoid(const std::string& name = "", double rad = 0.0, double invflat = 0.0);
+      
+      //! Returns the Ellipsoid name.
       const std::string& getName() const;
       
       /*!
-        \brief Sets the Ellipsoid name.        
-        \param name Ellipsoid name.
+       \brief Sets the Ellipsoid name.
+       \param name Ellipsoid name.
        */
       void setName(const std::string& name);
-
-      /*!
-        \brief Returns the Ellipsoid radium.
-        \return Ellipsoid radium.
-       */
+      
+      //! Returns the Ellipsoid radium.
       double getRadium() const;
-
+      
       /*!
-        \brief Sets the Ellipsoid radium.        
-        \param rad Ellipsoid radium.
+       \brief Sets the Ellipsoid radium.
+       \param rad Ellipsoid radium.
        */
       void setRadium(const double& rad);
-
-      /*!
-        \brief Returns the Ellipsoid inverse flattening.
-        \return  Ellipsoid inverse flattening.
-       */
+      
+      //! Returns the Ellipsoid inverse flattening.
       double getInverseFlattening() const;
-
+      
       /*!
-        \brief Sets the Ellipsoid inverse flattening.
-        \param invflat  Ellipsoid inverse flattening.
+       \brief Sets the Ellipsoid inverse flattening.
+       \param invflat  Ellipsoid inverse flattening.
        */
       void setInverseFlattening(const double& invflat);
-
-      //! Returns a WKT string that represent the ellipsoid.
+      
+      //! Returns a WKT string that represents the ellipsoid.
       std::string getWKT() const;
-
+      
     private:
       
       std::string m_name;        //!< Ellipsoid name

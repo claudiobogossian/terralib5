@@ -28,6 +28,7 @@
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
+#include "../../../dataaccess/query/FunctionNames.h"
 #include "../../../dataaccess/query/QueryCapabilities.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/DataSetLayer.h"
@@ -51,15 +52,15 @@ te::qt::widgets::QueryDialog::QueryDialog(QWidget* parent, Qt::WindowFlags f)
 {
   m_ui->setupUi(this);
 
-//build form
+  // Build form
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
   m_whereClauseWidget.reset( new te::qt::widgets::WhereClauseWidget(m_ui->m_widget));
   layout->addWidget(m_whereClauseWidget.get());
   layout->setContentsMargins(0,0,0,0);
 
-//connectors
+  // Signals¨& slots
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(QString)), this, SLOT(onInputLayerActivated(QString)));
-  connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
+  connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyPushButtonClicked()));
 }
 
 te::qt::widgets::QueryDialog::~QueryDialog()
@@ -108,7 +109,7 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
 {
   m_whereClauseWidget->clear();
 
-// get input layer
+  // Gets the input layer
   int idxLayer = m_ui->m_inputLayerComboBox->currentIndex();
 
   QVariant varLayer = m_ui->m_inputLayerComboBox->itemData(idxLayer, Qt::UserRole);
@@ -117,7 +118,7 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
 
   te::map::DataSetLayer* dsLayer = dynamic_cast<te::map::DataSetLayer*>(layer.get());
 
-// set data source
+  // Sets the DataSource
   std::string dataSourceName = dsLayer->getDataSourceId();
 
   te::da::DataSourcePtr dsPtr = te::da::GetDataSource(dataSourceName);
@@ -127,7 +128,7 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
 
   m_whereClauseWidget->setDataSource(dsPtr);
 
-//get capabilities
+  // Gets the capabilities
   std::vector<std::string> vecOperators;
   std::vector<std::string> vecSpatialOperators;
   std::vector<std::string> vecConnectors;
@@ -160,6 +161,20 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
     ++it;
   }
 
+  // For while! TODO: Revision!!!
+  if(vecSpatialOperators.size() == 1 && vecSpatialOperators[0] == te::da::FunctionNames::sm_ST_EnvelopeIntersects)
+  {
+    vecSpatialOperators.clear();
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Intersects);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Disjoint);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Touches);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Overlaps);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Crosses);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Within);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Contains);
+    vecSpatialOperators.push_back(te::da::FunctionNames::sm_ST_Equals);
+  }
+
   m_whereClauseWidget->setSpatialOperatorsList(vecSpatialOperators);
 
   it = queryCap.getLogicalOperators().begin();
@@ -171,7 +186,7 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
 
   m_whereClauseWidget->setConnectorsList(vecConnectors);
 
-//get data set information
+  // Gets data set information
   std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
   
   std::string dsName = dsType->getName();
@@ -183,7 +198,7 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
 
   m_whereClauseWidget->setFromItems(list);
 
-//get properties
+  // Get properties
   std::vector<std::string> inputProperties;
   std::vector<std::string> geomProperties;
 
@@ -202,13 +217,13 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
   m_whereClauseWidget->setGeomAttributeList(geomProperties, dsLayer->getSRID());
 }
 
-void te::qt::widgets::QueryDialog::onOkPushButtonClicked()
+void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
 {
   // Gets the defined restriction
   te::da::Where* wh = getWhere();
   if(wh == 0 || wh->getExp() == 0)
   {
-    QMessageBox::information(this, tr("TODO"), tr("TODO"));
+    QMessageBox::information(this, tr("Query"), tr("Add a restriction expression first."));
     return;
   }
 
@@ -222,21 +237,33 @@ void te::qt::widgets::QueryDialog::onOkPushButtonClicked()
   assert(layer.get());
 
   // Let's execute the query
+  try
+  {
+    setCursor(Qt::WaitCursor);
 
-  // The filter expression
-  te::da::Expression* e = wh->getExp()->clone();
+    // The filter expression
+    te::da::Expression* e = wh->getExp()->clone();
 
-  // Gets the layer schema
-  std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
+    // Gets the layer schema
+    std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
 
-  // Gets the dataset
-  std::auto_ptr<te::da::DataSet> dataset = layer->getData(e);
-  assert(dataset.get());
+    // Gets the dataset
+    std::auto_ptr<te::da::DataSet> dataset = layer->getData(e);
+    assert(dataset.get());
 
-  // Generates the oids
-  te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+    // Generates the oids
+    te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
 
-  layer->select(oids);
+    layer->select(oids);
+    emit layerSelectedObjectsChanged(layer);
 
-  emit layerSelectedObjectsChanged(layer);
+    setCursor(Qt::ArrowCursor);
+
+    QMessageBox::information(this, tr("Query"), tr("Query executed with successfully."));
+  }
+  catch(std::exception& e)
+  {
+    setCursor(Qt::ArrowCursor);
+    QMessageBox::information(this, tr("Query"), e.what());
+  }
 }

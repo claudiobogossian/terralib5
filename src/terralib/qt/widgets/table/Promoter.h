@@ -31,6 +31,7 @@
 // STL
 #include <map>
 #include <vector>
+#include <string>
 
 // Forward declarations
 namespace te
@@ -42,6 +43,12 @@ namespace te
     class DataSet;
   }
 }
+
+
+struct ObjectIdComparator
+{
+  bool operator () (te::da::ObjectId* lhs, te::da::ObjectId* rhs);
+};
 
 namespace te
 {
@@ -113,15 +120,6 @@ namespace te
           */
           void promote(const te::da::ObjectIdSet* oids);
 
-          /*
-            \brief Sort rows of \a dset.
-
-            \param dset The data set to be sorted.
-            
-            \param cols The positions of the columns to be used.
-          */
-          void sort(te::da::DataSet* dset, const std::vector<int>& cols);
-
           /*!
             \brief Given an object id returns its row.
 
@@ -133,7 +131,7 @@ namespace te
 
         protected:
 
-          std::map<te::da::ObjectId*, size_t, te::common::LessCmp<te::da::ObjectId*> > m_PkeysRows; //!< Map object id to its position in DataSet.
+          std::map<std::string, size_t> m_PkeysRows; //!< Map object id to its position in DataSet.
 
           std::vector<size_t> m_logicalRows;                                                        //!< Map original row to logical postion.
       };

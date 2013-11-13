@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/terralib4/DataSet.h
+  \file terralib/terralib4/RasterDataSet.h
 
   \brief ????
 */
 
-#ifndef __TERRALIB_TERRALIB4_INTERNAL_DATASET_H
-#define __TERRALIB_TERRALIB4_INTERNAL_DATASET_H
+#ifndef __TERRALIB_TERRALIB4_INTERNAL_RASTERDATASET_H
+#define __TERRALIB_TERRALIB4_INTERNAL_RASTERDATASET_H
 
 // TerraLib
 #include "../dataaccess/dataset/DataSet.h"
@@ -37,34 +37,27 @@
 #include <memory>
 #include <vector>
 
-namespace te
-{
-// Forward declarations
-  namespace da
-  {
-    class GeometryProperty;
-  }
-}
-
 class TeLayer;
-class TeDatabasePortal;
 
 namespace terralib4
 {
-  /*!
-    \class DataSet
 
-    \brief Implementation of a dataset for the ADO driver.
+  class Raster;
+
+  /*!
+    \class VectorDataSet
+
+    \brief Implementation of a dataset for the TerraLib 4 driver.
 
     \sa te::da::DataSet
   */
-  class TETERRALIB4EXPORT DataSet : public te::da::DataSet
+  class TETERRALIB4EXPORT RasterDataSet : public te::da::DataSet
   {
     public:
 
-      DataSet(TeLayer* layer);
+      RasterDataSet(TeRaster* raster);
 
-      ~DataSet();
+      ~RasterDataSet();
 
       te::common::TraverseType getTraverseType() const;
 
@@ -140,19 +133,14 @@ namespace terralib4
 
     protected:
 
-      TeQuerier* m_querier;
-      mutable TeSTInstance m_instance;
+      TeRaster* m_raster;
       int m_i;
-      int m_size;
-      int m_nCols;
-      bool m_hasGeometry;
-      TeLayer* m_layer;
   };
 
 }   // end namespace te
 
 
-#endif  // __TERRALIB_TERRALIB4_INTERNAL_DATASET_H
+#endif  // __TERRALIB_TERRALIB4_INTERNAL_RASTERDATASET_H
 
 
 

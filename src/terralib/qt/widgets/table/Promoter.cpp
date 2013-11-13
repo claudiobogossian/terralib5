@@ -21,7 +21,6 @@
 // TerraLib
 #include "../../../common/STLUtils.h"
 #include "../../../common/Translator.h"
-#include "../../../common/progress/TaskProgress.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
@@ -101,24 +100,6 @@ COMPARISON CompareAbsData (te::dt::AbstractData* lhs, te::dt::AbstractData* rhs)
   return res;
 }
 
-struct DataComparator
-{
-  bool operator() (const std::vector<te::dt::AbstractData*>& lhs, const std::vector<te::dt::AbstractData*>& rhs)
-  {
-    for (size_t i=0; i<lhs.size(); i++)
-    {
-      COMPARISON res = CompareAbsData(lhs[i], rhs[i]);
-
-      if(res == LESSER)
-        return true;
-      else if (res == GREATER)
-        return false;
-    }
-
-    return false;
-  }
-};
-
 std::vector<std::string> GetColumnsNames(te::da::DataSet* dset, const std::vector<size_t>& colsPositions)
 {
   std::vector<std::string> res;
@@ -130,18 +111,18 @@ std::vector<std::string> GetColumnsNames(te::da::DataSet* dset, const std::vecto
   return res;
 }
 
-void CleanAbstractData(std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator>& d)
+template <class T>
+void ClearVector(std::vector<T>& vec)
 {
-  std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator>::iterator it;
-    
-  for(it=d.begin(); it!=d.end(); ++it)
-    te::common::FreeContents(it->first);
-
-  d.clear();
+  std::vector<T>().swap(vec);
 }
 
 size_t GetRowPosition(const size_t& pos, const std::vector<size_t>& posVec)
 {
+  for(size_t i=pos; i<posVec.size(); i++)
+    if(posVec[i] == pos)
+      return i;
+
   for(size_t i=0; i<posVec.size(); i++)
     if(posVec[i] == pos)
       return i;
@@ -168,16 +149,12 @@ void te::qt::widgets::Promoter::cleanLogRowsAndProcessKeys()
 {
   cleanPreproccessKeys();
 
-  m_logicalRows.clear();
+  ClearVector(m_logicalRows);
 }
 
 void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std::vector<size_t>& pkeys)
 {
-  if(!m_PkeysRows.empty())
-    return;
-
   size_t setSize = dset->size();
-  std::vector<std::string> colsNames = GetColumnsNames(dset, pkeys);
 
   cleanPreproccessKeys();
 
@@ -186,40 +163,28 @@ void te::qt::widgets::Promoter::preProcessKeys(te::da::DataSet* dset, const std:
 
   dset->moveFirst();
 
-  te::common::TaskProgress task(QObject::tr("Preprocessing primary keys...").toStdString(), te::common::TaskProgress::UNDEFINED, (int)m_logicalRows.size());
-
   for(size_t i=0; i<setSize; i++)
   {
-    if(!task.isActive())
-    {
-      cleanLogRowsAndProcessKeys();
-      return;
-    }
+    std::string pkey;
 
-    te::da::ObjectId* obj = te::da::GenerateOID(dset, colsNames);
-    
-    m_PkeysRows[obj] = i;
+    for(size_t aux=0; aux<pkeys.size(); aux++)
+      pkey += dset->getAsString(pkeys[aux]) + ";";
+
+    m_PkeysRows[pkey] = i;
 
     m_logicalRows[i] = i;
 
     dset->moveNext();
-
-    task.pulse();
   }
 }
 
 size_t te::qt::widgets::Promoter::getLogicalRow(const size_t& visualRow)
 {
-  return (m_logicalRows.empty()) ? visualRow : m_logicalRows[visualRow];
+  return m_logicalRows.empty() ? visualRow : m_logicalRows[visualRow];
 }
 
 void te::qt::widgets::Promoter::cleanPreproccessKeys()
 {
-  std::map<te::da::ObjectId*, size_t, te::common::LessCmp<te::da::ObjectId*> >::iterator it;
-
-  for(it=m_PkeysRows.begin(); it!=m_PkeysRows.end(); ++it)
-    delete it->first;
-
   m_PkeysRows.clear();
 }
 
@@ -230,98 +195,42 @@ void te::qt::widgets::Promoter::promote(const te::da::ObjectIdSet* oids)
 
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
 
-  size_t pos=0;
-
   resetPromotion();
 
-  for(it=oids->begin(); it!=oids->end(); ++it)
+  std::map<size_t, size_t> new_pos;
+
+  for(it = oids->begin(); it != oids->end(); ++it)
   {
     size_t dsPos = map2Row(*it);
+    new_pos[dsPos] = m_logicalRows[dsPos];
+  }
 
-    if(m_logicalRows[dsPos] != dsPos)
-    {
-      size_t aux = dsPos;
+  std::map<size_t, size_t>::iterator mit;
 
-      while(m_logicalRows[aux] != dsPos)
-        aux++;
+  size_t pos = 0;
 
-      dsPos = aux;
-    }
-
-    size_t value = m_logicalRows[dsPos];
-
-    m_logicalRows.erase(m_logicalRows.begin()+dsPos);
-    m_logicalRows.insert(m_logicalRows.begin()+pos, value);
-
+  for(mit = new_pos.begin(); mit != new_pos.end(); ++mit)
+  {
+    m_logicalRows.erase(m_logicalRows.begin()+mit->first);
+    m_logicalRows.insert(m_logicalRows.begin()+pos, mit->second);
     pos++;
   }
 }
 
-void te::qt::widgets::Promoter::sort(te::da::DataSet* dset, const std::vector<int>& cols)
-{
-  if(cols.empty())
-    return;
-
-  if(m_logicalRows.empty())
-    m_logicalRows.resize(dset->size());
-
-  te::common::TaskProgress task (QObject::tr("Sorting columns...").toStdString(), te::common::TaskProgress::UNDEFINED, (int)m_logicalRows.size());
-
-  std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator> order;
-  std::multimap<std::vector<te::dt::AbstractData*>, int, DataComparator>::iterator m_it;
-
-  dset->moveBeforeFirst();
-
-  int i=0;
-
-  std::vector<te::dt::AbstractData*> value;
-  value.resize(cols.size());
-
-  while (dset->moveNext())
-  {
-    if(!task.isActive())
-    {
-      m_logicalRows.clear();
-      CleanAbstractData(order);
-
-      return;
-    }
-
-    for(size_t j=0; j<cols.size(); j++)
-      value[j] = (dset->isNull((size_t)cols[j])) ? 0 : dset->getValue((size_t)cols[j]).release();
-
-    order.insert(std::pair<std::vector<te::dt::AbstractData*>, int>(value, i++));
-
-    task.pulse();
-  }
-
-  task.setCurrentStep(0);
-
-  i=0;
-  for(m_it=order.begin(); m_it!=order.end(); ++m_it)
-  {
-    if(!task.isActive())
-    {
-      m_logicalRows.clear();
-      CleanAbstractData(order);
-
-      return;
-    }
-
-    m_logicalRows[i++] = m_it->second;
-
-    task.pulse();
-  }
-
-  CleanAbstractData(order);
-}
-
 size_t te::qt::widgets::Promoter::map2Row(te::da::ObjectId* oid)
 {
-  std::map<te::da::ObjectId*, size_t, te::common::LessCmp<te::da::ObjectId*> >::iterator it = m_PkeysRows.find(oid);
+  boost::ptr_vector<te::dt::AbstractData> data = oid->getValue();
+  boost::ptr_vector<te::dt::AbstractData>::iterator it_d;
+
+  std::string pkey;
+
+  for(it_d=data.begin(); it_d!=data.end(); ++it_d)
+    pkey += it_d->toString() + ";";
+
+  std::map<std::string, size_t>::iterator it = m_PkeysRows.find(pkey);
 
   if(it == m_PkeysRows.end())
     throw Exception(TR_QT_WIDGETS("Fail to get position of Object id"));
 
-  return (m_logicalRows.empty()) ? it->second : GetRowPosition(it->second, m_logicalRows);
+  return GetRowPosition(it->second, m_logicalRows);
 }

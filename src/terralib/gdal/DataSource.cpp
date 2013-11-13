@@ -36,6 +36,7 @@
 #include "Exception.h"
 #include "Transactor.h"
 #include "Utils.h"
+#include "DataSetUseCounter.h"
 
 // GDAL
 #include <gdal_priv.h>
@@ -122,11 +123,14 @@ bool te::gdal::DataSource::isValid() const
     if(it == m_connectionInfo.end())
       return false;
     
+    DataSetUseCounter dsUseCounter( it->second );
+    
     GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
     
     if(gds)
     {
       GDALClose(gds);
+      
       return true;
     }
   }
@@ -190,11 +194,14 @@ bool te::gdal::DataSource::exists(const std::map<std::string, std::string>& dsIn
   it = dsInfo.find("URI"); // expects a file?
   if(it != dsInfo.end())   
   {  
+    DataSetUseCounter dsUseCounter( it->second );
+    
     GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(it->second.c_str(), GA_ReadOnly));
   
     if (gds)
     {
       GDALClose(gds);
+      
       return true;
     }
   }

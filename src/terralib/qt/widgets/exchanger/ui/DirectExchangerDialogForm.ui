@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Direct Exchanger</string>
+   <string>Layer Exchanger</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_13">
    <property name="sizeConstraint">
@@ -69,7 +69,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Direct Exchanger</string>
+           <string>Layer Exchanger</string>
           </property>
          </widget>
         </item>
