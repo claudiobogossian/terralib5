@@ -25,10 +25,15 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../geometry/Geometry.h"
 #include "Config.h"
 #include "DataSourceTransactor.h"
+#include "EWKBReader.h"
 #include "FwDataSet.h"
 #include "Utils.h"
+
+// STL
+#include <memory>
 
 // SQLite
 #include <sqlite3.h>
@@ -243,7 +248,9 @@ std::auto_ptr<te::dt::ByteArray> te::sqlite::FwDataSet::getByteArray(std::size_t
 
 std::auto_ptr<te::gm::Geometry> te::sqlite::FwDataSet::getGeometry(std::size_t i) const
 {
-  throw te::common::Exception(TR_COMMON("Not supported by SQLite driver!"));
+  unsigned char* ewkb = (unsigned char*)(sqlite3_column_blob(m_pImpl->m_stmt, i));
+  std::auto_ptr<te::gm::Geometry> g(EWKBReader::read(ewkb));
+  return g;
 }
 
 std::auto_ptr<te::rst::Raster> te::sqlite::FwDataSet::getRaster(std::size_t i) const
