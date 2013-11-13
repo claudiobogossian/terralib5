@@ -43,6 +43,21 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+//Utility functions used mianly to pupulate ui elements.
+te::gm::Envelope& computeDataSetEnvelope(std::auto_ptr<te::da::DataSet> dataset,
+                            const std::string& propertyName)
+{
+  te::gm::Envelope* result = new te::gm::Envelope;
+
+  while(dataset->moveNext())
+  {
+    te::gm::Geometry* geom = dataset->getGeometry(propertyName).release();
+    assert(geom);
+    result->Union(*geom->getMBR());
+  }
+  return *result;
+}
+
 te::qt::widgets::DataPropertiesDialog::DataPropertiesDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::DataPropertiesDialogForm)
@@ -88,8 +103,14 @@ void te::qt::widgets::DataPropertiesDialog::onOkPushButtonClicked()
   {
     te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_DataSetAdapterLayer->getConverter()->getResult());
     std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(m_DataSetAdapterLayer->getDataSetName(), gp->getName(), m_DataSetAdapterLayer->getDataSourceId()));
+
+    //Checking if it was possible to obtain an envelope
+    if(!mbr.get())
+      m_DataSetAdapterLayer->setExtent(computeDataSetEnvelope(m_DataSetAdapterLayer->getData(), gp->getName()));  //Build an envelope
+    else
+      m_DataSetAdapterLayer->setExtent(*(mbr.release())); // using the envelope obtained by common means
+
     m_DataSetAdapterLayer->setSRID(gp->getSRID());
-    m_DataSetAdapterLayer->setExtent(*(mbr.release()));
     m_DataSetAdapterLayer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
   }
 

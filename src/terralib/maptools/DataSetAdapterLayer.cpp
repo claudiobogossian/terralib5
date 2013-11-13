@@ -79,8 +79,7 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(te::common:
                                                               const te::common::AccessPolicy accessPolicy) const
 {
   assert(!m_datasetName.empty());
-  std::auto_ptr<te::da::DataSet> inputData;
-  std::auto_ptr<te::da::DataSetAdapter> outputDataSet;
+  std::auto_ptr<te::da::DataSet> inputData, outputDataSet;
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
@@ -97,8 +96,7 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(const std::
                                                               const te::common::AccessPolicy accessPolicy) const
 {
   assert(!m_datasetName.empty());
-  std::auto_ptr<te::da::DataSet> inputData;
-  std::auto_ptr<te::da::DataSetAdapter> outputDataSet;
+  std::auto_ptr<te::da::DataSet> inputData, outputDataSet;
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
   
@@ -115,8 +113,7 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(const std::
                                                               const te::common::AccessPolicy accessPolicy) const
 {
   assert(!m_datasetName.empty());
-  std::auto_ptr<te::da::DataSet> inputData;
-  std::auto_ptr<te::da::DataSetAdapter> outputDataSet;
+  std::auto_ptr<te::da::DataSet> inputData, outputDataSet;
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
@@ -131,8 +128,7 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(te::da::Exp
                                                               const te::common::AccessPolicy accessPolicy) const
 {
   assert(!m_datasetName.empty());
-  std::auto_ptr<te::da::DataSet> inputData;
-  std::auto_ptr<te::da::DataSetAdapter> outputDataSet;
+  std::auto_ptr<te::da::DataSet> inputData, outputDataSet;
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
@@ -162,8 +158,7 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(const te::d
                                                               const te::common::AccessPolicy accessPolicy) const
 {
   assert(oids);
-  std::auto_ptr<te::da::DataSet> inputData;
-  std::auto_ptr<te::da::DataSetAdapter> outputDataSet;
+  std::auto_ptr<te::da::DataSet> inputData, outputDataSet;
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
 
