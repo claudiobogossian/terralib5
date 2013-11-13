@@ -47,13 +47,8 @@ te::qt::plugins::sqlite::SQLiteCreatorDialog::SQLiteCreatorDialog(QWidget* paren
   : QDialog(parent, f),
     m_ui(new Ui::SQLiteCreatorDialogForm)
 {
-// add controls
   m_ui->setupUi(this);
 
-// init controls
-  m_ui->m_advancedOptionsGroupBox->hide();
-
-// connect signal and slots
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
   connect(m_ui->m_searchDatabaseToolButton, SIGNAL(pressed()), this, SLOT(searchDatabaseToolButtonPressed()));
@@ -77,16 +72,13 @@ void te::qt::plugins::sqlite::SQLiteCreatorDialog::applyPushButtonPressed()
 {
   try
   {
-// check if driver is loaded
     if(te::da::DataSourceFactory::find("SQLITE") == 0)
       throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for SQLite data sources!"));
 
-// get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
 
     getConnectionInfo(dsInfo);
 
-    // create database
     te::da::DataSource::create("SQLITE", dsInfo);
 
   }
@@ -139,19 +131,7 @@ void te::qt::plugins::sqlite::SQLiteCreatorDialog::getConnectionInfo(std::map<st
 
   connInfo["SQLITE_CREATE_INTERMEDIATE_DIR"] = m_ui->m_allowIntermediateDirCheckBox->isChecked() ? "TRUE" : "FALSE";
 
-  if(m_ui->m_spatialiteSchemaRadioButton->isChecked())
-    connInfo["SQLITE_CREATE_SPATIALITE_METADATA_TABLES"] = "TRUE";
-  else if(m_ui->m_ogrSchemaRadioButton->isChecked())
-    connInfo["SQLITE_CREATE_OGR_METADATA_TABLES"] = "TRUE";
+  connInfo["SQLITE_CREATE_SPATIALITE_METADATA_TABLES"] = "TRUE";
 
-  connInfo["SQLITE_HIDE_SPATIAL_METADATA_TABLES"] = m_ui->m_hideSpatialMetatablesCheckBox->isChecked() ? "TRUE" : "FALSE";
-
-  connInfo["SQLITE_HIDE_RASTER_TABLES"] = m_ui->m_hideRasterTablesCheckBox->isChecked() ? "TRUE" : "FALSE";
-
-  connInfo["SQLITE_CREATE_TERRALIB_RASTER_METADATA_TABLES"] = m_ui->m_createTeRasterMetadataCheckBox->isChecked() ? "TRUE" : "FALSE";
-
-  qstr = m_ui->m_tablesToHideLineEdit->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["SQLITE_HIDE_TABLES"] = qstr.toUtf8().data();
+  connInfo["SQLITE_HIDE_SPATIAL_METADATA_TABLES"] = "TRUE";
 }

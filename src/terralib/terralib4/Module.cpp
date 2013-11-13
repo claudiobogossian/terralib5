@@ -70,10 +70,8 @@ void terralib4::Module::shutdown()
   if(!m_initialized)
     return;
 
-  // Unregister the ADO factory support.
   te::da::DataSourceFactory::remove("TERRALIB4");
 
-  // Free the ADO registered drivers
   te::da::DataSourceManager::getInstance().detachAll(TERRALIB4_DRIVER_IDENTIFIER);
  
   TE_LOG_TRACE(TR_TERRALIB4("TerraLib Terralib 4 driver shutdown!"));

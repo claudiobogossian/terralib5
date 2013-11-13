@@ -29,13 +29,15 @@
 // TerraLib
 #include "../raster/Raster.h"
 
+class TeRaster;
+
 namespace terralib4
 {
   class Raster: public te::rst::Raster
   {
     public:
 
-      Raster();
+      Raster(TeRaster* iraster);
 
       Raster(te::rst::Grid* grid, te::common::AccessPolicy p = te::common::RAccess);
 
@@ -59,6 +61,12 @@ namespace terralib4
       te::rst::Band& operator[](std::size_t i);
 
       te::dt::AbstractData* clone() const;
+
+    private:
+
+      class Impl;
+
+      Impl* m_pImpl;
   };
 
 }   // end namespace terralib4
