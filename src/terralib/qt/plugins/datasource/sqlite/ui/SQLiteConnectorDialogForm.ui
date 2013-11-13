@@ -81,10 +81,10 @@
           <item row="0" column="0">
            <widget class="QCheckBox" name="m_rwAccessCheckBox">
             <property name="text">
-             <string>Read/Write</string>
+             <string>Read only</string>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -101,7 +101,7 @@
              <string>Allow intermediate directory creation</string>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>

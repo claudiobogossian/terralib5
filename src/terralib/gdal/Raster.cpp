@@ -41,7 +41,7 @@
 #include "Exception.h"
 #include "Raster.h"
 #include "Utils.h"
-#include "DataSetsManager.h"
+
 
 // STL
 #include <cassert>
@@ -72,11 +72,8 @@ te::gdal::Raster::Raster(const std::string& rinfo, te::common::AccessPolicy p)
   
   m_myURI = rinfo;
   
-  if( !DataSetsManager::getInstance().incrementUseCounter( m_myURI ) )
-  {
-    throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
-  }  
-
+  m_dsUseCounterPtr.reset( new DataSetUseCounter( m_myURI ) );
+  
   m_gdataset = te::gdal::GetRasterHandle(rinfo, m_policy);
 
   if(m_gdataset == 0)
@@ -115,12 +112,7 @@ te::gdal::Raster::Raster(const Raster& rhs)
 {
   if(rhs.m_gdataset)
   {
-    m_myURI = rhs.m_gdataset->GetDescription();
     
-    if( !DataSetsManager::getInstance().incrementUseCounter( m_myURI ) )
-    {
-      throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
-    }    
     
     GDALDriver* driverPtr = rhs.m_gdataset->GetDriver();
 
@@ -129,6 +121,10 @@ te::gdal::Raster::Raster(const Raster& rhs)
     m_gdataset = driverPtr->CreateCopy(rhs.m_gdataset->GetDescription(),
                                        rhs.m_gdataset, 1, papszOptions,
                                        NULL, NULL);
+   
+    m_myURI = m_gdataset->GetDescription(); 
+                                       
+    m_dsUseCounterPtr.reset( new DataSetUseCounter( m_myURI ) );
 
     GDALFlushCache(m_gdataset);
 
@@ -168,8 +164,6 @@ te::gdal::Raster::~Raster()
     // deleting who?
     m_deleter = 0;
   }
-  
-  DataSetsManager::getInstance().decrementUseCounter( m_myURI );
 }
 
 void te::gdal::Raster::open(const std::map<std::string, std::string>& rinfo, te::common::AccessPolicy p)
@@ -187,10 +181,7 @@ void te::gdal::Raster::open(const std::map<std::string, std::string>& rinfo, te:
   
   m_myURI = it->second;
   
-  if( !DataSetsManager::getInstance().incrementUseCounter( m_myURI ) )
-  {
-    throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
-  }    
+  m_dsUseCounterPtr.reset( new DataSetUseCounter( m_myURI ) );
 
   m_gdataset = GetRasterHandle(it->second, p);
 
@@ -459,10 +450,7 @@ void te::gdal::Raster::create(te::rst::Grid* g,
     
     m_myURI = it->second;
     
-    if( !DataSetsManager::getInstance().incrementUseCounter( m_myURI ) )
-    {
-      throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
-    }      
+    m_dsUseCounterPtr.reset( new DataSetUseCounter( m_myURI ) );
     
     m_gdataset = te::gdal::CreateRaster(g, bands, rinfo);
 

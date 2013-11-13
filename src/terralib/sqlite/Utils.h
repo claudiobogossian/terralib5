@@ -26,6 +26,10 @@
 #ifndef __TERRALIB_SQLITE_INTERNAL_UTILS_H
 #define __TERRALIB_SQLITE_INTERNAL_UTILS_H
 
+// TerraLib
+#include "../dataaccess/Enums.h"
+#include "../geometry/Enums.h"
+
 // STL
 #include <iosfwd>
 #include <map>
@@ -50,6 +54,11 @@ namespace te
   namespace dt
   {
     class Property;
+  }
+
+  namespace gm
+  {
+    class Envelope;
   }
 
   namespace sqlite
@@ -86,7 +95,9 @@ namespace te
 
     int Convert2TerraLibCategory(const std::string& category);
 
-    te::gm::GeomType Convert2TerraLibGeomType(const std::string& geomType, const std::string& dimension);
+    std::string GetRtreeFilter(const te::gm::Envelope* e, const te::gm::SpatialRelation r);
+
+    std::string GetBindableSpatialRelation(const std::string& colName, const te::gm::SpatialRelation r);
 
   } // end namespace sqlite
 }   // end namespace te
