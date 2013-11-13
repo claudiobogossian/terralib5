@@ -331,7 +331,9 @@ install (
   COMPONENT HEADERS
 )
 
-include (${TE_MODULE_PATH}/GenerateDox.cmake)
+if(BUILD_DOC)
+  include (${TE_MODULE_PATH}/GenerateDox.cmake)
+endif()
 
 # Installing configuration file
 include (${CMAKE_SOURCE_DIR}/installTree.cmake)

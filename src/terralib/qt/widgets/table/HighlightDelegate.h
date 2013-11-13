@@ -32,6 +32,9 @@
 // Qt 
 #include <QItemDelegate>
 
+// STL
+#include <set>
+
 namespace te
 {
   namespace da
@@ -128,6 +131,8 @@ namespace te
           te::da::DataSet* m_dset;      //!< Pointer to the DataSet being used.
 
           Promoter* m_promoter;         //!< Pointer to the promoter being used.
+
+          std::set<std::string> m_oids;
       };
     }
   }
