@@ -625,7 +625,17 @@ void te::qt::af::BaseApplication::onOpenProjectTriggered()
   if(file.isEmpty())
     return;
 
-  openProject(file);
+  try
+  {
+    openProject(file);
+  }
+  catch(const te::common::Exception& e)
+  {
+    QString msg = tr("Fail to open project.");
+    msg += " ";
+    msg += e.what();
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
+  }
 }
 
 void te::qt::af::BaseApplication::onSaveProjectTriggered()
@@ -1255,14 +1265,15 @@ void te::qt::af::BaseApplication::onLayerPanToSelectedOnMapDisplayTriggered()
 
 void te::qt::af::BaseApplication::onQueryLayerTriggered()
 {
-  te::qt::widgets::QueryDialog dlg(this);
+  te::qt::widgets::QueryDialog* dlg = new te::qt::widgets::QueryDialog(this);
+  dlg->setAttribute(Qt::WA_DeleteOnClose, true);
 
   if(m_project)
-    dlg.setList(m_project->getTopLayers());
+    dlg->setList(m_project->getTopLayers());
 
-  connect(&dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
+  connect(dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
 
-  dlg.exec();
+  dlg->show();
 }
 
 void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
@@ -1874,8 +1885,8 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
-  initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Exchanger.All to All", tr("&Data Source Exchanger..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
-  initAction(m_toolsDataExchangerDirect, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Layer Exchanger..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchanger, "datasource-exchanger", "Tools.Exchanger.All to All", tr("&Advanced..."), tr("Exchange data sets between data sources"), true, false, true, m_menubar);
+  initAction(m_toolsDataExchangerDirect, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Layer..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
   initAction(m_toolsDataExchangerDirectPopUp, "data-exchange-direct-icon", "Tools.Exchanger.Direct", tr("&Exchange..."), tr("Exchange data sets from layers"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceExplorer, "datasource-explorer", "Tools.Data Source Explorer", tr("&Data Source Explorer..."), tr("Show or hide the data source explorer"), 
     true, false, true, m_menubar);
@@ -1900,7 +1911,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_helpAbout, "help-about-browser", "Help.About", tr("&About..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Project- actions
-  initAction(m_projectAddLayerDataset, "datasource", "Project.Add Layer.All Sources", tr("&All Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
+  initAction(m_projectAddLayerDataset, "datasource", "Project.Add Layer.All Sources", tr("&From Data Sources..."), tr("Add a new layer from all available data sources"), true, false, true, m_menubar);
   initAction(m_projectNewFolder, "folder-new", "Project.New Folder", tr("&New Folder..."), tr("Add a new folder"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "view-filter", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
   initAction(m_projectAddLayerTabularDataSet, "view-data-table", "Project.Add Layer.Tabular File", tr("&Tabular File..."), tr("Add a new layer from a Tabular file"), true, false, false, m_menubar);
@@ -1921,9 +1932,9 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart..."), tr(""), true, false, true, m_menubar);
-  initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer on the &Map Display"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
-  initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Objects on the Map Display", tr("Fit Selected Objects on the Map Display"), tr("Fit the selected objects on the Map Display"), true, false, true, m_menubar);
-  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to the Selected Objects on Map Display", tr("Pan to the Selected Objects on the Map Display"), tr("Pan to the selected objects on the Map Display"), true, false, true, m_menubar);
+  initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
+  initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Objects on the Map Display", tr("Fit Selected Objects"), tr("Fit the selected objects on the Map Display"), true, false, true, m_menubar);
+  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to the Selected Objects on Map Display", tr("Pan to the Selected Objects"), tr("Pan to the selected objects on the Map Display"), true, false, true, m_menubar);
   initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions
@@ -2038,9 +2049,9 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectAddLayerMenu->setObjectName("Project.Add Layer");
   m_projectAddLayerMenu->setTitle(tr("&Add Layer"));
   m_projectAddLayerMenu->setIcon(QIcon::fromTheme("layer-add"));
+  m_projectAddLayerMenu->addAction(m_projectAddLayerTabularDataSet);
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
   m_projectAddLayerMenu->addSeparator();
-  m_projectAddLayerMenu->addAction(m_projectAddLayerTabularDataSet);
   m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
   m_projectAddLayerMenu->addSeparator();
   m_projectMenu->addAction(m_projectNewFolder);

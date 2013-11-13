@@ -26,6 +26,10 @@
 #ifndef __TERRALIB_SQLITE_INTERNAL_UTILS_H
 #define __TERRALIB_SQLITE_INTERNAL_UTILS_H
 
+// TerraLib
+#include "../dataaccess/Enums.h"
+#include "../geometry/Enums.h"
+
 // STL
 #include <iosfwd>
 #include <map>
@@ -41,6 +45,22 @@ extern "C"
 
 namespace te
 {
+  namespace da
+  {
+    class DataSource;
+    class DataSetType;
+  }
+
+  namespace dt
+  {
+    class Property;
+  }
+
+  namespace gm
+  {
+    class Envelope;
+  }
+
   namespace sqlite
   {
     int GetConnectionFlags(const std::map<std::string, std::string>& connInfo);
@@ -62,6 +82,22 @@ namespace te
     bool ContainsSemicolon(const char* sql, std::size_t nbytes);
 
     bool IsComplete(char** sql, size_t len, std::size_t& buffsize);
+
+    void GetHiddenTables(const te::da::DataSource* ds, std::vector<std::string>& tables);
+
+    te::da::DataSetType* Convert2TerraLib(sqlite3_stmt* pStmt);
+
+    te::dt::Property* Convert2TerraLib(int colId,
+                                       const std::string& colName,
+                                       const std::string& colType,
+                                       bool required,
+                                       std::string* defaultValue = 0);
+
+    int Convert2TerraLibCategory(const std::string& category);
+
+    std::string GetRtreeFilter(const te::gm::Envelope* e, const te::gm::SpatialRelation r);
+
+    std::string GetBindableSpatialRelation(const std::string& colName, const te::gm::SpatialRelation r);
 
   } // end namespace sqlite
 }   // end namespace te

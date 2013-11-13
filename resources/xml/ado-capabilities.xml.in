@@ -31,6 +31,9 @@
     <Select>true</Select>
     <SelectInto>true</SelectInto>	
 	<SpatialTopologicOperators>
+	  <Function name="st_envelopeintersects">
+        <BinaryOpEncoder alias="st_envelopeintersects"/>
+      </Function>
     </SpatialTopologicOperators> 
 	<SpatialMetricOperators>
     </SpatialMetricOperators> 

@@ -33,13 +33,18 @@
 #include "../geometry/Enums.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
+#include "../raster/BandProperty.h"
+#include "../raster/Grid.h"
 #include "../raster/RasterProperty.h"
 #include "Utils.h"
 
 // TerraLib 4.x
 #include <terralib/kernel/TeBox.h>
 #include <terralib/kernel/TeDatabaseFactoryParams.h>
+#include <terralib/kernel/TeDecoderDatabase.h>
+#include <terralib/kernel/TeProjection.h>
 #include <terralib/kernel/TeTable.h>
+#include <terralib/kernel/TeRasterParams.h>
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -236,6 +241,45 @@ te::gm::GeomType terralib4::Convert2T5GeomType(TeGeomRep type)
   }
 }
 
+int terralib4::Convert2T5(TeDataType dt)
+{
+  switch(dt)
+  {
+    case TeBIT:
+      return te::dt::BIT_TYPE;
+
+    case TeUNSIGNEDCHAR:
+      return te::dt::UCHAR_TYPE;
+
+    case TeCHAR:
+      return te::dt::CHAR_TYPE;
+
+    case TeUNSIGNEDSHORT:
+      return te::dt::UINT16_TYPE;
+
+    case TeSHORT:
+      return te::dt::INT16_TYPE;
+
+    case TeINTEGER:
+      return te::dt::INT32_TYPE;
+
+    case TeUNSIGNEDLONG:
+      return te::dt::UINT32_TYPE;
+
+    case TeLONG:
+      return te::dt::INT32_TYPE;  // see TerraLib 4.x => TeRasterParams.cpp elementSize method => sizeof(long) => 4bytes!
+
+    case TeFLOAT:
+      return te::dt::FLOAT_TYPE;
+
+    case TeDOUBLE:
+      return te::dt::DOUBLE_TYPE;
+
+    default:
+      return te::dt::UNKNOWN_TYPE;
+  }
+}
+
 TeAttrDataType terralib4::Convert2T4(int type)
 {
   switch(type)
@@ -329,3 +373,57 @@ std::auto_ptr<te::da::DataSetType> terralib4::Convert2T5(TeTable table)
 
   return newDst;
 }
+
+te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
+{
+  std::auto_ptr<te::rst::RasterProperty> rproperty(new te::rst::RasterProperty("raster"));
+
+  unsigned int ncols = rparams.ncols_;
+  unsigned int nrows = rparams.nlines_;
+  std::auto_ptr<te::gm::Envelope> mbr(Convert2T5(rparams.boundingBox()));
+
+  std::auto_ptr<te::rst::Grid> grid(new te::rst::Grid(ncols, nrows, mbr.release(), rparams.projection()->epsgCode()));
+
+  rproperty->set(grid.release());
+
+  std::vector<te::rst::BandProperty::ColorEntry> palette;
+  if(rparams.photometric_[0] == TeRasterParams::TeRasterPhotometricInterpretation::TePallete)
+  {
+    std::size_t size = rparams.lutr_.size();
+
+    for(std::size_t j = 0; j < size; ++j)
+    {
+      te::rst::BandProperty::ColorEntry c;
+      c.c1 = rparams.lutr_[j];
+      c.c2 = rparams.lutg_[j];
+      c.c3 = rparams.lutb_[j];
+      palette.push_back(c);
+    }
+  }
+
+  for(int i = 0; i != rparams.nBands(); ++i)
+  {
+    te::rst::BandProperty* bp = new te::rst::BandProperty(i, Convert2T5(rparams.dataType_[i]));
+
+    bp->m_blkh = rparams.blockHeight_;
+    bp->m_blkw = rparams.blockWidth_;
+    bp->m_noDataValue = rparams.dummy_[i];
+    bp->m_valuesOffset = rparams.offset_;
+
+    if(!palette.empty())
+      bp->m_palette.assign(palette.begin(), palette.end());
+
+    int col, lin, band, res, subb;
+
+    TeDecoderDatabase decDb;
+    decDb.decodifyId(rparams.blockId_, col, lin, band, res, subb);
+
+    bp->m_nblocksx = col;
+    bp->m_nblocksy = lin;
+
+    rproperty->add(bp);
+  }
+
+  return rproperty.release();
+}
+

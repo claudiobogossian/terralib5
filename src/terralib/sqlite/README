@@ -3,8 +3,7 @@
 
 This folder contains an implementation of the Data Access classes
 for the SQLite database engine. It can acccess spatial data
-in an SQLite database. It have support for two types of
-spatial data format: OGR format and SpatiaLite format.
+in an SQLite database. It has support for for SpatiaLite format.
 
 Driver Dependencies:
 --------------------
@@ -21,12 +20,11 @@ This driver requires the following modules in order to be built:
 
 The third-party software needed:
 1. SQLite
-2. SpatiaLite (Optional)
-3. RasterLite (Optional)
-4. Boost.Thread
-5. Boost.DateTime
-6. Boost.FileSystem
-7. Boost.System
+2. SpatiaLite
+3. Boost.Thread
+4. Boost.DateTime
+5. Boost.FileSystem
+6. Boost.System
 
 More Information:
 -----------------

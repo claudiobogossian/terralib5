@@ -79,7 +79,7 @@ namespace te
 
           void onInputLayerActivated(QString value);
 
-          void onOkPushButtonClicked();
+          void onApplyPushButtonClicked();
 
         signals:
 

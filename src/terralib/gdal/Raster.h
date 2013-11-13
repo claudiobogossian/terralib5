@@ -30,6 +30,10 @@
 #include "../raster/Raster.h"
 #include "Band.h"
 #include "Config.h"
+#include "DataSetUseCounter.h"
+
+#include <string>
+#include <memory>
 
 // Forward declaration
 class GDALDataset;
@@ -83,7 +87,7 @@ namespace te
        \param gdataset    A GDAL dataset handler.
        \param p           Access Policy.
        */
-      Raster(GDALDataset* gdataset, te::common::AccessPolicy p = te::common::RAccess);
+      //Raster(GDALDataset* gdataset, te::common::AccessPolicy p = te::common::RAccess);
       
       Raster(const Raster& rhs);
       
@@ -137,6 +141,8 @@ namespace te
       GDALDataset* m_gdataset;       //!< Gdal data set handler.
       std::vector<Band*> m_bands;    //!< The vector of available bands in the raster.
       void (*m_deleter)(void*);      //!< A pointer to a deleter function, if the buffer needs to be deleted by this object.
+      std::string m_myURI;          //!< This instance URI;
+      std::auto_ptr< DataSetUseCounter > m_dsUseCounterPtr; //!< Dataset use counter pointer.
     };
   } // end namespace gdal
 }   // end namespace te

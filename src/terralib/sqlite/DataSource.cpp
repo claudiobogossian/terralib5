@@ -48,6 +48,11 @@ class te::sqlite::DataSource::Impl
 {
   public:
 
+    Impl()
+      : m_db(0)
+    {
+    }
+
     ~Impl()
     {
       int ret = SQLITE_OK;
@@ -152,7 +157,7 @@ void te::sqlite::DataSource::open()
   int spatialMetaTableType = result->getInt32(0);
 
   if(spatialMetaTableType == 0)
-    transactor->execute("SELECT InitSpatialMetadata()");
+    transactor->execute("SELECT InitSpatialMetadata(1)");
 }
 
 void te::sqlite::DataSource::close()

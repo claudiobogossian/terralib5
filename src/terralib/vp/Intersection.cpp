@@ -172,15 +172,7 @@ bool te::vp::Intersection(const std::string& inFirstDataSetName,
   // copy from memory to output datasource
   outDataSet->moveBeforeFirst();
   outDataSource->add(dsTypeResult->getName(),outDataSet, options);
-  
-  // create the primary key if it is possible
-  if (outDataSource->getCapabilities().getDataSetTypeCapabilities().supportsPrimaryKey())
-  {
-    std::string pk_name = dsTypeResult->getName() + "_pk";
-    te::da::PrimaryKey* pk = new te::da::PrimaryKey(pk_name, dsTypeResult);
-    pk->add(dsTypeResult->getProperty(0));
-    outDataSource->addPrimaryKey(outDataSetName,pk);
-  }
+
   return true;
 }
 
@@ -318,6 +310,14 @@ te::da::DataSetType* CreateDataSetType(std::string newName,
 {
   te::da::DataSetType* outputDt = new te::da::DataSetType(newName);
 
+  te::dt::SimpleProperty* pkProperty = new te::dt::SimpleProperty(newName + "_pk", te::dt::INT32_TYPE);
+  pkProperty->setAutoNumber(true);
+  outputDt->add(pkProperty);
+
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey("id_pk", outputDt);
+  pk->add(pkProperty);
+  outputDt->setPrimaryKey(pk);
+
   for(size_t i = 0; i < firstProps.size(); ++i)
   {
     te::dt::Property* prop = firstProps[i]->clone();
@@ -388,6 +388,8 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
   te::common::TaskProgress task("Processing intersection...");
   task.setTotalSteps(firstMember.ds->size());
   task.useTimer(true);
+
+  std::size_t pk = 0;
 
   while(firstMember.ds->moveNext())
   {
@@ -489,6 +491,9 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
         item->setValue(name, ad);
       }
 
+      item->setInt32(newName + "_pk", pk);
+      ++pk;
+
       outputDs->moveNext();
 
       int aux = te::da::GetFirstSpatialPropertyPos(outputDs);
@@ -496,7 +501,7 @@ std::pair<te::da::DataSetType*, te::da::DataSet*> PairwiseIntersection(std::stri
       if(!item->isNull(aux))
         outputDs->add(item);
     }
-    
+
     if(task.isActive() == false)
     {
       delete outputDt;
@@ -535,64 +540,82 @@ std::vector<te::dt::Property*> GetTabularProperties(te::da::DataSetType* dsType)
 
 te::da::DataSet* UpdateGeometryType(te::da::DataSetType* dsType, te::da::DataSet* ds)
 {
-  te::gm::Geometry* geom = 0;
+  te::mem::DataSet* dsMem = new te::mem::DataSet(dsType);
+  te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dsMem);
+  std::size_t pk = 0;
+  std::size_t type = 0;
+  std::vector<te::dt::Property*> props = dsType->getProperties();
 
-  ds->moveBeforeFirst();
-  te::mem::DataSet* dsMem = new te::mem::DataSet(*ds, true);
-  
-  std::size_t i = te::da::GetFirstSpatialPropertyPos(ds);
-
-  te::gm::GeometryProperty* geomProp = (te::gm::GeometryProperty*)dsType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
-  dsMem->moveBeforeFirst();
-
-  if(geomProp->getGeometryType() == te::gm::MultiPolygonType)
+  while(ds->moveNext())
   {
-    while(dsMem->moveNext())
+    std::string propName;
+    te::mem::DataSetItem* dsItem = new te::mem::DataSetItem(dsMem);
+
+    for(int i=0; i<props.size(); ++i)
     {
-      if(dsMem->getGeometry(i)->getGeomTypeId() == te::gm::MultiPolygonType)
+      type = props[i]->getType();
+      propName = props[i]->getName();
+
+      if(type != te::dt::GEOMETRY_TYPE)
       {
-        continue;
+        if(propName == dsType->getName() + "_pk")
+        {
+          dsItem->setInt32(i, pk);
+        }
+        else
+        {
+          std::auto_ptr<te::dt::AbstractData> value = ds->getValue(propName);
+          dsItem->setValue(i, value.release());
+        }
       }
-      else if(dsMem->getGeometry(i)->getGeomTypeId() == te::gm::PolygonType)
+      else
       {
-        te::gm::MultiPolygon* newGeom = new te::gm::MultiPolygon(0, te::gm::MultiPolygonType, dsMem->getGeometry(i)->getSRID());
-        newGeom->add(dsMem->getGeometry(i).release());
-        dsMem->setGeometry(i, newGeom);
+        std::auto_ptr<te::gm::Geometry> geom = ds->getGeometry(propName);
+        std::auto_ptr<te::gm::GeometryProperty> geomProp((te::gm::GeometryProperty*)props[i]->clone());
+
+        if(geomProp->getGeometryType() == te::gm::MultiPolygonType)
+        {
+          if(geom->getGeomTypeId() == te::gm::MultiPolygonType)
+          {
+            dsItem->setGeometry(i, geom.release());
+          }
+          else if(geom->getGeomTypeId() == te::gm::PolygonType)
+          {
+            std::auto_ptr<te::gm::GeometryCollection> newGeom(new te::gm::GeometryCollection(0, te::gm::MultiPolygonType, geom->getSRID()));
+            newGeom->add(geom.release());
+            dsItem->setGeometry(i, newGeom.release());
+          }
+        }
+        else if(geomProp->getGeometryType() == te::gm::MultiLineStringType)
+        {
+          if(geom->getGeomTypeId() == te::gm::MultiLineStringType)
+          {
+            dsItem->setGeometry(i, geom.release());
+          }
+          else if(geom->getGeomTypeId() == te::gm::LineStringType)
+          {
+            std::auto_ptr<te::gm::GeometryCollection> newGeom(new te::gm::GeometryCollection(0, te::gm::MultiLineStringType, geom->getSRID()));
+            newGeom->add(geom.release());
+            dsItem->setGeometry(i, newGeom.release());
+          }
+        }
+        else if(geomProp->getGeometryType() == te::gm::MultiPointType)
+        {
+          if(geom->getGeomTypeId() == te::gm::MultiPointType)
+          {
+            dsItem->setGeometry(i, geom.release());
+          }
+          else if(geom->getGeomTypeId() == te::gm::PointType)
+          {
+            std::auto_ptr<te::gm::GeometryCollection> newGeom(new te::gm::GeometryCollection(0, te::gm::MultiPointType, geom->getSRID()));
+            newGeom->add(geom.release());
+            dsItem->setGeometry(i, newGeom.release());
+          }
+        }
       }
     }
+    ++pk;
+    dsMem->add(dsItem);
   }
-  else if(geomProp->getGeometryType() == te::gm::MultiLineStringType)
-  {
-    while(dsMem->moveNext())
-    {
-      if(dsMem->getGeometry(i)->getGeomTypeId() == te::gm::MultiLineStringType)
-      {
-        continue;
-      }
-      else if(dsMem->getGeometry(i)->getGeomTypeId() == te::gm::LineStringType)
-      {
-        te::gm::MultiLineString* newGeom = new te::gm::MultiLineString(0, te::gm::MultiLineStringType, dsMem->getGeometry(i)->getSRID());
-        newGeom->add(dsMem->getGeometry(i).release());
-        dsMem->setGeometry(i, newGeom);
-      }
-    }
-  }
-  else if(geomProp->getGeometryType() == te::gm::MultiPointType)
-  {
-    while(dsMem->moveNext())
-    {
-      if(dsMem->getGeometry(i)->getGeomTypeId() == te::gm::MultiPointType)
-      {
-        continue;
-      }
-      else if(dsMem->getGeometry(i)->getGeomTypeId() == te::gm::PointType)
-      {
-        te::gm::MultiPoint* newGeom = new te::gm::MultiPoint(0, te::gm::MultiPointType, dsMem->getGeometry(i)->getSRID());
-        newGeom->add(dsMem->getGeometry(i).release());
-        dsMem->setGeometry(i, newGeom);
-      }
-    }
-  }
-
   return dsMem;
 }

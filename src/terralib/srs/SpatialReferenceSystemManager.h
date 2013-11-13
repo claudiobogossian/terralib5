@@ -46,7 +46,7 @@
 #include <boost/multi_index/ordered_index.hpp>
 
 namespace te
-{  
+{
   namespace srs
   {
     /*!
@@ -55,11 +55,11 @@ namespace te
      \brief A class to manage Coordinate Systems representations within TerraLib environment.
      
      A Coordinate System used to describe coordinates are also known as Spatial Reference System.
-     It can be represented by either one of these properties: 
-       - A pair <id,authority>: a unique numeric id given by a particular authority; 
-       - A simple, human-readable, interface-friendly, name;
-       - An OGC's WKT description;
-       - A PROJ4 text: to support coordinate conversion.
+     It can be represented by either one of these properties:
+     - A pair <id,authority>: a unique numeric id given by a particular authority;
+     - A simple, human-readable, interface-friendly, name;
+     - An OGC's WKT description;
+     - A PROJ4 text: to support coordinate conversion.
      
      Refer to the <a href="http://www.spatialreference.org">Spatial Reference website</a> for more information about EPSG codes for SRS.
      */
@@ -73,11 +73,11 @@ namespace te
        It is not visible outside this class. */
       struct srs_desc
       {
-        srs_desc(const std::string& name, unsigned int auth_id, const std::string& auth_name, const std::string& p4txt, const std::string& wkt); 
+        srs_desc(const std::string& name, unsigned int auth_id, const std::string& auth_name, const std::string& p4txt, const std::string& wkt);
         
         std::string srid() const;
         
-        std::string m_name;  
+        std::string m_name;
         unsigned int m_auth_id;
         std::string m_auth_name;
         std::string m_p4txt;
@@ -103,21 +103,23 @@ namespace te
     private:
       
       srs_set m_set;
-    
+      
     public:
       
-      typedef boost::multi_index::nth_index<srs_set,0>::type::iterator iterator; 
+      //! An iterator by SRS <id,authority>
+      typedef boost::multi_index::nth_index<srs_set,0>::type::iterator iterator;
       
-      /* \brief Destructor. */
+      //! Destructor.
       ~SpatialReferenceSystemManager();
       
-      /*! Inializes the manager from a JSON file containing instances of SRSs. */
       /*!
+       \brief Inializes the manager from a JSON file containing instances of SRSs
+       
        This methods reads the file "TE_JSON_FILES_LOCATION/srs.json" for SRSs definitions and insert them on the manager if it is empty.
        \exception te::srs::Exception if the JSON file is not well formed.
        */
       void init();
-            
+      
       /*!
        \brief Adds a  <id, authority> to the manager.
        \param name A simple, human-readable, interface-friendly, name;
@@ -126,7 +128,7 @@ namespace te
        \param id SRS id.
        \param authName The authority responsible for the id. Default "EPSG".
        \exception te::srs::Exception if the coordinate system id is already registered in the manager.
-       */      
+       */
       void add(const std::string& name, const std::string& p4Txt, const std::string& wkt, unsigned int id, const std::string& authName="EPSG");
       
       /*!
@@ -151,40 +153,40 @@ namespace te
        \param authName The authority responsible for the id. Default "EPSG".
        \return The coordinate system PROJ4 description if the identification is recognized or an empty string otherwise.
        */
-      std::string getP4Txt(unsigned int id, const std::string& authName="EPSG") const; 
+      std::string getP4Txt(unsigned int id, const std::string& authName="EPSG") const;
       
       /*!
        \brief Returns a coordinate system WKT description given an id.
        \param id The coordinate system identification.
        \param authName The authority responsible for the id. Default "EPSG".
        \return The coordinate system OGC WKT if the identification is recognized or an empty string otherwise.
-       */ 
+       */
       std::string getWkt  (unsigned int id, const std::string& authName="EPSG") const;
-
+      
       /*!
        \brief Returns a coordinate system identification given a name.
        \param name The coordinate system name.
        \return A pair composed by the coordinate system identification and the name of the authority responsible for it.
        \exception te::srs::Exception if the coordinate system name is not found in the manager.
-       */ 
+       */
       std::pair<std::string,unsigned int> getIdFromName (const std::string& name) const;
       
       /*!
        \brief Returns a coordinate system identification given a PROJ4 description.
-       \param name The coordinate system PROJ4 description.
+       \param p4Txt The coordinate system PROJ4 description.
        \return A pair composed by the coordinate system identification and the name of the authority responsible for it.
        \exception te::srs::Exception if the coordinate system PROJ4 description is not found in the manager.
        */
-      std::pair<std::string,unsigned int> getIdFromP4Txt(const std::string& p4Txt) const; 
+      std::pair<std::string,unsigned int> getIdFromP4Txt(const std::string& p4Txt) const;
       
       /*!
        \brief Returns a coordinate system identification given a WKT description.
-       \param name The coordinate system WKT.
+       \param wkt The coordinate system WKT.
        \return A pair composed by the coordinate system identification and the name of the authority responsible for it.
        \exception te::srs::Exception if the coordinate system WKT is not found in the manager.
        */
       std::pair<std::string,unsigned int> getIdFromWkt  (const std::string& wkt) const;
-
+      
       /*!
        \brief Returns a pointer to a coordinate system given an identification.
        \param id The coordinate system identification.
@@ -200,22 +202,21 @@ namespace te
        */
       void remove (unsigned int id, const std::string& authName="EPSG");
       
-      /*!
-       \brief Removes all coordinate system representations from the manager.
-      */
+      //! Removes all coordinate system representations from the manager.
       void clear();
       
-      /*! Returns the number of objects in the manager. */
+      //! Returns the number of objects in the manager.
       size_t size() const;
       
       /*!
        \brief Returns an iterator mechanism over the coordinate system descriptions in the manager.
+       
        The first iterator of the returned pair points to first coordinate system description.
        The second iterator of the returned pair points to the last plus one ccoordinate system description.
-      \return a pair of iterators pointing to the first and last coordnate system representation in the manager.
-       */     
+       \return a pair of iterators pointing to the first and last coordnate system representation in the manager.
+       */
       std::pair<te::srs::SpatialReferenceSystemManager::iterator,te::srs::SpatialReferenceSystemManager::iterator> getIterators() const;
-  
+      
       /*!
        \brief Returns the unit of measure for a SRS with a given id.
        \return A pointer to the unit of measure or a null pointer if it the SRS could not be founded.
@@ -249,8 +250,8 @@ namespace te
        
        \return A reference to this object.
        */
-      SpatialReferenceSystemManager& operator=(const SpatialReferenceSystemManager& rhs);     
-
+      SpatialReferenceSystemManager& operator=(const SpatialReferenceSystemManager& rhs);
+      
     };
   }
 }

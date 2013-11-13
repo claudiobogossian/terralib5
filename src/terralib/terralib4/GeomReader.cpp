@@ -179,31 +179,31 @@ std::auto_ptr<te::gm::Geometry> terralib4::GeomReader::getGeometry(const TeGeome
     case TePOLYGONS:
     {
       TePolygon p = dynamic_cast<const TePolygon&>(geom);
-      return getPolygon(p);
+      return std::auto_ptr<te::gm::Geometry>(getPolygon(p).release());
     }
 
     case TePOINTS:
     {
       TePoint p = dynamic_cast<const TePoint&>(geom);
-      return getPoint(p);
+      return std::auto_ptr<te::gm::Geometry>(getPoint(p).release());
     }
 
     case TeLINES:
     {
       TeLine2D p = dynamic_cast<const TeLine2D&>(geom);
-      return getLineString(p);
+      return std::auto_ptr<te::gm::Geometry>(getLineString(p).release());
     }
 
     case TeCELLS:
     {
       TePolygon p = dynamic_cast<const TePolygon&>(geom);
-      return getPolygon(p);
+      return std::auto_ptr<te::gm::Geometry>(getPolygon(p).release());
     }
 
     case TeNODES:
     {
       TePoint p = dynamic_cast<const TePoint&>(geom);
-      return getPoint(p);
+      return std::auto_ptr<te::gm::Geometry>(getPoint(p).release());
     }
 
     default:

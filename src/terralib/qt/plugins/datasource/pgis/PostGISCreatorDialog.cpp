@@ -201,24 +201,52 @@ const te::da::DataSourcePtr& te::qt::plugins::pgis::PostGISCreatorDialog::getDri
 
 void te::qt::plugins::pgis::PostGISCreatorDialog::passwordLineEditEditingFinished()
 {
-  if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
+  try
   {
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
+    if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
+    {
+      std::map<std::string, std::string> dsInfo;
+      getConnectionInfo(dsInfo);
 
-    // Get Templates/Databases
-    std::vector<std::string> templates = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
-    if(!templates.empty())
-      for(std::size_t i = 0; i < templates.size(); i++)
-        m_ui->m_templateComboBox->addItem(templates[i].c_str());
+      // Get Templates/Databases
+      std::vector<std::string> templates = te::da::DataSource::getDataSourceNames("POSTGIS", dsInfo);
+      if(!templates.empty())
+        for(std::size_t i = 0; i < templates.size(); i++)
+          m_ui->m_templateComboBox->addItem(templates[i].c_str());
 
-    m_ui->m_templateComboBox->setCurrentIndex(m_ui->m_templateComboBox->findText("postgis"));
+      m_ui->m_templateComboBox->setCurrentIndex(m_ui->m_templateComboBox->findText("postgis"));
 
-    // Get Encodings
-    m_ui->m_encodingComboBox->addItem("");
-    std::vector<std::string> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
-    if(!encodings.empty())
-      for(std::size_t i = 0; i < encodings.size(); i++)
-        m_ui->m_encodingComboBox->addItem(encodings[i].c_str());
+      // Get Encodings
+      m_ui->m_encodingComboBox->addItem("");
+      std::vector<std::string> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
+      if(!encodings.empty())
+        for(std::size_t i = 0; i < encodings.size(); i++)
+          m_ui->m_encodingComboBox->addItem(encodings[i].c_str());
+
+      // Try to go the owners
+      m_ui->m_ownerComboBox->clear();
+      std::map<std::string, std::string> info;
+      std::map<std::string, std::string> aux;
+      getConnectionInfo(aux);
+      info["PG_HOST"] = aux["PG_HOST"].empty()?"localhost":aux["PG_HOST"];
+      info["PG_PORT"] = aux["PG_PORT"].empty()?"5432":aux["PG_PORT"];
+      info["PG_USER"] = aux["PG_USER"];
+      info["PG_PASSWORD"] = aux["PG_PASSWORD"];
+
+      std::auto_ptr<te::da::DataSource> auxDs = te::da::DataSourceFactory::make("POSTGIS");
+      auxDs->setConnectionInfo(info);
+      auxDs->open();
+
+      std::auto_ptr<te::da::DataSet> dsRoles = auxDs->query("select * from pg_roles");
+
+      while(dsRoles->moveNext())
+        m_ui->m_ownerComboBox->addItem(dsRoles->getString("rolname").c_str());
+
+      auxDs->close();
+    }
+  }
+  catch(...)
+  {
+    return;
   }
 }

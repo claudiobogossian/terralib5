@@ -1,4 +1,4 @@
-/*  Copyright (C) 2009-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,40 +18,29 @@
  */
 
 /*!
-  \file terralib/sqlite/Module.h
+  \file terralib/gdal/DataSetUseCounter.cpp
 
-  \brief The TerraLib SQLite Data Access driver implements the plugin interface.
+  \brief GDAL data set use counter.
 */
 
-#ifndef __TERRALIB_SQLITE_INTERNAL_MODULE_H
-#define __TERRALIB_SQLITE_INTERNAL_MODULE_H
-
 // TerraLib
-#include "../plugin/Plugin.h"
+#include "DataSetUseCounter.h"
+#include "DataSetsManager.h"
+#include "Exception.h"
+#include "../common/Translator.h"
 
-namespace te
+te::gdal::DataSetUseCounter::DataSetUseCounter( const std::string& uri )
+  throw( te::gdal::Exception )
+  : m_uri( uri )
 {
-  namespace sqlite
+  if( !DataSetsManager::getInstance().incrementUseCounter( m_uri ) )
   {
-    class Module : public te::plugin::Plugin
-    {
-      public:
-
-        Module(const te::plugin::PluginInfo& pluginInfo);
-
-        ~Module();
-
-        void startup();
-
-        void shutdown();
-    };
-
-  }
+    throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
+  }  
 }
 
-#define TESQLITEEXPORT  __declspec(dllexport)
-
-PLUGIN_CALL_BACK_DECLARATION(TESQLITEEXPORT);
-
-#endif  // __TERRALIB_SQLITE_INTERNAL_MODULE_H
+te::gdal::DataSetUseCounter::~DataSetUseCounter()
+{
+  DataSetsManager::getInstance().decrementUseCounter( m_uri );
+}
 

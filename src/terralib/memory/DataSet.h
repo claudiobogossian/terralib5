@@ -39,6 +39,16 @@
 
 namespace te
 {
+  namespace da
+  {
+    class DataSetType;
+  }
+
+  namespace dt
+  {
+    class Property;
+  }
+
   namespace mem
   {
 // Forward declarations
