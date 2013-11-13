@@ -33,12 +33,15 @@
 #include "../geometry/Enums.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GeometryProperty.h"
+#include "../raster/BandProperty.h"
+#include "../raster/Grid.h"
 #include "../raster/RasterProperty.h"
 #include "Utils.h"
 
 // TerraLib 4.x
 #include <terralib/kernel/TeBox.h>
 #include <terralib/kernel/TeDatabaseFactoryParams.h>
+#include <terralib/kernel/TeProjection.h>
 #include <terralib/kernel/TeTable.h>
 
 // Boost
@@ -368,3 +371,32 @@ std::auto_ptr<te::da::DataSetType> terralib4::Convert2T5(TeTable table)
 
   return newDst;
 }
+
+te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
+{
+  std::auto_ptr<te::rst::RasterProperty> rproperty(new te::rst::RasterProperty("raster"));
+
+  unsigned int ncols = rparams.ncols_;
+  unsigned int nrows = rparams.nlines_;
+  std::auto_ptr<te::gm::Envelope> mbr(Convert2T5(rparams.boundingBox()));
+
+  std::auto_ptr<te::rst::Grid> grid(new te::rst::Grid(ncols, nrows, mbr.release(), rparams.projection()->epsgCode()));
+
+  rproperty->set(grid.release());
+
+  for(int i = 0; i != rparams.nBands(); ++i)
+  {
+    te::rst::BandProperty* bp = new te::rst::BandProperty(i, Convert2T5(rparams.dataType_[i]));
+
+    bp->m_blkh = rparams.blockHeight_;
+    bp->m_blkw = rparams.blockWidth_;
+    bp->m_noDataValue = rparams.dummy_[i];
+
+    // TODO: faltam varios parametros -> num-blocos serao importantes, ...
+
+    rproperty->add(bp);
+  }
+
+  return rproperty.release();
+}
+

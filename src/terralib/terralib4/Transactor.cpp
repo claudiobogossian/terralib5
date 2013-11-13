@@ -287,7 +287,9 @@ std::auto_ptr<te::da::DataSetType> terralib4::Transactor::getDataSetType(const s
   if(layer->hasGeometry(TeRASTER))
   {
     std::auto_ptr<te::da::DataSetType> dst(new te::da::DataSetType(layer->name(), 0));
-    te::rst::RasterProperty* prop = new te::rst::RasterProperty("raster");
+
+// TODO: handle rasters with multiple objectid!
+    te::rst::RasterProperty* prop = Convert2T5(layer->raster()->params());
     dst->add(prop);
     return dst;
   }
