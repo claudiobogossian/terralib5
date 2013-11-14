@@ -30,9 +30,6 @@
 #include "../../../../maptools/DataSetLayer.h"
 #include "AbstractTreeItem.h"
 
-// Qt
-#include <QtCore/QString>
-
 namespace te
 {
   namespace qt
@@ -67,15 +64,18 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
-          TreeItemType getType() const;
+        /*!
+          \brief It returns the item type: "DATASET_LAYER_ITEM".
+
+          \return The item type: "DATASET_LAYER_ITEM".
+        */
+          const std::string getItemType() const;
 
         private:
 
           bool hasGroupingItem() const;
 
           bool hasChartItem() const;
-
-          QString buildToolTip() const;
 
         private:
 

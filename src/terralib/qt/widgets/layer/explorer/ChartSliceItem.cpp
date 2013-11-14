@@ -115,9 +115,9 @@ te::map::AbstractLayerPtr te::qt::widgets::ChartSliceItem::getLayer() const
   return te::map::AbstractLayerPtr(0);
 }
 
-te::qt::widgets::AbstractTreeItem::TreeItemType te::qt::widgets::ChartSliceItem::getType() const
+const std::string te::qt::widgets::ChartSliceItem::getItemType() const
 {
-  return CHARTSLICEITEM;
+  return "CHART_SLICE_ITEM";
 }
 
 void te::qt::widgets::ChartSliceItem::setCheckable(bool checkable)

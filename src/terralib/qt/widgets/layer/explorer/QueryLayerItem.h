@@ -64,7 +64,12 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
-          TreeItemType getType() const;
+        /*!
+          \brief It returns the item type: "QUERY_LAYER_ITEM".
+
+          \return The item type: "QUERY_LAYER_ITEM".
+        */
+          const std::string getItemType() const;
 
         private:
 

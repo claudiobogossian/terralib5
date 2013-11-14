@@ -127,9 +127,9 @@ te::map::AbstractLayerPtr te::qt::widgets::DataSetAdapterLayerItem::getLayer() c
   return m_layer;
 }
 
-te::qt::widgets::AbstractTreeItem::TreeItemType te::qt::widgets::DataSetAdapterLayerItem::getType() const
+const std::string te::qt::widgets::DataSetAdapterLayerItem::getItemType() const
 {
-  return LAYERITEM;
+  return "DATASET_ADAPTER_LAYER_ITEM";
 }
 
 bool te::qt::widgets::DataSetAdapterLayerItem::hasGroupingItem() const

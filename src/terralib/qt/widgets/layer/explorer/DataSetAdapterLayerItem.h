@@ -64,7 +64,7 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
-          TreeItemType getType() const;
+          const std::string getItemType() const;
 
         private:
 
