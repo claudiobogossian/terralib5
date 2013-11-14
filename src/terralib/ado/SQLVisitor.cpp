@@ -28,6 +28,7 @@
 #include "../dataaccess/query/LiteralDateTime.h"
 #include "../dataaccess/query/LiteralEnvelope.h"
 #include "../dataaccess/query/LiteralGeom.h"
+#include "../dataaccess/query/PropertyName.h"
 #include "../dataaccess/query/ST_EnvelopeIntersects.h"
 #include "../geometry/Envelope.h"
 #include "SQLVisitor.h"
@@ -110,4 +111,15 @@ void te::ado::SQLVisitor::visit(const te::da::Function& visited)
   m_sql += upperX +" < " + boost::lexical_cast<std::string>(e->m_llx) + " OR ";
   m_sql += lowerY +" > " + boost::lexical_cast<std::string>(e->m_ury) + " OR ";
   m_sql += upperY +" < " + boost::lexical_cast<std::string>(e->m_lly) + ")";
+}
+
+void te::ado::SQLVisitor::visit(const te::da::PropertyName& visited)
+{
+  std::vector<std::string> values;
+  te::common::Tokenize(visited.getName(), values, ".");
+
+  if(values.size() == 1)
+    m_sql += visited.getName();
+  else
+    m_sql += values[values.size() - 1];
 }
