@@ -177,7 +177,15 @@ namespace te
           /*!
             \brief Sort by the selected columns.
           */
-          void sortByColumns();
+//          void sortByColumns();
+
+          /*!
+            \brief Sort by the selected columns.
+
+            \param asc True for ascendent order, false for descendent.
+          */
+          void sortByColumns(const bool& asc);
+
           //@}
 
           /*!

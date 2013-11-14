@@ -31,9 +31,29 @@
 
 // Qt
 #include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 #include <QtCore/QLibraryInfo>
 #include <QtCore/QProcess>
+#include <QtGui/QApplication>
+#include <QtGui/QMainWindow>
 #include <QtGui/QMessageBox>
+
+
+QWidget* GetMainWindow()
+{
+  QWidgetList lst = qApp->topLevelWidgets();
+  QWidgetList::iterator it;
+
+  for(it=lst.begin(); it!=lst.end(); ++it)
+  {
+    QMainWindow* main = qobject_cast<QMainWindow*>(*it);
+    
+    if(main != 0)
+      return main;
+  }
+
+  return 0;
+}
 
 
 te::qt::widgets::AssistantHelpManagerImpl::AssistantHelpManagerImpl(const QString& collectionFile, QObject* parent)
@@ -71,6 +91,14 @@ te::qt::widgets::AssistantHelpManagerImpl::~AssistantHelpManagerImpl()
 
 bool te::qt::widgets::AssistantHelpManagerImpl::startAssistant()
 {
+  QFileInfo info(m_collectionFile);
+
+  if(!info.exists())
+  {
+    QMessageBox::warning(GetMainWindow(), QObject::tr("Help failure"), QObject::tr("Could not find help files"));
+    return false;
+  }
+
   if (!m_proc)
     m_proc = new QProcess();
 
@@ -92,7 +120,7 @@ bool te::qt::widgets::AssistantHelpManagerImpl::startAssistant()
 
     if (!m_proc->waitForStarted()) 
     {
-      QMessageBox::critical(0, QObject::tr("Simple Text Viewer"), QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
+      QMessageBox::critical(GetMainWindow(), QObject::tr("Simple Text Viewer"), QObject::tr("Unable to launch Qt Assistant (%1)").arg(app));
       return false;
     }
   }

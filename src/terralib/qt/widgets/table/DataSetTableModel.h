@@ -88,27 +88,11 @@ namespace te
           void setPkeysColumns(const std::vector<size_t>& pkeys);
 
           /*!
-            \brief Enables or disables promotion fo the rows.
-
-            \param enable True for enable promotion, false for disable it.
-
-            \note This operation consumes time and memory resources, because the all primary keys must be processed.
-          */
-          void setPromotionEnable(const bool& enable);
-
-          /*!
             \brief Promotes the rows identified by \a oids.
 
             \parama oids The identifiers of the rows to be promoted.
           */
           void promote(const te::da::ObjectIdSet* oids);
-
-          /*!
-            \brief Sort data using columns \a cols.
-
-            \param cols Vector of positions of the columns to use on sorting.
-          */
-          void orderByColumns(const std::vector<int>& cols);
 
           /*!
             \brief Returns the pointer to the promoter being used.

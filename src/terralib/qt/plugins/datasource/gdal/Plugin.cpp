@@ -33,6 +33,7 @@
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../../widgets/layer/utils/DataSet2Layer.h"
+#include "../../../widgets/Utils.h"
 
 #include "../../../af/ApplicationController.h"
 #include "../../../af/Utils.h"
@@ -102,7 +103,7 @@ void te::qt::plugins::gdal::Plugin::startup()
   m_initialized = true;
 
   //Initializing action
-  QAction* act = te::qt::af::ApplicationController::getInstance().findAction("Project.Add Layer.All Sources");
+  QAction* act = te::qt::af::ApplicationController::getInstance().findAction("Project.Add Layer.Tabular File");
   QMenu* mnu = te::qt::af::ApplicationController::getInstance().findMenu("Project.Add Layer");
 
   if(act != 0 && mnu != 0)
@@ -110,8 +111,8 @@ void te::qt::plugins::gdal::Plugin::startup()
     QWidget* parent = act->parentWidget();
     m_openFile = new QAction(QIcon::fromTheme("file-raster"), tr("Raster File..."), parent);
     m_openFile->setObjectName("Project.Add Layer.Raster File");
-    //mnu->insertAction(act, m_openFile);
-    mnu->addAction(m_openFile);
+    mnu->insertAction(act, m_openFile);
+    //mnu->addAction(m_openFile);
 
     te::qt::af::AddActionToCustomToolbars(m_openFile);
 
@@ -138,14 +139,14 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 {
   QString filter = tr("Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)");
 
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Raster File"), te::qt::af::GetFilePathFromSettings("raster"), filter);
+  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), filter);
 
   if(fileNames.isEmpty())
     return;
 
   QFileInfo info(fileNames.value(0));
 
-  te::qt::af::AddFilePathToSettings(info.absolutePath(), "raster");
+  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "raster");
 
   std::list<te::map::AbstractLayerPtr> layers;
 
