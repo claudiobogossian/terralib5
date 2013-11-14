@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -84,7 +84,7 @@ void te::qt::plugins::rp::Plugin::startup()
   m_popupAction->setText(TE_QT_PLUGIN_RP("Raster Processing"));
 
   //add to application layer tree pop up menu
-  te::qt::af::evt::LayerPopUpAddAction evt(m_popupAction, 2 /*SINGLE_LAYER_SELECTED*/);
+  te::qt::af::evt::LayerPopUpAddAction evt(m_popupAction, "RASTER_LAYER_ITEM", 2 /*UNIQUE_ITEM_SELECTED*/);
   te::qt::af::ApplicationController::getInstance().broadcast(&evt);
 
   m_rpPopupMenu = new QMenu(m_rpMenu);

@@ -36,6 +36,7 @@
 #include "../../../widgets/Utils.h"
 
 #include "../../../af/ApplicationController.h"
+#include "../../../af/Project.h"
 #include "../../../af/Utils.h"
 #include "../../../af/events/LayerEvents.h"
 
@@ -52,6 +53,7 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMenu>
 #include <QtCore/QFileInfo>
+#include <QtGui/QMessageBox>
 
 std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPtr& info)
 {
@@ -182,10 +184,33 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
     GetLayers(ds, layers);
   }
 
+  // If there is a parent folder layer that is selected, get it as the parent of the layer to be added;
+  // otherwise, add the layer as a top level layer
+  te::map::AbstractLayerPtr parentLayer(0);
+
+  std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::af::ApplicationController::getInstance().getProject()->getSelectedLayers();
+
+  if(selectedLayers.size() > 1)
+  {
+    QMessageBox::warning(0, tr("Add Layer"), tr("Select only a folder layer item!"));
+    return;
+  }
+  else if (selectedLayers.size() == 1)
+  {
+    if(selectedLayers.front()->getType() != "FOLDERLAYER")
+    {
+      QMessageBox::warning(0, tr("Add Layer"), tr("Select only a folder layer item!"));
+      return;
+    }
+  }
+
+  if(!selectedLayers.empty())
+    parentLayer = selectedLayers.front();
+
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = layers.begin(); it != layers.end(); ++it)
   {
-    te::qt::af::evt::LayerAdded evt(*it);
+    te::qt::af::evt::LayerAdded evt(*it, parentLayer);
     te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 }
