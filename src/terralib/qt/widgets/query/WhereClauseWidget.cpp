@@ -355,7 +355,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
     {
       const te::da::ObjectIdSet* selecteds = layer->getSelected();
 
-      if(!selecteds)
+      if(!selecteds || selecteds->size() == 0)
       {
         QMessageBox::warning(this, tr("Query Builder"), tr("Selected layer has no selected geometries."));
         return;
@@ -501,7 +501,7 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
   {
     while(dataset->moveNext())
     {
-      std::string value = dataset->getAsString(0);
+      std::string value = dataset->getAsString(propertyName);
 
       m_ui->m_valueValueComboBox->addItem(value.c_str());
     }
@@ -516,18 +516,28 @@ void te::qt::widgets::WhereClauseWidget::onClearAllPushButtonClicked()
 
 te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QString& value, const std::string& propName)
 {
-  //get the dataset name
-  int pos = propName.find(".");
-  std::string dataSetAliasName = propName.substr(0, pos);
-  std::string propertyName = propName.substr(pos + 1, propName.size() - 1);
-  std::string dataSetName = "";
+  std::string dataSetName;
+  std::string propertyName = propName;
 
-  for(size_t t = 0; t < m_fromItems.size(); ++t)
+  //get the dataset name
+  if(m_fromItems.size() == 1)
   {
-    if(m_fromItems[t].second == dataSetAliasName)
+    dataSetName = m_fromItems[0].first;
+  }
+  else
+  {
+    std::size_t pos = propName.find(".");
+    assert(pos != std::string::npos);
+    std::string dataSetAliasName = propName.substr(0, pos);
+    propertyName = propName.substr(pos + 1, propName.size() - 1);
+
+    for(size_t t = 0; t < m_fromItems.size(); ++t)
     {
-      dataSetName = m_fromItems[t].first;
-      break;
+      if(m_fromItems[t].second == dataSetAliasName)
+      {
+        dataSetName = m_fromItems[t].first;
+        break;
+      }
     }
   }
 
