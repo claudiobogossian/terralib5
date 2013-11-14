@@ -266,7 +266,7 @@ namespace te
           bool isCheckable() const;
 
           /*!
-            \brief It gets the index to be associated to the given item.
+            \brief It gets the index that is associated to the given item.
 
             \param item The item whose index will be returned.
 
@@ -275,11 +275,22 @@ namespace te
           QModelIndex getIndex(AbstractTreeItem* item);
 
           /*!
-            \brief It adds a layer to the model.
+            \brief It gets the layer item that is associated to the given layer.
 
-            \param layer The layer to be added to the model.
+            \param layer The layer whose the corresponding layer item will be returned.
+
+            \return The layer item associated to the layer.
           */
-          void add(const te::map::AbstractLayerPtr& layer);
+          te::qt::widgets::AbstractTreeItem* getLayerItem(const te::map::AbstractLayerPtr& layer);
+
+          /*!
+            \brief It adds a item layer to the list of item layers of the parent layer item.
+                   If the parent layer is not specified, the item layer is added as a top layer item.
+
+            \param layer       The layer that will be associated to the item layer to be added.
+            \param parentItem  The parent item where the layer item will be added.
+          */
+          void add(const te::map::AbstractLayerPtr& layer, AbstractTreeItem* parentItem = 0);
 
           /*!
             \brief It removes a item from the model.

@@ -127,36 +127,45 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelected
   return m_treeView->getSelectedAndVisibleSingleLayers();
 }
 
-void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer)
+te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerExplorer::getLayerItem(const te::map::AbstractLayerPtr& layer)
+{
+  if(!m_treeModel)
+    return 0;
+
+  return m_treeModel->getLayerItem(layer);
+}
+
+void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer, te::qt::widgets::AbstractTreeItem* parentItem)
 {
   if(!m_treeModel)
     return;
 
-  m_treeModel->add(layer);
+  m_treeModel->add(layer, parentItem);
 }
 
-void te::qt::widgets::LayerExplorer::remove(AbstractTreeItem* item)
+bool te::qt::widgets::LayerExplorer::remove(AbstractTreeItem* item)
 {
   if(!m_treeModel)
-    return;
+    return false;
 
-  m_treeModel->remove(item);
+  return m_treeModel->remove(item);
 }
 
-te::qt::widgets::LayerTreeView::ContextMenuType te::qt::widgets::LayerExplorer::getMenuType(int menuType) const
+te::qt::widgets::LayerTreeView::ContextMenuSelectionType te::qt::widgets::LayerExplorer::getMenuSelectionType(int menuSelectionType) const
 {
-  return static_cast<te::qt::widgets::LayerTreeView::ContextMenuType>(menuType);
+  return static_cast<te::qt::widgets::LayerTreeView::ContextMenuSelectionType>(menuSelectionType);
 }
 
 void te::qt::widgets::LayerExplorer::add(QAction* action,
                                          const QString& menu,
-                                         const QString& layerType,
-                                         te::qt::widgets::LayerTreeView::ContextMenuType menuType)
+                                         const std::string& itemType,
+                                         te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuType,
+                                         bool applyActionToSubType)
 {
   if(!m_treeView)
     return;
 
-  m_treeView->add(action, menu, layerType, menuType);
+  m_treeView->add(action, menu, itemType, menuType, applyActionToSubType);
 }
 
 void te::qt::widgets::LayerExplorer::onSelectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
