@@ -175,6 +175,7 @@ te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Q
 
   //add icon
   m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("tabular-import-hint").pixmap(112,48));
+  m_ui->m_sridPushButton->setIcon(QIcon::fromTheme("srs"));
 
   //Connecting signals and slots
   connect(m_ui->m_inputDataToolButton, SIGNAL(clicked()), this, SLOT(onInputDataToolButtonTriggered()));
@@ -196,26 +197,17 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
   {
     te::gm::GeometryProperty* newGeom;
 
-    if(m_ui->m_pointRadioButton->isChecked())
-    {
-      std::vector<std::string> names;
-      names.push_back(m_ui->m_xAxisComboBox->currentText().toStdString());
-      names.push_back(m_ui->m_yAxisComboBox->currentText().toStdString());
-      newGeom = new te::gm::GeometryProperty("Point", true, new std::string());
-      newGeom->setGeometryType(te::gm::PointType);
+    std::vector<std::string> names;
+    names.push_back(m_ui->m_xAxisComboBox->currentText().toStdString());
+    names.push_back(m_ui->m_yAxisComboBox->currentText().toStdString());
+    newGeom = new te::gm::GeometryProperty("Point", true, new std::string());
+    newGeom->setGeometryType(te::gm::PointType);
 
-      if(!m_ui->m_sridLineEdit->text().isEmpty())
-        newGeom->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+    if(!m_ui->m_sridLineEdit->text().isEmpty())
+      newGeom->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
 
-      m_dsConverter->add(names, newGeom, te::da::XYToPointConverter);
-    }
-    else if(m_ui->m_wktRadioButton->isChecked())
-    {
-      //std::string name = m_ui->m_wktComboBox->currentText().toStdString();
-      //newGeom = new te::gm::GeometryProperty(name, true, new std::string());
-      //newGeom->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
-      //m_dsConverter->add(name, newGeom);
-    }
+    m_dsConverter->add(names, newGeom, te::da::XYToPointConverter);
+
   }
 
   //Searching for properties that the user selected to adapt
@@ -382,7 +374,6 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
   m_ui->m_dataPropertiesTableWidget->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
   //Clearing the Comboxes if they aren't empty
-  m_ui->m_wktComboBox->clear();
   m_ui->m_xAxisComboBox->clear();
   m_ui->m_yAxisComboBox->clear();
 
@@ -398,9 +389,7 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     {
       std::string propName = m_dataType->getProperty(t)->getName();
       int type = m_dataType->getProperty(t)->getType();
-      if(type == te::dt::STRING_TYPE)
-        m_ui->m_wktComboBox->addItem(QString::fromStdString(propName));
-      else if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || 
+      if((type >= te::dt::INT16_TYPE && type <= te::dt::UINT64_TYPE) || 
                type == te::dt::FLOAT_TYPE || type == te::dt::DOUBLE_TYPE)
       {
         m_ui->m_xAxisComboBox->addItem(QString::fromStdString(propName));
@@ -436,21 +425,7 @@ void te::qt::widgets::DatapPropertiesWidget::onPropertyTypeChanged(int row)
   int type = box->itemData(box->currentIndex()).toInt();
 
   //Searching the property to see if it is already in the comboBoxes
-  int wkt, xyAxis;
-  wkt = m_ui->m_wktComboBox->findText(QString::fromStdString(propName));
-  xyAxis = m_ui->m_xAxisComboBox->findText(QString::fromStdString(propName));
-
-  //Checking wheather the property needs to be added to or removed from wktComboBox
-  if(wkt == -1)
-  {
-    if(type == te::dt::STRING_TYPE)
-      m_ui->m_wktComboBox->addItem(QString::fromStdString(propName));
-  }
-  else
-  {
-    if(type != te::dt::STRING_TYPE)
-      m_ui->m_wktComboBox->removeItem(wkt);
-  }
+  int xyAxis = m_ui->m_xAxisComboBox->findText(QString::fromStdString(propName));
 
   //Checking wheather the property needs to be added to or removed from the xAxisoOmboBox and yAxisoCOmboBox.
   //Their values will always be the same.
