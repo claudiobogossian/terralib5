@@ -83,10 +83,10 @@ namespace te
       return true;
     }
     
-    double SegmenterDummyStrategy::getMemUsageFactor(
-      const unsigned int inputRasterBandsNumber ) const
+    double SegmenterDummyStrategy::getMemUsageEstimation(
+      const unsigned int bandsToProcess, const unsigned int pixelsNumber ) const
     {
-      return 1.0;
+      return (double)( sizeof(double) * bandsToProcess * pixelsNumber );
     }
     
     unsigned int SegmenterDummyStrategy::getOptimalBlocksOverlapSize() const

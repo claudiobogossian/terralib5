@@ -1071,41 +1071,31 @@ namespace te
       return true;
     }
     
-    double SegmenterRegionGrowingStrategy::getMemUsageFactor(
-      const unsigned int inputRasterBandsNumber ) const
+    double SegmenterRegionGrowingStrategy::getMemUsageEstimation(
+      const unsigned int bandsToProcess,
+      const unsigned int pixelsNumber ) const
     {
       TERP_TRUE_OR_THROW( m_isInitialized, "Instance not initialized" );
       
-      double factor = 1.0;
+      // Test case: 1505000 pixels image
+      // case1: one band
+      // case2: ten bands      
+      
+      double minM = 0;
+      double maxM = 0;
       
       switch( m_parameters.m_segmentFeatures )
       {
         case Parameters::MeanFeaturesType :
         {
-          factor =
-            (
-              ( 4.0 * ((double)( sizeof(Segment*) ) ) )  +
-              ( ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) ) +
-              ( (double)sizeof( MeanBasedSegment ) )
-            )
-            /
-            ( 
-              ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) 
-            );
+          minM = 556.7;
+          maxM = 648.6;
           break;
         }
         case Parameters::BaatzFeaturesType :
         {
-          factor =
-            (
-              ( 4.0 * ((double)( sizeof(Segment*) ) ) )  +
-              ( 3.0 * ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) ) +
-              ( (double)sizeof( BaatzBasedSegment ) )
-            )
-            /
-            ( 
-              ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) 
-            );
+          minM = 763.4;
+          maxM = 1039.0;
           break;
         }
         default :
@@ -1115,7 +1105,27 @@ namespace te
         }
       } 
       
-      return factor;
+      if( bandsToProcess == 10 )
+      {
+        return maxM;
+      }
+      else
+      {
+        double dM = ( maxM - minM );
+        double slope = dM / ( 10.0 - ((double)bandsToProcess) );
+        
+        return (
+                 ( ((double)bandsToProcess) * slope ) + minM
+               )
+               *
+               (
+                 ((double)pixelsNumber) / 1505000.0 
+               )
+               *
+               (
+                 1024.0 * 1024.0
+               );
+      }
     }
     
     unsigned int SegmenterRegionGrowingStrategy::getOptimalBlocksOverlapSize() const

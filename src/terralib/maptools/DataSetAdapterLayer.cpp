@@ -204,6 +204,11 @@ void te::map::DataSetAdapterLayer::draw(Canvas* canvas, const te::gm::Envelope& 
   if(m_rendererType.empty())
     throw Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
 
+  std::auto_ptr<te::da::DataSetType> dsType = getSchema();
+
+  if(!dsType->hasGeom())
+    return;
+
   // Try get the defined renderer
   std::auto_ptr<AbstractRenderer> renderer(RendererFactory::make(m_rendererType));
   if(renderer.get() == 0)
