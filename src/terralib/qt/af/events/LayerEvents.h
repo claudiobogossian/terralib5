@@ -55,38 +55,41 @@ namespace te
           /*!
             \brief Constructor.
 
-            \param newLayer Layer added.
+            \param layer       The layer to be added.
+            \param parentLayer  The parent layer where the new layer will be added.
           */
-          LayerAdded(te::map::AbstractLayerPtr newlayer)
+          LayerAdded(const te::map::AbstractLayerPtr& layer, te::map::AbstractLayerPtr& parentLayer = te::map::AbstractLayerPtr(0))
             : Event(LAYER_ADDED),
-              m_layer(newlayer)
+              m_layer(layer),
+              m_parentLayer(parentLayer)
           {
           }
 
-          te::map::AbstractLayerPtr m_layer;  //!< Layer added.
+          te::map::AbstractLayerPtr m_layer;        //!< Tha layer to be added.
+          te::map::AbstractLayerPtr m_parentLayer;  //!< The parent layer where the layer will be added.
         };
 
         /*!
-          \struct LayerItemRemoved
+          \struct ItemRemoved
 
-          \brief This event signals that a layer item is to be removed.
+          \brief This event signals that a item is to be removed from the layer explorer.
 
           \ingroup afevents
          */
-        struct LayerItemRemoved : public Event
+        struct ItemRemoved : public Event
         {
           /*!
             \brief Constructor.
 
-            \param layerItem Layer item to be removed.
+            \param item Item to be removed from the layer explorer.
           */
-          LayerItemRemoved(te::qt::widgets::AbstractTreeItem* layerItem)
-            : Event(LAYER_ITEM_REMOVED),
-              m_layerItem(layerItem)
+          ItemRemoved(te::qt::widgets::AbstractTreeItem* item)
+            : Event(ITEM_REMOVED),
+              m_item(item)
           {
           }
 
-          te::qt::widgets::AbstractTreeItem* m_layerItem;  //!< Layer item to be removed.
+          te::qt::widgets::AbstractTreeItem* m_item;  //!< Item to be removed.
         };
 
 
@@ -219,18 +222,21 @@ namespace te
           /*!
             \brief Construtor.
 
-            \param layer The layer that has the selected style.
+            \param action             The action to be added to the context menu.
+            \param itemType           The type of the selected item.
+            \param menuSelectionType  The selection type of the context menu
           */
-          LayerPopUpAddAction(QAction* action,
-                              int menuType) :
-            Event(LAYER_POPUP_ADD_ACTION),
-            m_action(action),
-            m_menuType(menuType)
+          LayerPopUpAddAction(QAction* action, std::string itemType, int menuSelectionType)
+            : Event(LAYER_POPUP_ADD_ACTION),
+              m_action(action),
+              m_itemType(itemType),
+              m_menuSelectionType(menuSelectionType)
           {
           }
   
-          QAction* m_action;              //!< Action to be added in pop up menu
-          int m_menuType;                 //!< LayerTreeView::ContextMenuType
+          QAction* m_action;           //!< The action to be added in pop up menu
+          std::string m_itemType;      //!< The type of the selected item
+          int m_menuSelectionType;     //!< The selection type of the context menu
         };
 
         /*!
@@ -245,15 +251,15 @@ namespace te
           /*!
             \brief Construtor.
 
-            \param layer The layer that has the selected style.
+            \param action The action to be removed.
           */
-          LayerPopUpRemoveAction(QAction* action) :
-            Event(LAYER_POPUP_REMOVE_ACTION),
-            m_action(action)
+          LayerPopUpRemoveAction(QAction* action)
+            : Event(LAYER_POPUP_REMOVE_ACTION),
+              m_action(action)
           {
           }
   
-          QAction* m_action;              //!< Action to be removed in pop up menu
+          QAction* m_action;              //!< Action to be removed in the pop up menu
         };
 
         /*!
