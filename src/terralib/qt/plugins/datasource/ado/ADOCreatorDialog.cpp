@@ -92,6 +92,48 @@ void te::qt::plugins::ado::ADOCreatorDialog::applyPushButtonPressed()
     // create database
     te::da::DataSource::create("ADO", dsInfo);
 
+    // Connect
+    std::map<std::string, std::string> connInfo;
+    connInfo["DB_NAME"] = dsInfo["DB_NAME"];
+    connInfo["PASSWORD"] = dsInfo["PASSWORD"];
+    connInfo["PROVIDER"] = dsInfo["PROVIDER"];
+
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("ADO");
+    ds->setConnectionInfo(connInfo);
+    ds->open();
+
+    m_driver.reset(ds.release());
+
+    if(m_driver.get() == 0)
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open ADO data source due to an unknown error!"));
+    
+    QString title = m_ui->m_fileLineEdit->text().trimmed();
+
+    if(m_datasource.get() == 0)
+    {
+// create a new data source based on form data
+      m_datasource.reset(new te::da::DataSourceInfo);
+
+      m_datasource->setConnInfo(connInfo);
+
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string dsId = boost::uuids::to_string(u);
+
+      m_datasource->setId(dsId);
+      m_driver->setId(dsId);
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription("");
+      m_datasource->setAccessDriver("ADO");
+      m_datasource->setType("ADO");
+    }
+    else
+    {
+      m_driver->setId(m_datasource->getId());
+      m_datasource->setConnInfo(connInfo);
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription("");
+    }
   }
   catch(const std::exception& e)
   {
