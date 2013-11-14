@@ -9,11 +9,11 @@
 #include "terralib/dataaccess/dataset/DataSetType.h"
 #include "terralib/dataaccess/datasource/DataSource.h"
 #include "terralib/dataaccess/datasource/DataSourceFactory.h"
-#include "terralib/dataaccess/datasource/DataSourceCatalogLoader.h"
+//#include "terralib/dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "terralib/dataaccess/datasource/DataSourceTransactor.h"
 #include "terralib/dataaccess/dataset/Index.h"
 
-#include "terralib/postgis/DataSetTypePersistence.h"
+//#include "terralib/postgis/DataSetTypePersistence.h"
 
 #include "terralib/qt/widgets/dataset/AddIndex.h"
 #include "terralib/qt/widgets/dataset/CreateDataSet.h"
@@ -28,16 +28,17 @@ DataSetManagement::DataSetManagement(QWidget* parent)
   setupUi(this);
 
   std::map<std::string, std::string> connInfo;
-  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  //connInfo["PG_HOST"] = "localhost";
+ connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
+  connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "sitim110";
+  connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "terralib4";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
 
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
-  ds->open(connInfo);
-  m_ds = ds;
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
+  ds->setConnectionInfo(connInfo);
+  ds->open();
+  m_ds = ds.get();
 
   m_dataSourceName = connInfo["PG_DB_NAME"];
 
@@ -77,17 +78,17 @@ void DataSetManagement::createDataSetPushButtonClicked()
   dataSetType = createDataSetDialog->getDataSetType();
 
   // Create data set
-  te::da::DataSourceTransactor* t = m_ds->getTransactor();
-  te::da::DataSetTypePersistence* persistence = t->getDataSetTypePersistence();
+  std::auto_ptr<te::da::DataSourceTransactor> t = m_ds->getTransactor();
+  //std::auto_ptr<te::da::DataSetTypePersistence* persistence = t->getDataSetTypePersistence();
 
   try
   {
-    persistence->create(dataSetType);
+    std::map<std::string, std::string> options;
+    t->createDataSet(dataSetType, options);
   }
   catch(te::common::Exception& e)
   {
     QMessageBox::critical(this, tr("Operation of Creating a Data Set Failed"), e.what());
-    delete t;
     delete createDataSetDialog;
     return;
   }
@@ -96,7 +97,6 @@ void DataSetManagement::createDataSetPushButtonClicked()
     tr("The data set \"%1\" was created successfully in the data source \"%2\"!")
       .arg(dataSetType->getName().c_str()).arg(m_dataSourceName.c_str()));
 
-  delete t;
 
   delete createDataSetDialog;
 }

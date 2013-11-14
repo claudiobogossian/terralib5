@@ -27,6 +27,7 @@
 #include "Config.h"
 #include "LoadModules.h"
 #include <terralib/common.h>
+#include <terralib/dataaccess.h>
 #include <terralib/dataaccess/datasource/DataSourceFactory.h>
 #include <terralib/gdal/Utils.h>
 #include <terralib/geometry.h>
@@ -224,9 +225,10 @@ void MixtureModelDialogExample(int argc, char** argv)
 // open the input raster
   const std::string dsname("cbers2b_rgb342_crop.tif");
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters";
-  std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("GDAL"));
-  ds->open(rinfo);
+  rinfo["URI"] =""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
+ 
+  ds->open();
   if(!ds->isOpened())
   {
     std::cout << std::endl << "Data source openning error";

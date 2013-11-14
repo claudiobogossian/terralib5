@@ -107,9 +107,6 @@ void PrintDataSourceCapabilities(te::da::DataSource* ds)
   PrintHelper("Efficient Move After Last", dataSetCapabilities.supportsEfficientMoveAfterLast());
   PrintHelper("Efficient Move", dataSetCapabilities.supportsEfficientMove());
   PrintHelper("Efficient Dataset Size", dataSetCapabilities.supportsEfficientDataSetSize());
-  PrintHelper("Support Insertion", dataSetCapabilities.supportsInsertion());
-  PrintHelper("Support Update", dataSetCapabilities.supportsUpdate());
-  PrintHelper("Support Deletion", dataSetCapabilities.supportsDeletion());
 
   std::cout << ":: Query Capabilities" << std::endl;
   const te::da::QueryCapabilities queryCapabilities = capabilities.getQueryCapabilities();

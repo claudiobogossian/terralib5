@@ -236,6 +236,7 @@ namespace te
      */
     TEOGREXPORT std::vector<std::string> GetOGRDrivers(bool filterCreate = false);
     
+    TEOGREXPORT std::string GetOGRConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
   } // end namespace ogr
 }   // end namespace te

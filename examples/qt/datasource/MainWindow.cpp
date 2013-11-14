@@ -31,7 +31,9 @@
 #include <terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.h>
 #include <terralib/qt/plugins/datasource/pgis/PostGISConnectorDialog.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
-
+#include <terralib/postgis/Utils.h>
+#include <terralib/gdal/Utils.h>
+#include <terralib/ogr/Utils.h>
 // Qt
 #include <QtGui/QAction>
 #include <QtGui/QActionGroup>
@@ -92,11 +94,13 @@ void MainWindow::setupActions()
 void MainWindow::onOpenPostGISTriggered()
 {
   te::qt::plugins::pgis::PostGISConnectorDialog* pgisDialog = new te::qt::plugins::pgis::PostGISConnectorDialog(this);
-  
+
   if (pgisDialog->exec() == QDialog::Accepted)
   {
+    std::string connstr = te::pgis::MakeConnectionStr(pgisDialog->getDriver()->getConnectionInfo());
     QMessageBox msgBox;
-    QString mess = QString("DS Connection string: %1").arg(pgisDialog->getDriver()->getConnectionStr().c_str()); 
+    QString mess = QString("DS Connection string: %1").arg(connstr.c_str());
+
     msgBox.setText(mess);
     msgBox.exec();
 
@@ -109,7 +113,7 @@ void MainWindow::onOpenOGRTriggered()
   
   if (ogrDialog->exec() == QDialog::Accepted)
   {
-    std::string conStr = ogrDialog->getDriver()->getConnectionStr();
+    std::string conStr = te::ogr::GetOGRConnectionInfo(ogrDialog->getDriver()->getConnectionInfo());
     QMessageBox msgBox;
     QString mess = QString("DS Connection string: %1").arg(conStr.c_str()); 
     msgBox.setText(mess);
@@ -123,8 +127,9 @@ void MainWindow::onOpenGDALTriggered()
   
   if (gdalDialog->exec() == QDialog::Accepted)
   {
+    std::string connstr = te::gdal::GetGDALConnectionInfo(gdalDialog->getDriver()->getConnectionInfo());
     QMessageBox msgBox;
-    QString mess = QString("DS Connection string: %1").arg(gdalDialog->getDriver()->getConnectionStr().c_str()); 
+    QString mess = QString("DS Connection string: %1").arg(connstr.c_str()); 
     msgBox.setText(mess);
     msgBox.exec();
   }
