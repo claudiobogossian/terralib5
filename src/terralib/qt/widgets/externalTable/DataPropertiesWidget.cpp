@@ -27,6 +27,7 @@
 #include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../../../dataaccess/dataset/PrimaryKey.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
@@ -39,6 +40,7 @@
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../memory/DataSet.h"
 #include "../table/DataSetTableView.h"
+#include "../Utils.h"
 #include "SRSManagerDialog.h"
 #include "DataPropertiesWidget.h"
 #include "DataSetAdapterWidget.h"
@@ -60,27 +62,27 @@
 //Utility functions used mianly to pupulate ui elements.
 void buidTypeMap(std::map<int, std::string>& typeMap)
 {
-   typeMap.clear();
+  typeMap.clear();
 
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::ARRAY_TYPE, QObject::tr("Array").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::BIT_TYPE, QObject::tr("Bit").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::BOOLEAN_TYPE, QObject::tr("Boolean").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::BYTE_ARRAY_TYPE, QObject::tr("Byte Array").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::CHAR_TYPE, QObject::tr("Char").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::COMPOSITE_TYPE, QObject::tr("Composite").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATETIME_TYPE, QObject::tr("Date and Time").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, QObject::tr("Double").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::FLOAT_TYPE, QObject::tr("Float").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::GEOMETRY_TYPE, QObject::tr("Geometry").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT16_TYPE, QObject::tr("Int 16").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, QObject::tr("Int 32").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, QObject::tr("Int 64").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, QObject::tr("Numeric").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, QObject::tr("String").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::UCHAR_TYPE, QObject::tr("U Char").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT16_TYPE, QObject::tr("U Int 16").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT32_TYPE, QObject::tr("U Int 32").toStdString()));
-   typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT64_TYPE, QObject::tr("U Int 64").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::ARRAY_TYPE, QObject::tr("Array").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::BIT_TYPE, QObject::tr("Bit").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::BOOLEAN_TYPE, QObject::tr("Boolean").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::BYTE_ARRAY_TYPE, QObject::tr("Byte Array").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::CHAR_TYPE, QObject::tr("Char").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::COMPOSITE_TYPE, QObject::tr("Composite").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::DATETIME_TYPE, QObject::tr("Date and Time").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::DOUBLE_TYPE, QObject::tr("Double").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::FLOAT_TYPE, QObject::tr("Float").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::GEOMETRY_TYPE, QObject::tr("Geometry").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT16_TYPE, QObject::tr("Int 16").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT32_TYPE, QObject::tr("Int 32").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::INT64_TYPE, QObject::tr("Int 64").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::NUMERIC_TYPE, QObject::tr("Numeric").toStdString()));
+  typeMap.insert(std::map<int, std::string>::value_type(te::dt::STRING_TYPE, QObject::tr("String").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::UCHAR_TYPE, QObject::tr("U Char").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT16_TYPE, QObject::tr("U Int 16").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT32_TYPE, QObject::tr("U Int 32").toStdString()));
+  //typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT64_TYPE, QObject::tr("U Int 64").toStdString()));
 }
 
 te::dt::SimpleProperty* getConvertedproperty(std::string name, int dataType, std::string defaultValue = "", bool isRequired = false, bool isAutoNumber = true)
@@ -217,6 +219,8 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
   }
 
   //Searching for properties that the user selected to adapt
+  te::da::PrimaryKey* pk = new te::da::PrimaryKey(m_dsConverter->getResult());
+  te::da::PrimaryKey* pkIn = m_dataType->getPrimaryKey();
   for (int i = 0; i < m_ui->m_dataPropertiesTableWidget->rowCount(); ++i)
   {
     if(dynamic_cast<QCheckBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(i, 0))->isChecked())
@@ -224,6 +228,23 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
       QComboBox* box = dynamic_cast<QComboBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(i, 1));
       int type = box->itemData(box->currentIndex()).toInt();
       m_dsConverter->add(m_dataType->getProperty(i)->getName(), getConvertedproperty(m_dataType->getProperty(i)->getName(), type));
+
+      if(pkIn)
+      {
+        std::vector<te::dt::Property*> props = pkIn->getProperties();
+
+        for(std::size_t t= 0; t < props.size(); ++t)
+        {
+          if(props[t]->getName() == m_dataType->getProperty(i)->getName())
+          {
+            te::dt::SimpleProperty* sp = getConvertedproperty(m_dataType->getProperty(i)->getName(), type);
+            pk->add(sp);
+
+            break;
+          }
+        }
+      }
+
     }
   }
 
@@ -248,14 +269,17 @@ te::da::DataSource* te::qt::widgets::DatapPropertiesWidget::getDataSource()
 
 void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 {
-  QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), "", tr("Comma Separated Value (*.csv *.CSV);; dBASE (*.dbf *.dbf)"), 
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Open Textual File"), te::qt::widgets::GetFilePathFromSettings("tabular"), tr("Comma Separated Value (*.csv *.CSV);; dBASE (*.dbf *.dbf)"), 
     0, QFileDialog::ReadOnly);
 
   if(fileName.isEmpty())
     return;
 
-  m_ui->m_inputDataLineEdit->setText(fileName);
+  QFileInfo info(fileName);
 
+  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "tabular");
+
+  m_ui->m_inputDataLineEdit->setText(fileName);
 
   //Getting the connection info
   std::string ogrInfo("connection_string=" + fileName.toStdString());
@@ -321,6 +345,36 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
     connect(typeCB, SIGNAL(currentIndexChanged (int)), m_mapper, SLOT(map()));
 
     m_ui->m_dataPropertiesTableWidget->setCellWidget(newrow, 1, typeCB);
+
+    //check geom
+    if(m_dataType->hasGeom())
+    {
+      te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_dataType.get());
+
+      if(gp && gp->getName() == propName)
+      {
+        typeCB->setEnabled(false);
+        break;
+      }
+    }
+
+    //check pk
+    te::da::PrimaryKey* pk = m_dataType->getPrimaryKey();
+
+    if(pk)
+    {
+      std::vector<te::dt::Property*> props = pk->getProperties();
+
+      for(std::size_t t= 0; t < props.size(); ++t)
+      {
+        if(props[t]->getName() == propName)
+        {
+          typeCB->setEnabled(false);
+          impCheck->setEnabled(false);
+          break;
+        }
+      }
+    }
   }
 
   m_ui->m_dataPropertiesTableWidget->resizeColumnsToContents();

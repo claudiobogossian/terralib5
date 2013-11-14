@@ -31,6 +31,7 @@
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../af/Utils.h"
 #include "../../../widgets/Exception.h"
+#include "../../../widgets/Utils.h"
 #include "OGRConnectorDialog.h"
 #include "ui_OGRConnectorDialogForm.h"
 
@@ -209,7 +210,7 @@ void te::qt::plugins::ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()
 {
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"), 
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Vector File"), te::qt::widgets::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"), 
       0, QFileDialog::ReadOnly);
     
     //  Web Feature Service - WFS (*.xml *.XML *.wfs *.WFS);; => not stable yet!
@@ -219,18 +220,18 @@ void te::qt::plugins::ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()
 
     QFileInfo info(fileName);
 
-    te::qt::af::AddFilePathToSettings(info.absolutePath(), "vector");
+    te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
 
     m_ui->m_featureRepoLineEdit->setText(fileName);
   }
   else if(m_ui->m_dirRadioButton->isChecked())
   {
-    QString dirName = QFileDialog::getExistingDirectory(this, tr("Select a directory with shape files"), te::qt::af::GetFilePathFromSettings("vector"), QFileDialog::ShowDirsOnly);
+    QString dirName = QFileDialog::getExistingDirectory(this, tr("Select a directory with shape files"), te::qt::widgets::GetFilePathFromSettings("vector"), QFileDialog::ShowDirsOnly);
 
     if(dirName.isEmpty())
       return;
 
-    te::qt::af::AddFilePathToSettings(dirName, "vector");
+    te::qt::widgets::AddFilePathToSettings(dirName, "vector");
 
     m_ui->m_featureRepoLineEdit->setText(dirName);
   }

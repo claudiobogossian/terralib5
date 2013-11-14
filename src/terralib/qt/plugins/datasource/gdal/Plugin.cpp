@@ -33,6 +33,7 @@
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../../widgets/layer/utils/DataSet2Layer.h"
+#include "../../../widgets/Utils.h"
 
 #include "../../../af/ApplicationController.h"
 #include "../../../af/Utils.h"
@@ -138,14 +139,14 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 {
   QString filter = tr("Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)");
 
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Raster File"), te::qt::af::GetFilePathFromSettings("raster"), filter);
+  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), filter);
 
   if(fileNames.isEmpty())
     return;
 
   QFileInfo info(fileNames.value(0));
 
-  te::qt::af::AddFilePathToSettings(info.absolutePath(), "raster");
+  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "raster");
 
   std::list<te::map::AbstractLayerPtr> layers;
 

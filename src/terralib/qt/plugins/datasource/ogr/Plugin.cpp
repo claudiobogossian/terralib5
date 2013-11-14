@@ -33,6 +33,7 @@
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../widgets/layer/utils/DataSet2Layer.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
+#include "../../../widgets/Utils.h"
 
 #include "../../../af/ApplicationController.h"
 #include "../../../af/Utils.h"
@@ -185,14 +186,14 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 //  QString filter = GetSupportedFiles();
 //  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), filter);
   
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"));
+  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::widgets::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"));
 
   if(fileNames.isEmpty())
     return;
 
   QFileInfo info(fileNames.value(0));
 
-  te::qt::af::AddFilePathToSettings(info.absolutePath(), "vector");
+  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
 
   std::list<te::map::AbstractLayerPtr> layers;
 
