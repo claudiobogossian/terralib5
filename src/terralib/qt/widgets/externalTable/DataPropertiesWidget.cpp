@@ -193,7 +193,7 @@ te::qt::widgets::DatapPropertiesWidget::~DatapPropertiesWidget()
 std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidget::getConverter()
 {
   //Configuring a new geometry if the user requested it.
-  if(m_ui->m_geometryGroupBox->isChecked())
+  if(m_ui->m_geometryGroupBox->isCheckable() && m_ui->m_geometryGroupBox->isChecked())
   {
     te::gm::GeometryProperty* newGeom;
 
@@ -219,6 +219,7 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
     {
       QComboBox* box = dynamic_cast<QComboBox*>(m_ui->m_dataPropertiesTableWidget->cellWidget(i, 1));
       int type = box->itemData(box->currentIndex()).toInt();
+
       m_dsConverter->add(m_dataType->getProperty(i)->getName(), getConvertedproperty(m_dataType->getProperty(i)->getName(), type));
 
       if(pkIn)
@@ -239,6 +240,12 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
 
     }
   }
+
+   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_dsConverter->getResult());
+
+   if(gp)
+     gp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+
 
   te::da::DataSourceManager::getInstance().insert(m_dataSource);
   return m_dsConverter;
@@ -345,6 +352,11 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
 
       if(gp && gp->getName() == propName)
       {
+        QString srid;
+        srid.setNum(gp->getSRID());
+        m_ui->m_sridLineEdit->setText(srid);
+
+        impCheck->setEnabled(false);
         typeCB->setEnabled(false);
         break;
       }
@@ -381,8 +393,12 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
   if(!m_dataType->hasGeom())
   {
 
-    m_ui->m_geometryGroupBox->setEnabled(true);
+    //m_ui->m_geometryGroupBox->setEnabled(true);
+    m_ui->m_geometryGroupBox->setCheckable(true);
+    m_ui->m_xAxisComboBox->setEnabled(true);
+    m_ui->m_yAxisComboBox->setEnabled(true);
     m_ui->m_geometryGroupBox->setChecked(false);
+
 
     //Filling the ComboBoxes that will be used to configure the resulting geometries
     for(size_t t = 0; t < m_dataType->size(); ++t)
@@ -399,8 +415,10 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
   }
   else
   {
-    m_ui->m_geometryGroupBox->setEnabled(false);
-    m_ui->m_geometryGroupBox->setChecked(false);
+    //m_ui->m_geometryGroupBox->setEnabled(false);
+    m_ui->m_geometryGroupBox->setCheckable(false);
+    m_ui->m_xAxisComboBox->setEnabled(false);
+    m_ui->m_yAxisComboBox->setEnabled(false);
   }
 }
 
