@@ -127,7 +127,7 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(const std::
 
   adaptedDataSet->moveBeforeFirst();
 
-  std::auto_ptr<te::da::FilteredDataSet> result(new te::da::FilteredDataSet(adaptedDataSet.release(), positions, true));
+  std::auto_ptr<te::da::DataSet> result(new te::da::FilteredDataSet(adaptedDataSet.release(), positions, true));
 
   return result;
 }
