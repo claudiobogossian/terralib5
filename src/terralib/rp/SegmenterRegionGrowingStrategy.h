@@ -117,8 +117,8 @@ namespace te
           const bool enableProgressInterface ) throw( te::rp::Exception );
         
         //overload         
-        double getMemUsageFactor( const unsigned int inputRasterBandsNumber ) 
-          const;
+        double getMemUsageEstimation( const unsigned int bandsToProcess,
+          const unsigned int pixelsNumber ) const;
         
         //overload  
         unsigned int getOptimalBlocksOverlapSize() const;
