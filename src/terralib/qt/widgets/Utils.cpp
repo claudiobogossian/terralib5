@@ -34,6 +34,7 @@
 #include "Utils.h"
 
 // Qt
+#include <QtCore/QSettings>
 #include <QtGui/QApplication>
 #include <QtGui/QImage>
 #include <QtGui/QMenu>
@@ -345,4 +346,22 @@ QPixmap te::qt::widgets::CreatePixmapIcon(const int& size, const QColor& penColo
   p.drawPath(path);
     
   return pix;
+}
+
+void te::qt::widgets::AddFilePathToSettings(const QString& path, const QString& typeFile)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  QString key = "Last used file path/" + typeFile;
+
+  sett.setValue(key, path);
+}
+
+QString te::qt::widgets::GetFilePathFromSettings(const QString& typeFile)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  QString key = "Last used file path/" + typeFile;
+
+  return sett.value(key).toString();
 }

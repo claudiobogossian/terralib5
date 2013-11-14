@@ -256,6 +256,26 @@ namespace te
       */
       TEQTWIDGETSEXPORT QPixmap CreatePixmapIcon(const int& size, const QColor& penColor, const QColor& brushColor, const int& contourSize);
 
+      /*!
+        \brief Save last used path in QSettings.
+
+        \param path The path to last used file.
+
+        \param typeFile The type of file opened. Actually we assume three values: "vector", "raster", "database". Any other value may be not used in the system. 
+
+        \note The params are case sensitive. It means that a "Vector" value for the argument \a typeFile is unkowned by application.
+      */
+      TEQTWIDGETSEXPORT void AddFilePathToSettings(const QString& path, const QString& typeFile);
+
+      /*!
+        \brief Returns the value of the last saved file path for the \a typeFile required.
+
+        \param typeFile The type of file opened. Actually we assume three values: "vector", "raster", "database". Any other value may be not used in the system.
+
+        \return The path if encountered or a null QString.
+      */
+      TEQTWIDGETSEXPORT QString GetFilePathFromSettings(const QString& typeFile);
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
