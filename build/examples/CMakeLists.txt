@@ -42,7 +42,6 @@ option (EXAMPLE_ADO "Build ADO example." ON)
 option (EXAMPLE_COLORBAR "Build colorbar example." OFF)  
 option (EXAMPLE_COMMON "Build common example." ON)  
 option (EXAMPLE_PLUGIN_HELLOWORLD "Build plugin hello world example." OFF)  
-option (EXAMPLE_DATAACCESS "Build data access example." OFF)
 option (EXAMPLE_DATAACCESS2 "Build data access2 example." ON)  
 option (EXAMPLE_DATASETMANAGEMENT "Build data set management example." ON)  
 option (EXAMPLE_FACTORY "Build factory example." OFF)  
@@ -96,10 +95,6 @@ endif()
 
 if(EXAMPLE_PLUGIN_HELLOWORLD)
   add_subdirectory(terralib_example_cppplugin_helloworld)
-endif()
-
-if(EXAMPLE_DATAACCESS)
-  add_subdirectory(terralib_example_dataaccess)
 endif()
 
 if(EXAMPLE_DATAACCESS2)
