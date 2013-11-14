@@ -219,12 +219,9 @@ void MainWindow::addDataSetLayer(const QString& path, const std::string& driver)
 
   // Transactor and catalog loader
   std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(transactor->getCatalogLoader());
-  cl->loadCatalog();
 
   // Get the number of data set types that belongs to the data source
-  boost::ptr_vector<std::string> datasets;
-  transactor->getCatalogLoader()->getDataSets(datasets);
+  std::vector<std::string> datasets = transactor->getDataSetNames();
   assert(!datasets.empty());
 
   // MapDisplay extent
@@ -235,7 +232,10 @@ void MainWindow::addDataSetLayer(const QString& path, const std::string& driver)
   for(std::size_t i = 0; i < datasets.size(); ++i)
   {
     // Gets DataSet Type
-    std::auto_ptr<te::da::DataSetType> dt(cl->getDataSetType(datasets[i]));
+    //std::auto_ptr<te::da::DataSetType> dt(cl->getDataSetType(datasets[i]));
+    std::auto_ptr<te::da::DataSetType> dt = transactor->getDataSetType(datasets[i]);
+    te::dt::Property* p = dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
+    std::string propname = p->getName();
 
     // Creates a DataSetLayer
     te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(static_cast<unsigned int>(ms_id++)), datasets[i]);
@@ -247,12 +247,11 @@ void MainWindow::addDataSetLayer(const QString& path, const std::string& driver)
     // Gets the layer extent
     te::gm::Envelope* e = 0;
     if(driver == "OGR")
-      e = cl->getExtent(dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE));
-      //e = cl->getExtent(dt->getDefaultGeomProperty());
+      e = (transactor->getExtent(datasets[i], propname)).get(); // getExtent(dt->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE)); 
     else
     {
       std::auto_ptr<te::rst::Raster> raster(te::map::GetRaster(layer));
-      e = new te::gm::Envelope(*raster->getExtent());
+      e = raster->getExtent();
       layer->setSRID(raster->getSRID());
       srid = raster->getSRID();
     }
@@ -263,7 +262,7 @@ void MainWindow::addDataSetLayer(const QString& path, const std::string& driver)
     // Sets the layer extent
     layer->setExtent(*e);
 
-    delete e;
+    //delete e;
 
     // Adding layer to layer list
     m_layers.push_back(layer);
@@ -304,14 +303,14 @@ void MainWindow::onPanTriggered()
 void MainWindow::onZoomInTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::ZoomClick(m_display, 2.0, te::qt::widgets::Zoom::In);
+  m_tool = new te::qt::widgets::ZoomClick( m_display, Qt::BlankCursor, 2.0, te::qt::widgets::Zoom::In);
   m_display->installEventFilter(m_tool);
 }
 
 void MainWindow::onZoomOutTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::ZoomClick(m_display, 2.0, te::qt::widgets::Zoom::Out);
+  m_tool = new te::qt::widgets::ZoomClick(m_display, Qt::BlankCursor, 2.0, te::qt::widgets::Zoom::Out);
   m_display->installEventFilter(m_tool);
 }
 

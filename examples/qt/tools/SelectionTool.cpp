@@ -78,8 +78,12 @@ bool SelectionTool::mouseReleaseEvent(QMouseEvent* e)
   te::gm::Point point(qpoint.x(), qpoint.y());
 
   // Gets the dataset
-  std::auto_ptr<te::da::DataSet> dataset(transactor->getDataSet(m_layer->getDataSetName(), &point, te::gm::INTERSECTS));
+  std::auto_ptr<te::da::DataSetType> datasetType = transactor->getDataSetType(m_layer->getDataSetName());
+  te::dt::Property* p = datasetType->findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
+  std::string propname = p->getName();
 
+  std::auto_ptr<te::da::DataSet> dataset = transactor->getDataSet(m_layer->getDataSetName(),propname, &point, te::gm::INTERSECTS);
+  
   // Clear the geometries
   te::common::FreeContents(m_geoms);
   m_geoms.clear();
@@ -92,11 +96,11 @@ bool SelectionTool::mouseReleaseEvent(QMouseEvent* e)
   while(dataset->moveNext())
   {
     std::size_t pos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
-    te::gm::Geometry* g = dataset->getGeometry(pos);
+    std::auto_ptr<te::gm::Geometry> g = dataset->getGeometry(pos);
     if(g->intersects(&point))
     {
       // Stores the geometry
-      m_geoms.push_back(g);
+      m_geoms.push_back(g.get());
 
       // Building the features attributes text
       for(std::size_t i = 0; i < nproperties; ++i)

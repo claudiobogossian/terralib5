@@ -22,14 +22,15 @@ void DrawingRasterObject()
   rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
   // open input raster
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
-  ds->open(rinfo);
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
+  ds->setConnectionInfo(rinfo);
+  ds->open();
 
-  te::da::DataSourceTransactor* tr = ds->getTransactor();
+  std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
 
-  te::da::DataSet* dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
-  std::size_t rpos = te::da::GetFirstPropertyPos(dataSet, te::dt::RASTER_TYPE);
-  te::rst::Raster* raster = dataSet->getRaster(rpos);
+  std::auto_ptr<te::da::DataSet> dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataSet.get(), te::dt::RASTER_TYPE);
+  std::auto_ptr<te::rst::Raster> raster = dataSet->getRaster(rpos);
 
   const te::gm::Envelope* extent = raster->getExtent();
 
@@ -44,7 +45,7 @@ void DrawingRasterObject()
   canvas.calcAspectRatio(llx,lly,urx,ury);
 
   //draw imamge
-  canvas.drawImage(0,0, canvas.getWidth(), canvas.getHeight(), raster, 0, 0, raster->getNumberOfColumns(), raster->getNumberOfRows());
+  canvas.drawImage(0,0, canvas.getWidth(), canvas.getHeight(), raster.get(), 0, 0, raster->getNumberOfColumns(), raster->getNumberOfRows());
 
   // save a PNG to disk
   canvas.save("raster.png", te::map::PNG);

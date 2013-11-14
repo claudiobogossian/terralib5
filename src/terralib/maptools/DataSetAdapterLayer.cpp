@@ -27,6 +27,7 @@
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetAdapter.h"
 #include "../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../dataaccess/dataset/FilteredDataSet.h"
 #include "../dataaccess/query/DataSetName.h"
 #include "../dataaccess/query/Field.h"
 #include "../dataaccess/query/Fields.h"
@@ -96,14 +97,39 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(const std::
                                                               const te::common::AccessPolicy accessPolicy) const
 {
   assert(!m_datasetName.empty());
-  std::auto_ptr<te::da::DataSet> inputData, outputDataSet;
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
   
-  inputData =  ds->getDataSet(m_datasetName, propertyName, e, r, travType, accessPolicy);
-  outputDataSet.reset(te::da::CreateAdapter(inputData.release(), m_converter.get(), true));
+  // TODO: Build a r-Tree with positions + envelope!
 
-  return outputDataSet;
+  // Gets all data
+  std::auto_ptr<te::da::DataSet> inputData = ds->getDataSet(m_datasetName, travType, accessPolicy);
+  
+  // Creates the data set adapter
+  std::auto_ptr<te::da::DataSet> adaptedDataSet;
+  adaptedDataSet.reset(te::da::CreateAdapter(inputData.release(), m_converter.get(), true));
+
+  // Filter
+  std::size_t pos = 0;
+  std::vector<std::size_t> positions;
+  while(adaptedDataSet->moveNext())
+  {
+    std::auto_ptr<te::gm::Geometry> geom(adaptedDataSet->getGeometry(propertyName));
+    assert(geom.get());
+
+    const te::gm::Envelope* geomEnvelope = geom->getMBR();
+
+    if(geomEnvelope->intersects(*e))
+      positions.push_back(pos);
+
+    ++pos;
+  }
+
+  adaptedDataSet->moveBeforeFirst();
+
+  std::auto_ptr<te::da::FilteredDataSet> result(new te::da::FilteredDataSet(adaptedDataSet.release(), positions, true));
+
+  return result;
 }
 
 std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(const std::string& propertyName,
@@ -177,6 +203,11 @@ void te::map::DataSetAdapterLayer::draw(Canvas* canvas, const te::gm::Envelope& 
 {
   if(m_rendererType.empty())
     throw Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
+
+  std::auto_ptr<te::da::DataSetType> dsType = getSchema();
+
+  if(!dsType->hasGeom())
+    return;
 
   // Try get the defined renderer
   std::auto_ptr<AbstractRenderer> renderer(RendererFactory::make(m_rendererType));

@@ -9,10 +9,10 @@
 #include "terralib/dataaccess/dataset/DataSetType.h"
 #include "terralib/dataaccess/datasource/DataSource.h"
 #include "terralib/dataaccess/datasource/DataSourceFactory.h"
-#include "terralib/dataaccess/datasource/DataSourceCatalogLoader.h"
+//#include "terralib/dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "terralib/dataaccess/datasource/DataSourceTransactor.h"
 
-#include "terralib/postgis/DataSetTypePersistence.h"
+//#include "terralib/postgis/DataSetTypePersistence.h"
 
 #include "terralib/qt/widgets/property/AddProperty.h"
 #include "terralib/qt/widgets/property/RenameProperty.h"
@@ -32,15 +32,16 @@ PropertyManagement::PropertyManagement(QWidget* parent)
 
   std::map<std::string, std::string> connInfo;
   connInfo["PG_HOST"] = "atlas.dpi.inpe.br";
-  //connInfo["PG_HOST"] = "localhost";
+  connInfo["PG_PORT"] = "5433" ;
   connInfo["PG_USER"] = "postgres";
-  connInfo["PG_PASSWORD"] = "sitim110";
+  connInfo["PG_PASSWORD"] = "postgres";
   connInfo["PG_DB_NAME"] = "terralib4";
   connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
 
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
-  ds->open(connInfo);
-  m_ds = ds;
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
+  ds->setConnectionInfo(connInfo);
+  ds->open();
+  m_ds = ds.get();
 
   m_dataSourceName = connInfo["PG_DB_NAME"];
 
@@ -81,11 +82,11 @@ void PropertyManagement::addPropertyPushButtonClicked()
   propertyParent = addPropertyDialog->getPropertyParent();
 
   te::da::DataSourceTransactor* t = m_ds->getTransactor();
-  te::da::DataSetTypePersistence* persistence = t->getDataSetTypePersistence();
+  //te::da::DataSetTypePersistence* persistence = t->getDataSetTypePersistence();
 
   try
   {
-    persistence->add(propertyParent, p);
+    t->add(propertyParent, p);
   }
   catch(te::common::Exception& e)
   {

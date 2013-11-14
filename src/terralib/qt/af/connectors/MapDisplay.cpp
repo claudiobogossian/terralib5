@@ -303,6 +303,11 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
   if(layer->getVisibility() != te::map::VISIBLE)
     return;
 
+  std::auto_ptr<te::da::DataSetType> dsType = layer->getSchema();
+
+  if(!dsType->hasGeom())
+    return;
+
   const te::da::ObjectIdSet* oids = layer->getSelected();
   if(oids == 0 || oids->size() == 0)
     return;

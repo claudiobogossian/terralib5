@@ -70,6 +70,7 @@ te::qt::widgets::DataPropertiesDialog::DataPropertiesDialog(QWidget* parent, Qt:
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_dataWidgetFrame);
   layout->addWidget(m_dataPropertiesWidget);
+  layout->setContentsMargins(0,0,0,0);
   this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 
 // connect signal and slots

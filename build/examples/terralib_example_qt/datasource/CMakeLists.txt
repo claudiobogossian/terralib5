@@ -13,13 +13,20 @@ set(PROJ_NAME "terralib_example_qt_datasource")
 project(${PROJ_NAME})         # the project name is terralib_example_qt_datasource
 SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_qt_datasource
 
+find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+
 set(DEP_LIBS 
     terralib_common
     terralib_plugin
     terralib_qt_widgets
     terralib_dataaccess
+    terralib_gdal
+    terralib_ogr
+    terralib_postgis
     ${QWT_LIBRARY}
     ${QT_LIBRARIES}
+	${Boost_LIBRARIES}
+	${GDAL_LIBRARY}
     )  
 
 # Select the source and header files
@@ -46,6 +53,7 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${QT_INCLUDE_DIR}
     ${QWT_INCLUDE_DIR}
+    ${GDAL_INCLUDE_DIR}
 )
 		      
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS} ${MOC})
