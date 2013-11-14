@@ -190,11 +190,10 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
   std::auto_ptr<te::da::DataSetType> dsType = dsLayer->getSchema();
   
   std::string dsName = dsType->getName();
-  int pos = dsName.find(".");
-  std::string aliasName = dsName.substr(pos + 1, dsName.size() - 1);
+  std::string aliasName = dsName;
 
   std::vector<std::pair<std::string, std::string> > list;
-  list.push_back(std::pair<std::string, std::string> (dsName, aliasName));
+  list.push_back(std::pair<std::string, std::string>(dsName, aliasName));
 
   m_whereClauseWidget->setFromItems(list);
 
@@ -205,12 +204,11 @@ void te::qt::widgets::QueryDialog::onInputLayerActivated(QString value)
   for(size_t i = 0; i < dsType->size(); ++i)
   {
     std::string propName = dsType->getProperty(i)->getName();
-    std::string fullName = aliasName + "." + propName;
 
     if(dsType->getProperty(i)->getType() == te::dt::GEOMETRY_TYPE)
-      geomProperties.push_back(fullName);
+      geomProperties.push_back(propName);
     else
-      inputProperties.push_back(fullName);
+      inputProperties.push_back(propName);
   }
 
   m_whereClauseWidget->setAttributeList(inputProperties);
