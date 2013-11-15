@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -86,11 +86,11 @@ namespace te
         */
         std::vector<te::dt::Property*> getSelected();
       
-        te::qt::widgets::AbstractTreeItem::TreeItemType getType() const;
+        const std::string getItemType() const;
 
       private:
 
-        std::vector<te::qt::widgets::AbstractTreeItem*> m_items;        
+        std::vector<te::qt::widgets::AbstractTreeItem*> m_items;
         te::map::AbstractLayerPtr m_layer;  //!< Terralib Layer of the LayerItem.
         te::vp::PropertyGroupItem* m_propertyGroup;
         te::vp::LegendGroupItem* m_legendGroup;

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -111,7 +111,7 @@ std::vector<te::qt::widgets::AbstractTreeItem*> te::vp::LegendGroupItem::getItem
   return m_items;
 }
 
-te::qt::widgets::AbstractTreeItem::TreeItemType te::vp::LegendGroupItem::getType() const
+const std::string te::vp::LegendGroupItem::getItemType() const
 {
-  return te::qt::widgets::AbstractTreeItem::LEGENDITEM;
+  return "LEGEND_ITEM";
 }
