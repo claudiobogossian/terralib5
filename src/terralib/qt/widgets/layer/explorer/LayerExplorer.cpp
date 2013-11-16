@@ -129,25 +129,16 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerExplorer::getSelected
 
 te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerExplorer::getLayerItem(const te::map::AbstractLayerPtr& layer)
 {
-  if(!m_treeModel)
-    return 0;
-
   return m_treeModel->getLayerItem(layer);
 }
 
 void te::qt::widgets::LayerExplorer::add(const te::map::AbstractLayerPtr& layer, te::qt::widgets::AbstractTreeItem* parentItem)
 {
-  if(!m_treeModel)
-    return;
-
   m_treeModel->add(layer, parentItem);
 }
 
 bool te::qt::widgets::LayerExplorer::remove(AbstractTreeItem* item)
 {
-  if(!m_treeModel)
-    return false;
-
   return m_treeModel->remove(item);
 }
 
@@ -162,9 +153,6 @@ void te::qt::widgets::LayerExplorer::add(QAction* action,
                                          te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuType,
                                          bool applyActionToSubType)
 {
-  if(!m_treeView)
-    return;
-
   m_treeView->add(action, menu, itemType, menuType, applyActionToSubType);
 }
 
@@ -190,9 +178,6 @@ void te::qt::widgets::LayerExplorer::onItemDoubleClicked(te::qt::widgets::Abstra
 
 void te::qt::widgets::LayerExplorer::expand(te::qt::widgets::AbstractTreeItem* item)
 {
-  if(!m_treeView || !m_treeModel)
-    return;
-
   QModelIndex index = m_treeModel->getIndex(item);
 
   m_treeView->expand(index);
@@ -200,9 +185,6 @@ void te::qt::widgets::LayerExplorer::expand(te::qt::widgets::AbstractTreeItem* i
 
 void te::qt::widgets::LayerExplorer::collapse(te::qt::widgets::AbstractTreeItem* item)
 {
-  if(!m_treeView || !m_treeModel)
-    return;
-
   QModelIndex index = m_treeModel->getIndex(item);
 
   m_treeView->collapse(index);
