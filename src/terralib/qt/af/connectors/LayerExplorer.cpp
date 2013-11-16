@@ -106,6 +106,8 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
       {
         te::qt::widgets::AbstractTreeItem* parentItem = static_cast<te::qt::widgets::AbstractTreeItem*>(item->parent());
 
+        m_explorer->collapse(parentItem);
+
         te::map::AbstractLayerPtr parentLayer = parentItem->getLayer();
 
         if(item->getItemType() == "CHART_ITEM")
