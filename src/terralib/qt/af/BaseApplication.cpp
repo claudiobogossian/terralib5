@@ -489,8 +489,8 @@ void te::qt::af::BaseApplication::onAddTabularLayerTriggered()
         te::qt::af::ApplicationController::getInstance().broadcast(&evt);
       }
 
-      //te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
-      //ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
     }
   }
   catch(const std::exception& e)
@@ -511,8 +511,8 @@ void te::qt::af::BaseApplication::onRemoveItemTriggered()
 
   if(selectedItems.empty())
   {
-    QString msg = tr("Select at least one item to be removed!");
-    QMessageBox::information(this, tr("Remove Item"), msg);
+    QString msg = tr("Select at least one item in the layer explorer to be removed!");
+    QMessageBox::warning(this, tr("Remove Item"), msg);
 
     return;
   }
@@ -546,10 +546,22 @@ void te::qt::af::BaseApplication::onRemoveItemTriggered()
 
 void te::qt::af::BaseApplication::onRenameItemTriggered()
 {
+ std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
+
+  if(selectedItems.empty() ||
+    (selectedItems.size() == 1 &&  !selectedItems.front()->getLayer()) ||
+    selectedItems.size() > 1)
+  {
+    QString msg = tr("Select only the item layer in the layer explorer to be renamed!");
+    QMessageBox::warning(this, tr("Rename Layer Item"), msg);
+
+    return;
+  }
+
   bool ok;
   QString text = QInputDialog::getText(this, ApplicationController::getInstance().getAppTitle(),
-                                      tr("Rename Item:"), QLineEdit::Normal,
-                                      tr("Insert name"), &ok);
+                                       tr("Rename Item:"), QLineEdit::Normal,
+                                       tr("Enter the new name"), &ok);
 
   if (!ok)
     return;
@@ -564,6 +576,9 @@ void te::qt::af::BaseApplication::onRenameItemTriggered()
   te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
   te::map::AbstractLayerPtr layer = selectedLayerItem->getLayer();
   layer->setTitle(text.toStdString());
+
+  te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+  ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
 }
 
 void te::qt::af::BaseApplication::onPluginsManagerTriggered()
@@ -1640,9 +1655,11 @@ void te::qt::af::BaseApplication::makeDialog()
 
   // Actions for the UNIQUE_SELECTED_ITEM context menu selection type
   treeView->add(m_layerObjectGrouping, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
+  treeView->add(m_toolsDataExchangerDirectPopUp, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
   treeView->add(m_layerChartsHistogram, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
-  treeView->add(m_layerChartsScatter, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED, false);
   treeView->add(m_layerChart, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED, false);
+  treeView->add(m_queryLayer, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
+  treeView->add(m_layerChartsScatter, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED, false);
 
   QAction* actionChartSep = new QAction(this);
   actionChartSep->setSeparator(true);
@@ -1657,6 +1674,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
   treeView->add(m_layerRemoveObjectSelection, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
   treeView->add(m_projectRemoveItem, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  treeView->add(m_projectRenameItem, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
 
   QAction* actionRemoveSep = new QAction(this);
   actionRemoveSep->setSeparator(true);
@@ -1858,17 +1876,17 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerChart, "chart-pie", "Layer.Charts.Chart", tr("&Pie/Bar Chart..."), tr(""), true, false, true, m_menubar);
   initAction(m_layerFitOnMapDisplay, "layer-fit", "Layer.Fit Layer on the Map Display", tr("Fit Layer"), tr("Fit the current layer on the Map Display"), true, false, true, m_menubar);
   initAction(m_layerFitSelectedOnMapDisplay, "zoom-selected-extent", "Layer.Fit Selected Objects on the Map Display", tr("Fit Selected Objects"), tr("Fit the selected objects on the Map Display"), true, false, true, m_menubar);
-  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to the Selected Objects on Map Display", tr("Pan to the Selected Objects"), tr("Pan to the selected objects on the Map Display"), true, false, true, m_menubar);
+  initAction(m_layerPanToSelectedOnMapDisplay, "pan-selected", "Layer.Pan to Selected Objects on Map Display", tr("Pan to Selected Objects"), tr("Pan to the selected objects on the Map Display"), true, false, true, m_menubar);
   initAction(m_queryLayer, "view-filter", "Layer.Query", tr("Query..."), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project..."), tr(""), true, false, true, m_menubar);
-  initAction(m_fileSaveProject, "document-save", "File.Save Project", tr("&Save Project..."), tr(""), true, false, true, m_menubar);
+  initAction(m_fileSaveProject, "document-save", "File.Save Project", tr("&Save Project"), tr(""), true, false, true, m_menubar);
   initAction(m_fileSaveProjectAs, "document-save-as", "File.Save Project As", tr("Save Project &As..."), tr(""), true, false, false, m_menubar);
   initAction(m_fileOpenProject, "document-open", "File.Open Project", tr("&Open Project..."), tr(""), true, false, true, m_menubar);
   initAction(m_fileExit, "system-log-out", "File.Exit", tr("E&xit"), tr(""), true, false, true, m_menubar);
-  initAction(m_filePrint, "document-print", "File.Print", tr("&Print..."), tr(""), true, false, false, m_menubar);
   initAction(m_filePrintPreview, "document-print-preview", "File.Print Preview", tr("Print Pre&view..."), tr(""), true, false, false, m_menubar);
+  initAction(m_filePrint, "document-print", "File.Print", tr("&Print..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Map- actions
   initAction(m_mapSRID, "srs", "Map.SRID", tr("&SRS..."), tr("Config the Map SRS"), true, false, true, m_menubar);
@@ -1921,8 +1939,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_recentProjectsMenu->menuAction());
   m_fileMenu->addSeparator();
-  m_fileMenu->addAction(m_filePrint);
   m_fileMenu->addAction(m_filePrintPreview);
+  m_fileMenu->addAction(m_filePrint);
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_fileExit);
 
@@ -1981,6 +1999,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectMenu->addAction(m_projectAddFolderLayer);
   m_projectMenu->addSeparator();
   m_projectMenu->addAction(m_projectRemoveItem);
+  m_projectMenu->addAction(m_projectRenameItem);
   m_projectMenu->addSeparator();
   m_projectMenu->addAction(m_projectProperties);
 
@@ -1989,8 +2008,9 @@ void te::qt::af::BaseApplication::initMenus()
 
   m_layerMenu->addAction(m_layerObjectGrouping);
   m_layerMenu->addAction(m_layerChartsHistogram);
-  m_layerMenu->addAction(m_layerChartsScatter);
   m_layerMenu->addAction(m_layerChart);
+  m_layerMenu->addAction(m_queryLayer);
+  m_layerMenu->addAction(m_layerChartsScatter);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerFitOnMapDisplay);
   m_layerMenu->addAction(m_layerFitSelectedOnMapDisplay);
@@ -2002,8 +2022,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerRemoveObjectSelection);
   m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerSRS);
+  m_layerMenu->addSeparator();
   m_layerMenu->addAction(m_layerProperties);
-  m_layerMenu->addAction(m_queryLayer);
 
   // TODO
   //m_layerMenu->addAction(m_layerRaise);
