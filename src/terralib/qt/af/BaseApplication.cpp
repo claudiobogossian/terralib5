@@ -343,27 +343,13 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
 {
   try
   {
-    // Get the parent item where the folder layer will be added.
-    te::qt::widgets::AbstractTreeItem* parentItem = 0;
+    // Get the parent layer where the dataset layer(s) will be added.
+    te::map::AbstractLayerPtr parentLayer(0);
 
     std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
 
-    if(selectedLayerItems.size() > 1)
-    {
-      QMessageBox::warning(this, tr("Add Layer"), tr("Select only a folder layer item!"));
-      return;
-    }
-    else if (selectedLayerItems.size() == 1)
-    {
-      if(selectedLayerItems.front()->getItemType() != "FOLDER_LAYER_ITEM")
-      {
-        QMessageBox::warning(this, tr("Add Dataset Layer"), tr("Select only a folder layer item!"));
-        return;
-      }
-    }
-
-    if(!selectedLayerItems.empty())
-      parentItem = selectedLayerItems.front();
+    if(selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
+      parentLayer = selectedLayerItems.front()->getLayer();
 
     // Get the layer(s) to be added
     std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
@@ -415,7 +401,7 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
     {
       if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
       {
-        te::qt::af::evt::LayerAdded evt(*it, parentItem->getLayer());
+        te::qt::af::evt::LayerAdded evt(*it, parentLayer);
         te::qt::af::ApplicationController::getInstance().broadcast(&evt);
       }
       ++it;
@@ -445,27 +431,13 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
     if(m_project == 0)
       throw Exception(TR_QT_AF("Error: there is no opened project!"));
 
-    // Get the parent item where the folder layer will be added.
-    te::qt::widgets::AbstractTreeItem* parentItem = 0;
+    // Get the parent layer where the dataset layer(s) will be added.
+    te::map::AbstractLayerPtr parentLayer(0);
 
     std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
 
-    if(selectedLayerItems.size() > 1)
-    {
-      QMessageBox::warning(this, tr("Add Query Layer"), tr("Select only a folder layer item!"));
-      return;
-    }
-    else if (selectedLayerItems.size() == 1)
-    {
-      if(selectedLayerItems.front()->getItemType() != "FOLDER_LAYER_ITEM")
-      {
-        QMessageBox::warning(this, tr("Add Query Layer"), tr("Select only a folder layer item!"));
-        return;
-      }
-    }
-
-    if(!selectedLayerItems.empty())
-      parentItem = selectedLayerItems.front();
+    if(selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
+      parentLayer = selectedLayerItems.front()->getLayer();
 
     std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
 
@@ -482,7 +454,7 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
     if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
     {
-      te::qt::af::evt::LayerAdded evt(layer, parentItem->getLayer());
+      te::qt::af::evt::LayerAdded evt(layer, parentLayer);
       te::qt::af::ApplicationController::getInstance().broadcast(&evt);
     }
 
@@ -797,32 +769,18 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
 void te::qt::af::BaseApplication::onAddFolderLayerTriggered()
 {
   // Get the parent item where the folder layer will be added.
-  te::qt::widgets::AbstractTreeItem* parentItem = 0;
+  te::map::AbstractLayerPtr parentLayer(0);
 
   std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
 
-  if(selectedLayerItems.size() > 1)
-  {
-    QMessageBox::warning(this, tr("Add Layer"), tr("Select only an item that is a folder layer"));
-    return;
-  }
-  else if (selectedLayerItems.size() == 1)
-  {
-    if(selectedLayerItems.front()->getItemType() != "FOLDER_LAYER_ITEM")
-    {
-      QMessageBox::warning(this, tr("Add Folder Layer"), tr("Select only an item that is a folder layer"));
-      return;
-    }
-  }
-
-  if(!selectedLayerItems.empty())
-    parentItem = selectedLayerItems.front();
+  if(selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
+    parentLayer = selectedLayerItems.front()->getLayer();
 
   // Get the folder layer to be added
   bool ok;
   QString text = QInputDialog::getText(this, ApplicationController::getInstance().getAppTitle(),
                                       tr("Folder layer name:"), QLineEdit::Normal,
-                                      tr("Insert folder layer name"), &ok);
+                                      tr("Enter folder layer name"), &ok);
 
   if (!ok)
     return;
@@ -841,7 +799,7 @@ void te::qt::af::BaseApplication::onAddFolderLayerTriggered()
   folderLayer->setTitle(text.toStdString());
   folderLayer->setId(id);
 
-  te::qt::af::evt::LayerAdded evt(folderLayer, parentItem->getLayer());
+  te::qt::af::evt::LayerAdded evt(folderLayer, parentLayer);
   te::qt::af::ApplicationController::getInstance().broadcast(&evt);
 
   te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;

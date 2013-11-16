@@ -190,21 +190,7 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 
   std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::af::ApplicationController::getInstance().getProject()->getSelectedLayers();
 
-  if(selectedLayers.size() > 1)
-  {
-    QMessageBox::warning(0, tr("Add Layer"), tr("Select only a folder layer item!"));
-    return;
-  }
-  else if (selectedLayers.size() == 1)
-  {
-    if(selectedLayers.front()->getType() != "FOLDERLAYER")
-    {
-      QMessageBox::warning(0, tr("Add Layer"), tr("Select only a folder layer item!"));
-      return;
-    }
-  }
-
-  if(!selectedLayers.empty())
+  if(selectedLayers.size() == 1 && selectedLayers.front()->getType() == "FOLDERLAYER")
     parentLayer = selectedLayers.front();
 
   std::list<te::map::AbstractLayerPtr>::iterator it;

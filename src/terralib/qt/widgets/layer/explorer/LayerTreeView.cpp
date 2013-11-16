@@ -153,7 +153,7 @@ class te::qt::widgets::LayerTreeView::Impl
                 menuType == te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED) &&
                 ((aItemType == selectedItemType) || aItemType.empty()))
             {
-              if(!applyActionToSubType)
+              if(selectedItemType == "RASTER_LAYER_ITEM" && !applyActionToSubType)
                 continue;
 
               menu.addAction(action);
