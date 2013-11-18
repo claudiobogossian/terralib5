@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -33,8 +33,10 @@
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../widgets/layer/utils/DataSet2Layer.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
+#include "../../../widgets/Utils.h"
 
 #include "../../../af/ApplicationController.h"
+#include "../../../af/Project.h"
 #include "../../../af/Utils.h"
 #include "../../../af/events/LayerEvents.h"
 
@@ -54,6 +56,7 @@
 #include <QtGui/QAction>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMenu>
+#include <QtGui/QMessageBox>
 
 std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPtr& info)
 {
@@ -185,14 +188,14 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 //  QString filter = GetSupportedFiles();
 //  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), filter);
   
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::af::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"));
+  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Vector File"), te::qt::widgets::GetFilePathFromSettings("vector"), tr("Esri Shapefile (*.shp *.SHP);; Mapinfo File (*.mif *.MIF);; GeoJSON (*.geojson *.GeoJSON);; GML (*.gml *.GML);; KML (*.kml *.KML);; All Files (*.*)"));
 
   if(fileNames.isEmpty())
     return;
 
   QFileInfo info(fileNames.value(0));
 
-  te::qt::af::AddFilePathToSettings(info.absolutePath(), "vector");
+  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
 
   std::list<te::map::AbstractLayerPtr> layers;
 
@@ -230,10 +233,19 @@ void te::qt::plugins::ogr::Plugin::showWindow()
     GetLayers(ds, layers);
   }
 
+  // If there is only a parent folder layer that is selected, get it as the parent of the layer to be added;
+  // otherwise, add the layer as a top level layer
+  te::map::AbstractLayerPtr parentLayer(0);
+
+  std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::af::ApplicationController::getInstance().getProject()->getSelectedLayers();
+
+  if(selectedLayers.size() == 1 && selectedLayers.front()->getType() == "FOLDERLAYER")
+    parentLayer = selectedLayers.front();
+
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = layers.begin(); it != layers.end(); ++it)
   {
-    te::qt::af::evt::LayerAdded evt(*it);
+    te::qt::af::evt::LayerAdded evt(*it, parentLayer);
     te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 }

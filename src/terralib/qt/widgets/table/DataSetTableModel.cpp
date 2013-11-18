@@ -233,7 +233,7 @@ QVariant te::qt::widgets::DataSetTableModel::data(const QModelIndex & index, int
 
       return (m_dataset->isNull(index.column())) ? 
         tr("Null") : 
-        m_dataset->getAsString(index.column()).c_str();
+        m_dataset->getAsString(index.column(), 6).c_str();
 
     break;
 

@@ -210,6 +210,7 @@ set (
   ${SRCDIR}/widgets/layer/explorer/ChartItem.h
   ${SRCDIR}/widgets/layer/explorer/ChartSliceItem.h
   ${SRCDIR}/widgets/layer/explorer/DataSetLayerItem.h
+  ${SRCDIR}/widgets/layer/explorer/DataSetAdapterLayerItem.h
   ${SRCDIR}/widgets/layer/explorer/FolderLayerItem.h
   ${SRCDIR}/widgets/layer/explorer/GroupingItemTreeItem.h
   ${SRCDIR}/widgets/layer/explorer/GroupingTreeItem.h

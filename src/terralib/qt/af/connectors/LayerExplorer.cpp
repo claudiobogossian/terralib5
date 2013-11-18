@@ -72,39 +72,75 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     {
       te::qt::af::evt::LayerAdded* e = static_cast<te::qt::af::evt::LayerAdded*>(evt);
 
-      m_explorer->add(e->m_layer);
+      // Update the project
+      te::map::AbstractLayerPtr parentLayer = e->m_parentLayer;
 
-      ApplicationController::getInstance().getProject()->add(e->m_layer);
+      ApplicationController::getInstance().getProject()->add(e->m_layer, parentLayer);
+
+      // Add the layer in the layer explorer
+      te::qt::widgets::AbstractTreeItem* parentItem = m_explorer->getLayerItem(parentLayer);
+
+      m_explorer->add(e->m_layer, parentItem);
+
+      if(parentItem)
+        m_explorer->expand(parentItem);
+
+      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
     }
     break;
 
-    case te::qt::af::evt::LAYER_ITEM_REMOVED:
+    case te::qt::af::evt::ITEM_REMOVED:
     {
-      te::qt::af::evt::LayerItemRemoved* e = static_cast<te::qt::af::evt::LayerItemRemoved*>(evt);
+      te::qt::af::evt::ItemRemoved* e = static_cast<te::qt::af::evt::ItemRemoved*>(evt);
 
-      te::qt::widgets::AbstractTreeItem* layerItem = e->m_layerItem;
+      te::qt::widgets::AbstractTreeItem* item = e->m_item;
 
-      te::map::AbstractLayerPtr layer = layerItem->getLayer();
+      te::map::AbstractLayerPtr layer = item->getLayer();
 
-      // Remove the layer from the layer explorer
-      m_explorer->remove(layerItem);
+      // If the item is associated to a layer, remove the layer from the project;
+      // otherwise, remove the pie/bar chart, classification, etc associated to the item.
+      if(layer)
+        ApplicationController::getInstance().getProject()->remove(layer);
+      else
+      {
+        te::qt::widgets::AbstractTreeItem* parentItem = static_cast<te::qt::widgets::AbstractTreeItem*>(item->parent());
 
-      // Remove the layer from the project
-      ApplicationController::getInstance().getProject()->remove(layer);
+        m_explorer->collapse(parentItem);
+
+        te::map::AbstractLayerPtr parentLayer = parentItem->getLayer();
+
+        if(item->getItemType() == "CHART_ITEM")
+        {
+          // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
+          parentLayer->setChart(0);
+        }
+        else if(item->getItemType() == "GROUPING_ITEM")
+        {
+          // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
+          parentLayer->setGrouping(0);
+        }
+      }
+
+      // Remove the item from the layer explorer
+      m_explorer->remove(item);
+
+      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
     }
     break;
 
-    case::te::qt::af::evt::LAYER_POPUP_ADD_ACTION:
+    case te::qt::af::evt::LAYER_POPUP_ADD_ACTION:
     {
       te::qt::af::evt::LayerPopUpAddAction* e = static_cast<te::qt::af::evt::LayerPopUpAddAction*>(evt);
       
       QAction* action = e->m_action;
 
-      m_explorer->add(action, "", "", m_explorer->getMenuType(e->m_menuType));
+      m_explorer->add(action, "", e->m_itemType.c_str(), m_explorer->getMenuSelectionType(e->m_menuSelectionType));
     }
     break;
 
-    case::te::qt::af::evt::LAYER_POPUP_REMOVE_ACTION:
+    case te::qt::af::evt::LAYER_POPUP_REMOVE_ACTION:
     {
       te::qt::af::evt::LayerPopUpRemoveAction* e = static_cast<te::qt::af::evt::LayerPopUpRemoveAction*>(evt);
 
@@ -112,7 +148,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     }
     break;
 
-    case::te::qt::af::evt::GET_LAYER_SELECTED:
+    case te::qt::af::evt::GET_LAYER_SELECTED:
     {
       te::qt::af::evt::GetLayerSelected* e = static_cast<te::qt::af::evt::GetLayerSelected*>(evt);
 
@@ -132,6 +168,8 @@ void te::qt::af::LayerExplorer::onSelectedLayersChanged(const std::list<te::map:
 {
   if(selectedLayers.empty())
     return;
+
+  ApplicationController::getInstance().getProject()->setSelectedLayers(selectedLayers);
 
   std::list<te::map::AbstractLayerPtr>::const_iterator it;
   for(it = selectedLayers.begin(); it != selectedLayers.end(); ++it)

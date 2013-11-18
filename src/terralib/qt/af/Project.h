@@ -126,11 +126,28 @@ namespace te
           void setTopLayers(const std::list<te::map::AbstractLayerPtr>& layers);
 
           /*!
-            \brief It adds the specified layer to the list of top layers of the project.
+            \brief It gets all the layers that are selected.
 
-            \param layer The layer that will be added to the list of top layers of the project.
+            \return The list of all the layers that are selected.
           */
-          void add(const te::map::AbstractLayerPtr& layer);
+          const std::list<te::map::AbstractLayerPtr> getSelectedLayers() const;
+
+          /*!
+            \brief It sets all the layers that are selected.
+
+            \param  selectedLayers The list of all the layers that are selected.
+          */
+           void setSelectedLayers(const std::list<te::map::AbstractLayerPtr>& selectedLayers);
+
+          /*!
+            \brief It adds the specified layer to the list of layers of the parent layer.
+                   If the parent layer is not specified, the layer is added as a top layer of the project.
+
+            \param layer       The layer that will be added to the list of layers of the project.
+            \param parentLayer The parent layer where the layer will be added.
+          */
+          void add(const te::map::AbstractLayerPtr& layer,
+                   const te::map::AbstractLayerPtr& parentLayer = te::map::AbstractLayerPtr());
 
           /*!
             \brief It removes the specified layer from the project.
@@ -174,11 +191,12 @@ namespace te
 
         private:
 
-          std::string m_title;                               //!< The title of the project.
-          std::string m_author;                              //!< The author of the project.
-          std::list<te::map::AbstractLayerPtr> m_topLayers;  //!< The top layers of the project.
-          bool m_changed;                                    //!< Flag indicating that the project needs to be saved.
-          std::string m_fileName;                            //!< The project file.
+          std::string m_title;                                      //!< The title of the project.
+          std::string m_author;                                     //!< The author of the project.
+          std::list<te::map::AbstractLayerPtr> m_topLayers;         //!< The list of top layers of the project.
+          std::list<te::map::AbstractLayerPtr> m_selectedLayers;    //!< The list of selected layers of the project.
+          bool m_changed;                                           //!< Flag indicating that the project needs to be saved.
+          std::string m_fileName;                                   //!< The project file.
       };
 
     } // end namespace af

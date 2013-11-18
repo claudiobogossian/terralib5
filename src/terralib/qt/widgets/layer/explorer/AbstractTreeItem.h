@@ -54,22 +54,6 @@ namespace te
 
         public:
 
-          /*!
-            \enum TreeItemType
-
-            \brief The type of the tree item.
-           */
-          enum TreeItemType
-          {
-            CHARTITEM,
-            CHARTSLICEITEM,
-            FOLDERLAYERITEM,
-            GROUPINGITEMTREEITEM,
-            GROUPINGTREEITEM,
-            LAYERITEM,
-            LEGENDITEM
-          };
-        
           AbstractTreeItem(QObject* parent = 0);
 
           virtual ~AbstractTreeItem();
@@ -98,7 +82,12 @@ namespace te
 
           virtual te::map::AbstractLayerPtr getLayer() const = 0;
 
-          virtual TreeItemType getType() const = 0;
+          /*!
+            \brief It returns the item type.
+
+            \return The item type.
+          */
+          virtual const std::string getItemType() const = 0;
       };
 
     } // end namespace widgets

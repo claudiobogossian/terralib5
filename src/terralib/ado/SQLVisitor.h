@@ -73,6 +73,7 @@ namespace te
         void visit(const te::da::LiteralDateTime& visited);
         void visit(const te::da::LiteralEnvelope& visited);
         void visit(const te::da::LiteralGeom& visited);
+        void visit(const te::da::PropertyName& visited);
 
         //@}
 

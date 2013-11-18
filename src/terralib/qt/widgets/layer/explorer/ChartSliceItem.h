@@ -69,7 +69,12 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
-          TreeItemType getType() const;
+        /*!
+          \brief It returns the item type: "CHART_SLICE_ITEM".
+
+          \return The item type: "CHART_SLICE_ITEM".
+        */
+          const std::string getItemType() const;
 
           void setCheckable(bool checkable);
 

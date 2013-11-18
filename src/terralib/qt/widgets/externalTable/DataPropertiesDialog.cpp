@@ -24,12 +24,39 @@
 */
 
 //Terralib
+#include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetAdapter.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/utils/Utils.h"
+#include "../../../geometry/GeometryProperty.h"
+#include "../../../maptools/DataSetAdapterLayer.h"
+#include "../../../se/FeatureTypeStyle.h"
+#include "../../../se/Utils.h"
 #include "DataPropertiesDialog.h"
 #include "DataPropertiesWidget.h"
 #include "ui_DataPropertiesDialogForm.h"
 #include "ui_DataPropertiesWidgetForm.h"
 
+// Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
+//Utility functions used mianly to pupulate ui elements.
+te::gm::Envelope& computeDataSetEnvelope(std::auto_ptr<te::da::DataSet> dataset,
+                            const std::string& propertyName)
+{
+  te::gm::Envelope* result = new te::gm::Envelope;
+
+  while(dataset->moveNext())
+  {
+    te::gm::Geometry* geom = dataset->getGeometry(propertyName).release();
+    assert(geom);
+    result->Union(*geom->getMBR());
+  }
+  return *result;
+}
 
 te::qt::widgets::DataPropertiesDialog::DataPropertiesDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -43,6 +70,7 @@ te::qt::widgets::DataPropertiesDialog::DataPropertiesDialog(QWidget* parent, Qt:
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_dataWidgetFrame);
   layout->addWidget(m_dataPropertiesWidget);
+  layout->setContentsMargins(0,0,0,0);
   this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 
 // connect signal and slots
@@ -59,11 +87,38 @@ void te::qt::widgets::DataPropertiesDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::DataPropertiesDialog::onOkPushButtonClicked()
 {
-  m_datasetAdapter = m_dataPropertiesWidget->getAdapter();
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+
+  std::string title = m_dataPropertiesWidget->getDataSetType()->getTitle().empty() ? m_dataPropertiesWidget->getDataSetType()->getName() : m_dataPropertiesWidget->getDataSetType()->getTitle();
+
+  m_DataSetAdapterLayer = new te::map::DataSetAdapterLayer(id, title);
+  m_DataSetAdapterLayer->setDataSetName(m_dataPropertiesWidget->getDataSetType()->getName());
+  m_DataSetAdapterLayer->setDataSourceId(m_dataPropertiesWidget->getDataSource()->getId());
+  m_DataSetAdapterLayer->setVisibility(te::map::NOT_VISIBLE);
+  m_DataSetAdapterLayer->setRendererType("ABSTRACT_LAYER_RENDERER");
+  m_DataSetAdapterLayer->setConverter(m_dataPropertiesWidget->getConverter());
+
+  if(m_DataSetAdapterLayer->getConverter()->getResult()->hasGeom())
+  {
+    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_DataSetAdapterLayer->getConverter()->getResult());
+    std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(m_DataSetAdapterLayer->getDataSetName(), gp->getName(), m_DataSetAdapterLayer->getDataSourceId()));
+
+    //Checking if it was possible to obtain an envelope
+    if(!mbr.get())
+      m_DataSetAdapterLayer->setExtent(computeDataSetEnvelope(m_DataSetAdapterLayer->getData(), gp->getName()));  //Build an envelope
+    else
+      m_DataSetAdapterLayer->setExtent(*(mbr.release())); // using the envelope obtained by common means
+
+    m_DataSetAdapterLayer->setSRID(gp->getSRID());
+    m_DataSetAdapterLayer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
+  }
+
   this->accept();
 }
 
-//te::map::DataSetAdapterLayerPtr te::qt::widgets::DataPropertiesDialog::getTextualLayer()
-//{
-//  return m_dataSetLayer;
-//}
+te::map::DataSetAdapterLayerPtr te::qt::widgets::DataPropertiesDialog::getDataSetAdapterLayer()
+{
+  return m_DataSetAdapterLayer;
+}

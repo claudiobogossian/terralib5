@@ -20,24 +20,25 @@ void RasterSymbologyWidgets()
   rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
 // open input raster
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
-  ds->open(rinfo);
+  std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("GDAL");
+  ds->setConnectionInfo(rinfo);
+  ds->open();
 
-  te::da::DataSourceTransactor* tr = ds->getTransactor();
-  te::da::DataSetType* dt = tr->getCatalogLoader()->getDataSetType("cbers2b_rgb342_crop.tif");
+  std::auto_ptr<te::da::DataSourceTransactor> tr = ds->getTransactor();
+  std::auto_ptr<te::da::DataSetType> dt = tr->getDataSetType("cbers2b_rgb342_crop.tif");
   te::rst::RasterProperty* rstp = static_cast<te::rst::RasterProperty*>(dt->getProperties()[0]->clone());
 
-  te::da::DataSet* dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
+  std::auto_ptr<te::da::DataSet> dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
 
-  std::size_t rpos = te::da::GetFirstPropertyPos(dataSet, te::dt::RASTER_TYPE);
-  te::rst::Raster* raster = dataSet->getRaster(rpos);
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataSet.get(), te::dt::RASTER_TYPE);
+  std::auto_ptr<te::rst::Raster> raster = dataSet->getRaster(rpos);
 
   te::se::RasterSymbolizer* rs = 0;
 
   // Creates the rastersymbolizer dialog
   te::qt::widgets::RasterSymbolizerDialog dlg;
 
-  dlg.setRasterProperty(raster, rstp);
+  dlg.setRasterProperty(raster.get(), rstp);
 
   if(dlg.exec() == QDialog::Accepted)
   {

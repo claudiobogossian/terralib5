@@ -141,17 +141,37 @@ void te::qt::af::Project::setTopLayers(const std::list<te::map::AbstractLayerPtr
   m_topLayers = layers;
 }
 
-void te::qt::af::Project::add(const te::map::AbstractLayerPtr& layer)
+const std::list<te::map::AbstractLayerPtr> te::qt::af::Project::getSelectedLayers() const
 {
-  m_topLayers.push_back(layer);
+  return m_selectedLayers;
+}
+
+void te::qt::af::Project::setSelectedLayers(const std::list<te::map::AbstractLayerPtr>& selectedLayers)
+{
+  m_selectedLayers.clear();
+
+  m_selectedLayers = selectedLayers;
+}
+
+void te::qt::af::Project::add(const te::map::AbstractLayerPtr& layer, const te::map::AbstractLayerPtr& parentLayer)
+{
+  if(!parentLayer)
+    m_topLayers.push_back(layer);
+  else
+    parentLayer->add(layer);
 
   m_changed = true;
 }
 
 void te::qt::af::Project::remove(const te::map::AbstractLayerPtr& layer)
 {
-  std::list<te::map::AbstractLayerPtr>::iterator newEnd = std::remove(m_topLayers.begin(), m_topLayers.end(), layer);
-  m_topLayers.erase(newEnd, m_topLayers.end());
+  te::map::AbstractLayerPtr parentLayer = static_cast<te::map::AbstractLayer*>(layer->getParent());
+
+  if(!parentLayer)
+    m_topLayers.remove(layer);
+  else
+    parentLayer->remove(layer->getIndex());
+
   m_changed = true;
 }
 

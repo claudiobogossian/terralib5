@@ -31,6 +31,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../af/Utils.h"
 #include "../../../widgets/Exception.h"
+#include "../../../widgets/Utils.h"
 #include "GDALConnectorDialog.h"
 #include "ui_GDALConnectorDialogForm.h"
 
@@ -205,7 +206,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::searchDatasetToolButtonPressed(
 {
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Geo Spatial File"), te::qt::af::GetFilePathFromSettings("raster"), 
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Geo Spatial File"), te::qt::widgets::GetFilePathFromSettings("raster"), 
       tr("Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
     if(fileName.isEmpty())
@@ -213,18 +214,18 @@ void te::qt::plugins::gdal::GDALConnectorDialog::searchDatasetToolButtonPressed(
 
     QFileInfo info(fileName);
 
-    te::qt::af::AddFilePathToSettings(info.absolutePath(), "raster");
+    te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "raster");
 
     m_ui->m_datasetLineEdit->setText(fileName);
   }
   else if(m_ui->m_dirRadioButton->isChecked())
   {
-    QString dirName = QFileDialog::getExistingDirectory(this, tr("Select a directory with image files"), te::qt::af::GetFilePathFromSettings("raster"), QFileDialog::ShowDirsOnly);
+    QString dirName = QFileDialog::getExistingDirectory(this, tr("Select a directory with image files"), te::qt::widgets::GetFilePathFromSettings("raster"), QFileDialog::ShowDirsOnly);
 
     if(dirName.isEmpty())
       return;
 
-    te::qt::af::AddFilePathToSettings(dirName, "raster");
+    te::qt::widgets::AddFilePathToSettings(dirName, "raster");
 
     m_ui->m_datasetLineEdit->setText(dirName);
   }

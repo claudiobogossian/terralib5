@@ -109,6 +109,9 @@
                <layout class="QGridLayout" name="gridLayout_10" columnstretch="0,0,1">
                 <item row="0" column="0">
                  <widget class="QCheckBox" name="m_onlySelectedCheckBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="text">
                    <string>Only Selected</string>
                   </property>

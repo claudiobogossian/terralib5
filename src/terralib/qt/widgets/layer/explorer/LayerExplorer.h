@@ -112,26 +112,58 @@ namespace te
           */
           std::list<te::map::AbstractLayerPtr> getSelectedAndVisibleSingleLayers() const;
 
-          void add(const te::map::AbstractLayerPtr& layer);
+          /*!
+            \brief It gets the layer item that is associated to the given layer.
 
-          void remove(AbstractTreeItem* item);
+            \param layer The layer whose the corresponding layer item will be returned.
 
-          te::qt::widgets::LayerTreeView::ContextMenuType getMenuType(int menuType) const;
+            \return The layer item associated to the layer.
+          */
+          te::qt::widgets::AbstractTreeItem* getLayerItem(const te::map::AbstractLayerPtr& layer);
+
+          /*!
+            \brief It adds a item layer to the list of item layers of the parent layer item.
+                   If the parent layer is not specified, the item layer is added as a top layer item.
+
+            \param layer       The layer that will be associated to the item layer to be added.
+            \param parentItem  The parent item where the layer item will be added.
+          */
+          void add(const te::map::AbstractLayerPtr& layer, AbstractTreeItem* parentItem = 0);
+
+          /*!
+            \brief It removes the given item from the layer explorer.
+
+            \param item The item to be removed from the layer explorer.
+
+            \return True, if the item was successfully removed; otherwise, it returns false.
+          */
+          bool remove(AbstractTreeItem* item);
+
+          /*!
+            \brief It gets the context menu selection type associated to the menu selection type.
+
+            \param menuSelectionType The menu selection type.
+
+            \return The context menu selection type.
+          */
+          te::qt::widgets::LayerTreeView::ContextMenuSelectionType getMenuSelectionType(int menuSelectionType) const;
 
           /*!
             \brief It calls the action to a specified menu of a given layer type when a context menu is displayed.
 
-            \param action    The action to be associated to the context menu.
-            \param menu      The name of a submenu, using a dot separator notation. If omitted the action will be set on a top menu item.
-            \param layerType If omitted the action will be set to all type of layers.
-            \param menuType  The type of selection to what this action will be displayed.
+            \param action                The action to be associated to the context menu.
+            \param menu                  The name of a submenu, using a dot separator notation. If omitted, the action will be set on a top menu item.
+            \param itemType              If omitted the action will be set to all item types.
+            \param menuSelectionType     The type of selection to what this action will be displayed.
+            \param applyActionToSubType  If true, the action is to be applied to the item subtype.
 
             \note The associated LayerTreeView will not take the action ownership.
           */
           void add(QAction* action,
-                   const QString& menu = QString(""),
-                   const QString& layerType = QString(""),
-                   te::qt::widgets::LayerTreeView::ContextMenuType menuType = te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED);
+                   const QString& menu,
+                   const std::string& itemType,
+                   te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuSelectionType,
+                   bool applyActionToSubType = true);
 
           signals:
 

@@ -87,13 +87,7 @@ namespace te
 
           void onAddTabularLayerTriggered();
 
-          void onRemoveChartTriggered();
-
-          void onRemoveClassificationTriggered();
-
-          void onRemoveFolderTriggered();
-
-          void onRemoveLayerTriggered();
+          void onRemoveItemTriggered();
 
           void onRenameItemTriggered();
 
@@ -119,7 +113,7 @@ namespace te
 
           void onProjectPropertiesTriggered();
 
-          void onNewFolderTriggered();
+          void onAddFolderLayerTriggered();
 
           void onLayerPropertiesTriggered();
 
@@ -199,8 +193,6 @@ namespace te
 
           virtual void openProject(const QString& projectFileName);
 
-          virtual void updateProject();
-
           virtual void checkProjectSave();
 
           virtual void newProject();
@@ -249,21 +241,16 @@ namespace te
           QAction* m_pluginsManager;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
-          //QAction* m_viewToolBars;
           QAction* m_viewGrid;
-          QAction* m_projectRemoveLayer;
-          QAction* m_projectRemoveFolder;
-          QAction* m_projectRemoveChart;
-          QAction* m_projectRemoveClassification;
+          QAction* m_projectRemoveItem;
           QAction* m_projectRenameItem;
           QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;
           QAction *m_projectAddLayerTabularDataSet;
           QAction* m_projectAddLayerGraph;
-          QAction* m_projectNewFolder;
+          QAction* m_projectAddFolderLayer;
           QAction* m_layerEdit;
-          QAction* m_layerRemoveSelection;
           QAction* m_layerRename;
           QAction* m_layerExport;
           QAction* m_layerProperties;
@@ -276,8 +263,9 @@ namespace te
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
           QAction* m_layerChart;
-          QAction* m_layerGrouping;
+          QAction* m_layerObjectGrouping;
           QAction* m_layerFitOnMapDisplay;
+          QAction* m_layerRemoveObjectSelection;
           QAction* m_layerFitSelectedOnMapDisplay;
           QAction* m_layerPanToSelectedOnMapDisplay;
           QAction* m_queryLayer;
