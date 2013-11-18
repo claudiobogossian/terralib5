@@ -79,6 +79,18 @@ void te::qt::plugins::pgis::PostGISConnector::create(std::list<te::da::DataSourc
   
   if(retval == QDialog::Rejected)
     return;
+
+  te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
+
+  if(ds.get() != 0)
+  {
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+    datasources.push_back(ds);
+
+    te::da::DataSourcePtr driver = cdialog->getDriver();
+
+    te::da::DataSourceManager::getInstance().insert(driver);
+  }
 }
 
 void te::qt::plugins::pgis::PostGISConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)

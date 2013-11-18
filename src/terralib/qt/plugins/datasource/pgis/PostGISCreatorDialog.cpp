@@ -86,6 +86,56 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
 // create database
     te::da::DataSource::create("POSTGIS", dsInfo);
 
+    // Connect
+    std::map<std::string, std::string> connInfo;
+    connInfo["PG_HOST"] = dsInfo["PG_HOST"];
+    connInfo["PG_PORT"] = dsInfo["PG_PORT"];
+    connInfo["PG_USER"] = dsInfo["PG_USER"];
+    connInfo["PG_PASSWORD"] = dsInfo["PG_PASSWORD"];
+    connInfo["PG_DB_NAME"] = dsInfo["PG_NEWDB_NAME"];
+    connInfo["PG_MIN_POOL_SIZE"] = "1";
+    connInfo["PG_MAX_POOL_SIZE"] = "4";
+    connInfo["PG_CONNECT_TIMEOUT"] = "5";
+    if(!dsInfo["PG_NEWDB_ENCODING"].empty())
+      connInfo["PG_CLIENT_ENCODING"] = dsInfo["PG_NEWDB_ENCODING"];
+
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("POSTGIS");
+    ds->setConnectionInfo(connInfo);
+    ds->open();
+
+    m_driver.reset(ds.release());
+
+    if(m_driver.get() == 0)
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open POSTGIS data source due to an unknown error!"));
+    
+    QString title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_newDatabaseNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_userNameLineEdit->text().trimmed();
+
+    if(m_datasource.get() == 0)
+    {
+// create a new data source based on form data
+      m_datasource.reset(new te::da::DataSourceInfo);
+
+      m_datasource->setConnInfo(connInfo);
+
+      boost::uuids::basic_random_generator<boost::mt19937> gen;
+      boost::uuids::uuid u = gen();
+      std::string dsId = boost::uuids::to_string(u);
+
+      m_datasource->setId(dsId);
+      m_driver->setId(dsId);
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription("");
+      m_datasource->setAccessDriver("POSTGIS");
+      m_datasource->setType("POSTGIS");
+    }
+    else
+    {
+      m_driver->setId(m_datasource->getId());
+      m_datasource->setConnInfo(connInfo);
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription("");
+    }
+
   }
   catch(const std::exception& e)
   {

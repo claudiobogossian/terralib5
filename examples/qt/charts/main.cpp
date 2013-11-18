@@ -71,14 +71,10 @@ void generateHistogram(te::da::DataSet* dataset, te::da::DataSourceTransactor* t
 
   int rendaIdx= te::da::GetPropertyPos(dataset, renda);
 
-  // get a catalogloader and load the dataSetType information in order to find out the pk, uk etc...
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
-  cl.reset(transactor->getCatalogLoader());
-  cl.get();
-  te::da::DataSetType *dt =  cl->getDataSetType("mapa_distritos_sp", true);
+  std::auto_ptr<te::da::DataSetType> dt =  transactor->getDataSetType("mapa_distritos_sp");
 
   //Creating the histogram and it's chart with the given dataset
-  te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dt, rendaIdx, 10);
+  te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dt.get(), rendaIdx, 10);
   te::qt::widgets::HistogramChart* chart = new te::qt::widgets::HistogramChart(histogram);
 
   //Creating and adjusting the chart Display's style.
@@ -108,14 +104,10 @@ void generateScatter(te::da::DataSet* dataset, te::da::DataSourceTransactor* tra
   int rendaIdx= te::da::GetPropertyPos(dataset, renda);
   int anosestIdx= te::da::GetPropertyPos(dataset, anosest);
 
-  // get a catalogloader and load the dataSetType information in order to find out the pk, uk etc...
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(0);
-  cl.reset(transactor->getCatalogLoader());
-  cl.get();
-  te::da::DataSetType *dt =  cl->getDataSetType("mapa_distritos_sp", true);
+  std::auto_ptr<te::da::DataSetType> dt =  transactor->getDataSetType("mapa_distritos_sp");
 
   //Creating the scatter and it's chart with the given dataset
-  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, dt, rendaIdx, anosestIdx);
+  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, dt.get(), rendaIdx, anosestIdx);
   te::qt::widgets::ScatterChart* chart = new te::qt::widgets::ScatterChart(scatter);
 
   //Creating and adjusting the chart Display's style.
@@ -146,20 +138,18 @@ int main(int /*argc*/, char** /*argv*/)
     LoadOGRModule();
     
     //pegar um data set
-    std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
-
-    te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
-    ds->setConnectionStr(ogrInfo);
+    //std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
+    std::map<std::string, std::string> connInfo;
+    connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/shp";
+    std::auto_ptr<te::da::DataSource> ds = te::da::DataSourceFactory::make("OGR");
+    ds->setConnectionInfo(connInfo);
     ds->open();
     
-    te::da::DataSourceTransactor* transactor = ds->getTransactor();
+    std::auto_ptr<te::da::DataSourceTransactor> transactor = ds->getTransactor();
 
-    te::da::DataSet* dataset = transactor->getDataSet("mapa_distritos_sp");
-    if(dataset==0)
+    std::auto_ptr<te::da::DataSet> dataset = transactor->getDataSet("mapa_distritos_sp");
+    if(dataset.get()==0)
     {
-       delete dataset;
-       delete transactor;
-       delete ds;
        return 0;
     }
 
@@ -167,15 +157,10 @@ int main(int /*argc*/, char** /*argv*/)
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
 
-    generateHistogram(dataset, transactor);
-    generateScatter(dataset, transactor);
+    generateHistogram(dataset.get(), transactor.get());
+    generateScatter(dataset.get(), transactor.get());
 
     int ret = app.exec();
-
-    //delete pointers
-    delete dataset;
-    delete transactor;
-    delete ds;
   }
   catch(const std::exception& e)
   {

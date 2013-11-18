@@ -64,14 +64,12 @@ namespace te
 
         public:
 
-          enum ContextMenuType
+          enum ContextMenuSelectionType
           {
             ALL_SELECTION_TYPES,
-            NO_LAYER_SELECTED,
-            SINGLE_LAYER_SELECTED,
-            SINGLE_LAYER_GROUPING_SELECTED,
-            SINGLE_LAYER_CHART_SELECTED,
-            MULTIPLE_LAYERS_SELECTED
+            NO_ITEM_SELECTED,
+            UNIQUE_ITEM_SELECTED,
+            MULTIPLE_ITEMS_SELECTED
           };
 
           /*! \brief Constructor */
@@ -116,19 +114,21 @@ namespace te
           std::list<te::map::AbstractLayerPtr> getSelectedAndVisibleSingleLayers() const;
 
           /*!
-            \brief It adds the action to a specified menu of a given layer type when a context menu is displayed.
+            \brief It adds the action to a specified menu of a given item type when a context menu is displayed.
 
-            \param action    The action to be associated to the context menu.
-            \param menu      The name of a submenu, using a dot separator notation. If omitted the action will be set on a top menu item.
-            \param layerType If omitted the action will be set to all type of layers.
-            \param menuType  The type of selection to what this action will be displayed.
+            \param action                The action to be associated to the context menu.
+            \param menu                  The name of a submenu, using a dot separator notation. If omitted, the action will be set on a top menu item.
+            \param itemType              If omitted the action will be set to all item types.
+            \param menuSelectionType     The type of selection to what this action will be displayed.
+            \param applyActionToSubType  If true, the action is to be applied to the item subtype.
 
             \note LayerTreeView will not take the action ownership.
           */
           void add(QAction* action,
-                   const QString& menu = QString(""),
-                   const QString& layerType = QString(""),
-                   ContextMenuType menuType = SINGLE_LAYER_SELECTED);
+                   const QString& menu,
+                   const std::string& itemType,
+                   ContextMenuSelectionType menuSelectionType,
+                   bool applyActionToSubType = true);
 
           /*!
             \brief It removes the action from the list of context menu.

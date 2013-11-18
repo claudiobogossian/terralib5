@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -44,7 +44,7 @@ namespace te
           DISPLAY_RESIZED,
           LAYER_ADDED,
           LAYER_REMOVED,
-          LAYER_ITEM_REMOVED,
+          ITEM_REMOVED,
           LAYER_SELECTED,
           LAYER_VISIBILITY_CHANGED,
           LAYER_SELECTED_OBJECTS_CHANGED,

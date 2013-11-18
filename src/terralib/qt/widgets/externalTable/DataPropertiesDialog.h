@@ -28,6 +28,7 @@
 
 
 //TerraLib
+#include "../../../maptools/DataSetAdapterLayer.h"
 #include "../Config.h"
 
 // Qt
@@ -40,9 +41,6 @@ namespace Ui { class DataPropertiesDialogForm; }
 
 namespace te
 {
-
-  namespace da { class DataSetAdapter; }
-
   namespace qt
   {
     namespace widgets
@@ -82,7 +80,7 @@ namespace te
             \return A DataSetAdapterLayerPtr with it's DataSetAdapter.
             \note The caller will take ownership of the returned pointer. 
           */
-          //te::map::DataSetAdapterLayerPtr getTextualLayer();
+          te::map::DataSetAdapterLayerPtr getDataSetAdapterLayer();
 
       protected slots:
 
@@ -93,8 +91,7 @@ namespace te
 
         std::auto_ptr<Ui::DataPropertiesDialogForm>  m_ui;                    //!< The dialog form.
         DatapPropertiesWidget*                       m_dataPropertiesWidget;  //!< The widget used to import and configure a textual file.
-        std::auto_ptr<te::da::DataSetAdapter>        m_datasetAdapter;        //!< THe adapter that will be used to configure the new layer.
-        //te::map::DataSetAdapterLayerPtr            m_datasetAdapterLayer;
+        te::map::DataSetAdapterLayerPtr              m_DataSetAdapterLayer;   //!< The new Layer.
       };
     } // end namespace widgets
   }   // end namespace qt

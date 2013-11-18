@@ -53,7 +53,7 @@ class te::qt::widgets::LayerTreeView::Impl
 {
   public:
 
-    typedef boost::tuple<QAction*, QString, QString, te::qt::widgets::LayerTreeView::ContextMenuType> tuple_type;
+    typedef boost::tuple<QAction*, QString, std::string, te::qt::widgets::LayerTreeView::ContextMenuSelectionType, bool> tuple_type;
 
     Impl(te::qt::widgets::LayerTreeView* ltv)
       : m_ltv(ltv)
@@ -62,10 +62,11 @@ class te::qt::widgets::LayerTreeView::Impl
 
     void add(QAction* action,
              const QString& menu,
-             const QString& layerType,
-             te::qt::widgets::LayerTreeView::ContextMenuType menuType)
+             const std::string& layerType,
+             te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuSelectionType,
+             bool applyActionToSubType)
     {
-      m_menus.push_back(tuple_type(action, menu, layerType, menuType));
+      m_menus.push_back(tuple_type(action, menu, layerType, menuSelectionType, applyActionToSubType));
     }
 
     void remove(QAction* action)
@@ -91,73 +92,83 @@ class te::qt::widgets::LayerTreeView::Impl
     {
       QMenu menu(m_ltv);
 
-      std::list<AbstractTreeItem*> selectedLayers = m_ltv->getSelectedItems();
+      std::list<AbstractTreeItem*> selectedItems = m_ltv->getSelectedItems();
 
-      if(selectedLayers.empty())
+      if(selectedItems.empty())
       {
         // if no layers were selected, we only show the NO_LAYER_SELECTED actions
-        for(std::list<tuple_type>::const_iterator it = m_menus.begin();
-            it != m_menus.end();
-            ++it)
+        for(std::list<tuple_type>::const_iterator it = m_menus.begin(); it != m_menus.end(); ++it)
         {
           QAction* action = it->get<0>();
-          //QString menuName = it->get<1>();
-          //QString layerType = it->get<2>();
-          te::qt::widgets::LayerTreeView::ContextMenuType menuType = it->get<3>();
+          te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuType = it->get<3>();
 
-          if(menuType == te::qt::widgets::LayerTreeView::NO_LAYER_SELECTED)
-          {
+          if(menuType == te::qt::widgets::LayerTreeView::NO_ITEM_SELECTED)
             menu.addAction(action);
-          }
         }
       }
-      else if(selectedLayers.size() == 1)
+      else if(selectedItems.size() == 1)
       {
-        // If just one layer is selected we show their actions
-        te::map::AbstractLayerPtr layer = selectedLayers.front()->getLayer();
-        if(layer == 0)
-          return;
+        // If just one item is selected we show their actions
+        te::qt::widgets::AbstractTreeItem* selectedItem = selectedItems.front();
 
-        QString layerType(QString::fromStdString(layer->getType()));
+        std::string selectedItemType = selectedItem->getItemType();
 
-        for(std::list<tuple_type>::const_iterator it = m_menus.begin();
-            it != m_menus.end();
-            ++it)
+        // If the type of the selected item is a dataset layer, set it as being
+        // a raster layer type if it has a raster geometry.
+        te::map::AbstractLayerPtr layer = selectedItem->getLayer();
+
+        if(layer && layer->getType() == "DATASETLAYER")
+        {
+          if(layer->getSchema()->hasRaster())
+            selectedItemType = "RASTER_LAYER_ITEM";
+        }
+
+        std::list<tuple_type>::const_iterator it;
+        for(it = m_menus.begin(); it != m_menus.end(); ++it)
         {
           QAction* action = it->get<0>();
-          //QString menuName = it->get<1>();
-          QString alayerType = it->get<2>();
-          te::qt::widgets::LayerTreeView::ContextMenuType menuType = it->get<3>();
+          std::string aItemType = it->get<2>();
+          te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuType = it->get<3>();
+          bool applyActionToSubType = it->get<4>();
 
-          if((menuType == te::qt::widgets::LayerTreeView::SINGLE_LAYER_SELECTED ||
-              menuType == te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES) &&
-             ((alayerType == layerType) || alayerType.isEmpty()))
+          const std::string itemType = selectedItem->getItemType();
+          if(itemType == "LEGEND_ITEM" || itemType == "CHART_SLICE_ITEM" || itemType == "GROUPING_SLICE_ITEM")
+            continue;
+
+          if(!layer || layer->getType() == "FOLDERLAYER")
           {
-            menu.addAction(action);
+            // The selected item is not a layer or is a folder layer,so add to
+            // the menu only the actions that are ALL_SELECTION_TYPES.
+            if((menuType == te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES) ||
+                menuType == te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED &&
+                (aItemType == selectedItemType))
+            {
+                menu.addAction(action);
+            }
           }
+          else
+          { 
+            if((menuType == te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES ||
+                menuType == te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED ||
+                menuType == te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED) &&
+                ((aItemType == selectedItemType) || aItemType.empty()))
+            {
+              if(selectedItemType == "RASTER_LAYER_ITEM" && !applyActionToSubType)
+                continue;
 
-          if(menuType == te::qt::widgets::LayerTreeView::SINGLE_LAYER_GROUPING_SELECTED &&
-            layer->getGrouping())
-          {
-            menu.addAction(action);
-          }
-
-          if(menuType == te::qt::widgets::LayerTreeView::SINGLE_LAYER_CHART_SELECTED &&
-            layer->getChart())
-          {
-            menu.addAction(action);
+              menu.addAction(action);
+            }
           }
         }
       }
       else
       {
-        // if more than one layer is selected we must look for common actions depending on the layer types
+        // If more than one layer is selected we must look for common actions depending on the layer types
         std::map<std::string, std::vector<QAction*> > actionsByLayerType;
 
-        // determine the layer types
-        for(std::list<AbstractTreeItem*>::const_iterator it = selectedLayers.begin();
-            it != selectedLayers.end();
-            ++it)
+        // Determine the layer types
+        std::list<AbstractTreeItem*>::const_iterator it;
+        for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
         {
           te::map::AbstractLayerPtr layer = (*it)->getLayer();
           if(layer.get() == 0)
@@ -173,14 +184,14 @@ class te::qt::widgets::LayerTreeView::Impl
         {
           QAction* action = it->get<0>();
           //QString menuName = it->get<1>();
-          QString alayerType = it->get<2>();
-          te::qt::widgets::LayerTreeView::ContextMenuType menuType = it->get<3>();
+          std::string alayerType = it->get<2>();
+          te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuType = it->get<3>();
 
-          if(menuType != te::qt::widgets::LayerTreeView::MULTIPLE_LAYERS_SELECTED &&
+          if(menuType != te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED &&
              menuType != te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES)
             continue;
 
-          std::string layerType = alayerType.toStdString();
+          std::string layerType = alayerType;
 
           if(layerType.empty())
           {
@@ -249,11 +260,11 @@ te::qt::widgets::LayerTreeView::LayerTreeView(QWidget* parent)
   viewport()->setAutoFillBackground(true);
 
   // Signals and slots
-  connect(this, SIGNAL(activated(const QModelIndex&)), this, SLOT(onItemActivated(const QModelIndex&)));
-  connect(this, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onItemClicked(const QModelIndex&)));
-  connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
-  connect(this, SIGNAL(entered(const QModelIndex&)), this, SLOT(onItemEntered(const QModelIndex&)));
-  connect(this, SIGNAL(pressed(const QModelIndex&)), this, SLOT(onItemPressed(const QModelIndex&)));
+  connect(this, SIGNAL(activated(const QModelIndex&)), SLOT(onItemActivated(const QModelIndex&)));
+  connect(this, SIGNAL(clicked(const QModelIndex&)), SLOT(onItemClicked(const QModelIndex&)));
+  connect(this, SIGNAL(doubleClicked(const QModelIndex&)), SLOT(onItemDoubleClicked(const QModelIndex&)));
+  connect(this, SIGNAL(entered(const QModelIndex&)), SLOT(onItemEntered(const QModelIndex&)));
+  connect(this, SIGNAL(pressed(const QModelIndex&)), SLOT(onItemPressed(const QModelIndex&)));
 
   m_pImpl = new Impl(this);
 }
@@ -293,11 +304,8 @@ std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerTreeView::ge
   {
     te::qt::widgets::AbstractTreeItem* selectedItem = *it;
 
-    if(selectedItem->getType() == te::qt::widgets::AbstractTreeItem::LAYERITEM ||
-       selectedItem->getType() == te::qt::widgets::AbstractTreeItem::FOLDERLAYERITEM)
-    {
+    if(selectedItem->getLayer())
       selectedLayerItems.push_back(selectedItem);
-    }
   }
 
   return selectedLayerItems;
@@ -314,7 +322,7 @@ std::list<te::qt::widgets::AbstractTreeItem*> te::qt::widgets::LayerTreeView::ge
   {
     te::qt::widgets::AbstractTreeItem* selectedLayerItem = *it;
 
-    if(selectedLayerItem->getType() == te::qt::widgets::AbstractTreeItem::LAYERITEM)
+    if(selectedLayerItem->getLayer() && selectedLayerItem->getItemType() != "FOLDER_ITEM_TYPE")
       selectedSingleLayerItems.push_back(selectedLayerItem);
   }
 
@@ -331,11 +339,11 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::LayerTreeView::getSelected
   for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
   {
     AbstractTreeItem* item = *it;
-    if(item->getType() == te::qt::widgets::AbstractTreeItem::LAYERITEM)
-    {
-      te::map::AbstractLayerPtr layer = (*it)->getLayer();
+
+    te::map::AbstractLayerPtr layer = (*it)->getLayer();
+
+    if(layer && layer->getType() != "FOLDERLAYER")
       selectedSingleLayers.push_back(layer);
-    }
   }
 
   return selectedSingleLayers;
@@ -367,10 +375,10 @@ void te::qt::widgets::LayerTreeView::onSelectedLayersChanged(const QItemSelectio
   std::list<te::qt::widgets::AbstractTreeItem*>::const_iterator it;
   for(it = selectedItems.begin(); it != selectedItems.end(); ++it)
   {
-    AbstractTreeItem* selectedItem = *it;
+    te::map::AbstractLayerPtr selectedLayer = (*it)->getLayer();
 
-    if(selectedItem->getType() == te::qt::widgets::AbstractTreeItem::LAYERITEM)
-      selectedLayers.push_back(selectedItem->getLayer());
+    if(selectedLayer)
+      selectedLayers.push_back(selectedLayer);
   }
 
   if(!selectedLayers.empty())
@@ -379,10 +387,11 @@ void te::qt::widgets::LayerTreeView::onSelectedLayersChanged(const QItemSelectio
 
 void te::qt::widgets::LayerTreeView::add(QAction* action,
                                          const QString& menu,
-                                         const QString& layerType,
-                                         ContextMenuType menuType)
+                                         const std::string& itemType,
+                                         ContextMenuSelectionType menuSelectionType,
+                                         bool applyActionToSubType)
 {
-  m_pImpl->add(action, menu, layerType, menuType);
+  m_pImpl->add(action, menu, itemType, menuSelectionType, applyActionToSubType);
 }
 
 void te::qt::widgets::LayerTreeView::remove(QAction* action)

@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/DataSetLayerItem.h
+  \file terralib/qt/widgets/layer/explorer/DataSetAdapterLayerItem.h
 
-  \brief The class that represents a dataset layer item in a LayerTreeModel.
+  \brief The class that represents a dataset adapter layer item in a LayerTreeModel.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETADAPTERLAYERITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETADAPTERLAYERITEM_H
 
 // TerraLib
-#include "../../../../maptools/DataSetLayer.h"
+#include "../../../../maptools/DataSetAdapterLayer.h"
 #include "AbstractTreeItem.h"
 
 namespace te
@@ -36,15 +36,15 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT DataSetLayerItem : public AbstractTreeItem
+      class TEQTWIDGETSEXPORT DataSetAdapterLayerItem : public AbstractTreeItem
       {
         Q_OBJECT
 
         public:
 
-          DataSetLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent = 0);
+          DataSetAdapterLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent = 0);
 
-          ~DataSetLayerItem();
+          ~DataSetAdapterLayerItem();
 
           int columnCount() const;
 
@@ -64,11 +64,6 @@ namespace te
 
           te::map::AbstractLayerPtr getLayer() const;
 
-        /*!
-          \brief It returns the item type: "DATASET_LAYER_ITEM".
-
-          \return The item type: "DATASET_LAYER_ITEM".
-        */
           const std::string getItemType() const;
 
         private:
@@ -79,10 +74,10 @@ namespace te
 
         private:
 
-          te::map::DataSetLayerPtr m_layer;
+          te::map::DataSetAdapterLayerPtr m_layer;
       }; 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETADAPTERLAYERITEM_H

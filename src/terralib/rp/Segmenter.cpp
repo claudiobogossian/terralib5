@@ -288,9 +288,11 @@ namespace te
           m_inputParameters.getSegStrategyParams() ), 
           "Unable to initialize the segmentation strategy" );   
           
-        const double stratMemUsageFactor = strategyPtr->getMemUsageFactor(
-          m_inputParameters.m_inputRasterPtr->getNumberOfBands() );  
-        TERP_DEBUG_TRUE_OR_THROW( stratMemUsageFactor > 0.0,
+        const double stratMemUsageEstimation = strategyPtr->getMemUsageEstimation(
+          m_inputParameters.m_inputRasterBands.size(),
+          m_inputParameters.m_inputRasterPtr->getNumberOfRows() *
+          m_inputParameters.m_inputRasterPtr->getNumberOfColumns() );  
+        TERP_DEBUG_TRUE_OR_THROW( stratMemUsageEstimation > 0.0,
           "Invalid strategy memory usage factorMemUsageFactor" );       
           
         const unsigned stratBlocksOverlapSize = 
@@ -317,8 +319,8 @@ namespace te
           2.0;
         const double freeVMem = MIN( totalPhysMem, 
           ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );
-        const double pixelRequiredRam = ((double)stratMemUsageFactor) *
-          (double)(m_inputParameters.m_inputRasterBands.size() * sizeof( double ) );
+        const double pixelRequiredRam = stratMemUsageEstimation
+          / ((double)totalRasterPixels);
         const double maxSimultaneousMemoryPixels = MIN( 
           ((double)totalRasterPixels), 
           freeVMem / pixelRequiredRam );         

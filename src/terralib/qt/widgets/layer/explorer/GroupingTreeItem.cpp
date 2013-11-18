@@ -121,9 +121,9 @@ te::map::AbstractLayerPtr te::qt::widgets::GroupingTreeItem::getLayer() const
   return te::map::AbstractLayerPtr(0);
 }
 
-te::qt::widgets::AbstractTreeItem::TreeItemType te::qt::widgets::GroupingTreeItem::getType() const
+const std::string te::qt::widgets::GroupingTreeItem::getItemType() const
 {
-  return GROUPINGTREEITEM;
+  return "GROUPING_ITEM";
 }
 
 void te::qt::widgets::GroupingTreeItem::setCheckable(bool checkable)

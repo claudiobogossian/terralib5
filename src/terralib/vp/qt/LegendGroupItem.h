@@ -68,8 +68,8 @@ namespace te
         te::map::AbstractLayerPtr getLayer() const;
 
         std::vector<te::qt::widgets::AbstractTreeItem*> getItems() const;
-      
-        te::qt::widgets::AbstractTreeItem::TreeItemType getType() const;
+
+        const std::string getItemType() const;
 
       private:
 

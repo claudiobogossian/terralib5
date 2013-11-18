@@ -594,15 +594,80 @@ QModelIndex te::qt::widgets::LayerTreeModel::getIndex(AbstractTreeItem* item)
   return createIndex(itemRow, 0, item);
 }
 
-void te::qt::widgets::LayerTreeModel::add(const te::map::AbstractLayerPtr& layer)
+te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerTreeModel::getLayerItem(const te::map::AbstractLayerPtr& layer)
 {
-  std::size_t row = m_layers.size();
-  m_layers.push_back(layer);
+  if(!layer)
+    return 0;
+
+  te::map::AbstractLayerPtr parentLayer = static_cast<te::map::AbstractLayer*>(layer->getParent());
+
+  if(!parentLayer)
+  {
+    // The layer is a top layer
+    for(std::size_t i = 0; i < m_layers.size(); ++i)
+    {
+      if(m_layers[i] == layer)
+        return m_items[i];
+    }
+  }
+
+  // Get the list of rows of the ancestors of the given layer,
+  // and the index of its top level ancestor layer.
+  std::vector<std::size_t> rows;
+  QModelIndex topLayerIndex;
+
+  te::map::AbstractLayerPtr auxLayer = layer;
+
+  while(parentLayer)
+  {
+    rows.push_back(auxLayer->getIndex());
+    auxLayer = parentLayer;
+    parentLayer = static_cast<te::map::AbstractLayer*>(parentLayer->getParent());
+  }
+
+  te::map::AbstractLayerPtr topLayer = auxLayer;
+  te::qt::widgets::AbstractTreeItem* topItem = 0;
+
+  for(std::size_t i = 0; i < m_layers.size(); ++i)
+  {
+    if(m_layers[i] == topLayer)
+    {
+      topItem = m_items[i];
+      topLayerIndex = index(i, 0, QModelIndex());
+      break;
+    }
+  }
+
+  QModelIndex inLayerIndex = topLayerIndex;
+
+  std::vector<std::size_t>::reverse_iterator it;
+  for(it = rows.rbegin(); it != rows.rend(); ++it)
+    inLayerIndex = index(*it, 0, inLayerIndex);
+
+  return static_cast<AbstractTreeItem*>(inLayerIndex.internalPointer());
+}
+
+void te::qt::widgets::LayerTreeModel::add(const te::map::AbstractLayerPtr& layer, te::qt::widgets::AbstractTreeItem* parentItem)
+{
+  std::size_t row = 0;
+
+  QModelIndex parentIndex;
+
+  if(!parentItem)
+  {
+    row = m_layers.size();
+    m_layers.push_back(layer);
+  }
+  else
+  {
+    row = parentItem->children().size();
+    parentIndex = getIndex(parentItem);
+  }
 
   m_insertingLayers.clear();
   m_insertingLayers.push_back(layer);
 
-  insertRows(row, 1, QModelIndex());
+  insertRows(row, 1, parentIndex);
 }
 
 bool te::qt::widgets::LayerTreeModel::remove(AbstractTreeItem* item)
@@ -612,13 +677,11 @@ bool te::qt::widgets::LayerTreeModel::remove(AbstractTreeItem* item)
   int itemRow = itemIndex.row();
   QModelIndex parentIndex = parent(itemIndex);
 
-    AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(item->parent());
+  AbstractTreeItem* parentItem = static_cast<AbstractTreeItem*>(item->parent());
 
-  if(item->getType() == te::qt::widgets::AbstractTreeItem::LAYERITEM ||
-     item->getType() == te::qt::widgets::AbstractTreeItem::FOLDERLAYERITEM)
+  if(item->getLayer())
   {
     // If the item is a single layer item or a folder layer item, remove the layer associated to the item.
-
     if(!parentItem)
     {
       // The item is a top level item; get its row
@@ -631,18 +694,6 @@ bool te::qt::widgets::LayerTreeModel::remove(AbstractTreeItem* item)
         }
       }
     }
-    else
-      parentItem->getLayer()->remove(itemRow);
-  }
-  else if(item->getType() == te::qt::widgets::AbstractTreeItem::GROUPINGTREEITEM)
-  {
-    // If the item is a group item, remove the grouping from the layer associated to the parent of this group item.
-    parentItem->getLayer()->setGrouping(0);
-  }
-  else if(item->getType() == te::qt::widgets::AbstractTreeItem::CHARTITEM)
-  {
-    // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
-    parentItem->getLayer()->setChart(0);
   }
 
   return removeRows(itemRow, 1, parentIndex);

@@ -33,8 +33,10 @@
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../../widgets/layer/utils/DataSet2Layer.h"
+#include "../../../widgets/Utils.h"
 
 #include "../../../af/ApplicationController.h"
+#include "../../../af/Project.h"
 #include "../../../af/Utils.h"
 #include "../../../af/events/LayerEvents.h"
 
@@ -51,6 +53,7 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMenu>
 #include <QtCore/QFileInfo>
+#include <QtGui/QMessageBox>
 
 std::list<te::da::DataSetTypePtr> GetDataSetsInfo(const te::da::DataSourceInfoPtr& info)
 {
@@ -138,14 +141,14 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
 {
   QString filter = tr("Image File (*.png *.jpg *.jpeg *.tif *.tiff *.geotif *.geotiff);; Web Map Service - WMS (*.xml *.wms);; Web Coverage Service - WCS (*.xml *.wcs);; All Files (*.*)");
 
-  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Raster File"), te::qt::af::GetFilePathFromSettings("raster"), filter);
+  QStringList fileNames = QFileDialog::getOpenFileNames(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Open Raster File"), te::qt::widgets::GetFilePathFromSettings("raster"), filter);
 
   if(fileNames.isEmpty())
     return;
 
   QFileInfo info(fileNames.value(0));
 
-  te::qt::af::AddFilePathToSettings(info.absolutePath(), "raster");
+  te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "raster");
 
   std::list<te::map::AbstractLayerPtr> layers;
 
@@ -181,10 +184,19 @@ void te::qt::plugins::gdal::Plugin::openFileDialog()
     GetLayers(ds, layers);
   }
 
+  // If there is a parent folder layer that is selected, get it as the parent of the layer to be added;
+  // otherwise, add the layer as a top level layer
+  te::map::AbstractLayerPtr parentLayer(0);
+
+  std::list<te::map::AbstractLayerPtr> selectedLayers = te::qt::af::ApplicationController::getInstance().getProject()->getSelectedLayers();
+
+  if(selectedLayers.size() == 1 && selectedLayers.front()->getType() == "FOLDERLAYER")
+    parentLayer = selectedLayers.front();
+
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = layers.begin(); it != layers.end(); ++it)
   {
-    te::qt::af::evt::LayerAdded evt(*it);
+    te::qt::af::evt::LayerAdded evt(*it, parentLayer);
     te::qt::af::ApplicationController::getInstance().broadcast(&evt);
   }
 }

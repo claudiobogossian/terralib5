@@ -502,3 +502,18 @@ std::vector<std::string> te::ogr::GetOGRDrivers(bool filterCreate
   
   return drivernames;
 }
+
+std::string te::ogr::GetOGRConnectionInfo(const std::map<std::string, std::string>& connInfo)
+{
+  std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
+
+  if(it != connInfo.end())
+    return it->second;
+
+  it = connInfo.find("SOURCE");
+
+  if(it != connInfo.end())
+    return it->second;
+
+  throw te::common::Exception(TR_OGR("Invalid data source connection information!."));
+}

@@ -88,15 +88,14 @@ namespace te
           const bool enableProgressInterface ) throw( te::rp::Exception ) = 0;          
         
         /*!
-            \brief Returns a memory use weight factor.
-            \details This parameter is used by the segmenter to
-            guess the sub-image blocks size.
-            \param inputRasterBandsNumber The number of input raster bands that will 
-            be processed at the strategy execution time.
-            \return A positive memory use weight factor (greater than one).
+            \brief Returns a memory estimation (bytes).
+            \details This parameter is used by the segmenter to guess the sub-image blocks size.
+            \param bandsToProcess The number of input raster bands that will be processed at the strategy execution time.
+            \param pixelsNumber The number of pixels.
+            \return A positive memory use estimation.
         */          
-        virtual double getMemUsageFactor( const unsigned int inputRasterBandsNumber ) 
-          const = 0;  
+        virtual double getMemUsageEstimation( const unsigned int bandsToProcess,
+          const unsigned int pixelsNumber ) const = 0;  
         
         /*!
             \brief Returns a optimal blocks overlap size (number of border pixels 

@@ -143,9 +143,9 @@ te::map::AbstractLayerPtr te::qt::widgets::LegendItem::getLayer() const
   return te::map::AbstractLayerPtr(0);
 }
 
-te::qt::widgets::AbstractTreeItem::TreeItemType te::qt::widgets::LegendItem::getType() const
+const std::string te::qt::widgets::LegendItem::getItemType() const
 {
-  return LEGENDITEM;
+  return "LEGEND_ITEM";
 }
 
 //te::qt::widgets::AbstractTreeItem* te::qt::widgets::LegendItem::clone(QObject* parent)

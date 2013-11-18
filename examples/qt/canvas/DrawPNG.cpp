@@ -20,22 +20,22 @@ void DrawPNG()
 
   try
   {
+    std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
 
-    te::da::DataSource* dsOGR = te::da::DataSourceFactory::make("OGR");
     std::map<std::string, std::string> connInfo;    
     connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp";
-    dsOGR->open(connInfo);
+    dsOGR->setConnectionInfo(connInfo);
+    dsOGR->open();
 
-    te::da::DataSourceTransactor* t = dsOGR->getTransactor();
+    std::auto_ptr<te::da::DataSourceTransactor> t = dsOGR->getTransactor();
 
-    te::da::DataSourceCatalogLoader* cl = t->getCatalogLoader();
-    cl->loadCatalog();
+    std::auto_ptr<te::da::DataSetType> dt = (dsOGR->getDataSetType("munic_2001"));
+    std::auto_ptr<te::da::DataSet> dataset = t->getDataSet("munic_2001");
+    std::size_t pos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+    std::auto_ptr<te::gm::Envelope>  extent = dataset->getExtent(pos);
+    te::gm::GeometryProperty* gcol = te::da::GetFirstGeomProperty(dt.get());
 
-    te::da::DataSetTypePtr dt(dsOGR->getCatalog()->getDataSetType("munic_2001"));
-
-    te::gm::GeometryProperty* gcol = te::da::GetFirstGeomProperty(dt.get()); // dt->getDefaultGeomProperty(); 
-    const te::gm::Envelope* extent = cl->getExtent(gcol);
-    if(extent == 0)
+    if(extent.get() == 0)
       throw("Extent not loaded!");
 
 
@@ -63,22 +63,17 @@ void DrawPNG()
     {
       canvas.setPointColor(te::color::RGBAColor(255, 0, 0, 255));
     }
+
     std::string geomName = (te::da::GetFirstGeomProperty(dt.get()))->getName();
-    //int geomCol = dt->getDefaultGeomPropertyPos();
-    te::da::DataSet* dataset = t->getDataSet("munic_2001");
+
     while(dataset->moveNext())
     {
-      te::gm::Geometry* g = dataset->getGeometry(geomName); //geomCol);
-      canvas.draw(g);
-      delete g;
+      std::auto_ptr<te::gm::Geometry> g = dataset->getGeometry(geomName);
+      canvas.draw(g.get());
     }
 
     std::string fileName = dt->getName() + ".png";
     canvas.save(fileName.c_str(), te::map::PNG);
-
-    delete dataset;
-    delete t;
-    delete dsOGR;
   }
   catch(const std::exception& e)
   {
