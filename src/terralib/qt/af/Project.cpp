@@ -153,7 +153,7 @@ void te::qt::af::Project::setSelectedLayers(const std::list<te::map::AbstractLay
   m_selectedLayers = selectedLayers;
 }
 
-void te::qt::af::Project::add(const te::map::AbstractLayerPtr& layer, te::map::AbstractLayerPtr& parentLayer)
+void te::qt::af::Project::add(const te::map::AbstractLayerPtr& layer, const te::map::AbstractLayerPtr& parentLayer)
 {
   if(!parentLayer)
     m_topLayers.push_back(layer);
