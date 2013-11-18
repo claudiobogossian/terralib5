@@ -147,7 +147,7 @@ namespace te
             \param parentLayer The parent layer where the layer will be added.
           */
           void add(const te::map::AbstractLayerPtr& layer,
-                   te::map::AbstractLayerPtr& parentLayer = te::map::AbstractLayerPtr(0));
+                   const te::map::AbstractLayerPtr& parentLayer = te::map::AbstractLayerPtr());
 
           /*!
             \brief It removes the specified layer from the project.

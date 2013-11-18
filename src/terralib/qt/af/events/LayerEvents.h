@@ -58,7 +58,7 @@ namespace te
             \param layer       The layer to be added.
             \param parentLayer  The parent layer where the new layer will be added.
           */
-          LayerAdded(const te::map::AbstractLayerPtr& layer, te::map::AbstractLayerPtr& parentLayer = te::map::AbstractLayerPtr(0))
+          LayerAdded(const te::map::AbstractLayerPtr& layer, const te::map::AbstractLayerPtr& parentLayer = te::map::AbstractLayerPtr())
             : Event(LAYER_ADDED),
               m_layer(layer),
               m_parentLayer(parentLayer)
