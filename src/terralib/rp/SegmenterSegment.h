@@ -34,7 +34,6 @@
       /*!
           \class SegmenterSegment
           \brief Segmenter segment base class.
-          \ingroup SegmentationAlgorithms
       */
       class TERPEXPORT SegmenterSegment
       {

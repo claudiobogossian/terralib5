@@ -83,6 +83,7 @@ option (TE_LOGGER_DO_AUTOMATIC_INITIALIZATION "Initialize automatically logger?"
 option (TE_LOGGER_DO_STATIC_INITIALIZATION "Initialize logger while static initialization?" OFF)
 option (TE_TRANSLATOR_ENABLED "Enable translate support on TerraLib?" ON)
 option (TE_CHARENCODING_ENABLED "Enable character encoding support on TerraLib?" ON)
+option (TE_DOXBUILD_ENABLED "Enable the doxygen documentation building?" OFF)
 
 if(UNIX)
   option (BUILD_GRIB "Build GRIB module?" ON)
@@ -298,7 +299,7 @@ install (
 install ( 
   DIRECTORY ${ROOT}/log
   DESTINATION .
-  COMPONENT HEADERS
+  COMPONENT BINARIES
 )
 
 # Installing TerraLib remaining header files
@@ -321,17 +322,17 @@ install (
 install (
   DIRECTORY ${ROOT}/schemas
   DESTINATION .
-  COMPONENT HEADERS
+  COMPONENT BINARIES
   FILES_MATCHING PATTERN "*.xsd"
 )
 
 install (
   DIRECTORY ${ROOT}/resources
   DESTINATION .
-  COMPONENT HEADERS
+  COMPONENT BINARIES
 )
 
-if(BUILD_DOC)
+if(TE_DOXBUILD_ENABLED)
   include (${TE_MODULE_PATH}/GenerateDox.cmake)
 endif()
 

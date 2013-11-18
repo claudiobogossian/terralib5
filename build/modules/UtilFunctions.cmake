@@ -408,7 +408,12 @@ MACRO (getVSVersion v)
 ENDMACRO(getVSVersion)
 
 MACRO (getPackageName packName)
-  set (_pname "terralib-${TE_VERSION}") 
+  if(${BUILD_TERRAVIEW})
+    set (_pname "terraview-${TE_VERSION}") 
+  else()
+    set (_pname "terralib-${TE_VERSION}") 
+  endif()
+  
   if(WIN32)
     if(MSVC)
       set (VSv "")

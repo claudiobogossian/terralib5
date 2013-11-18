@@ -37,7 +37,6 @@ namespace te
       \class AbstractFeeder
       \brief Abstract objects feeder.
       \details Sequential objects feeder to image processing algorithms.
-      \ingroup RPModule
      */
     template< typename ObjType >
     class AbstractFeeder : private boost::noncopyable

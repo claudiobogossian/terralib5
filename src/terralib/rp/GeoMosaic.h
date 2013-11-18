@@ -43,7 +43,6 @@ namespace te
       \class GeoMosaic
       \brief Create a mosaic from a set of geo-referenced rasters.
       \note The first raster will always be taken as reference to define the mosaic resolution and SRS.
-      \ingroup MosaicAlgorithms
      */
     class TERPEXPORT GeoMosaic : public Algorithm
     {

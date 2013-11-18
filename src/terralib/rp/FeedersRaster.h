@@ -41,7 +41,6 @@ namespace te
     /*!
       \class FeederConstRaster
       \brief Feeder from a input rasters.
-      \ingroup RPModule
      */
     class TERPEXPORT FeederConstRaster : public AbstractFeeder< const te::rst::Raster >
     {
@@ -64,7 +63,6 @@ namespace te
     /*!
       \class FeederConstRasterVector
       \brief A feeder from a input rasters vector;
-      \ingroup RPModule
      */
     class TERPEXPORT FeederConstRasterVector : public FeederConstRaster
     {
@@ -98,7 +96,6 @@ namespace te
     /*!
       \class FeederConstRasterFileNames
       \brief A feeder from a vector of input rasters infos.
-      \ingroup RPModule
      */
     class TERPEXPORT FeederConstRasterInfo : public FeederConstRaster
     {
@@ -136,7 +133,6 @@ namespace te
     /*!
       \class FeederConstRasterDirectory
       \brief A feeder from an input directory name.
-      \ingroup RPModule
      */
     class TERPEXPORT FeederConstRasterDirectory : public FeederConstRaster
     {
