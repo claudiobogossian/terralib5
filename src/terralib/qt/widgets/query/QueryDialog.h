@@ -52,6 +52,7 @@ namespace te
   {
     namespace widgets
     {
+      class ColorPickerToolButton;
       class WhereClauseWidget;
 
       /*!
@@ -99,8 +100,8 @@ namespace te
         private:
 
           std::auto_ptr<Ui::QueryDialogForm> m_ui;
-
           std::auto_ptr<te::qt::widgets::WhereClauseWidget> m_whereClauseWidget;
+          ColorPickerToolButton* m_colorPicker;
       };
 
     } // end namespace widgets
