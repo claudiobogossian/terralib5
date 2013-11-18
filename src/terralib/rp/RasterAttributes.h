@@ -57,8 +57,6 @@ namespace te
       \class RasterAttributes
 
       \brief Extraction of attributes from Raster, Bands, and Polygons.
-
-      \ingroup RPAlgorithms
     */
     class TERPEXPORT RasterAttributes : public Algorithm
     {

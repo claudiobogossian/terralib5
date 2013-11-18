@@ -39,7 +39,6 @@
       /*!
           \class SegmenterSegmentsPool
           \brief Segments pool.
-          \ingroup SegmentationAlgorithms
       */
       class TERPEXPORT SegmenterSegmentsPool : private boost::noncopyable 
       {

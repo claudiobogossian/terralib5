@@ -45,7 +45,6 @@ namespace te
       \class TiePointsMosaic
       \brief Create a mosaic from a set of rasters using tie-points.
       \note The first raster will always be taken as reference to define the mosaic resolution and SRS.
-      \ingroup MosaicAlgorithms
      */
     class TERPEXPORT TiePointsMosaic : public Algorithm
     {

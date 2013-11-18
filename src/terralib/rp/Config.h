@@ -18,40 +18,6 @@
  */
 
 /*!
- \defgroup RPModule Raster processing module.
- */
-
-/*!
- \defgroup RPAlgorithms Raster processing algorithms.
- \ingroup RPModule
- */
-
-/*!
- \defgroup RPFunctions Raster processing functions.
- \ingroup RPModule
- */
-
-/*!
- \defgroup SegmentationAlgorithms Raster segmentation algorithms.
- \ingroup RPAlgorithms
- */
-
-/*!
- \defgroup MatchingAlgorithms Raster matching algorithms.
- \ingroup RPAlgorithms
- */
-
-/*!
- \defgroup MosaicAlgorithms Raster mosaic algorithms.
- \ingroup RPAlgorithms
- */
-
-/*!
- \defgroup FusionAlgorithms Raster fusion algorithms.
- \ingroup RPAlgorithms
- */
-
-/*!
   \file terralib/rp/Config.h
 
   \brief Configuration flags for the Raster Processing module of TerraLib.
