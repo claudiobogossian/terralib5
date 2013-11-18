@@ -475,17 +475,26 @@ void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 
 void te::qt::af::BaseApplication::onAddTabularLayerTriggered()
 {
-   try
+  try
   {
     if(m_project == 0)
       throw Exception(TR_QT_AF("Error: there is no opened project!"));
+
+    // Get the parent layer where the tabular layer will be added.
+    te::map::AbstractLayerPtr parentLayer(0);
+
+    std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
+
+    if(selectedLayerItems.size() == 1 && selectedLayerItems.front()->getItemType() == "FOLDER_LAYER_ITEM")
+      parentLayer = selectedLayerItems.front()->getLayer();
+
     te::qt::widgets::DataPropertiesDialog dlg (this);
     int res = dlg.exec();
     if (res == QDialog::Accepted)
     {
       if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
       {
-        te::qt::af::evt::LayerAdded evt(dlg.getDataSetAdapterLayer());
+        te::qt::af::evt::LayerAdded evt(dlg.getDataSetAdapterLayer(), parentLayer);
         te::qt::af::ApplicationController::getInstance().broadcast(&evt);
       }
 
