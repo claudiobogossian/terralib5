@@ -35,11 +35,17 @@
 #include <QtCore/QPoint>
 #include <QtCore/QString>
 #include <QtCore/QMap>
+#include <QtGui/QColor>
 #include <QtGui/QMenu>
 #include <QtGui/QPixmap>
 
 namespace te
 {
+  namespace da
+  {
+    class DataSet;
+  }
+
   namespace qt
   {
     namespace widgets
@@ -138,6 +144,8 @@ namespace te
 
           void drawLayerSelection(te::map::AbstractLayerPtr layer);
 
+          void drawDataSet(te::da::DataSet* dataset, int srid, const QColor& color);
+
           void configSRS(const std::list<te::map::AbstractLayerPtr>& layers);
 
         signals:
@@ -148,16 +156,16 @@ namespace te
 
         protected:
 
-          te::qt::widgets::MapDisplay* m_display;             //!< Pointer to a component te::qt::widgets::MapDisplay.
-          te::qt::widgets::AbstractTool* m_tool;              //!< Pointer to the current tool being used.
-          QMenu* m_menu;                                      //!< The map display popup menu.
-          QPixmap m_lastDisplayContent;                       //!< The last map display content. i.e. a "clean" pixmap.
-          std::vector<te::gm::Envelope> m_extentStack;        //!< The stack of MapDisplay extents.
-          int m_currentExtentIndex;                           //!< The current extent index.
-          int m_extentStackMaxSize;                           //!< The max size of the extent stack. Used on previousExtent and nextExtent.
+          te::qt::widgets::MapDisplay* m_display;                    //!< Pointer to a component te::qt::widgets::MapDisplay.
+          te::qt::widgets::AbstractTool* m_tool;                     //!< Pointer to the current tool being used.
+          QMenu* m_menu;                                             //!< The map display popup menu.
+          QPixmap m_lastDisplayContent;                              //!< The last map display content. i.e. a "clean" pixmap.
+          std::vector<te::gm::Envelope> m_extentStack;               //!< The stack of MapDisplay extents.
+          int m_currentExtentIndex;                                  //!< The current extent index.
+          int m_extentStackMaxSize;                                  //!< The max size of the extent stack. Used on previousExtent and nextExtent.
 
-          te::qt::widgets::ZoomInMapDisplayWidget* m_zoomInDisplay;       //!< Pointer to a component that represents a zoom in display.
-          te::qt::widgets::EyeBirdMapDisplayWidget* m_eyeBirdDisplay;      //!< Pointer to a component that represents a eye bird display.
+          te::qt::widgets::ZoomInMapDisplayWidget* m_zoomInDisplay;   //!< Pointer to a component that represents a zoom in display.
+          te::qt::widgets::EyeBirdMapDisplayWidget* m_eyeBirdDisplay; //!< Pointer to a component that represents a eye bird display.
       };
     }
   }

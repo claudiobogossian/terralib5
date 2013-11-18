@@ -34,9 +34,19 @@
 
 // Qt
 #include <QtGui/QAction>
+#include <QtGui/QColor>
+
+// STL
+#include <memory>
 
 namespace te
 {
+// Forward declaration
+  namespace da
+  {
+    class DataSet;
+  }
+
   namespace qt
   {
     namespace af
@@ -185,6 +195,33 @@ namespace te
           }
 
           te::map::AbstractLayerPtr m_layer; //!< Layer whose selected objects were changed.
+        };
+
+        /*!
+          \struct HighlightLayerObjects
+
+          \brief This event indicates that the objects of the given layer must be highlighted.
+        */
+        struct HighlightLayerObjects : public Event
+        {
+          /*!
+            \brief Constructor
+
+            \param layer   The layer whose objects must be highlighted.
+            \param dataset The dataset that represents the objects that must be highlighted.
+          */
+          HighlightLayerObjects(te::map::AbstractLayerPtr layer, te::da::DataSet* dataset, const QColor& color)
+            : Event(HIGHLIGHT_LAYER_OBJECTS),
+              m_layer(layer),
+              m_dataset(dataset),
+              m_color(color)
+          {
+            assert(m_dataset);
+          }
+
+          te::map::AbstractLayerPtr m_layer; //!< The layer whose objects must be highlighted.
+          te::da::DataSet* m_dataset;        //!< The dataset that represents the objects that must be highlighted.
+          QColor m_color;                    //!< The color used to highlight.
         };
 
         /*!

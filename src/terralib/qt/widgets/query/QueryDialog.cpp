@@ -249,11 +249,15 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
     std::auto_ptr<te::da::DataSet> dataset = layer->getData(e);
     assert(dataset.get());
 
+    emit highlightLayerObjects(layer, dataset.get(), QColor(255, 255, 0, 128));
+
+    dataset->moveBeforeFirst();
+
     // Generates the oids
     te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
 
     layer->select(oids);
-    emit layerSelectedObjectsChanged(layer);
+    //emit layerSelectedObjectsChanged(layer);
 
     setCursor(Qt::ArrowCursor);
 

@@ -55,6 +55,7 @@
 
 // STL
 #include <cassert>
+#include <memory>
 #include <utility>
 
 te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
@@ -232,7 +233,7 @@ void te::qt::af::MapDisplay::onCoordTracked(QPointF& coordinate)
   ApplicationController::getInstance().broadcast(&e);
 
   if(m_zoomInDisplay)
-    m_zoomInDisplay->drawCursorPosition((double) coordinate.rx(), (double)coordinate.ry());
+    m_zoomInDisplay->drawCursorPosition(static_cast<double>(coordinate.x()), static_cast<double>(coordinate.ry()));
 }
 
 void te::qt::af::MapDisplay::onDrawLayersFinished(const QMap<QString, QString>& /*errors*/)
@@ -262,6 +263,14 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
       painter.end();
 
       drawLayersSelection(ApplicationController::getInstance().getProject()->getSingleLayers());
+    }
+    break;
+
+    case te::qt::af::evt::HIGHLIGHT_LAYER_OBJECTS:
+    {
+      te::qt::af::evt::HighlightLayerObjects* highlightEvent = static_cast<te::qt::af::evt::HighlightLayerObjects*>(e);
+      drawDataSet(highlightEvent->m_dataset, highlightEvent->m_layer->getSRID(), highlightEvent->m_color);
+      m_display->repaint();
     }
     break;
 
@@ -312,11 +321,6 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
   if(oids == 0 || oids->size() == 0)
     return;
 
-  bool needRemap = false;
-
-  if((layer->getSRID() != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (layer->getSRID() != m_display->getSRID()))
-    needRemap = true;
-
   // Try to retrieve the layer selection
   std::auto_ptr<te::da::DataSet> selected;
   try
@@ -329,7 +333,23 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
     return;
   }
 
-  std::size_t gpos = te::da::GetFirstPropertyPos(selected.get(), te::dt::GEOMETRY_TYPE);
+  drawDataSet(selected.get(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+}
+
+void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, int srid, const QColor& color)
+{
+  assert(dataset);
+  assert(color.isValid());
+
+  if(srid == TE_UNKNOWN_SRS && m_display->getSRID() != TE_UNKNOWN_SRS)
+    return;
+
+  bool needRemap = false;
+
+  if((srid != TE_UNKNOWN_SRS) && (m_display->getSRID() != TE_UNKNOWN_SRS) && (srid != m_display->getSRID()))
+    needRemap = true;
+
+  std::size_t gpos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE);
 
   QPixmap* content = m_display->getDisplayPixmap();
 
@@ -340,20 +360,20 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
 
   te::gm::GeomType currentGeomType = te::gm::UnknownGeometryType;
 
-  while(selected->moveNext())
+  while(dataset->moveNext())
   {
-    std::auto_ptr<te::gm::Geometry> g(selected->getGeometry(gpos));
+    std::auto_ptr<te::gm::Geometry> g(dataset->getGeometry(gpos));
 
     if(needRemap)
     {
-      g->setSRID(layer->getSRID());
+      g->setSRID(srid);
       g->transform(m_display->getSRID());
     }
 
     if(currentGeomType != g->getGeomTypeId())
     {
       currentGeomType = g->getGeomTypeId();
-      te::qt::widgets::Config2DrawLayerSelection(&canvas, ApplicationController::getInstance().getSelectionColor(), currentGeomType);
+      te::qt::widgets::Config2DrawLayerSelection(&canvas, color, currentGeomType);
     }
 
     canvas.draw(g.get());

@@ -134,9 +134,9 @@
           </widget>
          </item>
          <item row="0" column="3">
-          <widget class="QPushButton" name="m_cancelPushButton">
+          <widget class="QPushButton" name="m_closePushButton">
            <property name="text">
-            <string>Cancel</string>
+            <string>Close</string>
            </property>
           </widget>
          </item>
@@ -151,24 +151,24 @@
  <tabstops>
   <tabstop>m_inputLayerComboBox</tabstop>
   <tabstop>m_applyPushButton</tabstop>
-  <tabstop>m_cancelPushButton</tabstop>
+  <tabstop>m_closePushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
  </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>m_cancelPushButton</sender>
+   <sender>m_closePushButton</sender>
    <signal>clicked()</signal>
    <receiver>QueryDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>516</x>
-     <y>164</y>
+     <x>507</x>
+     <y>149</y>
     </hint>
     <hint type="destinationlabel">
-     <x>514</x>
-     <y>176</y>
+     <x>302</x>
+     <y>138</y>
     </hint>
    </hints>
   </connection>

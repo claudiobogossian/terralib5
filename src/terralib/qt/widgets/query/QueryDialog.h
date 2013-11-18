@@ -35,12 +35,19 @@
 #include <memory>
 
 // Qt
+#include <QtGui/QColor>
 #include <QtGui/QDialog>
 
 namespace Ui { class QueryDialogForm; }
 
 namespace te
 {
+// Forward declaration
+  namespace da
+  {
+    class DataSet;
+  }
+
   namespace qt
   {
     namespace widgets
@@ -85,6 +92,9 @@ namespace te
 
           /*! This signal is emitted when the layer selection changed. */
           void layerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
+
+          /*! This signal is emitted when the layer objects must be highlighted. */
+          void highlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color);
 
         private:
 

@@ -1264,7 +1264,11 @@ void te::qt::af::BaseApplication::onQueryLayerTriggered()
   if(m_project)
     dlg->setList(m_project->getTopLayers());
 
-  connect(dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)), SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));
+  connect(dlg, SIGNAL(highlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)),
+               SLOT(onHighlightLayerObjects(const te::map::AbstractLayerPtr&, te::da::DataSet*, const QColor&)));
+
+  /*connect(dlg, SIGNAL(layerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)),
+                 SLOT(onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr&)));*/
 
   dlg->show();
 }
@@ -1440,6 +1444,15 @@ void te::qt::af::BaseApplication::onLayerSelectedObjectsChanged(const te::map::A
   assert(layer.get());
 
   te::qt::af::evt::LayerSelectedObjectsChanged e(layer);
+  ApplicationController::getInstance().broadcast(&e);
+}
+
+void te::qt::af::BaseApplication::onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color)
+{
+  assert(layer.get());
+  assert(dataset);
+
+  te::qt::af::evt::HighlightLayerObjects e(layer, dataset, color);
   ApplicationController::getInstance().broadcast(&e);
 }
 
