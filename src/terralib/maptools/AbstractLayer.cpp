@@ -242,6 +242,13 @@ void te::map::AbstractLayer::select(te::da::ObjectIdSet* oids)
     return;
   }
 
+  if(m_selected->size() == 0)
+  {
+    delete m_selected;
+    m_selected = oids;
+    return;
+  }
+
   assert(m_selected);
 
   m_selected->Union(oids);
@@ -261,6 +268,9 @@ void te::map::AbstractLayer::clearSelected()
 void te::map::AbstractLayer::deselect(const te::da::ObjectIdSet* oids)
 {
   assert(m_selected);
+
+  if(m_selected->size() == 0)
+    return;
 
   m_selected->difference(oids);
 }
