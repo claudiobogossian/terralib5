@@ -251,13 +251,15 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
 
     emit highlightLayerObjects(layer, dataset.get(), QColor(255, 255, 0, 128));
 
-    dataset->moveBeforeFirst();
+    if(m_ui->m_addResult2LayerSelectionCheckBox->isChecked())
+    {
+      // Generates the oids
+      dataset->moveBeforeFirst();
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
 
-    // Generates the oids
-    te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
-
-    layer->select(oids);
-    //emit layerSelectedObjectsChanged(layer);
+      layer->select(oids);
+      emit layerSelectedObjectsChanged(layer);
+    }
 
     setCursor(Qt::ArrowCursor);
 
