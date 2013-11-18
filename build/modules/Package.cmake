@@ -1,4 +1,3 @@
-set ( CPACK_PACKAGE_DESCRIPTION_SUMMARY "TerraLib / TerraView binary instalation." )
 set ( CPACK_PACKAGE_VENDOR "www.dpi.inpe.br" )
 set ( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/../README" )
 set ( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/../COPYING" )
@@ -7,11 +6,20 @@ set ( CPACK_PACKAGE_VERSION_MINOR "${TE_MINOR_VERSION}" )
 set ( CPACK_PACKAGE_VERSION_PATCH "${TE_PATCH_VERSION}" )
 set ( CPACK_PACKAGE_VERSION "${TERRALIB_STRING_VERSION}" )
 set ( CPACK_PACKAGE_CONTACT "terralib-devel@dpi.inpe.br" )
-set ( CPACK_PACKAGE_NAME "terralib" )
-set ( CPACK_PACKAGE_INSTALL_DIRECTORY "terralib-${CPACK_PACKAGE_VERSION}" )
 set ( CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/../resources/images/bmp\\\\terralib-installer-logo-large.bmp" )
 
+if(${BUILD_TERRAVIEW})
+  set ( CPACK_PACKAGE_DESCRIPTION_SUMMARY "TerraView binary instalation." )
+  set ( CPACK_PACKAGE_NAME "terraview" )
+  set ( CPACK_PACKAGE_INSTALL_DIRECTORY "terraview-${CPACK_PACKAGE_VERSION}" )
+else()
+  set ( CPACK_PACKAGE_DESCRIPTION_SUMMARY "TerraLib binary instalation." )
+  set ( CPACK_PACKAGE_NAME "terralib" )
+  set ( CPACK_PACKAGE_INSTALL_DIRECTORY "terralib-${CPACK_PACKAGE_VERSION}" )
+endif()
+
 getPackageName(pname)
+
 set ( CPACK_PACKAGE_FILE_NAME ${pname} )
 
 if(WIN32)
@@ -58,6 +66,10 @@ set ( CPACK_COMPONENT_PLUGINS_DESCRIPTION "Plugins for TerraLib-based applicatio
 set ( CPACK_COMPONENT_PLUGINS_GROUP "tlib")
 set ( CPACK_COMPONENT_PLUGINS_INSTALL_TYPES Developer Full )
 
-set ( CPACK_COMPONENTS_ALL HEADERS BINARIES LIBRARIES PLUGINS CMAKE DOCS)
+if(${BUILD_TERRAVIEW})
+  set ( CPACK_COMPONENTS_ALL BINARIES PLUGINS)
+else()
+  set ( CPACK_COMPONENTS_ALL HEADERS BINARIES LIBRARIES PLUGINS CMAKE DOCS)
+endif()
 
 include (CPack)

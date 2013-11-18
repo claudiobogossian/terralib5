@@ -1,7 +1,7 @@
 set (ROOT "..")
 set (TE_SCHEMA_LOCATION "${ROOT}/schemas/terralib")
 set (TVIEW_OUT_DIR "${ROOT}/bin")
-set (TVIEW_RESOURCE_FILE "terraview.rcc")
+set (TVIEW_RESOURCE_FILE "${ROOT}/help/help.qhc")
 set (TE_ICONS_THEME_PATH "${ROOT}/resources/themes")
 set (TE_ABOUT_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png")
 set (TE_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png")
