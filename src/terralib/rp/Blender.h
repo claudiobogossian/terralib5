@@ -47,7 +47,6 @@ namespace te
       \class Blender
       \brief Blended pixel value calculation for two overlaped rasters.
       \details The overlap between the two images is modeled by the given geometric transformation direct mapping input raster 1 indexed coords (line, column) to input raster 2 indexed coords.
-      \ingroup RPModule
      */
     class TERPEXPORT Blender : public boost::noncopyable
     {

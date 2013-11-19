@@ -18,11 +18,6 @@
  */
 
 /*!
-  \defgroup MixtureModelAlgorithm Raster classification.
-  \ingroup RPAlgorithms
- */
-
-/*!
   \file terralib/rp/MixtureModel.h
 
   \brief Raster decomposition using mixture model.
@@ -57,8 +52,6 @@ namespace te
       \note The created output image will be written to the raster instance
       pointed by m_outRasterPtr (in this case the output band must also be
       passed by m_outRasterBand).
-
-      \ingroup MixtureModelAlgorithm
     */
 
     class TERPEXPORT MixtureModel : public Algorithm

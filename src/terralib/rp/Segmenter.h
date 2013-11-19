@@ -65,7 +65,6 @@ namespace te
       the data set name must be supplied - m_outDataSetName ).      
       \sa te::rp::Segmenter::Parameters For detailed parameters description.
       \sa te::rp::SegmenterStrategy For detailed parameters description.
-      \ingroup SegmentationAlgorithms
      */
     class TERPEXPORT Segmenter : public Algorithm
     {
