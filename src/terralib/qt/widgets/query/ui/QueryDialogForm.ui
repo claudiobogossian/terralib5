@@ -6,74 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>567</width>
-    <height>177</height>
+    <width>265</width>
+    <height>215</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Query</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_6">
+  <layout class="QGridLayout" name="gridLayout_8">
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_5">
+    <layout class="QGridLayout" name="gridLayout_7">
      <item row="0" column="0">
-      <widget class="QFrame" name="frame_2">
-       <property name="styleSheet">
-        <string notr="true">QWidget { background: white }</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Sunken</enum>
-       </property>
-       <layout class="QGridLayout" name="gridLayout" columnstretch="1,0">
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <property name="horizontalSpacing">
-         <number>9</number>
-        </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="m_datasourceTypeTitleLabel">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>The query operation creates a selection over a selected layer.</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="m_imgLabel">
-          <property name="minimumSize">
-           <size>
-            <width>112</width>
-            <height>48</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>48</width>
-            <height>48</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Imagem</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
         <string>Input Layer</string>
@@ -85,7 +28,7 @@
        </layout>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="1" column="0">
       <widget class="QWidget" name="m_widget" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -95,52 +38,109 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="0">
+      <widget class="QGroupBox" name="m_optionsGroupBox">
+       <property name="title">
+        <string>Options</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="m_addResult2LayerSelectionCheckBox">
+            <property name="text">
+             <string>Add the query results to layer selection</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,1">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="m_highlightLabel">
+                <property name="text">
+                 <string>Highlight:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QFrame" name="m_colorPickerFrame">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item row="3" column="0">
-      <layout class="QGridLayout" name="gridLayout_3">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <widget class="QPushButton" name="m_helpPushButton">
+         <property name="text">
+          <string>Help</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0">
-          <widget class="QPushButton" name="m_helpPushButton">
-           <property name="text">
-            <string>Help</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="2">
-          <widget class="QPushButton" name="m_applyPushButton">
-           <property name="text">
-            <string>Apply</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QPushButton" name="m_cancelPushButton">
-           <property name="text">
-            <string>Cancel</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+       <item row="0" column="1">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="m_applyPushButton">
+         <property name="text">
+          <string>Apply</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="m_closePushButton">
+         <property name="text">
+          <string>Close</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -151,24 +151,24 @@
  <tabstops>
   <tabstop>m_inputLayerComboBox</tabstop>
   <tabstop>m_applyPushButton</tabstop>
-  <tabstop>m_cancelPushButton</tabstop>
+  <tabstop>m_closePushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
  </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>m_cancelPushButton</sender>
+   <sender>m_closePushButton</sender>
    <signal>clicked()</signal>
    <receiver>QueryDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>516</x>
-     <y>164</y>
+     <x>507</x>
+     <y>149</y>
     </hint>
     <hint type="destinationlabel">
-     <x>514</x>
-     <y>176</y>
+     <x>302</x>
+     <y>138</y>
     </hint>
    </hints>
   </connection>

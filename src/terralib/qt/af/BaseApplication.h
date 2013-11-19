@@ -37,15 +37,20 @@
 #include <boost/noncopyable.hpp>
 
 // Qt
+#include <QtGui/QColor>
 #include <QtGui/QLineEdit>
 #include <QtGui/QMainWindow>
 
-// Forward declarations
 namespace te
 {
+// Forward declaration
+  namespace da
+  {
+    class DataSet;
+  }
+
   namespace qt
   {
-
     namespace af
     {
 // Forward declarations
@@ -178,6 +183,8 @@ namespace te
           void onFullScreenToggled(bool checked);
 
           void onLayerSelectedObjectsChanged(const te::map::AbstractLayerPtr& layer);
+
+          void onHighlightLayerObjects(const te::map::AbstractLayerPtr& layer, te::da::DataSet* dataset, const QColor& color);
 
           void onLayerExplorerVisibilityChanged(bool visible);
 

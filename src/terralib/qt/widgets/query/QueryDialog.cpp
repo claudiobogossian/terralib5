@@ -32,6 +32,7 @@
 #include "../../../dataaccess/query/QueryCapabilities.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../maptools/DataSetLayer.h"
+#include "../utils/ColorPickerToolButton.h"
 #include "QueryDialog.h"
 #include "WhereClauseWidget.h"
 #include "ui_QueryDialogForm.h"
@@ -56,7 +57,17 @@ te::qt::widgets::QueryDialog::QueryDialog(QWidget* parent, Qt::WindowFlags f)
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
   m_whereClauseWidget.reset( new te::qt::widgets::WhereClauseWidget(m_ui->m_widget));
   layout->addWidget(m_whereClauseWidget.get());
-  layout->setContentsMargins(0,0,0,0);
+  layout->setContentsMargins(0, 0, 0, 0);
+
+  // Color Picker
+  m_colorPicker = new te::qt::widgets::ColorPickerToolButton(this);
+  m_colorPicker->setFixedSize(70, 24);
+  m_colorPicker->setColor(QColor(255, 255, 0, 128));
+
+  // Adjusting...
+  QGridLayout* colorPickerLayout = new QGridLayout(m_ui->m_colorPickerFrame);
+  colorPickerLayout->setContentsMargins(0, 0, 0, 0);
+  colorPickerLayout->addWidget(m_colorPicker);
 
   // Signals¨& slots
   connect(m_ui->m_inputLayerComboBox, SIGNAL(activated(QString)), this, SLOT(onInputLayerActivated(QString)));
@@ -249,11 +260,17 @@ void te::qt::widgets::QueryDialog::onApplyPushButtonClicked()
     std::auto_ptr<te::da::DataSet> dataset = layer->getData(e);
     assert(dataset.get());
 
-    // Generates the oids
-    te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+    emit highlightLayerObjects(layer, dataset.get(), m_colorPicker->getColor());
 
-    layer->select(oids);
-    emit layerSelectedObjectsChanged(layer);
+    if(m_ui->m_addResult2LayerSelectionCheckBox->isChecked())
+    {
+      // Generates the oids
+      dataset->moveBeforeFirst();
+      te::da::ObjectIdSet* oids = te::da::GenerateOIDSet(dataset.get(), schema.get());
+
+      layer->select(oids);
+      emit layerSelectedObjectsChanged(layer);
+    }
 
     setCursor(Qt::ArrowCursor);
 

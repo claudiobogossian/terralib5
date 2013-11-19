@@ -166,8 +166,12 @@ std::auto_ptr<te::da::ObjectIdSet> te::da::SpatialQueryProcessor::getOIDSet(Data
   GetEmptyOIDSet(type.get(), oids);
   assert(oids);
 
+  std::vector<te::gm::Geometry*> geomRestrictions;
   for(std::size_t i = 0; i < restrictions.size(); ++i)
-    oids->Union(getOIDSet(t, baseSelect, restrictions[i], type.get()));
+    geomRestrictions.push_back(restrictions[i]->m_geometry);
+
+  for(std::size_t i = 0; i < restrictions.size(); ++i)
+    oids->Union(getOIDSet(t, baseSelect, restrictions[i], type.get(), geomRestrictions));
 
   return std::auto_ptr<te::da::ObjectIdSet>(oids);
 }
@@ -213,14 +217,19 @@ std::auto_ptr<te::da::ObjectIdSet> te::da::SpatialQueryProcessor::getOIDSet(Data
   GetEmptyOIDSet(type.get(), oids);
   assert(oids);
 
+  std::vector<te::gm::Geometry*> geomRestrictions;
   for(std::size_t i = 0; i < restrictions.size(); ++i)
-    oids->Union(getOIDSet(t, baseSelect, restrictions[i], type.get()));
+    geomRestrictions.push_back(restrictions[i]->m_geometry);
+
+  for(std::size_t i = 0; i < restrictions.size(); ++i)
+    oids->Union(getOIDSet(t, baseSelect, restrictions[i], type.get(), geomRestrictions));
 
   return std::auto_ptr<te::da::ObjectIdSet>(oids);
 }
 
 te::da::ObjectIdSet* te::da::SpatialQueryProcessor::getOIDSet(DataSourceTransactor* t, Select& baseSelect,
-                                                              SpatialRestriction* restriction, const DataSetType* type)
+                                                              SpatialRestriction* restriction, const DataSetType* type,
+                                                              const std::vector<te::gm::Geometry*>& geomRestrictions)
 {
   assert(t);
   assert(restriction);
@@ -271,6 +280,19 @@ te::da::ObjectIdSet* te::da::SpatialQueryProcessor::getOIDSet(DataSourceTransact
     }
 
     assert(currentGeom.get());
+
+    bool equalsToRestriction = false;
+    for(std::size_t i = 0; i < geomRestrictions.size(); ++i)
+    {
+      if(currentGeom->equals(geomRestrictions[i]))
+      {
+        equalsToRestriction = true;
+        break;
+      }
+    }
+
+    if(equalsToRestriction)
+      continue;
 
     if(!te::gm::SatisfySpatialRelation(currentGeom.get(), geomRestriction, restriction->m_type))
       continue;

@@ -16,12 +16,6 @@
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
  */
-
-/*!
-  \defgroup ClassifierAlgorithm Raster classification.
-  \ingroup RPAlgorithms
- */
-
 /*!
   \file terralib/rp/Classifier.h
 
@@ -64,8 +58,6 @@ namespace te
       \note The created label image will be written to the raster instance
       pointed by m_outRasterPtr (in this case the output band must also be
       passed by m_outRasterBand).
-
-      \ingroup ClassifierAlgorithm
     */
 
     class TERPEXPORT Classifier : public Algorithm

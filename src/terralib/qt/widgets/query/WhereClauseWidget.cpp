@@ -389,7 +389,8 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
         geom->transform(m_srid);
       }
 
-      valueStr = geom->toString();
+      //valueStr = geom->toString();
+      valueStr = tr("Geometry Value").toStdString();
 
       //create expression
       te::da::LiteralGeom* lGeom = new te::da::LiteralGeom(geom);
@@ -400,7 +401,7 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
       std::string connector = "";
 
       if(count < dsSize - 1)
-        connector = "or";
+        connector = tr("or").toStdString();
 
       ++count;
 
