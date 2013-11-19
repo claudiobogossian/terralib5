@@ -24,12 +24,13 @@
  */
 
 // TerraLib
-#include "GroupingAlgorithms.h"
 #include "../common/StringUtils.h"
 #include "../datatype/Enums.h"
+#include "GroupingAlgorithms.h"
 
 // STL
 #include <algorithm>
+#include <stdlib.h>
 
 // Boost
 #include <boost/cstdint.hpp>
