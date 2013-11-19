@@ -243,7 +243,7 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
 
    te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(m_dsConverter->getResult());
 
-   if(gp)
+   if(gp && !m_ui->m_sridLineEdit->text().isEmpty())
      gp->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
 
 
