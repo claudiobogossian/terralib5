@@ -53,7 +53,7 @@ namespace te
          //The struct used to sort the elements of the HistogramValues map
           struct CompareHistogramInterval
           {
-              bool operator()(te::dt::AbstractData* v1, te::dt::AbstractData* v2)
+              bool operator()(te::dt::AbstractData* v1, te::dt::AbstractData* v2) const
               {
                   int type = v1->getTypeCode();
                   switch(type) 
