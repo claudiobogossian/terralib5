@@ -347,6 +347,9 @@ class TablePopupFilter : public QObject
           }
         }
         break;
+
+        default:
+          break;
       }
 
       return QObject::eventFilter(watched, event);
