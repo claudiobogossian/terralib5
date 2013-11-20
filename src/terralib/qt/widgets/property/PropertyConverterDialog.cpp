@@ -49,8 +49,6 @@ te::qt::widgets::PropertyConverterDialog::PropertyConverterDialog(QWidget* paren
 
   buidTypeMap();
 
-  buildConverterMap();
-
   //build form
   m_propWidget = new te::qt::widgets::NewPropertyWidget(m_ui->m_widget);
 
@@ -65,7 +63,6 @@ te::qt::widgets::PropertyConverterDialog::PropertyConverterDialog(QWidget* paren
 te::qt::widgets::PropertyConverterDialog::~PropertyConverterDialog()
 {
   m_typeMap.clear();
-  m_converterMap.clear();
 }
 
 void te::qt::widgets::PropertyConverterDialog::set(te::da::DataSetType* dsType)
@@ -124,7 +121,7 @@ void te::qt::widgets::PropertyConverterDialog::adapt(te::da::DataSetTypeConverte
   }
 
   //adapt
-  converter->add(names, (te::dt::Property*)p, m_converterMap[converterName]);
+  converter->add(names, (te::dt::Property*)p, converterName);
 }
 
 void te::qt::widgets::PropertyConverterDialog::onOkPushButtonClicked()
@@ -162,31 +159,4 @@ void te::qt::widgets::PropertyConverterDialog::buidTypeMap()
    m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT16_TYPE, tr("U Int 16").toStdString()));
    m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT32_TYPE, tr("U Int 32").toStdString()));
    m_typeMap.insert(std::map<int, std::string>::value_type(te::dt::UINT64_TYPE, tr("U Int 64").toStdString()));
-}
-
-void te::qt::widgets::PropertyConverterDialog::buildConverterMap()
-{
-  m_converterMap.clear();
-
-  m_converterMap.insert(std::map<std::string, te::da::AttributeConverter>::value_type(tr("Generic Attribute Converter").toStdString(), te::da::GenericAttributeConverter));
-  m_converterMap.insert(std::map<std::string, te::da::AttributeConverter>::value_type(tr("X and Y to Point Converter").toStdString(), te::da::XYToPointConverter));
-  m_converterMap.insert(std::map<std::string, te::da::AttributeConverter>::value_type(tr("X, Y and Z to Point Converter").toStdString(), te::da::XYZToPointConverter));
-  m_converterMap.insert(std::map<std::string, te::da::AttributeConverter>::value_type(tr("X, Y and M to Point Converter").toStdString(), te::da::XYMToPointConverter));
-  m_converterMap.insert(std::map<std::string, te::da::AttributeConverter>::value_type(tr("X, Y, Z and M to Point Converter").toStdString(), te::da::XYZMToPointConverter));
-  m_converterMap.insert(std::map<std::string, te::da::AttributeConverter>::value_type(tr("Point to X Converter").toStdString(), te::da::PointToXConverter));
-  m_converterMap.insert(std::map<std::string, te::da::AttributeConverter>::value_type(tr("Point to Y Converter").toStdString(), te::da::PointToYConverter));
-  m_converterMap.insert(std::map<std::string, te::da::AttributeConverter>::value_type(tr("Point to Z Converter").toStdString(), te::da::PointToZConverter));
-  m_converterMap.insert(std::map<std::string, te::da::AttributeConverter>::value_type(tr("Point to M Converter").toStdString(), te::da::PointToMConverter));
-  m_converterMap.insert(std::map<std::string, te::da::AttributeConverter>::value_type(tr("Tuple to String Converter").toStdString(), te::da::TupleToStringConverter));
-
-
-  m_ui->m_comboBox->clear();
-
-  std::map<std::string, te::da::AttributeConverter>::iterator it = m_converterMap.begin();
-
-  while (it != m_converterMap.end())
-  {
-    m_ui->m_comboBox->addItem(it->first.c_str());
-    ++it;
-  }
 }

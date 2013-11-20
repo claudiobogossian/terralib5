@@ -217,7 +217,7 @@ void te::map::DataSetAdapterLayer::draw(Canvas* canvas, const te::gm::Envelope& 
   renderer->draw(this, canvas, bbox, srid);
 }
 
-te::da::DataSetTypeConverter* te::map::DataSetAdapterLayer::getConverter()
+te::da::DataSetTypeConverter* te::map::DataSetAdapterLayer::getConverter() const
 {
   return m_converter.get();
 }

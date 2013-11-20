@@ -111,7 +111,7 @@ namespace te
           \return The he DataSetTypeConverter.
           \note The caller will not take ownership of the returned pointer.
         */
-        te::da::DataSetTypeConverter* getConverter();
+        te::da::DataSetTypeConverter* getConverter() const;
 
         /*!
           \brief

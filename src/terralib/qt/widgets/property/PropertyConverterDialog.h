@@ -84,13 +84,10 @@ namespace te
 
           void buidTypeMap();
 
-          void buildConverterMap();
-
         private:
 
           std::auto_ptr<Ui::PropertyConverterDialogForm> m_ui;
           std::map<int, std::string> m_typeMap;
-          std::map<std::string, te::da::AttributeConverter> m_converterMap;
           te::qt::widgets::NewPropertyWidget* m_propWidget;
           te::da::DataSetType* m_dsType;
       }; 
