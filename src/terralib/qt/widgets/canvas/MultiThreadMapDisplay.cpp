@@ -150,7 +150,8 @@ void te::qt::widgets::MultiThreadMapDisplay::showFeedback(const QImage& image)
 {
   QPainter painter(m_displayPixmap);
   painter.setOpacity(0.1); // To improve user visual experience!
-  painter.drawImage(0, 0, image);
+  //painter.drawImage(0, 0, image);
+  painter.drawPixmap(0, 0, QPixmap::fromImage(image));
   repaint(); // or update()? Which is the best here?!
 }
 
@@ -160,7 +161,8 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
   if(m_images.size() != m_visibleLayers.size())
   {
     QPainter painter(m_displayPixmap);
-    painter.drawImage(0, 0, image);
+    //painter.drawImage(0, 0, image);
+    painter.drawPixmap(0, 0, QPixmap::fromImage(image));
     painter.end();
 
     repaint();
@@ -174,7 +176,8 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
 
   std::map<int, QImage>::iterator it;
   for(it = m_images.begin(); it != m_images.end(); ++it)
-    painter.drawImage(0, 0, it->second);
+    painter.drawPixmap(0, 0, QPixmap::fromImage(it->second));
+    //painter.drawImage(0, 0, it->second);
 
   painter.end();
 
