@@ -206,7 +206,7 @@ std::auto_ptr<te::da::DataSetTypeConverter> te::qt::widgets::DatapPropertiesWidg
     if(!m_ui->m_sridLineEdit->text().isEmpty())
       newGeom->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
 
-    m_dsConverter->add(names, newGeom, te::da::XYToPointConverter);
+    m_dsConverter->add(names, newGeom, "XYToPointConverter");//te::da::XYToPointConverter);
 
   }
 

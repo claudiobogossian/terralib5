@@ -142,6 +142,15 @@ namespace te
         void getConvertedProperties(std::size_t propertyPos, std::vector<std::size_t>& convertedPropertyPos);
 
         /*!
+          \brief This method tells which Attribute Converter was used in the porperty position.
+
+          \param propertyPos A property position of the DataSetTypeConverter.
+          
+          \return Attribute Converter name.
+        */
+        std::string getConverterName(std::size_t propertyPos);
+
+        /*!
           \brief This method removes a property of DataSetTypeConverter.
 
           \param propertyName The property name of the DataSetTypeConverter that will be removed.
@@ -160,36 +169,36 @@ namespace te
 
           \param propertyName The property name that will be converted.
           \param p The converted property.
-          \param conv The function that will be used to do the property values conversion.
+          \param attributeConverterName The function name that will be used to do the property values conversion.
         */
-        void add(const std::string& propertyName, te::dt::Property* p, AttributeConverter conv = GenericAttributeConverter);
+        void add(const std::string& propertyName, te::dt::Property* p, const std::string& attributeConverterName = "GenericAttributeConverter");
 
         /*!
           \brief It adds a conversions to the given property of the input data set type.
 
           \param propertyPos The property position that will be converted.
           \param p The converted property.
-          \param conv The function that will be used to do the property values conversion.
+          \param attributeConverterName The function name that will be used to do the property values conversion.
         */
-        void add(std::size_t propertyPos, te::dt::Property* p, AttributeConverter conv = GenericAttributeConverter);
+        void add(std::size_t propertyPos, te::dt::Property* p, const std::string& attributeConverterName = "GenericAttributeConverter");
 
         /*!
           \brief It adds a conversion to the given properties of the input data set type.
 
           \param propertyNames The property names that will be converted.
           \param p The converted property.
-          \param conv The function that will be used to do the attribute values conversion.
+          \param attributeConverterName The function name that will be used to do the property values conversion.
         */
-        void add(const std::vector<std::string>& propertyNames, te::dt::Property* p, AttributeConverter conv);
+        void add(const std::vector<std::string>& propertyNames, te::dt::Property* p, const std::string& attributeConverterName = "GenericAttributeConverter");
 
         /*!
           \brief It adds a conversion to the given properties of the input data set type.
 
           \param propertyPos The property positions that will be converted.
           \param p The converted property.
-          \param conv The function that will be used to do the attribute values conversion.
+          \param attributeConverterName The function name that will be used to do the property values conversion.
         */
-        void add(const std::vector<std::size_t>& propertyPos, te::dt::Property* p, AttributeConverter conv);
+        void add(const std::vector<std::size_t>& propertyPos, te::dt::Property* p, const std::string& attributeConverterName = "GenericAttributeConverter");
 
         /*!
           \brief Static method that verifies if the given data set type need an converter based on given data source capabilities.
@@ -217,6 +226,7 @@ namespace te
         DataSetType* m_outDataSetType;                             //!< The converted DataSetType.
         std::vector<std::vector<std::size_t> > m_propertyIndexes;  //!< A vector that stores the converted property indexes.
         std::vector<AttributeConverter> m_converters;              //!< A vector that stores the attribute converters functions.
+        std::vector<std::string> m_functionsNames;                //!< A vector that stores the attribute converters functions names.
         std::vector<std::size_t> m_convertedProperties;            //!< Internal vector to count the references to converted properties.
     };
 
