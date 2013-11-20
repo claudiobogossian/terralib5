@@ -52,8 +52,6 @@ namespace te
         
         \note The parameters order: argv[ 0 ]-Input array, argv[ 1 ]-minSegmentSize,
         argv[ 2 ]-segmentsSimilarityThreshold
-        
-        \ingroup IDLRPAlgorithms
         */
       IDL_VPTR RegionGrowingSegmenter(int argc, IDL_VPTR *argv, char *argk );
     }
