@@ -18,19 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/VisualDockWidget.h
+  \file terralib/qt/widgets/se/StyleDockWidget.h
 
-  \brief A dock widget used control the vectorial visual using se elements
-      and a property browser to show its properties.
+  \brief A dock widget used control the geographic data style using SE elements and a property browser to show its properties.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_VISUALDOCKWIDGET_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_VISUALDOCKWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_STYLEDOCKWIDGET_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_STYLEDOCKWIDGET_H
 
 // TerraLib
-#include "../Config.h"
-
 #include "../../../se.h"
+#include "../Config.h"
 
 // Qt
 #include <QtGui/QDockWidget>
@@ -50,16 +48,15 @@ namespace te
       class PolygonSymbolizerProperty;
       class LineSymbolizerProperty;
       class PointSymbolizerProperty;
-      class RasterVisualWidget;
+      class RasterSymbolizerWidget;
       class StyleControllerWidget;
 
       /*!
-        \class VisualDockWidget
+        \class StyleDockWidget
 
-        \brief A dock widget used control the vectorial visual using se elements
-            and a property browser to show its properties.
+        \brief A dock widget used control the geographic data style using SE elements and a property browser to show its properties.
       */
-      class TEQTWIDGETSEXPORT VisualDockWidget : public QDockWidget
+      class TEQTWIDGETSEXPORT StyleDockWidget : public QDockWidget
       {
         Q_OBJECT
 
@@ -70,25 +67,23 @@ namespace te
            */
           //@{
 
-          /*! \brief Constructs a RasterVisualDockWidget. */
-          VisualDockWidget(const QString & title, QWidget * parent = 0, Qt::WindowFlags flags = 0);
+          /*! \brief Constructs a StyleDockWidget. */
+          StyleDockWidget(const QString& title, QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
           /*! \brief Destructor. */
-          ~VisualDockWidget();
+          ~StyleDockWidget();
 
           //@}
 
-
         public:
+
           /*!
             \brief Sets a style element to this widget.
 
             \param style A valid style element.
-
             \param layer A valid layer element.
 
-            \note The widget will NOT take the ownership of the given fill.
-            \note The widget will be update based on given style parameters.
+            \note The widget will NOT take the ownership of the given pointers.
           */
           void setStyle(te::se::Style* style, te::map::AbstractLayer* layer);
 
@@ -96,7 +91,6 @@ namespace te
 
         protected:
 
-          /*! \brief Updates the widget form based on internal mark element. */
           void updateUi();
 
           QWidget* buildUi();
@@ -121,10 +115,10 @@ namespace te
 
           QTabWidget* m_tabWidget;
 
-          te::qt::widgets::PolygonSymbolizerProperty* m_polyWidget;   //!< Visual widget.
-          te::qt::widgets::LineSymbolizerProperty* m_lineWidget;      //!< Visual widget.
-          te::qt::widgets::PointSymbolizerProperty* m_pointWidget;    //!< Visual widget.
-          te::qt::widgets::RasterVisualWidget* m_visualWidget;        //!< Visual widget.
+          te::qt::widgets::PolygonSymbolizerProperty* m_polyWidget;
+          te::qt::widgets::LineSymbolizerProperty* m_lineWidget;
+          te::qt::widgets::PointSymbolizerProperty* m_pointWidget;
+          te::qt::widgets::RasterSymbolizerWidget* m_rasterWidget;
           te::qt::widgets::StyleControllerWidget* m_styleController;
 
           te::map::AbstractLayer* m_currentLayer;                     //!< Current Layer pointer (used for raster symbolizer information)
@@ -134,4 +128,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_VISUALDOCKWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_STYLEDOCKWIDGET_H

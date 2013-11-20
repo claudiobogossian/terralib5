@@ -68,7 +68,7 @@ namespace te
       class ShadedReliefWidget;
       class ImageOutlineWidget;
       class HorizontalSliderWidget;
-      class RasterVisualWidget;
+      class RasterSymbolizerWidget;
 
 
       /*!
@@ -140,7 +140,7 @@ namespace te
           te::qt::widgets::ShadedReliefWidget* m_shadedReliefWidget;            //!< Shaded Relief Widget form.
           te::qt::widgets::ImageOutlineWidget* m_imageOutlineWidget;            //!< Image Outline Widget form.
           te::qt::widgets::HorizontalSliderWidget* m_sliderWidget;              //!< Slider widget used for opacity information.
-          te::qt::widgets::RasterVisualWidget* m_visualWidget;                  //!< Visual widget.
+          te::qt::widgets::RasterSymbolizerWidget* m_rasterWidget;              //!< Raster Symbolizer widget.
 
           te::se::RasterSymbolizer* m_symbolizer;                               //!< SE Raster Symbolizer element.
           te::se::ColorMap* m_colorMap;                                         //!< SE Color Map element.

@@ -30,7 +30,11 @@
 #include "../Config.h"
 
 // Qt
+#include <QtCore/QString>
 #include <QtGui/QTreeWidget>
+
+// STL
+#include <map>
 
 namespace te
 {
@@ -91,10 +95,13 @@ namespace te
 
             \param style A valid style element.
 
-            \note The widget will NOT take the ownership of the given fill.
+            \note The widget will NOT take the ownership of the given style.
             \note The widget will be update based on given style parameters.
           */
           void setStyle(te::se::Style* style);
+
+          /*! \brief This method updates the Style Explorer. */
+          void updateStyleTree();
 
           /*!
             \brief Gets the current rule.
@@ -114,18 +121,17 @@ namespace te
           */
           te::se::Symbolizer* getCurrentSymbolizer();
 
-          void updateStyleTree();
-
           void goUpSymbolizer();
 
           void goDownSymbolizer();
 
           void setLegendIconSize(int size);
 
-        private:
+        public slots:
 
-          /*! \brief Internal method to initialize the widget. */
-          void initialize();
+          void onSymbolizerChanged(te::se::Symbolizer* symb);
+
+        private:
 
           /*! \brief Auxiliary internal method to retrieve a rule from a QTreeWidgetItem. */
           te::se::Rule* getRule(QTreeWidgetItem* item) const;
@@ -142,17 +148,11 @@ namespace te
           */
           QTreeWidgetItem* getSelectedItem() const;
 
-          int getSymbolizerIndex(te::se::Rule* r, te::se::Symbolizer* s) const;
-
           void swapSymbolizers(te::se::Rule* r, int indexFirst, int indexSecond);
 
         private slots:
 
           void onItemClicked(QTreeWidgetItem* item, int column);
-
-        public slots:
-
-          void onSymbolizerChanged(te::se::Symbolizer* symb);
 
         signals:
 
@@ -164,7 +164,8 @@ namespace te
 
         private:
 
-          te::se::Style* m_style; //!< Style element that will be explored by this widget.
+          te::se::Style* m_style;                        //!< Style element that will be explored by this widget.
+          std::map<QString, QString> m_symbolizerNames; //!< A map of symbolizers names to user interface names.
       };
 
     } // end namespace widgets

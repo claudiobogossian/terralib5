@@ -254,6 +254,9 @@ te::qt::widgets::LayerTreeView::LayerTreeView(QWidget* parent)
 {
   setAcceptDrops(true);
   setDragEnabled(true);
+
+  setDefaultDropAction(Qt::MoveAction);
+
   setRootIsDecorated(true);
   setSelectionMode(QAbstractItemView::ExtendedSelection);
 
