@@ -73,7 +73,14 @@ void te::gdal::DataSetsManager::decrementUseCounter( const std::string& uri )
     
     if( m_openURIS.find( uri ) != m_openURIS.end() )
     {
-      --( m_openURIS[ uri ] );
+      if(  m_openURIS[ uri ] == 1 )
+      {
+        m_openURIS.erase( uri );
+      }
+      else
+      {
+        --( m_openURIS[ uri ] );
+      }
     }
     
     m_mutex.unlock();
