@@ -60,8 +60,8 @@
 #include "../widgets/progress/ProgressViewerWidget.h"
 #include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/query/QueryDialog.h"
-#include "../widgets/se/VisualDockWidget.h"
 #include "../widgets/se/GroupingDialog.h"
+#include "../widgets/se/StyleDockWidget.h"
 #include "../widgets/tools/Info.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
@@ -73,7 +73,7 @@
 #include "connectors/DataSetTableDockWidget.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
-#include "connectors/SymbolizerExplorer.h"
+#include "connectors/StyleExplorer.h"
 #include "events/ApplicationEvents.h"
 #include "events/LayerEvents.h"
 #include "events/MapEvents.h"
@@ -142,7 +142,7 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_mapCursorSize(QSize(20, 20)),
     m_explorer(0),
     m_display(0),
-    m_symbolizerExplorer(0),
+    m_styleExplorer(0),
     m_project(0),
     m_progressDockWidget(0),
     m_zoomInDisplaysDockWidget(0),
@@ -194,7 +194,7 @@ te::qt::af::BaseApplication::~BaseApplication()
 {
   delete m_explorer;
   delete m_display;
-  delete m_symbolizerExplorer;
+  delete m_styleExplorer;
   delete m_project;
   delete m_progressDockWidget;
   delete m_zoomInDisplaysDockWidget;
@@ -1733,16 +1733,16 @@ void te::qt::af::BaseApplication::makeDialog()
 
 // 3. Symbolizer Explorer
 
-  te::qt::widgets::VisualDockWidget* visualDock = new te::qt::widgets::VisualDockWidget(tr("Style Explorer"), this);
-  visualDock->setObjectName("VisualDockWidget");
-  QMainWindow::addDockWidget(Qt::RightDockWidgetArea, visualDock);
-  visualDock->connect(m_viewStyleExplorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  te::qt::widgets::StyleDockWidget* stylelDock = new te::qt::widgets::StyleDockWidget(tr("Style Explorer"), this);
+  stylelDock->setObjectName("StyleDockWidget");
+  QMainWindow::addDockWidget(Qt::RightDockWidgetArea, stylelDock);
+  stylelDock->connect(m_viewStyleExplorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewStyleExplorer->setChecked(false);
-  visualDock->setVisible(false);
-  connect(visualDock, SIGNAL(visibilityChanged(bool)), this, SLOT(onStyleExplorerVisibilityChanged(bool)));
-  connect(visualDock, SIGNAL(repaintMapDisplay()), this, SLOT(onDrawTriggered()));
+  stylelDock->setVisible(false);
+  connect(stylelDock, SIGNAL(visibilityChanged(bool)), this, SLOT(onStyleExplorerVisibilityChanged(bool)));
+  connect(stylelDock, SIGNAL(repaintMapDisplay()), this, SLOT(onDrawTriggered()));
 
-  m_symbolizerExplorer = new te::qt::af::SymbolizerExplorer(visualDock, this);
+  m_styleExplorer = new te::qt::af::StyleExplorer(stylelDock, this);
 
   initStatusBar();
 
@@ -1755,7 +1755,7 @@ void te::qt::af::BaseApplication::makeDialog()
   te::qt::af::ApplicationController::getInstance().addListener(this);
   te::qt::af::ApplicationController::getInstance().addListener(m_explorer);
   te::qt::af::ApplicationController::getInstance().addListener(m_display);
-  te::qt::af::ApplicationController::getInstance().addListener(m_symbolizerExplorer);
+  te::qt::af::ApplicationController::getInstance().addListener(m_styleExplorer);
   //te::qt::af::ApplicationController::getInstance().addListener(m_viewer);
 
 // initializing connector widgets

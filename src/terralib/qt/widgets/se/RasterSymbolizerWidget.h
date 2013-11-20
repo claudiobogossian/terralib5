@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/RasterVisualWidget.h
+  \file terralib/qt/widgets/se/RasterSymbolizerWidget.h
 
-  \brief A widget used to build
+  \brief A widget used to configure a Raster Symbolizer SE element.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_RASTERVISUALWIDGET_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_RASTERVISUALWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_RASTERSYMBOLIZERWIDGET_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_RASTERSYMBOLIZERWIDGET_H
 
 // TerraLib
-#include "../Config.h"
 #include "../../../se.h"
+#include "../Config.h"
 
 // Qt
 #include <QtGui/QWidget>
@@ -41,7 +41,7 @@
 #include <map>
 
 // Forward declaraion
-namespace Ui { class RasterVisualWidgetForm; }
+namespace Ui { class RasterSymbolizerWidgetForm; }
 
 namespace te
 {
@@ -67,11 +67,11 @@ namespace te
       class HorizontalSliderWidget;
 
       /*!
-        \class RasterVisualWidget
+        \class RasterSymbolizerWidget
 
-        \brief A dialog used to define the raster visual
+        \brief A widget used to configure a Raster Symbolizer SE element.
       */
-      class TEQTWIDGETSEXPORT RasterVisualWidget : public QWidget
+      class TEQTWIDGETSEXPORT RasterSymbolizerWidget : public QWidget
       {
         Q_OBJECT
 
@@ -82,11 +82,11 @@ namespace te
            */
           //@{
 
-          /*! \brief Constructs a RasterVisualWidget dialog which is a child of parent, with widget flags set to f. */
-          RasterVisualWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          /*! \brief Constructs a RasterSymbolizerWidget dialog which is a child of parent, with widget flags set to f. */
+          RasterSymbolizerWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           /*! \brief Destructor. */
-          ~RasterVisualWidget();
+          ~RasterSymbolizerWidget();
 
           //@}
 
@@ -146,7 +146,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::RasterVisualWidgetForm> m_ui;                 //!< Dialog form.
+          std::auto_ptr<Ui::RasterSymbolizerWidgetForm> m_ui;             //!< Widget form.
           te::qt::widgets::HorizontalSliderWidget* m_sliderWidget;        //!< Slider widget used for opacity information.
 
           te::se::RasterSymbolizer* m_symbolizer;                         //!< SE Raster Symbolizer element.
@@ -175,4 +175,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_RASTERVISUALWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_RASTERSYMBOLIZERWIDGET_H

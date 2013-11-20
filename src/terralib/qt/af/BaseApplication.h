@@ -59,7 +59,7 @@ namespace te
       class MapDisplay;
       class Project;
       class DataSetTableDockWidget;
-      class SymbolizerExplorer;
+      class StyleExplorer;
 
       namespace evt
       {
@@ -332,7 +332,7 @@ namespace te
           // Well known Widgets
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
-          SymbolizerExplorer* m_symbolizerExplorer;
+          StyleExplorer* m_styleExplorer;
 
           std::vector<DataSetTableDockWidget*> m_tableDocks;
 
