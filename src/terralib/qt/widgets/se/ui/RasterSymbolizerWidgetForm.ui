@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RasterVisualWidgetForm</class>
- <widget class="QWidget" name="RasterVisualWidgetForm">
+ <class>RasterSymbolizerWidgetForm</class>
+ <widget class="QWidget" name="RasterSymbolizerWidgetForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Raster Visual</string>
+   <string>Raster Symbolizer</string>
   </property>
   <layout class="QGridLayout" name="m_mainGridLayout">
    <item row="0" column="0">
@@ -648,9 +648,5 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="F:/Funcate/CD_ENTREGA/applications/terraViewLite/tvLite.qrc"/>
-  <include location="C:/Qt/tvLite.qrc"/>
- </resources>
  <connections/>
 </ui>

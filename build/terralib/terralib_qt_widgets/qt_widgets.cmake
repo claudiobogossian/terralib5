@@ -405,16 +405,15 @@ set (
   ${SRCDIR}/widgets/se/PolygonSymbolizerProperty.h
   ${SRCDIR}/widgets/se/PolygonSymbolizerWidget.h
   ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
-  ${SRCDIR}/widgets/se/RasterVisualWidget.h
-  ${SRCDIR}/widgets/se/RasterVisualDockWidget.h
+  ${SRCDIR}/widgets/se/RasterSymbolizerWidget.h
   ${SRCDIR}/widgets/se/SelectedChannelWidget.h
   ${SRCDIR}/widgets/se/ShadedReliefWidget.h
   ${SRCDIR}/widgets/se/StyleControllerWidget.h
+  ${SRCDIR}/widgets/se/StyleDockWidget.h
   ${SRCDIR}/widgets/se/StyleExplorer.h
   ${SRCDIR}/widgets/se/SymbolEditorWidget.h
   ${SRCDIR}/widgets/se/SymbolSelectorDialog.h
   ${SRCDIR}/widgets/se/SymbolTableWidget.h
-  ${SRCDIR}/widgets/se/VisualDockWidget.h
   ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h
   ${SRCDIR}/widgets/se/WellKnownMarkPropertyItem.h
   ${SRCDIR}/widgets/se/WellKnownMarkWidget.h

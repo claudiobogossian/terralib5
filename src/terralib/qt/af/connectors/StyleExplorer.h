@@ -18,13 +18,13 @@
  */
 
 /*! 
-  \file terralib/qt/af/connectors/SymbolizerExplorer.h
+  \file terralib/qt/af/connectors/StyleExplorer.h
 
-  \brief A connector for the te::qt::widgets::VisualDockWidget class to the Application Framework.
+  \brief A connector for the te::qt::widgets::StyleDockWidget class to the Application Framework.
 */
 
-#ifndef __TERRALIB_QT_AF_CONNECTORS_INTERNAL_SYMBOLIZEREXPLORER_H
-#define __TERRALIB_QT_AF_CONNECTORS_INTERNAL_SYMBOLIZEREXPLORER_H
+#ifndef __TERRALIB_QT_AF_CONNECTORS_INTERNAL_STYLEEXPLORER_H
+#define __TERRALIB_QT_AF_CONNECTORS_INTERNAL_STYLEEXPLORER_H
 
 // Terralib
 #include "../Config.h"
@@ -36,14 +36,12 @@ namespace te
 {
   namespace map { class AbstractLayer; }
 
-  namespace se { class Symbolizer; }
-
   namespace qt
   {
 // Forward declarations
     namespace widgets 
     { 
-      class VisualDockWidget; 
+      class StyleDockWidget;
     }
 
     namespace af
@@ -54,16 +52,15 @@ namespace te
         struct Event;
       }
       /*!
-        \class SymbolizerExplorer
+        \class StyleExplorer
 
-        \brief A connector for the te::qt::widgets::VisualDockWidget class to the Application Framework.
+        \brief A connector for the te::qt::widgets::StyleDockWidget class to the Application Framework.
 
         It is used to listen events sent by the application framework.
 
-
         \ingroup afconnector
       */
-      class TEQTAFEXPORT SymbolizerExplorer : public QObject
+      class TEQTAFEXPORT StyleExplorer : public QObject
       {
         Q_OBJECT
 
@@ -72,14 +69,14 @@ namespace te
           /*!
             \brief Constructor.
 
-            \param explorer te::qt::widgets::SymbolizerExplorer to be listened.
+            \param explorer te::qt::widgets::StyleDockWidget to be listened.
           */
-          SymbolizerExplorer(te::qt::widgets::VisualDockWidget* explorer, QObject* parent = 0);
+          StyleExplorer(te::qt::widgets::StyleDockWidget* explorer, QObject* parent = 0);
 
           /*! \brief Destructor. */
-          ~SymbolizerExplorer();
+          ~StyleExplorer();
 
-          te::qt::widgets::VisualDockWidget* getExplorer() const;
+          te::qt::widgets::StyleDockWidget* getExplorer() const;
 
         protected slots:
 
@@ -90,20 +87,14 @@ namespace te
           */
           void onApplicationTriggered(te::qt::af::evt::Event* evt);
 
-          /*!
-            \brief Listener to the symbolizer explorer when a symbolizer has changed
-
-          */
-          void onSymbolizerChanged();
-
         protected:
 
-          te::qt::widgets::VisualDockWidget* m_explorer; //!< Pointer to a component te::qt::widgets::VisualDockWidget.
+          te::qt::widgets::StyleDockWidget* m_explorer; //!< Pointer to a component te::qt::widgets::StyleDockWidget.
       };
 
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te
 
-#endif // __TERRALIB_QT_AF_CONNECTORS_INTERNAL_SYMBOLIZEREXPLORER_H
+#endif // __TERRALIB_QT_AF_CONNECTORS_INTERNAL_STYLEEXPLORER_H
 

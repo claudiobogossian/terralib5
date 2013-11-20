@@ -28,9 +28,11 @@
 #include "../../../se/Symbolizer.h"
 #include "ui_StyleControllerWidgetForm.h"
 #include "StyleControllerWidget.h"
-
 #include "StyleExplorer.h"
 #include "SymbolPreviewWidget.h"
+
+// Qt
+#include <QtGui/QMessageBox>
 
 // STL
 #include <cassert>
@@ -41,39 +43,21 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
 {
   m_ui->setupUi(this);
 
-  //add explorer
+  // Add the StyleExplorer
   m_explorer = new te::qt::widgets::StyleExplorer(m_ui->m_explorerFrame);
   QGridLayout* le = new QGridLayout(m_ui->m_explorerFrame);
-  le->setContentsMargins(0,0,0,0);
+  le->setContentsMargins(0, 0, 0, 0);
   le->addWidget(m_explorer);
 
-  connect(m_explorer, SIGNAL(symbolizerClicked(te::se::Symbolizer*)), this, SLOT(onSymbolizerClicked(te::se::Symbolizer*)));
-  connect(m_explorer, SIGNAL(ruleClicked(const te::se::Rule*)), this, SLOT(onRuleClicked(const te::se::Rule*)));
+  // Signals & slots
   connect(m_ui->m_iconSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(changeLegendIconSize(int)));
-
-  //add rule preview
-  //m_rulePreview = new te::qt::widgets::SymbolPreviewWidget(QSize(121,121), m_ui->m_ruleFrame);
-  //QGridLayout* lr = new QGridLayout(m_ui->m_ruleFrame);
-  //lr->setContentsMargins(0,0,0,0);
-  //lr->addWidget(m_rulePreview);
-
-  //add symbolizer preview
-  //m_symbPreview = new te::qt::widgets::SymbolPreviewWidget(QSize(121,121), m_ui->m_symbFrame);
-  //QGridLayout* ls = new QGridLayout(m_ui->m_symbFrame);
-  //ls->setContentsMargins(0,0,0,0);
-  //ls->addWidget(m_symbPreview);
-
-  //connect buttons
   connect(m_ui->m_addSymbToolButton, SIGNAL(clicked()), this, SLOT(onAddSymbolizerClicked()));
   connect(m_ui->m_delSymbToolButton, SIGNAL(clicked()), this, SLOT(onDelSymbolizerClicked()));
   connect(m_ui->m_upSymbToolButton, SIGNAL(clicked()), this, SLOT(onUpSymbolizerClicked()));
   connect(m_ui->m_downSymbToolButton, SIGNAL(clicked()), this, SLOT(onDownSymbolizerClicked()));
   connect(m_ui->m_mapRefreshToolButton, SIGNAL(clicked()), this, SLOT(onMapRefreshClicked()));
 
-  //m_ui->m_tabWidget->setCurrentWidget(m_ui->m_previewTab);
-
-  //m_ui->m_ruleGroupBox->setVisible(false);
-
+  // TODO!
   m_ui->m_delSymbToolButton->setEnabled(false);
 
   updateUi();
@@ -86,6 +70,11 @@ te::qt::widgets::StyleControllerWidget::~StyleControllerWidget()
 void te::qt::widgets::StyleControllerWidget::setStyle(te::se::Style* style)
 {
   m_explorer->setStyle(style);
+}
+
+te::qt::widgets::StyleExplorer* te::qt::widgets::StyleControllerWidget::getStyleExplorer() const
+{
+  return m_explorer;
 }
 
 void te::qt::widgets::StyleControllerWidget::updateUi()
@@ -101,14 +90,27 @@ void te::qt::widgets::StyleControllerWidget::onAddSymbolizerClicked()
 {
   te::se::Rule* rule = m_explorer->getCurrentRule();
 
-  te::se::Symbolizer* symb = m_explorer->getCurrentSymbolizer();
-
-  if(rule && symb)
+  if(rule == 0)
   {
-    rule->push_back(symb->clone());
-
-    m_explorer->updateStyleTree();
+    QMessageBox::information(this, tr("Style"), tr("Select a rule first."));
+    return;
   }
+
+  te::se::Symbolizer* symb = m_explorer->getCurrentSymbolizer();
+ 
+  if(symb)
+    rule->push_back(symb->clone());
+  else
+  {
+    assert(!rule->getSymbolizers().empty());
+
+    const te::se::Symbolizer* symb = rule->getSymbolizer(0);
+    assert(symb);
+
+    rule->push_back(symb->clone());
+  }
+
+  m_explorer->updateStyleTree();
 }
 
 void te::qt::widgets::StyleControllerWidget::onDelSymbolizerClicked()
@@ -118,41 +120,28 @@ void te::qt::widgets::StyleControllerWidget::onDelSymbolizerClicked()
 
 void te::qt::widgets::StyleControllerWidget::onUpSymbolizerClicked()
 {
+  te::se::Symbolizer* symb = m_explorer->getCurrentSymbolizer();
+
+  if(symb == 0)
+  {
+    QMessageBox::information(this, tr("Style"), tr("Select a symbol first."));
+    return;
+  }
+
   m_explorer->goUpSymbolizer();
 }
 
 void te::qt::widgets::StyleControllerWidget::onDownSymbolizerClicked()
 {
+  te::se::Symbolizer* symb = m_explorer->getCurrentSymbolizer();
+
+  if(symb == 0)
+  {
+    QMessageBox::information(this, tr("Style"), tr("Select a symbol first."));
+    return;
+  }
+
   m_explorer->goDownSymbolizer();
-}
-
-void te::qt::widgets::StyleControllerWidget::onSymbolizerChanged(te::se::Symbolizer* s)
-{
-  m_explorer->onSymbolizerChanged(s);
-  //m_symbPreview->updatePreview(s);
-
-  //te::se::Rule* rule = m_explorer->getCurrentRule();
-
-  //if(rule)
-  //  onRuleClicked(rule);
-}
-
-void te::qt::widgets::StyleControllerWidget::onSymbolizerClicked(te::se::Symbolizer* symb)
-{
-  //m_symbPreview->updatePreview(symb);
-
-  //te::se::Rule* rule = m_explorer->getCurrentRule();
-
-  //if(rule)
-  //  onRuleClicked(rule);
-
-  emit symbolizerSelected(symb);
-}
-
-void te::qt::widgets::StyleControllerWidget::onRuleClicked(const te::se::Rule* rule)
-{
-  //if(!rule->getSymbolizers().empty())
-  //  m_rulePreview->updatePreview(rule->getSymbolizers());
 }
 
 void te::qt::widgets::StyleControllerWidget::onMapRefreshClicked()

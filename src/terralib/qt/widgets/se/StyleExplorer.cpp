@@ -40,9 +40,13 @@ te::qt::widgets::StyleExplorer::StyleExplorer(QWidget* parent)
   // Setup
   setAlternatingRowColors(true);
   setSelectionMode(QAbstractItemView::SingleSelection);
-  //setHeaderLabel(tr("Style Explorer"));
   setHeaderHidden(true);
   setIconSize(QSize(16, 16));
+
+  m_symbolizerNames["PolygonSymbolizer"] = tr("Polygon Symbol");
+  m_symbolizerNames["LineSymbolizer"] = tr("Line Symbol");
+  m_symbolizerNames["PointSymbolizer"] = tr("Point Symbol");
+  m_symbolizerNames["RasterSymbolizer"] = tr("Raster Symbol");
 
   // Signals & slots
   connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onItemClicked(QTreeWidgetItem*, int)));
@@ -58,95 +62,14 @@ void te::qt::widgets::StyleExplorer::setStyle(te::se::Style* style)
 
   m_style = style;
 
-  initialize();
-}
-
-te::se::Rule* te::qt::widgets::StyleExplorer::getCurrentRule() 
-{
-  QTreeWidgetItem* selectedItem = getSelectedItem();
-  if(selectedItem == 0)
-    return 0;
-
-  if(selectedItem->type() == RULE)
-    return getRule(selectedItem);
-
-  if(selectedItem->type() == SYMBOLIZER)
-    return getRule(selectedItem->parent());
-
-  return 0;
-}
-
-te::se::Symbolizer* te::qt::widgets::StyleExplorer::getCurrentSymbolizer()
-{
-  QTreeWidgetItem* selectedItem = getSelectedItem();
-  if(selectedItem != 0 && selectedItem->type() == SYMBOLIZER)
-    return getSymbolizer(selectedItem);
-
-  return 0;
+  updateStyleTree();
 }
 
 void te::qt::widgets::StyleExplorer::updateStyleTree()
 {
-  initialize();
-}
-
-void te::qt::widgets::StyleExplorer::goUpSymbolizer()
-{
-  te::se::Rule* r = getCurrentRule();
-  te::se::Symbolizer* s = getCurrentSymbolizer();
-
-  //check if exist current objects
-  if(r && s)
-  {
-    //check if exist more than one symbolizer in current rule
-    if(r->getSymbolizers().size() > 1)
-    {
-      //check if current symbolizer is not the first symbolizer
-      int index = getSymbolizerIndex(r, s);
-
-      if(index > 0)
-        swapSymbolizers(r, index, index - 1);
-
-      initialize();
-    }
-  }
-}
-
-void te::qt::widgets::StyleExplorer::goDownSymbolizer()
-{
-  te::se::Rule* r = getCurrentRule();
-  te::se::Symbolizer* s = getCurrentSymbolizer();
-
-  //check if exist current objects
-  if(r && s)
-  {
-    //check if exist more than one symbolizer in current rule
-    if(r->getSymbolizers().size() > 1)
-    {
-      //check if current symbolizer is not the first symbolizer
-      int index = getSymbolizerIndex(r, s);
-
-      if((index >= 0) && (index < (static_cast<int>(r->getSymbolizers().size()) - 1)))
-        swapSymbolizers(r, index, index + 1);
-
-      initialize();
-    }
-  }
-}
-
-void te::qt::widgets::StyleExplorer::setLegendIconSize(int size)
-{
-  setIconSize(QSize(size, size));
-
-  updateStyleTree();
-}
-
-void te::qt::widgets::StyleExplorer::initialize()
-{
   clear();
 
   QTreeWidgetItem* root = new QTreeWidgetItem(this, STYLE);
-  //root->setText(0, m_style->getType().c_str());
   root->setText(0, tr("Style"));
 
   std::size_t nRules = m_style->getRules().size();
@@ -165,32 +88,19 @@ void te::qt::widgets::StyleExplorer::initialize()
     {
       QTreeWidgetItem* symbItem = new QTreeWidgetItem(ruleItem, SYMBOLIZER);
 
-      QString symbTypeName = symbs[j]->getType().c_str();
+      QString symbTypeName = tr("Unknown Symbol");
 
-      if(symbs[j]->getType() == "PolygonSymbolizer")
-      {
-        symbTypeName = tr("Polygon Symbol ");
-      }
-      else if(symbs[j]->getType() == "LineSymbolizer")
-      {
-        symbTypeName = tr("Line Symbol ");
-      }
-      else if(symbs[j]->getType() == "PointSymbolizer")
-      {
-        symbTypeName = tr("Point Symbol ");
-      }
-      else if(symbs[j]->getType() == "RasterSymbolizer")
-      {
-        symbTypeName = tr("Raster Symbol ");
-      }
+      std::map<QString, QString>::iterator it = m_symbolizerNames.find(symbs[j]->getType().c_str());
+      if(it != m_symbolizerNames.end())
+        symbTypeName = it->second;
 
       QString count;
       count.setNum(j);
 
-      symbTypeName.append(count);
+      symbTypeName.append(" " + count);
 
       symbItem->setText(0, symbTypeName);
-      symbItem->setData(0, Qt::UserRole, (int)j);
+      symbItem->setData(0, Qt::UserRole, static_cast<int>(j));
       symbItem->setIcon(0, QIcon(SymbologyPreview::build(symbs[j], iconSize())));
 
       if(j == 0)
@@ -202,6 +112,100 @@ void te::qt::widgets::StyleExplorer::initialize()
   }
 
   expandAll();
+}
+
+te::se::Rule* te::qt::widgets::StyleExplorer::getCurrentRule()
+{
+  QTreeWidgetItem* selectedItem = getSelectedItem();
+
+  if(selectedItem == 0)
+    return 0;
+
+  if(selectedItem->type() == RULE)
+    return getRule(selectedItem);
+
+  if(selectedItem->type() == SYMBOLIZER)
+    return getRule(selectedItem->parent());
+
+  return 0;
+}
+
+te::se::Symbolizer* te::qt::widgets::StyleExplorer::getCurrentSymbolizer()
+{
+  QTreeWidgetItem* selectedItem = getSelectedItem();
+
+  if(selectedItem != 0 && selectedItem->type() == SYMBOLIZER)
+    return getSymbolizer(selectedItem);
+
+  return 0;
+}
+
+void te::qt::widgets::StyleExplorer::goUpSymbolizer()
+{
+  QTreeWidgetItem* currentItem = getSelectedItem();
+
+  if(currentItem == 0 || currentItem->type() != SYMBOLIZER)
+    return;
+
+  // Gets the symbolizer index
+  std::size_t index = currentItem->data(0, Qt::UserRole).toUInt();
+
+  // Checks if the current symbolizer is the first
+  if(index == 0)
+    return;
+
+  te::se::Rule* rule = getCurrentRule();
+  assert(rule);
+
+  swapSymbolizers(rule, index, index - 1);
+
+  updateStyleTree();
+}
+
+void te::qt::widgets::StyleExplorer::goDownSymbolizer()
+{
+  QTreeWidgetItem* currentItem = getSelectedItem();
+
+  if(currentItem == 0 || currentItem->type() != SYMBOLIZER)
+    return;
+
+  te::se::Rule* rule = getCurrentRule();
+  assert(rule);
+
+  // Gets the symbolizer index
+  std::size_t index = currentItem->data(0, Qt::UserRole).toUInt();
+
+  // Checks if the current symbolizer is the last
+  if(index == rule->getSymbolizers().size() - 1)
+    return;
+
+  swapSymbolizers(rule, index, index + 1);
+
+  updateStyleTree();
+}
+
+void te::qt::widgets::StyleExplorer::setLegendIconSize(int size)
+{
+  setIconSize(QSize(size, size));
+
+  updateStyleTree();
+}
+
+void te::qt::widgets::StyleExplorer::onSymbolizerChanged(te::se::Symbolizer* symb)
+{
+  QTreeWidgetItem* symbolizerItem = getSelectedItem();
+
+  // Updating item
+  symbolizerItem->setIcon(0, QIcon(SymbologyPreview::build(symb, iconSize())));
+
+  te::se::Rule* rule = getCurrentRule();
+  QTreeWidgetItem* ruleItem = symbolizerItem->parent();
+
+  if(rule && ruleItem)
+  {
+    const std::vector<te::se::Symbolizer*>& symbs = rule->getSymbolizers();
+    ruleItem->setIcon(0, QIcon(SymbologyPreview::build(symbs, iconSize())));
+  }
 }
 
 te::se::Rule* te::qt::widgets::StyleExplorer::getRule(QTreeWidgetItem* item) const
@@ -222,6 +226,7 @@ te::se::Symbolizer* te::qt::widgets::StyleExplorer::getSymbolizer(QTreeWidgetIte
   // Gets the rule associated with the symbolizer
   QTreeWidgetItem* parent = item->parent();
   assert(parent);
+
   const te::se::Rule* rule = getRule(parent);
   assert(rule);
 
@@ -238,35 +243,23 @@ te::se::Symbolizer* te::qt::widgets::StyleExplorer::getSymbolizer(QTreeWidgetIte
 QTreeWidgetItem* te::qt::widgets::StyleExplorer::getSelectedItem() const
 {
   QList<QTreeWidgetItem*> selected = selectedItems();
+
   if(selected.empty())
     return 0;
 
   return selected.at(0);
 }
 
-int te::qt::widgets::StyleExplorer::getSymbolizerIndex(te::se::Rule* r, te::se::Symbolizer* s) const
-{
-  assert(r);
-  assert(s);
-
-  for(size_t t = 0; t < r->getSymbolizers().size(); ++t)
-  {
-    if(s == r->getSymbolizers()[t])
-      return t;
-  }
-
-  return -1;
-}
-
 void te::qt::widgets::StyleExplorer::swapSymbolizers(te::se::Rule* r, int indexFirst, int indexSecond)
 {
   assert(r);
 
-  // Swap symbolizers
+  // Copy the symbolizers
   te::se::Symbolizer* first = r->getSymbolizer(indexFirst)->clone();
   te::se::Symbolizer* second = r->getSymbolizer(indexSecond)->clone();
 
-  r->setSymbolizer(indexFirst,second);
+  // Swap symbolizers
+  r->setSymbolizer(indexFirst, second);
   r->setSymbolizer(indexSecond, first);
 }
 
@@ -284,24 +277,5 @@ void te::qt::widgets::StyleExplorer::onItemClicked(QTreeWidgetItem* item, int /*
     case SYMBOLIZER:
       emit symbolizerClicked(getSymbolizer(item));
     break;
-  }
-}
-
-void te::qt::widgets::StyleExplorer::onSymbolizerChanged(te::se::Symbolizer* symb)
-{
-  QTreeWidgetItem* symbolizerItem = getSelectedItem();
-
-  // Updating item
-  //symbolizerItem->setText(0, tr(symb->getType().c_str()));
-  symbolizerItem->setIcon(0, QIcon(SymbologyPreview::build(symb, iconSize())));
-
-  te::se::Rule* rule = getCurrentRule();
-  QTreeWidgetItem* ruleItem = symbolizerItem->parent();
-
-  if(rule && ruleItem)
-  {
-    const std::vector<te::se::Symbolizer*>& symbs = rule->getSymbolizers();
-
-    ruleItem->setIcon(0, QIcon(SymbologyPreview::build(symbs, iconSize())));
   }
 }

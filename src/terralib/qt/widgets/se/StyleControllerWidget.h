@@ -56,7 +56,6 @@ namespace te
     {
 // Forward declarations
       class StyleExplorer;
-      class SymbolPreviewWidget;
 
       /*!
         \class StyleControllerWidget
@@ -74,7 +73,7 @@ namespace te
            */
           //@{
 
-          /*! \brief Constructs a well known mark widget which is a child of parent, with widget flags set to f. */
+          /*! \brief Constructs a StyleControllerWidget which is a child of parent, with widget flags set to f. */
           StyleControllerWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           /*! \brief Destructor. */
@@ -89,10 +88,12 @@ namespace te
 
             \param style A valid style element.
 
-            \note The widget will NOT take the ownership of the given fill.
+            \note The widget will NOT take the ownership of the given style.
             \note The widget will be update based on given style parameters.
           */
           void setStyle(te::se::Style* style);
+
+          StyleExplorer* getStyleExplorer() const;
 
         protected:
 
@@ -109,30 +110,18 @@ namespace te
 
           void onDownSymbolizerClicked();
 
-          void onSymbolizerChanged(te::se::Symbolizer* s);
-
-          void onSymbolizerClicked(te::se::Symbolizer* symb);
-
-          void onRuleClicked(const te::se::Rule* rule);
-
           void onMapRefreshClicked();
 
           void changeLegendIconSize(int size);
 
         signals:
 
-          /*! This signal is emitted when a symbolizer is clicked. */
-          void symbolizerSelected(te::se::Symbolizer* symb);
-
           void mapRefresh();
 
         private:
 
-          std::auto_ptr<Ui::StyleControllerWidgetForm> m_ui;    //!< Widget form.
-
-          te::qt::widgets::StyleExplorer* m_explorer;
-          te::qt::widgets::SymbolPreviewWidget* m_rulePreview;
-          te::qt::widgets::SymbolPreviewWidget* m_symbPreview;
+          std::auto_ptr<Ui::StyleControllerWidgetForm> m_ui; //!< Widget form.
+          te::qt::widgets::StyleExplorer* m_explorer;        //!< A style explorer used to explore the style.
       }; 
 
     } // end namespace widgets

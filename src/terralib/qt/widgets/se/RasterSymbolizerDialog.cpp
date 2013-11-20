@@ -27,7 +27,6 @@
 #include "../../../common.h"
 #include "../../../raster.h"
 #include "../../../se.h"
-
 #include "ChannelSelectionWidget.h"
 #include "ColorMapWidget.h"
 #include "ContrastEnhancementWidget.h"
@@ -35,15 +34,9 @@
 #include "ImageOutlineWidget.h"
 #include "OverlapBehaviorWidget.h"
 #include "RasterSymbolizerDialog.h"
-#include "RasterVisualWidget.h"
+#include "RasterSymbolizerWidget.h"
 #include "ShadedReliefWidget.h"
 #include "ui_RasterSymbolizerDialogForm.h"
-
-// Qt
-
-
-// STL
-
 
 te::qt::widgets::RasterSymbolizerDialog::RasterSymbolizerDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -55,7 +48,7 @@ te::qt::widgets::RasterSymbolizerDialog::RasterSymbolizerDialog(QWidget* parent,
     m_shadedReliefWidget(0),
     m_imageOutlineWidget(0),
     m_sliderWidget(0),
-    m_visualWidget(0),
+    m_rasterWidget(0),
     m_symbolizer(new te::se::RasterSymbolizer),
     m_colorMap(0),
     m_property(0),
@@ -147,9 +140,9 @@ te::se::Symbolizer* te::qt::widgets::RasterSymbolizerDialog::getRasterSymbolizer
     m_symbolizer->setColorMap(m_colorMap);
   }
 
-  if(m_visualWidget)
+  if(m_rasterWidget)
   {
-    te::se::RasterSymbolizer* rs = m_visualWidget->getRasterSymbolizer();
+    te::se::RasterSymbolizer* rs = m_rasterWidget->getRasterSymbolizer();
 
     if(rs)
     {
@@ -307,20 +300,20 @@ void te::qt::widgets::RasterSymbolizerDialog::onVisualClicked()
 {
   m_ui->m_stackedWidget->setCurrentIndex(1);
 
-  if(!m_visualWidget)
+  if(!m_rasterWidget)
   {
-    m_visualWidget = new te::qt::widgets::RasterVisualWidget(m_ui->m_stackedWidget->currentWidget());
+    m_rasterWidget = new te::qt::widgets::RasterSymbolizerWidget(m_ui->m_stackedWidget->currentWidget());
 
     QGridLayout* layout = new QGridLayout(m_ui->m_stackedWidget->currentWidget());
 
     layout->setAlignment(Qt::AlignTop);
-    layout->addWidget(m_visualWidget);
+    layout->addWidget(m_rasterWidget);
 
     if(m_property)
     {
-      m_visualWidget->setBandProperty(m_property->getBandProperties());
+      m_rasterWidget->setBandProperty(m_property->getBandProperties());
     }
 
-    m_visualWidget->setRasterSymbolizer(m_symbolizer);
+    m_rasterWidget->setRasterSymbolizer(m_symbolizer);
   }
 }

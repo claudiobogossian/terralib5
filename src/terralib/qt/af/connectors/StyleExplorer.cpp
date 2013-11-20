@@ -21,33 +21,32 @@
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../maptools/RasterLayer.h"
-#include "../../../qt/widgets/se/VisualDockWidget.h"
-#include "../../../se/Symbolizer.h"
+#include "../../../qt/widgets/se/StyleDockWidget.h"
 #include "../events/Event.h"
 #include "../events/LayerEvents.h"
 #include "../ApplicationController.h"
-#include "SymbolizerExplorer.h"
+#include "StyleExplorer.h"
 
 // STL
 #include <cassert>
 
-te::qt::af::SymbolizerExplorer::SymbolizerExplorer(te::qt::widgets::VisualDockWidget* explorer, QObject* parent)
+te::qt::af::StyleExplorer::StyleExplorer(te::qt::widgets::StyleDockWidget* explorer, QObject* parent)
   : QObject(parent),
     m_explorer(explorer)
 {
   assert(explorer);
 }
 
-te::qt::af::SymbolizerExplorer::~SymbolizerExplorer()
+te::qt::af::StyleExplorer::~StyleExplorer()
 {
 }
 
-te::qt::widgets::VisualDockWidget* te::qt::af::SymbolizerExplorer::getExplorer() const
+te::qt::widgets::StyleDockWidget* te::qt::af::StyleExplorer::getExplorer() const
 {
   return m_explorer;
 }
 
-void te::qt::af::SymbolizerExplorer::onApplicationTriggered(te::qt::af::evt::Event* evt)
+void te::qt::af::StyleExplorer::onApplicationTriggered(te::qt::af::evt::Event* evt)
 {
   switch(evt->m_id)
   {
@@ -58,7 +57,6 @@ void te::qt::af::SymbolizerExplorer::onApplicationTriggered(te::qt::af::evt::Eve
       te::map::AbstractLayerPtr layer = e->m_layer;
       assert(layer);
 
-      //if(layer->getType() != "FOLDERLAYER" && layer->getType() != "DATASETADAPTERLAYER" )
       if(layer->getStyle())
         m_explorer->setStyle(layer->getStyle(), layer.get());
     }
@@ -80,8 +78,4 @@ void te::qt::af::SymbolizerExplorer::onApplicationTriggered(te::qt::af::evt::Eve
     default:
       return;
   }
-}
-
-void te::qt::af::SymbolizerExplorer::onSymbolizerChanged()
-{
 }
