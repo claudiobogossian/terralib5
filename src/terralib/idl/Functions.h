@@ -48,8 +48,6 @@ namespace te
       \return Terralib data type.
       
       \sa terralib/datetype/Enums.h for more details.
-      
-      \ingroup IDLModule
       */
     int idl2TerralibType( const UCHAR& idlType );
 
@@ -61,21 +59,17 @@ namespace te
       \return IDL data type.
       
       \sa terralib/datetype/Enums.h for more details.
-      
-      \ingroup IDLModule
       */
     UCHAR terralib2IdlType( const int& tlType );
     
     /*!
       \brief A dummy function for internal use.
       \details It does nothing
-      \ingroup IDLModule
       */
     inline void dummyFunction( void* ) {};
     
     /*!
       \brief Delete an array of elements.
-      \ingroup IDLModule
       */
     inline void deleteArray( void* arrayPtr )
     {
@@ -84,7 +78,6 @@ namespace te
     
     /*!
       \brief Load the required terralib modules.
-      \ingroup IDLModule
       */
     void loadTerralibModules();
     

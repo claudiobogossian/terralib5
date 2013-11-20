@@ -44,8 +44,6 @@
 
   \return It is expected to return True (non-zero) if it was successful, and 
   False (0) if some initialization step failed.
-
-  \ingroup IDLModule
 */
 int TEIDLEXPORT IDL_Load(void);
 
@@ -55,8 +53,6 @@ int TEIDLEXPORT IDL_Load(void);
   \details IDL maintains a list of exit handler functions that it calls as part of its shutdown
 operations. These handlers perform actions such as closing files, wrapping up
 graphics output, and restoring the user environment to its initial state.
-
-  \ingroup IDLModule
 */
 void IDL_ExitHandler(void);
 

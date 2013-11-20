@@ -59,10 +59,6 @@ namespace te
   {
     class RasterHandler;
     
-    /** \addtogroup RPFunctions 
-     *  @{
-     */    
-    
     /*!
       \brief Create a new raster into the givem data source.
       \param rasterGrid The template grid used to create the output raster.
@@ -315,8 +311,6 @@ namespace te
       const unsigned int saturationBandIdx, const double rgbRangeMin, 
       const double rgbRangeMax, te::rst::Raster& outputRGBRaster );      
     
-    /** @}*/
-
   } // end namespace rp
 }   // end namespace te
 
