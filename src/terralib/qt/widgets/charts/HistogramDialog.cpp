@@ -74,6 +74,8 @@ void te::qt::widgets::HistogramDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   te::qt::widgets::HistogramChart* chart = new te::qt::widgets::HistogramChart(m_histogramDataWidget->getHistogram());
 
   //Creating and adjusting the chart Display's style.
@@ -92,5 +94,6 @@ void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
   //Adjusting the chart widget
   m_displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::HISTOGRAM_CHART, chartDisplay, this->parentWidget());
 
+  QApplication::restoreOverrideCursor();
   this->accept();
 }

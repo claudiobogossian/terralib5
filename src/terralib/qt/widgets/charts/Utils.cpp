@@ -387,7 +387,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
   te::common::TaskProgress task;
   task.setMessage("Histogram creation");
-  task.setTotalSteps(dataset->getNumProperties());
+
 
   if(rpos != std::string::npos)
   {
@@ -396,6 +396,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
     for(std::map<double, unsigned int>::iterator it = values.begin(); it != values.end(); ++it)
     {
+      task.pulse();
       newHistogram->insert(std::make_pair(new te::dt::Double(it->first), it->second));
     }
   }

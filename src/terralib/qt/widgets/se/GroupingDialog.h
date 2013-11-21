@@ -95,6 +95,8 @@ namespace te
 
           void onPushButtonClicked();
 
+          void onApplyClicked();
+
         private:
 
           std::auto_ptr<Ui::GroupingDialogForm> m_ui;        //!< Dialog form.
