@@ -87,7 +87,7 @@ void te::gdal::Module::startup()
 
   te::gdal::DataSource::setCapabilities(capabilities);
   
-  DataSetsManager::getInstance().setMaxUseCounter( 1 );
+  DataSetsManager::getInstance().setMaxUseCounter( 1000 );
 
   TE_LOG_TRACE(TR_GDAL("TerraLib GDAL driver startup!"));
 
