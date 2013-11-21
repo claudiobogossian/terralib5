@@ -28,13 +28,13 @@
 
 te::gdal::DataSetsManager::DataSetsManager()
 {
-  m_maxUseCounter = 1;  
 }
 
 te::gdal::DataSetsManager::~DataSetsManager()
 {}
 
-bool te::gdal::DataSetsManager::incrementUseCounter( const std::string& uri )
+bool te::gdal::DataSetsManager::incrementUseCounter( const std::string& uri,
+  const AccessType aType  )
 {
   if( uri.empty() )
   {
@@ -44,23 +44,27 @@ bool te::gdal::DataSetsManager::incrementUseCounter( const std::string& uri )
   {
     m_mutex.lock();
     
-    unsigned int currentCount = 0;
+    UrisInfoT::iterator it = m_openURIS.find( uri );
     
-    if( m_openURIS.find( uri ) != m_openURIS.end() )
+    if( it == m_openURIS.end() )
     {
-      currentCount = m_openURIS[ uri ];
-    }
-    
-    if( currentCount < m_maxUseCounter )
-    {
-      ++( m_openURIS[ uri ] );
+      m_openURIS[ uri ] = std::pair< AccessType, unsigned long int >( aType, 1 ) ;
       m_mutex.unlock(); 
       return true;
     }
     else
     {
-      m_mutex.unlock(); 
-      return false;
+      if( it->second.first & SingleAccessType )
+      {
+        m_mutex.unlock(); 
+        return false;
+      }
+      else
+      {
+        ++( it->second.second );
+        m_mutex.unlock(); 
+        return true;
+      }
     }
   }
 }
@@ -71,72 +75,21 @@ void te::gdal::DataSetsManager::decrementUseCounter( const std::string& uri )
   {
     m_mutex.lock();
     
-    if( m_openURIS.find( uri ) != m_openURIS.end() )
+    UrisInfoT::iterator it = m_openURIS.find( uri );
+    
+    if( it != m_openURIS.end() )
     {
-      if(  m_openURIS[ uri ] == 1 )
+      if(  it->second.second == 1 )
       {
         m_openURIS.erase( uri );
       }
       else
       {
-        --( m_openURIS[ uri ] );
+        --( it->second.second );
       }
     }
     
     m_mutex.unlock();
   }
 }
-        
-unsigned int te::gdal::DataSetsManager::getUseCounter( const std::string& uri ) const
-{
-  if( uri.empty() )
-  {
-    return 0;
-  }
-  else
-  {
-    m_mutex.lock();
-    
-    if( m_openURIS.find( uri ) == m_openURIS.end() )
-    {
-      m_mutex.unlock();
-      return 0;
-    }
-    else
-    {
-      unsigned int returnValue = m_openURIS[ uri ];
-      m_mutex.unlock();
-      return returnValue;
-    }
-  }
-}
 
-void te::gdal::DataSetsManager::setMaxUseCounter( const unsigned int counter )
-{
-  m_mutex.lock();
-  m_maxUseCounter = counter;
-  m_mutex.unlock();
-}
-
-bool te::gdal::DataSetsManager::hasReachedMaxUseCounter( const std::string& uri ) const
-{
-  m_mutex.lock();
-  
-  unsigned int currentCount = 0;
-  
-  if( ( !uri.empty() ) && ( m_openURIS.find( uri ) != m_openURIS.end() ) )
-  {
-    currentCount = m_openURIS[ uri ];
-  }
-  
-  if( currentCount < m_maxUseCounter )
-  {
-    m_mutex.unlock(); 
-    return false;
-  }
-  else
-  {
-    m_mutex.unlock(); 
-    return true;
-  }  
-}

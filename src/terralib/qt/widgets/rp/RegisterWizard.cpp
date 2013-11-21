@@ -210,6 +210,8 @@ bool te::qt::widgets::RegisterWizard::execute()
     else
     {
       QMessageBox::warning(this, tr("Register"), tr("Register Done!"));
+      
+      algoOutputParams.reset();
 
       //set output layer
       m_outputLayer = te::qt::widgets::createLayer(m_rasterInfoPage->getWidget()->getType(), 

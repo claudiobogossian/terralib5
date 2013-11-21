@@ -54,7 +54,7 @@
 
 std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getType(const std::string& dsfullname)
 {
-  DataSetUseCounter dsUseCounter( dsfullname );
+  DataSetUseCounter dsUseCounter( GetParentDataSetName( dsfullname ), DataSetsManager::MultipleAccessType );
   
   GDALDataset* ds = static_cast<GDALDataset*>(GDALOpen(dsfullname.c_str(), GA_ReadOnly));
   if (!ds)
@@ -111,7 +111,7 @@ void te::gdal::Transactor::getDataSetNames(const boost::filesystem::path& path, 
 {  
   if (boost::filesystem::is_regular_file(path))
   {
-    DataSetUseCounter dsUseCounter( path.string() );
+    DataSetUseCounter dsUseCounter( path.string(), DataSetsManager::MultipleAccessType );
     
     GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
     if (!gds)
@@ -161,7 +161,7 @@ bool te::gdal::Transactor::hasDataSets(const boost::filesystem::path& path)
 {
   if (boost::filesystem::is_regular_file(path))
   {
-    DataSetUseCounter dsUseCounter( path.string() );
+    DataSetUseCounter dsUseCounter( path.string(), DataSetsManager::MultipleAccessType );
     
     GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
     if (!gds)
@@ -188,7 +188,7 @@ size_t te::gdal::Transactor::getNumberOfDataSets(const boost::filesystem::path& 
   size_t nds = 0;
   if (boost::filesystem::is_regular_file(path))
   {
-    DataSetUseCounter dsUseCounter( path.string() );
+    DataSetUseCounter dsUseCounter( path.string(), DataSetsManager::MultipleAccessType );
     
     GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
     if (!gds)
@@ -238,7 +238,7 @@ std::auto_ptr<te::da::DataSetType> te::gdal::Transactor::getDataSetType(const bo
     }
     else
     {
-      DataSetUseCounter dsUseCounter( path.string() );
+      DataSetUseCounter dsUseCounter( GetParentDataSetName( path.string() ), DataSetsManager::MultipleAccessType );
       
       // it might be one of its sub datasets 
       GDALDataset* gds = static_cast<GDALDataset*>(GDALOpen(path.string().c_str(), GA_ReadOnly));
@@ -530,7 +530,7 @@ void te::gdal::Transactor::createDataSet(te::da::DataSetType* dt,
   if (boost::filesystem::exists(paux))
     throw Exception((boost::format(TR_GDAL("The datasource already has a dataset with this name (\"%1%\")!")) % dt->getName()).str());
   
-  DataSetUseCounter dsUseCounter( paux.string() );
+  DataSetUseCounter dsUseCounter( paux.string(), DataSetsManager::SingleAccessType );
   
   GDALDataset* gds = te::gdal::CreateRaster(paux.string(), rstp->getGrid(), rstp->getBandProperties(),options);
   

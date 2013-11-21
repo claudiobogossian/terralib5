@@ -289,7 +289,7 @@ namespace te
     std::string GetGDALConnectionInfo(const std::map<std::string, std::string>& connInfo);
     
     /*!
-     \brief It returns the Sub DataSet name from the given name.
+     \brief It returns the Sub DataSet name from the given name or the same name.
      
      \param name The Full SubDataSet string name.
      
@@ -323,6 +323,22 @@ namespace te
      \param outraster    A reference to the GDAL dataset where the rasterized geometries will be drawn.
      */
     TEGDALEXPORT void Rasterize(std::vector<te::gm::Geometry*> geometries, GDALDataset* outraster);
+
+    /*!
+     \brief Returns true if the given URI is related to a sub-dataset.
+     \param uri The given URI.
+     \return true if the given URI is related to a sub-dataset.
+     */
+    bool IsSubDataSet( const std::string& uri );
+    
+    /*!
+     \brief It returns the parent dataset name from a Sub DataSet name.
+     \param subDataSetName The Full SubDataSet string name.
+     \return the parent dataset name from a Sub DataSet name.
+     \note If the given name does not refers to a sub-dataset it will be returned.
+     */
+    std::string GetParentDataSetName(const std::string& subDataSetName);
+        
   } // end namespace gdal
 } // end namespace te
 #endif
