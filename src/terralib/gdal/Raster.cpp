@@ -72,7 +72,9 @@ te::gdal::Raster::Raster(const std::string& rinfo, te::common::AccessPolicy p)
   
   m_myURI = rinfo;
   
-  m_dsUseCounterPtr.reset( new DataSetUseCounter( m_myURI ) );
+  m_dsUseCounterPtr.reset( new DataSetUseCounter( GetParentDataSetName( m_myURI ),  
+    ( IsSubDataSet( m_myURI ) || ( p & te::common::WAccess ) ) ? DataSetsManager::SingleAccessType : 
+    DataSetsManager::MultipleAccessType ) );
   
   m_gdataset = te::gdal::GetRasterHandle(rinfo, m_policy);
 
@@ -124,7 +126,8 @@ te::gdal::Raster::Raster(const Raster& rhs)
    
     m_myURI = m_gdataset->GetDescription(); 
                                        
-    m_dsUseCounterPtr.reset( new DataSetUseCounter( m_myURI ) );
+    m_dsUseCounterPtr.reset( new DataSetUseCounter( GetParentDataSetName( m_myURI ), 
+      DataSetsManager::MultipleAccessType ) );
 
     GDALFlushCache(m_gdataset);
 
@@ -181,7 +184,9 @@ void te::gdal::Raster::open(const std::map<std::string, std::string>& rinfo, te:
   
   m_myURI = it->second;
   
-  m_dsUseCounterPtr.reset( new DataSetUseCounter( m_myURI ) );
+  m_dsUseCounterPtr.reset( new DataSetUseCounter( GetParentDataSetName( m_myURI ), 
+   ( IsSubDataSet( m_myURI ) || ( p & te::common::WAccess ) ) ? DataSetsManager::SingleAccessType : 
+   DataSetsManager::MultipleAccessType ) );
 
   m_gdataset = GetRasterHandle(it->second, p);
 
@@ -450,7 +455,7 @@ void te::gdal::Raster::create(te::rst::Grid* g,
     
     m_myURI = it->second;
     
-    m_dsUseCounterPtr.reset( new DataSetUseCounter( m_myURI ) );
+    m_dsUseCounterPtr.reset( new DataSetUseCounter( m_myURI, DataSetsManager::SingleAccessType ) );
     
     m_gdataset = te::gdal::CreateRaster(g, bands, rinfo);
 

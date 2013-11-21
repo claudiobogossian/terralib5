@@ -721,3 +721,56 @@ void te::gdal::Rasterize(std::vector<te::gm::Geometry*> geometries, GDALDataset*
 
   GDALRasterizeGeometries(outraster, bandList.size(), &(bandList[0]), ogrGeometries.size(), &(ogrGeometries[0]), NULL, NULL, &(burnValues[0]), NULL, NULL, NULL);
 }
+
+bool te::gdal::IsSubDataSet( const std::string& uri )
+{
+  std::size_t firstIdx = uri.find( ":" );
+  
+  if( firstIdx < uri.size() )
+  {
+    std::size_t secondIdx = uri.find( ":", firstIdx + 1 );
+    
+    if( secondIdx < uri.size() )
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    return false;
+  }
+}
+
+std::string te::gdal::GetParentDataSetName(const std::string& subDataSetName)
+{
+  if( IsSubDataSet( subDataSetName ) )
+  {
+    std::size_t firstIdx = subDataSetName.find( ":" );
+    
+    if( firstIdx < subDataSetName.size() )
+    {
+      std::size_t secondIdx = subDataSetName.find( ":", firstIdx + 1 );
+      
+      if( secondIdx < subDataSetName.size() )
+      {
+        return subDataSetName.substr( secondIdx + 1, subDataSetName.size() - firstIdx - 1);
+      }
+      else
+      {
+        return subDataSetName;
+      }
+    }
+    else
+    {
+      return subDataSetName;
+    }
+  }
+  else
+  {
+    return subDataSetName;
+  }
+}

@@ -25,15 +25,15 @@
 
 // TerraLib
 #include "DataSetUseCounter.h"
-#include "DataSetsManager.h"
 #include "Exception.h"
 #include "../common/Translator.h"
 
-te::gdal::DataSetUseCounter::DataSetUseCounter( const std::string& uri )
+te::gdal::DataSetUseCounter::DataSetUseCounter( const std::string& uri,
+  const DataSetsManager::AccessType aType )
   throw( te::gdal::Exception )
   : m_uri( uri )
 {
-  if( !DataSetsManager::getInstance().incrementUseCounter( m_uri ) )
+  if( !DataSetsManager::getInstance().incrementUseCounter( m_uri, aType ) )
   {
     throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
   }  

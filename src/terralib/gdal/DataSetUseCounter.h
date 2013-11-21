@@ -27,6 +27,7 @@
 #define __TERRALIB_DATAACCES_GDAL_INTERNAL_DATASETUSECOUNTER_H
 
 #include "Config.h"
+#include "DataSetsManager.h"
 #include "Exception.h"
 
 #include <boost/noncopyable.hpp>
@@ -49,12 +50,13 @@ namespace te
         /*!
          \brief Default constructor.
          \param uri Raster URI.
+         \param aType Access type.
          \exception Exception It can throw an exception (code te::common::NO_CONNECTION_AVAILABLE ) if:
                      <ul>
                      <li>the maximum number of simultaneous accesses has been reached</li>
                      </ul>     
          */        
-        DataSetUseCounter( const std::string& uri ) throw( te::gdal::Exception );
+        DataSetUseCounter( const std::string& uri, const DataSetsManager::AccessType aType ) throw( te::gdal::Exception );
         
         ~DataSetUseCounter();
         
