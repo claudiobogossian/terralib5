@@ -27,6 +27,8 @@
 #define __TERRALIB_MAPTOOLS_INTERNAL_DATASETADAPTERLAYER_H
 
 // TerraLib
+#include "../sam/rtree/Index.h"
+#include "../sam/rtree.h"
 #include "AbstractLayer.h"
 
 namespace te
@@ -171,10 +173,12 @@ namespace te
       private:
 
         std::auto_ptr<te::da::DataSetTypeConverter> m_converter;         //!< The DataSetConverter that will be cused to configure the layer.
-        std::string                                  m_datasetName;         //!< The dataset name where we will retrieve the layer objects.
-        std::string                                  m_datasourceId;        //!< The DataSource associated with this layer.
-        std::string                                  m_rendererType;        //!< A pointer to the internal renderer used to paint this layer.
-        static const std::string                     sm_type;               //!< A static data member used in the implementation of getType method.
+        std::string                                 m_datasetName;         //!< The dataset name where we will retrieve the layer objects.
+        std::string                                 m_datasourceId;        //!< The DataSource associated with this layer.
+        std::string                                 m_rendererType;        //!< A pointer to the internal renderer used to paint this layer.
+        static const std::string                    sm_type;               //!< A static data member used in the implementation of getType method.
+
+        te::sam::rtree::Index<std::size_t, 4>       m_rtree;
     };
 
     typedef boost::intrusive_ptr<DataSetAdapterLayer> DataSetAdapterLayerPtr;

@@ -49,6 +49,8 @@ te::qt::widgets::GroupingDialog::GroupingDialog(QWidget* parent, Qt::WindowFlags
 {
   m_ui->setupUi(this);
 
+  m_ui->m_okPushButton->setEnabled(false);
+
   //connect
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onPushButtonClicked()));
   m_ui->m_helpPushButton->setPageReference("widgets/grouping/grouping.html");
@@ -130,6 +132,8 @@ void te::qt::widgets::GroupingDialog::buildVectorialGroupingInteface()
   // Fill Widget
   m_groupingWidget = new te::qt::widgets::GroupingWidget(m_ui->m_widget);
 
+  connect(m_groupingWidget, SIGNAL(applyPushButtonClicked()), this, SLOT(onApplyClicked()));
+
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
   layout->setContentsMargins(0,0,0,0);
@@ -140,6 +144,8 @@ void te::qt::widgets::GroupingDialog::buildRasterGroupingInteface()
 {
   // Fill Widget
   m_colorMapWidget = new te::qt::widgets::ColorMapWidget(m_ui->m_widget);
+
+  connect(m_colorMapWidget, SIGNAL(applyPushButtonClicked()), this, SLOT(onApplyClicked()));
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_widget);
@@ -185,4 +191,9 @@ void te::qt::widgets::GroupingDialog::onPushButtonClicked()
   }
 
   accept();
+}
+
+void te::qt::widgets::GroupingDialog::onApplyClicked()
+{
+  m_ui->m_okPushButton->setEnabled(true);
 }

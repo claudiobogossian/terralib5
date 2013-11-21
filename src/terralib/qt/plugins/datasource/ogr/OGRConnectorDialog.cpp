@@ -34,6 +34,7 @@
 #include "../../../widgets/Utils.h"
 #include "OGRConnectorDialog.h"
 #include "ui_OGRConnectorDialogForm.h"
+#include "Utils.h"
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
@@ -45,6 +46,9 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
+
+// STL
+#include <cassert>
 
 te::qt::plugins::ogr::OGRConnectorDialog::OGRConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -142,6 +146,29 @@ void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
       m_datasource->setConnInfo(dsInfo);
       m_datasource->setTitle(title.toLatin1().data());
       m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toLatin1().data());
+    }
+
+    if(m_ui->m_fileRadioButton->isChecked())
+    {
+      QString path = m_ui->m_featureRepoLineEdit->text().trimmed();
+      if(IsShapeFile(path) && !HasShapeFileSpatialIndex(path))
+      {
+        if(QMessageBox::question(this, windowTitle(), tr("Do you want createb spatial index to the selected ESRI ShapeFile?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+        {
+          std::vector<std::string> datasetNames = m_driver->getDataSetNames();
+          assert(!datasetNames.empty());
+
+          std::string command = "CREATE SPATIAL INDEX ON " + datasetNames[0];
+
+          QApplication::setOverrideCursor(Qt::WaitCursor);
+
+          m_driver->execute(command);
+
+          QApplication::restoreOverrideCursor();
+
+          QMessageBox::information(this, windowTitle(), "Spatial index created with successfully!");
+        }
+      }
     }
   }
   catch(const std::exception& e)

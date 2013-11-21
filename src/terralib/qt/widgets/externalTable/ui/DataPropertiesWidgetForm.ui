@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Properties definitions</string>
+   <string>Tabular File</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_13">
    <item row="0" column="0">
@@ -58,7 +58,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Imports a tabular file</string>
+             <string>Opens a tabular file</string>
             </property>
            </widget>
           </item>

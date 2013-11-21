@@ -35,6 +35,8 @@ te::da::FilteredDataSet::FilteredDataSet(DataSet* dataset, const std::vector<std
     m_i(-1)
 {
   assert(dataset);
+
+  std::sort(m_positions.begin(), m_positions.end());
 }
 
 te::da::FilteredDataSet::FilteredDataSet(DataSet* dataset, const DataSetCapabilities& capabilities,
@@ -45,6 +47,8 @@ te::da::FilteredDataSet::FilteredDataSet(DataSet* dataset, const DataSetCapabili
     m_i(-1)
 {
   assert(dataset);
+
+  std::sort(m_positions.begin(), m_positions.end());
 }
 
 te::da::FilteredDataSet::~FilteredDataSet()

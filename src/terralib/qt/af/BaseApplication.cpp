@@ -951,7 +951,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       return;
     }
 
-    // The histogram will be accomplished only on the first layer selected
+    // The histogram will be created based on the first selected layer
     te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
 
     const te::map::LayerSchema* schema = selectedLayer->getSchema().release();
@@ -994,7 +994,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
       return;
     }
 
-    // The scatter will be accomplished only on the first layer selected
+    // The scatter will be created based on the first selected layer
     te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
 
     const te::map::LayerSchema* schema = selectedLayer->getSchema().release();

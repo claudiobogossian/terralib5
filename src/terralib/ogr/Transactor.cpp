@@ -235,10 +235,8 @@ void te::ogr::Transactor::execute(const std::string& command)
 
   OGRLayer* layer = m_ogrDs->getOGRDataSource()->ExecuteSQL(command.c_str(), 0, "");
 
-  if(layer == 0)
-    throw Exception(TR_OGR("Could not retrieve the DataSet from data source."));
-
-  m_ogrDs->getOGRDataSource()->ReleaseResultSet(layer);
+  if(layer != 0)
+    m_ogrDs->getOGRDataSource()->ReleaseResultSet(layer);
 }
 
 std::auto_ptr<te::da::PreparedQuery> te::ogr::Transactor::getPrepared(const std::string& /*qName*/)

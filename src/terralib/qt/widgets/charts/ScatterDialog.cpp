@@ -83,6 +83,8 @@ void te::qt::widgets::ScatterDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   te::qt::widgets::ScatterChart* chart = new te::qt::widgets::ScatterChart(m_scatterDataWidget->getScatter());
 
   //Creating and adjusting the chart Display's style.
@@ -102,5 +104,6 @@ void te::qt::widgets::ScatterDialog::onOkPushButtonClicked()
   //Adjusting the chart widget
   m_displayWidget = new te::qt::widgets::ChartDisplayWidget(chart, te::qt::widgets::SCATTER_CHART, chartDisplay, this->parentWidget());
 
+  QApplication::restoreOverrideCursor();
   this->accept();
 }
