@@ -141,7 +141,7 @@ void te::se::Rule::push_back(Symbolizer* s)
   m_symbolizers.push_back(s);
 }
 
-void te::se::Rule::setSymbolizer(size_t i, te::se::Symbolizer* s)
+void te::se::Rule::setSymbolizer(std::size_t i, te::se::Symbolizer* s)
 {
   assert(s);
   assert(i < m_symbolizers.size());
@@ -154,9 +154,17 @@ const std::vector<te::se::Symbolizer*>& te::se::Rule::getSymbolizers() const
   return m_symbolizers;
 }
 
-const te::se::Symbolizer* te::se::Rule::getSymbolizer(size_t i) const
+const te::se::Symbolizer* te::se::Rule::getSymbolizer(std::size_t i) const
 {
   assert(i < m_symbolizers.size());
   return m_symbolizers[i];
 }
 
+void te::se::Rule::removeSymbolizer(std::size_t i)
+{
+  assert(i < m_symbolizers.size());
+
+  delete m_symbolizers[i];
+
+  m_symbolizers.erase(m_symbolizers.begin() + i);
+}
