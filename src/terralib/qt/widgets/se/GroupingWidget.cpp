@@ -415,6 +415,8 @@ void te::qt::widgets::GroupingWidget::onApplyPushButtonClicked()
   updateUi();
 
   m_manual = false;
+
+  emit applyPushButtonClicked();
 }
 
 void te::qt::widgets::GroupingWidget::onTypeComboBoxActivated(int idx)

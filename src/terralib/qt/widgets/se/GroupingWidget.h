@@ -135,6 +135,11 @@ namespace te
 
           void onTableWidgetItemChanged(QTableWidgetItem* item);
 
+        signals:
+
+          void applyPushButtonClicked();
+
+
         private:
 
           std::auto_ptr<Ui::GroupingWidgetForm> m_ui;               //!< Widget form.
