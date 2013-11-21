@@ -80,33 +80,32 @@ namespace te
         };
 
         /*!
-          \struct ItemRemoved
+          \struct ItemOfLayerRemoved
 
-          \brief This event signals that a item is to be removed from the layer explorer.
+          \brief This event signals that a item belonging to a layer will be removed from the layer explorer.
 
           \ingroup afevents
          */
-        struct ItemRemoved : public Event
+        struct ItemOfLayerRemoved : public Event
         {
           /*!
             \brief Constructor.
 
-            \param item Item to be removed from the layer explorer.
+            \param item Item belonging to a layer to be removed from the layer explorer.
           */
-          ItemRemoved(te::qt::widgets::AbstractTreeItem* item)
-            : Event(ITEM_REMOVED),
+          ItemOfLayerRemoved(te::qt::widgets::AbstractTreeItem* item)
+            : Event(ITEM_OF_LAYER_REMOVED),
               m_item(item)
           {
           }
 
-          te::qt::widgets::AbstractTreeItem* m_item;  //!< Item to be removed.
+          te::qt::widgets::AbstractTreeItem* m_item;  //!< Item of the layer to be removed.
         };
-
 
         /*!
           \struct LayerRemoved
 
-          \brief This event signals that a layer was removed.
+          \brief This event signals that a layer is to be removed from the layer explorer.
 
           \ingroup afevents
          */
@@ -115,7 +114,7 @@ namespace te
           /*!
             \brief Constructor.
 
-            \param layer Layer removed.
+            \param layer Layer to be removed.
           */
           LayerRemoved(te::map::AbstractLayerPtr layer)
             : Event(LAYER_REMOVED),
@@ -129,7 +128,7 @@ namespace te
         /*!
           \struct LayerVisibilityChanged
 
-          \brief This event signals that a the layer visibility changed.
+          \brief This event signals that the layer visibility has changed.
 
           \ingroup afevents
         */

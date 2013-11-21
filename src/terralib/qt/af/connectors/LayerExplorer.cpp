@@ -90,36 +90,46 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
     }
     break;
 
-    case te::qt::af::evt::ITEM_REMOVED:
+    case te::qt::af::evt::LAYER_REMOVED:
     {
-      te::qt::af::evt::ItemRemoved* e = static_cast<te::qt::af::evt::ItemRemoved*>(evt);
+      te::qt::af::evt::LayerRemoved* e = static_cast<te::qt::af::evt::LayerRemoved*>(evt);
+
+      te::map::AbstractLayerPtr layer = e->m_layer;
+
+      ApplicationController::getInstance().getProject()->remove(layer);
+
+      // Remove the item from the layer explorer
+      te::qt::widgets::AbstractTreeItem* layerItem = m_explorer->getLayerItem(layer);
+      m_explorer->remove(layerItem);
+
+      te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
+      ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
+    }
+    break;
+
+    case te::qt::af::evt::ITEM_OF_LAYER_REMOVED:
+    {
+      te::qt::af::evt::ItemOfLayerRemoved* e = static_cast<te::qt::af::evt::ItemOfLayerRemoved*>(evt);
 
       te::qt::widgets::AbstractTreeItem* item = e->m_item;
 
       te::map::AbstractLayerPtr layer = item->getLayer();
 
-      // If the item is associated to a layer, remove the layer from the project;
-      // otherwise, remove the pie/bar chart, classification, etc associated to the item.
-      if(layer)
-        ApplicationController::getInstance().getProject()->remove(layer);
-      else
+      te::qt::widgets::AbstractTreeItem* parentItem = static_cast<te::qt::widgets::AbstractTreeItem*>(item->parent());
+
+      m_explorer->collapse(parentItem);
+
+      te::map::AbstractLayerPtr parentLayer = parentItem->getLayer();
+
+      if(item->getItemType() == "CHART_ITEM")
       {
-        te::qt::widgets::AbstractTreeItem* parentItem = static_cast<te::qt::widgets::AbstractTreeItem*>(item->parent());
-
-        m_explorer->collapse(parentItem);
-
-        te::map::AbstractLayerPtr parentLayer = parentItem->getLayer();
-
-        if(item->getItemType() == "CHART_ITEM")
-        {
-          // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
-          parentLayer->setChart(0);
-        }
-        else if(item->getItemType() == "GROUPING_ITEM")
-        {
-          // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
-          parentLayer->setGrouping(0);
-        }
+        // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
+        parentLayer->setChart(0);
+      }
+      else if(item->getItemType() == "GROUPING_ITEM")
+      {
+        // If the item is a chart item, remove the chart from the layer associated to the parent of this chart item.
+        parentLayer->setGrouping(0);
       }
 
       // Remove the item from the layer explorer

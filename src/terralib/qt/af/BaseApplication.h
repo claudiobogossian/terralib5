@@ -92,7 +92,9 @@ namespace te
 
           void onAddTabularLayerTriggered();
 
-          void onRemoveItemTriggered();
+          void onRemoveLayerTriggered();
+
+          void onLayerRemoveItemTriggered();
 
           void onRenameItemTriggered();
 
@@ -249,15 +251,16 @@ namespace te
           QAction* m_helpContents;
           QAction* m_helpUpdate;
           QAction* m_viewGrid;
-          QAction* m_projectRemoveItem;
-          QAction* m_projectRenameItem;
-          QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
           QAction *m_projectAddLayerQueryDataSet;
           QAction *m_projectAddLayerTabularDataSet;
           QAction* m_projectAddLayerGraph;
           QAction* m_projectAddFolderLayer;
+          QAction* m_projectRemoveLayer;
+          QAction* m_projectRenameLayer;
+          QAction* m_projectProperties;
           QAction* m_layerEdit;
+          QAction* m_layerRemoveItem;
           QAction* m_layerRename;
           QAction* m_layerExport;
           QAction* m_layerProperties;
