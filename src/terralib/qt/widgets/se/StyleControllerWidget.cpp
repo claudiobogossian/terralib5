@@ -52,13 +52,10 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
   // Signals & slots
   connect(m_ui->m_iconSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(changeLegendIconSize(int)));
   connect(m_ui->m_addSymbToolButton, SIGNAL(clicked()), this, SLOT(onAddSymbolizerClicked()));
-  connect(m_ui->m_delSymbToolButton, SIGNAL(clicked()), this, SLOT(onDelSymbolizerClicked()));
+  connect(m_ui->m_removeSymbToolButton, SIGNAL(clicked()), this, SLOT(onRemoveSymbolizerClicked()));
   connect(m_ui->m_upSymbToolButton, SIGNAL(clicked()), this, SLOT(onUpSymbolizerClicked()));
   connect(m_ui->m_downSymbToolButton, SIGNAL(clicked()), this, SLOT(onDownSymbolizerClicked()));
   connect(m_ui->m_mapRefreshToolButton, SIGNAL(clicked()), this, SLOT(onMapRefreshClicked()));
-
-  // TODO!
-  m_ui->m_delSymbToolButton->setEnabled(false);
 
   updateUi();
 }
@@ -82,7 +79,7 @@ void te::qt::widgets::StyleControllerWidget::updateUi()
   m_ui->m_upSymbToolButton->setIcon(QIcon::fromTheme("go-up").pixmap(16,16));
   m_ui->m_downSymbToolButton->setIcon(QIcon::fromTheme("go-down").pixmap(16,16));
   m_ui->m_addSymbToolButton->setIcon(QIcon::fromTheme("list-add").pixmap(16,16));
-  m_ui->m_delSymbToolButton->setIcon(QIcon::fromTheme("list-remove").pixmap(16,16));
+  m_ui->m_removeSymbToolButton->setIcon(QIcon::fromTheme("list-remove").pixmap(16,16));
   m_ui->m_mapRefreshToolButton->setIcon(QIcon::fromTheme("map-draw").pixmap(16,16));
 }
 
@@ -113,9 +110,35 @@ void te::qt::widgets::StyleControllerWidget::onAddSymbolizerClicked()
   m_explorer->updateStyleTree();
 }
 
-void te::qt::widgets::StyleControllerWidget::onDelSymbolizerClicked()
+void te::qt::widgets::StyleControllerWidget::onRemoveSymbolizerClicked()
 {
-  // TODO
+   te::se::Symbolizer* symb = m_explorer->getCurrentSymbolizer();
+
+  if(symb == 0)
+  {
+    QMessageBox::information(this, tr("Style"), tr("Select a symbol first."));
+    return;
+  }
+
+  te::se::Rule* rule = m_explorer->getCurrentRule();
+  assert(rule);
+
+  if(rule->getSymbolizers().size() == 1)
+  {
+    QMessageBox::information(this, tr("Style"), tr("The rule must have at least one symbol."));
+    return;
+  }
+
+  for(std::size_t i = 0; i < rule->getSymbolizers().size(); ++i)
+  {
+    if(rule->getSymbolizer(i) == symb)
+    {
+      rule->removeSymbolizer(i);
+      break;
+    }
+  }
+
+  m_explorer->updateStyleTree();
 }
 
 void te::qt::widgets::StyleControllerWidget::onUpSymbolizerClicked()
