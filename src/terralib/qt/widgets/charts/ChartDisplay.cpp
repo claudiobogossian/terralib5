@@ -47,6 +47,7 @@
 #include <qwt_symbol.h>
 
 //Qt
+#include <qapplication.h>
 #include <QtGui/QPen>
 
 //STL
@@ -132,6 +133,7 @@ void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oid
 {
   if(oids)
   {
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     const QwtPlotItemList& itmList = itemList(); 
 
     for ( QwtPlotItemIterator it = itmList.begin();
@@ -148,6 +150,7 @@ void te::qt::widgets::ChartDisplay::highlightOIds(const te::da::ObjectIdSet* oid
         break;
       }
     }
+    QApplication::restoreOverrideCursor();
   }
 }
 
@@ -199,6 +202,7 @@ void  te::qt::widgets::ChartDisplay::adjustDisplay()
 
 void te::qt::widgets::ChartDisplay::onPointPicked(const QPointF &pos)
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
   const QwtPlotItemList& itmList = itemList();
   for ( QwtPlotItemIterator it = itmList.begin();
       it != itmList.end(); ++it )
@@ -214,10 +218,12 @@ void te::qt::widgets::ChartDisplay::onPointPicked(const QPointF &pos)
       break;
     }
   }
+  QApplication::restoreOverrideCursor();
 }
 
 void te::qt::widgets::ChartDisplay::onRectPicked(const QRectF &rect)
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
   const QwtPlotItemList& itmList = itemList();
   for ( QwtPlotItemIterator it = itmList.begin();
       it != itmList.end(); ++it )
@@ -228,4 +234,5 @@ void te::qt::widgets::ChartDisplay::onRectPicked(const QRectF &rect)
     }
     break;
   }
+  QApplication::restoreOverrideCursor();
 }
