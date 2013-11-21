@@ -67,6 +67,7 @@ te::map::DataSetAdapterLayer::DataSetAdapterLayer(const std::string& id,
 
 te::map::DataSetAdapterLayer::~DataSetAdapterLayer()
 {
+  m_rtree.clear();
 }
 
 std::auto_ptr<te::map::LayerSchema> te::map::DataSetAdapterLayer::getSchema() const
@@ -99,8 +100,13 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(const std::
   assert(!m_datasetName.empty());
 
   te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
-  
-  // TODO: Build a r-Tree with positions + envelope!
+
+  std::auto_ptr<te::da::DataSetType> dsType = ds->getDataSetType(m_datasetName);
+
+  if(dsType->hasGeom())
+  {
+    return ds->getDataSet(m_datasetName, propertyName, e, r, travType, accessPolicy);
+  }
 
   // Gets all data
   std::auto_ptr<te::da::DataSet> inputData = ds->getDataSet(m_datasetName, travType, accessPolicy);
@@ -109,21 +115,9 @@ std::auto_ptr<te::da::DataSet> te::map::DataSetAdapterLayer::getData(const std::
   std::auto_ptr<te::da::DataSet> adaptedDataSet;
   adaptedDataSet.reset(te::da::CreateAdapter(inputData.release(), m_converter.get(), true));
 
-  // Filter
-  std::size_t pos = 0;
   std::vector<std::size_t> positions;
-  while(adaptedDataSet->moveNext())
-  {
-    std::auto_ptr<te::gm::Geometry> geom(adaptedDataSet->getGeometry(propertyName));
-    assert(geom.get());
 
-    const te::gm::Envelope* geomEnvelope = geom->getMBR();
-
-    if(geomEnvelope->intersects(*e))
-      positions.push_back(pos);
-
-    ++pos;
-  }
+  m_rtree.search(*(e), positions);
 
   adaptedDataSet->moveBeforeFirst();
 
@@ -225,6 +219,38 @@ te::da::DataSetTypeConverter* te::map::DataSetAdapterLayer::getConverter() const
 void te::map::DataSetAdapterLayer::setConverter(std::auto_ptr<te::da::DataSetTypeConverter> converter)
 {
   m_converter = converter;
+
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  std::auto_ptr<te::da::DataSetType> dsType = ds->getDataSetType(m_datasetName);
+
+  if(!dsType->hasGeom())
+  {
+     m_rtree.clear();
+
+    // Gets all data
+    std::auto_ptr<te::da::DataSet> inputData = ds->getDataSet(m_datasetName);
+
+    // Creates the data set adapter
+    std::auto_ptr<te::da::DataSet> adaptedDataSet;
+    adaptedDataSet.reset(te::da::CreateAdapter(inputData.release(), m_converter.get(), true));
+
+    std::size_t geomPropPos = te::da::GetFirstSpatialPropertyPos(adaptedDataSet.get());
+
+    std::size_t pos = 0;
+
+    while(adaptedDataSet->moveNext())
+    {
+      std::auto_ptr<te::gm::Geometry> geom(adaptedDataSet->getGeometry(geomPropPos));
+      assert(geom.get());
+
+      te::gm::Envelope env(*geom->getMBR());
+
+      m_rtree.insert(env, pos);
+
+      ++pos;
+    }
+  }
 }
 
 const std::string& te::map::DataSetAdapterLayer::getType() const
