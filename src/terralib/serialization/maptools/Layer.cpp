@@ -41,7 +41,6 @@
 #include "../../geometry/Envelope.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../../geometry/serialization/xml/Serializer.h"
-#include "../../geometry/Utils.h"
 #include "../../se/CoverageStyle.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
@@ -131,7 +130,7 @@ te::map::GroupingType GetGroupingType(const std::string& type)
   }
 }
 
-te::dt::SimpleProperty* GetProperty(std::string name, std::size_t dataType, std::size_t geomType, std::size_t srid)
+te::dt::SimpleProperty* GetProperty(std::string name, int dataType, int geomType, int srid)
 {
    te::dt::SimpleProperty* simpleProperty = 0;
 
@@ -173,7 +172,7 @@ te::dt::SimpleProperty* GetProperty(std::string name, std::size_t dataType, std:
         
     case te::dt::GEOMETRY_TYPE:
     {
-      simpleProperty = new te::gm::GeometryProperty(name, srid, te::gm::GetGeomType(geomType));
+      simpleProperty = new te::gm::GeometryProperty(name, srid, (te::gm::GeomType)geomType);
       break;
     }
 
@@ -1171,7 +1170,7 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
 
     assert(reader.getNodeType() == te::xml::VALUE);
 
-    std::size_t type = reader.getElementValueAsInt32();
+    int type = reader.getElementValueAsInt32();
 
     reader.next();
 
@@ -1194,8 +1193,8 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
 
     reader.next();
 
-    std::size_t geomType;
-    std::size_t srid;
+    int geomType;
+    int srid;
 
     assert(reader.getNodeType() == te::xml::START_ELEMENT);
     assert(reader.getElementLocalName() == "geomType");

@@ -88,16 +88,7 @@ namespace te
 
       \exception Exception It throws an exception if the spatial relation is not valid or if the test can not be evaluated.
     */
-    TEGEOMEXPORT bool SatisfySpatialRelation(const Geometry* g1, const Geometry* g2, SpatialRelation relation);      
-
-    /*!
-      \brief It returns a GeomType enum based on a number.
-     
-      \param geomType geometry type as number.
-
-      \return It returns a GeomType enum option.
-    */
-    TEGEOMEXPORT te::gm::GeomType GetGeomType(const std::size_t type);
+    TEGEOMEXPORT bool SatisfySpatialRelation(const Geometry* g1, const Geometry* g2, SpatialRelation relation);
 
   } // end namespace gm
 }   // end namespace te
