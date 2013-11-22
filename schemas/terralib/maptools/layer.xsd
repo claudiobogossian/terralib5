@@ -104,6 +104,47 @@
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:element name="DataSetAdapterLayer" type="te_map:DataSetAdapterLayerType" substitutionGroup="te_map:AbstractLayer" />
+
+  <xsd:complexType name="DataSetAdapterLayerType">
+    <xsd:complexContent>
+      <xsd:extension base="te_map:AbstractLayerType">
+        <xsd:sequence>
+          <xsd:element name="DataSetName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="DataSourceId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="RendererType" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="Converter" type="te_map:DataSetTypeConverterType" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="PropertyIndexesType">
+    <xsd:sequence>
+      <xsd:element name="InIdx" type="xsd:integer" minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="OutIdx" type="xsd:integer" use="required" />
+  </xsd:complexType>
+
+  <xsd:complexType name="OutPropInfoType">
+    <xsd:sequence>
+      <xsd:element name="type" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="geomType" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="srid" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+
+  <xsd:complexType name="DataSetTypeConverterType">
+    <xsd:sequence>
+      <xsd:element name="InDataSetTypeName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="OutPropInfo" type="te_map:OutPropInfoType" minOccurs="1" maxOccurs="unbounded" />
+      <xsd:element name="PropertyIndex" type="te_map:PropertyIndexesType" minOccurs="1" maxOccurs="unbounded" />
+      <xsd:element name="FunctionName" type="xsd:string" minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
   <xsd:complexType name="StyleType">
     <xsd:annotation>
       <xsd:documentation>The layer style</xsd:documentation>
@@ -193,5 +234,7 @@
       <xsd:enumeration value="BAR" />
     </xsd:restriction>
   </xsd:simpleType>
+
+  
 
 </xsd:schema>

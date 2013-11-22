@@ -102,8 +102,8 @@ void te::qt::plugins::rp::Plugin::shutdown()
     return;
 
 //remove from application layer tree pop up menu
-  te::qt::af::evt::LayerPopUpRemoveAction evt(m_popupAction);
-  te::qt::af::ApplicationController::getInstance().broadcast(&evt);
+  //te::qt::af::evt::LayerPopUpRemoveAction evt(m_popupAction);
+  //te::qt::af::ApplicationController::getInstance().broadcast(&evt);
 
 // remove menu
   delete m_rpMenu;

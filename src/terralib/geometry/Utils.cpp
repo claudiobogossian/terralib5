@@ -90,6 +90,3 @@ bool te::gm::SatisfySpatialRelation(const Geometry* g1,
       throw Exception(TR_GEOM("Invalid spatial relation!"));
   }
 }
-
-
-

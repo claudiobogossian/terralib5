@@ -407,6 +407,8 @@ void te::qt::widgets::ColorMapWidget::onApplyPushButtonClicked()
     buildRecodingMap();
   }
 
+  emit applyPushButtonClicked();
+
   updateUi();
 }
 

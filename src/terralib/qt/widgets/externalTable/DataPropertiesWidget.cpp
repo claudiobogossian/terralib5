@@ -30,6 +30,7 @@
 #include "../../../dataaccess/dataset/PrimaryKey.h"
 #include "../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype/Property.h"
@@ -289,11 +290,22 @@ void te::qt::widgets::DatapPropertiesWidget::onInputDataToolButtonTriggered()
   std::string file = uri.stem().string();
 
   //Creating a DataSource
-  m_dataSource = te::da::DataSourceFactory::make("OGR");
-  m_dataSource->setConnectionInfo(connInfo);
-
   static boost::uuids::basic_random_generator<boost::mt19937> gen;
   boost::uuids::uuid u = gen();
+
+  te::da::DataSourceInfoPtr dsInfo(new te::da::DataSourceInfo);
+  dsInfo->setConnInfo(connInfo);
+  dsInfo->setId(boost::uuids::to_string(u));
+  dsInfo->setTitle(fileName.toStdString());
+  dsInfo->setDescription("");
+  dsInfo->setAccessDriver("OGR");
+  dsInfo->setType("OGR");
+
+  te::da::DataSourceInfoManager::getInstance().add(dsInfo);
+
+  m_dataSource = te::da::DataSourceFactory::make(dsInfo->getAccessDriver());
+  m_dataSource->setConnectionInfo(dsInfo->getConnInfo());
+
   m_dataSource->setId(boost::uuids::to_string(u));
   m_dataSource->open();
 

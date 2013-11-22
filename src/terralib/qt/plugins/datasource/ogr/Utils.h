@@ -18,29 +18,32 @@
  */
 
 /*!
-  \file terralib/gdal/DataSetUseCounter.cpp
-
-  \brief GDAL data set use counter.
+  \file terralib/qt/plugins/datasource/ogr/Utils.h
+   
+  \brief Utility functions for the OGR data source widget plugin.
 */
 
-// TerraLib
-#include "DataSetUseCounter.h"
-#include "Exception.h"
-#include "../common/Translator.h"
+#ifndef __TE_QT_PLUGINS_DATASOURCE_OGR_INTERNAL_UTILS_H
+#define __TE_QT_PLUGINS_DATASOURCE_OGR_INTERNAL_UTILS_H
 
-te::gdal::DataSetUseCounter::DataSetUseCounter( const std::string& uri,
-  const DataSetsManager::AccessType aType )
-  throw( te::gdal::Exception )
-  : m_uri( uri )
+// Qt
+#include <QtCore/QString>
+
+namespace te
 {
-  if( !DataSetsManager::getInstance().incrementUseCounter( m_uri, aType ) )
+  namespace qt
   {
-    throw Exception(TR_GDAL("Maximum number of concurrent dataset instances reached"), te::common::NO_CONNECTION_AVAILABLE);
-  }  
-}
+    namespace plugins
+    {
+      namespace ogr
+      {
+        bool IsShapeFile(const QString& path);
 
-te::gdal::DataSetUseCounter::~DataSetUseCounter()
-{
-  DataSetsManager::getInstance().decrementUseCounter( m_uri );
-}
+        bool HasShapeFileSpatialIndex(const QString& path);
 
+      } // end namespace ogr
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TE_QT_PLUGINS_DATASOURCE_OGR_INTERNAL_UTILS_H

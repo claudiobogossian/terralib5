@@ -279,6 +279,9 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
   // The selection tool come active as default
   onSelectionToggled(true);
   m_mapSelection->setChecked(true);
+
+  m_viewDataTable->setChecked(false);
+  m_viewDataTable->setEnabled(false);
 }
 
 void  te::qt::af::BaseApplication::resetState()
@@ -947,6 +950,8 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
   doc->raise();
 
   m_viewDataTable->setChecked(true);
+
+  m_viewDataTable->setEnabled(true);
 }
 
 void te::qt::af::BaseApplication::onLayerHistogramTriggered()
@@ -962,7 +967,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
       return;
     }
 
-    // The histogram will be accomplished only on the first layer selected
+    // The histogram will be created based on the first selected layer
     te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
 
     const te::map::LayerSchema* schema = selectedLayer->getSchema().release();
@@ -1005,7 +1010,7 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
       return;
     }
 
-    // The scatter will be accomplished only on the first layer selected
+    // The scatter will be created based on the first selected layer
     te::map::AbstractLayerPtr selectedLayer = *(selectedLayers.begin());
 
     const te::map::LayerSchema* schema = selectedLayer->getSchema().release();
@@ -1449,7 +1454,10 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::af::DataSetTableDock
     m_tableDocks.erase(it);
 
   if(m_tableDocks.empty())
+  {
     m_viewDataTable->setChecked(false);
+    m_viewDataTable->setEnabled(false);
+  }
 
   ApplicationController::getInstance().removeListener(wid);
 }

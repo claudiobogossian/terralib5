@@ -35,7 +35,7 @@
 #include <cassert>
 
 te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type)
-  : m_inDataSetType(type)
+  : m_inDataSetType(dynamic_cast<DataSetType*>(type->clone()))
 {
   assert(type);
 
@@ -49,7 +49,7 @@ te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type)
 }
 
 te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const DataSourceCapabilities& capabilities)
-  : m_inDataSetType(type)
+  : m_inDataSetType(dynamic_cast<DataSetType*>(type->clone()))
 {
   assert(type);
 
@@ -90,6 +90,7 @@ te::da::DataSetTypeConverter::DataSetTypeConverter(DataSetType* type, const Data
 te::da::DataSetTypeConverter::~DataSetTypeConverter()
 {
   delete m_outDataSetType;
+  delete m_inDataSetType;
 }
 
 te::da::DataSetType* te::da::DataSetTypeConverter::getConvertee()

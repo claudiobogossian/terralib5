@@ -148,7 +148,8 @@ bool te::qt::widgets::ClassifierWizard::execute()
   {
     if(algorithmInstance.execute(algoOutputParams))
     {
-
+      algoOutputParams.reset();
+      
       QMessageBox::information(this, tr("Classifier"), tr("Classifier ended sucessfully"));
     }
     else

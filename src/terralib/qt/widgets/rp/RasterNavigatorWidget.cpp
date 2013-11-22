@@ -424,7 +424,7 @@ void te::qt::widgets::RasterNavigatorWidget::onRecomposeClicked()
 
   m_mapDisplay->setExtent(env);
 
-  m_eyeBirdMapDisplay->recompose();
+  m_eyeBirdMapDisplay->recompose(env);
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onRedComboBoxActivated(int index)

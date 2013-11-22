@@ -142,6 +142,10 @@ void te::qt::widgets::BasicStrokePropertyItem::updateUi()
       }
     }
   }
+  else
+  {
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_enumManager->setValue(m_dashProperty, 0);
+  }
 
   // Join Style
   const te::se::SvgParameter* join = m_stroke->getLineJoin();
@@ -161,6 +165,10 @@ void te::qt::widgets::BasicStrokePropertyItem::updateUi()
       ++it;
     }
   }
+  else
+  {
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_enumManager->setValue(m_joinProperty, 0); //TE_SE_MITRE_JOIN
+  }
 
   // Cap Style
   const te::se::SvgParameter* cap = m_stroke->getLineCap();
@@ -179,6 +187,10 @@ void te::qt::widgets::BasicStrokePropertyItem::updateUi()
 
       ++it;
     }
+  }
+  else
+  {
+    te::qt::widgets::AbstractPropertyManager::getInstance().m_enumManager->setValue(m_capProperty, 0); //TE_SE_BUTT_CAP
   }
 }
 

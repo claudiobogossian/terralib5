@@ -104,7 +104,7 @@ namespace te
 
           void onAddSymbolizerClicked();
 
-          void onDelSymbolizerClicked();
+          void onRemoveSymbolizerClicked();
 
           void onUpSymbolizerClicked();
 

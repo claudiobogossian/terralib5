@@ -74,7 +74,7 @@ namespace te
           */
           void setList(std::list<te::map::AbstractLayerPtr>& layerList, int srid);
 
-          void recompose();
+          void recompose(te::gm::Envelope& e);
 
           void setEnabled(bool status);
 
