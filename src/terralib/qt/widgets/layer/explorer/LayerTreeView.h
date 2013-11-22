@@ -66,7 +66,6 @@ namespace te
 
           enum ContextMenuSelectionType
           {
-            ALL_SELECTION_TYPES,
             NO_ITEM_SELECTED,
             UNIQUE_ITEM_SELECTED,
             MULTIPLE_ITEMS_SELECTED
@@ -119,16 +118,14 @@ namespace te
             \param action                The action to be associated to the context menu.
             \param menu                  The name of a submenu, using a dot separator notation. If omitted, the action will be set on a top menu item.
             \param itemType              If omitted the action will be set to all item types.
-            \param menuSelectionType     The type of selection to what this action will be displayed.
-            \param applyActionToSubType  If true, the action is to be applied to the item subtype.
+            \param menuSelectionType     The selection type of the context menu.
 
-            \note LayerTreeView will not take the action ownership.
+            \note LayerTreeView will not take the ownership of the action.
           */
           void add(QAction* action,
-                   const QString& menu,
-                   const std::string& itemType,
-                   ContextMenuSelectionType menuSelectionType,
-                   bool applyActionToSubType = true);
+                   const std::string& menu = "",
+                   const std::string& itemType = "",
+                   ContextMenuSelectionType menuSelectionType = te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
 
           /*!
             \brief It removes the action from the list of context menu.

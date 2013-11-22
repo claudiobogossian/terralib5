@@ -96,7 +96,7 @@ namespace te
 
           void onLayerRemoveItemTriggered();
 
-          void onRenameItemTriggered();
+          void onRenameLayerTriggered();
 
           void onPluginsManagerTriggered();
 
@@ -261,7 +261,6 @@ namespace te
           QAction* m_projectProperties;
           QAction* m_layerEdit;
           QAction* m_layerRemoveItem;
-          QAction* m_layerRename;
           QAction* m_layerExport;
           QAction* m_layerProperties;
           QAction* m_layerSRS;

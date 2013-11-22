@@ -521,7 +521,7 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
   if(selectedLayerItems.empty())
   {
     QString msg = tr("Select at least one layer to be removed!");
-    QMessageBox::warning(this, tr("Remove Item"), msg);
+    QMessageBox::warning(this, tr("Remove Layer"), msg);
 
     return;
   }
@@ -531,13 +531,13 @@ void te::qt::af::BaseApplication::onRemoveLayerTriggered()
 
   if(selectedLayerItems.size() == 1)
   {
-    msg = tr("Do you really want to remove the selected item?");
-    questionTitle = tr("Remove Item");
+    msg = tr("Do you really want to remove the selected layer?");
+    questionTitle = tr("Remove Layer");
   }
   else
   {
-    msg = tr("Do you really want to remove the selected items?");
-    questionTitle = tr("Remove Items");
+    msg = tr("Do you really want to remove the selected layers?");
+    questionTitle = tr("Remove Layers");
   }
 
   int reply = QMessageBox::question(this, questionTitle, msg, QMessageBox::No, QMessageBox::Yes);
@@ -565,24 +565,24 @@ void te::qt::af::BaseApplication::onLayerRemoveItemTriggered()
   }
 }
 
-void te::qt::af::BaseApplication::onRenameItemTriggered()
+void te::qt::af::BaseApplication::onRenameLayerTriggered()
 {
- std::list<te::qt::widgets::AbstractTreeItem*> selectedItems = m_explorer->getExplorer()->getSelectedItems();
+ std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedLayerItems();
 
-  if(selectedItems.empty() ||
-    (selectedItems.size() == 1 &&  !selectedItems.front()->getLayer()) ||
-    selectedItems.size() > 1)
+  if(selectedLayerItems.empty() ||
+    (selectedLayerItems.size() == 1 &&  !selectedLayerItems.front()->getLayer()) ||
+    selectedLayerItems.size() > 1)
   {
-    QString msg = tr("Select only the item layer in the layer explorer to be renamed!");
-    QMessageBox::warning(this, tr("Rename Layer Item"), msg);
+    QString msg = tr("Select only one layer to be renamed!");
+    QMessageBox::warning(this, tr("Rename Layer"), msg);
 
     return;
   }
 
   bool ok;
   QString text = QInputDialog::getText(this, ApplicationController::getInstance().getAppTitle(),
-                                       tr("Rename Item:"), QLineEdit::Normal,
-                                       tr("Enter the new name"), &ok);
+                                       tr("Rename Layer:"), QLineEdit::Normal,
+                                       tr("Enter the new layer name"), &ok);
 
   if (!ok)
     return;
@@ -593,8 +593,7 @@ void te::qt::af::BaseApplication::onRenameItemTriggered()
     return;
   }
 
-  std::list<te::qt::widgets::AbstractTreeItem*> selectedLayerItems = m_explorer->getExplorer()->getSelectedItems();
-  te::qt::widgets::AbstractTreeItem* selectedLayerItem = *(selectedLayerItems.begin());
+  te::qt::widgets::AbstractTreeItem* selectedLayerItem = selectedLayerItems.front();
   te::map::AbstractLayerPtr layer = selectedLayerItem->getLayer();
   layer->setTitle(text.toStdString());
 
@@ -1665,76 +1664,123 @@ void te::qt::af::BaseApplication::makeDialog()
   te::qt::widgets::LayerTreeView* treeView = lexplorer->getTreeView();
   treeView->setAnimated(true);
 
-  // *****************************************************************************
-  // Add the actions to the tree view for the several context menu selection types
-  // *****************************************************************************
+  // **********************************************************************************************
+  // Add the actions to the context menu of the tree view according to the number of selected items
+  // **********************************************************************************************
 
-  // Actions for the NO_SELECTED_ITEMS context menu selection type
+  /****************** Actions to be added to the context menu when there is no item selected ******************/
+
   treeView->add(m_projectAddLayerMenu->menuAction(), "", "", te::qt::widgets::LayerTreeView::NO_ITEM_SELECTED);
 
-  QAction* noItemsSelectedSep = new QAction(this);
-  noItemsSelectedSep->setSeparator(true);
-  treeView->add(noItemsSelectedSep, "", "", te::qt::widgets::LayerTreeView::NO_ITEM_SELECTED);
+  QAction* noItemSelectedSep = new QAction(this);
+  noItemSelectedSep->setSeparator(true);
+  treeView->add(noItemSelectedSep, "", "", te::qt::widgets::LayerTreeView::NO_ITEM_SELECTED);
 
   treeView->add(m_projectAddFolderLayer, "", "", te::qt::widgets::LayerTreeView::NO_ITEM_SELECTED);
 
-  // Actions for the folder item type and the UNIQUE_ITEM_SELECTED context menu selection type
-  treeView->add(m_projectAddLayerMenu->menuAction(), "", "FOLDER_LAYER_ITEM", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
+  /****************** Actions to be added to the context menu when there is a unique item selected ******************/
 
-  QAction* folderAndItemSelectedSep = new QAction(this);
-  folderAndItemSelectedSep->setSeparator(true);
-  treeView->add(folderAndItemSelectedSep, "", "FOLDER_LAYER_ITEM", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
+  // Actions for the folder layer item
+  treeView->add(m_projectAddLayerMenu->menuAction(), "", "FOLDER_LAYER_ITEM");
 
-  treeView->add(m_projectAddFolderLayer, "", "FOLDER_LAYER_ITEM", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
+  QAction* folderSep1 = new QAction(this);
+  folderSep1->setSeparator(true);
+  treeView->add(folderSep1, "", "FOLDER_LAYER_ITEM");
 
-  // Actions for the UNIQUE_SELECTED_ITEM context menu selection type
-  treeView->add(m_layerObjectGrouping, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
-  treeView->add(m_toolsDataExchangerDirectPopUp, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
-  treeView->add(m_layerChartsHistogram, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
-  treeView->add(m_layerChart, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED, false);
-  treeView->add(m_queryLayer, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
-  treeView->add(m_layerChartsScatter, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED, false);
+  treeView->add(m_projectAddFolderLayer, "", "FOLDER_LAYER_ITEM");
+
+  QAction* folderSep2 = new QAction(this);
+  folderSep2->setSeparator(true);
+  treeView->add(folderSep2, "", "FOLDER_LAYER_ITEM");
+
+  treeView->add(m_projectRemoveLayer, "", "FOLDER_LAYER_ITEM");
+  treeView->add(m_projectRenameLayer, "", "FOLDER_LAYER_ITEM");
+
+  // Actions for the single layer item that is not a raster layer
+  treeView->add(m_layerObjectGrouping);
+  treeView->add(m_toolsDataExchangerDirectPopUp);
+  treeView->add(m_layerChartsHistogram);
+  treeView->add(m_layerChart);
+  treeView->add(m_queryLayer);
+  treeView->add(m_layerChartsScatter);
 
   QAction* actionChartSep = new QAction(this);
   actionChartSep->setSeparator(true);
-  treeView->add(actionChartSep, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  treeView->add(actionChartSep);
 
-  treeView->add(m_layerShowTable, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
-  treeView->add(m_viewStyleExplorer, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
+  treeView->add(m_layerShowTable);
+  treeView->add(m_viewStyleExplorer);
 
   QAction* actionStyleSep = new QAction(this);
   actionStyleSep->setSeparator(true);
-  treeView->add(actionStyleSep, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  treeView->add(actionStyleSep);
 
-  treeView->add(m_layerRemoveObjectSelection, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
-  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
-  treeView->add(m_projectRenameLayer, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
+  treeView->add(m_layerRemoveObjectSelection);
+  treeView->add(m_projectRemoveLayer);
+  treeView->add(m_projectRenameLayer);
 
   QAction* actionRemoveSep = new QAction(this);
   actionRemoveSep->setSeparator(true);
-  treeView->add(actionRemoveSep, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  treeView->add(actionRemoveSep);
 
-  treeView->add(m_layerFitOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
-  treeView->add(m_layerFitSelectedOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
-  treeView->add(m_layerPanToSelectedOnMapDisplay, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+  treeView->add(m_layerFitOnMapDisplay);
+  treeView->add(m_layerFitSelectedOnMapDisplay);
+  treeView->add(m_layerPanToSelectedOnMapDisplay);
 
   QAction* actionFitSep = new QAction(this);
   actionFitSep->setSeparator(true);
-  treeView->add(actionFitSep, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  treeView->add(actionFitSep);
 
-  treeView->add(m_layerSRS, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
+  treeView->add(m_layerSRS);
 
   QAction* actionSRSSep = new QAction(this);
   actionSRSSep->setSeparator(true);
-  treeView->add(actionSRSSep, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  treeView->add(actionSRSSep);
 
-  treeView->add(m_layerProperties, "", "", te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
+  treeView->add(m_layerProperties);
 
-  QAction* actionPropertiesSep = new QAction(this);
-  actionPropertiesSep->setSeparator(true);
-  treeView->add(actionPropertiesSep, "", "", te::qt::widgets::LayerTreeView::ALL_SELECTION_TYPES);
+  // Actions for the items of a layer item such as the chart item and the grouping item
+  treeView->add(m_layerRemoveItem, "", "ITEM_OF_LAYER");
 
-  // **********End the actions to the tree view for the several context menu selection types ********
+  // Actions for the raster layer item
+  treeView->add(m_layerChartsHistogram, "", "RASTER_LAYER_ITEM");
+
+  QAction* rasterSep1 = new QAction(this);
+  rasterSep1->setSeparator(true);
+  treeView->add(rasterSep1, "", "RASTER_LAYER_ITEM");
+
+  treeView->add(m_viewStyleExplorer, "", "RASTER_LAYER_ITEM");
+
+  QAction* rasterSep2 = new QAction(this);
+  rasterSep2->setSeparator(true);
+  treeView->add(rasterSep2, "", "RASTER_LAYER_ITEM");
+
+  treeView->add(m_projectRemoveLayer, "", "RASTER_LAYER_ITEM");
+  treeView->add(m_projectRenameLayer, "", "RASTER_LAYER_ITEM");
+
+  QAction* rasterSep3 = new QAction(this);
+  rasterSep3->setSeparator(true);
+  treeView->add(rasterSep3, "", "RASTER_LAYER_ITEM");
+
+  treeView->add(m_layerFitOnMapDisplay, "", "RASTER_LAYER_ITEM");
+
+  QAction* rasterSep4 = new QAction(this);
+  rasterSep4->setSeparator(true);
+  treeView->add(rasterSep4, "", "RASTER_LAYER_ITEM");
+
+  treeView->add(m_layerSRS, "", "RASTER_LAYER_ITEM");
+
+  QAction* rasterSep5 = new QAction(this);
+  rasterSep5->setSeparator(true);
+  treeView->add(rasterSep5, "", "RASTER_LAYER_ITEM");
+
+  treeView->add(m_layerProperties, "", "RASTER_LAYER_ITEM");
+
+  /********* Actions to be added to the context menu when there is multiple items selected ***********/
+
+  treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+
+  // ********** End the actions to be added to the context menu ********
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 
@@ -1894,7 +1940,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectAddFolderLayer, "folderlayer-new", "Project.New Folder Layer", tr("Add &Folder Layer..."), tr("Add a new folder layer"), true, false, true, m_menubar);
   initAction(m_projectAddLayerQueryDataSet, "view-filter", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
   initAction(m_projectAddLayerTabularDataSet, "view-data-table", "Project.Add Layer.Tabular File", tr("&Tabular File..."), tr("Add a new layer from a Tabular file"), true, false, true, m_menubar);
-  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, true, this);
+  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer(s)"), tr("Remove layer(s) from the project"), true, false, true, this);
   initAction(m_projectRenameLayer, "layer-rename", "Project.Rename Layer", tr("Rename Layer..."), tr("Rename layer"), true, false, true, this);
   initAction(m_projectProperties, "document-info", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
@@ -2237,7 +2283,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
   connect(m_projectAddLayerTabularDataSet, SIGNAL(triggered()), SLOT(onAddTabularLayerTriggered()));
   connect(m_projectRemoveLayer, SIGNAL(triggered()), SLOT(onRemoveLayerTriggered()));
-  connect(m_projectRenameLayer, SIGNAL(triggered()), SLOT(onRenameItemTriggered()));
+  connect(m_projectRenameLayer, SIGNAL(triggered()), SLOT(onRenameLayerTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));

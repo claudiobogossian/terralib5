@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -148,12 +148,11 @@ te::qt::widgets::LayerTreeView::ContextMenuSelectionType te::qt::widgets::LayerE
 }
 
 void te::qt::widgets::LayerExplorer::add(QAction* action,
-                                         const QString& menu,
+                                         const std::string& menu,
                                          const std::string& itemType,
-                                         te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuType,
-                                         bool applyActionToSubType)
+                                         te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuType)
 {
-  m_treeView->add(action, menu, itemType, menuType, applyActionToSubType);
+  m_treeView->add(action, menu, itemType, menuType);
 }
 
 void te::qt::widgets::LayerExplorer::onSelectedLayersChanged(const std::list<te::map::AbstractLayerPtr>& selectedLayers)

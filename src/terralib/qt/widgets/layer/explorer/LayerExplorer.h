@@ -154,16 +154,14 @@ namespace te
             \param action                The action to be associated to the context menu.
             \param menu                  The name of a submenu, using a dot separator notation. If omitted, the action will be set on a top menu item.
             \param itemType              If omitted the action will be set to all item types.
-            \param menuSelectionType     The type of selection to what this action will be displayed.
-            \param applyActionToSubType  If true, the action is to be applied to the item subtype.
+            \param menuSelectionType     The selection type of the context menu.
 
-            \note The associated LayerTreeView will not take the action ownership.
+            \note The LayerTreeView will not take the ownership of the action.
           */
           void add(QAction* action,
-                   const QString& menu,
-                   const std::string& itemType,
-                   te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuSelectionType,
-                   bool applyActionToSubType = true);
+                   const std::string& menu = "",
+                   const std::string& itemType = "",
+                   te::qt::widgets::LayerTreeView::ContextMenuSelectionType menuSelectionType = te::qt::widgets::LayerTreeView::UNIQUE_ITEM_SELECTED);
 
           signals:
 
