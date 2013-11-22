@@ -27,15 +27,26 @@
 #include "../../common/BoostUtils.h"
 #include "../../common/Translator.h"
 #include "../../color/RGBAColor.h"
+#include "../../dataaccess/dataset/AttributeConverterManager.h"
+#include "../../dataaccess/dataset/DataSetTypeConverter.h"
+#include "../../dataaccess/datasource/DataSourceManager.h"
 #include "../../dataaccess/serialization/xml/Serializer.h"
 #include "../../dataaccess/utils/Utils.h"
+#include "../../datatype/DateTimeProperty.h"
+#include "../../datatype/NumericProperty.h"
+#include "../../datatype/Property.h"
+#include "../../datatype/SimpleProperty.h"
+#include "../../datatype/StringProperty.h"
+#include "../../datatype/serialization/xml/Serializer.h"
 #include "../../geometry/Envelope.h"
+#include "../../geometry/GeometryProperty.h"
 #include "../../geometry/serialization/xml/Serializer.h"
 #include "../../se/CoverageStyle.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../maptools/Chart.h"
+#include "../../maptools/DataSetAdapterLayer.h"
 #include "../../maptools/DataSetLayer.h"
 #include "../../maptools/FolderLayer.h"
 #include "../../maptools/Grouping.h"
@@ -61,10 +72,12 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader);
+te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader);
 void DataSetLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 void QueryLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 void FolderLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 void RasterLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
+void DataSetAdapterLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 
 te::map::Visibility GetVisibility(const std::string& visible)
 {
@@ -115,6 +128,62 @@ te::map::GroupingType GetGroupingType(const std::string& type)
       return "UNIQUE_VALUE";
     }
   }
+}
+
+te::dt::SimpleProperty* GetProperty(std::string name, int dataType, int geomType, int srid)
+{
+   te::dt::SimpleProperty* simpleProperty = 0;
+
+  switch(dataType)
+  {
+    case te::dt::BOOLEAN_TYPE:
+    case te::dt::CHAR_TYPE:
+    case te::dt::DOUBLE_TYPE:
+    case te::dt::FLOAT_TYPE:
+    case te::dt::INT16_TYPE:
+    case te::dt::INT32_TYPE:
+    case te::dt::INT64_TYPE:
+    case te::dt::UCHAR_TYPE:
+    case te::dt::UINT16_TYPE:
+    case te::dt::UINT32_TYPE:
+    case te::dt::UINT64_TYPE:
+    {
+      simpleProperty = new te::dt::SimpleProperty(name, dataType);
+      break;
+    }
+
+    case te::dt::STRING_TYPE:
+    {
+      simpleProperty = new te::dt::StringProperty(name);
+      break;
+    }
+
+    case te::dt::NUMERIC_TYPE:
+    {
+      simpleProperty = new te::dt::NumericProperty(name, 0, 0);
+      break;
+    }
+
+    case te::dt::DATETIME_TYPE:
+    {
+      simpleProperty = new te::dt::DateTimeProperty(name);
+      break;
+    }
+        
+    case te::dt::GEOMETRY_TYPE:
+    {
+      simpleProperty = new te::gm::GeometryProperty(name, srid, (te::gm::GeomType)geomType);
+      break;
+    }
+
+    default:
+    {
+      simpleProperty = 0;
+      return false;
+    }
+  }
+
+  return simpleProperty;
 }
 
 
@@ -647,6 +716,7 @@ te::serialize::Layer::Layer()
   m_fncts["QUERYLAYER"] = std::make_pair(LayerReadFnctType(&QueryLayerReader), LayerWriteFnctType(&QueryLayerWriter));
   m_fncts["FOLDERLAYER"] = std::make_pair(LayerReadFnctType(&FolderLayerReader), LayerWriteFnctType(&FolderLayerWriter));
   m_fncts["RASTERLAYER"] = std::make_pair(LayerReadFnctType(&RasterLayerReader), LayerWriteFnctType(&RasterLayerWriter));
+  m_fncts["DATASETADAPTERLAYER"] = std::make_pair(LayerReadFnctType(&DataSetAdapterLayerReader), LayerWriteFnctType(&DataSetAdapterLayerWriter));
 }
 
 te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
@@ -1009,6 +1079,271 @@ te::map::AbstractLayer* RasterLayerReader(te::xml::Reader& reader)
   return layer.release();
 }
 
+te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
+{
+  std::string id = reader.getAttr(0);
+
+  /* Title Element */
+  reader.next();
+  std::string title = ReadLayerTitle(reader);
+
+  /* Visible Element */
+  reader.next();
+  std::string visible = ReadLayerVisibility(reader);
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "DataSetName");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::string dataSetName = reader.getElementValue();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);  // DataSetName
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "DataSourceId");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::string dataSourceId = reader.getElementValue();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // DataSourceId
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "RendererType");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::VALUE);
+
+  std::string rendererType = reader.getElementValue();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); //RendererType
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Converter");
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "InDataSetTypeName");
+
+  reader.next();
+
+  std::string inDataSetName = reader.getElementValue();
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // InDataSetTypeName
+
+  reader.next();
+
+  std::vector<std::pair<std::string, std::vector<std::size_t> > > props;
+
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "OutPropInfo")
+  {
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "type");
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    int type = reader.getElementValueAsInt32();
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // type
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "name");
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    std::string name = reader.getElementValue();
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // name
+
+    reader.next();
+
+    int geomType;
+    int srid;
+
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "geomType");
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    geomType = reader.getElementValueAsInt32();
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // geomType
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+    assert(reader.getElementLocalName() == "srid");
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    srid = reader.getElementValueAsInt32();
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // srid
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // OutPropInfo
+
+    reader.next();
+
+    std::pair<std::string, std::vector<std::size_t> > prop;
+    prop.first = name;
+    std::vector<std::size_t> typeVec;
+    typeVec.push_back(type);
+    typeVec.push_back(geomType);
+    typeVec.push_back(srid);
+    prop.second = typeVec;
+    props.push_back(prop);
+  }
+
+  std::vector<std::vector<std::size_t> > propertyIndexes;
+
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "PropertyIndex")
+  {
+
+    int outIdx = reader.getAttrAsInt32("OutIdx");
+
+    reader.next();
+
+    std::vector<std::size_t> inIdxs;
+
+    while(reader.getNodeType() == te::xml::START_ELEMENT &&
+          reader.getElementLocalName() == "InIdx")
+    {
+      reader.next();
+
+      assert(reader.getNodeType() == te::xml::VALUE);
+
+      inIdxs.push_back(reader.getElementValueAsInt32());
+
+      reader.next();
+
+      assert(reader.getNodeType() == te::xml::END_ELEMENT); // InIdx
+
+      reader.next();
+    }
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // InIdx
+
+    propertyIndexes.push_back(inIdxs);
+
+    reader.next();
+  }
+
+  std::vector<std::string> functionsNames;
+
+  int teste = 0;
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "FunctionName")
+  {
+    ++teste;
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::VALUE);
+
+    functionsNames.push_back(reader.getElementValue());
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // FunctionName
+
+    reader.next();
+  }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // Converter
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // DataSetAdapterLayer
+
+  reader.next();
+
+  te::map::DataSetAdapterLayer* result = new te::map::DataSetAdapterLayer(id);
+  result->setTitle(title);
+
+  result->setVisibility(GetVisibility(visible));
+  result->setDataSetName(dataSetName);
+  result->setDataSourceId(dataSourceId);
+  result->setRendererType(rendererType);
+  
+  te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
+  std::auto_ptr<te::da::DataSetType> dst = ds->getDataSetType(dataSetName);
+
+  std::auto_ptr<te::da::DataSetTypeConverter> converter(new te::da::DataSetTypeConverter(dst.get()));
+  
+  for(std::size_t i = 0; i < propertyIndexes.size(); ++i)
+  {
+    converter->add(propertyIndexes[i], GetProperty(props[i].first, props[i].second[0], props[i].second[1], props[i].second[2]), functionsNames[i]);
+  }
+
+  result->setConverter(converter);
+
+  te::gm::Envelope* env = new te::gm::Envelope;
+
+  std::auto_ptr<te::da::DataSet> dataset = result->getData();
+
+  te::da::DataSetType* aaaa = result->getConverter()->getResult();
+
+  te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(result->getConverter()->getResult());
+
+  while(dataset->moveNext())
+  {
+    te::gm::Geometry* geom = dataset->getGeometry(gp->getName()).release();
+    assert(geom);
+    env->Union(*geom->getMBR());
+  }
+
+  result->setExtent(*env);
+
+  return result;
+}
+
 void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
 {
   const te::map::DataSetLayer* layer = dynamic_cast<const te::map::DataSetLayer*>(alayer);
@@ -1139,4 +1474,83 @@ void RasterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wr
   }
 
   writer.writeEndElement("te_map:RasterLayer");
+}
+
+void DataSetAdapterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
+{
+  const te::map::DataSetAdapterLayer* layer = dynamic_cast<const te::map::DataSetAdapterLayer*>(alayer);
+
+  if(layer == 0)
+    return;
+
+  writer.writeStartElement("te_map:DataSetAdapterLayer");
+
+  WriteAbstractLayer(layer, writer);
+  
+  writer.writeElement("te_map:DataSetName", layer->getDataSetName());
+  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
+  writer.writeElement("te_map:RendererType", layer->getRendererType());
+
+  te::da::DataSetTypeConverter* converter = layer->getConverter();
+
+  writer.writeStartElement("te_map:Converter");
+
+  writer.writeElement("te_map:InDataSetTypeName", converter->getConvertee()->getName());
+
+  te::da::DataSetType* resultDt = converter->getResult();
+
+  std::vector<te::dt::Property*> outProps = resultDt->getProperties();
+
+  for(std::size_t i = 0; i < outProps.size(); ++i)
+  {
+    writer.writeStartElement("te_map:OutPropInfo");
+
+    writer.writeElement("te_map:type", outProps[i]->getType());
+    writer.writeElement("te_map:name", outProps[i]->getName());
+
+    if(outProps[i]->getType() == te::dt::GEOMETRY_TYPE)
+    {
+      te::gm::GeometryProperty* geomProp = dynamic_cast<te::gm::GeometryProperty*>(outProps[i]);
+
+      writer.writeElement("te_map:geomType", geomProp->getGeometryType());
+      writer.writeElement("te_map:srid", geomProp->getSRID());
+    }
+    else
+    {
+      writer.writeElement("te_map:geomType", -1);
+      writer.writeElement("te_map:srid", 0);
+    }
+
+    writer.writeEndElement("te_map:OutPropInfo");
+    
+  }
+
+  // PropertyIndexes
+  std::vector<std::vector<std::size_t> > propertyIndexes = converter->getConvertedPropertyIndexes();
+
+  for(std::size_t i = 0; i < propertyIndexes.size(); ++i)
+  {
+    writer.writeStartElement("te_map:PropertyIndex");
+
+    writer.writeAttribute("OutIdx", i);
+
+    std::vector<std::size_t> inputPropertiesIdx = propertyIndexes[i];
+
+    for(std::size_t j = 0; j < inputPropertiesIdx.size(); ++j)
+      writer.writeElement("te_map:InIdx", inputPropertiesIdx[j]);
+
+    writer.writeEndElement("te_map:PropertyIndex");
+  }
+
+  std::vector<te::da::AttributeConverter> converters = converter->getConverters();
+  for(std::size_t i = 0; i < converters.size(); ++i)
+  {
+    std::string convName = layer->getConverter()->getConverterName(i);
+
+    writer.writeElement("te_map:FunctionName", convName);
+  }
+
+  writer.writeEndElement("te_map:Converter");
+
+  writer.writeEndElement("te_map:DataSetAdapterLayer");
 }

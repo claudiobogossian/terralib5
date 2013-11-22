@@ -88,7 +88,7 @@ namespace te
 
       \exception Exception It throws an exception if the spatial relation is not valid or if the test can not be evaluated.
     */
-    TEGEOMEXPORT bool SatisfySpatialRelation(const Geometry* g1, const Geometry* g2, SpatialRelation relation);      
+    TEGEOMEXPORT bool SatisfySpatialRelation(const Geometry* g1, const Geometry* g2, SpatialRelation relation);
 
   } // end namespace gm
 }   // end namespace te
