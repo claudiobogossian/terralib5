@@ -90,6 +90,15 @@ namespace te
     */
     TEGEOMEXPORT bool SatisfySpatialRelation(const Geometry* g1, const Geometry* g2, SpatialRelation relation);      
 
+    /*!
+      \brief It returns a GeomType enum based on a number.
+     
+      \param geomType geometry type as number.
+
+      \return It returns a GeomType enum option.
+    */
+    TEGEOMEXPORT te::gm::GeomType GetGeomType(const std::size_t type);
+
   } // end namespace gm
 }   // end namespace te
 
