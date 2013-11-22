@@ -68,28 +68,28 @@ void te::qt::widgets::EyeBirdMapDisplayWidget::setList(std::list<te::map::Abstra
   m_mapDisplay->setLayerList(layerList);
   m_mapDisplay->setSRID(srid, false);
 
-  m_itsMe = true;
-  m_mapDisplay->setExtent(m_inputExt, true);
-  m_itsMe = false;
+  //m_itsMe = true;
+  m_mapDisplay->setExtent(m_inputExt, false);
+  //m_itsMe = false;
 }
 
-void te::qt::widgets::EyeBirdMapDisplayWidget::recompose()
+void te::qt::widgets::EyeBirdMapDisplayWidget::recompose(te::gm::Envelope& e)
 {
   if(!m_isEnabled)
     return;
 
   m_itsMe = true;
-  m_mapDisplay->setExtent(m_inputExt, true);
+  m_mapDisplay->setExtent(e, true);
   m_itsMe = false;
 
-  m_panExtent->setCurrentExtent(m_inputExt);
+  m_panExtent->setCurrentExtent(e);
 }
 
 void te::qt::widgets::EyeBirdMapDisplayWidget::setEnabled(bool status)
 {
   m_isEnabled = status;
 
-  recompose();
+  recompose(m_inputExt);
 }
 
 void te::qt::widgets::EyeBirdMapDisplayWidget::onExtentMoved(te::gm::Envelope e)
