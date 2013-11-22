@@ -660,32 +660,44 @@ void te::qt::widgets::DataSetTableView::sortByColumns(const bool& asc)
   //*********************
   // Sort by query
   //*********************
-  ScopedCursor cursor(Qt::WaitCursor);
-
-  std::vector<int> selCols;
-
-  int nCols = model()->columnCount();
-
-  for(int i=0; i<nCols; i++)
+  try
   {
-    int logCol = verticalHeader()->logicalIndex(i);
+    ScopedCursor cursor(Qt::WaitCursor);
 
-    if(selectionModel()->isColumnSelected(i, QModelIndex()))
-      selCols.push_back(i);
+    std::vector<int> selCols;
+
+    int nCols = model()->columnCount();
+
+    for(int i=0; i<nCols; i++)
+    {
+      int logCol = verticalHeader()->logicalIndex(i);
+
+      if(selectionModel()->isColumnSelected(i, QModelIndex()))
+        selCols.push_back(i);
+    }
+
+    if(selCols.empty())
+      return;
+
+    std::auto_ptr<te::da::DataSet> dset = GetDataSet(m_layer, m_dset, selCols, asc);
+
+    if(dset.get() == 0)
+      throw te::common::Exception(tr("Sort operation not supported by the source of data.").toStdString());
+
+    setDataSet(dset.release());
+
+    viewport()->repaint();
+
+    setUpdatesEnabled(false);
+
+     m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
+
+    setUpdatesEnabled(true);
   }
-
-  if(selCols.empty())
-    return;
-
-  setDataSet(GetDataSet(m_layer, m_dset, selCols, asc).release());
-
-  viewport()->repaint();
-
-  setUpdatesEnabled(false);
-
-   m_model->getPromoter()->preProcessKeys(m_dset, m_delegate->getSelected()->getPropertyPos());
-
-  setUpdatesEnabled(true);
+  catch(te::common::Exception& e)
+  {
+    QMessageBox::information(this, tr("Sorting columns failure"), tr("Could not sort data: ") + e.what());
+  }
 }
 
 void te::qt::widgets::DataSetTableView::setOIdsColumnsVisible(const bool& visible)

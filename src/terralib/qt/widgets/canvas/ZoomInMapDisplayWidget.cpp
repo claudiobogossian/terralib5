@@ -99,9 +99,9 @@ void te::qt::widgets::ZoomInMapDisplayWidget::setList(std::list<te::map::Abstrac
   m_mapDisplay->setLayerList(layerList);
   m_mapDisplay->setSRID(srid, false);
 
-  m_itsMe = true;
-  m_mapDisplay->setExtent(ext, true);
-  m_itsMe = false;
+  //m_itsMe = true;
+  m_mapDisplay->setExtent(ext, false);
+  //m_itsMe = false;
 }
 
 te::gm::Envelope te::qt::widgets::ZoomInMapDisplayWidget::getCurrentExtent()
