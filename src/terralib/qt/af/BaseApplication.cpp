@@ -279,6 +279,9 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
   // The selection tool come active as default
   onSelectionToggled(true);
   m_mapSelection->setChecked(true);
+
+  m_viewDataTable->setChecked(false);
+  m_viewDataTable->setEnabled(false);
 }
 
 void  te::qt::af::BaseApplication::resetState()
@@ -936,6 +939,8 @@ void te::qt::af::BaseApplication::onLayerShowTableTriggered()
   doc->raise();
 
   m_viewDataTable->setChecked(true);
+
+  m_viewDataTable->setEnabled(true);
 }
 
 void te::qt::af::BaseApplication::onLayerHistogramTriggered()
@@ -1438,7 +1443,10 @@ void te::qt::af::BaseApplication::onLayerTableClose(te::qt::af::DataSetTableDock
     m_tableDocks.erase(it);
 
   if(m_tableDocks.empty())
+  {
     m_viewDataTable->setChecked(false);
+    m_viewDataTable->setEnabled(false);
+  }
 
   ApplicationController::getInstance().removeListener(wid);
 }
