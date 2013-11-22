@@ -1322,13 +1322,30 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
     converter->add(propertyIndexes[i], GetProperty(props[i].first, props[i].second[0], props[i].second[1], props[i].second[2]), functionsNames[i]);
   }
 
+  std::vector<te::dt::Property*> convertedProps = converter->getResult()->getProperties();
+
+  te::da::PrimaryKey* pkIn = dst->getPrimaryKey();
+  if(pkIn)
+  {
+    te::da::PrimaryKey* pk = new te::da::PrimaryKey(converter->getResult());
+
+    std::vector<te::dt::Property*> pkProps = pkIn->getProperties();
+    for(std::size_t i = 0; i < convertedProps.size(); ++i)
+    {
+      for(std::size_t t = 0; t < pkProps.size(); ++t)
+      {
+        if(convertedProps[i]->getName() == pkProps[t]->getName())
+          pk->add(convertedProps[i]);
+          
+      }
+    }
+  }
+
   result->setConverter(converter);
 
   te::gm::Envelope* env = new te::gm::Envelope;
 
   std::auto_ptr<te::da::DataSet> dataset = result->getData();
-
-  te::da::DataSetType* aaaa = result->getConverter()->getResult();
 
   te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(result->getConverter()->getResult());
 
