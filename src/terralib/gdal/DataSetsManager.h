@@ -53,12 +53,20 @@ namespace te
       
       public :
         
+        /*! \enum  Info regarding the uri access (bit field). */
+        enum AccessType
+        {
+          MultipleAccessType = 0, /*!< Allows multiple concurrent connections to the uri. */
+          SingleAccessType = 1 /*!< Allows just one single connection to the uri. */
+        };        
+        
         /*!
          \brief Try to increment the use counter for the given raster URI.
          \param uri RasterURI.
+         \param aType Access type.
          \return true if OK, false if the increment could not be done.
          */        
-        bool incrementUseCounter( const std::string& uri );
+        bool incrementUseCounter( const std::string& uri, const AccessType aType );
         
         /*!
          \brief Decrement the use counter for the given raster URI.
@@ -66,34 +74,16 @@ namespace te
          */                
         void decrementUseCounter( const std::string& uri );
 
-        /*!
-         \brief Return the use counter for the given raster URI.
-         \param uri RasterURI.
-         \return The use counter for the given raster URI.
-         */        
-        unsigned int getUseCounter( const std::string& uri ) const;
-
-        /*!
-         \brief Set the maximum use counter for all URIS.
-         \param counter The new maximum use counter value.
-         */       
-        void setMaxUseCounter( const unsigned int counter );
-        
-        /*!
-         \brief Return true if the use counter for the given raster URI has reached its maximum allowed value.
-         \return true if the use counter for the given raster URI has reached its maximum allowed value.
-         */  
-        bool hasReachedMaxUseCounter( const std::string& uri ) const;
         
       protected :
+        
+        typedef std::map< std::string, std::pair< AccessType, unsigned long int > > UrisInfoT;
         
         DataSetsManager();
         
         ~DataSetsManager();
         
-        unsigned int m_maxUseCounter; //!< Maximum allowed use couter for all URIs.
-      
-        mutable std::map< std::string, unsigned long int > m_openURIS;   //!< Current open URIs.
+        mutable UrisInfoT m_openURIS;   //!< Current open URIs.
         
         mutable boost::mutex m_mutex; //!< Internal thread sync mutex.
     };

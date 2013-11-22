@@ -30,6 +30,8 @@
 #include "MultiThreadMapDisplay.h"
 
 // Qt
+#include <QtGui/QApplication>
+#include <QtGui/QCursor>
 #include <QtGui/QPainter>
 
 te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size, const bool& showFeedback, QWidget* parent, Qt::WindowFlags f)
@@ -92,6 +94,8 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh()
 
     m_threads.push_back(thread);
   }
+
+  QApplication::setOverrideCursor(Qt::WaitCursor);
 
   m_isDrawing = true;
 
@@ -186,6 +190,8 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
   repaint(); // or update()? Which is the best here?!
 
   m_isDrawing = false;
+
+  QApplication::restoreOverrideCursor();
 
   // Building the error messages
   QMap<QString, QString> errors;

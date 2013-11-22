@@ -33,7 +33,6 @@
 #include "DataSourceFactory.h"
 #include "Module.h"
 #include "RasterFactory.h"
-#include "DataSetsManager.h"
 
 // GDAL
 #include <gdal_priv.h>
@@ -87,8 +86,6 @@ void te::gdal::Module::startup()
 
   te::gdal::DataSource::setCapabilities(capabilities);
   
-  DataSetsManager::getInstance().setMaxUseCounter( 1 );
-
   TE_LOG_TRACE(TR_GDAL("TerraLib GDAL driver startup!"));
 
   m_initialized = true;

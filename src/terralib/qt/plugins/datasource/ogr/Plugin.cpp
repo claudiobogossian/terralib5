@@ -30,18 +30,18 @@
 #include "../../../../dataaccess/dataset/DataSetType.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../widgets/layer/utils/DataSet2Layer.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../../../widgets/Utils.h"
-
 #include "../../../af/ApplicationController.h"
 #include "../../../af/Project.h"
 #include "../../../af/Utils.h"
 #include "../../../af/events/LayerEvents.h"
-
 #include "OGRType.h"
 #include "Plugin.h"
+#include "Utils.h"
 
 // OGR
 #include <ogrsf_frmts.h>
@@ -54,6 +54,7 @@
 // Qt 
 #include <QtCore/QFileInfo>
 #include <QtGui/QAction>
+#include <QtGui/QApplication>
 #include <QtGui/QFileDialog>
 #include <QtGui/QMenu>
 #include <QtGui/QMessageBox>
@@ -197,6 +198,9 @@ void te::qt::plugins::ogr::Plugin::showWindow()
 
   te::qt::widgets::AddFilePathToSettings(info.absolutePath(), "vector");
 
+  // The selected shapefiles without spatial index
+  std::map<std::string, std::string> shpWithoutSpatialIndex;
+
   std::list<te::map::AbstractLayerPtr> layers;
 
   for(QStringList::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
@@ -230,7 +234,38 @@ void te::qt::plugins::ogr::Plugin::showWindow()
     ds->setId(id);
     te::da::DataSourceInfoManager::getInstance().add(ds);
 
+    if(IsShapeFile(*it) && !HasShapeFileSpatialIndex(*it))
+    {
+      QString datasetName(fileBaseName.c_str());
+      datasetName.remove(".shp", Qt::CaseInsensitive);
+      shpWithoutSpatialIndex[id] = datasetName.toStdString();
+    }
+
     GetLayers(ds, layers);
+  }
+
+  if(!shpWithoutSpatialIndex.empty())
+  {
+    if(QMessageBox::question(te::qt::af::ApplicationController::getInstance().getMainWindow(),
+                              tr("Spatial Index"), tr("Do you want create spatial index to the selected ESRI ShapeFiles?"),
+                              QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+    {
+      QApplication::setOverrideCursor(Qt::WaitCursor);
+
+      std::map<std::string, std::string>::iterator it;
+      for(it = shpWithoutSpatialIndex.begin(); it != shpWithoutSpatialIndex.end(); ++it)
+      {
+        te::da::DataSourcePtr driver = te::da::GetDataSource(it->first, true);
+
+        std::string command = "CREATE SPATIAL INDEX ON " + it->second;
+
+        driver->execute(command);
+      }
+      
+      QApplication::restoreOverrideCursor();
+
+      QMessageBox::information(te::qt::af::ApplicationController::getInstance().getMainWindow(), tr("Spatial Index"), "Spatial index created with successfully!");
+    }
   }
 
   // If there is only a parent folder layer that is selected, get it as the parent of the layer to be added;

@@ -123,6 +123,7 @@ namespace te
 
         signals:
 
+          void applyPushButtonClicked();
 
         private:
 
