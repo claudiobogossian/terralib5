@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/GroupingTreeItem.h
+  \file terralib/qt/widgets/layer/explorer/GroupingItem.h
 
   \brief A class that represents a grouping of a layer in a LayerTreeModel.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_GROUPINGTREEITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_GROUPINGTREEITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_GROUPINGITEM_H
+#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_GROUPINGITEM_H
 
 // TerraLib
 #include "AbstractTreeItem.h"
@@ -38,15 +38,15 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT GroupingTreeItem : public AbstractTreeItem
+      class TEQTWIDGETSEXPORT GroupingItem : public AbstractTreeItem
       {
         Q_OBJECT
 
         public:
 
-          GroupingTreeItem(te::map::Grouping* grouping, QObject* parent = 0);
+          GroupingItem(te::map::Grouping* grouping, QObject* parent = 0);
 
-          ~GroupingTreeItem();
+          ~GroupingItem();
 
           int columnCount() const;
 
@@ -88,4 +88,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_GROUPINGTREEITEM_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_GROUPINGITEM_H

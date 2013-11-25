@@ -30,7 +30,7 @@
 #include "../../Exception.h"
 #include "ChartItem.h"
 #include "DataSetAdapterLayerItem.h"
-#include "GroupingTreeItem.h"
+#include "GroupingItem.h"
 #include "LegendItem.h"
 
 // Qt
@@ -92,7 +92,7 @@ void te::qt::widgets::DataSetAdapterLayerItem::fetchMore()
   }
 
   if(m_layer->getGrouping() && !hasGroupingItem())
-    new GroupingTreeItem(m_layer->getGrouping(), this);
+    new GroupingItem(m_layer->getGrouping(), this);
 
   if(m_layer->getChart() && !hasChartItem())
     new ChartItem(m_layer->getChart(), this);
@@ -134,7 +134,7 @@ const std::string te::qt::widgets::DataSetAdapterLayerItem::getItemType() const
 
 bool te::qt::widgets::DataSetAdapterLayerItem::hasGroupingItem() const
 {
-  GroupingTreeItem* groupingItem = findChild<GroupingTreeItem*>();
+  GroupingItem* groupingItem = findChild<GroupingItem*>();
 
   return groupingItem != 0;
 }
