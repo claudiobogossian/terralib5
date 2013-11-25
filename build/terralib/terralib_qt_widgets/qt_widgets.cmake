@@ -212,8 +212,8 @@ set (
   ${SRCDIR}/widgets/layer/explorer/DataSetLayerItem.h
   ${SRCDIR}/widgets/layer/explorer/DataSetAdapterLayerItem.h
   ${SRCDIR}/widgets/layer/explorer/FolderLayerItem.h
-  ${SRCDIR}/widgets/layer/explorer/GroupingItemTreeItem.h
-  ${SRCDIR}/widgets/layer/explorer/GroupingTreeItem.h
+  ${SRCDIR}/widgets/layer/explorer/GroupingItem.h
+  ${SRCDIR}/widgets/layer/explorer/GroupingSliceItem.h
   ${SRCDIR}/widgets/layer/explorer/LayerExplorer.h
   ${SRCDIR}/widgets/layer/explorer/LayerTreeModel.h
   ${SRCDIR}/widgets/layer/explorer/LayerTreeView.h
