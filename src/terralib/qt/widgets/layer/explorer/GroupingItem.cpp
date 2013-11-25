@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,21 +18,21 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/GroupingTreeItem.cpp
+  \file terralib/qt/widgets/layer/explorer/GroupingItem.cpp
 
   \brief A class that represents a grouping of a layer in a LayerTreeModel.
 */
 
 // TerraLib
 #include "../../../../maptools/Grouping.h"
-#include "GroupingItemTreeItem.h"
-#include "GroupingTreeItem.h"
+#include "GroupingSliceItem.h"
+#include "GroupingItem.h"
 
 // Qt
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
-te::qt::widgets::GroupingTreeItem::GroupingTreeItem(te::map::Grouping* grouping, QObject* parent)
+te::qt::widgets::GroupingItem::GroupingItem(te::map::Grouping* grouping, QObject* parent)
   : AbstractTreeItem(parent),
     m_grouping(grouping),
     m_isCheckable(true),
@@ -40,16 +40,16 @@ te::qt::widgets::GroupingTreeItem::GroupingTreeItem(te::map::Grouping* grouping,
 {
 }
 
-te::qt::widgets::GroupingTreeItem::~GroupingTreeItem()
+te::qt::widgets::GroupingItem::~GroupingItem()
 {
 }
 
-int te::qt::widgets::GroupingTreeItem::columnCount() const
+int te::qt::widgets::GroupingItem::columnCount() const
 {
   return 1;
 }
 
-QVariant te::qt::widgets::GroupingTreeItem::data(int /*column*/, int role) const
+QVariant te::qt::widgets::GroupingItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
     return QVariant(QIcon::fromTheme("grouping"));
@@ -66,37 +66,37 @@ QVariant te::qt::widgets::GroupingTreeItem::data(int /*column*/, int role) const
   return QVariant();
 }
 
-QMenu* te::qt::widgets::GroupingTreeItem::getMenu(QWidget* /*parent*/) const
+QMenu* te::qt::widgets::GroupingItem::getMenu(QWidget* /*parent*/) const
 {
   return 0;
 }
 
-bool te::qt::widgets::GroupingTreeItem::canFetchMore() const
+bool te::qt::widgets::GroupingItem::canFetchMore() const
 {
   return !m_grouping->getGroupingItems().empty() && children().isEmpty();
 }
 
-Qt::ItemFlags te::qt::widgets::GroupingTreeItem::flags() const
+Qt::ItemFlags te::qt::widgets::GroupingItem::flags() const
 {
   return (m_isCheckable ? (Qt::ItemIsEnabled | Qt::ItemIsUserCheckable) : Qt::ItemIsEnabled);
 }
 
-void te::qt::widgets::GroupingTreeItem::fetchMore()
+void te::qt::widgets::GroupingItem::fetchMore()
 {
   if(!children().isEmpty())
     return;
 
   const std::vector<te::map::GroupingItem*> items = m_grouping->getGroupingItems();
   for(std::size_t i = 0; i < items.size(); ++i)
-    new GroupingItemTreeItem(items[i], this);
+    new GroupingSliceItem(items[i], this);
 }
 
-bool te::qt::widgets::GroupingTreeItem::hasChildren() const
+bool te::qt::widgets::GroupingItem::hasChildren() const
 {
   return !m_grouping->getGroupingItems().empty();
 }
 
-bool te::qt::widgets::GroupingTreeItem::setData(int /*column*/, const QVariant& value, int role)
+bool te::qt::widgets::GroupingItem::setData(int /*column*/, const QVariant& value, int role)
 {
   if(role == Qt::CheckStateRole && m_isCheckable)
   {
@@ -116,22 +116,22 @@ bool te::qt::widgets::GroupingTreeItem::setData(int /*column*/, const QVariant& 
   return false;
 }
 
-te::map::AbstractLayerPtr te::qt::widgets::GroupingTreeItem::getLayer() const
+te::map::AbstractLayerPtr te::qt::widgets::GroupingItem::getLayer() const
 {
   return te::map::AbstractLayerPtr(0);
 }
 
-const std::string te::qt::widgets::GroupingTreeItem::getItemType() const
+const std::string te::qt::widgets::GroupingItem::getItemType() const
 {
   return "GROUPING_ITEM";
 }
 
-void te::qt::widgets::GroupingTreeItem::setCheckable(bool checkable)
+void te::qt::widgets::GroupingItem::setCheckable(bool checkable)
 {
   m_isCheckable = checkable;
 }
 
-bool te::qt::widgets::GroupingTreeItem::getCheckable()
+bool te::qt::widgets::GroupingItem::getCheckable()
 {
   return m_isCheckable;
 }
