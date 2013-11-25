@@ -113,6 +113,7 @@
           <xsd:element name="DataSetName" type="xsd:string" minOccurs="1" maxOccurs="1" />
           <xsd:element name="DataSourceId" type="xsd:string" minOccurs="1" maxOccurs="1" />
           <xsd:element name="RendererType" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="Style" type="te_map:StyleType" minOccurs="0" maxOccurs="1"/>
           <xsd:element name="Converter" type="te_map:DataSetTypeConverterType" minOccurs="1" maxOccurs="1" />
         </xsd:sequence>
       </xsd:extension>
