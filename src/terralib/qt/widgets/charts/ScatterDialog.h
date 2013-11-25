@@ -89,7 +89,6 @@ namespace te
         protected slots:
 
           void onOkPushButtonClicked();
-          void onHelpPushButtonClicked();
 
         private:
 

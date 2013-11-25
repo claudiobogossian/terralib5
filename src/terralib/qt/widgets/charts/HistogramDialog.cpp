@@ -55,9 +55,8 @@ te::qt::widgets::HistogramDialog::HistogramDialog(te::da::DataSet* dataSet, te::
 
 // connect signal and slots
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  //connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
-  m_ui->m_helpPushButton->setPageReference("widgets/histogram/histogram.html");
 
+  m_ui->m_helpPushButton->setPageReference("widgets/charts/histogram/histogram.html");
 }
 
 te::qt::widgets::HistogramDialog::~HistogramDialog()
@@ -69,8 +68,6 @@ te::qt::widgets::ChartDisplayWidget* te::qt::widgets::HistogramDialog::getDispla
 {
   return m_displayWidget;
 }
-
-void te::qt::widgets::HistogramDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::HistogramDialog::onOkPushButtonClicked()
 {
