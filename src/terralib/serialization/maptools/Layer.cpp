@@ -1576,12 +1576,12 @@ void DataSetAdapterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Wr
   {
     writer.writeStartElement("te_map:PropertyIndex");
 
-    writer.writeAttribute("OutIdx", i);
+    writer.writeAttribute("OutIdx", (int)i);
 
     std::vector<std::size_t> inputPropertiesIdx = propertyIndexes[i];
 
     for(std::size_t j = 0; j < inputPropertiesIdx.size(); ++j)
-      writer.writeElement("te_map:InIdx", inputPropertiesIdx[j]);
+      writer.writeElement("te_map:InIdx", (int)inputPropertiesIdx[j]);
 
     writer.writeEndElement("te_map:PropertyIndex");
   }
