@@ -120,7 +120,7 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( geomTransformation.isValid(),
         "Invalid transformation" );
         
-      initState();
+      clear();
       
       // defining the input rasters
       
@@ -218,7 +218,7 @@ namespace te
             outRingPtr->setPoint( pIdx, auxCoord2.x, auxCoord2.y );
           }
           
-          indexedDelimiter1Ptr->add( outRingPtr );
+          indexedDelimiter2Ptr->add( outRingPtr );
         }        
       }
       else
@@ -258,24 +258,71 @@ namespace te
         indexedDelimiter2Ptr->add( outRingPtr );
       }
       
+      // Calculating the intersection
+      
       {
-        std::auto_ptr< te::gm::Geometry > segs1IndexedPtr;
-        segs1IndexedPtr.reset( indexedDelimiter1Ptr->intersection( indexedDelimiter2Ptr->getRingN( 0 ) ) );
-        
-        if( segs1IndexedPtr.get() != 0 ) 
+        std::auto_ptr< te::gm::Geometry > geomIntersectionPtr( 
+          indexedDelimiter2Ptr->intersection( indexedDelimiter1Ptr.get() ) );
+          
+        if( geomIntersectionPtr.get() )
         {
-          if( segs1IndexedPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+          if( geomIntersectionPtr->getGeomTypeId() == te::gm::PolygonType )
           {
-            te::gm::MultiLineString const* segsIndexedNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-              segs1IndexedPtr.get() );
-            assert( segsIndexedNPtr );
+            std::auto_ptr< te::gm::MultiPolygon > multiPolIntersectionPtr( 
+              new te::gm::MultiPolygon( 0, te::gm::MultiPolygonType, 0, 0 ) );
+            multiPolIntersectionPtr->add( geomIntersectionPtr.release() );
             
-            std::size_t numGeoms = segsIndexedNPtr->getNumGeometries();
-            
-            for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+            m_intersectionPtr.reset( multiPolIntersectionPtr.release() );
+          }
+          else if( geomIntersectionPtr->getGeomTypeId() == te::gm::MultiPolygonType )
+          {
+            m_intersectionPtr.reset( (te::gm::MultiPolygon*)geomIntersectionPtr.release() );
+          }
+        }
+      }
+      
+      // Extracting the intersection segments points
+      
+      if( m_intersectionPtr.get() )
+      {
+        std::size_t ringIdx = 0;
+        
+        for( ringIdx = 0 ; ringIdx < indexedDelimiter2Ptr->getNumRings() ;
+          ++ringIdx )
+        {
+          std::auto_ptr< te::gm::Geometry > ringIntersectionPtr;
+          ringIntersectionPtr.reset( indexedDelimiter1Ptr->intersection( indexedDelimiter2Ptr->getRingN( ringIdx ) ) );
+          
+          if( ringIntersectionPtr.get() != 0 ) 
+          {
+            if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+            {
+              te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
+                ringIntersectionPtr.get() );
+              assert( ringIntersectionNPtr );
+              
+              std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
+              
+              for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+              {
+                te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
+                  ringIntersectionNPtr->getGeometryN( gIdx ) );
+                assert( segIndexedNPtr );
+                
+                std::size_t nPoints = segIndexedNPtr->size();
+                te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
+                
+                for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
+                {
+                  m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
+                    coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+                }
+              }
+            }
+            else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
             {
               te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                segsIndexedNPtr->getGeometryN( gIdx ) );
+                ringIntersectionPtr.get() );
               assert( segIndexedNPtr );
               
               std::size_t nPoints = segIndexedNPtr->size();
@@ -288,49 +335,44 @@ namespace te
               }
             }
           }
-          else if( segs1IndexedPtr->getGeomTypeId() == te::gm::LineStringType )
-          {
-            te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-              segs1IndexedPtr.get() );
-            assert( segIndexedNPtr );
-            
-            std::size_t nPoints = segIndexedNPtr->size();
-            te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-            
-            for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-            {
-              m_r2IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-            }
-          }
         }
         
-/*        for( unsigned int idx = 0 ; idx < m_r2IntersectionSegmentsPoints.size() ; ++idx )
+        for( ringIdx = 0 ; ringIdx < indexedDelimiter1Ptr->getNumRings() ;
+          ++ringIdx )
         {
-          std::cout << std::endl << "m_r2IntersectionSegmentsPoints[" << idx << "]=" 
-            << m_r2IntersectionSegmentsPoints[ idx ].first.x
-            << " " << m_r2IntersectionSegmentsPoints[ idx ].first.y
-            << " " << m_r2IntersectionSegmentsPoints[ idx ].second.x
-            << " " << m_r2IntersectionSegmentsPoints[ idx ].second.y;            
-        } */       
-        
-        std::auto_ptr< te::gm::Geometry > segs2IndexedPtr;
-        segs2IndexedPtr.reset( indexedDelimiter2Ptr->intersection( indexedDelimiter1Ptr->getRingN( 0 ) ) );
-        
-        if( segs2IndexedPtr.get() != 0 )
-        {
-          if( segs2IndexedPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+          std::auto_ptr< te::gm::Geometry > ringIntersectionPtr;
+          ringIntersectionPtr.reset( indexedDelimiter2Ptr->intersection( indexedDelimiter1Ptr->getRingN( ringIdx ) ) );
+          
+          if( ringIntersectionPtr.get() != 0 ) 
           {
-            te::gm::MultiLineString const* segsIndexedNPtr = dynamic_cast< te::gm::MultiLineString const * >(
-              segs2IndexedPtr.get() );
-            assert( segsIndexedNPtr );
-            
-            std::size_t numGeoms = segsIndexedNPtr->getNumGeometries();
-            
-            for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+            if( ringIntersectionPtr->getGeomTypeId() == te::gm::MultiLineStringType )
+            {
+              te::gm::MultiLineString const* ringIntersectionNPtr = dynamic_cast< te::gm::MultiLineString const * >(
+                ringIntersectionPtr.get() );
+              assert( ringIntersectionNPtr );
+              
+              std::size_t numGeoms = ringIntersectionNPtr->getNumGeometries();
+              
+              for( std::size_t gIdx = 0 ; gIdx < numGeoms ; ++gIdx )
+              {
+                te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
+                  ringIntersectionNPtr->getGeometryN( gIdx ) );
+                assert( segIndexedNPtr );
+                
+                std::size_t nPoints = segIndexedNPtr->size();
+                te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
+                
+                for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
+                {
+                  m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
+                    coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
+                }
+              }
+            }
+            else if( ringIntersectionPtr->getGeomTypeId() == te::gm::LineStringType )
             {
               te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-                segsIndexedNPtr->getGeometryN( gIdx ) );
+                ringIntersectionPtr.get() );
               assert( segIndexedNPtr );
               
               std::size_t nPoints = segIndexedNPtr->size();
@@ -343,31 +385,26 @@ namespace te
               }
             }
           }
-          else if( segs2IndexedPtr->getGeomTypeId() == te::gm::LineStringType )
-          {
-            te::gm::LineString const* segIndexedNPtr = dynamic_cast< te::gm::LineString const * >(
-              segs2IndexedPtr.get() );
-            assert( segIndexedNPtr );
-            
-            std::size_t nPoints = segIndexedNPtr->size();
-            te::gm::Coord2D const* coodsPtr = segIndexedNPtr->getCoordinates();
-            
-            for( std::size_t pIdx = 1 ; pIdx < nPoints ; ++pIdx )
-            {
-              m_r1IntersectionSegmentsPoints.push_back( std::pair< te::gm::Coord2D, te::gm::Coord2D >(
-                coodsPtr[ pIdx - 1 ], coodsPtr[ pIdx ] ) );
-            }
-          }          
-        }
-        
-/*        for( unsigned int idx = 0 ; idx < m_r1IntersectionSegmentsPoints.size() ; ++idx )
+        }        
+
+/*        std::cout << std::endl;
+        for( unsigned int idx = 0 ; idx < m_r1IntersectionSegmentsPoints.size() ; ++idx )
         {
           std::cout << std::endl << "m_r1IntersectionSegmentsPoints[" << idx << "]=" 
             << m_r1IntersectionSegmentsPoints[ idx ].first.x
             << " " << m_r1IntersectionSegmentsPoints[ idx ].first.y
             << " " << m_r1IntersectionSegmentsPoints[ idx ].second.x
             << " " << m_r1IntersectionSegmentsPoints[ idx ].second.y;            
-        }  */         
+        }
+        for( unsigned int idx = 0 ; idx < m_r2IntersectionSegmentsPoints.size() ; ++idx )
+        {
+          std::cout << std::endl << "m_r2IntersectionSegmentsPoints[" << idx << "]=" 
+            << m_r2IntersectionSegmentsPoints[ idx ].first.x
+            << " " << m_r2IntersectionSegmentsPoints[ idx ].first.y
+            << " " << m_r2IntersectionSegmentsPoints[ idx ].second.x
+            << " " << m_r2IntersectionSegmentsPoints[ idx ].second.y;            
+        }   
+        std::cout << std::endl;  */   
           
         m_r2IntersectionSegmentsPointsSize = (unsigned int)m_r2IntersectionSegmentsPoints.size();
         m_r1IntersectionSegmentsPointsSize = (unsigned int)m_r1IntersectionSegmentsPoints.size();
@@ -386,8 +423,7 @@ namespace te
         }
         case EuclideanDistanceMethod :
         {
-          if( ( m_r1IntersectionSegmentsPointsSize > 0 ) &&
-            ( m_r2IntersectionSegmentsPointsSize > 0 ) )
+          if( m_intersectionPtr.get() )
           {
             m_blendFuncPtr = &te::rp::Blender::euclideanDistanceMethodImp;
           }
@@ -477,6 +513,7 @@ namespace te
     
     void Blender::clear()
     {
+      m_intersectionPtr.reset();
       m_r1IntersectionSegmentsPoints.clear();
       m_r2IntersectionSegmentsPoints.clear();
       if( m_geomTransformationPtr ) delete m_geomTransformationPtr;
@@ -544,151 +581,164 @@ namespace te
       std::vector< double >& values )
     {
       TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
-        
-      // Finding distances to both rasters valid area delimiters
+      TERP_DEBUG_TRUE_OR_THROW( m_intersectionPtr.get(), "Invalid intersection pointer" );
+      
+      // Checking if it is inside the intersection
+      
+      m_euclideanDistanceMethodImp_auxPoint.setX( col );
+      m_euclideanDistanceMethodImp_auxPoint.setY( line );
+      
+      if( m_euclideanDistanceMethodImp_auxPoint.within( m_intersectionPtr.get() ) )
+      {
+        // Finding distances to both rasters valid area delimiters
+              
+        m_euclideanDistanceMethodImp_dist1 = std::numeric_limits<double>::max();
+        for( m_euclideanDistanceMethodImp_vecIdx = 0 ; 
+          m_euclideanDistanceMethodImp_vecIdx < m_r1IntersectionSegmentsPointsSize ; 
+          ++m_euclideanDistanceMethodImp_vecIdx )
+        {
+          
+          getPerpendicularDistance( 
+            col,
+            line,
+            m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].first.x,
+            m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].first.y, 
+            m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].second.x,
+            m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].second.y,           
+            m_euclideanDistanceMethodImp_aux1,
+            m_euclideanDistanceMethodImp_aux2,
+            m_euclideanDistanceMethodImp_currDist );
             
-      m_euclideanDistanceMethodImp_dist1 = std::numeric_limits<double>::max();
-      for( m_euclideanDistanceMethodImp_vecIdx = 0 ; 
-        m_euclideanDistanceMethodImp_vecIdx < m_r1IntersectionSegmentsPointsSize ; 
-        ++m_euclideanDistanceMethodImp_vecIdx )
-      {
+          if( m_euclideanDistanceMethodImp_currDist < m_euclideanDistanceMethodImp_dist1 )
+          {
+            m_euclideanDistanceMethodImp_dist1 = m_euclideanDistanceMethodImp_currDist;
+          }
+        }     
         
-        getPerpendicularDistance( 
-          col,
-          line,
-          m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].first.x,
-          m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].first.y, 
-          m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].second.x,
-          m_r1IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].second.y,           
-          m_euclideanDistanceMethodImp_aux1,
-          m_euclideanDistanceMethodImp_aux2,
-          m_euclideanDistanceMethodImp_currDist );
-          
-        if( m_euclideanDistanceMethodImp_currDist < m_euclideanDistanceMethodImp_dist1 )
+        m_euclideanDistanceMethodImp_dist2 = std::numeric_limits<double>::max();
+        for( m_euclideanDistanceMethodImp_vecIdx = 0 ; 
+          m_euclideanDistanceMethodImp_vecIdx < m_r2IntersectionSegmentsPointsSize ; 
+          ++m_euclideanDistanceMethodImp_vecIdx )
         {
-          m_euclideanDistanceMethodImp_dist1 = m_euclideanDistanceMethodImp_currDist;
-        }
-      }     
-      
-      m_euclideanDistanceMethodImp_dist2 = std::numeric_limits<double>::max();
-      for( m_euclideanDistanceMethodImp_vecIdx = 0 ; 
-        m_euclideanDistanceMethodImp_vecIdx < m_r2IntersectionSegmentsPointsSize ; 
-        ++m_euclideanDistanceMethodImp_vecIdx )
-      {
+          
+          getPerpendicularDistance( 
+            col,
+            line,
+            m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].first.x,
+            m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].first.y, 
+            m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].second.x,
+            m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].second.y,           
+            m_euclideanDistanceMethodImp_aux1,
+            m_euclideanDistanceMethodImp_aux2,
+            m_euclideanDistanceMethodImp_currDist );
+            
+          if( m_euclideanDistanceMethodImp_currDist < m_euclideanDistanceMethodImp_dist2 )
+          {
+            m_euclideanDistanceMethodImp_dist2 = m_euclideanDistanceMethodImp_currDist;
+          }
+        } 
         
-        getPerpendicularDistance( 
-          col,
-          line,
-          m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].first.x,
-          m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].first.y, 
-          m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].second.x,
-          m_r2IntersectionSegmentsPoints[ m_euclideanDistanceMethodImp_vecIdx ].second.y,           
-          m_euclideanDistanceMethodImp_aux1,
-          m_euclideanDistanceMethodImp_aux2,
-          m_euclideanDistanceMethodImp_currDist );
-          
-        if( m_euclideanDistanceMethodImp_currDist < m_euclideanDistanceMethodImp_dist2 )
-        {
-          m_euclideanDistanceMethodImp_dist2 = m_euclideanDistanceMethodImp_currDist;
-        }
-      } 
-      
-      // Finding the point over the second raster
-      
-      m_geomTransformationPtr->directMap( col, line, m_euclideanDistanceMethodImp_Point2Col,
-        m_euclideanDistanceMethodImp_Point2Line );      
-      
-      // Blending values
+        // Finding the point over the second raster
+        
+        m_geomTransformationPtr->directMap( col, line, m_euclideanDistanceMethodImp_Point2Col,
+          m_euclideanDistanceMethodImp_Point2Line );      
+        
+        // Blending values
 
-      for( m_euclideanDistanceMethodImp_BandIdx = 0 ; m_euclideanDistanceMethodImp_BandIdx <
-        m_raster1Bands.size() ; ++m_euclideanDistanceMethodImp_BandIdx )
-      {
-        m_interp1->getValue( col, line, m_euclideanDistanceMethodImp_cValue1, 
-          m_raster1Bands[ m_euclideanDistanceMethodImp_BandIdx ] ); 
-        m_interp2->getValue( m_euclideanDistanceMethodImp_Point2Col, 
-          m_euclideanDistanceMethodImp_Point2Line, m_euclideanDistanceMethodImp_cValue2, 
-          m_raster2Bands[ m_euclideanDistanceMethodImp_BandIdx ] );
-    
-        if( m_euclideanDistanceMethodImp_cValue1.real() == m_raster1NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
+        for( m_euclideanDistanceMethodImp_BandIdx = 0 ; m_euclideanDistanceMethodImp_BandIdx <
+          m_raster1Bands.size() ; ++m_euclideanDistanceMethodImp_BandIdx )
         {
-          if( m_euclideanDistanceMethodImp_cValue2.real() == m_raster2NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
+          m_interp1->getValue( col, line, m_euclideanDistanceMethodImp_cValue1, 
+            m_raster1Bands[ m_euclideanDistanceMethodImp_BandIdx ] ); 
+          m_interp2->getValue( m_euclideanDistanceMethodImp_Point2Col, 
+            m_euclideanDistanceMethodImp_Point2Line, m_euclideanDistanceMethodImp_cValue2, 
+            m_raster2Bands[ m_euclideanDistanceMethodImp_BandIdx ] );
+      
+          if( m_euclideanDistanceMethodImp_cValue1.real() == m_raster1NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
           {
-            values[ m_euclideanDistanceMethodImp_BandIdx ] = m_outputNoDataValue;
+            if( m_euclideanDistanceMethodImp_cValue2.real() == m_raster2NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
+            {
+              values[ m_euclideanDistanceMethodImp_BandIdx ] = m_outputNoDataValue;
+            }
+            else
+            {
+              values[ m_euclideanDistanceMethodImp_BandIdx ] = 
+                ( m_euclideanDistanceMethodImp_cValue2.real() * 
+                m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] ) + 
+                m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]; 
+            }
           }
           else
           {
-            values[ m_euclideanDistanceMethodImp_BandIdx ] = 
-              ( m_euclideanDistanceMethodImp_cValue2.real() * 
-              m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] ) + 
-              m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]; 
-          }
-        }
-        else
-        {
-          if( m_euclideanDistanceMethodImp_cValue2.real() == m_raster2NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
-          {
-            values[ m_euclideanDistanceMethodImp_BandIdx ] =  
-              ( m_euclideanDistanceMethodImp_cValue1.real()  * 
-              m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] ) +
-              m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]; 
-          }
-          else
-          {
-            if( m_euclideanDistanceMethodImp_dist1 == 0.0 )
+            if( m_euclideanDistanceMethodImp_cValue2.real() == m_raster2NoDataValues[ m_euclideanDistanceMethodImp_BandIdx ] )
             {
               values[ m_euclideanDistanceMethodImp_BandIdx ] =  
                 ( m_euclideanDistanceMethodImp_cValue1.real()  * 
                 m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] ) +
                 m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]; 
             }
-            else if( m_euclideanDistanceMethodImp_dist1 == 0.0 )
-            {
-              values[ m_euclideanDistanceMethodImp_BandIdx ] =  
-                ( m_euclideanDistanceMethodImp_cValue2.real()  * 
-                m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] ) +
-                m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]; 
-            }            
             else
             {
-              values[ m_euclideanDistanceMethodImp_BandIdx ] =
-                (
+              if( m_euclideanDistanceMethodImp_dist1 == 0.0 )
+              {
+                values[ m_euclideanDistanceMethodImp_BandIdx ] =  
+                  ( m_euclideanDistanceMethodImp_cValue1.real()  * 
+                  m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] ) +
+                  m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]; 
+              }
+              else if( m_euclideanDistanceMethodImp_dist1 == 0.0 )
+              {
+                values[ m_euclideanDistanceMethodImp_BandIdx ] =  
+                  ( m_euclideanDistanceMethodImp_cValue2.real()  * 
+                  m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] ) +
+                  m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]; 
+              }            
+              else
+              {
+                values[ m_euclideanDistanceMethodImp_BandIdx ] =
                   (
                     (
-                      ( 
-                        m_euclideanDistanceMethodImp_cValue1.real()  
-                        * 
-                        m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] 
-                      ) 
-                      +
-                      m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]
+                      (
+                        ( 
+                          m_euclideanDistanceMethodImp_cValue1.real()  
+                          * 
+                          m_pixelScales1[ m_euclideanDistanceMethodImp_BandIdx ] 
+                        ) 
+                        +
+                        m_pixelOffsets1[ m_euclideanDistanceMethodImp_BandIdx ]
+                      )
+                      *
+                      m_euclideanDistanceMethodImp_dist1
                     )
-                    *
-                    m_euclideanDistanceMethodImp_dist1
+                    +
+                    (
+                      (
+                        ( 
+                          m_euclideanDistanceMethodImp_cValue2.real() 
+                          * 
+                          m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] 
+                        ) 
+                        + 
+                        m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]
+                      )
+                      *
+                      m_euclideanDistanceMethodImp_dist2
+                    )
                   )
-                  +
-                  (
-                    (
-                      ( 
-                        m_euclideanDistanceMethodImp_cValue2.real() 
-                        * 
-                        m_pixelScales2[ m_euclideanDistanceMethodImp_BandIdx ] 
-                      ) 
-                      + 
-                      m_pixelOffsets2[ m_euclideanDistanceMethodImp_BandIdx ]
-                    )
-                    *
+                  /
+                  ( 
+                    m_euclideanDistanceMethodImp_dist1 
+                    +
                     m_euclideanDistanceMethodImp_dist2
-                  )
-                )
-                /
-                ( 
-                  m_euclideanDistanceMethodImp_dist1 
-                  +
-                  m_euclideanDistanceMethodImp_dist2
-                );
-            }
-          }          
-        }      
+                  );
+              }
+            }          
+          }      
+        }
+      }
+      else
+      {
+        noBlendMethodImp( line, col, values );
       }
     }    
 

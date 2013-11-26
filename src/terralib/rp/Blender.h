@@ -31,6 +31,8 @@
 #include "../raster/Raster.h"
 #include "../raster/Interpolator.h"
 #include "../geometry/Polygon.h"
+#include "../geometry/MultiPolygon.h"
+#include "../geometry/Point.h"
 #include "../geometry/GeometricTransformation.h"
 
 #include <boost/noncopyable.hpp>
@@ -135,6 +137,7 @@ namespace te
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
         te::rst::Raster const* m_raster1Ptr; //!< Input raster 1.
         te::rst::Raster const* m_raster2Ptr; //!< Input raster 2.
+        std::auto_ptr< te::gm::MultiPolygon > m_intersectionPtr; //!< The Intersection geometry ( Multipolygon geometry - raster 1 indexed coods).
         std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r1IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 1 valid data polygon ( raster 1 indexed coods).
         std::size_t m_r1IntersectionSegmentsPointsSize; //!< Size of m_r1IntersectionSegmentsPoints;
         std::vector< std::pair< te::gm::Coord2D, te::gm::Coord2D > > m_r2IntersectionSegmentsPoints; //!< A sub-set of the intersection polygon wich is part of raster 2 valid data polygon ( raster 1 indexed coods).
@@ -166,6 +169,7 @@ namespace te
         unsigned int m_noBlendMethodImp_BandIdx;
         
         // variables used by the euclideanDistanceMethodImp method
+        te::gm::Point m_euclideanDistanceMethodImp_auxPoint;
         double m_euclideanDistanceMethodImp_Point2Line;
         double m_euclideanDistanceMethodImp_Point2Col;        
         std::complex< double > m_euclideanDistanceMethodImp_cValue1;
