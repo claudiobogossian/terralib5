@@ -30,6 +30,9 @@
 #include "../../../../maptools/DataSetLayer.h"
 #include "AbstractTreeItem.h"
 
+// Qt
+#include <QtCore/QString>
+
 namespace te
 {
   namespace qt
@@ -70,6 +73,8 @@ namespace te
           \return The item type: "DATASET_LAYER_ITEM".
         */
           const std::string getItemType() const;
+
+          QString buildToolTip() const;
 
         private:
 

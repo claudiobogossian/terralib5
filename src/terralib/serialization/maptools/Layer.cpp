@@ -1136,7 +1136,24 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT); //RendererType
 
+  /* has a Style Element ? */
   reader.next();
+
+  std::auto_ptr<te::se::Style> style;
+
+  if((reader.getNodeType() == te::xml::START_ELEMENT) &&
+     (reader.getElementLocalName() == "Style"))
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+
+    style.reset(te::serialize::Style::getInstance().read(reader));
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    assert(reader.getElementLocalName() == "Style");
+
+    reader.next();
+  }
 
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Converter");
@@ -1311,6 +1328,7 @@ te::map::AbstractLayer* DataSetAdapterLayerReader(te::xml::Reader& reader)
   result->setDataSetName(dataSetName);
   result->setDataSourceId(dataSourceId);
   result->setRendererType(rendererType);
+  result->setStyle(style.release());
   
   te::da::DataSourcePtr ds = te::da::GetDataSource(dataSourceId);
   std::auto_ptr<te::da::DataSetType> dst = ds->getDataSetType(dataSetName);
@@ -1508,6 +1526,15 @@ void DataSetAdapterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Wr
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:RendererType", layer->getRendererType());
 
+  if(layer->getStyle())
+  {
+    writer.writeStartElement("te_map:Style");
+
+    te::serialize::Style::getInstance().write(layer->getStyle(), writer);
+
+    writer.writeEndElement("te_map:Style");
+  }
+
   te::da::DataSetTypeConverter* converter = layer->getConverter();
 
   writer.writeStartElement("te_map:Converter");
@@ -1549,12 +1576,12 @@ void DataSetAdapterLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Wr
   {
     writer.writeStartElement("te_map:PropertyIndex");
 
-    writer.writeAttribute("OutIdx", i);
+    writer.writeAttribute("OutIdx", (int)i);
 
     std::vector<std::size_t> inputPropertiesIdx = propertyIndexes[i];
 
     for(std::size_t j = 0; j < inputPropertiesIdx.size(); ++j)
-      writer.writeElement("te_map:InIdx", inputPropertiesIdx[j]);
+      writer.writeElement("te_map:InIdx", (int)inputPropertiesIdx[j]);
 
     writer.writeEndElement("te_map:PropertyIndex");
   }

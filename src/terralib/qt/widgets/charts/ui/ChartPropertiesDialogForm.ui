@@ -123,7 +123,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QPushButton" name="m_helpButton">
+        <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
          <property name="text">
           <string>Help</string>
          </property>
@@ -152,7 +152,7 @@
        <item>
         <widget class="QPushButton" name="m_exitButton">
          <property name="text">
-          <string>cancel</string>
+          <string>Cancel</string>
          </property>
         </widget>
        </item>
@@ -162,12 +162,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>m_componentsListWidget</tabstop>
   <tabstop>m_tabWidget</tabstop>
   <tabstop>m_applyPushButton</tabstop>
   <tabstop>m_exitButton</tabstop>
-  <tabstop>m_helpButton</tabstop>
  </tabstops>
  <resources/>
  <connections>

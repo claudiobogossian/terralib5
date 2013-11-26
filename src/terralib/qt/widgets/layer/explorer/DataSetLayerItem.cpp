@@ -25,17 +25,21 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../maptools/DataSetLayer.h"
 #include "../../../../se/Style.h"
 #include "../../Exception.h"
 #include "ChartItem.h"
 #include "DataSetLayerItem.h"
-#include "GroupingTreeItem.h"
+#include "GroupingItem.h"
 #include "LegendItem.h"
 
 // Qt
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
+
+// STL
+#include <map>
 
 te::qt::widgets::DataSetLayerItem::DataSetLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent)
   : AbstractTreeItem(parent)
@@ -62,6 +66,9 @@ QVariant te::qt::widgets::DataSetLayerItem::data(int /*column*/, int role) const
 
   if(role == Qt::CheckStateRole)
     return QVariant(m_layer->getVisibility() == te::map::VISIBLE ? Qt::Checked : Qt::Unchecked);
+
+  if(role == Qt::ToolTipRole)
+    return buildToolTip();
 
   return QVariant();
 }
@@ -92,7 +99,7 @@ void te::qt::widgets::DataSetLayerItem::fetchMore()
   }
 
   if(m_layer->getGrouping() && !hasGroupingItem())
-    new GroupingTreeItem(m_layer->getGrouping(), this);
+    new GroupingItem(m_layer->getGrouping(), this);
 
   if(m_layer->getChart() && !hasChartItem())
     new ChartItem(m_layer->getChart(), this);
@@ -134,7 +141,7 @@ const std::string te::qt::widgets::DataSetLayerItem::getItemType() const
 
 bool te::qt::widgets::DataSetLayerItem::hasGroupingItem() const
 {
-  GroupingTreeItem* groupingItem = findChild<GroupingTreeItem*>();
+  GroupingItem* groupingItem = findChild<GroupingItem*>();
 
   return groupingItem != 0;
 }
@@ -144,4 +151,28 @@ bool te::qt::widgets::DataSetLayerItem::hasChartItem() const
   ChartItem* chartItem = findChild<ChartItem*>();
 
   return chartItem != 0;
+}
+
+QString te::qt::widgets::DataSetLayerItem::buildToolTip() const
+{
+  // Gets the connection info
+  const std::string& id = m_layer->getDataSourceId();
+  te::da::DataSourceInfoPtr info = te::da::DataSourceInfoManager::getInstance().get(id);
+  const std::map<std::string, std::string>& connInfo = info->getConnInfo();
+
+  QString toolTip;
+
+  std::size_t i = 0;
+  std::map<std::string, std::string>::const_iterator it;
+  for(it = connInfo.begin(); it != connInfo.end(); ++it)
+  {
+    toolTip += it->first.c_str();
+    toolTip += " = ";
+    toolTip += it->second.c_str();
+    ++i;
+    if(i != connInfo.size())
+      toolTip += "\n";
+  }
+
+  return toolTip;
 }

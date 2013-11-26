@@ -80,6 +80,8 @@ te::qt::widgets::ChartProperties::ChartProperties(te::qt::widgets::ChartDisplayW
   m_ui->m_tabWidget->addTab(m_curComp, QString::fromStdString("Chart Style"));
   m_curComp->setDisplay(m_chartWidget->getDisplay());
   m_ui->m_componentsListWidget->setCurrentRow(0);
+  m_ui->m_helpPushButton->setPageReference("widgets/charts/style/style.html");
+
   connect(m_ui->m_componentsListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
   connect(m_ui->m_applyPushButton, SIGNAL(clicked()), this, SLOT(onApplyButtonClicked()));
 }

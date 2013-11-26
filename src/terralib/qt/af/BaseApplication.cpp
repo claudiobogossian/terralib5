@@ -47,7 +47,7 @@
 #include "../widgets/externalTable/DataPropertiesDialog.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/ChartItem.h"
-#include "../widgets/layer/explorer/GroupingTreeItem.h"
+#include "../widgets/layer/explorer/GroupingItem.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
 #include "../widgets/layer/explorer/LayerTreeView.h"
 #include "../widgets/layer/explorer/AbstractTreeItem.h"
@@ -1120,7 +1120,7 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
     dlg.setLayer(selectedLayer);
 
     // Check if the selected layer item has a grouping item; in positive case, remove it from the layer item.
-    te::qt::widgets::GroupingTreeItem* groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingTreeItem*>();
+    te::qt::widgets::GroupingItem* groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingItem*>();
 
     if(groupingItem)
       m_explorer->getExplorer()->remove(groupingItem);
@@ -1134,7 +1134,7 @@ void te::qt::af::BaseApplication::onLayerGroupingTriggered()
       // Expand the selected layer item and the grouping item
       m_explorer->getExplorer()->expand(selectedLayerItem);
 
-      groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingTreeItem*>();
+      groupingItem = selectedLayerItem->findChild<te::qt::widgets::GroupingItem*>();
       if(groupingItem)
         m_explorer->getExplorer()->expand(groupingItem);
 
