@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/ObjectId.h"
 #include "../../../dataaccess/dataset/ObjectIdSet.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Geometry.h"
@@ -328,19 +329,55 @@ void te::qt::af::MapDisplay::drawLayerSelection(te::map::AbstractLayerPtr layer)
   if(oids == 0 || oids->size() == 0)
     return;
 
-  // Try to retrieve the layer selection
-  std::auto_ptr<te::da::DataSet> selected;
   try
   {
-    selected = layer->getData(oids);
+    std::size_t maxOids = 4000;
+
+    if(oids->size() <= maxOids)
+    {
+      // Try to retrieve the layer selection
+      std::auto_ptr<te::da::DataSet> selected(layer->getData(oids));
+
+      drawDataSet(selected.get(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+
+      return;
+    }
+    
+    // The batch of oids
+    std::auto_ptr<te::da::ObjectIdSet> oidsBatch(new te::da::ObjectIdSet(*oids, false));
+
+    // Count the all oids
+    std::size_t nOids = 0;
+
+    // Count the processed oids
+    std::size_t nProcessedOids = 0;
+
+    std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
+    for(it = oids->begin(); it != oids->end(); ++it)
+    {
+      oidsBatch->add((*it)->clone());
+
+      ++nOids;
+      ++nProcessedOids;
+
+      if(nProcessedOids == maxOids || nOids == oids->size())
+      {
+        // Try to retrieve the layer selection batch
+        std::auto_ptr<te::da::DataSet> selected(layer->getData(oidsBatch.get()));
+
+        drawDataSet(selected.get(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
+
+        // Prepares to next batch
+        oidsBatch->clear();
+        nProcessedOids = 0;
+      }
+    }
   }
   catch(std::exception& e)
   {
     QMessageBox::critical(m_display, tr("Error"), QString(tr("The layer selection cannot be drawn. Details:") + " %1.").arg(e.what()));
     return;
   }
-
-  drawDataSet(selected.get(), layer->getSRID(), ApplicationController::getInstance().getSelectionColor());
 }
 
 void te::qt::af::MapDisplay::drawDataSet(te::da::DataSet* dataset, int srid, const QColor& color)
