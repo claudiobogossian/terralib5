@@ -25,25 +25,9 @@
           <input>terraview.qhp</input>
           <output>terraview.qch</output>
         </file>
-        <file>
-          <input>apf.qhp</input>
-          <output>apf.qch</output> 
-        </file> 
-        <file>
-          <input>plugins.qhp</input>
-          <output>plugins.qch</output>
-        </file>
-
-        <file>
-          <input>widgets.qhp</input>
-          <output>widgets.qch</output>
-        </file>
       </generate>
       <register>
 		<file>terraview.qch</file>
-        <file>apf.qch</file>
-        <file>plugins.qch</file>       
-        <file>widgets.qch</file>
       </register>
     </docFiles>
 </QHelpCollectionProject>
