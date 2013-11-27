@@ -1751,6 +1751,7 @@ void te::qt::af::BaseApplication::makeDialog()
   treeView->add(m_layerRemoveItem, "", "ITEM_OF_LAYER");
 
   // Actions for the raster layer item
+  treeView->add(m_layerObjectGrouping, "", "RASTER_LAYER_ITEM");
   treeView->add(m_layerChartsHistogram, "", "RASTER_LAYER_ITEM");
 
   QAction* rasterSep1 = new QAction(this);
