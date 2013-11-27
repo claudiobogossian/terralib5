@@ -44,13 +44,6 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="m_helpPushButton">
-         <property name="text">
-          <string>Help</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="1">
         <spacer name="horizontalSpacer">
          <property name="orientation">
@@ -78,16 +71,29 @@
          </property>
         </widget>
        </item>
+       <item row="1" column="0">
+        <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
+         <property name="text">
+          <string>Help</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>te::qt::widgets::HelpPushButton</class>
+   <extends>QPushButton</extends>
+   <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>m_okPushButton</tabstop>
   <tabstop>m_cancelPushButton</tabstop>
-  <tabstop>m_helpPushButton</tabstop>
  </tabstops>
  <resources/>
  <connections>

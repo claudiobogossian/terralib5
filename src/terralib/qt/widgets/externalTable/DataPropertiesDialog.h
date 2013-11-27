@@ -85,8 +85,7 @@ namespace te
       protected slots:
 
           void onOkPushButtonClicked();
-          void onHelpPushButtonClicked();
-      
+
       private:
 
         std::auto_ptr<Ui::DataPropertiesDialogForm>  m_ui;                    //!< The dialog form.

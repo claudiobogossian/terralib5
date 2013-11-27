@@ -75,15 +75,14 @@ te::qt::widgets::DataPropertiesDialog::DataPropertiesDialog(QWidget* parent, Qt:
 
 // connect signal and slots
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+
+  m_ui->m_helpPushButton->setPageReference("widgets/external_table/external_table.html");
 }
 
 te::qt::widgets::DataPropertiesDialog::~DataPropertiesDialog()
 {
   delete m_dataPropertiesWidget;
 }
-
-void te::qt::widgets::DataPropertiesDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::DataPropertiesDialog::onOkPushButtonClicked()
 {
