@@ -124,7 +124,7 @@ namespace te
             
             bool m_enableGeometryFilter; //!< Enable/disable the geometry filter/outliers remotion (default:true).
             
-            double m_geometryFilterAssurance; //!< Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - default:0.5 - Use 0-zero to let this number be automatically found.
+            double m_geometryFilterAssurance; //!< Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - default:0.05 - Use 0-zero to let this number be automatically found.
             
             double m_rastersRescaleFactor; //!< Global rescale factor to apply to all input rasters (default:1, valid range: non-zero positive values).
             
