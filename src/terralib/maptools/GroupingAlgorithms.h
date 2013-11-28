@@ -36,6 +36,7 @@
 #include <vector>
 
 #include <math.h>
+#include <stdlib.h>
 
 
 #ifndef MIN
