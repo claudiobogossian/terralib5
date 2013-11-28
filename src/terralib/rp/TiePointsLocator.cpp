@@ -98,7 +98,7 @@ namespace te
       m_moravecWindowWidth = 5;
       m_maxR1ToR2Offset = 0;
       m_enableGeometryFilter = true;
-      m_geometryFilterAssurance = 0.5;
+      m_geometryFilterAssurance = 0.1;
       m_moravecGaussianFilterIterations = 1;
       m_surfScalesNumber = 4;
       m_surfOctavesNumber = 2;
