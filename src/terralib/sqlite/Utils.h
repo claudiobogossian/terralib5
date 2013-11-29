@@ -99,6 +99,12 @@ namespace te
 
     std::string GetBindableSpatialRelation(const std::string& colName, const te::gm::SpatialRelation r);
 
+    void Convert2SpatiaLiteGeom(const te::gm::GeomType t, std::string& geomType, std::string& dimension);
+
+    std::string GetSQLType(const te::dt::Property* p);
+
+    te::da::FKActionType GetAction(const std::string& action);
+
   } // end namespace sqlite
 }   // end namespace te
 

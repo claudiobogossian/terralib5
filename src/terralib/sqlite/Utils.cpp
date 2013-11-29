@@ -619,3 +619,229 @@ std::string te::sqlite::GetBindableSpatialRelation(const std::string& colName, c
 
   return filter;
 }
+
+void te::sqlite::Convert2SpatiaLiteGeom(const te::gm::GeomType t, std::string& geomType, std::string& dimension)
+{
+  switch(t)
+  {
+    case te::gm::PointType :
+      geomType = "POINT";
+    break;
+
+    case te::gm::PointZType :
+      geomType = "POINTZ";
+    break;
+
+    case te::gm::PointMType :
+      geomType = "POINTM";
+    break;
+
+    case te::gm::PointZMType :
+      geomType = "POINTZM";
+    break;
+
+    case te::gm::LineStringType :
+      geomType = "LINESTRING";
+    break;
+
+    case te::gm::LineStringZType :
+      geomType = "LINESTRINGZ";
+    break;
+
+    case te::gm::LineStringMType :
+      geomType = "LINESTRINGM";
+    break;
+
+    case te::gm::LineStringZMType :
+      geomType = "LINESTRINGZM";
+    break;
+
+    case te::gm::PolygonType :
+      geomType = "POLYGON";
+    break;
+
+    case te::gm::PolygonZType :
+      geomType = "POLYGONZ";
+    break;
+
+    case te::gm::PolygonMType :
+      geomType = "POLYGONM";
+    break;
+
+    case te::gm::PolygonZMType :
+      geomType = "POLYGONZM";
+    break;
+
+    case te::gm::MultiPointType :
+      geomType = "MULTIPOINT";
+    break;
+
+    case te::gm::MultiPointZType :
+      geomType = "MULTIPOINTZ";
+    break;
+
+    case te::gm::MultiPointMType :
+      geomType = "MULTIPOINTM";
+    break;
+
+    case te::gm::MultiPointZMType :
+      geomType = "MULTIPOINTZM";
+    break;
+
+    case te::gm::MultiLineStringType :
+      geomType = "MULTILINESTRING";
+    break;
+
+    case te::gm::MultiLineStringZType :
+      geomType = "MULTILINESTRINGZ";
+    break;
+
+    case te::gm::MultiLineStringMType :
+      geomType = "MULTILINESTRINGM";
+    break;
+
+    case te::gm::MultiLineStringZMType :
+      geomType = "MULTILINESTRINGZM";
+    break;
+
+    case te::gm::MultiPolygonType :
+      geomType = "MULTIPOLYGON";
+    break;
+
+    case te::gm::MultiPolygonZType :
+      geomType = "MULTIPOLYGONZ";
+    break;
+
+    case te::gm::MultiPolygonMType :
+      geomType = "MULTIPOLYGONM";
+    break;
+
+    case te::gm::MultiPolygonZMType :
+      geomType = "MULTIPOLYGONZM";
+    break;
+
+    case te::gm::GeometryCollectionType :
+      geomType = "GEOMETRYCOLLECTION";
+    break;
+
+    case te::gm::GeometryCollectionZType :
+      geomType = "GEOMETRYCOLLECTIONZ";
+    break;
+
+    case te::gm::GeometryCollectionMType :
+      geomType = "GEOMETRYCOLLECTIONM";
+    break;
+
+    case te::gm::GeometryCollectionZMType :
+      geomType = "GEOMETRYCOLLECTIONZM";
+    break;
+
+    case te::gm::GeometryType :
+      geomType = "GEOMETRY";
+    break;
+
+    case te::gm::GeometryZType :
+      geomType = "GEOMETRYZ";
+    break;
+
+    case te::gm::GeometryMType :
+      geomType = "GEOMETRYM";
+    break;
+
+    case te::gm::GeometryZMType :
+      geomType = "GEOMETRYZM";
+    break;
+
+    default:
+      throw te::common::Exception(TR_COMMON("This geometric type is not supported by SpatiaLite!"));
+  }
+
+  if((t & 0xF00) == 0xB00)    // it is zm
+    dimension = "XYZM";
+  else if((t & 0x0F00) == 0x300)   // it is z
+    dimension = "XYZ";
+  else if((t & 0xF00) == 0x700)  // it is m
+    dimension = "XYM";
+  else
+    dimension = "XY";
+}
+
+std::string te::sqlite::GetSQLType(const te::dt::Property* p)
+{
+  std::string sql;
+
+  switch(p->getType())
+  {
+    case te::dt::CHAR_TYPE :
+    case te::dt::UCHAR_TYPE :
+    case te::dt::INT16_TYPE :
+    case te::dt::INT32_TYPE :
+    case te::dt::INT64_TYPE :
+      sql = "INTEGER";
+    break;
+
+    case te::dt::FLOAT_TYPE :
+    case te::dt::DOUBLE_TYPE :
+      sql = "REAL";
+    break;
+    
+    case te::dt::STRING_TYPE :
+      sql = "TEXT";
+    break;
+
+    case te::dt::NUMERIC_TYPE :
+      sql = "NUMERIC";
+    break;
+
+    case te::dt::BYTE_ARRAY_TYPE :
+      sql = "BLOB";
+    break;
+
+    case te::dt::DATETIME_TYPE :
+      sql = static_cast<const te::dt::DateTimeProperty*>(p)->getSubType() == te::dt::TIME_INSTANT ? "DATETIME" : "DATE";
+    break;
+
+    case te::dt::GEOMETRY_TYPE :
+    {
+      const te::gm::GeometryProperty* gp = static_cast<const te::gm::GeometryProperty*>(p);
+
+      std::string gtype;
+      std::string cdim;
+
+      Convert2SpatiaLiteGeom(gp->getGeometryType(), gtype, cdim);
+
+      sql = gtype;
+    }
+    break;
+
+    default:
+      throw te::common::Exception((boost::format(TR_COMMON("The TerraLib data type %1% can not be converted to SQLite type system!")) % p->getType()).str());
+  }
+
+  return sql;
+}
+
+te::da::FKActionType te::sqlite::GetAction(const std::string& action)
+{
+  if(action == "NO ACTION")
+  {
+    return te::da::NO_ACTION;
+  }
+  else if(action == "RESTRICT")
+  {
+    return te::da::RESTRICT;
+  }
+  else if(action == "CASCADE")
+  {
+    return te::da::CASCADE;
+  }
+  else if(action == "SET NULL")
+  {
+    return te::da::SET_NULL;
+  }
+  else //if(action == "SET DEFAULT")
+  {
+    return te::da::SET_DEFAULT;
+  }
+}
+
