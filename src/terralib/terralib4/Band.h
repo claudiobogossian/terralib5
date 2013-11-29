@@ -39,7 +39,7 @@ namespace terralib4
   {
     public:
 
-      Band(Raster* parent, TeRaster* iraster, std::size_t idx);
+      Band(Raster* parent, TeRaster* iraster, te::rst::BandProperty* bp, std::size_t idx);
 
       ~Band();
 
