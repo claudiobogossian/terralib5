@@ -1785,7 +1785,17 @@ void te::qt::af::BaseApplication::makeDialog()
 
   treeView->add(m_layerProperties, "", "RASTER_LAYER_ITEM");
 
-  /********* Actions to be added to the context menu when there is multiple items selected ***********/
+  /********* Actions to be added to the context menu when there are multiple items selected ***********/
+
+  treeView->add(m_layerFitSelectedOnMapDisplay, "", "DATASET_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+  treeView->add(m_layerPanToSelectedOnMapDisplay, "", "DATASET_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+
+  treeView->add(m_layerFitSelectedOnMapDisplay, "", "QUERY_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+  treeView->add(m_layerPanToSelectedOnMapDisplay, "", "QUERY_LAYER_ITEM", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
+
+  QAction* multipleSelectedSep = new QAction(this);
+  multipleSelectedSep->setSeparator(true);
+  treeView->add(multipleSelectedSep, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
 
   treeView->add(m_projectRemoveLayer, "", "", te::qt::widgets::LayerTreeView::MULTIPLE_ITEMS_SELECTED);
 
