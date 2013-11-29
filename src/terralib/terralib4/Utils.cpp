@@ -380,7 +380,7 @@ te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
 
   unsigned int ncols = rparams.ncols_;
   unsigned int nrows = rparams.nlines_;
-  std::auto_ptr<te::gm::Envelope> mbr(Convert2T5(rparams.boundingBox()));
+  std::auto_ptr<te::gm::Envelope> mbr(Convert2T5(rparams.box()));
 
   std::auto_ptr<te::rst::Grid> grid(new te::rst::Grid(ncols, nrows, mbr.release(), rparams.projection()->epsgCode()));
 
@@ -413,13 +413,8 @@ te::rst::RasterProperty* terralib4::Convert2T5(TeRasterParams& rparams)
     if(!palette.empty())
       bp->m_palette.assign(palette.begin(), palette.end());
 
-    int col, lin, band, res, subb;
-
-    TeDecoderDatabase decDb;
-    decDb.decodifyId(rparams.blockId_, col, lin, band, res, subb);
-
-    bp->m_nblocksx = col;
-    bp->m_nblocksy = lin;
+    bp->m_nblocksx = (ncols + bp->m_blkw - 1) / bp->m_blkw;
+    bp->m_nblocksy = (nrows + bp->m_blkh - 1) / bp->m_blkh;
 
     rproperty->add(bp);
   }
