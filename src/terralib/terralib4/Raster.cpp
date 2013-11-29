@@ -25,6 +25,9 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../raster/BandProperty.h"
+#include "../raster/Grid.h"
+#include "../raster/RasterProperty.h"
 #include "Band.h"
 #include "Exception.h"
 #include "Raster.h"
@@ -57,10 +60,18 @@ terralib4::Raster::Raster(TeRaster* iraster)
 {
   m_pImpl = new Impl(iraster);
 
+  te::rst::RasterProperty* prop = Convert2T5(iraster->params());
+
+  m_grid = new te::rst::Grid(*prop->getGrid());
+
   for(std::size_t i = 0; i != getNumberOfBands(); ++i)
   {
-    m_pImpl->m_bands.push_back(new Band(this, iraster, i));
+    m_pImpl->m_bands.push_back(new Band(this, iraster, prop->getBandProperties()[i], i));
+
+    prop->getBandProperties()[i] = 0;
   }
+
+  delete prop;
 }
 
 terralib4::Raster::Raster(te::rst::Grid* /*grid*/, te::common::AccessPolicy /*p*/)

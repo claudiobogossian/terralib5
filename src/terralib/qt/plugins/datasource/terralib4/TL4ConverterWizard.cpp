@@ -281,7 +281,7 @@ void te::qt::plugins::terralib4::TL4ConverterWizard::rasterFolderSelectionPageNe
 
       std::auto_ptr<te::rst::Raster> raster = ds->getRaster("Raster");
 
-      te::rst::CreateCopy(*raster.release(), m_rasterFolderPath);
+      te::rst::RasterPtr r = te::rst::CreateCopy(*raster.release(), m_rasterFolderPath + "/" + dsNames[i] + ".tif");
     }
   }
 

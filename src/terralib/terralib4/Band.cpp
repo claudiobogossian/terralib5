@@ -47,8 +47,8 @@ terralib4::Band::Impl::Impl(Raster* parent, TeRaster* iraster)
 {
 }
 
-terralib4::Band::Band(Raster* parent, TeRaster* iraster, std::size_t idx)
-  : te::rst::Band(0, idx), m_pImpl(0)
+terralib4::Band::Band(Raster* parent, TeRaster* iraster, te::rst::BandProperty* bp, std::size_t idx)
+  : te::rst::Band(bp, idx), m_pImpl(0)
 {
   m_pImpl = new Impl(parent, iraster);
 }
