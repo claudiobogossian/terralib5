@@ -423,7 +423,9 @@ namespace te
         }
         case EuclideanDistanceMethod :
         {
-          if( m_intersectionPtr.get() )
+          if( ( m_intersectionPtr.get() != 0 ) && 
+            ( m_r1IntersectionSegmentsPointsSize > 1 ) && 
+            ( m_r2IntersectionSegmentsPointsSize > 1 ) )
           {
             m_blendFuncPtr = &te::rp::Blender::euclideanDistanceMethodImp;
           }
@@ -582,6 +584,8 @@ namespace te
     {
       TERP_DEBUG_TRUE_OR_THROW( values.size() == m_raster1Bands.size(), "Invalid values vector size" );
       TERP_DEBUG_TRUE_OR_THROW( m_intersectionPtr.get(), "Invalid intersection pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r1IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r2IntersectionSegmentsPointsSize > 1, "Invalid intersection points" );
       
       // Checking if it is inside the intersection
       
@@ -679,7 +683,7 @@ namespace te
             }
             else
             {
-              if( m_euclideanDistanceMethodImp_dist1 == 0.0 )
+              if( m_euclideanDistanceMethodImp_dist2 == 0.0 )
               {
                 values[ m_euclideanDistanceMethodImp_BandIdx ] =  
                   ( m_euclideanDistanceMethodImp_cValue1.real()  * 

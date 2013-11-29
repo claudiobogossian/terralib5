@@ -73,9 +73,9 @@ void terralib4::Band::setValue(unsigned int /*c*/, unsigned int /*r*/, const dou
   throw Exception(TR_TERRALIB4("This method is not supported by TerraLib 4.x driver!"));
 }
 
-void terralib4::Band::getIValue(unsigned int c, unsigned int r, double& value) const
+void terralib4::Band::getIValue(unsigned int /*c*/, unsigned int /*r*/, double& value) const
 {
-  throw;
+  value = 0.0;
 }
 
 void terralib4::Band::setIValue(unsigned int /*c*/, unsigned int /*r*/, const double /*value*/)
