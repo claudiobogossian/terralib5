@@ -811,49 +811,33 @@ namespace te
             // Blending the current raster into the mosaic
         
             {
-              te::gm::GTParameters inverseTransParams;
-              inverseTransParams.m_directParameters = 
-                geoTransPtr->getParameters().m_inverseParameters;
-              inverseTransParams.m_inverseParameters = 
-                geoTransPtr->getParameters().m_directParameters;
-              
-              std::auto_ptr< te::gm::GeometricTransformation > inverseTransPtr;
-              inverseTransPtr.reset( geoTransPtr->clone() );
-              TERP_TRUE_OR_RETURN_FALSE( inverseTransPtr.get(), 
-                 "Invalid transformation pointer" );
-              TERP_TRUE_OR_RETURN_FALSE( inverseTransPtr->initialize( 
-                inverseTransParams ), "Inverse transformation init error" );              
-              
               te::rp::Blender blenderInstance;
               
               TERP_TRUE_OR_RETURN_FALSE( blenderInstance.initialize(
-                *inputRasterPtr,
-                m_inputParameters.m_inputRastersBands[ inputRasterIdx ],              
                 *( mosaicRasterHandler.get() ),
-                dummyRasterBandsIndexes,
+                dummyRasterBandsIndexes,              
+                *inputRasterPtr,
+                m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
                 m_inputParameters.m_blendMethod,
-                m_inputParameters.m_interpMethod,
                 te::rst::Interpolator::NearestNeighbor,
+                m_inputParameters.m_interpMethod,
                 m_inputParameters.m_noDataValue,
                 m_inputParameters.m_forceInputNoDataValue,
-                currentRasterBandsOffsets,
-                currentRasterBandsScales,                                                                    
                 dummyRasterOffsets,
-                dummyRasterScales,
-                0,
+                dummyRasterScales,                                                                    
+                currentRasterBandsOffsets,
+                currentRasterBandsScales,  
                 &mosaicValidDataPol,
-                *inverseTransPtr ), 
+                0,                
+                *geoTransPtr ), 
                 "Blender initiazing error" );                    
 
               std::vector< double > blendedValues( mosaicRasterHandler->getNumberOfBands() );
               unsigned int outputRow = 0;
               unsigned int outputCol = 0;
-              double inputRow = 0;
-              double inputCol = 0;
               const unsigned int nBands = mosaicRasterHandler->getNumberOfBands();
               unsigned int outBandIdx = 0;
               te::rst::Raster& outputRaster = *mosaicRasterHandler;
-              const te::gm::GeometricTransformation& inverseTrans = *inverseTransPtr;
               
               for( outputRow = lastInputRasterBBoxURYIndexed ; outputRow <= lastInputRasterBBoxLLYIndexed ;
                 ++outputRow )
@@ -861,10 +845,7 @@ namespace te
                 for( outputCol = lastInputRasterBBoxLLXIndexed ; outputCol <= lastInputRasterBBoxURXIndexed ;
                   ++outputCol )
                 {
-                  inverseTrans.inverseMap( (double)outputCol, (double)outputRow, 
-                    inputCol, inputRow );
-                    
-                  blenderInstance.getBlendedValues( inputRow, inputCol,
+                  blenderInstance.getBlendedValues( (double)outputRow, (double)outputCol,
                     blendedValues );
                     
                   for( outBandIdx = 0 ; outBandIdx < nBands ; ++outBandIdx )
