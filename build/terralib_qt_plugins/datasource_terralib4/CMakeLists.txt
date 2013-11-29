@@ -60,6 +60,7 @@ list (APPEND
   terralib_plugin
   terralib_qt_af
   terralib_qt_widgets
+  terralib_raster
 )
 
 file(GLOB SRCS ${SRCDIR}/*.cpp)
