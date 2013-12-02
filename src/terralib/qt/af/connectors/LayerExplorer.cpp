@@ -99,11 +99,11 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* e
 
       te::map::AbstractLayerPtr layer = e->m_layer;
 
-      ApplicationController::getInstance().getProject()->remove(layer);
-
       // Remove the item from the layer explorer
       te::qt::widgets::AbstractTreeItem* layerItem = m_explorer->getLayerItem(layer);
       m_explorer->remove(layerItem);
+
+      ApplicationController::getInstance().getProject()->remove(layer);
 
       te::qt::af::evt::ProjectUnsaved projectUnsavedEvent;
       ApplicationController::getInstance().broadcast(&projectUnsavedEvent);
