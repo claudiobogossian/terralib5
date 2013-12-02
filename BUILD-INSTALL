@@ -1,15 +1,19 @@
+  Building Procedures for TerraLib 5
+  ======================================
+
+  The Terralib library uses Cmake to generate the compilation environment, Cmake is a cross-platform family of tools designed to build, test and package software.
+  For informations on Cmake, please refer to http://www.cmake.org/ for details.
+  
+  This section will explain the steps required to generate the compilation envirnment using cmake. 
+  
+  
   Installation Procedures for TerraLib 5
   ======================================
           (!!UNDER DEVELOPMENT!!)
-		  
-If you haven't built the TerraLib yet,
-please, refer to the BUILD-NOTES documentation first.
 
-If you have successfully built TerraLib
-the following steps will guide you through
-the process of installation of TerraLib in your plataform.
-Note that there are specific notes depending on the Operational
-System.
+The following steps will guide you through the process of installation of TerraLib in your plataform.
+
+Note that there are specific notes depending on the Operational System.
 
 Notes for Windows XP - 32 bit
 -----------------------------
