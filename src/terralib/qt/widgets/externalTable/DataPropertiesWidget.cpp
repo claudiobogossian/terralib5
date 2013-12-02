@@ -181,8 +181,6 @@ te::qt::widgets::DatapPropertiesWidget::DatapPropertiesWidget(QWidget* parent, Q
   //Connecting signals and slots
   connect(m_ui->m_inputDataToolButton, SIGNAL(clicked()), this, SLOT(onInputDataToolButtonTriggered()));
   connect(m_ui->m_sridPushButton, SIGNAL(clicked()), this, SLOT(onSridPushButtonCLicked()));
-  connect(m_ui->m_xAxisComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onPointPropertyChanged(const QString&)));
-  connect(m_ui->m_yAxisComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onPointPropertyChanged(const QString&)));
   connect(m_mapper, SIGNAL(mapped(int)), this, SLOT(onPropertyTypeChanged(int)));
 }
 
@@ -475,8 +473,4 @@ void te::qt::widgets::DatapPropertiesWidget::onPropertyTypeChanged(int row)
       m_ui->m_yAxisComboBox->removeItem(xyAxis);
     }
   }
-}
-
-void te::qt::widgets::DatapPropertiesWidget::onPointPropertyChanged(const QString& text)
-{
 }

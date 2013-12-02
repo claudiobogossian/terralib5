@@ -36,7 +36,7 @@
 #include "../ApplicationController.h"
 
 te::qt::af::ChartDisplayDockWidget::ChartDisplayDockWidget(te::qt::widgets::ChartDisplayWidget* displayWidget, QWidget* parent) :
-QDockWidget(parent, Qt::Dialog),
+QDockWidget(parent, Qt::Widget),
   m_displayWidget(displayWidget),
   m_layer(0)
 {

@@ -119,7 +119,6 @@ namespace te
           void onInputDataToolButtonTriggered();
           void onSridPushButtonCLicked();
           void onPropertyTypeChanged(int index);
-          void onPointPropertyChanged(const QString& text);
 
         private:
 
