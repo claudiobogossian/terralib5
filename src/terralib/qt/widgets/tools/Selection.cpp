@@ -183,11 +183,14 @@ void te::qt::widgets::Selection::executeSelection(const te::map::AbstractLayerPt
 
   try
   {
-    // Gets the dataset
+    // Gets the layer schema
     std::auto_ptr<const te::map::LayerSchema> schema(layer->getSchema());
+    if(!schema->hasGeom())
+      return;
 
     te::gm::GeometryProperty* gp = te::da::GetFirstGeomProperty(schema.get());
 
+    // Gets the dataset
     std::auto_ptr<te::da::DataSet> dataset = layer->getData(gp->getName(), &reprojectedEnvelope, te::gm::INTERSECTS);
     assert(dataset.get());
 
