@@ -132,7 +132,7 @@ class te::qt::widgets::LayerTreeView::Impl
 
           if(!layer)
           {
-            if((selectedItemType == "GROUPING_ITEM" || selectedItemType == "CHART_ITEM") &&
+            if((selectedItemType == "GROUPING_ITEM" || selectedItemType == "CHART_ITEM" || selectedItemType == "COLORMAP_ITEM") &&
                 aItemType == "ITEM_OF_LAYER")
             {
               menu.addAction(action);

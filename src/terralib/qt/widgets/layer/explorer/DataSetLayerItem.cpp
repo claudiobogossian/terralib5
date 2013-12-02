@@ -27,9 +27,12 @@
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../maptools/DataSetLayer.h"
+#include "../../../../se/RasterSymbolizer.h"
 #include "../../../../se/Style.h"
+#include "../../../../se/Utils.h"
 #include "../../Exception.h"
 #include "ChartItem.h"
+#include "ColorMapItem.h"
 #include "DataSetLayerItem.h"
 #include "GroupingItem.h"
 #include "LegendItem.h"
@@ -98,6 +101,14 @@ void te::qt::widgets::DataSetLayerItem::fetchMore()
       new LegendItem(rules[i], this);
   }
 
+  if(m_layer->getStyle())
+  {
+    te::se::RasterSymbolizer* rs = te::se::GetRasterSymbolizer(m_layer->getStyle());
+
+    if(rs && rs->getColorMap() && !hasColorMapItem())
+      new ColorMapItem(rs->getColorMap(), this);
+  }
+
   if(m_layer->getGrouping() && !hasGroupingItem())
     new GroupingItem(m_layer->getGrouping(), this);
 
@@ -151,6 +162,13 @@ bool te::qt::widgets::DataSetLayerItem::hasChartItem() const
   ChartItem* chartItem = findChild<ChartItem*>();
 
   return chartItem != 0;
+}
+
+bool te::qt::widgets::DataSetLayerItem::hasColorMapItem() const
+{
+  ColorMapItem* cmi = findChild<ColorMapItem*>();
+
+  return cmi != 0;
 }
 
 QString te::qt::widgets::DataSetLayerItem::buildToolTip() const
