@@ -165,8 +165,6 @@ void te::map::DataSetLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, i
   std::auto_ptr<AbstractRenderer> renderer(RendererFactory::make(m_rendererType));
   if(renderer.get() == 0)
     throw Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
-  if (!bbox.isValid())
-    throw Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. Its bounding box can not be remaped to the canvas SRID.")) % getTitle() % m_rendererType).str());
 
   renderer->draw(this, canvas, bbox, srid);
 }
